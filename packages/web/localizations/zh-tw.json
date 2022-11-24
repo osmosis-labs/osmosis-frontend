@@ -99,6 +99,7 @@
       "amount": "幣額",
       "token": "代幣",
       "swapFee": "設定兌換費",
+      "scalingFactorController": "例因子控制器（可選)",
       "undersandCost": "我明白建立一個新流動性池會需要費用 {POOL_CREATION_FEE}",
       "interestedCreate": "想建立新流動性池嗎？",
       "startProcess": "按此開始流程"
@@ -343,6 +344,7 @@
     "negativeSwapFee": "兌換費為負數",
     "highSwapFee": "兌換費太高",
     "invalidSwapFee": "非正確兌換費",
+    "invalidScalingFactorControllerAddress": "比例因子控制器地址無效",
     "minAssetsCount": "最少需要 {num} 種資產",
     "maxAssetsCount": "最少可有 {num} 種資產",
     "negativePercentage": "百份比值必須為正數",

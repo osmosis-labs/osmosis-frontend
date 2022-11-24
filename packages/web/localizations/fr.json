@@ -99,6 +99,7 @@
       "amount": "Montant",
       "token": "Jeton",
       "swapFee": "Définit les frais d'échange",
+      "scalingFactorController": "Définir le contrôleur de facteur d'échelle (facultatif)",
       "undersandCost": "Je comprends que la création d'un nouveau bassin coûtera {POOL_CREATION_FEE}.",
       "interestedCreate": "Intéressé par la création d'un nouveau bassin ?",
       "startProcess": "Cliquez ici pour démarrer le processus"
@@ -342,6 +343,7 @@
     "insufficientAmount": "Le montant est insuffisant",
     "negativeSwapFee": "Les frais d'échange sont négatifs",
     "highSwapFee": "Les frais d'échange sont trop importants",
+    "invalidScalingFactorControllerAddress": "Adresse de contrôleur de facteur d'échelle invalide",
     "invalidSwapFee": "Les frais d'échange est invalide",
     "minAssetsCount": "Un minimum de {num} actif est requis",
     "maxAssetsCount": "Un maximum de {num} actif est requis",

@@ -99,6 +99,7 @@
       "amount": "Amount",
       "token": "Token",
       "swapFee": "Set Swap Fee",
+      "scalingFactorController": "Set scaling factor controller (optional)",
       "undersandCost": "I understand that creating a new pool will cost {POOL_CREATION_FEE}.",
       "interestedCreate": "Interested in creating a new pool?",
       "startProcess": "Click here to start the process"
@@ -344,6 +345,7 @@
     "negativeSwapFee": "Swap fee is negative",
     "highSwapFee": "Swap fee too high",
     "invalidSwapFee": "Swap fee is invalid",
+    "invalidScalingFactorControllerAddress": "Invalid scaling factor controller address",
     "minAssetsCount": "Minimum of {num} assets required",
     "maxAssetsCount": "Maximum of {num} assets allowed",
     "negativePercentage": "Percentage must be positive",

@@ -101,6 +101,7 @@
       "amount": "Ilość",
       "token": "Token",
       "swapFee": "Ustaw Prowizję Wymiany",
+      "scalingFactorController": "Ustaw regulator współczynnika skalowania (opcjonalnie)",
       "undersandCost": "Rozumiem, że stworzenie nowej puli będzie kosztować {POOL_CREATION_FEE}.",
       "interestedCreate": "Zainteresowany tworzeniem nowej puli?",
       "startProcess": "Kliknij tutaj, żeby zacząć proces"
@@ -345,6 +346,7 @@
     "negativeSwapFee": "Prowizja wymiany jest ujemna",
     "highSwapFee": "Prowizja wymiany zbyt wysoka",
     "invalidSwapFee": "Prowizja wymiany nieprawidłowa",
+    "invalidScalingFactorControllerAddress": "Nieprawidłowy adres kontrolera współczynnika skalowania",
     "minAssetsCount": "Wymagane minimum {num} środków",
     "maxAssetsCount": "Dozwolone maksymalnie {num} środków",
     "negativePercentage": "Procent musi być dodatni",

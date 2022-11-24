@@ -38,6 +38,7 @@ export declare class ObservableCreatePoolConfig extends TxChainSetter {
     set acknowledgeFee(ack: boolean);
     get sendableCurrencies(): AppCurrency[];
     get swapFee(): string;
+    get scalingFactorControllerAddress(): string;
     /**
      * sendableCurrencies 중에서 현재 assets에 없는 currency들을 반환한다.
      * Among the SendableCurrencies, return currencies that are not currently in Assets.
@@ -51,6 +52,7 @@ export declare class ObservableCreatePoolConfig extends TxChainSetter {
     get percentageError(): Error | undefined;
     get swapFeeError(): Error | undefined;
     get amountError(): Error | undefined;
+    get scalingFactorControllerError(): Error | undefined;
     setFeeConfig(config: IFeeConfig | undefined): void;
     setSender(bech32Address: string): void;
     setPoolType(poolType: ObservableQueryPool["type"] | null): void;

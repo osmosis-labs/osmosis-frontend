@@ -5,6 +5,7 @@ import { Info } from "../../../alert";
 import { Button } from "../../../buttons";
 import { POOL_CREATION_FEE } from ".";
 import { useWindowSize } from "../../../../hooks";
+import { tError } from "../../../localization";
 import { useTranslation } from "react-multi-lang";
 
 export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
@@ -18,24 +19,45 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
     }) => {
       const { isMobile } = useWindowSize();
       const t = useTranslation();
-      const positiveBalanceError = t(
-        config.positiveBalanceError?.message ?? ""
-      );
-      const percentageError = t(config.percentageError?.message ?? "");
-      const amountError = t(config.amountError?.message ?? "");
-      const swapFeeError = t(config.swapFeeError?.message ?? "");
+
+      const positiveBalanceError = config.positiveBalanceError
+        ? t(...tError(config.positiveBalanceError))
+        : undefined;
+      const percentageError = config.percentageError
+        ? t(...tError(config.percentageError))
+        : undefined;
+      const amountError = config.amountError
+        ? t(...tError(config.amountError))
+        : undefined;
+      const swapFeeError = config.swapFeeError
+        ? t(...tError(config.swapFeeError))
+        : undefined;
+      const scalingFactorControllerError = config.scalingFactorControllerError
+        ? t(...tError(config.scalingFactorControllerError))
+        : undefined;
 
       const canAdvance =
-        (step === 1 && !percentageError && !positiveBalanceError) ||
+        (step === 1 &&
+          !percentageError &&
+          !positiveBalanceError &&
+          !(config.assets.length <= 1)) ||
         (step === 2 && !amountError) ||
-        (step === 3 && config.acknowledgeFee && !swapFeeError);
+        (step === 3 &&
+          config.acknowledgeFee &&
+          !swapFeeError &&
+          !scalingFactorControllerError);
 
       const currentErrorMessage =
         step === 1
           ? percentageError || positiveBalanceError
           : step === 2
           ? amountError
-          : swapFeeError;
+          : swapFeeError || scalingFactorControllerError;
+
+      const urgentErrorMessage =
+        step === 1
+          ? percentageError
+          : swapFeeError || scalingFactorControllerError;
 
       return (
         <div className="flex flex-col gap-5">
@@ -73,6 +95,9 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
           )}
           <Button
             onClick={() => advanceStep()}
+            mode={
+              !canAdvance && urgentErrorMessage ? "primary-warning" : undefined
+            }
             disabled={!canAdvance || isSendingMsg}
           >
             {currentErrorMessage

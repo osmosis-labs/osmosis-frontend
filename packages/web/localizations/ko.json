@@ -99,6 +99,7 @@
       "amount": "수량",
       "token": "토큰",
       "swapFee": "교환 수수료 설정",
+      "scalingFactorController": "배율 계수 제어기 설정(선택 사항)",
       "undersandCost": "새 풀을 만드는데 {POOL_CREATION_FEE} 만큼의 비용이 든다는 것을 이해합니다.",
       "interestedCreate": "새 풀을 만들어 볼까요?",
       "startProcess": "여기를 클랙해서 시작하세요."
@@ -344,6 +345,7 @@
     "negativeSwapFee": "교환 수수료가 음수입니다",
     "highSwapFee": "교환 수수료가 너무 높습니다",
     "invalidSwapFee": "교환 수수료가 잘못 되었습니다",
+    "invalidScalingFactorControllerAddress": "잘못된 배율 인수 컨트롤러 주소",
     "minAssetsCount": "최소 {num}개의 자산이 필요합니다",
     "maxAssetsCount": "최대 {num}개의 자산만 허용됩니다",
     "negativePercentage": "퍼센티지는 양수여야합니다",

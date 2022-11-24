@@ -7,6 +7,9 @@ export declare class HighSwapFeeError extends Error {
 export declare class InvalidSwapFeeError extends Error {
     constructor(m: string);
 }
+export declare class InvalidScalingFactorControllerAddress extends Error {
+    constructor(m: string);
+}
 export declare class MinAssetsCountError extends Error {
     constructor(m: string);
 }

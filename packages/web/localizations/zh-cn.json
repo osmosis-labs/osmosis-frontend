@@ -99,6 +99,7 @@
       "amount": "总量",
       "token": "代币",
       "swapFee": "设置交易费",
+      "scalingFactorController": "设置比例因子控制器（可选）",
       "undersandCost": "我已理解创建资金池将会花费 {POOL_CREATION_FEE}.",
       "interestedCreate": "对创建新的资金池感兴趣?",
       "startProcess": "点击此处开始创建"
@@ -343,6 +344,7 @@
     "negativeSwapFee": "交易费为负数",
     "highSwapFee": "交易费太高",
     "invalidSwapFee": "交易费无效",
+    "invalidScalingFactorControllerAddress": "比例因子控制器地址无效",
     "minAssetsCount": "最少需要 {num} 个资产",
     "maxAssetsCount": "最多允许 {num} 个资产",
     "negativePercentage": "百分比必须是正数",

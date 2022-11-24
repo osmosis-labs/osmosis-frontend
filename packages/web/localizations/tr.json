@@ -99,6 +99,7 @@
       "amount": "Miktar",
       "token": "Token",
       "swapFee": "Takas Ücreti Belirle",
+      "scalingFactorController": "Ölçeklendirme faktörü denetleyicisini ayarla (isteğe bağlı)",
       "undersandCost": "Yeni havuz oluşturmanın, {POOL_CREATION_FEE} 'ya mâl olacağını anlıyorum.",
       "interestedCreate": "Yeni bir havuz oluşturmak mı istiyorsunuz?",
       "startProcess": "İşlemi başlatmak için buraya tıklayın"
@@ -344,6 +345,7 @@
     "negativeSwapFee": "Takas ücreti negatif",
     "highSwapFee": "Takas ücreti çok yüksek",
     "invalidSwapFee": "Takas ücreti geçersiz",
+    "invalidScalingFactorControllerAddress": "Geçersiz ölçeklendirme faktörü denetleyici adresi",
     "minAssetsCount": "En az {num} varlık gerekli",
     "maxAssetsCount": "En fazla {num} varlık olabilir",
     "negativePercentage": "Yüzde pozitif olmalı",

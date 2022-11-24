@@ -17,12 +17,14 @@ import {
 } from "@keplr-wallet/stores";
 import { AmountConfig } from "@keplr-wallet/hooks";
 import { AppCurrency } from "@keplr-wallet/types";
+import { Bech32Address } from "@keplr-wallet/cosmos";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
 import type { ObservableQueryPool } from "../queries";
 import {
   DepositNoBalanceError,
   HighSwapFeeError,
   InvalidSwapFeeError,
+  InvalidScalingFactorControllerAddress,
   MaxAssetsCountError,
   MinAssetsCountError,
   NegativePercentageError,
@@ -147,6 +149,10 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
     return this._swapFee;
   }
 
+  get scalingFactorControllerAddress(): string {
+    return this._scalingFactorControllerAddress;
+  }
+
   /**
    * sendableCurrencies 중에서 현재 assets에 없는 currency들을 반환한다.
    * Among the SendableCurrencies, return currencies that are not currently in Assets.
@@ -237,6 +243,28 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
     }
   }
 
+  get scalingFactorControllerError(): Error | undefined {
+    if (
+      this._poolType !== "stable" ||
+      this._scalingFactorControllerAddress === ""
+    )
+      return;
+
+    const bech32Prefix = this.chainGetter.getChain(this.chainId).bech32Config
+      .bech32PrefixAccAddr;
+
+    try {
+      Bech32Address.validate(
+        this._scalingFactorControllerAddress,
+        bech32Prefix
+      );
+    } catch {
+      return new InvalidScalingFactorControllerAddress(
+        "Invalid scaling factor controller address"
+      );
+    }
+  }
+
   @action
   setFeeConfig(config: IFeeConfig | undefined) {
     this._feeConfig = config;
@@ -271,7 +299,7 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
       this._queriesStore,
       this.chainId,
       this.sender,
-      this.feeConfig ?? undefined
+      this.feeConfig
     );
     config.setSendCurrency(currency);
 
