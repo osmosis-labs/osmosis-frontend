@@ -340,11 +340,6 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
   }
 
   @action
-  clearAssets() {
-    this._assets = [];
-  }
-
-  @action
   setAssetPercentageAt(index: number, percentage: string) {
     if (this._poolType !== "weighted" || index >= this._assets.length) return;
 

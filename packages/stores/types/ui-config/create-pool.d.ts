@@ -62,7 +62,6 @@ export declare class ObservableCreatePoolConfig extends TxChainSetter {
     setSwapFee(swapFee: string): void;
     addAsset(currency: AppCurrency): void;
     removeAssetAt(index: number): void;
-    clearAssets(): void;
     setAssetPercentageAt(index: number, percentage: string): void;
     setScalingFactorAt(index: number, scalingFactor: string): void;
     /** Set percentages for all assets for an evenly balanced pool. */

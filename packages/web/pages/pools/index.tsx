@@ -285,16 +285,14 @@ const Pools: NextPage = observer(function () {
 
   return (
     <main className="max-w-container m-auto bg-osmoverse-900 px-8 md:px-3">
-      {isCreatingPool && (
-        <CreatePoolModal
-          isOpen={isCreatingPool}
-          onRequestClose={() => setIsCreatingPool(false)}
-          title={t("pools.createPool.title")}
-          createPoolConfig={createPoolConfig}
-          isSendingMsg={account.txTypeInProgress !== ""}
-          onCreatePool={onCreatePool}
-        />
-      )}
+      <CreatePoolModal
+        isOpen={isCreatingPool}
+        onRequestClose={() => setIsCreatingPool(false)}
+        title={t("pools.createPool.title")}
+        createPoolConfig={createPoolConfig}
+        isSendingMsg={account.txTypeInProgress !== ""}
+        onCreatePool={onCreatePool}
+      />
       {addLiquidityModalPoolId && (
         <AddLiquidityModal
           title={t("addLiquidity.titleInPool", {

@@ -36,7 +36,6 @@ export const CreatePoolModal: FunctionComponent<
     <ModalBase
       {...props}
       onRequestClose={() => {
-        config.clearAssets();
         props.onRequestClose();
       }}
       onRequestBack={curStep !== 0 ? backStep : undefined}
