@@ -4,14 +4,15 @@ import { CoinPretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { FunctionComponent, useRef } from "react";
 import { useTranslation } from "react-multi-lang";
-import { SearchBox } from "../input";
+import { SearchBox } from "../../input";
 import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
-import { useFilteredData } from "../../hooks";
+import { useStore } from "../../../stores";
+import { useFilteredData } from "../../../hooks";
 import debounce from "debounce";
-import { useWindowKeyActions } from "../../hooks/window/use-window-key-actions";
-import { RecommendedSwapDenoms } from "../../config";
-import useDraggableScroll from "../../hooks/use-draggable-scroll";
+import { useWindowKeyActions } from "../../../hooks/window/use-window-key-actions";
+import { RecommendedSwapDenoms } from "../../../config";
+import useDraggableScroll from "../../../hooks/use-draggable-scroll";
+import styles from "./token-select.module.css";
 
 function getJustDenom(coinDenom: string) {
   return coinDenom.split(" ").slice(0, 1).join(" ") ?? "";
@@ -69,19 +70,23 @@ export const TokenSelectDrawer: FunctionComponent<{
     return RecommendedSwapDenoms.includes(justDenom);
   });
 
-  if (!isOpen) return null;
-
   return (
     <>
       <div
         onClick={() => onClose?.()}
-        className="absolute inset-0 z-40 bg-osmoverse-1000/40"
+        className={classNames("absolute inset-0 z-40 bg-osmoverse-1000/40", {
+          [styles["overlay--out"]]: !isOpen,
+          [styles["overlay--in"]]: isOpen,
+        })}
       />
 
       <div
         className={classNames(
-          "bg-osmoverse-800 w-full h-full rounded-[24px] absolute z-50 flex flex-col mt-16",
-          isOpen && "inset-0"
+          "bg-osmoverse-800 w-full h-full rounded-[24px] absolute z-50 flex flex-col mt-16 inset-0 transform transition ease-inOutBack",
+          {
+            [styles["drawer-container--out"]]: !isOpen,
+            [styles["drawer-container--in"]]: isOpen,
+          }
         )}
       >
         <div className="relative flex justify-center pt-8 pb-4">

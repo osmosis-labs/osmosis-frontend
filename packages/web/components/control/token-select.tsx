@@ -127,7 +127,7 @@ export const TokenSelect: FunctionComponent<{
     }, [setIsSelectOpen]);
 
     return (
-      <div className="flex md:justify-start justify-center items-center relative">
+      <div className="relative flex items-center justify-center md:justify-start">
         {selectedCurrency && (
           <button
             className={classNames(

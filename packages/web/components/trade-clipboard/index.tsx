@@ -18,7 +18,6 @@ import {
 } from "../../hooks";
 import { useStore } from "../../stores";
 import { BorderButton, Button } from "../buttons";
-import { TokenSelect } from "../control/token-select";
 import { InputBox } from "../input";
 import { InfoTooltip } from "../tooltip";
 import { useTranslation } from "react-multi-lang";
@@ -551,7 +550,10 @@ export const TradeClipboard: FunctionComponent<{
                     .hideDenom(true)
                     .maxDecimals(tradeTokenInConfig.sendCurrency.coinDecimals)
                     .toString()}{" "}
-                  {tradeTokenInConfig.sendCurrency.coinDenom}
+                  {tradeTokenInConfig.sendCurrency.coinDenom.toLowerCase() ===
+                  "unknown"
+                    ? ""
+                    : tradeTokenInConfig.sendCurrency.coinDenom}
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
