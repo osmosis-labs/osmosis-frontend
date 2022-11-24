@@ -22,19 +22,34 @@ export declare class OsmosisAccountImpl {
     protected readonly _msgOpts: OsmosisMsgOpts;
     constructor(base: AccountSetBaseSuper & CosmosAccount, chainGetter: ChainGetter, chainId: string, queriesStore: IQueriesStore<CosmosQueries & OsmosisQueries>, _msgOpts: OsmosisMsgOpts);
     /**
-     * https://docs.osmosis.zone/developing/modules/spec-gamm.html#create-pool
+     * Create balancer/weighted pool.
      * @param swapFee The swap fee of the pool. Should set as the percentage. (Ex. 10% -> 10)
-     * @param assets Assets that will be provided to the pool initially. Token can be parsed as to primitive by convenience. `amount`s are not in micro.
+     * @param assets Assets that will be provided to the pool initially, with weights. Token can be parsed as to primitive by convenience. `amount`s are not in micro.
      * @param memo Transaction memo.
      * @param onFulfill Callback to handle tx fulfillment.
      */
-    sendCreatePoolMsg(swapFee: string, assets: {
+    sendCreateBalancerPoolMsg(swapFee: string, assets: {
         weight: string;
         token: {
             currency: Currency;
             amount: string;
         };
     }[], memo?: string, onFulfill?: (tx: any) => void): Promise<void>;
+    /**
+     * Create stableswap pool.
+     * @param swapFee The swap fee of the pool. Should set as the percentage. (Ex. 10% -> 10)
+     * @param assets Assets that will be provided to the pool initially, with scaling factors. Token can be parsed as to primitive by convenience. `amount`s are not in micro.
+     * @param memo Transaction memo.
+     * @param scalingFactorControllerAddress Osmo address of account permitted to change scaling factors later.
+     * @param onFulfill Callback to handle tx fulfillment.
+     */
+    sendCreateStableswapPoolMsg(swapFee: string, assets: {
+        scalingFactor: number;
+        token: {
+            currency: Currency;
+            amount: string;
+        };
+    }[], scalingFactorControllerAddress?: string, memo?: string, onFulfill?: (tx: any) => void): Promise<void>;
     /**
      * Join pool with multiple assets.
      *

@@ -1,6 +1,7 @@
 import { MsgOpt } from "@keplr-wallet/stores";
 export interface OsmosisMsgOpts {
-    readonly createPool: MsgOpt;
+    readonly createBalancerPool: MsgOpt;
+    readonly createStableswapPool: MsgOpt;
     readonly joinPool: MsgOpt & {
         shareCoinDecimals: number;
     };

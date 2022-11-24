@@ -8,7 +8,7 @@ import {
   RatePretty,
 } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
-import { useState, ComponentProps, useMemo } from "react";
+import { useState, ComponentProps, useMemo, useCallback } from "react";
 import { Duration } from "dayjs/plugin/duration";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { PoolCard } from "../../components/cards";
@@ -196,6 +196,67 @@ const Pools: NextPage = observer(function () {
     }
   };
 
+  const onCreatePool = useCallback(async () => {
+    try {
+      if (createPoolConfig.poolType === "weighted") {
+        await account.osmosis.sendCreateBalancerPoolMsg(
+          createPoolConfig.swapFee,
+          createPoolConfig.assets.map((asset) => {
+            if (!asset.percentage)
+              throw new Error(
+                "Pool config with poolType of weighted doesn't include asset percentage"
+              );
+
+            return {
+              weight: new Dec(asset.percentage)
+                .mul(DecUtils.getTenExponentNInPrecisionRange(4))
+                .truncate()
+                .toString(),
+              token: {
+                amount: asset.amountConfig.amount,
+                currency: asset.amountConfig.sendCurrency,
+              },
+            };
+          }),
+          undefined,
+          () => {
+            setIsCreatingPool(false);
+          }
+        );
+      } else if (createPoolConfig.poolType === "stable") {
+        const scalingFactorController =
+          createPoolConfig.scalingFactorControllerAddress
+            ? createPoolConfig.scalingFactorControllerAddress
+            : undefined;
+        await account.osmosis.sendCreateStableswapPoolMsg(
+          createPoolConfig.swapFee,
+          createPoolConfig.assets.map((asset) => {
+            if (!asset.scalingFactor)
+              throw new Error(
+                "Pool config with poolType of stable doesn't include scaling factors"
+              );
+
+            return {
+              scalingFactor: asset.scalingFactor,
+              token: {
+                amount: asset.amountConfig.amount,
+                currency: asset.amountConfig.sendCurrency,
+              },
+            };
+          }),
+          scalingFactorController,
+          undefined,
+          () => {
+            setIsCreatingPool(false);
+          }
+        );
+      }
+    } catch (e) {
+      setIsCreatingPool(false);
+      console.error(e);
+    }
+  }, [createPoolConfig, account]);
+
   // my pools
   const myPoolIds = queryOsmosis.queryGammPoolShare.getOwnPools(
     account.bech32Address
@@ -231,30 +292,7 @@ const Pools: NextPage = observer(function () {
           title={t("pools.createPool.title")}
           createPoolConfig={createPoolConfig}
           isSendingMsg={account.txTypeInProgress !== ""}
-          onCreatePool={async () => {
-            try {
-              await account.osmosis.sendCreatePoolMsg(
-                createPoolConfig.swapFee,
-                createPoolConfig.assets.map((asset) => ({
-                  weight: new Dec(asset.percentage)
-                    .mul(DecUtils.getTenExponentNInPrecisionRange(4))
-                    .truncate()
-                    .toString(),
-                  token: {
-                    amount: asset.amountConfig.amount,
-                    currency: asset.amountConfig.sendCurrency,
-                  },
-                })),
-                undefined,
-                () => {
-                  setIsCreatingPool(false);
-                }
-              );
-            } catch (e) {
-              setIsCreatingPool(false);
-              console.error(e);
-            }
-          }}
+          onCreatePool={onCreatePool}
         />
       )}
       {addLiquidityModalPoolId && (

@@ -67,13 +67,13 @@ export class OsmosisAccountImpl {
   ) {}
 
   /**
-   * https://docs.osmosis.zone/developing/modules/spec-gamm.html#create-pool
+   * Create balancer/weighted pool.
    * @param swapFee The swap fee of the pool. Should set as the percentage. (Ex. 10% -> 10)
-   * @param assets Assets that will be provided to the pool initially. Token can be parsed as to primitive by convenience. `amount`s are not in micro.
+   * @param assets Assets that will be provided to the pool initially, with weights. Token can be parsed as to primitive by convenience. `amount`s are not in micro.
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fulfillment.
    */
-  async sendCreatePoolMsg(
+  async sendCreateBalancerPoolMsg(
     swapFee: string,
     assets: {
       // Int
@@ -120,7 +120,7 @@ export class OsmosisAccountImpl {
     }
 
     const msg = {
-      type: this._msgOpts.createPool.type,
+      type: this._msgOpts.createBalancerPool.type,
       value: {
         sender: this.base.bech32Address,
         pool_params: poolParams,
@@ -130,7 +130,7 @@ export class OsmosisAccountImpl {
     };
 
     await this.base.cosmos.sendMsgs(
-      "createPool",
+      "createBalancerPool",
       {
         aminoMsgs: [msg],
         protoMsgs: [
@@ -159,7 +159,132 @@ export class OsmosisAccountImpl {
       memo,
       {
         amount: [],
-        gas: this._msgOpts.createPool.gas.toString(),
+        gas: this._msgOpts.createBalancerPool.gas.toString(),
+      },
+      undefined,
+      (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+          this.queries.queryGammPools.waitFreshResponse();
+          queries.queryBalances
+            .getQueryBech32Address(this.base.bech32Address)
+            .balances.forEach((bal) => {
+              if (
+                assets.find(
+                  (asset) =>
+                    asset.token.currency.coinMinimalDenom ===
+                    bal.currency.coinMinimalDenom
+                )
+              ) {
+                bal.waitFreshResponse();
+              }
+            });
+        }
+
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
+   * Create stableswap pool.
+   * @param swapFee The swap fee of the pool. Should set as the percentage. (Ex. 10% -> 10)
+   * @param assets Assets that will be provided to the pool initially, with scaling factors. Token can be parsed as to primitive by convenience. `amount`s are not in micro.
+   * @param memo Transaction memo.
+   * @param scalingFactorControllerAddress Osmo address of account permitted to change scaling factors later.
+   * @param onFulfill Callback to handle tx fulfillment.
+   */
+  async sendCreateStableswapPoolMsg(
+    swapFee: string,
+    assets: {
+      scalingFactor: number;
+      // Ex) 10 atom.
+      token: {
+        currency: Currency;
+        amount: string;
+      };
+    }[],
+    scalingFactorControllerAddress?: string,
+    memo: string = "",
+    onFulfill?: (tx: any) => void
+  ) {
+    const poolParams = {
+      swap_fee: new Dec(swapFee)
+        .quo(DecUtils.getTenExponentNInPrecisionRange(2))
+        .toString(),
+      exit_fee: new Dec(0).toString(),
+    };
+
+    const initialPoolLiquidity: {
+      denom: string;
+      amount: string;
+    }[] = [];
+
+    const scalingFactors: Long[] = [];
+
+    for (const asset of assets) {
+      initialPoolLiquidity.push({
+        denom: asset.token.currency.coinMinimalDenom,
+        amount: new Dec(asset.token.amount)
+          .mul(
+            DecUtils.getTenExponentNInPrecisionRange(
+              asset.token.currency.coinDecimals
+            )
+          )
+          .truncate()
+          .toString(),
+      });
+      scalingFactors.push(new Long(asset.scalingFactor));
+    }
+
+    const msg = {
+      type: this._msgOpts.createStableswapPool.type,
+      value: {
+        sender: this.base.bech32Address,
+        pool_params: poolParams,
+        initial_pool_liquidity: initialPoolLiquidity,
+        scaling_factors: scalingFactors,
+        scaling_factor_controller: scalingFactorControllerAddress,
+        future_pool_governor: "24h",
+      },
+    };
+
+    console.log({ msg });
+
+    await this.base.cosmos.sendMsgs(
+      "createStableswapPool",
+      {
+        aminoMsgs: [msg],
+        protoMsgs: [
+          {
+            typeUrl:
+              "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool",
+            value:
+              osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool.encode(
+                {
+                  sender: msg.value.sender,
+                  poolParams: {
+                    swapFee: this.changeDecStringToProtoBz(
+                      msg.value.pool_params.swap_fee
+                    ),
+                    exitFee: this.changeDecStringToProtoBz(
+                      msg.value.pool_params.exit_fee
+                    ),
+                  },
+                  initialPoolLiquidity: msg.value.initial_pool_liquidity,
+                  scalingFactors: msg.value.scaling_factors,
+                  scalingFactorController: msg.value.scaling_factor_controller,
+                  futurePoolGovernor: msg.value.future_pool_governor,
+                }
+              ).finish(),
+          },
+        ],
+      },
+      memo,
+      {
+        amount: [],
+        gas: this._msgOpts.createStableswapPool.gas.toString(),
       },
       undefined,
       (tx) => {

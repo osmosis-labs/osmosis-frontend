@@ -26,7 +26,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
 
     // And prepare the pool
     await new Promise<any>((resolve) => {
-      account.osmosis.sendCreatePoolMsg(
+      account.osmosis.sendCreateBalancerPoolMsg(
         "0",
         [
           {
