@@ -1,0 +1,63 @@
+.drawer-container--out {
+  animation: fadeOutSlideDown 0.3s cubic-bezier(0.7, -0.4, 0.4, 1.4) forwards;
+}
+
+.drawer-container--in {
+  animation: fadeInSlideUp 0.3s cubic-bezier(0.7, -0.4, 0.4, 1.4) forwards;
+}
+
+.overlay--out {
+  animation: fadeOut 0.3s cubic-bezier(0.7, -0.4, 0.4, 1.4) forwards;
+}
+
+.overlay--in {
+  animation: fadeIn 0.3s cubic-bezier(0.7, -0.4, 0.4, 1.4) forwards;
+}
+
+@keyframes fadeOut {
+  0% {
+    visibility: visible;
+    opacity: 1;
+  }
+  100% {
+    visibility: hidden;
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    visibility: hidden;
+    opacity: 0;
+  }
+  100% {
+    visibility: visible;
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(15%);
+    visibility: hidden;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+  }
+}
+
+@keyframes fadeOutSlideDown {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(15%);
+    visibility: hidden;
+  }
+}
