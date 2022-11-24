@@ -308,7 +308,10 @@
       "mobileMenu": "정렬"
     },
     "MAX": "MAX",
-    "searchTokens": "토큰 검색"
+    "searchTokens": "검색",
+    "selectToken": {
+      "title": "토큰 선택"
+    }
   },
   "menu": {
     "swap": "교환",

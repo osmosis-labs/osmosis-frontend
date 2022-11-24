@@ -306,7 +306,10 @@
       "mobileMenu": "排序"
     },
     "MAX": "最大",
-    "searchTokens": "搜索代币"
+    "searchTokens": "搜索",
+    "selectToken": {
+      "title": "选择一个代币"
+    }
   },
   "menu": {
     "swap": "兑换",

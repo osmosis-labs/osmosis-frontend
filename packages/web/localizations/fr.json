@@ -306,7 +306,10 @@
       "mobileMenu": "Trier par"
     },
     "MAX": "MAX",
-    "searchTokens": "Recherche de jetons"
+    "searchTokens": "Chercher",
+    "selectToken": {
+      "title": "Sélectionnez un jeton"
+    }
   },
   "menu": {
     "swap": "Échanger",
