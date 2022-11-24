@@ -82,7 +82,10 @@
       "weightedPool": "加权池",
       "stablePool": "稳定池",
       "step": {
-        "one": "步骤 {step} / {nbStep} - 设置代币比率",
+        "one": {
+          "weighted": "步骤 {step} / {nbStep} - 设置代币比率",
+          "stable": "步骤 {step} / {nbStep} - 设置比例因子"
+        },
         "two": "步骤 {step} / {nbStep} - 输入添加总量",
         "three": "步骤 {step} / {nbStep} - 确认资金池的代币比率和总量"
       },

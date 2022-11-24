@@ -18,6 +18,7 @@ import {
 import { AmountConfig } from "@keplr-wallet/hooks";
 import { AppCurrency } from "@keplr-wallet/types";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
+import type { ObservableQueryPool } from "../queries";
 import {
   DepositNoBalanceError,
   HighSwapFeeError,
@@ -39,7 +40,7 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
   protected _sender: string;
 
   @observable.ref
-  protected _feeConfig: IFeeConfig | undefined = undefined;
+  protected _feeConfig: IFeeConfig | undefined;
 
   @observable.ref
   protected _queriesStore: IQueriesStore;
@@ -49,12 +50,19 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
 
   @observable.shallow
   protected _assets: {
-    percentage: string;
+    percentage?: string;
+    scalingFactor?: number;
     amountConfig: AmountConfig;
   }[] = [];
 
   @observable
+  protected _poolType: ObservableQueryPool["type"] | null = null;
+
+  @observable
   protected _swapFee: string = "0";
+
+  @observable
+  protected _scalingFactorControllerAddress: string = "";
 
   @observable
   public _acknowledgeFee = false;
@@ -88,13 +96,9 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
     return this._feeConfig;
   }
 
-  @action
-  setFeeConfig(config: IFeeConfig | undefined) {
-    this._feeConfig = config;
-  }
-
   get assets(): {
-    percentage: string;
+    percentage?: string;
+    scalingFactor?: number;
     amountConfig: AmountConfig;
   }[] {
     return this._assets;
@@ -111,9 +115,8 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
     return this._sender;
   }
 
-  @action
-  setSender(bech32Address: string) {
-    this._sender = bech32Address;
+  get poolType(): ObservableQueryPool["type"] | null {
+    return this._poolType;
   }
 
   get queryBalances(): ObservableQueryBalances {
@@ -164,6 +167,8 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
    *  from the current number of assets.
    */
   get balancedPercentage(): RatePretty {
+    if (this._poolType !== "weighted") return new RatePretty(0).ready(false);
+
     return new RatePretty(new Dec(1).quo(new Dec(this.assets.length)));
   }
 
@@ -176,6 +181,8 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
   }
 
   get percentageError(): Error | undefined {
+    if (this._poolType !== "weighted") return;
+
     if (this.assets.length < this._opts.minAssetsCount) {
       return new MinAssetsCountError(
         `Minimum of ${this._opts.minAssetsCount} assets required`
@@ -190,6 +197,7 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
     let totalPercentage = new Dec(0);
     for (const asset of this.assets) {
       try {
+        if (!asset.percentage) return;
         const percentage = new Dec(asset.percentage);
 
         if (percentage.lte(new Dec(0))) {
@@ -230,6 +238,28 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
   }
 
   @action
+  setFeeConfig(config: IFeeConfig | undefined) {
+    this._feeConfig = config;
+  }
+
+  @action
+  setSender(bech32Address: string) {
+    this._sender = bech32Address;
+  }
+
+  @action
+  setPoolType(poolType: ObservableQueryPool["type"] | null) {
+    this._poolType = poolType;
+  }
+
+  @action
+  setScalingFactorControllerAddress(address: string) {
+    if (this._poolType !== "stable") return;
+
+    this._scalingFactorControllerAddress = address;
+  }
+
+  @action
   setSwapFee(swapFee: string): void {
     this._swapFee = swapFee;
   }
@@ -241,7 +271,7 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
       this._queriesStore,
       this.chainId,
       this.sender,
-      this.feeConfig
+      this.feeConfig ?? undefined
     );
     config.setSendCurrency(currency);
 
@@ -265,6 +295,8 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
 
   @action
   setAssetPercentageAt(index: number, percentage: string) {
+    if (this._poolType !== "weighted" || index >= this._assets.length) return;
+
     if (percentage.startsWith(".")) {
       percentage = "0" + percentage;
     }
@@ -275,9 +307,24 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
     };
   }
 
+  @action
+  setScalingFactorAt(index: number, scalingFactor: string) {
+    if (this._poolType !== "stable" || index >= this._assets.length) return;
+
+    const parsedScalingFactor = parseFloat(scalingFactor);
+
+    if (parsedScalingFactor !== NaN)
+      this.assets[index] = {
+        ...this.assets[index],
+        scalingFactor: parsedScalingFactor,
+      };
+  }
+
   /** Set percentages for all assets for an evenly balanced pool. */
   @action
   setBalancedPercentages() {
+    if (this._poolType !== "weighted") return;
+
     this.assets.forEach((_, index) => {
       this.setAssetPercentageAt(
         index,

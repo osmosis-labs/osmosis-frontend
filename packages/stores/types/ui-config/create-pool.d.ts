@@ -3,6 +3,7 @@ import { ObservableQueryBalances, ChainGetter, IQueriesStore } from "@keplr-wall
 import { AmountConfig } from "@keplr-wallet/hooks";
 import { AppCurrency } from "@keplr-wallet/types";
 import { RatePretty } from "@keplr-wallet/unit";
+import type { ObservableQueryPool } from "../queries";
 export interface CreatePoolConfigOpts {
     minAssetsCount: number;
     maxAssetsCount: number;
@@ -13,22 +14,25 @@ export declare class ObservableCreatePoolConfig extends TxChainSetter {
     protected _queriesStore: IQueriesStore;
     protected _queryBalances: ObservableQueryBalances;
     protected _assets: {
-        percentage: string;
+        percentage?: string;
+        scalingFactor?: number;
         amountConfig: AmountConfig;
     }[];
+    protected _poolType: ObservableQueryPool["type"] | null;
     protected _swapFee: string;
+    protected _scalingFactorControllerAddress: string;
     _acknowledgeFee: boolean;
     protected _opts: CreatePoolConfigOpts;
     constructor(chainGetter: ChainGetter, initialChainId: string, sender: string, queriesStore: IQueriesStore, queryBalances: ObservableQueryBalances, feeConfig?: IFeeConfig, opts?: CreatePoolConfigOpts);
     get feeConfig(): IFeeConfig | undefined;
-    setFeeConfig(config: IFeeConfig | undefined): void;
     get assets(): {
-        percentage: string;
+        percentage?: string;
+        scalingFactor?: number;
         amountConfig: AmountConfig;
     }[];
     get canAddAsset(): boolean;
     get sender(): string;
-    setSender(bech32Address: string): void;
+    get poolType(): ObservableQueryPool["type"] | null;
     get queryBalances(): ObservableQueryBalances;
     get acknowledgeFee(): boolean;
     set acknowledgeFee(ack: boolean);
@@ -47,11 +51,16 @@ export declare class ObservableCreatePoolConfig extends TxChainSetter {
     get percentageError(): Error | undefined;
     get swapFeeError(): Error | undefined;
     get amountError(): Error | undefined;
+    setFeeConfig(config: IFeeConfig | undefined): void;
+    setSender(bech32Address: string): void;
+    setPoolType(poolType: ObservableQueryPool["type"] | null): void;
+    setScalingFactorControllerAddress(address: string): void;
     setSwapFee(swapFee: string): void;
     addAsset(currency: AppCurrency): void;
     removeAssetAt(index: number): void;
     clearAssets(): void;
     setAssetPercentageAt(index: number, percentage: string): void;
+    setScalingFactorAt(index: number, scalingFactor: string): void;
     /** Set percentages for all assets for an evenly balanced pool. */
     setBalancedPercentages(): void;
 }

@@ -82,7 +82,10 @@
       "weightedPool": "Grupo ponderado",
       "stablePool": "Piscina estable",
       "step": {
-        "one": "Paso {step} / {nbstep} - Establecer proporción de token",
+        "one": {
+          "weighted": "Paso {step} / {nbstep} - Establecer proporción de token",
+          "stable": "Paso {step} / {nbstep} - Establecer factores de escala"
+        },
         "two": "Paso {step} / {nbstep} - Introduce monto a añadir",
         "three": "Paso {step} / {nbstep} - Confirmar la proporción de la piscina y la cantidad de token"
       },

@@ -82,7 +82,10 @@
       "weightedPool": "Piscine pondérée",
       "stablePool": "Piscine stable",
       "step": {
-        "one": "Étape {step} / {nbStep} - Configurer le ratio des jetons",
+        "one": {
+          "weighted": "Étape {step} / {nbStep} - Configurer le ratio des jetons",
+          "stable": "Étape {step} / {nbStep} - Configurer les facteurs d'échelle"
+        },
         "two": "Étape {step} / {nbStep} - Entrer le montant à ajouter",
         "three": "Étape {step} / {nbStep} - Comfirmer le ratio du bassin et le montant des jetons"
       },

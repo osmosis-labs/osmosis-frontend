@@ -41,10 +41,15 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
         <div className="flex flex-col gap-5">
           <span className="body2 text-center md:caption md:mt-4">
             {step === 1
-              ? t("pools.createPool.step.one", {
-                  step: step.toString(),
-                  nbStep: "3",
-                })
+              ? config.poolType === "weighted"
+                ? t("pools.createPool.step.one.weighted", {
+                    step: step.toString(),
+                    nbStep: "3",
+                  })
+                : t("pools.createPool.step.one.stable", {
+                    step: step.toString(),
+                    nbStep: "3",
+                  })
               : step === 2
               ? t("pools.createPool.step.two", {
                   step: step.toString(),

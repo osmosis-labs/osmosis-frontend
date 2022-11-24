@@ -82,7 +82,10 @@
       "weightedPool": "Weighted pool",
       "stablePool": "Stable pool",
       "step": {
-        "one": "Step {step} / {nbStep} - Set token ratios",
+        "one": {
+          "weighted": "Step {step} / {nbStep} - Set token ratios",
+          "stable": "Step {step} / {nbStep} - Set scaling factors"
+        },
         "two": "Step {step} / {nbStep} - Input amount to add",
         "three": "Step {step} / {nbStep} - Confirm pool ratio and token amount"
       },

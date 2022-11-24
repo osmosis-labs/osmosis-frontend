@@ -84,7 +84,10 @@
       "weightedPool": "Basen ważony",
       "stablePool": "Stabilny basen",
       "step": {
-        "one": "Krok {step} / {nbStep} - Ustaw proporcje tokenów",
+        "one": {
+          "weighted": "Krok {step} / {nbStep} - Ustaw proporcje tokenów",
+          "stable": "Krok {step} / {nbStep} - Ustaw współczynniki skalowania"
+        },
         "two": "Krok {step} / {nbStep} - Wpisz ilość do dodania",
         "three": "Krok {step} / {nbStep} - Potwierdź proporcje puli i ilość tokenów"
       },

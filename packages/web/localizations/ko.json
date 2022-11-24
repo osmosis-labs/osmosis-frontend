@@ -82,7 +82,10 @@
       "weightedPool": "가중 풀",
       "stablePool": "안정적인 풀",
       "step": {
-        "one": "{step} / {nbStep} 단계 - 토큰 비율 설정",
+        "one": {
+          "weighted": "{step} / {nbStep} 단계 - 토큰 비율 설정",
+          "stable": "{step} / {nbStep} 단계 - 배율 설정"
+        },
         "two": "{step} / {nbStep} 단계 - 추가할 수량 입력",
         "three": "{step} / {nbStep} 단계 - 풀의 비율과 수량 확인"
       },

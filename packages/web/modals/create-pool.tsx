@@ -2,7 +2,6 @@ import { FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { ObservableCreatePoolConfig } from "@osmosis-labs/stores";
 import {
-  PoolType,
   SelectType,
   Step1SetRatios,
   Step2AddLiquidity,
@@ -18,13 +17,19 @@ export const CreatePoolModal: FunctionComponent<
   }
 > = observer((props) => {
   const { createPoolConfig: config, isSendingMsg, onCreatePool } = props;
-  const [poolType, setPoolType] = useState<PoolType | null>(null);
-  const [curStep, setCurStep] = useState<1 | 2 | 3 | null>(null);
+  const [curStep, setCurStep] = useState<1 | 2 | 3 | 0>(
+    config.poolType ? 1 : 0
+  );
   const advanceStep = () => {
-    if (curStep) setCurStep(Math.min(curStep + 1, 3) as 1 | 2 | 3);
+    if (curStep > 0) setCurStep(Math.min(curStep + 1, 3) as 1 | 2 | 3);
   };
   const backStep = () => {
-    if (curStep) setCurStep(Math.max(curStep - 1, 0) as 1 | 2 | 3);
+    if (curStep > 0) {
+      if (curStep === 1) {
+        config.setPoolType(null);
+      }
+      setCurStep(Math.max(curStep - 1, 0) as 1 | 2 | 3);
+    }
   };
 
   return (
@@ -34,13 +39,13 @@ export const CreatePoolModal: FunctionComponent<
         config.clearAssets();
         props.onRequestClose();
       }}
-      onRequestBack={curStep && curStep !== 1 ? backStep : undefined}
+      onRequestBack={curStep !== 0 ? backStep : undefined}
     >
-      {poolType === null && (
+      {config.poolType === null && (
         <SelectType
           types={["weighted", "stable"]}
           selectType={(type) => {
-            setPoolType(type);
+            config.setPoolType(type);
             setCurStep(1);
           }}
         ></SelectType>
