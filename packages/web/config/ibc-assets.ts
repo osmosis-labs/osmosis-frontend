@@ -867,8 +867,8 @@ export const IBCAssetInfos: (IBCAsset & {
   },
   {
     counterpartyChainId: "LumenX",
-    sourceChannelId: "channel-286",
-    destChannelId: "channel-3",
+    sourceChannelId: "channel-495",
+    destChannelId: "channel-5",
     coinMinimalDenom: "ulumen",
   },
   {
