@@ -6,7 +6,7 @@ import { CoinPretty } from "@keplr-wallet/unit";
 import { useStore } from "../../stores";
 import { useWindowSize } from "../../hooks";
 import classNames from "classnames";
-import { TokenSelectDrawer } from "../drawers/token-select";
+import { TokenSelectDrawer } from "../drawers/token-select-drawer";
 
 /** Will display balances if provided `CoinPretty` objects. Assumes denoms are unique. */
 export const TokenSelectWithDrawer: FunctionComponent<{

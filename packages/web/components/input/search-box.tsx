@@ -1,11 +1,15 @@
 import Image from "next/image";
-import { forwardRef, useState } from "react";
+import { DOMAttributes, forwardRef, useState } from "react";
 import classNames from "classnames";
 import { InputProps, Disableable, CustomClasses } from "../types";
 
 type SearchBoxProps = Omit<InputProps<string>, "currentValue"> &
   Disableable &
-  CustomClasses & { type?: string; currentValue?: string };
+  CustomClasses & {
+    type?: string;
+    currentValue?: string;
+    onKeyDown?: DOMAttributes<HTMLInputElement>["onKeyDown"];
+  };
 
 export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
   function SearchBox(
@@ -18,6 +22,7 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
       disabled = false,
       autoFocus,
       className,
+      onKeyDown,
     },
     ref
   ) {
@@ -55,6 +60,7 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
             onInput={(e: any) => onInput(e.target.value)}
             onClick={(e: any) => e.target.select()}
             disabled={disabled}
+            onKeyDown={onKeyDown}
           />
         </label>
       </div>
