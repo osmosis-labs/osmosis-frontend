@@ -1,19 +1,10 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 
-export function calcPriceImpactTokenIn(
+export function calcPriceImpactWithAmount(
   spotPriceBefore: Dec,
-  tokenIn: Int,
+  tokenAmount: Int,
   priceImpact: Dec
 ): Int {
   const effectivePrice = spotPriceBefore.mul(priceImpact.add(new Dec(1)));
-  return new Dec(tokenIn).quo(effectivePrice).truncate();
-}
-
-export function calcPriceImpactTokenOut(
-  spotPriceBefore: Dec,
-  tokenOut: Int,
-  priceImpact: Dec
-): Int {
-  const effectivePrice = spotPriceBefore.mul(priceImpact.add(new Dec(1)));
-  return new Dec(tokenOut).mul(effectivePrice).truncate();
+  return new Dec(tokenAmount).quo(effectivePrice).truncate();
 }

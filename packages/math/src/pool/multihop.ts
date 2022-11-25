@@ -1,6 +1,6 @@
 import { Dec } from "@keplr-wallet/unit";
 
-// Section: OSMO Multihop dicount
+// Section: OSMO Multihop discount
 
 /**
  * Can provide a swap fee discount if true. Introduced in Osmosis v13.

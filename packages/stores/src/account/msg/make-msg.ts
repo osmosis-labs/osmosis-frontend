@@ -60,7 +60,7 @@ export class Amino {
 
     const tokenOutMinAmount = maxSlippageDec.equals(new Dec(0))
       ? new Int(1)
-      : PoolMath.calcPriceImpactTokenIn(
+      : PoolMath.calcPriceImpactWithAmount(
           estimated.spotPriceBeforeRaw,
           new Dec(tokenIn.amount)
             .mul(
@@ -141,7 +141,7 @@ export class Amino {
 
     const tokenOutMinAmount = maxSlippageDec.equals(new Dec(0))
       ? new Int(1)
-      : PoolMath.calcPriceImpactTokenIn(
+      : PoolMath.calcPriceImpactWithAmount(
           estimated.raw.spotPriceBefore,
           inUAmount,
           maxSlippageDec
@@ -210,7 +210,7 @@ export class Amino {
     const tokenInMaxAmount = maxSlippageDec.equals(new Dec(0))
       ? // TODO: Set exact 2^128 - 1
         new Int(1_000_000_000_000)
-      : PoolMath.calcPriceImpactTokenOut(
+      : PoolMath.calcPriceImpactWithAmount(
           estimated.raw.spotPriceBefore,
           outUAmount,
           maxSlippageDec
