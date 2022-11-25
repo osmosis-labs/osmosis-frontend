@@ -16,6 +16,8 @@ import { Transition } from "@headlessui/react";
 import { useKeyActions } from "../../hooks/use-key-actions";
 import { useStateRef } from "../../hooks/use-state-ref";
 import useLatest from "../../hooks/use-latest";
+import { useConst } from "../../hooks/use-const";
+import { generateUniqueId } from "../../utils/string";
 
 function getJustDenom(coinDenom: string) {
   return coinDenom.split(" ").slice(0, 1).join(" ") ?? "";
@@ -23,6 +25,22 @@ function getJustDenom(coinDenom: string) {
 
 function getCurrency(token: CoinPretty | AppCurrency) {
   return token instanceof CoinPretty ? token.currency : token;
+}
+
+const dataAttributeName = "data-token-id";
+
+function getTokenItemId(uniqueId: string, index: number) {
+  return `token-selector-item-${uniqueId}-${index}`;
+}
+
+function getTokenElement(uniqueId: string, index: number) {
+  return document.querySelector(
+    `[${dataAttributeName}=${getTokenItemId(uniqueId, index)}]`
+  );
+}
+
+function getAllTokenElements() {
+  return document.querySelectorAll(`[${dataAttributeName}]`);
 }
 
 export const TokenSelectDrawer: FunctionComponent<{
@@ -37,11 +55,9 @@ export const TokenSelectDrawer: FunctionComponent<{
   ({ isOpen, tokens, onClose: onCloseProp, onSelect: onSelectProp }) => {
     const t = useTranslation();
     const { priceStore } = useStore();
+    const uniqueId = useConst(() => generateUniqueId());
 
     const [selectedIndex, setSelectedIndex, selectedIndexRef] = useStateRef(0);
-
-    const tokenItemsRefs = useRef<(HTMLButtonElement | null)[]>([]);
-    const searchBoxRef = useRef<HTMLInputElement>(null);
 
     const [_searchValue, setTokenSearch, searchedTokens] = useFilteredData(
       tokens,
@@ -55,7 +71,7 @@ export const TokenSelectDrawer: FunctionComponent<{
     );
 
     const searchTokensRef = useLatest(searchedTokens);
-
+    const searchBoxRef = useRef<HTMLInputElement>(null);
     const quickSelectRef = useRef<HTMLDivElement>(null);
 
     const { onMouseDown: onMouseDownQuickSelect } =
@@ -63,7 +79,6 @@ export const TokenSelectDrawer: FunctionComponent<{
 
     const onClose = () => {
       setTokenSearch("");
-      tokenItemsRefs.current = [];
       setSelectedIndex(0);
       onCloseProp?.();
     };
@@ -82,12 +97,12 @@ export const TokenSelectDrawer: FunctionComponent<{
     const { handleKeyDown: containerKeyDown } = useKeyActions({
       ArrowDown: () => {
         setSelectedIndex((selectedIndex) =>
-          selectedIndex === tokenItemsRefs.current.length - 1
+          selectedIndex === getAllTokenElements().length - 1
             ? 0
             : selectedIndex + 1
         );
 
-        tokenItemsRefs.current[selectedIndexRef.current]?.scrollIntoView({
+        getTokenElement(uniqueId, selectedIndexRef.current)?.scrollIntoView({
           block: "nearest",
         });
 
@@ -97,11 +112,11 @@ export const TokenSelectDrawer: FunctionComponent<{
       ArrowUp: () => {
         setSelectedIndex((selectedIndex) =>
           selectedIndex === 0
-            ? tokenItemsRefs.current.length - 1
+            ? getAllTokenElements().length - 1
             : selectedIndex - 1
         );
 
-        tokenItemsRefs.current[selectedIndexRef.current]?.scrollIntoView({
+        getTokenElement(uniqueId, selectedIndexRef.current)?.scrollIntoView({
           block: "nearest",
         });
 
@@ -130,7 +145,6 @@ export const TokenSelectDrawer: FunctionComponent<{
     const onSearch = debounce((nextValue: string) => {
       setTokenSearch(nextValue);
       setSelectedIndex(0);
-      tokenItemsRefs.current = [];
     }, 200);
 
     const quickSelectTokens = tokens.filter(({ token }) => {
@@ -171,7 +185,7 @@ export const TokenSelectDrawer: FunctionComponent<{
           leaveTo="visible opacity-0 translate-y-[15%]"
           afterEnter={() => searchBoxRef?.current?.focus()}
         >
-          <div className="bg-osmoverse-800 w-full h-full rounded-[24px] absolute z-50 flex flex-col mt-16 inset-0">
+          <div className="bg-osmoverse-800 w-full h-full rounded-[24px] absolute z-50 flex flex-col mt-16 inset-0 overflow-hidden">
             <div className="relative flex justify-center pt-8 pb-4">
               <button className="absolute left-4" onClick={() => onClose()}>
                 <Image
@@ -274,10 +288,6 @@ export const TokenSelectDrawer: FunctionComponent<{
                         "bg-osmoverse-900": selectedIndex === index,
                       }
                     )}
-                    ref={(el) => {
-                      if (el === null) return;
-                      tokenItemsRefs.current[index] = el;
-                    }}
                     onClick={(e) => {
                       e.stopPropagation();
                       onSelect?.(coinDenom);
@@ -285,6 +295,9 @@ export const TokenSelectDrawer: FunctionComponent<{
                     }}
                     onMouseOver={() => setSelectedIndex(index)}
                     onFocus={() => setSelectedIndex(index)}
+                    {...{
+                      [dataAttributeName]: getTokenItemId(uniqueId, index),
+                    }}
                   >
                     <div className="flex items-center justify-between w-full text-left">
                       <div className="flex items-center">
