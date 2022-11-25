@@ -42,8 +42,8 @@ class ObservableQueryIbcChainStatus extends ObservableQueryExternalBase<
       );
       if (channelData) {
         if (channelData.size_queue > 0) {
-          if (channelData.duration_minutes > 20) return "blocked";
-          else if (channelData.duration_minutes > 5) return "congested";
+          //if (channelData.duration_minutes > 20) return "blocked";
+          /*else */if (channelData.duration_minutes > 5) return "congested";
         }
         return "normal";
       }
