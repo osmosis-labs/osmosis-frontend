@@ -244,7 +244,7 @@ export class OsmosisAccountImpl {
         sender: this.base.bech32Address,
         pool_params: poolParams,
         initial_pool_liquidity: initialPoolLiquidity,
-        scaling_factors: scalingFactors,
+        scaling_factors: scalingFactors.map((sf) => sf.toString()),
         future_pool_governor: "24h",
       },
     };
@@ -280,7 +280,7 @@ export class OsmosisAccountImpl {
                     ),
                   },
                   initialPoolLiquidity: msg.value.initial_pool_liquidity,
-                  scalingFactors: msg.value.scaling_factors,
+                  scalingFactors: scalingFactors,
                   scalingFactorController: msg.value.scaling_factor_controller,
                   futurePoolGovernor: msg.value.future_pool_governor,
                 }
