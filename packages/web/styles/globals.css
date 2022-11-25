@@ -5,6 +5,22 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #231d4b00;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #777;
+    border-radius: 18px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #666;
+  }
+}
+
 @layer components {
   html {
     font-family: Inter, ui-sans-serif, system-ui;
