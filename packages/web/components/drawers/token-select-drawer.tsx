@@ -17,7 +17,6 @@ import { useKeyActions } from "../../hooks/use-key-actions";
 import { useStateRef } from "../../hooks/use-state-ref";
 import useLatest from "../../hooks/use-latest";
 import { useConst } from "../../hooks/use-const";
-import { generateUniqueId } from "../../utils/string";
 
 function getJustDenom(coinDenom: string) {
   return coinDenom.split(" ").slice(0, 1).join(" ") ?? "";
@@ -55,7 +54,7 @@ export const TokenSelectDrawer: FunctionComponent<{
   ({ isOpen, tokens, onClose: onCloseProp, onSelect: onSelectProp }) => {
     const t = useTranslation();
     const { priceStore } = useStore();
-    const uniqueId = useConst(() => generateUniqueId());
+    const uniqueId = useConst(() => Math.random().toString(36).substring(2, 9));
 
     const [selectedIndex, setSelectedIndex, selectedIndexRef] = useStateRef(0);
 
@@ -71,6 +70,7 @@ export const TokenSelectDrawer: FunctionComponent<{
     );
 
     const searchTokensRef = useLatest(searchedTokens);
+
     const searchBoxRef = useRef<HTMLInputElement>(null);
     const quickSelectRef = useRef<HTMLDivElement>(null);
 
@@ -321,7 +321,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                         </div>
                       </div>
 
-                      {tokenAmount && tokenPrice && (
+                      {tokenAmount && tokenPrice && Number(tokenAmount) > 0 && (
                         <div className="flex flex-col text-right">
                           <p className="subtitle1">{tokenAmount}</p>
                           <span className="subtitle2 text-osmoverse-400">

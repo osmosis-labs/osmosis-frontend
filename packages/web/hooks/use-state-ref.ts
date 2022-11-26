@@ -18,6 +18,11 @@ type UseStateRef = {
   ];
 };
 
+/**
+ * useState and useRef together. This is useful to get the state value
+ * inside an async callback instead of that value at the time the
+ * callback was created from.
+ */
 export const useStateRef: UseStateRef = <S>(initialState?: S | (() => S)) => {
   const [state, setState] = useState(initialState);
   const ref = useRef(state);
