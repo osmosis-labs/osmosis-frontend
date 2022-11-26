@@ -2,7 +2,6 @@ import Image from "next/image";
 import {
   ButtonHTMLAttributes,
   FunctionComponent,
-  MouseEvent,
   useEffect,
   useState,
 } from "react";
