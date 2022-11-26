@@ -2365,7 +2365,7 @@ chainInfos.push({
       coinDecimals: 18,
       // coinGeckoId: "weth",
       coinGeckoId: "pool:weth-wei",
-      coinImageUrl: "/tokens/weth.png",
+      coinImageUrl: "/tokens/weth.svg",
     },
     {
       coinDenom: "WBTC",
