@@ -489,9 +489,7 @@ export class OsmosisAccountImpl {
         );
 
         const poolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
-          (asset) => {
-            asset.denom === poolAsset.amount.currency.coinMinimalDenom;
-          }
+          (asset) => asset.denom === poolAsset.amount.currency.coinMinimalDenom
         )?.weight;
         if (!poolAssetWeight) {
           throw new Error("Pool asset not weighted");
@@ -500,11 +498,11 @@ export class OsmosisAccountImpl {
         const estimated = WeightedPoolEstimates.estimateJoinSwapExternAmountIn(
           {
             amount: new Int(poolAsset.amount.toCoin().amount),
-            weight: new Int(poolAssetWeight.toString()),
+            weight: new Int(poolAssetWeight.toDec().truncate().toString()),
           },
           {
             totalShare: pool.totalShare,
-            totalWeight: new Int(totalWeight.toString()),
+            totalWeight: new Int(totalWeight.toDec().truncate().toString()),
             swapFee: pool.swapFee,
           },
           tokenIn,
