@@ -1,5 +1,11 @@
 import Image from "next/image";
-import { ButtonHTMLAttributes, FunctionComponent, useState } from "react";
+import {
+  ButtonHTMLAttributes,
+  FunctionComponent,
+  MouseEvent,
+  useEffect,
+  useState,
+} from "react";
 import { observer } from "mobx-react-lite";
 import classNames from "classnames";
 import { WalletStatus } from "@keplr-wallet/stores";
@@ -10,6 +16,7 @@ import { IUserSetting } from "../../stores/user-settings";
 import { useTranslation } from "react-multi-lang";
 import { MainLayoutMenu, CustomClasses } from "../types";
 import { MainMenu } from "../main-menu";
+import { useRouter } from "next/router";
 
 export const NavBar: FunctionComponent<
   {
@@ -19,6 +26,7 @@ export const NavBar: FunctionComponent<
   } & CustomClasses
 > = observer(({ title, className, backElementClassNames, menus }) => {
   const { navBarStore, userSettings } = useStore();
+  const router = useRouter();
 
   // settings button
   const [settingsDropdownOpen, setSettingsDropdownOpen] =
@@ -27,6 +35,17 @@ export const NavBar: FunctionComponent<
   // mobile nav menu
   const [mobileNavMenuOptionsOpen, setMobileNavMenuOptionsOpen] =
     useBooleanWithWindowEvent(false);
+
+  useEffect(() => {
+    const handler = () => {
+      setMobileNavMenuOptionsOpen((prevValue) => {
+        return prevValue ? false : prevValue;
+      });
+    };
+
+    router.events.on("routeChangeComplete", handler);
+    return () => router.events.off("routeChangeComplete", handler);
+  }, []);
 
   return (
     <>
