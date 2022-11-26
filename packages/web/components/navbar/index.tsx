@@ -32,7 +32,7 @@ export const NavBar: FunctionComponent<
     <>
       <div
         className={classNames(
-          "fixed z-50 flex place-content-between md:place-content-start lg:gap-5 items-center bg-osmoverse-900 h-navbar md:h-navbar-mobile w-[calc(100vw_-_12.875rem)] md:w-full px-8 md:px-4",
+          "fixed shadow-md z-50 flex place-content-between md:place-content-start lg:gap-5 items-center bg-osmoverse-900 h-navbar md:h-navbar-mobile w-[calc(100vw_-_12.875rem)] md:w-full px-8 md:px-4",
           className
         )}
       >
@@ -153,7 +153,7 @@ const SettingsDropdown: FunctionComponent<{
   const t = useTranslation();
   return (
     <div
-      className="absolute top-[110%] md:top-navbar-mobile left-[50%] md:left-0 -translate-x-1/2 md:translate-x-0 flex flex-col gap-10 min-w-[385px] md:w-[90vw] md:min-w-min md:max-w-[385px] text-left bg-osmoverse-800 p-8 rounded-3xl"
+      className="absolute shadow-md top-[110%] md:top-navbar-mobile left-[50%] md:left-0 -translate-x-1/2 md:translate-x-0 flex flex-col gap-10 min-w-[385px] md:w-[90vw] md:min-w-min md:max-w-[385px] text-left bg-osmoverse-800 p-8 rounded-3xl"
       onClick={(e) => e.stopPropagation()}
     >
       <h5>{t("settings.title")}</h5>
