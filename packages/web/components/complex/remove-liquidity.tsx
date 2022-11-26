@@ -23,7 +23,7 @@ export const RemoveLiquidity: FunctionComponent<
     <>
       <div
         className={classNames(
-          "w-[420px] md:w-full flex flex-col gap-9 md:gap-5 mx-auto text-center",
+          "mx-auto flex w-[420px] flex-col gap-9 text-center md:w-full md:gap-5",
           className
         )}
       >
@@ -31,7 +31,7 @@ export const RemoveLiquidity: FunctionComponent<
           <h2 className="mt-12 md:mt-7">{`${removeLiquidityConfig.computePoolShareValueWithPercentage(
             priceStore
           )}`}</h2>
-          <h5 className="text-osmoverse-100 md:font-h6 md:text-h6">
+          <h5 className="text-osmoverse-100 md:text-h6 md:font-h6">
             {t("removeLiquidity.sharesAmount", {
               shares: removeLiquidityConfig.poolShareWithPercentage
                 .trim(true)
@@ -40,7 +40,7 @@ export const RemoveLiquidity: FunctionComponent<
             })}
           </h5>
         </div>
-        <div className="flex flex-wrap items-center place-content-around gap-4 rounded-xl border border-osmoverse-600 py-2 px-3 text-osmoverse-300">
+        <div className="flex flex-wrap place-content-around items-center gap-4 rounded-xl border border-osmoverse-600 py-2 px-3 text-osmoverse-300">
           {removeLiquidityConfig.poolShareAssetsWithPercentage.map((asset) => (
             <div
               className="flex items-center gap-2"
@@ -61,7 +61,7 @@ export const RemoveLiquidity: FunctionComponent<
           ))}
         </div>
         <Slider
-          className="w-full my-8"
+          className="my-8 w-full"
           currentValue={removeLiquidityConfig.percentage}
           onInput={(value) =>
             removeLiquidityConfig.setPercentage(value.toString())
@@ -70,7 +70,7 @@ export const RemoveLiquidity: FunctionComponent<
           max={100}
           step={1}
         />
-        <div className="grid grid-cols-4 gap-5 md:gap-1 h-9 w-full md:mb-6 mb-14">
+        <div className="mb-14 grid h-9 w-full grid-cols-4 gap-5 md:mb-6 md:gap-1">
           <BorderButton
             onClick={() => removeLiquidityConfig.setPercentage("25")}
             disabled={removeLiquidityConfig.poolShareWithPercentage

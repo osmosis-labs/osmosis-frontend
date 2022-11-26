@@ -497,11 +497,11 @@ const AxelarTransfer: FunctionComponent<
             </a>
           </div>
         )}
-        <div className="w-full md:mt-4 mt-6 flex items-center justify-center">
+        <div className="mt-6 flex w-full items-center justify-center md:mt-4">
           {connectCosmosWalletButtonOverride ?? (
             <Button
               className={classNames(
-                "hover:opacity-75 transition-opacity duration-300",
+                "transition-opacity duration-300 hover:opacity-75",
                 { "opacity-30": isDepositAddressLoading }
               )}
               disabled={

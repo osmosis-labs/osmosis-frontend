@@ -295,8 +295,8 @@ const Pixels: NextPage = observer(function () {
 
   return (
     <main>
-      <div className="w-full h-screen bg-osmoverse-900">
-        <div className="absolute pointer-events-none top-10 left-1/2 z-[11]  py-2 px-8 bg-wosmongton-200 flex items-center rounded-lg">
+      <div className="h-screen w-full bg-osmoverse-900">
+        <div className="pointer-events-none absolute top-10 left-1/2 z-[11]  flex items-center rounded-lg bg-wosmongton-200 py-2 px-8">
           {`${new IntPretty(
             new Dec(status.response?.data.numDots ?? 0)
           )} pixels placed`}
@@ -398,7 +398,7 @@ const Pixels: NextPage = observer(function () {
           }}
         </TransformWrapper>
         <div className="relative">
-          <div className="absolute pointer-events-none bottom-[40px] left-1/2 -translate-x-1/2 z-[11] py-2 px-8 bg-wosmongton-200 flex items-center rounded-lg">
+          <div className="pointer-events-none absolute bottom-[40px] left-1/2 z-[11] flex -translate-x-1/2 items-center rounded-lg bg-wosmongton-200 py-2 px-8">
             Pixels has ended. Thank you for playing.
           </div>
         </div>

@@ -139,7 +139,7 @@ export const LockTokensModal: FunctionComponent<
         <span className="subtitle1 text-center">
           {t("lockToken.selectPeriod")}
         </span>
-        <h2 className="text-center md:font-h3 md:text-h3">
+        <h2 className="text-center md:text-h3 md:font-h3">
           <span
             className={classNames({ "text-superfluid": superfluidInEffect })}
           >
@@ -147,7 +147,7 @@ export const LockTokensModal: FunctionComponent<
           </span>{" "}
           {t("pool.APR")}
         </h2>
-        <div className="flex gap-4 md:gap-1 overflow-x-auto p-[3px]">
+        <div className="flex gap-4 overflow-x-auto p-[3px] md:gap-1">
           {bondableDurations.map(({ duration, aggregateApr }, index) => (
             <LockupItem
               key={index}
@@ -160,7 +160,7 @@ export const LockTokensModal: FunctionComponent<
         </div>
         {superfluidPoolConfig?.isSuperfluid && (
           <CheckBox
-            className="after:!bg-transparent after:!border-2 after:!rounded-[10px] -top-0.5 -left-0.5 after:!h-6 after:!w-6 after:!border-superfluid checked:after:bg-superfluid checked:after:border-none transition-all"
+            className="-top-0.5 -left-0.5 transition-all after:!h-6 after:!w-6 after:!rounded-[10px] after:!border-2 after:!border-superfluid after:!bg-transparent checked:after:border-none checked:after:bg-superfluid"
             isOn={highestDurationSelected && electSuperfluid}
             onToggle={() => setElectSuperfluid(!electSuperfluid)}
             checkMarkIconUrl="/icons/check-mark-dark.svg"
@@ -173,7 +173,7 @@ export const LockTokensModal: FunctionComponent<
                   !highestDurationSelected || hasSuperfluidValidator,
               })}
             >
-              <h6 className="md:font-subtitle1 md:text-subtitle1">
+              <h6 className="md:text-subtitle1 md:font-subtitle1">
                 {t("lockToken.superfluidStake")}{" "}
                 {superfluidApr && `(+${superfluidApr.maxDecimals(0)} APR)`}
               </h6>
@@ -190,13 +190,13 @@ export const LockTokensModal: FunctionComponent<
           </CheckBox>
         )}
         <div className="flex flex-col gap-2">
-          <div className="flex items-center place-content-between">
+          <div className="flex place-content-between items-center">
             <span className="subtitle1">{t("lockToken.amountToBond")}</span>
             {availableToken && (
-              <div className="flex gap-1 caption">
+              <div className="caption flex gap-1">
                 <span>{t("lockToken.availableToken")}</span>
                 <span
-                  className="text-wosmongton-300 cursor-pointer"
+                  className="cursor-pointer text-wosmongton-300"
                   onClick={() => config.setIsMax(true)}
                 >
                   {t("pool.sharesAmount", {
@@ -232,16 +232,16 @@ const LockupItem: FunctionComponent<{
   <button
     onClick={onSelect}
     className={classNames(
-      "rounded-xl w-full md:px-3 px-5 md:py-3.5 py-5 cursor-pointer transition-colors",
+      "w-full cursor-pointer rounded-xl px-5 py-5 transition-colors md:px-3 md:py-3.5",
       isSelected
-        ? "bg-osmoverse-700 -m-px !border-[3px] border-osmoverse-200"
-        : "border border-osmoverse-600 hover:border-2 hover:border-osmoverse-200 hover:-m-px"
+        ? "-m-px !border-[3px] border-osmoverse-200 bg-osmoverse-700"
+        : "border border-osmoverse-600 hover:-m-px hover:border-2 hover:border-osmoverse-200"
     )}
   >
-    <div className="flex w-full place-content-between flex-col text-center">
+    <div className="flex w-full flex-col place-content-between text-center">
       <h5>{duration}</h5>
       {apr && (
-        <p className="subtitle1 md:m-0 mt-1 text-wosmongton-200">{apr}</p>
+        <p className="subtitle1 mt-1 text-wosmongton-200 md:m-0">{apr}</p>
       )}
     </div>
   </button>

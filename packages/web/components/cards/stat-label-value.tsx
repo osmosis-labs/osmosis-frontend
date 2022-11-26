@@ -13,7 +13,7 @@ export const StatLabelValue: FunctionComponent<{
     <div className={classNames("flex flex-col", containerClassName)}>
       <div
         className={classNames(
-          "subtitle2 text-white-disabled md-[2px]",
+          "subtitle2 md-[2px] text-white-disabled",
           labelClassName
         )}
       >

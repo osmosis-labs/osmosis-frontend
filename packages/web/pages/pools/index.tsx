@@ -211,7 +211,7 @@ const Pools: NextPage = observer(function () {
   );
 
   return (
-    <main className="max-w-container m-auto bg-osmoverse-900 px-8 md:px-3">
+    <main className="m-auto max-w-container bg-osmoverse-900 px-8 md:px-3">
       {isCreatingPool && (
         <CreatePoolModal
           isOpen={isCreatingPool}
@@ -285,7 +285,7 @@ const Pools: NextPage = observer(function () {
         <div className="mx-auto pb-[3.75rem]">
           <h5 className="md:px-3">{t("pools.myPools")}</h5>
           <div className="flex flex-col gap-4">
-            <div className="mt-5 grid grid-cards md:gap-3">
+            <div className="grid-cards mt-5 grid md:gap-3">
               {dustFilteredPools.map((myPool) => {
                 const internalIncentiveApr =
                   queryOsmosis.queryIncentivizedPools.computeMostApr(
@@ -605,7 +605,7 @@ const Pools: NextPage = observer(function () {
           <section>
             <div className="mx-auto">
               <h5>{t("pools.superfluid.title")}</h5>
-              <div className="my-5 grid grid-cards">
+              <div className="grid-cards my-5 grid">
                 {superfluidPools &&
                   (showMoreSfsPools
                     ? superfluidPools
@@ -694,15 +694,15 @@ const Pools: NextPage = observer(function () {
         </>
       )}
       <section className="pb-4">
-        <div className="w-full flex items-center bg-osmoverse-800 rounded-full px-5 py-4">
-          <span className="subtitle1 md:text-subtitle2 md:font-subtitle2 flex items-center gap-1">
+        <div className="flex w-full items-center rounded-full bg-osmoverse-800 px-5 py-4">
+          <span className="subtitle1 flex items-center gap-1 md:text-subtitle2 md:font-subtitle2">
             {t("pools.createPool.interestedCreate")}{" "}
             <u
-              className="text-wosmongton-300 flex items-center cursor-pointer"
+              className="flex cursor-pointer items-center text-wosmongton-300"
               onClick={() => setIsCreatingPool(true)}
             >
               {t("pools.createPool.startProcess")}
-              <div className="flex items-center shrink-0">
+              <div className="flex shrink-0 items-center">
                 <Image
                   alt="right arrow"
                   src="/icons/arrow-right-wosmongton-300.svg"
