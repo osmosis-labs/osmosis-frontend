@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { RateRing } from "../assets";
 import { PoolAssetInfo } from "./types";
 import { CustomClasses, MobileProps } from "../types";
-import { truncateString } from "../utils";
+import { truncateString } from "../../utils/string";
 
 export const Token: FunctionComponent<
   PoolAssetInfo & CustomClasses & MobileProps & { ringColorIndex?: number }

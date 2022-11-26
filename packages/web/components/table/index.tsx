@@ -10,10 +10,10 @@ import React, {
 import classNames from "classnames";
 import { InfoTooltip } from "../tooltip";
 import { CustomClasses } from "../types";
-import { replaceAt } from "../utils";
 import { BaseCell, ColumnDef, RowDef } from "./types";
 import { useWindowSize } from "../../hooks";
 import { IS_FRONTIER } from "../../config";
+import { replaceAt } from "../../utils/array";
 
 export interface Props<TCell extends BaseCell> extends CustomClasses {
   /** Functionality common to all columns. */

@@ -10,11 +10,11 @@ import { toHex, isAddress } from "web3-utils";
 import { KVStore } from "@keplr-wallet/common";
 import { EventEmitter } from "eventemitter3";
 import { Alert } from "../../components/alert";
-import { getKeyByValue } from "../../components/utils";
 import { WalletDisplay, WalletKey } from "../wallets";
 import { ChainNames, EthWallet } from "./types";
 import { switchToChain, withEthInWindow } from "./metamask-utils";
 import { pollTransactionReceipt } from "./queries";
+import { getKeyByValue } from "../../utils/object";
 
 const CONNECTED_ACCOUNT_KEY = "metamask-connected-account";
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";

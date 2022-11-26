@@ -2,11 +2,11 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { FunctionComponent, useEffect, useState } from "react";
 import classNames from "classnames";
-import { truncateString } from "../../utils";
 import { useWindowSize } from "../../../hooks";
 import { CustomClasses, LoadingProps } from "../../types";
 import { Animation as AnimationProps } from "../types";
 import { useTranslation } from "react-multi-lang";
+import { truncateString } from "../../../utils/string";
 
 const Lottie = dynamic(() => import("react-lottie"), { ssr: false });
 

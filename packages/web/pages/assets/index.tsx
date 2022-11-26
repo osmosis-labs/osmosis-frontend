@@ -16,7 +16,6 @@ import { ShowMoreButton } from "../../components/buttons/show-more";
 import { PoolCard } from "../../components/cards/";
 import { Metric } from "../../components/types";
 import { MetricLoader } from "../../components/loaders";
-import { priceFormatter } from "../../components/utils";
 import { useTranslation } from "react-multi-lang";
 import {
   IbcTransferModal,
@@ -35,6 +34,7 @@ import {
   useTransferConfig,
 } from "../../hooks";
 import { EventName, ExternalIncentiveGaugeAllowList } from "../../config";
+import { priceFormatter } from "../../utils/formatter";
 
 const INIT_POOL_CARD_COUNT = 6;
 

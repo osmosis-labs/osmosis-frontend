@@ -3,7 +3,7 @@ import { FunctionComponent } from "react";
 import classNames from "classnames";
 import { CustomClasses, Metric } from "../types";
 import { PoolAssetInfo } from "../assets";
-import { truncateString } from "../utils";
+import { truncateString } from "../../utils/string";
 
 /** For displaying a token and it's balance, or a pool overview. */
 export const AssetCard: FunctionComponent<

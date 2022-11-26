@@ -24,7 +24,6 @@ import {
 import { PoolsOverview } from "../../components/overview/pools";
 import { MetricLoader } from "../../components/loaders";
 import { TabBox } from "../../components/control";
-import { priceFormatter } from "../../components/utils";
 import { useStore } from "../../stores";
 import { DataSorter } from "../../hooks/data/data-sorter";
 import {
@@ -44,6 +43,7 @@ import { ShowMoreButton } from "../../components/buttons/show-more";
 import { EventName, ExternalIncentiveGaugeAllowList } from "../../config";
 import { POOLS_PER_PAGE } from "../../components/complex";
 import { useTranslation } from "react-multi-lang";
+import { priceFormatter } from "../../utils/formatter";
 
 const TVL_FILTER_THRESHOLD = 1000;
 

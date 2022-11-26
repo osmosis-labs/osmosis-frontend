@@ -2,7 +2,7 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 import classNames from "classnames";
 import { CustomClasses, LoadingProps, MobileProps } from "../types";
-import { generateRandom } from "../utils";
+import { generateRandom } from "../../utils/random";
 
 export const CatalystIcon: FunctionComponent<
   {

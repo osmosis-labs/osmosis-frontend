@@ -11,9 +11,9 @@ import {
 import { useStore } from "../../stores";
 import { Table, BaseCell } from ".";
 import { Breakpoint, CustomClasses } from "../types";
-import { truncateString } from "../utils";
 import { useWindowSize } from "../../hooks";
 import { useTranslation } from "react-multi-lang";
+import { truncateString } from "../../utils/string";
 
 type History = {
   txHash: string;

@@ -1,5 +1,5 @@
 import { ITxStatusReceiver, ITxStatusSource } from "@osmosis-labs/stores";
-import { poll } from "../../components/utils";
+import { poll } from "../../utils/promise";
 import { getTransferStatus, TransferStatus } from "./queries";
 
 /** Tracks (polls Axelar endpoint) and reports status updates on Axelar bridge transfers. */
