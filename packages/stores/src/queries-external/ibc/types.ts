@@ -1,1 +1,1 @@
-export type IbcStatus = "normal" | "delayed";
+export type IbcStatus = "normal" | "congested" | "blocked";
