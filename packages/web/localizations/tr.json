@@ -209,6 +209,8 @@
     "ibcTransfer": {
       "titleWithdraw": "{coinDenom} Çek",
       "titleDeposit": "{coinDenom} Yatır",
+      "channelCongested": "Kanal çağrıldı",
+      "channelBlocked": "Kanal engellendi",
       "selectAmount": "Miktar Seç",
       "estimatedTime": "Takribi Süre",
       "waitTime": "20 saniye",
