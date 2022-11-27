@@ -238,7 +238,7 @@ export class OsmosisAccountImpl {
       scalingFactors.push(new Long(asset.scalingFactor));
     }
 
-    let msg: any = {
+    const msg = {
       type: this._msgOpts.createStableswapPool.type,
       value: {
         sender: this.base.bech32Address,
@@ -246,18 +246,9 @@ export class OsmosisAccountImpl {
         initial_pool_liquidity: initialPoolLiquidity,
         scaling_factors: scalingFactors.map((sf) => sf.toString()),
         future_pool_governor: "24h",
+        scaling_factor_controller: scalingFactorControllerAddress,
       },
     };
-
-    if (scalingFactorControllerAddress) {
-      msg = {
-        ...msg,
-        value: {
-          ...msg.value,
-          scaling_factor_controller: scalingFactorControllerAddress,
-        },
-      };
-    }
 
     await this.base.cosmos.sendMsgs(
       "createStableswapPool",
