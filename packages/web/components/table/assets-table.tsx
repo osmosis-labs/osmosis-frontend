@@ -1,5 +1,11 @@
 import Image from "next/image";
-import { FunctionComponent, useCallback, useMemo, useState } from "react";
+import {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { Dec } from "@keplr-wallet/unit";
 import { BUY_OSMO_TRANSAK, initialAssetsSort } from "../../config";
 import {
@@ -60,6 +66,10 @@ export const AssetsTable: FunctionComponent<Props> = observer(
     const { width, isMobile } = useWindowSize();
     const t = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
+    const [favoritesList, onSetFavoritesList] = useLocalStorageState(
+      "favoritesList",
+      ["OSMO"]
+    );
 
     const onDeposit = useCallback(
       (...depositParams: Parameters<typeof do_onDeposit>) => {
@@ -278,6 +288,26 @@ export const AssetsTable: FunctionComponent<Props> = observer(
       ? filteredSortedCells
       : filteredSortedCells.slice(0, 10);
 
+    const tableDataWithFavorites = useMemo(
+      () =>
+        tableData.map((v) => {
+          v.isFavorite = favoritesList.includes(v.coinDenom);
+          v.onToggleFavorite = () => {
+            if (v.isFavorite) {
+              const newFavorites = favoritesList.filter(
+                (d) => d !== v.coinDenom
+              );
+              onSetFavoritesList(newFavorites);
+            } else {
+              const newFavorites = [...favoritesList, v.coinDenom];
+              onSetFavoritesList(newFavorites);
+            }
+          };
+          return v;
+        }),
+      [favoritesList, onSetFavoritesList, tableData]
+    );
+
     return (
       <section>
         {isMobile ? (
@@ -395,7 +425,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
         )}
         {isMobile ? (
           <div className="flex flex-col gap-3 my-7">
-            {tableData.map((assetData) => (
+            {tableDataWithFavorites.map((assetData) => (
               <div
                 key={assetData.coinDenom}
                 className="w-full flex items-center place-content-between bg-osmoverse-800 rounded-xl px-3 py-3"
@@ -501,7 +531,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                     },
                   ] as ColumnDef<TableCell>[])),
             ]}
-            data={tableData.map((cell) => [
+            data={tableDataWithFavorites.map((cell) => [
               cell,
               cell,
               ...(mergeWithdrawCol ? [cell] : [cell, cell]),
