@@ -6,7 +6,7 @@ import {
 } from "@keplr-wallet/stores";
 import { Dec } from "@keplr-wallet/unit";
 import { PricePretty } from "@keplr-wallet/unit/build/price-pretty";
-import { autorun, makeObservable, observable } from "mobx";
+import { autorun, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { IPriceStore } from "../../price";
 import { ObservableQueryNumPools } from "./num-pools";
@@ -16,7 +16,6 @@ import { GET_POOLS_PAGINATION_LIMIT } from ".";
 
 export class ObservableQueryPools extends ObservableChainQuery<Pools> {
   /** Maintain references of ObservableQueryPool objects to prevent breaking observers. */
-  @observable
   protected _pools: Map<string, ObservableQueryPool> = new Map<
     string,
     ObservableQueryPool
@@ -70,15 +69,14 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
   }
 
   /** Returns `undefined` if the pool does not exist or the data has not loaded. */
-  readonly getPool: (id: string) => ObservableQueryPool | undefined =
-    computedFn((id: string) => {
-      if (!this.response && !this._pools.get(id)) {
-        // TODO: consider constructing individual `ObservableQueryPool` and fetching, adding to array, and returning
-        return undefined;
-      }
+  getPool(id: string): ObservableQueryPool | undefined {
+    if (!this.response && !this._pools.get(id)) {
+      // TODO: consider constructing individual `ObservableQueryPool` and fetching, adding to array, and returning
+      return undefined;
+    }
 
-      return this._pools.get(id);
-    });
+    return this._pools.get(id);
+  }
 
   /** Returns `undefined` if pool data has not loaded, and `true`/`false` for if the pool exists. */
   readonly poolExists: (id: string) => boolean | undefined = computedFn(
