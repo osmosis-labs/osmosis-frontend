@@ -70,27 +70,28 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   ) {
     super.setResponse(response);
 
-    const chainInfo = this.chainGetter.getChain(this.chainId);
-    const denomsInPool: string[] = [];
-    // Try to register the Denom of Asset in the Pool in Response.(For IBC tokens)
-    if ("pool_assets" in response.data.pool) {
-      // weighted pool
-      for (const asset of response.data.pool.pool_assets) {
-        denomsInPool.push(asset.token.denom);
-      }
-    } else {
-      // stable pool
-      for (const asset of response.data.pool.pool_liquidity) {
-        denomsInPool.push(asset.denom);
-      }
-    }
-
-    chainInfo.addUnknownCurrencies(...denomsInPool);
     this.setRaw(response.data.pool);
   }
 
   @action
   setRaw(raw: PoolRaw) {
+    const chainInfo = this.chainGetter.getChain(this.chainId);
+    const denomsInPool: string[] = [];
+    // Try to register the Denom of Asset in the Pool in Response.(For IBC tokens)
+    if ("pool_assets" in raw) {
+      // weighted pool
+      for (const asset of raw.pool_assets) {
+        denomsInPool.push(asset.token.denom);
+      }
+    } else {
+      // stable pool
+      for (const asset of raw.pool_liquidity) {
+        denomsInPool.push(asset.denom);
+      }
+    }
+
+    chainInfo.addUnknownCurrencies(...denomsInPool);
+
     this.raw = raw;
   }
 
