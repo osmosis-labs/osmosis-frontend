@@ -3,7 +3,12 @@ import { AppCurrency } from "@keplr-wallet/types";
 import { HIGHCHART_GRADIENTS } from "./gradients";
 
 export const generateSeries = (
-  data: { currency: AppCurrency; percentage: string; amount: string }[]
+  data: {
+    currency: AppCurrency;
+    percentage: string;
+    amount: string;
+    color?: string;
+  }[]
 ): SeriesPieOptions[] => {
   const series = {
     type: "pie",
@@ -12,7 +17,7 @@ export const generateSeries = (
     dataLabels: {
       enabled: false,
     },
-    innerSize: "70%",
+    innerSize: "80%",
     name: "Pool",
     data: [] as PointOptionsObject[],
   };
@@ -21,7 +26,10 @@ export const generateSeries = (
       name: d.currency.coinDenom.toUpperCase(),
       y: Number(d.percentage),
       x: Number(d.amount),
-      color: HIGHCHART_GRADIENTS?.[i] ? HIGHCHART_GRADIENTS?.[i] : undefined,
+      color:
+        d?.color ??
+        (HIGHCHART_GRADIENTS?.[i] ? HIGHCHART_GRADIENTS?.[i] : undefined),
+      sliced: true,
     });
   });
   return [series as SeriesPieOptions];

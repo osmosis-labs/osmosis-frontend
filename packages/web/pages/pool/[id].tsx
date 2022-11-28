@@ -45,6 +45,7 @@ import { BondCard } from "../../components/cards";
 import { Disableable } from "../../components/types";
 import { Button, ArrowButton } from "../../components/buttons";
 import { useTranslation } from "react-multi-lang";
+import PoolComposition from "../../components/chart/pool-composition";
 
 const E = EventName.PoolDetail;
 
@@ -83,6 +84,7 @@ const Pool: FunctionComponent = observer(() => {
     useSuperfluidPoolConfig(poolDetailConfig);
   const bondLiquidityConfig = useBondLiquidityConfig(bech32Address, pool?.id);
 
+  console.log(poolDetailConfig?.userPoolAssets);
   // user analytics
   const { poolName, poolWeight } = useMemo(
     () => ({
@@ -450,8 +452,8 @@ const Pool: FunctionComponent = observer(() => {
           </div>
         </div>
         {poolDetailConfig?.userStats && (
-          <div className="grid w-full grid-cols-[2fr_1fr] gap-4 lg:flex lg:flex-col">
-            <div className="flex w-full flex-col gap-3 rounded-4xl bg-osmoverse-1000 px-10 py-7">
+          <div className="w-full flex lg:flex-col gap-4">
+            <div className="flex flex-col w-full gap-3 flex-1 px-10 bg-osmoverse-1000 py-7 rounded-4xl">
               <span className="body2 text-osmoverse-300">
                 {t("pool.yourStats")}
               </span>
@@ -485,7 +487,14 @@ const Pool: FunctionComponent = observer(() => {
                 </div>
               </div>
             </div>
-            <div className="flex w-full flex-col place-content-between gap-3 rounded-4xl bg-osmoverse-1000 px-10 py-7">
+            <div className="flex flex-col px-10 bg-osmoverse-1000 py-7 rounded-4xl">
+              <h1 className="body2 text-osmoverse-300">
+                Your pool composition
+              </h1>
+
+              <PoolComposition assets={poolDetailConfig.userPoolAssets} />
+            </div>
+            <div className="flex flex-col gap-3 px-10 place-content-between bg-osmoverse-1000 py-7 rounded-4xl">
               <div className="flex flex-col gap-2">
                 <span className="body2 text-osmoverse-300">
                   {t("pool.currentDailyEarn")}
@@ -500,7 +509,10 @@ const Pool: FunctionComponent = observer(() => {
                 </h4>
               </div>
               {poolDetailConfig?.userAvailableValue.toDec().gt(new Dec(0)) && (
-                <ArrowButton onClick={() => setShowLockLPTokenModal(true)}>
+                <ArrowButton
+                  className="text-left"
+                  onClick={() => setShowLockLPTokenModal(true)}
+                >
                   {t("pool.earnMore")}
                 </ArrowButton>
               )}

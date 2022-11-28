@@ -1,8 +1,9 @@
 import dynamic from "next/dynamic";
 import type { Options } from "highcharts";
 import React, { FunctionComponent, useState, useEffect } from "react";
+import type { CompletePieSvgProps } from "@nivo/pie";
 
-const HighchartsReact = dynamic(() => import("highcharts-react-official"), {
+const Pie = dynamic(() => import("@nivo/pie").then((mod) => mod.Pie), {
   ssr: false,
 });
 
@@ -64,26 +65,34 @@ const defaultOptions: Partial<Options> = {
   },
 };
 
-export const PieChart: FunctionComponent<{
-  height?: number;
-  width?: number;
-  options: Options;
-}> = (props) => {
-  const [options, setOptions] = useState<Partial<Options>>(defaultOptions);
-  useEffect(() => {
-    if (!props.options) return;
-    setOptions((v) => {
-      if (props.height && props.width) {
-        v.chart = { ...v.chart, height: props.height, width: props.width };
-      }
-      return { ...v, ...props.options };
-    });
-  }, [props.options, props.height, props.width]);
+type BaseDatum = { id: string; label: string; color: string };
 
-  const [hc, setHc] = useState<any | null>(null);
-  useEffect(() => {
-    import("highcharts").then((hc) => setHc(hc));
-  }, []);
+export const PieChart = <Datum extends BaseDatum>(
+  props: Partial<CompletePieSvgProps<Datum>> & {
+    data: CompletePieSvgProps<Datum>["data"];
+  }
+) => {
+  return (
+    <Pie
+      innerRadius={0.8}
+      cornerRadius={45}
+      /** @ts-ignore */
+      colors={{ datum: "data.color" }}
+      /** @ts-ignore */
+      tooltip={({ datum }) => <PieTooltip {...(datum as BaseDatum)} />}
+      motionConfig="wobbly"
+      padAngle={2.5}
+      enableArcLabels={false}
+      enableArcLinkLabels={false}
+      activeOuterRadiusOffset={4}
+      margin={{ top: 6, right: 6, bottom: 6, left: 6 }}
+      {...props}
+      width={props?.width ?? 200}
+      height={props?.height ?? 200}
+    />
+  );
+};
 
-  return hc ? <HighchartsReact highcharts={hc} options={options} /> : null;
+const PieTooltip: FunctionComponent<BaseDatum> = ({ label }) => {
+  return <div className="bg-osmoverse-800 px-3 py-2 rounded-md">{label}</div>;
 };

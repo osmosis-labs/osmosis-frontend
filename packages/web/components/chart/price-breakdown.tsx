@@ -3,8 +3,8 @@ import classNames from "classnames";
 import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 
 const ColorCycle = [
-  "bg-ion-700",
-  "bg-osmoverse-400",
+  "bg-wosmongton-400",
+  "bg-osmoverse-600",
   "bg-bullish-600",
   "bg-ammelia-600",
 ];

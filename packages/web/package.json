@@ -28,6 +28,8 @@
     "@keplr-wallet/wc-client": "^0.10.24",
     "@metamask/onboarding": "^1.0.1",
     "@next/bundle-analyzer": "^12.1.6",
+    "@nivo/core": "^0.80.0",
+    "@nivo/pie": "^0.80.0",
     "@osmosis-labs/pools": "^3.0.0",
     "@osmosis-labs/stores": "^3.0.0",
     "@tippyjs/react": "^4.2.6",

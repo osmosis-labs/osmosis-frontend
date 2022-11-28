@@ -41,9 +41,12 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
             }}
           >
             <PieChart
-              options={{
-                series,
-              }}
+              data={config.assets.map((asset) => ({
+                id: asset.amountConfig.amount,
+                currency: asset.amountConfig.sendCurrency,
+                percentage: asset.percentage,
+                amount: asset.amountConfig.amount,
+              }))}
               height={isMobile ? 96 : 200}
               width={isMobile ? 96 : 200}
             />
