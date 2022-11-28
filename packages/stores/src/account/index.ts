@@ -221,7 +221,8 @@ export class OsmosisAccountImpl {
       amount: string;
     }[] = [];
 
-    const scalingFactors: Long[] = [];
+    /** Denom -> Long(scalingFactor) */
+    const scalingFactorsMap: Map<string, Long> = new Map<string, Long>();
 
     for (const asset of assets) {
       initialPoolLiquidity.push({
@@ -235,8 +236,26 @@ export class OsmosisAccountImpl {
           .truncate()
           .toString(),
       });
-      scalingFactors.push(new Long(asset.scalingFactor));
+      scalingFactorsMap.set(
+        asset.token.currency.coinMinimalDenom,
+        new Long(asset.scalingFactor)
+      );
     }
+
+    // sort initial liquidity and scaling factors to pass chain encoding check
+    // chain does this to make sure that index of scaling factors is consistent with token indexes
+    initialPoolLiquidity.sort((a, b) => a.denom.localeCompare(b.denom));
+    const sortedScalingFactors: Long[] = [];
+    initialPoolLiquidity.forEach((asset) => {
+      const scalingFactor = scalingFactorsMap.get(asset.denom);
+      if (!scalingFactor) {
+        throw new Error(
+          `Scaling factor for asset ${asset.denom} missing in scalingFactorsMap`
+        );
+      }
+
+      sortedScalingFactors.push(scalingFactor);
+    });
 
     const msg = {
       type: this._msgOpts.createStableswapPool.type,
@@ -244,7 +263,7 @@ export class OsmosisAccountImpl {
         sender: this.base.bech32Address,
         pool_params: poolParams,
         initial_pool_liquidity: initialPoolLiquidity,
-        scaling_factors: scalingFactors.map((sf) => sf.toString()),
+        scaling_factors: sortedScalingFactors.map((sf) => sf.toString()),
         future_pool_governor: "24h",
         scaling_factor_controller: scalingFactorControllerAddress,
       },
@@ -257,7 +276,7 @@ export class OsmosisAccountImpl {
         protoMsgs: [
           {
             typeUrl:
-              "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool",
+              "/osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool",
             value:
               osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool.encode(
                 {
@@ -271,7 +290,7 @@ export class OsmosisAccountImpl {
                     ),
                   },
                   initialPoolLiquidity: msg.value.initial_pool_liquidity,
-                  scalingFactors: scalingFactors,
+                  scalingFactors: sortedScalingFactors,
                   scalingFactorController: msg.value.scaling_factor_controller,
                   futurePoolGovernor: msg.value.future_pool_governor,
                 }
