@@ -1,6 +1,5 @@
 import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
 import { FunctionComponent } from "react";
-import { PieChart } from "./pie-chart";
 
 const ColorCycle = ["#2994D0", "#CA2EBD", "#FA825D", "#29D0B2"];
 
@@ -31,34 +30,6 @@ const PoolComposition: FunctionComponent<{
           </li>
         ))}
       </ul>
-
-      <PieChart
-        width={80}
-        height={80}
-        data={assets.map(({ asset, ratio }, index) => {
-          return {
-            id: asset.denom,
-            label: asset.denom,
-            value: ratio.symbol("").toString(),
-            formattedValue:
-              "$" + asset.maxDecimals(4).hideDenom(true).trim(true).toString(),
-            percentage: ratio.toString(),
-            color: getColorByIndex(colorCycle, index),
-          };
-        })}
-        tooltip={({ datum }) => {
-          return (
-            <div className="flex flex-col bg-osmoverse-800 px-3 py-2 rounded-md ">
-              <p className="whitespace-nowrap tracking-wide">
-                {datum.data.label}: {datum.data.percentage}
-              </p>
-              <p className="tracking-wider text-osmoverse-300 text-sm">
-                {datum.data.formattedValue}
-              </p>
-            </div>
-          );
-        }}
-      />
     </div>
   );
 };
