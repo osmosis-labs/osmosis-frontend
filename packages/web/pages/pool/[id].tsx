@@ -71,7 +71,10 @@ const Pool: FunctionComponent = observer(() => {
     queriesExternalStore.queryAccountsPoolRewards.get(bech32Address);
 
   // eject to pools page if pool does not exist
-  const poolExists = queryOsmosis.queryGammPools.poolExists(poolId as string);
+  const poolExists =
+    poolId !== undefined
+      ? queryOsmosis.queryGammPools.poolExists(poolId as string)
+      : undefined;
   useEffect(() => {
     if (poolExists === false) {
       router.push("/pools");
