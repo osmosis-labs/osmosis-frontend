@@ -129,8 +129,8 @@ const Pool: FunctionComponent = observer(() => {
   const [showSuperfluidValidatorModal, setShowSuperfluidValidatorsModal] =
     useState(false);
   const [showPoolDetails, setShowPoolDetails] = useState(false);
-  const bondableDurations = pool
-    ? bondLiquidityConfig?.getBondableAllowedDurations(
+  const bondDurations = pool
+    ? bondLiquidityConfig?.getAllowedBondDurations(
         (denom) => chainStore.getChain(chainId).forceFindCurrency(denom),
         ExternalIncentiveGaugeAllowList[pool.id]
       ) ?? []
@@ -286,8 +286,8 @@ const Pool: FunctionComponent = observer(() => {
     ],
   });
 
-  const levelCta = bondLiquidityConfig?.calculateBondLevel(bondableDurations);
-  const level2Disabled = bondableDurations.length === 0;
+  const levelCta = bondLiquidityConfig?.calculateBondLevel(bondDurations);
+  const level2Disabled = !bondDurations.some((duration) => duration.bondable);
 
   return (
     <main className="max-w-container m-auto flex flex-col gap-10 md:gap-4 bg-osmoverse-900 min-h-screen p-8 md:p-4">
@@ -610,7 +610,7 @@ const Pool: FunctionComponent = observer(() => {
             className={classNames(
               "flex flex-col bg-osmoverse-800 rounded-4x4pxlinset p-9 md:p-5",
               {
-                "gap-10": !level2Disabled,
+                "gap-10": !level2Disabled || bondDurations.length > 0,
               }
             )}
           >
@@ -648,25 +648,25 @@ const Pool: FunctionComponent = observer(() => {
               )}
             </div>
             <div className="grid grid-cols-3 1.5xl:grid-cols-1 gap-4">
-              {bondableDurations.map((bondableDuration) => (
+              {bondDurations.map((bondDuration) => (
                 <BondCard
-                  key={bondableDuration.duration.asMilliseconds()}
-                  {...bondableDuration}
-                  onUnbond={() => onUnlockTokens(bondableDuration.duration)}
+                  key={bondDuration.duration.asMilliseconds()}
+                  {...bondDuration}
+                  onUnbond={() => onUnlockTokens(bondDuration.duration)}
                   onGoSuperfluid={() => setShowSuperfluidValidatorsModal(true)}
                   splashImageSrc={
                     poolDetailConfig && poolDetailConfig.isIncentivized
                       ? poolDetailConfig.lockableDurations.length > 0 &&
                         poolDetailConfig.lockableDurations[0].asDays() ===
-                          bondableDuration.duration.asDays()
+                          bondDuration.duration.asDays()
                         ? "/images/small-vial.svg"
                         : poolDetailConfig.lockableDurations.length > 1 &&
                           poolDetailConfig.lockableDurations[1].asDays() ===
-                            bondableDuration.duration.asDays()
+                            bondDuration.duration.asDays()
                         ? "/images/medium-vial.svg"
                         : poolDetailConfig.lockableDurations.length > 2 &&
                           poolDetailConfig.lockableDurations[2].asDays() ===
-                            bondableDuration.duration.asDays()
+                            bondDuration.duration.asDays()
                         ? "/images/large-vial.svg"
                         : undefined
                       : undefined
