@@ -43,7 +43,7 @@ export const LockTokensModal: FunctionComponent<
   const bondLiquidityConfig = useBondLiquidityConfig(bech32Address, poolId);
 
   const bondableDurations =
-    bondLiquidityConfig?.getBondableAllowedDurations(
+    bondLiquidityConfig?.getAllowedBondDurations(
       (denom) => chainStore.getChain(chainId).forceFindCurrency(denom),
       ExternalIncentiveGaugeAllowList[poolId]
     ) ?? [];

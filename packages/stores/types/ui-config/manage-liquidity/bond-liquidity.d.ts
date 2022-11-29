@@ -5,8 +5,10 @@ import { ObservableQueryPoolDetails, ObservableQuerySuperfluidPool, ObservableQu
 import { ObservableQueryPoolFeesMetrics } from "../../queries-external";
 import { IPriceStore } from "../../price";
 import { UserConfig } from "../user-config";
-export declare type BondableDuration = {
+export declare type BondDuration = {
     duration: Duration;
+    /** Bondable if there's any active gauges for this duration. */
+    bondable: boolean;
     userShares: CoinPretty;
     userUnlockingShares?: {
         shares: CoinPretty;
@@ -52,10 +54,10 @@ export declare class ObservableBondLiquidityConfig extends UserConfig {
      *  1. Liquidity needs to be added
      *  2. Liquidity needs to be bonded
      */
-    readonly calculateBondLevel: (bondableDurations: BondableDuration[]) => 1 | 2 | undefined;
-    /** Gets all available durations for user to bond in, with a breakdown of the assets incentivizing the duration. Internal OSMO incentives & swap fees included in breakdown. */
-    readonly getBondableAllowedDurations: (findCurrency: (denom: string) => AppCurrency | undefined, allowedGauges: {
+    readonly calculateBondLevel: (bondDurations: BondDuration[]) => 1 | 2 | undefined;
+    /** Gets all durations for user to bond in, or has locked tokens for, with a breakdown of the assets incentivizing the duration. Internal OSMO incentives & swap fees included in breakdown. */
+    readonly getAllowedBondDurations: (findCurrency: (denom: string) => AppCurrency | undefined, allowedGauges: {
         gaugeId: string;
         denom: string;
-    }[] | undefined) => BondableDuration[];
+    }[] | undefined) => BondDuration[];
 }
