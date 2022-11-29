@@ -45,6 +45,7 @@ import { BondCard } from "../../components/cards";
 import { Disableable } from "../../components/types";
 import { Button, ArrowButton } from "../../components/buttons";
 import { useTranslation } from "react-multi-lang";
+import PoolComposition from "../../components/chart/pool-composition";
 
 const E = EventName.PoolDetail;
 
@@ -289,6 +290,21 @@ const Pool: FunctionComponent = observer(() => {
   const levelCta = bondLiquidityConfig?.calculateBondLevel(bondableDurations);
   const level2Disabled = bondableDurations.length === 0;
 
+  const highestAPRBondableDuration =
+    bondableDurations[bondableDurations?.length - 1];
+
+  const highestAPRDailyPeriodicRate =
+    highestAPRBondableDuration?.aggregateApr
+      .sub(highestAPRBondableDuration?.swapFeeApr)
+      .quo(new Dec(365)) // get daily periodic rate
+      .toDec() ?? new Dec(0);
+
+  const additionalRewardsByBonding = queryAccountPoolRewards
+    .getUsdRewardsForPool(poolId)
+    ?.day.mul(highestAPRDailyPeriodicRate)
+    .maxDecimals(3)
+    .inequalitySymbol(false);
+
   return (
     <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
       <Head>
@@ -450,17 +466,17 @@ const Pool: FunctionComponent = observer(() => {
           </div>
         </div>
         {poolDetailConfig?.userStats && (
-          <div className="grid w-full grid-cols-[2fr_1fr] gap-4 lg:flex lg:flex-col">
-            <div className="flex w-full flex-col gap-3 rounded-4xl bg-osmoverse-1000 px-10 py-7">
+          <div className="flex w-full gap-4 1.5lg:flex-col">
+            <div className="flex flex-col gap-3 rounded-4xl bg-osmoverse-1000 px-8 py-7">
               <span className="body2 text-osmoverse-300">
                 {t("pool.yourStats")}
               </span>
-              <div className="flex place-content-between items-center gap-3 md:flex-col md:items-start">
+              <div className="flex place-content-between items-center gap-6 sm:flex-col sm:items-start">
                 <div className="flex shrink-0 flex-col gap-1">
                   <h4 className="text-osmoverse-100">
                     {poolDetailConfig.userStats.totalShareValue.toString()}
                   </h4>
-                  <h6 className="text-osmoverse-300">
+                  <h6 className="subtitle1 text-osmoverse-300">
                     {t("pool.sharesAmount", {
                       shares: poolDetailConfig.userStats.totalShares
                         .maxDecimals(6)
@@ -469,41 +485,61 @@ const Pool: FunctionComponent = observer(() => {
                     })}
                   </h6>
                 </div>
-                <div className="w-1/2 md:w-full">
-                  <PriceBreakdownChart
-                    prices={[
-                      {
-                        label: t("pool.bonded"),
-                        price: poolDetailConfig.userStats.bondedValue,
-                      },
-                      {
-                        label: t("pool.unbonded"),
-                        price: poolDetailConfig.userStats.unbondedValue,
-                      },
-                    ]}
-                  />
-                </div>
+
+                <PoolComposition assets={poolDetailConfig.userPoolAssets} />
               </div>
             </div>
-            <div className="flex w-full flex-col place-content-between gap-3 rounded-4xl bg-osmoverse-1000 px-10 py-7">
-              <div className="flex flex-col gap-2">
-                <span className="body2 text-osmoverse-300">
-                  {t("pool.currentDailyEarn")}
-                </span>
-                <h4 className="text-osmoverse-100">
-                  {t("pool.dailyEarnAmount", {
-                    amount:
-                      queryAccountPoolRewards
-                        .getUsdRewardsForPool(poolId)
-                        ?.day.toString() ?? "$0",
-                  })}
-                </h4>
+
+            <div className="flex flex-1 gap-4 1.5md:flex-col">
+              <div className="flex flex-1 flex-col space-y-3 rounded-4xl bg-osmoverse-1000 px-8 py-7">
+                <PriceBreakdownChart
+                  prices={[
+                    {
+                      label: t("pool.bonded"),
+                      price: poolDetailConfig.userStats.bondedValue,
+                    },
+                    {
+                      label: t("pool.available"),
+                      price: poolDetailConfig.userStats.unbondedValue,
+                    },
+                  ]}
+                />
               </div>
-              {poolDetailConfig?.userAvailableValue.toDec().gt(new Dec(0)) && (
-                <ArrowButton onClick={() => setShowLockLPTokenModal(true)}>
-                  {t("pool.earnMore")}
-                </ArrowButton>
-              )}
+
+              <div className="flex flex-col place-content-between gap-3 rounded-4xl bg-osmoverse-1000 px-8 py-7">
+                <div className="flex flex-col gap-2">
+                  <span className="body2 text-osmoverse-300">
+                    {t("pool.currentDailyEarn")}
+                  </span>
+                  <h4 className="text-osmoverse-100">
+                    {t("pool.dailyEarnAmount", {
+                      amount:
+                        queryAccountPoolRewards
+                          .getUsdRewardsForPool(poolId)
+                          ?.day.toString() ?? "$0",
+                    })}
+                  </h4>
+                </div>
+
+                {poolDetailConfig?.userAvailableValue
+                  .toDec()
+                  .gt(new Dec(0)) && (
+                  <ArrowButton
+                    className="text-left"
+                    onClick={() => setShowLockLPTokenModal(true)}
+                  >
+                    {t("pool.earnMore", {
+                      amount: additionalRewardsByBonding
+                        ?.toDec()
+                        .gte(new Dec(0.001))
+                        ? `$${additionalRewardsByBonding?.toString()}/${t(
+                            "pool.day"
+                          )}`
+                        : "",
+                    })}
+                  </ArrowButton>
+                )}
+              </div>
             </div>
           </div>
         )}

@@ -43,9 +43,10 @@ module.exports = {
             700: "#1469AF",
           },
       bullish: IS_FRONTIER
-        ? {}
+        ? { 500: "#29D0B2" }
         : {
             400: "#6BDEC9",
+            500: "#29D0B2",
             600: "#00A399",
           },
       osmoverse: IS_FRONTIER
@@ -265,6 +266,9 @@ module.exports = {
         height: "height",
         width: "width",
         borderRadius: "border-radius",
+      },
+      letterSpacing: {
+        wide: ".009375em",
       },
     },
   },
