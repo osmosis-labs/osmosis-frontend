@@ -13,7 +13,7 @@
     background: #231d4b00;
   }
   ::-webkit-scrollbar-thumb {
-    background: #777;
+    @apply bg-osmoverse-600;
     border-radius: 18px;
   }
   ::-webkit-scrollbar-thumb:hover {
