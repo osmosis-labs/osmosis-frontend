@@ -2,8 +2,8 @@
   "object" == typeof exports && "undefined" != typeof module
     ? (module.exports = n(require("dayjs")))
     : "function" == typeof define && define.amd
-      ? define(["dayjs"], n)
-      : ((e =
+    ? define(["dayjs"], n)
+    : ((e =
         "undefined" != typeof globalThis
           ? globalThis
           : e || self).dayjs_locale_fr = n(e.dayjs));

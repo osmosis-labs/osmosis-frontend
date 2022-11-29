@@ -185,7 +185,7 @@ export const TokenSelectDrawer: FunctionComponent<{
           leaveTo="visible opacity-0 translate-y-[15%]"
           afterEnter={() => searchBoxRef?.current?.focus()}
         >
-          <div className="bg-osmoverse-800 w-full h-full rounded-[24px] absolute z-50 flex flex-col mt-16 inset-0 overflow-hidden">
+          <div className="absolute inset-0 z-50 mt-16 flex h-full w-full flex-col overflow-hidden rounded-[24px] bg-osmoverse-800">
             <div className="relative flex justify-center pt-8 pb-4">
               <button className="absolute left-4" onClick={() => onClose()}>
                 <Image
@@ -218,7 +218,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                 <div
                   ref={quickSelectRef}
                   onMouseDown={onMouseDownQuickSelect}
-                  className="flex px-4 space-x-4 overflow-x-auto no-scrollbar"
+                  className="no-scrollbar flex space-x-4 overflow-x-auto px-4"
                 >
                   {quickSelectTokens.map(({ token }) => {
                     const currency = getCurrency(token);
@@ -229,9 +229,9 @@ export const TokenSelectDrawer: FunctionComponent<{
                       <button
                         key={currency.coinDenom}
                         className={classNames(
-                          "flex items-center space-x-3 border border-osmoverse-700 rounded-lg p-2",
+                          "flex items-center space-x-3 rounded-lg border border-osmoverse-700 p-2",
                           "transition-colors duration-150 ease-out hover:bg-osmoverse-900",
-                          "focus:bg-osmoverse-900 my-1"
+                          "my-1 focus:bg-osmoverse-900"
                         )}
                         onClick={(e) => {
                           e.stopPropagation();
@@ -239,7 +239,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                         }}
                       >
                         {coinImageUrl && (
-                          <div className="w-[24px] h-[24px] rounded-full">
+                          <div className="h-[24px] w-[24px] rounded-full">
                             <Image
                               src={coinImageUrl}
                               alt="token icon"
@@ -282,7 +282,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                   <button
                     key={currency.coinDenom}
                     className={classNames(
-                      "flex justify-between items-center py-2 px-5 cursor-pointer",
+                      "flex cursor-pointer items-center justify-between py-2 px-5",
                       "transition-colors duration-150 ease-out",
                       {
                         "bg-osmoverse-900": selectedIndex === index,
@@ -299,10 +299,10 @@ export const TokenSelectDrawer: FunctionComponent<{
                       [dataAttributeName]: getTokenItemId(uniqueId, index),
                     }}
                   >
-                    <div className="flex items-center justify-between w-full text-left">
+                    <div className="flex w-full items-center justify-between text-left">
                       <div className="flex items-center">
                         {coinImageUrl && (
-                          <div className="w-8 h-8 mr-4 rounded-full">
+                          <div className="mr-4 h-8 w-8 rounded-full">
                             <Image
                               src={coinImageUrl}
                               alt="token icon"
@@ -313,7 +313,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                         )}
                         <div>
                           <h6 className="text-white-full">{justDenom}</h6>
-                          <div className="font-semibold text-left text-osmoverse-400 md:caption">
+                          <div className="md:caption text-left font-semibold text-osmoverse-400">
                             {showChannel
                               ? `${networkName} ${channel}`
                               : networkName}

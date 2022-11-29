@@ -36,7 +36,7 @@ export const NavBar: FunctionComponent<
           className
         )}
       >
-        <div className="relative hidden md:flex items-center shrink-0">
+        <div className="relative hidden shrink-0 items-center md:flex">
           <Image
             alt="mobile menu"
             src="/icons/hamburger.svg"
@@ -51,7 +51,7 @@ export const NavBar: FunctionComponent<
           )}
           {mobileNavMenuOptionsOpen && (
             <div
-              className="absolute flex flex-col gap-2 w-52 top-[100%] top-navbar-mobile py-4 px-3 bg-osmoverse-800 rounded-3xl"
+              className="top-navbar-mobile absolute top-[100%] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3"
               onClick={(e) => {
                 e.stopPropagation();
               }}
@@ -71,14 +71,14 @@ export const NavBar: FunctionComponent<
             </div>
           )}
         </div>
-        <div className="grow flex items-center md:place-content-between shrink-0 gap-9 lg:gap-2 md:gap-1">
-          <h4 className="md:font-h6 md:text-h6">
+        <div className="flex shrink-0 grow items-center gap-9 lg:gap-2 md:place-content-between md:gap-1">
+          <h4 className="md:text-h6 md:font-h6">
             {navBarStore.title || title}
           </h4>
           <div className="flex items-center gap-3 lg:gap-1">
             {navBarStore.callToActionButtons.map((button, index) => (
               <Button
-                className="w-[180px] lg:w-fit h-fit lg:px-2"
+                className="h-fit w-[180px] lg:w-fit lg:px-2"
                 mode={
                   index > 0 || navBarStore.callToActionButtons.length === 1
                     ? "secondary"
@@ -92,7 +92,7 @@ export const NavBar: FunctionComponent<
             ))}
           </div>
         </div>
-        <div className="md:hidden flex gap-3 lg:gap-2 shrink-0 items-center">
+        <div className="flex shrink-0 items-center gap-3 lg:gap-2 md:hidden">
           <div className="relative">
             <NavBarButton
               iconurl="/icons/setting.svg"
@@ -112,7 +112,7 @@ export const NavBar: FunctionComponent<
       {/* Back-layer element to occupy space for the caller */}
       <div
         className={classNames(
-          "bg-osmoverse-900 h-navbar md:h-navbar-mobile",
+          "h-navbar bg-osmoverse-900 md:h-navbar-mobile",
           backElementClassNames
         )}
       />
@@ -134,7 +134,7 @@ const NavBarButton: FunctionComponent<
       {...props}
       onMouseOver={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="flex bg-osmoverse-700 items-center px-3 py-2 rounded-xl hover:bg-osmoverse-600 transition-colors"
+      className="flex items-center rounded-xl bg-osmoverse-700 px-3 py-2 transition-colors hover:bg-osmoverse-600"
     >
       <Image
         alt="settings"
@@ -160,10 +160,10 @@ const SettingsDropdown: FunctionComponent<{
       <div className="flex flex-col gap-7">
         {userSettings.map((setting) => (
           <div
-            className="flex items-center w-full place-content-between"
+            className="flex w-full place-content-between items-center"
             key={setting.id}
           >
-            <span className="flex-nowrap subtitle1 text-osmoverse-100">
+            <span className="subtitle1 flex-nowrap text-osmoverse-100">
               {setting.getLabel(t)}
             </span>
             {setting.controlComponent(setting.state as any, setting.setState)}
@@ -195,20 +195,20 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
     const [mobileTapInfo, setMobileTapInfo] = useState(false);
 
     return (
-      <div className={classNames("w-40 lg:w-36 md:w-full shrink-0", className)}>
+      <div className={classNames("w-40 shrink-0 lg:w-36 md:w-full", className)}>
         {!walletConnected ? (
           <Button
-            className="w-40 lg:w-36 md:w-full !h-10"
+            className="!h-10 w-40 lg:w-36 md:w-full"
             onClick={() => {
               account.init();
               setHoverWalletInfo(false);
             }}
           >
-            <span className="mx-auto button">{t("connectWallet")}</span>
+            <span className="button mx-auto">{t("connectWallet")}</span>
           </Button>
         ) : hoverWalletInfo || mobileTapInfo ? (
           <Button
-            className="w-40 lg:w-36 md:w-full !h-10"
+            className="!h-10 w-40 lg:w-36 md:w-full"
             mode="secondary"
             onMouseLeave={() => setHoverWalletInfo(false)}
             onClick={() => {
@@ -216,11 +216,11 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
               setHoverWalletInfo(false);
             }}
           >
-            <span className="mx-auto button">{t("menu.signOut")}</span>
+            <span className="button mx-auto">{t("menu.signOut")}</span>
           </Button>
         ) : (
           <div
-            className="flex items-center gap-3 place-content-between px-2 py-1 rounded-xl border border-osmoverse-700"
+            className="flex place-content-between items-center gap-3 rounded-xl border border-osmoverse-700 px-2 py-1"
             onMouseOver={() => {
               if (!isMobile) setHoverWalletInfo(true);
             }}
@@ -228,7 +228,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
               if (isMobile) setMobileTapInfo(true);
             }}
           >
-            <div className="w-7 h-7 shrink-0">
+            <div className="h-7 w-7 shrink-0">
               <Image
                 alt="wallet-icon"
                 src={navBarStore.walletInfo.logoUrl}
@@ -237,7 +237,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
               />
             </div>
 
-            <div className="flex w-full leading-tight flex-col text-center truncate">
+            <div className="flex w-full flex-col truncate text-center leading-tight">
               <span className="text-button font-button">
                 {navBarStore.walletInfo.balance.toString()}
               </span>

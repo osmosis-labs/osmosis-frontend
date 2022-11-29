@@ -15,7 +15,7 @@ export const InfoTooltip: FunctionComponent<
     }
 > = ({ content, trigger, size, iconSrcOverride, className }) => (
   <Tippy
-    className="bg-osmoverse-900 border border-osmoverse-600 md:p-1 p-2 rounded-lg body2"
+    className="body2 rounded-lg border border-osmoverse-600 bg-osmoverse-900 p-2 md:p-1"
     content={content}
     trigger={trigger ?? "click"}
   >

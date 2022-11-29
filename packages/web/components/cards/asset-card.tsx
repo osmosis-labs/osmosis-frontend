@@ -31,7 +31,7 @@ export const AssetCard: FunctionComponent<
     className={classNames(
       "w-full rounded-2xl",
       {
-        "p-[2px] bg-superfluid": isSuperfluid,
+        "bg-superfluid p-[2px]": isSuperfluid,
       },
       className
     )}
@@ -39,7 +39,7 @@ export const AssetCard: FunctionComponent<
   >
     <div
       className={classNames(
-        "flex flex-col gap-3 place-content-between w-full bg-osmoverse-800 rounded-[0.875rem] p-9",
+        "flex w-full flex-col place-content-between gap-3 rounded-[0.875rem] bg-osmoverse-800 p-9",
         contentClassName
       )}
     >
@@ -60,7 +60,7 @@ export const AssetCard: FunctionComponent<
                   );
                 })
               ) : (
-                <div className="w-[2.125rem] h-[2.125rem] rounded-full shrink-0 flex items-center justify-center overflow-hidden">
+                <div className="flex h-[2.125rem] w-[2.125rem] shrink-0 items-center justify-center overflow-hidden rounded-full">
                   <Image
                     alt="asset"
                     src={coinImageUrl}
@@ -78,7 +78,7 @@ export const AssetCard: FunctionComponent<
           </span>
         )}
       </div>
-      <div className="flex items-center place-content-between gap-2.5">
+      <div className="flex place-content-between items-center gap-2.5">
         {metrics.map(({ label, value }, index) => (
           <div key={index} className="flex flex-col text-left">
             <span className="subtitle1 text-osmoverse-400">{label}</span>
