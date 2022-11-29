@@ -290,11 +290,10 @@ const Pool: FunctionComponent = observer(() => {
   const levelCta = bondLiquidityConfig?.calculateBondLevel(bondableDurations);
   const level2Disabled = bondableDurations.length === 0;
 
-  const highestAPRDailyPeriodicRate = bondableDurations[
-    bondableDurations?.length - 1
-  ]?.aggregateApr
-    .quo(new Dec(365)) // get daily periodic rate
-    .toDec();
+  const highestAPRDailyPeriodicRate =
+    bondableDurations[bondableDurations?.length - 1]?.aggregateApr
+      .quo(new Dec(365)) // get daily periodic rate
+      .toDec() ?? new Dec(0);
 
   const additionalRewardsByBonding = poolDetailConfig?.userStats?.unbondedValue
     .mul(highestAPRDailyPeriodicRate)
@@ -462,17 +461,17 @@ const Pool: FunctionComponent = observer(() => {
           </div>
         </div>
         {poolDetailConfig?.userStats && (
-          <div className="w-full flex lg:flex-col gap-4">
-            <div className="flex flex-col gap-3 px-8 py-7 bg-osmoverse-1000 rounded-4xl">
+          <div className="flex w-full gap-4 lg:flex-col">
+            <div className="flex flex-col gap-3 rounded-4xl bg-osmoverse-1000 px-8 py-7">
               <span className="body2 text-osmoverse-300">
                 {t("pool.yourStats")}
               </span>
-              <div className="flex items-center gap-3 sm:flex-col sm:items-start place-content-between space-x-8 sm:space-x-0">
-                <div className="flex flex-col gap-1 shrink-0">
+              <div className="flex place-content-between items-center gap-3 space-x-8 sm:flex-col sm:items-start sm:space-x-0">
+                <div className="flex shrink-0 flex-col gap-1">
                   <h4 className="text-osmoverse-100">
                     {poolDetailConfig.userStats.totalShareValue.toString()}
                   </h4>
-                  <h6 className="text-osmoverse-300 subtitle1">
+                  <h6 className="subtitle1 text-osmoverse-300">
                     {t("pool.sharesAmount", {
                       shares: poolDetailConfig.userStats.totalShares
                         .maxDecimals(6)
@@ -486,7 +485,7 @@ const Pool: FunctionComponent = observer(() => {
               </div>
             </div>
 
-            <div className="flex flex-col flex-1 px-8 py-7 bg-osmoverse-1000 rounded-4xl space-y-3">
+            <div className="flex flex-1 flex-col space-y-3 rounded-4xl bg-osmoverse-1000 px-8 py-7">
               <PriceBreakdownChart
                 prices={[
                   {
@@ -501,7 +500,7 @@ const Pool: FunctionComponent = observer(() => {
               />
             </div>
 
-            <div className="flex flex-col gap-3 px-8 py-7 place-content-between bg-osmoverse-1000 rounded-4xl">
+            <div className="flex flex-col place-content-between gap-3 rounded-4xl bg-osmoverse-1000 px-8 py-7">
               <div className="flex flex-col gap-2">
                 <span className="body2 text-osmoverse-300">
                   {t("pool.currentDailyEarn")}

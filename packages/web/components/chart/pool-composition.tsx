@@ -13,7 +13,7 @@ const PoolComposition: FunctionComponent<{
       {assets.map(({ asset }) => (
         <li key={asset.denom} className="flex items-center tracking-wide">
           {asset.currency.coinImageUrl && (
-            <div className="mr-2 w-[20px] h-[20px]">
+            <div className="mr-2 h-[20px] w-[20px]">
               <Image
                 src={asset.currency.coinImageUrl}
                 width={20}
@@ -22,7 +22,7 @@ const PoolComposition: FunctionComponent<{
               />
             </div>
           )}
-          <span className="text-osmoverse-300 mr-1">{asset.denom}</span>
+          <span className="mr-1 text-osmoverse-300">{asset.denom}</span>
           <span className="text-osmoverse-100">
             {asset.trim(true).hideDenom(true).maxDecimals(4).toString()}
           </span>
