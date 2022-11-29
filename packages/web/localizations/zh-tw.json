@@ -210,6 +210,8 @@
       "titleWithdraw": "轉出 {coinDenom}",
       "titleDeposit": "存入 {coinDenom}",
       "channelCongested": "通道擁擠",
+      "channelCongestedWithdraw": "轉出 {coinDenom} (通道擁擠)",
+      "channelCongestedDeposit": "存入 {coinDenom} (通道擁擠)",
       "channelBlocked": "通道堵塞",
       "selectAmount": "選擇數量",
       "estimatedTime": "預計所需時間",

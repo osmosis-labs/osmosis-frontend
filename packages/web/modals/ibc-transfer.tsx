@@ -103,7 +103,9 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
             chainStatus === "blocked"
               ? t("assets.ibcTransfer.channelBlocked")
               : chainStatus === "congested"
-              ? t("assets.ibcTransfer.channelCongested")
+                ? isWithdraw
+                  ? t("assets.ibcTransfer.channelCongestedWithdraw")
+                  : t("assets.ibcTransfer.channelCongestedDeposit")
               : isWithdraw
               ? t("assets.ibcTransfer.titleWithdraw", {
                   coinDenom: currency.coinDenom,

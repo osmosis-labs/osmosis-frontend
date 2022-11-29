@@ -210,6 +210,8 @@
       "titleWithdraw": "{coinDenom} Çek",
       "titleDeposit": "{coinDenom} Yatır",
       "channelCongested": "Kanal çağrıldı",
+      "channelCongestedWithdraw": "{coinDenom} Çek (Kanal çağrıldı)",
+      "channelCongestedDeposit": "{coinDenom} Yatır (Kanal çağrıldı)",
       "channelBlocked": "Kanal engellendi",
       "selectAmount": "Miktar Seç",
       "estimatedTime": "Takribi Süre",
