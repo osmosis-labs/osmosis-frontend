@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { FunctionComponent, useState, useMemo } from "react";
-import { observer } from "mobx-react-lite";
 import classNames from "classnames";
 import moment from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
@@ -148,30 +147,37 @@ const Drawer: FunctionComponent<{
   drawerUp: boolean;
   toggleDetailsVisible: () => void;
   onGoSuperfluid: () => void;
-}> = observer(
-  ({
-    duration,
-    aggregateApr,
-    swapFeeApr,
-    swapFeeDailyReward,
-    incentivesBreakdown,
-    superfluid,
-    drawerUp,
-    toggleDetailsVisible,
-  }) => {
-    const uniqueCoinImages = useMemo(() => {
-      const imgSrcDenomMap = new Map<string, string>();
-      incentivesBreakdown.forEach((breakdown) => {
-        const currency = breakdown.dailyPoolReward.currency;
-        if (currency.coinImageUrl) {
-          imgSrcDenomMap.set(currency.coinDenom, currency.coinImageUrl);
-        }
-      });
-      return Array.from(imgSrcDenomMap.values());
-    }, [incentivesBreakdown]);
-    const t = useTranslation();
+}> = ({
+  duration,
+  aggregateApr,
+  swapFeeApr,
+  swapFeeDailyReward,
+  incentivesBreakdown,
+  superfluid,
+  drawerUp,
+  toggleDetailsVisible,
+}) => {
+  const uniqueCoinImages = useMemo(() => {
+    const imgSrcDenomMap = new Map<string, string>();
+    incentivesBreakdown.forEach((breakdown) => {
+      const currency = breakdown.dailyPoolReward.currency;
+      if (currency.coinImageUrl) {
+        imgSrcDenomMap.set(currency.coinDenom, currency.coinImageUrl);
+      }
+    });
+    return Array.from(imgSrcDenomMap.values());
+  }, [incentivesBreakdown]);
+  const t = useTranslation();
 
-    return (
+  return (
+    <div
+      className={classNames(
+        "absolute w-full h-[320px] -bottom-[234px] left-1/2 -translate-x-1/2 flex flex-col transition-all duration-300 ease-inOutBack z-40",
+        {
+          "-translate-y-[220px] bg-osmoverse-700 rounded-t-[18px]": drawerUp,
+        }
+      )}
+    >
       <div
         className={classNames(
           "absolute w-full h-[320px] -bottom-[234px] left-1/2 -translate-x-1/2 flex flex-col transition-all duration-300 ease-inOutBack z-50",
@@ -275,9 +281,9 @@ const Drawer: FunctionComponent<{
           </span>
         </div>
       </div>
-    );
-  }
-);
+    </div>
+  );
+};
 
 const SuperfluidBreakdownRow: FunctionComponent<
   BondableDuration["superfluid"]
