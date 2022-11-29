@@ -416,7 +416,7 @@ export const TradeClipboard: FunctionComponent<{
           </button>
           {isSettingOpen && (
             <div
-              className="absolute bottom-[-0.5rem] right-0 z-40 w-full max-w-[23.875rem] translate-y-full rounded-2xl bg-osmoverse-800 p-[1.875rem] md:p-5"
+              className="absolute shadow-md bottom-[-0.5rem] right-0 translate-y-full bg-osmoverse-800 rounded-2xl p-[1.875rem] md:p-5 z-40 w-full max-w-[23.875rem]"
               onClick={(e) => e.stopPropagation()}
             >
               <h6>{t("swap.settings.title")}</h6>
@@ -690,7 +690,7 @@ export const TradeClipboard: FunctionComponent<{
 
           <button
             className={classNames(
-              "absolute left-[45%] top-[235px] z-30 flex items-center transition-all duration-500 ease-bounce md:top-[178px]",
+              "absolute flex items-center left-[45%] top-[235px] md:top-[178px] transition-all duration-500 ease-bounce z-30 shadow-[0_4px_4px_rgba(0,0,0,0.25)]",
               {
                 "h-10 w-10 md:h-8 md:w-8": !isHoveringSwitchButton,
                 "h-11 w-11 -translate-x-[2px] md:h-9 md:w-9":
