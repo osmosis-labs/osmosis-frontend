@@ -10,7 +10,7 @@ import {
   useMemo,
 } from "react";
 import classNames from "classnames";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { Staking } from "@keplr-wallet/stores";
 import {
   ObservableAddLiquidityConfig,
@@ -84,7 +84,6 @@ const Pool: FunctionComponent = observer(() => {
     useSuperfluidPoolConfig(poolDetailConfig);
   const bondLiquidityConfig = useBondLiquidityConfig(bech32Address, pool?.id);
 
-  console.log(poolDetailConfig?.userPoolAssets);
   // user analytics
   const { poolName, poolWeight } = useMemo(
     () => ({
@@ -291,6 +290,17 @@ const Pool: FunctionComponent = observer(() => {
   const levelCta = bondLiquidityConfig?.calculateBondLevel(bondableDurations);
   const level2Disabled = bondableDurations.length === 0;
 
+  const highestAPRDailyPeriodicRate = bondableDurations[
+    bondableDurations?.length - 1
+  ]?.aggregateApr
+    .quo(new Dec(365)) // get daily periodic rate
+    .toDec();
+
+  const additionalRewardsByBonding = poolDetailConfig?.userStats?.unbondedValue
+    .mul(highestAPRDailyPeriodicRate)
+    .maxDecimals(2)
+    .inequalitySymbol(false);
+
   return (
     <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
       <Head>
@@ -453,16 +463,16 @@ const Pool: FunctionComponent = observer(() => {
         </div>
         {poolDetailConfig?.userStats && (
           <div className="w-full flex lg:flex-col gap-4">
-            <div className="flex flex-col w-full gap-3 flex-1 px-10 bg-osmoverse-1000 py-7 rounded-4xl">
+            <div className="flex flex-col gap-3 px-8 py-7 bg-osmoverse-1000 rounded-4xl">
               <span className="body2 text-osmoverse-300">
                 {t("pool.yourStats")}
               </span>
-              <div className="flex place-content-between items-center gap-3 md:flex-col md:items-start">
-                <div className="flex shrink-0 flex-col gap-1">
+              <div className="flex items-center gap-3 sm:flex-col sm:items-start place-content-between space-x-8 sm:space-x-0">
+                <div className="flex flex-col gap-1 shrink-0">
                   <h4 className="text-osmoverse-100">
                     {poolDetailConfig.userStats.totalShareValue.toString()}
                   </h4>
-                  <h6 className="text-osmoverse-300">
+                  <h6 className="text-osmoverse-300 subtitle1">
                     {t("pool.sharesAmount", {
                       shares: poolDetailConfig.userStats.totalShares
                         .maxDecimals(6)
@@ -471,30 +481,27 @@ const Pool: FunctionComponent = observer(() => {
                     })}
                   </h6>
                 </div>
-                <div className="w-1/2 md:w-full">
-                  <PriceBreakdownChart
-                    prices={[
-                      {
-                        label: t("pool.bonded"),
-                        price: poolDetailConfig.userStats.bondedValue,
-                      },
-                      {
-                        label: t("pool.unbonded"),
-                        price: poolDetailConfig.userStats.unbondedValue,
-                      },
-                    ]}
-                  />
-                </div>
+
+                <PoolComposition assets={poolDetailConfig.userPoolAssets} />
               </div>
             </div>
-            <div className="flex flex-col px-10 bg-osmoverse-1000 py-7 rounded-4xl">
-              <h1 className="body2 text-osmoverse-300">
-                Your pool composition
-              </h1>
 
-              <PoolComposition assets={poolDetailConfig.userPoolAssets} />
+            <div className="flex flex-col flex-1 px-8 py-7 bg-osmoverse-1000 rounded-4xl space-y-3">
+              <PriceBreakdownChart
+                prices={[
+                  {
+                    label: t("pool.bonded"),
+                    price: poolDetailConfig.userStats.bondedValue,
+                  },
+                  {
+                    label: t("pool.available"),
+                    price: poolDetailConfig.userStats.unbondedValue,
+                  },
+                ]}
+              />
             </div>
-            <div className="flex flex-col gap-3 px-10 place-content-between bg-osmoverse-1000 py-7 rounded-4xl">
+
+            <div className="flex flex-col gap-3 px-8 py-7 place-content-between bg-osmoverse-1000 rounded-4xl">
               <div className="flex flex-col gap-2">
                 <span className="body2 text-osmoverse-300">
                   {t("pool.currentDailyEarn")}
@@ -508,12 +515,21 @@ const Pool: FunctionComponent = observer(() => {
                   })}
                 </h4>
               </div>
+
               {poolDetailConfig?.userAvailableValue.toDec().gt(new Dec(0)) && (
                 <ArrowButton
                   className="text-left"
                   onClick={() => setShowLockLPTokenModal(true)}
                 >
-                  {t("pool.earnMore")}
+                  {t("pool.earnMore", {
+                    amount: additionalRewardsByBonding
+                      ?.toDec()
+                      .gte(new Dec(0.001))
+                      ? `$${additionalRewardsByBonding?.toString()}/${t(
+                          "pool.day"
+                        )}`
+                      : "",
+                  })}
                 </ArrowButton>
               )}
             </div>

@@ -268,8 +268,7 @@ module.exports = {
         borderRadius: "border-radius",
       },
       letterSpacing: {
-        wide: ".0125em",
-        wider: ".025em",
+        wide: ".009375em",
       },
     },
   },

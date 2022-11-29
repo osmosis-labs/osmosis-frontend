@@ -1,36 +1,34 @@
 import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
+import Image from "next/image";
 import { FunctionComponent } from "react";
-
-const ColorCycle = ["#2994D0", "#CA2EBD", "#FA825D", "#29D0B2"];
-
-function getColorByIndex(colorCycle: string[], index: number) {
-  return colorCycle[index % colorCycle.length];
-}
 
 const PoolComposition: FunctionComponent<{
   assets: {
     ratio: RatePretty;
     asset: CoinPretty;
   }[];
-  colorCycle?: typeof ColorCycle;
-}> = ({ assets, colorCycle = ColorCycle }) => {
+}> = ({ assets }) => {
   return (
-    <div className="flex items-end space-x-8">
-      <ul>
-        {assets.map(({ asset }, index) => (
-          <li key={asset.denom} className="flex items-center tracking-wider">
-            <div
-              className="w-3 h-3 rounded-full mr-2"
-              style={{ background: getColorByIndex(colorCycle, index) }}
-            />
-            <span className="mr-1">
-              {asset.trim(true).hideDenom(true).maxDecimals(4).toString()}
-            </span>
-            <span className="text-osmoverse-200">{asset.denom}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <ul className="space-y-1">
+      {assets.map(({ asset }) => (
+        <li key={asset.denom} className="flex items-center tracking-wide">
+          {asset.currency.coinImageUrl && (
+            <div className="mr-2 w-[20px] h-[20px]">
+              <Image
+                src={asset.currency.coinImageUrl}
+                width={20}
+                height={20}
+                alt="asset image"
+              />
+            </div>
+          )}
+          <span className="text-osmoverse-300 mr-1">{asset.denom}</span>
+          <span className="text-osmoverse-100">
+            {asset.trim(true).hideDenom(true).maxDecimals(4).toString()}
+          </span>
+        </li>
+      ))}
+    </ul>
   );
 };
 
