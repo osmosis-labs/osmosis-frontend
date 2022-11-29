@@ -466,7 +466,7 @@ const Pool: FunctionComponent = observer(() => {
           </div>
         </div>
         {poolDetailConfig?.userStats && (
-          <div className="flex w-full gap-4 xl:flex-col">
+          <div className="flex w-full gap-4 1.5lg:flex-col">
             <div className="flex flex-col gap-3 rounded-4xl bg-osmoverse-1000 px-8 py-7">
               <span className="body2 text-osmoverse-300">
                 {t("pool.yourStats")}
@@ -490,7 +490,7 @@ const Pool: FunctionComponent = observer(() => {
               </div>
             </div>
 
-            <div className="flex flex-1 gap-4 lg:flex-col">
+            <div className="flex flex-1 gap-4 1.5md:flex-col">
               <div className="flex flex-1 flex-col space-y-3 rounded-4xl bg-osmoverse-1000 px-8 py-7">
                 <PriceBreakdownChart
                   prices={[
