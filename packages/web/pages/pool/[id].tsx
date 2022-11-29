@@ -10,7 +10,7 @@ import {
   useMemo,
 } from "react";
 import classNames from "classnames";
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { Staking } from "@keplr-wallet/stores";
 import {
   ObservableAddLiquidityConfig,
