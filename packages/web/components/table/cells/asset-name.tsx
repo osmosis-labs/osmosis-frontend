@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useState } from "react";
 import { AssetCell as Cell } from "./types";
 import { InfoTooltip } from "../../tooltip";
 import { UNSTABLE_MSG } from "../../../config";
@@ -13,13 +13,22 @@ export const AssetNameCell: FunctionComponent<Partial<Cell>> = ({
   isFavorite,
   onToggleFavorite,
 }) => {
+  const [showStar, setShowStar] = useState(false);
   return (
-    <div className="flex gap-2 items-center ">
-      <Icon
-        color={isFavorite ? "#F4CC82" : "#8E83AA"}
-        name="star"
-        onClick={onToggleFavorite}
-      />
+    <div
+      className="flex gap-2 items-center"
+      onMouseEnter={() => setShowStar(true)}
+      onMouseLeave={() => setShowStar(false)}
+    >
+      {showStar || isFavorite ? (
+        <Icon
+          color={isFavorite ? "#F4CC82" : "#8E83AA"}
+          name="star"
+          onClick={onToggleFavorite}
+        />
+      ) : (
+        <div style={{ height: 24, width: 24 }} />
+      )}
       {coinDenom ? (
         <div className="flex items-center gap-4">
           <div>
