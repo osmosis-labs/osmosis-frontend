@@ -17,6 +17,7 @@ export class ObservableQueryLockableDurations extends ObservableChainQuery<Locka
     makeObservable(this);
   }
 
+  /** On chain param: bond durations capable of receiving internal (OSMO) mint incentives, assuming pool is marked incentivized. */
   @computed
   get lockableDurations(): Duration[] {
     if (!this.response) {

@@ -42,8 +42,8 @@ export const LockTokensModal: FunctionComponent<
   const { superfluidPoolConfig } = useSuperfluidPoolConfig(poolDetailConfig);
   const bondLiquidityConfig = useBondLiquidityConfig(bech32Address, poolId);
 
-  const bondableDurations =
-    bondLiquidityConfig?.getBondableAllowedDurations(
+  const bondDurations =
+    bondLiquidityConfig?.getAllowedBondDurations(
       (denom) => chainStore.getChain(chainId).forceFindCurrency(denom),
       ExternalIncentiveGaugeAllowList[poolId]
     ) ?? [];
@@ -59,14 +59,23 @@ export const LockTokensModal: FunctionComponent<
     superfluidPoolConfig?.superfluid?.delegations &&
     superfluidPoolConfig.superfluid.delegations.length > 0;
   const superfluidApr =
-    bondableDurations[bondableDurations.length - 1]?.superfluid?.apr;
+    bondDurations[bondDurations.length - 1]?.superfluid?.apr;
 
   // component state
   const [selectedDurationIndex, setSelectedDurationIndex] = useState<
     number | null
   >(null);
-  const highestDurationSelected =
-    selectedDurationIndex === bondableDurations.length - 1;
+
+  /** Superfluid duration assumed to be longest duration in lockableDurations
+   *  chain parameter.
+   */
+  const longestDuration = poolDetailConfig?.longestDuration;
+  const superfluidDurationSelected =
+    selectedDurationIndex !== null &&
+    bondDurations.length > selectedDurationIndex &&
+    bondDurations[selectedDurationIndex].duration.asMilliseconds() ===
+      longestDuration?.asMilliseconds();
+
   const [electSuperfluid, setElectSuperfluid] = useState(false);
   useEffect(() => {
     if (superfluidPoolConfig?.isSuperfluid) {
@@ -76,14 +85,14 @@ export const LockTokensModal: FunctionComponent<
 
   let selectedApr =
     selectedDurationIndex !== null
-      ? bondableDurations[selectedDurationIndex]?.aggregateApr
+      ? bondDurations[selectedDurationIndex]?.aggregateApr
       : undefined;
-  const superfluidInEffect = electSuperfluid && highestDurationSelected;
+  const superfluidInEffect = electSuperfluid && superfluidDurationSelected;
 
   if (
     selectedApr &&
     superfluidApr &&
-    highestDurationSelected &&
+    superfluidDurationSelected &&
     !electSuperfluid
   ) {
     selectedApr = selectedApr.sub(superfluidApr);
@@ -96,7 +105,7 @@ export const LockTokensModal: FunctionComponent<
         selectedDurationIndex === null ||
         isSendingMsg,
       onClick: () => {
-        const bondableDuration = bondableDurations.find(
+        const bondableDuration = bondDurations.find(
           (_, index) => index === selectedDurationIndex
         );
         if (bondableDuration) {
@@ -107,7 +116,7 @@ export const LockTokensModal: FunctionComponent<
             // Logically it could be a problem if it's not the mainnet
             hasSuperfluidValidator ||
               !superfluidPoolConfig?.isSuperfluid ||
-              !highestDurationSelected
+              !superfluidDurationSelected
               ? undefined
               : electSuperfluid
           );
@@ -115,7 +124,9 @@ export const LockTokensModal: FunctionComponent<
       },
       children:
         (config.error ? t(...tError(config.error)) : false) ||
-        (electSuperfluid && !hasSuperfluidValidator && highestDurationSelected
+        (electSuperfluid &&
+        !hasSuperfluidValidator &&
+        superfluidDurationSelected
           ? t("lockToken.buttonNext")
           : superfluidInEffect
           ? t("lockToken.buttonBondStake")
@@ -126,8 +137,8 @@ export const LockTokensModal: FunctionComponent<
 
   // auto select the gauge if there's one
   useEffect(() => {
-    if (bondableDurations.length === 1) setSelectedDurationIndex(0);
-  }, [bondableDurations]);
+    if (bondDurations.length === 1) setSelectedDurationIndex(0);
+  }, [bondDurations]);
 
   return (
     <ModalBase
@@ -148,7 +159,7 @@ export const LockTokensModal: FunctionComponent<
           {t("pool.APR")}
         </h2>
         <div className="flex gap-4 md:gap-1 overflow-x-auto p-[3px]">
-          {bondableDurations.map(({ duration, aggregateApr }, index) => (
+          {bondDurations.map(({ duration, aggregateApr }, index) => (
             <LockupItem
               key={index}
               duration={duration.locale(locale).humanize()}
@@ -161,16 +172,16 @@ export const LockTokensModal: FunctionComponent<
         {superfluidPoolConfig?.isSuperfluid && (
           <CheckBox
             className="after:!bg-transparent after:!border-2 after:!rounded-[10px] -top-0.5 -left-0.5 after:!h-6 after:!w-6 after:!border-superfluid checked:after:bg-superfluid checked:after:border-none transition-all"
-            isOn={highestDurationSelected && electSuperfluid}
+            isOn={superfluidDurationSelected && electSuperfluid}
             onToggle={() => setElectSuperfluid(!electSuperfluid)}
             checkMarkIconUrl="/icons/check-mark-dark.svg"
             checkMarkClassName="left-0 h-6 w-6"
-            disabled={!highestDurationSelected || hasSuperfluidValidator}
+            disabled={!superfluidDurationSelected || hasSuperfluidValidator}
           >
             <div
               className={classNames("flex flex-col gap-1", {
                 "opacity-30":
-                  !highestDurationSelected || hasSuperfluidValidator,
+                  !superfluidDurationSelected || hasSuperfluidValidator,
               })}
             >
               <h6 className="md:font-subtitle1 md:text-subtitle1">
