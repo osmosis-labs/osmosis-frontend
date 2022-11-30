@@ -401,6 +401,7 @@ export const AllPoolsTableSet: FunctionComponent<{
             {
               poolId,
               poolAssets,
+              stableswapPool: poolWithMetrics.pool.type === "stable",
             },
             { value: poolWithMetrics.liquidity.toString() },
             {

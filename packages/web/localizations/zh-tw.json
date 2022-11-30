@@ -109,6 +109,7 @@
     "title": "流動性池 #{id}",
     "swap": "兌換代幣",
     "superfluidEnabled": "超流體質押已啟用",
+    "stableswapEnabled": "啟用穩定交換",
     "24hrTradingVolume": "24小時交易量",
     "liquidity": "流動性",
     "swapFee": "兌換費",

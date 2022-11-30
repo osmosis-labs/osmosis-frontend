@@ -109,6 +109,7 @@
     "title": "Piscina #{id}",
     "swap": "Intercambiar Tokens",
     "superfluidEnabled": "Interés superfluido habilitada",
+    "stableswapEnabled": "Intercambio estable habilitado",
     "24hrTradingVolume": "Volumen Últimas 24h",
     "liquidity": "Liquidez",
     "swapFee": "Tarifa de intercambio",

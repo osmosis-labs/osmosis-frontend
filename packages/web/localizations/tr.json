@@ -109,6 +109,7 @@
     "title": "Havuz #{id}",
     "swap": "Tokenleri Takas Et",
     "superfluidEnabled": "Superfluid staking etkin",
+    "stableswapEnabled": "Stableswap etkin",
     "24hrTradingVolume": "24s İşlem hacmi",
     "liquidity": "Havuzdaki likidite",
     "swapFee": "Takas ücreti",

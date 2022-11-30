@@ -109,6 +109,7 @@
     "title": "풀 #{id}",
     "swap": "토큰 교환",
     "superfluidEnabled": "Superfluid 스테이킹 가능",
+    "stableswapEnabled": "안정적인 스왑 사용",
     "24hrTradingVolume": "24시간 거래량",
     "liquidity": "풀 유동성",
     "swapFee": "수수료",

@@ -111,6 +111,7 @@
     "title": "Pula #{id}",
     "swap": "Wymień Tokeny",
     "superfluidEnabled": "Dostępne superpłynne stakowanie",
+    "stableswapEnabled": "Stabilna zamiana włączona",
     "24hrTradingVolume": "24h Wolumen wymian",
     "liquidity": "Płynność puli",
     "swapFee": "Prowizja wymiany",

@@ -390,6 +390,17 @@ const Pool: FunctionComponent = observer(() => {
                     {t("pool.superfluidEnabled")}
                   </span>
                 )}
+                {pool?.type === "stable" && (
+                  <div className="flex items-center gap-1.5 body2 text-gradient-positive">
+                    <Image
+                      alt=""
+                      src="/icons/stableswap-pool.svg"
+                      height={24}
+                      width={24}
+                    />
+                    <span>{t("pool.stableswapEnabled")}</span>
+                  </div>
+                )}
               </div>
               <div className="flex items-center gap-10 xl:place-content-between xl:w-full lg:flex-col lg:w-fit lg:items-start">
                 <div>

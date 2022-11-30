@@ -109,6 +109,7 @@
     "title": "资金池 #{id}",
     "swap": "兑换代币",
     "superfluidEnabled": "已启用超流质押",
+    "stableswapEnabled": "启用稳定交换",
     "24hrTradingVolume": "24时成交额",
     "liquidity": "资金池流动性",
     "swapFee": "交易费",

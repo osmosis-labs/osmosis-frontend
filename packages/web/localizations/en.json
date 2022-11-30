@@ -109,6 +109,7 @@
     "title": "Pool #{id}",
     "swap": "Swap Tokens",
     "superfluidEnabled": "Superfluid staking enabled",
+    "stableswapEnabled": "Stableswap enabled",
     "24hrTradingVolume": "24h Trading volume",
     "liquidity": "Pool liquidity",
     "swapFee": "Swap fee",
