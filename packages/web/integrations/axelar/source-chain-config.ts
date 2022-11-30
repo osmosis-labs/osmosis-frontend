@@ -69,7 +69,7 @@ export const SourceChainConfigs: {
       logoUrl: "/networks/ethereum.svg",
       transferFeeMinAmount: IS_TESTNET
         ? "100000000000000"
-        : "20400000000000000",
+        : "8400000000000000",
     },
   },
   wglmr: {
