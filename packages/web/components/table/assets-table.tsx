@@ -288,25 +288,28 @@ export const AssetsTable: FunctionComponent<Props> = observer(
       ? filteredSortedCells
       : filteredSortedCells.slice(0, 10);
 
-    const tableDataWithFavorites = useMemo(
-      () =>
-        tableData.map((v) => {
-          v.isFavorite = favoritesList.includes(v.coinDenom);
-          v.onToggleFavorite = () => {
-            if (v.isFavorite) {
+    const favoritesData: TableCell[] = useMemo(() => {
+      return tableData
+        .map((coin) => {
+          if (favoritesList.includes(coin.coinDenom)) {
+            coin.isFavorite = true;
+            coin.onToggleFavorite = () => {
               const newFavorites = favoritesList.filter(
-                (d) => d !== v.coinDenom
+                (d) => d !== coin.coinDenom
               );
               onSetFavoritesList(newFavorites);
-            } else {
-              const newFavorites = [...favoritesList, v.coinDenom];
+            };
+          } else {
+            coin.isFavorite = false;
+            coin.onToggleFavorite = () => {
+              const newFavorites = [...favoritesList, coin.coinDenom];
               onSetFavoritesList(newFavorites);
-            }
-          };
-          return v;
-        }),
-      [favoritesList, onSetFavoritesList, tableData]
-    );
+            };
+          }
+          return coin;
+        })
+        .sort((a, b) => Number(b.isFavorite) - Number(a.isFavorite));
+    }, [favoritesList, tableData]);
 
     return (
       <section>
@@ -425,7 +428,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
         )}
         {isMobile ? (
           <div className="flex flex-col gap-3 my-7">
-            {tableDataWithFavorites.map((assetData) => (
+            {favoritesData.map((assetData) => (
               <div
                 key={assetData.coinDenom}
                 className="w-full flex items-center place-content-between bg-osmoverse-800 rounded-xl px-3 py-3"
@@ -531,7 +534,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                     },
                   ] as ColumnDef<TableCell>[])),
             ]}
-            data={tableDataWithFavorites.map((cell) => [
+            data={favoritesData.map((cell) => [
               cell,
               cell,
               ...(mergeWithdrawCol ? [cell] : [cell, cell]),
