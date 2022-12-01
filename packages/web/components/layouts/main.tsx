@@ -7,6 +7,7 @@ import { IS_FRONTIER } from "../../config";
 import { MainMenu } from "../main-menu";
 import { NavBar } from "../navbar";
 import { MainLayoutMenu } from "../types";
+import NavbarOsmoPrice from "../navbar-osmo-price";
 
 export const MainLayout: FunctionComponent<{
   menus: MainLayoutMenu[];
@@ -39,6 +40,9 @@ export const MainLayout: FunctionComponent<{
           </div>
         )}
         <MainMenu menus={menus} />
+        <div className="flex flex-1 flex-col justify-end">
+          <NavbarOsmoPrice />
+        </div>
       </article>
       <NavBar
         className="ml-sidebar md:ml-0"

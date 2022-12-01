@@ -8,12 +8,14 @@ import {
   IMPERATOR_HISTORICAL_DATA_BASEURL,
   IMPERATOR_TX_REWARD_BASEURL,
 } from ".";
+import { ObservableQueryTokensHistoricalChart } from "./token-historical";
 
 /** Root store for queries external to any chain. */
 export class QueriesExternalStore {
   public readonly queryGammPoolFeeMetrics: DeepReadonly<ObservableQueryPoolFeesMetrics>;
   public readonly queryAccountsPoolRewards: DeepReadonly<ObservableQueryAccountsPoolRewards>;
   public readonly queryChainStatus: DeepReadonly<ObservableQueryIbcChainsStatus>;
+  public readonly queryTokenHistoricalChart: DeepReadonly<ObservableQueryTokensHistoricalChart>;
 
   constructor(
     kvStore: KVStore,
@@ -34,6 +36,11 @@ export class QueriesExternalStore {
     this.queryChainStatus = new ObservableQueryIbcChainsStatus(
       kvStore,
       chainId,
+      feeMetricsBaseURL
+    );
+    this.queryTokenHistoricalChart = new ObservableQueryTokensHistoricalChart(
+      kvStore,
+      priceStore,
       feeMetricsBaseURL
     );
   }
