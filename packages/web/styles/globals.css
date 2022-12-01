@@ -93,7 +93,7 @@
   }
 
   thead > tr {
-    @apply bg-osmoverse-700 text-osmoverse-400;
+    @apply bg-osmoverse-800 text-osmoverse-300;
   }
 
   thead > tr > th:first-child {

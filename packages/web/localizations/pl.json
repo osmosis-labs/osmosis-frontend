@@ -35,7 +35,7 @@
     "myPools": "Moje Pule",
     "APR": "APR",
     "available": "Dostępne",
-    "liquidity": "Płynność Puli",
+    "liquidity": "Moja płynność",
     "bonded": "Związane",
     "incentivized": "Premiowane",
     "all": "Wszystkie Pule",
@@ -44,7 +44,7 @@
       "title": "Superpłynne Pule",
       "tab": "Superpłynne",
       "APR": "APR",
-      "liquidity": "Płynność Puli",
+      "liquidity": "Moja płynność",
       "fees7D": "Prowizje (7D)"
     },
     "allPools": {
@@ -56,7 +56,7 @@
       "search": "Wyszukaj pulę",
       "displayLowLiquidity": "Pokaż pule < {value}",
       "sort": {
-        "poolName": "Nazwa Puli",
+        "poolName": "Nazwa/numer puli",
         "liquidity": "Płynność",
         "volume24h": "Wolumen (24H)",
         "fees": "Prowizje (7D)",
@@ -66,12 +66,12 @@
       }
     },
     "externalIncentivized": {
-      "title": "Zewnętrzne Premie",
+      "title": "Baseny motywowane zewnętrznie",
       "TVL": "TVL",
       "APR": "APR",
       "search": "Wyszukaj po symbolu",
       "sort": {
-        "poolName": "Nazwa Puli",
+        "poolName": "Nazwa/numer puli",
         "liquidity": "Płynność",
         "APR": "APR",
         "epochs": "Pozostało Epok",
@@ -189,7 +189,7 @@
     }
   },
   "assets": {
-    "totalAssets": "Suma",
+    "totalAssets": "Aktywa ogółem",
     "unbondedAssets": "Rozwiązane",
     "bondedAssets": "Związane",
     "stakedAssets": "Stakowane OSMO",
@@ -203,7 +203,7 @@
     "poolCards": {
       "APR": "APR",
       "FeeAPY": "APY z Prowizji",
-      "liquidity": "Płynność Puli",
+      "liquidity": "Moja płynność",
       "bonded": "Związane",
       "myLiquidity": "Moja Płynność"
     },
@@ -257,8 +257,8 @@
     "table": {
       "depositButton": "Wpłać",
       "withdrawButton": "Wypłać",
-      "search": "Filtruj po symbolu",
-      "title": "Środki",
+      "search": "Szukaj",
+      "title": "Wszystkie aktywa",
       "hideZero": "Ukryj puste salda",
       "buyOsmo": "Kup",
       "preTransfer": {

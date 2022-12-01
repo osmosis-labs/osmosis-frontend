@@ -407,7 +407,7 @@ const Pool: FunctionComponent = observer(() => {
                 )}
               </div>
               <div className="flex items-center gap-10 xl:w-full xl:place-content-between lg:w-fit lg:flex-col lg:items-start lg:gap-3">
-                <div>
+                <div className="space-y-2">
                   <span className="body2 gap-2 text-osmoverse-400">
                     {t("pool.24hrTradingVolume")}
                   </span>
@@ -417,7 +417,7 @@ const Pool: FunctionComponent = observer(() => {
                       .volume24h.toString()}
                   </h4>
                 </div>
-                <div>
+                <div className="space-y-2">
                   <span className="body2 gap-2 text-osmoverse-400">
                     {t("pool.liquidity")}
                   </span>
@@ -425,7 +425,7 @@ const Pool: FunctionComponent = observer(() => {
                     {poolDetailConfig?.totalValueLocked.toString()}
                   </h4>
                 </div>
-                <div>
+                <div className="space-y-2">
                   <span className="body2 gap-2 text-osmoverse-400">
                     {t("pool.swapFee")}
                   </span>
@@ -544,7 +544,7 @@ const Pool: FunctionComponent = observer(() => {
           </div>
         )}
       </section>
-      <section className="flex flex-col gap-7 md:gap-4">
+      <section className="flex flex-col gap-4 md:gap-4">
         <div className="flex flex-col flex-wrap md:gap-3">
           <h5 className="md:text-h6 md:font-h6">{t("pool.putAssetsToWork")}</h5>
           <span className="subtitle1 text-osmoverse-300 md:text-body1 md:font-body1">

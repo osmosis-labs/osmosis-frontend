@@ -33,7 +33,7 @@
     "myPools": "내 풀",
     "APR": "APR",
     "available": "가능 수량",
-    "liquidity": "풀 유동성",
+    "liquidity": "내 유동성",
     "bonded": "예치된 자산",
     "incentivized": "인센티브",
     "all": "전체 풀",
@@ -42,7 +42,7 @@
       "title": "Superfluid Pools",
       "tab": "Superfluid",
       "APR": "APR",
-      "liquidity": "풀 유동성",
+      "liquidity": "내 유동성",
       "fees7D": "수수료 (7D)"
     },
     "allPools": {
@@ -54,7 +54,7 @@
       "search": "풀 검색하기",
       "displayLowLiquidity": "풀 보기 < {value}",
       "sort": {
-        "poolName": "풀 이름",
+        "poolName": "풀 이름/번호",
         "liquidity": "유동성",
         "volume24h": "거래량 (24H)",
         "fees": "수수료 (7D)",
@@ -64,12 +64,12 @@
       }
     },
     "externalIncentivized": {
-      "title": "외부 인센티브",
+      "title": "외부 인센티브 풀",
       "TVL": "TVL",
       "APR": "APR",
       "search": "심볼로 검색하기",
       "sort": {
-        "poolName": "풀 이름",
+        "poolName": "풀 이름/번호",
         "liquidity": "유동성",
         "APR": "APR",
         "epochs": "남은 기간",
@@ -189,7 +189,7 @@
     }
   },
   "assets": {
-    "totalAssets": "전체",
+    "totalAssets": "총 자산",
     "unbondedAssets": "예치되지 않은 자산",
     "bondedAssets": "예치된 자산",
     "stakedAssets": "스테이킹된 OSMO",
@@ -203,7 +203,7 @@
     "poolCards": {
       "APR": "APR",
       "FeeAPY": "수수료 APY",
-      "liquidity": "풀 유동성",
+      "liquidity": "내 유동성",
       "bonded": "예치된 자산",
       "myLiquidity": "내 유동성"
     },
@@ -257,8 +257,8 @@
     "table": {
       "depositButton": "입금",
       "withdrawButton": "출금",
-      "search": "심볼로 필터",
-      "title": "자산",
+      "search": "검색",
+      "title": "모든 자산",
       "hideZero": "작은 자산 숨기기",
       "buyOsmo": "구매",
       "preTransfer": {

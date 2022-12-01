@@ -232,17 +232,8 @@ const AssetsOverview: FunctionComponent = observer(() => {
     stakedAssetsValue.toString(),
   ]);
 
-  const Metric: FunctionComponent<Metric> = ({ label, value }) => (
-    <div className="flex shrink-0 flex-col gap-5 md:gap-2">
-      <h6 className="md:text-subtitle1 md:font-subtitle1">{label}</h6>
-      <h2 className="text-wosmongton-100 lg:text-h3 lg:font-h3 md:text-h4 md:font-h4">
-        {value}
-      </h2>
-    </div>
-  );
-
   return (
-    <div className="flex w-full items-center gap-[100px] rounded-[32px] bg-osmoverse-1000 px-20 py-10 lg:gap-5 lg:px-10 md:flex-col md:items-start md:gap-3 md:px-4 md:py-5">
+    <div className="flex w-full items-center gap-[100px] rounded-[32px] bg-osmoverse-1000 px-8 py-9 lg:gap-5 lg:px-10 md:flex-col md:items-start md:gap-3 md:px-4 md:py-5">
       <Metric
         label={t("assets.totalAssets")}
         value={totalAssetsValue.toString()}
@@ -258,6 +249,15 @@ const AssetsOverview: FunctionComponent = observer(() => {
     </div>
   );
 });
+
+const Metric: FunctionComponent<Metric> = ({ label, value }) => (
+  <div className="flex shrink-0 flex-col gap-1 md:gap-2">
+    <h6 className="md:text-subtitle1 md:font-subtitle1">{label}</h6>
+    <h2 className="text-h3 font-h3 text-wosmongton-100 md:text-h4 md:font-h4">
+      {value}
+    </h2>
+  </div>
+);
 
 const PoolAssets: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();

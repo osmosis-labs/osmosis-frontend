@@ -33,7 +33,7 @@
     "myPools": "Mis Piscinas",
     "APR": "TPA",
     "available": "Disponible",
-    "liquidity": "Liquidez",
+    "liquidity": "Mi Liquidez",
     "bonded": "Abonado",
     "incentivized": "Incentivada",
     "all": "Todas las piscinas",
@@ -42,7 +42,7 @@
       "title": "Piscinas superfluidas",
       "tab": "Superfluido",
       "APR": "TPA",
-      "liquidity": "Liquidez",
+      "liquidity": "Mi Liquidez",
       "fees7D": "Tarifas (7d)"
     },
     "allPools": {
@@ -54,7 +54,7 @@
       "search": "Buscar piscinas",
       "displayLowLiquidity": "Mostrar piscinas < {value}",
       "sort": {
-        "poolName": "Nombre de la Piscina",
+        "poolName": "Nombre/Número de piscina",
         "liquidity": "Liquidez",
         "volume24h": "Volumen (24h)",
         "fees": "Tarifas (7d)",
@@ -64,12 +64,12 @@
       }
     },
     "externalIncentivized": {
-      "title": "Incentivos externos",
+      "title": "Fondos comunes con incentivos externos",
       "TVL": "VTB",
       "APR": "TPA",
       "search": "Buscar por símbolo",
       "sort": {
-        "poolName": "Nombre de la Piscina",
+        "poolName": "Nombre/Número de piscina",
         "liquidity": "Liquidez",
         "APR": "TPA",
         "epochs": "Épocas restantes",
@@ -188,7 +188,7 @@
     }
   },
   "assets": {
-    "totalAssets": "Total",
+    "totalAssets": "Los activos totales",
     "unbondedAssets": "No abonado",
     "bondedAssets": "Abonado",
     "stakedAssets": "OSMO Abonado",
@@ -202,7 +202,7 @@
     "poolCards": {
       "APR": "TPA",
       "FeeAPY": "Tarifa TAI",
-      "liquidity": "Liquidez",
+      "liquidity": "Mi Liquidez",
       "bonded": "Abonado",
       "myLiquidity": "Mi liquidez"
     },
@@ -256,8 +256,8 @@
     "table": {
       "depositButton": "Depositar",
       "withdrawButton": "Retirar",
-      "search": "Filtrar por símbolo",
-      "title": "Activos",
+      "search": "Buscar",
+      "title": "Todos los activos",
       "hideZero": "Ocultar saldos cero",
       "buyOsmo": "Comprar",
       "preTransfer": {

@@ -33,7 +33,7 @@
     "myPools": "Havuzlarım",
     "APR": "APR",
     "available": "Mevcut",
-    "liquidity": "Havuzdaki Likidite",
+    "liquidity": "Likiditem",
     "bonded": "Bağlı",
     "incentivized": "Teşvikli",
     "all": "Tüm Havuzlar",
@@ -42,7 +42,7 @@
       "title": "Superfluid Havuzlar",
       "tab": "Superfluid",
       "APR": "APR",
-      "liquidity": "Havuzdaki Likidite",
+      "liquidity": "Likiditem",
       "fees7D": "Ücretler (7G)"
     },
     "allPools": {
@@ -54,7 +54,7 @@
       "search": "Havuzlarda ara",
       "displayLowLiquidity": "{value}dan az likiditesi olan havuzları göster",
       "sort": {
-        "poolName": "Havuz Adı",
+        "poolName": "Havuz Adı/Numarası",
         "liquidity": "Likidite",
         "volume24h": "Hacim (24S)",
         "fees": "Ücretler (7G)",
@@ -64,12 +64,12 @@
       }
     },
     "externalIncentivized": {
-      "title": "Dış Teşvikler",
+      "title": "Dışarıdan Teşvik Edilen Havuzlar",
       "TVL": "TVL",
       "APR": "APR",
       "search": "Sembolle ara",
       "sort": {
-        "poolName": "Havuz Adı",
+        "poolName": "Havuz Adı/Numarası",
         "liquidity": "Likidite",
         "APR": "APR",
         "epochs": "Kalan Devir",
@@ -188,7 +188,7 @@
     }
   },
   "assets": {
-    "totalAssets": "Toplam",
+    "totalAssets": "Toplam varlıklar",
     "unbondedAssets": "Bağlı Olmayan",
     "bondedAssets": "Bağlı",
     "stakedAssets": "Stake Edilmiş OSMO",
@@ -202,7 +202,7 @@
     "poolCards": {
       "APR": "APR",
       "FeeAPY": "APY ücreti",
-      "liquidity": "Havuz Likiditesi",
+      "liquidity": "Likiditem",
       "bonded": "Bağlı",
       "myLiquidity": "Likiditem"
     },
@@ -256,8 +256,8 @@
     "table": {
       "depositButton": "Yatır",
       "withdrawButton": "Çek",
-      "search": "Sembole göre filtrele",
-      "title": "Varlıklar",
+      "search": "Arama",
+      "title": "Tüm Varlıklar",
       "hideZero": "Sıfır bakiyeyi gizle",
       "buyOsmo": "Al",
       "preTransfer": {
