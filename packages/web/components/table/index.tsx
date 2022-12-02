@@ -47,7 +47,7 @@ export const Table = <TCell extends BaseCell>({
   const router = useRouter();
 
   // pass row hovered to cell components. Tailwind preferred for tr/tds.
-  const [rowsHovered, setRowsHovered] = useState(() => data?.map(() => false));
+  const [rowsHovered, setRowsHovered] = useState(() => data.map(() => false));
   const setRowHovered = useCallback(
     (rowIndex: number, value: boolean) =>
       setRowsHovered(
@@ -131,7 +131,7 @@ export const Table = <TCell extends BaseCell>({
         </tr>
       </thead>
       <tbody className={tBodyClassName}>
-        {data?.map((row, rowIndex) => {
+        {data.map((row, rowIndex) => {
           const rowDef =
             rowDefs && Array.isArray(rowDefs) ? rowDefs[rowIndex] : rowDefs;
           const rowHovered = rowsHovered[rowIndex] ?? false;

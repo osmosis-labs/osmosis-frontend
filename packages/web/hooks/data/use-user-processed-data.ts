@@ -20,6 +20,6 @@ export function useUserProcessedData<TData>(
   return [
     userInput,
     setUserInput,
-    userInput === "" ? data : processor?.process(userInput),
+    userInput === "" ? data : processor.process(userInput),
   ];
 }

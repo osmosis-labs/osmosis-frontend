@@ -64,7 +64,7 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
       }
 
       const raw = this.response.data.pools.find((raw) => raw.id === id);
-      if (!raw || !raw.pool_assets) {
+      if (!raw) {
         return undefined;
       }
 

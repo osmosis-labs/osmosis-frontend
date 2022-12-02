@@ -76,7 +76,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
 
   @computed
   get pool(): Pool {
-    if (this.raw && this.raw.pool_assets) return new WeightedPool(this.raw);
+    return new WeightedPool(this.raw);
   }
 
   @computed

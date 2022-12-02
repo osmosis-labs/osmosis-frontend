@@ -27,7 +27,7 @@ export function useSortedData<TData>(
   TData[]
 ] {
   const processor = useMemo(
-    () => (sorter && data) && new DataSorter<TData>(data),
+    () => sorter ?? new DataSorter<TData>(data),
     [sorter, data]
   );
   const [sortDirection, setSortDirection] = useState<SortDirection>(
@@ -44,7 +44,7 @@ export function useSortedData<TData>(
   );
 
   if (sortDirection === "descending") {
-    results?.reverse();
+    results.reverse();
   }
 
   return [
