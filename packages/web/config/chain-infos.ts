@@ -630,6 +630,17 @@ const chainInfos = (
           coinGeckoId: "pool:muse",
           coinImageUrl: "/tokens/muse.svg",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1cltgm8v842gu54srmejewghnd6uqa26lzkpa635wzra9m9xuudkqa2gtcz",
+          coinDenom: "FURY",
+          coinMinimalDenom:
+            "cw20:juno1cltgm8v842gu54srmejewghnd6uqa26lzkpa635wzra9m9xuudkqa2gtcz:FURY",
+          coinDecimals: 6,
+          coinGeckoId: "pool:fury",
+          coinImageUrl: "/tokens/fanfury.png",
+        },
       ],
       features: [
         "stargate",
