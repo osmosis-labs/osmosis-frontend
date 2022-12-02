@@ -6,7 +6,7 @@ import { TokenHistoricalPrice } from "./types";
 declare const AvailableRangeValues: readonly [5, 15, 30, 60, 120, 240, 720, 1440, 10080, 43800];
 declare type Tf = typeof AvailableRangeValues[number];
 /** Queries Imperator token history data chart. */
-export declare class ObservableQueryTokenHistoricalChart extends ObservableQueryExternalBase<TokenHistoricalPrice[]> {
+export declare class ObservableQueryTokenHistoricalData extends ObservableQueryExternalBase<TokenHistoricalPrice[]> {
     protected readonly priceStore: IPriceStore;
     protected readonly symbol: string;
     /**
@@ -23,8 +23,8 @@ export declare class ObservableQueryTokenHistoricalChart extends ObservableQuery
     protected canFetch(): boolean;
     readonly getChart: () => TokenHistoricalPrice[] | undefined;
 }
-export declare class ObservableQueryTokensHistoricalChart extends HasMapStore<ObservableQueryTokenHistoricalChart> {
+export declare class ObservableQueryTokensHistoricalData extends HasMapStore<ObservableQueryTokenHistoricalData> {
     constructor(kvStore: KVStore, priceStore: IPriceStore, tokenHistoricalBaseUrl?: string);
-    get(symbol: string, tf?: Tf): ObservableQueryTokenHistoricalChart;
+    get(symbol: string): ObservableQueryTokenHistoricalData;
 }
 export {};

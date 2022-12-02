@@ -2,13 +2,20 @@ import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { KVStore } from "@keplr-wallet/common";
 import { HasMapStore } from "@keplr-wallet/stores";
-import { IPriceStore } from "../../price";
 import { ObservableQueryExternalBase } from "../base";
+import { ChartPrice, TokenHistoricalPrice } from "./types";
+import { IPriceStore } from "src/price";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
 
-const AvailableRangeValues = [5, 15, 30, 60, 120, 240, 720, 1440, 10080, 43800];
+const AvailableRangeValues = [
+  5, 15, 30, 60, 120, 240, 720, 1440, 10080, 43800,
+] as const;
+type Tf = typeof AvailableRangeValues[number];
 
 /** Queries Imperator token history data chart. */
-export class ObservableQueryTokenHistoricalChart extends ObservableQueryExternalBase<any> {
+export class ObservableQueryTokenHistoricalChart extends ObservableQueryExternalBase<
+  TokenHistoricalPrice[]
+> {
   constructor(
     kvStore: KVStore,
     baseURL: string,
@@ -18,7 +25,7 @@ export class ObservableQueryTokenHistoricalChart extends ObservableQueryExternal
      * Range of historical data represented by minutes
      * Available values: 5,15,30,60,120,240,720,1440,10080,43800
      */
-    protected readonly tf: number = 60
+    protected readonly tf: Tf = 60
   ) {
     super(kvStore, baseURL, `/tokens/v2/historical/${symbol}/chart?tf=${tf}`);
 
@@ -34,17 +41,21 @@ export class ObservableQueryTokenHistoricalChart extends ObservableQueryExternal
     );
   }
 
-  readonly getChart = computedFn(() => {
-    if (!this.response) return undefined;
+  readonly getChartPrices = computedFn((): ChartPrice[] | undefined => {
+    const fiat = this.priceStore.getFiatCurrency("usd");
 
-    return this.response.data;
+    if (!this.response || !fiat) return undefined;
+
+    return this.response.data.map(
+      ({ close }) => new PricePretty(fiat, new Dec(close))
+    );
   });
 }
 
 export class ObservableQueryTokensHistoricalChart extends HasMapStore<ObservableQueryTokenHistoricalChart> {
   constructor(
     kvStore: KVStore,
-    priceStore: IPriceStore,
+    protected readonly priceStore: IPriceStore,
     tokenHistoricalBaseUrl = "https://api-osmosis.imperator.co"
   ) {
     super((symbolAndTf: string) => {
@@ -55,12 +66,12 @@ export class ObservableQueryTokensHistoricalChart extends HasMapStore<Observable
         tokenHistoricalBaseUrl,
         priceStore,
         symbol,
-        Number(tf)
+        Number(tf) as Tf
       );
     });
   }
 
-  get(symbol: string, tf = 60) {
+  get(symbol: string, tf: Tf = 60) {
     return super.get(`${symbol},${tf}`) as ObservableQueryTokenHistoricalChart;
   }
 }

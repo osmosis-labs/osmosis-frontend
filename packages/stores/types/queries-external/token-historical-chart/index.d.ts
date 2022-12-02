@@ -1,8 +1,8 @@
 import { KVStore } from "@keplr-wallet/common";
 import { HasMapStore } from "@keplr-wallet/stores";
-import { IPriceStore } from "../../price";
 import { ObservableQueryExternalBase } from "../base";
-import { TokenHistoricalPrice } from "./types";
+import { ChartPrice, TokenHistoricalPrice } from "./types";
+import { IPriceStore } from "src/price";
 declare const AvailableRangeValues: readonly [5, 15, 30, 60, 120, 240, 720, 1440, 10080, 43800];
 declare type Tf = typeof AvailableRangeValues[number];
 /** Queries Imperator token history data chart. */
@@ -21,9 +21,10 @@ export declare class ObservableQueryTokenHistoricalChart extends ObservableQuery
      */
     tf?: Tf);
     protected canFetch(): boolean;
-    readonly getChart: () => TokenHistoricalPrice[] | undefined;
+    readonly getChartPrices: () => ChartPrice[] | undefined;
 }
 export declare class ObservableQueryTokensHistoricalChart extends HasMapStore<ObservableQueryTokenHistoricalChart> {
+    protected readonly priceStore: IPriceStore;
     constructor(kvStore: KVStore, priceStore: IPriceStore, tokenHistoricalBaseUrl?: string);
     get(symbol: string, tf?: Tf): ObservableQueryTokenHistoricalChart;
 }
