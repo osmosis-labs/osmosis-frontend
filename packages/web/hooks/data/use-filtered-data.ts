@@ -21,6 +21,6 @@ export function useFilteredData<TData>(
     () => filter ?? new DataFilter<TData>(data, keys),
     [data, keys, filter]
   );
-
+  if (!processor) return undefined;
   return useUserProcessedData(data, processor, initialQuery);
 }

@@ -115,6 +115,7 @@ export const AllPoolsTableSet: FunctionComponent<{
     const allPoolsWithMetrics: PoolWithMetrics[] = useMemo(
       () =>
         allPools.map((pool) => {
+          if (!pool) return;
           const poolTvl = pool.computeTotalValueLocked(priceStore);
           const myLiquidity = poolTvl.mul(
             queriesOsmosis.queryGammPoolShare.getAllGammShareRatio(
@@ -171,6 +172,7 @@ export const AllPoolsTableSet: FunctionComponent<{
         incentivizedPools: PoolWithMetrics[],
         poolWithMetrics: PoolWithMetrics
       ) => {
+        if (!poolWithMetrics) return;
         if (
           queriesOsmosis.queryIncentivizedPools.incentivizedPools.some(
             (incentivizedPoolId) =>
@@ -225,7 +227,7 @@ export const AllPoolsTableSet: FunctionComponent<{
     const tvlFilteredPools = useMemo(() => {
       return isPoolTvlFiltered
         ? activeOptionPools
-        : activeOptionPools.filter((poolWithMetrics) =>
+        : activeOptionPools?.filter((poolWithMetrics) =>
             poolWithMetrics.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
           );
     }, [
@@ -359,7 +361,7 @@ export const AllPoolsTableSet: FunctionComponent<{
 
     const tableRows: RowDef[] = useMemo(
       () =>
-        allData.map((poolWithFeeMetrics) => ({
+        allData?.map((poolWithFeeMetrics) => ({
           link: `/pool/${poolWithFeeMetrics.pool.id}`,
           onClick: () => {
             logEvent([
@@ -388,7 +390,7 @@ export const AllPoolsTableSet: FunctionComponent<{
     const [cellGroupEventEmitter] = useState(() => new EventEmitter());
     const tableData = useMemo(
       () =>
-        allData.map((poolWithMetrics) => {
+        allData?.map((poolWithMetrics) => {
           const poolId = poolWithMetrics.pool.id;
           const poolAssets = poolWithMetrics.pool.poolAssets.map(
             (poolAsset) => ({

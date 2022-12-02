@@ -33,7 +33,7 @@ const Home: NextPage = observer(function () {
 
           // Trim not useful pools.
 
-          const passed = poolsPassed.current.get(pool.id);
+          const passed = poolsPassed.current.get(pool?.id);
           if (passed) {
             return true;
           }
@@ -42,7 +42,7 @@ const Home: NextPage = observer(function () {
           // For now, based on the mainnet, only those pools with assets above a certain value are calculated for swap.
 
           let hasEnoughAssets = false;
-
+          if (pool && pool.poolAssets)
           for (const asset of pool.poolAssets) {
             // Probably, the pools that include gamm token may be created mistakenly by users.
             if (

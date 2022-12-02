@@ -350,7 +350,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
 
     const tableRows: RowDef[] = useMemo(
       () =>
-        allData.map((poolWithFeeMetrics) => ({
+        allData?.map((poolWithFeeMetrics) => ({
           link: `/pool/${poolWithFeeMetrics.pool.id}`,
           onClick: () => {
             logEvent([
@@ -377,7 +377,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
     const [cellGroupEventEmitter] = useState(() => new EventEmitter());
     const tableData = useMemo(
       () =>
-        allData.map((poolWithMetrics) => {
+        allData?.map((poolWithMetrics) => {
           const poolId = poolWithMetrics.pool.id;
           const poolAssets = poolWithMetrics.pool.poolAssets.map(
             (poolAsset) => ({

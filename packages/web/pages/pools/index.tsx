@@ -69,7 +69,7 @@ const Pools: NextPage = observer(function () {
   const account = accountStore.getAccount(chainId);
 
   const superfluidPoolIds = queryOsmosis.querySuperfluidPools.superfluidPoolIds;
-  const superfluidPools = new DataSorter(
+  const superfluidPools = superfluidPoolIds && new DataSorter(
     superfluidPoolIds
       ?.map((poolId) => queryOsmosis.queryGammPools.getPool(poolId))
       .filter((pool): pool is ObservableQueryPool => pool !== undefined)
@@ -672,7 +672,7 @@ const Pools: NextPage = observer(function () {
                     )
                   )}
               </div>
-              {superfluidPools.length > LESS_SUPERFLUID_POOLS_COUNT && (
+              {superfluidPools?.length > LESS_SUPERFLUID_POOLS_COUNT && (
                 <ShowMoreButton
                   className="mx-auto"
                   isOn={showMoreSfsPools}
