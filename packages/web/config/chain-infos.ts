@@ -1873,6 +1873,34 @@ const chainInfos = (
       explorerUrlToTx: "https://tgrade.aneka.io/txs/{txHash}",
     },
     {
+      rpc: "https://rpc-acre.synergynodes.com/",
+      rest: "https://lcd-acre.synergynodes.com/",
+      chainId: "acre_9052-1",
+      chainName: "Acrechain",
+      bip44: {
+        coinType: 60,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("acre"),
+      currencies: [
+        {
+          coinDenom: "ACRE",
+          coinMinimalDenom: "aacre",
+          coinDecimals: 18,
+          coinGeckoId: "arable-protocol",
+          coinImageUrl: "/tokens/acre.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 10000000000,
+        average: 25000000000,
+        high: 40000000000,
+      },
+      features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
+      explorerUrlToTx: "https://cosmosrun.info/acre-mainnet/tx/${txHash}",
+    },
+    {
       rpc: "https://rpc-echelon.whispernode.com/",
       rest: "https://lcd-echelon.whispernode.com/",
       chainId: "echelon_3000-3",

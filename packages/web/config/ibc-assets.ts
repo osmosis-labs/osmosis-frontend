@@ -785,6 +785,13 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
+    counterpartyChainId: "acre_9052-1",
+    sourceChannelId: "channel-490",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "aacre",
+    isVerified: true,
+  },
+  {
     counterpartyChainId: "tgrade-mainnet-1",
     sourceChannelId: "channel-263",
     destChannelId: "channel-0",
