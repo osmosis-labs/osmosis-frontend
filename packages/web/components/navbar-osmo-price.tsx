@@ -6,11 +6,6 @@ import { Button } from "./buttons";
 import { Sparkline } from "./chart/sparkline";
 import Skeleton from "./skeleton";
 
-function getChartPrices(prices?: PricePretty[]): number[] {
-  if (!prices) return [];
-  return prices.map((price) => Number(price.toDec().toString()));
-}
-
 /**
  * Get chart data.
  * @param prices - prices by hour
