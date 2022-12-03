@@ -2,7 +2,6 @@ import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { KVStore } from "@keplr-wallet/common";
 import { HasMapStore } from "@keplr-wallet/stores";
-import { IPriceStore } from "../../price";
 import { ObservableQueryExternalBase } from "../base";
 import { TokenData } from "./types";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
