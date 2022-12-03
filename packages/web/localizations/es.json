@@ -322,7 +322,8 @@
     "info": "Estadísticas",
     "signOut": "Desconectar",
     "help": "Obtener ayuda para el laboratorio de soporte",
-    "learnMoreFrontier": "Obtenga más información <br/> sobre <br2/> <name> Osmosis Frontier </name>"
+    "learnMoreFrontier": "Obtenga más información <br/> sobre <br2/> <name> Osmosis Frontier </name>",
+    "buyTokens": "Comprar fichas"
   },
   "settings": {
     "title": "Ajustes",

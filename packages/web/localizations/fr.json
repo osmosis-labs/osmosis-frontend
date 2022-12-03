@@ -321,7 +321,8 @@
     "info": "Info",
     "signOut": "Déconnecter",
     "help": "Obtenir de l'aide",
-    "learnMoreFrontier": "En apprendre<br/>plus sur<br2/> <name>Osmosis Frontier</name>"
+    "learnMoreFrontier": "En apprendre<br/>plus sur<br2/> <name>Osmosis Frontier</name>",
+    "buyTokens": "Acheter des jetons"
   },
   "settings": {
     "title": "Paramètres",

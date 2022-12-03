@@ -6,28 +6,22 @@ import { Button } from "./buttons";
 import { Sparkline } from "./chart/sparkline";
 import Skeleton from "./skeleton";
 
-function chunkArray(chunkSize: number, array: number[]) {
-  const result = [];
-
-  for (var i = 0; i < array.length; i += chunkSize) {
-    result[result.length] = array.slice(i, i + chunkSize);
-  }
-
-  return result;
-}
-
-function arrayAverage(array: number[]) {
-  return array.reduce((a, b) => a + b, 0) / array.length;
-}
-
 function getChartPrices(prices?: PricePretty[]): number[] {
   if (!prices) return [];
   return prices.map((price) => Number(price.toDec().toString()));
 }
 
-function getChartData(prices: number[]) {
-  const chunkedPrices = chunkArray(8, prices);
-  return chunkedPrices.map((chunk) => arrayAverage(chunk));
+/**
+ * Get chart data.
+ * @param prices - prices by hour
+ */
+function getChartData(prices: PricePretty[] = []) {
+  // subtract length by 24 to get current day's data
+  const chunkedPrices = prices
+    .map((price) => Number(price.toDec().toString()))
+    .splice(prices.length - 24);
+
+  return chunkedPrices;
 }
 
 const NavbarOsmoPrice = observer(() => {
@@ -76,12 +70,10 @@ const NavbarOsmoPrice = observer(() => {
             !tokenChartQuery.isFetching &&
             osmoPrice.isReady
           }
-          className="flex min-h-[23px] min-w-[70px] items-center gap-3"
+          className="flex min-h-[23px] min-w-[85px] items-center justify-end gap-1.5"
         >
           <Sparkline
-            data={getChartData(
-              getChartPrices(tokenChartQuery?.getChartPrices())
-            )}
+            data={getChartData(tokenChartQuery?.getChartPrices())}
             width={30}
             height={24}
             lineWidth={2}
@@ -94,16 +86,20 @@ const NavbarOsmoPrice = observer(() => {
                 : "text-error"
             }
           >
-            {tokenDataQuery.get24hrChange()?.maxDecimals(0).toString()}
+            {tokenDataQuery
+              .get24hrChange()
+              ?.maxDecimals(2)
+              .inequalitySymbol(false)
+              .toString()}
           </p>
         </Skeleton>
       </div>
 
       <Button
         mode="tertiary"
-        className="!h-11 !rounded-full border-osmoverse-700 !py-1 text-osmoverse-100"
+        className="!h-11 !rounded-full !border-osmoverse-700 !py-1 text-osmoverse-100 !transition-none hover:bg-gradient-positive hover:text-osmoverse-1000"
       >
-        Buy Tokens
+        Buy tokens
       </Button>
     </div>
   );

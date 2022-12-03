@@ -322,7 +322,8 @@
     "info": "Bilgi",
     "signOut": "Bağlantıyı Kes",
     "help": "Destek Ekibinden Yardım İste",
-    "learnMoreFrontier": "<name>Osmosis Frontier</name><br/>Hakkında<br2/>Daha Fazla Bilgi"
+    "learnMoreFrontier": "<name>Osmosis Frontier</name><br/>Hakkında<br2/>Daha Fazla Bilgi",
+    "buyTokens": "jeton satın al"
   },
   "settings": {
     "title": "Ayarlar",
