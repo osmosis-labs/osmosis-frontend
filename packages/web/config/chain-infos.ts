@@ -169,6 +169,16 @@ const chainInfos = (
         },
         {
           type: "cw20",
+          contractAddress: "secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852",
+          coinDenom: "ALTER",
+          coinMinimalDenom:
+            "cw20:secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852:AMBER",
+          coinDecimals: 6,
+          // coinGeckoId: "amber",
+          coinImageUrl: "/tokens/amber.svg",
+        },
+        {
+          type: "cw20",
           contractAddress: "secret1yxcexylwyxlq58umhgsjgstgcg2a0ytfy4d9lt",
           coinDenom: "BUTT",
           coinMinimalDenom:
