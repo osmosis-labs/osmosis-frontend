@@ -638,7 +638,7 @@ const chainInfos = (
           coinMinimalDenom:
             "cw20:juno1cltgm8v842gu54srmejewghnd6uqa26lzkpa635wzra9m9xuudkqa2gtcz:FURY",
           coinDecimals: 6,
-          coinGeckoId: "pool:fury",
+          coinGeckoId: "fanfury",
           coinImageUrl: "/tokens/fanfury.png",
         },
       ],
