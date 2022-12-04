@@ -211,6 +211,8 @@
       "titleWithdraw": "Wypłać {coinDenom}",
       "titleDeposit": "Wpłać {coinDenom}",
       "channelCongested": "Kanał zmyślony",
+      "channelCongestedWithdraw": "Wypłać (Kanał zmyślony)",
+      "channelCongestedDeposit": "Wpłać (Kanał zmyślony)",
       "channelBlocked": "Kanał zablokowany",
       "selectAmount": "Wybierz Ilość",
       "estimatedTime": "Szacowany Czas",

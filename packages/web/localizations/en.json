@@ -210,6 +210,8 @@
       "titleWithdraw": "Withdraw {coinDenom}",
       "titleDeposit": "Deposit {coinDenom}",
       "channelCongested": "Channel congested",
+      "channelCongestedWithdraw": "Withdraw (Channel congested)",
+      "channelCongestedDeposit": "Deposit (Channel congested)",
       "channelBlocked": "Channel blocked",
       "selectAmount": "Select Amount",
       "estimatedTime": "Estimated Time",
