@@ -349,6 +349,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "udig",
     isVerified: true,
+    isUnstable: true,
   },
   {
     counterpartyChainId: "sommelier-3",
