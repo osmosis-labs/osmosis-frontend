@@ -1073,6 +1073,12 @@ export const IBCAssetInfos: (IBCAsset & {
     ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
   },
   {
+    counterpartyChainId: "beezee-1",
+    sourceChannelId: "channel-340",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "ubze",      
+  },
+  {    
     counterpartyChainId: "juno-1",
     sourceChannelId: "channel-169",
     destChannelId: "channel-47",
