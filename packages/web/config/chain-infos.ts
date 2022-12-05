@@ -2303,6 +2303,30 @@ const chainInfos = (
       features: ["stargate", "ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://ping.pub/jackal/tx/{txHash}",
     },
+    {
+      rpc: "https://rpc.getbze.com",
+      rest: "https://rest.getbze.com",
+      chainId: "beezee-1",
+      chainName: "BeeZee",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("bze"),
+      currencies: [
+        {
+          coinDenom: "BZE",
+          coinMinimalDenom: "ubze",
+          coinDecimals: 6,
+          coinGeckoId: "pool:ubze",
+          // coinGeckoId: "BZEdge",
+          coinImageUrl: "/tokens/bze.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      explorerUrlToTx: "https://explorer.thesilverfox.pro/beezee/tx/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
