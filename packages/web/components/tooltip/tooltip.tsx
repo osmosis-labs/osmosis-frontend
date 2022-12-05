@@ -1,17 +1,14 @@
 import classNames from "classnames";
-import dynamic from "next/dynamic";
 import { FunctionComponent } from "react";
 import { CustomClasses } from "../types";
 import { TooltipProps } from "./types";
-import type { TippyProps } from "@tippyjs/react";
-
-const Tippy = dynamic(() => import("@tippyjs/react"), { ssr: false });
+import Tippy, { TippyProps } from "@tippyjs/react";
 
 export const Tooltip: FunctionComponent<
-  TooltipProps & CustomClasses & TippyProps
+  TooltipProps & CustomClasses & Omit<TippyProps, "content">
 > = ({ content, trigger, children, className, ...props }) => (
   <Tippy
-    className="bg-osmoverse-700 md:px-2 md:py-1.5 py-2.5 px-3 rounded-lg body2"
+    className="body2 rounded-lg bg-osmoverse-700 py-2.5 px-3 md:px-2 md:py-1.5"
     content={content}
     trigger={trigger ?? "mouseenter focus"}
     {...props}
