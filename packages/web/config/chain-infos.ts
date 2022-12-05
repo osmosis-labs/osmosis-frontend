@@ -90,8 +90,8 @@ const chainInfos = (
       explorerUrlToTx: "https://www.mintscan.io/cosmos/txs/{txHash}",
     },
     {
-      rpc: "http://public-node.terra.dev:26657",
-      rest: "https://lcd-columbus.keplr.app",
+      rpc: "https://rpc-terra-ia.cosmosia.notional.ventures/",
+      rest: "https://api-terra-ia.cosmosia.notional.ventures/",
       chainId: "columbus-5",
       chainName: "Terra Classic",
       bip44: {
