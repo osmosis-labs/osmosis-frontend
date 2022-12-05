@@ -1581,8 +1581,8 @@ const chainInfos = (
       explorerUrlToTx: "https://www.mintscan.io/provenance/txs/{txHash}",
     },
     {
-      rpc: "https://rpc.galaxychain.zone",
-      rest: "https://rest.galaxychain.zone",
+      rpc: "https://galaxy-rpc.brocha.in",
+      rest: " https://galaxy-rest.brocha.in",
       chainId: "galaxy-1",
       chainName: "Galaxy",
       bip44: {
