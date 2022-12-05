@@ -1087,7 +1087,16 @@ export const IBCAssetInfos: (IBCAsset & {
     counterpartyChainId: "beezee-1",
     sourceChannelId: "channel-340",
     destChannelId: "channel-0",
-    coinMinimalDenom: "ubze",
+    coinMinimalDenom: "ubze",      
+  },
+  {    
+    counterpartyChainId: "juno-1",
+    sourceChannelId: "channel-169",
+    destChannelId: "channel-47",
+    coinMinimalDenom:
+      "cw20:juno1cltgm8v842gu54srmejewghnd6uqa26lzkpa635wzra9m9xuudkqa2gtcz",
+    ics20ContractAddress:
+      "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
   },
 ].filter((ibcAsset) => {
   // validate IBC asset config
