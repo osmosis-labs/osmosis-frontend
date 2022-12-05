@@ -2,14 +2,15 @@ import Image from "next/image";
 import { FunctionComponent, useState, useMemo } from "react";
 import classNames from "classnames";
 import moment from "dayjs";
+import { Duration } from "dayjs/plugin/duration";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { BondableDuration } from "@osmosis-labs/stores";
+import { BondDuration } from "@osmosis-labs/stores";
 import { FallbackImg } from "../assets";
 import { ArrowButton } from "../buttons";
 import { useTranslation } from "react-multi-lang";
 
 export const BondCard: FunctionComponent<
-  BondableDuration & {
+  BondDuration & {
     onUnbond: () => void;
     onGoSuperfluid: () => void;
     splashImageSrc?: string;
@@ -120,6 +121,7 @@ export const BondCard: FunctionComponent<
         onClick={() => setDrawerUp(false)}
       />
       <Drawer
+        duration={duration}
         aggregateApr={aggregateApr}
         userShares={userShares}
         swapFeeApr={swapFeeApr}
@@ -135,16 +137,18 @@ export const BondCard: FunctionComponent<
 };
 
 const Drawer: FunctionComponent<{
+  duration: Duration;
   aggregateApr: RatePretty;
   swapFeeApr: RatePretty;
   swapFeeDailyReward: PricePretty;
   userShares: CoinPretty;
-  incentivesBreakdown: BondableDuration["incentivesBreakdown"];
-  superfluid: BondableDuration["superfluid"];
+  incentivesBreakdown: BondDuration["incentivesBreakdown"];
+  superfluid: BondDuration["superfluid"];
   drawerUp: boolean;
   toggleDetailsVisible: () => void;
   onGoSuperfluid: () => void;
 }> = ({
+  duration,
   aggregateApr,
   swapFeeApr,
   swapFeeDailyReward,
@@ -251,20 +255,18 @@ const Drawer: FunctionComponent<{
         })}
       >
         <div className="flex flex-col h-[180px] gap-5 py-6 px-8 md:px-[10px] overflow-y-auto">
+          {superfluid &&
+            superfluid.duration.asMilliseconds() ===
+              duration.asMilliseconds() && (
+              <SuperfluidBreakdownRow {...superfluid} />
+            )}
           {incentivesBreakdown.map((breakdown, index) => (
-            <div className="flex flex-col gap-5 xs:text-subtitle2" key={index}>
-              {index === 0 && superfluid && (
-                <SuperfluidBreakdownRow {...superfluid} />
-              )}
-              <IncentiveBreakdownRow {...breakdown} />
-              {index === incentivesBreakdown.length - 1 && (
-                <SwapFeeBreakdownRow
-                  swapFeeApr={swapFeeApr}
-                  swapFeeDailyReward={swapFeeDailyReward}
-                />
-              )}
-            </div>
+            <IncentiveBreakdownRow key={index} {...breakdown} />
           ))}
+          <SwapFeeBreakdownRow
+            swapFeeApr={swapFeeApr}
+            swapFeeDailyReward={swapFeeDailyReward}
+          />
         </div>
         <span className="caption text-center text-osmoverse-400">
           {t("pool.rewardDistribution")}
@@ -274,9 +276,7 @@ const Drawer: FunctionComponent<{
   );
 };
 
-const SuperfluidBreakdownRow: FunctionComponent<
-  BondableDuration["superfluid"]
-> = ({
+const SuperfluidBreakdownRow: FunctionComponent<BondDuration["superfluid"]> = ({
   apr,
   commission,
   delegated,
@@ -340,7 +340,7 @@ const SuperfluidBreakdownRow: FunctionComponent<
 };
 
 const IncentiveBreakdownRow: FunctionComponent<
-  BondableDuration["incentivesBreakdown"][0]
+  BondDuration["incentivesBreakdown"][0]
 > = ({ dailyPoolReward, apr, numDaysRemaining }) => {
   const t = useTranslation();
   return (

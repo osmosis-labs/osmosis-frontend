@@ -210,6 +210,10 @@
     "ibcTransfer": {
       "titleWithdraw": "Wypłać {coinDenom}",
       "titleDeposit": "Wpłać {coinDenom}",
+      "channelCongested": "Kanał zmyślony",
+      "channelCongestedWithdraw": "Wypłać (Kanał zmyślony)",
+      "channelCongestedDeposit": "Wpłać (Kanał zmyślony)",
+      "channelBlocked": "Kanał zablokowany",
       "selectAmount": "Wybierz Ilość",
       "estimatedTime": "Szacowany Czas",
       "waitTime": "20 sekund",
@@ -243,6 +247,7 @@
         "insufficientFee": "Niewystarczająca Prowizja",
         "insufficientBal": "Niewystarczająca Ilość Środków"
       },
+      "wrapNativeLink": "Konwertuj {fromDenom} na {toDenom} na {platformName}",
       "waitTime": "{minutes} minut"
     },
     "selectAssetSource": {
@@ -356,10 +361,10 @@
   "connectWallet": "Połącz portfel",
   "keplr": {
     "install": "Zainstaluj Keplr",
-    "wallet": "Keplr Wallet",
-    "extension": "Keplr Browser Extension",
+    "wallet": "Keplr Portfel",
+    "extension": "Keplr Rozszerzenie Przeglądarki",
     "walletConnect": "WalletConnect",
-    "mobile": "Keplr Mobile"
+    "mobile": "Keplr Mobilny"
   },
   "connectDisclaimer": "Podłączając portfel, potwierdzasz, że przeczytałeś i zrozumiałeś Osmosis",
   "protocolDisclaimer": "Zastrzeżenie Protokołu",

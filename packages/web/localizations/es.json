@@ -209,6 +209,10 @@
     "ibcTransfer": {
       "titleWithdraw": "Retirar {coinDenom}",
       "titleDeposit": "Depositar {coinDenom}",
+      "channelCongested": "Canal impugnado",
+      "channelCongestedWithdraw": "Retirar (Canal impugnado)",
+      "channelCongestedDeposit": "Depositar (Canal impugnado)",
+      "channelBlocked": "Canal bloqueado",
       "selectAmount": "Cantidad seleccionada",
       "estimatedTime": "Tiempo estimado",
       "waitTime": "20 segundos",
@@ -374,5 +378,8 @@
   "Amount is empty": "La cantidad está vacía",
   "Insufficient amount": "Cantidad insuficiente",
   "Amount is zero": "La cantidad es cero",
-  "Minimum of 2 assets required": "Mínimo de 2 activos requeridos"
+  "Minimum of 2 assets required": "Mínimo de 2 activos requeridos",
+  "stablecoinTypes": {
+    "collateralized": "colateralizado"
+  }
 }

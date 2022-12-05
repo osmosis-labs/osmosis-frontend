@@ -1,4 +1,4 @@
-import { SourceChain } from "./types";
+import { SourceChain } from "../bridge-info";
 import { t } from "react-multi-lang";
 
 export function waitBySourceChain(sourceChain: SourceChain) {
