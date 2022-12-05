@@ -47,8 +47,10 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
     const denomsInPools: string[] = [];
     // Register the denoms in the response.
     for (const pool of response.data.pools) {
-      for (const asset of pool.pool_assets) {
-        denomsInPools.push(asset.token.denom);
+      if (pool.pool_assets) {
+        for (const asset of pool.pool_assets) {
+          denomsInPools.push(asset.token.denom);
+        }
       }
     }
 
@@ -72,7 +74,12 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
         this.kvStore,
         this.chainId,
         this.chainGetter,
-        raw
+        raw.pool_assets
+          ? (raw as any)
+          : {
+              ...raw,
+              pool_assets: [],
+            }
       );
     });
 
