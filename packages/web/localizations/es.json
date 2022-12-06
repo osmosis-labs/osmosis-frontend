@@ -210,6 +210,8 @@
       "titleWithdraw": "Retirar {coinDenom}",
       "titleDeposit": "Depositar {coinDenom}",
       "channelCongested": "Canal impugnado",
+      "channelCongestedWithdraw": "Retirar (Canal impugnado)",
+      "channelCongestedDeposit": "Depositar (Canal impugnado)",
       "channelBlocked": "Canal bloqueado",
       "selectAmount": "Cantidad seleccionada",
       "estimatedTime": "Tiempo estimado",

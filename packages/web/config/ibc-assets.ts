@@ -349,6 +349,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "udig",
     isVerified: true,
+    isUnstable: true,
   },
   {
     counterpartyChainId: "sommelier-3",
@@ -370,6 +371,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-0",
     coinMinimalDenom: "udarc",
     isVerified: true,
+    isUnstable: true,
   },
   {
     counterpartyChainId: "umee-1",
@@ -793,12 +795,22 @@ export const IBCAssetInfos: (IBCAsset & {
   },
   {
     counterpartyChainId: "echelon_3000-3",
-    sourceChannelId: "channel-262",
-    destChannelId: "channel-8",
+    sourceChannelId: "channel-403",
+    destChannelId: "channel-11",
     coinMinimalDenom: "aechelon",
     depositUrlOverride: "https://app.ech.network/ibc",
     withdrawUrlOverride: "https://app.ech.network/ibc",
+    },
+  /*
+  {
+    counterpartyChainId: "echelon_3000-3",
+    sourceChannelId: "channel-262",
+    destChannelId: "channel-8",
+    coinMinimalDenom: "aechelon",
+    sourceChainNameOverride: "Echelon (legacy)",
+    isUnstable: true,
   },
+  */
   {
     counterpartyChainId: "odin-mainnet-freya",
     sourceChannelId: "channel-258",
@@ -1073,11 +1085,26 @@ export const IBCAssetInfos: (IBCAsset & {
     ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
   },
   {
+    counterpartyChainId: "beezee-1",
+    sourceChannelId: "channel-340",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "ubze",      
+  },
+  {    
+    counterpartyChainId: "juno-1",
+    sourceChannelId: "channel-169",
+    destChannelId: "channel-47",
+    coinMinimalDenom:
+      "cw20:juno1cltgm8v842gu54srmejewghnd6uqa26lzkpa635wzra9m9xuudkqa2gtcz",
+    ics20ContractAddress:
+      "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+  },
+  {
     counterpartyChainId: "acre_9052-1",
     sourceChannelId: "channel-490",
     destChannelId: "channel-0",
     coinMinimalDenom: "aacre",
-  },
+  }
 ].filter((ibcAsset) => {
   // validate IBC asset config
   if (
