@@ -208,4 +208,16 @@ export const SourceChainConfigs: {
       transferFeeMinAmount: IS_TESTNET ? "500000000000000" : "5000000000000000",
     },
   },
+  wmatic: {
+    polygon: {
+      id: IS_TESTNET
+        ? ("Mumbai" as const)
+        : ("Polygon" as const),
+      erc20ContractAddress: IS_TESTNET
+        ? "0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889"
+        : "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+      logoUrl: "/networks/polygon.svg",
+      transferFeeMinAmount: IS_TESTNET ? "100000000000000000" : "1600000000000000000",
+    },
+  },
 };
