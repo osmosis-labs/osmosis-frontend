@@ -90,22 +90,6 @@ export const IBCAssetInfos: (IBCAsset & {
     },
   },
   {
-    counterpartyChainId: IS_TESTNET
-      ? "axelar-testnet-lisbon-3"
-      : "axelar-dojo-1",
-    sourceChannelId: IS_TESTNET ? "channel-312" : "channel-208",
-    destChannelId: IS_TESTNET ? "channel-22" : "channel-3",
-    coinMinimalDenom: "wmatic-wei",
-    sourceChainNameOverride: IS_TESTNET ? "Mumbai" : "Polygon",
-    isVerified: false,
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const],
-      method: "deposit-address" as const,
-      sourceChains: [AxelarSourceChainConfigs.wmatic.polygon],
-    },
-  },
-  {
     counterpartyChainId: "cosmoshub-4",
     sourceChannelId: "channel-0",
     destChannelId: "channel-141",
@@ -816,17 +800,7 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "aechelon",
     depositUrlOverride: "https://app.ech.network/ibc",
     withdrawUrlOverride: "https://app.ech.network/ibc",
-    },
-  /*
-  {
-    counterpartyChainId: "echelon_3000-3",
-    sourceChannelId: "channel-262",
-    destChannelId: "channel-8",
-    coinMinimalDenom: "aechelon",
-    sourceChainNameOverride: "Echelon (legacy)",
-    isUnstable: true,
   },
-  */
   {
     counterpartyChainId: "odin-mainnet-freya",
     sourceChannelId: "channel-258",
@@ -1114,6 +1088,22 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1cltgm8v842gu54srmejewghnd6uqa26lzkpa635wzra9m9xuudkqa2gtcz",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+  },
+  {
+    counterpartyChainId: IS_TESTNET
+      ? "axelar-testnet-lisbon-3"
+      : "axelar-dojo-1",
+    sourceChannelId: IS_TESTNET ? "channel-312" : "channel-208",
+    destChannelId: IS_TESTNET ? "channel-22" : "channel-3",
+    coinMinimalDenom: "wmatic-wei",
+    sourceChainNameOverride: IS_TESTNET ? "Mumbai" : "Polygon",
+    isVerified: false,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.wmatic.polygon],
+    },
   },
 ].filter((ibcAsset) => {
   // validate IBC asset config
