@@ -58,7 +58,7 @@ const chainInfos = (
           coinImageUrl: "/tokens/ion.png",
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx:
         OSMOSIS_EXPLORER_URL_OVERWRITE ??
         (IS_TESTNET
@@ -86,7 +86,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/cosmos/txs/{txHash}",
     },
     {
@@ -133,7 +133,7 @@ const chainInfos = (
           pegMechanism: "algorithmic",
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+      features: ["ibc-transfer"],
       explorerUrlToTx: "https://finder.terra.money/columbus-5/tx/{txHash}",
     },
     {
@@ -209,10 +209,8 @@ const chainInfos = (
         },
       ],
       features: [
-        "stargate",
         "ibc-transfer",
         "ibc-go",
-        "no-legacy-stdTx",
         "wasmd_0.24+",
         "cosmwasm",
       ],
@@ -240,7 +238,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer", "ibc-go", "no-legacy-stdTx"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/akash/txs/{txHash}",
     },
     {
@@ -262,7 +260,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+      features: ["ibc-transfer"],
       explorerUrlToTx: "https://regen.aneka.io/txs/{txHash}",
     },
     {
@@ -285,7 +283,7 @@ const chainInfos = (
         },
       ],
       explorerUrlToTx: "https://www.mintscan.io/sentinel/txs/{txHash}",
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
     },
     {
       rpc: "https://rpc-persistence.keplr.app",
@@ -317,7 +315,7 @@ const chainInfos = (
           coinImageUrl: "/tokens/pstake.png",
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/persistence/txs/{txHash}",
     },
     {
@@ -341,7 +339,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+      features: ["ibc-transfer"],
       explorerUrlToTx: "https://www.mintscan.io/iris/txs/{txHash}",
     },
     {
@@ -365,7 +363,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+      features: ["ibc-transfer"],
       explorerUrlToTx: "https://www.mintscan.io/crypto-org/txs/{txHash}",
     },
     {
@@ -389,7 +387,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer"],
+      features: ["ibc-transfer"],
       explorerUrlToTx: "https://www.mintscan.io/starname/txs/{txHash}",
     },
     {
@@ -426,7 +424,7 @@ const chainInfos = (
           coinImageUrl: "/tokens/eeur.png",
         },
       ],
-      features: ["stargate", "ibc-transfer"],
+      features: ["ibc-transfer"],
       explorerUrlToTx: "https://emoney.bigdipper.live/transactions/{txHash}",
     },
     {
@@ -643,10 +641,8 @@ const chainInfos = (
         },
       ],
       features: [
-        "stargate",
         "ibc-transfer",
         "ibc-go",
-        "no-legacy-stdTx",
         "wasmd_0.24+",
         "cosmwasm",
       ],
@@ -673,7 +669,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer"],
+      features: ["ibc-transfer"],
       explorerUrlToTx: "https://explorer.microtick.zone/transactions/{txHash}",
     },
     {
@@ -697,7 +693,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://likecoin.bigdipper.live/transactions/{txHash}",
     },
     {
@@ -721,7 +717,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer"],
+      features: ["ibc-transfer"],
       explorerUrlToTx: "https://blockscan.ixo.world/transactions/{txHash}",
     },
     {
@@ -745,7 +741,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+      features: ["ibc-transfer"],
       explorerUrlToTx: "https://www.mintscan.io/bitcanna/txs/{txHash}",
     },
     {
@@ -867,7 +863,7 @@ const chainInfos = (
             "/tokens/ftD4B6290EDEE1EC7B97AB5A1DC6C177EFD08ADCC3.png",
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://explorebitsong.com/transactions/{txHash}",
     },
     {
@@ -908,7 +904,6 @@ const chainInfos = (
         },
       ],
       features: [
-        "stargate",
         "ibc-transfer",
         "ibc-go",
         "wasmd_0.24+",
@@ -942,7 +937,7 @@ const chainInfos = (
           },
         },
       ],
-      features: ["stargate", "ibc-transfer"],
+      features: ["ibc-transfer"],
       explorerUrlToTx: "https://www.mintscan.io/medibloc/txs/{txHash}",
     },
     {
@@ -966,7 +961,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+      features: ["ibc-transfer"],
       explorerUrlToTx: "https://cyb.ai/network/bostrom/tx/{txHash}",
     },
     {
@@ -990,7 +985,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+      features: ["ibc-transfer"],
       explorerUrlToTx: "https://www.mintscan.io/comdex/txs/{txHash}",
     },
     {
@@ -1019,7 +1014,7 @@ const chainInfos = (
           },
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+      features: ["ibc-transfer"],
       explorerUrlToTx: "https://explorer.cheqd.io/transactions/{txHash}",
     },
     {
@@ -1043,7 +1038,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+      features: ["ibc-transfer"],
       explorerUrlToTx: "https://www.mintscan.io/stargaze/txs/{txHash}",
     },
     {
@@ -1072,7 +1067,7 @@ const chainInfos = (
           },
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://ping.pub/chihuahua/tx/{txHash}",
     },
     {
@@ -1096,7 +1091,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/lum/txs/{txHash}",
     },
     {
@@ -1120,7 +1115,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://explorers.vidulum.app/vidulum/tx/{txHash}",
     },
     {
@@ -1144,7 +1139,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://explorer.desmos.network/transactions/{txHash}",
     },
     {
@@ -1173,7 +1168,7 @@ const chainInfos = (
           },
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://ping.pub/dig/tx/{txHash}",
     },
     {
@@ -1197,7 +1192,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://sommscan.io",
     },
     {
@@ -1221,7 +1216,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer"],
+      features: ["ibc-transfer"],
       explorerUrlToTx: "https://www.mintscan.io/sifchain/txs/{txHash}",
     },
     {
@@ -1245,7 +1240,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+      features: ["ibc-transfer"],
       explorerUrlToTx: "https://cosmoscan.io/tx/{txHash}",
     },
     {
@@ -1269,7 +1264,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+      features: ["ibc-transfer"],
       explorerUrlToTx: "https://www.mintscan.io/konstellation/txs/{txHash}",
     },
     {
@@ -1293,7 +1288,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+      features: ["ibc-transfer"],
       explorerUrlToTx: "https://www.mintscan.io/umee/txs/{txHash}",
     },
     {
@@ -1373,7 +1368,7 @@ const chainInfos = (
           pegMechanism: "collateralized",
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/gravity-bridge/txs/{txHash}",
     },
     {
@@ -1397,7 +1392,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+      features: ["ibc-transfer"],
       explorerUrlToTx:
         "https://explorer.decentr.net/transactions/{txHash}?networkId=mainnet",
     },
@@ -1422,7 +1417,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/certik/txs/{txHash}",
     },
     {
@@ -1451,7 +1446,7 @@ const chainInfos = (
           },
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx:
         "https://scan.carbon.network/transaction/{txHash}?net=main",
     },
@@ -1506,7 +1501,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://skynetexplorers.com/Cerberus/tx/{txHash}",
     },
     {
@@ -1535,7 +1530,7 @@ const chainInfos = (
           },
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/fetchai/txs/{txHash}",
     },
     {
@@ -1559,7 +1554,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/asset-mantle/txs/{txHash}",
     },
     {
@@ -1588,12 +1583,12 @@ const chainInfos = (
           },
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/provenance/txs/{txHash}",
     },
     {
-      rpc: "https://rpc.galaxychain.zone",
-      rest: "https://rest.galaxychain.zone",
+      rpc: "https://galaxy-rpc.brocha.in",
+      rest: "https://galaxy-rest.brocha.in",
       chainId: "galaxy-1",
       chainName: "Galaxy",
       bip44: {
@@ -1616,7 +1611,7 @@ const chainInfos = (
           },
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://explorer.postcapitalist.io/galaxy/tx/{txHash}",
     },
     {
@@ -1644,7 +1639,7 @@ const chainInfos = (
           },
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://explorer.meme.sx/meme/tx/{txHash}",
     },
     {
@@ -1702,7 +1697,7 @@ const chainInfos = (
           },
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+      features: ["ibc-transfer"],
       explorerUrlToTx: "https://finder.terra.money/phoenix-1/tx/{txHash}",
     },
     {
@@ -1731,7 +1726,7 @@ const chainInfos = (
           },
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/rizon/txs/{txHash}",
     },
     {
@@ -1779,7 +1774,7 @@ const chainInfos = (
           coinImageUrl: "/tokens/usdx.png",
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/kava/txs/{txHash}",
     },
     {
@@ -1807,7 +1802,12 @@ const chainInfos = (
           },
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      gasPriceStep: {
+        low: 999999999,
+        average: 1000000000,
+        high: 1000000001,
+      },
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://ping.pub/genesisL1/tx/{txHash}",
     },
     {
@@ -1844,7 +1844,7 @@ const chainInfos = (
           coinImageUrl: "/tokens/usk.png",
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://finder.kujira.app/kaiyo-1/tx/{txHash}",
     },
     {
@@ -1874,10 +1874,8 @@ const chainInfos = (
         },
       ],
       features: [
-        "stargate",
         "ibc-transfer",
         "ibc-go",
-        "no-legacy-stdTx",
         "wasmd_0.24+",
         "cosmwasm",
       ],
@@ -1909,7 +1907,7 @@ const chainInfos = (
           },
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://ping.pub/echelon/tx/{txHash}",
     },
     {
@@ -1954,10 +1952,8 @@ const chainInfos = (
         },
       ],
       features: [
-        "stargate",
         "ibc-transfer",
         "ibc-go",
-        "no-legacy-stdTx",
         "wasmd_0.24+",
         "cosmwasm",
       ],
@@ -1989,7 +1985,7 @@ const chainInfos = (
           },
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/crescent/txs/{txHash}",
     },
     {
@@ -2017,7 +2013,7 @@ const chainInfos = (
           },
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://scope.helios-1.lumenex.io/lumenx/tx/{txHash}",
     },
     {
@@ -2045,7 +2041,7 @@ const chainInfos = (
           },
         },
       ],
-      features: ["stargate", "ibc-transfer", "cosmwasm"],
+      features: ["ibc-transfer", "cosmwasm"],
       explorerUrlToTx: "https://scan.orai.io/txs/{txHash}",
     },
     {
@@ -2074,7 +2070,7 @@ const chainInfos = (
           },
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://explorer.cudos.org/transactions/{txHash}",
     },
     {
@@ -2105,7 +2101,7 @@ const chainInfos = (
           coinImageUrl: "/tokens/ist.png",
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://agoric.bigdipper.live/transactions/{txHash}",
     },
     {
@@ -2170,7 +2166,7 @@ const chainInfos = (
           coinImageUrl: "/tokens/stscrt.svg",
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://explorer.stride.zone/stride/tx/{txHash}",
     },
     {
@@ -2194,7 +2190,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://rebus.explorers.guru/transaction/{txHash}",
     },
     {
@@ -2223,7 +2219,7 @@ const chainInfos = (
           },
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://explorer.teritori.com/teritori/tx/{txHash}",
     },
     {
@@ -2276,7 +2272,7 @@ const chainInfos = (
           },
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx:
         "https://explorer.unification.chainmasters.ninja/unification/tx/{txHash}",
     },
@@ -2300,7 +2296,7 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://ping.pub/jackal/tx/{txHash}",
     },
     {
@@ -2324,8 +2320,36 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
-      features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://explorer.thesilverfox.pro/beezee/tx/{txHash}",
+    },
+    {
+      rpc: "https://rpc-acre.synergynodes.com/",
+      rest: "https://lcd-acre.synergynodes.com/",
+      chainId: "acre_9052-1",
+      chainName: "Acrechain",
+      bip44: {
+        coinType: 60,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("acre"),
+      currencies: [
+        {
+          coinDenom: "ACRE",
+          coinMinimalDenom: "aacre",
+          coinDecimals: 18,
+          coinGeckoId: "arable-protocol",
+          coinImageUrl: "/tokens/acre.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 10000000000,
+            average: 25000000000,
+            high: 40000000000,
+          },
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
+      explorerUrlToTx: "https://cosmosrun.info/acre-mainnet/tx/{txHash}",
     },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
@@ -2503,6 +2527,13 @@ chainInfos.push({
       coinGeckoId: "wbnb",
       coinImageUrl: "/tokens/wbnb.svg",
     },
+    {
+      coinDenom: "WMATIC",
+      coinMinimalDenom: "wmatic-wei",
+      coinDecimals: 18,
+      coinGeckoId: "wmatic",
+      coinImageUrl: "/tokens/wmatic.svg",
+    },
   ],
   feeCurrencies: [
     {
@@ -2518,7 +2549,7 @@ chainInfos.push({
     average: 0.00007,
     high: 0.00009,
   },
-  features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+  features: ["ibc-transfer", "ibc-go"],
   explorerUrlToTx: IS_TESTNET
     ? "https://testnet.axelarscan.io/tx/{txHash}"
     : "https://axelarscan.io/tx/{txHash}",
