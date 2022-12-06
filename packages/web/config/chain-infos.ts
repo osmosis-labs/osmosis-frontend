@@ -2522,6 +2522,13 @@ chainInfos.push({
       coinGeckoId: "wbnb",
       coinImageUrl: "/tokens/wbnb.svg",
     },
+    {
+      coinDenom: "WMATIC",
+      coinMinimalDenom: "wmatic-wei",
+      coinDecimals: 18,
+      coinGeckoId: "wmatic",
+      coinImageUrl: "/tokens/wmatic.svg",
+    },
   ],
   feeCurrencies: [
     {

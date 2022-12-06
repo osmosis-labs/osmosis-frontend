@@ -124,6 +124,28 @@ export const IBCAssetInfos: (IBCAsset & {
     },
   },
   {
+    counterpartyChainId: IS_TESTNET
+      ? "axelar-testnet-lisbon-3"
+      : "axelar-dojo-1",
+    sourceChannelId: IS_TESTNET ? "channel-312" : "channel-208",
+    destChannelId: IS_TESTNET ? "channel-22" : "channel-3",
+    coinMinimalDenom: "wmatic-wei",
+    sourceChainNameOverride: IS_TESTNET ? "Mumbai" : "Polygon",
+    isVerified: false,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.wmatic.polygon],
+      wrapAssetConfig: {
+        url: "https://v2.swapmatic.io/?#/matic/swap?outputCurrency=0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270&inputCurrency=MATIC",
+        fromDenom: "MATIC",
+        toDenom: "WMATIC",
+        platformName: "SwapMatic",
+      },
+    },
+  },
+  {
     counterpartyChainId: "juno-1",
     sourceChannelId: "channel-42",
     destChannelId: "channel-0",
@@ -800,17 +822,7 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "aechelon",
     depositUrlOverride: "https://app.ech.network/ibc",
     withdrawUrlOverride: "https://app.ech.network/ibc",
-    },
-  /*
-  {
-    counterpartyChainId: "echelon_3000-3",
-    sourceChannelId: "channel-262",
-    destChannelId: "channel-8",
-    coinMinimalDenom: "aechelon",
-    sourceChainNameOverride: "Echelon (legacy)",
-    isUnstable: true,
   },
-  */
   {
     counterpartyChainId: "odin-mainnet-freya",
     sourceChannelId: "channel-258",
