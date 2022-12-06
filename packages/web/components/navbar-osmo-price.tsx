@@ -13,8 +13,8 @@ import Skeleton from "./skeleton";
 function getChartData(prices: PricePretty[] = []) {
   // subtract length by 24 to get current day's data
   const chunkedPrices = prices
-    .map((price) => Number(price.toDec().toString()))
-    .splice(prices.length - 24);
+    .splice(prices.length - 24)
+    .map((price) => Number(price.toDec().toString()));
 
   return chunkedPrices;
 }

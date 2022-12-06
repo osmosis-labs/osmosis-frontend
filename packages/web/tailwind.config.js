@@ -223,7 +223,7 @@ module.exports = {
         },
       },
       spacing: {
-        sidebar: "12.875rem",
+        sidebar: "13.75rem",
         "mobile-header": "6rem",
         0.25: "1px",
       },

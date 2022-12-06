@@ -31,7 +31,7 @@ export const MainMenu: FunctionComponent<{
               className={classNames(
                 "flex cursor-pointer items-center px-4 py-3",
                 {
-                  "rounded-full bg-wosmongton-500": selected,
+                  "rounded-full bg-osmoverse-700": selected,
                 }
               )}
               onClick={(e) => {
