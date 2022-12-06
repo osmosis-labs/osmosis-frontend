@@ -1582,7 +1582,7 @@ const chainInfos = (
     },
     {
       rpc: "https://galaxy-rpc.brocha.in",
-      rest: " https://galaxy-rest.brocha.in",
+      rest: "https://galaxy-rest.brocha.in",
       chainId: "galaxy-1",
       chainName: "Galaxy",
       bip44: {
