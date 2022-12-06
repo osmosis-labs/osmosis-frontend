@@ -369,7 +369,7 @@
   "protocolDisclaimer": "Deslindo de responsabilidad al protocolo",
   "Transaction Failed": "Transacción fallida",
   "Transaction Successful": "Transacción exitosa",
-  "Transaction Broadcasting": "Transacción de transacción",
+  "Transaction Broadcasting": "Ejecutando transacción",
   "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.": "El intercambio falló. La liquidez puede no ser suficiente. Intente ajustar el deslizamiento permitido.",
   "Waiting for transaction to be included in the block": "Esperando que la transacción se incluya en el bloque",
   "view explorer": "Ver Explorador",
