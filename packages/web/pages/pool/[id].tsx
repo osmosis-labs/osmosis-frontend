@@ -471,7 +471,7 @@ const Pool: FunctionComponent = observer(() => {
               <span className="body2 text-osmoverse-300">
                 {t("pool.yourStats")}
               </span>
-              <div className="flex place-content-between items-center gap-6 sm:flex-col sm:items-start">
+              <div className="flex place-content-between  gap-6 sm:flex-col sm:items-start">
                 <div className="flex shrink-0 flex-col gap-1">
                   <h4 className="text-osmoverse-100">
                     {poolDetailConfig.userStats.totalShareValue.toString()}
@@ -491,7 +491,7 @@ const Pool: FunctionComponent = observer(() => {
             </div>
 
             <div className="flex flex-1 gap-4 1.5md:flex-col">
-              <div className="flex flex-1 flex-col space-y-3 rounded-4xl bg-osmoverse-1000 px-8 py-7">
+              <div className="flex flex-1 flex-col space-y-3 rounded-4xl bg-osmoverse-1000 px-8 pt-2 pb-4">
                 <PriceBreakdownChart
                   prices={[
                     {
@@ -546,8 +546,8 @@ const Pool: FunctionComponent = observer(() => {
       </section>
       <section className="flex flex-col gap-4 md:gap-4">
         <div className="flex flex-col flex-wrap md:gap-3">
-          <h5 className="md:text-h6 md:font-h6">{t("pool.putAssetsToWork")}</h5>
-          <span className="subtitle1 text-osmoverse-300 md:text-body1 md:font-body1">
+          <h6 className="text-h6 font-h6">{t("pool.putAssetsToWork")}</h6>
+          <span className="body2 text-osmoverse-300">
             {t("pool.putAssetsToWorkCaption")}{" "}
             <a
               rel="noreferrer"
@@ -681,7 +681,7 @@ const Pool: FunctionComponent = observer(() => {
                   </h6>
                 ) : (
                   <Button
-                    className={classNames("w-96 border-none md:w-full", {
+                    className={classNames("w-64 border-none md:w-full", {
                       "!border-0 bg-gradient-positive text-osmoverse-900":
                         levelCta === 2,
                     })}

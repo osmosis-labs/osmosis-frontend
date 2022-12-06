@@ -32,7 +32,7 @@ export const PriceBreakdownChart: FunctionComponent<{
 
   return (
     <div
-      className={classNames("grid w-full")}
+      className={classNames("grid h-full w-full")}
       style={{
         gridTemplateColumns: gridTemplateColumns.join(" "),
       }}
@@ -44,7 +44,12 @@ export const PriceBreakdownChart: FunctionComponent<{
         if (!percentage) return null;
 
         return (
-          <div key={index} className={classNames("flex flex-col gap-2.5")}>
+          <div
+            key={index}
+            className={classNames(
+              "flex h-full flex-col justify-evenly gap-2.5"
+            )}
+          >
             <div
               className={classNames("space-y-2 whitespace-nowrap", {
                 "text-right": isLast,
