@@ -1898,7 +1898,7 @@ const chainInfos = (
         high: 40000000000,
       },
       features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
-      explorerUrlToTx: "https://cosmosrun.info/acre-mainnet/tx/${txHash}",
+      explorerUrlToTx: "https://cosmosrun.info/acre-mainnet/tx/{txHash}",
     },
     {
       rpc: "https://rpc-echelon.whispernode.com/",

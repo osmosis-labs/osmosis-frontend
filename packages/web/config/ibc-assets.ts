@@ -785,13 +785,6 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
-    counterpartyChainId: "acre_9052-1",
-    sourceChannelId: "channel-490",
-    destChannelId: "channel-0",
-    coinMinimalDenom: "aacre",
-    isVerified: true,
-  },
-  {
     counterpartyChainId: "tgrade-mainnet-1",
     sourceChannelId: "channel-263",
     destChannelId: "channel-0",
@@ -1078,6 +1071,12 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "cw20:secret1k6u0cy4feepm6pehnz804zmwakuwdapm69tuc4",
     depositUrlOverride: "https://wrap.scrt.network",
     ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
+  },
+  {
+    counterpartyChainId: "acre_9052-1",
+    sourceChannelId: "channel-490",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "aacre",
   },
 ].filter((ibcAsset) => {
   // validate IBC asset config
