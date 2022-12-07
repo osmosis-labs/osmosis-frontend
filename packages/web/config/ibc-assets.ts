@@ -964,6 +964,12 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-5",
     coinMinimalDenom: "stustars",
   },
+   {
+    counterpartyChainId: "medasdigital-1",
+    sourceChannelId: "channel-519",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "umedas",
+  },
   {
     counterpartyChainId: "juno-1",
     sourceChannelId: "channel-169",
