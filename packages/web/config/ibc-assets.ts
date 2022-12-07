@@ -1117,7 +1117,13 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-490",
     destChannelId: "channel-0",
     coinMinimalDenom: "aacre",
-  }
+  },
+  {
+    counterpartyChainId: "comdex-1",
+    sourceChannelId: "channel-87",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "ucmst",
+  },
 ].filter((ibcAsset) => {
   // validate IBC asset config
   if (
