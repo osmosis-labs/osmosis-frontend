@@ -47,11 +47,10 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
     const denomsInPools: string[] = [];
     // Register the denoms in the response.
     for (const pool of response.data.pools) {
-      if (pool.pool_assets) {
+      if (pool.pool_assets)
         for (const asset of pool.pool_assets) {
           denomsInPools.push(asset.token.denom);
         }
-      }
     }
 
     chainInfo.addUnknownCurrencies(...denomsInPools);
@@ -66,7 +65,7 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
       }
 
       const raw = this.response.data.pools.find((raw) => raw.id === id);
-      if (!raw) {
+      if (!raw || !raw.pool_assets) {
         return undefined;
       }
 
@@ -122,8 +121,10 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
       return [];
     }
 
-    return this.response.data.pools.map((raw) => {
-      return this.getPool(raw.id)!;
-    });
+    return this.response.data.pools
+      .map((raw) => {
+        return this.getPool(raw.id)!;
+      })
+      .filter((f) => f != undefined);
   });
 }

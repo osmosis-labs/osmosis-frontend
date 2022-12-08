@@ -32,6 +32,7 @@ const Home: NextPage = observer(function () {
           // TODO: If not on production environment, this logic should pass all pools (or other selection standard).
 
           // Trim not useful pools.
+          if (!pool) return false;
 
           const passed = poolsPassed.current.get(pool.id);
           if (passed) {
