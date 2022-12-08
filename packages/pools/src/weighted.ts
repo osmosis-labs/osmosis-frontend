@@ -1,9 +1,10 @@
-import { Pool, SmoothWeightChangeParams } from "./interface";
+import { Pool } from "./interface";
 import { Dec, Int } from "@keplr-wallet/unit";
-import * as WeightedPoolMath from "@osmosis-labs/math";
+import { WeightedPoolMath } from "@osmosis-labs/math";
 
 /** Raw query response representation of pool. */
 export interface WeightedPoolRaw {
+  "@type": string;
   id: string;
   pool_params: {
     lock: boolean;
@@ -56,16 +57,47 @@ export interface WeightedPoolRaw {
   ];
 }
 
-/** Implementation of Pool interface w/ related calculations. */
+// TODO: use Int, and Duration types instead of raw strings
+/** Parameters of LBP. */
+export type SmoothWeightChangeParams = {
+  /** Timestamp */
+  startTime: string;
+  /** Seconds with s suffix. Ex) 3600s */
+  duration: string;
+  initialPoolWeights: {
+    token: {
+      denom: string;
+      /** Int */
+      amount: string;
+    };
+    /** Int */
+    weight: string;
+  }[];
+  targetPoolWeights: {
+    token: {
+      denom: string;
+      /** Int */
+      amount: string;
+    };
+    /** Int */
+    weight: string;
+  }[];
+};
+
+/** Implementation of Pool interface w/ related weighted/balancer calculations & metadata. */
 export class WeightedPool implements Pool {
   constructor(public readonly raw: WeightedPoolRaw) {}
 
-  get exitFee(): Dec {
-    return new Dec(this.raw.pool_params.exit_fee);
+  get type(): "weighted" {
+    return "weighted";
   }
 
   get id(): string {
     return this.raw.id;
+  }
+
+  get totalWeight(): Int {
+    return new Int(this.raw.total_weight);
   }
 
   get poolAssets(): { denom: string; amount: Int; weight: Int }[] {
@@ -82,6 +114,9 @@ export class WeightedPool implements Pool {
     return this.raw.pool_assets.map((asset) => asset.token.denom);
   }
 
+  get totalShare(): Int {
+    return new Int(this.raw.total_shares.amount);
+  }
   get shareDenom(): string {
     return this.raw.total_shares.denom;
   }
@@ -89,11 +124,11 @@ export class WeightedPool implements Pool {
   get swapFee(): Dec {
     return new Dec(this.raw.pool_params.swap_fee);
   }
-
-  get totalShare(): Int {
-    return new Int(this.raw.total_shares.amount);
+  get exitFee(): Dec {
+    return new Dec(this.raw.pool_params.exit_fee);
   }
 
+  /** LBP pool */
   get smoothWeightChange(): SmoothWeightChangeParams | undefined {
     if (this.raw.pool_params.smooth_weight_change_params !== null) {
       const {
@@ -125,10 +160,6 @@ export class WeightedPool implements Pool {
   hasPoolAsset(denom: string): boolean {
     const poolAsset = this.poolAssets.find((asset) => asset.denom === denom);
     return poolAsset !== undefined;
-  }
-
-  get totalWeight(): Int {
-    return new Int(this.raw.total_weight);
   }
 
   getSpotPriceInOverOut(tokenInDenom: string, tokenOutDenom: string): Dec {
@@ -177,7 +208,8 @@ export class WeightedPool implements Pool {
 
   getTokenInByTokenOut(
     tokenOut: { denom: string; amount: Int },
-    tokenInDenom: string
+    tokenInDenom: string,
+    swapFee?: Dec
   ): {
     amount: Int;
     beforeSpotPriceInOverOut: Dec;
@@ -196,7 +228,7 @@ export class WeightedPool implements Pool {
       new Dec(inPoolAsset.weight),
       new Dec(outPoolAsset.amount),
       new Dec(outPoolAsset.weight),
-      this.swapFee
+      swapFee ?? this.swapFee
     );
 
     const tokenInAmount = WeightedPoolMath.calcInGivenOut(
@@ -205,7 +237,7 @@ export class WeightedPool implements Pool {
       new Dec(outPoolAsset.amount),
       new Dec(outPoolAsset.weight),
       new Dec(tokenOut.amount),
-      this.swapFee
+      swapFee ?? this.swapFee
     ).truncate();
 
     const afterSpotPriceInOverOut = WeightedPoolMath.calcSpotPrice(
@@ -213,7 +245,7 @@ export class WeightedPool implements Pool {
       new Dec(inPoolAsset.weight),
       new Dec(outPoolAsset.amount).sub(new Dec(tokenOut.amount)),
       new Dec(outPoolAsset.weight),
-      this.swapFee
+      swapFee ?? this.swapFee
     );
 
     if (afterSpotPriceInOverOut.lt(beforeSpotPriceInOverOut)) {
@@ -241,7 +273,8 @@ export class WeightedPool implements Pool {
 
   getTokenOutByTokenIn(
     tokenIn: { denom: string; amount: Int },
-    tokenOutDenom: string
+    tokenOutDenom: string,
+    swapFee?: Dec
   ): {
     amount: Int;
     beforeSpotPriceInOverOut: Dec;
@@ -260,7 +293,7 @@ export class WeightedPool implements Pool {
       new Dec(inPoolAsset.weight),
       new Dec(outPoolAsset.amount),
       new Dec(outPoolAsset.weight),
-      this.swapFee
+      swapFee ?? this.swapFee
     );
 
     const tokenOutAmount = WeightedPoolMath.calcOutGivenIn(
@@ -269,7 +302,7 @@ export class WeightedPool implements Pool {
       new Dec(outPoolAsset.amount),
       new Dec(outPoolAsset.weight),
       new Dec(tokenIn.amount),
-      this.swapFee
+      swapFee ?? this.swapFee
     ).truncate();
 
     if (tokenOutAmount.equals(new Int(0))) {
@@ -290,7 +323,7 @@ export class WeightedPool implements Pool {
       new Dec(inPoolAsset.weight),
       new Dec(outPoolAsset.amount).sub(new Dec(tokenOutAmount)),
       new Dec(outPoolAsset.weight),
-      this.swapFee
+      swapFee ?? this.swapFee
     );
 
     if (afterSpotPriceInOverOut.lt(beforeSpotPriceInOverOut)) {

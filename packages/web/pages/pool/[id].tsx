@@ -10,7 +10,7 @@ import {
   useMemo,
 } from "react";
 import classNames from "classnames";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, IntPretty, RatePretty } from "@keplr-wallet/unit";
 import { Staking } from "@keplr-wallet/stores";
 import {
   ObservableAddLiquidityConfig,
@@ -71,7 +71,10 @@ const Pool: FunctionComponent = observer(() => {
     queriesExternalStore.queryAccountsPoolRewards.get(bech32Address);
 
   // eject to pools page if pool does not exist
-  const poolExists = queryOsmosis.queryGammPools.poolExists(poolId as string);
+  const poolExists =
+    poolId !== undefined
+      ? queryOsmosis.queryGammPools.poolExists(poolId as string)
+      : undefined;
   useEffect(() => {
     if (poolExists === false) {
       router.push("/pools");
@@ -89,7 +92,7 @@ const Pool: FunctionComponent = observer(() => {
       poolName: pool?.poolAssets
         .map((poolAsset) => poolAsset.amount.denom)
         .join(" / "),
-      poolWeight: pool?.poolAssets
+      poolWeight: pool?.weightedPoolInfo?.assets
         .map((poolAsset) => poolAsset.weightFraction.toString())
         .join(" / "),
     }),
@@ -364,7 +367,7 @@ const Pool: FunctionComponent = observer(() => {
             className={classNames(
               "flex flex-col gap-10 px-10 pt-10 md:px-5 md:pt-7 transition-height duration-300 ease-inOutBack overflow-hidden",
               showPoolDetails
-                ? "h-[230px] xl:h-[300px] lg:h-[520px]"
+                ? "h-[235px] xl:h-[300px] lg:h-[520px]"
                 : "h-[120px] xl:h-[180px] lg:h-[280px]"
             )}
           >
@@ -386,6 +389,17 @@ const Pool: FunctionComponent = observer(() => {
                   <span className="body2 text-superfluid-gradient">
                     {t("pool.superfluidEnabled")}
                   </span>
+                )}
+                {pool?.type === "stable" && (
+                  <div className="flex items-center gap-1.5 body2 text-gradient-positive">
+                    <Image
+                      alt=""
+                      src="/icons/stableswap-pool.svg"
+                      height={24}
+                      width={24}
+                    />
+                    <span>{t("pool.stableswapEnabled")}</span>
+                  </div>
                 )}
               </div>
               <div className="flex items-center gap-10 xl:place-content-between xl:w-full lg:flex-col lg:w-fit lg:items-start">
@@ -419,8 +433,29 @@ const Pool: FunctionComponent = observer(() => {
             </div>
             {pool && (
               <AssetBreakdownChart
-                assets={pool.poolAssets}
-                totalWeight={pool.totalWeight}
+                assets={pool.poolAssets.map((poolAsset) => {
+                  const weights: {
+                    weight: IntPretty;
+                    weightFraction: RatePretty;
+                  } = pool.weightedPoolInfo?.assets.find(
+                    (asset) =>
+                      asset.denom === poolAsset.amount.currency.coinMinimalDenom
+                  ) ?? {
+                    weight: new IntPretty(1), // Assume stable pools have even weight
+                    weightFraction: new RatePretty(
+                      new Dec(1).quo(new Dec(pool.poolAssets.length))
+                    ),
+                  };
+
+                  return {
+                    ...weights,
+                    ...poolAsset,
+                  };
+                })}
+                totalWeight={
+                  pool.weightedPoolInfo?.totalWeight ??
+                  new IntPretty(pool.poolAssets.length)
+                }
               />
             )}
           </div>

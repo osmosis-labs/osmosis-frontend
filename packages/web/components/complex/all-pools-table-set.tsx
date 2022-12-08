@@ -371,8 +371,8 @@ export const AllPoolsTableSet: FunctionComponent<{
                 poolName: poolWithFeeMetrics.pool.poolAssets
                   .map((poolAsset) => poolAsset.amount.denom)
                   .join(" / "),
-                poolWeight: poolWithFeeMetrics.pool.poolAssets
-                  .map((poolAsset) => poolAsset.weightFraction.toString())
+                poolWeight: poolWithFeeMetrics.pool.weightedPoolInfo?.assets
+                  .map((poolAsset) => poolAsset.weightFraction?.toString())
                   .join(" / "),
                 isSuperfluidPool:
                   queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
@@ -401,6 +401,7 @@ export const AllPoolsTableSet: FunctionComponent<{
             {
               poolId,
               poolAssets,
+              stableswapPool: poolWithMetrics.pool.type === "stable",
             },
             { value: poolWithMetrics.liquidity.toString() },
             {

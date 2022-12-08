@@ -18,7 +18,7 @@ describe("Exit Pool Tx", () => {
 
     // And prepare the pool
     await new Promise<any>((resolve) => {
-      account.osmosis.sendCreatePoolMsg(
+      account.osmosis.sendCreateBalancerPoolMsg(
         "0",
         [
           {
