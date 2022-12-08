@@ -9,9 +9,11 @@ import {
   HighSwapFeeError,
   NegativeSwapFeeError,
   InvalidSwapFeeError,
+  InvalidScalingFactorControllerAddress,
   MinAssetsCountError,
   MaxAssetsCountError,
   NegativePercentageError,
+  ScalingFactorTooLowError,
   PercentageSumError,
   DepositNoBalanceError,
   NegativeSlippageError,
@@ -42,12 +44,16 @@ export function tError<TError extends Error>(e?: TError): Parameters<typeof t> {
     return ["errors.highSwapFee"];
   } else if (e instanceof InvalidSwapFeeError) {
     return ["errors.invalidSwapFee"];
+  } else if (e instanceof InvalidScalingFactorControllerAddress) {
+    return ["errors.invalidScalingFactorControllerAddress"];
   } else if (e instanceof MinAssetsCountError) {
     return ["errors.minAssetsCount", { num: e.message.split(" ")[2] }];
   } else if (e instanceof MaxAssetsCountError) {
     return ["errors.maxAssetsCount", { num: e.message.split(" ")[2] }];
   } else if (e instanceof NegativePercentageError) {
     return ["errors.negativePercentage"];
+  } else if (e instanceof ScalingFactorTooLowError) {
+    return ["errors.scalingFactorTooLow"];
   } else if (e instanceof PercentageSumError) {
     return ["errors.percentageSum"];
   } else if (e instanceof DepositNoBalanceError) {

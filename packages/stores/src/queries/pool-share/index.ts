@@ -204,31 +204,6 @@ export class ObservableQueryGammPoolShare {
     }
   );
 
-  /** Gets user's ownership ratio and coin balance of each asset in pool. */
-  readonly getShareAssets = computedFn(
-    (
-      bech32Address: string,
-      poolId: string
-    ): {
-      ratio: RatePretty;
-      asset: CoinPretty;
-    }[] => {
-      const shareRatio = this.getAllGammShareRatio(bech32Address, poolId);
-      const pool = this.queryPools.getPool(poolId);
-      if (!pool || !shareRatio.isReady) {
-        return [];
-      }
-
-      return pool.poolAssets.map((asset) => ({
-        ratio: new RatePretty(asset.weight.quo(pool.totalWeight)),
-        asset: asset.amount
-          .mul(shareRatio.moveDecimalPointLeft(2))
-          .trim(true)
-          .shrink(true),
-      }));
-    }
-  );
-
   /** Gets user's locked assets given a set of durations. */
   readonly getShareLockedAssets = computedFn(
     (

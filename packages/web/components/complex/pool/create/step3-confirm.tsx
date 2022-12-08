@@ -1,5 +1,6 @@
 import { FunctionComponent, useMemo } from "react";
 import { observer } from "mobx-react-lite";
+import { Dec } from "@keplr-wallet/unit";
 import { InputBox } from "../../../input";
 import {
   PieChart,
@@ -23,7 +24,14 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
     return generateSeries(
       config.assets.map((asset) => ({
         currency: asset.amountConfig.sendCurrency,
-        percentage: asset.percentage,
+        percentage:
+          config.poolType === "weighted"
+            ? asset.percentage ?? "1"
+            : asset.scalingFactor
+            ? new Dec(asset.scalingFactor)
+                .quo(new Dec(config.assets.length))
+                .toString()
+            : "1",
         amount: asset.amountConfig.amount,
       }))
     );
@@ -55,7 +63,11 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
             </div>
             {config.assets.map(
               (
-                { percentage, amountConfig: { sendCurrency, amount } },
+                {
+                  percentage,
+                  scalingFactor,
+                  amountConfig: { sendCurrency, amount },
+                },
                 index
               ) => {
                 const justCoinDenom = sendCurrency.coinDenom.includes("channel")
@@ -95,7 +107,9 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
                         <br />
                       )}
                       <span className="body1 md:caption md:text-sm text-osmoverse-500">
-                        {percentage}%
+                        {config.poolType === "weighted"
+                          ? `${percentage}%`
+                          : scalingFactor ?? "1"}
                       </span>
                     </div>
                   </div>
@@ -104,19 +118,42 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
             )}
           </div>
         </div>
-        <div className="flex p-3.5 md:p-2.5 items-center place-content-between rounded-2xl">
-          <span className="md:subtitle2">{t("pools.createPool.swapFee")}</span>
-          <div className="flex items-center gap-4 md:gap-1">
-            <InputBox
-              className="w-44 md:w-20"
-              type="number"
-              inputClassName="text-right text-h6 font-h6 md:subtitle1"
-              currentValue={config.swapFee}
-              onInput={(value) => config.setSwapFee(value)}
-              placeholder=""
-              trailingSymbol="%"
-            />
+        <div className="flex p-3.5 md:p-2.5 flex-col gap-4">
+          <div className="flex items-center place-content-between rounded-2xl">
+            <span className="md:subtitle2">
+              {t("pools.createPool.swapFee")}
+            </span>
+            <div className="flex items-center gap-4 md:gap-1">
+              <InputBox
+                className="w-44 md:w-20"
+                type="number"
+                inputClassName="text-right text-h6 font-h6 md:subtitle1"
+                currentValue={config.swapFee}
+                onInput={(value) => config.setSwapFee(value)}
+                placeholder=""
+                trailingSymbol="%"
+              />
+            </div>
           </div>
+          {config.poolType === "stable" && (
+            <div className="flex items-center place-content-between rounded-2xl">
+              <span className="md:subtitle2">
+                {t("pools.createPool.scalingFactorController")}
+              </span>
+              <div className="flex items-center gap-4 md:gap-1">
+                <InputBox
+                  className="w-44 md:w-20"
+                  type="text"
+                  inputClassName="text-right text-h6 font-h6 md:subtitle1"
+                  currentValue={config.scalingFactorControllerAddress}
+                  onInput={(value) =>
+                    config.setScalingFactorControllerAddress(value)
+                  }
+                  placeholder="osmo..."
+                />
+              </div>
+            </div>
+          )}
         </div>
         <div className="bg-gradient-negative rounded-xl md:caption p-[2px]">
           <div className="flex items-center justify-center gap-2 bg-osmoverse-800 rounded-xlinset p-3.5 md:px-12">
