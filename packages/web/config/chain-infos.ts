@@ -1932,6 +1932,16 @@ const chainInfos = (
           isStakeCurrency: true,
           isFeeCurrency: true,
         },
+        /*
+        {
+          coinDenom: "ECH (OLD)",
+          coinMinimalDenom: "aechelon",
+          coinDecimals: 18,
+          coinImageUrl: "/tokens/ech.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+        */
       ],
       gasPriceStep: {
         low: 10000000000,

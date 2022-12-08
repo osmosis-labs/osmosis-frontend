@@ -823,6 +823,15 @@ export const IBCAssetInfos: (IBCAsset & {
     withdrawUrlOverride: "https://app.ech.network/ibc",
   },
   {
+    counterpartyChainId: "echelon_3000-3",
+    sourceChannelId: "channel-262",
+    destChannelId: "channel-8",
+    coinMinimalDenom: "aechelon",
+    sourceChainNameOverride: "Echelon (legacy)",
+    isUnstable: true,
+    //coinDenomOverride: "ECH (OLD)",  // NOTE: not currently added nor extended to type
+  },
+  {
     counterpartyChainId: "odin-mainnet-freya",
     sourceChannelId: "channel-258",
     destChannelId: "channel-3",
