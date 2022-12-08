@@ -701,9 +701,9 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
   },
   {
     alternativeCoinId: "pool:aechelon",
-    poolId: "747",
+    poolId: "848",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
-      [{ portId: "transfer", channelId: "channel-262" }],
+      [{ portId: "transfer", channelId: "channel-403" }],
       "aechelon"
     ),
     spotPriceDestDenom: "uosmo",
