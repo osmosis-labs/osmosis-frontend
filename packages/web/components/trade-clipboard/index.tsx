@@ -416,7 +416,7 @@ export const TradeClipboard: FunctionComponent<{
           </button>
           {isSettingOpen && (
             <div
-              className="absolute bottom-[-0.5rem] right-0 translate-y-full bg-osmoverse-800 rounded-2xl p-[1.875rem] md:p-5 z-50 w-full max-w-[23.875rem]"
+              className="absolute bottom-[-0.5rem] right-0 translate-y-full bg-osmoverse-800 rounded-2xl p-[1.875rem] md:p-5 z-40 w-full max-w-[23.875rem]"
               onClick={(e) => e.stopPropagation()}
             >
               <h6>{t("swap.settings.title")}</h6>

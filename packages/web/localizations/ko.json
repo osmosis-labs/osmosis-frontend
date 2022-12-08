@@ -114,12 +114,12 @@
     "liquidity": "풀 유동성",
     "swapFee": "수수료",
     "yourStats": "내 상태",
-    "sharesAmount": "{shares} 지분 토큰",
+    "sharesAmount": "{shares} LP",
     "currentDailyEarn": "내 일일 보상",
     "earnMore": "예치하고 보상 더 받기",
     "dailyEarnAmount": "{amount} / 일",
-    "putAssetsToWork": "자산을 불려보세요.",
-    "putAssetsToWorkCaption": "이 풀에 자산을 추가하고 두근되는 APR을 확인하세요. 더 긴 해지 긴간을 예치하면, 더 많은 보상을 얻을 수 있어요",
+    "putAssetsToWork": "자산을 늘리세요.",
+    "putAssetsToWorkCaption": "이 풀에 자산을 추가하고 두근되는 APR을 확인하세요. 더 긴 해지 기간을 선택하면, 더 많은 보상을 얻을 수 있어요",
     "learnMore": "더 알아보기",
     "level": "레벨 {level}",
     "earnSwapFees": "교환 수수료를 받으세요",
@@ -132,7 +132,7 @@
     "bondSuperfluidLiquidityCaption": "Superfluid 를 통해 최대 보상을 받으세요.",
     "bondShares": "유동성 예치",
     "amountDaysUnbonding": "예치 해제 {numDays}일",
-    "shares": "주식",
+    "shares": "LP",
     "unbonded": "예치되지 않은 자산",
     "unbond": "예치 해재하기",
     "bonded": "예치된 자산",
@@ -156,7 +156,7 @@
   "removeLiquidity": {
     "title": "유동성 해제하기",
     "titleInPool": "{poolId}풀에서 유동성을 제거합니다.",
-    "sharesAmount": "{shares}주"
+    "sharesAmount": "{shares} LP"
   },
   "addLiquidity": {
     "title": "유동성 추가",
@@ -196,7 +196,7 @@
   },
   "assets": {
     "totalAssets": "전체",
-    "unbondedAssets": "예치되지 않은 ",
+    "unbondedAssets": "예치되지 않은 자산",
     "bondedAssets": "예치된 자산",
     "stakedAssets": "스테이킹된 OSMO",
     "myPools": "내 풀",
@@ -216,6 +216,8 @@
     "ibcTransfer": {
       "titleWithdraw": "{coinDenom} 출금",
       "titleDeposit": "{coinDenom} 입금",
+      "channelCongested": "채널 혼잡",
+      "channelBlocked": "채널이 차단됨",
       "selectAmount": "수량 선택",
       "estimatedTime": "예상 시간",
       "waitTime": "20초",
@@ -305,7 +307,7 @@
       "less": "숨기기"
     },
     "table": {
-      "poolId": "수영장 {id}"
+      "poolId": "풀 {id}"
     },
     "sort": {
       "SORT": "정렬",

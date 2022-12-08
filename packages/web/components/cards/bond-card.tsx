@@ -1,17 +1,16 @@
 import Image from "next/image";
 import { FunctionComponent, useState, useMemo } from "react";
-import { observer } from "mobx-react-lite";
 import classNames from "classnames";
 import moment from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { BondableDuration } from "@osmosis-labs/stores";
+import { BondDuration } from "@osmosis-labs/stores";
 import { FallbackImg } from "../assets";
 import { ArrowButton } from "../buttons";
 import { useTranslation } from "react-multi-lang";
 
 export const BondCard: FunctionComponent<
-  BondableDuration & {
+  BondDuration & {
     onUnbond: () => void;
     onGoSuperfluid: () => void;
     splashImageSrc?: string;
@@ -143,145 +142,141 @@ const Drawer: FunctionComponent<{
   swapFeeApr: RatePretty;
   swapFeeDailyReward: PricePretty;
   userShares: CoinPretty;
-  incentivesBreakdown: BondableDuration["incentivesBreakdown"];
-  superfluid: BondableDuration["superfluid"];
+  incentivesBreakdown: BondDuration["incentivesBreakdown"];
+  superfluid: BondDuration["superfluid"];
   drawerUp: boolean;
   toggleDetailsVisible: () => void;
   onGoSuperfluid: () => void;
-}> = observer(
-  ({
-    duration,
-    aggregateApr,
-    swapFeeApr,
-    swapFeeDailyReward,
-    incentivesBreakdown,
-    superfluid,
-    drawerUp,
-    toggleDetailsVisible,
-  }) => {
-    const uniqueCoinImages = useMemo(() => {
-      const imgSrcDenomMap = new Map<string, string>();
-      incentivesBreakdown.forEach((breakdown) => {
-        const currency = breakdown.dailyPoolReward.currency;
-        if (currency.coinImageUrl) {
-          imgSrcDenomMap.set(currency.coinDenom, currency.coinImageUrl);
-        }
-      });
-      return Array.from(imgSrcDenomMap.values());
-    }, [incentivesBreakdown]);
-    const t = useTranslation();
+}> = ({
+  duration,
+  aggregateApr,
+  swapFeeApr,
+  swapFeeDailyReward,
+  incentivesBreakdown,
+  superfluid,
+  drawerUp,
+  toggleDetailsVisible,
+}) => {
+  const uniqueCoinImages = useMemo(() => {
+    const imgSrcDenomMap = new Map<string, string>();
+    incentivesBreakdown.forEach((breakdown) => {
+      const currency = breakdown.dailyPoolReward.currency;
+      if (currency.coinImageUrl) {
+        imgSrcDenomMap.set(currency.coinDenom, currency.coinImageUrl);
+      }
+    });
+    return Array.from(imgSrcDenomMap.values());
+  }, [incentivesBreakdown]);
+  const t = useTranslation();
 
-    return (
+  return (
+    <div
+      className={classNames(
+        "absolute w-full h-[320px] -bottom-[234px] left-1/2 -translate-x-1/2 flex flex-col transition-all duration-300 ease-inOutBack z-40",
+        {
+          "-translate-y-[220px] bg-osmoverse-700 rounded-t-[18px]": drawerUp,
+        }
+      )}
+    >
       <div
         className={classNames(
-          "absolute w-full h-[320px] -bottom-[234px] left-1/2 -translate-x-1/2 flex flex-col transition-all duration-300 ease-inOutBack z-50",
+          "flex items-end place-content-between transition-all py-4 px-8 md:px-[10px]",
           {
-            "-translate-y-[220px] bg-osmoverse-700 rounded-t-[18px]": drawerUp,
+            "border-b border-osmoverse-600": drawerUp,
           }
         )}
       >
-        <div
+        <div className="flex flex-col">
+          <span className="subtitle1 text-osmoverse-200">
+            {t("pool.incentives")}
+          </span>
+          <div className="flex items-center gap-2 md:gap-1.5">
+            <h5
+              className={classNames(
+                superfluid ? "text-superfluid-gradient" : "text-bullish-400"
+              )}
+            >
+              {aggregateApr.maxDecimals(0).toString()} {t("pool.APR")}
+            </h5>
+            <div
+              className={classNames(
+                "flex items-center gap-1 transition-opacity duration-300",
+                drawerUp ? "opacity-0" : "opacity-100"
+              )}
+            >
+              {uniqueCoinImages.map((coinImageUrl, index) => (
+                <div key={index}>
+                  {index === 2 && incentivesBreakdown.length > 3 ? (
+                    <span className="caption text-osmoverse-400">
+                      +{incentivesBreakdown.length - 2}
+                    </span>
+                  ) : index < 2 ? (
+                    <Image
+                      alt="incentive icon"
+                      src={coinImageUrl}
+                      height={24}
+                      width={24}
+                    />
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <button
           className={classNames(
-            "flex items-end place-content-between transition-all py-4 px-8 md:px-[10px]",
+            "flex items-center cursor-pointer transition-transform",
             {
-              "border-b border-osmoverse-600": drawerUp,
+              "-translate-y-[28px]": drawerUp,
             }
           )}
+          onClick={toggleDetailsVisible}
         >
-          <div className="flex flex-col">
-            <span className="subtitle1 text-osmoverse-200">
-              {t("pool.incentives")}
-            </span>
-            <div className="flex items-center gap-2 md:gap-1.5">
-              <h5
-                className={classNames(
-                  superfluid ? "text-superfluid-gradient" : "text-bullish-400"
-                )}
-              >
-                {aggregateApr.maxDecimals(0).toString()} {t("pool.APR")}
-              </h5>
-              <div
-                className={classNames(
-                  "flex items-center gap-1 transition-opacity duration-300",
-                  drawerUp ? "opacity-0" : "opacity-100"
-                )}
-              >
-                {uniqueCoinImages.map((coinImageUrl, index) => (
-                  <div key={index}>
-                    {index === 2 && incentivesBreakdown.length > 3 ? (
-                      <span className="caption text-osmoverse-400">
-                        +{incentivesBreakdown.length - 2}
-                      </span>
-                    ) : index < 2 ? (
-                      <Image
-                        alt="incentive icon"
-                        src={coinImageUrl}
-                        height={24}
-                        width={24}
-                      />
-                    ) : null}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-          <button
-            className={classNames(
-              "flex items-center cursor-pointer transition-transform",
-              {
-                "-translate-y-[28px]": drawerUp,
-              }
-            )}
-            onClick={toggleDetailsVisible}
+          <span className="xs:hidden caption text-osmoverse-400">
+            {t("pool.details")}
+          </span>
+          <div
+            className={classNames("flex items-center transition-transform", {
+              "rotate-180": drawerUp,
+            })}
           >
-            <span className="xs:hidden caption text-osmoverse-400">
-              {t("pool.details")}
-            </span>
-            <div
-              className={classNames("flex items-center transition-transform", {
-                "rotate-180": drawerUp,
-              })}
-            >
-              <Image
-                alt="details"
-                src="/icons/chevron-up-osmoverse-400.svg"
-                height={30}
-                width={30}
-              />
-            </div>
-          </button>
-        </div>
-        <div
-          className={classNames("flex flex-col gap-1.5 h-full", {
-            "bg-osmoverse-700": drawerUp,
-          })}
-        >
-          <div className="flex flex-col h-[180px] gap-5 py-6 px-8 md:px-[10px] overflow-y-auto">
-            {superfluid &&
-              superfluid.duration.asMilliseconds() ===
-                duration.asMilliseconds() && (
-                <SuperfluidBreakdownRow {...superfluid} />
-              )}
-            {incentivesBreakdown.map((breakdown, index) => (
-              <IncentiveBreakdownRow key={index} {...breakdown} />
-            ))}
-            <SwapFeeBreakdownRow
-              swapFeeApr={swapFeeApr}
-              swapFeeDailyReward={swapFeeDailyReward}
+            <Image
+              alt="details"
+              src="/icons/chevron-up-osmoverse-400.svg"
+              height={30}
+              width={30}
             />
           </div>
-          <span className="caption text-center text-osmoverse-400">
-            {t("pool.rewardDistribution")}
-          </span>
-        </div>
+        </button>
       </div>
-    );
-  }
-);
+      <div
+        className={classNames("flex flex-col gap-1.5 h-full", {
+          "bg-osmoverse-700": drawerUp,
+        })}
+      >
+        <div className="flex flex-col h-[180px] gap-5 py-6 px-8 md:px-[10px] overflow-y-auto">
+          {superfluid &&
+            superfluid.duration.asMilliseconds() ===
+              duration.asMilliseconds() && (
+              <SuperfluidBreakdownRow {...superfluid} />
+            )}
+          {incentivesBreakdown.map((breakdown, index) => (
+            <IncentiveBreakdownRow key={index} {...breakdown} />
+          ))}
+          <SwapFeeBreakdownRow
+            swapFeeApr={swapFeeApr}
+            swapFeeDailyReward={swapFeeDailyReward}
+          />
+        </div>
+        <span className="caption text-center text-osmoverse-400">
+          {t("pool.rewardDistribution")}
+        </span>
+      </div>
+    </div>
+  );
+};
 
-const SuperfluidBreakdownRow: FunctionComponent<
-  BondableDuration["superfluid"]
-> = ({
+const SuperfluidBreakdownRow: FunctionComponent<BondDuration["superfluid"]> = ({
   apr,
   commission,
   delegated,
@@ -345,7 +340,7 @@ const SuperfluidBreakdownRow: FunctionComponent<
 };
 
 const IncentiveBreakdownRow: FunctionComponent<
-  BondableDuration["incentivesBreakdown"][0]
+  BondDuration["incentivesBreakdown"][0]
 > = ({ dailyPoolReward, apr, numDaysRemaining }) => {
   const t = useTranslation();
   return (

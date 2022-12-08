@@ -51,6 +51,7 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
     chainInfo.addUnknownCurrencies(...[...new Set(unknownCurrencies)]);
   }
 
+  /** Locked coins aggregated by duration. */
   get lockedCoins(): {
     amount: CoinPretty;
     lockIds: string[];
@@ -66,8 +67,8 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
     });
 
     const map: Map<
-      // key: coinMinimalDenom
-      string,
+      // key: duration in milliseconds
+      number,
       {
         amount: CoinPretty;
         lockIds: string[];
@@ -76,30 +77,35 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
     > = new Map();
 
     for (const lock of matchedLocks) {
+      const seconds = parseInt(lock.duration.slice(0, -1));
+      const curDuration = dayjs.duration({ seconds });
+      const curDurationMs = curDuration.asMilliseconds();
+
       for (const coin of lock.coins) {
         const currency = this.chainGetter
           .getChain(this.chainId)
           .findCurrency(coin.denom);
 
         if (currency) {
-          const key = currency.coinMinimalDenom;
-          if (!map.has(key)) {
-            const seconds = parseInt(lock.duration.slice(0, -1));
-
-            map.set(key, {
+          if (!map.has(curDurationMs)) {
+            map.set(curDurationMs, {
               amount: new CoinPretty(currency, new Dec(0)),
               lockIds: [],
-              duration: dayjs.duration({ seconds }),
+              duration: curDuration,
             });
           }
 
-          const value = map.get(key)!;
-          value.amount = value.amount.add(
-            new CoinPretty(currency, new Dec(coin.amount))
-          );
-          value.lockIds.push(lock.ID);
+          const curDurationValue = map.get(curDurationMs);
 
-          map.set(key, value);
+          // aggregate amount for current duration
+          if (curDurationValue) {
+            curDurationValue.amount = curDurationValue.amount.add(
+              new CoinPretty(currency, new Dec(coin.amount))
+            );
+            curDurationValue.lockIds.push(lock.ID);
+
+            map.set(curDurationMs, curDurationValue);
+          }
         }
       }
     }

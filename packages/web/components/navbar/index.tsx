@@ -32,7 +32,7 @@ export const NavBar: FunctionComponent<
     <>
       <div
         className={classNames(
-          "fixed z-[100] flex place-content-between md:place-content-start lg:gap-5 items-center bg-osmoverse-900 h-navbar md:h-navbar-mobile w-[calc(100vw_-_12.875rem)] md:w-full px-8 md:px-4",
+          "fixed z-50 flex place-content-between md:place-content-start lg:gap-5 items-center bg-osmoverse-900 h-navbar md:h-navbar-mobile w-[calc(100vw_-_12.875rem)] md:w-full px-8 md:px-4",
           className
         )}
       >

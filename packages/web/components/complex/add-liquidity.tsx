@@ -191,7 +191,10 @@ export const AddLiquidity: FunctionComponent<
                     textClassName="w-full text-center"
                     message={t("addLiquidity.stablecoinWarning", {
                       denom: currency!.originCurrency!.coinDenom,
-                      mechanism: currency.originCurrency!.pegMechanism!,
+                      mechanism: t(
+                        `stablecoinTypes.${currency.originCurrency!
+                          .pegMechanism!}`
+                      ),
                     })}
                   />
                 )}
