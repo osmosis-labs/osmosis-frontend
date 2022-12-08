@@ -73,7 +73,12 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
         this.kvStore,
         this.chainId,
         this.chainGetter,
-        raw
+        raw.pool_assets
+          ? (raw as any)
+          : {
+              ...raw,
+              pool_assets: [],
+            }
       );
     });
 

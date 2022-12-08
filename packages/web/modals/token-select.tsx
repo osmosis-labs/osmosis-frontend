@@ -80,7 +80,7 @@ export const TokenSelectModal: FunctionComponent<
               <button className="flex items-center justify-between text-left w-full">
                 <div className="flex items-center">
                   {coinImageUrl && (
-                    <div className="w-8 h-8 rounded-full mr-4">
+                    <div className="w-8 h-8 mr-4">
                       <Image
                         src={coinImageUrl}
                         alt="token icon"

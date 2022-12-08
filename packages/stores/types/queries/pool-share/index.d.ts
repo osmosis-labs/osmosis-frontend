@@ -42,4 +42,5 @@ export declare class ObservableQueryGammPoolShare {
         amount: CoinPretty;
         lockIds: string[];
     }[];
+    fetch(bech32Address: string): Promise<[Generator<unknown, any, any>, void, Generator<unknown, any, any>, Generator<unknown, any, any>, Generator<unknown, any, any>]>;
 }

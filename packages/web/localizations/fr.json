@@ -208,6 +208,10 @@
     "ibcTransfer": {
       "titleWithdraw": "Retirer {coinDenom}",
       "titleDeposit": "Déposer {coinDenom}",
+      "channelCongested": "Canal conjecturé",
+      "channelCongestedWithdraw": "Retirer (Canal conjecturé)",
+      "channelCongestedDeposit": "Déposer (Canal conjecturé)",
+      "channelBlocked": "Chaîne bloquée",
       "selectAmount": "Sélectionnez le montant",
       "estimatedTime": "Temps estimé",
       "waitTime": "20 secondes",
@@ -285,7 +289,7 @@
         "transactionHash": "Hash Transaction",
         "type": "Type",
         "amount": "Montant",
-        "status": "Status",
+        "status": "Statut",
         "deposit": "Déposer",
         "withdraw": "Retirer"
       }
@@ -344,8 +348,8 @@
     "percentageSum": "La somme des pourcentages n'est pas égale à 100",
     "depositNoBalance": "Vous n'avez pas d'actifs à déposer",
     "negativeSlippage": "Le glissement ne peut être négatif",
-    "invalidSlippage": "Invalid slippage",
-    "noSendCurrency": "Glissement invalide",
+    "invalidSlippage": "Glissement invalide",
+    "noSendCurrency": "Devise à envoyer non définie",
     "insufficientBal": "Solde insuffisant",
     "notInitialized": "Non initialisé",
     "calculatingShareOutAmount": "Problème de calcul du montant de sortie",

@@ -77,7 +77,8 @@ export class RootStore {
   ) {
     this.chainStore = new ChainStore(
       ChainInfos,
-      IS_TESTNET ? "osmo-test-4" : "osmosis"
+      process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE ??
+        (IS_TESTNET ? "osmo-test-4" : "osmosis")
     );
 
     const eventListener = (() => {
@@ -178,6 +179,7 @@ export class RootStore {
     this.queriesExternalStore = new QueriesExternalStore(
       makeIndexedKVStore("store_web_queries"),
       this.priceStore,
+      this.chainStore.osmosis.chainId,
       IS_TESTNET ? "https://api.testnet.osmosis.zone/" : undefined
     );
 

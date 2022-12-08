@@ -34,6 +34,14 @@ const SUPPORTED_LANGUAGES: MenuDropdownIconItemProps[] = [
     value: "tr",
     display: "Türkçe",
   },
+  {
+    value: "zh-cn",
+    display: "简体中文",
+  },
+  {
+    value: "zh-tw",
+    display: "正體中文",
+  },
 ];
 
 export class LanguageUserSetting implements IUserSetting<LanguageState> {
