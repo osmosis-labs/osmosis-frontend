@@ -67,9 +67,7 @@ export const SourceChainConfigs: {
         ? "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"
         : "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       logoUrl: "/networks/ethereum.svg",
-      transferFeeMinAmount: IS_TESTNET
-        ? "100000000000000"
-        : "8400000000000000",
+      transferFeeMinAmount: IS_TESTNET ? "100000000000000" : "8400000000000000",
     },
   },
   wglmr: {
@@ -210,14 +208,14 @@ export const SourceChainConfigs: {
   },
   wmatic: {
     polygon: {
-      id: IS_TESTNET
-        ? ("Mumbai" as const)
-        : ("Polygon" as const),
+      id: IS_TESTNET ? ("Mumbai" as const) : ("Polygon" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889"
         : "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
       logoUrl: "/networks/polygon.svg",
-      transferFeeMinAmount: IS_TESTNET ? "100000000000000000" : "1600000000000000000",
+      transferFeeMinAmount: IS_TESTNET
+        ? "100000000000000000"
+        : "1600000000000000000",
     },
   },
 };

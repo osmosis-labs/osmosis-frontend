@@ -293,7 +293,7 @@ const Pool: FunctionComponent = observer(() => {
   const level2Disabled = !bondDurations.some((duration) => duration.bondable);
 
   return (
-    <main className="max-w-container m-auto flex flex-col gap-10 md:gap-4 bg-osmoverse-900 min-h-screen p-8 md:p-4">
+    <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 p-8 md:gap-4 md:p-4">
       <Head>
         <title>
           {t("pool.title", { id: poolId ? poolId.toString() : "-" })}
@@ -361,17 +361,19 @@ const Pool: FunctionComponent = observer(() => {
             onSelectValidator={handleSuperfluidDelegateToValidator}
           />
         )}
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-4 bg-osmoverse-1000 rounded-4xl pb-5">
+      <section className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 rounded-4xl bg-osmoverse-1000 pb-4">
           <div
             className={classNames(
-              "flex flex-col gap-10 px-10 pt-10 md:px-5 md:pt-7 transition-height duration-300 ease-inOutBack overflow-hidden",
-              showPoolDetails
-                ? "h-[235px] xl:h-[300px] lg:h-[520px]"
-                : "h-[120px] xl:h-[180px] lg:h-[280px]"
+              "flex flex-col gap-3 overflow-hidden px-8 pt-8 transition-height duration-300 ease-inOutBack md:px-5 md:pt-7",
+              showPoolDetails && pool
+                ? pool.poolAssets.length > 2
+                  ? "h-[180px] xl:h-[250px] lg:h-[390px] md:h-[460px]"
+                  : "h-[180px] xl:h-[250px] lg:h-[390px] md:h-[410px]"
+                : "h-[100px] xl:h-[180px] lg:h-[240px]"
             )}
           >
-            <div className="flex items-start gap-2 place-content-between xl:flex-col">
+            <div className="flex place-content-between items-start gap-2 xl:flex-col">
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2">
                   {pool && (
@@ -391,7 +393,7 @@ const Pool: FunctionComponent = observer(() => {
                   </span>
                 )}
                 {pool?.type === "stable" && (
-                  <div className="flex items-center gap-1.5 body2 text-gradient-positive">
+                  <div className="body2 text-gradient-positive flex items-center gap-1.5">
                     <Image
                       alt=""
                       src="/icons/stableswap-pool.svg"
@@ -402,9 +404,9 @@ const Pool: FunctionComponent = observer(() => {
                   </div>
                 )}
               </div>
-              <div className="flex items-center gap-10 xl:place-content-between xl:w-full lg:flex-col lg:w-fit lg:items-start">
+              <div className="flex items-center gap-10 xl:w-full xl:place-content-between lg:w-fit lg:flex-col lg:items-start lg:gap-3">
                 <div>
-                  <span className="text-osmoverse-400 subtitle1 gap-2">
+                  <span className="body2 gap-2 text-osmoverse-400">
                     {t("pool.24hrTradingVolume")}
                   </span>
                   <h4 className="text-osmoverse-100">
@@ -414,7 +416,7 @@ const Pool: FunctionComponent = observer(() => {
                   </h4>
                 </div>
                 <div>
-                  <span className="text-osmoverse-400 subtitle1 gap-2">
+                  <span className="body2 gap-2 text-osmoverse-400">
                     {t("pool.liquidity")}
                   </span>
                   <h4 className="text-osmoverse-100">
@@ -422,7 +424,7 @@ const Pool: FunctionComponent = observer(() => {
                   </h4>
                 </div>
                 <div>
-                  <span className="text-osmoverse-400 subtitle1 gap-2">
+                  <span className="body2 gap-2 text-osmoverse-400">
                     {t("pool.swapFee")}
                   </span>
                   <h4 className="text-osmoverse-100">
@@ -460,7 +462,7 @@ const Pool: FunctionComponent = observer(() => {
             )}
           </div>
           <div
-            className="flex items-center mx-auto gap-1 cursor-pointer select-none"
+            className="mx-auto flex cursor-pointer select-none items-center gap-1"
             onClick={() => setShowPoolDetails(!showPoolDetails)}
           >
             <span className="subtitle2 text-wosmongton-200">
@@ -483,12 +485,12 @@ const Pool: FunctionComponent = observer(() => {
           </div>
         </div>
         {poolDetailConfig?.userStats && (
-          <div className="w-full grid grid-cols-[2fr_1fr] lg:flex lg:flex-col gap-4">
-            <div className="w-full flex flex-col gap-3 bg-osmoverse-1000 px-10 py-7 rounded-4xl">
-              <span className="subtitle1 text-osmoverse-300">
+          <div className="grid w-full grid-cols-[2fr_1fr] gap-4 lg:flex lg:flex-col">
+            <div className="flex w-full flex-col gap-3 rounded-4xl bg-osmoverse-1000 px-10 py-7">
+              <span className="body2 text-osmoverse-300">
                 {t("pool.yourStats")}
               </span>
-              <div className="flex items-center md:flex-col md:items-start gap-3 place-content-between">
+              <div className="flex place-content-between items-center gap-3 md:flex-col md:items-start">
                 <div className="flex shrink-0 flex-col gap-1">
                   <h4 className="text-osmoverse-100">
                     {poolDetailConfig.userStats.totalShareValue.toString()}
@@ -518,9 +520,9 @@ const Pool: FunctionComponent = observer(() => {
                 </div>
               </div>
             </div>
-            <div className="w-full flex flex-col gap-3 place-content-between bg-osmoverse-1000 px-10 py-7 rounded-4xl">
+            <div className="flex w-full flex-col place-content-between gap-3 rounded-4xl bg-osmoverse-1000 px-10 py-7">
               <div className="flex flex-col gap-2">
-                <span className="subtitle1 text-osmoverse-300">
+                <span className="body2 text-osmoverse-300">
                   {t("pool.currentDailyEarn")}
                 </span>
                 <h4 className="text-osmoverse-100">
@@ -540,11 +542,11 @@ const Pool: FunctionComponent = observer(() => {
             </div>
           </div>
         )}
-      </div>
-      <div className="flex flex-col gap-7 md:gap-4">
+      </section>
+      <section className="flex flex-col gap-7 md:gap-4">
         <div className="flex flex-col flex-wrap md:gap-3">
           <h5 className="md:text-h6 md:font-h6">{t("pool.putAssetsToWork")}</h5>
-          <span className="subtitle1 md:text-body1 md:font-body1 text-osmoverse-300">
+          <span className="subtitle1 text-osmoverse-300 md:text-body1 md:font-body1">
             {t("pool.putAssetsToWorkCaption")}{" "}
             <a
               rel="noreferrer"
@@ -556,102 +558,103 @@ const Pool: FunctionComponent = observer(() => {
             </a>
           </span>
         </div>
-        <div
-          className={classNames(
-            "rounded-4xl p-1",
-            levelCta === 1 ? "bg-gradient-positive" : "bg-osmoverse-800"
-          )}
-        >
-          <div className="flex flex-col gap-10 bg-osmoverse-800 rounded-4x4pxlinset p-9 md:p-5">
-            <div className="flex items-start lg:flex-col gap-2 lg:gap-14 place-content-between">
-              <div className="flex flex-col gap-4">
-                <div className="flex items-baseline flex-wrap gap-4">
-                  <LevelBadge level={1} />
-                  <div className="flex items-center gap-4 flex-wrap shrink">
-                    <h5 className="md:text-h6 md:font-h6">
-                      {t("pool.earnSwapFees")}
-                    </h5>
-                    <h5 className="md:text-h6 md:font-h6 text-bullish-400">{`${
-                      pool
-                        ? queryGammPoolFeeMetrics
-                            .get7dPoolFeeApr(pool, priceStore)
-                            .maxDecimals(2)
-                            .toString()
-                        : ""
-                    } ${t("pool.APR")}`}</h5>
-                  </div>
-                </div>
-                <span className="body2 text-osmoverse-200">
-                  {t("pool.earnSwapFeesCaption")}
-                </span>
-              </div>
-              <div className="lg:w-full flex flex-col gap-4">
-                <div className="hidden lg:flex flex-col items-end gap-3">
-                  <h3 className="md:text-h4 md:font-h4">
-                    {t("pool.sharesAmount", {
-                      shares: queryOsmosis.queryGammPoolShare
-                        .getAvailableGammShare(bech32Address, poolId)
-                        .trim(true)
-                        .hideDenom(true)
-                        .maxDecimals(4)
-                        .toString(),
-                    })}
-                  </h3>
-                </div>
-                <div className="flex place-content-end flex-wrap shrink-0 xs:shrink gap-4">
-                  <Button
-                    className="w-fit xs:w-full shrink-0"
-                    mode="secondary"
-                    disabled={poolDetailConfig?.userAvailableValue
-                      .toDec()
-                      .isZero()}
-                    onClick={() => setShowRemoveLiquidityModal(true)}
-                  >
-                    {t("removeLiquidity.title")}
-                  </Button>
-                  <Button
-                    className={classNames("w-fit xs:w-full shrink-0 ", {
-                      "bg-gradient-positive text-osmoverse-900 !border-0":
-                        levelCta === 1,
-                    })}
-                    onClick={() => setShowAddLiquidityModal(true)}
-                  >
-                    {t("addLiquidity.title")}
-                  </Button>
-                </div>
-              </div>
-            </div>
-            <div className="lg:hidden flex flex-col items-end gap-3">
-              <h3 className="md:text-h4 md:font-h4">
-                {t("pool.sharesAmount", {
-                  shares: queryOsmosis.queryGammPoolShare
-                    .getAvailableGammShare(bech32Address, poolId)
-                    .trim(true)
-                    .hideDenom(true)
-                    .maxDecimals(4)
-                    .toString(),
-                })}
-              </h3>
-            </div>
-          </div>
-        </div>
-        <div
-          className={classNames(
-            "rounded-4xl p-1",
-            levelCta === 2 ? "bg-gradient-positive" : "bg-osmoverse-800"
-          )}
-        >
+        <div className="flex flex-col gap-10 md:gap-4">
           <div
             className={classNames(
-              "flex flex-col bg-osmoverse-800 rounded-4x4pxlinset p-9 md:p-5",
+              "rounded-4xl p-1",
+              levelCta === 1 ? "bg-gradient-positive" : "bg-osmoverse-800"
+            )}
+          >
+            <div className="flex flex-col gap-10 rounded-4x4pxlinset bg-osmoverse-800 p-8 md:p-5">
+              <div className="flex place-content-between items-start gap-2 lg:flex-col lg:gap-14">
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-wrap items-baseline gap-4 md:gap-3">
+                    <LevelBadge level={1} />
+                    <div className="flex shrink flex-wrap items-center gap-3">
+                      <h6 className="md:text-h6 md:font-h6">
+                        {t("pool.earnSwapFees")}
+                      </h6>
+                      <h6 className="text-bullish-400 md:text-h6 md:font-h6">{`${
+                        pool
+                          ? queryGammPoolFeeMetrics
+                              .get7dPoolFeeApr(pool, priceStore)
+                              .maxDecimals(2)
+                              .toString()
+                          : ""
+                      } ${t("pool.APR")}`}</h6>
+                    </div>
+                  </div>
+                  <span className="body2 text-osmoverse-200">
+                    {t("pool.earnSwapFeesCaption")}
+                  </span>
+                </div>
+                <div className="flex flex-col gap-4 lg:w-full">
+                  <div className="hidden flex-col items-end lg:flex">
+                    <h4 className="text-osmoverse-100">
+                      {poolDetailConfig?.userAvailableValue.toString()}
+                    </h4>
+                    <h6 className="text-osmoverse-300">
+                      {t("pool.sharesAmount", {
+                        shares: queryOsmosis.queryGammPoolShare
+                          .getAvailableGammShare(bech32Address, poolId)
+                          .trim(true)
+                          .hideDenom(true)
+                          .maxDecimals(4)
+                          .toString(),
+                      })}
+                    </h6>
+                  </div>
+                  <div className="flex shrink-0 flex-wrap place-content-end gap-4 xs:shrink">
+                    <Button
+                      className="w-fit shrink-0 xs:w-full"
+                      mode="secondary"
+                      disabled={poolDetailConfig?.userAvailableValue
+                        .toDec()
+                        .isZero()}
+                      onClick={() => setShowRemoveLiquidityModal(true)}
+                    >
+                      {t("removeLiquidity.title")}
+                    </Button>
+                    <Button
+                      className={classNames("w-fit shrink-0 xs:w-full ", {
+                        "!border-0 bg-gradient-positive text-osmoverse-900":
+                          levelCta === 1,
+                      })}
+                      onClick={() => setShowAddLiquidityModal(true)}
+                    >
+                      {t("addLiquidity.title")}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col items-end text-right lg:hidden">
+                <h4 className="text-osmoverse-100">
+                  {poolDetailConfig?.userAvailableValue.toString()}
+                </h4>
+                <h6 className="text-osmoverse-300 md:text-h4 md:font-h4">
+                  {t("pool.sharesAmount", {
+                    shares: queryOsmosis.queryGammPoolShare
+                      .getAvailableGammShare(bech32Address, poolId)
+                      .trim(true)
+                      .hideDenom(true)
+                      .maxDecimals(4)
+                      .toString(),
+                  })}
+                </h6>
+              </div>
+            </div>
+          </div>
+          <div
+            className={classNames(
+              "flex flex-col rounded-4x4pxlinset bg-osmoverse-800 p-9 md:p-5",
               {
                 "gap-10": !level2Disabled || bondDurations.length > 0,
               }
             )}
           >
-            <div className="flex lg:flex-col place-content-between gap-4">
+            <div className="flex place-content-between gap-4 lg:flex-col">
               <div className="flex flex-col gap-4">
-                <div className="flex md:flex-col items-baseline flex-wrap gap-4">
+                <div className="flex flex-wrap items-baseline gap-4 md:flex-col">
                   <LevelBadge level={2} disabled={level2Disabled} />
                   <h5 className="md:text-h6 md:font-h6">
                     {level2Disabled
@@ -671,8 +674,8 @@ const Pool: FunctionComponent = observer(() => {
                 </h6>
               ) : (
                 <Button
-                  className={classNames("w-96 md:w-full border-none", {
-                    "bg-gradient-positive text-osmoverse-900 !border-0":
+                  className={classNames("w-96 border-none md:w-full", {
+                    "!border-0 bg-gradient-positive text-osmoverse-900":
                       levelCta === 2,
                   })}
                   disabled={levelCta !== 2}
@@ -682,7 +685,7 @@ const Pool: FunctionComponent = observer(() => {
                 </Button>
               )}
             </div>
-            <div className="grid grid-cols-3 1.5xl:grid-cols-1 gap-4">
+            <div className="grid grid-cols-3 gap-4 1.5xl:grid-cols-1">
               {bondDurations.map((bondDuration) => (
                 <BondCard
                   key={bondDuration.duration.asMilliseconds()}
@@ -711,7 +714,7 @@ const Pool: FunctionComponent = observer(() => {
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </main>
   );
 });
@@ -723,13 +726,13 @@ const LevelBadge: FunctionComponent<{ level: number } & Disableable> = ({
   const t = useTranslation();
   return (
     <div
-      className={classNames("bg-wosmongton-400 rounded-xl px-5 py-1", {
-        "text-osmoverse-100 bg-osmoverse-600": disabled,
+      className={classNames("rounded-lg bg-wosmongton-400 px-5 py-1", {
+        "bg-osmoverse-600 text-osmoverse-100": disabled,
       })}
     >
-      <h5 className="md:text-h6 md:font-h6">
+      <h6 className="md:text-h6 md:font-h6">
         {t("pool.level", { level: level.toString() })}
-      </h5>
+      </h6>
     </div>
   );
 };

@@ -208,12 +208,7 @@ const chainInfos = (
           coinImageUrl: "/tokens/sienna.svg",
         },
       ],
-      features: [
-        "ibc-transfer",
-        "ibc-go",
-        "wasmd_0.24+",
-        "cosmwasm",
-      ],
+      features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx:
         "https://secretnodes.com/secret/chains/secret-4/transactions/{txHash}",
     },
@@ -640,12 +635,7 @@ const chainInfos = (
           coinImageUrl: "/tokens/fanfury.png",
         },
       ],
-      features: [
-        "ibc-transfer",
-        "ibc-go",
-        "wasmd_0.24+",
-        "cosmwasm",
-      ],
+      features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: "https://www.mintscan.io/juno/txs/{txHash}",
     },
     {
@@ -903,12 +893,7 @@ const chainInfos = (
         average: 0.03,
         high: 0.05,
       },
-      features: [
-        "ibc-transfer",
-        "ibc-go",
-        "wasmd_0.24+",
-        "cosmwasm",
-      ],
+      features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: "https://www.mintscan.io/ki-chain/txs/{txHash}",
     },
     {
@@ -1876,12 +1861,7 @@ const chainInfos = (
         average: 0.075,
         high: 0.1,
       },
-      features: [
-        "ibc-transfer",
-        "ibc-go",
-        "wasmd_0.24+",
-        "cosmwasm",
-      ],
+      features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: "https://tgrade.aneka.io/txs/{txHash}",
     },
     {
@@ -1982,12 +1962,7 @@ const chainInfos = (
         average: 0.05,
         high: 0.06,
       },
-      features: [
-        "ibc-transfer",
-        "ibc-go",
-        "wasmd_0.24+",
-        "cosmwasm",
-      ],
+      features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: "https://scan.odinprotocol.io/transactions/{txHash}",
     },
     {

@@ -79,7 +79,11 @@ export const NavBar: FunctionComponent<
             {navBarStore.callToActionButtons.map((button, index) => (
               <Button
                 className="w-[180px] lg:w-fit h-fit lg:px-2"
-                mode={index > 0 ? "secondary" : undefined}
+                mode={
+                  index > 0 || navBarStore.callToActionButtons.length === 1
+                    ? "secondary"
+                    : undefined
+                }
                 key={index}
                 {...button}
               >

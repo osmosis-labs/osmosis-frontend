@@ -18,6 +18,7 @@ export const BondCard: FunctionComponent<
 > = ({
   duration,
   userShares,
+  userShareValue,
   userUnlockingShares,
   aggregateApr,
   swapFeeApr,
@@ -31,12 +32,6 @@ export const BondCard: FunctionComponent<
   const [drawerUp, setDrawerUp] = useState(false);
   const t = useTranslation();
 
-  const shares = userShares
-    .hideDenom(true)
-    .trim(true)
-    .maxDecimals(3)
-    .toString();
-
   return (
     <div className="relative flex flex-col gap-[115px] overflow-hidden h-[380px] w-full min-w-[280px] rounded-2xl bg-osmoverse-800 border-2 border-osmoverse-600 p-8 md:p-[10px]">
       <div className="h-[260px] flex flex-col place-content-between gap-2">
@@ -48,16 +43,18 @@ export const BondCard: FunctionComponent<
               })}
             </span>
             <div className="flex flex-col text-osmoverse-100 grow">
-              <h3
-                className={classNames("bg-osmoverse-800", {
-                  "text-h4 font-h4": shares.length > 5,
-                  "text-h5 font-h5": shares.length > 8,
-                  "text-h6 font-h6": shares.length > 10,
+              <h4 className="text-osmoverse-100">
+                {userShareValue.toString()}
+              </h4>
+              <h6 className={"text-osmoverse-300"}>
+                {t("pool.sharesAmount", {
+                  shares: userShares
+                    .hideDenom(true)
+                    .trim(true)
+                    .maxDecimals(3)
+                    .toString(),
                 })}
-              >
-                {shares}
-              </h3>
-              <span>{t("pool.shares")}</span>
+              </h6>
             </div>
             {userShares.toDec().gt(new Dec(0)) && (
               <ArrowButton onClick={onUnbond}>{t("pool.unbond")}</ArrowButton>
