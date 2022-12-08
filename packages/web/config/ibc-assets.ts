@@ -393,7 +393,6 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-0",
     coinMinimalDenom: "udarc",
     isVerified: true,
-    isUnstable: true,
   },
   {
     counterpartyChainId: "umee-1",
@@ -925,6 +924,7 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-320",
     destChannelId: "channel-1",
     coinMinimalDenom: "uist",
+    isVerified: true,
   },
   {
     counterpartyChainId: "juno-1",
@@ -1119,11 +1119,23 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "aacre",
   },
   {
+    counterpartyChainId: "comdex-1",
+    sourceChannelId: "channel-87",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "ucmst",
+  },
+  {
+    counterpartyChainId: "imversed_5555555-1",
+    sourceChannelId: "channel-517",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "aimv",
+  },
+  {
     counterpartyChainId: "medasdigital-1",
     sourceChannelId: "channel-519",
     destChannelId: "channel-0",
     coinMinimalDenom: "umedas",
-  }
+  },
 ].filter((ibcAsset) => {
   // validate IBC asset config
   if (
