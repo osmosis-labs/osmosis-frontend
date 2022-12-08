@@ -545,7 +545,7 @@ const Pool: FunctionComponent = observer(() => {
         )}
       </section>
       <section className="flex flex-col gap-4 md:gap-4">
-        <div className="flex flex-col flex-wrap md:gap-3">
+        <div className="flex flex-col flex-wrap px-8 md:gap-3">
           <h6 className="text-h6 font-h6">{t("pool.putAssetsToWork")}</h6>
           <span className="body2 text-osmoverse-300">
             {t("pool.putAssetsToWorkCaption")}{" "}
@@ -594,7 +594,7 @@ const Pool: FunctionComponent = observer(() => {
                     <h4 className="text-osmoverse-100">
                       {poolDetailConfig?.userAvailableValue.toString()}
                     </h4>
-                    <h6 className="text-osmoverse-300">
+                    <h6 className="subtitle1 text-osmoverse-300">
                       {t("pool.sharesAmount", {
                         shares: queryOsmosis.queryGammPoolShare
                           .getAvailableGammShare(bech32Address, poolId)
@@ -632,7 +632,7 @@ const Pool: FunctionComponent = observer(() => {
                 <h4 className="text-osmoverse-100">
                   {poolDetailConfig?.userAvailableValue.toString()}
                 </h4>
-                <h6 className="text-osmoverse-300 md:text-h4 md:font-h4">
+                <h6 className="subtitle1 text-osmoverse-300">
                   {t("pool.sharesAmount", {
                     shares: queryOsmosis.queryGammPoolShare
                       .getAvailableGammShare(bech32Address, poolId)

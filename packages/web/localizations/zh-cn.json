@@ -111,7 +111,7 @@
     "currentDailyEarn": "您当前正在赚取",
     "earnMore": "通过结合赚取 {amount}",
     "day": "天",
-    "dailyEarnAmount": "{amount}/天",
+    "dailyEarnAmount": "{amount} / 天",
     "putAssetsToWork": "让您的资产发挥作用.",
     "putAssetsToWorkCaption": "将您的资产添加到此资金池中以解锁令人兴奋的 APR，解绑期越长您赚得越多.",
     "learnMore": "了解更多",

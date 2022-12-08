@@ -111,7 +111,7 @@
     "currentDailyEarn": "내 일일 보상",
     "earnMore": "본딩으로 {amount} 더 벌기",
     "day": "일",
-    "dailyEarnAmount": "{amount}/일",
+    "dailyEarnAmount": "{amount} / 일",
     "putAssetsToWork": "자산을 늘리세요.",
     "putAssetsToWorkCaption": "이 풀에 자산을 추가하고 두근되는 APR을 확인하세요. 더 긴 해지 기간을 선택하면, 더 많은 보상을 얻을 수 있어요",
     "learnMore": "더 알아보기",

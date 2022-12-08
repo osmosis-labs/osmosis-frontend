@@ -111,7 +111,7 @@
     "currentDailyEarn": "You're currently earning",
     "earnMore": "Earn {amount} more by bonding",
     "day": "day",
-    "dailyEarnAmount": "{amount}/day",
+    "dailyEarnAmount": "{amount} / day",
     "putAssetsToWork": "Put your assets to work.",
     "putAssetsToWorkCaption": "Add your assets to this pool to unlock APRs. The longer your unbonding period, the more you make.",
     "learnMore": "Learn more",

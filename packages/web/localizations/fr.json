@@ -111,7 +111,7 @@
     "currentDailyEarn": "Vous gagnez actuellement",
     "earnMore": "Gagnez {amount} plus en blocant",
     "day": "jour",
-    "dailyEarnAmount": "{amount}/jour",
+    "dailyEarnAmount": "{amount} / jour",
     "putAssetsToWork": "Mettez vos actifs au travail.",
     "putAssetsToWorkCaption": "Ajoutez vos actifs à ce bassin pour débloquer des taux d'intérêt attractifs. Plus votre période de désengagement est longue, plus vous gagnez.",
     "learnMore": "En savoir plus",

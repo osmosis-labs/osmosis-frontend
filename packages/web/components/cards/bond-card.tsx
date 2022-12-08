@@ -7,6 +7,7 @@ import { BondableDuration } from "@osmosis-labs/stores";
 import { FallbackImg } from "../assets";
 import { ArrowButton } from "../buttons";
 import { useTranslation } from "react-multi-lang";
+import { formatNumberToScale } from "../../utils/number";
 
 export const BondCard: FunctionComponent<
   BondableDuration & {
@@ -35,7 +36,7 @@ export const BondCard: FunctionComponent<
     <div className="relative flex h-[380px] w-full min-w-[280px] flex-col gap-[115px] overflow-hidden rounded-2xl border-2 border-osmoverse-600 bg-osmoverse-800 p-7 md:p-[10px]">
       <div className="flex h-[260px] flex-col place-content-between gap-2">
         <div className="flex place-content-between items-start gap-4">
-          <div className="z-10 flex max-w-[60%] flex-col gap-3 overflow-visible">
+          <div className="z-10 flex max-w-[60%] flex-col gap-5 overflow-visible">
             <span className="subtitle1 text-osmoverse-100">
               {t("pool.amountDaysUnbonding", {
                 numDays: duration.asDays().toString(),
@@ -45,7 +46,7 @@ export const BondCard: FunctionComponent<
               <h4 className="text-osmoverse-100">
                 {userShareValue.toString()}
               </h4>
-              <h6 className={"text-osmoverse-300"}>
+              <h6 className="subtitle1 text-osmoverse-300">
                 {t("pool.sharesAmount", {
                   shares: userShares
                     .hideDenom(true)
@@ -286,7 +287,7 @@ const SuperfluidBreakdownRow: FunctionComponent<
     <div className="flex flex-col gap-2">
       <div className="flex place-content-between items-start text-right">
         <div className="flex items-center gap-2">
-          <h6 className="text-superfluid-gradient bg-clip-text text-transparent">
+          <h6 className="subtitle1 text-superfluid-gradient bg-clip-text text-transparent">
             +{apr.maxDecimals(0).toString()}
           </h6>
           <FallbackImg
@@ -298,7 +299,7 @@ const SuperfluidBreakdownRow: FunctionComponent<
             width={24}
           />
         </div>
-        <span>
+        <span className="text-osmoverse-100">
           {(delegated || undelegating) && validatorMoniker
             ? validatorMoniker
             : t("pool.superfluidStaking")}
@@ -343,7 +344,9 @@ const IncentiveBreakdownRow: FunctionComponent<
   return (
     <div className="flex place-content-between items-start">
       <div className="flex shrink-0 items-center gap-2">
-        <h6 className="text-osmoverse-200">+{apr.maxDecimals(0).toString()}</h6>
+        <h6 className="subtitle1 text-white">
+          +{apr.maxDecimals(0).toString()}
+        </h6>
         {dailyPoolReward.currency.coinImageUrl && (
           <Image
             alt="token icon"
@@ -354,9 +357,11 @@ const IncentiveBreakdownRow: FunctionComponent<
         )}
       </div>
       <div className="flex flex-col text-right">
-        <span>
+        <span className="text-osmoverse-100">
           {t("pool.dailyEarnAmount", {
-            amount: dailyPoolReward.maxDecimals(0).toString(),
+            amount: `${formatNumberToScale(
+              dailyPoolReward.toDec().toString()
+            )} ${dailyPoolReward.currency.coinDenom}`,
           })}
         </span>
         {numDaysRemaining && (
@@ -379,14 +384,16 @@ const SwapFeeBreakdownRow: FunctionComponent<{
   return (
     <div className="flex place-content-between items-start">
       <div className="flex items-center gap-2">
-        <h6 className="text-osmoverse-200">
+        <h6 className="subtitle1 text-white">
           +{swapFeeApr.maxDecimals(0).toString()}
         </h6>
       </div>
       <div className="flex flex-col text-right">
-        <span>
+        <span className="text-osmoverse-100">
           {t("pool.dailyEarnAmount", {
-            amount: swapFeeDailyReward.maxDecimals(0).toString(),
+            amount: `${
+              swapFeeDailyReward.fiatCurrency.symbol
+            }${formatNumberToScale(swapFeeDailyReward.toDec().toString())}`,
           })}
         </span>
         <span className="caption text-osmoverse-400">

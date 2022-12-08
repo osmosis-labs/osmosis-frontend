@@ -51,27 +51,34 @@ export const PriceBreakdownChart: FunctionComponent<{
             )}
           >
             <div
-              className={classNames("space-y-2 whitespace-nowrap", {
+              className={classNames("whitespace-nowrap", {
                 "text-right": isLast,
               })}
             >
               <span className="body2 text-osmoverse-400">{label}</span>
-              <h5 className="body1 text-osmoverse-100">
+            </div>
+
+            <div className="space-y-2 whitespace-nowrap">
+              <h5
+                className={classNames("body1 text-osmoverse-100", {
+                  "text-right": isLast,
+                })}
+              >
                 {price.maxDecimals(0).toString()}
               </h5>
+              <div
+                className={classNames(
+                  "flex h-2 w-full",
+                  colorCycle[index % colorCycle.length],
+                  {
+                    "rounded-l-full": index === 0,
+                    "rounded-r-full":
+                      positivePrices.length === 1 ||
+                      index === positivePrices.length - 1,
+                  }
+                )}
+              />
             </div>
-            <div
-              className={classNames(
-                "flex h-2 w-full",
-                colorCycle[index % colorCycle.length],
-                {
-                  "rounded-l-full": index === 0,
-                  "rounded-r-full":
-                    positivePrices.length === 1 ||
-                    index === positivePrices.length - 1,
-                }
-              )}
-            />
           </div>
         );
       })}
