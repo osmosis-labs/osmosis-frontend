@@ -295,8 +295,8 @@ const SuperfluidBreakdownRow: FunctionComponent<
             alt="validator icon"
             src={validatorLogoUrl ?? "/icons/superfluid-osmo.svg"}
             fallbacksrc="/icons/profile.svg"
-            height={24}
-            width={24}
+            height={20}
+            width={20}
           />
         </div>
         <span className="text-osmoverse-100">
@@ -351,8 +351,8 @@ const IncentiveBreakdownRow: FunctionComponent<
           <Image
             alt="token icon"
             src={dailyPoolReward.currency.coinImageUrl}
-            height={24}
-            width={24}
+            height={20}
+            width={20}
           />
         )}
       </div>
