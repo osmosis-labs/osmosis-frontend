@@ -79,8 +79,13 @@
     "createPool": {
       "title": "Crea una nueva Piscina",
       "button": "Crear nueva Piscina",
+      "weightedPool": "Grupo ponderado",
+      "stablePool": "Piscina estable",
       "step": {
-        "one": "Paso {step} / {nbstep} - Establecer proporción de token",
+        "one": {
+          "weighted": "Paso {step} / {nbstep} - Establecer proporción de token",
+          "stable": "Paso {step} / {nbstep} - Establecer factores de escala"
+        },
         "two": "Paso {step} / {nbstep} - Introduce monto a añadir",
         "three": "Paso {step} / {nbstep} - Confirmar la proporción de la piscina y la cantidad de token"
       },
@@ -94,6 +99,7 @@
       "amount": "Monto",
       "token": "Token",
       "swapFee": "Establecer tarifa de intercambio",
+      "scalingFactorController": "Establecer controlador de factor de escala (opcional)",
       "undersandCost": "Entiendo que crear una nueva piscina costará {POOL_CREATION_FEE}.",
       "interestedCreate": "¿Interesado en crear una nueva Piscina?",
       "startProcess": "Haga clic aquí para comenzar el proceso"
@@ -103,6 +109,7 @@
     "title": "Piscina #{id}",
     "swap": "Intercambiar Tokens",
     "superfluidEnabled": "Interés superfluido habilitada",
+    "stableswapEnabled": "Intercambio estable habilitado",
     "24hrTradingVolume": "Volumen Últimas 24h",
     "liquidity": "Liquidez",
     "swapFee": "Tarifa de intercambio",
@@ -209,6 +216,8 @@
       "titleWithdraw": "Retirar {coinDenom}",
       "titleDeposit": "Depositar {coinDenom}",
       "channelCongested": "Canal impugnado",
+      "channelCongestedWithdraw": "Retirar (Canal impugnado)",
+      "channelCongestedDeposit": "Depositar (Canal impugnado)",
       "channelBlocked": "Canal bloqueado",
       "selectAmount": "Cantidad seleccionada",
       "estimatedTime": "Tiempo estimado",
@@ -339,10 +348,12 @@
     "insufficientAmount": "Cantidad insuficiente",
     "negativeSwapFee": "La Cuota de intercambio es negativa",
     "highSwapFee": "Cuota de intercambio demasiado alta",
+    "invalidScalingFactorControllerAddress": "Dirección de controlador de factor de escala no válida",
     "invalidSwapFee": "La cuota de intercambio no es válida",
     "minAssetsCount": "Mínimo de {num} activos requeridos",
     "maxAssetsCount": "Máximo de {num} activos permitidos",
     "negativePercentage": "El porcentaje debe ser positivo",
+    "scalingFactorTooLow": "Factor de escala demasiado bajo",
     "percentageSum": "La suma de porcentajes no es 100",
     "depositNoBalance": "No tienes activos para depositar",
     "negativeSlippage": "El deslizamiento no puede ser negativo",
@@ -366,7 +377,7 @@
   "protocolDisclaimer": "Deslindo de responsabilidad al protocolo",
   "Transaction Failed": "Transacción fallida",
   "Transaction Successful": "Transacción exitosa",
-  "Transaction Broadcasting": "Transacción de transacción",
+  "Transaction Broadcasting": "Ejecutando transacción",
   "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.": "El intercambio falló. La liquidez puede no ser suficiente. Intente ajustar el deslizamiento permitido.",
   "Waiting for transaction to be included in the block": "Esperando que la transacción se incluya en el bloque",
   "view explorer": "Ver Explorador",

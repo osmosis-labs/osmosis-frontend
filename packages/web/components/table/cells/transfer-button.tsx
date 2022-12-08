@@ -66,7 +66,7 @@ const TransferButton: FunctionComponent<{
   return externalUrl ? (
     <a
       className={classNames(
-        "flex items-center gap-1 pt-2 lg:pt-0 subtitle1 shrink-0 text-wosmongton-200",
+        "subtitle1 flex shrink-0 items-center gap-1 pt-2 text-wosmongton-200 lg:pt-0",
         { "opacity-30": disabled }
       )}
       rel="noreferrer"
@@ -89,7 +89,7 @@ const TransferButton: FunctionComponent<{
     </a>
   ) : (
     <button
-      className="flex items-center gap-1 text-wosmongton-200 hover:text-rust-300 transition-colors subtitle1 disabled:opacity-30 hover:disabled:text-wosmongton-200"
+      className="subtitle1 flex items-center gap-1 text-wosmongton-200 transition-colors hover:text-rust-300 disabled:opacity-30 hover:disabled:text-wosmongton-200"
       onClick={action}
       disabled={disabled}
       onMouseEnter={() => setIsHovering(true)}

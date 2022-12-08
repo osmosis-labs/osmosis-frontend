@@ -52,7 +52,7 @@ export const PriceBreakdownChart: FunctionComponent<{
             </div>
             <div
               className={classNames(
-                "flex w-full h-3",
+                "flex h-3 w-full",
                 colorCycle[index % colorCycle.length],
                 {
                   "rounded-l-full": index === 0,

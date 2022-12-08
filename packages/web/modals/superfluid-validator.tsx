@@ -90,19 +90,19 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
 
     return (
       <ModalBase {...props}>
-        <div className="flex flex-col gap-4 md:gap-2 mt-8">
-          <div className="flex md:flex-col gap-2.5 mb-1 items-center place-content-between">
+        <div className="mt-8 flex flex-col gap-4 md:gap-2">
+          <div className="mb-1 flex place-content-between items-center gap-2.5 md:flex-col">
             <span className="subtitle1 mr-auto">
               {t("superfluidValidator.choose")}
             </span>
             <SearchBox
-              className={isMobile ? "!rounded !w-full h-11" : undefined}
+              className={isMobile ? "h-11 !w-full !rounded" : undefined}
               currentValue={query}
               onInput={setQuery}
               placeholder={t("superfluidValidator.search")}
             />
           </div>
-          <div className="overflow-y-scroll overflow-x-clip h-72">
+          <div className="h-72 overflow-x-clip overflow-y-scroll">
             <Table
               className="w-full"
               tHeadClassName="sticky top-0"
@@ -155,12 +155,12 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
               )}
             />
           </div>
-          <div className="flex flex-col md:gap-2 gap-4 py-3 px-4 caption text-osmoverse-300">
-            <div className="flex items-center place-content-between">
+          <div className="caption flex flex-col gap-4 py-3 px-4 text-osmoverse-300 md:gap-2">
+            <div className="flex place-content-between items-center">
               <span>{t("superfluidValidator.bondedAmount")}</span>
               <span>{availableBondAmount.trim(true).toString()}</span>
             </div>
-            <div className="flex items-center place-content-between">
+            <div className="flex place-content-between items-center">
               <span>
                 {isMobile
                   ? t("superfluidValidator.estimationMobile")

@@ -79,8 +79,13 @@
     "createPool": {
       "title": "새로운 풀 만들기",
       "button": "새로운 풀 만들기",
+      "weightedPool": "가중 풀",
+      "stablePool": "안정적인 풀",
       "step": {
-        "one": "{step} / {nbStep} 단계 - 토큰 비율 설정",
+        "one": {
+          "weighted": "{step} / {nbStep} 단계 - 토큰 비율 설정",
+          "stable": "{step} / {nbStep} 단계 - 배율 설정"
+        },
         "two": "{step} / {nbStep} 단계 - 추가할 수량 입력",
         "three": "{step} / {nbStep} 단계 - 풀의 비율과 수량 확인"
       },
@@ -94,6 +99,7 @@
       "amount": "수량",
       "token": "토큰",
       "swapFee": "교환 수수료 설정",
+      "scalingFactorController": "배율 계수 제어기 설정(선택 사항)",
       "undersandCost": "새 풀을 만드는데 {POOL_CREATION_FEE} 만큼의 비용이 든다는 것을 이해합니다.",
       "interestedCreate": "새 풀을 만들어 볼까요?",
       "startProcess": "여기를 클랙해서 시작하세요."
@@ -103,6 +109,7 @@
     "title": "풀 #{id}",
     "swap": "토큰 교환",
     "superfluidEnabled": "Superfluid 스테이킹 가능",
+    "stableswapEnabled": "안정적인 스왑 사용",
     "24hrTradingVolume": "24시간 거래량",
     "liquidity": "풀 유동성",
     "swapFee": "수수료",
@@ -210,6 +217,8 @@
       "titleWithdraw": "{coinDenom} 출금",
       "titleDeposit": "{coinDenom} 입금",
       "channelCongested": "채널 혼잡",
+      "channelCongestedWithdraw": "출금 (채널 혼잡)",
+      "channelCongestedDeposit": "입금 (채널 혼잡)",
       "channelBlocked": "채널이 차단됨",
       "selectAmount": "수량 선택",
       "estimatedTime": "예상 시간",
@@ -341,9 +350,11 @@
     "negativeSwapFee": "교환 수수료가 음수입니다",
     "highSwapFee": "교환 수수료가 너무 높습니다",
     "invalidSwapFee": "교환 수수료가 잘못 되었습니다",
+    "invalidScalingFactorControllerAddress": "잘못된 배율 인수 컨트롤러 주소",
     "minAssetsCount": "최소 {num}개의 자산이 필요합니다",
     "maxAssetsCount": "최대 {num}개의 자산만 허용됩니다",
     "negativePercentage": "퍼센티지는 양수여야합니다",
+    "scalingFactorTooLow": "배율 인수가 너무 낮음",
     "percentageSum": "퍼센티지의 합이 100이 아닙니다",
     "depositNoBalance": "입금할 자산이 없습니다",
     "negativeSlippage": "슬리피지가 음수입니다",
