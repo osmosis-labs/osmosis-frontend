@@ -79,8 +79,13 @@
     "createPool": {
       "title": "建立新流動性池",
       "button": "建立新流動性池",
+      "weightedPool": "加權儲存區",
+      "stablePool": "穩定的池",
       "step": {
-        "one": "步驟 {step} / {nbStep} - 設定代幣比例",
+        "one": {
+          "weighted": "步驟 {step} / {nbStep} - 設定代幣比例",
+          "stable": "步驟 {step} / {nbStep} - 設定調整係數"
+        },
         "two": "步驟 {step} / {nbStep} - 輸入要加入的幣額",
         "three": "步驟 {step} / {nbStep} - 確認代幣比例及幣額"
       },
@@ -94,6 +99,7 @@
       "amount": "幣額",
       "token": "代幣",
       "swapFee": "設定兌換費",
+      "scalingFactorController": "例因子控制器（可選)",
       "undersandCost": "我明白建立一個新流動性池會需要費用 {POOL_CREATION_FEE}",
       "interestedCreate": "想建立新流動性池嗎？",
       "startProcess": "按此開始流程"
@@ -103,6 +109,7 @@
     "title": "流動性池 #{id}",
     "swap": "兌換代幣",
     "superfluidEnabled": "超流體質押已啟用",
+    "stableswapEnabled": "啟用穩定交換",
     "24hrTradingVolume": "24小時交易量",
     "liquidity": "流動性",
     "swapFee": "兌換費",
@@ -341,9 +348,11 @@
     "negativeSwapFee": "兌換費為負數",
     "highSwapFee": "兌換費太高",
     "invalidSwapFee": "非正確兌換費",
+    "invalidScalingFactorControllerAddress": "比例因子控制器地址無效",
     "minAssetsCount": "最少需要 {num} 種資產",
     "maxAssetsCount": "最少可有 {num} 種資產",
     "negativePercentage": "百份比值必須為正數",
+    "scalingFactorTooLow": "縮放因數過低",
     "percentageSum": "所有百份比值總和非100",
     "depositNoBalance": "你沒有資產存入",
     "negativeSlippage": "滑價不能為負數",
