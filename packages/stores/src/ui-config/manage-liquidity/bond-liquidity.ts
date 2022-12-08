@@ -2,7 +2,13 @@ import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { Duration } from "dayjs/plugin/duration";
 import dayjs from "dayjs";
-import { CoinPretty, RatePretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  RatePretty,
+  Dec,
+  PricePretty,
+  IntPretty,
+} from "@keplr-wallet/unit";
 import { AppCurrency } from "@keplr-wallet/types";
 import {
   ObservableQueryPoolDetails,
@@ -21,6 +27,7 @@ export type BondDuration = {
   /** Bondable if there's any active gauges for this duration. */
   bondable: boolean;
   userShares: CoinPretty;
+  userShareValue: PricePretty;
   userUnlockingShares?: { shares: CoinPretty; endTime?: Date };
   aggregateApr: RatePretty;
   swapFeeApr: RatePretty;
@@ -129,6 +136,16 @@ export class ObservableBondLiquidityConfig extends UserConfig {
           const curDuration = dayjs.duration({
             milliseconds: durationMs,
           });
+          const lockedUserShares = queryLockedCoin.getLockedCoinWithDuration(
+            this.poolDetails.poolShareCurrency,
+            curDuration
+          ).amount;
+
+          const totalShares = this.poolDetails.pool.totalShare;
+          const poolTvl = this.poolDetails.totalValueLocked;
+          const userShareValue = poolTvl.mul(
+            new IntPretty(lockedUserShares.quo(totalShares))
+          );
 
           /** There is only one internal gauge of a chain-configured lockable duration (1,7,14 days). */
           const internalGaugeOfDuration = gauges.find(
@@ -142,10 +159,6 @@ export class ObservableBondLiquidityConfig extends UserConfig {
             }
             return gauges;
           }, []);
-          const lockedUserShares = queryLockedCoin.getLockedCoinWithDuration(
-            this.poolDetails.poolShareCurrency,
-            curDuration
-          ).amount;
 
           const unlockingUserShares =
             queryLockedCoin.getUnlockingCoinWithDuration(
@@ -277,6 +290,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
               .feesSpent7d.quo(new Dec(7)),
             incentivesBreakdown,
             superfluid,
+            userShareValue,
           };
         });
     }
