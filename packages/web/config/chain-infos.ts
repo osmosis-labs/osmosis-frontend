@@ -2379,7 +2379,7 @@ const chainInfos = (
         average: 25000000000,
         high: 40000000000,
       },
-      features: ["ibc-transfer"],
+      features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
       explorerUrlToTx: "https://txe.imversed.network/tx/{txHash}",
     },
   ] as SimplifiedChainInfo[]
