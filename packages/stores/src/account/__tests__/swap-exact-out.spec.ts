@@ -26,7 +26,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
 
     // And prepare the pool
     await new Promise<any>((resolve) => {
-      account.osmosis.sendCreateBalancerPoolMsg(
+      account.osmosis.sendCreatePoolMsg(
         "0",
         [
           {
@@ -434,32 +434,17 @@ async function estimateSwapExactOut(
   const outPoolAsset = queryPool!.getPoolAsset(
     tokenOut.currency.coinMinimalDenom
   );
-  const inPoolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
-    ({ denom }) => denom === inPoolAsset.amount.currency.coinMinimalDenom
-  )?.weight;
-  const outPoolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
-    ({ denom }) => denom === outPoolAsset.amount.currency.coinMinimalDenom
-  )?.weight;
-  const poolAssets = queryPool?.stableSwapInfo
-    ? queryPool.stableSwapInfo.assets
-    : [];
   return estimateSwapExactAmountOut(
     {
       inPoolAsset: {
         ...inPoolAsset.amount.currency,
         amount: new Int(inPoolAsset.amount.toCoin().amount),
-        weight: inPoolAssetWeight
-          ? new Int(inPoolAssetWeight.toString())
-          : undefined,
+        weight: inPoolAsset.weight.locale(false).toDec().truncate(),
       },
       outPoolAsset: {
-        denom: outPoolAsset.amount.currency.coinMinimalDenom,
         amount: new Int(outPoolAsset.amount.toCoin().amount),
-        weight: outPoolAssetWeight
-          ? new Int(outPoolAsset.toString())
-          : undefined,
+        weight: outPoolAsset.weight.locale(false).toDec().truncate(),
       },
-      poolAssets,
       swapFee: queryPool!.swapFee.toDec(),
     },
     new Coin(

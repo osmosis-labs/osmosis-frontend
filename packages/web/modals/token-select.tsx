@@ -27,7 +27,7 @@ export const TokenSelectModal: FunctionComponent<
 
   return (
     <ModalBase
-      className="!rounded-xl !p-0"
+      className="!p-0 !rounded-xl"
       {...props}
       hideCloseButton
       title=""
@@ -44,7 +44,7 @@ export const TokenSelectModal: FunctionComponent<
           onFocus={props.onFocus}
         />
       </div>
-      <ul className="flex max-h-64 flex-col overflow-y-auto">
+      <ul className="flex flex-col max-h-64 overflow-y-auto">
         {props.tokens.map((t) => {
           const currency =
             t.token instanceof CoinPretty ? t.token.currency : t.token;
@@ -70,17 +70,17 @@ export const TokenSelectModal: FunctionComponent<
           return (
             <li
               key={currency.coinDenom}
-              className="my-1 mx-3 flex cursor-pointer items-center justify-between rounded-2xl py-2.5 px-4 hover:bg-osmoverse-900"
+              className="flex justify-between items-center rounded-2xl py-2.5 px-4 my-1 hover:bg-osmoverse-900 cursor-pointer mx-3"
               onClick={(e) => {
                 e.stopPropagation();
                 props.onSelect(coinDenom);
                 props.onRequestClose();
               }}
             >
-              <button className="flex w-full items-center justify-between text-left">
+              <button className="flex items-center justify-between text-left w-full">
                 <div className="flex items-center">
                   {coinImageUrl && (
-                    <div className="mr-4 h-8 w-8">
+                    <div className="w-8 h-8 rounded-full mr-4">
                       <Image
                         src={coinImageUrl}
                         alt="token icon"
@@ -91,7 +91,7 @@ export const TokenSelectModal: FunctionComponent<
                   )}
                   <div>
                     <h6 className="text-white-full">{justDenom}</h6>
-                    <div className="md:caption text-left font-semibold text-osmoverse-400">
+                    <div className="text-osmoverse-400 text-left md:caption font-semibold">
                       {showChannel ? `${networkName} ${channel}` : networkName}
                     </div>
                   </div>

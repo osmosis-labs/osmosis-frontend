@@ -57,7 +57,7 @@ export const PreTransferModal: FunctionComponent<
       }
     >
       <div className="flex flex-col gap-7 pt-5">
-        <div className="items-left flex flex-col gap-2 px-5">
+        <div className="flex flex-col gap-2 px-5 items-left">
           <span className="caption text-osmoverse-400">
             {t("assets.table.preTransfer.currentBal")}
           </span>
@@ -73,7 +73,7 @@ export const PreTransferModal: FunctionComponent<
           {externalWithdrawUrl ? (
             <a
               className={classNames(
-                "flex h-10 w-full items-center justify-center gap-1 rounded-lg border border-wosmongton-200 bg-wosmongton-200/30 text-button font-button",
+                "flex w-full gap-1 text-button font-button h-10 justify-center items-center rounded-lg bg-wosmongton-200/30 border border-wosmongton-200",
                 { "opacity-30": isUnstable }
               )}
               href={externalWithdrawUrl}
@@ -95,7 +95,7 @@ export const PreTransferModal: FunctionComponent<
             </a>
           ) : (
             <Button
-              className="h-10 w-full"
+              className="w-full h-10"
               mode="secondary"
               disabled={isUnstable}
               onClick={onWithdraw}
@@ -106,7 +106,7 @@ export const PreTransferModal: FunctionComponent<
           {externalDepositUrl ? (
             <a
               className={classNames(
-                "flex h-10 w-full items-center justify-center gap-1 rounded-lg bg-wosmongton-200 text-button font-button",
+                "flex w-full gap-1 h-10 text-button font-button justify-center items-center rounded-lg bg-wosmongton-200",
                 { "opacity-30": isUnstable }
               )}
               href={externalDepositUrl}
@@ -128,7 +128,7 @@ export const PreTransferModal: FunctionComponent<
             </a>
           ) : (
             <Button
-              className="h-10 w-full"
+              className="w-full h-10"
               disabled={isUnstable}
               onClick={onDeposit}
             >

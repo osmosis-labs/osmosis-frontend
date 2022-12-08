@@ -22,17 +22,6 @@ export class InvalidSwapFeeError extends Error {
   }
 }
 
-export class InvalidScalingFactorControllerAddress extends Error {
-  constructor(m: string) {
-    super(m);
-    // Set the prototype explicitly.
-    Object.setPrototypeOf(
-      this,
-      InvalidScalingFactorControllerAddress.prototype
-    );
-  }
-}
-
 export class MinAssetsCountError extends Error {
   constructor(m: string) {
     super(m);
@@ -54,14 +43,6 @@ export class NegativePercentageError extends Error {
     super(m);
     // Set the prototype explicitly.
     Object.setPrototypeOf(this, NegativePercentageError.prototype);
-  }
-}
-
-export class ScalingFactorTooLowError extends Error {
-  constructor(m: string) {
-    super(m);
-    // Set the prototype explicitly.
-    Object.setPrototypeOf(this, ScalingFactorTooLowError.prototype);
   }
 }
 

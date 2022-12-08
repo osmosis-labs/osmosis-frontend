@@ -28,13 +28,13 @@ export const MainLayout: FunctionComponent<{
   return (
     <React.Fragment>
       {showFixedLogo && (
-        <div className="fixed z-50 w-sidebar px-5 pt-6">
+        <div className="z-50 fixed w-sidebar px-5 pt-6">
           <OsmosisFullLogo onClick={() => router.push("/")} />
         </div>
       )}
-      <article className="fixed inset-y-0 z-40 flex w-sidebar flex-col overflow-x-hidden bg-osmoverse-800 px-2 py-6 md:hidden">
+      <article className="fixed md:hidden flex flex-col inset-y-0 z-40 bg-osmoverse-800 px-2 py-6 w-sidebar overflow-x-hidden">
         {showBlockLogo && (
-          <div className="z-50 mx-auto ml-2 w-sidebar grow-0">
+          <div className="grow-0 ml-2 z-50 w-sidebar mx-auto">
             <OsmosisFullLogo width={166} onClick={() => router.push("/")} />
           </div>
         )}
@@ -45,7 +45,7 @@ export const MainLayout: FunctionComponent<{
         title={selectedMenuItem?.label ?? ""}
         menus={menus}
       />
-      <div className="ml-sidebar h-content bg-osmoverse-900 md:ml-0 md:h-content-mobile">
+      <div className="ml-sidebar md:ml-0 h-content md:h-content-mobile bg-osmoverse-900">
         {children}
       </div>
     </React.Fragment>

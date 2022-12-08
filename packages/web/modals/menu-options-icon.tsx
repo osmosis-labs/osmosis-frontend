@@ -15,16 +15,16 @@ export const MenuOptionsIconModal: FunctionComponent<
   }
 > = ({ currentOption, options, onSelect, ...props }) => (
   <ModalBase
-    className="!rounded-xl border border-white-faint !p-0"
+    className="border border-white-faint !p-0 !rounded-xl"
     {...props}
     hideCloseButton
     title=""
     overlayClassName="-bottom-1/2"
   >
-    <span className="subtitle1 w-full p-2 text-center text-white-high">
+    <span className="w-full subtitle1 text-center p-2 text-white-high">
       {props.title}
     </span>
-    <hr className="mx-3 h-px text-white-faint shadow-separator" />
+    <hr className="mx-3 shadow-separator h-px text-white-faint" />
     <div className="flex flex-col">
       {options.map((option: MenuDropdownIconItemProps, index: number) => {
         return (

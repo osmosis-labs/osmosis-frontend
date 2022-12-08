@@ -14,30 +14,18 @@ import {
   IntPretty,
   RatePretty,
 } from "@keplr-wallet/unit";
-import {
-  Pool,
-  WeightedPool,
-  WeightedPoolRaw,
-  StablePool,
-  StablePoolRaw,
-} from "@osmosis-labs/pools";
+import { Pool, WeightedPool, WeightedPoolRaw } from "@osmosis-labs/pools";
 import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { IPriceStore } from "src/price";
 import { Duration } from "dayjs/plugin/duration";
 import dayjs from "dayjs";
 
-type PoolRaw = WeightedPoolRaw | StablePoolRaw;
-
-const STABLE_POOL_TYPE = "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool";
-// const WEIGHTED_POOL_TYPE = "/osmosis.gamm.v1beta1.Pool";
-
 export class ObservableQueryPool extends ObservableChainQuery<{
-  pool: PoolRaw;
+  pool: WeightedPoolRaw;
 }> {
-  /** Observe any new references resulting from pool or pools query. */
   @observable.ref
-  protected raw: PoolRaw;
+  protected raw: WeightedPoolRaw;
 
   /** Constructed with the assumption that initial pool data has already been fetched
    *  using the `/pools` endpoint.
@@ -47,7 +35,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     readonly kvStore: KVStore,
     chainId: string,
     readonly chainGetter: ChainGetter,
-    raw: PoolRaw
+    raw: WeightedPoolRaw
   ) {
     super(
       kvStore,
@@ -64,82 +52,31 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   protected setResponse(
     response: Readonly<
       QueryResponse<{
-        pool: PoolRaw;
+        pool: WeightedPoolRaw;
       }>
     >
   ) {
     super.setResponse(response);
 
+    const chainInfo = this.chainGetter.getChain(this.chainId);
+    const denomsInPool: string[] = [];
+    // Try to register the Denom of Asset in the Pool in Response.(For IBC tokens)
+    for (const asset of response.data.pool.pool_assets) {
+      denomsInPool.push(asset.token.denom);
+    }
+
+    chainInfo.addUnknownCurrencies(...denomsInPool);
     this.setRaw(response.data.pool);
   }
 
   @action
-  setRaw(raw: PoolRaw) {
-    const chainInfo = this.chainGetter.getChain(this.chainId);
-    const denomsInPool: string[] = [];
-    // Try to register the Denom of Asset in the Pool in Response.(For IBC tokens)
-    if ("pool_assets" in raw) {
-      // weighted pool
-      for (const asset of raw.pool_assets) {
-        denomsInPool.push(asset.token.denom);
-      }
-    } else {
-      // stable pool
-      for (const asset of raw.pool_liquidity) {
-        denomsInPool.push(asset.denom);
-      }
-    }
-
-    chainInfo.addUnknownCurrencies(...denomsInPool);
-
+  setRaw(raw: WeightedPoolRaw) {
     this.raw = raw;
   }
 
   @computed
   get pool(): Pool {
-    if (this.raw["@type"] === STABLE_POOL_TYPE) {
-      return new StablePool(this.raw as StablePoolRaw);
-    }
-    return new WeightedPool(this.raw as WeightedPoolRaw);
-  }
-
-  /** Info specific to and relevant if is stableswap pool. */
-  @computed
-  get stableSwapInfo() {
-    if (this.pool instanceof StablePool) {
-      return {
-        assets: this.pool.poolAssets.map((asset) => ({
-          ...asset,
-          amountScaled: asset.amount.toDec().quo(new Dec(asset.scalingFactor)),
-        })),
-      };
-    }
-  }
-
-  /** Info specific to and relevant if is weighted/balancer pool. */
-  @computed
-  get weightedPoolInfo() {
-    if (this.pool instanceof WeightedPool) {
-      return {
-        assets: this.pool.poolAssets.map(({ denom, amount, weight }) => ({
-          denom,
-          amount,
-          weight: new IntPretty(weight),
-          weightFraction: new RatePretty(
-            weight
-              .toDec()
-              .quoTruncate((this.pool as WeightedPool).totalWeight.toDec())
-          ),
-        })),
-        totalWeight: new IntPretty(this.pool.totalWeight),
-        smoothWeightChange: this.pool.smoothWeightChange,
-      };
-    }
-  }
-
-  @computed
-  get type(): "weighted" | "stable" {
-    return this.pool.type;
+    return new WeightedPool(this.raw);
   }
 
   @computed
@@ -178,6 +115,11 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   }
 
   @computed
+  get totalWeight(): IntPretty {
+    return new IntPretty(this.pool.totalWeight);
+  }
+
+  @computed
   get smoothWeightChange():
     | {
         startTime: Date;
@@ -195,15 +137,9 @@ export class ObservableQueryPool extends ObservableChainQuery<{
         }[];
       }
     | undefined {
-    if (
-      !(this.pool instanceof WeightedPool) ||
-      !(this.pool as WeightedPool).smoothWeightChange
-    )
-      return;
+    if (!this.pool.smoothWeightChange) return;
 
-    const params = (this.pool as WeightedPool).smoothWeightChange;
-
-    if (!params) return;
+    const params = this.pool.smoothWeightChange;
 
     const startTime = new Date(params.startTime);
     const duration = dayjs.duration(
@@ -257,6 +193,8 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   @computed
   get poolAssets(): {
     amount: CoinPretty;
+    weight: IntPretty;
+    weightFraction: RatePretty;
   }[] {
     return this.pool.poolAssets.map((asset) => {
       const currency = this.chainGetter
@@ -265,12 +203,18 @@ export class ObservableQueryPool extends ObservableChainQuery<{
 
       return {
         amount: new CoinPretty(currency, asset.amount),
+        weight: new IntPretty(asset.weight),
+        weightFraction: new RatePretty(
+          asset.weight.toDec().quoTruncate(this.pool.totalWeight.toDec())
+        ),
       };
     });
   }
 
   readonly getPoolAsset: (denom: string) => {
     amount: CoinPretty;
+    weight: IntPretty;
+    weightFraction: RatePretty;
   } = computedFn((denom: string) => {
     const asset = this.poolAssets.find(
       (asset) => asset.amount.currency.coinMinimalDenom === denom

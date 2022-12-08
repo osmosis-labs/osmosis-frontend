@@ -1,5 +1,4 @@
-import { useCallback, useEffect } from "react";
-import dayjs from "dayjs";
+import { useCallback } from "react";
 import { Duration } from "dayjs/plugin/duration";
 import { AmountConfig } from "@keplr-wallet/hooks";
 import { AppCurrency } from "@keplr-wallet/types";
@@ -20,7 +19,6 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
   const { chainId } = chainStore.osmosis;
 
   const account = accountStore.getAccount(chainId);
-  const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const { bech32Address } = account;
 
   const config = useAmountConfig(
@@ -58,6 +56,8 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
     },
     [account, config.sendCurrency, config.amount]
   );
+
+  const queryOsmosis = queriesStore.get(chainId).osmosis!;
 
   const unlockTokens = useCallback(
     (lockIds: string[], duration: Duration) => {
@@ -116,39 +116,6 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
       queryOsmosis.queryLockableDurations.response,
     ]
   );
-
-  // refresh query stores when an unbonding token happens to unbond with window open
-  useEffect(() => {
-    if (
-      queryOsmosis.queryAccountLocked.get(bech32Address).isFetching ||
-      bech32Address === ""
-    )
-      return;
-
-    const unlockingTokens =
-      queryOsmosis.queryAccountLocked.get(bech32Address).unlockingCoins;
-    const now = dayjs().utc();
-    let timeoutIds: NodeJS.Timeout[] = [];
-
-    // set a timeout for each unlocking token to trigger a refresh at unbond time
-    unlockingTokens.forEach(({ endTime }) => {
-      const diffMs = dayjs(endTime).diff(now, "ms");
-      const blockTime = 6_000; // allow one block to process unbond before querying
-
-      timeoutIds.push(
-        setTimeout(() => {
-          queryOsmosis.queryGammPoolShare.fetch(bech32Address);
-        }, diffMs + blockTime)
-      );
-    });
-
-    return () => {
-      timeoutIds.forEach((timeout) => clearTimeout(timeout));
-    };
-  }, [
-    queryOsmosis.queryAccountLocked.get(bech32Address).response,
-    bech32Address,
-  ]);
 
   return { config, lockToken, unlockTokens };
 }

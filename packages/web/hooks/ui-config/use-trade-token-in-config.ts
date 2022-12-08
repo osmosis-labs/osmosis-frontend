@@ -24,8 +24,6 @@ export function useTradeTokenInConfig(
   pools: Pool[],
   requeryIntervalMs = 8000
 ) {
-  const queriesOsmosis = queriesStore.get(osmosisChainId).osmosis!;
-
   const [config] = useState(
     () =>
       new ObservableTradeTokenInConfig(
@@ -59,12 +57,6 @@ export function useTradeTokenInConfig(
     queriesStore,
     requeryIntervalMs,
   ]);
-
-  useEffect(() => {
-    config.setIncentivizedPoolIds(
-      queriesOsmosis.queryIncentivizedPools.incentivizedPools
-    );
-  }, [queriesOsmosis.queryIncentivizedPools.response]);
 
   config.setChain(osmosisChainId);
   config.setSender(bech32Address);

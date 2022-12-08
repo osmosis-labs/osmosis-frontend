@@ -16,7 +16,7 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
     return (
       <StepBase step={2} {...props}>
         <div className="flex flex-col gap-2.5">
-          {config.assets.map(({ percentage, scalingFactor, amountConfig }) => {
+          {config.assets.map(({ percentage, amountConfig }) => {
             const currency = amountConfig.sendCurrency;
 
             const justCoinDenom = currency.coinDenom.includes("channel")
@@ -26,14 +26,15 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
             return (
               <div
                 key={amountConfig.sendCurrency.coinDenom}
-                className="flex h-24 place-content-between items-center rounded-2xl border border-white-faint px-7 md:h-fit md:p-2"
+                className="h-24 md:h-fit flex px-7 md:p-2 items-center place-content-between border border-white-faint rounded-2xl"
               >
                 <div className="flex items-center">
                   {currency.coinImageUrl && (
-                    <div className="flex h-14 w-14 items-center overflow-hidden md:h-7 md:w-7">
+                    <div className="flex items-center w-14 h-14 md:h-7 md:w-7 rounded-full overflow-hidden">
                       <Image
                         src={currency.coinImageUrl}
                         alt="token icon"
+                        className="rounded-full"
                         width={isMobile ? 30 : 44}
                         height={isMobile ? 30 : 44}
                       />
@@ -45,20 +46,18 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
                     ) : (
                       <h5>{justCoinDenom}</h5>
                     )}
-                    <div className="md:caption text-sm font-semibold text-osmoverse-400 md:text-xs">
-                      {config.poolType === "weighted"
-                        ? `${percentage}%`
-                        : scalingFactor ?? "1"}
+                    <div className="text-osmoverse-400 text-sm md:text-xs md:caption font-semibold">
+                      {percentage}%
                     </div>
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <div className="flex place-content-end items-center gap-1">
+                  <div className="flex items-center place-content-end gap-1">
                     <span className="caption">
                       {t("pools.createPool.available")}
                     </span>
                     <span
-                      className="caption cursor-pointer text-wosmongton-300"
+                      className="caption text-wosmongton-300 cursor-pointer"
                       onClick={() => amountConfig.setIsMax(true)}
                     >
                       {config.queryBalances

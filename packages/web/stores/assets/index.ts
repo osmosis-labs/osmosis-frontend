@@ -65,11 +65,7 @@ export class ObservableAssets {
   @computed
   get nativeBalances(): CoinBalance[] {
     return this.chain.currencies
-      .filter(
-        (currency) =>
-          currency.coinMinimalDenom.includes("factory") ||
-          !currency.coinMinimalDenom.includes("/")
-      )
+      .filter((currency) => !currency.coinMinimalDenom.includes("/"))
       .map((currency) => {
         const bal = this.queries.queryBalances
           .getQueryBech32Address(this.account.bech32Address)

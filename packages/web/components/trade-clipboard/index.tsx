@@ -388,11 +388,11 @@ export const TradeClipboard: FunctionComponent<{
     return (
       <div
         className={classNames(
-          "relative flex flex-col gap-8 rounded-[18px] bg-osmoverse-800 px-6 pt-12 pb-8 md:gap-6 md:px-3 md:pt-4 md:pb-4",
+          "relative rounded-[18px] flex flex-col gap-8 md:gap-6 bg-osmoverse-800 px-6 md:px-3 pt-12 md:pt-4 pb-8 md:pb-4",
           containerClassName
         )}
       >
-        <div className="relative flex w-full items-center justify-end">
+        <div className="relative flex items-center justify-end w-full">
           <h6 className="w-full text-center">{t("swap.title")}</h6>
           <button
             className="absolute right-3 top-0"
@@ -416,24 +416,24 @@ export const TradeClipboard: FunctionComponent<{
           </button>
           {isSettingOpen && (
             <div
-              className="absolute bottom-[-0.5rem] right-0 z-40 w-full max-w-[23.875rem] translate-y-full rounded-2xl bg-osmoverse-800 p-[1.875rem] md:p-5"
+              className="absolute bottom-[-0.5rem] right-0 translate-y-full bg-osmoverse-800 rounded-2xl p-[1.875rem] md:p-5 z-40 w-full max-w-[23.875rem]"
               onClick={(e) => e.stopPropagation()}
             >
               <h6>{t("swap.settings.title")}</h6>
-              <div className="mt-2.5 flex items-center">
-                <div className="subtitle1 mr-2 text-osmoverse-200">
+              <div className="flex items-center mt-2.5">
+                <div className="subtitle1 text-osmoverse-200 mr-2">
                   {t("swap.settings.slippage")}
                 </div>
                 <InfoTooltip content={t("swap.settings.slippageInfo")} />
               </div>
 
-              <ul className="mt-3 flex w-full gap-x-3">
+              <ul className="flex gap-x-3 w-full mt-3">
                 {slippageConfig.selectableSlippages.map((slippage) => {
                   return (
                     <li
                       key={slippage.index}
                       className={classNames(
-                        "flex h-8 w-full cursor-pointer items-center justify-center rounded-lg bg-osmoverse-700",
+                        "flex items-center justify-center w-full h-8 cursor-pointer rounded-lg bg-osmoverse-700",
                         { "border-2 border-wosmongton-200": slippage.selected }
                       )}
                       onClick={(e) => {
@@ -455,7 +455,7 @@ export const TradeClipboard: FunctionComponent<{
                 })}
                 <li
                   className={classNames(
-                    "flex h-8 w-full cursor-pointer items-center justify-center rounded-lg",
+                    "flex items-center justify-center w-full h-8 cursor-pointer rounded-lg",
                     slippageConfig.isManualSlippage
                       ? "border-2 border-wosmongton-200 text-white-high"
                       : "text-osmoverse-500",
@@ -475,7 +475,7 @@ export const TradeClipboard: FunctionComponent<{
                 >
                   <InputBox
                     type="number"
-                    className="w-fit bg-transparent px-0"
+                    className="bg-transparent px-0 w-fit"
                     inputClassName={`bg-transparent text-center ${
                       !slippageConfig.isManualSlippage
                         ? "text-osmoverse-500"
@@ -516,7 +516,7 @@ export const TradeClipboard: FunctionComponent<{
         <div className="relative flex flex-col gap-3">
           <div
             className={classNames(
-              "rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:px-3 md:py-2.5",
+              "bg-osmoverse-900 rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all",
               !switchOutBack ? "ease-outBack" : "ease-inBack",
               {
                 "opacity-30": isAnimatingSwitch,
@@ -532,17 +532,17 @@ export const TradeClipboard: FunctionComponent<{
           >
             <div
               className={classNames(
-                "flex place-content-between items-center transition-opacity",
+                "flex items-center place-content-between transition-opacity",
                 {
                   "opacity-0": isAnimatingSwitch,
                 }
               )}
             >
               <div className="flex">
-                <span className="caption text-sm text-white-full md:text-xs">
+                <span className="caption text-sm md:text-xs text-white-full">
                   {t("swap.available")}
                 </span>
-                <span className="caption ml-1.5 text-sm text-wosmongton-300 md:text-xs">
+                <span className="caption text-sm md:text-xs text-wosmongton-300 ml-1.5">
                   {queries.queryBalances
                     .getQueryBech32Address(account.bech32Address)
                     .getBalanceFromCurrency(tradeTokenInConfig.sendCurrency)
@@ -555,7 +555,7 @@ export const TradeClipboard: FunctionComponent<{
               <div className="flex items-center gap-1.5">
                 <BorderButton
                   className={classNames(
-                    "py-1 px-1.5 text-xs",
+                    "text-xs py-1 px-1.5",
                     tradeTokenInConfig.fraction === 1
                       ? "bg-wosmongton-100/40"
                       : "bg-transparent"
@@ -580,7 +580,7 @@ export const TradeClipboard: FunctionComponent<{
                 </BorderButton>
                 <BorderButton
                   className={classNames(
-                    "py-1 px-1.5 text-xs",
+                    "text-xs py-1 px-1.5",
                     tradeTokenInConfig.fraction === 0.5
                       ? "bg-wosmongton-100/40"
                       : "bg-transparent"
@@ -605,7 +605,7 @@ export const TradeClipboard: FunctionComponent<{
                 </BorderButton>
               </div>
             </div>
-            <div className="mt-3 flex place-content-between items-center">
+            <div className="flex items-center place-content-between mt-3">
               <TokenSelect
                 sortByBalances
                 dropdownOpen={showFromTokenSelectDropdown}
@@ -644,15 +644,15 @@ export const TradeClipboard: FunctionComponent<{
                   closeTokenSelectDropdowns();
                 }}
               />
-              <div className="flex w-full flex-col items-end">
+              <div className="flex flex-col items-end w-full">
                 <input
                   ref={fromAmountInput}
                   type="number"
                   className={classNames(
-                    "w-full bg-transparent text-right text-white-full placeholder:text-white-disabled focus:outline-none md:text-subtitle1",
+                    "md:text-subtitle1 text-white-full bg-transparent text-right focus:outline-none w-full placeholder:text-white-disabled",
                     tradeTokenInConfig.amount.length >= 14
                       ? "caption"
-                      : "text-h5 font-h5 md:font-subtitle1"
+                      : "font-h5 md:font-subtitle1 text-h5"
                   )}
                   placeholder="0"
                   onChange={(e) => {
@@ -686,10 +686,10 @@ export const TradeClipboard: FunctionComponent<{
 
           <button
             className={classNames(
-              "absolute left-[45%] top-[124px] z-30 flex items-center transition-all duration-500 ease-bounce md:top-[94px]",
+              "absolute flex items-center left-[45%] top-[124px] md:top-[94px] transition-all duration-500 ease-bounce z-30",
               {
-                "h-10 w-10 md:h-8 md:w-8": !isHoveringSwitchButton,
-                "h-11 w-11 -translate-x-[2px] md:h-9 md:w-9":
+                "w-10 md:w-8 h-10 md:h-8": !isHoveringSwitchButton,
+                "w-11 md:w-9 h-11 md:h-9 -translate-x-[2px]":
                   isHoveringSwitchButton,
               }
             )}
@@ -713,19 +713,19 @@ export const TradeClipboard: FunctionComponent<{
           >
             <div
               className={classNames(
-                "flex h-full w-full items-center rounded-full",
+                "w-full h-full rounded-full flex items-center",
                 {
                   "bg-osmoverse-700": !isHoveringSwitchButton,
                   "bg-[#4E477C]": isHoveringSwitchButton,
                 }
               )}
             >
-              <div className="relative h-full w-full">
+              <div className="relative w-full h-full">
                 <div
                   className={classNames(
-                    "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/3 transition-all duration-500 ease-bounce",
+                    "absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/3 transition-all duration-500 ease-bounce",
                     {
-                      "rotate-180 opacity-0": isHoveringSwitchButton,
+                      "opacity-0 rotate-180": isHoveringSwitchButton,
                     }
                   )}
                 >
@@ -738,9 +738,9 @@ export const TradeClipboard: FunctionComponent<{
                 </div>
                 <div
                   className={classNames(
-                    "absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/3 transition-all duration-500 ease-bounce",
+                    "absolute left-1/2 -translate-x-1/2 top-1/3 -translate-y-1/3 transition-all duration-500 ease-bounce",
                     {
-                      "rotate-180 opacity-100": isHoveringSwitchButton,
+                      "opacity-100 rotate-180": isHoveringSwitchButton,
                       "opacity-0": !isHoveringSwitchButton,
                     }
                   )}
@@ -758,7 +758,7 @@ export const TradeClipboard: FunctionComponent<{
 
           <div
             className={classNames(
-              "rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:px-3 md:py-2.5",
+              "bg-osmoverse-900 rounded-xl md:rounded-xl px-4 md:px-3 py-[22px] md:py-2.5 transition-all",
               !switchOutBack ? "ease-outBack" : "ease-inBack",
               {
                 "opacity-30": isAnimatingSwitch,
@@ -773,7 +773,7 @@ export const TradeClipboard: FunctionComponent<{
             }
           >
             <div
-              className="flex place-content-between items-center transition-transform"
+              className="flex items-center place-content-between transition-transform"
               style={
                 isAnimatingSwitch
                   ? {
@@ -820,10 +820,10 @@ export const TradeClipboard: FunctionComponent<{
                   closeTokenSelectDropdowns();
                 }}
               />
-              <div className="flex w-full flex-col items-end">
+              <div className="flex flex-col items-end w-full">
                 <h5
                   className={classNames(
-                    "md:subtitle1 text-right",
+                    "text-right md:subtitle1",
                     tradeTokenInConfig.expectedSwapResult.amount
                       .toDec()
                       .isPositive()
@@ -850,13 +850,13 @@ export const TradeClipboard: FunctionComponent<{
 
           <div
             className={classNames(
-              "relative overflow-hidden rounded-lg bg-osmoverse-900 px-4 transition-all duration-300 ease-inOutBack md:px-3",
+              "relative rounded-lg bg-osmoverse-900 px-4 md:px-3 transition-all ease-inOutBack duration-300 overflow-hidden",
               showEstimateDetails ? "h-56 py-6" : "h-11 py-[10px]"
             )}
           >
             <button
               className={classNames(
-                "flex w-full place-content-between items-center",
+                "w-full flex items-center place-content-between",
                 {
                   "cursor-pointer": isEstimateDetailRelevant,
                 }
@@ -947,7 +947,7 @@ export const TradeClipboard: FunctionComponent<{
               <hr className="text-white-faint" />
               <div className="flex justify-between">
                 <div className="caption">{t("swap.expectedOutput")}</div>
-                <div className="caption whitespace-nowrap text-osmoverse-200">
+                <div className="caption text-osmoverse-200 whitespace-nowrap">
                   {`≈ ${tradeTokenInConfig.expectedSwapResult.amount.toString()} `}
                 </div>
               </div>
@@ -959,7 +959,7 @@ export const TradeClipboard: FunctionComponent<{
                 </div>
                 <div
                   className={classNames(
-                    "caption flex flex-col gap-0.5 text-right text-osmoverse-200"
+                    "caption flex flex-col text-right gap-0.5 text-osmoverse-200"
                   )}
                 >
                   <span className="whitespace-nowrap">

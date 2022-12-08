@@ -1,9 +1,9 @@
-import { WeightedPoolRaw, StablePoolRaw } from "@osmosis-labs/pools";
+import { WeightedPoolRaw } from "@osmosis-labs/pools";
 import { Duration } from "dayjs/plugin/duration";
 import { CoinPretty } from "@keplr-wallet/unit";
 
 export type Pools = {
-  pools: (WeightedPoolRaw | StablePoolRaw)[];
+  pools: WeightedPoolRaw[];
 };
 
 export type NumPools = {

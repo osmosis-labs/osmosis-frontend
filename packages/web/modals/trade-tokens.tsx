@@ -9,7 +9,7 @@ interface Props extends ModalBaseProps {
 
 export const TradeTokens: FunctionComponent<Props> = (props) => {
   return (
-    <ModalBase {...props} hideCloseButton className="!w-fit !p-0">
+    <ModalBase {...props} hideCloseButton className="!p-0 !w-fit">
       <TradeClipboard
         pools={props.pools}
         isInModal

@@ -103,13 +103,13 @@ export const Transfer: FunctionComponent<TransferProps> = ({
       />
       <div
         className={classNames(
-          "body1 flex gap-4 text-osmoverse-400 transition-opacity duration-300 md:gap-2",
+          "flex gap-4 md:gap-2 body1 text-osmoverse-400 transition-opacity duration-300",
           { "opacity-30": panelDisabled }
         )}
       >
         <div
           className={classNames(
-            "flex w-full rounded-2xl border border-white-faint p-4 text-center transition-width md:p-2",
+            "flex w-full text-center border border-white-faint rounded-2xl p-4 md:p-2 transition-width",
             {
               "w-1/4": isEditingWithdrawAddr,
               "text-osmoverse-400/30": isEditingWithdrawAddr,
@@ -117,7 +117,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
           )}
         >
           {!(isMobile && isEditingWithdrawAddr) && !panelDisabled && (
-            <div className="md:caption mx-auto flex flex-wrap items-center justify-center gap-2">
+            <div className="flex flex-wrap justify-center items-center gap-2 mx-auto md:caption">
               {!from.address.startsWith("0x") || from.address.length === 0 ? (
                 isOsmosisAccountLoaded ? (
                   Bech32Address.shortenAddress(from.address, maxFromChars)
@@ -141,14 +141,14 @@ export const Transfer: FunctionComponent<TransferProps> = ({
         </div>
         <div
           className={classNames(
-            "w-full rounded-2xl border border-white-faint text-center transition-width",
+            "w-full text-center border border-white-faint rounded-2xl transition-width",
             isEditingWithdrawAddr ? "p-[7px]" : "flex p-4 md:p-2",
             {
               "w-3/4": isEditingWithdrawAddr,
             }
           )}
         >
-          <div className="md:caption mx-auto flex flex-wrap items-center justify-center gap-2">
+          <div className="flex flex-wrap justify-center items-center gap-2 mx-auto md:caption">
             {!isEditingWithdrawAddr &&
               !panelDisabled &&
               (!to.address.startsWith("0x") || to.address.length === 0 ? (
@@ -180,7 +180,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
               !panelDisabled &&
               !isEditingWithdrawAddr && (
                 <BorderButton
-                  className="caption h-6 border border-wosmongton-300 py-0.5 px-1.5 text-wosmongton-100 hover:border-wosmongton-100/60 hover:text-wosmongton-100/60"
+                  className="h-6 py-0.5 px-1.5 caption border border-wosmongton-300 hover:border-wosmongton-100/60 text-wosmongton-100 hover:text-wosmongton-100/60"
                   onClick={() => {
                     setIsEditingWithdrawAddr(true);
                     editWithdrawAddrConfig.setCustomAddress(to.address);
@@ -220,7 +220,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
         )}
       >
         <div className="flex flex-col gap-3">
-          <div className="flex place-content-between items-baseline">
+          <div className="flex items-baseline place-content-between">
             {isMobile ? (
               <span className="subtitle1">
                 {t("assets.ibcTransfer.selectAmount")}
@@ -230,7 +230,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
             )}
             <div
               className={classNames(
-                "caption text-xs text-white-high transition-opacity",
+                "text-xs text-white-high caption transition-opacity",
                 availableBalance && availableBalance.isReady
                   ? "opacity-100"
                   : "opacity-0"
@@ -242,7 +242,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
                     network: from.networkName,
                   })}{" "}
               <button
-                className="cursor-pointer text-wosmongton-100 disabled:cursor-default"
+                className="text-wosmongton-100 cursor-pointer disabled:cursor-default"
                 disabled={availableBalance?.toDec().isZero()}
                 onClick={() => {
                   toggleIsMax();
@@ -254,20 +254,20 @@ export const Transfer: FunctionComponent<TransferProps> = ({
           </div>
           <InputBox
             type="number"
-            className="p-3 text-h6"
+            className="text-h6 p-3"
             inputClassName="text-right"
             currentValue={currentValue}
             onInput={onInput}
           />
         </div>
-        <div className="caption my-2 flex flex-col gap-2.5 rounded-lg border border-white-faint p-2.5 text-wireframes-lightGrey">
+        <div className="flex flex-col gap-2.5 p-2.5 my-2 caption text-wireframes-lightGrey border border-white-faint rounded-lg">
           {transferFee && (
-            <div className="flex place-content-between items-center">
+            <div className="flex items-center place-content-between">
               <span>{t("assets.transfer.transferFee")}</span>
               <span>{transferFee!.trim(true).toString()}</span>
             </div>
           )}
-          <div className="flex place-content-between items-center">
+          <div className="flex items-center place-content-between">
             <span>{t("assets.ibcTransfer.estimatedTime")}</span>
             <span>{waitTime}</span>
           </div>
@@ -282,12 +282,12 @@ export const Transfer: FunctionComponent<TransferProps> = ({
           </GradientView>
         )}
         {editWithdrawAddrConfig && editWithdrawAddrConfig.customAddress !== "" && (
-          <GradientView className="body2 md:caption flex flex-col gap-2 bg-osmoverse-800 text-center">
+          <GradientView className="flex flex-col gap-2 body2 md:caption text-center bg-osmoverse-800">
             <span>{t("assets.ibcTransfer.warningLossFunds")}</span>
             <div className="mx-auto">
               <CheckBox
                 isOn={editWithdrawAddrConfig.didAckWithdrawRisk}
-                className="-top-0.5 after:h-6 after:w-6 after:rounded-[10px] after:!border-superfluid checked:after:bg-superfluid"
+                className="after:!border-superfluid checked:after:bg-superfluid after:rounded-[10px] after:h-6 after:w-6 -top-0.5"
                 checkClassName="-top-1 -left-0.5 h-6 w-6 bg-superfluid rounded-[10px]"
                 checkMarkClassName="top-[1px] -left-[0.5px] h-6 w-6"
                 checkMarkIconUrl="/icons/check-mark-dark.svg"

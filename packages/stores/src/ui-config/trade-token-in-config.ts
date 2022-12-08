@@ -20,8 +20,6 @@ import { NoSendCurrencyError, InsufficientBalanceError } from "./errors";
 export class ObservableTradeTokenInConfig extends AmountConfig {
   @observable.ref
   protected _pools: Pool[];
-  @observable
-  protected _incentivizedPoolIds: string[];
 
   @observable
   protected _inCurrencyMinimalDenom: string | undefined = undefined;
@@ -33,16 +31,14 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   constructor(
     chainGetter: ChainGetter,
     queriesStore: IQueriesStore,
-    protected readonly initialChainId: string,
+    initialChainId: string,
     sender: string,
     feeConfig: IFeeConfig | undefined,
-    pools: Pool[],
-    incentivizedPoolIds: string[] = []
+    pools: Pool[]
   ) {
     super(chainGetter, queriesStore, initialChainId, sender, feeConfig);
 
     this._pools = pools;
-    this._incentivizedPoolIds = incentivizedPoolIds;
 
     makeObservable(this);
   }
@@ -50,11 +46,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   @action
   setPools(pools: Pool[]) {
     this._pools = pools;
-  }
-
-  @action
-  setIncentivizedPoolIds(poolIds: string[]) {
-    this._incentivizedPoolIds = poolIds;
   }
 
   @override
@@ -194,13 +185,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
   @computed
   protected get optimizedRoutes(): OptimizedRoutes {
-    const stakeCurrencyMinDenom = this.chainGetter.getChain(this.initialChainId)
-      .stakeCurrency.coinMinimalDenom;
-    return new OptimizedRoutes(
-      this.pools,
-      this._incentivizedPoolIds,
-      stakeCurrencyMinDenom
-    );
+    return new OptimizedRoutes(this.pools);
   }
 
   @computed

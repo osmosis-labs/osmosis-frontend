@@ -35,25 +35,25 @@ const Palette = ({
 
   return (
     <div
-      className="pointer-events-none absolute bottom-[40px] z-[11] h-auto"
+      className="absolute pointer-events-none h-auto bottom-[40px] z-[11]"
       style={{
         width: `calc(100% - ${sidebarWidth}px)`,
       }}
     >
       <div
-        className="mx-auto w-full max-w-[424px] rounded-[16px] bg-osmoverse-700 p-[20px]"
+        className="w-full max-w-[424px] rounded-[16px] bg-osmoverse-700 p-[20px] mx-auto"
         style={{
           pointerEvents: "all",
         }}
       >
-        <div className="mx-2 mb-[5px] flex h-auto justify-between">
-          <div className="my-auto font-subtitle1">
+        <div className="flex justify-between h-auto mx-2 mb-[5px]">
+          <div className="font-subtitle1 my-auto">
             {doneEnabled ? `(${x + 1}, ${y + 1})` : " "}
           </div>
           <div
             className={`cursor-pointer ${
               doneEnabled ? "text-rust-200" : "text-rust-600"
-            } my-auto text-base font-subtitle1`}
+            } font-subtitle1 text-base my-auto`}
             onClick={() => {
               openShareModal();
             }}
@@ -62,7 +62,7 @@ const Palette = ({
           </div>
         </div>
         <div
-          className="grid h-auto w-full content-center justify-around"
+          className="w-full h-auto grid justify-around content-center"
           style={{
             gridTemplateRows: "repeat(2, 50px)",
             gridTemplateColumns: "repeat(8, 1fr)",
@@ -72,22 +72,22 @@ const Palette = ({
             <React.Fragment key={idx}>
               {maxColors > idx ? (
                 idx === colorIndex ? (
-                  <div className="m-auto flex h-[36px] w-[36px] cursor-pointer items-center justify-center rounded-full border-0 bg-white-full">
+                  <div className="cursor-pointer w-[36px] h-[36px] rounded-full border-0 m-auto flex items-center justify-center bg-white-full">
                     <div
-                      className="m-auto h-[32px] w-[32px] rounded-full border-2 border-black"
+                      className="w-[32px] h-[32px] rounded-full border-2 border-black m-auto"
                       style={{ backgroundColor: color }}
                     />
                   </div>
                 ) : (
                   <div
-                    className="m-auto h-[28px] w-[28px] cursor-pointer rounded-full border-0"
+                    className="cursor-pointer w-[28px] h-[28px] rounded-full border-0 m-auto"
                     onClick={() => colorOnClick(idx)}
                     style={{ backgroundColor: color }}
                   />
                 )
               ) : (
                 <div
-                  className="m-auto h-[28px] w-[28px] rounded-full bg-transparent"
+                  className="w-[28px] h-[28px] rounded-full bg-transparent m-auto"
                   style={{
                     border: "1px dashed rgba(255, 255, 255, 0.4)",
                   }}
@@ -99,13 +99,13 @@ const Palette = ({
         {maxColors < 5 ? (
           <div className="relative">
             <a
-              className="absolute bottom-[6px] flex w-full flex-row items-center justify-center rounded-lg py-[8px] text-center text-subtitle1 text-xs tracking-tighter"
+              className="absolute flex flex-row items-center justify-center w-full rounded-lg text-subtitle1 tracking-tighter text-xs bottom-[6px] text-center py-[8px]"
               href="https://wallet.keplr.app/chains/osmosis"
               target="_blank"
               rel="noopener noreferrer"
             >
               Redelegate to bottom 2/3 validators to unlock color
-              <div className="ml-1 flex items-center justify-center">
+              <div className="flex items-center justify-center ml-1">
                 <Image
                   alt="link"
                   src="/icons/link-deco-real-white.svg"
@@ -118,7 +118,7 @@ const Palette = ({
         ) : null}
         <Button
           size="sm"
-          className="mt-4 w-full !py-2"
+          className="w-full mt-4 !py-2"
           onClick={() => {
             if (doneEnabled) {
               clickDone();

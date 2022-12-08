@@ -13,7 +13,7 @@ export const ShowMoreButton: FunctionComponent<ToggleProps & CustomClasses> = ({
   const t = useTranslation();
   return (
     <button
-      className={classNames("button flex flex-col gap-1", className)}
+      className={classNames("flex flex-col gap-1 button", className)}
       onClick={() => onToggle(isOn)}
     >
       <span className="body2 md:caption text-wosmongton-200">

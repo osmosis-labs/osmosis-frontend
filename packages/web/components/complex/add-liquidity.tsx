@@ -28,35 +28,31 @@ export const AddLiquidity: FunctionComponent<
 
     return (
       <div className={classNames("flex flex-col gap-8", className)}>
-        {addLiquidityConfig.supportsSingleAmountIn && (
-          <div className="flex flex-col gap-4 text-center">
-            <div className="mx-auto">
-              <MenuToggle
-                selectedOptionId={
-                  addLiquidityConfig.isSingleAmountIn ? "single" : "all"
-                }
-                options={[
-                  {
-                    id: "all",
-                    display: t("addLiquidity.allAssets"),
-                  },
-                  { id: "single", display: t("addLiquidity.singleAsset") },
-                ]}
-                onSelect={(id) => {
-                  if (id === "single") {
-                    addLiquidityConfig.setIsSingleAmountIn(true);
-                  } else addLiquidityConfig.setIsSingleAmountIn(false);
-                }}
-              />
-            </div>
-            {addLiquidityConfig.isSingleAmountIn && (
-              <span className="caption">
-                {t("addLiquidity.autoswapCaption")}
-              </span>
-            )}
+        <div className="flex flex-col gap-4 text-center">
+          <div className="mx-auto">
+            <MenuToggle
+              selectedOptionId={
+                addLiquidityConfig.isSingleAmountIn ? "single" : "all"
+              }
+              options={[
+                {
+                  id: "all",
+                  display: t("addLiquidity.allAssets"),
+                },
+                { id: "single", display: t("addLiquidity.singleAsset") },
+              ]}
+              onSelect={(id) => {
+                if (id === "single") {
+                  addLiquidityConfig.setIsSingleAmountIn(true);
+                } else addLiquidityConfig.setIsSingleAmountIn(false);
+              }}
+            />
           </div>
-        )}
-        <div className="flex max-h-96 flex-col gap-2.5 overflow-y-auto">
+          {addLiquidityConfig.isSingleAmountIn && (
+            <span className="caption">{t("addLiquidity.autoswapCaption")}</span>
+          )}
+        </div>
+        <div className="flex flex-col gap-2.5 max-h-96 overflow-y-auto">
           {(addLiquidityConfig.isSingleAmountIn &&
           addLiquidityConfig.singleAmountInAsset
             ? [addLiquidityConfig.singleAmountInAsset]
@@ -96,9 +92,9 @@ export const AddLiquidity: FunctionComponent<
             return (
               <div
                 key={currency.coinDenom}
-                className="flex w-full flex-col gap-1 rounded-2xl border border-osmoverse-700 p-4 md:rounded-xl md:p-3"
+                className="flex flex-col gap-1 w-full md:p-3 p-4 border border-osmoverse-700 md:rounded-xl rounded-2xl"
               >
-                <div className="flex w-full place-content-between items-center">
+                <div className="flex items-center w-full place-content-between">
                   {addLiquidityConfig.isSingleAmountIn ? (
                     <PoolTokenSelect
                       tokens={addLiquidityConfig.poolAssets.map(
@@ -133,14 +129,14 @@ export const AddLiquidity: FunctionComponent<
                   )}
                   <div className="flex flex-col gap-2">
                     {!isMobile && (
-                      <div className="flex justify-end gap-2 text-caption font-caption">
+                      <div className="flex gap-2 text-caption font-caption justify-end">
                         <span className="my-auto">
                           {t("addLiquidity.available")}
                         </span>
                         {assetBalance && (
                           <span
                             className={classNames(
-                              "my-auto text-wosmongton-300",
+                              "text-wosmongton-300 my-auto",
                               assetBalance?.toDec().isZero()
                                 ? "opacity-70"
                                 : "cursor-pointer"
@@ -152,7 +148,7 @@ export const AddLiquidity: FunctionComponent<
                         )}
                       </div>
                     )}
-                    <div className="flex place-content-end items-center gap-1">
+                    <div className="flex items-center place-content-end gap-1">
                       <div className="flex flex-col rounded-lg bg-osmoverse-1000 p-1">
                         <InputBox
                           style="no-border"
@@ -163,7 +159,7 @@ export const AddLiquidity: FunctionComponent<
                           placeholder=""
                         />
                         {!isMobile && (
-                          <span className="pr-3 text-right text-xs font-caption leading-5 text-osmoverse-400">
+                          <span className="text-right text-xs font-caption text-osmoverse-400 leading-5 pr-3">
                             {!inputAmountValue ||
                             inputAmountValue.toDec().isZero() ? (
                               <br />
@@ -203,7 +199,7 @@ export const AddLiquidity: FunctionComponent<
           })}
         </div>
         {addLiquidityConfig.singleAmountInPriceImpact && (
-          <div className="caption flex place-content-between p-4 text-osmoverse-300">
+          <div className="flex place-content-between p-4 caption text-osmoverse-300">
             <span>Price impact</span>
             <span>
               {addLiquidityConfig.singleAmountInPriceImpact.toString()}

@@ -24,7 +24,7 @@ describe("Join Pool Tx", () => {
 
     // And prepare the pool
     await new Promise<any>((resolve) => {
-      account.osmosis.sendCreateBalancerPoolMsg(
+      account.osmosis.sendCreatePoolMsg(
         "0",
         [
           {

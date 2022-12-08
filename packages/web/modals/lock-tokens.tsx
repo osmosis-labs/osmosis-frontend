@@ -42,8 +42,8 @@ export const LockTokensModal: FunctionComponent<
   const { superfluidPoolConfig } = useSuperfluidPoolConfig(poolDetailConfig);
   const bondLiquidityConfig = useBondLiquidityConfig(bech32Address, poolId);
 
-  const bondDurations =
-    bondLiquidityConfig?.getAllowedBondDurations(
+  const bondableDurations =
+    bondLiquidityConfig?.getBondableAllowedDurations(
       (denom) => chainStore.getChain(chainId).forceFindCurrency(denom),
       ExternalIncentiveGaugeAllowList[poolId]
     ) ?? [];
@@ -59,23 +59,14 @@ export const LockTokensModal: FunctionComponent<
     superfluidPoolConfig?.superfluid?.delegations &&
     superfluidPoolConfig.superfluid.delegations.length > 0;
   const superfluidApr =
-    bondDurations[bondDurations.length - 1]?.superfluid?.apr;
+    bondableDurations[bondableDurations.length - 1]?.superfluid?.apr;
 
   // component state
   const [selectedDurationIndex, setSelectedDurationIndex] = useState<
     number | null
   >(null);
-
-  /** Superfluid duration assumed to be longest duration in lockableDurations
-   *  chain parameter.
-   */
-  const longestDuration = poolDetailConfig?.longestDuration;
-  const superfluidDurationSelected =
-    selectedDurationIndex !== null &&
-    bondDurations.length > selectedDurationIndex &&
-    bondDurations[selectedDurationIndex].duration.asMilliseconds() ===
-      longestDuration?.asMilliseconds();
-
+  const highestDurationSelected =
+    selectedDurationIndex === bondableDurations.length - 1;
   const [electSuperfluid, setElectSuperfluid] = useState(false);
   useEffect(() => {
     if (superfluidPoolConfig?.isSuperfluid) {
@@ -85,14 +76,14 @@ export const LockTokensModal: FunctionComponent<
 
   let selectedApr =
     selectedDurationIndex !== null
-      ? bondDurations[selectedDurationIndex]?.aggregateApr
+      ? bondableDurations[selectedDurationIndex]?.aggregateApr
       : undefined;
-  const superfluidInEffect = electSuperfluid && superfluidDurationSelected;
+  const superfluidInEffect = electSuperfluid && highestDurationSelected;
 
   if (
     selectedApr &&
     superfluidApr &&
-    superfluidDurationSelected &&
+    highestDurationSelected &&
     !electSuperfluid
   ) {
     selectedApr = selectedApr.sub(superfluidApr);
@@ -105,7 +96,7 @@ export const LockTokensModal: FunctionComponent<
         selectedDurationIndex === null ||
         isSendingMsg,
       onClick: () => {
-        const bondableDuration = bondDurations.find(
+        const bondableDuration = bondableDurations.find(
           (_, index) => index === selectedDurationIndex
         );
         if (bondableDuration) {
@@ -116,7 +107,7 @@ export const LockTokensModal: FunctionComponent<
             // Logically it could be a problem if it's not the mainnet
             hasSuperfluidValidator ||
               !superfluidPoolConfig?.isSuperfluid ||
-              !superfluidDurationSelected
+              !highestDurationSelected
               ? undefined
               : electSuperfluid
           );
@@ -124,9 +115,7 @@ export const LockTokensModal: FunctionComponent<
       },
       children:
         (config.error ? t(...tError(config.error)) : false) ||
-        (electSuperfluid &&
-        !hasSuperfluidValidator &&
-        superfluidDurationSelected
+        (electSuperfluid && !hasSuperfluidValidator && highestDurationSelected
           ? t("lockToken.buttonNext")
           : superfluidInEffect
           ? t("lockToken.buttonBondStake")
@@ -137,8 +126,8 @@ export const LockTokensModal: FunctionComponent<
 
   // auto select the gauge if there's one
   useEffect(() => {
-    if (bondDurations.length === 1) setSelectedDurationIndex(0);
-  }, [bondDurations]);
+    if (bondableDurations.length === 1) setSelectedDurationIndex(0);
+  }, [bondableDurations]);
 
   return (
     <ModalBase
@@ -150,7 +139,7 @@ export const LockTokensModal: FunctionComponent<
         <span className="subtitle1 text-center">
           {t("lockToken.selectPeriod")}
         </span>
-        <h2 className="text-center md:text-h3 md:font-h3">
+        <h2 className="text-center md:font-h3 md:text-h3">
           <span
             className={classNames({ "text-superfluid": superfluidInEffect })}
           >
@@ -158,8 +147,8 @@ export const LockTokensModal: FunctionComponent<
           </span>{" "}
           {t("pool.APR")}
         </h2>
-        <div className="flex gap-4 overflow-x-auto p-[3px] md:gap-1">
-          {bondDurations.map(({ duration, aggregateApr }, index) => (
+        <div className="flex gap-4 md:gap-1 overflow-x-auto p-[3px]">
+          {bondableDurations.map(({ duration, aggregateApr }, index) => (
             <LockupItem
               key={index}
               duration={duration.locale(locale).humanize()}
@@ -171,20 +160,20 @@ export const LockTokensModal: FunctionComponent<
         </div>
         {superfluidPoolConfig?.isSuperfluid && (
           <CheckBox
-            className="-top-0.5 -left-0.5 transition-all after:!h-6 after:!w-6 after:!rounded-[10px] after:!border-2 after:!border-superfluid after:!bg-transparent checked:after:border-none checked:after:bg-superfluid"
-            isOn={superfluidDurationSelected && electSuperfluid}
+            className="after:!bg-transparent after:!border-2 after:!rounded-[10px] -top-0.5 -left-0.5 after:!h-6 after:!w-6 after:!border-superfluid checked:after:bg-superfluid checked:after:border-none transition-all"
+            isOn={highestDurationSelected && electSuperfluid}
             onToggle={() => setElectSuperfluid(!electSuperfluid)}
             checkMarkIconUrl="/icons/check-mark-dark.svg"
             checkMarkClassName="left-0 h-6 w-6"
-            disabled={!superfluidDurationSelected || hasSuperfluidValidator}
+            disabled={!highestDurationSelected || hasSuperfluidValidator}
           >
             <div
               className={classNames("flex flex-col gap-1", {
                 "opacity-30":
-                  !superfluidDurationSelected || hasSuperfluidValidator,
+                  !highestDurationSelected || hasSuperfluidValidator,
               })}
             >
-              <h6 className="md:text-subtitle1 md:font-subtitle1">
+              <h6 className="md:font-subtitle1 md:text-subtitle1">
                 {t("lockToken.superfluidStake")}{" "}
                 {superfluidApr && `(+${superfluidApr.maxDecimals(0)} APR)`}
               </h6>
@@ -201,13 +190,13 @@ export const LockTokensModal: FunctionComponent<
           </CheckBox>
         )}
         <div className="flex flex-col gap-2">
-          <div className="flex place-content-between items-center">
+          <div className="flex items-center place-content-between">
             <span className="subtitle1">{t("lockToken.amountToBond")}</span>
             {availableToken && (
-              <div className="caption flex gap-1">
+              <div className="flex gap-1 caption">
                 <span>{t("lockToken.availableToken")}</span>
                 <span
-                  className="cursor-pointer text-wosmongton-300"
+                  className="text-wosmongton-300 cursor-pointer"
                   onClick={() => config.setIsMax(true)}
                 >
                   {t("pool.sharesAmount", {
@@ -243,16 +232,16 @@ const LockupItem: FunctionComponent<{
   <button
     onClick={onSelect}
     className={classNames(
-      "w-full cursor-pointer rounded-xl px-5 py-5 transition-colors md:px-3 md:py-3.5",
+      "rounded-xl w-full md:px-3 px-5 md:py-3.5 py-5 cursor-pointer transition-colors",
       isSelected
-        ? "-m-px !border-[3px] border-osmoverse-200 bg-osmoverse-700"
-        : "border border-osmoverse-600 hover:-m-px hover:border-2 hover:border-osmoverse-200"
+        ? "bg-osmoverse-700 -m-px !border-[3px] border-osmoverse-200"
+        : "border border-osmoverse-600 hover:border-2 hover:border-osmoverse-200 hover:-m-px"
     )}
   >
-    <div className="flex w-full flex-col place-content-between text-center">
+    <div className="flex w-full place-content-between flex-col text-center">
       <h5>{duration}</h5>
       {apr && (
-        <p className="subtitle1 mt-1 text-wosmongton-200 md:m-0">{apr}</p>
+        <p className="subtitle1 md:m-0 mt-1 text-wosmongton-200">{apr}</p>
       )}
     </div>
   </button>

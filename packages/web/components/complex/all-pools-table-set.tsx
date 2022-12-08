@@ -371,8 +371,8 @@ export const AllPoolsTableSet: FunctionComponent<{
                 poolName: poolWithFeeMetrics.pool.poolAssets
                   .map((poolAsset) => poolAsset.amount.denom)
                   .join(" / "),
-                poolWeight: poolWithFeeMetrics.pool.weightedPoolInfo?.assets
-                  .map((poolAsset) => poolAsset.weightFraction?.toString())
+                poolWeight: poolWithFeeMetrics.pool.poolAssets
+                  .map((poolAsset) => poolAsset.weightFraction.toString())
                   .join(" / "),
                 isSuperfluidPool:
                   queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
@@ -401,7 +401,6 @@ export const AllPoolsTableSet: FunctionComponent<{
             {
               poolId,
               poolAssets,
-              stableswapPool: poolWithMetrics.pool.type === "stable",
             },
             { value: poolWithMetrics.liquidity.toString() },
             {
@@ -568,8 +567,8 @@ export const AllPoolsTableSet: FunctionComponent<{
 
     return (
       <>
-        <div className="mt-5 flex flex-col gap-3">
-          <div className="flex place-content-between items-center">
+        <div className="flex flex-col gap-3 mt-5">
+          <div className="flex items-center place-content-between">
             <h5>{t("pools.allPools.title")}</h5>
             <Switch
               isOn={isPoolTvlFiltered}
@@ -582,7 +581,7 @@ export const AllPoolsTableSet: FunctionComponent<{
               </span>
             </Switch>
           </div>
-          <div className="flex flex-wrap place-content-between items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4 place-content-between">
             <MenuToggle
               className="inline"
               options={poolsMenuOptions}
@@ -638,7 +637,7 @@ export const AllPoolsTableSet: FunctionComponent<{
           rowDefs={tableRows}
           data={tableData}
         />
-        <div className="flex place-content-center items-center">
+        <div className="flex items-center place-content-center">
           <PageList
             currentValue={page}
             max={numPages}

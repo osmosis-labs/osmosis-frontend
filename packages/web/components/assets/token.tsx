@@ -28,7 +28,7 @@ export const Token: FunctionComponent<
           colorIndex={ringColorIndex}
         />
       )}
-      <div className="flex flex-col place-content-center text-left">
+      <div className="flex flex-col text-left place-content-center">
         {isMobile ? (
           <h6>{truncateString(justCoinDenom)}</h6>
         ) : (

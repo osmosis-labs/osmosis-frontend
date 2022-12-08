@@ -93,7 +93,7 @@ export const TransferHistoryTable: FunctionComponent<CustomClasses> = observer(
 
     return histories.length > 0 ? (
       <>
-        <div className="mt-8 text-h5 font-h5 md:text-h6 md:font-h6">
+        <div className="text-h5 font-h5 md:text-h6 md:font-h6 mt-8">
           {t("assets.historyTable.title")}
         </div>
         <Table<BaseCell & History>
@@ -169,7 +169,7 @@ const StatusDisplayCell: FunctionComponent<
     // Show pending for uncommitted history..
     return (
       <div className="flex items-center gap-2">
-        <div className="h-6 w-6 animate-spin">
+        <div className="w-6 h-6 animate-spin">
           <Image
             alt="loading"
             src="/icons/loading-blue.svg"
@@ -198,7 +198,7 @@ const StatusDisplayCell: FunctionComponent<
     case "pending":
       return (
         <div className="flex items-center gap-2">
-          <div className="h-6 w-6 animate-spin">
+          <div className="w-6 h-6 animate-spin">
             <Image
               alt="loading"
               src="/icons/loading-blue.svg"
@@ -219,7 +219,7 @@ const StatusDisplayCell: FunctionComponent<
     case "timeout":
       return (
         <div className="flex items-center gap-2">
-          <div className="h-6 w-6 animate-spin">
+          <div className="w-6 h-6 animate-spin">
             <Image
               alt="loading"
               src="/icons/loading-blue.svg"

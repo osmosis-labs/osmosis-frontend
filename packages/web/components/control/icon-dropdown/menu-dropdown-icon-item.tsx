@@ -26,7 +26,7 @@ export const MenuDropdownIconItem: FunctionComponent<Props> = ({
   return (
     <button
       className={classNames(
-        "flex cursor-pointer items-center px-4 py-2 transition-colors hover:bg-osmoverse-700 ",
+        "px-4 py-2 cursor-pointer hover:bg-osmoverse-700 transition-colors flex items-center ",
         {
           "rounded-b-xlinset": index === optionLength - 1,
           "rounded-t-xlinset": index === 0,
@@ -36,7 +36,7 @@ export const MenuDropdownIconItem: FunctionComponent<Props> = ({
       onClick={() => onSelect(option)}
     >
       {option.iconUrl && (
-        <div className="flex min-w-[24px] items-center justify-center">
+        <div className="flex items-center justify-center min-w-[24px]">
           <Image
             src={option.iconUrl}
             width={24}

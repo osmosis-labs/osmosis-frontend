@@ -2,44 +2,36 @@ import { MsgOpt } from "@keplr-wallet/stores";
 import { Currency } from "@keplr-wallet/types";
 import { Dec, DecUtils, Int, Coin } from "@keplr-wallet/unit";
 import { Msg } from "@cosmjs/launchpad";
-import * as PoolMath from "@osmosis-labs/math";
+import * as WeightedPoolMath from "@osmosis-labs/math";
 
 /**
- * Helpers for constructing Amino messages involving min amount estimates for Osmosis.
+ * Helpers for constructing Amino messages for Osmosis.
  * Amino Ref: https://github.com/tendermint/go-amino/
  *
  * Note: not an exhaustive list.
  */
 export class Amino {
-  /** Estimate min amount out givem a pool with asset weights or reserves with scaling factors. (AKA weighted, or stable.) */
   public static makeMultihopSwapExactAmountInMsg(
     msgOpt: Pick<MsgOpt, "type">,
     sender: string,
     tokenIn: { currency: Currency; amount: string },
-    pools: {
+    routes: {
       pool: {
         id: string;
-        swapFee: Dec;
         inPoolAsset: {
           coinDecimals: number;
           coinMinimalDenom: string;
           amount: Int;
-          weight?: Int;
+          weight: Int;
         };
-        outPoolAsset: { denom: string; amount: Int; weight?: Int };
-        poolAssets: {
-          amount: Int;
-          denom: string;
-          scalingFactor: number;
-        }[];
-        isIncentivized: boolean;
+        outPoolAsset: { amount: Int; weight: Int };
+        swapFee: Dec;
       };
       tokenOutCurrency: Currency;
     }[],
-    stakeCurrencyMinDenom: string,
     maxSlippage: string = "0"
   ) {
-    const estimated = PoolMath.estimateMultihopSwapExactAmountIn(
+    const estimated = WeightedPoolMath.estimateMultihopSwapExactAmountIn(
       {
         currency: tokenIn.currency,
         amount: new Dec(tokenIn.amount)
@@ -51,8 +43,7 @@ export class Amino {
           .truncate()
           .toString(),
       },
-      pools,
-      stakeCurrencyMinDenom
+      routes
     );
     const maxSlippageDec = new Dec(maxSlippage).quo(
       DecUtils.getTenExponentNInPrecisionRange(2)
@@ -60,7 +51,7 @@ export class Amino {
 
     const tokenOutMinAmount = maxSlippageDec.equals(new Dec(0))
       ? new Int(1)
-      : PoolMath.calcPriceImpactWithAmount(
+      : WeightedPoolMath.calcPriceImpactTokenIn(
           estimated.spotPriceBeforeRaw,
           new Dec(tokenIn.amount)
             .mul(
@@ -83,7 +74,7 @@ export class Amino {
       type: msgOpt.type,
       value: {
         sender,
-        routes: pools.map((route) => {
+        routes: routes.map((route) => {
           return {
             pool_id: route.pool.id,
             token_out_denom: route.tokenOutCurrency.coinMinimalDenom,
@@ -98,7 +89,6 @@ export class Amino {
     };
   }
 
-  /** Estimate min amount out given a pool with asset weights or reserves with scaling factors. (AKA weighted, or stable.) */
   public static makeSwapExactAmountInMsg(
     pool: {
       id: string;
@@ -106,14 +96,9 @@ export class Amino {
         coinDecimals: number;
         coinMinimalDenom: string;
         amount: Int;
-        weight?: Int;
+        weight: Int;
       };
-      outPoolAsset: { denom: string; amount: Int; weight?: Int };
-      poolAssets: {
-        amount: Int;
-        denom: string;
-        scalingFactor: number;
-      }[];
+      outPoolAsset: { amount: Int; weight: Int };
       swapFee: Dec;
     },
     msgOpt: Pick<MsgOpt, "type">,
@@ -129,7 +114,7 @@ export class Amino {
       .truncate();
     const coin = new Coin(tokenIn.currency.coinMinimalDenom, inUAmount);
 
-    const estimated = PoolMath.estimateSwapExactAmountIn(
+    const estimated = WeightedPoolMath.estimateSwapExactAmountIn(
       pool,
       coin,
       tokenOutCurrency
@@ -141,7 +126,7 @@ export class Amino {
 
     const tokenOutMinAmount = maxSlippageDec.equals(new Dec(0))
       ? new Int(1)
-      : PoolMath.calcPriceImpactWithAmount(
+      : WeightedPoolMath.calcPriceImpactTokenIn(
           estimated.raw.spotPriceBefore,
           inUAmount,
           maxSlippageDec
@@ -166,7 +151,6 @@ export class Amino {
     };
   }
 
-  /** Estimate min amount in given a pool with asset weights or reserves with scaling factors. (AKA weighted, or stable.) */
   public static makeSwapExactAmountOutMsg(
     pool: {
       id: string;
@@ -174,14 +158,9 @@ export class Amino {
         coinDecimals: number;
         coinMinimalDenom: string;
         amount: Int;
-        weight?: Int;
+        weight: Int;
       };
-      outPoolAsset: { denom: string; amount: Int; weight?: Int };
-      poolAssets: {
-        amount: Int;
-        denom: string;
-        scalingFactor: number;
-      }[];
+      outPoolAsset: { amount: Int; weight: Int };
       swapFee: Dec;
     },
     msgOpt: Pick<MsgOpt, "type">,
@@ -197,7 +176,7 @@ export class Amino {
       .truncate();
     const coin = new Coin(tokenOut.currency.coinMinimalDenom, outUAmount);
 
-    const estimated = PoolMath.estimateSwapExactAmountOut(
+    const estimated = WeightedPoolMath.estimateSwapExactAmountOut(
       pool,
       coin,
       tokenInCurrency
@@ -210,7 +189,7 @@ export class Amino {
     const tokenInMaxAmount = maxSlippageDec.equals(new Dec(0))
       ? // TODO: Set exact 2^128 - 1
         new Int(1_000_000_000_000)
-      : PoolMath.calcPriceImpactWithAmount(
+      : WeightedPoolMath.calcPriceImpactTokenOut(
           estimated.raw.spotPriceBefore,
           outUAmount,
           maxSlippageDec

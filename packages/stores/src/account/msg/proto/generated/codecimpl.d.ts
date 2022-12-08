@@ -3520,11 +3520,11 @@ export namespace osmosis {
             /** Pool poolLiquidity */
             poolLiquidity?: cosmos.base.v1beta1.ICoin[] | null;
 
-            /** Pool scalingFactors */
-            scalingFactors?: Long[] | null;
+            /** Pool scalingFactor */
+            scalingFactor?: Long[] | null;
 
-            /** Pool scalingFactorController */
-            scalingFactorController?: string | null;
+            /** Pool scalingFactorGovernor */
+            scalingFactorGovernor?: string | null;
           }
 
           /** Represents a Pool. */
@@ -3553,11 +3553,11 @@ export namespace osmosis {
             /** Pool poolLiquidity. */
             public poolLiquidity: cosmos.base.v1beta1.ICoin[];
 
-            /** Pool scalingFactors. */
-            public scalingFactors: Long[];
+            /** Pool scalingFactor. */
+            public scalingFactor: Long[];
 
-            /** Pool scalingFactorController. */
-            public scalingFactorController: string;
+            /** Pool scalingFactorGovernor. */
+            public scalingFactorGovernor: string;
 
             /**
              * Creates a new Pool instance using the specified properties.
@@ -3723,9 +3723,6 @@ export namespace osmosis {
 
             /** MsgCreateStableswapPool futurePoolGovernor */
             futurePoolGovernor?: string | null;
-
-            /** MsgCreateStableswapPool scalingFactorController */
-            scalingFactorController?: string | null;
           }
 
           /** Represents a MsgCreateStableswapPool. */
@@ -3752,9 +3749,6 @@ export namespace osmosis {
 
             /** MsgCreateStableswapPool futurePoolGovernor. */
             public futurePoolGovernor: string;
-
-            /** MsgCreateStableswapPool scalingFactorController. */
-            public scalingFactorController: string;
 
             /**
              * Creates a new MsgCreateStableswapPool instance using the specified properties.
@@ -4066,6 +4060,1535 @@ export namespace osmosis {
           }
         }
       }
+    }
+  }
+
+  /** Namespace lockup. */
+  namespace lockup {
+    /** Properties of a PeriodLock. */
+    interface IPeriodLock {
+      /** PeriodLock ID */
+      ID?: Long | null;
+
+      /** PeriodLock owner */
+      owner?: string | null;
+
+      /** PeriodLock duration */
+      duration?: google.protobuf.IDuration | null;
+
+      /** PeriodLock endTime */
+      endTime?: google.protobuf.ITimestamp | null;
+
+      /** PeriodLock coins */
+      coins?: cosmos.base.v1beta1.ICoin[] | null;
+    }
+
+    /** Represents a PeriodLock. */
+    class PeriodLock implements IPeriodLock {
+      /**
+       * Constructs a new PeriodLock.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.lockup.IPeriodLock);
+
+      /** PeriodLock ID. */
+      public ID: Long;
+
+      /** PeriodLock owner. */
+      public owner: string;
+
+      /** PeriodLock duration. */
+      public duration?: google.protobuf.IDuration | null;
+
+      /** PeriodLock endTime. */
+      public endTime?: google.protobuf.ITimestamp | null;
+
+      /** PeriodLock coins. */
+      public coins: cosmos.base.v1beta1.ICoin[];
+
+      /**
+       * Creates a new PeriodLock instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns PeriodLock instance
+       */
+      public static create(
+        properties?: osmosis.lockup.IPeriodLock
+      ): osmosis.lockup.PeriodLock;
+
+      /**
+       * Encodes the specified PeriodLock message. Does not implicitly {@link osmosis.lockup.PeriodLock.verify|verify} messages.
+       * @param m PeriodLock message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.lockup.IPeriodLock,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a PeriodLock message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns PeriodLock
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.lockup.PeriodLock;
+
+      /**
+       * Creates a PeriodLock message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns PeriodLock
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.lockup.PeriodLock;
+
+      /**
+       * Creates a plain object from a PeriodLock message. Also converts values to other types if specified.
+       * @param m PeriodLock
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.lockup.PeriodLock,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this PeriodLock to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** LockQueryType enum. */
+    enum LockQueryType {
+      ByDuration = 0,
+      ByTime = 1,
+    }
+
+    /** Properties of a QueryCondition. */
+    interface IQueryCondition {
+      /** QueryCondition lockQueryType */
+      lockQueryType?: osmosis.lockup.LockQueryType | null;
+
+      /** QueryCondition denom */
+      denom?: string | null;
+
+      /** QueryCondition duration */
+      duration?: google.protobuf.IDuration | null;
+
+      /** QueryCondition timestamp */
+      timestamp?: google.protobuf.ITimestamp | null;
+    }
+
+    /** Represents a QueryCondition. */
+    class QueryCondition implements IQueryCondition {
+      /**
+       * Constructs a new QueryCondition.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.lockup.IQueryCondition);
+
+      /** QueryCondition lockQueryType. */
+      public lockQueryType: osmosis.lockup.LockQueryType;
+
+      /** QueryCondition denom. */
+      public denom: string;
+
+      /** QueryCondition duration. */
+      public duration?: google.protobuf.IDuration | null;
+
+      /** QueryCondition timestamp. */
+      public timestamp?: google.protobuf.ITimestamp | null;
+
+      /**
+       * Creates a new QueryCondition instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns QueryCondition instance
+       */
+      public static create(
+        properties?: osmosis.lockup.IQueryCondition
+      ): osmosis.lockup.QueryCondition;
+
+      /**
+       * Encodes the specified QueryCondition message. Does not implicitly {@link osmosis.lockup.QueryCondition.verify|verify} messages.
+       * @param m QueryCondition message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.lockup.IQueryCondition,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a QueryCondition message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns QueryCondition
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.lockup.QueryCondition;
+
+      /**
+       * Creates a QueryCondition message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns QueryCondition
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.lockup.QueryCondition;
+
+      /**
+       * Creates a plain object from a QueryCondition message. Also converts values to other types if specified.
+       * @param m QueryCondition
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.lockup.QueryCondition,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this QueryCondition to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a SyntheticLock. */
+    interface ISyntheticLock {
+      /** SyntheticLock underlyingLockId */
+      underlyingLockId?: Long | null;
+
+      /** SyntheticLock synthDenom */
+      synthDenom?: string | null;
+
+      /** SyntheticLock endTime */
+      endTime?: google.protobuf.ITimestamp | null;
+
+      /** SyntheticLock duration */
+      duration?: google.protobuf.IDuration | null;
+    }
+
+    /** Represents a SyntheticLock. */
+    class SyntheticLock implements ISyntheticLock {
+      /**
+       * Constructs a new SyntheticLock.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.lockup.ISyntheticLock);
+
+      /** SyntheticLock underlyingLockId. */
+      public underlyingLockId: Long;
+
+      /** SyntheticLock synthDenom. */
+      public synthDenom: string;
+
+      /** SyntheticLock endTime. */
+      public endTime?: google.protobuf.ITimestamp | null;
+
+      /** SyntheticLock duration. */
+      public duration?: google.protobuf.IDuration | null;
+
+      /**
+       * Creates a new SyntheticLock instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns SyntheticLock instance
+       */
+      public static create(
+        properties?: osmosis.lockup.ISyntheticLock
+      ): osmosis.lockup.SyntheticLock;
+
+      /**
+       * Encodes the specified SyntheticLock message. Does not implicitly {@link osmosis.lockup.SyntheticLock.verify|verify} messages.
+       * @param m SyntheticLock message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.lockup.ISyntheticLock,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a SyntheticLock message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns SyntheticLock
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.lockup.SyntheticLock;
+
+      /**
+       * Creates a SyntheticLock message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns SyntheticLock
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.lockup.SyntheticLock;
+
+      /**
+       * Creates a plain object from a SyntheticLock message. Also converts values to other types if specified.
+       * @param m SyntheticLock
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.lockup.SyntheticLock,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this SyntheticLock to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Represents a Msg */
+    class Msg extends $protobuf.rpc.Service {
+      /**
+       * Constructs a new Msg service.
+       * @param rpcImpl RPC implementation
+       * @param [requestDelimited=false] Whether requests are length-delimited
+       * @param [responseDelimited=false] Whether responses are length-delimited
+       */
+      constructor(
+        rpcImpl: $protobuf.RPCImpl,
+        requestDelimited?: boolean,
+        responseDelimited?: boolean
+      );
+
+      /**
+       * Creates new Msg service using the specified rpc implementation.
+       * @param rpcImpl RPC implementation
+       * @param [requestDelimited=false] Whether requests are length-delimited
+       * @param [responseDelimited=false] Whether responses are length-delimited
+       * @returns RPC service. Useful where requests and/or responses are streamed.
+       */
+      public static create(
+        rpcImpl: $protobuf.RPCImpl,
+        requestDelimited?: boolean,
+        responseDelimited?: boolean
+      ): Msg;
+
+      /**
+       * Calls LockTokens.
+       * @param request MsgLockTokens message or plain object
+       * @param callback Node-style callback called with the error, if any, and MsgLockTokensResponse
+       */
+      public lockTokens(
+        request: osmosis.lockup.IMsgLockTokens,
+        callback: osmosis.lockup.Msg.LockTokensCallback
+      ): void;
+
+      /**
+       * Calls LockTokens.
+       * @param request MsgLockTokens message or plain object
+       * @returns Promise
+       */
+      public lockTokens(
+        request: osmosis.lockup.IMsgLockTokens
+      ): Promise<osmosis.lockup.MsgLockTokensResponse>;
+
+      /**
+       * Calls BeginUnlockingAll.
+       * @param request MsgBeginUnlockingAll message or plain object
+       * @param callback Node-style callback called with the error, if any, and MsgBeginUnlockingAllResponse
+       */
+      public beginUnlockingAll(
+        request: osmosis.lockup.IMsgBeginUnlockingAll,
+        callback: osmosis.lockup.Msg.BeginUnlockingAllCallback
+      ): void;
+
+      /**
+       * Calls BeginUnlockingAll.
+       * @param request MsgBeginUnlockingAll message or plain object
+       * @returns Promise
+       */
+      public beginUnlockingAll(
+        request: osmosis.lockup.IMsgBeginUnlockingAll
+      ): Promise<osmosis.lockup.MsgBeginUnlockingAllResponse>;
+
+      /**
+       * Calls BeginUnlocking.
+       * @param request MsgBeginUnlocking message or plain object
+       * @param callback Node-style callback called with the error, if any, and MsgBeginUnlockingResponse
+       */
+      public beginUnlocking(
+        request: osmosis.lockup.IMsgBeginUnlocking,
+        callback: osmosis.lockup.Msg.BeginUnlockingCallback
+      ): void;
+
+      /**
+       * Calls BeginUnlocking.
+       * @param request MsgBeginUnlocking message or plain object
+       * @returns Promise
+       */
+      public beginUnlocking(
+        request: osmosis.lockup.IMsgBeginUnlocking
+      ): Promise<osmosis.lockup.MsgBeginUnlockingResponse>;
+
+      /**
+       * Calls ExtendLockup.
+       * @param request MsgExtendLockup message or plain object
+       * @param callback Node-style callback called with the error, if any, and MsgExtendLockupResponse
+       */
+      public extendLockup(
+        request: osmosis.lockup.IMsgExtendLockup,
+        callback: osmosis.lockup.Msg.ExtendLockupCallback
+      ): void;
+
+      /**
+       * Calls ExtendLockup.
+       * @param request MsgExtendLockup message or plain object
+       * @returns Promise
+       */
+      public extendLockup(
+        request: osmosis.lockup.IMsgExtendLockup
+      ): Promise<osmosis.lockup.MsgExtendLockupResponse>;
+    }
+
+    namespace Msg {
+      /**
+       * Callback as used by {@link osmosis.lockup.Msg#lockTokens}.
+       * @param error Error, if any
+       * @param [response] MsgLockTokensResponse
+       */
+      type LockTokensCallback = (
+        error: Error | null,
+        response?: osmosis.lockup.MsgLockTokensResponse
+      ) => void;
+
+      /**
+       * Callback as used by {@link osmosis.lockup.Msg#beginUnlockingAll}.
+       * @param error Error, if any
+       * @param [response] MsgBeginUnlockingAllResponse
+       */
+      type BeginUnlockingAllCallback = (
+        error: Error | null,
+        response?: osmosis.lockup.MsgBeginUnlockingAllResponse
+      ) => void;
+
+      /**
+       * Callback as used by {@link osmosis.lockup.Msg#beginUnlocking}.
+       * @param error Error, if any
+       * @param [response] MsgBeginUnlockingResponse
+       */
+      type BeginUnlockingCallback = (
+        error: Error | null,
+        response?: osmosis.lockup.MsgBeginUnlockingResponse
+      ) => void;
+
+      /**
+       * Callback as used by {@link osmosis.lockup.Msg#extendLockup}.
+       * @param error Error, if any
+       * @param [response] MsgExtendLockupResponse
+       */
+      type ExtendLockupCallback = (
+        error: Error | null,
+        response?: osmosis.lockup.MsgExtendLockupResponse
+      ) => void;
+    }
+
+    /** Properties of a MsgLockTokens. */
+    interface IMsgLockTokens {
+      /** MsgLockTokens owner */
+      owner?: string | null;
+
+      /** MsgLockTokens duration */
+      duration?: google.protobuf.IDuration | null;
+
+      /** MsgLockTokens coins */
+      coins?: cosmos.base.v1beta1.ICoin[] | null;
+    }
+
+    /** Represents a MsgLockTokens. */
+    class MsgLockTokens implements IMsgLockTokens {
+      /**
+       * Constructs a new MsgLockTokens.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.lockup.IMsgLockTokens);
+
+      /** MsgLockTokens owner. */
+      public owner: string;
+
+      /** MsgLockTokens duration. */
+      public duration?: google.protobuf.IDuration | null;
+
+      /** MsgLockTokens coins. */
+      public coins: cosmos.base.v1beta1.ICoin[];
+
+      /**
+       * Creates a new MsgLockTokens instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgLockTokens instance
+       */
+      public static create(
+        properties?: osmosis.lockup.IMsgLockTokens
+      ): osmosis.lockup.MsgLockTokens;
+
+      /**
+       * Encodes the specified MsgLockTokens message. Does not implicitly {@link osmosis.lockup.MsgLockTokens.verify|verify} messages.
+       * @param m MsgLockTokens message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.lockup.IMsgLockTokens,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgLockTokens message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgLockTokens
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.lockup.MsgLockTokens;
+
+      /**
+       * Creates a MsgLockTokens message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgLockTokens
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.lockup.MsgLockTokens;
+
+      /**
+       * Creates a plain object from a MsgLockTokens message. Also converts values to other types if specified.
+       * @param m MsgLockTokens
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.lockup.MsgLockTokens,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgLockTokens to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a MsgLockTokensResponse. */
+    interface IMsgLockTokensResponse {
+      /** MsgLockTokensResponse ID */
+      ID?: Long | null;
+    }
+
+    /** Represents a MsgLockTokensResponse. */
+    class MsgLockTokensResponse implements IMsgLockTokensResponse {
+      /**
+       * Constructs a new MsgLockTokensResponse.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.lockup.IMsgLockTokensResponse);
+
+      /** MsgLockTokensResponse ID. */
+      public ID: Long;
+
+      /**
+       * Creates a new MsgLockTokensResponse instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgLockTokensResponse instance
+       */
+      public static create(
+        properties?: osmosis.lockup.IMsgLockTokensResponse
+      ): osmosis.lockup.MsgLockTokensResponse;
+
+      /**
+       * Encodes the specified MsgLockTokensResponse message. Does not implicitly {@link osmosis.lockup.MsgLockTokensResponse.verify|verify} messages.
+       * @param m MsgLockTokensResponse message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.lockup.IMsgLockTokensResponse,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgLockTokensResponse message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgLockTokensResponse
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.lockup.MsgLockTokensResponse;
+
+      /**
+       * Creates a MsgLockTokensResponse message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgLockTokensResponse
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.lockup.MsgLockTokensResponse;
+
+      /**
+       * Creates a plain object from a MsgLockTokensResponse message. Also converts values to other types if specified.
+       * @param m MsgLockTokensResponse
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.lockup.MsgLockTokensResponse,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgLockTokensResponse to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a MsgBeginUnlockingAll. */
+    interface IMsgBeginUnlockingAll {
+      /** MsgBeginUnlockingAll owner */
+      owner?: string | null;
+    }
+
+    /** Represents a MsgBeginUnlockingAll. */
+    class MsgBeginUnlockingAll implements IMsgBeginUnlockingAll {
+      /**
+       * Constructs a new MsgBeginUnlockingAll.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.lockup.IMsgBeginUnlockingAll);
+
+      /** MsgBeginUnlockingAll owner. */
+      public owner: string;
+
+      /**
+       * Creates a new MsgBeginUnlockingAll instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgBeginUnlockingAll instance
+       */
+      public static create(
+        properties?: osmosis.lockup.IMsgBeginUnlockingAll
+      ): osmosis.lockup.MsgBeginUnlockingAll;
+
+      /**
+       * Encodes the specified MsgBeginUnlockingAll message. Does not implicitly {@link osmosis.lockup.MsgBeginUnlockingAll.verify|verify} messages.
+       * @param m MsgBeginUnlockingAll message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.lockup.IMsgBeginUnlockingAll,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgBeginUnlockingAll message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgBeginUnlockingAll
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.lockup.MsgBeginUnlockingAll;
+
+      /**
+       * Creates a MsgBeginUnlockingAll message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgBeginUnlockingAll
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.lockup.MsgBeginUnlockingAll;
+
+      /**
+       * Creates a plain object from a MsgBeginUnlockingAll message. Also converts values to other types if specified.
+       * @param m MsgBeginUnlockingAll
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.lockup.MsgBeginUnlockingAll,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgBeginUnlockingAll to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a MsgBeginUnlockingAllResponse. */
+    interface IMsgBeginUnlockingAllResponse {
+      /** MsgBeginUnlockingAllResponse unlocks */
+      unlocks?: osmosis.lockup.IPeriodLock[] | null;
+    }
+
+    /** Represents a MsgBeginUnlockingAllResponse. */
+    class MsgBeginUnlockingAllResponse
+      implements IMsgBeginUnlockingAllResponse
+    {
+      /**
+       * Constructs a new MsgBeginUnlockingAllResponse.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.lockup.IMsgBeginUnlockingAllResponse);
+
+      /** MsgBeginUnlockingAllResponse unlocks. */
+      public unlocks: osmosis.lockup.IPeriodLock[];
+
+      /**
+       * Creates a new MsgBeginUnlockingAllResponse instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgBeginUnlockingAllResponse instance
+       */
+      public static create(
+        properties?: osmosis.lockup.IMsgBeginUnlockingAllResponse
+      ): osmosis.lockup.MsgBeginUnlockingAllResponse;
+
+      /**
+       * Encodes the specified MsgBeginUnlockingAllResponse message. Does not implicitly {@link osmosis.lockup.MsgBeginUnlockingAllResponse.verify|verify} messages.
+       * @param m MsgBeginUnlockingAllResponse message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.lockup.IMsgBeginUnlockingAllResponse,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgBeginUnlockingAllResponse message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgBeginUnlockingAllResponse
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.lockup.MsgBeginUnlockingAllResponse;
+
+      /**
+       * Creates a MsgBeginUnlockingAllResponse message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgBeginUnlockingAllResponse
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.lockup.MsgBeginUnlockingAllResponse;
+
+      /**
+       * Creates a plain object from a MsgBeginUnlockingAllResponse message. Also converts values to other types if specified.
+       * @param m MsgBeginUnlockingAllResponse
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.lockup.MsgBeginUnlockingAllResponse,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgBeginUnlockingAllResponse to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a MsgBeginUnlocking. */
+    interface IMsgBeginUnlocking {
+      /** MsgBeginUnlocking owner */
+      owner?: string | null;
+
+      /** MsgBeginUnlocking ID */
+      ID?: Long | null;
+
+      /** MsgBeginUnlocking coins */
+      coins?: cosmos.base.v1beta1.ICoin[] | null;
+    }
+
+    /** Represents a MsgBeginUnlocking. */
+    class MsgBeginUnlocking implements IMsgBeginUnlocking {
+      /**
+       * Constructs a new MsgBeginUnlocking.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.lockup.IMsgBeginUnlocking);
+
+      /** MsgBeginUnlocking owner. */
+      public owner: string;
+
+      /** MsgBeginUnlocking ID. */
+      public ID: Long;
+
+      /** MsgBeginUnlocking coins. */
+      public coins: cosmos.base.v1beta1.ICoin[];
+
+      /**
+       * Creates a new MsgBeginUnlocking instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgBeginUnlocking instance
+       */
+      public static create(
+        properties?: osmosis.lockup.IMsgBeginUnlocking
+      ): osmosis.lockup.MsgBeginUnlocking;
+
+      /**
+       * Encodes the specified MsgBeginUnlocking message. Does not implicitly {@link osmosis.lockup.MsgBeginUnlocking.verify|verify} messages.
+       * @param m MsgBeginUnlocking message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.lockup.IMsgBeginUnlocking,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgBeginUnlocking message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgBeginUnlocking
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.lockup.MsgBeginUnlocking;
+
+      /**
+       * Creates a MsgBeginUnlocking message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgBeginUnlocking
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.lockup.MsgBeginUnlocking;
+
+      /**
+       * Creates a plain object from a MsgBeginUnlocking message. Also converts values to other types if specified.
+       * @param m MsgBeginUnlocking
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.lockup.MsgBeginUnlocking,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgBeginUnlocking to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a MsgBeginUnlockingResponse. */
+    interface IMsgBeginUnlockingResponse {
+      /** MsgBeginUnlockingResponse success */
+      success?: boolean | null;
+    }
+
+    /** Represents a MsgBeginUnlockingResponse. */
+    class MsgBeginUnlockingResponse implements IMsgBeginUnlockingResponse {
+      /**
+       * Constructs a new MsgBeginUnlockingResponse.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.lockup.IMsgBeginUnlockingResponse);
+
+      /** MsgBeginUnlockingResponse success. */
+      public success: boolean;
+
+      /**
+       * Creates a new MsgBeginUnlockingResponse instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgBeginUnlockingResponse instance
+       */
+      public static create(
+        properties?: osmosis.lockup.IMsgBeginUnlockingResponse
+      ): osmosis.lockup.MsgBeginUnlockingResponse;
+
+      /**
+       * Encodes the specified MsgBeginUnlockingResponse message. Does not implicitly {@link osmosis.lockup.MsgBeginUnlockingResponse.verify|verify} messages.
+       * @param m MsgBeginUnlockingResponse message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.lockup.IMsgBeginUnlockingResponse,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgBeginUnlockingResponse message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgBeginUnlockingResponse
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.lockup.MsgBeginUnlockingResponse;
+
+      /**
+       * Creates a MsgBeginUnlockingResponse message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgBeginUnlockingResponse
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.lockup.MsgBeginUnlockingResponse;
+
+      /**
+       * Creates a plain object from a MsgBeginUnlockingResponse message. Also converts values to other types if specified.
+       * @param m MsgBeginUnlockingResponse
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.lockup.MsgBeginUnlockingResponse,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgBeginUnlockingResponse to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a MsgExtendLockup. */
+    interface IMsgExtendLockup {
+      /** MsgExtendLockup owner */
+      owner?: string | null;
+
+      /** MsgExtendLockup ID */
+      ID?: Long | null;
+
+      /** MsgExtendLockup duration */
+      duration?: google.protobuf.IDuration | null;
+    }
+
+    /** Represents a MsgExtendLockup. */
+    class MsgExtendLockup implements IMsgExtendLockup {
+      /**
+       * Constructs a new MsgExtendLockup.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.lockup.IMsgExtendLockup);
+
+      /** MsgExtendLockup owner. */
+      public owner: string;
+
+      /** MsgExtendLockup ID. */
+      public ID: Long;
+
+      /** MsgExtendLockup duration. */
+      public duration?: google.protobuf.IDuration | null;
+
+      /**
+       * Creates a new MsgExtendLockup instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgExtendLockup instance
+       */
+      public static create(
+        properties?: osmosis.lockup.IMsgExtendLockup
+      ): osmosis.lockup.MsgExtendLockup;
+
+      /**
+       * Encodes the specified MsgExtendLockup message. Does not implicitly {@link osmosis.lockup.MsgExtendLockup.verify|verify} messages.
+       * @param m MsgExtendLockup message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.lockup.IMsgExtendLockup,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgExtendLockup message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgExtendLockup
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.lockup.MsgExtendLockup;
+
+      /**
+       * Creates a MsgExtendLockup message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgExtendLockup
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.lockup.MsgExtendLockup;
+
+      /**
+       * Creates a plain object from a MsgExtendLockup message. Also converts values to other types if specified.
+       * @param m MsgExtendLockup
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.lockup.MsgExtendLockup,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgExtendLockup to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a MsgExtendLockupResponse. */
+    interface IMsgExtendLockupResponse {
+      /** MsgExtendLockupResponse success */
+      success?: boolean | null;
+    }
+
+    /** Represents a MsgExtendLockupResponse. */
+    class MsgExtendLockupResponse implements IMsgExtendLockupResponse {
+      /**
+       * Constructs a new MsgExtendLockupResponse.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.lockup.IMsgExtendLockupResponse);
+
+      /** MsgExtendLockupResponse success. */
+      public success: boolean;
+
+      /**
+       * Creates a new MsgExtendLockupResponse instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgExtendLockupResponse instance
+       */
+      public static create(
+        properties?: osmosis.lockup.IMsgExtendLockupResponse
+      ): osmosis.lockup.MsgExtendLockupResponse;
+
+      /**
+       * Encodes the specified MsgExtendLockupResponse message. Does not implicitly {@link osmosis.lockup.MsgExtendLockupResponse.verify|verify} messages.
+       * @param m MsgExtendLockupResponse message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.lockup.IMsgExtendLockupResponse,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgExtendLockupResponse message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgExtendLockupResponse
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.lockup.MsgExtendLockupResponse;
+
+      /**
+       * Creates a MsgExtendLockupResponse message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgExtendLockupResponse
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.lockup.MsgExtendLockupResponse;
+
+      /**
+       * Creates a plain object from a MsgExtendLockupResponse message. Also converts values to other types if specified.
+       * @param m MsgExtendLockupResponse
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.lockup.MsgExtendLockupResponse,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgExtendLockupResponse to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+  }
+
+  /** Namespace incentives. */
+  namespace incentives {
+    /** Represents a Msg */
+    class Msg extends $protobuf.rpc.Service {
+      /**
+       * Constructs a new Msg service.
+       * @param rpcImpl RPC implementation
+       * @param [requestDelimited=false] Whether requests are length-delimited
+       * @param [responseDelimited=false] Whether responses are length-delimited
+       */
+      constructor(
+        rpcImpl: $protobuf.RPCImpl,
+        requestDelimited?: boolean,
+        responseDelimited?: boolean
+      );
+
+      /**
+       * Creates new Msg service using the specified rpc implementation.
+       * @param rpcImpl RPC implementation
+       * @param [requestDelimited=false] Whether requests are length-delimited
+       * @param [responseDelimited=false] Whether responses are length-delimited
+       * @returns RPC service. Useful where requests and/or responses are streamed.
+       */
+      public static create(
+        rpcImpl: $protobuf.RPCImpl,
+        requestDelimited?: boolean,
+        responseDelimited?: boolean
+      ): Msg;
+
+      /**
+       * Calls CreateGauge.
+       * @param request MsgCreateGauge message or plain object
+       * @param callback Node-style callback called with the error, if any, and MsgCreateGaugeResponse
+       */
+      public createGauge(
+        request: osmosis.incentives.IMsgCreateGauge,
+        callback: osmosis.incentives.Msg.CreateGaugeCallback
+      ): void;
+
+      /**
+       * Calls CreateGauge.
+       * @param request MsgCreateGauge message or plain object
+       * @returns Promise
+       */
+      public createGauge(
+        request: osmosis.incentives.IMsgCreateGauge
+      ): Promise<osmosis.incentives.MsgCreateGaugeResponse>;
+
+      /**
+       * Calls AddToGauge.
+       * @param request MsgAddToGauge message or plain object
+       * @param callback Node-style callback called with the error, if any, and MsgAddToGaugeResponse
+       */
+      public addToGauge(
+        request: osmosis.incentives.IMsgAddToGauge,
+        callback: osmosis.incentives.Msg.AddToGaugeCallback
+      ): void;
+
+      /**
+       * Calls AddToGauge.
+       * @param request MsgAddToGauge message or plain object
+       * @returns Promise
+       */
+      public addToGauge(
+        request: osmosis.incentives.IMsgAddToGauge
+      ): Promise<osmosis.incentives.MsgAddToGaugeResponse>;
+    }
+
+    namespace Msg {
+      /**
+       * Callback as used by {@link osmosis.incentives.Msg#createGauge}.
+       * @param error Error, if any
+       * @param [response] MsgCreateGaugeResponse
+       */
+      type CreateGaugeCallback = (
+        error: Error | null,
+        response?: osmosis.incentives.MsgCreateGaugeResponse
+      ) => void;
+
+      /**
+       * Callback as used by {@link osmosis.incentives.Msg#addToGauge}.
+       * @param error Error, if any
+       * @param [response] MsgAddToGaugeResponse
+       */
+      type AddToGaugeCallback = (
+        error: Error | null,
+        response?: osmosis.incentives.MsgAddToGaugeResponse
+      ) => void;
+    }
+
+    /** Properties of a MsgCreateGauge. */
+    interface IMsgCreateGauge {
+      /** MsgCreateGauge isPerpetual */
+      isPerpetual?: boolean | null;
+
+      /** MsgCreateGauge owner */
+      owner?: string | null;
+
+      /** MsgCreateGauge distributeTo */
+      distributeTo?: osmosis.lockup.IQueryCondition | null;
+
+      /** MsgCreateGauge coins */
+      coins?: cosmos.base.v1beta1.ICoin[] | null;
+
+      /** MsgCreateGauge startTime */
+      startTime?: google.protobuf.ITimestamp | null;
+
+      /** MsgCreateGauge numEpochsPaidOver */
+      numEpochsPaidOver?: Long | null;
+    }
+
+    /** Represents a MsgCreateGauge. */
+    class MsgCreateGauge implements IMsgCreateGauge {
+      /**
+       * Constructs a new MsgCreateGauge.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.incentives.IMsgCreateGauge);
+
+      /** MsgCreateGauge isPerpetual. */
+      public isPerpetual: boolean;
+
+      /** MsgCreateGauge owner. */
+      public owner: string;
+
+      /** MsgCreateGauge distributeTo. */
+      public distributeTo?: osmosis.lockup.IQueryCondition | null;
+
+      /** MsgCreateGauge coins. */
+      public coins: cosmos.base.v1beta1.ICoin[];
+
+      /** MsgCreateGauge startTime. */
+      public startTime?: google.protobuf.ITimestamp | null;
+
+      /** MsgCreateGauge numEpochsPaidOver. */
+      public numEpochsPaidOver: Long;
+
+      /**
+       * Creates a new MsgCreateGauge instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgCreateGauge instance
+       */
+      public static create(
+        properties?: osmosis.incentives.IMsgCreateGauge
+      ): osmosis.incentives.MsgCreateGauge;
+
+      /**
+       * Encodes the specified MsgCreateGauge message. Does not implicitly {@link osmosis.incentives.MsgCreateGauge.verify|verify} messages.
+       * @param m MsgCreateGauge message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.incentives.IMsgCreateGauge,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgCreateGauge message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgCreateGauge
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.incentives.MsgCreateGauge;
+
+      /**
+       * Creates a MsgCreateGauge message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgCreateGauge
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.incentives.MsgCreateGauge;
+
+      /**
+       * Creates a plain object from a MsgCreateGauge message. Also converts values to other types if specified.
+       * @param m MsgCreateGauge
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.incentives.MsgCreateGauge,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgCreateGauge to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a MsgCreateGaugeResponse. */
+    interface IMsgCreateGaugeResponse {}
+
+    /** Represents a MsgCreateGaugeResponse. */
+    class MsgCreateGaugeResponse implements IMsgCreateGaugeResponse {
+      /**
+       * Constructs a new MsgCreateGaugeResponse.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.incentives.IMsgCreateGaugeResponse);
+
+      /**
+       * Creates a new MsgCreateGaugeResponse instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgCreateGaugeResponse instance
+       */
+      public static create(
+        properties?: osmosis.incentives.IMsgCreateGaugeResponse
+      ): osmosis.incentives.MsgCreateGaugeResponse;
+
+      /**
+       * Encodes the specified MsgCreateGaugeResponse message. Does not implicitly {@link osmosis.incentives.MsgCreateGaugeResponse.verify|verify} messages.
+       * @param m MsgCreateGaugeResponse message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.incentives.IMsgCreateGaugeResponse,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgCreateGaugeResponse message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgCreateGaugeResponse
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.incentives.MsgCreateGaugeResponse;
+
+      /**
+       * Creates a MsgCreateGaugeResponse message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgCreateGaugeResponse
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.incentives.MsgCreateGaugeResponse;
+
+      /**
+       * Creates a plain object from a MsgCreateGaugeResponse message. Also converts values to other types if specified.
+       * @param m MsgCreateGaugeResponse
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.incentives.MsgCreateGaugeResponse,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgCreateGaugeResponse to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a MsgAddToGauge. */
+    interface IMsgAddToGauge {
+      /** MsgAddToGauge owner */
+      owner?: string | null;
+
+      /** MsgAddToGauge gaugeId */
+      gaugeId?: Long | null;
+
+      /** MsgAddToGauge rewards */
+      rewards?: cosmos.base.v1beta1.ICoin[] | null;
+    }
+
+    /** Represents a MsgAddToGauge. */
+    class MsgAddToGauge implements IMsgAddToGauge {
+      /**
+       * Constructs a new MsgAddToGauge.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.incentives.IMsgAddToGauge);
+
+      /** MsgAddToGauge owner. */
+      public owner: string;
+
+      /** MsgAddToGauge gaugeId. */
+      public gaugeId: Long;
+
+      /** MsgAddToGauge rewards. */
+      public rewards: cosmos.base.v1beta1.ICoin[];
+
+      /**
+       * Creates a new MsgAddToGauge instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgAddToGauge instance
+       */
+      public static create(
+        properties?: osmosis.incentives.IMsgAddToGauge
+      ): osmosis.incentives.MsgAddToGauge;
+
+      /**
+       * Encodes the specified MsgAddToGauge message. Does not implicitly {@link osmosis.incentives.MsgAddToGauge.verify|verify} messages.
+       * @param m MsgAddToGauge message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.incentives.IMsgAddToGauge,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgAddToGauge message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgAddToGauge
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.incentives.MsgAddToGauge;
+
+      /**
+       * Creates a MsgAddToGauge message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgAddToGauge
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.incentives.MsgAddToGauge;
+
+      /**
+       * Creates a plain object from a MsgAddToGauge message. Also converts values to other types if specified.
+       * @param m MsgAddToGauge
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.incentives.MsgAddToGauge,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgAddToGauge to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a MsgAddToGaugeResponse. */
+    interface IMsgAddToGaugeResponse {}
+
+    /** Represents a MsgAddToGaugeResponse. */
+    class MsgAddToGaugeResponse implements IMsgAddToGaugeResponse {
+      /**
+       * Constructs a new MsgAddToGaugeResponse.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.incentives.IMsgAddToGaugeResponse);
+
+      /**
+       * Creates a new MsgAddToGaugeResponse instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgAddToGaugeResponse instance
+       */
+      public static create(
+        properties?: osmosis.incentives.IMsgAddToGaugeResponse
+      ): osmosis.incentives.MsgAddToGaugeResponse;
+
+      /**
+       * Encodes the specified MsgAddToGaugeResponse message. Does not implicitly {@link osmosis.incentives.MsgAddToGaugeResponse.verify|verify} messages.
+       * @param m MsgAddToGaugeResponse message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.incentives.IMsgAddToGaugeResponse,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgAddToGaugeResponse message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgAddToGaugeResponse
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.incentives.MsgAddToGaugeResponse;
+
+      /**
+       * Creates a MsgAddToGaugeResponse message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgAddToGaugeResponse
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.incentives.MsgAddToGaugeResponse;
+
+      /**
+       * Creates a plain object from a MsgAddToGaugeResponse message. Also converts values to other types if specified.
+       * @param m MsgAddToGaugeResponse
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.incentives.MsgAddToGaugeResponse,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgAddToGaugeResponse to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
     }
   }
 
@@ -5047,1730 +6570,6 @@ export namespace osmosis {
 
       /**
        * Converts this MsgUnPoolWhitelistedPoolResponse to JSON.
-       * @returns JSON object
-       */
-      public toJSON(): { [k: string]: any };
-    }
-  }
-
-  /** Namespace lockup. */
-  namespace lockup {
-    /** Properties of a PeriodLock. */
-    interface IPeriodLock {
-      /** PeriodLock ID */
-      ID?: Long | null;
-
-      /** PeriodLock owner */
-      owner?: string | null;
-
-      /** PeriodLock duration */
-      duration?: google.protobuf.IDuration | null;
-
-      /** PeriodLock endTime */
-      endTime?: google.protobuf.ITimestamp | null;
-
-      /** PeriodLock coins */
-      coins?: cosmos.base.v1beta1.ICoin[] | null;
-    }
-
-    /** Represents a PeriodLock. */
-    class PeriodLock implements IPeriodLock {
-      /**
-       * Constructs a new PeriodLock.
-       * @param [p] Properties to set
-       */
-      constructor(p?: osmosis.lockup.IPeriodLock);
-
-      /** PeriodLock ID. */
-      public ID: Long;
-
-      /** PeriodLock owner. */
-      public owner: string;
-
-      /** PeriodLock duration. */
-      public duration?: google.protobuf.IDuration | null;
-
-      /** PeriodLock endTime. */
-      public endTime?: google.protobuf.ITimestamp | null;
-
-      /** PeriodLock coins. */
-      public coins: cosmos.base.v1beta1.ICoin[];
-
-      /**
-       * Creates a new PeriodLock instance using the specified properties.
-       * @param [properties] Properties to set
-       * @returns PeriodLock instance
-       */
-      public static create(
-        properties?: osmosis.lockup.IPeriodLock
-      ): osmosis.lockup.PeriodLock;
-
-      /**
-       * Encodes the specified PeriodLock message. Does not implicitly {@link osmosis.lockup.PeriodLock.verify|verify} messages.
-       * @param m PeriodLock message or plain object to encode
-       * @param [w] Writer to encode to
-       * @returns Writer
-       */
-      public static encode(
-        m: osmosis.lockup.IPeriodLock,
-        w?: $protobuf.Writer
-      ): $protobuf.Writer;
-
-      /**
-       * Decodes a PeriodLock message from the specified reader or buffer.
-       * @param r Reader or buffer to decode from
-       * @param [l] Message length if known beforehand
-       * @returns PeriodLock
-       * @throws {Error} If the payload is not a reader or valid buffer
-       * @throws {$protobuf.util.ProtocolError} If required fields are missing
-       */
-      public static decode(
-        r: $protobuf.Reader | Uint8Array,
-        l?: number
-      ): osmosis.lockup.PeriodLock;
-
-      /**
-       * Creates a PeriodLock message from a plain object. Also converts values to their respective internal types.
-       * @param d Plain object
-       * @returns PeriodLock
-       */
-      public static fromObject(d: {
-        [k: string]: any;
-      }): osmosis.lockup.PeriodLock;
-
-      /**
-       * Creates a plain object from a PeriodLock message. Also converts values to other types if specified.
-       * @param m PeriodLock
-       * @param [o] Conversion options
-       * @returns Plain object
-       */
-      public static toObject(
-        m: osmosis.lockup.PeriodLock,
-        o?: $protobuf.IConversionOptions
-      ): { [k: string]: any };
-
-      /**
-       * Converts this PeriodLock to JSON.
-       * @returns JSON object
-       */
-      public toJSON(): { [k: string]: any };
-    }
-
-    /** LockQueryType enum. */
-    enum LockQueryType {
-      ByDuration = 0,
-      ByTime = 1,
-    }
-
-    /** Properties of a QueryCondition. */
-    interface IQueryCondition {
-      /** QueryCondition lockQueryType */
-      lockQueryType?: osmosis.lockup.LockQueryType | null;
-
-      /** QueryCondition denom */
-      denom?: string | null;
-
-      /** QueryCondition duration */
-      duration?: google.protobuf.IDuration | null;
-
-      /** QueryCondition timestamp */
-      timestamp?: google.protobuf.ITimestamp | null;
-    }
-
-    /** Represents a QueryCondition. */
-    class QueryCondition implements IQueryCondition {
-      /**
-       * Constructs a new QueryCondition.
-       * @param [p] Properties to set
-       */
-      constructor(p?: osmosis.lockup.IQueryCondition);
-
-      /** QueryCondition lockQueryType. */
-      public lockQueryType: osmosis.lockup.LockQueryType;
-
-      /** QueryCondition denom. */
-      public denom: string;
-
-      /** QueryCondition duration. */
-      public duration?: google.protobuf.IDuration | null;
-
-      /** QueryCondition timestamp. */
-      public timestamp?: google.protobuf.ITimestamp | null;
-
-      /**
-       * Creates a new QueryCondition instance using the specified properties.
-       * @param [properties] Properties to set
-       * @returns QueryCondition instance
-       */
-      public static create(
-        properties?: osmosis.lockup.IQueryCondition
-      ): osmosis.lockup.QueryCondition;
-
-      /**
-       * Encodes the specified QueryCondition message. Does not implicitly {@link osmosis.lockup.QueryCondition.verify|verify} messages.
-       * @param m QueryCondition message or plain object to encode
-       * @param [w] Writer to encode to
-       * @returns Writer
-       */
-      public static encode(
-        m: osmosis.lockup.IQueryCondition,
-        w?: $protobuf.Writer
-      ): $protobuf.Writer;
-
-      /**
-       * Decodes a QueryCondition message from the specified reader or buffer.
-       * @param r Reader or buffer to decode from
-       * @param [l] Message length if known beforehand
-       * @returns QueryCondition
-       * @throws {Error} If the payload is not a reader or valid buffer
-       * @throws {$protobuf.util.ProtocolError} If required fields are missing
-       */
-      public static decode(
-        r: $protobuf.Reader | Uint8Array,
-        l?: number
-      ): osmosis.lockup.QueryCondition;
-
-      /**
-       * Creates a QueryCondition message from a plain object. Also converts values to their respective internal types.
-       * @param d Plain object
-       * @returns QueryCondition
-       */
-      public static fromObject(d: {
-        [k: string]: any;
-      }): osmosis.lockup.QueryCondition;
-
-      /**
-       * Creates a plain object from a QueryCondition message. Also converts values to other types if specified.
-       * @param m QueryCondition
-       * @param [o] Conversion options
-       * @returns Plain object
-       */
-      public static toObject(
-        m: osmosis.lockup.QueryCondition,
-        o?: $protobuf.IConversionOptions
-      ): { [k: string]: any };
-
-      /**
-       * Converts this QueryCondition to JSON.
-       * @returns JSON object
-       */
-      public toJSON(): { [k: string]: any };
-    }
-
-    /** Properties of a SyntheticLock. */
-    interface ISyntheticLock {
-      /** SyntheticLock underlyingLockId */
-      underlyingLockId?: Long | null;
-
-      /** SyntheticLock synthDenom */
-      synthDenom?: string | null;
-
-      /** SyntheticLock endTime */
-      endTime?: google.protobuf.ITimestamp | null;
-
-      /** SyntheticLock duration */
-      duration?: google.protobuf.IDuration | null;
-    }
-
-    /** Represents a SyntheticLock. */
-    class SyntheticLock implements ISyntheticLock {
-      /**
-       * Constructs a new SyntheticLock.
-       * @param [p] Properties to set
-       */
-      constructor(p?: osmosis.lockup.ISyntheticLock);
-
-      /** SyntheticLock underlyingLockId. */
-      public underlyingLockId: Long;
-
-      /** SyntheticLock synthDenom. */
-      public synthDenom: string;
-
-      /** SyntheticLock endTime. */
-      public endTime?: google.protobuf.ITimestamp | null;
-
-      /** SyntheticLock duration. */
-      public duration?: google.protobuf.IDuration | null;
-
-      /**
-       * Creates a new SyntheticLock instance using the specified properties.
-       * @param [properties] Properties to set
-       * @returns SyntheticLock instance
-       */
-      public static create(
-        properties?: osmosis.lockup.ISyntheticLock
-      ): osmosis.lockup.SyntheticLock;
-
-      /**
-       * Encodes the specified SyntheticLock message. Does not implicitly {@link osmosis.lockup.SyntheticLock.verify|verify} messages.
-       * @param m SyntheticLock message or plain object to encode
-       * @param [w] Writer to encode to
-       * @returns Writer
-       */
-      public static encode(
-        m: osmosis.lockup.ISyntheticLock,
-        w?: $protobuf.Writer
-      ): $protobuf.Writer;
-
-      /**
-       * Decodes a SyntheticLock message from the specified reader or buffer.
-       * @param r Reader or buffer to decode from
-       * @param [l] Message length if known beforehand
-       * @returns SyntheticLock
-       * @throws {Error} If the payload is not a reader or valid buffer
-       * @throws {$protobuf.util.ProtocolError} If required fields are missing
-       */
-      public static decode(
-        r: $protobuf.Reader | Uint8Array,
-        l?: number
-      ): osmosis.lockup.SyntheticLock;
-
-      /**
-       * Creates a SyntheticLock message from a plain object. Also converts values to their respective internal types.
-       * @param d Plain object
-       * @returns SyntheticLock
-       */
-      public static fromObject(d: {
-        [k: string]: any;
-      }): osmosis.lockup.SyntheticLock;
-
-      /**
-       * Creates a plain object from a SyntheticLock message. Also converts values to other types if specified.
-       * @param m SyntheticLock
-       * @param [o] Conversion options
-       * @returns Plain object
-       */
-      public static toObject(
-        m: osmosis.lockup.SyntheticLock,
-        o?: $protobuf.IConversionOptions
-      ): { [k: string]: any };
-
-      /**
-       * Converts this SyntheticLock to JSON.
-       * @returns JSON object
-       */
-      public toJSON(): { [k: string]: any };
-    }
-
-    /** Represents a Msg */
-    class Msg extends $protobuf.rpc.Service {
-      /**
-       * Constructs a new Msg service.
-       * @param rpcImpl RPC implementation
-       * @param [requestDelimited=false] Whether requests are length-delimited
-       * @param [responseDelimited=false] Whether responses are length-delimited
-       */
-      constructor(
-        rpcImpl: $protobuf.RPCImpl,
-        requestDelimited?: boolean,
-        responseDelimited?: boolean
-      );
-
-      /**
-       * Creates new Msg service using the specified rpc implementation.
-       * @param rpcImpl RPC implementation
-       * @param [requestDelimited=false] Whether requests are length-delimited
-       * @param [responseDelimited=false] Whether responses are length-delimited
-       * @returns RPC service. Useful where requests and/or responses are streamed.
-       */
-      public static create(
-        rpcImpl: $protobuf.RPCImpl,
-        requestDelimited?: boolean,
-        responseDelimited?: boolean
-      ): Msg;
-
-      /**
-       * Calls LockTokens.
-       * @param request MsgLockTokens message or plain object
-       * @param callback Node-style callback called with the error, if any, and MsgLockTokensResponse
-       */
-      public lockTokens(
-        request: osmosis.lockup.IMsgLockTokens,
-        callback: osmosis.lockup.Msg.LockTokensCallback
-      ): void;
-
-      /**
-       * Calls LockTokens.
-       * @param request MsgLockTokens message or plain object
-       * @returns Promise
-       */
-      public lockTokens(
-        request: osmosis.lockup.IMsgLockTokens
-      ): Promise<osmosis.lockup.MsgLockTokensResponse>;
-
-      /**
-       * Calls BeginUnlockingAll.
-       * @param request MsgBeginUnlockingAll message or plain object
-       * @param callback Node-style callback called with the error, if any, and MsgBeginUnlockingAllResponse
-       */
-      public beginUnlockingAll(
-        request: osmosis.lockup.IMsgBeginUnlockingAll,
-        callback: osmosis.lockup.Msg.BeginUnlockingAllCallback
-      ): void;
-
-      /**
-       * Calls BeginUnlockingAll.
-       * @param request MsgBeginUnlockingAll message or plain object
-       * @returns Promise
-       */
-      public beginUnlockingAll(
-        request: osmosis.lockup.IMsgBeginUnlockingAll
-      ): Promise<osmosis.lockup.MsgBeginUnlockingAllResponse>;
-
-      /**
-       * Calls BeginUnlocking.
-       * @param request MsgBeginUnlocking message or plain object
-       * @param callback Node-style callback called with the error, if any, and MsgBeginUnlockingResponse
-       */
-      public beginUnlocking(
-        request: osmosis.lockup.IMsgBeginUnlocking,
-        callback: osmosis.lockup.Msg.BeginUnlockingCallback
-      ): void;
-
-      /**
-       * Calls BeginUnlocking.
-       * @param request MsgBeginUnlocking message or plain object
-       * @returns Promise
-       */
-      public beginUnlocking(
-        request: osmosis.lockup.IMsgBeginUnlocking
-      ): Promise<osmosis.lockup.MsgBeginUnlockingResponse>;
-
-      /**
-       * Calls ExtendLockup.
-       * @param request MsgExtendLockup message or plain object
-       * @param callback Node-style callback called with the error, if any, and MsgExtendLockupResponse
-       */
-      public extendLockup(
-        request: osmosis.lockup.IMsgExtendLockup,
-        callback: osmosis.lockup.Msg.ExtendLockupCallback
-      ): void;
-
-      /**
-       * Calls ExtendLockup.
-       * @param request MsgExtendLockup message or plain object
-       * @returns Promise
-       */
-      public extendLockup(
-        request: osmosis.lockup.IMsgExtendLockup
-      ): Promise<osmosis.lockup.MsgExtendLockupResponse>;
-
-      /**
-       * Calls ForceUnlock.
-       * @param request MsgForceUnlock message or plain object
-       * @param callback Node-style callback called with the error, if any, and MsgForceUnlockResponse
-       */
-      public forceUnlock(
-        request: osmosis.lockup.IMsgForceUnlock,
-        callback: osmosis.lockup.Msg.ForceUnlockCallback
-      ): void;
-
-      /**
-       * Calls ForceUnlock.
-       * @param request MsgForceUnlock message or plain object
-       * @returns Promise
-       */
-      public forceUnlock(
-        request: osmosis.lockup.IMsgForceUnlock
-      ): Promise<osmosis.lockup.MsgForceUnlockResponse>;
-    }
-
-    namespace Msg {
-      /**
-       * Callback as used by {@link osmosis.lockup.Msg#lockTokens}.
-       * @param error Error, if any
-       * @param [response] MsgLockTokensResponse
-       */
-      type LockTokensCallback = (
-        error: Error | null,
-        response?: osmosis.lockup.MsgLockTokensResponse
-      ) => void;
-
-      /**
-       * Callback as used by {@link osmosis.lockup.Msg#beginUnlockingAll}.
-       * @param error Error, if any
-       * @param [response] MsgBeginUnlockingAllResponse
-       */
-      type BeginUnlockingAllCallback = (
-        error: Error | null,
-        response?: osmosis.lockup.MsgBeginUnlockingAllResponse
-      ) => void;
-
-      /**
-       * Callback as used by {@link osmosis.lockup.Msg#beginUnlocking}.
-       * @param error Error, if any
-       * @param [response] MsgBeginUnlockingResponse
-       */
-      type BeginUnlockingCallback = (
-        error: Error | null,
-        response?: osmosis.lockup.MsgBeginUnlockingResponse
-      ) => void;
-
-      /**
-       * Callback as used by {@link osmosis.lockup.Msg#extendLockup}.
-       * @param error Error, if any
-       * @param [response] MsgExtendLockupResponse
-       */
-      type ExtendLockupCallback = (
-        error: Error | null,
-        response?: osmosis.lockup.MsgExtendLockupResponse
-      ) => void;
-
-      /**
-       * Callback as used by {@link osmosis.lockup.Msg#forceUnlock}.
-       * @param error Error, if any
-       * @param [response] MsgForceUnlockResponse
-       */
-      type ForceUnlockCallback = (
-        error: Error | null,
-        response?: osmosis.lockup.MsgForceUnlockResponse
-      ) => void;
-    }
-
-    /** Properties of a MsgLockTokens. */
-    interface IMsgLockTokens {
-      /** MsgLockTokens owner */
-      owner?: string | null;
-
-      /** MsgLockTokens duration */
-      duration?: google.protobuf.IDuration | null;
-
-      /** MsgLockTokens coins */
-      coins?: cosmos.base.v1beta1.ICoin[] | null;
-    }
-
-    /** Represents a MsgLockTokens. */
-    class MsgLockTokens implements IMsgLockTokens {
-      /**
-       * Constructs a new MsgLockTokens.
-       * @param [p] Properties to set
-       */
-      constructor(p?: osmosis.lockup.IMsgLockTokens);
-
-      /** MsgLockTokens owner. */
-      public owner: string;
-
-      /** MsgLockTokens duration. */
-      public duration?: google.protobuf.IDuration | null;
-
-      /** MsgLockTokens coins. */
-      public coins: cosmos.base.v1beta1.ICoin[];
-
-      /**
-       * Creates a new MsgLockTokens instance using the specified properties.
-       * @param [properties] Properties to set
-       * @returns MsgLockTokens instance
-       */
-      public static create(
-        properties?: osmosis.lockup.IMsgLockTokens
-      ): osmosis.lockup.MsgLockTokens;
-
-      /**
-       * Encodes the specified MsgLockTokens message. Does not implicitly {@link osmosis.lockup.MsgLockTokens.verify|verify} messages.
-       * @param m MsgLockTokens message or plain object to encode
-       * @param [w] Writer to encode to
-       * @returns Writer
-       */
-      public static encode(
-        m: osmosis.lockup.IMsgLockTokens,
-        w?: $protobuf.Writer
-      ): $protobuf.Writer;
-
-      /**
-       * Decodes a MsgLockTokens message from the specified reader or buffer.
-       * @param r Reader or buffer to decode from
-       * @param [l] Message length if known beforehand
-       * @returns MsgLockTokens
-       * @throws {Error} If the payload is not a reader or valid buffer
-       * @throws {$protobuf.util.ProtocolError} If required fields are missing
-       */
-      public static decode(
-        r: $protobuf.Reader | Uint8Array,
-        l?: number
-      ): osmosis.lockup.MsgLockTokens;
-
-      /**
-       * Creates a MsgLockTokens message from a plain object. Also converts values to their respective internal types.
-       * @param d Plain object
-       * @returns MsgLockTokens
-       */
-      public static fromObject(d: {
-        [k: string]: any;
-      }): osmosis.lockup.MsgLockTokens;
-
-      /**
-       * Creates a plain object from a MsgLockTokens message. Also converts values to other types if specified.
-       * @param m MsgLockTokens
-       * @param [o] Conversion options
-       * @returns Plain object
-       */
-      public static toObject(
-        m: osmosis.lockup.MsgLockTokens,
-        o?: $protobuf.IConversionOptions
-      ): { [k: string]: any };
-
-      /**
-       * Converts this MsgLockTokens to JSON.
-       * @returns JSON object
-       */
-      public toJSON(): { [k: string]: any };
-    }
-
-    /** Properties of a MsgLockTokensResponse. */
-    interface IMsgLockTokensResponse {
-      /** MsgLockTokensResponse ID */
-      ID?: Long | null;
-    }
-
-    /** Represents a MsgLockTokensResponse. */
-    class MsgLockTokensResponse implements IMsgLockTokensResponse {
-      /**
-       * Constructs a new MsgLockTokensResponse.
-       * @param [p] Properties to set
-       */
-      constructor(p?: osmosis.lockup.IMsgLockTokensResponse);
-
-      /** MsgLockTokensResponse ID. */
-      public ID: Long;
-
-      /**
-       * Creates a new MsgLockTokensResponse instance using the specified properties.
-       * @param [properties] Properties to set
-       * @returns MsgLockTokensResponse instance
-       */
-      public static create(
-        properties?: osmosis.lockup.IMsgLockTokensResponse
-      ): osmosis.lockup.MsgLockTokensResponse;
-
-      /**
-       * Encodes the specified MsgLockTokensResponse message. Does not implicitly {@link osmosis.lockup.MsgLockTokensResponse.verify|verify} messages.
-       * @param m MsgLockTokensResponse message or plain object to encode
-       * @param [w] Writer to encode to
-       * @returns Writer
-       */
-      public static encode(
-        m: osmosis.lockup.IMsgLockTokensResponse,
-        w?: $protobuf.Writer
-      ): $protobuf.Writer;
-
-      /**
-       * Decodes a MsgLockTokensResponse message from the specified reader or buffer.
-       * @param r Reader or buffer to decode from
-       * @param [l] Message length if known beforehand
-       * @returns MsgLockTokensResponse
-       * @throws {Error} If the payload is not a reader or valid buffer
-       * @throws {$protobuf.util.ProtocolError} If required fields are missing
-       */
-      public static decode(
-        r: $protobuf.Reader | Uint8Array,
-        l?: number
-      ): osmosis.lockup.MsgLockTokensResponse;
-
-      /**
-       * Creates a MsgLockTokensResponse message from a plain object. Also converts values to their respective internal types.
-       * @param d Plain object
-       * @returns MsgLockTokensResponse
-       */
-      public static fromObject(d: {
-        [k: string]: any;
-      }): osmosis.lockup.MsgLockTokensResponse;
-
-      /**
-       * Creates a plain object from a MsgLockTokensResponse message. Also converts values to other types if specified.
-       * @param m MsgLockTokensResponse
-       * @param [o] Conversion options
-       * @returns Plain object
-       */
-      public static toObject(
-        m: osmosis.lockup.MsgLockTokensResponse,
-        o?: $protobuf.IConversionOptions
-      ): { [k: string]: any };
-
-      /**
-       * Converts this MsgLockTokensResponse to JSON.
-       * @returns JSON object
-       */
-      public toJSON(): { [k: string]: any };
-    }
-
-    /** Properties of a MsgBeginUnlockingAll. */
-    interface IMsgBeginUnlockingAll {
-      /** MsgBeginUnlockingAll owner */
-      owner?: string | null;
-    }
-
-    /** Represents a MsgBeginUnlockingAll. */
-    class MsgBeginUnlockingAll implements IMsgBeginUnlockingAll {
-      /**
-       * Constructs a new MsgBeginUnlockingAll.
-       * @param [p] Properties to set
-       */
-      constructor(p?: osmosis.lockup.IMsgBeginUnlockingAll);
-
-      /** MsgBeginUnlockingAll owner. */
-      public owner: string;
-
-      /**
-       * Creates a new MsgBeginUnlockingAll instance using the specified properties.
-       * @param [properties] Properties to set
-       * @returns MsgBeginUnlockingAll instance
-       */
-      public static create(
-        properties?: osmosis.lockup.IMsgBeginUnlockingAll
-      ): osmosis.lockup.MsgBeginUnlockingAll;
-
-      /**
-       * Encodes the specified MsgBeginUnlockingAll message. Does not implicitly {@link osmosis.lockup.MsgBeginUnlockingAll.verify|verify} messages.
-       * @param m MsgBeginUnlockingAll message or plain object to encode
-       * @param [w] Writer to encode to
-       * @returns Writer
-       */
-      public static encode(
-        m: osmosis.lockup.IMsgBeginUnlockingAll,
-        w?: $protobuf.Writer
-      ): $protobuf.Writer;
-
-      /**
-       * Decodes a MsgBeginUnlockingAll message from the specified reader or buffer.
-       * @param r Reader or buffer to decode from
-       * @param [l] Message length if known beforehand
-       * @returns MsgBeginUnlockingAll
-       * @throws {Error} If the payload is not a reader or valid buffer
-       * @throws {$protobuf.util.ProtocolError} If required fields are missing
-       */
-      public static decode(
-        r: $protobuf.Reader | Uint8Array,
-        l?: number
-      ): osmosis.lockup.MsgBeginUnlockingAll;
-
-      /**
-       * Creates a MsgBeginUnlockingAll message from a plain object. Also converts values to their respective internal types.
-       * @param d Plain object
-       * @returns MsgBeginUnlockingAll
-       */
-      public static fromObject(d: {
-        [k: string]: any;
-      }): osmosis.lockup.MsgBeginUnlockingAll;
-
-      /**
-       * Creates a plain object from a MsgBeginUnlockingAll message. Also converts values to other types if specified.
-       * @param m MsgBeginUnlockingAll
-       * @param [o] Conversion options
-       * @returns Plain object
-       */
-      public static toObject(
-        m: osmosis.lockup.MsgBeginUnlockingAll,
-        o?: $protobuf.IConversionOptions
-      ): { [k: string]: any };
-
-      /**
-       * Converts this MsgBeginUnlockingAll to JSON.
-       * @returns JSON object
-       */
-      public toJSON(): { [k: string]: any };
-    }
-
-    /** Properties of a MsgBeginUnlockingAllResponse. */
-    interface IMsgBeginUnlockingAllResponse {
-      /** MsgBeginUnlockingAllResponse unlocks */
-      unlocks?: osmosis.lockup.IPeriodLock[] | null;
-    }
-
-    /** Represents a MsgBeginUnlockingAllResponse. */
-    class MsgBeginUnlockingAllResponse
-      implements IMsgBeginUnlockingAllResponse
-    {
-      /**
-       * Constructs a new MsgBeginUnlockingAllResponse.
-       * @param [p] Properties to set
-       */
-      constructor(p?: osmosis.lockup.IMsgBeginUnlockingAllResponse);
-
-      /** MsgBeginUnlockingAllResponse unlocks. */
-      public unlocks: osmosis.lockup.IPeriodLock[];
-
-      /**
-       * Creates a new MsgBeginUnlockingAllResponse instance using the specified properties.
-       * @param [properties] Properties to set
-       * @returns MsgBeginUnlockingAllResponse instance
-       */
-      public static create(
-        properties?: osmosis.lockup.IMsgBeginUnlockingAllResponse
-      ): osmosis.lockup.MsgBeginUnlockingAllResponse;
-
-      /**
-       * Encodes the specified MsgBeginUnlockingAllResponse message. Does not implicitly {@link osmosis.lockup.MsgBeginUnlockingAllResponse.verify|verify} messages.
-       * @param m MsgBeginUnlockingAllResponse message or plain object to encode
-       * @param [w] Writer to encode to
-       * @returns Writer
-       */
-      public static encode(
-        m: osmosis.lockup.IMsgBeginUnlockingAllResponse,
-        w?: $protobuf.Writer
-      ): $protobuf.Writer;
-
-      /**
-       * Decodes a MsgBeginUnlockingAllResponse message from the specified reader or buffer.
-       * @param r Reader or buffer to decode from
-       * @param [l] Message length if known beforehand
-       * @returns MsgBeginUnlockingAllResponse
-       * @throws {Error} If the payload is not a reader or valid buffer
-       * @throws {$protobuf.util.ProtocolError} If required fields are missing
-       */
-      public static decode(
-        r: $protobuf.Reader | Uint8Array,
-        l?: number
-      ): osmosis.lockup.MsgBeginUnlockingAllResponse;
-
-      /**
-       * Creates a MsgBeginUnlockingAllResponse message from a plain object. Also converts values to their respective internal types.
-       * @param d Plain object
-       * @returns MsgBeginUnlockingAllResponse
-       */
-      public static fromObject(d: {
-        [k: string]: any;
-      }): osmosis.lockup.MsgBeginUnlockingAllResponse;
-
-      /**
-       * Creates a plain object from a MsgBeginUnlockingAllResponse message. Also converts values to other types if specified.
-       * @param m MsgBeginUnlockingAllResponse
-       * @param [o] Conversion options
-       * @returns Plain object
-       */
-      public static toObject(
-        m: osmosis.lockup.MsgBeginUnlockingAllResponse,
-        o?: $protobuf.IConversionOptions
-      ): { [k: string]: any };
-
-      /**
-       * Converts this MsgBeginUnlockingAllResponse to JSON.
-       * @returns JSON object
-       */
-      public toJSON(): { [k: string]: any };
-    }
-
-    /** Properties of a MsgBeginUnlocking. */
-    interface IMsgBeginUnlocking {
-      /** MsgBeginUnlocking owner */
-      owner?: string | null;
-
-      /** MsgBeginUnlocking ID */
-      ID?: Long | null;
-
-      /** MsgBeginUnlocking coins */
-      coins?: cosmos.base.v1beta1.ICoin[] | null;
-    }
-
-    /** Represents a MsgBeginUnlocking. */
-    class MsgBeginUnlocking implements IMsgBeginUnlocking {
-      /**
-       * Constructs a new MsgBeginUnlocking.
-       * @param [p] Properties to set
-       */
-      constructor(p?: osmosis.lockup.IMsgBeginUnlocking);
-
-      /** MsgBeginUnlocking owner. */
-      public owner: string;
-
-      /** MsgBeginUnlocking ID. */
-      public ID: Long;
-
-      /** MsgBeginUnlocking coins. */
-      public coins: cosmos.base.v1beta1.ICoin[];
-
-      /**
-       * Creates a new MsgBeginUnlocking instance using the specified properties.
-       * @param [properties] Properties to set
-       * @returns MsgBeginUnlocking instance
-       */
-      public static create(
-        properties?: osmosis.lockup.IMsgBeginUnlocking
-      ): osmosis.lockup.MsgBeginUnlocking;
-
-      /**
-       * Encodes the specified MsgBeginUnlocking message. Does not implicitly {@link osmosis.lockup.MsgBeginUnlocking.verify|verify} messages.
-       * @param m MsgBeginUnlocking message or plain object to encode
-       * @param [w] Writer to encode to
-       * @returns Writer
-       */
-      public static encode(
-        m: osmosis.lockup.IMsgBeginUnlocking,
-        w?: $protobuf.Writer
-      ): $protobuf.Writer;
-
-      /**
-       * Decodes a MsgBeginUnlocking message from the specified reader or buffer.
-       * @param r Reader or buffer to decode from
-       * @param [l] Message length if known beforehand
-       * @returns MsgBeginUnlocking
-       * @throws {Error} If the payload is not a reader or valid buffer
-       * @throws {$protobuf.util.ProtocolError} If required fields are missing
-       */
-      public static decode(
-        r: $protobuf.Reader | Uint8Array,
-        l?: number
-      ): osmosis.lockup.MsgBeginUnlocking;
-
-      /**
-       * Creates a MsgBeginUnlocking message from a plain object. Also converts values to their respective internal types.
-       * @param d Plain object
-       * @returns MsgBeginUnlocking
-       */
-      public static fromObject(d: {
-        [k: string]: any;
-      }): osmosis.lockup.MsgBeginUnlocking;
-
-      /**
-       * Creates a plain object from a MsgBeginUnlocking message. Also converts values to other types if specified.
-       * @param m MsgBeginUnlocking
-       * @param [o] Conversion options
-       * @returns Plain object
-       */
-      public static toObject(
-        m: osmosis.lockup.MsgBeginUnlocking,
-        o?: $protobuf.IConversionOptions
-      ): { [k: string]: any };
-
-      /**
-       * Converts this MsgBeginUnlocking to JSON.
-       * @returns JSON object
-       */
-      public toJSON(): { [k: string]: any };
-    }
-
-    /** Properties of a MsgBeginUnlockingResponse. */
-    interface IMsgBeginUnlockingResponse {
-      /** MsgBeginUnlockingResponse success */
-      success?: boolean | null;
-    }
-
-    /** Represents a MsgBeginUnlockingResponse. */
-    class MsgBeginUnlockingResponse implements IMsgBeginUnlockingResponse {
-      /**
-       * Constructs a new MsgBeginUnlockingResponse.
-       * @param [p] Properties to set
-       */
-      constructor(p?: osmosis.lockup.IMsgBeginUnlockingResponse);
-
-      /** MsgBeginUnlockingResponse success. */
-      public success: boolean;
-
-      /**
-       * Creates a new MsgBeginUnlockingResponse instance using the specified properties.
-       * @param [properties] Properties to set
-       * @returns MsgBeginUnlockingResponse instance
-       */
-      public static create(
-        properties?: osmosis.lockup.IMsgBeginUnlockingResponse
-      ): osmosis.lockup.MsgBeginUnlockingResponse;
-
-      /**
-       * Encodes the specified MsgBeginUnlockingResponse message. Does not implicitly {@link osmosis.lockup.MsgBeginUnlockingResponse.verify|verify} messages.
-       * @param m MsgBeginUnlockingResponse message or plain object to encode
-       * @param [w] Writer to encode to
-       * @returns Writer
-       */
-      public static encode(
-        m: osmosis.lockup.IMsgBeginUnlockingResponse,
-        w?: $protobuf.Writer
-      ): $protobuf.Writer;
-
-      /**
-       * Decodes a MsgBeginUnlockingResponse message from the specified reader or buffer.
-       * @param r Reader or buffer to decode from
-       * @param [l] Message length if known beforehand
-       * @returns MsgBeginUnlockingResponse
-       * @throws {Error} If the payload is not a reader or valid buffer
-       * @throws {$protobuf.util.ProtocolError} If required fields are missing
-       */
-      public static decode(
-        r: $protobuf.Reader | Uint8Array,
-        l?: number
-      ): osmosis.lockup.MsgBeginUnlockingResponse;
-
-      /**
-       * Creates a MsgBeginUnlockingResponse message from a plain object. Also converts values to their respective internal types.
-       * @param d Plain object
-       * @returns MsgBeginUnlockingResponse
-       */
-      public static fromObject(d: {
-        [k: string]: any;
-      }): osmosis.lockup.MsgBeginUnlockingResponse;
-
-      /**
-       * Creates a plain object from a MsgBeginUnlockingResponse message. Also converts values to other types if specified.
-       * @param m MsgBeginUnlockingResponse
-       * @param [o] Conversion options
-       * @returns Plain object
-       */
-      public static toObject(
-        m: osmosis.lockup.MsgBeginUnlockingResponse,
-        o?: $protobuf.IConversionOptions
-      ): { [k: string]: any };
-
-      /**
-       * Converts this MsgBeginUnlockingResponse to JSON.
-       * @returns JSON object
-       */
-      public toJSON(): { [k: string]: any };
-    }
-
-    /** Properties of a MsgExtendLockup. */
-    interface IMsgExtendLockup {
-      /** MsgExtendLockup owner */
-      owner?: string | null;
-
-      /** MsgExtendLockup ID */
-      ID?: Long | null;
-
-      /** MsgExtendLockup duration */
-      duration?: google.protobuf.IDuration | null;
-    }
-
-    /** Represents a MsgExtendLockup. */
-    class MsgExtendLockup implements IMsgExtendLockup {
-      /**
-       * Constructs a new MsgExtendLockup.
-       * @param [p] Properties to set
-       */
-      constructor(p?: osmosis.lockup.IMsgExtendLockup);
-
-      /** MsgExtendLockup owner. */
-      public owner: string;
-
-      /** MsgExtendLockup ID. */
-      public ID: Long;
-
-      /** MsgExtendLockup duration. */
-      public duration?: google.protobuf.IDuration | null;
-
-      /**
-       * Creates a new MsgExtendLockup instance using the specified properties.
-       * @param [properties] Properties to set
-       * @returns MsgExtendLockup instance
-       */
-      public static create(
-        properties?: osmosis.lockup.IMsgExtendLockup
-      ): osmosis.lockup.MsgExtendLockup;
-
-      /**
-       * Encodes the specified MsgExtendLockup message. Does not implicitly {@link osmosis.lockup.MsgExtendLockup.verify|verify} messages.
-       * @param m MsgExtendLockup message or plain object to encode
-       * @param [w] Writer to encode to
-       * @returns Writer
-       */
-      public static encode(
-        m: osmosis.lockup.IMsgExtendLockup,
-        w?: $protobuf.Writer
-      ): $protobuf.Writer;
-
-      /**
-       * Decodes a MsgExtendLockup message from the specified reader or buffer.
-       * @param r Reader or buffer to decode from
-       * @param [l] Message length if known beforehand
-       * @returns MsgExtendLockup
-       * @throws {Error} If the payload is not a reader or valid buffer
-       * @throws {$protobuf.util.ProtocolError} If required fields are missing
-       */
-      public static decode(
-        r: $protobuf.Reader | Uint8Array,
-        l?: number
-      ): osmosis.lockup.MsgExtendLockup;
-
-      /**
-       * Creates a MsgExtendLockup message from a plain object. Also converts values to their respective internal types.
-       * @param d Plain object
-       * @returns MsgExtendLockup
-       */
-      public static fromObject(d: {
-        [k: string]: any;
-      }): osmosis.lockup.MsgExtendLockup;
-
-      /**
-       * Creates a plain object from a MsgExtendLockup message. Also converts values to other types if specified.
-       * @param m MsgExtendLockup
-       * @param [o] Conversion options
-       * @returns Plain object
-       */
-      public static toObject(
-        m: osmosis.lockup.MsgExtendLockup,
-        o?: $protobuf.IConversionOptions
-      ): { [k: string]: any };
-
-      /**
-       * Converts this MsgExtendLockup to JSON.
-       * @returns JSON object
-       */
-      public toJSON(): { [k: string]: any };
-    }
-
-    /** Properties of a MsgExtendLockupResponse. */
-    interface IMsgExtendLockupResponse {
-      /** MsgExtendLockupResponse success */
-      success?: boolean | null;
-    }
-
-    /** Represents a MsgExtendLockupResponse. */
-    class MsgExtendLockupResponse implements IMsgExtendLockupResponse {
-      /**
-       * Constructs a new MsgExtendLockupResponse.
-       * @param [p] Properties to set
-       */
-      constructor(p?: osmosis.lockup.IMsgExtendLockupResponse);
-
-      /** MsgExtendLockupResponse success. */
-      public success: boolean;
-
-      /**
-       * Creates a new MsgExtendLockupResponse instance using the specified properties.
-       * @param [properties] Properties to set
-       * @returns MsgExtendLockupResponse instance
-       */
-      public static create(
-        properties?: osmosis.lockup.IMsgExtendLockupResponse
-      ): osmosis.lockup.MsgExtendLockupResponse;
-
-      /**
-       * Encodes the specified MsgExtendLockupResponse message. Does not implicitly {@link osmosis.lockup.MsgExtendLockupResponse.verify|verify} messages.
-       * @param m MsgExtendLockupResponse message or plain object to encode
-       * @param [w] Writer to encode to
-       * @returns Writer
-       */
-      public static encode(
-        m: osmosis.lockup.IMsgExtendLockupResponse,
-        w?: $protobuf.Writer
-      ): $protobuf.Writer;
-
-      /**
-       * Decodes a MsgExtendLockupResponse message from the specified reader or buffer.
-       * @param r Reader or buffer to decode from
-       * @param [l] Message length if known beforehand
-       * @returns MsgExtendLockupResponse
-       * @throws {Error} If the payload is not a reader or valid buffer
-       * @throws {$protobuf.util.ProtocolError} If required fields are missing
-       */
-      public static decode(
-        r: $protobuf.Reader | Uint8Array,
-        l?: number
-      ): osmosis.lockup.MsgExtendLockupResponse;
-
-      /**
-       * Creates a MsgExtendLockupResponse message from a plain object. Also converts values to their respective internal types.
-       * @param d Plain object
-       * @returns MsgExtendLockupResponse
-       */
-      public static fromObject(d: {
-        [k: string]: any;
-      }): osmosis.lockup.MsgExtendLockupResponse;
-
-      /**
-       * Creates a plain object from a MsgExtendLockupResponse message. Also converts values to other types if specified.
-       * @param m MsgExtendLockupResponse
-       * @param [o] Conversion options
-       * @returns Plain object
-       */
-      public static toObject(
-        m: osmosis.lockup.MsgExtendLockupResponse,
-        o?: $protobuf.IConversionOptions
-      ): { [k: string]: any };
-
-      /**
-       * Converts this MsgExtendLockupResponse to JSON.
-       * @returns JSON object
-       */
-      public toJSON(): { [k: string]: any };
-    }
-
-    /** Properties of a MsgForceUnlock. */
-    interface IMsgForceUnlock {
-      /** MsgForceUnlock owner */
-      owner?: string | null;
-
-      /** MsgForceUnlock ID */
-      ID?: Long | null;
-
-      /** MsgForceUnlock coins */
-      coins?: cosmos.base.v1beta1.ICoin[] | null;
-    }
-
-    /** Represents a MsgForceUnlock. */
-    class MsgForceUnlock implements IMsgForceUnlock {
-      /**
-       * Constructs a new MsgForceUnlock.
-       * @param [p] Properties to set
-       */
-      constructor(p?: osmosis.lockup.IMsgForceUnlock);
-
-      /** MsgForceUnlock owner. */
-      public owner: string;
-
-      /** MsgForceUnlock ID. */
-      public ID: Long;
-
-      /** MsgForceUnlock coins. */
-      public coins: cosmos.base.v1beta1.ICoin[];
-
-      /**
-       * Creates a new MsgForceUnlock instance using the specified properties.
-       * @param [properties] Properties to set
-       * @returns MsgForceUnlock instance
-       */
-      public static create(
-        properties?: osmosis.lockup.IMsgForceUnlock
-      ): osmosis.lockup.MsgForceUnlock;
-
-      /**
-       * Encodes the specified MsgForceUnlock message. Does not implicitly {@link osmosis.lockup.MsgForceUnlock.verify|verify} messages.
-       * @param m MsgForceUnlock message or plain object to encode
-       * @param [w] Writer to encode to
-       * @returns Writer
-       */
-      public static encode(
-        m: osmosis.lockup.IMsgForceUnlock,
-        w?: $protobuf.Writer
-      ): $protobuf.Writer;
-
-      /**
-       * Decodes a MsgForceUnlock message from the specified reader or buffer.
-       * @param r Reader or buffer to decode from
-       * @param [l] Message length if known beforehand
-       * @returns MsgForceUnlock
-       * @throws {Error} If the payload is not a reader or valid buffer
-       * @throws {$protobuf.util.ProtocolError} If required fields are missing
-       */
-      public static decode(
-        r: $protobuf.Reader | Uint8Array,
-        l?: number
-      ): osmosis.lockup.MsgForceUnlock;
-
-      /**
-       * Creates a MsgForceUnlock message from a plain object. Also converts values to their respective internal types.
-       * @param d Plain object
-       * @returns MsgForceUnlock
-       */
-      public static fromObject(d: {
-        [k: string]: any;
-      }): osmosis.lockup.MsgForceUnlock;
-
-      /**
-       * Creates a plain object from a MsgForceUnlock message. Also converts values to other types if specified.
-       * @param m MsgForceUnlock
-       * @param [o] Conversion options
-       * @returns Plain object
-       */
-      public static toObject(
-        m: osmosis.lockup.MsgForceUnlock,
-        o?: $protobuf.IConversionOptions
-      ): { [k: string]: any };
-
-      /**
-       * Converts this MsgForceUnlock to JSON.
-       * @returns JSON object
-       */
-      public toJSON(): { [k: string]: any };
-    }
-
-    /** Properties of a MsgForceUnlockResponse. */
-    interface IMsgForceUnlockResponse {
-      /** MsgForceUnlockResponse success */
-      success?: boolean | null;
-    }
-
-    /** Represents a MsgForceUnlockResponse. */
-    class MsgForceUnlockResponse implements IMsgForceUnlockResponse {
-      /**
-       * Constructs a new MsgForceUnlockResponse.
-       * @param [p] Properties to set
-       */
-      constructor(p?: osmosis.lockup.IMsgForceUnlockResponse);
-
-      /** MsgForceUnlockResponse success. */
-      public success: boolean;
-
-      /**
-       * Creates a new MsgForceUnlockResponse instance using the specified properties.
-       * @param [properties] Properties to set
-       * @returns MsgForceUnlockResponse instance
-       */
-      public static create(
-        properties?: osmosis.lockup.IMsgForceUnlockResponse
-      ): osmosis.lockup.MsgForceUnlockResponse;
-
-      /**
-       * Encodes the specified MsgForceUnlockResponse message. Does not implicitly {@link osmosis.lockup.MsgForceUnlockResponse.verify|verify} messages.
-       * @param m MsgForceUnlockResponse message or plain object to encode
-       * @param [w] Writer to encode to
-       * @returns Writer
-       */
-      public static encode(
-        m: osmosis.lockup.IMsgForceUnlockResponse,
-        w?: $protobuf.Writer
-      ): $protobuf.Writer;
-
-      /**
-       * Decodes a MsgForceUnlockResponse message from the specified reader or buffer.
-       * @param r Reader or buffer to decode from
-       * @param [l] Message length if known beforehand
-       * @returns MsgForceUnlockResponse
-       * @throws {Error} If the payload is not a reader or valid buffer
-       * @throws {$protobuf.util.ProtocolError} If required fields are missing
-       */
-      public static decode(
-        r: $protobuf.Reader | Uint8Array,
-        l?: number
-      ): osmosis.lockup.MsgForceUnlockResponse;
-
-      /**
-       * Creates a MsgForceUnlockResponse message from a plain object. Also converts values to their respective internal types.
-       * @param d Plain object
-       * @returns MsgForceUnlockResponse
-       */
-      public static fromObject(d: {
-        [k: string]: any;
-      }): osmosis.lockup.MsgForceUnlockResponse;
-
-      /**
-       * Creates a plain object from a MsgForceUnlockResponse message. Also converts values to other types if specified.
-       * @param m MsgForceUnlockResponse
-       * @param [o] Conversion options
-       * @returns Plain object
-       */
-      public static toObject(
-        m: osmosis.lockup.MsgForceUnlockResponse,
-        o?: $protobuf.IConversionOptions
-      ): { [k: string]: any };
-
-      /**
-       * Converts this MsgForceUnlockResponse to JSON.
-       * @returns JSON object
-       */
-      public toJSON(): { [k: string]: any };
-    }
-  }
-
-  /** Namespace incentives. */
-  namespace incentives {
-    /** Represents a Msg */
-    class Msg extends $protobuf.rpc.Service {
-      /**
-       * Constructs a new Msg service.
-       * @param rpcImpl RPC implementation
-       * @param [requestDelimited=false] Whether requests are length-delimited
-       * @param [responseDelimited=false] Whether responses are length-delimited
-       */
-      constructor(
-        rpcImpl: $protobuf.RPCImpl,
-        requestDelimited?: boolean,
-        responseDelimited?: boolean
-      );
-
-      /**
-       * Creates new Msg service using the specified rpc implementation.
-       * @param rpcImpl RPC implementation
-       * @param [requestDelimited=false] Whether requests are length-delimited
-       * @param [responseDelimited=false] Whether responses are length-delimited
-       * @returns RPC service. Useful where requests and/or responses are streamed.
-       */
-      public static create(
-        rpcImpl: $protobuf.RPCImpl,
-        requestDelimited?: boolean,
-        responseDelimited?: boolean
-      ): Msg;
-
-      /**
-       * Calls CreateGauge.
-       * @param request MsgCreateGauge message or plain object
-       * @param callback Node-style callback called with the error, if any, and MsgCreateGaugeResponse
-       */
-      public createGauge(
-        request: osmosis.incentives.IMsgCreateGauge,
-        callback: osmosis.incentives.Msg.CreateGaugeCallback
-      ): void;
-
-      /**
-       * Calls CreateGauge.
-       * @param request MsgCreateGauge message or plain object
-       * @returns Promise
-       */
-      public createGauge(
-        request: osmosis.incentives.IMsgCreateGauge
-      ): Promise<osmosis.incentives.MsgCreateGaugeResponse>;
-
-      /**
-       * Calls AddToGauge.
-       * @param request MsgAddToGauge message or plain object
-       * @param callback Node-style callback called with the error, if any, and MsgAddToGaugeResponse
-       */
-      public addToGauge(
-        request: osmosis.incentives.IMsgAddToGauge,
-        callback: osmosis.incentives.Msg.AddToGaugeCallback
-      ): void;
-
-      /**
-       * Calls AddToGauge.
-       * @param request MsgAddToGauge message or plain object
-       * @returns Promise
-       */
-      public addToGauge(
-        request: osmosis.incentives.IMsgAddToGauge
-      ): Promise<osmosis.incentives.MsgAddToGaugeResponse>;
-    }
-
-    namespace Msg {
-      /**
-       * Callback as used by {@link osmosis.incentives.Msg#createGauge}.
-       * @param error Error, if any
-       * @param [response] MsgCreateGaugeResponse
-       */
-      type CreateGaugeCallback = (
-        error: Error | null,
-        response?: osmosis.incentives.MsgCreateGaugeResponse
-      ) => void;
-
-      /**
-       * Callback as used by {@link osmosis.incentives.Msg#addToGauge}.
-       * @param error Error, if any
-       * @param [response] MsgAddToGaugeResponse
-       */
-      type AddToGaugeCallback = (
-        error: Error | null,
-        response?: osmosis.incentives.MsgAddToGaugeResponse
-      ) => void;
-    }
-
-    /** Properties of a MsgCreateGauge. */
-    interface IMsgCreateGauge {
-      /** MsgCreateGauge isPerpetual */
-      isPerpetual?: boolean | null;
-
-      /** MsgCreateGauge owner */
-      owner?: string | null;
-
-      /** MsgCreateGauge distributeTo */
-      distributeTo?: osmosis.lockup.IQueryCondition | null;
-
-      /** MsgCreateGauge coins */
-      coins?: cosmos.base.v1beta1.ICoin[] | null;
-
-      /** MsgCreateGauge startTime */
-      startTime?: google.protobuf.ITimestamp | null;
-
-      /** MsgCreateGauge numEpochsPaidOver */
-      numEpochsPaidOver?: Long | null;
-    }
-
-    /** Represents a MsgCreateGauge. */
-    class MsgCreateGauge implements IMsgCreateGauge {
-      /**
-       * Constructs a new MsgCreateGauge.
-       * @param [p] Properties to set
-       */
-      constructor(p?: osmosis.incentives.IMsgCreateGauge);
-
-      /** MsgCreateGauge isPerpetual. */
-      public isPerpetual: boolean;
-
-      /** MsgCreateGauge owner. */
-      public owner: string;
-
-      /** MsgCreateGauge distributeTo. */
-      public distributeTo?: osmosis.lockup.IQueryCondition | null;
-
-      /** MsgCreateGauge coins. */
-      public coins: cosmos.base.v1beta1.ICoin[];
-
-      /** MsgCreateGauge startTime. */
-      public startTime?: google.protobuf.ITimestamp | null;
-
-      /** MsgCreateGauge numEpochsPaidOver. */
-      public numEpochsPaidOver: Long;
-
-      /**
-       * Creates a new MsgCreateGauge instance using the specified properties.
-       * @param [properties] Properties to set
-       * @returns MsgCreateGauge instance
-       */
-      public static create(
-        properties?: osmosis.incentives.IMsgCreateGauge
-      ): osmosis.incentives.MsgCreateGauge;
-
-      /**
-       * Encodes the specified MsgCreateGauge message. Does not implicitly {@link osmosis.incentives.MsgCreateGauge.verify|verify} messages.
-       * @param m MsgCreateGauge message or plain object to encode
-       * @param [w] Writer to encode to
-       * @returns Writer
-       */
-      public static encode(
-        m: osmosis.incentives.IMsgCreateGauge,
-        w?: $protobuf.Writer
-      ): $protobuf.Writer;
-
-      /**
-       * Decodes a MsgCreateGauge message from the specified reader or buffer.
-       * @param r Reader or buffer to decode from
-       * @param [l] Message length if known beforehand
-       * @returns MsgCreateGauge
-       * @throws {Error} If the payload is not a reader or valid buffer
-       * @throws {$protobuf.util.ProtocolError} If required fields are missing
-       */
-      public static decode(
-        r: $protobuf.Reader | Uint8Array,
-        l?: number
-      ): osmosis.incentives.MsgCreateGauge;
-
-      /**
-       * Creates a MsgCreateGauge message from a plain object. Also converts values to their respective internal types.
-       * @param d Plain object
-       * @returns MsgCreateGauge
-       */
-      public static fromObject(d: {
-        [k: string]: any;
-      }): osmosis.incentives.MsgCreateGauge;
-
-      /**
-       * Creates a plain object from a MsgCreateGauge message. Also converts values to other types if specified.
-       * @param m MsgCreateGauge
-       * @param [o] Conversion options
-       * @returns Plain object
-       */
-      public static toObject(
-        m: osmosis.incentives.MsgCreateGauge,
-        o?: $protobuf.IConversionOptions
-      ): { [k: string]: any };
-
-      /**
-       * Converts this MsgCreateGauge to JSON.
-       * @returns JSON object
-       */
-      public toJSON(): { [k: string]: any };
-    }
-
-    /** Properties of a MsgCreateGaugeResponse. */
-    interface IMsgCreateGaugeResponse {}
-
-    /** Represents a MsgCreateGaugeResponse. */
-    class MsgCreateGaugeResponse implements IMsgCreateGaugeResponse {
-      /**
-       * Constructs a new MsgCreateGaugeResponse.
-       * @param [p] Properties to set
-       */
-      constructor(p?: osmosis.incentives.IMsgCreateGaugeResponse);
-
-      /**
-       * Creates a new MsgCreateGaugeResponse instance using the specified properties.
-       * @param [properties] Properties to set
-       * @returns MsgCreateGaugeResponse instance
-       */
-      public static create(
-        properties?: osmosis.incentives.IMsgCreateGaugeResponse
-      ): osmosis.incentives.MsgCreateGaugeResponse;
-
-      /**
-       * Encodes the specified MsgCreateGaugeResponse message. Does not implicitly {@link osmosis.incentives.MsgCreateGaugeResponse.verify|verify} messages.
-       * @param m MsgCreateGaugeResponse message or plain object to encode
-       * @param [w] Writer to encode to
-       * @returns Writer
-       */
-      public static encode(
-        m: osmosis.incentives.IMsgCreateGaugeResponse,
-        w?: $protobuf.Writer
-      ): $protobuf.Writer;
-
-      /**
-       * Decodes a MsgCreateGaugeResponse message from the specified reader or buffer.
-       * @param r Reader or buffer to decode from
-       * @param [l] Message length if known beforehand
-       * @returns MsgCreateGaugeResponse
-       * @throws {Error} If the payload is not a reader or valid buffer
-       * @throws {$protobuf.util.ProtocolError} If required fields are missing
-       */
-      public static decode(
-        r: $protobuf.Reader | Uint8Array,
-        l?: number
-      ): osmosis.incentives.MsgCreateGaugeResponse;
-
-      /**
-       * Creates a MsgCreateGaugeResponse message from a plain object. Also converts values to their respective internal types.
-       * @param d Plain object
-       * @returns MsgCreateGaugeResponse
-       */
-      public static fromObject(d: {
-        [k: string]: any;
-      }): osmosis.incentives.MsgCreateGaugeResponse;
-
-      /**
-       * Creates a plain object from a MsgCreateGaugeResponse message. Also converts values to other types if specified.
-       * @param m MsgCreateGaugeResponse
-       * @param [o] Conversion options
-       * @returns Plain object
-       */
-      public static toObject(
-        m: osmosis.incentives.MsgCreateGaugeResponse,
-        o?: $protobuf.IConversionOptions
-      ): { [k: string]: any };
-
-      /**
-       * Converts this MsgCreateGaugeResponse to JSON.
-       * @returns JSON object
-       */
-      public toJSON(): { [k: string]: any };
-    }
-
-    /** Properties of a MsgAddToGauge. */
-    interface IMsgAddToGauge {
-      /** MsgAddToGauge owner */
-      owner?: string | null;
-
-      /** MsgAddToGauge gaugeId */
-      gaugeId?: Long | null;
-
-      /** MsgAddToGauge rewards */
-      rewards?: cosmos.base.v1beta1.ICoin[] | null;
-    }
-
-    /** Represents a MsgAddToGauge. */
-    class MsgAddToGauge implements IMsgAddToGauge {
-      /**
-       * Constructs a new MsgAddToGauge.
-       * @param [p] Properties to set
-       */
-      constructor(p?: osmosis.incentives.IMsgAddToGauge);
-
-      /** MsgAddToGauge owner. */
-      public owner: string;
-
-      /** MsgAddToGauge gaugeId. */
-      public gaugeId: Long;
-
-      /** MsgAddToGauge rewards. */
-      public rewards: cosmos.base.v1beta1.ICoin[];
-
-      /**
-       * Creates a new MsgAddToGauge instance using the specified properties.
-       * @param [properties] Properties to set
-       * @returns MsgAddToGauge instance
-       */
-      public static create(
-        properties?: osmosis.incentives.IMsgAddToGauge
-      ): osmosis.incentives.MsgAddToGauge;
-
-      /**
-       * Encodes the specified MsgAddToGauge message. Does not implicitly {@link osmosis.incentives.MsgAddToGauge.verify|verify} messages.
-       * @param m MsgAddToGauge message or plain object to encode
-       * @param [w] Writer to encode to
-       * @returns Writer
-       */
-      public static encode(
-        m: osmosis.incentives.IMsgAddToGauge,
-        w?: $protobuf.Writer
-      ): $protobuf.Writer;
-
-      /**
-       * Decodes a MsgAddToGauge message from the specified reader or buffer.
-       * @param r Reader or buffer to decode from
-       * @param [l] Message length if known beforehand
-       * @returns MsgAddToGauge
-       * @throws {Error} If the payload is not a reader or valid buffer
-       * @throws {$protobuf.util.ProtocolError} If required fields are missing
-       */
-      public static decode(
-        r: $protobuf.Reader | Uint8Array,
-        l?: number
-      ): osmosis.incentives.MsgAddToGauge;
-
-      /**
-       * Creates a MsgAddToGauge message from a plain object. Also converts values to their respective internal types.
-       * @param d Plain object
-       * @returns MsgAddToGauge
-       */
-      public static fromObject(d: {
-        [k: string]: any;
-      }): osmosis.incentives.MsgAddToGauge;
-
-      /**
-       * Creates a plain object from a MsgAddToGauge message. Also converts values to other types if specified.
-       * @param m MsgAddToGauge
-       * @param [o] Conversion options
-       * @returns Plain object
-       */
-      public static toObject(
-        m: osmosis.incentives.MsgAddToGauge,
-        o?: $protobuf.IConversionOptions
-      ): { [k: string]: any };
-
-      /**
-       * Converts this MsgAddToGauge to JSON.
-       * @returns JSON object
-       */
-      public toJSON(): { [k: string]: any };
-    }
-
-    /** Properties of a MsgAddToGaugeResponse. */
-    interface IMsgAddToGaugeResponse {}
-
-    /** Represents a MsgAddToGaugeResponse. */
-    class MsgAddToGaugeResponse implements IMsgAddToGaugeResponse {
-      /**
-       * Constructs a new MsgAddToGaugeResponse.
-       * @param [p] Properties to set
-       */
-      constructor(p?: osmosis.incentives.IMsgAddToGaugeResponse);
-
-      /**
-       * Creates a new MsgAddToGaugeResponse instance using the specified properties.
-       * @param [properties] Properties to set
-       * @returns MsgAddToGaugeResponse instance
-       */
-      public static create(
-        properties?: osmosis.incentives.IMsgAddToGaugeResponse
-      ): osmosis.incentives.MsgAddToGaugeResponse;
-
-      /**
-       * Encodes the specified MsgAddToGaugeResponse message. Does not implicitly {@link osmosis.incentives.MsgAddToGaugeResponse.verify|verify} messages.
-       * @param m MsgAddToGaugeResponse message or plain object to encode
-       * @param [w] Writer to encode to
-       * @returns Writer
-       */
-      public static encode(
-        m: osmosis.incentives.IMsgAddToGaugeResponse,
-        w?: $protobuf.Writer
-      ): $protobuf.Writer;
-
-      /**
-       * Decodes a MsgAddToGaugeResponse message from the specified reader or buffer.
-       * @param r Reader or buffer to decode from
-       * @param [l] Message length if known beforehand
-       * @returns MsgAddToGaugeResponse
-       * @throws {Error} If the payload is not a reader or valid buffer
-       * @throws {$protobuf.util.ProtocolError} If required fields are missing
-       */
-      public static decode(
-        r: $protobuf.Reader | Uint8Array,
-        l?: number
-      ): osmosis.incentives.MsgAddToGaugeResponse;
-
-      /**
-       * Creates a MsgAddToGaugeResponse message from a plain object. Also converts values to their respective internal types.
-       * @param d Plain object
-       * @returns MsgAddToGaugeResponse
-       */
-      public static fromObject(d: {
-        [k: string]: any;
-      }): osmosis.incentives.MsgAddToGaugeResponse;
-
-      /**
-       * Creates a plain object from a MsgAddToGaugeResponse message. Also converts values to other types if specified.
-       * @param m MsgAddToGaugeResponse
-       * @param [o] Conversion options
-       * @returns Plain object
-       */
-      public static toObject(
-        m: osmosis.incentives.MsgAddToGaugeResponse,
-        o?: $protobuf.IConversionOptions
-      ): { [k: string]: any };
-
-      /**
-       * Converts this MsgAddToGaugeResponse to JSON.
        * @returns JSON object
        */
       public toJSON(): { [k: string]: any };

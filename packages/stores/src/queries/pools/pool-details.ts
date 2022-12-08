@@ -148,29 +148,18 @@ export class ObservableQueryPoolDetails extends UserConfig {
 
   @computed
   get userPoolAssets() {
-    return this.queryPool.poolAssets.map((asset) => {
-      const weightedAsset = this.queryPool.weightedPoolInfo?.assets.find(
-        ({ denom }) => denom === asset.amount.currency.coinMinimalDenom
-      );
-      const totalWeight = this.queryPool.weightedPoolInfo?.totalWeight;
-
-      return {
-        // TODO: test
-        ratio:
-          weightedAsset && totalWeight
-            ? new RatePretty(weightedAsset.weight.quo(totalWeight))
-            : new RatePretty(0),
-        asset: asset.amount
-          .mul(
-            this.queries.queryGammPoolShare.getAllGammShareRatio(
-              this.bech32Address,
-              this.queryPool.id
-            )
+    return this.queryPool.poolAssets.map((asset) => ({
+      ratio: new RatePretty(asset.weight.quo(this.queryPool.totalWeight)),
+      asset: asset.amount
+        .mul(
+          this.queries.queryGammPoolShare.getAllGammShareRatio(
+            this.bech32Address,
+            this.queryPool.id
           )
-          .trim(true)
-          .shrink(true),
-      };
-    });
+        )
+        .trim(true)
+        .shrink(true),
+    }));
   }
 
   @computed

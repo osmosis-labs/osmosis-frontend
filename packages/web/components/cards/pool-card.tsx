@@ -27,7 +27,7 @@ export const PoolCard: FunctionComponent<
     <Link href={`/pool/${poolId}`} passHref prefetch={false}>
       <a
         className={classNames(
-          "rounded-4xl p-[2px] text-left hover:bg-wosmongton-200",
+          "p-[2px] rounded-4xl hover:bg-wosmongton-200 text-left",
           {
             "bg-osmoverse-800": !isSuperfluid,
             "bg-superfluid hover:bg-none": isSuperfluid,
@@ -37,8 +37,8 @@ export const PoolCard: FunctionComponent<
           onClick?.();
         }}
       >
-        <div className="flex h-full w-full cursor-pointer flex-col place-content-between gap-14 rounded-[27px] bg-osmoverse-800 px-[1.875rem] pt-7 pb-6 transition-colors hover:bg-osmoverse-700">
-          <div className="flex place-content-between items-center">
+        <div className="flex flex-col gap-14 place-content-between w-full h-full px-[1.875rem] pt-7 pb-6 bg-osmoverse-800 rounded-[27px] hover:bg-osmoverse-700 transition-colors cursor-pointer">
+          <div className="flex items-center place-content-between">
             <PoolAssetsIcon assets={poolAssets} />
             <div className="ml-5 flex flex-col">
               <PoolAssetsName

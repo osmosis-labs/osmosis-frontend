@@ -22,10 +22,8 @@ import { ObservableQueryPoolFeesMetrics } from "../../queries-external";
 import { IPriceStore } from "../../price";
 import { UserConfig } from "../user-config";
 
-export type BondDuration = {
+export type BondableDuration = {
   duration: Duration;
-  /** Bondable if there's any active gauges for this duration. */
-  bondable: boolean;
   userShares: CoinPretty;
   userShareValue: PricePretty;
   userUnlockingShares?: { shares: CoinPretty; endTime?: Date };
@@ -39,8 +37,6 @@ export type BondDuration = {
   }[];
   /** Both `delegated` and `undelegating` will be `undefined` if the user may "Go superfluid". */
   superfluid?: {
-    /** Duration users can bond to for superfluid participation. Assumed to be longest duration on lock durations chain param. */
-    duration: Duration;
     apr: RatePretty;
     commission?: RatePretty;
     validatorMoniker?: string;
@@ -72,10 +68,10 @@ export class ObservableBondLiquidityConfig extends UserConfig {
    *  2. Liquidity needs to be bonded
    */
   readonly calculateBondLevel = computedFn(
-    (bondDurations: BondDuration[]): 1 | 2 | undefined => {
+    (bondableDurations: BondableDuration[]): 1 | 2 | undefined => {
       if (
         this.poolDetails?.userAvailableValue.toDec().gt(new Dec(0)) &&
-        bondDurations.some((duration) => duration.bondable)
+        bondableDurations.length > 0
       )
         return 2;
 
@@ -83,12 +79,12 @@ export class ObservableBondLiquidityConfig extends UserConfig {
     }
   );
 
-  /** Gets all durations for user to bond in, or has locked tokens for, with a breakdown of the assets incentivizing the duration. Internal OSMO incentives & swap fees included in breakdown. */
-  readonly getAllowedBondDurations = computedFn(
+  /** Gets all available durations for user to bond in, with a breakdown of the assets incentivizing the duration. Internal OSMO incentives & swap fees included in breakdown. */
+  readonly getBondableAllowedDurations = computedFn(
     (
       findCurrency: (denom: string) => AppCurrency | undefined,
       allowedGauges: { gaugeId: string; denom: string }[] | undefined
-    ): BondDuration[] => {
+    ): BondableDuration[] => {
       const poolId = this.poolDetails.pool.id;
       const gauges = this.superfluidPool.gaugesWithSuperfluidApr;
 
@@ -130,7 +126,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
         });
 
       return Array.from(durationsMsSet.values())
-        .sort((a, b) => b - a)
+        .sort()
         .reverse()
         .map((durationMs) => {
           const curDuration = dayjs.duration({
@@ -153,6 +149,11 @@ export class ObservableBondLiquidityConfig extends UserConfig {
             this.poolDetails.poolShareCurrency,
             curDuration
           ).amount;
+          const totalShares = this.poolDetails.pool.totalShare;
+          const poolTvl = this.poolDetails.totalValueLocked;
+          const userShareValue = poolTvl.mul(
+            new IntPretty(lockedUserShares.quo(totalShares))
+          );
 
           const unlockingUserShares =
             queryLockedCoin.getUnlockingCoinWithDuration(
@@ -170,7 +171,8 @@ export class ObservableBondLiquidityConfig extends UserConfig {
                 }
               : undefined;
 
-          const incentivesBreakdown: BondDuration["incentivesBreakdown"] = [];
+          const incentivesBreakdown: BondableDuration["incentivesBreakdown"] =
+            [];
 
           // push single internal incentive for current duration
           if (internalGaugeOfDuration) {
@@ -228,7 +230,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
 
           // add superfluid data if highest duration
           const sfsDuration = this.poolDetails.longestDuration;
-          let superfluid: BondDuration["superfluid"] | undefined;
+          let superfluid: BondableDuration["superfluid"] | undefined;
           if (
             this.superfluidPool.isSuperfluid &&
             this.superfluidPool.superfluid &&
@@ -245,7 +247,6 @@ export class ObservableBondLiquidityConfig extends UserConfig {
                 : undefined;
 
             superfluid = {
-              duration: sfsDuration,
               apr: this.superfluidPool.superfluidApr,
               commission: delegation?.validatorCommission,
               delegated: !this.superfluidPool.superfluid.upgradeableLpLockIds
@@ -272,9 +273,6 @@ export class ObservableBondLiquidityConfig extends UserConfig {
 
           return {
             duration: curDuration,
-            bondable:
-              internalGaugeOfDuration !== undefined ||
-              externalGaugesOfDuration.length > 0,
             userShares: lockedUserShares,
             userShareValue,
             userUnlockingShares,

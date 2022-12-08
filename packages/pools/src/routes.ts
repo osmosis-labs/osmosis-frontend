@@ -1,8 +1,4 @@
 import { Dec, Int } from "@keplr-wallet/unit";
-import {
-  isOsmoRoutedMultihop,
-  getOsmoRoutedMultihopTotalSwapFee,
-} from "@osmosis-labs/math";
 import { Pool } from "./interface";
 import { NoPoolsError, NotEnoughLiquidityError } from "./errors";
 
@@ -22,16 +18,15 @@ export interface RoutePathWithAmount extends RoutePath {
 
 export class OptimizedRoutes {
   protected _pools: ReadonlyArray<Pool>;
-  protected _incentivizedPoolIds: string[];
   protected candidatePathsCache = new Map<string, RoutePath[]>();
 
-  constructor(
-    pools: ReadonlyArray<Pool>,
-    incventivizedPoolIds: string[],
-    protected readonly stakeCurrencyMinDenom: string
-  ) {
+  constructor(pools: ReadonlyArray<Pool>) {
     this._pools = pools;
-    this._incentivizedPoolIds = incventivizedPoolIds;
+  }
+
+  setPools(pools: ReadonlyArray<Pool>) {
+    this._pools = pools;
+    this.clearCache();
   }
 
   get pools(): ReadonlyArray<Pool> {
@@ -229,18 +224,18 @@ export class OptimizedRoutes {
       throw new Error("Token in amount is zero or negative");
     }
 
-    let routes = this.getCandidatePaths(tokenIn.denom, tokenOutDenom, true);
+    let paths = this.getCandidatePaths(tokenIn.denom, tokenOutDenom, true);
     // TODO: if paths is single pool - confirm enough liquidity otherwise find different route
-    if (routes.length === 0) {
+    if (paths.length === 0) {
       throw new NoPoolsError();
     }
 
-    routes = routes.slice(0, maxPools);
+    paths = paths.slice(0, maxPools);
 
     const initialSwapAmounts: Int[] = [];
     let totalLimitAmount = new Int(0);
-    for (const route of routes) {
-      const limitAmount = route.pools[0].getLimitAmountByTokenIn(tokenIn.denom);
+    for (const path of paths) {
+      const limitAmount = path.pools[0].getLimitAmountByTokenIn(tokenIn.denom);
 
       totalLimitAmount = totalLimitAmount.add(limitAmount);
 
@@ -268,13 +263,13 @@ export class OptimizedRoutes {
 
     return initialSwapAmounts.map((amount, i) => {
       return {
-        ...routes[i],
+        ...paths[i],
         amount,
       };
     });
   }
 
-  calculateTokenOutByTokenIn(routes: RoutePathWithAmount[]): {
+  calculateTokenOutByTokenIn(paths: RoutePathWithAmount[]): {
     amount: Int;
     beforeSpotPriceInOverOut: Dec;
     beforeSpotPriceOutOverIn: Dec;
@@ -284,10 +279,9 @@ export class OptimizedRoutes {
     effectivePriceOutOverIn: Dec;
     tokenInFeeAmount: Int;
     swapFee: Dec;
-    multiHopOsmoDiscount: boolean;
     priceImpact: Dec;
   } {
-    if (routes.length === 0) {
+    if (paths.length === 0) {
       throw new Error("Paths are empty");
     }
 
@@ -296,82 +290,56 @@ export class OptimizedRoutes {
     let totalAfterSpotPriceInOverOut: Dec = new Dec(0);
     let totalEffectivePriceInOverOut: Dec = new Dec(0);
     let totalSwapFee: Dec = new Dec(0);
-    /** Special case when routing through _only_ 2 OSMO pools. */
-    let isMultihopOsmoFeeDiscount = false;
 
     let sumAmount = new Int(0);
-    for (const path of routes) {
+    for (const path of paths) {
       sumAmount = sumAmount.add(path.amount);
     }
 
     let outDenom: string | undefined;
-    for (const route of routes) {
+    for (const path of paths) {
       if (
-        route.pools.length !== route.tokenOutDenoms.length ||
-        route.pools.length === 0
+        path.pools.length !== path.tokenOutDenoms.length ||
+        path.pools.length === 0
       ) {
         throw new Error("Invalid path");
       }
 
       if (!outDenom) {
-        outDenom = route.tokenOutDenoms[route.tokenOutDenoms.length - 1];
+        outDenom = path.tokenOutDenoms[path.tokenOutDenoms.length - 1];
       } else if (
-        outDenom !== route.tokenOutDenoms[route.tokenOutDenoms.length - 1]
+        outDenom !== path.tokenOutDenoms[path.tokenOutDenoms.length - 1]
       ) {
         throw new Error("Paths have different out denom");
       }
 
-      const amountFraction = route.amount
-        .toDec()
-        .quoTruncate(sumAmount.toDec());
+      const amountFraction = path.amount.toDec().quoTruncate(sumAmount.toDec());
 
-      let previousInDenom = route.tokenInDenom;
-      let previousInAmount = route.amount;
+      let previousInDenom = path.tokenInDenom;
+      let previousInAmount = path.amount;
 
       let beforeSpotPriceInOverOut: Dec = new Dec(1);
       let afterSpotPriceInOverOut: Dec = new Dec(1);
       let effectivePriceInOverOut: Dec = new Dec(1);
       let swapFee: Dec = new Dec(0);
 
-      for (let i = 0; i < route.pools.length; i++) {
-        const pool = route.pools[i];
-        const outDenom = route.tokenOutDenoms[i];
-
-        let poolSwapFee = pool.swapFee;
-        if (
-          routes.length === 1 &&
-          isOsmoRoutedMultihop(
-            routes[0].pools.map((routePool) => ({
-              id: routePool.id,
-              isIncentivized: this._incentivizedPoolIds.includes(routePool.id),
-            })),
-            outDenom,
-            this.stakeCurrencyMinDenom
-          )
-        ) {
-          isMultihopOsmoFeeDiscount = true;
-          const { maxSwapFee, swapFeeSum } = getOsmoRoutedMultihopTotalSwapFee(
-            routes[0].pools
-          );
-          poolSwapFee = maxSwapFee.mul(poolSwapFee.quo(swapFeeSum));
-        }
+      for (let i = 0; i < path.pools.length; i++) {
+        const pool = path.pools[i];
+        const outDenom = path.tokenOutDenoms[i];
 
         // less fee
         const tokenOut = pool.getTokenOutByTokenIn(
           { denom: previousInDenom, amount: previousInAmount },
-          outDenom,
-          poolSwapFee
+          outDenom
         );
 
         if (!tokenOut.amount.gt(new Int(0))) {
           // not enough liquidity
-          console.warn("Token out is 0 through pool:", pool.id);
-
+          console.warn("Token out is 0 through pool: ", pool.id);
           return {
             ...tokenOut,
             tokenInFeeAmount: new Int(0),
-            swapFee,
-            multiHopOsmoDiscount: false,
+            swapFee: pool.swapFee,
           };
         }
 
@@ -384,10 +352,11 @@ export class OptimizedRoutes {
         effectivePriceInOverOut = effectivePriceInOverOut.mulTruncate(
           tokenOut.effectivePriceInOverOut
         );
-        swapFee = swapFee.add(new Dec(1).sub(swapFee).mulTruncate(poolSwapFee));
+        swapFee = swapFee.add(
+          new Dec(1).sub(swapFee).mulTruncate(pool.swapFee)
+        );
 
-        // is last pool
-        if (i === route.pools.length - 1) {
+        if (i === path.pools.length - 1) {
           totalOutAmount = totalOutAmount.add(tokenOut.amount);
 
           totalBeforeSpotPriceInOverOut = totalBeforeSpotPriceInOverOut.add(
@@ -429,7 +398,6 @@ export class OptimizedRoutes {
         new Dec(sumAmount).mulTruncate(new Dec(1).sub(totalSwapFee)).round()
       ),
       swapFee: totalSwapFee,
-      multiHopOsmoDiscount: isMultihopOsmoFeeDiscount,
       priceImpact,
     };
   }

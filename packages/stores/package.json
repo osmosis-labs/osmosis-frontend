@@ -2,6 +2,7 @@
   "name": "@osmosis-labs/stores",
   "version": "3.0.0",
   "main": "build/index.js",
+  "typings": "types/index.d.ts",
   "author": "osmosis-labs",
   "homepage": "https://github.com/osmosis-labs/osmosis-frontend/tree/master/packages/stores#readme",
   "repository": {

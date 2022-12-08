@@ -15,7 +15,7 @@ export const SourceChainConfigs: {
         ? "0x254d06f33bDc5b8ee05b2ea472107E300226659A"
         : "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // test: 'aUSDC' on metamask/etherscan
       logoUrl: "/networks/ethereum.svg",
-      transferFeeMinAmount: IS_TESTNET ? "150000" : "10500000", // From https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee
+      transferFeeMinAmount: IS_TESTNET ? "150000" : "20500000", // From https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee
     },
     avalanche: {
       id: "Avalanche" as const,
@@ -67,7 +67,9 @@ export const SourceChainConfigs: {
         ? "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"
         : "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       logoUrl: "/networks/ethereum.svg",
-      transferFeeMinAmount: IS_TESTNET ? "100000000000000" : "8400000000000000",
+      transferFeeMinAmount: IS_TESTNET
+        ? "100000000000000"
+        : "20400000000000000",
     },
   },
   wglmr: {
@@ -87,7 +89,7 @@ export const SourceChainConfigs: {
       id: "Ethereum" as const,
       erc20ContractAddress: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
       logoUrl: "/networks/ethereum.svg",
-      transferFeeMinAmount: "63000",
+      transferFeeMinAmount: "50000",
     },
   },
   dai: {
@@ -95,7 +97,7 @@ export const SourceChainConfigs: {
       id: "Ethereum" as const,
       erc20ContractAddress: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
       logoUrl: "/networks/ethereum.svg",
-      transferFeeMinAmount: "10500000000000000000",
+      transferFeeMinAmount: "20500000000000000000",
     },
   },
   dot: {
@@ -111,7 +113,7 @@ export const SourceChainConfigs: {
       id: "Ethereum" as const,
       erc20ContractAddress: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
       logoUrl: "/networks/ethereum.svg",
-      transferFeeMinAmount: "10500000000000000000",
+      transferFeeMinAmount: "20500000000000000000",
     },
   },
   frax: {
@@ -119,7 +121,7 @@ export const SourceChainConfigs: {
       id: "Ethereum" as const,
       erc20ContractAddress: "0x853d955aCEf822Db058eb8505911ED77F175b99e",
       logoUrl: "/networks/ethereum.svg",
-      transferFeeMinAmount: "10500000000000000000",
+      transferFeeMinAmount: "20500000000000000000",
     },
   },
   link: {
@@ -127,7 +129,7 @@ export const SourceChainConfigs: {
       id: "Ethereum" as const,
       erc20ContractAddress: "0x514910771AF9Ca656af840dff83E8264EcF986CA",
       logoUrl: "/networks/ethereum.svg",
-      transferFeeMinAmount: "2080000000000000000",
+      transferFeeMinAmount: "3080000000000000000",
     },
   },
   aave: {
@@ -135,7 +137,7 @@ export const SourceChainConfigs: {
       id: "Ethereum" as const,
       erc20ContractAddress: "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9",
       logoUrl: "/networks/ethereum.svg",
-      transferFeeMinAmount: "208000000000000000",
+      transferFeeMinAmount: "308000000000000000",
     },
   },
   ape: {
@@ -143,7 +145,7 @@ export const SourceChainConfigs: {
       id: "Ethereum" as const,
       erc20ContractAddress: "0x4d224452801ACEd8B2F0aebE155379bb5D594381",
       logoUrl: "/networks/ethereum.svg",
-      transferFeeMinAmount: "2100000000000000000",
+      transferFeeMinAmount: "4100000000000000000",
     },
   },
   axs: {
@@ -151,7 +153,7 @@ export const SourceChainConfigs: {
       id: "Ethereum" as const,
       erc20ContractAddress: "0xBB0E17EF65F82Ab018d8EDd776e8DD940327B28b",
       logoUrl: "/networks/ethereum.svg",
-      transferFeeMinAmount: "730000000000000000",
+      transferFeeMinAmount: "1030000000000000000",
     },
   },
   mkr: {
@@ -159,7 +161,7 @@ export const SourceChainConfigs: {
       id: "Ethereum" as const,
       erc20ContractAddress: "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2",
       logoUrl: "/networks/ethereum.svg",
-      transferFeeMinAmount: "10600000000000000",
+      transferFeeMinAmount: "20600000000000000",
     },
   },
   rai: {
@@ -167,7 +169,7 @@ export const SourceChainConfigs: {
       id: "Ethereum" as const,
       erc20ContractAddress: "0x03ab458634910AaD20eF5f1C8ee96F1D6ac54919",
       logoUrl: "/networks/ethereum.svg",
-      transferFeeMinAmount: "3200000000000000000",
+      transferFeeMinAmount: "7200000000000000000",
     },
   },
   shib: {
@@ -175,7 +177,7 @@ export const SourceChainConfigs: {
       id: "Ethereum" as const,
       erc20ContractAddress: "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE",
       logoUrl: "/networks/ethereum.svg",
-      transferFeeMinAmount: "1050000000000000000000000",
+      transferFeeMinAmount: "2050000000000000000000000",
     },
   },
   uni: {
@@ -183,7 +185,7 @@ export const SourceChainConfigs: {
       id: "Ethereum" as const,
       erc20ContractAddress: "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
       logoUrl: "/networks/ethereum.svg",
-      transferFeeMinAmount: "2100000000000000000",
+      transferFeeMinAmount: "4100000000000000000",
     },
   },
   xcn: {
@@ -191,7 +193,7 @@ export const SourceChainConfigs: {
       id: "Ethereum" as const,
       erc20ContractAddress: "0xA2cd3D43c775978A96BdBf12d733D5A1ED94fb18",
       logoUrl: "/networks/ethereum.svg",
-      transferFeeMinAmount: "106000000000000000000",
+      transferFeeMinAmount: "206000000000000000000",
     },
   },
   wbnb: {
@@ -204,18 +206,6 @@ export const SourceChainConfigs: {
         : "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
       logoUrl: "/networks/binance.svg",
       transferFeeMinAmount: IS_TESTNET ? "500000000000000" : "5000000000000000",
-    },
-  },
-  wmatic: {
-    polygon: {
-      id: IS_TESTNET ? ("Mumbai" as const) : ("Polygon" as const),
-      erc20ContractAddress: IS_TESTNET
-        ? "0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889"
-        : "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
-      logoUrl: "/networks/polygon.svg",
-      transferFeeMinAmount: IS_TESTNET
-        ? "100000000000000000"
-        : "1600000000000000000",
     },
   },
 };

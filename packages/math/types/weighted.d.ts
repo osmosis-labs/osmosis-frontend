@@ -1,0 +1,12 @@
+import { Dec, Int } from "@keplr-wallet/unit";
+export declare function calcSlippageTokenIn(spotPriceBefore: Dec, tokenIn: Int, slippage: Dec): Int;
+export declare function calcSlippageTokenOut(spotPriceBefore: Dec, tokenOut: Int, slippage: Dec): Int;
+export declare function calcSlippageSlope(tokenBalanceIn: Dec, tokenWeightIn: Dec, tokenWeightOut: Dec, swapFee: Dec): Dec;
+export declare function calcSpotPrice(tokenBalanceIn: Dec, tokenWeightIn: Dec, tokenBalanceOut: Dec, tokenWeightOut: Dec, swapFee: Dec): Dec;
+export declare function calcOutGivenIn(tokenBalanceIn: Dec, tokenWeightIn: Dec, tokenBalanceOut: Dec, tokenWeightOut: Dec, tokenAmountIn: Dec, swapFee: Dec): Dec;
+export declare function calcInGivenOut(tokenBalanceIn: Dec, tokenWeightIn: Dec, tokenBalanceOut: Dec, tokenWeightOut: Dec, tokenAmountOut: Dec, swapFee: Dec): Dec;
+export declare function calcPoolOutGivenSingleIn(tokenBalanceIn: Dec, tokenWeightIn: Dec, poolSupply: Dec, totalWeight: Dec, tokenAmountIn: Dec, swapFee: Dec): Dec;
+export declare function calcSingleInGivenPoolOut(tokenBalanceIn: Dec, tokenWeightIn: Dec, poolSupply: Dec, totalWeight: Dec, poolAmountOut: Dec, swapFee: Dec): Dec;
+export declare function calcSingleOutGivenPoolIn(tokenBalanceOut: Dec, tokenWeightOut: Dec, poolSupply: Dec, totalWeight: Dec, poolAmountIn: Dec, swapFee: Dec): Dec;
+export declare function calcPoolInGivenSingleOut(tokenBalanceOut: Dec, tokenWeightOut: Dec, poolSupply: Dec, totalWeight: Dec, tokenAmountOut: Dec, swapFee: Dec): Dec;
+export declare function pow(base: Dec, exp: Dec): Dec;

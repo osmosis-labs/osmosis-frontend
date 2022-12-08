@@ -61,19 +61,18 @@ export class ObservableQuerySuperfluidOsmoEquivalent {
   readonly estimatePoolAPROsmoEquivalentMultiplier = computedFn(
     (poolId: string): Dec => {
       const pool = this._queryPools.getPool(poolId);
-      if (pool && pool.weightedPoolInfo) {
+      if (pool) {
         const osmoCurrency = this.chainGetter.getChain(
           this.chainId
         ).stakeCurrency;
 
-        const poolAsset = pool.weightedPoolInfo.assets.find(
-          ({ denom }) => denom === osmoCurrency.coinMinimalDenom
+        const poolAsset = pool.poolAssets.find(
+          (asset) =>
+            asset.amount.currency.coinMinimalDenom ===
+            osmoCurrency.coinMinimalDenom
         );
-        if (
-          poolAsset &&
-          pool.weightedPoolInfo.totalWeight.toDec().gt(new Dec(0))
-        ) {
-          const ratio = poolAsset.weight.quo(pool.weightedPoolInfo.totalWeight);
+        if (poolAsset && pool.totalWeight.toDec().gt(new Dec(0))) {
+          const ratio = poolAsset.weight.quo(pool.totalWeight);
 
           const minimumRiskFactor =
             this._querySuperfluidParams.minimumRiskFactor;
