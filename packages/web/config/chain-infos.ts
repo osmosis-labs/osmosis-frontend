@@ -2327,34 +2327,6 @@ const chainInfos = (
       explorerUrlToTx: "https://explorer.thesilverfox.pro/beezee/tx/{txHash}",
     },
     {
-      rpc: "https://rpc.imversed.network:443",
-      rest: "https://rest.imversed.network:443",
-      chainId: "imversed_5555555-1",
-      chainName: "Imversed",
-      bip44: {
-        coinType: 60,
-      },
-      bech32Config: Bech32Address.defaultBech32Config("imv"),
-      currencies: [
-        {
-          coinDenom: "IMV",
-          coinMinimalDenom: "aimv",
-          coinDecimals: 18,
-          coinGeckoId: "pool:aimv",
-          coinImageUrl: "/tokens/imversed.svg",
-          isStakeCurrency: true,
-          isFeeCurrency: true,
-        },
-      ],
-      gasPriceStep: {
-        low: 20000000000,
-        average: 25000000000,
-        high: 40000000000,
-      },
-      features: ["ibc-transfer"],
-      explorerUrlToTx: "https://txe.imversed.network/tx/{txHash}",
-    },
-    {
       rpc: "https://rpc-acre.synergynodes.com/",
       rest: "https://lcd-acre.synergynodes.com/",
       chainId: "acre_9052-1",
@@ -2381,6 +2353,34 @@ const chainInfos = (
       },
       features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
       explorerUrlToTx: "https://cosmosrun.info/acre-mainnet/tx/{txHash}",
+    },
+    {
+      rpc: "https://rpc.imversed.network:443",
+      rest: "https://rest.imversed.network:443",
+      chainId: "imversed_5555555-1",
+      chainName: "Imversed",
+      bip44: {
+        coinType: 60,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("imv"),
+      currencies: [
+        {
+          coinDenom: "IMV",
+          coinMinimalDenom: "aimv",
+          coinDecimals: 18,
+          coinGeckoId: "pool:aimv",
+          coinImageUrl: "/tokens/imversed.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 20000000000,
+        average: 25000000000,
+        high: 40000000000,
+      },
+      features: ["ibc-transfer"],
+      explorerUrlToTx: "https://txe.imversed.network/tx/{txHash}",
     },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
