@@ -393,7 +393,6 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-0",
     coinMinimalDenom: "udarc",
     isVerified: true,
-    isUnstable: true,
   },
   {
     counterpartyChainId: "umee-1",
