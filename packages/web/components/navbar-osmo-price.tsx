@@ -48,7 +48,7 @@ const NavbarOsmoPrice = observer(() => {
 
   return (
     <div className="flex flex-col gap-6 px-2">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between  px-2">
         <Skeleton isLoaded={osmoPrice.isReady} className="min-w-[70px]">
           <div className="flex items-center gap-1">
             <div className="h-[20px] w-[20px]">
@@ -60,7 +60,10 @@ const NavbarOsmoPrice = observer(() => {
               />
             </div>
 
-            <p>{osmoPrice.maxDecimals(2).toString()}</p>
+            <p className="mt-[3px]">
+              {osmoPrice.fiatCurrency.symbol}
+              {Number(osmoPrice.toDec().toString()).toFixed(2)}
+            </p>
           </div>
         </Skeleton>
 
@@ -74,7 +77,7 @@ const NavbarOsmoPrice = observer(() => {
         >
           <Sparkline
             data={getChartData(tokenChartQuery?.getChartPrices())}
-            width={30}
+            width={25}
             height={24}
             lineWidth={2}
           />
@@ -98,11 +101,19 @@ const NavbarOsmoPrice = observer(() => {
       <Skeleton isLoaded={osmoPrice.isReady}>
         <Button
           mode="tertiary"
-          className="group relative !h-11 gap-2 overflow-hidden !rounded-full !border-osmoverse-700 !py-1 text-osmoverse-100 !transition-all !duration-300 !ease-in-out hover:bg-gradient-positive hover:text-osmoverse-1000"
+          className={classNames(
+            "group relative !h-11 gap-2 overflow-hidden !rounded-full !border-osmoverse-700 !py-1 !font-semibold text-osmoverse-100 !transition-all !duration-300 !ease-in-out",
+            "hover:border-none hover:bg-gradient-positive hover:text-osmoverse-1000"
+          )}
           onClick={() => transferConfig.buyOsmo()}
         >
-          <CreditCardIcon /> <span>Buy tokens</span>{" "}
-          <CoinsIcon className="absolute top-0 -translate-y-full transform transition-transform duration-[3s] ease-linear group-hover:translate-y-[30%]" />
+          <CreditCardIcon /> <span className="z-10">Buy tokens</span>{" "}
+          <CoinsIcon
+            className={classNames(
+              "invisible absolute top-0 -translate-y-full transform transition-transform ease-linear",
+              "group-hover:visible group-hover:translate-y-[30%] group-hover:duration-[3s]"
+            )}
+          />
         </Button>
       </Skeleton>
 
@@ -121,6 +132,7 @@ const CreditCardIcon = () => {
       viewBox="0 0 24 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      className="z-10"
     >
       <g clipPath="url(#clip0_558_4852)">
         <path
