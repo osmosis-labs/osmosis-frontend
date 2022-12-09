@@ -102,7 +102,7 @@ const NavbarOsmoPrice = observer(() => {
         <Button
           mode="tertiary"
           className={classNames(
-            "group relative !h-11 gap-2 overflow-hidden !rounded-full !border-osmoverse-700 !py-1 !font-semibold text-osmoverse-100 !transition-all !duration-300 !ease-in-out",
+            "button group relative !h-11 gap-2 overflow-hidden !rounded-full !border-osmoverse-700 !py-1 font-bold text-osmoverse-100 !transition-all !duration-300 !ease-in-out",
             "hover:border-none hover:bg-gradient-positive hover:text-osmoverse-1000"
           )}
           onClick={() => transferConfig.buyOsmo()}
@@ -138,21 +138,19 @@ const CreditCardIcon = () => {
         <path
           d="M15.4018 1.25846L2.51708 5.28766C1.72641 5.53491 1.28589 6.37632 1.53314 7.16699L4.21927 15.7568C4.46652 16.5475 5.30792 16.988 6.09859 16.7407L18.9833 12.7115C19.774 12.4643 20.2145 11.6229 19.9672 10.8322L17.2811 2.24241C17.0339 1.45174 16.1925 1.01121 15.4018 1.25846Z"
           stroke="currentcolor"
-          strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
           className={classNames(
-            "translate-x-[6px] -translate-y-[1px] rotate-[17.37deg] transform transition-transform duration-300 ease-in-out",
-            "group-hover:translate-x-0 group-hover:-translate-y-0 group-hover:rotate-0"
+            "translate-x-[6px] -translate-y-[1px] rotate-[17.37deg] transform stroke-[1.5] transition-transform duration-300 ease-in-out",
+            "group-hover:translate-x-0 group-hover:-translate-y-0 group-hover:rotate-0 group-hover:stroke-[2]"
           )}
         />
         <path
           d="M20.5 5H7C6.17157 5 5.5 5.67157 5.5 6.5V15.5C5.5 16.3284 6.17157 17 7 17H20.5C21.3284 17 22 16.3284 22 15.5V6.5C22 5.67157 21.3284 5 20.5 5Z"
           stroke="currentcolor"
-          strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="fill-osmoverse-700 group-hover:fill-[#71B5EB]"
+          className="fill-osmoverse-700 stroke-[1.5] group-hover:fill-[#71B5EB] group-hover:stroke-[2]"
         />
         <path
           d="M6.5 9.5H21"
