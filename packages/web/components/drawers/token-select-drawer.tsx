@@ -196,14 +196,13 @@ export const TokenSelectDrawer: FunctionComponent<{
                 />
               </button>
 
-              <h1 className="text-h6">{t("components.selectToken.title")}</h1>
+              <h1 className="text-h6 font-h6">
+                {t("components.selectToken.title")}
+              </h1>
             </div>
 
-            <div className="shadow-[0_4px_8px_0_rgba(9,5,36,0.12)]">
-              <div
-                className="px-4 pt-4 pb-3"
-                onClick={(e) => e.stopPropagation()}
-              >
+            <div className="mb-2 shadow-[0_4px_8px_0_rgba(9,5,36,0.12)]">
+              <div className="px-4 py-4" onClick={(e) => e.stopPropagation()}>
                 <SearchBox
                   ref={searchBoxRef}
                   type="text"
@@ -248,7 +247,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                             />
                           </div>
                         )}
-                        <p>{justDenom}</p>
+                        <p className="subtitle1">{justDenom}</p>
                       </button>
                     );
                   })}
@@ -312,8 +311,10 @@ export const TokenSelectDrawer: FunctionComponent<{
                           </div>
                         )}
                         <div>
-                          <h6 className="text-white-full">{justDenom}</h6>
-                          <div className="md:caption text-left font-semibold text-osmoverse-400">
+                          <h6 className="button font-button text-white-full">
+                            {justDenom}
+                          </h6>
+                          <div className="caption text-left font-semibold font-medium text-osmoverse-400">
                             {showChannel
                               ? `${networkName} ${channel}`
                               : networkName}
@@ -323,8 +324,8 @@ export const TokenSelectDrawer: FunctionComponent<{
 
                       {tokenAmount && tokenPrice && Number(tokenAmount) > 0 && (
                         <div className="flex flex-col text-right">
-                          <p className="subtitle1">{tokenAmount}</p>
-                          <span className="subtitle2 text-osmoverse-400">
+                          <p className="button">{tokenAmount}</p>
+                          <span className="caption font-medium text-osmoverse-400">
                             {tokenPrice}
                           </span>
                         </div>
