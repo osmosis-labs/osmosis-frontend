@@ -8,7 +8,7 @@ import { BondDuration } from "@osmosis-labs/stores";
 import { FallbackImg } from "../assets";
 import { ArrowButton } from "../buttons";
 import { useTranslation } from "react-multi-lang";
-import { formatNumberToScale } from "../../utils/number";
+import { coinFormatter, priceFormatter } from "../../utils/formatter";
 
 export const BondCard: FunctionComponent<
   BondDuration & {
@@ -359,9 +359,7 @@ const IncentiveBreakdownRow: FunctionComponent<
       <div className="flex flex-col text-right">
         <span className="text-osmoverse-100">
           {t("pool.dailyEarnAmount", {
-            amount: `${formatNumberToScale(
-              dailyPoolReward.toDec().toString()
-            )} ${dailyPoolReward.currency.coinDenom}`,
+            amount: coinFormatter(dailyPoolReward),
           })}
         </span>
         {numDaysRemaining && (
@@ -391,9 +389,7 @@ const SwapFeeBreakdownRow: FunctionComponent<{
       <div className="flex flex-col text-right">
         <span className="text-osmoverse-100">
           {t("pool.dailyEarnAmount", {
-            amount: `${
-              swapFeeDailyReward.fiatCurrency.symbol
-            }${formatNumberToScale(swapFeeDailyReward.toDec().toString())}`,
+            amount: priceFormatter(swapFeeDailyReward),
           })}
         </span>
         <span className="caption text-osmoverse-400">
