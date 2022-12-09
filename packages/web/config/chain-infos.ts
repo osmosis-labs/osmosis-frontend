@@ -170,7 +170,7 @@ const chainInfos = (
         {
           type: "cw20",
           contractAddress: "secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852",
-          coinDenom: "ALTER",
+          coinDenom: "AMBER",
           coinMinimalDenom:
             "cw20:secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852:AMBER",
           coinDecimals: 6,
