@@ -79,8 +79,13 @@
     "createPool": {
       "title": "Yeni Havuz Oluştur",
       "button": "Yeni Havuz Oluştur",
+      "weightedPool": "Ağırlıklı havuz",
+      "stablePool": "Ahır havuzu",
       "step": {
-        "one": "Adım {step} / {nbStep} - Token oranlarını ayarlayın",
+        "one": {
+          "weighted": "Adım {step} / {nbStep} - Token oranlarını ayarlayın",
+          "stable": "Adım {step} / {nbStep} - Ölçeklendirme faktörlerini ayarlayın"
+        },
         "two": "Adım {step} / {nbStep} - Eklenecek miktarı girin",
         "three": "Adım {step} / {nbStep} - Havuz oranını ve token miktarını onaylayın"
       },
@@ -94,6 +99,7 @@
       "amount": "Miktar",
       "token": "Token",
       "swapFee": "Takas Ücreti Belirle",
+      "scalingFactorController": "Ölçeklendirme faktörü denetleyicisini ayarla (isteğe bağlı)",
       "undersandCost": "Yeni havuz oluşturmanın, {POOL_CREATION_FEE} 'ya mâl olacağını anlıyorum.",
       "interestedCreate": "Yeni bir havuz oluşturmak mı istiyorsunuz?",
       "startProcess": "İşlemi başlatmak için buraya tıklayın"
@@ -103,6 +109,7 @@
     "title": "Havuz #{id}",
     "swap": "Tokenleri Takas Et",
     "superfluidEnabled": "Superfluid staking etkin",
+    "stableswapEnabled": "Stableswap etkin",
     "24hrTradingVolume": "24s İşlem hacmi",
     "liquidity": "Havuzdaki likidite",
     "swapFee": "Takas ücreti",
@@ -210,6 +217,8 @@
       "titleWithdraw": "{coinDenom} Çek",
       "titleDeposit": "{coinDenom} Yatır",
       "channelCongested": "Kanal çağrıldı",
+      "channelCongestedWithdraw": "Çek (Kanal çağrıldı)",
+      "channelCongestedDeposit": "Yatır (Kanal çağrıldı)",
       "channelBlocked": "Kanal engellendi",
       "selectAmount": "Miktar Seç",
       "estimatedTime": "Takribi Süre",
@@ -345,9 +354,11 @@
     "negativeSwapFee": "Takas ücreti negatif",
     "highSwapFee": "Takas ücreti çok yüksek",
     "invalidSwapFee": "Takas ücreti geçersiz",
+    "invalidScalingFactorControllerAddress": "Geçersiz ölçeklendirme faktörü denetleyici adresi",
     "minAssetsCount": "En az {num} varlık gerekli",
     "maxAssetsCount": "En fazla {num} varlık olabilir",
     "negativePercentage": "Yüzde pozitif olmalı",
+    "scalingFactorTooLow": "Ölçeklendirme faktörü çok düşük",
     "percentageSum": "Yüzdeler toplamı 100'e eşit değil",
     "depositNoBalance": "Yatıracak varlığınız yok",
     "negativeSlippage": "Slipaj negatif olamaz",

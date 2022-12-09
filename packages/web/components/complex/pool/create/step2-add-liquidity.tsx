@@ -16,7 +16,7 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
     return (
       <StepBase step={2} {...props}>
         <div className="flex flex-col gap-2.5">
-          {config.assets.map(({ percentage, amountConfig }) => {
+          {config.assets.map(({ percentage, scalingFactor, amountConfig }) => {
             const currency = amountConfig.sendCurrency;
 
             const justCoinDenom = currency.coinDenom.includes("channel")
@@ -30,11 +30,10 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
               >
                 <div className="flex items-center">
                   {currency.coinImageUrl && (
-                    <div className="flex h-14 w-14 items-center overflow-hidden rounded-full md:h-7 md:w-7">
+                    <div className="flex h-14 w-14 items-center overflow-hidden md:h-7 md:w-7">
                       <Image
                         src={currency.coinImageUrl}
                         alt="token icon"
-                        className="rounded-full"
                         width={isMobile ? 30 : 44}
                         height={isMobile ? 30 : 44}
                       />
@@ -47,7 +46,9 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
                       <h5>{justCoinDenom}</h5>
                     )}
                     <div className="md:caption text-sm font-semibold text-osmoverse-400 md:text-xs">
-                      {percentage}%
+                      {config.poolType === "weighted"
+                        ? `${percentage}%`
+                        : scalingFactor ?? "1"}
                     </div>
                   </div>
                 </div>

@@ -81,8 +81,13 @@
     "createPool": {
       "title": "Stwórz nową pulę",
       "button": "Stwórz nową pulę",
+      "weightedPool": "Basen ważony",
+      "stablePool": "Stabilny basen",
       "step": {
-        "one": "Krok {step} / {nbStep} - Ustaw proporcje tokenów",
+        "one": {
+          "weighted": "Krok {step} / {nbStep} - Ustaw proporcje tokenów",
+          "stable": "Krok {step} / {nbStep} - Ustaw współczynniki skalowania"
+        },
         "two": "Krok {step} / {nbStep} - Wpisz ilość do dodania",
         "three": "Krok {step} / {nbStep} - Potwierdź proporcje puli i ilość tokenów"
       },
@@ -96,6 +101,7 @@
       "amount": "Ilość",
       "token": "Token",
       "swapFee": "Ustaw Prowizję Wymiany",
+      "scalingFactorController": "Ustaw regulator współczynnika skalowania (opcjonalnie)",
       "undersandCost": "Rozumiem, że stworzenie nowej puli będzie kosztować {POOL_CREATION_FEE}.",
       "interestedCreate": "Zainteresowany tworzeniem nowej puli?",
       "startProcess": "Kliknij tutaj, żeby zacząć proces"
@@ -105,6 +111,7 @@
     "title": "Pula #{id}",
     "swap": "Wymień Tokeny",
     "superfluidEnabled": "Dostępne superpłynne stakowanie",
+    "stableswapEnabled": "Stabilna zamiana włączona",
     "24hrTradingVolume": "24h Wolumen wymian",
     "liquidity": "Płynność puli",
     "swapFee": "Prowizja wymiany",
@@ -211,6 +218,8 @@
       "titleWithdraw": "Wypłać {coinDenom}",
       "titleDeposit": "Wpłać {coinDenom}",
       "channelCongested": "Kanał zmyślony",
+      "channelCongestedWithdraw": "Wypłać (Kanał zmyślony)",
+      "channelCongestedDeposit": "Wpłać (Kanał zmyślony)",
       "channelBlocked": "Kanał zablokowany",
       "selectAmount": "Wybierz Ilość",
       "estimatedTime": "Szacowany Czas",
@@ -346,9 +355,11 @@
     "negativeSwapFee": "Prowizja wymiany jest ujemna",
     "highSwapFee": "Prowizja wymiany zbyt wysoka",
     "invalidSwapFee": "Prowizja wymiany nieprawidłowa",
+    "invalidScalingFactorControllerAddress": "Nieprawidłowy adres kontrolera współczynnika skalowania",
     "minAssetsCount": "Wymagane minimum {num} środków",
     "maxAssetsCount": "Dozwolone maksymalnie {num} środków",
     "negativePercentage": "Procent musi być dodatni",
+    "scalingFactorTooLow": "Zbyt niski współczynnik skalowania",
     "percentageSum": "Suma procentów nie jest równa 100",
     "depositNoBalance": "Nie masz środków do wpłaty",
     "negativeSlippage": "Wartość odchylenia nie może być ujemne",

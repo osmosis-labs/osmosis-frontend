@@ -22,7 +22,7 @@ describe("Create Pool Tx", () => {
     const account = accountStore.getAccount(chainId);
 
     await expect(
-      account.osmosis.sendCreatePoolMsg("0", [], "", (_) => {})
+      account.osmosis.sendCreateBalancerPoolMsg("0", [], "", (_) => {})
     ).rejects.not.toBeNull();
   });
 
@@ -30,7 +30,7 @@ describe("Create Pool Tx", () => {
     const account = accountStore.getAccount(chainId);
 
     await expect(
-      account.osmosis.sendCreatePoolMsg(
+      account.osmosis.sendCreateBalancerPoolMsg(
         "0",
         [
           {
@@ -55,7 +55,7 @@ describe("Create Pool Tx", () => {
     const account = accountStore.getAccount(chainId);
 
     await expect(
-      account.osmosis.sendCreatePoolMsg(
+      account.osmosis.sendCreateBalancerPoolMsg(
         "0",
         [
           {
@@ -91,7 +91,7 @@ describe("Create Pool Tx", () => {
     const account = accountStore.getAccount(chainId);
 
     const tx = await new Promise<any>((resolve) => {
-      account.osmosis.sendCreatePoolMsg(
+      account.osmosis.sendCreateBalancerPoolMsg(
         "0",
         [
           {
@@ -156,7 +156,7 @@ describe("Create Pool Tx", () => {
     const account = accountStore.getAccount(chainId);
 
     const tx = await new Promise<any>((resolve) => {
-      account.osmosis.sendCreatePoolMsg(
+      account.osmosis.sendCreateBalancerPoolMsg(
         "0.1",
         [
           {
