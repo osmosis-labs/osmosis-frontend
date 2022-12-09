@@ -295,6 +295,7 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-38",
     destChannelId: "channel-4",
     coinMinimalDenom: "uixo",
+    isUnstable: true,
   },
   {
     counterpartyChainId: "bitcanna-1",
