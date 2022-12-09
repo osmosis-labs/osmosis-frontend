@@ -1062,15 +1062,6 @@ export const IBCAssetInfos: (IBCAsset & {
     ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
   },
   {
-    // AMBER
-    counterpartyChainId: "secret-4",
-    sourceChannelId: "channel-476",
-    destChannelId: "channel-44",
-    coinMinimalDenom: "cw20:secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852",
-    depositUrlOverride: "https://wrap.scrt.network",
-    ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
-  },
-  {
     // BUTT
     counterpartyChainId: "secret-4",
     sourceChannelId: "channel-476",
@@ -1138,6 +1129,14 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-517",
     destChannelId: "channel-1",
     coinMinimalDenom: "aimv",
+  },
+  {
+    counterpartyChainId: "secret-4",
+    sourceChannelId: "channel-476",
+    destChannelId: "channel-44",
+    coinMinimalDenom: "cw20:secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852",
+    depositUrlOverride: "https://wrap.scrt.network",
+    ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
   },
 ].filter((ibcAsset) => {
   // validate IBC asset config
