@@ -17,7 +17,7 @@ export function priceFormatter(
   );
 }
 
-/** Formats a coin as compact by default. i.e. $7.53M or $265K. Validate handled by `PricePretty`. */
+/** Formats a coin as compact by default. i.e. $7.53 ATOM or $265 OSMO. Validate handled by `CoinPretty`. */
 export function coinFormatter(
   coin: CoinPretty,
   opts: Intl.NumberFormatOptions = {
