@@ -21,7 +21,7 @@ export const PoolAssetsIcon: FunctionComponent<Props> = ({
             "h-[3.125rem] w-[3.125rem]": size === "md",
             "h-[2.5rem] w-[2.5rem]": size === "sm",
           },
-          "absolute z-10 flex items-center justify-center overflow-hidden rounded-full"
+          "absolute z-10 flex items-center justify-center overflow-hidden"
         )}
       >
         {assets[0].coinImageUrl ? (
@@ -46,7 +46,7 @@ export const PoolAssetsIcon: FunctionComponent<Props> = ({
             "ml-10 h-[3.125rem] w-[3.125rem]": size === "md",
             "ml-5 h-[2.5rem] w-[2.5rem]": size === "sm",
           },
-          "flex shrink-0 items-center justify-center overflow-hidden rounded-full"
+          "flex shrink-0 items-center justify-center overflow-hidden"
         )}
       >
         {assets.length >= 3 ? (

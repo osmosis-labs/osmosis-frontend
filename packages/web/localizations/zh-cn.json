@@ -79,8 +79,13 @@
     "createPool": {
       "title": "创建新的资金池",
       "button": "创建新的资金池",
+      "weightedPool": "加权池",
+      "stablePool": "稳定池",
       "step": {
-        "one": "步骤 {step} / {nbStep} - 设置代币比率",
+        "one": {
+          "weighted": "步骤 {step} / {nbStep} - 设置代币比率",
+          "stable": "步骤 {step} / {nbStep} - 设置比例因子"
+        },
         "two": "步骤 {step} / {nbStep} - 输入添加总量",
         "three": "步骤 {step} / {nbStep} - 确认资金池的代币比率和总量"
       },
@@ -94,6 +99,7 @@
       "amount": "总量",
       "token": "代币",
       "swapFee": "设置交易费",
+      "scalingFactorController": "设置比例因子控制器（可选）",
       "undersandCost": "我已理解创建资金池将会花费 {POOL_CREATION_FEE}.",
       "interestedCreate": "对创建新的资金池感兴趣?",
       "startProcess": "点击此处开始创建"
@@ -103,6 +109,7 @@
     "title": "资金池 #{id}",
     "swap": "兑换代币",
     "superfluidEnabled": "已启用超流质押",
+    "stableswapEnabled": "启用稳定交换",
     "24hrTradingVolume": "24时成交额",
     "liquidity": "资金池流动性",
     "swapFee": "交易费",
@@ -209,6 +216,8 @@
       "titleWithdraw": "提币 {coinDenom}",
       "titleDeposit": "存入 {coinDenom}",
       "channelCongested": "频道争抢",
+      "channelCongestedWithdraw": "提币 (频道争抢)",
+      "channelCongestedDeposit": "存入 (频道争抢)",
       "channelBlocked": "频道被封锁",
       "selectAmount": "选择数量",
       "estimatedTime": "预估时间",
@@ -343,9 +352,11 @@
     "negativeSwapFee": "交易费为负数",
     "highSwapFee": "交易费太高",
     "invalidSwapFee": "交易费无效",
+    "invalidScalingFactorControllerAddress": "比例因子控制器地址无效",
     "minAssetsCount": "最少需要 {num} 个资产",
     "maxAssetsCount": "最多允许 {num} 个资产",
     "negativePercentage": "百分比必须是正数",
+    "scalingFactorTooLow": "比例因子太低",
     "percentageSum": "百分比总和不是 100",
     "depositNoBalance": "您没有可以存入的资产",
     "negativeSlippage": "滑点不能为负数",

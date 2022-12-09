@@ -3,7 +3,7 @@ import { FunctionComponent } from "react";
 import classNames from "classnames";
 import { CustomClasses, Metric } from "../types";
 import { PoolAssetInfo } from "../assets";
-import { truncateString } from "../../utils/string";
+import { truncateString } from "../utils";
 
 /** For displaying a token and it's balance, or a pool overview. */
 export const AssetCard: FunctionComponent<
@@ -60,7 +60,7 @@ export const AssetCard: FunctionComponent<
                   );
                 })
               ) : (
-                <div className="flex h-[2.125rem] w-[2.125rem] shrink-0 items-center justify-center overflow-hidden rounded-full">
+                <div className="flex h-[2.125rem] w-[2.125rem] shrink-0 items-center justify-center overflow-hidden">
                   <Image
                     alt="asset"
                     src={coinImageUrl}
