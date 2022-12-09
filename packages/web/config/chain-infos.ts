@@ -2382,6 +2382,35 @@ const chainInfos = (
       features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
       explorerUrlToTx: "https://txe.imversed.network/tx/{txHash}",
     },
+    {
+      rpc: "https://rpc.medas-digital.io:26657",
+      rest: "https://lcd.medas-digital.io:1317",
+      chainId: "medasdigital-1",
+      chainName: "medasdigital",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("medas"),
+      currencies: [
+        {
+          coinDenom: "MEDAS",
+          coinMinimalDenom: "umedas",
+          coinDecimals: 6,
+          // coinGeckoId: "medasdigital",
+          coinGeckoId: "pool:umedas",
+          coinImageUrl: "/tokens/medas.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      gasPriceStep: {
+        low: 1.0,
+        average: 5.0,
+        high: 10.0,
+      },
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx: "https://www.mintscan.io/medasdigital/txs/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
