@@ -72,6 +72,9 @@
   .text-superfluid-gradient {
     @apply bg-superfluid bg-clip-text text-transparent;
   }
+  .text-gradient-positive {
+    @apply bg-gradient-positive bg-clip-text text-transparent;
+  }
 
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {

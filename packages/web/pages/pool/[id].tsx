@@ -10,7 +10,7 @@ import {
   useMemo,
 } from "react";
 import classNames from "classnames";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, IntPretty, RatePretty } from "@keplr-wallet/unit";
 import { Staking } from "@keplr-wallet/stores";
 import {
   ObservableAddLiquidityConfig,
@@ -72,7 +72,10 @@ const Pool: FunctionComponent = observer(() => {
     queriesExternalStore.queryAccountsPoolRewards.get(bech32Address);
 
   // eject to pools page if pool does not exist
-  const poolExists = queryOsmosis.queryGammPools.poolExists(poolId as string);
+  const poolExists =
+    poolId !== undefined
+      ? queryOsmosis.queryGammPools.poolExists(poolId as string)
+      : undefined;
   useEffect(() => {
     if (poolExists === false) {
       router.push("/pools");
@@ -90,7 +93,7 @@ const Pool: FunctionComponent = observer(() => {
       poolName: pool?.poolAssets
         .map((poolAsset) => poolAsset.amount.denom)
         .join(" / "),
-      poolWeight: pool?.poolAssets
+      poolWeight: pool?.weightedPoolInfo?.assets
         .map((poolAsset) => poolAsset.weightFraction.toString())
         .join(" / "),
     }),
@@ -130,8 +133,8 @@ const Pool: FunctionComponent = observer(() => {
   const [showSuperfluidValidatorModal, setShowSuperfluidValidatorsModal] =
     useState(false);
   const [showPoolDetails, setShowPoolDetails] = useState(false);
-  const bondableDurations = pool
-    ? bondLiquidityConfig?.getBondableAllowedDurations(
+  const bondDurations = pool
+    ? bondLiquidityConfig?.getAllowedBondDurations(
         (denom) => chainStore.getChain(chainId).forceFindCurrency(denom),
         ExternalIncentiveGaugeAllowList[pool.id]
       ) ?? []
@@ -287,11 +290,10 @@ const Pool: FunctionComponent = observer(() => {
     ],
   });
 
-  const levelCta = bondLiquidityConfig?.calculateBondLevel(bondableDurations);
-  const level2Disabled = bondableDurations.length === 0;
+  const levelCta = bondLiquidityConfig?.calculateBondLevel(bondDurations);
+  const level2Disabled = !bondDurations.some((duration) => duration.bondable);
 
-  const highestAPRBondableDuration =
-    bondableDurations[bondableDurations?.length - 1];
+  const highestAPRBondableDuration = bondDurations[bondDurations?.length - 1];
 
   const highestAPRDailyPeriodicRate =
     highestAPRBondableDuration?.aggregateApr
@@ -405,6 +407,17 @@ const Pool: FunctionComponent = observer(() => {
                     {t("pool.superfluidEnabled")}
                   </span>
                 )}
+                {pool?.type === "stable" && (
+                  <div className="body2 text-gradient-positive flex items-center gap-1.5">
+                    <Image
+                      alt=""
+                      src="/icons/stableswap-pool.svg"
+                      height={24}
+                      width={24}
+                    />
+                    <span>{t("pool.stableswapEnabled")}</span>
+                  </div>
+                )}
               </div>
               <div className="flex items-center gap-10 xl:w-full xl:place-content-between lg:w-fit lg:flex-col lg:items-start lg:gap-3">
                 <div className="space-y-2">
@@ -437,8 +450,29 @@ const Pool: FunctionComponent = observer(() => {
             </div>
             {pool && (
               <AssetBreakdownChart
-                assets={pool.poolAssets}
-                totalWeight={pool.totalWeight}
+                assets={pool.poolAssets.map((poolAsset) => {
+                  const weights: {
+                    weight: IntPretty;
+                    weightFraction: RatePretty;
+                  } = pool.weightedPoolInfo?.assets.find(
+                    (asset) =>
+                      asset.denom === poolAsset.amount.currency.coinMinimalDenom
+                  ) ?? {
+                    weight: new IntPretty(1), // Assume stable pools have even weight
+                    weightFraction: new RatePretty(
+                      new Dec(1).quo(new Dec(pool.poolAssets.length))
+                    ),
+                  };
+
+                  return {
+                    ...weights,
+                    ...poolAsset,
+                  };
+                })}
+                totalWeight={
+                  pool.weightedPoolInfo?.totalWeight ??
+                  new IntPretty(pool.poolAssets.length)
+                }
               />
             )}
           </div>
@@ -655,7 +689,7 @@ const Pool: FunctionComponent = observer(() => {
               className={classNames(
                 "flex flex-col rounded-4x4pxlinset bg-osmoverse-800 p-8 md:p-5",
                 {
-                  "gap-10": !level2Disabled,
+                  "gap-10": !level2Disabled || bondDurations.length > 0,
                 }
               )}
             >
@@ -693,27 +727,27 @@ const Pool: FunctionComponent = observer(() => {
                 )}
               </div>
               <div className="grid grid-cols-3 gap-4 1.5xl:grid-cols-1">
-                {bondableDurations.map((bondableDuration) => (
+                {bondDurations.map((bondDuration) => (
                   <BondCard
-                    key={bondableDuration.duration.asMilliseconds()}
-                    {...bondableDuration}
-                    onUnbond={() => onUnlockTokens(bondableDuration.duration)}
+                    key={bondDuration.duration.asMilliseconds()}
+                    {...bondDuration}
+                    onUnbond={() => onUnlockTokens(bondDuration.duration)}
                     onGoSuperfluid={() =>
                       setShowSuperfluidValidatorsModal(true)
                     }
                     splashImageSrc={
-                      poolDetailConfig
+                      poolDetailConfig && poolDetailConfig.isIncentivized
                         ? poolDetailConfig.lockableDurations.length > 0 &&
                           poolDetailConfig.lockableDurations[0].asDays() ===
-                            bondableDuration.duration.asDays()
+                            bondDuration.duration.asDays()
                           ? "/images/small-vial.svg"
                           : poolDetailConfig.lockableDurations.length > 1 &&
                             poolDetailConfig.lockableDurations[1].asDays() ===
-                              bondableDuration.duration.asDays()
+                              bondDuration.duration.asDays()
                           ? "/images/medium-vial.svg"
                           : poolDetailConfig.lockableDurations.length > 2 &&
                             poolDetailConfig.lockableDurations[2].asDays() ===
-                              bondableDuration.duration.asDays()
+                              bondDuration.duration.asDays()
                           ? "/images/large-vial.svg"
                           : undefined
                         : undefined
@@ -736,13 +770,13 @@ const LevelBadge: FunctionComponent<{ level: number } & Disableable> = ({
   const t = useTranslation();
   return (
     <div
-      className={classNames("rounded-lg bg-wosmongton-400 px-5 py-1", {
+      className={classNames("rounded-xl bg-wosmongton-400 px-5 py-1", {
         "bg-osmoverse-600 text-osmoverse-100": disabled,
       })}
     >
-      <h6 className="md:text-h6 md:font-h6">
+      <h5 className="md:text-h6 md:font-h6">
         {t("pool.level", { level: level.toString() })}
-      </h6>
+      </h5>
     </div>
   );
 };

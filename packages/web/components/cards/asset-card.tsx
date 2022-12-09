@@ -60,7 +60,7 @@ export const AssetCard: FunctionComponent<
                   );
                 })
               ) : (
-                <div className="flex h-[2.125rem] w-[2.125rem] shrink-0 items-center justify-center overflow-hidden rounded-full">
+                <div className="flex h-[2.125rem] w-[2.125rem] shrink-0 items-center justify-center overflow-hidden">
                   <Image
                     alt="asset"
                     src={coinImageUrl}

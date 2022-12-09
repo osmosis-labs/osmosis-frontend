@@ -98,12 +98,11 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               }
             );
           },
-
           children:
-            chainStatus === "blocked"
-              ? t("assets.ibcTransfer.channelBlocked")
-              : chainStatus === "congested"
-              ? t("assets.ibcTransfer.channelCongested")
+            chainStatus === "blocked" || chainStatus === "congested"
+              ? isWithdraw
+                ? t("assets.ibcTransfer.channelCongestedWithdraw")
+                : t("assets.ibcTransfer.channelCongestedDeposit")
               : isWithdraw
               ? t("assets.ibcTransfer.titleWithdraw", {
                   coinDenom: currency.coinDenom,
