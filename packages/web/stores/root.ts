@@ -141,8 +141,8 @@ export class RootStore {
         queriesStore: this.queriesStore,
         msgOptsCreator: (chainId) =>
           chainId.startsWith("evmos_")
-            ? { ibcTransfer: { gas: 160000 } }
-            : { ibcTransfer: { gas: 130000 } },
+            ? { ibcTransfer: { gas: 250000 } }
+            : { ibcTransfer: { gas: 210000 } },
         preTxEvents: {
           onBroadcastFailed: toastOnBroadcastFailed((chainId) =>
             this.chainStore.getChain(chainId)

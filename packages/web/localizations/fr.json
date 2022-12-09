@@ -83,8 +83,13 @@
     "createPool": {
       "title": "Créer un nouveau bassin",
       "button": "Créer un nouveau bassin",
+      "weightedPool": "Piscine pondérée",
+      "stablePool": "Piscine stable",
       "step": {
-        "one": "Étape {step} / {nbStep} - Configurer le ratio des jetons",
+        "one": {
+          "weighted": "Étape {step} / {nbStep} - Configurer le ratio des jetons",
+          "stable": "Étape {step} / {nbStep} - Configurer les facteurs d'échelle"
+        },
         "two": "Étape {step} / {nbStep} - Entrer le montant à ajouter",
         "three": "Étape {step} / {nbStep} - Comfirmer le ratio du bassin et le montant des jetons"
       },
@@ -98,6 +103,7 @@
       "amount": "Montant",
       "token": "Jeton",
       "swapFee": "Définit les frais d'échange",
+      "scalingFactorController": "Définir le contrôleur de facteur d'échelle (facultatif)",
       "undersandCost": "Je comprends que la création d'un nouveau bassin coûtera {POOL_CREATION_FEE}.",
       "interestedCreate": "Intéressé par la création d'un nouveau bassin ?",
       "startProcess": "Cliquez ici pour démarrer le processus"
@@ -107,6 +113,7 @@
     "title": "Bassin n°{id}",
     "swap": "Échange de jeton",
     "superfluidEnabled": "Délégation Superfluide activée",
+    "stableswapEnabled": "Stableswap activé",
     "24hrTradingVolume": "Volume de transactions sur 24h",
     "liquidity": "Liquidité du bassin",
     "swapFee": "Frais d'échange",
@@ -345,10 +352,12 @@
     "insufficientAmount": "Le montant est insuffisant",
     "negativeSwapFee": "Les frais d'échange sont négatifs",
     "highSwapFee": "Les frais d'échange sont trop importants",
+    "invalidScalingFactorControllerAddress": "Adresse de contrôleur de facteur d'échelle invalide",
     "invalidSwapFee": "Les frais d'échange est invalide",
     "minAssetsCount": "Un minimum de {num} actif est requis",
     "maxAssetsCount": "Un maximum de {num} actif est requis",
     "negativePercentage": "Le pourcentage doit être positif",
+    "scalingFactorTooLow": "Facteur d'échelle trop faible",
     "percentageSum": "La somme des pourcentages n'est pas égale à 100",
     "depositNoBalance": "Vous n'avez pas d'actifs à déposer",
     "negativeSlippage": "Le glissement ne peut être négatif",
