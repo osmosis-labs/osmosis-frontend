@@ -2594,6 +2594,13 @@ chainInfos.push({
       coinGeckoId: "wmatic",
       coinImageUrl: "/tokens/wmatic.svg",
     },
+    {
+      coinDenom: "BUSD",
+      coinMinimalDenom: "busd-wei",
+      coinDecimals: 18,
+      coinGeckoId: "binance-usd",
+      coinImageUrl: "/tokens/busd.png",
+    },
   ],
   feeCurrencies: [
     {
