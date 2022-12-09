@@ -2403,6 +2403,11 @@ const chainInfos = (
           isFeeCurrency: true,
         },
       ],
+      gasPriceStep: {
+        low: 1.0,
+        average: 5.0,
+        high: 10.0,
+      },
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/medasdigital/txs/{txHash}",
     },
