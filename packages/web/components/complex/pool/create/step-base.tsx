@@ -5,6 +5,7 @@ import { Info } from "../../../alert";
 import { Button } from "../../../buttons";
 import { POOL_CREATION_FEE } from ".";
 import { useWindowSize } from "../../../../hooks";
+import { tError } from "../../../localization";
 import { useTranslation } from "react-multi-lang";
 
 export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
@@ -18,33 +19,48 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
     }) => {
       const { isMobile } = useWindowSize();
       const t = useTranslation();
-      const positiveBalanceError = t(
-        config.positiveBalanceError?.message ?? ""
-      );
-      const percentageError = t(config.percentageError?.message ?? "");
-      const amountError = t(config.amountError?.message ?? "");
-      const swapFeeError = t(config.swapFeeError?.message ?? "");
 
       const canAdvance =
-        (step === 1 && !percentageError && !positiveBalanceError) ||
-        (step === 2 && !amountError) ||
-        (step === 3 && config.acknowledgeFee && !swapFeeError);
+        (step === 1 &&
+          !config.percentageError &&
+          !config.positiveBalanceError &&
+          !config.assetCountError &&
+          !config.scalingFactorError &&
+          !(config.assets.length <= 1)) ||
+        (step === 2 && !config.amountError) ||
+        (step === 3 &&
+          config.acknowledgeFee &&
+          !config.swapFeeError &&
+          !config.scalingFactorControllerError);
 
-      const currentErrorMessage =
+      const currentError =
         step === 1
-          ? percentageError || positiveBalanceError
+          ? config.percentageError ||
+            config.positiveBalanceError ||
+            config.assetCountError ||
+            config.scalingFactorError
           : step === 2
-          ? amountError
-          : swapFeeError;
+          ? config.amountError
+          : config.swapFeeError || config.scalingFactorControllerError;
+
+      const urgentErrorMessage =
+        step === 1
+          ? config.scalingFactorError
+          : config.swapFeeError || config.scalingFactorControllerError;
 
       return (
         <div className="flex flex-col gap-5">
           <span className="body2 text-center md:caption md:mt-4">
             {step === 1
-              ? t("pools.createPool.step.one", {
-                  step: step.toString(),
-                  nbStep: "3",
-                })
+              ? config.poolType === "weighted"
+                ? t("pools.createPool.step.one.weighted", {
+                    step: step.toString(),
+                    nbStep: "3",
+                  })
+                : t("pools.createPool.step.one.stable", {
+                    step: step.toString(),
+                    nbStep: "3",
+                  })
               : step === 2
               ? t("pools.createPool.step.two", {
                   step: step.toString(),
@@ -68,10 +84,13 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
           )}
           <Button
             onClick={() => advanceStep()}
+            mode={
+              !canAdvance && urgentErrorMessage ? "primary-warning" : undefined
+            }
             disabled={!canAdvance || isSendingMsg}
           >
-            {currentErrorMessage
-              ? currentErrorMessage
+            {currentError
+              ? t(...tError(currentError))
               : step === 3
               ? t("pools.createPool.buttonCreate")
               : t("pools.createPool.buttonNext")}

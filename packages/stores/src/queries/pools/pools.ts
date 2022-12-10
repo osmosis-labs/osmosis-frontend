@@ -15,6 +15,12 @@ import { Pools } from "./types";
 import { GET_POOLS_PAGINATION_LIMIT } from ".";
 
 export class ObservableQueryPools extends ObservableChainQuery<Pools> {
+  /** Maintain references of ObservableQueryPool objects to prevent breaking observers. */
+  protected _pools: Map<string, ObservableQueryPool> = new Map<
+    string,
+    ObservableQueryPool
+  >();
+
   constructor(
     kvStore: KVStore,
     chainId: string,
@@ -43,38 +49,34 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
   protected setResponse(response: Readonly<QueryResponse<Pools>>) {
     super.setResponse(response);
 
-    const chainInfo = this.chainGetter.getChain(this.chainId);
-    const denomsInPools: string[] = [];
-    // Register the denoms in the response.
-    for (const pool of response.data.pools) {
-      for (const asset of pool.pool_assets) {
-        denomsInPools.push(asset.token.denom);
+    // update potentially existing references of ObservableQueryPool objects
+    for (const poolRaw of response.data.pools) {
+      const existingQueryPool = this._pools.get(poolRaw.id);
+      if (existingQueryPool) {
+        existingQueryPool.setRaw(poolRaw);
+      } else {
+        this._pools.set(
+          poolRaw.id,
+          new ObservableQueryPool(
+            this.kvStore,
+            this.chainId,
+            this.chainGetter,
+            poolRaw
+          )
+        );
       }
     }
-
-    chainInfo.addUnknownCurrencies(...denomsInPools);
   }
 
   /** Returns `undefined` if the pool does not exist or the data has not loaded. */
-  readonly getPool: (id: string) => ObservableQueryPool | undefined =
-    computedFn((id: string) => {
-      if (!this.response) {
-        // TODO: consider constructing individual `ObservableQueryPool` and fetching, adding to array, and returning
-        return undefined;
-      }
+  getPool(id: string): ObservableQueryPool | undefined {
+    if (!this.response && !this._pools.get(id)) {
+      // TODO: consider constructing individual `ObservableQueryPool` and fetching, adding to array, and returning
+      return undefined;
+    }
 
-      const raw = this.response.data.pools.find((raw) => raw.id === id);
-      if (!raw) {
-        return undefined;
-      }
-
-      return new ObservableQueryPool(
-        this.kvStore,
-        this.chainId,
-        this.chainGetter,
-        raw
-      );
-    });
+    return this._pools.get(id);
+  }
 
   /** Returns `undefined` if pool data has not loaded, and `true`/`false` for if the pool exists. */
   readonly poolExists: (id: string) => boolean | undefined = computedFn(
