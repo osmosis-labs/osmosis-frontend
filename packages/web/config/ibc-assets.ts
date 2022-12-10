@@ -1145,7 +1145,15 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1rws84uz7969aaa7pej303udhlkt3j9ca0l3egpcae98jwak9quzq8szn2l",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
-  },    
+  },
+  {
+    counterpartyChainId: "secret-4",
+    sourceChannelId: "channel-476",
+    destChannelId: "channel-44",
+    coinMinimalDenom: "cw20:secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852",
+    depositUrlOverride: "https://wrap.scrt.network",
+    ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
+  },
 ].filter((ibcAsset) => {
   // validate IBC asset config
   if (
