@@ -1225,4 +1225,21 @@ export const ExternalIncentiveGaugeAllowList: {
         "ibc/2DA9C149E9AD2BD27FEFA635458FB37093C256C1A940392634A16BEA45262604",
     },
   ],
+  "858": [
+    {
+      gaugeId: "30150",
+      denom:
+        "ibc/BB936517F7E5D77A63E0ADB05217A6608B0C4CF8FBA7EA2F4BAE4107A7238F06",
+    },
+    {
+      gaugeId: "30151",
+      denom:
+        "ibc/BB936517F7E5D77A63E0ADB05217A6608B0C4CF8FBA7EA2F4BAE4107A7238F06",
+    },
+    {
+      gaugeId: "30152",
+      denom:
+        "ibc/BB936517F7E5D77A63E0ADB05217A6608B0C4CF8FBA7EA2F4BAE4107A7238F06",
+    },
+  ],
 };
