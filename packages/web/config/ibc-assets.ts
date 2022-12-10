@@ -295,6 +295,7 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-38",
     destChannelId: "channel-4",
     coinMinimalDenom: "uixo",
+    isUnstable: true,
   },
   {
     counterpartyChainId: "bitcanna-1",
@@ -1129,6 +1130,21 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-517",
     destChannelId: "channel-1",
     coinMinimalDenom: "aimv",
+  },
+  {
+    counterpartyChainId: "medasdigital-1",
+    sourceChannelId: "channel-519",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "umedas",
+  },
+  {
+    counterpartyChainId: "juno-1",
+    sourceChannelId: "channel-169",
+    destChannelId: "channel-47",
+    coinMinimalDenom:
+      "cw20:juno1rws84uz7969aaa7pej303udhlkt3j9ca0l3egpcae98jwak9quzq8szn2l",
+    ics20ContractAddress:
+      "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
   },
   {
     counterpartyChainId: "secret-4",
