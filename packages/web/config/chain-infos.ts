@@ -639,6 +639,17 @@ const chainInfos = (
           coinGeckoId: "fanfury",
           coinImageUrl: "/tokens/fanfury.png",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1rws84uz7969aaa7pej303udhlkt3j9ca0l3egpcae98jwak9quzq8szn2l",
+          coinDenom: "PHMN",
+          coinMinimalDenom:
+            "cw20:juno1rws84uz7969aaa7pej303udhlkt3j9ca0l3egpcae98jwak9quzq8szn2l:PHMN",
+          coinDecimals: 6,
+          coinGeckoId: "posthuman",
+          coinImageUrl: "/tokens/phmn.png",
+        },
       ],
       features: [
         "ibc-transfer",
