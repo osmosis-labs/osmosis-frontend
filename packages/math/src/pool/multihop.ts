@@ -38,6 +38,11 @@ export function isOsmoRoutedMultihop(
  * Get's the special swap fee discount for routing through 2 OSMO pools as defined in `isOsmoRoutedMultihop`.
  *
  * Should match: https://github.com/osmosis-labs/osmosis/blob/d868b873fe55942d50f1e6e74900cf8bf1f90f25/x/gamm/keeper/multihop.go#L288-L305
+ *
+ * Formula is:
+ *
+ * swapFeeSum = swapFee1 + swapFee2 + ... + swapFeeN
+ * maxSwapFee = max(swapFee1, swapFee2, swapFeeSum / n)
  */
 export function getOsmoRoutedMultihopTotalSwapFee(pools: { swapFee: Dec }[]): {
   swapFeeSum: Dec;
