@@ -2397,7 +2397,7 @@ const chainInfos = (
       rpc: "https://rpc.medas-digital.io:26657",
       rest: "https://lcd.medas-digital.io:1317",
       chainId: "medasdigital-1",
-      chainName: "medasdigital",
+      chainName: "Medas Digital Network",
       bip44: {
         coinType: 118,
       },
