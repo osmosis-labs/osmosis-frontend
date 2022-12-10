@@ -140,7 +140,7 @@ export class RootStore {
       CosmosAccount.use({
         queriesStore: this.queriesStore,
         msgOptsCreator: (chainId) =>
-          chainId.startsWith("evmos_") || chainId.startsWith("acre_")
+          chainId.startsWith("evmos_")
             ? { ibcTransfer: { gas: 160000 } }
             : { ibcTransfer: { gas: 130000 } },
         preTxEvents: {
