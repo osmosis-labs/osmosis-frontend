@@ -1,12 +1,16 @@
 import Image from "next/image";
-import { FunctionComponent, useState, useMemo } from "react";
+import {
+  FunctionComponent,
+  useState,
+  useMemo,
+  ButtonHTMLAttributes,
+} from "react";
 import classNames from "classnames";
 import moment from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { BondDuration } from "@osmosis-labs/stores";
 import { FallbackImg } from "../assets";
-import { ArrowButton } from "../buttons";
 import { useTranslation } from "react-multi-lang";
 import { coinFormatter, priceFormatter } from "../../utils/formatter";
 
@@ -35,7 +39,7 @@ export const BondCard: FunctionComponent<
 
   return (
     <div className="relative flex h-[380px] w-full min-w-[280px] flex-col gap-[115px] overflow-hidden rounded-2xl border-2 border-osmoverse-600 bg-osmoverse-800 p-7 md:p-[10px]">
-      <div className="flex h-[260px] flex-col place-content-between gap-2">
+      <div className="flex h-[264px] flex-col place-content-between gap-2 md:h-[280px]">
         <div className="flex place-content-between items-start gap-4">
           <div className="z-10 flex max-w-[60%] flex-col gap-5 overflow-visible">
             <span className="subtitle1 text-osmoverse-100">
@@ -57,9 +61,6 @@ export const BondCard: FunctionComponent<
                 })}
               </h6>
             </div>
-            {userShares.toDec().gt(new Dec(0)) && (
-              <ArrowButton onClick={onUnbond}>{t("pool.unbond")}</ArrowButton>
-            )}
           </div>
           {splashImageSrc && (
             <div className="h-fit w-fit shrink-0">
@@ -67,6 +68,7 @@ export const BondCard: FunctionComponent<
             </div>
           )}
         </div>
+
         {userUnlockingShares && (
           <div className="flex w-fit flex-wrap items-center gap-1 rounded-lg bg-osmoverse-900 p-3 md:p-1.5">
             <h6 className="lg:text-subtitle1 lg:font-subtitle1">
@@ -93,6 +95,9 @@ export const BondCard: FunctionComponent<
             </h6>
           </div>
         )}
+        {userShares.toDec().gt(new Dec(0)) && (
+          <UnbondButton onClick={onUnbond} />
+        )}
         {superfluid &&
           userShares.toDec().gt(new Dec(0)) &&
           !superfluid.delegated &&
@@ -118,6 +123,7 @@ export const BondCard: FunctionComponent<
         )}
         onClick={() => setDrawerUp(false)}
       />
+
       <Drawer
         duration={duration}
         aggregateApr={aggregateApr}
@@ -405,5 +411,79 @@ const SwapFeeBreakdownRow: FunctionComponent<{
         </span>
       </div>
     </div>
+  );
+};
+
+const UnbondButton: FunctionComponent<
+  ButtonHTMLAttributes<HTMLButtonElement>
+> = (props) => {
+  const t = useTranslation();
+  return (
+    <button
+      {...props}
+      className="group max-w-[113px] overflow-hidden rounded-lg border-2 border-wosmongton-300 transition-all duration-300 ease-inOutBack hover:border-rust-300"
+    >
+      <div className="flex transform items-center gap-2.5 self-start px-3 py-1.5 text-base font-button text-wosmongton-200 duration-300 ease-inOutBack group-hover:-translate-x-[30px] group-hover:text-rust-300">
+        <UnlockIcon />
+        {t("pool.unbond")}
+        <RightArrowIcon />
+      </div>
+    </button>
+  );
+};
+
+const RightArrowIcon = () => {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="flex-shrink-0"
+    >
+      <path
+        d="M4 12H18"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M14 6L19 12L14 18"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+const UnlockIcon = () => {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="flex-shrink-0"
+    >
+      <path
+        d="M12.6667 7.3335H3.33333C2.59695 7.3335 2 7.93045 2 8.66683V13.3335C2 14.0699 2.59695 14.6668 3.33333 14.6668H12.6667C13.403 14.6668 14 14.0699 14 13.3335V8.66683C14 7.93045 13.403 7.3335 12.6667 7.3335Z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M4.66699 7.33344V4.66677C4.66616 3.84013 4.97251 3.04268 5.52658 2.42921C6.08064 1.81575 6.84288 1.43004 7.66533 1.34696C8.48778 1.26389 9.31176 1.48937 9.97731 1.97964C10.6429 2.46992 11.1025 3.19 11.267 4.0001"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 };
