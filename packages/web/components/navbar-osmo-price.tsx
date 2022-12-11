@@ -110,8 +110,7 @@ const NavbarOsmoPrice = observer(() => {
             mode="tertiary"
             className={classNames(
               "button group relative flex !h-11 items-center justify-center gap-2 overflow-hidden !rounded-full !border-osmoverse-700 !py-1 font-bold text-osmoverse-100 !transition-all !duration-300 !ease-in-out",
-              "hover:border-none hover:bg-gradient-positive hover:text-osmoverse-1000",
-              "disabled:cursor-not-allowed disabled:opacity-70"
+              "hover:border-none hover:bg-gradient-positive hover:text-osmoverse-1000"
             )}
             onClick={() => transferConfig.buyOsmo()}
           >
