@@ -1,5 +1,4 @@
-import { makeObservable } from "mobx";
-import { computedFn } from "mobx-utils";
+import { computed, makeObservable } from "mobx";
 import { KVStore } from "@keplr-wallet/common";
 import { HasMapStore } from "@keplr-wallet/stores";
 import { ObservableQueryExternalBase } from "../base";
@@ -24,13 +23,14 @@ export class ObservableQueryTokenData extends ObservableQueryExternalBase<
     return this.symbol !== "" && this.symbol != null;
   }
 
-  readonly get24hrChange = computedFn((): RatePretty | undefined => {
+  @computed
+  get get24hrChange(): RatePretty | undefined {
     if (!this.response) return undefined;
 
     return new RatePretty(
       new Dec(this.response.data[0].price_24h_change / 100)
     );
-  });
+  }
 }
 
 export class ObservableQueryTokensData extends HasMapStore<ObservableQueryTokenData> {

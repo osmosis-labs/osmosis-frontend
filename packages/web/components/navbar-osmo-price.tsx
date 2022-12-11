@@ -2,13 +2,14 @@ import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
+import { useTranslation } from "react-multi-lang";
 import { useTransferConfig } from "../hooks";
 import { FiatRampsModal } from "../modals";
 import { useStore } from "../stores";
 import { CoinsIcon } from "./assets/coins-icon";
 import { Button } from "./buttons";
 import { Sparkline } from "./chart/sparkline";
-import Skeleton from "./skeleton";
+import SkeletonLoader from "./skeleton-loader";
 
 /**
  * Get chart data.
@@ -26,6 +27,7 @@ function getChartData(prices: PricePretty[] = []) {
 const NavbarOsmoPrice = observer(() => {
   const { priceStore, chainStore, queriesExternalStore } = useStore();
   const transferConfig = useTransferConfig();
+  const t = useTranslation();
 
   const osmoCurrency = chainStore.osmosis.stakeCurrency;
   const osmoPrice = priceStore.calculatePrice(
@@ -49,7 +51,7 @@ const NavbarOsmoPrice = observer(() => {
   return (
     <div className="flex flex-col gap-6 px-2">
       <div className="flex items-center justify-between  px-2">
-        <Skeleton isLoaded={osmoPrice.isReady} className="min-w-[70px]">
+        <SkeletonLoader isLoaded={osmoPrice.isReady} className="min-w-[70px]">
           <div className="flex items-center gap-1">
             <div className="h-[20px] w-[20px]">
               <Image
@@ -65,9 +67,9 @@ const NavbarOsmoPrice = observer(() => {
               {Number(osmoPrice.toDec().toString()).toFixed(2)}
             </p>
           </div>
-        </Skeleton>
+        </SkeletonLoader>
 
-        <Skeleton
+        <SkeletonLoader
           isLoaded={
             !tokenDataQuery.isFetching &&
             !tokenChartQuery.isFetching &&
@@ -76,7 +78,7 @@ const NavbarOsmoPrice = observer(() => {
           className="flex min-h-[23px] min-w-[85px] items-center justify-end gap-1.5"
         >
           <Sparkline
-            data={getChartData(tokenChartQuery?.getChartPrices())}
+            data={getChartData(tokenChartQuery?.getChartPrices)}
             width={25}
             height={24}
             lineWidth={2}
@@ -84,30 +86,32 @@ const NavbarOsmoPrice = observer(() => {
 
           <p
             className={
-              tokenDataQuery.get24hrChange()?.toDec().gte(new Dec(0))
+              tokenDataQuery.get24hrChange?.toDec().gte(new Dec(0))
                 ? "text-bullish-400"
                 : "text-error"
             }
           >
-            {tokenDataQuery
-              .get24hrChange()
+            {tokenDataQuery.get24hrChange
               ?.maxDecimals(2)
               .inequalitySymbol(false)
               .toString()}
           </p>
-        </Skeleton>
+        </SkeletonLoader>
       </div>
 
-      <Skeleton isLoaded={osmoPrice.isReady}>
+      <SkeletonLoader isLoaded={osmoPrice.isReady}>
         <Button
           mode="tertiary"
           className={classNames(
-            "button group relative !h-11 gap-2 overflow-hidden !rounded-full !border-osmoverse-700 !py-1 font-bold text-osmoverse-100 !transition-all !duration-300 !ease-in-out",
+            "button group relative flex !h-11 items-center justify-center gap-2 overflow-hidden !rounded-full !border-osmoverse-700 !py-1 font-bold text-osmoverse-100 !transition-all !duration-300 !ease-in-out",
             "hover:border-none hover:bg-gradient-positive hover:text-osmoverse-1000"
           )}
           onClick={() => transferConfig.buyOsmo()}
         >
-          <CreditCardIcon /> <span className="z-10">Buy tokens</span>{" "}
+          <CreditCardIcon />{" "}
+          <span className="z-10 mt-0.5 flex-shrink-0">
+            {t("menu.buyTokens")}
+          </span>{" "}
           <CoinsIcon
             className={classNames(
               "invisible absolute top-0 -translate-y-full transform transition-transform ease-linear",
@@ -115,7 +119,7 @@ const NavbarOsmoPrice = observer(() => {
             )}
           />
         </Button>
-      </Skeleton>
+      </SkeletonLoader>
 
       {transferConfig?.fiatRampsModal && (
         <FiatRampsModal {...transferConfig.fiatRampsModal} />

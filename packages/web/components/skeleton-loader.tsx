@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { DetailedHTMLProps, FunctionComponent } from "react";
 
-const Skeleton: FunctionComponent<
+const SkeletonLoader: FunctionComponent<
   {
     isLoaded?: boolean;
   } & DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>
@@ -21,4 +21,4 @@ const Skeleton: FunctionComponent<
   );
 };
 
-export default Skeleton;
+export default SkeletonLoader;
