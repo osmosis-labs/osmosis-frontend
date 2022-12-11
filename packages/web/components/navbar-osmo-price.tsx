@@ -1,3 +1,4 @@
+import { WalletStatus } from "@keplr-wallet/stores";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -25,9 +26,13 @@ function getChartData(prices: PricePretty[] = []) {
 }
 
 const NavbarOsmoPrice = observer(() => {
-  const { priceStore, chainStore, queriesExternalStore } = useStore();
+  const { accountStore, priceStore, chainStore, queriesExternalStore } =
+    useStore();
   const transferConfig = useTransferConfig();
   const t = useTranslation();
+
+  const { chainId } = chainStore.osmosis;
+  const account = accountStore.getAccount(chainId);
 
   const osmoCurrency = chainStore.osmosis.stakeCurrency;
   const osmoPrice = priceStore.calculatePrice(
@@ -99,27 +104,30 @@ const NavbarOsmoPrice = observer(() => {
         </SkeletonLoader>
       </div>
 
-      <SkeletonLoader isLoaded={osmoPrice.isReady}>
-        <Button
-          mode="tertiary"
-          className={classNames(
-            "button group relative flex !h-11 items-center justify-center gap-2 overflow-hidden !rounded-full !border-osmoverse-700 !py-1 font-bold text-osmoverse-100 !transition-all !duration-300 !ease-in-out",
-            "hover:border-none hover:bg-gradient-positive hover:text-osmoverse-1000"
-          )}
-          onClick={() => transferConfig.buyOsmo()}
-        >
-          <CreditCardIcon />{" "}
-          <span className="z-10 mt-0.5 flex-shrink-0">
-            {t("menu.buyTokens")}
-          </span>{" "}
-          <CoinsIcon
+      {account.walletStatus === WalletStatus.Loaded && (
+        <SkeletonLoader isLoaded={osmoPrice.isReady}>
+          <Button
+            mode="tertiary"
             className={classNames(
-              "invisible absolute top-0 -translate-y-full transform transition-transform ease-linear",
-              "group-hover:visible group-hover:translate-y-[30%] group-hover:duration-[3s]"
+              "button group relative flex !h-11 items-center justify-center gap-2 overflow-hidden !rounded-full !border-osmoverse-700 !py-1 font-bold text-osmoverse-100 !transition-all !duration-300 !ease-in-out",
+              "hover:border-none hover:bg-gradient-positive hover:text-osmoverse-1000",
+              "disabled:cursor-not-allowed disabled:opacity-70"
             )}
-          />
-        </Button>
-      </SkeletonLoader>
+            onClick={() => transferConfig.buyOsmo()}
+          >
+            <CreditCardIcon />{" "}
+            <span className="z-10 mt-0.5 flex-shrink-0">
+              {t("menu.buyTokens")}
+            </span>{" "}
+            <CoinsIcon
+              className={classNames(
+                "invisible absolute top-0 -translate-y-full transform transition-transform ease-linear",
+                "group-hover:visible group-hover:translate-y-[30%] group-hover:duration-[3s]"
+              )}
+            />
+          </Button>
+        </SkeletonLoader>
+      )}
 
       {transferConfig?.fiatRampsModal && (
         <FiatRampsModal {...transferConfig.fiatRampsModal} />

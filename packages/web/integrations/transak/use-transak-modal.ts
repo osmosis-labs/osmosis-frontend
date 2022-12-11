@@ -23,6 +23,8 @@ export function useTransakModal(
   const [transak, setTransak] = useState<any | null>(null);
   const [shouldShow, setShouldShow] = useState(false);
 
+  console.log(transak?.EVENTS);
+
   useEffect(() => {
     if (account.walletStatus === WalletStatus.Loaded) {
       import("@transak/transak-sdk" as any).then(({ default: transakSdk }) => {
@@ -43,11 +45,16 @@ export function useTransakModal(
 
         setTransak(transak);
 
+        transak.on(transak.EVENTS.TRANSAK_WIDGET_INITIALISED, () => {
+          document.documentElement.classList.remove("html-transak-closed");
+        });
+
         // This will trigger when the user closed the widget
         transak.on(transak.EVENTS.TRANSAK_WIDGET_CLOSE, () => {
           transak.close();
           setShouldShow(false);
           onRequestClose?.();
+          document.documentElement.classList.add("html-transak-closed");
         });
 
         // This will trigger when the user marks payment is made.
