@@ -24,6 +24,11 @@ const defaultState: UseMeasureRect = {
   right: 0,
 };
 
+/**
+ * React sensor hook that tracks dimensions of an HTML element using the Resize Observer API.
+ *
+ * @returns A tuple containing a ref callback and a rect object.
+ */
 function useMeasure<E extends Element = Element>(): UseMeasureResult<E> {
   const [element, ref] = useState<E | null>(null);
   const [rect, setRect] = useState<UseMeasureRect>(defaultState);
