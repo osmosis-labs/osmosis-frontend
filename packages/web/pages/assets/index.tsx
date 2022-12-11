@@ -255,6 +255,10 @@ const AssetsOverview: FunctionComponent = observer(() => {
         label={t("assets.unbondedAssets")}
         value={availableAssetsValue.toString()}
       />
+      <Metric
+        label={t("assets.stakedAssets")}
+        value={stakedAssetsValue.toString()}
+      />
     </div>
   );
 });
