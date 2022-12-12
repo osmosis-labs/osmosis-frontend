@@ -23,8 +23,6 @@ export function useTransakModal(
   const [transak, setTransak] = useState<any | null>(null);
   const [shouldShow, setShouldShow] = useState(false);
 
-  console.log(transak?.EVENTS);
-
   useEffect(() => {
     if (account.walletStatus === WalletStatus.Loaded) {
       import("@transak/transak-sdk" as any).then(({ default: transakSdk }) => {
