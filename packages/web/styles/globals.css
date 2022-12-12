@@ -184,6 +184,10 @@
   }
 }
 
+.html-transak-closed {
+  overflow: auto !important;
+}
+
 /* Toasts override styles in `react-toastify/dist/ReactToastify.css` */
 .Toastify__toast-container {
   z-index: 99999 !important;

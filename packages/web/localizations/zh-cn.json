@@ -330,7 +330,8 @@
     "info": "统计数据",
     "signOut": "断开连接",
     "help": "获取 Support Lab 帮助",
-    "learnMoreFrontier": "了解更多<br/>关于 <br2/> <name>Osmosis Frontier</name>"
+    "learnMoreFrontier": "了解更多<br/>关于 <br2/> <name>Osmosis Frontier</name>",
+    "buyTokens": "购买代币"
   },
   "settings": {
     "title": "设置",

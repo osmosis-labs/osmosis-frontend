@@ -331,7 +331,8 @@
     "info": "Stats",
     "signOut": "Disconnect",
     "help": "Get Support Lab Help",
-    "learnMoreFrontier": "Learn More<br/>About the <br2/> <name>Osmosis Frontier</name>"
+    "learnMoreFrontier": "Learn More<br/>About the <br2/> <name>Osmosis Frontier</name>",
+    "buyTokens": "Buy tokens"
   },
   "settings": {
     "title": "Settings",

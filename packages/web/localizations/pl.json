@@ -332,7 +332,8 @@
     "info": "Statystyki",
     "signOut": "Rozłącz",
     "help": "Uzyskaj Pomoc od Support Lab",
-    "learnMoreFrontier": "Dowiedz się więcej o <br/> <name>Osmosis Frontier</name>"
+    "learnMoreFrontier": "Dowiedz się więcej o <br/> <name>Osmosis Frontier</name>",
+    "buyTokens": "Kup tokeny"
   },
   "settings": {
     "title": "Ustawienia",

@@ -209,7 +209,7 @@ module.exports = {
       height: {
         navbar: "72px",
         "navbar-mobile": "58px",
-        content: "calc(100vh - 88px)",
+        content: "calc(100vh - 72px)",
         "content-mobile": "calc(100vh - 58px)",
       },
       width: {
@@ -223,7 +223,7 @@ module.exports = {
         },
       },
       spacing: {
-        sidebar: "12.875rem",
+        sidebar: "13.75rem",
         "mobile-header": "6rem",
         0.25: "1px",
       },
