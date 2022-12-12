@@ -194,14 +194,12 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-72",
     destChannelId: "channel-1",
     coinMinimalDenom: "uluna",
-    isUnstable: true,
   },
   {
     counterpartyChainId: "columbus-5",
     sourceChannelId: "channel-72",
     destChannelId: "channel-1",
     coinMinimalDenom: "uusd",
-    isUnstable: true,
   },
   {
     counterpartyChainId: "stargaze-1",
@@ -476,7 +474,6 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-72",
     destChannelId: "channel-1",
     coinMinimalDenom: "ukrw",
-    isUnstable: true,
   },
   {
     counterpartyChainId: "microtick-1",
