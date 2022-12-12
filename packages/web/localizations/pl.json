@@ -25,7 +25,11 @@
       "findCurrency": "Nie udało się znaleźć waluty {currency}"
     },
     "wrapNativeLink": "Konwertuj {fromDenom} na {toDenom} na {platformName}",
-    "waitTime": "{minutes} minuty"
+    "waitTime": "{minutes} minuty",
+    "autoRouter": "Zoptymalizowana trasa",
+    "routerTooltipFee": "Opłata",
+    "autoRouterToggle": { "show": "Mostrar", "hide": "Esconder" },
+    "pool": "Pula #{id}"
   },
   "pools": {
     "title": "Aktywne pule",
