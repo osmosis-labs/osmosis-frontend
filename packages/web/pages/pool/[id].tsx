@@ -381,11 +381,9 @@ const Pool: FunctionComponent = observer(() => {
           <div
             className={classNames(
               "flex flex-col gap-3 overflow-hidden px-8 pt-8 transition-height duration-300 ease-inOutBack md:px-5 md:pt-7",
-              showPoolDetails && pool
-                ? pool.poolAssets.length > 2
-                  ? "h-[180px] xl:h-[250px] lg:h-[390px] md:h-[460px]"
-                  : "h-[180px] xl:h-[250px] lg:h-[390px] md:h-[410px]"
-                : "h-[100px] xl:h-[180px] lg:h-[240px]"
+              showPoolDetails
+                ? "h-[180px] xl:h-[260px] lg:h-[420px]"
+                : "h-[105px] xl:h-[180px] lg:h-[340px]"
             )}
           >
             <div className="flex place-content-between items-start gap-2 xl:flex-col">
