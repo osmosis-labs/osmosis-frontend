@@ -33,7 +33,7 @@
     "myPools": "Mes Bassins",
     "APR": "TAP",
     "available": "Disponible",
-    "liquidity": "Liquidité Bassin",
+    "liquidity": "Ma liquidité",
     "bonded": "Cautionné",
     "incentivized": "Bassins incités",
     "all": "Tous les Bassins",
@@ -42,7 +42,7 @@
       "title": "Bassins superfluides",
       "tab": "Superfluides",
       "APR": "TAP",
-      "liquidity": "Liquidité Bassin",
+      "liquidity": "Ma liquidité",
       "fees7D": "Frais (7J)"
     },
     "allPools": {
@@ -54,7 +54,7 @@
       "search": "Rechercher dans les bassins",
       "displayLowLiquidity": "Afficher les bassins avec moins de {value}",
       "sort": {
-        "poolName": "Nom du bassin",
+        "poolName": "Nom/Numéro du pool",
         "liquidity": "Liquidité",
         "volume24h": "Volume (24H)",
         "fees": "Frais (7J)",
@@ -64,12 +64,12 @@
       }
     },
     "externalIncentivized": {
-      "title": "Bassins externes conseillés",
+      "title": "Pools incités à l'externe",
       "TVL": "VTB",
       "APR": "TAP",
       "search": "Rechercher par devise",
       "sort": {
-        "poolName": "Nom du bassin",
+        "poolName": "Nom/Numéro du pool",
         "liquidity": "Liquidité",
         "APR": "TAP",
         "epochs": "Cycles restants",
@@ -118,7 +118,7 @@
     "currentDailyEarn": "Vous gagnez actuellement",
     "earnMore": "Gagnez {amount} plus en blocant",
     "day": "jour",
-    "dailyEarnAmount": "{amount}/jour",
+    "dailyEarnAmount": "{amount} / jour",
     "putAssetsToWork": "Mettez vos actifs au travail.",
     "putAssetsToWorkCaption": "Ajoutez vos actifs à ce bassin pour débloquer des taux d'intérêt attractifs. Plus votre période de désengagement est longue, plus vous gagnez.",
     "learnMore": "En savoir plus",
@@ -194,7 +194,7 @@
     }
   },
   "assets": {
-    "totalAssets": "Actifs totaux",
+    "totalAssets": "Total des actifs",
     "unbondedAssets": "Actifs non liés",
     "bondedAssets": "Actifs liés",
     "stakedAssets": "OSMO cautionné",
@@ -208,7 +208,7 @@
     "poolCards": {
       "APR": "TAP",
       "FeeAPY": "Frais PAR",
-      "liquidity": "Liquidité Bassin",
+      "liquidity": "Ma liquidité",
       "bonded": "Liés",
       "myLiquidity": "Ma liquidité"
     },
@@ -264,8 +264,8 @@
     "table": {
       "depositButton": "Déposer",
       "withdrawButton": "Retirer",
-      "search": "Rechercher par devise",
-      "title": "Actifs",
+      "search": "Chercher",
+      "title": "Tous les actifs",
       "hideZero": "Cacher les fonds à zéro",
       "buyOsmo": "Acheter",
       "preTransfer": {

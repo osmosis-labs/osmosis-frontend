@@ -21,7 +21,7 @@ export const Switch: FunctionComponent<
 }) => (
   <label
     className={classNames(
-      "subtitle2 md:subtitle1 flex shrink-0 select-none items-center gap-2 text-osmoverse-200",
+      "subtitle1 flex shrink-0 select-none items-center gap-2 text-osmoverse-200",
       {
         "cursor-pointer": !disabled,
       },
@@ -31,7 +31,7 @@ export const Switch: FunctionComponent<
     {labelPosition === "left" && (
       <div
         className={classNames(
-          "mr-3 lg:mr-1",
+          "mr-2 lg:mr-1",
           disabled ? "opacity-30" : undefined
         )}
       >
@@ -56,7 +56,7 @@ export const Switch: FunctionComponent<
     {labelPosition === "right" && (
       <div
         className={classNames(
-          "ml-3 lg:ml-1",
+          "ml-2 lg:ml-1",
           disabled ? "opacity-30" : undefined
         )}
       >

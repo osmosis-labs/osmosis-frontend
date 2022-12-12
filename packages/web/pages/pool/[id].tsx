@@ -381,11 +381,9 @@ const Pool: FunctionComponent = observer(() => {
           <div
             className={classNames(
               "flex flex-col gap-3 overflow-hidden px-8 pt-8 transition-height duration-300 ease-inOutBack md:px-5 md:pt-7",
-              showPoolDetails && pool
-                ? pool.poolAssets.length > 2
-                  ? "h-[180px] xl:h-[250px] lg:h-[390px] md:h-[460px]"
-                  : "h-[180px] xl:h-[250px] lg:h-[390px] md:h-[410px]"
-                : "h-[100px] xl:h-[180px] lg:h-[240px]"
+              showPoolDetails
+                ? "h-[180px] xl:h-[260px] lg:h-[420px]"
+                : "h-[105px] xl:h-[180px] lg:h-[340px]"
             )}
           >
             <div className="flex place-content-between items-start gap-2 xl:flex-col">
@@ -420,7 +418,7 @@ const Pool: FunctionComponent = observer(() => {
                 )}
               </div>
               <div className="flex items-center gap-10 xl:w-full xl:place-content-between lg:w-fit lg:flex-col lg:items-start lg:gap-3">
-                <div>
+                <div className="space-y-2">
                   <span className="body2 gap-2 text-osmoverse-400">
                     {t("pool.24hrTradingVolume")}
                   </span>
@@ -430,7 +428,7 @@ const Pool: FunctionComponent = observer(() => {
                       .volume24h.toString()}
                   </h4>
                 </div>
-                <div>
+                <div className="space-y-2">
                   <span className="body2 gap-2 text-osmoverse-400">
                     {t("pool.liquidity")}
                   </span>
@@ -438,7 +436,7 @@ const Pool: FunctionComponent = observer(() => {
                     {poolDetailConfig?.totalValueLocked.toString()}
                   </h4>
                 </div>
-                <div>
+                <div className="space-y-2">
                   <span className="body2 gap-2 text-osmoverse-400">
                     {t("pool.swapFee")}
                   </span>
@@ -505,7 +503,7 @@ const Pool: FunctionComponent = observer(() => {
               <span className="body2 text-osmoverse-300">
                 {t("pool.yourStats")}
               </span>
-              <div className="flex place-content-between items-center gap-6 sm:flex-col sm:items-start">
+              <div className="flex place-content-between  gap-6 sm:flex-col sm:items-start">
                 <div className="flex shrink-0 flex-col gap-1">
                   <h4 className="text-osmoverse-100">
                     {poolDetailConfig.userStats.totalShareValue.toString()}
@@ -525,7 +523,7 @@ const Pool: FunctionComponent = observer(() => {
             </div>
 
             <div className="flex flex-1 gap-4 1.5md:flex-col">
-              <div className="flex flex-1 flex-col space-y-3 rounded-4xl bg-osmoverse-1000 px-8 py-7">
+              <div className="flex flex-1 flex-col space-y-3 rounded-4xl bg-osmoverse-1000 px-8 pt-2 pb-4">
                 <PriceBreakdownChart
                   prices={[
                     {
@@ -578,10 +576,10 @@ const Pool: FunctionComponent = observer(() => {
           </div>
         )}
       </section>
-      <section className="flex flex-col gap-7 md:gap-4">
-        <div className="flex flex-col flex-wrap md:gap-3">
-          <h5 className="md:text-h6 md:font-h6">{t("pool.putAssetsToWork")}</h5>
-          <span className="subtitle1 text-osmoverse-300 md:text-body1 md:font-body1">
+      <section className="flex flex-col gap-4 md:gap-4">
+        <div className="flex flex-col flex-wrap px-8 md:gap-3">
+          <h6 className="text-h6 font-h6">{t("pool.putAssetsToWork")}</h6>
+          <span className="body2 text-osmoverse-300">
             {t("pool.putAssetsToWorkCaption")}{" "}
             <a
               rel="noreferrer"
@@ -628,7 +626,7 @@ const Pool: FunctionComponent = observer(() => {
                     <h4 className="text-osmoverse-100">
                       {poolDetailConfig?.userAvailableValue.toString()}
                     </h4>
-                    <h6 className="text-osmoverse-300">
+                    <h6 className="subtitle1 text-osmoverse-300">
                       {t("pool.sharesAmount", {
                         shares: queryOsmosis.queryGammPoolShare
                           .getAvailableGammShare(bech32Address, poolId)
@@ -666,7 +664,7 @@ const Pool: FunctionComponent = observer(() => {
                 <h4 className="text-osmoverse-100">
                   {poolDetailConfig?.userAvailableValue.toString()}
                 </h4>
-                <h6 className="text-osmoverse-300 md:text-h4 md:font-h4">
+                <h6 className="subtitle1 text-osmoverse-300">
                   {t("pool.sharesAmount", {
                     shares: queryOsmosis.queryGammPoolShare
                       .getAvailableGammShare(bech32Address, poolId)
@@ -715,7 +713,7 @@ const Pool: FunctionComponent = observer(() => {
                   </h6>
                 ) : (
                   <Button
-                    className={classNames("w-96 border-none md:w-full", {
+                    className={classNames("w-64 border-none md:w-full", {
                       "!border-0 bg-gradient-positive text-osmoverse-900":
                         levelCta === 2,
                     })}

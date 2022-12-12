@@ -33,7 +33,7 @@
     "myPools": "我的流動性池",
     "APR": "年利率(APR)",
     "available": "可用",
-    "liquidity": "流動性",
+    "liquidity": "我的流動性",
     "bonded": "已鎖住",
     "incentivized": "有激勵的",
     "all": "全部流動性池",
@@ -42,7 +42,7 @@
       "title": "超流體流動性池",
       "tab": "超流體",
       "APR": "年利率(APR)",
-      "liquidity": "流動性",
+      "liquidity": "我的流動性",
       "fees7D": "交易費(7日)"
     },
     "allPools": {
@@ -54,7 +54,7 @@
       "search": "搜尋流動性池",
       "displayLowLiquidity": "顯示少於 {value} 的流動性池",
       "sort": {
-        "poolName": "流動性池名稱",
+        "poolName": "池名稱/編號",
         "liquidity": "流動性",
         "volume24h": "交易量 (1日)",
         "fees": "交易費 (7日)",
@@ -64,12 +64,12 @@
       }
     },
     "externalIncentivized": {
-      "title": "外部激勵",
+      "title": "外部激勵礦池",
       "TVL": "總鎖定資產價值(TVL)",
       "APR": "年利率(APR)",
       "search": "以符號搜尋",
       "sort": {
-        "poolName": "流動性池名稱",
+        "poolName": "池名稱/編號",
         "liquidity": "流動性",
         "APR": "年利率(APR)",
         "epochs": "剩餘日數",
@@ -118,7 +118,7 @@
     "currentDailyEarn": "你現在正賺取",
     "earnMore": "通過結合賺取 {amount}",
     "day": "日",
-    "dailyEarnAmount": "{amount}/日",
+    "dailyEarnAmount": "{amount} / 日",
     "putAssetsToWork": "讓你的資產為你工作",
     "putAssetsToWorkCaption": "將你的資產加入到此流動性池以解鎖誘人的獎勵，選擇的解鎖時間愈長，賺得愈多",
     "learnMore": "了解更多",
@@ -196,7 +196,7 @@
     }
   },
   "assets": {
-    "totalAssets": "總額",
+    "totalAssets": "總資產",
     "unbondedAssets": "未鎖定",
     "bondedAssets": "已鎖定",
     "stakedAssets": "已質押的OSMO",
@@ -210,7 +210,7 @@
     "poolCards": {
       "APR": "年利率(APR)",
       "FeeAPY": "交易費 APY",
-      "liquidity": "流動性",
+      "liquidity": "我的流動性",
       "bonded": "已鎖定",
       "myLiquidity": "我的流動性"
     },
@@ -266,8 +266,8 @@
     "table": {
       "depositButton": "存入",
       "withdrawButton": "轉出",
-      "search": "以符號搜尋",
-      "title": "資產",
+      "search": "搜索",
+      "title": "所有資產",
       "hideZero": "隱藏結餘為零的項目",
       "buyOsmo": "買",
       "preTransfer": {
