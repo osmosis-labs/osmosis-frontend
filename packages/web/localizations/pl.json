@@ -338,7 +338,7 @@
   "settings": {
     "title": "Ustawienia",
     "titleLanguage": "Język",
-    "titleShowDust": "Pokaż pule/środki < {fiatSymbol}0.01"
+    "titleHideDust": "Ukryj pule z < {fiatSymbol}0.01"
   },
   "404": {
     "title": "Nie znaleziono"

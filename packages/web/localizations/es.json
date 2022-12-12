@@ -337,7 +337,7 @@
   "settings": {
     "title": "Ajustes",
     "titleLanguage": "Idioma",
-    "titleShowDust": "Mostrar piscinas/activos <{fiatSymbol} 0.01"
+    "titleHideDust": "Ocultar piscinas con <{fiatSymbol} 0.01"
   },
   "404": {
     "title": "No encontrado"

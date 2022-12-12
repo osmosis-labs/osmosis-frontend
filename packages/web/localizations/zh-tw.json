@@ -335,7 +335,7 @@
   "settings": {
     "title": "設定",
     "titleLanguage": "語言",
-    "titleShowDust": "顯示少於 {fiatSymbol}0.01 的流動性池及資產"
+    "titleHideDust": "使用 < {fiatSymbol}0.01 隱藏礦池"
   },
   "404": {
     "title": "找不到這頁面"

@@ -338,7 +338,7 @@
   "settings": {
     "title": "설정",
     "titleLanguage": "언어",
-    "titleShowDust": "< {fiatSymbol}0.01 이하 자산/풀 보여주기"
+    "titleHideDust": "< {fiatSymbol}0.01 미만인 풀 숨기기"
   },
   "404": {
     "title": "페이지를 찾을 수 없습니다"

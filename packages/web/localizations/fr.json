@@ -336,7 +336,7 @@
   "settings": {
     "title": "Paramètres",
     "titleLanguage": "Langue",
-    "titleShowDust": "Afficher les pools/actifs < 0.01{fiatSymbol}"
+    "titleHideDust": "Masquer les piscines avec < 0.01{fiatSymbol}"
   },
   "404": {
     "title": "Page non trouvée"

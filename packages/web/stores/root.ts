@@ -36,7 +36,7 @@ import { OsmoPixelsQueries } from "./pixels";
 import { NavBarStore } from "./nav-bar";
 import {
   UserSettings,
-  ShowDustUserSetting,
+  HideDustUserSetting,
   LanguageUserSetting,
 } from "./user-settings";
 const semver = require("semver");
@@ -263,7 +263,7 @@ export class RootStore {
     const userSettingKvStore = makeLocalStorageKVStore("user_setting");
     this.userSettings = new UserSettings(userSettingKvStore, [
       new LanguageUserSetting(0), // give index of default language in SUPPORTED_LANGUAGES
-      new ShowDustUserSetting(
+      new HideDustUserSetting(
         this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)
           ?.symbol ?? "$"
       ),
