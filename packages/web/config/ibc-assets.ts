@@ -453,7 +453,6 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-72",
     destChannelId: "channel-1",
     coinMinimalDenom: "ukrw",
-    isUnstable: true,
   },
   {
     counterpartyChainId: "microtick-1",
