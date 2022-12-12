@@ -337,7 +337,7 @@
   "settings": {
     "title": "Ayarlar",
     "titleLanguage": "Dil",
-    "titleShowDust": "Havuzlar/varlıkları göster < {fiatSymbol}0.01"
+    "titleHideDust": "olan havuzları gizle < {fiatSymbol}0.01"
   },
   "404": {
     "title": "Bulunamadı"

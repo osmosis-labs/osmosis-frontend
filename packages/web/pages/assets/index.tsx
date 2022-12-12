@@ -30,7 +30,7 @@ import {
   useWindowSize,
   useAmplitudeAnalytics,
   useNavBar,
-  useShowDustUserSetting,
+  useHideDustUserSetting,
   useTransferConfig,
 } from "../../hooks";
 import { EventName, ExternalIncentiveGaugeAllowList } from "../../config";
@@ -281,7 +281,7 @@ const PoolAssets: FunctionComponent = observer(() => {
     setUserProperty("myPoolsCount", ownedPoolIds.length);
   }, [ownedPoolIds.length]);
 
-  const dustedPoolIds = useShowDustUserSetting(ownedPoolIds, (poolId) =>
+  const dustedPoolIds = useHideDustUserSetting(ownedPoolIds, (poolId) =>
     queryOsmosis.queryGammPools
       .getPool(poolId)
       ?.computeTotalValueLocked(priceStore)

@@ -13,7 +13,6 @@ import {
   useLocalStorageState,
   useWindowSize,
   useAmplitudeAnalytics,
-  useShowDustUserSetting,
 } from "../../hooks";
 import { ShowMoreButton } from "../buttons/show-more";
 import { SearchBox } from "../input";
@@ -88,10 +87,6 @@ export const AssetsTable: FunctionComponent<Props> = observer(
       [do_onWithdraw, logEvent]
     );
 
-    const dustIbcBalances = useShowDustUserSetting(ibcBalances, (ibcBalance) =>
-      !ibcBalance.balance.toDec().isZero() ? ibcBalance.fiatValue : undefined
-    );
-
     const mergeWithdrawCol = width < 1000 && !isMobile;
     // Assemble cells with all data needed for any place in the table.
     const cells: TableCell[] = useMemo(
@@ -128,7 +123,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
           };
         }),
         ...initialAssetsSort(
-          dustIbcBalances.map((ibcBalance) => {
+          ibcBalances.map((ibcBalance) => {
             const {
               chainInfo: { chainId, chainName },
               balance,
@@ -179,7 +174,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
       [
         nativeBalances,
         chainStore.osmosis.chainId,
-        dustIbcBalances,
+        ibcBalances,
         onDeposit,
         onWithdraw,
       ]

@@ -337,7 +337,7 @@
   "settings": {
     "title": "Settings",
     "titleLanguage": "Language",
-    "titleShowDust": "Show pools/assets < {fiatSymbol}0.01"
+    "titleHideDust": "Hide pools with < {fiatSymbol}0.01"
   },
   "404": {
     "title": "Not found"

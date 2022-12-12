@@ -36,7 +36,7 @@ import {
   useLockTokenConfig,
   usePoolDetailConfig,
   useSuperfluidPoolConfig,
-  useShowDustUserSetting,
+  useHideDustUserSetting,
 } from "../../hooks";
 import { CompactPoolTableDisplay } from "../../components/complex/compact-pool-table-display";
 import { ShowMoreButton } from "../../components/buttons/show-more";
@@ -272,7 +272,7 @@ const Pools: NextPage = observer(function () {
         .filter((pool): pool is ObservableQueryPool => !!pool),
     [isMobile, showMoreMyPools, myPoolIds, queryOsmosis.queryGammPools.response]
   );
-  const dustFilteredPools = useShowDustUserSetting(myPools, (pool) =>
+  const dustFilteredPools = useHideDustUserSetting(myPools, (pool) =>
     pool
       .computeTotalValueLocked(priceStore)
       .mul(

@@ -336,7 +336,7 @@
   "settings": {
     "title": "设置",
     "titleLanguage": "语言",
-    "titleShowDust": "显示资金池/资金 < {fiatSymbol}0.01"
+    "titleHideDust": "使用 < {fiatSymbol}0.01 隐藏矿池"
   },
   "404": {
     "title": "未找到"

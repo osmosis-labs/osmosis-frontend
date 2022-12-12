@@ -3,30 +3,30 @@ import { FunctionComponent } from "react";
 import { Switch } from "../../components/control";
 import { IUserSetting } from ".";
 
-export type ShowDustState = { showDust: boolean };
-export class ShowDustUserSetting implements IUserSetting<ShowDustState> {
-  readonly id = "show-dust";
-  readonly controlComponent: FunctionComponent<ShowDustState> = ({
-    showDust,
+export type HideDustState = { hideDust: boolean };
+export class HideDustUserSetting implements IUserSetting<HideDustState> {
+  readonly id = "hide-dust";
+  readonly controlComponent: FunctionComponent<HideDustState> = ({
+    hideDust,
   }) => (
     <Switch
-      isOn={showDust}
-      onToggle={() => this.setState({ showDust: !showDust })}
+      isOn={hideDust}
+      onToggle={() => this.setState({ hideDust: !hideDust })}
     />
   );
 
   @observable
   protected _state = {
-    showDust: false,
+    hideDust: false,
   };
 
   constructor(protected readonly fiatSymbol: string) {
     makeObservable(this);
-    this._state = { showDust: false };
+    this._state = { hideDust: false };
   }
 
   getLabel(t: Function): string {
-    return t("settings.titleShowDust", { fiatSymbol: this.fiatSymbol });
+    return t("settings.titleHideDust", { fiatSymbol: this.fiatSymbol });
   }
 
   @computed
@@ -35,7 +35,7 @@ export class ShowDustUserSetting implements IUserSetting<ShowDustState> {
   }
 
   @action
-  setState(state: ShowDustState) {
+  setState(state: HideDustState) {
     this._state = state;
   }
 }
