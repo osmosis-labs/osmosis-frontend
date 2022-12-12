@@ -46,9 +46,7 @@ export const PriceBreakdownChart: FunctionComponent<{
         return (
           <div
             key={index}
-            className={classNames(
-              "flex h-full flex-col justify-evenly gap-2.5"
-            )}
+            className="flex h-full flex-col justify-evenly gap-2.5"
           >
             <div
               className={classNames("whitespace-nowrap", {
