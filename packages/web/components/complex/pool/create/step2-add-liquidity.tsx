@@ -16,7 +16,7 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
     return (
       <StepBase step={2} {...props}>
         <div className="flex flex-col gap-2.5">
-          {config.assets.map(({ percentage, amountConfig }) => {
+          {config.assets.map(({ percentage, scalingFactor, amountConfig }) => {
             const currency = amountConfig.sendCurrency;
 
             const justCoinDenom = currency.coinDenom.includes("channel")
@@ -46,7 +46,9 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
                       <h5>{justCoinDenom}</h5>
                     )}
                     <div className="text-osmoverse-400 text-sm md:text-xs md:caption font-semibold">
-                      {percentage}%
+                      {config.poolType === "weighted"
+                        ? `${percentage}%`
+                        : scalingFactor ?? "1"}
                     </div>
                   </div>
                 </div>

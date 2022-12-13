@@ -90,8 +90,8 @@ const chainInfos = (
       explorerUrlToTx: "https://www.mintscan.io/cosmos/txs/{txHash}",
     },
     {
-      rpc: "https://rpc-columbus.keplr.app",
-      rest: "https://lcd-columbus.keplr.app",
+      rpc: "https://rpc-terra-ia.cosmosia.notional.ventures/",
+      rest: "https://api-terra-ia.cosmosia.notional.ventures/",
       chainId: "columbus-5",
       chainName: "Terra Classic",
       bip44: {
@@ -166,6 +166,16 @@ const chainInfos = (
           coinDecimals: 6,
           coinGeckoId: "alter",
           coinImageUrl: "/tokens/alter.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress: "secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852",
+          coinDenom: "AMBER",
+          coinMinimalDenom:
+            "cw20:secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852:AMBER",
+          coinDecimals: 6,
+          // coinGeckoId: "amber",
+          coinImageUrl: "/tokens/amber.svg",
         },
         {
           type: "cw20",
@@ -639,6 +649,17 @@ const chainInfos = (
           coinGeckoId: "fanfury",
           coinImageUrl: "/tokens/fanfury.png",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1rws84uz7969aaa7pej303udhlkt3j9ca0l3egpcae98jwak9quzq8szn2l",
+          coinDenom: "PHMN",
+          coinMinimalDenom:
+            "cw20:juno1rws84uz7969aaa7pej303udhlkt3j9ca0l3egpcae98jwak9quzq8szn2l:PHMN",
+          coinDecimals: 6,
+          coinGeckoId: "posthuman",
+          coinImageUrl: "/tokens/phmn.png",
+        },
       ],
       features: [
         "ibc-transfer",
@@ -978,11 +999,19 @@ const chainInfos = (
           coinDenom: "CMDX",
           coinMinimalDenom: "ucmdx",
           coinDecimals: 6,
-          coinGeckoId: "comdex",
-          // coinGeckoId: "pool:ucmdx",
+          //coinGeckoId: "comdex",
+          coinGeckoId: "pool:ucmdx",
           coinImageUrl: "/tokens/cmdx.png",
           isStakeCurrency: true,
           isFeeCurrency: true,
+        },
+        {
+          coinDenom: "CMST",
+          coinMinimalDenom: "ucmst",
+          coinDecimals: 6,
+          coinGeckoId: "pool:ucmst",
+          coinImageUrl: "/tokens/cmst.png",
+          pegMechanism: "collateralized",
         },
       ],
       features: ["ibc-transfer"],
@@ -1838,7 +1867,7 @@ const chainInfos = (
         {
           coinDenom: "USK",
           coinMinimalDenom:
-            "factory:kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7:uusk",
+            "factory/kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7/uusk",
           coinDecimals: 6,
           coinGeckoId: "usk",
           coinImageUrl: "/tokens/usk.png",
@@ -2350,6 +2379,63 @@ const chainInfos = (
       ],
       features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
       explorerUrlToTx: "https://cosmosrun.info/acre-mainnet/tx/{txHash}",
+    },
+    {
+      rpc: "https://rpc.imversed.network:443",
+      rest: "https://rest.imversed.network:443",
+      chainId: "imversed_5555555-1",
+      chainName: "Imversed",
+      bip44: {
+        coinType: 60,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("imv"),
+      currencies: [
+        {
+          coinDenom: "IMV",
+          coinMinimalDenom: "aimv",
+          coinDecimals: 18,
+          coinGeckoId: "pool:aimv",
+          coinImageUrl: "/tokens/imversed.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 20000000000,
+            average: 25000000000,
+            high: 40000000000,
+          },
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
+      explorerUrlToTx: "https://txe.imversed.network/tx/{txHash}",
+    },
+    {
+      rpc: "https://rpc.medas-digital.io:26657",
+      rest: "https://lcd.medas-digital.io:1317",
+      chainId: "medasdigital-1",
+      chainName: "Medas Digital Network",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("medas"),
+      currencies: [
+        {
+          coinDenom: "MEDAS",
+          coinMinimalDenom: "umedas",
+          coinDecimals: 6,
+          // coinGeckoId: "medasdigital",
+          coinGeckoId: "pool:umedas",
+          coinImageUrl: "/tokens/medas.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 1.0,
+            average: 5.0,
+            high: 10.0,
+          },
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx: "https://www.mintscan.io/medasdigital/txs/{txHash}",
     },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);

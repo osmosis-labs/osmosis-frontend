@@ -56,6 +56,9 @@
   .text-superfluid-gradient {
     @apply text-transparent bg-clip-text bg-superfluid;
   }
+  .text-gradient-positive {
+    @apply text-transparent bg-clip-text bg-gradient-positive;
+  }
 
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
@@ -224,4 +227,8 @@
   50% {
     opacity: 0.5;
   }
+}
+
+.tippy-box[data-animation="fade"][data-state="hidden"] {
+  opacity: 0;
 }
