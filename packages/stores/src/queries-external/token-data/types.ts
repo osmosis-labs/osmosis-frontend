@@ -1,5 +1,3 @@
-import { RatePretty } from "@keplr-wallet/unit";
-
 export interface TokenData {
   price: number;
   denom: string;
@@ -14,5 +12,3 @@ export interface TokenData {
   exponent: number;
   display: string;
 }
-
-export type Token24hrChange = RatePretty;

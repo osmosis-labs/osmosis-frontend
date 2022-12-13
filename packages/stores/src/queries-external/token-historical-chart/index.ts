@@ -2,7 +2,7 @@ import { computed, makeObservable } from "mobx";
 import { KVStore } from "@keplr-wallet/common";
 import { HasMapStore } from "@keplr-wallet/stores";
 import { ObservableQueryExternalBase } from "../base";
-import { ChartPrice, TokenHistoricalPrice } from "./types";
+import { TokenHistoricalPrice } from "./types";
 import { IPriceStore } from "src/price";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 
@@ -41,7 +41,7 @@ export class ObservableQueryTokenHistoricalChart extends ObservableQueryExternal
   }
 
   @computed
-  get getChartPrices(): ChartPrice[] | undefined {
+  get getChartPrices(): PricePretty[] | undefined {
     const fiat = this.priceStore.getFiatCurrency("usd");
 
     if (!this.response || !fiat) return undefined;

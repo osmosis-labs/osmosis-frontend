@@ -53,7 +53,7 @@ export const BondCard: FunctionComponent<
               <h4 className="text-osmoverse-100">
                 {userShareValue.toString()}
               </h4>
-              <h6 className="subtitle1 text-osmoverse-300">
+              <span className="subtitle1 text-osmoverse-300">
                 {t("pool.sharesAmount", {
                   shares: userShares
                     .hideDenom(true)
@@ -61,7 +61,7 @@ export const BondCard: FunctionComponent<
                     .maxDecimals(3)
                     .toString(),
                 })}
-              </h6>
+              </span>
             </div>
           </div>
           {splashImageSrc && (
@@ -73,7 +73,7 @@ export const BondCard: FunctionComponent<
 
         {userUnlockingShares && (
           <div className="flex w-fit flex-wrap items-center gap-1 rounded-lg bg-osmoverse-900 p-3 md:p-1.5">
-            <h6 className="lg:text-subtitle1 lg:font-subtitle1">
+            <span className="text-subtitle1 font-subtitle1">
               ~
               {t("pool.sharesAmount", {
                 shares: userUnlockingShares.shares
@@ -82,8 +82,8 @@ export const BondCard: FunctionComponent<
                   .maxDecimals(6)
                   .toString(),
               })}
-            </h6>
-            <h6 className="flex items-center gap-1 text-osmoverse-400 lg:text-subtitle1 lg:font-subtitle1">
+            </span>
+            <span className="flex items-center gap-1 text-subtitle1 font-subtitle1 text-osmoverse-400">
               {userUnlockingShares.endTime ? (
                 <>
                   {t("pool.sharesAvailableIn")}
@@ -94,7 +94,7 @@ export const BondCard: FunctionComponent<
               ) : (
                 <>{t("pool.unbonding")}</>
               )}
-            </h6>
+            </span>
           </div>
         )}
         {userShares.toDec().gt(new Dec(0)) && (
@@ -295,9 +295,9 @@ const SuperfluidBreakdownRow: FunctionComponent<BondDuration["superfluid"]> = ({
     <div className="flex flex-col gap-2">
       <div className="flex place-content-between items-start text-right">
         <div className="flex items-center gap-2">
-          <h6 className="subtitle1 text-superfluid-gradient bg-clip-text text-transparent">
+          <span className="subtitle1 text-superfluid-gradient bg-clip-text text-transparent">
             +{apr.maxDecimals(0).toString()}
-          </h6>
+          </span>
           <FallbackImg
             className="rounded-full"
             alt="validator icon"
@@ -352,9 +352,9 @@ const IncentiveBreakdownRow: FunctionComponent<
   return (
     <div className="flex place-content-between items-start">
       <div className="flex shrink-0 items-center gap-2">
-        <h6 className="subtitle1 text-white">
+        <span className="subtitle1 text-white">
           +{apr.maxDecimals(0).toString()}
-        </h6>
+        </span>
         {dailyPoolReward.currency.coinImageUrl && (
           <Image
             alt="token icon"
@@ -390,9 +390,9 @@ const SwapFeeBreakdownRow: FunctionComponent<{
   return (
     <div className="flex place-content-between items-start">
       <div className="flex items-center gap-2">
-        <h6 className="subtitle1 text-white">
+        <span className="subtitle1 text-white">
           +{swapFeeApr.maxDecimals(0).toString()}
-        </h6>
+        </span>
       </div>
       <div className="flex flex-col text-right">
         <span className="text-osmoverse-100">

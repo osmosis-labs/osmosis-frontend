@@ -185,7 +185,7 @@ export const TokenSelectDrawer: FunctionComponent<{
           leaveTo="visible opacity-0 translate-y-[15%]"
           afterEnter={() => searchBoxRef?.current?.focus()}
         >
-          <div className="absolute inset-0 z-50 mt-16 flex h-full w-full flex-col overflow-hidden rounded-[24px] bg-osmoverse-800">
+          <div className="absolute inset-0 z-50 mt-16 flex h-full w-full flex-col overflow-hidden rounded-[24px] bg-osmoverse-800 pb-16">
             <div className="relative flex justify-center pt-8 pb-4">
               <button className="absolute left-4" onClick={() => onClose()}>
                 <Image
