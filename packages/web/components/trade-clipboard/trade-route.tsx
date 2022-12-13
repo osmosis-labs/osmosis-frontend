@@ -1,5 +1,6 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import { Dec } from "@keplr-wallet/unit";
+import { getOsmoRoutedMultihopTotalSwapFee } from "@osmosis-labs/math";
 import { Pool, RoutePathWithAmount } from "@osmosis-labs/pools";
 import { useSingleton } from "@tippyjs/react";
 import classNames from "classnames";
@@ -19,11 +20,24 @@ function getDenomsFromPool(chainStore: ChainStore, pool: Pool) {
   return [firstDenom, secondDenom];
 }
 
-function getPoolsWithDenomAndFee(chainStore: ChainStore, pool: Pool) {
+function getPoolsWithDenomAndFee(
+  chainStore: ChainStore,
+  isMultihopDiscount: boolean,
+  maxSwapFee: Dec,
+  swapFeeSum: Dec,
+  pool: Pool
+) {
   return {
     id: pool.id,
     denoms: getDenomsFromPool(chainStore, pool),
-    fee: pool.swapFee.mul(new Dec(100)).toString(1) + "%",
+    fee: isMultihopDiscount
+      ? Number(
+          maxSwapFee
+            .mul(pool.swapFee.quo(swapFeeSum))
+            .mul(new Dec(100))
+            .toString(3)
+        ) + "%"
+      : Number(pool.swapFee.mul(new Dec(100)).toString(3)) + "%",
   };
 }
 
@@ -58,64 +72,77 @@ function reorderPathDenoms(
 const TradeRoute: FunctionComponent<{
   sendCurrency: AppCurrency;
   outCurrency: AppCurrency;
-  path: RoutePathWithAmount;
-}> = observer(({ sendCurrency, outCurrency, path }) => {
-  const { chainStore } = useStore();
+  route: RoutePathWithAmount;
+  isMultihopOsmoFeeDiscount: boolean;
+}> = observer(
+  ({ sendCurrency, outCurrency, route, isMultihopOsmoFeeDiscount }) => {
+    const { chainStore } = useStore();
 
-  const [showRouter, setShowRouter] = useState(false);
+    const [showRouter, setShowRouter] = useState(false);
 
-  const t = useTranslation();
+    const t = useTranslation();
 
-  const poolsWithDenomAndFee = path?.pools.map((pool) =>
-    getPoolsWithDenomAndFee(chainStore, pool)
-  );
+    const { maxSwapFee, swapFeeSum } = getOsmoRoutedMultihopTotalSwapFee(
+      route.pools
+    );
 
-  const poolsWithReorderedDenoms = reorderPathDenoms(
-    sendCurrency,
-    poolsWithDenomAndFee
-  );
+    const poolsWithDenomAndFee = route?.pools.map((pool) =>
+      getPoolsWithDenomAndFee(
+        chainStore,
+        isMultihopOsmoFeeDiscount,
+        maxSwapFee,
+        swapFeeSum,
+        pool
+      )
+    );
 
-  return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h6 className="text-xs font-normal">{t("swap.autoRouter")}</h6>
-        <button
-          onClick={() => setShowRouter(!showRouter)}
-          className="text-xs text-wosmongton-300"
-        >
-          {showRouter
-            ? t("swap.autoRouterToggle.hide")
-            : t("swap.autoRouterToggle.show")}
-        </button>
-      </div>
+    const poolsWithReorderedDenoms = reorderPathDenoms(
+      sendCurrency,
+      poolsWithDenomAndFee
+    );
 
-      {showRouter && (
-        <div className="flex items-center justify-between space-x-2 rounded-full bg-osmoverse-1000 px-1 py-1.5">
-          <div className="h-[24px] shrink-0">
-            <DenomImage denom={sendCurrency} size={24} />
-          </div>
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h6 className="text-xs font-normal">{t("swap.autoRouter")}</h6>
+          <button
+            onClick={() => setShowRouter(!showRouter)}
+            className="text-xs text-wosmongton-300"
+          >
+            {showRouter
+              ? t("swap.autoRouterToggle.hide")
+              : t("swap.autoRouterToggle.show")}
+          </button>
+        </div>
 
-          <div className="relative flex w-full items-center justify-center">
-            <div className="relative flex w-full items-center space-x-1">
-              <Dots className="animate-[pulse_3s_ease-in-out_0s_infinite]" />
-              <Dots className="animate-[pulse_3s_ease-in-out_0.5s_infinite]" />
-              <Dots className="animate-[pulse_3s_ease-in-out_0.7s_infinite]" />
-              <Dots className="animate-[pulse_3s_ease-in-out_1s_infinite]" />
+        {showRouter && (
+          <div className="flex items-center justify-between space-x-2 rounded-full bg-osmoverse-1000 px-1 py-1.5">
+            <div className="h-[24px] shrink-0">
+              <DenomImage denom={sendCurrency} size={24} />
             </div>
 
-            {poolsWithReorderedDenoms && (
-              <Routes pools={poolsWithReorderedDenoms} />
-            )}
-          </div>
+            <div className="relative flex w-full items-center justify-center">
+              <div className="relative flex w-full items-center space-x-1">
+                <Dots className="animate-[pulse_3s_ease-in-out_0s_infinite]" />
+                <Dots className="animate-[pulse_3s_ease-in-out_0.5s_infinite]" />
+                <Dots className="animate-[pulse_3s_ease-in-out_0.7s_infinite]" />
+                <Dots className="animate-[pulse_3s_ease-in-out_1s_infinite]" />
+              </div>
 
-          <div className="h-[24px] shrink-0">
-            <DenomImage denom={outCurrency} size={24} />
+              {poolsWithReorderedDenoms && (
+                <Routes pools={poolsWithReorderedDenoms} />
+              )}
+            </div>
+
+            <div className="h-[24px] shrink-0">
+              <DenomImage denom={outCurrency} size={24} />
+            </div>
           </div>
-        </div>
-      )}
-    </div>
-  );
-});
+        )}
+      </div>
+    );
+  }
+);
 
 interface DotsProps {
   className?: string;

@@ -1003,12 +1003,16 @@ export const TradeClipboard: FunctionComponent<{
                   </span>
                 </div>
               </div>
-              {tradeTokenInConfig.optimizedRoutePaths.map((path, index) => (
+              {tradeTokenInConfig.optimizedRoutePaths.map((route, index) => (
                 <TradeRoute
                   key={index}
                   sendCurrency={tradeTokenInConfig.sendCurrency}
                   outCurrency={tradeTokenInConfig.outCurrency}
-                  path={path}
+                  route={route}
+                  isMultihopOsmoFeeDiscount={
+                    tradeTokenInConfig.expectedSwapResult
+                      .isMultihopOsmoFeeDiscount
+                  }
                 />
               ))}
             </div>

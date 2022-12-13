@@ -57,7 +57,8 @@
     "semver": "^7.3.7",
     "sha.js": "^2.4.11",
     "sharp": "^0.30.4",
-    "web3-utils": "^1.7.4"
+    "web3-utils": "^1.7.4",
+    "@osmosis-labs/math": "^4.0.0"
   },
   "devDependencies": {
     "@types/qrcode.react": "^1.0.2",
