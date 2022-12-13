@@ -138,7 +138,7 @@ export const TokenSelectWithDrawer: FunctionComponent<{
                   </div>
                 )}
               </div>
-              <div className="subtitle2 md:caption w-24 text-osmoverse-400">
+              <div className="subtitle2 md:caption w-32 text-osmoverse-400">
                 {chainStore.getChainFromCurrency(selectedCurrency.coinDenom)
                   ?.chainName ?? ""}
               </div>
