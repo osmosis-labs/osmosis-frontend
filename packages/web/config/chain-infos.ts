@@ -718,8 +718,8 @@ const chainInfos = (
       explorerUrlToTx: "https://likecoin.bigdipper.live/transactions/{txHash}",
     },
     {
-      rpc: "https://rpc-impacthub.keplr.app",
-      rest: "https://lcd-impacthub.keplr.app",
+      rpc: "https://impacthub.ixo.world/rpc/",
+      rest: "https://impacthub.ixo.world/rest/",
       chainId: "ixo-4",
       chainName: "IXO",
       bip44: {
