@@ -224,7 +224,9 @@ export class OptimizedRoutes {
     },
     tokenOutDenom: string,
     maxPools: number
-  ): RoutePathWithAmount[] {
+  ): (RoutePathWithAmount & {
+    isMultihopOsmoFeeDiscount: boolean;
+  })[] {
     if (!tokenIn.amount.isPositive()) {
       throw new Error("Token in amount is zero or negative");
     }
@@ -270,6 +272,14 @@ export class OptimizedRoutes {
       return {
         ...routes[i],
         amount,
+        isMultihopOsmoFeeDiscount: isOsmoRoutedMultihop(
+          routes[0].pools.map((routePool) => ({
+            id: routePool.id,
+            isIncentivized: this._incentivizedPoolIds.includes(routePool.id),
+          })),
+          routes[0].tokenOutDenoms[0],
+          this.stakeCurrencyMinDenom
+        ),
       };
     });
   }
