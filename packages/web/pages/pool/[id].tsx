@@ -46,6 +46,7 @@ import { Disableable } from "../../components/types";
 import { Button, ArrowButton } from "../../components/buttons";
 import { useTranslation } from "react-multi-lang";
 import PoolComposition from "../../components/chart/pool-composition";
+import useMeasure from "../../hooks/use-measure";
 
 const E = EventName.PoolDetail;
 
@@ -60,6 +61,13 @@ const Pool: FunctionComponent = observer(() => {
   } = useStore();
   const t = useTranslation();
   const { isMobile } = useWindowSize();
+
+  const [poolDetailsContainerRef, { y: poolDetailsContainerOffset }] =
+    useMeasure<HTMLDivElement>();
+  const [poolHeaderRef, { height: poolHeaderHeight }] =
+    useMeasure<HTMLDivElement>();
+  const [poolBreakdownRef, { height: poolBreakdownHeight }] =
+    useMeasure<HTMLDivElement>();
 
   const { id: poolId } = router.query as { id: string };
   const { chainId } = chainStore.osmosis;
@@ -379,16 +387,24 @@ const Pool: FunctionComponent = observer(() => {
       <section className="flex flex-col gap-4">
         <div className="flex flex-col gap-4 rounded-4xl bg-osmoverse-1000 pb-4">
           <div
+            ref={poolDetailsContainerRef}
             className={classNames(
-              "flex flex-col gap-3 overflow-hidden px-8 pt-8 transition-height duration-300 ease-inOutBack md:px-5 md:pt-7",
-              showPoolDetails && pool
-                ? pool.poolAssets.length > 2
-                  ? "h-[190px] xl:h-[260px] lg:h-[420px] md:h-[505px] xs:h-[525px]"
-                  : "h-[190px] xl:h-[260px] lg:h-[420px] md:h-[440px] xs:h-[460px]"
-                : "h-[105px] xl:h-[180px] lg:h-[340px]"
+              "flex flex-col gap-3 overflow-hidden px-8 pt-8 transition-height duration-300 ease-inOutBack md:px-5 md:pt-7"
             )}
+            style={{
+              height: showPoolDetails
+                ? poolBreakdownHeight +
+                    poolHeaderHeight +
+                    poolDetailsContainerOffset +
+                    12 ?? // gap between header and breakdown
+                  178
+                : poolHeaderHeight + poolDetailsContainerOffset ?? 100,
+            }}
           >
-            <div className="flex place-content-between items-start gap-2 xl:flex-col">
+            <div
+              ref={poolHeaderRef}
+              className="flex place-content-between items-start gap-2 xl:flex-col"
+            >
               <div className="flex flex-col gap-2">
                 <div className="flex flex-wrap items-center gap-2">
                   {pool && (
@@ -448,33 +464,36 @@ const Pool: FunctionComponent = observer(() => {
                 </div>
               </div>
             </div>
-            {pool && (
+            <div ref={poolBreakdownRef}>
               <AssetBreakdownChart
-                assets={pool.poolAssets.map((poolAsset) => {
-                  const weights: {
-                    weight: IntPretty;
-                    weightFraction: RatePretty;
-                  } = pool.weightedPoolInfo?.assets.find(
-                    (asset) =>
-                      asset.denom === poolAsset.amount.currency.coinMinimalDenom
-                  ) ?? {
-                    weight: new IntPretty(1), // Assume stable pools have even weight
-                    weightFraction: new RatePretty(
-                      new Dec(1).quo(new Dec(pool.poolAssets.length))
-                    ),
-                  };
+                assets={
+                  pool?.poolAssets.map((poolAsset) => {
+                    const weights: {
+                      weight: IntPretty;
+                      weightFraction: RatePretty;
+                    } = pool.weightedPoolInfo?.assets.find(
+                      (asset) =>
+                        asset.denom ===
+                        poolAsset.amount.currency.coinMinimalDenom
+                    ) ?? {
+                      weight: new IntPretty(1), // Assume stable pools have even weight
+                      weightFraction: new RatePretty(
+                        new Dec(1).quo(new Dec(pool.poolAssets.length))
+                      ),
+                    };
 
-                  return {
-                    ...weights,
-                    ...poolAsset,
-                  };
-                })}
+                    return {
+                      ...weights,
+                      ...poolAsset,
+                    };
+                  }) ?? []
+                }
                 totalWeight={
-                  pool.weightedPoolInfo?.totalWeight ??
-                  new IntPretty(pool.poolAssets.length)
+                  pool?.weightedPoolInfo?.totalWeight ??
+                  new IntPretty(pool?.poolAssets.length ?? 0)
                 }
               />
-            )}
+            </div>
           </div>
           <div
             className="mx-auto flex cursor-pointer select-none items-center gap-1"
