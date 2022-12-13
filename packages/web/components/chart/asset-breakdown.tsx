@@ -1,6 +1,7 @@
 import { FunctionComponent } from "react";
 import classNames from "classnames";
 import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
+import { truncateString } from "../../utils/string";
 
 const ColorCycle = [
   "bg-ion-500",
@@ -46,8 +47,11 @@ export const AssetBreakdownChart: FunctionComponent<{
                   colorCycle[index % colorCycle.length]
                 )}
               />
-              <span className="subtitle1 md:body2 text-osmoverse-400">
-                {amount.currency.coinDenom}:{" "}
+              <span
+                className="subtitle1 md:body2 text-osmoverse-400"
+                title={amount.currency.coinDenom}
+              >
+                {truncateString(amount.currency.coinDenom, 6)}:{" "}
                 {assetPercentages[index].toString()}%
               </span>
             </div>
