@@ -71,14 +71,12 @@ export const EventName = {
     stakeClicked: "Sidebar: Stake clicked",
     voteClicked: "Sidebar: Vote clicked",
     infoClicked: "Sidebar: Info clicked",
-    connectWalletClicked: "Sidebar: Connect wallet clicked",
-    signOutClicked: "Sidebar: Sign out clicked",
-    twitterClicked: "Sidebar: Twitter clicked",
-    mediumClicked: "Sidebar: Medium clicked",
-    commonwealthClicked: "Sidebar: Commonwealth clicked",
-    discordClicked: "Sidebar: Discord clicked",
-    telegramClicked: "Sidebar: Telegram clicked",
     supportClicked: "Sidebar: Support clicked",
+  },
+  // Events in Topnav UI
+  Topnav: {
+    connectWalletClicked: "Topnav: Connect wallet clicked",
+    signOutClicked: "Topnav: Sign out clicked",
   },
   // Events in Pools page
   Pools: {
@@ -98,7 +96,6 @@ export const EventName = {
   // Events in Pool detail page
   PoolDetail: {
     pageViewed: "Pool detail: Page viewed",
-    addOrRemoveLiquidityClicked: "Pool detail: Add/Remove liquidity clicked",
     swapTokensClicked: "Pool detail: Swap tokens clicked",
     startEarningClicked: "Pool detail: Start earning clicked",
     unbondAllStarted: "Pool detail: Unbond all started",
@@ -129,5 +126,6 @@ export const EventName = {
     depositAssetCompleted: "Deposit asset: Deposit completed",
     withdrawAssetStarted: "Withdraw asset: Withdraw started",
     withdrawAssetCompleted: "Withdraw asset: Withdraw completed",
+    buyOsmoClicked: "Assets: Buy Osmo clicked",
   },
 };

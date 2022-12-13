@@ -4,7 +4,8 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useTranslation } from "react-multi-lang";
-import { useTransferConfig } from "../hooks";
+import { EventName } from "../config";
+import { useAmplitudeAnalytics, useTransferConfig } from "../hooks";
 import { FiatRampsModal } from "../modals";
 import { useStore } from "../stores";
 import { CoinsIcon } from "./assets/coins-icon";
@@ -31,6 +32,7 @@ const NavbarOsmoPrice = observer(() => {
     useStore();
   const transferConfig = useTransferConfig();
   const t = useTranslation();
+  const { logEvent } = useAmplitudeAnalytics();
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getAccount(chainId);
@@ -113,7 +115,10 @@ const NavbarOsmoPrice = observer(() => {
               "button group relative flex !h-11 items-center justify-center gap-2 overflow-hidden !rounded-full !border-osmoverse-700 !py-1 font-bold text-osmoverse-100 !transition-all !duration-300 !ease-in-out",
               "hover:border-none hover:bg-gradient-positive hover:text-osmoverse-1000"
             )}
-            onClick={() => transferConfig.buyOsmo()}
+            onClick={() => {
+              logEvent([EventName.Assets.buyOsmoClicked]);
+              transferConfig.buyOsmo();
+            }}
           >
             <CreditCardIcon
               classes={{
