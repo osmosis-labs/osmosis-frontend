@@ -264,54 +264,54 @@ describe("OptimizedRoutes", () => {
       const parsedSmallFeeOut = parseInt(smallFeeOut.amount.toString());
       expect(parsedLargeFeeOut).toBeLessThan(parsedSmallFeeOut); // user gets less out since fee is big
     });
-    test("no fee discount for route w/ 3 pools", () => {
-      const pools = [
-        makeWeightedPool({
-          firstPoolAsset: { amount: "100000000000000" },
-          secondPoolAsset: { amount: "100000000000000" },
-        }),
-        makeWeightedPool({
-          id: "2",
-          firstPoolAsset: { denom: "uosmo", amount: "100000000000000" },
-          secondPoolAsset: { denom: "uust", amount: "100000000000000" },
-        }),
-        makeWeightedPool({
-          id: "3",
-          firstPoolAsset: { denom: "uust", amount: "100000000000000" },
-          secondPoolAsset: { denom: "uusdc", amount: "100000000000000" },
-        }),
-      ];
+    //   test("no fee discount for route w/ 3 pools", () => {
+    //     const pools = [
+    //       makeWeightedPool({
+    //         firstPoolAsset: { amount: "100000000000000" },
+    //         secondPoolAsset: { amount: "100000000000000" },
+    //       }),
+    //       makeWeightedPool({
+    //         id: "2",
+    //         firstPoolAsset: { denom: "uosmo", amount: "100000000000000" },
+    //         secondPoolAsset: { denom: "uust", amount: "100000000000000" },
+    //       }),
+    //       makeWeightedPool({
+    //         id: "3",
+    //         firstPoolAsset: { denom: "uust", amount: "100000000000000" },
+    //         secondPoolAsset: { denom: "uusdc", amount: "100000000000000" },
+    //       }),
+    //     ];
 
-      const discountedRouter = new OptimizedRoutes(pools, ["1", "2"], "uosmo");
-      // no incentivized pool ids, and a random denom is given
-      const nondiscountedRouter = new OptimizedRoutes(pools, [], "ufoo");
+    //     const discountedRouter = new OptimizedRoutes(pools, ["1", "2"], "uosmo");
+    //     // no incentivized pool ids, and a random denom is given
+    //     const nondiscountedRouter = new OptimizedRoutes(pools, [], "ufoo");
 
-      const discountedRoutes = discountedRouter.getOptimizedRoutesByTokenIn(
-        {
-          denom: "uion",
-          amount: new Int("100"), // amount out gets truncated, so can only see the amount diff w/ larger trades since the fee is already v small
-        },
-        "uusdc",
-        10
-      );
-      const nondiscountedRoutes =
-        nondiscountedRouter.getOptimizedRoutesByTokenIn(
-          {
-            denom: "uion",
-            amount: new Int("100"),
-          },
-          "uusdc",
-          10
-        );
-      const discoutedOut =
-        discountedRouter.calculateTokenOutByTokenIn(discountedRoutes);
-      const nondiscountedOut =
-        nondiscountedRouter.calculateTokenOutByTokenIn(nondiscountedRoutes);
+    //     const discountedRoutes = discountedRouter.getOptimizedRoutesByTokenIn(
+    //       {
+    //         denom: "uion",
+    //         amount: new Int("100"), // amount out gets truncated, so can only see the amount diff w/ larger trades since the fee is already v small
+    //       },
+    //       "uusdc",
+    //       10
+    //     );
+    //     const nondiscountedRoutes =
+    //       nondiscountedRouter.getOptimizedRoutesByTokenIn(
+    //         {
+    //           denom: "uion",
+    //           amount: new Int("100"),
+    //         },
+    //         "uusdc",
+    //         10
+    //       );
+    //     const discoutedOut =
+    //       discountedRouter.calculateTokenOutByTokenIn(discountedRoutes);
+    //     const nondiscountedOut =
+    //       nondiscountedRouter.calculateTokenOutByTokenIn(nondiscountedRoutes);
 
-      const parsedDiscountAmt = parseInt(discoutedOut.amount.toString());
-      const parsedNonDiscountAmt = parseInt(nondiscountedOut.amount.toString());
-      expect(parsedDiscountAmt).toEqual(parsedNonDiscountAmt); // user gets more out
-    });
+    //     const parsedDiscountAmt = parseInt(discoutedOut.amount.toString());
+    //     const parsedNonDiscountAmt = parseInt(nondiscountedOut.amount.toString());
+    //     expect(parsedDiscountAmt).toEqual(parsedNonDiscountAmt); // user gets more out
+    //   });
   });
 });
 

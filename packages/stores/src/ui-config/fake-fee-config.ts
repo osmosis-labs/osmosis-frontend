@@ -12,6 +12,17 @@ import { Currency } from "@keplr-wallet/types";
 import { StdFee } from "@cosmjs/launchpad";
 
 /**
+ * Currencies that can be used for fees.
+ */
+interface FeeCurrency extends Currency {
+  readonly gasPriceStep: {
+    low: number;
+    average: number;
+    high: number;
+  };
+}
+
+/**
  * FakeFeeConfig is used to set the fee with the high gas price step.
  * Currently, Keplr wallet doesn't support to set the fee manually in the frontend.
  * Keplr wallet just override the fee always in the wallet side.
@@ -57,6 +68,10 @@ export class FakeFeeConfig extends TxChainSetter implements IFeeConfig {
     return chainInfo.feeCurrencies[0];
   }
 
+  get feeCurrencyWithGas(): FeeCurrency {
+    return this.feeCurrency as FeeCurrency;
+  }
+
   feeType: FeeType | undefined;
 
   get error(): Error | undefined {
@@ -85,7 +100,8 @@ export class FakeFeeConfig extends TxChainSetter implements IFeeConfig {
       };
     }
 
-    const gasPriceStep = this.chainInfo.gasPriceStep ?? DefaultGasPriceStep;
+    const gasPriceStep =
+      this.feeCurrencyWithGas.gasPriceStep ?? DefaultGasPriceStep;
     const feeAmount = new Dec(gasPriceStep.high.toString()).mul(
       new Dec(this.gas)
     );

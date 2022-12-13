@@ -23,7 +23,11 @@
     "minimumSlippage": "Minimum reçu après glissement ({slippage})",
     "error": {
       "findCurrency": "Impossible de trouver la devise {currency}"
-    }
+    },
+    "autoRouter": "Itinéraire optimisé",
+    "routerTooltipFee": "Frais",
+    "autoRouterToggle": { "show": "Montrer", "hide": "Cacher" },
+    "pool": "Bassin n°{id}"
   },
   "pools": {
     "title": "Bassins actifs",

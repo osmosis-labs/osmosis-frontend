@@ -20,9 +20,11 @@ import { useStore } from "../../stores";
 import { BorderButton, Button } from "../buttons";
 import { InputBox } from "../input";
 import { InfoTooltip } from "../tooltip";
+import TradeRoute from "./trade-route";
 import { useTranslation } from "react-multi-lang";
 import { tError } from "../localization";
 import { TokenSelectWithDrawer } from "../control/token-select-with-drawer";
+import useMeasure from "../../hooks/use-measure";
 
 export const TradeClipboard: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!
@@ -52,6 +54,10 @@ export const TradeClipboard: FunctionComponent<{
 
     const [isSettingOpen, setIsSettingOpen] = useBooleanWithWindowEvent(false);
     const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
+    const [
+      estimateDetailsContentRef,
+      { height: estimateDetailsContentHeight, y: estimateDetailsContentOffset },
+    ] = useMeasure<HTMLDivElement>();
 
     const slippageConfig = useSlippageConfig();
     const tradeTokenInConfig = useTradeTokenInConfig(
@@ -855,8 +861,16 @@ export const TradeClipboard: FunctionComponent<{
           <div
             className={classNames(
               "relative overflow-hidden rounded-lg bg-osmoverse-900 px-4 transition-all duration-300 ease-inOutBack md:px-3",
-              showEstimateDetails ? "h-56 py-6" : "h-11 py-[10px]"
+              showEstimateDetails ? "py-6" : "py-[10px]"
             )}
+            style={{
+              height: showEstimateDetails
+                ? (estimateDetailsContentHeight +
+                    estimateDetailsContentOffset ?? 288) +
+                  44 + // collapsed height
+                  20 // padding
+                : 44,
+            }}
           >
             <button
               className={classNames(
@@ -914,6 +928,7 @@ export const TradeClipboard: FunctionComponent<{
               </div>
             </button>
             <div
+              ref={estimateDetailsContentRef}
               className={classNames(
                 "absolute flex flex-col gap-4 pt-5",
                 isInModal ? "w-[94%]" : "w-[358px] md:w-[94%]"
@@ -992,6 +1007,18 @@ export const TradeClipboard: FunctionComponent<{
                   </span>
                 </div>
               </div>
+              {tradeTokenInConfig.optimizedRoutePaths.map((route, index) => (
+                <TradeRoute
+                  key={index}
+                  sendCurrency={tradeTokenInConfig.sendCurrency}
+                  outCurrency={tradeTokenInConfig.outCurrency}
+                  route={route}
+                  isMultihopOsmoFeeDiscount={
+                    tradeTokenInConfig.expectedSwapResult
+                      .isMultihopOsmoFeeDiscount
+                  }
+                />
+              ))}
             </div>
           </div>
         </div>

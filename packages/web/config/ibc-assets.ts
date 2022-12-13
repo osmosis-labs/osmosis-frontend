@@ -194,14 +194,12 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-72",
     destChannelId: "channel-1",
     coinMinimalDenom: "uluna",
-    isUnstable: true,
   },
   {
     counterpartyChainId: "columbus-5",
     sourceChannelId: "channel-72",
     destChannelId: "channel-1",
     coinMinimalDenom: "uusd",
-    isUnstable: true,
   },
   {
     counterpartyChainId: "stargaze-1",
@@ -291,10 +289,11 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
-    counterpartyChainId: "impacthub-3",
+    counterpartyChainId: "ixo-4",
     sourceChannelId: "channel-38",
     destChannelId: "channel-4",
     coinMinimalDenom: "uixo",
+    isUnstable: true,
   },
   {
     counterpartyChainId: "bitcanna-1",
@@ -363,7 +362,6 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-135",
     destChannelId: "channel-2",
     coinMinimalDenom: "udsm",
-    isVerified: true,
   },
   {
     counterpartyChainId: "dig-1",
@@ -392,7 +390,6 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-171",
     destChannelId: "channel-0",
     coinMinimalDenom: "udarc",
-    isVerified: true,
   },
   {
     counterpartyChainId: "umee-1",
@@ -477,7 +474,6 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-72",
     destChannelId: "channel-1",
     coinMinimalDenom: "ukrw",
-    isUnstable: true,
   },
   {
     counterpartyChainId: "microtick-1",
@@ -924,6 +920,7 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-320",
     destChannelId: "channel-1",
     coinMinimalDenom: "uist",
+    isVerified: true,
   },
   {
     counterpartyChainId: "juno-1",
@@ -1033,7 +1030,7 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-259",
     destChannelId: "channel-3",
     coinMinimalDenom:
-      "factory:kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7:uusk",
+      "factory/kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7/uusk",
     depositUrlOverride:
       "https://blue.kujira.app/ibc?destination=osmosis-1&source=kaiyo-1&denom=factory%2Fkujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7%2Fuusk",
     withdrawUrlOverride:
@@ -1122,6 +1119,35 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-87",
     destChannelId: "channel-1",
     coinMinimalDenom: "ucmst",
+  },
+  {
+    counterpartyChainId: "imversed_5555555-1",
+    sourceChannelId: "channel-517",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "aimv",
+  },
+  {
+    counterpartyChainId: "medasdigital-1",
+    sourceChannelId: "channel-519",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "umedas",
+  },
+  {
+    counterpartyChainId: "juno-1",
+    sourceChannelId: "channel-169",
+    destChannelId: "channel-47",
+    coinMinimalDenom:
+      "cw20:juno1rws84uz7969aaa7pej303udhlkt3j9ca0l3egpcae98jwak9quzq8szn2l",
+    ics20ContractAddress:
+      "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+  },
+  {
+    counterpartyChainId: "secret-4",
+    sourceChannelId: "channel-476",
+    destChannelId: "channel-44",
+    coinMinimalDenom: "cw20:secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852",
+    depositUrlOverride: "https://wrap.scrt.network",
+    ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
   },
 ].filter((ibcAsset) => {
   // validate IBC asset config
