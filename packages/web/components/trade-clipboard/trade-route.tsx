@@ -73,73 +73,76 @@ const TradeRoute: FunctionComponent<{
   sendCurrency: AppCurrency;
   outCurrency: AppCurrency;
   route: RoutePathWithAmount;
-}> = observer(({ sendCurrency, outCurrency, route }) => {
-  const { chainStore } = useStore();
+  isMultihopOsmoFeeDiscount: boolean;
+}> = observer(
+  ({ sendCurrency, outCurrency, route, isMultihopOsmoFeeDiscount }) => {
+    const { chainStore } = useStore();
 
-  const [showRouter, setShowRouter] = useState(false);
+    const [showRouter, setShowRouter] = useState(false);
 
-  const t = useTranslation();
+    const t = useTranslation();
 
-  const { maxSwapFee, swapFeeSum } = getOsmoRoutedMultihopTotalSwapFee(
-    route.pools
-  );
+    const { maxSwapFee, swapFeeSum } = getOsmoRoutedMultihopTotalSwapFee(
+      route.pools
+    );
 
-  const poolsWithDenomAndFee = route?.pools.map((pool) =>
-    getPoolsWithDenomAndFee(
-      chainStore,
-      route.isMultihopOsmoFeeDiscount,
-      maxSwapFee,
-      swapFeeSum,
-      pool
-    )
-  );
+    const poolsWithDenomAndFee = route?.pools.map((pool) =>
+      getPoolsWithDenomAndFee(
+        chainStore,
+        isMultihopOsmoFeeDiscount,
+        maxSwapFee,
+        swapFeeSum,
+        pool
+      )
+    );
 
-  const poolsWithReorderedDenoms = reorderPathDenoms(
-    sendCurrency,
-    poolsWithDenomAndFee
-  );
+    const poolsWithReorderedDenoms = reorderPathDenoms(
+      sendCurrency,
+      poolsWithDenomAndFee
+    );
 
-  return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h6 className="text-xs font-normal">{t("swap.autoRouter")}</h6>
-        <button
-          onClick={() => setShowRouter(!showRouter)}
-          className="text-xs text-wosmongton-300"
-        >
-          {showRouter
-            ? t("swap.autoRouterToggle.hide")
-            : t("swap.autoRouterToggle.show")}
-        </button>
-      </div>
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h6 className="text-xs font-normal">{t("swap.autoRouter")}</h6>
+          <button
+            onClick={() => setShowRouter(!showRouter)}
+            className="text-xs text-wosmongton-300"
+          >
+            {showRouter
+              ? t("swap.autoRouterToggle.hide")
+              : t("swap.autoRouterToggle.show")}
+          </button>
+        </div>
 
-      {showRouter && (
-        <div className="flex items-center justify-between space-x-2 rounded-full bg-osmoverse-1000 px-1 py-1.5">
-          <div className="h-[24px] shrink-0">
-            <DenomImage denom={sendCurrency} size={24} />
-          </div>
-
-          <div className="relative flex w-full items-center justify-center">
-            <div className="relative flex w-full items-center space-x-1">
-              <Dots className="animate-[pulse_3s_ease-in-out_0s_infinite]" />
-              <Dots className="animate-[pulse_3s_ease-in-out_0.5s_infinite]" />
-              <Dots className="animate-[pulse_3s_ease-in-out_0.7s_infinite]" />
-              <Dots className="animate-[pulse_3s_ease-in-out_1s_infinite]" />
+        {showRouter && (
+          <div className="flex items-center justify-between space-x-2 rounded-full bg-osmoverse-1000 px-1 py-1.5">
+            <div className="h-[24px] shrink-0">
+              <DenomImage denom={sendCurrency} size={24} />
             </div>
 
-            {poolsWithReorderedDenoms && (
-              <Routes pools={poolsWithReorderedDenoms} />
-            )}
-          </div>
+            <div className="relative flex w-full items-center justify-center">
+              <div className="relative flex w-full items-center space-x-1">
+                <Dots className="animate-[pulse_3s_ease-in-out_0s_infinite]" />
+                <Dots className="animate-[pulse_3s_ease-in-out_0.5s_infinite]" />
+                <Dots className="animate-[pulse_3s_ease-in-out_0.7s_infinite]" />
+                <Dots className="animate-[pulse_3s_ease-in-out_1s_infinite]" />
+              </div>
 
-          <div className="h-[24px] shrink-0">
-            <DenomImage denom={outCurrency} size={24} />
+              {poolsWithReorderedDenoms && (
+                <Routes pools={poolsWithReorderedDenoms} />
+              )}
+            </div>
+
+            <div className="h-[24px] shrink-0">
+              <DenomImage denom={outCurrency} size={24} />
+            </div>
           </div>
-        </div>
-      )}
-    </div>
-  );
-});
+        )}
+      </div>
+    );
+  }
+);
 
 interface DotsProps {
   className?: string;

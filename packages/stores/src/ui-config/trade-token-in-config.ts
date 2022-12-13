@@ -245,6 +245,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     tokenInFeeAmount: CoinPretty;
     swapFee: RatePretty;
     priceImpact: RatePretty;
+    isMultihopOsmoFeeDiscount: boolean;
   } {
     const paths = this.optimizedRoutePaths;
     this.setError(undefined);
@@ -263,6 +264,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       ),
       swapFee: new RatePretty(0).ready(false),
       priceImpact: new RatePretty(0).ready(false),
+      isMultihopOsmoFeeDiscount: false,
     };
 
     if (paths.length === 0 || this.amount === "" || this.amount === "0") {
@@ -330,6 +332,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       ).locale(false),
       swapFee: new RatePretty(result.swapFee),
       priceImpact: new RatePretty(result.priceImpact),
+      isMultihopOsmoFeeDiscount: result.multiHopOsmoDiscount,
     };
   }
 

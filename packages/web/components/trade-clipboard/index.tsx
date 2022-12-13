@@ -1009,6 +1009,10 @@ export const TradeClipboard: FunctionComponent<{
                   sendCurrency={tradeTokenInConfig.sendCurrency}
                   outCurrency={tradeTokenInConfig.outCurrency}
                   route={route}
+                  isMultihopOsmoFeeDiscount={
+                    tradeTokenInConfig.expectedSwapResult
+                      .isMultihopOsmoFeeDiscount
+                  }
                 />
               ))}
             </div>
