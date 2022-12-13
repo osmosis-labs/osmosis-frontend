@@ -33,7 +33,7 @@
     "myPools": "Havuzlarım",
     "APR": "APR",
     "available": "Mevcut",
-    "liquidity": "Havuzdaki Likidite",
+    "liquidity": "Likiditem",
     "bonded": "Bağlı",
     "incentivized": "Teşvikli",
     "all": "Tüm Havuzlar",
@@ -42,7 +42,7 @@
       "title": "Superfluid Havuzlar",
       "tab": "Superfluid",
       "APR": "APR",
-      "liquidity": "Havuzdaki Likidite",
+      "liquidity": "Likiditem",
       "fees7D": "Ücretler (7G)"
     },
     "allPools": {
@@ -54,7 +54,7 @@
       "search": "Havuzlarda ara",
       "displayLowLiquidity": "{value}dan az likiditesi olan havuzları göster",
       "sort": {
-        "poolName": "Havuz Adı",
+        "poolName": "Havuz Adı/Numarası",
         "liquidity": "Likidite",
         "volume24h": "Hacim (24S)",
         "fees": "Ücretler (7G)",
@@ -64,12 +64,12 @@
       }
     },
     "externalIncentivized": {
-      "title": "Dış Teşvikler",
+      "title": "Dışarıdan Teşvik Edilen Havuzlar",
       "TVL": "TVL",
       "APR": "APR",
       "search": "Sembolle ara",
       "sort": {
-        "poolName": "Havuz Adı",
+        "poolName": "Havuz Adı/Numarası",
         "liquidity": "Likidite",
         "APR": "APR",
         "epochs": "Kalan Devir",
@@ -113,10 +113,11 @@
     "24hrTradingVolume": "24s İşlem hacmi",
     "liquidity": "Havuzdaki likidite",
     "swapFee": "Takas ücreti",
-    "yourStats": "İstatistikleriniz",
+    "yourStats": "Havuz bakiyeniz",
     "sharesAmount": "{shares} hisse",
     "currentDailyEarn": "Şu anda kazanıyorsunuz",
-    "earnMore": "Bağlayarak daha fazla kazanın",
+    "earnMore": "Bağlayarak {amount} daha fazla kazanın",
+    "day": "gün",
     "dailyEarnAmount": "{amount} / gün",
     "putAssetsToWork": "Varlıklarınız sizin için çalışsın.",
     "putAssetsToWorkCaption": "Heyecan verici APR'lerden yararlanmak için varlıklarınızı bu havuza ekleyin. Bağlama süreniz ne kadar uzun olursa, o kadar çok kazanırsınız.",
@@ -132,7 +133,7 @@
     "bondSuperfluidLiquidityCaption": "Maksimum kazanç için Superfluid seçin.",
     "bondShares": "Hisseleri bağla",
     "amountDaysUnbonding": "{numDays} gün sonra çözülecek",
-    "unbonded": "Bağlanmamış",
+    "available": "Mevcut",
     "unbond": "Çöz",
     "bonded": "Bağlı",
     "showDetails": "Detayları göster",
@@ -194,7 +195,7 @@
     }
   },
   "assets": {
-    "totalAssets": "Toplam",
+    "totalAssets": "Toplam varlıklar",
     "unbondedAssets": "Bağlı Olmayan",
     "bondedAssets": "Bağlı",
     "stakedAssets": "Stake Edilmiş OSMO",
@@ -208,7 +209,7 @@
     "poolCards": {
       "APR": "APR",
       "FeeAPY": "APY ücreti",
-      "liquidity": "Havuz Likiditesi",
+      "liquidity": "Likiditem",
       "bonded": "Bağlı",
       "myLiquidity": "Likiditem"
     },
@@ -264,8 +265,8 @@
     "table": {
       "depositButton": "Yatır",
       "withdrawButton": "Çek",
-      "search": "Sembole göre filtrele",
-      "title": "Varlıklar",
+      "search": "Arama",
+      "title": "Tüm Varlıklar",
       "hideZero": "Sıfır bakiyeyi gizle",
       "buyOsmo": "Al",
       "preTransfer": {
@@ -316,7 +317,10 @@
       "mobileMenu": "Sırala"
     },
     "MAX": "MAKS",
-    "searchTokens": "Token ara"
+    "searchTokens": "Arama",
+    "selectToken": {
+      "title": "Bir belirteç seçin"
+    }
   },
   "menu": {
     "swap": "Takas",
@@ -327,12 +331,13 @@
     "info": "Bilgi",
     "signOut": "Bağlantıyı Kes",
     "help": "Destek Ekibinden Yardım İste",
-    "learnMoreFrontier": "<name>Osmosis Frontier</name><br/>Hakkında<br2/>Daha Fazla Bilgi"
+    "learnMoreFrontier": "<name>Osmosis Frontier</name><br/>Hakkında<br2/>Daha Fazla Bilgi",
+    "buyTokens": "jeton satın al"
   },
   "settings": {
     "title": "Ayarlar",
     "titleLanguage": "Dil",
-    "titleShowDust": "Havuzlar/varlıkları göster < {fiatSymbol}0.01"
+    "titleHideDust": "olan havuzları gizle < {fiatSymbol}0.01"
   },
   "404": {
     "title": "Bulunamadı"

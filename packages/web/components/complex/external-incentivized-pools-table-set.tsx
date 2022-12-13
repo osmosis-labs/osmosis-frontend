@@ -482,7 +482,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
 
     return (
       <>
-        <div className="mt-5 flex flex-wrap gap-3 items-center justify-between">
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
           <h5>{t("pools.externalIncentivized.title")}</h5>
           <div className="flex items-center gap-3 lg:w-full lg:place-content-between">
             <SearchBox

@@ -33,7 +33,7 @@
     "myPools": "My Pools",
     "APR": "APR",
     "available": "Available",
-    "liquidity": "Pool Liquidity",
+    "liquidity": "My Liquidity",
     "bonded": "Bonded",
     "incentivized": "Incentivized",
     "all": "All Pools",
@@ -42,7 +42,7 @@
       "title": "Superfluid Pools",
       "tab": "Superfluid",
       "APR": "APR",
-      "liquidity": "Pool Liquidity",
+      "liquidity": "My Liquidity",
       "fees7D": "Fees (7D)"
     },
     "allPools": {
@@ -54,7 +54,7 @@
       "search": "Search pools",
       "displayLowLiquidity": "Show pools < {value}",
       "sort": {
-        "poolName": "Pool Name",
+        "poolName": "Pool Name/Number",
         "liquidity": "Liquidity",
         "volume24h": "Volume (24H)",
         "fees": "Fees (7D)",
@@ -64,12 +64,12 @@
       }
     },
     "externalIncentivized": {
-      "title": "External Incentives",
+      "title": "Externally Incentivized Pools",
       "TVL": "TVL",
       "APR": "APR",
       "search": "Search by symbol",
       "sort": {
-        "poolName": "Pool Name",
+        "poolName": "Pool Name/Number",
         "liquidity": "Liquidity",
         "APR": "APR",
         "epochs": "Epochs Remaining",
@@ -113,10 +113,11 @@
     "24hrTradingVolume": "24h Trading volume",
     "liquidity": "Pool liquidity",
     "swapFee": "Swap fee",
-    "yourStats": "Your stats",
+    "yourStats": "Your pool balance",
     "sharesAmount": "{shares} shares",
     "currentDailyEarn": "You're currently earning",
-    "earnMore": "Earn more by bonding",
+    "earnMore": "Earn {amount} more by bonding",
+    "day": "day",
     "dailyEarnAmount": "{amount} / day",
     "putAssetsToWork": "Put your assets to work.",
     "putAssetsToWorkCaption": "Add your assets to this pool to unlock APRs. The longer your unbonding period, the more you make.",
@@ -132,7 +133,7 @@
     "bondSuperfluidLiquidityCaption": "Go superfluid for maximum rewards.",
     "bondShares": "Bond Shares",
     "amountDaysUnbonding": "{numDays} days unbonding",
-    "unbonded": "Unbonded",
+    "available": "Available",
     "unbond": "Unbond",
     "bonded": "Bonded",
     "showDetails": "Show pool composition",
@@ -194,7 +195,7 @@
     }
   },
   "assets": {
-    "totalAssets": "Total",
+    "totalAssets": "Total assets",
     "unbondedAssets": "Unbonded",
     "bondedAssets": "Bonded",
     "stakedAssets": "Staked OSMO",
@@ -208,7 +209,7 @@
     "poolCards": {
       "APR": "APR",
       "FeeAPY": "Fee APY",
-      "liquidity": "Pool Liquidity",
+      "liquidity": "My Liquidity",
       "bonded": "Bonded",
       "myLiquidity": "My Liquidity"
     },
@@ -264,8 +265,8 @@
     "table": {
       "depositButton": "Deposit",
       "withdrawButton": "Withdraw",
-      "search": "Filter by symbol",
-      "title": "Assets",
+      "search": "Search",
+      "title": "All Assets",
       "hideZero": "Hide zero balances",
       "buyOsmo": "Buy",
       "preTransfer": {
@@ -316,7 +317,10 @@
       "mobileMenu": "Sort by"
     },
     "MAX": "MAX",
-    "searchTokens": "Search tokens"
+    "searchTokens": "Search",
+    "selectToken": {
+      "title": "Select a token"
+    }
   },
   "menu": {
     "swap": "Swap",
@@ -327,12 +331,13 @@
     "info": "Stats",
     "signOut": "Disconnect",
     "help": "Get Support Lab Help",
-    "learnMoreFrontier": "Learn More<br/>About the <br2/> <name>Osmosis Frontier</name>"
+    "learnMoreFrontier": "Learn More<br/>About the <br2/> <name>Osmosis Frontier</name>",
+    "buyTokens": "Buy tokens"
   },
   "settings": {
     "title": "Settings",
     "titleLanguage": "Language",
-    "titleShowDust": "Show pools/assets < {fiatSymbol}0.01"
+    "titleHideDust": "Hide pools with < {fiatSymbol}0.01"
   },
   "404": {
     "title": "Not found"

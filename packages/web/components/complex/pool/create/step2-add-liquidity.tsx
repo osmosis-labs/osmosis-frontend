@@ -26,11 +26,11 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
             return (
               <div
                 key={amountConfig.sendCurrency.coinDenom}
-                className="h-24 md:h-fit flex px-7 md:p-2 items-center place-content-between border border-white-faint rounded-2xl"
+                className="flex h-24 place-content-between items-center rounded-2xl border border-white-faint px-7 md:h-fit md:p-2"
               >
                 <div className="flex items-center">
                   {currency.coinImageUrl && (
-                    <div className="flex items-center w-14 h-14 md:h-7 md:w-7 overflow-hidden">
+                    <div className="flex h-14 w-14 items-center overflow-hidden md:h-7 md:w-7">
                       <Image
                         src={currency.coinImageUrl}
                         alt="token icon"
@@ -45,7 +45,7 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
                     ) : (
                       <h5>{justCoinDenom}</h5>
                     )}
-                    <div className="text-osmoverse-400 text-sm md:text-xs md:caption font-semibold">
+                    <div className="md:caption text-sm font-semibold text-osmoverse-400 md:text-xs">
                       {config.poolType === "weighted"
                         ? `${percentage}%`
                         : scalingFactor ?? "1"}
@@ -53,12 +53,12 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <div className="flex items-center place-content-end gap-1">
+                  <div className="flex place-content-end items-center gap-1">
                     <span className="caption">
                       {t("pools.createPool.available")}
                     </span>
                     <span
-                      className="caption text-wosmongton-300 cursor-pointer"
+                      className="caption cursor-pointer text-wosmongton-300"
                       onClick={() => amountConfig.setIsMax(true)}
                     >
                       {config.queryBalances

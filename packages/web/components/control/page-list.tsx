@@ -73,7 +73,7 @@ export const PageList: FunctionComponent<Props> = ({
       {editField && isEditingText ? (
         <input
           ref={inputElem}
-          className="leading-tight border border-wosmongton-200 rounded-lg w-fit appearance-none bg-transparent text-center py-2"
+          className="w-fit appearance-none rounded-lg border border-wosmongton-200 bg-transparent py-2 text-center leading-tight"
           type="text"
           size={4}
           value={currentValue}
@@ -91,8 +91,8 @@ export const PageList: FunctionComponent<Props> = ({
         />
       ) : (
         <span
-          className={classNames("leading-5 px-2 text-md whitespace-nowrap", {
-            "hover:underline underline-offset-2 cursor-pointer":
+          className={classNames("text-md whitespace-nowrap px-2 leading-5", {
+            "cursor-pointer underline-offset-2 hover:underline":
               editField && min !== max,
           })}
           onClick={() => {

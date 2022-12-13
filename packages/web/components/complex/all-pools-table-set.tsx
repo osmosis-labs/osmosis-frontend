@@ -568,8 +568,8 @@ export const AllPoolsTableSet: FunctionComponent<{
 
     return (
       <>
-        <div className="flex flex-col gap-3 mt-5">
-          <div className="flex items-center place-content-between">
+        <div className="mt-5 flex flex-col gap-3">
+          <div className="flex place-content-between items-center">
             <h5>{t("pools.allPools.title")}</h5>
             <Switch
               isOn={isPoolTvlFiltered}
@@ -582,7 +582,7 @@ export const AllPoolsTableSet: FunctionComponent<{
               </span>
             </Switch>
           </div>
-          <div className="flex flex-wrap items-center gap-4 place-content-between">
+          <div className="flex flex-wrap place-content-between items-center gap-4">
             <MenuToggle
               className="inline"
               options={poolsMenuOptions}
@@ -638,7 +638,7 @@ export const AllPoolsTableSet: FunctionComponent<{
           rowDefs={tableRows}
           data={tableData}
         />
-        <div className="flex items-center place-content-center">
+        <div className="flex place-content-center items-center">
           <PageList
             currentValue={page}
             max={numPages}

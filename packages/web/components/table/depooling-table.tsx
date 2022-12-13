@@ -61,7 +61,7 @@ export const DepoolingTable: FunctionComponent<
       )}
       {poolId && <Info size="subtle" message={t("pool.depoolings.note")} />}
       <Table
-        className={classNames("w-full md:caption", tableClassName)}
+        className={classNames("md:caption w-full", tableClassName)}
         headerTrClassName="md:h-11"
         columnDefs={[
           { display: t("pool.depoolings.amount"), className: "!pl-8" },

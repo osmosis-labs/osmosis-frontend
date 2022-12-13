@@ -27,7 +27,7 @@ export const AssetBreakdownChart: FunctionComponent<{
   return (
     <div
       className={classNames(
-        "grid w-full md:!grid-cols-2 md:p-6 md:rounded-2xl md:bg-osmoverse-900"
+        "grid w-full md:!grid-cols-2 md:rounded-2xl md:bg-osmoverse-900 md:p-6"
       )}
       style={{
         gridTemplateColumns: gridTemplateColumns.join(" "),
@@ -42,7 +42,7 @@ export const AssetBreakdownChart: FunctionComponent<{
             <div className="md:flex md:items-center md:gap-1">
               <div
                 className={classNames(
-                  "hidden md:block h-4 w-4 rounded-full",
+                  "hidden h-4 w-4 rounded-full md:block",
                   colorCycle[index % colorCycle.length]
                 )}
               />
@@ -57,7 +57,7 @@ export const AssetBreakdownChart: FunctionComponent<{
           </div>
           <div
             className={classNames(
-              "md:hidden flex w-full h-2",
+              "flex h-2 w-full md:hidden",
               colorCycle[index % colorCycle.length],
               {
                 "rounded-l-full": index === 0,
