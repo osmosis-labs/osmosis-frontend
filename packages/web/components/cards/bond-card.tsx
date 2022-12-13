@@ -18,7 +18,7 @@ export const BondCard: FunctionComponent<
 > = ({
   duration,
   userShares,
-  userShareValue,
+  userLockedShareValue,
   userUnlockingShares,
   aggregateApr,
   swapFeeApr,
@@ -44,7 +44,7 @@ export const BondCard: FunctionComponent<
             </span>
             <div className="flex flex-col text-osmoverse-100 grow">
               <h4 className="text-osmoverse-100">
-                {userShareValue.toString()}
+                {userLockedShareValue.toString()}
               </h4>
               <h6 className={"text-osmoverse-300"}>
                 {t("pool.sharesAmount", {

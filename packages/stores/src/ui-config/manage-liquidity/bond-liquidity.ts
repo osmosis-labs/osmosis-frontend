@@ -27,7 +27,7 @@ export type BondDuration = {
   /** Bondable if there's any active gauges for this duration. */
   bondable: boolean;
   userShares: CoinPretty;
-  userShareValue: PricePretty;
+  userLockedShareValue: PricePretty;
   userUnlockingShares?: { shares: CoinPretty; endTime?: Date };
   aggregateApr: RatePretty;
   swapFeeApr: RatePretty;
@@ -141,10 +141,10 @@ export class ObservableBondLiquidityConfig extends UserConfig {
             curDuration
           ).amount;
 
-          const totalShares = this.poolDetails.pool.totalShare;
-          const poolTvl = this.poolDetails.totalValueLocked;
-          const userShareValue = poolTvl.mul(
-            new IntPretty(lockedUserShares.quo(totalShares))
+          const userLockedShareValue = this.poolDetails.totalValueLocked.mul(
+            new IntPretty(
+              lockedUserShares.quo(this.poolDetails.pool.totalShare)
+            )
           );
 
           /** There is only one internal gauge of a chain-configured lockable duration (1,7,14 days). */
@@ -282,6 +282,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
               internalGaugeOfDuration !== undefined ||
               externalGaugesOfDuration.length > 0,
             userShares: lockedUserShares,
+            userLockedShareValue,
             userUnlockingShares,
             aggregateApr,
             swapFeeApr,
@@ -290,7 +291,6 @@ export class ObservableBondLiquidityConfig extends UserConfig {
               .feesSpent7d.quo(new Dec(7)),
             incentivesBreakdown,
             superfluid,
-            userShareValue,
           };
         });
     }
