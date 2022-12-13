@@ -2,7 +2,13 @@ import Image from "next/image";
 import { AppCurrency, IBCCurrency } from "@keplr-wallet/types";
 import { CoinPretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
-import { Fragment, FunctionComponent, useRef } from "react";
+import {
+  Fragment,
+  FunctionComponent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-multi-lang";
 import { SearchBox } from "../input";
 import { observer } from "mobx-react-lite";
@@ -51,12 +57,20 @@ export const TokenSelectDrawer: FunctionComponent<{
     chainName: string;
   }[];
 }> = observer(
-  ({ isOpen, tokens, onClose: onCloseProp, onSelect: onSelectProp }) => {
+  ({
+    isOpen,
+    tokens: tokensProp,
+    onClose: onCloseProp,
+    onSelect: onSelectProp,
+  }) => {
     const t = useTranslation();
     const { priceStore } = useStore();
     const uniqueId = useConst(() => Math.random().toString(36).substring(2, 9));
 
     const [selectedIndex, setSelectedIndex, selectedIndexRef] = useStateRef(0);
+
+    const [tokens, setTokens] = useState(tokensProp);
+    const [isRequestingClose, setIsRequestingClose] = useState(false);
 
     const [_searchValue, setTokenSearch, searchedTokens] = useFilteredData(
       tokens,
@@ -78,6 +92,7 @@ export const TokenSelectDrawer: FunctionComponent<{
       useDraggableScroll(quickSelectRef);
 
     const onClose = () => {
+      setIsRequestingClose(true);
       setTokenSearch("");
       setSelectedIndex(0);
       onCloseProp?.();
@@ -87,6 +102,12 @@ export const TokenSelectDrawer: FunctionComponent<{
       onSelectProp?.(coinDenom);
       onClose?.();
     };
+
+    // Only update tokens while not requesting to close
+    useEffect(() => {
+      if (isRequestingClose) return;
+      setTokens(tokensProp);
+    }, [isRequestingClose, tokensProp]);
 
     useWindowKeyActions({
       Escape: () => {
@@ -184,6 +205,7 @@ export const TokenSelectDrawer: FunctionComponent<{
           leaveFrom="visible opacity-100 translate-y-0"
           leaveTo="visible opacity-0 translate-y-[15%]"
           afterEnter={() => searchBoxRef?.current?.focus()}
+          afterLeave={() => setIsRequestingClose(false)}
         >
           <div className="absolute inset-0 z-50 mt-16 flex h-full w-full flex-col overflow-hidden rounded-[24px] bg-osmoverse-800 pb-16">
             <div className="relative flex justify-center pt-8 pb-4">

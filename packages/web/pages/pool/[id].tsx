@@ -381,14 +381,16 @@ const Pool: FunctionComponent = observer(() => {
           <div
             className={classNames(
               "flex flex-col gap-3 overflow-hidden px-8 pt-8 transition-height duration-300 ease-inOutBack md:px-5 md:pt-7",
-              showPoolDetails
-                ? "h-[180px] xl:h-[260px] lg:h-[420px]"
+              showPoolDetails && pool
+                ? pool.poolAssets.length > 2
+                  ? "h-[190px] xl:h-[260px] lg:h-[420px] md:h-[505px] xs:h-[525px]"
+                  : "h-[190px] xl:h-[260px] lg:h-[420px] md:h-[440px] xs:h-[460px]"
                 : "h-[105px] xl:h-[180px] lg:h-[340px]"
             )}
           >
             <div className="flex place-content-between items-start gap-2 xl:flex-col">
               <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   {pool && (
                     <PoolAssetsIcon
                       assets={pool.poolAssets.map((asset) => ({
