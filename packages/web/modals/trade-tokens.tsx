@@ -11,9 +11,9 @@ export const TradeTokens: FunctionComponent<Props> = (props) => {
   return (
     <ModalBase {...props} hideCloseButton className="!p-0 !w-fit">
       <TradeClipboard
-        // containerClassName="w-full"
         pools={props.pools}
         isInModal
+        onRequestModalClose={props.onRequestClose}
       />
     </ModalBase>
   );

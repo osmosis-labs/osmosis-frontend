@@ -30,6 +30,15 @@ export class ObservableQueryAccountPoolRewards extends ObservableQueryExternalBa
 
       if (!this.response || !fiat) return undefined;
 
+      const poolIds =
+        this.response.data.pools !== undefined &&
+        this.response.data.pools !== null &&
+        typeof this.response.data.pools === "object"
+          ? Object.keys(this.response.data.pools)
+          : [];
+
+      if (!poolIds.includes(poolId)) return undefined;
+
       const poolRewards = this.response.data.pools[poolId] as
         | PoolsRewards["pools"][0]
         | undefined;

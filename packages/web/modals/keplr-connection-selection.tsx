@@ -41,7 +41,7 @@ export const KeplrConnectionSelectModal: FunctionComponent<
           />
           <div className="flex flex-col text-left ml-5">
             <div className="flex items-center gap-2">
-              <h6>{t("installKeplr")}</h6>
+              <h6>{t("keplr.install")}</h6>
               <Image
                 src="/icons/external-link-white.svg"
                 alt="external link"

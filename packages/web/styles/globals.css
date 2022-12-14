@@ -10,6 +10,9 @@
     font-family: Inter, ui-sans-serif, system-ui;
     @apply text-white-full;
   }
+  body {
+    @apply bg-osmoverse-900;
+  }
 
   h1 {
     @apply text-h1 font-h1;
@@ -52,6 +55,9 @@
   }
   .text-superfluid-gradient {
     @apply text-transparent bg-clip-text bg-superfluid;
+  }
+  .text-gradient-positive {
+    @apply text-transparent bg-clip-text bg-gradient-positive;
   }
 
   input::-webkit-outer-spin-button,
@@ -102,7 +108,7 @@
   }
 
   .grid-cards {
-    @apply grid-cols-4 gap-4 3xl:grid-cols-3 1.5xl:grid-cols-2 1.5md:grid-cols-1;
+    @apply gap-4 grid-cols-3 1.5xl:grid-cols-2 1.5md:grid-cols-1;
   }
 
   /* Chrome, Safari and Opera */
@@ -221,4 +227,8 @@
   50% {
     opacity: 0.5;
   }
+}
+
+.tippy-box[data-animation="fade"][data-state="hidden"] {
+  opacity: 0;
 }

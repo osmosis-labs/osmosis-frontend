@@ -15,9 +15,10 @@ export function useDepositAddress(
 } {
   const [depositAddress, setDepositAddress] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [lastAddress, setLastAddress] = useState<string | null>(null);
 
   const generateAddress = useCallback(async () => {
-    if (address && depositAddress === null) {
+    if (address) {
       setIsLoading(true);
       new AxelarAssetTransfer({ environment })
         .getDepositAddress(sourceChain, destChain, address, coinMinimalDenom)
@@ -32,7 +33,6 @@ export function useDepositAddress(
     return null;
   }, [
     environment,
-    depositAddress,
     address,
     sourceChain,
     destChain,
@@ -56,12 +56,13 @@ export function useDepositAddress(
       }),
     [generateAddress, setDepositAddress]
   );
-
   useEffect(() => {
-    if (address && generateOnMount && !depositAddress) {
+    if (address && generateOnMount && address != lastAddress) {
+      setLastAddress(address);
+      setDepositAddress(null);
       doGen().catch((e) => console.error(e));
     }
-  }, [address, generateOnMount, depositAddress, doGen]);
+  }, [address, generateOnMount, doGen]);
 
   return {
     depositAddress: depositAddress || undefined,

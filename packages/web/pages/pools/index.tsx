@@ -1,8 +1,14 @@
 import Image from "next/image";
 import type { NextPage } from "next";
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  Dec,
+  DecUtils,
+  PricePretty,
+  RatePretty,
+} from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
-import { useState, ComponentProps, useMemo } from "react";
+import { useState, ComponentProps, useMemo, useCallback } from "react";
 import { Duration } from "dayjs/plugin/duration";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { PoolCard } from "../../components/cards";
@@ -35,7 +41,7 @@ import {
 } from "../../hooks";
 import { CompactPoolTableDisplay } from "../../components/complex/compact-pool-table-display";
 import { ShowMoreButton } from "../../components/buttons/show-more";
-import { EventName } from "../../config";
+import { EventName, ExternalIncentiveGaugeAllowList } from "../../config";
 import { POOLS_PER_PAGE } from "../../components/complex";
 import { useTranslation } from "react-multi-lang";
 
@@ -58,6 +64,7 @@ const Pools: NextPage = observer(function () {
   });
 
   const { chainId } = chainStore.osmosis;
+  const queryCosmos = queriesStore.get(chainId).cosmos;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const account = accountStore.getAccount(chainId);
 
@@ -78,11 +85,23 @@ const Pools: NextPage = observer(function () {
           priceStore
         ),
         poolLiquidity: superfluidPool.computeTotalValueLocked(priceStore),
-        assets: superfluidPool.poolAssets.map((poolAsset) => ({
-          coinImageUrl: poolAsset.amount.currency.coinImageUrl,
-          coinDenom: poolAsset.amount.currency.coinDenom,
-          weightFraction: poolAsset.weightFraction,
-        })),
+        assets: superfluidPool.poolAssets.map((asset) => {
+          const weightedAsset = superfluidPool.weightedPoolInfo?.assets.find(
+            (weightedAsset) =>
+              weightedAsset.denom === asset.amount.currency.coinMinimalDenom
+          );
+          const weightFraction =
+            weightedAsset?.weightFraction ??
+            new RatePretty(
+              new Dec(1).quo(new Dec(superfluidPool.poolAssets.length))
+            ); // stableswap pools have consistent weight fraction
+
+          return {
+            coinImageUrl: asset.amount.currency.coinImageUrl,
+            coinDenom: asset.amount.currency.coinDenom,
+            weightFraction,
+          };
+        }),
       })) ?? []
   )
     .process("poolLiquidity")
@@ -177,6 +196,67 @@ const Pools: NextPage = observer(function () {
     }
   };
 
+  const onCreatePool = useCallback(async () => {
+    try {
+      if (createPoolConfig.poolType === "weighted") {
+        await account.osmosis.sendCreateBalancerPoolMsg(
+          createPoolConfig.swapFee,
+          createPoolConfig.assets.map((asset) => {
+            if (!asset.percentage)
+              throw new Error(
+                "Pool config with poolType of weighted doesn't include asset percentage"
+              );
+
+            return {
+              weight: new Dec(asset.percentage)
+                .mul(DecUtils.getTenExponentNInPrecisionRange(4))
+                .truncate()
+                .toString(),
+              token: {
+                amount: asset.amountConfig.amount,
+                currency: asset.amountConfig.sendCurrency,
+              },
+            };
+          }),
+          undefined,
+          () => {
+            setIsCreatingPool(false);
+          }
+        );
+      } else if (createPoolConfig.poolType === "stable") {
+        const scalingFactorController =
+          createPoolConfig.scalingFactorControllerAddress
+            ? createPoolConfig.scalingFactorControllerAddress
+            : undefined;
+        await account.osmosis.sendCreateStableswapPoolMsg(
+          createPoolConfig.swapFee,
+          createPoolConfig.assets.map((asset) => {
+            if (!asset.scalingFactor)
+              throw new Error(
+                "Pool config with poolType of stable doesn't include scaling factors"
+              );
+
+            return {
+              scalingFactor: asset.scalingFactor,
+              token: {
+                amount: asset.amountConfig.amount,
+                currency: asset.amountConfig.sendCurrency,
+              },
+            };
+          }),
+          scalingFactorController,
+          undefined,
+          () => {
+            setIsCreatingPool(false);
+          }
+        );
+      }
+    } catch (e) {
+      setIsCreatingPool(false);
+      console.error(e);
+    }
+  }, [createPoolConfig, account]);
+
   // my pools
   const myPoolIds = queryOsmosis.queryGammPoolShare.getOwnPools(
     account.bech32Address
@@ -204,40 +284,15 @@ const Pools: NextPage = observer(function () {
   );
 
   return (
-    <main className="bg-osmoverse-900 px-8 md:px-3">
-      {isCreatingPool && (
-        <CreatePoolModal
-          isOpen={isCreatingPool}
-          onRequestClose={() => setIsCreatingPool(false)}
-          title={t("pools.createPool.title")}
-          createPoolConfig={createPoolConfig}
-          isSendingMsg={account.txTypeInProgress !== ""}
-          onCreatePool={async () => {
-            try {
-              await account.osmosis.sendCreatePoolMsg(
-                createPoolConfig.swapFee,
-                createPoolConfig.assets.map((asset) => ({
-                  weight: new Dec(asset.percentage)
-                    .mul(DecUtils.getTenExponentNInPrecisionRange(4))
-                    .truncate()
-                    .toString(),
-                  token: {
-                    amount: asset.amountConfig.amount,
-                    currency: asset.amountConfig.sendCurrency,
-                  },
-                })),
-                undefined,
-                () => {
-                  setIsCreatingPool(false);
-                }
-              );
-            } catch (e) {
-              setIsCreatingPool(false);
-              console.error(e);
-            }
-          }}
-        />
-      )}
+    <main className="max-w-container m-auto bg-osmoverse-900 px-8 md:px-3">
+      <CreatePoolModal
+        isOpen={isCreatingPool}
+        onRequestClose={() => setIsCreatingPool(false)}
+        title={t("pools.createPool.title")}
+        createPoolConfig={createPoolConfig}
+        isSendingMsg={account.txTypeInProgress !== ""}
+        onCreatePool={onCreatePool}
+      />
       {addLiquidityModalPoolId && (
         <AddLiquidityModal
           title={t("addLiquidity.titleInPool", {
@@ -280,10 +335,62 @@ const Pools: NextPage = observer(function () {
           <div className="flex flex-col gap-4">
             <div className="mt-5 grid grid-cards md:gap-3">
               {dustFilteredPools.map((myPool) => {
-                const apr = queryOsmosis.queryIncentivizedPools.computeMostApr(
-                  myPool.id,
-                  priceStore
+                const internalIncentiveApr =
+                  queryOsmosis.queryIncentivizedPools.computeMostApr(
+                    myPool.id,
+                    priceStore
+                  );
+                const swapFeeApr =
+                  queriesExternalStore.queryGammPoolFeeMetrics.get7dPoolFeeApr(
+                    myPool,
+                    priceStore
+                  );
+                const whitelistedGauges =
+                  ExternalIncentiveGaugeAllowList?.[myPool.id] ?? undefined;
+                const highestDuration =
+                  queryOsmosis.queryLockableDurations.highestDuration;
+
+                const externalApr = (whitelistedGauges ?? []).reduce(
+                  (sum, { gaugeId, denom }) => {
+                    const gauge = queryOsmosis.queryGauge.get(gaugeId);
+
+                    if (
+                      !gauge ||
+                      !highestDuration ||
+                      gauge.lockupDuration.asMilliseconds() !==
+                        highestDuration.asMilliseconds()
+                    ) {
+                      return sum;
+                    }
+
+                    return sum.add(
+                      queryOsmosis.queryIncentivizedPools.computeExternalIncentiveGaugeAPR(
+                        myPool.id,
+                        gaugeId,
+                        denom,
+                        priceStore
+                      )
+                    );
+                  },
+                  new RatePretty(0)
                 );
+                const superfluidApr =
+                  queryOsmosis.querySuperfluidPools.isSuperfluidPool(myPool.id)
+                    ? new RatePretty(
+                        queryCosmos.queryInflation.inflation
+                          .mul(
+                            queryOsmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
+                              myPool.id
+                            )
+                          )
+                          .moveDecimalPointLeft(2)
+                      )
+                    : new RatePretty(0);
+                const apr = internalIncentiveApr
+                  .add(swapFeeApr)
+                  .add(externalApr)
+                  .add(superfluidApr);
+
                 const poolLiquidity =
                   myPool.computeTotalValueLocked(priceStore);
                 const myBonded =
@@ -305,7 +412,7 @@ const Pools: NextPage = observer(function () {
                           queryOsmosis.queryIncentivizedPools.isAprFetching
                         }
                       >
-                        {apr.maxDecimals(2).toString()}
+                        <h6>{apr.maxDecimals(2).toString()}</h6>
                       </MetricLoader>
                     ),
                   },
@@ -336,7 +443,7 @@ const Pools: NextPage = observer(function () {
                         .toString()
                     ) : (
                       <MetricLoader isLoading={poolLiquidity.toDec().isZero()}>
-                        {priceFormatter(poolLiquidity)}
+                        <h6>{priceFormatter(poolLiquidity)}</h6>
                       </MetricLoader>
                     ),
                   },
@@ -346,7 +453,7 @@ const Pools: NextPage = observer(function () {
                       myBonded.toString()
                     ) : (
                       <MetricLoader isLoading={poolLiquidity.toDec().isZero()}>
-                        {priceFormatter(myBonded)}
+                        <h6>{priceFormatter(myBonded)}</h6>
                       </MetricLoader>
                     ),
                   },
@@ -384,9 +491,9 @@ const Pools: NextPage = observer(function () {
                               (poolAsset) => poolAsset.amount.currency.coinDenom
                             )
                             .join(" / "),
-                          poolWeight: myPool.poolAssets
+                          poolWeight: myPool.weightedPoolInfo?.assets
                             .map((poolAsset) =>
-                              poolAsset.weightFraction.toString()
+                              poolAsset.weightFraction?.toString()
                             )
                             .join(" / "),
                           isSuperfluidPool:
@@ -567,7 +674,7 @@ const Pools: NextPage = observer(function () {
                                     .isAprFetching
                                 }
                               >
-                                {apr.maxDecimals(2).toString()}
+                                <h6>{apr.maxDecimals(2).toString()}</h6>
                               </MetricLoader>
                             ),
                           },
@@ -577,7 +684,7 @@ const Pools: NextPage = observer(function () {
                               <MetricLoader
                                 isLoading={poolLiquidity.toDec().isZero()}
                               >
-                                {priceFormatter(poolLiquidity)}
+                                <h6>{priceFormatter(poolLiquidity)}</h6>
                               </MetricLoader>
                             ),
                           },
@@ -587,7 +694,9 @@ const Pools: NextPage = observer(function () {
                               <MetricLoader
                                 isLoading={!poolFeesMetrics.feesSpent7d.isReady}
                               >
-                                {poolFeesMetrics.feesSpent7d.toString()}
+                                <h6>
+                                  {poolFeesMetrics.feesSpent7d.toString()}
+                                </h6>
                               </MetricLoader>
                             ),
                           },
@@ -602,7 +711,9 @@ const Pools: NextPage = observer(function () {
                                 .map((asset) => asset.coinDenom)
                                 .join(" / "),
                               poolWeight: assets
-                                .map((asset) => asset.weightFraction.toString())
+                                .map((asset) =>
+                                  asset.weightFraction?.toString()
+                                )
                                 .join(" / "),
                             },
                           ])

@@ -4,6 +4,7 @@ export * from "./pool-assets-name";
 export * from "./rate-ring";
 export * from "./token";
 export * from "./types";
+export * from "./denom-image";
 
 export const ringFillColors = [
   "#89EAFB",

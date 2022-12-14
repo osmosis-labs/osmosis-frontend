@@ -17,6 +17,7 @@ export class ObservableQueryLockableDurations extends ObservableChainQuery<Locka
     makeObservable(this);
   }
 
+  /** On chain param: bond durations capable of receiving internal (OSMO) mint incentives, assuming pool is marked incentivized. */
   @computed
   get lockableDurations(): Duration[] {
     if (!this.response) {
@@ -36,5 +37,13 @@ export class ObservableQueryLockableDurations extends ObservableChainQuery<Locka
         // 오름차순 정렬
         return v1.asMilliseconds() > v2.asMilliseconds() ? 1 : -1;
       });
+  }
+
+  @computed
+  get highestDuration(): Duration | undefined {
+    if (!this.response || this.response.data.lockable_durations.length === 0)
+      return;
+
+    return this.lockableDurations[this.lockableDurations.length - 1];
   }
 }

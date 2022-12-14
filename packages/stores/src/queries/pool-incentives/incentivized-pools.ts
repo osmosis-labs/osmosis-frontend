@@ -128,8 +128,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
       poolId: string,
       gaugeId: string,
       denom: string,
-      priceStore: IPriceStore,
-      fiatCurrency: FiatCurrency
+      priceStore: IPriceStore
     ): RatePretty => {
       const observableGauge = this.queryGauge.get(gaugeId);
 
@@ -140,8 +139,11 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
       const chainInfo = this.chainGetter.getChain(this.chainId);
 
       const mintCurrency = chainInfo.findCurrency(denom);
+      const fiatCurrency = priceStore.getFiatCurrency(
+        priceStore.defaultVsCurrency
+      );
 
-      if (!mintCurrency?.coinGeckoId) {
+      if (!mintCurrency?.coinGeckoId || !fiatCurrency) {
         return new RatePretty(new Dec(0));
       }
 

@@ -101,6 +101,16 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     );
   }
 
+  @computed
+  get supportsSingleAmountIn(): boolean {
+    const queryPool = this._queryPools.getPool(this._poolId);
+
+    if (!queryPool) return false;
+    if (queryPool.type === "stable") return false;
+
+    return true;
+  }
+
   /*
 	 Return the `AmountConfig` of selected single amount in.
 	 Return undefined if the mode is no single amount in
@@ -125,6 +135,17 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
 
   @action
   setIsSingleAmountIn(value: boolean) {
+    const queryPool = this._queryPools.getPool(this._poolId);
+
+    if (!queryPool) return;
+
+    if (queryPool.type === "stable") {
+      console.warn(
+        "Single asset join pool currently not supported for stable pools"
+      );
+      return;
+    }
+
     this._isSingleAmountIn = value;
 
     if (value === true) {
@@ -269,10 +290,24 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     if (!pool) {
       return [];
     }
-    return pool.poolAssets.map((asset) => {
+
+    return pool.poolAssets.map(({ amount }) => {
+      const weights: {
+        weight: IntPretty;
+        weightFraction: RatePretty;
+      } = pool.weightedPoolInfo?.assets.find(
+        (asset) => asset.denom === amount.currency.coinMinimalDenom
+      ) ?? {
+        weight: new IntPretty(1), // Assume stable pools have even weight
+        weightFraction: new RatePretty(
+          new Dec(1).quo(new Dec(pool.poolAssets.length))
+        ),
+      }; // TODO: test with stable pool
+
       return {
-        ...asset,
-        currency: asset.amount.currency as Currency & {
+        ...weights,
+        amount,
+        currency: amount.currency as Currency & {
           originCurrency: Currency & {
             pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
           };

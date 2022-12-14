@@ -28,30 +28,34 @@ export const AddLiquidity: FunctionComponent<
 
     return (
       <div className={classNames("flex flex-col gap-8", className)}>
-        <div className="flex flex-col gap-4 text-center">
-          <div className="mx-auto">
-            <MenuToggle
-              selectedOptionId={
-                addLiquidityConfig.isSingleAmountIn ? "single" : "all"
-              }
-              options={[
-                {
-                  id: "all",
-                  display: t("addLiquidity.allAssets"),
-                },
-                { id: "single", display: t("addLiquidity.singleAsset") },
-              ]}
-              onSelect={(id) => {
-                if (id === "single") {
-                  addLiquidityConfig.setIsSingleAmountIn(true);
-                } else addLiquidityConfig.setIsSingleAmountIn(false);
-              }}
-            />
+        {addLiquidityConfig.supportsSingleAmountIn && (
+          <div className="flex flex-col gap-4 text-center">
+            <div className="mx-auto">
+              <MenuToggle
+                selectedOptionId={
+                  addLiquidityConfig.isSingleAmountIn ? "single" : "all"
+                }
+                options={[
+                  {
+                    id: "all",
+                    display: t("addLiquidity.allAssets"),
+                  },
+                  { id: "single", display: t("addLiquidity.singleAsset") },
+                ]}
+                onSelect={(id) => {
+                  if (id === "single") {
+                    addLiquidityConfig.setIsSingleAmountIn(true);
+                  } else addLiquidityConfig.setIsSingleAmountIn(false);
+                }}
+              />
+            </div>
+            {addLiquidityConfig.isSingleAmountIn && (
+              <span className="caption">
+                {t("addLiquidity.autoswapCaption")}
+              </span>
+            )}
           </div>
-          {addLiquidityConfig.isSingleAmountIn && (
-            <span className="caption">{t("addLiquidity.autoswapCaption")}</span>
-          )}
-        </div>
+        )}
         <div className="flex flex-col gap-2.5 max-h-96 overflow-y-auto">
           {(addLiquidityConfig.isSingleAmountIn &&
           addLiquidityConfig.singleAmountInAsset
@@ -94,23 +98,6 @@ export const AddLiquidity: FunctionComponent<
                 key={currency.coinDenom}
                 className="flex flex-col gap-1 w-full md:p-3 p-4 border border-osmoverse-700 md:rounded-xl rounded-2xl"
               >
-                {isPeggedCurrency && (
-                  <Info
-                    size="subtle"
-                    className="border-2 border-rust-200/30"
-                    message={`You are adding liquidity to ${
-                      currency!.originCurrency!.coinDenom
-                    }, ${
-                      ["a", "e", "i", "o", "u"].some((vowel) =>
-                        currency.originCurrency!.pegMechanism!.startsWith(vowel)
-                      )
-                        ? "an"
-                        : "a"
-                    } ${
-                      currency.originCurrency!.pegMechanism
-                    }-backed stablecoin.`}
-                  />
-                )}
                 <div className="flex items-center w-full place-content-between">
                   {addLiquidityConfig.isSingleAmountIn ? (
                     <PoolTokenSelect
@@ -197,6 +184,20 @@ export const AddLiquidity: FunctionComponent<
                     </div>
                   </div>
                 </div>
+                {isPeggedCurrency && (
+                  <Info
+                    className="text-wosmongton-100"
+                    borderClassName="bg-gradient-neutral"
+                    textClassName="w-full text-center"
+                    message={t("addLiquidity.stablecoinWarning", {
+                      denom: currency!.originCurrency!.coinDenom,
+                      mechanism: t(
+                        `stablecoinTypes.${currency.originCurrency!
+                          .pegMechanism!}`
+                      ),
+                    })}
+                  />
+                )}
               </div>
             );
           })}

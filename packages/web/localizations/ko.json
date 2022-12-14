@@ -6,24 +6,28 @@
     }
   },
   "swap": {
-    "title": "스왑",
+    "title": "거래",
     "settings": {
       "title": "트랜잭션 설정",
       "slippage": "슬리피지 허용치",
-      "slippageInfo": "교환 비율이 이 이상으로 변경되면 거래가 취소됩니다."
+      "slippageInfo": "교환 비율이 해당 값 이상일 경우 거래가 취소됩니다."
     },
-    "available": "가능수량",
-    "MAX": "최대치",
+    "available": "거래 가능수량",
+    "MAX": "최대",
     "HALF": "절반",
-    "button": "교환",
-    "buttonError": "계속 교환하기",
+    "button": "거래",
+    "buttonError": "무시하고 교환하기",
     "priceImpact": "가격 변동",
     "fee": "교환 수수료 ({fee})",
     "expectedOutput": "예상 교환치",
     "minimumSlippage": "슬리피지 이후 받을 최소수량 ({slippage})",
     "error": {
       "findCurrency": "토큰 A {currency}를 찾을 수 없습니다"
-    }
+    },
+    "autoRouter": "최적화된 경로",
+    "routerTooltipFee": "회비",
+    "autoRouterToggle": { "show": "보여주다", "hide": "숨다" },
+    "pool": "풀 #{id}"
   },
   "pools": {
     "title": "활성화된 풀",
@@ -59,7 +63,7 @@
         "volume24h": "거래량 (24H)",
         "fees": "수수료 (7D)",
         "APRIncentivized": "APR",
-        "APR": "내 유동성",
+        "APR": "APR",
         "poolId": "풀 ID"
       }
     },
@@ -79,21 +83,27 @@
     "createPool": {
       "title": "새로운 풀 만들기",
       "button": "새로운 풀 만들기",
+      "weightedPool": "가중 풀",
+      "stablePool": "안정적인 풀",
       "step": {
-        "one": "{step} / {nbStep} 단계 - 토큰 비율 설정",
+        "one": {
+          "weighted": "{step} / {nbStep} 단계 - 토큰 비율 설정",
+          "stable": "{step} / {nbStep} 단계 - 배율 설정"
+        },
         "two": "{step} / {nbStep} 단계 - 추가할 수량 입력",
         "three": "{step} / {nbStep} 단계 - 풀의 비율과 수량 확인"
       },
       "infoMessage": "풀 생성 수수료",
-      "infoCaption": "Osmosis 커뮤니티풀로 이전",
+      "infoCaption": "Osmosis 커뮤니티풀로 전송됩니다",
       "buttonCreate": "풀 생성하기",
       "buttonNext": "다음",
       "buttonBack": "이전",
       "buttonAddToken": "새로운 토큰 추가히기",
-      "available": "Available",
+      "available": "사용 가능",
       "amount": "수량",
       "token": "토큰",
       "swapFee": "교환 수수료 설정",
+      "scalingFactorController": "배율 계수 제어기 설정(선택 사항)",
       "undersandCost": "새 풀을 만드는데 {POOL_CREATION_FEE} 만큼의 비용이 든다는 것을 이해합니다.",
       "interestedCreate": "새 풀을 만들어 볼까요?",
       "startProcess": "여기를 클랙해서 시작하세요."
@@ -103,18 +113,19 @@
     "title": "풀 #{id}",
     "swap": "토큰 교환",
     "superfluidEnabled": "Superfluid 스테이킹 가능",
+    "stableswapEnabled": "안정적인 스왑 사용",
     "24hrTradingVolume": "24시간 거래량",
     "liquidity": "풀 유동성",
     "swapFee": "수수료",
     "yourStats": "내 상태",
-    "sharesAmount": "{shares} 지분",
-    "currentDailyEarn": "내 보상",
+    "sharesAmount": "{shares} LP",
+    "currentDailyEarn": "내 일일 보상",
     "earnMore": "예치하고 보상 더 받기",
     "dailyEarnAmount": "{amount} / 일",
-    "putAssetsToWork": "자산을 불려보세요.",
-    "putAssetsToWorkCaption": "이 풀에 자산을 추가하고 두근되는 APR을 확인하세요. 더 긴 기간동안 예치하면, 더 많은 보상을 얻을 수 있어요",
+    "putAssetsToWork": "자산을 늘리세요.",
+    "putAssetsToWorkCaption": "이 풀에 자산을 추가하고 두근되는 APR을 확인하세요. 더 긴 해지 기간을 선택하면, 더 많은 보상을 얻을 수 있어요",
     "learnMore": "더 알아보기",
-    "level": "Level {level}",
+    "level": "레벨 {level}",
     "earnSwapFees": "교환 수수료를 받으세요",
     "earnSwapFeesCaption": "풀에 유동성을 공급하고, 모든 교환에서 수수료를 받으세요",
     "APR": "APR",
@@ -125,15 +136,15 @@
     "bondSuperfluidLiquidityCaption": "Superfluid 를 통해 최대 보상을 받으세요.",
     "bondShares": "유동성 예치",
     "amountDaysUnbonding": "예치 해제 {numDays}일",
-    "shares": "shares",
-    "unbonded": "Unbonded",
+    "shares": "LP",
+    "unbonded": "예치되지 않은 자산",
     "unbond": "예치 해재하기",
     "bonded": "예치된 자산",
     "showDetails": "자세히 보기",
     "collapseDetails": "닫기",
-    "sharesAvailableIn": "available in",
+    "sharesAvailableIn": "가능",
     "unbonding": "에치 해제중",
-    "superfluidEarnMore": "Earn {rate} more. Go superfluid",
+    "superfluidEarnMore": "Superfluid 스테이킹을 하고 {rate}를 더 받으세요",
     "incentives": "인센티브",
     "details": "상세정보",
     "rewardDistribution": "모든 유동성 공급자에게 분배된 보상",
@@ -141,6 +152,7 @@
     "delegated": "위임된 자산",
     "undelegating": "위임 해제중",
     "commission": "수수료",
+    "numDaysRemaining": "{numDays}일 남음",
     "from": "에서",
     "swapFees": "교환 수수료",
     "7davg": "(7d avg)"
@@ -148,15 +160,16 @@
   "removeLiquidity": {
     "title": "유동성 해제하기",
     "titleInPool": "{poolId}풀에서 유동성을 제거합니다.",
-    "sharesAmount": "{shares} shares"
+    "sharesAmount": "{shares} LP"
   },
   "addLiquidity": {
     "title": "유동성 추가",
     "titleInPool": "{poolId}풀에 유동성 추가하기",
     "allAssets": "모든 자산",
     "singleAsset": "단일 자산",
-    "available": "입력 가능 수량",
-    "autoswapCaption": "오토스왑을 통해 단일 자산으로 유동성 추가합니다"
+    "available": "추가 가능 수량",
+    "autoswapCaption": "오토스왑을 통해 단일 자산으로 유동성 추가합니다",
+    "stablecoinWarning": "You are adding liquidity to {denom}, a {mechanism}-backed stablecoin."
   },
   "lockToken": {
     "title": "유동성 예치",
@@ -165,7 +178,7 @@
     "availableToken": "입력 가능 수량",
     "amountToBond": "예치할 수량",
     "superfluidStake": "Superfluid 스테이킹",
-    "bondingRequirement": "{numDays} day bonding requirement",
+    "bondingRequirement": "{numDays}일 본딩 요건",
     "buttonNext": "다음",
     "buttonBond": "예치하기",
     "buttonBondStake": "예치 & 스테이킹"
@@ -187,10 +200,16 @@
   },
   "assets": {
     "totalAssets": "전체",
-    "unbondedAssets": "Unbonded",
+    "unbondedAssets": "예치되지 않은 자산",
     "bondedAssets": "예치된 자산",
     "stakedAssets": "스테이킹된 OSMO",
     "myPools": "내 풀",
+    "transferAssetSelect": {
+      "deposit": "입금",
+      "withdraw": "출금",
+      "network": "회로망",
+      "buttonNext": "다음"
+    },
     "poolCards": {
       "APR": "APR",
       "FeeAPY": "수수료 APY",
@@ -201,6 +220,10 @@
     "ibcTransfer": {
       "titleWithdraw": "{coinDenom} 출금",
       "titleDeposit": "{coinDenom} 입금",
+      "channelCongested": "채널 혼잡",
+      "channelCongestedWithdraw": "출금 (채널 혼잡)",
+      "channelCongestedDeposit": "입금 (채널 혼잡)",
+      "channelBlocked": "채널이 차단됨",
       "selectAmount": "수량 선택",
       "estimatedTime": "예상 시간",
       "waitTime": "20초",
@@ -225,8 +248,8 @@
       "to": "으로",
       "via": "경유해서",
       "loading": "로딩",
-      "availableOn": "Available on {network}",
-      "availableMobile": "Available",
+      "availableOn": "{network} 잔고",
+      "availableMobile": "잔고",
       "transferFee": "전송 수수료",
       "errors": {
         "reconnectWallet": "{walletName} 다시 연결",
@@ -273,9 +296,9 @@
       "pending": "대기중",
       "success": "성공",
       "refunded": "반환됨",
-      "pendingRefunded": "실패: Pending refund",
+      "pendingRefunded": "실패: 환불 대기 중",
       "colums": {
-        "transactionHash": "Transaction Hash",
+        "transactionHash": "트랜잭션 ",
         "type": "타입",
         "amount": "수량",
         "status": "상태",
@@ -290,7 +313,7 @@
       "less": "숨기기"
     },
     "table": {
-      "poolId": "Pool #{id}"
+      "poolId": "풀 {id}"
     },
     "sort": {
       "SORT": "정렬",
@@ -298,7 +321,7 @@
       "mobileMenu": "정렬"
     },
     "MAX": "MAX",
-    "searchTokens": "Search tokens"
+    "searchTokens": "토큰 검색"
   },
   "menu": {
     "swap": "교환",
@@ -314,7 +337,7 @@
   "settings": {
     "title": "설정",
     "titleLanguage": "언어",
-    "titleShowDust": "Show pools/assets < {fiatSymbol}0.01"
+    "titleShowDust": "< {fiatSymbol}0.01 이하 자산/풀 보여주기"
   },
   "404": {
     "title": "페이지를 찾을 수 없습니다"
@@ -331,9 +354,11 @@
     "negativeSwapFee": "교환 수수료가 음수입니다",
     "highSwapFee": "교환 수수료가 너무 높습니다",
     "invalidSwapFee": "교환 수수료가 잘못 되었습니다",
+    "invalidScalingFactorControllerAddress": "잘못된 배율 인수 컨트롤러 주소",
     "minAssetsCount": "최소 {num}개의 자산이 필요합니다",
     "maxAssetsCount": "최대 {num}개의 자산만 허용됩니다",
     "negativePercentage": "퍼센티지는 양수여야합니다",
+    "scalingFactorTooLow": "배율 인수가 너무 낮음",
     "percentageSum": "퍼센티지의 합이 100이 아닙니다",
     "depositNoBalance": "입금할 자산이 없습니다",
     "negativeSlippage": "슬리피지가 음수입니다",
@@ -350,16 +375,16 @@
     "wallet": "Keplr 지갑",
     "extension": "Keplr 브라우저 익스텐션",
     "walletConnect": "WalletConnect",
-    "mobile": "Keplr Mobile"
+    "mobile": "Keplr 이동하는"
   },
-  "connectDisclaimer": "By connecting a wallet, you acknowledge that you have read and understand the Osmosis",
+  "connectDisclaimer": "지갑을 연결함으로써 귀하는 Osmosis를 읽고 이해했음을 인정합니다",
   "protocolDisclaimer": "프로토콜 면책 조항",
   "Transaction Failed": "전송 실패",
   "Transaction Successful": "전송 성공",
   "Transaction Broadcasting": "전송 진행중",
   "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.": "교환에 실패했습니다. 교환에 필요한 유동성이 충분하지 않을 수 있습니다. 슬리피지를 조정하고 다시 시도해주세요.",
   "Waiting for transaction to be included in the block": "트랜잭션이 블록에 포함중입니다",
-  "view explorer": "블록 탐색기 보기",
+  "view explorer": "블록 익스플로러 보기",
   "Unknown error": "알 수 없는 에러",
   "Request rejected": "요청이 거부됨",
   "Amount is empty": "수량이 비어있습니다",

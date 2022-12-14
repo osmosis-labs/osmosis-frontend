@@ -24,8 +24,10 @@
     "error": {
       "findCurrency": "Para birimi bulunamadı {currency}"
     },
-    "wrapNativeLink": "{platformName}'ta {fromDenom}'yi {toDenom}'ye dönüştürün",
-    "waitTime": "{minutes} dakika"
+    "autoRouter": "Optimize Rota",
+    "routerTooltipFee": "Ücret",
+    "autoRouterToggle": { "show": "Göstermek", "hide": "Saklamak" },
+    "pool": "Havuz #{id}"
   },
   "pools": {
     "title": "Aktif Havuzlar",
@@ -81,8 +83,13 @@
     "createPool": {
       "title": "Yeni Havuz Oluştur",
       "button": "Yeni Havuz Oluştur",
+      "weightedPool": "Ağırlıklı havuz",
+      "stablePool": "Ahır havuzu",
       "step": {
-        "one": "Adım {step} / {nbStep} - Token oranlarını ayarlayın",
+        "one": {
+          "weighted": "Adım {step} / {nbStep} - Token oranlarını ayarlayın",
+          "stable": "Adım {step} / {nbStep} - Ölçeklendirme faktörlerini ayarlayın"
+        },
         "two": "Adım {step} / {nbStep} - Eklenecek miktarı girin",
         "three": "Adım {step} / {nbStep} - Havuz oranını ve token miktarını onaylayın"
       },
@@ -96,6 +103,7 @@
       "amount": "Miktar",
       "token": "Token",
       "swapFee": "Takas Ücreti Belirle",
+      "scalingFactorController": "Ölçeklendirme faktörü denetleyicisini ayarla (isteğe bağlı)",
       "undersandCost": "Yeni havuz oluşturmanın, {POOL_CREATION_FEE} 'ya mâl olacağını anlıyorum.",
       "interestedCreate": "Yeni bir havuz oluşturmak mı istiyorsunuz?",
       "startProcess": "İşlemi başlatmak için buraya tıklayın"
@@ -105,6 +113,7 @@
     "title": "Havuz #{id}",
     "swap": "Tokenleri Takas Et",
     "superfluidEnabled": "Superfluid staking etkin",
+    "stableswapEnabled": "Stableswap etkin",
     "24hrTradingVolume": "24s İşlem hacmi",
     "liquidity": "Havuzdaki likidite",
     "swapFee": "Takas ücreti",
@@ -143,6 +152,7 @@
     "delegated": "delege edilen",
     "undelegating": "delegasyonu bozulan",
     "commission": "komisyon",
+    "numDaysRemaining": "{numDays} gün kaldı",
     "from": "kimden",
     "swapFees": "takas ücretleri",
     "7davg": "(7g ort)"
@@ -158,7 +168,8 @@
     "allAssets": "Tüm varlıklar",
     "singleAsset": "Tek varlık",
     "available": "Kullanılabilir",
-    "autoswapCaption": "Tek bir varlıkla likidite eklemek için otomatik takası kullanın."
+    "autoswapCaption": "Tek bir varlıkla likidite eklemek için otomatik takası kullanın.",
+    "stablecoinWarning": "{mechanism} destekli bir stabilcoin olan {denom}'a likidite ekliyorsunuz."
   },
   "lockToken": {
     "title": "LP Hisselerini Bağla",
@@ -193,9 +204,15 @@
     "bondedAssets": "Bağlı",
     "stakedAssets": "Stake Edilmiş OSMO",
     "myPools": "Havuzlarım",
+    "transferAssetSelect": {
+      "deposit": "Yatır",
+      "withdraw": "Çek",
+      "network": "Ağ",
+      "buttonNext": "Sonraki"
+    },
     "poolCards": {
       "APR": "APR",
-      "FeeAPY": "Fee APY",
+      "FeeAPY": "APY ücreti",
       "liquidity": "Havuz Likiditesi",
       "bonded": "Bağlı",
       "myLiquidity": "Likiditem"
@@ -203,6 +220,10 @@
     "ibcTransfer": {
       "titleWithdraw": "{coinDenom} Çek",
       "titleDeposit": "{coinDenom} Yatır",
+      "channelCongested": "Kanal çağrıldı",
+      "channelCongestedWithdraw": "Çek (Kanal çağrıldı)",
+      "channelCongestedDeposit": "Yatır (Kanal çağrıldı)",
+      "channelBlocked": "Kanal engellendi",
       "selectAmount": "Miktar Seç",
       "estimatedTime": "Takribi Süre",
       "waitTime": "20 saniye",
@@ -218,6 +239,32 @@
       "amoutDeposit": "Yatırılacak Miktar",
       "availableBalance": "Kullanılabilir bakiye:",
       "MAX": "MAKS"
+    },
+    "transfer": {
+      "titleWithdraw": "{coinDenom} Çek",
+      "titleDeposit": "{coinDenom} Yatır",
+      "warnDepositAddressDifferent": "Uyarı: {address} te seçtiğiniz adres, son yatırdığınız adresten farklı.",
+      "from": "Ağından",
+      "to": "Ağına",
+      "via": "vasıtasıyla",
+      "loading": "Yükleniyor",
+      "availableOn": "{network} ağında mevcut",
+      "availableMobile": "Kullanılabilir",
+      "transferFee": "İşlem Ücreti",
+      "errors": {
+        "reconnectWallet": "{walletName} tekrar bağlan",
+        "wrongNetworkInWallet": "{walletName} cüzdanda ağ hatası",
+        "insufficientFee": "Yetersiz Ücret",
+        "insufficientBal": "Yetersiz Bakiye"
+      },
+      "wrapNativeLink": "{platformName} üzerinde {fromDenom} dan {fromDenom} a çevir.",
+      "waitTime": "{minutes} dakika"
+    },
+    "selectAssetSource": {
+      "titleWithdraw": "Adrese çek",
+      "titleDeposit": "Adresten yatır",
+      "next": "Sonraki",
+      "installWallet": "{walletName} yükle"
     },
     "table": {
       "depositButton": "Yatır",
@@ -307,14 +354,17 @@
     "negativeSwapFee": "Takas ücreti negatif",
     "highSwapFee": "Takas ücreti çok yüksek",
     "invalidSwapFee": "Takas ücreti geçersiz",
+    "invalidScalingFactorControllerAddress": "Geçersiz ölçeklendirme faktörü denetleyici adresi",
     "minAssetsCount": "En az {num} varlık gerekli",
     "maxAssetsCount": "En fazla {num} varlık olabilir",
     "negativePercentage": "Yüzde pozitif olmalı",
+    "scalingFactorTooLow": "Ölçeklendirme faktörü çok düşük",
     "percentageSum": "Yüzdeler toplamı 100'e eşit değil",
     "depositNoBalance": "Yatıracak varlığınız yok",
     "negativeSlippage": "Slipaj negatif olamaz",
     "invalidSlippage": "Geçersiz slipaj",
     "noSendCurrency": "Gönderilecek varlık seçilmedi",
+    "insufficientBal": "Yetersiz bakiye",
     "notInitialized": "Başlatılmadı",
     "calculatingShareOutAmount": "Miktar hesaplamasında sorun",
     "noAvailableShares": "Kullanılabilir {denom} hissesi yok",

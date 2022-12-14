@@ -72,7 +72,7 @@ export const PoolsOverview: FunctionComponent<{} & CustomClasses> = ({
           {osmoPrice?.toString()}
         </h2>
       </div>
-      <div className="flex flex-col gap-5 md:gap-2 bg-osmoverse-1000/80 shadow-2xl z-50 pr-2 rounded-2xl">
+      <div className="flex flex-col gap-5 md:gap-2 bg-osmoverse-1000/80 shadow-2xl z-40 pr-2 rounded-2xl">
         <h6 className="md:font-subtitle1 md:text-subtitle1">
           {t("pools.rewardDistribution")}
         </h6>

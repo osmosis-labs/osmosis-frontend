@@ -16,8 +16,10 @@ import { ObservableQueryPoolFeesMetrics } from "../../queries-external";
 import { IPriceStore } from "../../price";
 import { UserConfig } from "../user-config";
 
-export type BondableDuration = {
+export type BondDuration = {
   duration: Duration;
+  /** Bondable if there's any active gauges for this duration. */
+  bondable: boolean;
   userShares: CoinPretty;
   userUnlockingShares?: { shares: CoinPretty; endTime?: Date };
   aggregateApr: RatePretty;
@@ -30,6 +32,8 @@ export type BondableDuration = {
   }[];
   /** Both `delegated` and `undelegating` will be `undefined` if the user may "Go superfluid". */
   superfluid?: {
+    /** Duration users can bond to for superfluid participation. Assumed to be longest duration on lock durations chain param. */
+    duration: Duration;
     apr: RatePretty;
     commission?: RatePretty;
     validatorMoniker?: string;
@@ -61,10 +65,10 @@ export class ObservableBondLiquidityConfig extends UserConfig {
    *  2. Liquidity needs to be bonded
    */
   readonly calculateBondLevel = computedFn(
-    (bondableDurations: BondableDuration[]): 1 | 2 | undefined => {
+    (bondDurations: BondDuration[]): 1 | 2 | undefined => {
       if (
         this.poolDetails?.userAvailableValue.toDec().gt(new Dec(0)) &&
-        bondableDurations.length > 0
+        bondDurations.some((duration) => duration.bondable)
       )
         return 2;
 
@@ -72,14 +76,18 @@ export class ObservableBondLiquidityConfig extends UserConfig {
     }
   );
 
-  /** Gets all available durations for user to bond in, with a breakdown of the assets incentivizing the duration. Internal OSMO incentives & swap fees included in breakdown. */
-  readonly getBondableAllowedDurations = computedFn(
+  /** Gets all durations for user to bond in, or has locked tokens for, with a breakdown of the assets incentivizing the duration. Internal OSMO incentives & swap fees included in breakdown. */
+  readonly getAllowedBondDurations = computedFn(
     (
       findCurrency: (denom: string) => AppCurrency | undefined,
       allowedGauges: { gaugeId: string; denom: string }[] | undefined
-    ): BondableDuration[] => {
+    ): BondDuration[] => {
       const poolId = this.poolDetails.pool.id;
       const gauges = this.superfluidPool.gaugesWithSuperfluidApr;
+
+      const queryLockedCoin = this.queries.queryAccountLocked.get(
+        this.bech32Address
+      );
 
       const externalGauges = allowedGauges
         ? this.poolDetails.queryAllowedExternalGauges(
@@ -91,165 +99,186 @@ export class ObservableBondLiquidityConfig extends UserConfig {
       /** Set of all available durations. */
       const durationsMsSet = new Set<number>();
 
+      // Get all durations for locks with this pool's share currency
+      (
+        queryLockedCoin.lockedCoins as {
+          amount: CoinPretty;
+          duration: Duration;
+        }[]
+      )
+        .concat(queryLockedCoin.unlockingCoins)
+        .forEach((coin) => {
+          if (
+            coin.amount.currency.coinMinimalDenom ===
+            this.poolDetails.poolShareCurrency.coinMinimalDenom
+          ) {
+            durationsMsSet.add(coin.duration.asMilliseconds());
+          }
+        });
+
       (gauges as { duration: Duration }[])
         .concat(externalGauges as { duration: Duration }[])
         .forEach((gauge) => {
           durationsMsSet.add(gauge.duration.asMilliseconds());
         });
 
-      return Array.from(durationsMsSet.values()).map((durationMs) => {
-        const curDuration = dayjs.duration({
-          milliseconds: durationMs,
-        });
+      return Array.from(durationsMsSet.values())
+        .sort((a, b) => b - a)
+        .reverse()
+        .map((durationMs) => {
+          const curDuration = dayjs.duration({
+            milliseconds: durationMs,
+          });
 
-        /** There is only one internal gauge of a chain-configured lockable duration (1,7,14 days). */
-        const internalGaugeOfDuration = gauges.find(
-          (gauge) => gauge.duration.asMilliseconds() === durationMs
-        );
-        const externalGaugesOfDuration = externalGauges.reduce<ExternalGauge[]>(
-          (gauges, externalGauge) => {
+          /** There is only one internal gauge of a chain-configured lockable duration (1,7,14 days). */
+          const internalGaugeOfDuration = gauges.find(
+            (gauge) => gauge.duration.asMilliseconds() === durationMs
+          );
+          const externalGaugesOfDuration = externalGauges.reduce<
+            ExternalGauge[]
+          >((gauges, externalGauge) => {
             if (externalGauge.duration.asMilliseconds() === durationMs) {
               gauges.push(externalGauge);
             }
             return gauges;
-          },
-          []
-        );
+          }, []);
+          const lockedUserShares = queryLockedCoin.getLockedCoinWithDuration(
+            this.poolDetails.poolShareCurrency,
+            curDuration
+          ).amount;
 
-        const queryLockedCoin = this.queries.queryAccountLocked.get(
-          this.bech32Address
-        );
-        const userShares = queryLockedCoin.getLockedCoinWithDuration(
-          this.poolDetails.poolShareCurrency,
-          curDuration
-        ).amount;
-        const allUnlockingCoins = queryLockedCoin.getUnlockingCoinWithDuration(
-          this.poolDetails.poolShareCurrency,
-          curDuration
-        );
-        const userUnlockingShares =
-          allUnlockingCoins.length > 0
-            ? {
-                // only return soonest unlocking shares
-                shares:
-                  allUnlockingCoins[0]?.amount ??
-                  new CoinPretty(this.poolDetails.poolShareCurrency, 0),
-                endTime: allUnlockingCoins[0]?.endTime,
+          const unlockingUserShares =
+            queryLockedCoin.getUnlockingCoinWithDuration(
+              this.poolDetails.poolShareCurrency,
+              curDuration
+            );
+          const userUnlockingShares =
+            unlockingUserShares.length > 0
+              ? {
+                  // only return soonest unlocking shares
+                  shares:
+                    unlockingUserShares[0].amount ??
+                    new CoinPretty(this.poolDetails.poolShareCurrency, 0),
+                  endTime: unlockingUserShares[0].endTime,
+                }
+              : undefined;
+
+          const incentivesBreakdown: BondDuration["incentivesBreakdown"] = [];
+
+          // push single internal incentive for current duration
+          if (internalGaugeOfDuration) {
+            const { apr } = internalGaugeOfDuration;
+
+            const fiatCurrency = this.priceStore.getFiatCurrency(
+              this.priceStore.defaultVsCurrency
+            );
+
+            if (fiatCurrency) {
+              const dailyPoolReward =
+                this.queries.queryIncentivizedPools.computeDailyRewardForDuration(
+                  poolId,
+                  curDuration,
+                  this.priceStore,
+                  fiatCurrency
+                );
+
+              if (dailyPoolReward) {
+                incentivesBreakdown.push({
+                  dailyPoolReward,
+                  apr,
+                });
               }
-            : undefined;
-
-        const incentivesBreakdown: BondableDuration["incentivesBreakdown"] = [];
-
-        // push single internal incentive for current duration
-        if (internalGaugeOfDuration) {
-          const { apr } = internalGaugeOfDuration;
-
-          const fiatCurrency = this.priceStore.getFiatCurrency(
-            this.priceStore.defaultVsCurrency
-          );
-
-          if (fiatCurrency) {
-            const dailyPoolReward =
-              this.queries.queryIncentivizedPools.computeDailyRewardForDuration(
-                poolId,
-                curDuration,
-                this.priceStore,
-                fiatCurrency
-              );
-
-            if (dailyPoolReward) {
-              incentivesBreakdown.push({
-                dailyPoolReward,
-                apr,
-              });
             }
           }
-        }
 
-        // push external incentives to current duration
-        externalGaugesOfDuration.forEach(({ id }) => {
-          const queryGauge = this.queries.queryGauge.get(id);
-          const allowedGauge = allowedGauges?.find(
-            ({ gaugeId }) => gaugeId === id
-          );
-          if (!allowedGauge) return;
+          // push external incentives to current duration
+          externalGaugesOfDuration.forEach(({ id }) => {
+            const queryGauge = this.queries.queryGauge.get(id);
+            const allowedGauge = allowedGauges?.find(
+              ({ gaugeId }) => gaugeId === id
+            );
+            if (!allowedGauge) return;
 
-          const currency = findCurrency(allowedGauge.denom);
-          const fiatCurrency = this.priceStore.getFiatCurrency(
-            this.priceStore.defaultVsCurrency
-          );
-          if (!currency || !fiatCurrency) return;
+            const currency = findCurrency(allowedGauge.denom);
+            const fiatCurrency = this.priceStore.getFiatCurrency(
+              this.priceStore.defaultVsCurrency
+            );
+            if (!currency || !fiatCurrency) return;
 
-          incentivesBreakdown.push({
-            dailyPoolReward: queryGauge
-              .getRemainingCoin(currency)
-              .quo(new Dec(queryGauge.remainingEpoch)),
-            apr: this.queries.queryIncentivizedPools.computeExternalIncentiveGaugeAPR(
-              poolId,
-              allowedGauge.gaugeId,
-              allowedGauge.denom,
-              this.priceStore,
-              fiatCurrency
-            ),
+            incentivesBreakdown.push({
+              dailyPoolReward: queryGauge
+                .getRemainingCoin(currency)
+                .quo(new Dec(queryGauge.remainingEpoch)),
+              apr: this.queries.queryIncentivizedPools.computeExternalIncentiveGaugeAPR(
+                poolId,
+                allowedGauge.gaugeId,
+                allowedGauge.denom,
+                this.priceStore
+              ),
+              numDaysRemaining: queryGauge.remainingEpoch,
+            });
           });
-        });
 
-        // add superfluid data if highest duration
-        const sfsDuration = this.poolDetails.longestDuration;
-        let superfluid: BondableDuration["superfluid"] | undefined;
-        if (
-          this.superfluidPool.isSuperfluid &&
-          this.superfluidPool.superfluid &&
-          sfsDuration &&
-          curDuration.asSeconds() === sfsDuration.asSeconds()
-        ) {
-          const delegation =
-            (this.superfluidPool.superfluid.delegations?.length ?? 0) > 0
-              ? this.superfluidPool.superfluid.delegations?.[0]
-              : undefined;
-          const undelegation =
-            (this.superfluidPool.superfluid.undelegations?.length ?? 0) > 0
-              ? this.superfluidPool.superfluid.undelegations?.[0]
-              : undefined;
+          // add superfluid data if highest duration
+          const sfsDuration = this.poolDetails.longestDuration;
+          let superfluid: BondDuration["superfluid"] | undefined;
+          if (
+            this.superfluidPool.isSuperfluid &&
+            this.superfluidPool.superfluid &&
+            sfsDuration &&
+            curDuration.asSeconds() === sfsDuration.asSeconds()
+          ) {
+            const delegation =
+              (this.superfluidPool.superfluid.delegations?.length ?? 0) > 0
+                ? this.superfluidPool.superfluid.delegations?.[0]
+                : undefined;
+            const undelegation =
+              (this.superfluidPool.superfluid.undelegations?.length ?? 0) > 0
+                ? this.superfluidPool.superfluid.undelegations?.[0]
+                : undefined;
 
-          superfluid = {
-            apr: this.superfluidPool.superfluidApr,
-            commission: delegation?.validatorCommission,
-            delegated: !this.superfluidPool.superfluid.upgradeableLpLockIds
-              ? delegation?.amount
-              : undefined,
-            undelegating: !this.superfluidPool.superfluid.upgradeableLpLockIds
-              ? undelegation?.amount
-              : undefined,
-            validatorMoniker: delegation?.validatorName,
-            validatorLogoUrl: delegation?.validatorImgSrc,
+            superfluid = {
+              duration: sfsDuration,
+              apr: this.superfluidPool.superfluidApr,
+              commission: delegation?.validatorCommission,
+              delegated: !this.superfluidPool.superfluid.upgradeableLpLockIds
+                ? delegation?.amount
+                : undefined,
+              undelegating: !this.superfluidPool.superfluid.upgradeableLpLockIds
+                ? undelegation?.amount
+                : undefined,
+              validatorMoniker: delegation?.validatorName,
+              validatorLogoUrl: delegation?.validatorImgSrc,
+            };
+          }
+
+          let aggregateApr = incentivesBreakdown.reduce<RatePretty>(
+            (sum, { apr }) => sum.add(apr),
+            new RatePretty(0)
+          );
+          const swapFeeApr = this.queryFeeMetrics.get7dPoolFeeApr(
+            this.poolDetails.pool,
+            this.priceStore
+          );
+          aggregateApr = aggregateApr.add(swapFeeApr);
+          if (superfluid) aggregateApr = aggregateApr.add(superfluid.apr);
+
+          return {
+            duration: curDuration,
+            bondable:
+              internalGaugeOfDuration !== undefined ||
+              externalGaugesOfDuration.length > 0,
+            userShares: lockedUserShares,
+            userUnlockingShares,
+            aggregateApr,
+            swapFeeApr,
+            swapFeeDailyReward: this.queryFeeMetrics
+              .getPoolFeesMetrics(poolId, this.priceStore)
+              .feesSpent7d.quo(new Dec(7)),
+            incentivesBreakdown,
+            superfluid,
           };
-        }
-
-        let aggregateApr = incentivesBreakdown.reduce<RatePretty>(
-          (sum, { apr }) => sum.add(apr),
-          new RatePretty(0)
-        );
-        const swapFeeApr = this.queryFeeMetrics.get7dPoolFeeApr(
-          this.poolDetails.pool,
-          this.priceStore
-        );
-        aggregateApr = aggregateApr.add(swapFeeApr);
-        if (superfluid) aggregateApr = aggregateApr.add(superfluid.apr);
-
-        return {
-          duration: curDuration,
-          userShares,
-          userUnlockingShares,
-          aggregateApr,
-          swapFeeApr,
-          swapFeeDailyReward: this.queryFeeMetrics
-            .getPoolFeesMetrics(poolId, this.priceStore)
-            .feesSpent7d.quo(new Dec(7)),
-          incentivesBreakdown,
-          superfluid,
-        };
-      });
+        });
     }
   );
 }

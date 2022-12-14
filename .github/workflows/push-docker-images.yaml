@@ -52,7 +52,7 @@ jobs:
           file: ./docker/Dockerfile
           context: .
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           tags: ${{ env.FRONTEND_DOCKER_REPOSITORY }}:${{ env.SHA }}, ${{ env.FRONTEND_DOCKER_REPOSITORY }}:latest
       -
         name: Build and push (frontier)
@@ -61,7 +61,7 @@ jobs:
           file: ./docker/Dockerfile.frontier
           context: .
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           tags: ${{ env.FRONTIER_DOCKER_REPOSITORY }}:${{ env.SHA }}, ${{ env.FRONTIER_DOCKER_REPOSITORY }}:latest
       -
         name: Build and push (testnet)
@@ -70,5 +70,5 @@ jobs:
           file: ./docker/Dockerfile.testnet
           context: .
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           tags: ${{ env.TESTNET_DOCKER_REPOSITORY }}:${{ env.SHA }}, ${{ env.TESTNET_DOCKER_REPOSITORY }}:latest

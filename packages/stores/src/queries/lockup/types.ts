@@ -15,6 +15,7 @@ export type AccountLockedLongerDuration = {
     ID: string;
     owner: string;
     duration: string;
+    /** UTC */
     end_time: string;
     coins: {
       denom: string;

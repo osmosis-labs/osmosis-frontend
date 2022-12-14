@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo, useCallback, useState } from "react";
@@ -43,6 +43,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
     const t = useTranslation();
 
     const { chainId } = chainStore.osmosis;
+    const queryCosmos = queriesStore.get(chainId).cosmos;
     const queryOsmosis = queriesStore.get(chainId).osmosis!;
     const account = accountStore.getAccount(chainId);
 
@@ -120,6 +121,59 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
             )
           );
 
+          // sum aprs for highest duration
+          const internalIncentiveApr =
+            queryOsmosis.queryIncentivizedPools.computeMostApr(
+              pool.id,
+              priceStore
+            );
+          const swapFeeApr =
+            queriesExternalStore.queryGammPoolFeeMetrics.get7dPoolFeeApr(
+              pool,
+              priceStore
+            );
+          const whitelistedGauges =
+            ExternalIncentiveGaugeAllowList?.[pool.id] ?? undefined;
+          const highestDuration =
+            queryOsmosis.queryLockableDurations.highestDuration;
+
+          const externalApr = (whitelistedGauges ?? []).reduce(
+            (sum, { gaugeId, denom }) => {
+              const gauge = queryOsmosis.queryGauge.get(gaugeId);
+
+              if (
+                !gauge ||
+                !highestDuration ||
+                gauge.lockupDuration.asMilliseconds() !==
+                  highestDuration.asMilliseconds()
+              ) {
+                return sum;
+              }
+
+              return sum.add(
+                queryOsmosis.queryIncentivizedPools.computeExternalIncentiveGaugeAPR(
+                  pool.id,
+                  gaugeId,
+                  denom,
+                  priceStore
+                )
+              );
+            },
+            new RatePretty(0)
+          );
+          const superfluidApr =
+            queryOsmosis.querySuperfluidPools.isSuperfluidPool(pool.id)
+              ? new RatePretty(
+                  queryCosmos.queryInflation.inflation
+                    .mul(
+                      queryOsmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
+                        pool.id
+                      )
+                    )
+                    .moveDecimalPointLeft(2)
+                )
+              : new RatePretty(0);
+
           return {
             pool,
             ...queriesExternalStore.queryGammPoolFeeMetrics.getPoolFeesMetrics(
@@ -139,15 +193,10 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
                     .getAvailableGammShare(account.bech32Address, pool.id)
                     .quo(pool.totalShare)
                 ),
-            apr: queryOsmosis.queryIncentivizedPools
-              .computeMostApr(pool.id, priceStore)
-              .add(
-                // swap fees
-                queriesExternalStore.queryGammPoolFeeMetrics.get7dPoolFeeApr(
-                  pool,
-                  priceStore
-                )
-              )
+            apr: internalIncentiveApr
+              .add(swapFeeApr)
+              .add(externalApr)
+              .add(superfluidApr)
               .maxDecimals(0),
             poolName: pool.poolAssets
               .map((asset) => asset.amount.currency.coinDenom)
@@ -165,6 +214,8 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
         chainId,
         externalIncentivizedPools,
         queryOsmosis.queryIncentivizedPools.response,
+        queryOsmosis.querySuperfluidPools.response,
+        queryCosmos.queryInflation.isFetching,
         queriesExternalStore.queryGammPoolFeeMetrics.response,
         queryOsmosis.queryGammPools.response,
         priceStore,
@@ -309,8 +360,8 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
                 poolName: poolWithFeeMetrics.pool.poolAssets
                   .map((poolAsset) => poolAsset.amount.denom)
                   .join(" / "),
-                poolWeight: poolWithFeeMetrics.pool.poolAssets
-                  .map((poolAsset) => poolAsset.weightFraction.toString())
+                poolWeight: poolWithFeeMetrics.pool.weightedPoolInfo?.assets
+                  .map((poolAsset) => poolAsset.weightFraction?.toString())
                   .join(" / "),
                 isSuperfluidPool:
                   queryOsmosis.querySuperfluidPools.isSuperfluidPool(

@@ -89,7 +89,7 @@ const TransferButton: FunctionComponent<{
     </a>
   ) : (
     <button
-      className="flex items-center gap-1 text-wosmongton-200 hover:text-rust-300 transition-colors subtitle1"
+      className="flex items-center gap-1 text-wosmongton-200 hover:text-rust-300 transition-colors subtitle1 disabled:opacity-30 hover:disabled:text-wosmongton-200"
       onClick={action}
       disabled={disabled}
       onMouseEnter={() => setIsHovering(true)}
@@ -97,19 +97,25 @@ const TransferButton: FunctionComponent<{
     >
       <span>{label}</span>
       {isHovering ? (
-        <Image
-          alt="chevron"
-          src="/icons/chevron-right-rust.svg"
-          height={13}
-          width={13}
-        />
+        <div className="h-fit shrink-0">
+          <Image
+            alt="chevron"
+            src="/icons/chevron-right-rust.svg"
+            height={13}
+            width={13}
+            priority={true}
+          />
+        </div>
       ) : (
-        <Image
-          alt="chevron"
-          src="/icons/chevron-right.svg"
-          height={13}
-          width={13}
-        />
+        <div className="h-fit shrink-0">
+          <Image
+            alt="chevron"
+            src="/icons/chevron-right.svg"
+            height={13}
+            width={13}
+            priority={true}
+          />
+        </div>
       )}
     </button>
   );

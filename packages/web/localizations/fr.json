@@ -12,7 +12,7 @@
       "slippage": "Tolérance de glissement",
       "slippageInfo": "Votre transaction sera annulée si le prix dépasse le pourcentage en votre défaveur."
     },
-    "available": "Disponnible",
+    "available": "Disponible",
     "MAX": "MAX",
     "HALF": "MOITIÉ",
     "button": "Échanger",
@@ -23,7 +23,11 @@
     "minimumSlippage": "Minimum reçu après glissement ({slippage})",
     "error": {
       "findCurrency": "Impossible de trouver la devise {currency}"
-    }
+    },
+    "autoRouter": "Itinéraire optimisé",
+    "routerTooltipFee": "Frais",
+    "autoRouterToggle": { "show": "Montrer", "hide": "Cacher" },
+    "pool": "Bassin n°{id}"
   },
   "pools": {
     "title": "Bassins actifs",
@@ -32,7 +36,7 @@
     "rewardDistribution": "Distribution de la récompence dans",
     "myPools": "Mes Bassins",
     "APR": "TAP",
-    "available": "Disponnible",
+    "available": "Disponible",
     "liquidity": "Liquidité Bassin",
     "bonded": "Cautionné",
     "incentivized": "Bassins incités",
@@ -79,8 +83,13 @@
     "createPool": {
       "title": "Créer un nouveau bassin",
       "button": "Créer un nouveau bassin",
+      "weightedPool": "Piscine pondérée",
+      "stablePool": "Piscine stable",
       "step": {
-        "one": "Étape {step} / {nbStep} - Configurer le ratio des jetons",
+        "one": {
+          "weighted": "Étape {step} / {nbStep} - Configurer le ratio des jetons",
+          "stable": "Étape {step} / {nbStep} - Configurer les facteurs d'échelle"
+        },
         "two": "Étape {step} / {nbStep} - Entrer le montant à ajouter",
         "three": "Étape {step} / {nbStep} - Comfirmer le ratio du bassin et le montant des jetons"
       },
@@ -90,10 +99,11 @@
       "buttonNext": "Suivant",
       "buttonBack": "Retour",
       "buttonAddToken": "Ajouter un nouveau jeton",
-      "available": "Disponnible",
+      "available": "Disponible",
       "amount": "Montant",
       "token": "Jeton",
       "swapFee": "Définit les frais d'échange",
+      "scalingFactorController": "Définir le contrôleur de facteur d'échelle (facultatif)",
       "undersandCost": "Je comprends que la création d'un nouveau bassin coûtera {POOL_CREATION_FEE}.",
       "interestedCreate": "Intéressé par la création d'un nouveau bassin ?",
       "startProcess": "Cliquez ici pour démarrer le processus"
@@ -103,6 +113,7 @@
     "title": "Bassin n°{id}",
     "swap": "Échange de jeton",
     "superfluidEnabled": "Délégation Superfluide activée",
+    "stableswapEnabled": "Stableswap activé",
     "24hrTradingVolume": "Volume de transactions sur 24h",
     "liquidity": "Liquidité du bassin",
     "swapFee": "Frais d'échange",
@@ -131,7 +142,7 @@
     "bonded": "Bloqués",
     "showDetails": "Afficher details",
     "collapseDetails": "Cacher details",
-    "sharesAvailableIn": "Disponnible dans",
+    "sharesAvailableIn": "Disponible dans",
     "unbonding": "Déblocage",
     "superfluidEarnMore": "Gagner {rate} de plus. Utilisez le superfluide",
     "incentives": "Incitations",
@@ -141,6 +152,7 @@
     "delegated": "Déléguer",
     "undelegating": "Désengager",
     "commission": "commission",
+    "numDaysRemaining": "{numDays} jours restants",
     "from": "de",
     "swapFees": "frais d'échange",
     "7davg": "(7j moy)"
@@ -155,14 +167,14 @@
     "titleInPool": "Ajouter des liquidités au pool {poolId}",
     "allAssets": "Tous les actifs",
     "singleAsset": "Actif unique",
-    "available": "Disponnible",
+    "available": "Disponible",
     "autoswapCaption": "Utilisez l'échange automatique pour ajouter de la liquidité avec un seul actif."
   },
   "lockToken": {
     "title": "Bloquer les actifs RL",
     "titleInPool": "Bloquer les actifs dans {poolId}",
     "selectPeriod": "Sélectionner la période de deblocage",
-    "availableToken": "Disponnible",
+    "availableToken": "Disponible",
     "amountToBond": "Montant à bloquer",
     "superfluidStake": "Jalonnement superfluide",
     "bondingRequirement": "{numDays} jour de blocage requis",
@@ -207,6 +219,10 @@
     "ibcTransfer": {
       "titleWithdraw": "Retirer {coinDenom}",
       "titleDeposit": "Déposer {coinDenom}",
+      "channelCongested": "Canal conjecturé",
+      "channelCongestedWithdraw": "Retirer (Canal conjecturé)",
+      "channelCongestedDeposit": "Déposer (Canal conjecturé)",
+      "channelBlocked": "Chaîne bloquée",
       "selectAmount": "Sélectionnez le montant",
       "estimatedTime": "Temps estimé",
       "waitTime": "20 secondes",
@@ -263,7 +279,7 @@
       },
       "columns": {
         "assetChain": "Actif / Chaine",
-        "balance": "Fonds",
+        "balance": "Solde",
         "transfer": "Transfert",
         "deposit": "Déposer",
         "withdraw": "Retirer"
@@ -271,7 +287,7 @@
       "sort": {
         "symbol": "Devise",
         "network": "Réseau",
-        "balance": "Fonds"
+        "balance": "Solde"
       }
     },
     "historyTable": {
@@ -284,7 +300,7 @@
         "transactionHash": "Hash Transaction",
         "type": "Type",
         "amount": "Montant",
-        "status": "Status",
+        "status": "Statut",
         "deposit": "Déposer",
         "withdraw": "Retirer"
       }
@@ -336,19 +352,21 @@
     "insufficientAmount": "Le montant est insuffisant",
     "negativeSwapFee": "Les frais d'échange sont négatifs",
     "highSwapFee": "Les frais d'échange sont trop importants",
+    "invalidScalingFactorControllerAddress": "Adresse de contrôleur de facteur d'échelle invalide",
     "invalidSwapFee": "Les frais d'échange est invalide",
     "minAssetsCount": "Un minimum de {num} actif est requis",
     "maxAssetsCount": "Un maximum de {num} actif est requis",
     "negativePercentage": "Le pourcentage doit être positif",
+    "scalingFactorTooLow": "Facteur d'échelle trop faible",
     "percentageSum": "La somme des pourcentages n'est pas égale à 100",
     "depositNoBalance": "Vous n'avez pas d'actifs à déposer",
     "negativeSlippage": "Le glissement ne peut être négatif",
-    "invalidSlippage": "Invalid slippage",
-    "noSendCurrency": "Glissement invalide",
+    "invalidSlippage": "Glissement invalide",
+    "noSendCurrency": "Devise à envoyer non définie",
     "insufficientBal": "Solde insuffisant",
     "notInitialized": "Non initialisé",
-    "calculatingShareOutAmount": "Problème de calcul du montant de la sortie",
-    "noAvailableShares": "Aucun actif {denom} disponnible",
+    "calculatingShareOutAmount": "Problème de calcul du montant de sortie",
+    "noAvailableShares": "Aucun actif {denom} disponible",
     "generic": "Erreur"
   },
   "connectWallet": "Connecter le portefeuille",
@@ -363,7 +381,7 @@
   "protocolDisclaimer": "Clause de non-responsabilité du protocole",
   "Transaction Failed": "Échec de la transaction",
   "Transaction Successful": "Succès de la transaction",
-  "Transaction Broadcasting": "Diffustion de la transaction",
+  "Transaction Broadcasting": "Émission de la transaction",
   "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.": "L'échange a échoué. La liquitité n'est peut-être pas suffisante. Essayez d'ajuster le glissement autorisé.",
   "Waiting for transaction to be included in the block": "Attente de l'inclusion de la transaction dans le bloc",
   "view explorer": "Voir dans l'exploreur",

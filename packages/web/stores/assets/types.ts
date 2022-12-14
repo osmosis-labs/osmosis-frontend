@@ -12,6 +12,9 @@ export interface IBCAsset {
   // In some reasons, ibc channel is in unstable status.
   // Disable the deposit, withdraw button and show the tooltip.
   isUnstable?: boolean;
+
+  /** Is asset incentivized or strategically worth including in main vs frontier. */
+  isVerified?: boolean;
   // If the asset is from ics20-cw20
   ics20ContractAddress?: string;
 

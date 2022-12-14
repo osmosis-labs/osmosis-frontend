@@ -10,7 +10,7 @@ import {
   useMemo,
 } from "react";
 import classNames from "classnames";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, IntPretty, RatePretty } from "@keplr-wallet/unit";
 import { Staking } from "@keplr-wallet/stores";
 import {
   ObservableAddLiquidityConfig,
@@ -71,7 +71,10 @@ const Pool: FunctionComponent = observer(() => {
     queriesExternalStore.queryAccountsPoolRewards.get(bech32Address);
 
   // eject to pools page if pool does not exist
-  const poolExists = queryOsmosis.queryGammPools.poolExists(poolId as string);
+  const poolExists =
+    poolId !== undefined
+      ? queryOsmosis.queryGammPools.poolExists(poolId as string)
+      : undefined;
   useEffect(() => {
     if (poolExists === false) {
       router.push("/pools");
@@ -89,7 +92,7 @@ const Pool: FunctionComponent = observer(() => {
       poolName: pool?.poolAssets
         .map((poolAsset) => poolAsset.amount.denom)
         .join(" / "),
-      poolWeight: pool?.poolAssets
+      poolWeight: pool?.weightedPoolInfo?.assets
         .map((poolAsset) => poolAsset.weightFraction.toString())
         .join(" / "),
     }),
@@ -129,8 +132,8 @@ const Pool: FunctionComponent = observer(() => {
   const [showSuperfluidValidatorModal, setShowSuperfluidValidatorsModal] =
     useState(false);
   const [showPoolDetails, setShowPoolDetails] = useState(false);
-  const bondableDurations = pool
-    ? bondLiquidityConfig?.getBondableAllowedDurations(
+  const bondDurations = pool
+    ? bondLiquidityConfig?.getAllowedBondDurations(
         (denom) => chainStore.getChain(chainId).forceFindCurrency(denom),
         ExternalIncentiveGaugeAllowList[pool.id]
       ) ?? []
@@ -286,11 +289,11 @@ const Pool: FunctionComponent = observer(() => {
     ],
   });
 
-  const levelCta = bondLiquidityConfig?.calculateBondLevel(bondableDurations);
-  const level2Disabled = bondableDurations.length === 0;
+  const levelCta = bondLiquidityConfig?.calculateBondLevel(bondDurations);
+  const level2Disabled = !bondDurations.some((duration) => duration.bondable);
 
   return (
-    <main className="flex flex-col gap-10 md:gap-4 bg-osmoverse-900 min-h-screen p-8 md:p-4">
+    <main className="max-w-container m-auto flex flex-col gap-10 md:gap-4 bg-osmoverse-900 min-h-screen p-8 md:p-4">
       <Head>
         <title>
           {t("pool.title", { id: poolId ? poolId.toString() : "-" })}
@@ -364,7 +367,7 @@ const Pool: FunctionComponent = observer(() => {
             className={classNames(
               "flex flex-col gap-10 px-10 pt-10 md:px-5 md:pt-7 transition-height duration-300 ease-inOutBack overflow-hidden",
               showPoolDetails
-                ? "h-[230px] xl:h-[300px] lg:h-[520px]"
+                ? "h-[235px] xl:h-[300px] lg:h-[520px]"
                 : "h-[120px] xl:h-[180px] lg:h-[280px]"
             )}
           >
@@ -386,6 +389,17 @@ const Pool: FunctionComponent = observer(() => {
                   <span className="body2 text-superfluid-gradient">
                     {t("pool.superfluidEnabled")}
                   </span>
+                )}
+                {pool?.type === "stable" && (
+                  <div className="flex items-center gap-1.5 body2 text-gradient-positive">
+                    <Image
+                      alt=""
+                      src="/icons/stableswap-pool.svg"
+                      height={24}
+                      width={24}
+                    />
+                    <span>{t("pool.stableswapEnabled")}</span>
+                  </div>
                 )}
               </div>
               <div className="flex items-center gap-10 xl:place-content-between xl:w-full lg:flex-col lg:w-fit lg:items-start">
@@ -419,8 +433,29 @@ const Pool: FunctionComponent = observer(() => {
             </div>
             {pool && (
               <AssetBreakdownChart
-                assets={pool.poolAssets}
-                totalWeight={pool.totalWeight}
+                assets={pool.poolAssets.map((poolAsset) => {
+                  const weights: {
+                    weight: IntPretty;
+                    weightFraction: RatePretty;
+                  } = pool.weightedPoolInfo?.assets.find(
+                    (asset) =>
+                      asset.denom === poolAsset.amount.currency.coinMinimalDenom
+                  ) ?? {
+                    weight: new IntPretty(1), // Assume stable pools have even weight
+                    weightFraction: new RatePretty(
+                      new Dec(1).quo(new Dec(pool.poolAssets.length))
+                    ),
+                  };
+
+                  return {
+                    ...weights,
+                    ...poolAsset,
+                  };
+                })}
+                totalWeight={
+                  pool.weightedPoolInfo?.totalWeight ??
+                  new IntPretty(pool.poolAssets.length)
+                }
               />
             )}
           </div>
@@ -507,7 +542,7 @@ const Pool: FunctionComponent = observer(() => {
         )}
       </div>
       <div className="flex flex-col gap-7 md:gap-4">
-        <div>
+        <div className="flex flex-col flex-wrap md:gap-3">
           <h5 className="md:text-h6 md:font-h6">{t("pool.putAssetsToWork")}</h5>
           <span className="subtitle1 md:text-body1 md:font-body1 text-osmoverse-300">
             {t("pool.putAssetsToWorkCaption")}{" "}
@@ -610,11 +645,11 @@ const Pool: FunctionComponent = observer(() => {
             className={classNames(
               "flex flex-col bg-osmoverse-800 rounded-4x4pxlinset p-9 md:p-5",
               {
-                "gap-10": !level2Disabled,
+                "gap-10": !level2Disabled || bondDurations.length > 0,
               }
             )}
           >
-            <div className="flex lg:flex-col place-content-between md:gap-4">
+            <div className="flex lg:flex-col place-content-between gap-4">
               <div className="flex flex-col gap-4">
                 <div className="flex md:flex-col items-baseline flex-wrap gap-4">
                   <LevelBadge level={2} disabled={level2Disabled} />
@@ -648,19 +683,27 @@ const Pool: FunctionComponent = observer(() => {
               )}
             </div>
             <div className="grid grid-cols-3 1.5xl:grid-cols-1 gap-4">
-              {bondableDurations.map((bondableDuration) => (
+              {bondDurations.map((bondDuration) => (
                 <BondCard
-                  key={bondableDuration.duration.asMilliseconds()}
-                  {...bondableDuration}
-                  onUnbond={() => onUnlockTokens(bondableDuration.duration)}
+                  key={bondDuration.duration.asMilliseconds()}
+                  {...bondDuration}
+                  onUnbond={() => onUnlockTokens(bondDuration.duration)}
                   onGoSuperfluid={() => setShowSuperfluidValidatorsModal(true)}
                   splashImageSrc={
-                    bondableDuration.duration.asDays() === 1
-                      ? "/images/small-vial.svg"
-                      : bondableDuration.duration.asDays() === 7
-                      ? "/images/medium-vial.svg"
-                      : bondableDuration.duration.asDays() === 14
-                      ? "/images/large-vial.svg"
+                    poolDetailConfig && poolDetailConfig.isIncentivized
+                      ? poolDetailConfig.lockableDurations.length > 0 &&
+                        poolDetailConfig.lockableDurations[0].asDays() ===
+                          bondDuration.duration.asDays()
+                        ? "/images/small-vial.svg"
+                        : poolDetailConfig.lockableDurations.length > 1 &&
+                          poolDetailConfig.lockableDurations[1].asDays() ===
+                            bondDuration.duration.asDays()
+                        ? "/images/medium-vial.svg"
+                        : poolDetailConfig.lockableDurations.length > 2 &&
+                          poolDetailConfig.lockableDurations[2].asDays() ===
+                            bondDuration.duration.asDays()
+                        ? "/images/large-vial.svg"
+                        : undefined
                       : undefined
                   }
                 />

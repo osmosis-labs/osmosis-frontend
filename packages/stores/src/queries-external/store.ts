@@ -3,6 +3,7 @@ import { DeepReadonly } from "utility-types";
 import { IPriceStore } from "../price";
 import { ObservableQueryPoolFeesMetrics } from "./pool-fees";
 import { ObservableQueryAccountsPoolRewards } from "./pool-rewards";
+import { ObservableQueryIbcChainsStatus } from "./ibc";
 import {
   IMPERATOR_HISTORICAL_DATA_BASEURL,
   IMPERATOR_TX_REWARD_BASEURL,
@@ -12,10 +13,12 @@ import {
 export class QueriesExternalStore {
   public readonly queryGammPoolFeeMetrics: DeepReadonly<ObservableQueryPoolFeesMetrics>;
   public readonly queryAccountsPoolRewards: DeepReadonly<ObservableQueryAccountsPoolRewards>;
+  public readonly queryChainStatus: DeepReadonly<ObservableQueryIbcChainsStatus>;
 
   constructor(
     kvStore: KVStore,
     priceStore: IPriceStore,
+    chainId: string,
     feeMetricsBaseURL = IMPERATOR_HISTORICAL_DATA_BASEURL,
     poolRewardsBaseUrl = IMPERATOR_TX_REWARD_BASEURL
   ) {
@@ -27,6 +30,11 @@ export class QueriesExternalStore {
       kvStore,
       priceStore,
       poolRewardsBaseUrl
+    );
+    this.queryChainStatus = new ObservableQueryIbcChainsStatus(
+      kvStore,
+      chainId,
+      feeMetricsBaseURL
     );
   }
 }

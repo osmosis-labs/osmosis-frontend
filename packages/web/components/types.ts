@@ -14,6 +14,7 @@ export type MainLayoutMenu = {
 export interface InputProps<T> {
   currentValue: T;
   onInput: (value: T) => void;
+  autoFocus?: boolean;
   onFocus?: (e: any) => void;
   placeholder?: T;
 }
