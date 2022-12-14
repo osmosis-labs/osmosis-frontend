@@ -213,7 +213,7 @@ const Pool: FunctionComponent = observer(() => {
         unbondingPeriod: duration.asDays(),
       };
 
-      logEvent([E.bondStarted, lockInfo]);
+      logEvent([E.bondingStarted, lockInfo]);
 
       if (electSuperfluid) {
         setShowSuperfluidValidatorsModal(true);
@@ -221,7 +221,7 @@ const Pool: FunctionComponent = observer(() => {
         // `sendLockAndSuperfluidDelegateMsg` will be sent after superfluid modal
       } else {
         lockToken(duration)
-          .then(() => logEvent([E.bondCompleted, lockInfo]))
+          .then(() => logEvent([E.bondingCompleted, lockInfo]))
           .finally(() => setShowLockLPTokenModal(false));
       }
     },
@@ -766,7 +766,7 @@ const Pool: FunctionComponent = observer(() => {
                     onToggleDetails={(nextValue) => {
                       if (nextValue)
                         logEvent([
-                          EventName.PoolDetail.cardDetailsExpanded,
+                          E.cardDetailsExpanded,
                           {
                             ...baseEventInfo,
                             unbondingPeriod: bondDuration.duration.asDays(),
