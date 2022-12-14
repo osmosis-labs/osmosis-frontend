@@ -42,7 +42,6 @@ export const IBCAssetInfos: (IBCAsset & {
         AxelarSourceChainConfigs.usdc.binance,
         AxelarSourceChainConfigs.usdc.moonbeam,
         AxelarSourceChainConfigs.usdc.polygon,
-        AxelarSourceChainConfigs.usdc.binance,
         AxelarSourceChainConfigs.usdc.avalanche,
         AxelarSourceChainConfigs.usdc.fantom,
       ],
