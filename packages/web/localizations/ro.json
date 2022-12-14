@@ -32,13 +32,13 @@
   "pools": {
     "title": "Pool-uri active",
     "poolId": "Pool #{id}",
-    "priceOsmo": "pret OSMO",
+    "priceOsmo": "Pret OSMO",
     "rewardDistribution": "Recompensele se distribuie in",
     "myPools": "Pool-urile mele",
     "APR": "APR",
     "available": "Disponibil",
     "liquidity": "Lichiditate pool",
-    "bonded": "Legate",
+    "bonded": "Blocate",
     "incentivized": "Stimulat",
     "all": "Toate Pool-urile",
     "allTab": "Toate",
@@ -138,8 +138,8 @@
     "amountDaysUnbonding": "{numDays} zile blocate",
     "shares": "actiuni",
     "unbonded": "Deblocate",
-    "unbond": "Deblocheaza",
-    "bonded": "Blocheaza",
+    "unbond": "Deblocate",
+    "bonded": "Blocate",
     "showDetails": "Arata detalii",
     "collapseDetails": "Ascunde detalii",
     "sharesAvailableIn": "Disponibil in",
@@ -288,7 +288,7 @@
       "sort": {
         "symbol": "Simbol",
         "network": "Retea",
-        "balance": "Balance"
+        "balance": "Balanta"
       }
     },
     "historyTable": {
@@ -370,7 +370,7 @@
     "noAvailableShares": "Actiuni {denom} nu sunt disponibile",
     "generic": "Eroare"
   },
-  "connectWallet": "Conecteaza portofel",
+  "connectWallet": "Conecteaza Portofel",
   "keplr": {
     "install": "Instaleaza Keplr",
     "wallet": "Portofel Keplr",
