@@ -109,6 +109,10 @@ export const EventName = {
     bondCompleted: "Liquidity bonding: Bond completed",
     superfluidStakeStarted: "Liquidity bonding: Superfluid stake started",
     superfluidStakeCompleted: "Liquidity bonding: Superfluid stake completed",
+    cardDetailsExpanded: "Pool detail: Card details expanded",
+    earnMoreByBondingClicked: "Pool detail: Earn more by bonding clicked",
+    goSuperfluidClicked: "Pool detail: Go Superfluid clicked",
+    unbondSharesClicked: "Pool detail: Unbond shares clicked",
   },
   // Events in assets page
   Assets: {

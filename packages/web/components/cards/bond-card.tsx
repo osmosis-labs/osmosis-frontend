@@ -20,6 +20,7 @@ export const BondCard: FunctionComponent<
   BondDuration & {
     onUnbond: () => void;
     onGoSuperfluid: () => void;
+    onToggleDetails?: (nextValue: boolean) => void;
     splashImageSrc?: string;
   }
 > = ({
@@ -35,6 +36,7 @@ export const BondCard: FunctionComponent<
   onUnbond,
   onGoSuperfluid,
   splashImageSrc,
+  onToggleDetails,
 }) => {
   const [drawerUp, setDrawerUp] = useState(false);
   const t = useTranslation();
@@ -135,7 +137,11 @@ export const BondCard: FunctionComponent<
         incentivesBreakdown={incentivesBreakdown}
         superfluid={superfluid}
         drawerUp={drawerUp}
-        toggleDetailsVisible={() => setDrawerUp(!drawerUp)}
+        toggleDetailsVisible={() => {
+          const nextValue = !drawerUp;
+          onToggleDetails?.(nextValue);
+          setDrawerUp(nextValue);
+        }}
         onGoSuperfluid={onGoSuperfluid}
       />
     </div>

@@ -579,7 +579,10 @@ const Pool: FunctionComponent = observer(() => {
                   .gt(new Dec(0)) && (
                   <ArrowButton
                     className="text-left"
-                    onClick={() => setShowLockLPTokenModal(true)}
+                    onClick={() => {
+                      logEvent([E.earnMoreByBondingClicked, baseEventInfo]);
+                      setShowLockLPTokenModal(true);
+                    }}
                   >
                     {t("pool.earnMore", {
                       amount: additionalRewardsByBonding
@@ -750,10 +753,30 @@ const Pool: FunctionComponent = observer(() => {
                   <BondCard
                     key={bondDuration.duration.asMilliseconds()}
                     {...bondDuration}
-                    onUnbond={() => onUnlockTokens(bondDuration.duration)}
-                    onGoSuperfluid={() =>
-                      setShowSuperfluidValidatorsModal(true)
-                    }
+                    onUnbond={() => {
+                      logEvent([
+                        E.unbondSharesClicked,
+                        {
+                          ...baseEventInfo,
+                          unbondingPeriod: bondDuration.duration.asDays(),
+                        },
+                      ]);
+                      onUnlockTokens(bondDuration.duration);
+                    }}
+                    onToggleDetails={(nextValue) => {
+                      if (nextValue)
+                        logEvent([
+                          EventName.PoolDetail.cardDetailsExpanded,
+                          {
+                            ...baseEventInfo,
+                            unbondingPeriod: bondDuration.duration.asDays(),
+                          },
+                        ]);
+                    }}
+                    onGoSuperfluid={() => {
+                      logEvent([E.goSuperfluidClicked, baseEventInfo]);
+                      setShowSuperfluidValidatorsModal(true);
+                    }}
                     splashImageSrc={
                       poolDetailConfig && poolDetailConfig.isIncentivized
                         ? poolDetailConfig.lockableDurations.length > 0 &&
