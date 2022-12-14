@@ -774,7 +774,13 @@ const Pool: FunctionComponent = observer(() => {
                         ]);
                     }}
                     onGoSuperfluid={() => {
-                      logEvent([E.goSuperfluidClicked, baseEventInfo]);
+                      logEvent([
+                        E.goSuperfluidClicked,
+                        {
+                          ...baseEventInfo,
+                          unbondingPeriod: bondDuration.duration.asDays(),
+                        },
+                      ]);
                       setShowSuperfluidValidatorsModal(true);
                     }}
                     splashImageSrc={
