@@ -11,11 +11,11 @@
   "use strict";
   return {
     name: "en",
-    weekdays: "Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split(
+    weekdays: "Duminica_Luni_Marti_Miercuri_Joi_Vineri_Sambata".split(
       "_"
     ),
     months:
-      "January_February_March_April_May_June_July_August_September_October_November_December".split(
+      "Ianuarie_Februarie_Martie_Aprilie_Mai_Iunie_Iulie_August_Septembrie_Octombrie_Noiembrie_Decembrie".split(
         "_"
       ),
   };
