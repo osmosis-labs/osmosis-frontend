@@ -289,7 +289,7 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
-    counterpartyChainId: "ixo-4",
+    counterpartyChainId: "impacthub-3",
     sourceChannelId: "channel-38",
     destChannelId: "channel-4",
     coinMinimalDenom: "uixo",
