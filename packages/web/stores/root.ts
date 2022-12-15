@@ -36,7 +36,7 @@ import { OsmoPixelsQueries } from "./pixels";
 import { NavBarStore } from "./nav-bar";
 import {
   UserSettings,
-  ShowDustUserSetting,
+  HideDustUserSetting,
   LanguageUserSetting,
 } from "./user-settings";
 const semver = require("semver");
@@ -77,7 +77,8 @@ export class RootStore {
   ) {
     this.chainStore = new ChainStore(
       ChainInfos,
-      IS_TESTNET ? "osmo-test-4" : "osmosis"
+      process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE ??
+        (IS_TESTNET ? "osmo-test-4" : "osmosis")
     );
 
     const eventListener = (() => {
@@ -140,8 +141,8 @@ export class RootStore {
         queriesStore: this.queriesStore,
         msgOptsCreator: (chainId) =>
           chainId.startsWith("evmos_")
-            ? { ibcTransfer: { gas: 160000 } }
-            : { ibcTransfer: { gas: 130000 } },
+            ? { ibcTransfer: { gas: 250000 } }
+            : { ibcTransfer: { gas: 210000 } },
         preTxEvents: {
           onBroadcastFailed: toastOnBroadcastFailed((chainId) =>
             this.chainStore.getChain(chainId)
@@ -178,6 +179,7 @@ export class RootStore {
     this.queriesExternalStore = new QueriesExternalStore(
       makeIndexedKVStore("store_web_queries"),
       this.priceStore,
+      this.chainStore.osmosis.chainId,
       IS_TESTNET ? "https://api.testnet.osmosis.zone/" : undefined
     );
 
@@ -261,7 +263,7 @@ export class RootStore {
     const userSettingKvStore = makeLocalStorageKVStore("user_setting");
     this.userSettings = new UserSettings(userSettingKvStore, [
       new LanguageUserSetting(0), // give index of default language in SUPPORTED_LANGUAGES
-      new ShowDustUserSetting(
+      new HideDustUserSetting(
         this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)
           ?.symbol ?? "$"
       ),

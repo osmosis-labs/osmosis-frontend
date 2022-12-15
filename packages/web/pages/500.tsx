@@ -5,7 +5,7 @@ import { useTranslation } from "react-multi-lang";
 const Custom500: NextPage = () => {
   const t = useTranslation();
   return (
-    <div className="bg-osmoverse-900 flex gap-3 justify-center items-center h-screen">
+    <div className="flex h-screen items-center justify-center gap-3 bg-osmoverse-900">
       <Image
         src="/icons/error-x.svg"
         alt={t("505.title")}

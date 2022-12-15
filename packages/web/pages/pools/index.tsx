@@ -8,7 +8,7 @@ import {
   RatePretty,
 } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
-import { useState, ComponentProps, useMemo } from "react";
+import { useState, ComponentProps, useMemo, useCallback } from "react";
 import { Duration } from "dayjs/plugin/duration";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { PoolCard } from "../../components/cards";
@@ -24,7 +24,6 @@ import {
 import { PoolsOverview } from "../../components/overview/pools";
 import { MetricLoader } from "../../components/loaders";
 import { TabBox } from "../../components/control";
-import { priceFormatter } from "../../components/utils";
 import { useStore } from "../../stores";
 import { DataSorter } from "../../hooks/data/data-sorter";
 import {
@@ -37,13 +36,14 @@ import {
   useLockTokenConfig,
   usePoolDetailConfig,
   useSuperfluidPoolConfig,
-  useShowDustUserSetting,
+  useHideDustUserSetting,
 } from "../../hooks";
 import { CompactPoolTableDisplay } from "../../components/complex/compact-pool-table-display";
 import { ShowMoreButton } from "../../components/buttons/show-more";
 import { EventName, ExternalIncentiveGaugeAllowList } from "../../config";
 import { POOLS_PER_PAGE } from "../../components/complex";
 import { useTranslation } from "react-multi-lang";
+import { priceFormatter } from "../../utils/formatter";
 
 const TVL_FILTER_THRESHOLD = 1000;
 
@@ -85,11 +85,23 @@ const Pools: NextPage = observer(function () {
           priceStore
         ),
         poolLiquidity: superfluidPool.computeTotalValueLocked(priceStore),
-        assets: superfluidPool.poolAssets.map((poolAsset) => ({
-          coinImageUrl: poolAsset.amount.currency.coinImageUrl,
-          coinDenom: poolAsset.amount.currency.coinDenom,
-          weightFraction: poolAsset.weightFraction,
-        })),
+        assets: superfluidPool.poolAssets.map((asset) => {
+          const weightedAsset = superfluidPool.weightedPoolInfo?.assets.find(
+            (weightedAsset) =>
+              weightedAsset.denom === asset.amount.currency.coinMinimalDenom
+          );
+          const weightFraction =
+            weightedAsset?.weightFraction ??
+            new RatePretty(
+              new Dec(1).quo(new Dec(superfluidPool.poolAssets.length))
+            ); // stableswap pools have consistent weight fraction
+
+          return {
+            coinImageUrl: asset.amount.currency.coinImageUrl,
+            coinDenom: asset.amount.currency.coinDenom,
+            weightFraction,
+          };
+        }),
       })) ?? []
   )
     .process("poolLiquidity")
@@ -184,6 +196,67 @@ const Pools: NextPage = observer(function () {
     }
   };
 
+  const onCreatePool = useCallback(async () => {
+    try {
+      if (createPoolConfig.poolType === "weighted") {
+        await account.osmosis.sendCreateBalancerPoolMsg(
+          createPoolConfig.swapFee,
+          createPoolConfig.assets.map((asset) => {
+            if (!asset.percentage)
+              throw new Error(
+                "Pool config with poolType of weighted doesn't include asset percentage"
+              );
+
+            return {
+              weight: new Dec(asset.percentage)
+                .mul(DecUtils.getTenExponentNInPrecisionRange(4))
+                .truncate()
+                .toString(),
+              token: {
+                amount: asset.amountConfig.amount,
+                currency: asset.amountConfig.sendCurrency,
+              },
+            };
+          }),
+          undefined,
+          () => {
+            setIsCreatingPool(false);
+          }
+        );
+      } else if (createPoolConfig.poolType === "stable") {
+        const scalingFactorController =
+          createPoolConfig.scalingFactorControllerAddress
+            ? createPoolConfig.scalingFactorControllerAddress
+            : undefined;
+        await account.osmosis.sendCreateStableswapPoolMsg(
+          createPoolConfig.swapFee,
+          createPoolConfig.assets.map((asset) => {
+            if (!asset.scalingFactor)
+              throw new Error(
+                "Pool config with poolType of stable doesn't include scaling factors"
+              );
+
+            return {
+              scalingFactor: asset.scalingFactor,
+              token: {
+                amount: asset.amountConfig.amount,
+                currency: asset.amountConfig.sendCurrency,
+              },
+            };
+          }),
+          scalingFactorController,
+          undefined,
+          () => {
+            setIsCreatingPool(false);
+          }
+        );
+      }
+    } catch (e) {
+      setIsCreatingPool(false);
+      console.error(e);
+    }
+  }, [createPoolConfig, account]);
+
   // my pools
   const myPoolIds = queryOsmosis.queryGammPoolShare.getOwnPools(
     account.bech32Address
@@ -199,7 +272,7 @@ const Pools: NextPage = observer(function () {
         .filter((pool): pool is ObservableQueryPool => !!pool),
     [isMobile, showMoreMyPools, myPoolIds, queryOsmosis.queryGammPools.response]
   );
-  const dustFilteredPools = useShowDustUserSetting(myPools, (pool) =>
+  const dustFilteredPools = useHideDustUserSetting(myPools, (pool) =>
     pool
       .computeTotalValueLocked(priceStore)
       .mul(
@@ -211,40 +284,15 @@ const Pools: NextPage = observer(function () {
   );
 
   return (
-    <main className="max-w-container m-auto bg-osmoverse-900 px-8 md:px-3">
-      {isCreatingPool && (
-        <CreatePoolModal
-          isOpen={isCreatingPool}
-          onRequestClose={() => setIsCreatingPool(false)}
-          title={t("pools.createPool.title")}
-          createPoolConfig={createPoolConfig}
-          isSendingMsg={account.txTypeInProgress !== ""}
-          onCreatePool={async () => {
-            try {
-              await account.osmosis.sendCreatePoolMsg(
-                createPoolConfig.swapFee,
-                createPoolConfig.assets.map((asset) => ({
-                  weight: new Dec(asset.percentage)
-                    .mul(DecUtils.getTenExponentNInPrecisionRange(4))
-                    .truncate()
-                    .toString(),
-                  token: {
-                    amount: asset.amountConfig.amount,
-                    currency: asset.amountConfig.sendCurrency,
-                  },
-                })),
-                undefined,
-                () => {
-                  setIsCreatingPool(false);
-                }
-              );
-            } catch (e) {
-              setIsCreatingPool(false);
-              console.error(e);
-            }
-          }}
-        />
-      )}
+    <main className="m-auto max-w-container bg-osmoverse-900 px-8 md:px-3">
+      <CreatePoolModal
+        isOpen={isCreatingPool}
+        onRequestClose={() => setIsCreatingPool(false)}
+        title={t("pools.createPool.title")}
+        createPoolConfig={createPoolConfig}
+        isSendingMsg={account.txTypeInProgress !== ""}
+        onCreatePool={onCreatePool}
+      />
       {addLiquidityModalPoolId && (
         <AddLiquidityModal
           title={t("addLiquidity.titleInPool", {
@@ -278,14 +326,14 @@ const Pools: NextPage = observer(function () {
       {superfluidDelegateModalProps && (
         <SuperfluidValidatorModal {...superfluidDelegateModalProps} />
       )}
-      <section className="pt-8 md:pt-4 pb-10 md:pb-5">
+      <section className="pt-8 pb-10 md:pt-4 md:pb-5">
         <PoolsOverview className="mx-auto" />
       </section>
       <section>
         <div className="mx-auto pb-[3.75rem]">
           <h5 className="md:px-3">{t("pools.myPools")}</h5>
           <div className="flex flex-col gap-4">
-            <div className="mt-5 grid grid-cards md:gap-3">
+            <div className="grid-cards mt-5 grid md:gap-3">
               {dustFilteredPools.map((myPool) => {
                 const internalIncentiveApr =
                   queryOsmosis.queryIncentivizedPools.computeMostApr(
@@ -443,9 +491,9 @@ const Pools: NextPage = observer(function () {
                               (poolAsset) => poolAsset.amount.currency.coinDenom
                             )
                             .join(" / "),
-                          poolWeight: myPool.poolAssets
+                          poolWeight: myPool.weightedPoolInfo?.assets
                             .map((poolAsset) =>
-                              poolAsset.weightFraction.toString()
+                              poolAsset.weightFraction?.toString()
                             )
                             .join(" / "),
                           isSuperfluidPool:
@@ -605,7 +653,7 @@ const Pools: NextPage = observer(function () {
           <section>
             <div className="mx-auto">
               <h5>{t("pools.superfluid.title")}</h5>
-              <div className="my-5 grid grid-cards">
+              <div className="grid-cards my-5 grid">
                 {superfluidPools &&
                   (showMoreSfsPools
                     ? superfluidPools
@@ -663,7 +711,9 @@ const Pools: NextPage = observer(function () {
                                 .map((asset) => asset.coinDenom)
                                 .join(" / "),
                               poolWeight: assets
-                                .map((asset) => asset.weightFraction.toString())
+                                .map((asset) =>
+                                  asset.weightFraction?.toString()
+                                )
                                 .join(" / "),
                             },
                           ])
@@ -694,15 +744,15 @@ const Pools: NextPage = observer(function () {
         </>
       )}
       <section className="pb-4">
-        <div className="w-full flex items-center bg-osmoverse-800 rounded-full px-5 py-4">
-          <span className="subtitle1 md:text-subtitle2 md:font-subtitle2 flex items-center gap-1">
+        <div className="flex w-full items-center rounded-full bg-osmoverse-800 px-5 py-4">
+          <span className="subtitle1 flex items-center gap-1 md:text-subtitle2 md:font-subtitle2">
             {t("pools.createPool.interestedCreate")}{" "}
             <u
-              className="text-wosmongton-300 flex items-center cursor-pointer"
+              className="flex cursor-pointer items-center text-wosmongton-300"
               onClick={() => setIsCreatingPool(true)}
             >
               {t("pools.createPool.startProcess")}
-              <div className="flex items-center shrink-0">
+              <div className="flex shrink-0 items-center">
                 <Image
                   alt="right arrow"
                   src="/icons/arrow-right-wosmongton-300.svg"

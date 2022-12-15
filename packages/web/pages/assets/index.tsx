@@ -16,7 +16,6 @@ import { ShowMoreButton } from "../../components/buttons/show-more";
 import { PoolCard } from "../../components/cards/";
 import { Metric } from "../../components/types";
 import { MetricLoader } from "../../components/loaders";
-import { priceFormatter } from "../../components/utils";
 import { useTranslation } from "react-multi-lang";
 import {
   IbcTransferModal,
@@ -31,10 +30,11 @@ import {
   useWindowSize,
   useAmplitudeAnalytics,
   useNavBar,
-  useShowDustUserSetting,
+  useHideDustUserSetting,
   useTransferConfig,
 } from "../../hooks";
 import { EventName, ExternalIncentiveGaugeAllowList } from "../../config";
+import { priceFormatter } from "../../utils/formatter";
 
 const INIT_POOL_CARD_COUNT = 6;
 
@@ -142,7 +142,7 @@ const Assets: NextPage = observer(() => {
   );
 
   return (
-    <main className="max-w-container mx-auto flex flex-col gap-20 md:gap-8 bg-osmoverse-900 p-8 md:p-4">
+    <main className="mx-auto flex max-w-container flex-col gap-20 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
       <AssetsOverview />
       {isMobile && preTransferModalProps && (
         <PreTransferModal {...preTransferModalProps} />
@@ -179,7 +179,7 @@ const Assets: NextPage = observer(() => {
       {!isMobile && <PoolAssets />}
       <section className="bg-osmoverse-900">
         <DepoolingTable
-          className="p-10 md:p-5 max-w-container mx-auto"
+          className="mx-auto max-w-container p-10 md:p-5"
           tableClassName="md:w-screen md:-mx-5"
         />
       </section>
@@ -232,17 +232,8 @@ const AssetsOverview: FunctionComponent = observer(() => {
     stakedAssetsValue.toString(),
   ]);
 
-  const Metric: FunctionComponent<Metric> = ({ label, value }) => (
-    <div className="flex flex-col gap-5 md:gap-2 shrink-0">
-      <h6 className="md:text-subtitle1 md:font-subtitle1">{label}</h6>
-      <h2 className="lg:text-h3 lg:font-h3 md:text-h4 md:font-h4 text-wosmongton-100">
-        {value}
-      </h2>
-    </div>
-  );
-
   return (
-    <div className="w-full flex md:flex-col items-center md:items-start gap-[100px] lg:gap-5 md:gap-3 bg-osmoverse-1000 rounded-[32px] px-20 lg:px-10 md:px-4 py-10 md:py-5">
+    <div className="flex w-full items-center gap-[100px] rounded-[32px] bg-osmoverse-1000 px-8 py-9 lg:gap-5 lg:px-10 md:flex-col md:items-start md:gap-3 md:px-4 md:py-5">
       <Metric
         label={t("assets.totalAssets")}
         value={totalAssetsValue.toString()}
@@ -255,9 +246,22 @@ const AssetsOverview: FunctionComponent = observer(() => {
         label={t("assets.unbondedAssets")}
         value={availableAssetsValue.toString()}
       />
+      <Metric
+        label={t("assets.stakedAssets")}
+        value={stakedAssetsValue.toString()}
+      />
     </div>
   );
 });
+
+const Metric: FunctionComponent<Metric> = ({ label, value }) => (
+  <div className="flex shrink-0 flex-col gap-1 md:gap-2">
+    <h6 className="md:text-subtitle1 md:font-subtitle1">{label}</h6>
+    <h2 className="text-h3 font-h3 text-wosmongton-100 md:text-h4 md:font-h4">
+      {value}
+    </h2>
+  </div>
+);
 
 const PoolAssets: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
@@ -277,7 +281,7 @@ const PoolAssets: FunctionComponent = observer(() => {
     setUserProperty("myPoolsCount", ownedPoolIds.length);
   }, [ownedPoolIds.length]);
 
-  const dustedPoolIds = useShowDustUserSetting(ownedPoolIds, (poolId) =>
+  const dustedPoolIds = useHideDustUserSetting(ownedPoolIds, (poolId) =>
     queryOsmosis.queryGammPools
       .getPool(poolId)
       ?.computeTotalValueLocked(priceStore)
@@ -311,7 +315,7 @@ const PoolCards: FunctionComponent<{
   const { logEvent } = useAmplitudeAnalytics();
   return (
     <>
-      <div className="my-5 grid grid-cards">
+      <div className="grid-cards my-5 grid">
         <PoolCardsDisplayer
           poolIds={
             showAllPools
@@ -512,8 +516,8 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                   poolName: pool.poolAssets
                     .map((poolAsset) => poolAsset.amount.denom)
                     .join(" / "),
-                  poolWeight: pool.poolAssets
-                    .map((poolAsset) => poolAsset.weightFraction.toString())
+                  poolWeight: pool.weightedPoolInfo?.assets
+                    .map((poolAsset) => poolAsset.weightFraction?.toString())
                     .join(" / "),
                   isSuperfluidPool:
                     queryOsmosis.querySuperfluidPools.isSuperfluidPool(pool.id),

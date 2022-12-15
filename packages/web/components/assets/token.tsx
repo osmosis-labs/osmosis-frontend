@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { RateRing } from "../assets";
 import { PoolAssetInfo } from "./types";
 import { CustomClasses, MobileProps } from "../types";
-import { truncateString } from "../utils";
+import { truncateString } from "../../utils/string";
 
 export const Token: FunctionComponent<
   PoolAssetInfo & CustomClasses & MobileProps & { ringColorIndex?: number }
@@ -28,7 +28,7 @@ export const Token: FunctionComponent<
           colorIndex={ringColorIndex}
         />
       )}
-      <div className="flex flex-col text-left place-content-center">
+      <div className="flex flex-col place-content-center text-left">
         {isMobile ? (
           <h6>{truncateString(justCoinDenom)}</h6>
         ) : (

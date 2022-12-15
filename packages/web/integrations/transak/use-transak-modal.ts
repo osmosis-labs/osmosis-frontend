@@ -37,18 +37,22 @@ export function useTransakModal(
           defaultCryptoCurrency: "OSMO", // Example 'ETH'
           walletAddress: account.bech32Address, // Your customer's wallet address
           themeColor: "6A67EA", // App theme color // wosmongton-700
-          fiatCurrency: "USD", // If you want to limit fiat selectison eg 'USD'
           email: "", // Your customer's email address
           redirectURL: "",
         });
 
         setTransak(transak);
 
+        transak.on(transak.EVENTS.TRANSAK_WIDGET_INITIALISED, () => {
+          document.documentElement.classList.remove("html-transak-closed");
+        });
+
         // This will trigger when the user closed the widget
         transak.on(transak.EVENTS.TRANSAK_WIDGET_CLOSE, () => {
           transak.close();
           setShouldShow(false);
           onRequestClose?.();
+          document.documentElement.classList.add("html-transak-closed");
         });
 
         // This will trigger when the user marks payment is made.
