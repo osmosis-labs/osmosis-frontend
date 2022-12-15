@@ -321,8 +321,8 @@ const Pool: FunctionComponent = observer(() => {
    */
   const isSuperfluidEnabled =
     (highestAPRBondableDuration?.userShares?.toDec().gt(new Dec(0)) &&
-      Boolean(highestAPRBondableDuration.superfluid?.delegated)) ||
-    Boolean(highestAPRBondableDuration.superfluid?.undelegating);
+      Boolean(highestAPRBondableDuration?.superfluid?.delegated)) ||
+    Boolean(highestAPRBondableDuration?.superfluid?.undelegating);
 
   return (
     <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
