@@ -90,6 +90,20 @@ export const IBCAssetInfos: (IBCAsset & {
     },
   },
   {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "busd-wei",
+    sourceChainNameOverride: "Ethereum",
+    isVerified: false,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.busd.ethereum],
+    },
+  },
+  {
     counterpartyChainId: "cosmoshub-4",
     sourceChannelId: "channel-0",
     destChannelId: "channel-141",
