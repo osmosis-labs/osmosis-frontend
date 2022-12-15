@@ -316,6 +316,9 @@ const Pool: FunctionComponent = observer(() => {
     .maxDecimals(3)
     .inequalitySymbol(false);
 
+  /**
+   * In mainnet, highestAPRBondableDuration should be superfluid as the highest gauge index.
+   */
   const isSuperfluidEnabled =
     (highestAPRBondableDuration?.userShares?.toDec().gt(new Dec(0)) &&
       Boolean(highestAPRBondableDuration.superfluid?.delegated)) ||
