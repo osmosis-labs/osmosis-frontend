@@ -19,7 +19,7 @@ interface FeeCurrency extends Currency {
     low: number;
     average: number;
     high: number;
-  }
+  };
 }
 
 /**
@@ -100,7 +100,8 @@ export class FakeFeeConfig extends TxChainSetter implements IFeeConfig {
       };
     }
 
-    const gasPriceStep = this.feeCurrencyWithGas.gasPriceStep ?? DefaultGasPriceStep;
+    const gasPriceStep =
+      this.feeCurrencyWithGas.gasPriceStep ?? DefaultGasPriceStep;
     const feeAmount = new Dec(gasPriceStep.high.toString()).mul(
       new Dec(this.gas)
     );

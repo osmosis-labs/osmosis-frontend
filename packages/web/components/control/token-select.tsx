@@ -127,7 +127,7 @@ export const TokenSelect: FunctionComponent<{
     }, [setIsSelectOpen]);
 
     return (
-      <div className="flex md:justify-start justify-center items-center relative">
+      <div className="relative flex items-center justify-center md:justify-start">
         {selectedCurrency && (
           <button
             className={classNames(
@@ -142,7 +142,7 @@ export const TokenSelect: FunctionComponent<{
             }}
           >
             {selectedCurrency.coinImageUrl && (
-              <div className="w-[50px] h-[50px] md:h-7 md:w-7 overflow-hidden shrink-0 mr-1">
+              <div className="mr-1 h-[50px] w-[50px] shrink-0 overflow-hidden rounded-full md:h-7 md:w-7">
                 <Image
                   src={selectedCurrency.coinImageUrl}
                   alt="token icon"
@@ -159,9 +159,9 @@ export const TokenSelect: FunctionComponent<{
                   <h5>{selectedDenom}</h5>
                 )}
                 {canSelectTokens && (
-                  <div className="w-5 ml-3 md:ml-2 md:pb-1.5">
+                  <div className="ml-3 w-5 md:ml-2 md:pb-1.5">
                     <Image
-                      className={`opacity-40 group-hover:opacity-100 transition-transform duration-100 ${
+                      className={`opacity-40 transition-transform duration-100 group-hover:opacity-100 ${
                         isSelectOpen ? "rotate-180" : "rotate-0"
                       }`}
                       src="/icons/chevron-down.svg"
@@ -172,7 +172,7 @@ export const TokenSelect: FunctionComponent<{
                   </div>
                 )}
               </div>
-              <div className="w-24 subtitle2 md:caption text-osmoverse-400">
+              <div className="subtitle2 md:caption w-24 text-osmoverse-400">
                 {chainStore.getChainFromCurrency(selectedCurrency.coinDenom)
                   ?.chainName ?? ""}
               </div>

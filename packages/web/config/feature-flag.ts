@@ -12,6 +12,15 @@ export const BUY_OSMO_TRANSAK = true;
 
 export const HiddenPoolIds: string[] = [];
 
+export const RecommendedSwapDenoms = [
+  "OSMO",
+  "USDC",
+  "ATOM",
+  "DAI",
+  "JUNO",
+  "EVMOS",
+];
+
 export const UnPoolWhitelistedPoolIds: { [poolId: string]: boolean } = {
   // #560 (UST/OSMO)
   // #562 (UST/LUNA)
@@ -1230,7 +1239,7 @@ export const ExternalIncentiveGaugeAllowList: {
       gaugeId: "30210",
       denom:
         "ibc/C822645522FC3EECF817609AA38C24B64D04F5C267A23BCCF8F2E3BC5755FA88",
-    }
+    },
   ],
   "858": [
     {

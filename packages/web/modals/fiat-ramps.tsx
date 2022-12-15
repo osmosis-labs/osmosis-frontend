@@ -27,7 +27,7 @@ export const FiatRampsModal: FunctionComponent<
     <ModalBase
       {...props}
       overlayClassName={fiatRampKey === "transak" ? "!hidden" : undefined}
-      className="w-fit p-0 m-0"
+      className="m-0 w-fit p-0"
       hideCloseButton
     >
       {(() => {

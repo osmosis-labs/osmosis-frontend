@@ -43,9 +43,10 @@ module.exports = {
             700: "#1469AF",
           },
       bullish: IS_FRONTIER
-        ? {}
+        ? { 500: "#29D0B2" }
         : {
             400: "#6BDEC9",
+            500: "#29D0B2",
             600: "#00A399",
           },
       osmoverse: IS_FRONTIER
@@ -206,9 +207,9 @@ module.exports = {
     },
     extend: {
       height: {
-        navbar: "88px",
+        navbar: "72px",
         "navbar-mobile": "58px",
-        content: "calc(100vh - 88px)",
+        content: "calc(100vh - 72px)",
         "content-mobile": "calc(100vh - 58px)",
       },
       width: {
@@ -222,7 +223,7 @@ module.exports = {
         },
       },
       spacing: {
-        sidebar: "12.875rem",
+        sidebar: "13.75rem",
         "mobile-header": "6rem",
         0.25: "1px",
       },
@@ -245,6 +246,7 @@ module.exports = {
       },
       boxShadow: {
         separator: "0px -1px 0px 0px rgba(255, 255, 255, 0.12)",
+        md: "0px 6px 8px rgba(9, 5, 36, 0.2)",
       },
       borderRadius: {
         none: "0",
@@ -264,6 +266,9 @@ module.exports = {
         height: "height",
         width: "width",
         borderRadius: "border-radius",
+      },
+      letterSpacing: {
+        wide: ".009375em",
       },
     },
   },

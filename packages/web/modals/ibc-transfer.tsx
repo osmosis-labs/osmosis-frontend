@@ -52,7 +52,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
     );
 
     const isChainBlockedOrCongested =
-      chainStatus ===  "congested" || chainStatus === "blocked";
+      chainStatus === "congested" || chainStatus === "blocked";
     const { showModalBase, accountActionButton, walletConnected } =
       useConnectWalletModalRedirect(
         {

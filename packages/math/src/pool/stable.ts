@@ -256,7 +256,7 @@ export function iterKCalculator(
   // output amount = initial reserve - final reserve
   const xOut = x0.sub(xf);
   // horners method
-  // ax^3 + bx^2 + cx 
+  // ax^3 + bx^2 + cx
   const term1 = cubicCoeff.mul(xOut).mul(xOut).mul(xOut);
   const term2 = quadraticCoeff.mul(xOut).mul(xOut);
   const term3 = linearCoeff.mul(xOut);

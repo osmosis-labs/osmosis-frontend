@@ -21,7 +21,7 @@ export const MenuDropdown: FunctionComponent<Props> = ({
 }) => (
   <div
     className={classNames(
-      "absolute flex flex-col bg-osmoverse-900 border border-osmoverse-600 select-none z-[1000]",
+      "absolute z-[1000] flex select-none flex-col border border-osmoverse-600 bg-osmoverse-900",
       isFloating ? "rounded-xl" : "rounded-b-xl",
       {
         hidden: !isOpen,
@@ -32,7 +32,7 @@ export const MenuDropdown: FunctionComponent<Props> = ({
     {options.map(({ id, display }, index) => (
       <button
         className={classNames(
-          "px-4 py-1.5 cursor-pointer w-full hover:bg-osmoverse-700 transition-colors text-right",
+          "w-full cursor-pointer px-4 py-1.5 text-right transition-colors hover:bg-osmoverse-700",
           {
             "text-rust-200": id === selectedOptionId,
             "text-osmoverse-200": id !== selectedOptionId,

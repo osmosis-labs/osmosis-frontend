@@ -19,7 +19,7 @@ export const DenomImage: FunctionComponent<{
     ) : (
       <div
         style={{ width: size, height: size }}
-        className="bg-osmoverse-700 rounded-full flex items-center justify-center"
+        className="flex items-center justify-center rounded-full bg-osmoverse-700"
       >
         {denom.coinDenom[0].toUpperCase()}
       </div>
