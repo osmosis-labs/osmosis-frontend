@@ -72,6 +72,8 @@ export const EventName = {
     voteClicked: "Sidebar: Vote clicked",
     infoClicked: "Sidebar: Info clicked",
     supportClicked: "Sidebar: Support clicked",
+    buyOsmoStarted: "Sidebar: Buy Osmo started",
+    buyOsmoCompleted: "Sidebar: Buy Osmo completed",
   },
   // Events in Topnav UI
   Topnav: {
@@ -112,7 +114,7 @@ export const EventName = {
     cardDetailsExpanded: "Pool detail: Card details expanded",
     earnMoreByBondingClicked: "Pool detail: Earn more by bonding clicked",
     goSuperfluidClicked: "Pool detail: Go Superfluid clicked",
-    unbondSharesClicked: "Pool detail: Unbond shares clicked",
+    unbondClicked: "Pool detail: Unbond clicked",
   },
   // Events in assets page
   Assets: {
@@ -130,6 +132,7 @@ export const EventName = {
     depositAssetCompleted: "Deposit asset: Deposit completed",
     withdrawAssetStarted: "Withdraw asset: Withdraw started",
     withdrawAssetCompleted: "Withdraw asset: Withdraw completed",
-    buyOsmoClicked: "Assets: Buy Osmo clicked",
+    buyOsmoStarted: "Assets: Buy Osmo started",
+    buyOsmoCompleted: "Assets: Buy Osmo completed",
   },
 };

@@ -5,12 +5,17 @@ import { useTransakModal } from "../integrations/transak";
 import { Kado } from "../integrations/kado";
 
 export const FiatRampsModal: FunctionComponent<
-  { fiatRampKey: FiatRampKey; assetKey: string } & ModalBaseProps
+  {
+    fiatRampKey: FiatRampKey;
+    assetKey: string;
+    transakModalProps?: Parameters<typeof useTransakModal>[0];
+  } & ModalBaseProps
 > = (props) => {
   const { fiatRampKey, isOpen } = props;
 
   const { setModal } = useTransakModal({
     onRequestClose: props.onRequestClose,
+    ...props.transakModalProps,
   });
 
   useEffect(() => {

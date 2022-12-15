@@ -755,7 +755,7 @@ const Pool: FunctionComponent = observer(() => {
                     {...bondDuration}
                     onUnbond={() => {
                       logEvent([
-                        E.unbondSharesClicked,
+                        E.unbondClicked,
                         {
                           ...baseEventInfo,
                           unbondingPeriod: bondDuration.duration.asDays(),

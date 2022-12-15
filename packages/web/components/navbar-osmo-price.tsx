@@ -28,11 +28,18 @@ function getChartData(prices: PricePretty[] = []) {
 }
 
 const NavbarOsmoPrice = observer(() => {
-  const { accountStore, priceStore, chainStore, queriesExternalStore } =
-    useStore();
+  const {
+    accountStore,
+    priceStore,
+    chainStore,
+    queriesExternalStore,
+    assetsStore,
+  } = useStore();
   const transferConfig = useTransferConfig();
   const t = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
+
+  const { nativeBalances } = assetsStore;
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getAccount(chainId);
@@ -116,7 +123,6 @@ const NavbarOsmoPrice = observer(() => {
               "hover:border-none hover:bg-gradient-positive hover:text-osmoverse-1000"
             )}
             onClick={() => {
-              logEvent([EventName.Assets.buyOsmoClicked]);
               transferConfig.buyOsmo();
             }}
           >
@@ -145,7 +151,40 @@ const NavbarOsmoPrice = observer(() => {
       )}
 
       {transferConfig?.fiatRampsModal && (
-        <FiatRampsModal {...transferConfig.fiatRampsModal} />
+        <FiatRampsModal
+          transakModalProps={{
+            onOpen: (data) => {
+              const cryptoBalance = nativeBalances.find(
+                (coin) =>
+                  coin.balance.denom.toLowerCase() ===
+                  data.initialTokenName.toLowerCase()
+              );
+
+              logEvent([
+                EventName.Sidebar.buyOsmoStarted,
+                {
+                  tokenName: data.initialTokenName,
+                  tokenAmount: (
+                    cryptoBalance?.fiatValue ?? cryptoBalance?.balance
+                  )
+                    ?.maxDecimals(4)
+                    .toString(),
+                },
+              ]);
+            },
+            onSuccessfulOrder: (data) => {
+              logEvent([
+                EventName.Sidebar.buyOsmoCompleted,
+                {
+                  tokenName: data.status.cryptoCurrency,
+                  tokenAmount:
+                    data.status?.fiatAmountInUsd ?? data.status.cryptoAmount,
+                },
+              ]);
+            },
+          }}
+          {...transferConfig.fiatRampsModal}
+        />
       )}
     </div>
   );

@@ -160,7 +160,40 @@ const Assets: NextPage = observer(() => {
         <BridgeTransferModal {...transferConfig.bridgeTransferModal} />
       )}
       {transferConfig?.fiatRampsModal && (
-        <FiatRampsModal {...transferConfig.fiatRampsModal} />
+        <FiatRampsModal
+          transakModalProps={{
+            onOpen: (data) => {
+              const cryptoBalance = nativeBalances.find(
+                (coin) =>
+                  coin.balance.denom.toLowerCase() ===
+                  data.initialTokenName.toLowerCase()
+              );
+
+              logEvent([
+                EventName.Assets.buyOsmoStarted,
+                {
+                  tokenName: data.initialTokenName,
+                  tokenAmount: (
+                    cryptoBalance?.fiatValue ?? cryptoBalance?.balance
+                  )
+                    ?.maxDecimals(4)
+                    .toString(),
+                },
+              ]);
+            },
+            onSuccessfulOrder: (data) => {
+              logEvent([
+                EventName.Assets.buyOsmoCompleted,
+                {
+                  tokenName: data.status.cryptoCurrency,
+                  tokenAmount:
+                    data.status?.fiatAmountInUsd ?? data.status.cryptoAmount,
+                },
+              ]);
+            },
+          }}
+          {...transferConfig.fiatRampsModal}
+        />
       )}
       {transferConfig?.walletConnectEth.sessionConnectUri && (
         <WalletConnectQRModal
