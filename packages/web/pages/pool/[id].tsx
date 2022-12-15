@@ -266,6 +266,7 @@ const Pool: FunctionComponent = observer(() => {
         validatorName: queryCosmos.queryValidators
           .getQueryStatus(Staking.BondStatus.Bonded)
           .getValidator(validatorAddress)?.description.moniker,
+        isSuperfluidEnabled,
       };
 
       logEvent([E.superfluidStakeStarted, poolInfo]);
@@ -314,6 +315,11 @@ const Pool: FunctionComponent = observer(() => {
     ?.day.mul(highestAPRDailyPeriodicRate)
     .maxDecimals(3)
     .inequalitySymbol(false);
+
+  const isSuperfluidEnabled =
+    (highestAPRBondableDuration?.userShares?.toDec().gt(new Dec(0)) &&
+      Boolean(highestAPRBondableDuration.superfluid?.delegated)) ||
+    Boolean(highestAPRBondableDuration.superfluid?.undelegating);
 
   return (
     <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
@@ -779,6 +785,7 @@ const Pool: FunctionComponent = observer(() => {
                         {
                           ...baseEventInfo,
                           unbondingPeriod: bondDuration.duration.asDays(),
+                          isSuperfluidEnabled,
                         },
                       ]);
                       setShowSuperfluidValidatorsModal(true);
