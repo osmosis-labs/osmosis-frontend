@@ -30,7 +30,6 @@ export function useTransferFeeQuery(
         ).toCoin().amount
       );
       if (!isNaN(amount)) {
-        console.log("amount " + amount);
         return await api.getTransferFee(
           sourceChain,
           destChain,

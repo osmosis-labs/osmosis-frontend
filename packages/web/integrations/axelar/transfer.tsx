@@ -174,19 +174,14 @@ const AxelarTransfer: FunctionComponent<
     /** Amount, with decimals. e.g. 1.2 USDC */
     const amount = isWithdraw ? withdrawAmountConfig.amount : depositAmount;
 
-    console.log("Get transfer fee");
-
     const { transferFee: transferFeeMinAmount } = useTransferFeeQuery(
       sourceChain,
       destChain,
       originCurrency.coinMinimalDenom,
       amount,
       originCurrency,
-      isTestNet ? Environment.TESTNET : Environment.MAINNET,
-      1000
+      isTestNet ? Environment.TESTNET : Environment.MAINNET
     );
-
-    console.log("transfer fee: " + transferFeeMinAmount);
 
     const availableBalance = isWithdraw
       ? balanceOnOsmosis.balance
