@@ -27,7 +27,7 @@ export const KeplrConnectionSelectModal: FunctionComponent<
     >
       {overrideWithKeplrInstallLink ? (
         <button
-          className="bg-osmoverse-900 hover:bg-osmoverse-700 transition-colors rounded-2xl p-5 flex items-center"
+          className="flex items-center rounded-2xl bg-osmoverse-900 p-5 transition-colors hover:bg-osmoverse-700"
           onClick={(e) => {
             e.preventDefault();
             window.open(overrideWithKeplrInstallLink, "_blank");
@@ -39,9 +39,9 @@ export const KeplrConnectionSelectModal: FunctionComponent<
             width={64}
             height={64}
           />
-          <div className="flex flex-col text-left ml-5">
+          <div className="ml-5 flex flex-col text-left">
             <div className="flex items-center gap-2">
-              <h6>{t("installKeplr")}</h6>
+              <h6>{t("keplr.install")}</h6>
               <Image
                 src="/icons/external-link-white.svg"
                 alt="external link"
@@ -49,14 +49,14 @@ export const KeplrConnectionSelectModal: FunctionComponent<
                 height={14}
               />
             </div>
-            <p className="body2 text-osmoverse-400 mt-1">
+            <p className="body2 mt-1 text-osmoverse-400">
               {overrideWithKeplrInstallLink}
             </p>
           </div>
         </button>
       ) : (
         <button
-          className="bg-osmoverse-900 hover:bg-osmoverse-700 transition-colors rounded-2xl p-5 flex items-center"
+          className="flex items-center rounded-2xl bg-osmoverse-900 p-5 transition-colors hover:bg-osmoverse-700"
           onClick={(e) => {
             e.preventDefault();
             onSelectExtension();
@@ -68,19 +68,19 @@ export const KeplrConnectionSelectModal: FunctionComponent<
             width={64}
             height={64}
           />
-          <div className="flex flex-col text-left ml-5">
+          <div className="ml-5 flex flex-col text-left">
             <h6>{t("keplr.wallet")}</h6>
-            <p className="body2 text-osmoverse-400 mt-1">
+            <p className="body2 mt-1 text-osmoverse-400">
               {t("keplr.extension")}
             </p>
           </div>
-          <p className="body2 text-osmoverse-400 mt-1">
+          <p className="body2 mt-1 text-osmoverse-400">
             {overrideWithKeplrInstallLink}
           </p>
         </button>
       )}
       <button
-        className="bg-osmoverse-900 hover:bg-osmoverse-700 transition-colors rounded-2xl p-5 flex items-center mt-5"
+        className="mt-5 flex items-center rounded-2xl bg-osmoverse-900 p-5 transition-colors hover:bg-osmoverse-700"
         onClick={(e) => {
           e.preventDefault();
           onSelectWalletConnect();
@@ -92,12 +92,12 @@ export const KeplrConnectionSelectModal: FunctionComponent<
           width={64}
           height={64}
         />
-        <div className="flex flex-col text-left ml-5">
+        <div className="ml-5 flex flex-col text-left">
           <h6>{t("keplr.walletConnect")}</h6>
-          <p className="body2 text-osmoverse-400 mt-1">{t("keplr.mobile")}</p>
+          <p className="body2 mt-1 text-osmoverse-400">{t("keplr.mobile")}</p>
         </div>
       </button>
-      <div className="mt-5 p-5 rounded-2xl bg-osmoverse-700">
+      <div className="mt-5 rounded-2xl bg-osmoverse-700 p-5">
         <p className="caption text-white-mid">
           {t("connectDisclaimer")}{" "}
           <Link href="/disclaimer" passHref>

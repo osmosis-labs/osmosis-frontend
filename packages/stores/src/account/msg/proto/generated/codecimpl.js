@@ -4148,7 +4148,7 @@ exports.osmosis = $root.osmosis = (() => {
           v1beta1.Pool = (function () {
             function Pool(p) {
               this.poolLiquidity = [];
-              this.scalingFactor = [];
+              this.scalingFactors = [];
               if (p)
                 for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
                   if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
@@ -4161,8 +4161,8 @@ exports.osmosis = $root.osmosis = (() => {
             Pool.prototype.futurePoolGovernor = "";
             Pool.prototype.totalShares = null;
             Pool.prototype.poolLiquidity = $util.emptyArray;
-            Pool.prototype.scalingFactor = $util.emptyArray;
-            Pool.prototype.scalingFactorGovernor = "";
+            Pool.prototype.scalingFactors = $util.emptyArray;
+            Pool.prototype.scalingFactorController = "";
             Pool.create = function create(properties) {
               return new Pool(properties);
             };
@@ -4200,17 +4200,17 @@ exports.osmosis = $root.osmosis = (() => {
                     w.uint32(50).fork()
                   ).ldelim();
               }
-              if (m.scalingFactor != null && m.scalingFactor.length) {
+              if (m.scalingFactors != null && m.scalingFactors.length) {
                 w.uint32(58).fork();
-                for (var i = 0; i < m.scalingFactor.length; ++i)
-                  w.uint64(m.scalingFactor[i]);
+                for (var i = 0; i < m.scalingFactors.length; ++i)
+                  w.uint64(m.scalingFactors[i]);
                 w.ldelim();
               }
               if (
-                m.scalingFactorGovernor != null &&
-                Object.hasOwnProperty.call(m, "scalingFactorGovernor")
+                m.scalingFactorController != null &&
+                Object.hasOwnProperty.call(m, "scalingFactorController")
               )
-                w.uint32(66).string(m.scalingFactorGovernor);
+                w.uint32(66).string(m.scalingFactorController);
               return w;
             };
             Pool.decode = function decode(r, l) {
@@ -4250,15 +4250,15 @@ exports.osmosis = $root.osmosis = (() => {
                     );
                     break;
                   case 7:
-                    if (!(m.scalingFactor && m.scalingFactor.length))
-                      m.scalingFactor = [];
+                    if (!(m.scalingFactors && m.scalingFactors.length))
+                      m.scalingFactors = [];
                     if ((t & 7) === 2) {
                       var c2 = r.uint32() + r.pos;
-                      while (r.pos < c2) m.scalingFactor.push(r.uint64());
-                    } else m.scalingFactor.push(r.uint64());
+                      while (r.pos < c2) m.scalingFactors.push(r.uint64());
+                    } else m.scalingFactors.push(r.uint64());
                     break;
                   case 8:
-                    m.scalingFactorGovernor = r.string();
+                    m.scalingFactorController = r.string();
                     break;
                   default:
                     r.skipType(t & 7);
@@ -4328,30 +4328,30 @@ exports.osmosis = $root.osmosis = (() => {
                     );
                 }
               }
-              if (d.scalingFactor) {
-                if (!Array.isArray(d.scalingFactor))
+              if (d.scalingFactors) {
+                if (!Array.isArray(d.scalingFactors))
                   throw TypeError(
-                    ".osmosis.gamm.poolmodels.stableswap.v1beta1.Pool.scalingFactor: array expected"
+                    ".osmosis.gamm.poolmodels.stableswap.v1beta1.Pool.scalingFactors: array expected"
                   );
-                m.scalingFactor = [];
-                for (var i = 0; i < d.scalingFactor.length; ++i) {
+                m.scalingFactors = [];
+                for (var i = 0; i < d.scalingFactors.length; ++i) {
                   if ($util.Long)
-                    (m.scalingFactor[i] = $util.Long.fromValue(
-                      d.scalingFactor[i]
+                    (m.scalingFactors[i] = $util.Long.fromValue(
+                      d.scalingFactors[i]
                     )).unsigned = true;
-                  else if (typeof d.scalingFactor[i] === "string")
-                    m.scalingFactor[i] = parseInt(d.scalingFactor[i], 10);
-                  else if (typeof d.scalingFactor[i] === "number")
-                    m.scalingFactor[i] = d.scalingFactor[i];
-                  else if (typeof d.scalingFactor[i] === "object")
-                    m.scalingFactor[i] = new $util.LongBits(
-                      d.scalingFactor[i].low >>> 0,
-                      d.scalingFactor[i].high >>> 0
+                  else if (typeof d.scalingFactors[i] === "string")
+                    m.scalingFactors[i] = parseInt(d.scalingFactors[i], 10);
+                  else if (typeof d.scalingFactors[i] === "number")
+                    m.scalingFactors[i] = d.scalingFactors[i];
+                  else if (typeof d.scalingFactors[i] === "object")
+                    m.scalingFactors[i] = new $util.LongBits(
+                      d.scalingFactors[i].low >>> 0,
+                      d.scalingFactors[i].high >>> 0
                     ).toNumber(true);
                 }
               }
-              if (d.scalingFactorGovernor != null) {
-                m.scalingFactorGovernor = String(d.scalingFactorGovernor);
+              if (d.scalingFactorController != null) {
+                m.scalingFactorController = String(d.scalingFactorController);
               }
               return m;
             };
@@ -4360,7 +4360,7 @@ exports.osmosis = $root.osmosis = (() => {
               var d = {};
               if (o.arrays || o.defaults) {
                 d.poolLiquidity = [];
-                d.scalingFactor = [];
+                d.scalingFactors = [];
               }
               if (o.defaults) {
                 d.address = "";
@@ -4376,7 +4376,7 @@ exports.osmosis = $root.osmosis = (() => {
                 d.poolParams = null;
                 d.futurePoolGovernor = "";
                 d.totalShares = null;
-                d.scalingFactorGovernor = "";
+                d.scalingFactorController = "";
               }
               if (m.address != null && m.hasOwnProperty("address")) {
                 d.address = m.address;
@@ -4423,31 +4423,33 @@ exports.osmosis = $root.osmosis = (() => {
                   );
                 }
               }
-              if (m.scalingFactor && m.scalingFactor.length) {
-                d.scalingFactor = [];
-                for (var j = 0; j < m.scalingFactor.length; ++j) {
-                  if (typeof m.scalingFactor[j] === "number")
-                    d.scalingFactor[j] =
+              if (m.scalingFactors && m.scalingFactors.length) {
+                d.scalingFactors = [];
+                for (var j = 0; j < m.scalingFactors.length; ++j) {
+                  if (typeof m.scalingFactors[j] === "number")
+                    d.scalingFactors[j] =
                       o.longs === String
-                        ? String(m.scalingFactor[j])
-                        : m.scalingFactor[j];
+                        ? String(m.scalingFactors[j])
+                        : m.scalingFactors[j];
                   else
-                    d.scalingFactor[j] =
+                    d.scalingFactors[j] =
                       o.longs === String
-                        ? $util.Long.prototype.toString.call(m.scalingFactor[j])
+                        ? $util.Long.prototype.toString.call(
+                            m.scalingFactors[j]
+                          )
                         : o.longs === Number
                         ? new $util.LongBits(
-                            m.scalingFactor[j].low >>> 0,
-                            m.scalingFactor[j].high >>> 0
+                            m.scalingFactors[j].low >>> 0,
+                            m.scalingFactors[j].high >>> 0
                           ).toNumber(true)
-                        : m.scalingFactor[j];
+                        : m.scalingFactors[j];
                 }
               }
               if (
-                m.scalingFactorGovernor != null &&
-                m.hasOwnProperty("scalingFactorGovernor")
+                m.scalingFactorController != null &&
+                m.hasOwnProperty("scalingFactorController")
               ) {
-                d.scalingFactorGovernor = m.scalingFactorGovernor;
+                d.scalingFactorController = m.scalingFactorController;
               }
               return d;
             };
@@ -4526,6 +4528,7 @@ exports.osmosis = $root.osmosis = (() => {
               $util.emptyArray;
             MsgCreateStableswapPool.prototype.scalingFactors = $util.emptyArray;
             MsgCreateStableswapPool.prototype.futurePoolGovernor = "";
+            MsgCreateStableswapPool.prototype.scalingFactorController = "";
             MsgCreateStableswapPool.create = function create(properties) {
               return new MsgCreateStableswapPool(properties);
             };
@@ -4562,6 +4565,11 @@ exports.osmosis = $root.osmosis = (() => {
                 Object.hasOwnProperty.call(m, "futurePoolGovernor")
               )
                 w.uint32(42).string(m.futurePoolGovernor);
+              if (
+                m.scalingFactorController != null &&
+                Object.hasOwnProperty.call(m, "scalingFactorController")
+              )
+                w.uint32(50).string(m.scalingFactorController);
               return w;
             };
             MsgCreateStableswapPool.decode = function decode(r, l) {
@@ -4601,6 +4609,9 @@ exports.osmosis = $root.osmosis = (() => {
                     break;
                   case 5:
                     m.futurePoolGovernor = r.string();
+                    break;
+                  case 6:
+                    m.scalingFactorController = r.string();
                     break;
                   default:
                     r.skipType(t & 7);
@@ -4673,6 +4684,9 @@ exports.osmosis = $root.osmosis = (() => {
               if (d.futurePoolGovernor != null) {
                 m.futurePoolGovernor = String(d.futurePoolGovernor);
               }
+              if (d.scalingFactorController != null) {
+                m.scalingFactorController = String(d.scalingFactorController);
+              }
               return m;
             };
             MsgCreateStableswapPool.toObject = function toObject(m, o) {
@@ -4686,6 +4700,7 @@ exports.osmosis = $root.osmosis = (() => {
                 d.sender = "";
                 d.poolParams = null;
                 d.futurePoolGovernor = "";
+                d.scalingFactorController = "";
               }
               if (m.sender != null && m.hasOwnProperty("sender")) {
                 d.sender = m.sender;
@@ -4734,6 +4749,12 @@ exports.osmosis = $root.osmosis = (() => {
                 m.hasOwnProperty("futurePoolGovernor")
               ) {
                 d.futurePoolGovernor = m.futurePoolGovernor;
+              }
+              if (
+                m.scalingFactorController != null &&
+                m.hasOwnProperty("scalingFactorController")
+              ) {
+                d.scalingFactorController = m.scalingFactorController;
               }
               return d;
             };
@@ -5095,1752 +5116,6 @@ exports.osmosis = $root.osmosis = (() => {
       return poolmodels;
     })();
     return gamm;
-  })();
-  osmosis.lockup = (function () {
-    const lockup = {};
-    lockup.PeriodLock = (function () {
-      function PeriodLock(p) {
-        this.coins = [];
-        if (p)
-          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
-            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-      }
-      PeriodLock.prototype.ID = $util.Long
-        ? $util.Long.fromBits(0, 0, true)
-        : 0;
-      PeriodLock.prototype.owner = "";
-      PeriodLock.prototype.duration = null;
-      PeriodLock.prototype.endTime = null;
-      PeriodLock.prototype.coins = $util.emptyArray;
-      PeriodLock.create = function create(properties) {
-        return new PeriodLock(properties);
-      };
-      PeriodLock.encode = function encode(m, w) {
-        if (!w) w = $Writer.create();
-        if (m.ID != null && Object.hasOwnProperty.call(m, "ID"))
-          w.uint32(8).uint64(m.ID);
-        if (m.owner != null && Object.hasOwnProperty.call(m, "owner"))
-          w.uint32(18).string(m.owner);
-        if (m.duration != null && Object.hasOwnProperty.call(m, "duration"))
-          $root.google.protobuf.Duration.encode(
-            m.duration,
-            w.uint32(26).fork()
-          ).ldelim();
-        if (m.endTime != null && Object.hasOwnProperty.call(m, "endTime"))
-          $root.google.protobuf.Timestamp.encode(
-            m.endTime,
-            w.uint32(34).fork()
-          ).ldelim();
-        if (m.coins != null && m.coins.length) {
-          for (var i = 0; i < m.coins.length; ++i)
-            $root.cosmos.base.v1beta1.Coin.encode(
-              m.coins[i],
-              w.uint32(42).fork()
-            ).ldelim();
-        }
-        return w;
-      };
-      PeriodLock.decode = function decode(r, l) {
-        if (!(r instanceof $Reader)) r = $Reader.create(r);
-        var c = l === undefined ? r.len : r.pos + l,
-          m = new $root.osmosis.lockup.PeriodLock();
-        while (r.pos < c) {
-          var t = r.uint32();
-          switch (t >>> 3) {
-            case 1:
-              m.ID = r.uint64();
-              break;
-            case 2:
-              m.owner = r.string();
-              break;
-            case 3:
-              m.duration = $root.google.protobuf.Duration.decode(r, r.uint32());
-              break;
-            case 4:
-              m.endTime = $root.google.protobuf.Timestamp.decode(r, r.uint32());
-              break;
-            case 5:
-              if (!(m.coins && m.coins.length)) m.coins = [];
-              m.coins.push(
-                $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
-              );
-              break;
-            default:
-              r.skipType(t & 7);
-              break;
-          }
-        }
-        return m;
-      };
-      PeriodLock.fromObject = function fromObject(d) {
-        if (d instanceof $root.osmosis.lockup.PeriodLock) return d;
-        var m = new $root.osmosis.lockup.PeriodLock();
-        if (d.ID != null) {
-          if ($util.Long) (m.ID = $util.Long.fromValue(d.ID)).unsigned = true;
-          else if (typeof d.ID === "string") m.ID = parseInt(d.ID, 10);
-          else if (typeof d.ID === "number") m.ID = d.ID;
-          else if (typeof d.ID === "object")
-            m.ID = new $util.LongBits(d.ID.low >>> 0, d.ID.high >>> 0).toNumber(
-              true
-            );
-        }
-        if (d.owner != null) {
-          m.owner = String(d.owner);
-        }
-        if (d.duration != null) {
-          if (typeof d.duration !== "object")
-            throw TypeError(
-              ".osmosis.lockup.PeriodLock.duration: object expected"
-            );
-          m.duration = $root.google.protobuf.Duration.fromObject(d.duration);
-        }
-        if (d.endTime != null) {
-          if (typeof d.endTime !== "object")
-            throw TypeError(
-              ".osmosis.lockup.PeriodLock.endTime: object expected"
-            );
-          m.endTime = $root.google.protobuf.Timestamp.fromObject(d.endTime);
-        }
-        if (d.coins) {
-          if (!Array.isArray(d.coins))
-            throw TypeError(".osmosis.lockup.PeriodLock.coins: array expected");
-          m.coins = [];
-          for (var i = 0; i < d.coins.length; ++i) {
-            if (typeof d.coins[i] !== "object")
-              throw TypeError(
-                ".osmosis.lockup.PeriodLock.coins: object expected"
-              );
-            m.coins[i] = $root.cosmos.base.v1beta1.Coin.fromObject(d.coins[i]);
-          }
-        }
-        return m;
-      };
-      PeriodLock.toObject = function toObject(m, o) {
-        if (!o) o = {};
-        var d = {};
-        if (o.arrays || o.defaults) {
-          d.coins = [];
-        }
-        if (o.defaults) {
-          if ($util.Long) {
-            var n = new $util.Long(0, 0, true);
-            d.ID =
-              o.longs === String
-                ? n.toString()
-                : o.longs === Number
-                ? n.toNumber()
-                : n;
-          } else d.ID = o.longs === String ? "0" : 0;
-          d.owner = "";
-          d.duration = null;
-          d.endTime = null;
-        }
-        if (m.ID != null && m.hasOwnProperty("ID")) {
-          if (typeof m.ID === "number")
-            d.ID = o.longs === String ? String(m.ID) : m.ID;
-          else
-            d.ID =
-              o.longs === String
-                ? $util.Long.prototype.toString.call(m.ID)
-                : o.longs === Number
-                ? new $util.LongBits(m.ID.low >>> 0, m.ID.high >>> 0).toNumber(
-                    true
-                  )
-                : m.ID;
-        }
-        if (m.owner != null && m.hasOwnProperty("owner")) {
-          d.owner = m.owner;
-        }
-        if (m.duration != null && m.hasOwnProperty("duration")) {
-          d.duration = $root.google.protobuf.Duration.toObject(m.duration, o);
-        }
-        if (m.endTime != null && m.hasOwnProperty("endTime")) {
-          d.endTime = $root.google.protobuf.Timestamp.toObject(m.endTime, o);
-        }
-        if (m.coins && m.coins.length) {
-          d.coins = [];
-          for (var j = 0; j < m.coins.length; ++j) {
-            d.coins[j] = $root.cosmos.base.v1beta1.Coin.toObject(m.coins[j], o);
-          }
-        }
-        return d;
-      };
-      PeriodLock.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-      };
-      return PeriodLock;
-    })();
-    lockup.LockQueryType = (function () {
-      const valuesById = {},
-        values = Object.create(valuesById);
-      values[(valuesById[0] = "ByDuration")] = 0;
-      values[(valuesById[1] = "ByTime")] = 1;
-      return values;
-    })();
-    lockup.QueryCondition = (function () {
-      function QueryCondition(p) {
-        if (p)
-          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
-            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-      }
-      QueryCondition.prototype.lockQueryType = 0;
-      QueryCondition.prototype.denom = "";
-      QueryCondition.prototype.duration = null;
-      QueryCondition.prototype.timestamp = null;
-      QueryCondition.create = function create(properties) {
-        return new QueryCondition(properties);
-      };
-      QueryCondition.encode = function encode(m, w) {
-        if (!w) w = $Writer.create();
-        if (
-          m.lockQueryType != null &&
-          Object.hasOwnProperty.call(m, "lockQueryType")
-        )
-          w.uint32(8).int32(m.lockQueryType);
-        if (m.denom != null && Object.hasOwnProperty.call(m, "denom"))
-          w.uint32(18).string(m.denom);
-        if (m.duration != null && Object.hasOwnProperty.call(m, "duration"))
-          $root.google.protobuf.Duration.encode(
-            m.duration,
-            w.uint32(26).fork()
-          ).ldelim();
-        if (m.timestamp != null && Object.hasOwnProperty.call(m, "timestamp"))
-          $root.google.protobuf.Timestamp.encode(
-            m.timestamp,
-            w.uint32(34).fork()
-          ).ldelim();
-        return w;
-      };
-      QueryCondition.decode = function decode(r, l) {
-        if (!(r instanceof $Reader)) r = $Reader.create(r);
-        var c = l === undefined ? r.len : r.pos + l,
-          m = new $root.osmosis.lockup.QueryCondition();
-        while (r.pos < c) {
-          var t = r.uint32();
-          switch (t >>> 3) {
-            case 1:
-              m.lockQueryType = r.int32();
-              break;
-            case 2:
-              m.denom = r.string();
-              break;
-            case 3:
-              m.duration = $root.google.protobuf.Duration.decode(r, r.uint32());
-              break;
-            case 4:
-              m.timestamp = $root.google.protobuf.Timestamp.decode(
-                r,
-                r.uint32()
-              );
-              break;
-            default:
-              r.skipType(t & 7);
-              break;
-          }
-        }
-        return m;
-      };
-      QueryCondition.fromObject = function fromObject(d) {
-        if (d instanceof $root.osmosis.lockup.QueryCondition) return d;
-        var m = new $root.osmosis.lockup.QueryCondition();
-        switch (d.lockQueryType) {
-          case "ByDuration":
-          case 0:
-            m.lockQueryType = 0;
-            break;
-          case "ByTime":
-          case 1:
-            m.lockQueryType = 1;
-            break;
-        }
-        if (d.denom != null) {
-          m.denom = String(d.denom);
-        }
-        if (d.duration != null) {
-          if (typeof d.duration !== "object")
-            throw TypeError(
-              ".osmosis.lockup.QueryCondition.duration: object expected"
-            );
-          m.duration = $root.google.protobuf.Duration.fromObject(d.duration);
-        }
-        if (d.timestamp != null) {
-          if (typeof d.timestamp !== "object")
-            throw TypeError(
-              ".osmosis.lockup.QueryCondition.timestamp: object expected"
-            );
-          m.timestamp = $root.google.protobuf.Timestamp.fromObject(d.timestamp);
-        }
-        return m;
-      };
-      QueryCondition.toObject = function toObject(m, o) {
-        if (!o) o = {};
-        var d = {};
-        if (o.defaults) {
-          d.lockQueryType = o.enums === String ? "ByDuration" : 0;
-          d.denom = "";
-          d.duration = null;
-          d.timestamp = null;
-        }
-        if (m.lockQueryType != null && m.hasOwnProperty("lockQueryType")) {
-          d.lockQueryType =
-            o.enums === String
-              ? $root.osmosis.lockup.LockQueryType[m.lockQueryType]
-              : m.lockQueryType;
-        }
-        if (m.denom != null && m.hasOwnProperty("denom")) {
-          d.denom = m.denom;
-        }
-        if (m.duration != null && m.hasOwnProperty("duration")) {
-          d.duration = $root.google.protobuf.Duration.toObject(m.duration, o);
-        }
-        if (m.timestamp != null && m.hasOwnProperty("timestamp")) {
-          d.timestamp = $root.google.protobuf.Timestamp.toObject(
-            m.timestamp,
-            o
-          );
-        }
-        return d;
-      };
-      QueryCondition.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-      };
-      return QueryCondition;
-    })();
-    lockup.SyntheticLock = (function () {
-      function SyntheticLock(p) {
-        if (p)
-          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
-            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-      }
-      SyntheticLock.prototype.underlyingLockId = $util.Long
-        ? $util.Long.fromBits(0, 0, true)
-        : 0;
-      SyntheticLock.prototype.synthDenom = "";
-      SyntheticLock.prototype.endTime = null;
-      SyntheticLock.prototype.duration = null;
-      SyntheticLock.create = function create(properties) {
-        return new SyntheticLock(properties);
-      };
-      SyntheticLock.encode = function encode(m, w) {
-        if (!w) w = $Writer.create();
-        if (
-          m.underlyingLockId != null &&
-          Object.hasOwnProperty.call(m, "underlyingLockId")
-        )
-          w.uint32(8).uint64(m.underlyingLockId);
-        if (m.synthDenom != null && Object.hasOwnProperty.call(m, "synthDenom"))
-          w.uint32(18).string(m.synthDenom);
-        if (m.endTime != null && Object.hasOwnProperty.call(m, "endTime"))
-          $root.google.protobuf.Timestamp.encode(
-            m.endTime,
-            w.uint32(26).fork()
-          ).ldelim();
-        if (m.duration != null && Object.hasOwnProperty.call(m, "duration"))
-          $root.google.protobuf.Duration.encode(
-            m.duration,
-            w.uint32(34).fork()
-          ).ldelim();
-        return w;
-      };
-      SyntheticLock.decode = function decode(r, l) {
-        if (!(r instanceof $Reader)) r = $Reader.create(r);
-        var c = l === undefined ? r.len : r.pos + l,
-          m = new $root.osmosis.lockup.SyntheticLock();
-        while (r.pos < c) {
-          var t = r.uint32();
-          switch (t >>> 3) {
-            case 1:
-              m.underlyingLockId = r.uint64();
-              break;
-            case 2:
-              m.synthDenom = r.string();
-              break;
-            case 3:
-              m.endTime = $root.google.protobuf.Timestamp.decode(r, r.uint32());
-              break;
-            case 4:
-              m.duration = $root.google.protobuf.Duration.decode(r, r.uint32());
-              break;
-            default:
-              r.skipType(t & 7);
-              break;
-          }
-        }
-        return m;
-      };
-      SyntheticLock.fromObject = function fromObject(d) {
-        if (d instanceof $root.osmosis.lockup.SyntheticLock) return d;
-        var m = new $root.osmosis.lockup.SyntheticLock();
-        if (d.underlyingLockId != null) {
-          if ($util.Long)
-            (m.underlyingLockId = $util.Long.fromValue(
-              d.underlyingLockId
-            )).unsigned = true;
-          else if (typeof d.underlyingLockId === "string")
-            m.underlyingLockId = parseInt(d.underlyingLockId, 10);
-          else if (typeof d.underlyingLockId === "number")
-            m.underlyingLockId = d.underlyingLockId;
-          else if (typeof d.underlyingLockId === "object")
-            m.underlyingLockId = new $util.LongBits(
-              d.underlyingLockId.low >>> 0,
-              d.underlyingLockId.high >>> 0
-            ).toNumber(true);
-        }
-        if (d.synthDenom != null) {
-          m.synthDenom = String(d.synthDenom);
-        }
-        if (d.endTime != null) {
-          if (typeof d.endTime !== "object")
-            throw TypeError(
-              ".osmosis.lockup.SyntheticLock.endTime: object expected"
-            );
-          m.endTime = $root.google.protobuf.Timestamp.fromObject(d.endTime);
-        }
-        if (d.duration != null) {
-          if (typeof d.duration !== "object")
-            throw TypeError(
-              ".osmosis.lockup.SyntheticLock.duration: object expected"
-            );
-          m.duration = $root.google.protobuf.Duration.fromObject(d.duration);
-        }
-        return m;
-      };
-      SyntheticLock.toObject = function toObject(m, o) {
-        if (!o) o = {};
-        var d = {};
-        if (o.defaults) {
-          if ($util.Long) {
-            var n = new $util.Long(0, 0, true);
-            d.underlyingLockId =
-              o.longs === String
-                ? n.toString()
-                : o.longs === Number
-                ? n.toNumber()
-                : n;
-          } else d.underlyingLockId = o.longs === String ? "0" : 0;
-          d.synthDenom = "";
-          d.endTime = null;
-          d.duration = null;
-        }
-        if (
-          m.underlyingLockId != null &&
-          m.hasOwnProperty("underlyingLockId")
-        ) {
-          if (typeof m.underlyingLockId === "number")
-            d.underlyingLockId =
-              o.longs === String
-                ? String(m.underlyingLockId)
-                : m.underlyingLockId;
-          else
-            d.underlyingLockId =
-              o.longs === String
-                ? $util.Long.prototype.toString.call(m.underlyingLockId)
-                : o.longs === Number
-                ? new $util.LongBits(
-                    m.underlyingLockId.low >>> 0,
-                    m.underlyingLockId.high >>> 0
-                  ).toNumber(true)
-                : m.underlyingLockId;
-        }
-        if (m.synthDenom != null && m.hasOwnProperty("synthDenom")) {
-          d.synthDenom = m.synthDenom;
-        }
-        if (m.endTime != null && m.hasOwnProperty("endTime")) {
-          d.endTime = $root.google.protobuf.Timestamp.toObject(m.endTime, o);
-        }
-        if (m.duration != null && m.hasOwnProperty("duration")) {
-          d.duration = $root.google.protobuf.Duration.toObject(m.duration, o);
-        }
-        return d;
-      };
-      SyntheticLock.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-      };
-      return SyntheticLock;
-    })();
-    lockup.Msg = (function () {
-      function Msg(rpcImpl, requestDelimited, responseDelimited) {
-        $protobuf.rpc.Service.call(
-          this,
-          rpcImpl,
-          requestDelimited,
-          responseDelimited
-        );
-      }
-      (Msg.prototype = Object.create(
-        $protobuf.rpc.Service.prototype
-      )).constructor = Msg;
-      Msg.create = function create(
-        rpcImpl,
-        requestDelimited,
-        responseDelimited
-      ) {
-        return new this(rpcImpl, requestDelimited, responseDelimited);
-      };
-      Object.defineProperty(
-        (Msg.prototype.lockTokens = function lockTokens(request, callback) {
-          return this.rpcCall(
-            lockTokens,
-            $root.osmosis.lockup.MsgLockTokens,
-            $root.osmosis.lockup.MsgLockTokensResponse,
-            request,
-            callback
-          );
-        }),
-        "name",
-        { value: "LockTokens" }
-      );
-      Object.defineProperty(
-        (Msg.prototype.beginUnlockingAll = function beginUnlockingAll(
-          request,
-          callback
-        ) {
-          return this.rpcCall(
-            beginUnlockingAll,
-            $root.osmosis.lockup.MsgBeginUnlockingAll,
-            $root.osmosis.lockup.MsgBeginUnlockingAllResponse,
-            request,
-            callback
-          );
-        }),
-        "name",
-        { value: "BeginUnlockingAll" }
-      );
-      Object.defineProperty(
-        (Msg.prototype.beginUnlocking = function beginUnlocking(
-          request,
-          callback
-        ) {
-          return this.rpcCall(
-            beginUnlocking,
-            $root.osmosis.lockup.MsgBeginUnlocking,
-            $root.osmosis.lockup.MsgBeginUnlockingResponse,
-            request,
-            callback
-          );
-        }),
-        "name",
-        { value: "BeginUnlocking" }
-      );
-      Object.defineProperty(
-        (Msg.prototype.extendLockup = function extendLockup(request, callback) {
-          return this.rpcCall(
-            extendLockup,
-            $root.osmosis.lockup.MsgExtendLockup,
-            $root.osmosis.lockup.MsgExtendLockupResponse,
-            request,
-            callback
-          );
-        }),
-        "name",
-        { value: "ExtendLockup" }
-      );
-      return Msg;
-    })();
-    lockup.MsgLockTokens = (function () {
-      function MsgLockTokens(p) {
-        this.coins = [];
-        if (p)
-          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
-            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-      }
-      MsgLockTokens.prototype.owner = "";
-      MsgLockTokens.prototype.duration = null;
-      MsgLockTokens.prototype.coins = $util.emptyArray;
-      MsgLockTokens.create = function create(properties) {
-        return new MsgLockTokens(properties);
-      };
-      MsgLockTokens.encode = function encode(m, w) {
-        if (!w) w = $Writer.create();
-        if (m.owner != null && Object.hasOwnProperty.call(m, "owner"))
-          w.uint32(10).string(m.owner);
-        if (m.duration != null && Object.hasOwnProperty.call(m, "duration"))
-          $root.google.protobuf.Duration.encode(
-            m.duration,
-            w.uint32(18).fork()
-          ).ldelim();
-        if (m.coins != null && m.coins.length) {
-          for (var i = 0; i < m.coins.length; ++i)
-            $root.cosmos.base.v1beta1.Coin.encode(
-              m.coins[i],
-              w.uint32(26).fork()
-            ).ldelim();
-        }
-        return w;
-      };
-      MsgLockTokens.decode = function decode(r, l) {
-        if (!(r instanceof $Reader)) r = $Reader.create(r);
-        var c = l === undefined ? r.len : r.pos + l,
-          m = new $root.osmosis.lockup.MsgLockTokens();
-        while (r.pos < c) {
-          var t = r.uint32();
-          switch (t >>> 3) {
-            case 1:
-              m.owner = r.string();
-              break;
-            case 2:
-              m.duration = $root.google.protobuf.Duration.decode(r, r.uint32());
-              break;
-            case 3:
-              if (!(m.coins && m.coins.length)) m.coins = [];
-              m.coins.push(
-                $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
-              );
-              break;
-            default:
-              r.skipType(t & 7);
-              break;
-          }
-        }
-        return m;
-      };
-      MsgLockTokens.fromObject = function fromObject(d) {
-        if (d instanceof $root.osmosis.lockup.MsgLockTokens) return d;
-        var m = new $root.osmosis.lockup.MsgLockTokens();
-        if (d.owner != null) {
-          m.owner = String(d.owner);
-        }
-        if (d.duration != null) {
-          if (typeof d.duration !== "object")
-            throw TypeError(
-              ".osmosis.lockup.MsgLockTokens.duration: object expected"
-            );
-          m.duration = $root.google.protobuf.Duration.fromObject(d.duration);
-        }
-        if (d.coins) {
-          if (!Array.isArray(d.coins))
-            throw TypeError(
-              ".osmosis.lockup.MsgLockTokens.coins: array expected"
-            );
-          m.coins = [];
-          for (var i = 0; i < d.coins.length; ++i) {
-            if (typeof d.coins[i] !== "object")
-              throw TypeError(
-                ".osmosis.lockup.MsgLockTokens.coins: object expected"
-              );
-            m.coins[i] = $root.cosmos.base.v1beta1.Coin.fromObject(d.coins[i]);
-          }
-        }
-        return m;
-      };
-      MsgLockTokens.toObject = function toObject(m, o) {
-        if (!o) o = {};
-        var d = {};
-        if (o.arrays || o.defaults) {
-          d.coins = [];
-        }
-        if (o.defaults) {
-          d.owner = "";
-          d.duration = null;
-        }
-        if (m.owner != null && m.hasOwnProperty("owner")) {
-          d.owner = m.owner;
-        }
-        if (m.duration != null && m.hasOwnProperty("duration")) {
-          d.duration = $root.google.protobuf.Duration.toObject(m.duration, o);
-        }
-        if (m.coins && m.coins.length) {
-          d.coins = [];
-          for (var j = 0; j < m.coins.length; ++j) {
-            d.coins[j] = $root.cosmos.base.v1beta1.Coin.toObject(m.coins[j], o);
-          }
-        }
-        return d;
-      };
-      MsgLockTokens.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-      };
-      return MsgLockTokens;
-    })();
-    lockup.MsgLockTokensResponse = (function () {
-      function MsgLockTokensResponse(p) {
-        if (p)
-          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
-            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-      }
-      MsgLockTokensResponse.prototype.ID = $util.Long
-        ? $util.Long.fromBits(0, 0, true)
-        : 0;
-      MsgLockTokensResponse.create = function create(properties) {
-        return new MsgLockTokensResponse(properties);
-      };
-      MsgLockTokensResponse.encode = function encode(m, w) {
-        if (!w) w = $Writer.create();
-        if (m.ID != null && Object.hasOwnProperty.call(m, "ID"))
-          w.uint32(8).uint64(m.ID);
-        return w;
-      };
-      MsgLockTokensResponse.decode = function decode(r, l) {
-        if (!(r instanceof $Reader)) r = $Reader.create(r);
-        var c = l === undefined ? r.len : r.pos + l,
-          m = new $root.osmosis.lockup.MsgLockTokensResponse();
-        while (r.pos < c) {
-          var t = r.uint32();
-          switch (t >>> 3) {
-            case 1:
-              m.ID = r.uint64();
-              break;
-            default:
-              r.skipType(t & 7);
-              break;
-          }
-        }
-        return m;
-      };
-      MsgLockTokensResponse.fromObject = function fromObject(d) {
-        if (d instanceof $root.osmosis.lockup.MsgLockTokensResponse) return d;
-        var m = new $root.osmosis.lockup.MsgLockTokensResponse();
-        if (d.ID != null) {
-          if ($util.Long) (m.ID = $util.Long.fromValue(d.ID)).unsigned = true;
-          else if (typeof d.ID === "string") m.ID = parseInt(d.ID, 10);
-          else if (typeof d.ID === "number") m.ID = d.ID;
-          else if (typeof d.ID === "object")
-            m.ID = new $util.LongBits(d.ID.low >>> 0, d.ID.high >>> 0).toNumber(
-              true
-            );
-        }
-        return m;
-      };
-      MsgLockTokensResponse.toObject = function toObject(m, o) {
-        if (!o) o = {};
-        var d = {};
-        if (o.defaults) {
-          if ($util.Long) {
-            var n = new $util.Long(0, 0, true);
-            d.ID =
-              o.longs === String
-                ? n.toString()
-                : o.longs === Number
-                ? n.toNumber()
-                : n;
-          } else d.ID = o.longs === String ? "0" : 0;
-        }
-        if (m.ID != null && m.hasOwnProperty("ID")) {
-          if (typeof m.ID === "number")
-            d.ID = o.longs === String ? String(m.ID) : m.ID;
-          else
-            d.ID =
-              o.longs === String
-                ? $util.Long.prototype.toString.call(m.ID)
-                : o.longs === Number
-                ? new $util.LongBits(m.ID.low >>> 0, m.ID.high >>> 0).toNumber(
-                    true
-                  )
-                : m.ID;
-        }
-        return d;
-      };
-      MsgLockTokensResponse.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-      };
-      return MsgLockTokensResponse;
-    })();
-    lockup.MsgBeginUnlockingAll = (function () {
-      function MsgBeginUnlockingAll(p) {
-        if (p)
-          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
-            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-      }
-      MsgBeginUnlockingAll.prototype.owner = "";
-      MsgBeginUnlockingAll.create = function create(properties) {
-        return new MsgBeginUnlockingAll(properties);
-      };
-      MsgBeginUnlockingAll.encode = function encode(m, w) {
-        if (!w) w = $Writer.create();
-        if (m.owner != null && Object.hasOwnProperty.call(m, "owner"))
-          w.uint32(10).string(m.owner);
-        return w;
-      };
-      MsgBeginUnlockingAll.decode = function decode(r, l) {
-        if (!(r instanceof $Reader)) r = $Reader.create(r);
-        var c = l === undefined ? r.len : r.pos + l,
-          m = new $root.osmosis.lockup.MsgBeginUnlockingAll();
-        while (r.pos < c) {
-          var t = r.uint32();
-          switch (t >>> 3) {
-            case 1:
-              m.owner = r.string();
-              break;
-            default:
-              r.skipType(t & 7);
-              break;
-          }
-        }
-        return m;
-      };
-      MsgBeginUnlockingAll.fromObject = function fromObject(d) {
-        if (d instanceof $root.osmosis.lockup.MsgBeginUnlockingAll) return d;
-        var m = new $root.osmosis.lockup.MsgBeginUnlockingAll();
-        if (d.owner != null) {
-          m.owner = String(d.owner);
-        }
-        return m;
-      };
-      MsgBeginUnlockingAll.toObject = function toObject(m, o) {
-        if (!o) o = {};
-        var d = {};
-        if (o.defaults) {
-          d.owner = "";
-        }
-        if (m.owner != null && m.hasOwnProperty("owner")) {
-          d.owner = m.owner;
-        }
-        return d;
-      };
-      MsgBeginUnlockingAll.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-      };
-      return MsgBeginUnlockingAll;
-    })();
-    lockup.MsgBeginUnlockingAllResponse = (function () {
-      function MsgBeginUnlockingAllResponse(p) {
-        this.unlocks = [];
-        if (p)
-          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
-            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-      }
-      MsgBeginUnlockingAllResponse.prototype.unlocks = $util.emptyArray;
-      MsgBeginUnlockingAllResponse.create = function create(properties) {
-        return new MsgBeginUnlockingAllResponse(properties);
-      };
-      MsgBeginUnlockingAllResponse.encode = function encode(m, w) {
-        if (!w) w = $Writer.create();
-        if (m.unlocks != null && m.unlocks.length) {
-          for (var i = 0; i < m.unlocks.length; ++i)
-            $root.osmosis.lockup.PeriodLock.encode(
-              m.unlocks[i],
-              w.uint32(10).fork()
-            ).ldelim();
-        }
-        return w;
-      };
-      MsgBeginUnlockingAllResponse.decode = function decode(r, l) {
-        if (!(r instanceof $Reader)) r = $Reader.create(r);
-        var c = l === undefined ? r.len : r.pos + l,
-          m = new $root.osmosis.lockup.MsgBeginUnlockingAllResponse();
-        while (r.pos < c) {
-          var t = r.uint32();
-          switch (t >>> 3) {
-            case 1:
-              if (!(m.unlocks && m.unlocks.length)) m.unlocks = [];
-              m.unlocks.push(
-                $root.osmosis.lockup.PeriodLock.decode(r, r.uint32())
-              );
-              break;
-            default:
-              r.skipType(t & 7);
-              break;
-          }
-        }
-        return m;
-      };
-      MsgBeginUnlockingAllResponse.fromObject = function fromObject(d) {
-        if (d instanceof $root.osmosis.lockup.MsgBeginUnlockingAllResponse)
-          return d;
-        var m = new $root.osmosis.lockup.MsgBeginUnlockingAllResponse();
-        if (d.unlocks) {
-          if (!Array.isArray(d.unlocks))
-            throw TypeError(
-              ".osmosis.lockup.MsgBeginUnlockingAllResponse.unlocks: array expected"
-            );
-          m.unlocks = [];
-          for (var i = 0; i < d.unlocks.length; ++i) {
-            if (typeof d.unlocks[i] !== "object")
-              throw TypeError(
-                ".osmosis.lockup.MsgBeginUnlockingAllResponse.unlocks: object expected"
-              );
-            m.unlocks[i] = $root.osmosis.lockup.PeriodLock.fromObject(
-              d.unlocks[i]
-            );
-          }
-        }
-        return m;
-      };
-      MsgBeginUnlockingAllResponse.toObject = function toObject(m, o) {
-        if (!o) o = {};
-        var d = {};
-        if (o.arrays || o.defaults) {
-          d.unlocks = [];
-        }
-        if (m.unlocks && m.unlocks.length) {
-          d.unlocks = [];
-          for (var j = 0; j < m.unlocks.length; ++j) {
-            d.unlocks[j] = $root.osmosis.lockup.PeriodLock.toObject(
-              m.unlocks[j],
-              o
-            );
-          }
-        }
-        return d;
-      };
-      MsgBeginUnlockingAllResponse.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-      };
-      return MsgBeginUnlockingAllResponse;
-    })();
-    lockup.MsgBeginUnlocking = (function () {
-      function MsgBeginUnlocking(p) {
-        this.coins = [];
-        if (p)
-          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
-            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-      }
-      MsgBeginUnlocking.prototype.owner = "";
-      MsgBeginUnlocking.prototype.ID = $util.Long
-        ? $util.Long.fromBits(0, 0, true)
-        : 0;
-      MsgBeginUnlocking.prototype.coins = $util.emptyArray;
-      MsgBeginUnlocking.create = function create(properties) {
-        return new MsgBeginUnlocking(properties);
-      };
-      MsgBeginUnlocking.encode = function encode(m, w) {
-        if (!w) w = $Writer.create();
-        if (m.owner != null && Object.hasOwnProperty.call(m, "owner"))
-          w.uint32(10).string(m.owner);
-        if (m.ID != null && Object.hasOwnProperty.call(m, "ID"))
-          w.uint32(16).uint64(m.ID);
-        if (m.coins != null && m.coins.length) {
-          for (var i = 0; i < m.coins.length; ++i)
-            $root.cosmos.base.v1beta1.Coin.encode(
-              m.coins[i],
-              w.uint32(26).fork()
-            ).ldelim();
-        }
-        return w;
-      };
-      MsgBeginUnlocking.decode = function decode(r, l) {
-        if (!(r instanceof $Reader)) r = $Reader.create(r);
-        var c = l === undefined ? r.len : r.pos + l,
-          m = new $root.osmosis.lockup.MsgBeginUnlocking();
-        while (r.pos < c) {
-          var t = r.uint32();
-          switch (t >>> 3) {
-            case 1:
-              m.owner = r.string();
-              break;
-            case 2:
-              m.ID = r.uint64();
-              break;
-            case 3:
-              if (!(m.coins && m.coins.length)) m.coins = [];
-              m.coins.push(
-                $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
-              );
-              break;
-            default:
-              r.skipType(t & 7);
-              break;
-          }
-        }
-        return m;
-      };
-      MsgBeginUnlocking.fromObject = function fromObject(d) {
-        if (d instanceof $root.osmosis.lockup.MsgBeginUnlocking) return d;
-        var m = new $root.osmosis.lockup.MsgBeginUnlocking();
-        if (d.owner != null) {
-          m.owner = String(d.owner);
-        }
-        if (d.ID != null) {
-          if ($util.Long) (m.ID = $util.Long.fromValue(d.ID)).unsigned = true;
-          else if (typeof d.ID === "string") m.ID = parseInt(d.ID, 10);
-          else if (typeof d.ID === "number") m.ID = d.ID;
-          else if (typeof d.ID === "object")
-            m.ID = new $util.LongBits(d.ID.low >>> 0, d.ID.high >>> 0).toNumber(
-              true
-            );
-        }
-        if (d.coins) {
-          if (!Array.isArray(d.coins))
-            throw TypeError(
-              ".osmosis.lockup.MsgBeginUnlocking.coins: array expected"
-            );
-          m.coins = [];
-          for (var i = 0; i < d.coins.length; ++i) {
-            if (typeof d.coins[i] !== "object")
-              throw TypeError(
-                ".osmosis.lockup.MsgBeginUnlocking.coins: object expected"
-              );
-            m.coins[i] = $root.cosmos.base.v1beta1.Coin.fromObject(d.coins[i]);
-          }
-        }
-        return m;
-      };
-      MsgBeginUnlocking.toObject = function toObject(m, o) {
-        if (!o) o = {};
-        var d = {};
-        if (o.arrays || o.defaults) {
-          d.coins = [];
-        }
-        if (o.defaults) {
-          d.owner = "";
-          if ($util.Long) {
-            var n = new $util.Long(0, 0, true);
-            d.ID =
-              o.longs === String
-                ? n.toString()
-                : o.longs === Number
-                ? n.toNumber()
-                : n;
-          } else d.ID = o.longs === String ? "0" : 0;
-        }
-        if (m.owner != null && m.hasOwnProperty("owner")) {
-          d.owner = m.owner;
-        }
-        if (m.ID != null && m.hasOwnProperty("ID")) {
-          if (typeof m.ID === "number")
-            d.ID = o.longs === String ? String(m.ID) : m.ID;
-          else
-            d.ID =
-              o.longs === String
-                ? $util.Long.prototype.toString.call(m.ID)
-                : o.longs === Number
-                ? new $util.LongBits(m.ID.low >>> 0, m.ID.high >>> 0).toNumber(
-                    true
-                  )
-                : m.ID;
-        }
-        if (m.coins && m.coins.length) {
-          d.coins = [];
-          for (var j = 0; j < m.coins.length; ++j) {
-            d.coins[j] = $root.cosmos.base.v1beta1.Coin.toObject(m.coins[j], o);
-          }
-        }
-        return d;
-      };
-      MsgBeginUnlocking.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-      };
-      return MsgBeginUnlocking;
-    })();
-    lockup.MsgBeginUnlockingResponse = (function () {
-      function MsgBeginUnlockingResponse(p) {
-        if (p)
-          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
-            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-      }
-      MsgBeginUnlockingResponse.prototype.success = false;
-      MsgBeginUnlockingResponse.create = function create(properties) {
-        return new MsgBeginUnlockingResponse(properties);
-      };
-      MsgBeginUnlockingResponse.encode = function encode(m, w) {
-        if (!w) w = $Writer.create();
-        if (m.success != null && Object.hasOwnProperty.call(m, "success"))
-          w.uint32(8).bool(m.success);
-        return w;
-      };
-      MsgBeginUnlockingResponse.decode = function decode(r, l) {
-        if (!(r instanceof $Reader)) r = $Reader.create(r);
-        var c = l === undefined ? r.len : r.pos + l,
-          m = new $root.osmosis.lockup.MsgBeginUnlockingResponse();
-        while (r.pos < c) {
-          var t = r.uint32();
-          switch (t >>> 3) {
-            case 1:
-              m.success = r.bool();
-              break;
-            default:
-              r.skipType(t & 7);
-              break;
-          }
-        }
-        return m;
-      };
-      MsgBeginUnlockingResponse.fromObject = function fromObject(d) {
-        if (d instanceof $root.osmosis.lockup.MsgBeginUnlockingResponse)
-          return d;
-        var m = new $root.osmosis.lockup.MsgBeginUnlockingResponse();
-        if (d.success != null) {
-          m.success = Boolean(d.success);
-        }
-        return m;
-      };
-      MsgBeginUnlockingResponse.toObject = function toObject(m, o) {
-        if (!o) o = {};
-        var d = {};
-        if (o.defaults) {
-          d.success = false;
-        }
-        if (m.success != null && m.hasOwnProperty("success")) {
-          d.success = m.success;
-        }
-        return d;
-      };
-      MsgBeginUnlockingResponse.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-      };
-      return MsgBeginUnlockingResponse;
-    })();
-    lockup.MsgExtendLockup = (function () {
-      function MsgExtendLockup(p) {
-        if (p)
-          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
-            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-      }
-      MsgExtendLockup.prototype.owner = "";
-      MsgExtendLockup.prototype.ID = $util.Long
-        ? $util.Long.fromBits(0, 0, true)
-        : 0;
-      MsgExtendLockup.prototype.duration = null;
-      MsgExtendLockup.create = function create(properties) {
-        return new MsgExtendLockup(properties);
-      };
-      MsgExtendLockup.encode = function encode(m, w) {
-        if (!w) w = $Writer.create();
-        if (m.owner != null && Object.hasOwnProperty.call(m, "owner"))
-          w.uint32(10).string(m.owner);
-        if (m.ID != null && Object.hasOwnProperty.call(m, "ID"))
-          w.uint32(16).uint64(m.ID);
-        if (m.duration != null && Object.hasOwnProperty.call(m, "duration"))
-          $root.google.protobuf.Duration.encode(
-            m.duration,
-            w.uint32(26).fork()
-          ).ldelim();
-        return w;
-      };
-      MsgExtendLockup.decode = function decode(r, l) {
-        if (!(r instanceof $Reader)) r = $Reader.create(r);
-        var c = l === undefined ? r.len : r.pos + l,
-          m = new $root.osmosis.lockup.MsgExtendLockup();
-        while (r.pos < c) {
-          var t = r.uint32();
-          switch (t >>> 3) {
-            case 1:
-              m.owner = r.string();
-              break;
-            case 2:
-              m.ID = r.uint64();
-              break;
-            case 3:
-              m.duration = $root.google.protobuf.Duration.decode(r, r.uint32());
-              break;
-            default:
-              r.skipType(t & 7);
-              break;
-          }
-        }
-        return m;
-      };
-      MsgExtendLockup.fromObject = function fromObject(d) {
-        if (d instanceof $root.osmosis.lockup.MsgExtendLockup) return d;
-        var m = new $root.osmosis.lockup.MsgExtendLockup();
-        if (d.owner != null) {
-          m.owner = String(d.owner);
-        }
-        if (d.ID != null) {
-          if ($util.Long) (m.ID = $util.Long.fromValue(d.ID)).unsigned = true;
-          else if (typeof d.ID === "string") m.ID = parseInt(d.ID, 10);
-          else if (typeof d.ID === "number") m.ID = d.ID;
-          else if (typeof d.ID === "object")
-            m.ID = new $util.LongBits(d.ID.low >>> 0, d.ID.high >>> 0).toNumber(
-              true
-            );
-        }
-        if (d.duration != null) {
-          if (typeof d.duration !== "object")
-            throw TypeError(
-              ".osmosis.lockup.MsgExtendLockup.duration: object expected"
-            );
-          m.duration = $root.google.protobuf.Duration.fromObject(d.duration);
-        }
-        return m;
-      };
-      MsgExtendLockup.toObject = function toObject(m, o) {
-        if (!o) o = {};
-        var d = {};
-        if (o.defaults) {
-          d.owner = "";
-          if ($util.Long) {
-            var n = new $util.Long(0, 0, true);
-            d.ID =
-              o.longs === String
-                ? n.toString()
-                : o.longs === Number
-                ? n.toNumber()
-                : n;
-          } else d.ID = o.longs === String ? "0" : 0;
-          d.duration = null;
-        }
-        if (m.owner != null && m.hasOwnProperty("owner")) {
-          d.owner = m.owner;
-        }
-        if (m.ID != null && m.hasOwnProperty("ID")) {
-          if (typeof m.ID === "number")
-            d.ID = o.longs === String ? String(m.ID) : m.ID;
-          else
-            d.ID =
-              o.longs === String
-                ? $util.Long.prototype.toString.call(m.ID)
-                : o.longs === Number
-                ? new $util.LongBits(m.ID.low >>> 0, m.ID.high >>> 0).toNumber(
-                    true
-                  )
-                : m.ID;
-        }
-        if (m.duration != null && m.hasOwnProperty("duration")) {
-          d.duration = $root.google.protobuf.Duration.toObject(m.duration, o);
-        }
-        return d;
-      };
-      MsgExtendLockup.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-      };
-      return MsgExtendLockup;
-    })();
-    lockup.MsgExtendLockupResponse = (function () {
-      function MsgExtendLockupResponse(p) {
-        if (p)
-          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
-            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-      }
-      MsgExtendLockupResponse.prototype.success = false;
-      MsgExtendLockupResponse.create = function create(properties) {
-        return new MsgExtendLockupResponse(properties);
-      };
-      MsgExtendLockupResponse.encode = function encode(m, w) {
-        if (!w) w = $Writer.create();
-        if (m.success != null && Object.hasOwnProperty.call(m, "success"))
-          w.uint32(8).bool(m.success);
-        return w;
-      };
-      MsgExtendLockupResponse.decode = function decode(r, l) {
-        if (!(r instanceof $Reader)) r = $Reader.create(r);
-        var c = l === undefined ? r.len : r.pos + l,
-          m = new $root.osmosis.lockup.MsgExtendLockupResponse();
-        while (r.pos < c) {
-          var t = r.uint32();
-          switch (t >>> 3) {
-            case 1:
-              m.success = r.bool();
-              break;
-            default:
-              r.skipType(t & 7);
-              break;
-          }
-        }
-        return m;
-      };
-      MsgExtendLockupResponse.fromObject = function fromObject(d) {
-        if (d instanceof $root.osmosis.lockup.MsgExtendLockupResponse) return d;
-        var m = new $root.osmosis.lockup.MsgExtendLockupResponse();
-        if (d.success != null) {
-          m.success = Boolean(d.success);
-        }
-        return m;
-      };
-      MsgExtendLockupResponse.toObject = function toObject(m, o) {
-        if (!o) o = {};
-        var d = {};
-        if (o.defaults) {
-          d.success = false;
-        }
-        if (m.success != null && m.hasOwnProperty("success")) {
-          d.success = m.success;
-        }
-        return d;
-      };
-      MsgExtendLockupResponse.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-      };
-      return MsgExtendLockupResponse;
-    })();
-    return lockup;
-  })();
-  osmosis.incentives = (function () {
-    const incentives = {};
-    incentives.Msg = (function () {
-      function Msg(rpcImpl, requestDelimited, responseDelimited) {
-        $protobuf.rpc.Service.call(
-          this,
-          rpcImpl,
-          requestDelimited,
-          responseDelimited
-        );
-      }
-      (Msg.prototype = Object.create(
-        $protobuf.rpc.Service.prototype
-      )).constructor = Msg;
-      Msg.create = function create(
-        rpcImpl,
-        requestDelimited,
-        responseDelimited
-      ) {
-        return new this(rpcImpl, requestDelimited, responseDelimited);
-      };
-      Object.defineProperty(
-        (Msg.prototype.createGauge = function createGauge(request, callback) {
-          return this.rpcCall(
-            createGauge,
-            $root.osmosis.incentives.MsgCreateGauge,
-            $root.osmosis.incentives.MsgCreateGaugeResponse,
-            request,
-            callback
-          );
-        }),
-        "name",
-        { value: "CreateGauge" }
-      );
-      Object.defineProperty(
-        (Msg.prototype.addToGauge = function addToGauge(request, callback) {
-          return this.rpcCall(
-            addToGauge,
-            $root.osmosis.incentives.MsgAddToGauge,
-            $root.osmosis.incentives.MsgAddToGaugeResponse,
-            request,
-            callback
-          );
-        }),
-        "name",
-        { value: "AddToGauge" }
-      );
-      return Msg;
-    })();
-    incentives.MsgCreateGauge = (function () {
-      function MsgCreateGauge(p) {
-        this.coins = [];
-        if (p)
-          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
-            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-      }
-      MsgCreateGauge.prototype.isPerpetual = false;
-      MsgCreateGauge.prototype.owner = "";
-      MsgCreateGauge.prototype.distributeTo = null;
-      MsgCreateGauge.prototype.coins = $util.emptyArray;
-      MsgCreateGauge.prototype.startTime = null;
-      MsgCreateGauge.prototype.numEpochsPaidOver = $util.Long
-        ? $util.Long.fromBits(0, 0, true)
-        : 0;
-      MsgCreateGauge.create = function create(properties) {
-        return new MsgCreateGauge(properties);
-      };
-      MsgCreateGauge.encode = function encode(m, w) {
-        if (!w) w = $Writer.create();
-        if (
-          m.isPerpetual != null &&
-          Object.hasOwnProperty.call(m, "isPerpetual")
-        )
-          w.uint32(8).bool(m.isPerpetual);
-        if (m.owner != null && Object.hasOwnProperty.call(m, "owner"))
-          w.uint32(18).string(m.owner);
-        if (
-          m.distributeTo != null &&
-          Object.hasOwnProperty.call(m, "distributeTo")
-        )
-          $root.osmosis.lockup.QueryCondition.encode(
-            m.distributeTo,
-            w.uint32(26).fork()
-          ).ldelim();
-        if (m.coins != null && m.coins.length) {
-          for (var i = 0; i < m.coins.length; ++i)
-            $root.cosmos.base.v1beta1.Coin.encode(
-              m.coins[i],
-              w.uint32(34).fork()
-            ).ldelim();
-        }
-        if (m.startTime != null && Object.hasOwnProperty.call(m, "startTime"))
-          $root.google.protobuf.Timestamp.encode(
-            m.startTime,
-            w.uint32(42).fork()
-          ).ldelim();
-        if (
-          m.numEpochsPaidOver != null &&
-          Object.hasOwnProperty.call(m, "numEpochsPaidOver")
-        )
-          w.uint32(48).uint64(m.numEpochsPaidOver);
-        return w;
-      };
-      MsgCreateGauge.decode = function decode(r, l) {
-        if (!(r instanceof $Reader)) r = $Reader.create(r);
-        var c = l === undefined ? r.len : r.pos + l,
-          m = new $root.osmosis.incentives.MsgCreateGauge();
-        while (r.pos < c) {
-          var t = r.uint32();
-          switch (t >>> 3) {
-            case 1:
-              m.isPerpetual = r.bool();
-              break;
-            case 2:
-              m.owner = r.string();
-              break;
-            case 3:
-              m.distributeTo = $root.osmosis.lockup.QueryCondition.decode(
-                r,
-                r.uint32()
-              );
-              break;
-            case 4:
-              if (!(m.coins && m.coins.length)) m.coins = [];
-              m.coins.push(
-                $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
-              );
-              break;
-            case 5:
-              m.startTime = $root.google.protobuf.Timestamp.decode(
-                r,
-                r.uint32()
-              );
-              break;
-            case 6:
-              m.numEpochsPaidOver = r.uint64();
-              break;
-            default:
-              r.skipType(t & 7);
-              break;
-          }
-        }
-        return m;
-      };
-      MsgCreateGauge.fromObject = function fromObject(d) {
-        if (d instanceof $root.osmosis.incentives.MsgCreateGauge) return d;
-        var m = new $root.osmosis.incentives.MsgCreateGauge();
-        if (d.isPerpetual != null) {
-          m.isPerpetual = Boolean(d.isPerpetual);
-        }
-        if (d.owner != null) {
-          m.owner = String(d.owner);
-        }
-        if (d.distributeTo != null) {
-          if (typeof d.distributeTo !== "object")
-            throw TypeError(
-              ".osmosis.incentives.MsgCreateGauge.distributeTo: object expected"
-            );
-          m.distributeTo = $root.osmosis.lockup.QueryCondition.fromObject(
-            d.distributeTo
-          );
-        }
-        if (d.coins) {
-          if (!Array.isArray(d.coins))
-            throw TypeError(
-              ".osmosis.incentives.MsgCreateGauge.coins: array expected"
-            );
-          m.coins = [];
-          for (var i = 0; i < d.coins.length; ++i) {
-            if (typeof d.coins[i] !== "object")
-              throw TypeError(
-                ".osmosis.incentives.MsgCreateGauge.coins: object expected"
-              );
-            m.coins[i] = $root.cosmos.base.v1beta1.Coin.fromObject(d.coins[i]);
-          }
-        }
-        if (d.startTime != null) {
-          if (typeof d.startTime !== "object")
-            throw TypeError(
-              ".osmosis.incentives.MsgCreateGauge.startTime: object expected"
-            );
-          m.startTime = $root.google.protobuf.Timestamp.fromObject(d.startTime);
-        }
-        if (d.numEpochsPaidOver != null) {
-          if ($util.Long)
-            (m.numEpochsPaidOver = $util.Long.fromValue(
-              d.numEpochsPaidOver
-            )).unsigned = true;
-          else if (typeof d.numEpochsPaidOver === "string")
-            m.numEpochsPaidOver = parseInt(d.numEpochsPaidOver, 10);
-          else if (typeof d.numEpochsPaidOver === "number")
-            m.numEpochsPaidOver = d.numEpochsPaidOver;
-          else if (typeof d.numEpochsPaidOver === "object")
-            m.numEpochsPaidOver = new $util.LongBits(
-              d.numEpochsPaidOver.low >>> 0,
-              d.numEpochsPaidOver.high >>> 0
-            ).toNumber(true);
-        }
-        return m;
-      };
-      MsgCreateGauge.toObject = function toObject(m, o) {
-        if (!o) o = {};
-        var d = {};
-        if (o.arrays || o.defaults) {
-          d.coins = [];
-        }
-        if (o.defaults) {
-          d.isPerpetual = false;
-          d.owner = "";
-          d.distributeTo = null;
-          d.startTime = null;
-          if ($util.Long) {
-            var n = new $util.Long(0, 0, true);
-            d.numEpochsPaidOver =
-              o.longs === String
-                ? n.toString()
-                : o.longs === Number
-                ? n.toNumber()
-                : n;
-          } else d.numEpochsPaidOver = o.longs === String ? "0" : 0;
-        }
-        if (m.isPerpetual != null && m.hasOwnProperty("isPerpetual")) {
-          d.isPerpetual = m.isPerpetual;
-        }
-        if (m.owner != null && m.hasOwnProperty("owner")) {
-          d.owner = m.owner;
-        }
-        if (m.distributeTo != null && m.hasOwnProperty("distributeTo")) {
-          d.distributeTo = $root.osmosis.lockup.QueryCondition.toObject(
-            m.distributeTo,
-            o
-          );
-        }
-        if (m.coins && m.coins.length) {
-          d.coins = [];
-          for (var j = 0; j < m.coins.length; ++j) {
-            d.coins[j] = $root.cosmos.base.v1beta1.Coin.toObject(m.coins[j], o);
-          }
-        }
-        if (m.startTime != null && m.hasOwnProperty("startTime")) {
-          d.startTime = $root.google.protobuf.Timestamp.toObject(
-            m.startTime,
-            o
-          );
-        }
-        if (
-          m.numEpochsPaidOver != null &&
-          m.hasOwnProperty("numEpochsPaidOver")
-        ) {
-          if (typeof m.numEpochsPaidOver === "number")
-            d.numEpochsPaidOver =
-              o.longs === String
-                ? String(m.numEpochsPaidOver)
-                : m.numEpochsPaidOver;
-          else
-            d.numEpochsPaidOver =
-              o.longs === String
-                ? $util.Long.prototype.toString.call(m.numEpochsPaidOver)
-                : o.longs === Number
-                ? new $util.LongBits(
-                    m.numEpochsPaidOver.low >>> 0,
-                    m.numEpochsPaidOver.high >>> 0
-                  ).toNumber(true)
-                : m.numEpochsPaidOver;
-        }
-        return d;
-      };
-      MsgCreateGauge.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-      };
-      return MsgCreateGauge;
-    })();
-    incentives.MsgCreateGaugeResponse = (function () {
-      function MsgCreateGaugeResponse(p) {
-        if (p)
-          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
-            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-      }
-      MsgCreateGaugeResponse.create = function create(properties) {
-        return new MsgCreateGaugeResponse(properties);
-      };
-      MsgCreateGaugeResponse.encode = function encode(m, w) {
-        if (!w) w = $Writer.create();
-        return w;
-      };
-      MsgCreateGaugeResponse.decode = function decode(r, l) {
-        if (!(r instanceof $Reader)) r = $Reader.create(r);
-        var c = l === undefined ? r.len : r.pos + l,
-          m = new $root.osmosis.incentives.MsgCreateGaugeResponse();
-        while (r.pos < c) {
-          var t = r.uint32();
-          switch (t >>> 3) {
-            default:
-              r.skipType(t & 7);
-              break;
-          }
-        }
-        return m;
-      };
-      MsgCreateGaugeResponse.fromObject = function fromObject(d) {
-        if (d instanceof $root.osmosis.incentives.MsgCreateGaugeResponse)
-          return d;
-        return new $root.osmosis.incentives.MsgCreateGaugeResponse();
-      };
-      MsgCreateGaugeResponse.toObject = function toObject() {
-        return {};
-      };
-      MsgCreateGaugeResponse.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-      };
-      return MsgCreateGaugeResponse;
-    })();
-    incentives.MsgAddToGauge = (function () {
-      function MsgAddToGauge(p) {
-        this.rewards = [];
-        if (p)
-          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
-            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-      }
-      MsgAddToGauge.prototype.owner = "";
-      MsgAddToGauge.prototype.gaugeId = $util.Long
-        ? $util.Long.fromBits(0, 0, true)
-        : 0;
-      MsgAddToGauge.prototype.rewards = $util.emptyArray;
-      MsgAddToGauge.create = function create(properties) {
-        return new MsgAddToGauge(properties);
-      };
-      MsgAddToGauge.encode = function encode(m, w) {
-        if (!w) w = $Writer.create();
-        if (m.owner != null && Object.hasOwnProperty.call(m, "owner"))
-          w.uint32(10).string(m.owner);
-        if (m.gaugeId != null && Object.hasOwnProperty.call(m, "gaugeId"))
-          w.uint32(16).uint64(m.gaugeId);
-        if (m.rewards != null && m.rewards.length) {
-          for (var i = 0; i < m.rewards.length; ++i)
-            $root.cosmos.base.v1beta1.Coin.encode(
-              m.rewards[i],
-              w.uint32(26).fork()
-            ).ldelim();
-        }
-        return w;
-      };
-      MsgAddToGauge.decode = function decode(r, l) {
-        if (!(r instanceof $Reader)) r = $Reader.create(r);
-        var c = l === undefined ? r.len : r.pos + l,
-          m = new $root.osmosis.incentives.MsgAddToGauge();
-        while (r.pos < c) {
-          var t = r.uint32();
-          switch (t >>> 3) {
-            case 1:
-              m.owner = r.string();
-              break;
-            case 2:
-              m.gaugeId = r.uint64();
-              break;
-            case 3:
-              if (!(m.rewards && m.rewards.length)) m.rewards = [];
-              m.rewards.push(
-                $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
-              );
-              break;
-            default:
-              r.skipType(t & 7);
-              break;
-          }
-        }
-        return m;
-      };
-      MsgAddToGauge.fromObject = function fromObject(d) {
-        if (d instanceof $root.osmosis.incentives.MsgAddToGauge) return d;
-        var m = new $root.osmosis.incentives.MsgAddToGauge();
-        if (d.owner != null) {
-          m.owner = String(d.owner);
-        }
-        if (d.gaugeId != null) {
-          if ($util.Long)
-            (m.gaugeId = $util.Long.fromValue(d.gaugeId)).unsigned = true;
-          else if (typeof d.gaugeId === "string")
-            m.gaugeId = parseInt(d.gaugeId, 10);
-          else if (typeof d.gaugeId === "number") m.gaugeId = d.gaugeId;
-          else if (typeof d.gaugeId === "object")
-            m.gaugeId = new $util.LongBits(
-              d.gaugeId.low >>> 0,
-              d.gaugeId.high >>> 0
-            ).toNumber(true);
-        }
-        if (d.rewards) {
-          if (!Array.isArray(d.rewards))
-            throw TypeError(
-              ".osmosis.incentives.MsgAddToGauge.rewards: array expected"
-            );
-          m.rewards = [];
-          for (var i = 0; i < d.rewards.length; ++i) {
-            if (typeof d.rewards[i] !== "object")
-              throw TypeError(
-                ".osmosis.incentives.MsgAddToGauge.rewards: object expected"
-              );
-            m.rewards[i] = $root.cosmos.base.v1beta1.Coin.fromObject(
-              d.rewards[i]
-            );
-          }
-        }
-        return m;
-      };
-      MsgAddToGauge.toObject = function toObject(m, o) {
-        if (!o) o = {};
-        var d = {};
-        if (o.arrays || o.defaults) {
-          d.rewards = [];
-        }
-        if (o.defaults) {
-          d.owner = "";
-          if ($util.Long) {
-            var n = new $util.Long(0, 0, true);
-            d.gaugeId =
-              o.longs === String
-                ? n.toString()
-                : o.longs === Number
-                ? n.toNumber()
-                : n;
-          } else d.gaugeId = o.longs === String ? "0" : 0;
-        }
-        if (m.owner != null && m.hasOwnProperty("owner")) {
-          d.owner = m.owner;
-        }
-        if (m.gaugeId != null && m.hasOwnProperty("gaugeId")) {
-          if (typeof m.gaugeId === "number")
-            d.gaugeId = o.longs === String ? String(m.gaugeId) : m.gaugeId;
-          else
-            d.gaugeId =
-              o.longs === String
-                ? $util.Long.prototype.toString.call(m.gaugeId)
-                : o.longs === Number
-                ? new $util.LongBits(
-                    m.gaugeId.low >>> 0,
-                    m.gaugeId.high >>> 0
-                  ).toNumber(true)
-                : m.gaugeId;
-        }
-        if (m.rewards && m.rewards.length) {
-          d.rewards = [];
-          for (var j = 0; j < m.rewards.length; ++j) {
-            d.rewards[j] = $root.cosmos.base.v1beta1.Coin.toObject(
-              m.rewards[j],
-              o
-            );
-          }
-        }
-        return d;
-      };
-      MsgAddToGauge.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-      };
-      return MsgAddToGauge;
-    })();
-    incentives.MsgAddToGaugeResponse = (function () {
-      function MsgAddToGaugeResponse(p) {
-        if (p)
-          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
-            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-      }
-      MsgAddToGaugeResponse.create = function create(properties) {
-        return new MsgAddToGaugeResponse(properties);
-      };
-      MsgAddToGaugeResponse.encode = function encode(m, w) {
-        if (!w) w = $Writer.create();
-        return w;
-      };
-      MsgAddToGaugeResponse.decode = function decode(r, l) {
-        if (!(r instanceof $Reader)) r = $Reader.create(r);
-        var c = l === undefined ? r.len : r.pos + l,
-          m = new $root.osmosis.incentives.MsgAddToGaugeResponse();
-        while (r.pos < c) {
-          var t = r.uint32();
-          switch (t >>> 3) {
-            default:
-              r.skipType(t & 7);
-              break;
-          }
-        }
-        return m;
-      };
-      MsgAddToGaugeResponse.fromObject = function fromObject(d) {
-        if (d instanceof $root.osmosis.incentives.MsgAddToGaugeResponse)
-          return d;
-        return new $root.osmosis.incentives.MsgAddToGaugeResponse();
-      };
-      MsgAddToGaugeResponse.toObject = function toObject() {
-        return {};
-      };
-      MsgAddToGaugeResponse.prototype.toJSON = function toJSON() {
-        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-      };
-      return MsgAddToGaugeResponse;
-    })();
-    return incentives;
   })();
   osmosis.superfluid = (function () {
     const superfluid = {};
@@ -7793,6 +6068,1956 @@ exports.osmosis = $root.osmosis = (() => {
       return MsgUnPoolWhitelistedPoolResponse;
     })();
     return superfluid;
+  })();
+  osmosis.lockup = (function () {
+    const lockup = {};
+    lockup.PeriodLock = (function () {
+      function PeriodLock(p) {
+        this.coins = [];
+        if (p)
+          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+      }
+      PeriodLock.prototype.ID = $util.Long
+        ? $util.Long.fromBits(0, 0, true)
+        : 0;
+      PeriodLock.prototype.owner = "";
+      PeriodLock.prototype.duration = null;
+      PeriodLock.prototype.endTime = null;
+      PeriodLock.prototype.coins = $util.emptyArray;
+      PeriodLock.create = function create(properties) {
+        return new PeriodLock(properties);
+      };
+      PeriodLock.encode = function encode(m, w) {
+        if (!w) w = $Writer.create();
+        if (m.ID != null && Object.hasOwnProperty.call(m, "ID"))
+          w.uint32(8).uint64(m.ID);
+        if (m.owner != null && Object.hasOwnProperty.call(m, "owner"))
+          w.uint32(18).string(m.owner);
+        if (m.duration != null && Object.hasOwnProperty.call(m, "duration"))
+          $root.google.protobuf.Duration.encode(
+            m.duration,
+            w.uint32(26).fork()
+          ).ldelim();
+        if (m.endTime != null && Object.hasOwnProperty.call(m, "endTime"))
+          $root.google.protobuf.Timestamp.encode(
+            m.endTime,
+            w.uint32(34).fork()
+          ).ldelim();
+        if (m.coins != null && m.coins.length) {
+          for (var i = 0; i < m.coins.length; ++i)
+            $root.cosmos.base.v1beta1.Coin.encode(
+              m.coins[i],
+              w.uint32(42).fork()
+            ).ldelim();
+        }
+        return w;
+      };
+      PeriodLock.decode = function decode(r, l) {
+        if (!(r instanceof $Reader)) r = $Reader.create(r);
+        var c = l === undefined ? r.len : r.pos + l,
+          m = new $root.osmosis.lockup.PeriodLock();
+        while (r.pos < c) {
+          var t = r.uint32();
+          switch (t >>> 3) {
+            case 1:
+              m.ID = r.uint64();
+              break;
+            case 2:
+              m.owner = r.string();
+              break;
+            case 3:
+              m.duration = $root.google.protobuf.Duration.decode(r, r.uint32());
+              break;
+            case 4:
+              m.endTime = $root.google.protobuf.Timestamp.decode(r, r.uint32());
+              break;
+            case 5:
+              if (!(m.coins && m.coins.length)) m.coins = [];
+              m.coins.push(
+                $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
+              );
+              break;
+            default:
+              r.skipType(t & 7);
+              break;
+          }
+        }
+        return m;
+      };
+      PeriodLock.fromObject = function fromObject(d) {
+        if (d instanceof $root.osmosis.lockup.PeriodLock) return d;
+        var m = new $root.osmosis.lockup.PeriodLock();
+        if (d.ID != null) {
+          if ($util.Long) (m.ID = $util.Long.fromValue(d.ID)).unsigned = true;
+          else if (typeof d.ID === "string") m.ID = parseInt(d.ID, 10);
+          else if (typeof d.ID === "number") m.ID = d.ID;
+          else if (typeof d.ID === "object")
+            m.ID = new $util.LongBits(d.ID.low >>> 0, d.ID.high >>> 0).toNumber(
+              true
+            );
+        }
+        if (d.owner != null) {
+          m.owner = String(d.owner);
+        }
+        if (d.duration != null) {
+          if (typeof d.duration !== "object")
+            throw TypeError(
+              ".osmosis.lockup.PeriodLock.duration: object expected"
+            );
+          m.duration = $root.google.protobuf.Duration.fromObject(d.duration);
+        }
+        if (d.endTime != null) {
+          if (typeof d.endTime !== "object")
+            throw TypeError(
+              ".osmosis.lockup.PeriodLock.endTime: object expected"
+            );
+          m.endTime = $root.google.protobuf.Timestamp.fromObject(d.endTime);
+        }
+        if (d.coins) {
+          if (!Array.isArray(d.coins))
+            throw TypeError(".osmosis.lockup.PeriodLock.coins: array expected");
+          m.coins = [];
+          for (var i = 0; i < d.coins.length; ++i) {
+            if (typeof d.coins[i] !== "object")
+              throw TypeError(
+                ".osmosis.lockup.PeriodLock.coins: object expected"
+              );
+            m.coins[i] = $root.cosmos.base.v1beta1.Coin.fromObject(d.coins[i]);
+          }
+        }
+        return m;
+      };
+      PeriodLock.toObject = function toObject(m, o) {
+        if (!o) o = {};
+        var d = {};
+        if (o.arrays || o.defaults) {
+          d.coins = [];
+        }
+        if (o.defaults) {
+          if ($util.Long) {
+            var n = new $util.Long(0, 0, true);
+            d.ID =
+              o.longs === String
+                ? n.toString()
+                : o.longs === Number
+                ? n.toNumber()
+                : n;
+          } else d.ID = o.longs === String ? "0" : 0;
+          d.owner = "";
+          d.duration = null;
+          d.endTime = null;
+        }
+        if (m.ID != null && m.hasOwnProperty("ID")) {
+          if (typeof m.ID === "number")
+            d.ID = o.longs === String ? String(m.ID) : m.ID;
+          else
+            d.ID =
+              o.longs === String
+                ? $util.Long.prototype.toString.call(m.ID)
+                : o.longs === Number
+                ? new $util.LongBits(m.ID.low >>> 0, m.ID.high >>> 0).toNumber(
+                    true
+                  )
+                : m.ID;
+        }
+        if (m.owner != null && m.hasOwnProperty("owner")) {
+          d.owner = m.owner;
+        }
+        if (m.duration != null && m.hasOwnProperty("duration")) {
+          d.duration = $root.google.protobuf.Duration.toObject(m.duration, o);
+        }
+        if (m.endTime != null && m.hasOwnProperty("endTime")) {
+          d.endTime = $root.google.protobuf.Timestamp.toObject(m.endTime, o);
+        }
+        if (m.coins && m.coins.length) {
+          d.coins = [];
+          for (var j = 0; j < m.coins.length; ++j) {
+            d.coins[j] = $root.cosmos.base.v1beta1.Coin.toObject(m.coins[j], o);
+          }
+        }
+        return d;
+      };
+      PeriodLock.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+      };
+      return PeriodLock;
+    })();
+    lockup.LockQueryType = (function () {
+      const valuesById = {},
+        values = Object.create(valuesById);
+      values[(valuesById[0] = "ByDuration")] = 0;
+      values[(valuesById[1] = "ByTime")] = 1;
+      return values;
+    })();
+    lockup.QueryCondition = (function () {
+      function QueryCondition(p) {
+        if (p)
+          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+      }
+      QueryCondition.prototype.lockQueryType = 0;
+      QueryCondition.prototype.denom = "";
+      QueryCondition.prototype.duration = null;
+      QueryCondition.prototype.timestamp = null;
+      QueryCondition.create = function create(properties) {
+        return new QueryCondition(properties);
+      };
+      QueryCondition.encode = function encode(m, w) {
+        if (!w) w = $Writer.create();
+        if (
+          m.lockQueryType != null &&
+          Object.hasOwnProperty.call(m, "lockQueryType")
+        )
+          w.uint32(8).int32(m.lockQueryType);
+        if (m.denom != null && Object.hasOwnProperty.call(m, "denom"))
+          w.uint32(18).string(m.denom);
+        if (m.duration != null && Object.hasOwnProperty.call(m, "duration"))
+          $root.google.protobuf.Duration.encode(
+            m.duration,
+            w.uint32(26).fork()
+          ).ldelim();
+        if (m.timestamp != null && Object.hasOwnProperty.call(m, "timestamp"))
+          $root.google.protobuf.Timestamp.encode(
+            m.timestamp,
+            w.uint32(34).fork()
+          ).ldelim();
+        return w;
+      };
+      QueryCondition.decode = function decode(r, l) {
+        if (!(r instanceof $Reader)) r = $Reader.create(r);
+        var c = l === undefined ? r.len : r.pos + l,
+          m = new $root.osmosis.lockup.QueryCondition();
+        while (r.pos < c) {
+          var t = r.uint32();
+          switch (t >>> 3) {
+            case 1:
+              m.lockQueryType = r.int32();
+              break;
+            case 2:
+              m.denom = r.string();
+              break;
+            case 3:
+              m.duration = $root.google.protobuf.Duration.decode(r, r.uint32());
+              break;
+            case 4:
+              m.timestamp = $root.google.protobuf.Timestamp.decode(
+                r,
+                r.uint32()
+              );
+              break;
+            default:
+              r.skipType(t & 7);
+              break;
+          }
+        }
+        return m;
+      };
+      QueryCondition.fromObject = function fromObject(d) {
+        if (d instanceof $root.osmosis.lockup.QueryCondition) return d;
+        var m = new $root.osmosis.lockup.QueryCondition();
+        switch (d.lockQueryType) {
+          case "ByDuration":
+          case 0:
+            m.lockQueryType = 0;
+            break;
+          case "ByTime":
+          case 1:
+            m.lockQueryType = 1;
+            break;
+        }
+        if (d.denom != null) {
+          m.denom = String(d.denom);
+        }
+        if (d.duration != null) {
+          if (typeof d.duration !== "object")
+            throw TypeError(
+              ".osmosis.lockup.QueryCondition.duration: object expected"
+            );
+          m.duration = $root.google.protobuf.Duration.fromObject(d.duration);
+        }
+        if (d.timestamp != null) {
+          if (typeof d.timestamp !== "object")
+            throw TypeError(
+              ".osmosis.lockup.QueryCondition.timestamp: object expected"
+            );
+          m.timestamp = $root.google.protobuf.Timestamp.fromObject(d.timestamp);
+        }
+        return m;
+      };
+      QueryCondition.toObject = function toObject(m, o) {
+        if (!o) o = {};
+        var d = {};
+        if (o.defaults) {
+          d.lockQueryType = o.enums === String ? "ByDuration" : 0;
+          d.denom = "";
+          d.duration = null;
+          d.timestamp = null;
+        }
+        if (m.lockQueryType != null && m.hasOwnProperty("lockQueryType")) {
+          d.lockQueryType =
+            o.enums === String
+              ? $root.osmosis.lockup.LockQueryType[m.lockQueryType]
+              : m.lockQueryType;
+        }
+        if (m.denom != null && m.hasOwnProperty("denom")) {
+          d.denom = m.denom;
+        }
+        if (m.duration != null && m.hasOwnProperty("duration")) {
+          d.duration = $root.google.protobuf.Duration.toObject(m.duration, o);
+        }
+        if (m.timestamp != null && m.hasOwnProperty("timestamp")) {
+          d.timestamp = $root.google.protobuf.Timestamp.toObject(
+            m.timestamp,
+            o
+          );
+        }
+        return d;
+      };
+      QueryCondition.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+      };
+      return QueryCondition;
+    })();
+    lockup.SyntheticLock = (function () {
+      function SyntheticLock(p) {
+        if (p)
+          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+      }
+      SyntheticLock.prototype.underlyingLockId = $util.Long
+        ? $util.Long.fromBits(0, 0, true)
+        : 0;
+      SyntheticLock.prototype.synthDenom = "";
+      SyntheticLock.prototype.endTime = null;
+      SyntheticLock.prototype.duration = null;
+      SyntheticLock.create = function create(properties) {
+        return new SyntheticLock(properties);
+      };
+      SyntheticLock.encode = function encode(m, w) {
+        if (!w) w = $Writer.create();
+        if (
+          m.underlyingLockId != null &&
+          Object.hasOwnProperty.call(m, "underlyingLockId")
+        )
+          w.uint32(8).uint64(m.underlyingLockId);
+        if (m.synthDenom != null && Object.hasOwnProperty.call(m, "synthDenom"))
+          w.uint32(18).string(m.synthDenom);
+        if (m.endTime != null && Object.hasOwnProperty.call(m, "endTime"))
+          $root.google.protobuf.Timestamp.encode(
+            m.endTime,
+            w.uint32(26).fork()
+          ).ldelim();
+        if (m.duration != null && Object.hasOwnProperty.call(m, "duration"))
+          $root.google.protobuf.Duration.encode(
+            m.duration,
+            w.uint32(34).fork()
+          ).ldelim();
+        return w;
+      };
+      SyntheticLock.decode = function decode(r, l) {
+        if (!(r instanceof $Reader)) r = $Reader.create(r);
+        var c = l === undefined ? r.len : r.pos + l,
+          m = new $root.osmosis.lockup.SyntheticLock();
+        while (r.pos < c) {
+          var t = r.uint32();
+          switch (t >>> 3) {
+            case 1:
+              m.underlyingLockId = r.uint64();
+              break;
+            case 2:
+              m.synthDenom = r.string();
+              break;
+            case 3:
+              m.endTime = $root.google.protobuf.Timestamp.decode(r, r.uint32());
+              break;
+            case 4:
+              m.duration = $root.google.protobuf.Duration.decode(r, r.uint32());
+              break;
+            default:
+              r.skipType(t & 7);
+              break;
+          }
+        }
+        return m;
+      };
+      SyntheticLock.fromObject = function fromObject(d) {
+        if (d instanceof $root.osmosis.lockup.SyntheticLock) return d;
+        var m = new $root.osmosis.lockup.SyntheticLock();
+        if (d.underlyingLockId != null) {
+          if ($util.Long)
+            (m.underlyingLockId = $util.Long.fromValue(
+              d.underlyingLockId
+            )).unsigned = true;
+          else if (typeof d.underlyingLockId === "string")
+            m.underlyingLockId = parseInt(d.underlyingLockId, 10);
+          else if (typeof d.underlyingLockId === "number")
+            m.underlyingLockId = d.underlyingLockId;
+          else if (typeof d.underlyingLockId === "object")
+            m.underlyingLockId = new $util.LongBits(
+              d.underlyingLockId.low >>> 0,
+              d.underlyingLockId.high >>> 0
+            ).toNumber(true);
+        }
+        if (d.synthDenom != null) {
+          m.synthDenom = String(d.synthDenom);
+        }
+        if (d.endTime != null) {
+          if (typeof d.endTime !== "object")
+            throw TypeError(
+              ".osmosis.lockup.SyntheticLock.endTime: object expected"
+            );
+          m.endTime = $root.google.protobuf.Timestamp.fromObject(d.endTime);
+        }
+        if (d.duration != null) {
+          if (typeof d.duration !== "object")
+            throw TypeError(
+              ".osmosis.lockup.SyntheticLock.duration: object expected"
+            );
+          m.duration = $root.google.protobuf.Duration.fromObject(d.duration);
+        }
+        return m;
+      };
+      SyntheticLock.toObject = function toObject(m, o) {
+        if (!o) o = {};
+        var d = {};
+        if (o.defaults) {
+          if ($util.Long) {
+            var n = new $util.Long(0, 0, true);
+            d.underlyingLockId =
+              o.longs === String
+                ? n.toString()
+                : o.longs === Number
+                ? n.toNumber()
+                : n;
+          } else d.underlyingLockId = o.longs === String ? "0" : 0;
+          d.synthDenom = "";
+          d.endTime = null;
+          d.duration = null;
+        }
+        if (
+          m.underlyingLockId != null &&
+          m.hasOwnProperty("underlyingLockId")
+        ) {
+          if (typeof m.underlyingLockId === "number")
+            d.underlyingLockId =
+              o.longs === String
+                ? String(m.underlyingLockId)
+                : m.underlyingLockId;
+          else
+            d.underlyingLockId =
+              o.longs === String
+                ? $util.Long.prototype.toString.call(m.underlyingLockId)
+                : o.longs === Number
+                ? new $util.LongBits(
+                    m.underlyingLockId.low >>> 0,
+                    m.underlyingLockId.high >>> 0
+                  ).toNumber(true)
+                : m.underlyingLockId;
+        }
+        if (m.synthDenom != null && m.hasOwnProperty("synthDenom")) {
+          d.synthDenom = m.synthDenom;
+        }
+        if (m.endTime != null && m.hasOwnProperty("endTime")) {
+          d.endTime = $root.google.protobuf.Timestamp.toObject(m.endTime, o);
+        }
+        if (m.duration != null && m.hasOwnProperty("duration")) {
+          d.duration = $root.google.protobuf.Duration.toObject(m.duration, o);
+        }
+        return d;
+      };
+      SyntheticLock.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+      };
+      return SyntheticLock;
+    })();
+    lockup.Msg = (function () {
+      function Msg(rpcImpl, requestDelimited, responseDelimited) {
+        $protobuf.rpc.Service.call(
+          this,
+          rpcImpl,
+          requestDelimited,
+          responseDelimited
+        );
+      }
+      (Msg.prototype = Object.create(
+        $protobuf.rpc.Service.prototype
+      )).constructor = Msg;
+      Msg.create = function create(
+        rpcImpl,
+        requestDelimited,
+        responseDelimited
+      ) {
+        return new this(rpcImpl, requestDelimited, responseDelimited);
+      };
+      Object.defineProperty(
+        (Msg.prototype.lockTokens = function lockTokens(request, callback) {
+          return this.rpcCall(
+            lockTokens,
+            $root.osmosis.lockup.MsgLockTokens,
+            $root.osmosis.lockup.MsgLockTokensResponse,
+            request,
+            callback
+          );
+        }),
+        "name",
+        { value: "LockTokens" }
+      );
+      Object.defineProperty(
+        (Msg.prototype.beginUnlockingAll = function beginUnlockingAll(
+          request,
+          callback
+        ) {
+          return this.rpcCall(
+            beginUnlockingAll,
+            $root.osmosis.lockup.MsgBeginUnlockingAll,
+            $root.osmosis.lockup.MsgBeginUnlockingAllResponse,
+            request,
+            callback
+          );
+        }),
+        "name",
+        { value: "BeginUnlockingAll" }
+      );
+      Object.defineProperty(
+        (Msg.prototype.beginUnlocking = function beginUnlocking(
+          request,
+          callback
+        ) {
+          return this.rpcCall(
+            beginUnlocking,
+            $root.osmosis.lockup.MsgBeginUnlocking,
+            $root.osmosis.lockup.MsgBeginUnlockingResponse,
+            request,
+            callback
+          );
+        }),
+        "name",
+        { value: "BeginUnlocking" }
+      );
+      Object.defineProperty(
+        (Msg.prototype.extendLockup = function extendLockup(request, callback) {
+          return this.rpcCall(
+            extendLockup,
+            $root.osmosis.lockup.MsgExtendLockup,
+            $root.osmosis.lockup.MsgExtendLockupResponse,
+            request,
+            callback
+          );
+        }),
+        "name",
+        { value: "ExtendLockup" }
+      );
+      Object.defineProperty(
+        (Msg.prototype.forceUnlock = function forceUnlock(request, callback) {
+          return this.rpcCall(
+            forceUnlock,
+            $root.osmosis.lockup.MsgForceUnlock,
+            $root.osmosis.lockup.MsgForceUnlockResponse,
+            request,
+            callback
+          );
+        }),
+        "name",
+        { value: "ForceUnlock" }
+      );
+      return Msg;
+    })();
+    lockup.MsgLockTokens = (function () {
+      function MsgLockTokens(p) {
+        this.coins = [];
+        if (p)
+          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+      }
+      MsgLockTokens.prototype.owner = "";
+      MsgLockTokens.prototype.duration = null;
+      MsgLockTokens.prototype.coins = $util.emptyArray;
+      MsgLockTokens.create = function create(properties) {
+        return new MsgLockTokens(properties);
+      };
+      MsgLockTokens.encode = function encode(m, w) {
+        if (!w) w = $Writer.create();
+        if (m.owner != null && Object.hasOwnProperty.call(m, "owner"))
+          w.uint32(10).string(m.owner);
+        if (m.duration != null && Object.hasOwnProperty.call(m, "duration"))
+          $root.google.protobuf.Duration.encode(
+            m.duration,
+            w.uint32(18).fork()
+          ).ldelim();
+        if (m.coins != null && m.coins.length) {
+          for (var i = 0; i < m.coins.length; ++i)
+            $root.cosmos.base.v1beta1.Coin.encode(
+              m.coins[i],
+              w.uint32(26).fork()
+            ).ldelim();
+        }
+        return w;
+      };
+      MsgLockTokens.decode = function decode(r, l) {
+        if (!(r instanceof $Reader)) r = $Reader.create(r);
+        var c = l === undefined ? r.len : r.pos + l,
+          m = new $root.osmosis.lockup.MsgLockTokens();
+        while (r.pos < c) {
+          var t = r.uint32();
+          switch (t >>> 3) {
+            case 1:
+              m.owner = r.string();
+              break;
+            case 2:
+              m.duration = $root.google.protobuf.Duration.decode(r, r.uint32());
+              break;
+            case 3:
+              if (!(m.coins && m.coins.length)) m.coins = [];
+              m.coins.push(
+                $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
+              );
+              break;
+            default:
+              r.skipType(t & 7);
+              break;
+          }
+        }
+        return m;
+      };
+      MsgLockTokens.fromObject = function fromObject(d) {
+        if (d instanceof $root.osmosis.lockup.MsgLockTokens) return d;
+        var m = new $root.osmosis.lockup.MsgLockTokens();
+        if (d.owner != null) {
+          m.owner = String(d.owner);
+        }
+        if (d.duration != null) {
+          if (typeof d.duration !== "object")
+            throw TypeError(
+              ".osmosis.lockup.MsgLockTokens.duration: object expected"
+            );
+          m.duration = $root.google.protobuf.Duration.fromObject(d.duration);
+        }
+        if (d.coins) {
+          if (!Array.isArray(d.coins))
+            throw TypeError(
+              ".osmosis.lockup.MsgLockTokens.coins: array expected"
+            );
+          m.coins = [];
+          for (var i = 0; i < d.coins.length; ++i) {
+            if (typeof d.coins[i] !== "object")
+              throw TypeError(
+                ".osmosis.lockup.MsgLockTokens.coins: object expected"
+              );
+            m.coins[i] = $root.cosmos.base.v1beta1.Coin.fromObject(d.coins[i]);
+          }
+        }
+        return m;
+      };
+      MsgLockTokens.toObject = function toObject(m, o) {
+        if (!o) o = {};
+        var d = {};
+        if (o.arrays || o.defaults) {
+          d.coins = [];
+        }
+        if (o.defaults) {
+          d.owner = "";
+          d.duration = null;
+        }
+        if (m.owner != null && m.hasOwnProperty("owner")) {
+          d.owner = m.owner;
+        }
+        if (m.duration != null && m.hasOwnProperty("duration")) {
+          d.duration = $root.google.protobuf.Duration.toObject(m.duration, o);
+        }
+        if (m.coins && m.coins.length) {
+          d.coins = [];
+          for (var j = 0; j < m.coins.length; ++j) {
+            d.coins[j] = $root.cosmos.base.v1beta1.Coin.toObject(m.coins[j], o);
+          }
+        }
+        return d;
+      };
+      MsgLockTokens.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+      };
+      return MsgLockTokens;
+    })();
+    lockup.MsgLockTokensResponse = (function () {
+      function MsgLockTokensResponse(p) {
+        if (p)
+          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+      }
+      MsgLockTokensResponse.prototype.ID = $util.Long
+        ? $util.Long.fromBits(0, 0, true)
+        : 0;
+      MsgLockTokensResponse.create = function create(properties) {
+        return new MsgLockTokensResponse(properties);
+      };
+      MsgLockTokensResponse.encode = function encode(m, w) {
+        if (!w) w = $Writer.create();
+        if (m.ID != null && Object.hasOwnProperty.call(m, "ID"))
+          w.uint32(8).uint64(m.ID);
+        return w;
+      };
+      MsgLockTokensResponse.decode = function decode(r, l) {
+        if (!(r instanceof $Reader)) r = $Reader.create(r);
+        var c = l === undefined ? r.len : r.pos + l,
+          m = new $root.osmosis.lockup.MsgLockTokensResponse();
+        while (r.pos < c) {
+          var t = r.uint32();
+          switch (t >>> 3) {
+            case 1:
+              m.ID = r.uint64();
+              break;
+            default:
+              r.skipType(t & 7);
+              break;
+          }
+        }
+        return m;
+      };
+      MsgLockTokensResponse.fromObject = function fromObject(d) {
+        if (d instanceof $root.osmosis.lockup.MsgLockTokensResponse) return d;
+        var m = new $root.osmosis.lockup.MsgLockTokensResponse();
+        if (d.ID != null) {
+          if ($util.Long) (m.ID = $util.Long.fromValue(d.ID)).unsigned = true;
+          else if (typeof d.ID === "string") m.ID = parseInt(d.ID, 10);
+          else if (typeof d.ID === "number") m.ID = d.ID;
+          else if (typeof d.ID === "object")
+            m.ID = new $util.LongBits(d.ID.low >>> 0, d.ID.high >>> 0).toNumber(
+              true
+            );
+        }
+        return m;
+      };
+      MsgLockTokensResponse.toObject = function toObject(m, o) {
+        if (!o) o = {};
+        var d = {};
+        if (o.defaults) {
+          if ($util.Long) {
+            var n = new $util.Long(0, 0, true);
+            d.ID =
+              o.longs === String
+                ? n.toString()
+                : o.longs === Number
+                ? n.toNumber()
+                : n;
+          } else d.ID = o.longs === String ? "0" : 0;
+        }
+        if (m.ID != null && m.hasOwnProperty("ID")) {
+          if (typeof m.ID === "number")
+            d.ID = o.longs === String ? String(m.ID) : m.ID;
+          else
+            d.ID =
+              o.longs === String
+                ? $util.Long.prototype.toString.call(m.ID)
+                : o.longs === Number
+                ? new $util.LongBits(m.ID.low >>> 0, m.ID.high >>> 0).toNumber(
+                    true
+                  )
+                : m.ID;
+        }
+        return d;
+      };
+      MsgLockTokensResponse.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+      };
+      return MsgLockTokensResponse;
+    })();
+    lockup.MsgBeginUnlockingAll = (function () {
+      function MsgBeginUnlockingAll(p) {
+        if (p)
+          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+      }
+      MsgBeginUnlockingAll.prototype.owner = "";
+      MsgBeginUnlockingAll.create = function create(properties) {
+        return new MsgBeginUnlockingAll(properties);
+      };
+      MsgBeginUnlockingAll.encode = function encode(m, w) {
+        if (!w) w = $Writer.create();
+        if (m.owner != null && Object.hasOwnProperty.call(m, "owner"))
+          w.uint32(10).string(m.owner);
+        return w;
+      };
+      MsgBeginUnlockingAll.decode = function decode(r, l) {
+        if (!(r instanceof $Reader)) r = $Reader.create(r);
+        var c = l === undefined ? r.len : r.pos + l,
+          m = new $root.osmosis.lockup.MsgBeginUnlockingAll();
+        while (r.pos < c) {
+          var t = r.uint32();
+          switch (t >>> 3) {
+            case 1:
+              m.owner = r.string();
+              break;
+            default:
+              r.skipType(t & 7);
+              break;
+          }
+        }
+        return m;
+      };
+      MsgBeginUnlockingAll.fromObject = function fromObject(d) {
+        if (d instanceof $root.osmosis.lockup.MsgBeginUnlockingAll) return d;
+        var m = new $root.osmosis.lockup.MsgBeginUnlockingAll();
+        if (d.owner != null) {
+          m.owner = String(d.owner);
+        }
+        return m;
+      };
+      MsgBeginUnlockingAll.toObject = function toObject(m, o) {
+        if (!o) o = {};
+        var d = {};
+        if (o.defaults) {
+          d.owner = "";
+        }
+        if (m.owner != null && m.hasOwnProperty("owner")) {
+          d.owner = m.owner;
+        }
+        return d;
+      };
+      MsgBeginUnlockingAll.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+      };
+      return MsgBeginUnlockingAll;
+    })();
+    lockup.MsgBeginUnlockingAllResponse = (function () {
+      function MsgBeginUnlockingAllResponse(p) {
+        this.unlocks = [];
+        if (p)
+          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+      }
+      MsgBeginUnlockingAllResponse.prototype.unlocks = $util.emptyArray;
+      MsgBeginUnlockingAllResponse.create = function create(properties) {
+        return new MsgBeginUnlockingAllResponse(properties);
+      };
+      MsgBeginUnlockingAllResponse.encode = function encode(m, w) {
+        if (!w) w = $Writer.create();
+        if (m.unlocks != null && m.unlocks.length) {
+          for (var i = 0; i < m.unlocks.length; ++i)
+            $root.osmosis.lockup.PeriodLock.encode(
+              m.unlocks[i],
+              w.uint32(10).fork()
+            ).ldelim();
+        }
+        return w;
+      };
+      MsgBeginUnlockingAllResponse.decode = function decode(r, l) {
+        if (!(r instanceof $Reader)) r = $Reader.create(r);
+        var c = l === undefined ? r.len : r.pos + l,
+          m = new $root.osmosis.lockup.MsgBeginUnlockingAllResponse();
+        while (r.pos < c) {
+          var t = r.uint32();
+          switch (t >>> 3) {
+            case 1:
+              if (!(m.unlocks && m.unlocks.length)) m.unlocks = [];
+              m.unlocks.push(
+                $root.osmosis.lockup.PeriodLock.decode(r, r.uint32())
+              );
+              break;
+            default:
+              r.skipType(t & 7);
+              break;
+          }
+        }
+        return m;
+      };
+      MsgBeginUnlockingAllResponse.fromObject = function fromObject(d) {
+        if (d instanceof $root.osmosis.lockup.MsgBeginUnlockingAllResponse)
+          return d;
+        var m = new $root.osmosis.lockup.MsgBeginUnlockingAllResponse();
+        if (d.unlocks) {
+          if (!Array.isArray(d.unlocks))
+            throw TypeError(
+              ".osmosis.lockup.MsgBeginUnlockingAllResponse.unlocks: array expected"
+            );
+          m.unlocks = [];
+          for (var i = 0; i < d.unlocks.length; ++i) {
+            if (typeof d.unlocks[i] !== "object")
+              throw TypeError(
+                ".osmosis.lockup.MsgBeginUnlockingAllResponse.unlocks: object expected"
+              );
+            m.unlocks[i] = $root.osmosis.lockup.PeriodLock.fromObject(
+              d.unlocks[i]
+            );
+          }
+        }
+        return m;
+      };
+      MsgBeginUnlockingAllResponse.toObject = function toObject(m, o) {
+        if (!o) o = {};
+        var d = {};
+        if (o.arrays || o.defaults) {
+          d.unlocks = [];
+        }
+        if (m.unlocks && m.unlocks.length) {
+          d.unlocks = [];
+          for (var j = 0; j < m.unlocks.length; ++j) {
+            d.unlocks[j] = $root.osmosis.lockup.PeriodLock.toObject(
+              m.unlocks[j],
+              o
+            );
+          }
+        }
+        return d;
+      };
+      MsgBeginUnlockingAllResponse.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+      };
+      return MsgBeginUnlockingAllResponse;
+    })();
+    lockup.MsgBeginUnlocking = (function () {
+      function MsgBeginUnlocking(p) {
+        this.coins = [];
+        if (p)
+          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+      }
+      MsgBeginUnlocking.prototype.owner = "";
+      MsgBeginUnlocking.prototype.ID = $util.Long
+        ? $util.Long.fromBits(0, 0, true)
+        : 0;
+      MsgBeginUnlocking.prototype.coins = $util.emptyArray;
+      MsgBeginUnlocking.create = function create(properties) {
+        return new MsgBeginUnlocking(properties);
+      };
+      MsgBeginUnlocking.encode = function encode(m, w) {
+        if (!w) w = $Writer.create();
+        if (m.owner != null && Object.hasOwnProperty.call(m, "owner"))
+          w.uint32(10).string(m.owner);
+        if (m.ID != null && Object.hasOwnProperty.call(m, "ID"))
+          w.uint32(16).uint64(m.ID);
+        if (m.coins != null && m.coins.length) {
+          for (var i = 0; i < m.coins.length; ++i)
+            $root.cosmos.base.v1beta1.Coin.encode(
+              m.coins[i],
+              w.uint32(26).fork()
+            ).ldelim();
+        }
+        return w;
+      };
+      MsgBeginUnlocking.decode = function decode(r, l) {
+        if (!(r instanceof $Reader)) r = $Reader.create(r);
+        var c = l === undefined ? r.len : r.pos + l,
+          m = new $root.osmosis.lockup.MsgBeginUnlocking();
+        while (r.pos < c) {
+          var t = r.uint32();
+          switch (t >>> 3) {
+            case 1:
+              m.owner = r.string();
+              break;
+            case 2:
+              m.ID = r.uint64();
+              break;
+            case 3:
+              if (!(m.coins && m.coins.length)) m.coins = [];
+              m.coins.push(
+                $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
+              );
+              break;
+            default:
+              r.skipType(t & 7);
+              break;
+          }
+        }
+        return m;
+      };
+      MsgBeginUnlocking.fromObject = function fromObject(d) {
+        if (d instanceof $root.osmosis.lockup.MsgBeginUnlocking) return d;
+        var m = new $root.osmosis.lockup.MsgBeginUnlocking();
+        if (d.owner != null) {
+          m.owner = String(d.owner);
+        }
+        if (d.ID != null) {
+          if ($util.Long) (m.ID = $util.Long.fromValue(d.ID)).unsigned = true;
+          else if (typeof d.ID === "string") m.ID = parseInt(d.ID, 10);
+          else if (typeof d.ID === "number") m.ID = d.ID;
+          else if (typeof d.ID === "object")
+            m.ID = new $util.LongBits(d.ID.low >>> 0, d.ID.high >>> 0).toNumber(
+              true
+            );
+        }
+        if (d.coins) {
+          if (!Array.isArray(d.coins))
+            throw TypeError(
+              ".osmosis.lockup.MsgBeginUnlocking.coins: array expected"
+            );
+          m.coins = [];
+          for (var i = 0; i < d.coins.length; ++i) {
+            if (typeof d.coins[i] !== "object")
+              throw TypeError(
+                ".osmosis.lockup.MsgBeginUnlocking.coins: object expected"
+              );
+            m.coins[i] = $root.cosmos.base.v1beta1.Coin.fromObject(d.coins[i]);
+          }
+        }
+        return m;
+      };
+      MsgBeginUnlocking.toObject = function toObject(m, o) {
+        if (!o) o = {};
+        var d = {};
+        if (o.arrays || o.defaults) {
+          d.coins = [];
+        }
+        if (o.defaults) {
+          d.owner = "";
+          if ($util.Long) {
+            var n = new $util.Long(0, 0, true);
+            d.ID =
+              o.longs === String
+                ? n.toString()
+                : o.longs === Number
+                ? n.toNumber()
+                : n;
+          } else d.ID = o.longs === String ? "0" : 0;
+        }
+        if (m.owner != null && m.hasOwnProperty("owner")) {
+          d.owner = m.owner;
+        }
+        if (m.ID != null && m.hasOwnProperty("ID")) {
+          if (typeof m.ID === "number")
+            d.ID = o.longs === String ? String(m.ID) : m.ID;
+          else
+            d.ID =
+              o.longs === String
+                ? $util.Long.prototype.toString.call(m.ID)
+                : o.longs === Number
+                ? new $util.LongBits(m.ID.low >>> 0, m.ID.high >>> 0).toNumber(
+                    true
+                  )
+                : m.ID;
+        }
+        if (m.coins && m.coins.length) {
+          d.coins = [];
+          for (var j = 0; j < m.coins.length; ++j) {
+            d.coins[j] = $root.cosmos.base.v1beta1.Coin.toObject(m.coins[j], o);
+          }
+        }
+        return d;
+      };
+      MsgBeginUnlocking.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+      };
+      return MsgBeginUnlocking;
+    })();
+    lockup.MsgBeginUnlockingResponse = (function () {
+      function MsgBeginUnlockingResponse(p) {
+        if (p)
+          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+      }
+      MsgBeginUnlockingResponse.prototype.success = false;
+      MsgBeginUnlockingResponse.create = function create(properties) {
+        return new MsgBeginUnlockingResponse(properties);
+      };
+      MsgBeginUnlockingResponse.encode = function encode(m, w) {
+        if (!w) w = $Writer.create();
+        if (m.success != null && Object.hasOwnProperty.call(m, "success"))
+          w.uint32(8).bool(m.success);
+        return w;
+      };
+      MsgBeginUnlockingResponse.decode = function decode(r, l) {
+        if (!(r instanceof $Reader)) r = $Reader.create(r);
+        var c = l === undefined ? r.len : r.pos + l,
+          m = new $root.osmosis.lockup.MsgBeginUnlockingResponse();
+        while (r.pos < c) {
+          var t = r.uint32();
+          switch (t >>> 3) {
+            case 1:
+              m.success = r.bool();
+              break;
+            default:
+              r.skipType(t & 7);
+              break;
+          }
+        }
+        return m;
+      };
+      MsgBeginUnlockingResponse.fromObject = function fromObject(d) {
+        if (d instanceof $root.osmosis.lockup.MsgBeginUnlockingResponse)
+          return d;
+        var m = new $root.osmosis.lockup.MsgBeginUnlockingResponse();
+        if (d.success != null) {
+          m.success = Boolean(d.success);
+        }
+        return m;
+      };
+      MsgBeginUnlockingResponse.toObject = function toObject(m, o) {
+        if (!o) o = {};
+        var d = {};
+        if (o.defaults) {
+          d.success = false;
+        }
+        if (m.success != null && m.hasOwnProperty("success")) {
+          d.success = m.success;
+        }
+        return d;
+      };
+      MsgBeginUnlockingResponse.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+      };
+      return MsgBeginUnlockingResponse;
+    })();
+    lockup.MsgExtendLockup = (function () {
+      function MsgExtendLockup(p) {
+        if (p)
+          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+      }
+      MsgExtendLockup.prototype.owner = "";
+      MsgExtendLockup.prototype.ID = $util.Long
+        ? $util.Long.fromBits(0, 0, true)
+        : 0;
+      MsgExtendLockup.prototype.duration = null;
+      MsgExtendLockup.create = function create(properties) {
+        return new MsgExtendLockup(properties);
+      };
+      MsgExtendLockup.encode = function encode(m, w) {
+        if (!w) w = $Writer.create();
+        if (m.owner != null && Object.hasOwnProperty.call(m, "owner"))
+          w.uint32(10).string(m.owner);
+        if (m.ID != null && Object.hasOwnProperty.call(m, "ID"))
+          w.uint32(16).uint64(m.ID);
+        if (m.duration != null && Object.hasOwnProperty.call(m, "duration"))
+          $root.google.protobuf.Duration.encode(
+            m.duration,
+            w.uint32(26).fork()
+          ).ldelim();
+        return w;
+      };
+      MsgExtendLockup.decode = function decode(r, l) {
+        if (!(r instanceof $Reader)) r = $Reader.create(r);
+        var c = l === undefined ? r.len : r.pos + l,
+          m = new $root.osmosis.lockup.MsgExtendLockup();
+        while (r.pos < c) {
+          var t = r.uint32();
+          switch (t >>> 3) {
+            case 1:
+              m.owner = r.string();
+              break;
+            case 2:
+              m.ID = r.uint64();
+              break;
+            case 3:
+              m.duration = $root.google.protobuf.Duration.decode(r, r.uint32());
+              break;
+            default:
+              r.skipType(t & 7);
+              break;
+          }
+        }
+        return m;
+      };
+      MsgExtendLockup.fromObject = function fromObject(d) {
+        if (d instanceof $root.osmosis.lockup.MsgExtendLockup) return d;
+        var m = new $root.osmosis.lockup.MsgExtendLockup();
+        if (d.owner != null) {
+          m.owner = String(d.owner);
+        }
+        if (d.ID != null) {
+          if ($util.Long) (m.ID = $util.Long.fromValue(d.ID)).unsigned = true;
+          else if (typeof d.ID === "string") m.ID = parseInt(d.ID, 10);
+          else if (typeof d.ID === "number") m.ID = d.ID;
+          else if (typeof d.ID === "object")
+            m.ID = new $util.LongBits(d.ID.low >>> 0, d.ID.high >>> 0).toNumber(
+              true
+            );
+        }
+        if (d.duration != null) {
+          if (typeof d.duration !== "object")
+            throw TypeError(
+              ".osmosis.lockup.MsgExtendLockup.duration: object expected"
+            );
+          m.duration = $root.google.protobuf.Duration.fromObject(d.duration);
+        }
+        return m;
+      };
+      MsgExtendLockup.toObject = function toObject(m, o) {
+        if (!o) o = {};
+        var d = {};
+        if (o.defaults) {
+          d.owner = "";
+          if ($util.Long) {
+            var n = new $util.Long(0, 0, true);
+            d.ID =
+              o.longs === String
+                ? n.toString()
+                : o.longs === Number
+                ? n.toNumber()
+                : n;
+          } else d.ID = o.longs === String ? "0" : 0;
+          d.duration = null;
+        }
+        if (m.owner != null && m.hasOwnProperty("owner")) {
+          d.owner = m.owner;
+        }
+        if (m.ID != null && m.hasOwnProperty("ID")) {
+          if (typeof m.ID === "number")
+            d.ID = o.longs === String ? String(m.ID) : m.ID;
+          else
+            d.ID =
+              o.longs === String
+                ? $util.Long.prototype.toString.call(m.ID)
+                : o.longs === Number
+                ? new $util.LongBits(m.ID.low >>> 0, m.ID.high >>> 0).toNumber(
+                    true
+                  )
+                : m.ID;
+        }
+        if (m.duration != null && m.hasOwnProperty("duration")) {
+          d.duration = $root.google.protobuf.Duration.toObject(m.duration, o);
+        }
+        return d;
+      };
+      MsgExtendLockup.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+      };
+      return MsgExtendLockup;
+    })();
+    lockup.MsgExtendLockupResponse = (function () {
+      function MsgExtendLockupResponse(p) {
+        if (p)
+          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+      }
+      MsgExtendLockupResponse.prototype.success = false;
+      MsgExtendLockupResponse.create = function create(properties) {
+        return new MsgExtendLockupResponse(properties);
+      };
+      MsgExtendLockupResponse.encode = function encode(m, w) {
+        if (!w) w = $Writer.create();
+        if (m.success != null && Object.hasOwnProperty.call(m, "success"))
+          w.uint32(8).bool(m.success);
+        return w;
+      };
+      MsgExtendLockupResponse.decode = function decode(r, l) {
+        if (!(r instanceof $Reader)) r = $Reader.create(r);
+        var c = l === undefined ? r.len : r.pos + l,
+          m = new $root.osmosis.lockup.MsgExtendLockupResponse();
+        while (r.pos < c) {
+          var t = r.uint32();
+          switch (t >>> 3) {
+            case 1:
+              m.success = r.bool();
+              break;
+            default:
+              r.skipType(t & 7);
+              break;
+          }
+        }
+        return m;
+      };
+      MsgExtendLockupResponse.fromObject = function fromObject(d) {
+        if (d instanceof $root.osmosis.lockup.MsgExtendLockupResponse) return d;
+        var m = new $root.osmosis.lockup.MsgExtendLockupResponse();
+        if (d.success != null) {
+          m.success = Boolean(d.success);
+        }
+        return m;
+      };
+      MsgExtendLockupResponse.toObject = function toObject(m, o) {
+        if (!o) o = {};
+        var d = {};
+        if (o.defaults) {
+          d.success = false;
+        }
+        if (m.success != null && m.hasOwnProperty("success")) {
+          d.success = m.success;
+        }
+        return d;
+      };
+      MsgExtendLockupResponse.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+      };
+      return MsgExtendLockupResponse;
+    })();
+    lockup.MsgForceUnlock = (function () {
+      function MsgForceUnlock(p) {
+        this.coins = [];
+        if (p)
+          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+      }
+      MsgForceUnlock.prototype.owner = "";
+      MsgForceUnlock.prototype.ID = $util.Long
+        ? $util.Long.fromBits(0, 0, true)
+        : 0;
+      MsgForceUnlock.prototype.coins = $util.emptyArray;
+      MsgForceUnlock.create = function create(properties) {
+        return new MsgForceUnlock(properties);
+      };
+      MsgForceUnlock.encode = function encode(m, w) {
+        if (!w) w = $Writer.create();
+        if (m.owner != null && Object.hasOwnProperty.call(m, "owner"))
+          w.uint32(10).string(m.owner);
+        if (m.ID != null && Object.hasOwnProperty.call(m, "ID"))
+          w.uint32(16).uint64(m.ID);
+        if (m.coins != null && m.coins.length) {
+          for (var i = 0; i < m.coins.length; ++i)
+            $root.cosmos.base.v1beta1.Coin.encode(
+              m.coins[i],
+              w.uint32(26).fork()
+            ).ldelim();
+        }
+        return w;
+      };
+      MsgForceUnlock.decode = function decode(r, l) {
+        if (!(r instanceof $Reader)) r = $Reader.create(r);
+        var c = l === undefined ? r.len : r.pos + l,
+          m = new $root.osmosis.lockup.MsgForceUnlock();
+        while (r.pos < c) {
+          var t = r.uint32();
+          switch (t >>> 3) {
+            case 1:
+              m.owner = r.string();
+              break;
+            case 2:
+              m.ID = r.uint64();
+              break;
+            case 3:
+              if (!(m.coins && m.coins.length)) m.coins = [];
+              m.coins.push(
+                $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
+              );
+              break;
+            default:
+              r.skipType(t & 7);
+              break;
+          }
+        }
+        return m;
+      };
+      MsgForceUnlock.fromObject = function fromObject(d) {
+        if (d instanceof $root.osmosis.lockup.MsgForceUnlock) return d;
+        var m = new $root.osmosis.lockup.MsgForceUnlock();
+        if (d.owner != null) {
+          m.owner = String(d.owner);
+        }
+        if (d.ID != null) {
+          if ($util.Long) (m.ID = $util.Long.fromValue(d.ID)).unsigned = true;
+          else if (typeof d.ID === "string") m.ID = parseInt(d.ID, 10);
+          else if (typeof d.ID === "number") m.ID = d.ID;
+          else if (typeof d.ID === "object")
+            m.ID = new $util.LongBits(d.ID.low >>> 0, d.ID.high >>> 0).toNumber(
+              true
+            );
+        }
+        if (d.coins) {
+          if (!Array.isArray(d.coins))
+            throw TypeError(
+              ".osmosis.lockup.MsgForceUnlock.coins: array expected"
+            );
+          m.coins = [];
+          for (var i = 0; i < d.coins.length; ++i) {
+            if (typeof d.coins[i] !== "object")
+              throw TypeError(
+                ".osmosis.lockup.MsgForceUnlock.coins: object expected"
+              );
+            m.coins[i] = $root.cosmos.base.v1beta1.Coin.fromObject(d.coins[i]);
+          }
+        }
+        return m;
+      };
+      MsgForceUnlock.toObject = function toObject(m, o) {
+        if (!o) o = {};
+        var d = {};
+        if (o.arrays || o.defaults) {
+          d.coins = [];
+        }
+        if (o.defaults) {
+          d.owner = "";
+          if ($util.Long) {
+            var n = new $util.Long(0, 0, true);
+            d.ID =
+              o.longs === String
+                ? n.toString()
+                : o.longs === Number
+                ? n.toNumber()
+                : n;
+          } else d.ID = o.longs === String ? "0" : 0;
+        }
+        if (m.owner != null && m.hasOwnProperty("owner")) {
+          d.owner = m.owner;
+        }
+        if (m.ID != null && m.hasOwnProperty("ID")) {
+          if (typeof m.ID === "number")
+            d.ID = o.longs === String ? String(m.ID) : m.ID;
+          else
+            d.ID =
+              o.longs === String
+                ? $util.Long.prototype.toString.call(m.ID)
+                : o.longs === Number
+                ? new $util.LongBits(m.ID.low >>> 0, m.ID.high >>> 0).toNumber(
+                    true
+                  )
+                : m.ID;
+        }
+        if (m.coins && m.coins.length) {
+          d.coins = [];
+          for (var j = 0; j < m.coins.length; ++j) {
+            d.coins[j] = $root.cosmos.base.v1beta1.Coin.toObject(m.coins[j], o);
+          }
+        }
+        return d;
+      };
+      MsgForceUnlock.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+      };
+      return MsgForceUnlock;
+    })();
+    lockup.MsgForceUnlockResponse = (function () {
+      function MsgForceUnlockResponse(p) {
+        if (p)
+          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+      }
+      MsgForceUnlockResponse.prototype.success = false;
+      MsgForceUnlockResponse.create = function create(properties) {
+        return new MsgForceUnlockResponse(properties);
+      };
+      MsgForceUnlockResponse.encode = function encode(m, w) {
+        if (!w) w = $Writer.create();
+        if (m.success != null && Object.hasOwnProperty.call(m, "success"))
+          w.uint32(8).bool(m.success);
+        return w;
+      };
+      MsgForceUnlockResponse.decode = function decode(r, l) {
+        if (!(r instanceof $Reader)) r = $Reader.create(r);
+        var c = l === undefined ? r.len : r.pos + l,
+          m = new $root.osmosis.lockup.MsgForceUnlockResponse();
+        while (r.pos < c) {
+          var t = r.uint32();
+          switch (t >>> 3) {
+            case 1:
+              m.success = r.bool();
+              break;
+            default:
+              r.skipType(t & 7);
+              break;
+          }
+        }
+        return m;
+      };
+      MsgForceUnlockResponse.fromObject = function fromObject(d) {
+        if (d instanceof $root.osmosis.lockup.MsgForceUnlockResponse) return d;
+        var m = new $root.osmosis.lockup.MsgForceUnlockResponse();
+        if (d.success != null) {
+          m.success = Boolean(d.success);
+        }
+        return m;
+      };
+      MsgForceUnlockResponse.toObject = function toObject(m, o) {
+        if (!o) o = {};
+        var d = {};
+        if (o.defaults) {
+          d.success = false;
+        }
+        if (m.success != null && m.hasOwnProperty("success")) {
+          d.success = m.success;
+        }
+        return d;
+      };
+      MsgForceUnlockResponse.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+      };
+      return MsgForceUnlockResponse;
+    })();
+    return lockup;
+  })();
+  osmosis.incentives = (function () {
+    const incentives = {};
+    incentives.Msg = (function () {
+      function Msg(rpcImpl, requestDelimited, responseDelimited) {
+        $protobuf.rpc.Service.call(
+          this,
+          rpcImpl,
+          requestDelimited,
+          responseDelimited
+        );
+      }
+      (Msg.prototype = Object.create(
+        $protobuf.rpc.Service.prototype
+      )).constructor = Msg;
+      Msg.create = function create(
+        rpcImpl,
+        requestDelimited,
+        responseDelimited
+      ) {
+        return new this(rpcImpl, requestDelimited, responseDelimited);
+      };
+      Object.defineProperty(
+        (Msg.prototype.createGauge = function createGauge(request, callback) {
+          return this.rpcCall(
+            createGauge,
+            $root.osmosis.incentives.MsgCreateGauge,
+            $root.osmosis.incentives.MsgCreateGaugeResponse,
+            request,
+            callback
+          );
+        }),
+        "name",
+        { value: "CreateGauge" }
+      );
+      Object.defineProperty(
+        (Msg.prototype.addToGauge = function addToGauge(request, callback) {
+          return this.rpcCall(
+            addToGauge,
+            $root.osmosis.incentives.MsgAddToGauge,
+            $root.osmosis.incentives.MsgAddToGaugeResponse,
+            request,
+            callback
+          );
+        }),
+        "name",
+        { value: "AddToGauge" }
+      );
+      return Msg;
+    })();
+    incentives.MsgCreateGauge = (function () {
+      function MsgCreateGauge(p) {
+        this.coins = [];
+        if (p)
+          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+      }
+      MsgCreateGauge.prototype.isPerpetual = false;
+      MsgCreateGauge.prototype.owner = "";
+      MsgCreateGauge.prototype.distributeTo = null;
+      MsgCreateGauge.prototype.coins = $util.emptyArray;
+      MsgCreateGauge.prototype.startTime = null;
+      MsgCreateGauge.prototype.numEpochsPaidOver = $util.Long
+        ? $util.Long.fromBits(0, 0, true)
+        : 0;
+      MsgCreateGauge.create = function create(properties) {
+        return new MsgCreateGauge(properties);
+      };
+      MsgCreateGauge.encode = function encode(m, w) {
+        if (!w) w = $Writer.create();
+        if (
+          m.isPerpetual != null &&
+          Object.hasOwnProperty.call(m, "isPerpetual")
+        )
+          w.uint32(8).bool(m.isPerpetual);
+        if (m.owner != null && Object.hasOwnProperty.call(m, "owner"))
+          w.uint32(18).string(m.owner);
+        if (
+          m.distributeTo != null &&
+          Object.hasOwnProperty.call(m, "distributeTo")
+        )
+          $root.osmosis.lockup.QueryCondition.encode(
+            m.distributeTo,
+            w.uint32(26).fork()
+          ).ldelim();
+        if (m.coins != null && m.coins.length) {
+          for (var i = 0; i < m.coins.length; ++i)
+            $root.cosmos.base.v1beta1.Coin.encode(
+              m.coins[i],
+              w.uint32(34).fork()
+            ).ldelim();
+        }
+        if (m.startTime != null && Object.hasOwnProperty.call(m, "startTime"))
+          $root.google.protobuf.Timestamp.encode(
+            m.startTime,
+            w.uint32(42).fork()
+          ).ldelim();
+        if (
+          m.numEpochsPaidOver != null &&
+          Object.hasOwnProperty.call(m, "numEpochsPaidOver")
+        )
+          w.uint32(48).uint64(m.numEpochsPaidOver);
+        return w;
+      };
+      MsgCreateGauge.decode = function decode(r, l) {
+        if (!(r instanceof $Reader)) r = $Reader.create(r);
+        var c = l === undefined ? r.len : r.pos + l,
+          m = new $root.osmosis.incentives.MsgCreateGauge();
+        while (r.pos < c) {
+          var t = r.uint32();
+          switch (t >>> 3) {
+            case 1:
+              m.isPerpetual = r.bool();
+              break;
+            case 2:
+              m.owner = r.string();
+              break;
+            case 3:
+              m.distributeTo = $root.osmosis.lockup.QueryCondition.decode(
+                r,
+                r.uint32()
+              );
+              break;
+            case 4:
+              if (!(m.coins && m.coins.length)) m.coins = [];
+              m.coins.push(
+                $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
+              );
+              break;
+            case 5:
+              m.startTime = $root.google.protobuf.Timestamp.decode(
+                r,
+                r.uint32()
+              );
+              break;
+            case 6:
+              m.numEpochsPaidOver = r.uint64();
+              break;
+            default:
+              r.skipType(t & 7);
+              break;
+          }
+        }
+        return m;
+      };
+      MsgCreateGauge.fromObject = function fromObject(d) {
+        if (d instanceof $root.osmosis.incentives.MsgCreateGauge) return d;
+        var m = new $root.osmosis.incentives.MsgCreateGauge();
+        if (d.isPerpetual != null) {
+          m.isPerpetual = Boolean(d.isPerpetual);
+        }
+        if (d.owner != null) {
+          m.owner = String(d.owner);
+        }
+        if (d.distributeTo != null) {
+          if (typeof d.distributeTo !== "object")
+            throw TypeError(
+              ".osmosis.incentives.MsgCreateGauge.distributeTo: object expected"
+            );
+          m.distributeTo = $root.osmosis.lockup.QueryCondition.fromObject(
+            d.distributeTo
+          );
+        }
+        if (d.coins) {
+          if (!Array.isArray(d.coins))
+            throw TypeError(
+              ".osmosis.incentives.MsgCreateGauge.coins: array expected"
+            );
+          m.coins = [];
+          for (var i = 0; i < d.coins.length; ++i) {
+            if (typeof d.coins[i] !== "object")
+              throw TypeError(
+                ".osmosis.incentives.MsgCreateGauge.coins: object expected"
+              );
+            m.coins[i] = $root.cosmos.base.v1beta1.Coin.fromObject(d.coins[i]);
+          }
+        }
+        if (d.startTime != null) {
+          if (typeof d.startTime !== "object")
+            throw TypeError(
+              ".osmosis.incentives.MsgCreateGauge.startTime: object expected"
+            );
+          m.startTime = $root.google.protobuf.Timestamp.fromObject(d.startTime);
+        }
+        if (d.numEpochsPaidOver != null) {
+          if ($util.Long)
+            (m.numEpochsPaidOver = $util.Long.fromValue(
+              d.numEpochsPaidOver
+            )).unsigned = true;
+          else if (typeof d.numEpochsPaidOver === "string")
+            m.numEpochsPaidOver = parseInt(d.numEpochsPaidOver, 10);
+          else if (typeof d.numEpochsPaidOver === "number")
+            m.numEpochsPaidOver = d.numEpochsPaidOver;
+          else if (typeof d.numEpochsPaidOver === "object")
+            m.numEpochsPaidOver = new $util.LongBits(
+              d.numEpochsPaidOver.low >>> 0,
+              d.numEpochsPaidOver.high >>> 0
+            ).toNumber(true);
+        }
+        return m;
+      };
+      MsgCreateGauge.toObject = function toObject(m, o) {
+        if (!o) o = {};
+        var d = {};
+        if (o.arrays || o.defaults) {
+          d.coins = [];
+        }
+        if (o.defaults) {
+          d.isPerpetual = false;
+          d.owner = "";
+          d.distributeTo = null;
+          d.startTime = null;
+          if ($util.Long) {
+            var n = new $util.Long(0, 0, true);
+            d.numEpochsPaidOver =
+              o.longs === String
+                ? n.toString()
+                : o.longs === Number
+                ? n.toNumber()
+                : n;
+          } else d.numEpochsPaidOver = o.longs === String ? "0" : 0;
+        }
+        if (m.isPerpetual != null && m.hasOwnProperty("isPerpetual")) {
+          d.isPerpetual = m.isPerpetual;
+        }
+        if (m.owner != null && m.hasOwnProperty("owner")) {
+          d.owner = m.owner;
+        }
+        if (m.distributeTo != null && m.hasOwnProperty("distributeTo")) {
+          d.distributeTo = $root.osmosis.lockup.QueryCondition.toObject(
+            m.distributeTo,
+            o
+          );
+        }
+        if (m.coins && m.coins.length) {
+          d.coins = [];
+          for (var j = 0; j < m.coins.length; ++j) {
+            d.coins[j] = $root.cosmos.base.v1beta1.Coin.toObject(m.coins[j], o);
+          }
+        }
+        if (m.startTime != null && m.hasOwnProperty("startTime")) {
+          d.startTime = $root.google.protobuf.Timestamp.toObject(
+            m.startTime,
+            o
+          );
+        }
+        if (
+          m.numEpochsPaidOver != null &&
+          m.hasOwnProperty("numEpochsPaidOver")
+        ) {
+          if (typeof m.numEpochsPaidOver === "number")
+            d.numEpochsPaidOver =
+              o.longs === String
+                ? String(m.numEpochsPaidOver)
+                : m.numEpochsPaidOver;
+          else
+            d.numEpochsPaidOver =
+              o.longs === String
+                ? $util.Long.prototype.toString.call(m.numEpochsPaidOver)
+                : o.longs === Number
+                ? new $util.LongBits(
+                    m.numEpochsPaidOver.low >>> 0,
+                    m.numEpochsPaidOver.high >>> 0
+                  ).toNumber(true)
+                : m.numEpochsPaidOver;
+        }
+        return d;
+      };
+      MsgCreateGauge.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+      };
+      return MsgCreateGauge;
+    })();
+    incentives.MsgCreateGaugeResponse = (function () {
+      function MsgCreateGaugeResponse(p) {
+        if (p)
+          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+      }
+      MsgCreateGaugeResponse.create = function create(properties) {
+        return new MsgCreateGaugeResponse(properties);
+      };
+      MsgCreateGaugeResponse.encode = function encode(m, w) {
+        if (!w) w = $Writer.create();
+        return w;
+      };
+      MsgCreateGaugeResponse.decode = function decode(r, l) {
+        if (!(r instanceof $Reader)) r = $Reader.create(r);
+        var c = l === undefined ? r.len : r.pos + l,
+          m = new $root.osmosis.incentives.MsgCreateGaugeResponse();
+        while (r.pos < c) {
+          var t = r.uint32();
+          switch (t >>> 3) {
+            default:
+              r.skipType(t & 7);
+              break;
+          }
+        }
+        return m;
+      };
+      MsgCreateGaugeResponse.fromObject = function fromObject(d) {
+        if (d instanceof $root.osmosis.incentives.MsgCreateGaugeResponse)
+          return d;
+        return new $root.osmosis.incentives.MsgCreateGaugeResponse();
+      };
+      MsgCreateGaugeResponse.toObject = function toObject() {
+        return {};
+      };
+      MsgCreateGaugeResponse.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+      };
+      return MsgCreateGaugeResponse;
+    })();
+    incentives.MsgAddToGauge = (function () {
+      function MsgAddToGauge(p) {
+        this.rewards = [];
+        if (p)
+          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+      }
+      MsgAddToGauge.prototype.owner = "";
+      MsgAddToGauge.prototype.gaugeId = $util.Long
+        ? $util.Long.fromBits(0, 0, true)
+        : 0;
+      MsgAddToGauge.prototype.rewards = $util.emptyArray;
+      MsgAddToGauge.create = function create(properties) {
+        return new MsgAddToGauge(properties);
+      };
+      MsgAddToGauge.encode = function encode(m, w) {
+        if (!w) w = $Writer.create();
+        if (m.owner != null && Object.hasOwnProperty.call(m, "owner"))
+          w.uint32(10).string(m.owner);
+        if (m.gaugeId != null && Object.hasOwnProperty.call(m, "gaugeId"))
+          w.uint32(16).uint64(m.gaugeId);
+        if (m.rewards != null && m.rewards.length) {
+          for (var i = 0; i < m.rewards.length; ++i)
+            $root.cosmos.base.v1beta1.Coin.encode(
+              m.rewards[i],
+              w.uint32(26).fork()
+            ).ldelim();
+        }
+        return w;
+      };
+      MsgAddToGauge.decode = function decode(r, l) {
+        if (!(r instanceof $Reader)) r = $Reader.create(r);
+        var c = l === undefined ? r.len : r.pos + l,
+          m = new $root.osmosis.incentives.MsgAddToGauge();
+        while (r.pos < c) {
+          var t = r.uint32();
+          switch (t >>> 3) {
+            case 1:
+              m.owner = r.string();
+              break;
+            case 2:
+              m.gaugeId = r.uint64();
+              break;
+            case 3:
+              if (!(m.rewards && m.rewards.length)) m.rewards = [];
+              m.rewards.push(
+                $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
+              );
+              break;
+            default:
+              r.skipType(t & 7);
+              break;
+          }
+        }
+        return m;
+      };
+      MsgAddToGauge.fromObject = function fromObject(d) {
+        if (d instanceof $root.osmosis.incentives.MsgAddToGauge) return d;
+        var m = new $root.osmosis.incentives.MsgAddToGauge();
+        if (d.owner != null) {
+          m.owner = String(d.owner);
+        }
+        if (d.gaugeId != null) {
+          if ($util.Long)
+            (m.gaugeId = $util.Long.fromValue(d.gaugeId)).unsigned = true;
+          else if (typeof d.gaugeId === "string")
+            m.gaugeId = parseInt(d.gaugeId, 10);
+          else if (typeof d.gaugeId === "number") m.gaugeId = d.gaugeId;
+          else if (typeof d.gaugeId === "object")
+            m.gaugeId = new $util.LongBits(
+              d.gaugeId.low >>> 0,
+              d.gaugeId.high >>> 0
+            ).toNumber(true);
+        }
+        if (d.rewards) {
+          if (!Array.isArray(d.rewards))
+            throw TypeError(
+              ".osmosis.incentives.MsgAddToGauge.rewards: array expected"
+            );
+          m.rewards = [];
+          for (var i = 0; i < d.rewards.length; ++i) {
+            if (typeof d.rewards[i] !== "object")
+              throw TypeError(
+                ".osmosis.incentives.MsgAddToGauge.rewards: object expected"
+              );
+            m.rewards[i] = $root.cosmos.base.v1beta1.Coin.fromObject(
+              d.rewards[i]
+            );
+          }
+        }
+        return m;
+      };
+      MsgAddToGauge.toObject = function toObject(m, o) {
+        if (!o) o = {};
+        var d = {};
+        if (o.arrays || o.defaults) {
+          d.rewards = [];
+        }
+        if (o.defaults) {
+          d.owner = "";
+          if ($util.Long) {
+            var n = new $util.Long(0, 0, true);
+            d.gaugeId =
+              o.longs === String
+                ? n.toString()
+                : o.longs === Number
+                ? n.toNumber()
+                : n;
+          } else d.gaugeId = o.longs === String ? "0" : 0;
+        }
+        if (m.owner != null && m.hasOwnProperty("owner")) {
+          d.owner = m.owner;
+        }
+        if (m.gaugeId != null && m.hasOwnProperty("gaugeId")) {
+          if (typeof m.gaugeId === "number")
+            d.gaugeId = o.longs === String ? String(m.gaugeId) : m.gaugeId;
+          else
+            d.gaugeId =
+              o.longs === String
+                ? $util.Long.prototype.toString.call(m.gaugeId)
+                : o.longs === Number
+                ? new $util.LongBits(
+                    m.gaugeId.low >>> 0,
+                    m.gaugeId.high >>> 0
+                  ).toNumber(true)
+                : m.gaugeId;
+        }
+        if (m.rewards && m.rewards.length) {
+          d.rewards = [];
+          for (var j = 0; j < m.rewards.length; ++j) {
+            d.rewards[j] = $root.cosmos.base.v1beta1.Coin.toObject(
+              m.rewards[j],
+              o
+            );
+          }
+        }
+        return d;
+      };
+      MsgAddToGauge.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+      };
+      return MsgAddToGauge;
+    })();
+    incentives.MsgAddToGaugeResponse = (function () {
+      function MsgAddToGaugeResponse(p) {
+        if (p)
+          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+      }
+      MsgAddToGaugeResponse.create = function create(properties) {
+        return new MsgAddToGaugeResponse(properties);
+      };
+      MsgAddToGaugeResponse.encode = function encode(m, w) {
+        if (!w) w = $Writer.create();
+        return w;
+      };
+      MsgAddToGaugeResponse.decode = function decode(r, l) {
+        if (!(r instanceof $Reader)) r = $Reader.create(r);
+        var c = l === undefined ? r.len : r.pos + l,
+          m = new $root.osmosis.incentives.MsgAddToGaugeResponse();
+        while (r.pos < c) {
+          var t = r.uint32();
+          switch (t >>> 3) {
+            default:
+              r.skipType(t & 7);
+              break;
+          }
+        }
+        return m;
+      };
+      MsgAddToGaugeResponse.fromObject = function fromObject(d) {
+        if (d instanceof $root.osmosis.incentives.MsgAddToGaugeResponse)
+          return d;
+        return new $root.osmosis.incentives.MsgAddToGaugeResponse();
+      };
+      MsgAddToGaugeResponse.toObject = function toObject() {
+        return {};
+      };
+      MsgAddToGaugeResponse.prototype.toJSON = function toJSON() {
+        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+      };
+      return MsgAddToGaugeResponse;
+    })();
+    return incentives;
   })();
   return osmosis;
 })();

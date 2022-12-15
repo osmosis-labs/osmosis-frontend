@@ -6,11 +6,11 @@ export const ArrowButton: FunctionComponent<
   ButtonHTMLAttributes<HTMLButtonElement>
 > = (props) => (
   <button
+    {...props}
     className={classNames(
-      "flex items-center gap-1 text-wosmongton-200 hover:gap-2 transition-all",
+      "flex items-center gap-1 text-wosmongton-200 transition-all hover:gap-2",
       props.className
     )}
-    {...props}
   >
     {props.children}
     <Image

@@ -22,7 +22,7 @@ export function displayToast(
       closeButton: ({ closeToast }) => (
         <button
           onClick={closeToast}
-          className="hover:opacity-75 absolute md:top-2 -top-2 -left-2 md:h-5 h-6 md:w-5 w-6"
+          className="absolute -top-2 -left-2 h-6 w-6 hover:opacity-75 md:top-2 md:h-5 md:w-5"
         >
           <Image
             alt="close"
@@ -52,8 +52,8 @@ export function displayToast(
 const LoadingToast: FunctionComponent<Alert> = ({ message, caption }) => {
   const t = useTranslation();
   return (
-    <div className="flex items-center md:gap-2 gap-3">
-      <div className="flex items-center animate-spin h-8 w-8 shrink-0">
+    <div className="flex items-center gap-3 md:gap-2">
+      <div className="flex h-8 w-8 shrink-0 animate-spin items-center">
         <Image
           alt="loading"
           src="/icons/loading-blue.svg"
@@ -62,8 +62,8 @@ const LoadingToast: FunctionComponent<Alert> = ({ message, caption }) => {
         />
       </div>
       <div className="text-white-high">
-        <h6 className="mb-2 md:text-base text-lg">{t(message)}</h6>
-        {caption && <p className="md:text-xs text-sm">{t(caption)}</p>}
+        <h6 className="mb-2 text-lg md:text-base">{t(message)}</h6>
+        {caption && <p className="text-sm md:text-xs">{t(caption)}</p>}
       </div>
     </div>
   );
@@ -72,13 +72,13 @@ const LoadingToast: FunctionComponent<Alert> = ({ message, caption }) => {
 const ErrorToast: FunctionComponent<Alert> = ({ message, caption }) => {
   const t = useTranslation();
   return (
-    <div className="flex items-center md:gap-2 gap-3">
-      <div className="w-8 h-8 shrink-0">
+    <div className="flex items-center gap-3 md:gap-2">
+      <div className="h-8 w-8 shrink-0">
         <Image alt="failed" src="/icons/error-x.svg" height={32} width={32} />
       </div>
       <div className="text-white-high">
-        <h6 className="mb-2 md:text-base text-lg">{t(message)}</h6>
-        {caption && <p className="md:text-xs text-sm">{t(caption)}</p>}
+        <h6 className="mb-2 text-lg md:text-base">{t(message)}</h6>
+        {caption && <p className="text-sm md:text-xs">{t(caption)}</p>}
       </div>
     </div>
   );
@@ -91,20 +91,20 @@ const SuccessToast: FunctionComponent<Alert> = ({
 }) => {
   const t = useTranslation();
   return (
-    <div className="flex items-center md:gap-2 gap-3">
-      <div className="w-8 h-8 shrink-0">
+    <div className="flex items-center gap-3 md:gap-2">
+      <div className="h-8 w-8 shrink-0">
         <Image alt="b" src="/icons/check-circle.svg" height={32} width={32} />
       </div>
       <div className="text-white-high">
-        <h6 className="mb-2 md:text-base text-lg">{t(message)}</h6>
+        <h6 className="mb-2 text-lg md:text-base">{t(message)}</h6>
         {learnMoreUrl && (
           <a
             target="__blank"
             href={learnMoreUrl}
-            className="md:text-xs text-sm inline hover:opacity-75 cursor-pointer"
+            className="inline cursor-pointer text-sm hover:opacity-75 md:text-xs"
           >
             {learnMoreUrlCaption ?? t("Learn more")}
-            <div className="inline-block ml-2 mb-0.75">
+            <div className="mb-0.75 ml-2 inline-block">
               <Image
                 alt="link"
                 src="/icons/link-deco.svg"

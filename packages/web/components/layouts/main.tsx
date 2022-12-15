@@ -7,6 +7,7 @@ import { IS_FRONTIER } from "../../config";
 import { MainMenu } from "../main-menu";
 import { NavBar } from "../navbar";
 import { MainLayoutMenu } from "../types";
+import NavbarOsmoPrice from "../navbar-osmo-price";
 
 export const MainLayout: FunctionComponent<{
   menus: MainLayoutMenu[];
@@ -28,24 +29,27 @@ export const MainLayout: FunctionComponent<{
   return (
     <React.Fragment>
       {showFixedLogo && (
-        <div className="z-50 fixed w-sidebar px-5 pt-6">
+        <div className="fixed z-50 w-sidebar px-5 pt-6">
           <OsmosisFullLogo onClick={() => router.push("/")} />
         </div>
       )}
-      <article className="fixed md:hidden flex flex-col inset-y-0 z-40 bg-osmoverse-800 px-2 py-6 w-sidebar overflow-x-hidden">
+      <article className="fixed inset-y-0 z-40 flex w-sidebar flex-col overflow-x-hidden bg-osmoverse-800 px-2 py-6 md:hidden">
         {showBlockLogo && (
-          <div className="grow-0 ml-2 z-50 w-sidebar mx-auto">
+          <div className="z-50 mx-auto ml-2 w-sidebar grow-0">
             <OsmosisFullLogo width={166} onClick={() => router.push("/")} />
           </div>
         )}
         <MainMenu menus={menus} />
+        <div className="flex flex-1 flex-col justify-end">
+          <NavbarOsmoPrice />
+        </div>
       </article>
       <NavBar
         className="ml-sidebar md:ml-0"
         title={selectedMenuItem?.label ?? ""}
         menus={menus}
       />
-      <div className="ml-sidebar md:ml-0 h-content md:h-content-mobile bg-osmoverse-900">
+      <div className="ml-sidebar h-content bg-osmoverse-900 md:ml-0 md:h-content-mobile">
         {children}
       </div>
     </React.Fragment>

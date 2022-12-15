@@ -14,7 +14,6 @@ import { IBCBalance } from "../../stores/assets";
 import { useStore } from "../../stores";
 import { Transfer } from "../../components/complex/transfer";
 import { Button } from "../../components/buttons";
-import { getKeyByValue } from "../../components/utils";
 import { displayToast, ToastType } from "../../components/alert";
 import { BridgeIntegrationProps } from "../../modals";
 import { queryErc20Balance } from "../ethereum/queries";
@@ -29,13 +28,14 @@ import { useGeneralAmountConfig } from "../use-general-amount-config";
 import { useDepositAddress } from "./hooks";
 import {
   AxelarBridgeConfig,
-  SourceChain,
-  EthClientChainIds_AxelarChainIdsMap,
+  AxelarChainIds_SourceChainMap,
   waitBySourceChain,
 } from ".";
+import { SourceChain, EthClientChainIds_SourceChainMap } from "../bridge-info";
 import { useAmplitudeAnalytics } from "../../hooks/use-amplitude-analytics";
 import { EventName } from "../../config/user-analytics-v2";
 import { useTranslation } from "react-multi-lang";
+import { getKeyByValue } from "../../utils/object";
 
 /** Axelar-specific bridge transfer integration UI. */
 const AxelarTransfer: FunctionComponent<
@@ -77,19 +77,19 @@ const AxelarTransfer: FunctionComponent<
 
     // notify eth wallet of prev selected preferred chain
     useEffect(() => {
+      let ethClientChainName: string | undefined =
+        getKeyByValue(
+          EthClientChainIds_SourceChainMap,
+          selectedSourceChainKey
+        ) ?? selectedSourceChainKey;
+
       let hexChainId: string | undefined = getKeyByValue(
         ChainNames,
-        selectedSourceChainKey
+        ethClientChainName
       )
-        ? selectedSourceChainKey
+        ? ethClientChainName
         : undefined;
 
-      if (!hexChainId) {
-        hexChainId = getKeyByValue(
-          EthClientChainIds_AxelarChainIdsMap,
-          selectedSourceChainKey
-        );
-      }
       if (!hexChainId) return;
 
       ethWalletClient.setPreferredSourceChain(hexChainId);
@@ -97,7 +97,7 @@ const AxelarTransfer: FunctionComponent<
 
     /** Chain key that Axelar accepts in APIs. */
     const selectedSourceChainAxelarKey =
-      EthClientChainIds_AxelarChainIdsMap[selectedSourceChainKey] ??
+      getKeyByValue(AxelarChainIds_SourceChainMap, selectedSourceChainKey) ??
       selectedSourceChainKey;
 
     const sourceChainConfig = sourceChains.find(
@@ -220,8 +220,10 @@ const AxelarTransfer: FunctionComponent<
     }, [ethWalletClient.isConnected, userDisconnectedEthWallet]);
 
     const correctChainSelected =
-      (EthClientChainIds_AxelarChainIdsMap[ethWalletClient.chainId as string] ??
-        ethWalletClient.chainId) === selectedSourceChainAxelarKey;
+      (EthClientChainIds_SourceChainMap[ethWalletClient.chainId as string] ??
+        ethWalletClient.chainId) ===
+      (AxelarChainIds_SourceChainMap[selectedSourceChainAxelarKey] ??
+        selectedSourceChainAxelarKey);
 
     const { depositAddress, isLoading: isDepositAddressLoading } =
       useDepositAddress(
@@ -495,11 +497,11 @@ const AxelarTransfer: FunctionComponent<
             </a>
           </div>
         )}
-        <div className="w-full md:mt-4 mt-6 flex items-center justify-center">
+        <div className="mt-6 flex w-full items-center justify-center md:mt-4">
           {connectCosmosWalletButtonOverride ?? (
             <Button
               className={classNames(
-                "hover:opacity-75 transition-opacity duration-300",
+                "transition-opacity duration-300 hover:opacity-75",
                 { "opacity-30": isDepositAddressLoading }
               )}
               disabled={

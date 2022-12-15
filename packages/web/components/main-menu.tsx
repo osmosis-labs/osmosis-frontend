@@ -15,7 +15,7 @@ export const MainMenu: FunctionComponent<{
   const { logEvent } = useAmplitudeAnalytics();
 
   return (
-    <ul className="w-full flex flex-col gap-3 md:gap-0 mt-20 md:mt-0">
+    <ul className="mt-20 flex w-full flex-col gap-3 md:mt-0 md:gap-0">
       {menus.map(
         (
           { label, link, icon, iconSelected, selectionTest, amplitudeEvent },
@@ -29,9 +29,9 @@ export const MainMenu: FunctionComponent<{
             <li
               key={index}
               className={classNames(
-                "px-4 py-3 flex items-center cursor-pointer",
+                "flex cursor-pointer items-center px-4 py-3",
                 {
-                  "rounded-full bg-wosmongton-500": selected,
+                  "rounded-full bg-osmoverse-700": selected,
                 }
               )}
               onClick={(e) => {
@@ -64,7 +64,7 @@ export const MainMenu: FunctionComponent<{
                 >
                   <div
                     className={classNames(
-                      "w-5 h-5 z-10",
+                      "z-10 h-5 w-5",
                       selected ? "opacity-100" : "opacity-60"
                     )}
                   >
@@ -77,7 +77,7 @@ export const MainMenu: FunctionComponent<{
                   </div>
                   <p
                     className={classNames(
-                      "ml-2.5 text-base overflow-x-hidden font-semibold transition-all max-w-24",
+                      "max-w-24 ml-2.5 overflow-x-hidden text-base font-semibold transition-all",
                       {
                         "text-white-full/60 group-hover:text-white-mid":
                           !selected,

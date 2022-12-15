@@ -25,7 +25,11 @@
       "findCurrency": "Nie udało się znaleźć waluty {currency}"
     },
     "wrapNativeLink": "Konwertuj {fromDenom} na {toDenom} na {platformName}",
-    "waitTime": "{minutes} minuty"
+    "waitTime": "{minutes} minuty",
+    "autoRouter": "Zoptymalizowana trasa",
+    "routerTooltipFee": "Opłata",
+    "autoRouterToggle": { "show": "Mostrar", "hide": "Esconder" },
+    "pool": "Pula #{id}"
   },
   "pools": {
     "title": "Aktywne pule",
@@ -35,7 +39,7 @@
     "myPools": "Moje Pule",
     "APR": "APR",
     "available": "Dostępne",
-    "liquidity": "Płynność Puli",
+    "liquidity": "Moja płynność",
     "bonded": "Związane",
     "incentivized": "Premiowane",
     "all": "Wszystkie Pule",
@@ -44,7 +48,7 @@
       "title": "Superpłynne Pule",
       "tab": "Superpłynne",
       "APR": "APR",
-      "liquidity": "Płynność Puli",
+      "liquidity": "Moja płynność",
       "fees7D": "Prowizje (7D)"
     },
     "allPools": {
@@ -56,7 +60,7 @@
       "search": "Wyszukaj pulę",
       "displayLowLiquidity": "Pokaż pule < {value}",
       "sort": {
-        "poolName": "Nazwa Puli",
+        "poolName": "Nazwa/numer puli",
         "liquidity": "Płynność",
         "volume24h": "Wolumen (24H)",
         "fees": "Prowizje (7D)",
@@ -66,12 +70,12 @@
       }
     },
     "externalIncentivized": {
-      "title": "Zewnętrzne Premie",
+      "title": "Baseny motywowane zewnętrznie",
       "TVL": "TVL",
       "APR": "APR",
       "search": "Wyszukaj po symbolu",
       "sort": {
-        "poolName": "Nazwa Puli",
+        "poolName": "Nazwa/numer puli",
         "liquidity": "Płynność",
         "APR": "APR",
         "epochs": "Pozostało Epok",
@@ -81,8 +85,13 @@
     "createPool": {
       "title": "Stwórz nową pulę",
       "button": "Stwórz nową pulę",
+      "weightedPool": "Basen ważony",
+      "stablePool": "Stabilny basen",
       "step": {
-        "one": "Krok {step} / {nbStep} - Ustaw proporcje tokenów",
+        "one": {
+          "weighted": "Krok {step} / {nbStep} - Ustaw proporcje tokenów",
+          "stable": "Krok {step} / {nbStep} - Ustaw współczynniki skalowania"
+        },
         "two": "Krok {step} / {nbStep} - Wpisz ilość do dodania",
         "three": "Krok {step} / {nbStep} - Potwierdź proporcje puli i ilość tokenów"
       },
@@ -96,6 +105,7 @@
       "amount": "Ilość",
       "token": "Token",
       "swapFee": "Ustaw Prowizję Wymiany",
+      "scalingFactorController": "Ustaw regulator współczynnika skalowania (opcjonalnie)",
       "undersandCost": "Rozumiem, że stworzenie nowej puli będzie kosztować {POOL_CREATION_FEE}.",
       "interestedCreate": "Zainteresowany tworzeniem nowej puli?",
       "startProcess": "Kliknij tutaj, żeby zacząć proces"
@@ -105,13 +115,15 @@
     "title": "Pula #{id}",
     "swap": "Wymień Tokeny",
     "superfluidEnabled": "Dostępne superpłynne stakowanie",
+    "stableswapEnabled": "Stabilna zamiana włączona",
     "24hrTradingVolume": "24h Wolumen wymian",
     "liquidity": "Płynność puli",
     "swapFee": "Prowizja wymiany",
-    "yourStats": "Twoje statystyki",
+    "yourStats": "Twoje saldo puli",
     "sharesAmount": "{shares} aktyw",
     "currentDailyEarn": "Aktualnie zarabiasz",
-    "earnMore": "Zyskujesz więcej związując",
+    "earnMore": "Zarabiaj {amount} więcej dzięki łączeniu",
+    "day": "dzień",
     "dailyEarnAmount": "{amount} / dzień",
     "putAssetsToWork": "Zarabiaj dzięki swoim środkom",
     "putAssetsToWorkCaption": "Dodaj swoje środki do tej puli, żeby odblokować ekscytujące APR. Im dłuższy okres związania, tym wyższe zarobki.",
@@ -127,8 +139,7 @@
     "bondSuperfluidLiquidityCaption": "Maksymalizuj zyski używając superpłynnośći.",
     "bondShares": "Zwiąż Aktywa",
     "amountDaysUnbonding": "{numDays} dni rozwiązywania",
-    "shares": "aktyw",
-    "unbonded": "Rozwiązane",
+    "available": "Do dyspozycji",
     "unbond": "Zwiąż",
     "bonded": "Związane",
     "showDetails": "Pokaż szczegóły",
@@ -189,7 +200,7 @@
     }
   },
   "assets": {
-    "totalAssets": "Suma",
+    "totalAssets": "Aktywa ogółem",
     "unbondedAssets": "Rozwiązane",
     "bondedAssets": "Związane",
     "stakedAssets": "Stakowane OSMO",
@@ -203,13 +214,17 @@
     "poolCards": {
       "APR": "APR",
       "FeeAPY": "APY z Prowizji",
-      "liquidity": "Płynność Puli",
+      "liquidity": "Moja płynność",
       "bonded": "Związane",
       "myLiquidity": "Moja Płynność"
     },
     "ibcTransfer": {
       "titleWithdraw": "Wypłać {coinDenom}",
       "titleDeposit": "Wpłać {coinDenom}",
+      "channelCongested": "Kanał zmyślony",
+      "channelCongestedWithdraw": "Wypłać (Kanał zmyślony)",
+      "channelCongestedDeposit": "Wpłać (Kanał zmyślony)",
+      "channelBlocked": "Kanał zablokowany",
       "selectAmount": "Wybierz Ilość",
       "estimatedTime": "Szacowany Czas",
       "waitTime": "20 sekund",
@@ -243,6 +258,7 @@
         "insufficientFee": "Niewystarczająca Prowizja",
         "insufficientBal": "Niewystarczająca Ilość Środków"
       },
+      "wrapNativeLink": "Konwertuj {fromDenom} na {toDenom} na {platformName}",
       "waitTime": "{minutes} minut"
     },
     "selectAssetSource": {
@@ -254,8 +270,8 @@
     "table": {
       "depositButton": "Wpłać",
       "withdrawButton": "Wypłać",
-      "search": "Filtruj po symbolu",
-      "title": "Środki",
+      "search": "Szukaj",
+      "title": "Wszystkie aktywa",
       "hideZero": "Ukryj puste salda",
       "buyOsmo": "Kup",
       "preTransfer": {
@@ -306,7 +322,10 @@
       "mobileMenu": "Sortuj według"
     },
     "MAX": "MAKSIMUM",
-    "searchTokens": "Szukaj tokenów"
+    "searchTokens": "Szukaj",
+    "selectToken": {
+      "title": "Wybierz token"
+    }
   },
   "menu": {
     "swap": "Wymień",
@@ -317,12 +336,13 @@
     "info": "Statystyki",
     "signOut": "Rozłącz",
     "help": "Uzyskaj Pomoc od Support Lab",
-    "learnMoreFrontier": "Dowiedz się więcej o <br/> <name>Osmosis Frontier</name>"
+    "learnMoreFrontier": "Dowiedz się więcej o <br/> <name>Osmosis Frontier</name>",
+    "buyTokens": "Kup tokeny"
   },
   "settings": {
     "title": "Ustawienia",
     "titleLanguage": "Język",
-    "titleShowDust": "Pokaż pule/środki < {fiatSymbol}0.01"
+    "titleHideDust": "Ukryj pule z < {fiatSymbol}0.01"
   },
   "404": {
     "title": "Nie znaleziono"
@@ -339,9 +359,11 @@
     "negativeSwapFee": "Prowizja wymiany jest ujemna",
     "highSwapFee": "Prowizja wymiany zbyt wysoka",
     "invalidSwapFee": "Prowizja wymiany nieprawidłowa",
+    "invalidScalingFactorControllerAddress": "Nieprawidłowy adres kontrolera współczynnika skalowania",
     "minAssetsCount": "Wymagane minimum {num} środków",
     "maxAssetsCount": "Dozwolone maksymalnie {num} środków",
     "negativePercentage": "Procent musi być dodatni",
+    "scalingFactorTooLow": "Zbyt niski współczynnik skalowania",
     "percentageSum": "Suma procentów nie jest równa 100",
     "depositNoBalance": "Nie masz środków do wpłaty",
     "negativeSlippage": "Wartość odchylenia nie może być ujemne",
@@ -356,10 +378,10 @@
   "connectWallet": "Połącz portfel",
   "keplr": {
     "install": "Zainstaluj Keplr",
-    "wallet": "Keplr Wallet",
-    "extension": "Keplr Browser Extension",
+    "wallet": "Keplr Portfel",
+    "extension": "Keplr Rozszerzenie Przeglądarki",
     "walletConnect": "WalletConnect",
-    "mobile": "Keplr Mobile"
+    "mobile": "Keplr Mobilny"
   },
   "connectDisclaimer": "Podłączając portfel, potwierdzasz, że przeczytałeś i zrozumiałeś Osmosis",
   "protocolDisclaimer": "Zastrzeżenie Protokołu",

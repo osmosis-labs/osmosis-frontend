@@ -22,9 +22,9 @@ export const MenuToggle: FunctionComponent<Props> = ({
         key={id}
         htmlFor={"menu-radio"}
         className={classNames(
-          "relative h-10 px-4 py-2 select-none cursor-pointer",
+          "relative h-10 cursor-pointer select-none px-4 py-2",
           {
-            "bg-wosmongton-400 rounded-full": id === selectedOptionId,
+            "rounded-full bg-wosmongton-400": id === selectedOptionId,
             "text-osmoverse-1000": id === selectedOptionId && IS_FRONTIER,
           },
           className
@@ -34,8 +34,8 @@ export const MenuToggle: FunctionComponent<Props> = ({
           id="menu-radio"
           type="radio"
           className={classNames(
-            "absolute w-full h-full appearance-none cursor-pointer z-20",
-            "after:absolute after:w-full after:h-full",
+            "absolute z-20 h-full w-full cursor-pointer appearance-none",
+            "after:absolute after:h-full after:w-full",
             {
               "text-osmoverse-300": id !== selectedOptionId,
             }
@@ -46,7 +46,7 @@ export const MenuToggle: FunctionComponent<Props> = ({
           onChange={() => onSelect(id)}
         ></input>
         <span
-          className={classNames("relative subtitle2 z-10", {
+          className={classNames("subtitle2 relative z-10", {
             "text-osmoverse-300": id !== selectedOptionId,
           })}
         >

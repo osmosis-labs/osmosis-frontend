@@ -1,6 +1,6 @@
-import { poll } from "../../../components/utils";
 import { SendFn } from "../types";
 import { hexToNumberString } from "web3-utils";
+import { poll } from "../../../utils/promise";
 
 type ReceiptStatus = "confirmed" | "failed";
 

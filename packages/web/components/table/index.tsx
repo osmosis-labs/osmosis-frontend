@@ -10,10 +10,10 @@ import React, {
 import classNames from "classnames";
 import { InfoTooltip } from "../tooltip";
 import { CustomClasses } from "../types";
-import { replaceAt } from "../utils";
 import { BaseCell, ColumnDef, RowDef } from "./types";
 import { useWindowSize } from "../../hooks";
 import { IS_FRONTIER } from "../../config";
+import { replaceAt } from "../../utils/array";
 
 export interface Props<TCell extends BaseCell> extends CustomClasses {
   /** Functionality common to all columns. */
@@ -147,7 +147,7 @@ export const Table = <TCell extends BaseCell>({
                 {
                   "focus-within:bg-osmoverse-700 focus-within:outline-none":
                     rowDef?.link,
-                  " hover:bg-osmoverse-800 hover:cursor-pointer":
+                  " hover:cursor-pointer hover:bg-osmoverse-800":
                     rowDef?.onClick,
                 },
                 rowDef?.makeHoverClass
