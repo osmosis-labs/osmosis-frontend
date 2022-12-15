@@ -25,7 +25,7 @@ import {
   useTxReceiptState,
 } from "../ethereum";
 import { useGeneralAmountConfig } from "../use-general-amount-config";
-import { useDepositAddress } from "./hooks";
+import { useDepositAddress, useTransferFeeQuery } from "./hooks";
 import {
   AxelarBridgeConfig,
   AxelarChainIds_SourceChainMap,
@@ -105,7 +105,6 @@ const AxelarTransfer: FunctionComponent<
     );
 
     const erc20ContractAddress = sourceChainConfig?.erc20ContractAddress;
-    const transferFeeMinAmount = sourceChainConfig?.transferFeeMinAmount ?? "0";
 
     const axelarChainId =
       chainStore.getChainFromCurrency(originCurrency.coinDenom)?.chainId ||
@@ -174,6 +173,20 @@ const AxelarTransfer: FunctionComponent<
 
     /** Amount, with decimals. e.g. 1.2 USDC */
     const amount = isWithdraw ? withdrawAmountConfig.amount : depositAmount;
+
+    console.log("Get transfer fee");
+
+    const { transferFee: transferFeeMinAmount } = useTransferFeeQuery(
+      sourceChain,
+      destChain,
+      originCurrency.coinMinimalDenom,
+      amount,
+      originCurrency,
+      isTestNet ? Environment.TESTNET : Environment.MAINNET,
+      1000
+    );
+
+    console.log("transfer fee: " + transferFeeMinAmount);
 
     const availableBalance = isWithdraw
       ? balanceOnOsmosis.balance
@@ -392,6 +405,7 @@ const AxelarTransfer: FunctionComponent<
       (isWithdraw && osmosisAccount.txTypeInProgress === "");
     const isInsufficientFee =
       amount !== "" &&
+      transferFeeMinAmount !== undefined &&
       new CoinPretty(
         originCurrency,
         new Dec(amount).mul(
@@ -401,17 +415,7 @@ const AxelarTransfer: FunctionComponent<
       )
         .moveDecimalPointRight(originCurrency.coinDecimals)
         .toDec()
-        .lt(
-          new CoinPretty(
-            originCurrency,
-            new Dec(transferFeeMinAmount).mul(
-              // CoinPretty only accepts whole amounts
-              DecUtils.getTenExponentNInPrecisionRange(
-                originCurrency.coinDecimals
-              )
-            )
-          ).toDec()
-        );
+        .lt(transferFeeMinAmount.toDec());
     const isInsufficientBal =
       amount !== "" &&
       availableBalance &&
@@ -481,9 +485,7 @@ const AxelarTransfer: FunctionComponent<
               toggleIsDepositAmtMax();
             }
           }}
-          transferFee={
-            new CoinPretty(originCurrency, new Dec(transferFeeMinAmount))
-          }
+          transferFee={transferFeeMinAmount}
           waitTime={waitBySourceChain(selectedSourceChainKey)}
           disabled={!userCanInteract}
           disablePanel={
