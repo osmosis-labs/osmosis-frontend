@@ -138,8 +138,8 @@ const chainInfos = (
     },
     {
       rpc: "https://rpc-secret.keplr.app",
-      //rest: "https://lcd-secret.keplr.app",
-      rest: "https://api.scrt.network/",
+      rest: "https://lcd-secret.keplr.app",
+      //rest: "https://api.scrt.network/",
       chainId: "secret-4",
       chainName: "Secret Network",
       bip44: {
