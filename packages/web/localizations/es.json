@@ -24,7 +24,7 @@
     "error": {
       "findCurrency": "No se pudo encontrar la moneda {currency}"
     },
-    "autoRouter": "Ruta optimizada",
+    "autoRouter": "Ruta",
     "routerTooltipFee": "Tarifa",
     "autoRouterToggle": { "show": "Mostrar", "hide": "Ocultar" },
     "pool": "Piscina #{id}"

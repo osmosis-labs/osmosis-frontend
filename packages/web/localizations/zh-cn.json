@@ -23,7 +23,11 @@
     "minimumSlippage": "扣除滑点后最少获得 ({slippage})",
     "error": {
       "findCurrency": "无法找到代币 {currency}"
-    }
+    },
+    "autoRouter": "路线",
+    "routerTooltipFee": "费用",
+    "autoRouterToggle": { "show": "节目", "hide": "隐藏" },
+    "pool": "资金池 #{id}"
   },
   "pools": {
     "title": "活跃资金池",

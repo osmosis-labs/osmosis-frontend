@@ -24,7 +24,7 @@
     "error": {
       "findCurrency": "Para birimi bulunamadı {currency}"
     },
-    "autoRouter": "Optimize Rota",
+    "autoRouter": "Güzergah",
     "routerTooltipFee": "Ücret",
     "autoRouterToggle": { "show": "Göstermek", "hide": "Saklamak" },
     "pool": "Havuz #{id}"

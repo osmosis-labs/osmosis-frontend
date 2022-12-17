@@ -26,7 +26,7 @@
     },
     "wrapNativeLink": "Konwertuj {fromDenom} na {toDenom} na {platformName}",
     "waitTime": "{minutes} minuty",
-    "autoRouter": "Zoptymalizowana trasa",
+    "autoRouter": "Trasa",
     "routerTooltipFee": "Opłata",
     "autoRouterToggle": { "show": "Mostrar", "hide": "Esconder" },
     "pool": "Pula #{id}"

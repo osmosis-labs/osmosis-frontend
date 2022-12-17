@@ -24,7 +24,7 @@
     "error": {
       "findCurrency": "Moneda {currency} nu a fost gasita"
     },
-    "autoRouter": "Ruta optimizata",
+    "autoRouter": "Traseu",
     "routerTooltipFee": "Taxa",
     "autoRouterToggle": { "show": "Arata", "hide": "Ascunde" },
     "pool": "Pool #{id}"
