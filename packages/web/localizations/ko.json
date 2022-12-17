@@ -37,7 +37,8 @@
     "myPools": "내 풀",
     "APR": "APR",
     "available": "가능 수량",
-    "liquidity": "내 유동성",
+    "liquidity": "유동성",
+    "myLiquidity": "내 유동성",
     "bonded": "예치된 자산",
     "incentivized": "인센티브",
     "all": "전체 풀",
@@ -46,7 +47,7 @@
       "title": "Superfluid Pools",
       "tab": "Superfluid",
       "APR": "APR",
-      "liquidity": "내 유동성",
+      "liquidity": "유동성",
       "fees7D": "수수료 (7D)"
     },
     "allPools": {

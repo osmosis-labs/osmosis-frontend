@@ -37,7 +37,8 @@
     "myPools": "我的资金池",
     "APR": "APR",
     "available": "可用",
-    "liquidity": "我的流动性",
+    "liquidity": "流动性",
+    "myLiquidity": "我的流动性",
     "bonded": "已绑定",
     "incentivized": "激励池",
     "all": "所有池",
@@ -46,7 +47,7 @@
       "title": "超流质押池",
       "tab": "超流质押",
       "APR": "APR",
-      "liquidity": "我的流动性",
+      "liquidity": "流动性",
       "fees7D": "交易费 (7天)"
     },
     "allPools": {

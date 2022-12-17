@@ -39,7 +39,8 @@
     "myPools": "Moje Pule",
     "APR": "APR",
     "available": "Dostępne",
-    "liquidity": "Moja płynność",
+    "liquidity": "Płynność",
+    "myLiquidity": "Moja płynność",
     "bonded": "Związane",
     "incentivized": "Premiowane",
     "all": "Wszystkie Pule",
@@ -48,7 +49,7 @@
       "title": "Superpłynne Pule",
       "tab": "Superpłynne",
       "APR": "APR",
-      "liquidity": "Moja płynność",
+      "liquidity": "Płynność",
       "fees7D": "Prowizje (7D)"
     },
     "allPools": {
