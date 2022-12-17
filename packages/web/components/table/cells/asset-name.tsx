@@ -20,14 +20,15 @@ export const AssetNameCell: FunctionComponent<Partial<Cell>> = ({
       onMouseLeave={() => setShowStar(false)}
     >
       {showStar || isFavorite ? (
-        <Image
-          alt="star"
-          color="#F4CC82"
-          onClick={onToggleFavorite}
-          src={`/icons/star.svg`}
-          height={24}
-          width={24}
-        />
+        <div className="cursor-pointer">
+          <Image
+            alt="star"
+            onClick={onToggleFavorite}
+            src={`/icons/star${isFavorite ? "-filled" : ""}.svg`}
+            height={24}
+            width={24}
+          />
+        </div>
       ) : (
         <div style={{ height: 24, width: 24 }} />
       )}
