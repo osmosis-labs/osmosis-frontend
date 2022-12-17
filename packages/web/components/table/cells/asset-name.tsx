@@ -3,7 +3,6 @@ import React, { FunctionComponent, useState } from "react";
 import { AssetCell as Cell } from "./types";
 import { InfoTooltip } from "../../tooltip";
 import { UNSTABLE_MSG } from "../../../config";
-import Icon from "../../icon";
 
 export const AssetNameCell: FunctionComponent<Partial<Cell>> = ({
   coinDenom,
@@ -21,10 +20,13 @@ export const AssetNameCell: FunctionComponent<Partial<Cell>> = ({
       onMouseLeave={() => setShowStar(false)}
     >
       {showStar || isFavorite ? (
-        <Icon
-          color={isFavorite ? "#F4CC82" : "#8E83AA"}
-          name="star"
+        <Image
+          alt="star"
+          color="#F4CC82"
           onClick={onToggleFavorite}
+          src={`/icons/star.svg`}
+          height={24}
+          width={24}
         />
       ) : (
         <div style={{ height: 24, width: 24 }} />
