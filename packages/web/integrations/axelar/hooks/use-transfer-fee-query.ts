@@ -13,7 +13,7 @@ export function useTransferFeeQuery(
   amountMinDenom: string,
   currency: AppCurrency,
   environment = Environment.MAINNET,
-  inputDebounceMs = 1400
+  inputDebounceMs = 2000
 ): { transferFee?: CoinPretty; isLoading: boolean } {
   const [transferFee, setTransferFee] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
