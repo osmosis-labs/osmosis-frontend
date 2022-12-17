@@ -33,7 +33,8 @@
     "myPools": "我的流動性池",
     "APR": "年利率(APR)",
     "available": "可用",
-    "liquidity": "我的流動性",
+    "liquidity": "流動性",
+    "myLiquidity": "我的流動性",
     "bonded": "已鎖住",
     "incentivized": "有激勵的",
     "all": "全部流動性池",
@@ -42,7 +43,7 @@
       "title": "超流體流動性池",
       "tab": "超流體",
       "APR": "年利率(APR)",
-      "liquidity": "我的流動性",
+      "liquidity": "流動性",
       "fees7D": "交易費(7日)"
     },
     "allPools": {

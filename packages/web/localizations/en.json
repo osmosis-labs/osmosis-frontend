@@ -37,7 +37,8 @@
     "myPools": "My Pools",
     "APR": "APR",
     "available": "Available",
-    "liquidity": "My Liquidity",
+    "liquidity": "Liquidity",
+    "myLiquidity": "My Liquidity",
     "bonded": "Bonded",
     "incentivized": "Incentivized",
     "all": "All Pools",
@@ -46,7 +47,7 @@
       "title": "Superfluid Pools",
       "tab": "Superfluid",
       "APR": "APR",
-      "liquidity": "My Liquidity",
+      "liquidity": "Liquidity",
       "fees7D": "Fees (7D)"
     },
     "allPools": {

@@ -400,6 +400,23 @@ const Pools: NextPage = observer(function () {
                     poolLiquidity,
                     priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!
                   );
+                const myLiquidity = !myPool.totalShare
+                  .toDec()
+                  .equals(new Dec(0))
+                  ? myPool
+                      .computeTotalValueLocked(priceStore)
+                      .mul(
+                        queryOsmosis.queryGammPoolShare
+                          .getAvailableGammShare(
+                            account.bech32Address,
+                            myPool.id
+                          )
+                          .quo(myPool.totalShare)
+                      )
+                  : new PricePretty(
+                      priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
+                      new Dec(0)
+                    );
 
                 let myPoolMetrics = [
                   {
@@ -419,31 +436,14 @@ const Pools: NextPage = observer(function () {
                   {
                     label: isMobile
                       ? t("pools.available")
-                      : t("pools.liquidity"),
-                    value: isMobile ? (
-                      (!myPool.totalShare.toDec().equals(new Dec(0))
-                        ? myPool
-                            .computeTotalValueLocked(priceStore)
-                            .mul(
-                              queryOsmosis.queryGammPoolShare
-                                .getAvailableGammShare(
-                                  account.bech32Address,
-                                  myPool.id
-                                )
-                                .quo(myPool.totalShare)
-                            )
-                        : new PricePretty(
-                            priceStore.getFiatCurrency(
-                              priceStore.defaultVsCurrency
-                            )!,
-                            new Dec(0)
-                          )
-                      )
-                        .maxDecimals(2)
-                        .toString()
-                    ) : (
+                      : t("pools.myLiquidity"),
+                    value: (
                       <MetricLoader isLoading={poolLiquidity.toDec().isZero()}>
-                        <h6>{priceFormatter(poolLiquidity)}</h6>
+                        <h6>
+                          {isMobile
+                            ? priceFormatter(myLiquidity)
+                            : myLiquidity.maxDecimals(2).toString()}
+                        </h6>
                       </MetricLoader>
                     ),
                   },

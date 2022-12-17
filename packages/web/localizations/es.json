@@ -37,7 +37,8 @@
     "myPools": "Mis Piscinas",
     "APR": "TPA",
     "available": "Disponible",
-    "liquidity": "Mi Liquidez",
+    "liquidity": "Liquidez",
+    "myLiquidity": "Mi Liquidez",
     "bonded": "Abonado",
     "incentivized": "Incentivada",
     "all": "Todas las piscinas",
@@ -46,7 +47,7 @@
       "title": "Piscinas superfluidas",
       "tab": "Superfluido",
       "APR": "TPA",
-      "liquidity": "Mi Liquidez",
+      "liquidity": "Liquidez",
       "fees7D": "Tarifas (7d)"
     },
     "allPools": {

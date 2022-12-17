@@ -37,7 +37,8 @@
     "myPools": "Mes Bassins",
     "APR": "TAP",
     "available": "Disponible",
-    "liquidity": "Ma liquidité",
+    "liquidity": "Liquidité",
+    "myLiquidity": "Ma liquidité",
     "bonded": "Cautionné",
     "incentivized": "Bassins incités",
     "all": "Tous les Bassins",
@@ -46,7 +47,7 @@
       "title": "Bassins superfluides",
       "tab": "Superfluides",
       "APR": "TAP",
-      "liquidity": "Ma liquidité",
+      "liquidity": "Liquidité",
       "fees7D": "Frais (7J)"
     },
     "allPools": {

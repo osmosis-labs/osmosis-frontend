@@ -37,7 +37,8 @@
     "myPools": "Havuzlarım",
     "APR": "APR",
     "available": "Mevcut",
-    "liquidity": "Likiditem",
+    "liquidity": "Likidite",
+    "myLiquidity": "Likiditem",
     "bonded": "Bağlı",
     "incentivized": "Teşvikli",
     "all": "Tüm Havuzlar",
@@ -46,7 +47,7 @@
       "title": "Superfluid Havuzlar",
       "tab": "Superfluid",
       "APR": "APR",
-      "liquidity": "Likiditem",
+      "liquidity": "Likidite",
       "fees7D": "Ücretler (7G)"
     },
     "allPools": {
