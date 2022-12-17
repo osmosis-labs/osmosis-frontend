@@ -273,7 +273,6 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-38",
     destChannelId: "channel-4",
     coinMinimalDenom: "uixo",
-    isVerified: true,
   },
   {
     counterpartyChainId: "bitcanna-1",
@@ -308,7 +307,6 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-95",
     destChannelId: "channel-2",
     coinMinimalDenom: "boot",
-    isVerified: true,
   },
   {
     counterpartyChainId: "comdex-1",
@@ -439,7 +437,6 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
-    isVerified: true,
   },
   {
     counterpartyChainId: "injective-1",
@@ -922,7 +919,6 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1wwnhkagvcd3tjz6f8vsdsw5plqnw8qy2aj3rrhqr2axvktzv9q2qz8jxn3",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
-    isUnstable: true,
   },
   {
     counterpartyChainId: "stride-1",

@@ -2,7 +2,6 @@
   "name": "@osmosis-labs/pools",
   "version": "3.0.0",
   "main": "build/index.js",
-  "typings": "types/index.d.ts",
   "author": "osmosis-labs",
   "homepage": "https://github.com/osmosis-labs/osmosis-frontend/tree/master/packages/pools#readme",
   "repository": {
@@ -40,5 +39,8 @@
   "dependencies": {
     "@keplr-wallet/unit": "^0.10.24",
     "@osmosis-labs/math": "^3.0.0"
+  },
+  "devDependencies": {
+    "deepmerge": ""
   }
 }

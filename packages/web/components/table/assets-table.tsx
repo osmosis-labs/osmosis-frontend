@@ -180,7 +180,13 @@ export const AssetsTable: FunctionComponent<Props> = observer(
           })
         ),
       ],
-      [nativeBalances, chainStore.osmosis.chainId, dustIbcBalances]
+      [
+        nativeBalances,
+        chainStore.osmosis.chainId,
+        dustIbcBalances,
+        onDeposit,
+        onWithdraw,
+      ]
     );
 
     // Sort data based on user's input either with the table column headers or the sort menu.

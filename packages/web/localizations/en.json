@@ -79,8 +79,13 @@
     "createPool": {
       "title": "Create New Pool",
       "button": "Create New Pool",
+      "weightedPool": "Weighted pool",
+      "stablePool": "Stable pool",
       "step": {
-        "one": "Step {step} / {nbStep} - Set token ratios",
+        "one": {
+          "weighted": "Step {step} / {nbStep} - Set token ratios",
+          "stable": "Step {step} / {nbStep} - Set scaling factors"
+        },
         "two": "Step {step} / {nbStep} - Input amount to add",
         "three": "Step {step} / {nbStep} - Confirm pool ratio and token amount"
       },
@@ -94,6 +99,7 @@
       "amount": "Amount",
       "token": "Token",
       "swapFee": "Set Swap Fee",
+      "scalingFactorController": "Set scaling factor controller (optional)",
       "undersandCost": "I understand that creating a new pool will cost {POOL_CREATION_FEE}.",
       "interestedCreate": "Interested in creating a new pool?",
       "startProcess": "Click here to start the process"
@@ -103,6 +109,7 @@
     "title": "Pool #{id}",
     "swap": "Swap Tokens",
     "superfluidEnabled": "Superfluid staking enabled",
+    "stableswapEnabled": "Stableswap enabled",
     "24hrTradingVolume": "24h Trading volume",
     "liquidity": "Pool liquidity",
     "swapFee": "Swap fee",
@@ -209,6 +216,8 @@
     "ibcTransfer": {
       "titleWithdraw": "Withdraw {coinDenom}",
       "titleDeposit": "Deposit {coinDenom}",
+      "channelCongested": "Channel congested",
+      "channelBlocked": "Channel blocked",
       "selectAmount": "Select Amount",
       "estimatedTime": "Estimated Time",
       "waitTime": "20 seconds",
@@ -339,9 +348,11 @@
     "negativeSwapFee": "Swap fee is negative",
     "highSwapFee": "Swap fee too high",
     "invalidSwapFee": "Swap fee is invalid",
+    "invalidScalingFactorControllerAddress": "Invalid scaling factor controller address",
     "minAssetsCount": "Minimum of {num} assets required",
     "maxAssetsCount": "Maximum of {num} assets allowed",
     "negativePercentage": "Percentage must be positive",
+    "scalingFactorTooLow": "Scaling factor too low",
     "percentageSum": "Sum of percentages is not 100",
     "depositNoBalance": "You have no assets to deposit",
     "negativeSlippage": "Slippage cannot be negative",

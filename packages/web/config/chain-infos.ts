@@ -52,6 +52,14 @@ const chainInfos = (
           coinGeckoId: "pool:uion",
           coinImageUrl: "/tokens/ion.png",
         },
+        {
+          coinDenom: "FOO",
+          coinMinimalDenom:
+            "factory/osmo1ch9l34p0m9u5pvpj0h63m2f43h599kzfm0shpl/ufoo",
+          coinDecimals: 6,
+          coinGeckoId: "ion",
+          coinImageUrl: "/tokens/juno.svg",
+        },
       ],
       gasPriceStep: {
         low: 0,
@@ -2365,7 +2373,7 @@ chainInfos.push({
       coinDecimals: 18,
       // coinGeckoId: "weth",
       coinGeckoId: "pool:weth-wei",
-      coinImageUrl: "/tokens/weth.png",
+      coinImageUrl: "/tokens/weth.svg",
     },
     {
       coinDenom: "WBTC",

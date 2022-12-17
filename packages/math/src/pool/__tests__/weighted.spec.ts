@@ -1,5 +1,5 @@
 import assert from "assert";
-import * as WeightedPoolMath from "../weighted";
+import { WeightedPoolMath } from "../weighted";
 import { pow } from "../../utils";
 import { Dec } from "@keplr-wallet/unit";
 
@@ -98,66 +98,6 @@ describe("Test osmosis math", () => {
       new Dec("0.15")
     );
     const expected = new Dec("18.6519592");
-    assert.strictEqual(
-      expected
-        .sub(actual)
-        .abs()
-        .lte(powPrecision.mul(new Dec("10000"))),
-      true,
-      "expected value & actual value's difference should less than precision*10000"
-    );
-  });
-
-  test("Test calcSingleInGivenPoolOut", () => {
-    const actual = WeightedPoolMath.calcSingleInGivenPoolOut(
-      new Dec("100"),
-      new Dec("0.2"),
-      new Dec("300"),
-      new Dec("1"),
-      new Dec("70"),
-      new Dec("0.15")
-    );
-    const expected = new Dec("210.64327066965955");
-    assert.strictEqual(
-      expected
-        .sub(actual)
-        .abs()
-        .lte(powPrecision.mul(new Dec("10000"))),
-      true,
-      "expected value & actual value's difference should less than precision*10000"
-    );
-  });
-
-  test("Test calcSingleOutGivenPoolIn", () => {
-    const actual = WeightedPoolMath.calcSingleOutGivenPoolIn(
-      new Dec("200"),
-      new Dec("0.8"),
-      new Dec("300"),
-      new Dec("1"),
-      new Dec("40"),
-      new Dec("0.15")
-    );
-    const expected = new Dec("31.77534976");
-    assert.strictEqual(
-      expected
-        .sub(actual)
-        .abs()
-        .lte(powPrecision.mul(new Dec("10000"))),
-      true,
-      "expected value & actual value's difference should less than precision*10000"
-    );
-  });
-
-  test("Test calcPoolInGivenSingleOut", () => {
-    const actual = WeightedPoolMath.calcPoolInGivenSingleOut(
-      new Dec("200"),
-      new Dec("0.8"),
-      new Dec("300"),
-      new Dec("1"),
-      new Dec("70"),
-      new Dec("0.15")
-    );
-    const expected = new Dec("90.29092777");
     assert.strictEqual(
       expected
         .sub(actual)

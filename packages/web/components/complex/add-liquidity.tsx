@@ -28,30 +28,34 @@ export const AddLiquidity: FunctionComponent<
 
     return (
       <div className={classNames("flex flex-col gap-8", className)}>
-        <div className="flex flex-col gap-4 text-center">
-          <div className="mx-auto">
-            <MenuToggle
-              selectedOptionId={
-                addLiquidityConfig.isSingleAmountIn ? "single" : "all"
-              }
-              options={[
-                {
-                  id: "all",
-                  display: t("addLiquidity.allAssets"),
-                },
-                { id: "single", display: t("addLiquidity.singleAsset") },
-              ]}
-              onSelect={(id) => {
-                if (id === "single") {
-                  addLiquidityConfig.setIsSingleAmountIn(true);
-                } else addLiquidityConfig.setIsSingleAmountIn(false);
-              }}
-            />
+        {addLiquidityConfig.supportsSingleAmountIn && (
+          <div className="flex flex-col gap-4 text-center">
+            <div className="mx-auto">
+              <MenuToggle
+                selectedOptionId={
+                  addLiquidityConfig.isSingleAmountIn ? "single" : "all"
+                }
+                options={[
+                  {
+                    id: "all",
+                    display: t("addLiquidity.allAssets"),
+                  },
+                  { id: "single", display: t("addLiquidity.singleAsset") },
+                ]}
+                onSelect={(id) => {
+                  if (id === "single") {
+                    addLiquidityConfig.setIsSingleAmountIn(true);
+                  } else addLiquidityConfig.setIsSingleAmountIn(false);
+                }}
+              />
+            </div>
+            {addLiquidityConfig.isSingleAmountIn && (
+              <span className="caption">
+                {t("addLiquidity.autoswapCaption")}
+              </span>
+            )}
           </div>
-          {addLiquidityConfig.isSingleAmountIn && (
-            <span className="caption">{t("addLiquidity.autoswapCaption")}</span>
-          )}
-        </div>
+        )}
         <div className="flex flex-col gap-2.5 max-h-96 overflow-y-auto">
           {(addLiquidityConfig.isSingleAmountIn &&
           addLiquidityConfig.singleAmountInAsset
