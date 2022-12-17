@@ -23,7 +23,11 @@
     "minimumSlippage": "({slippage}) 包括滑價({slippage})後最少能獲得",
     "error": {
       "findCurrency": "無法找到貨幣 {currency}"
-    }
+    },
+    "autoRouter": "路線",
+    "routerTooltipFee": "費",
+    "autoRouterToggle": { "show": "顯示", "hide": "隱藏" },
+    "pool": "流動性池 #{id}"
   },
   "pools": {
     "title": "活躍流動性池",

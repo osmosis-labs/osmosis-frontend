@@ -68,8 +68,7 @@ export function useTokenSwapQueryParams(
             tradeConfig.sendCurrency.coinDenom !== "UNKNOWN" &&
             tradeConfig.outCurrency.coinDenom !== "UNKNOWN" &&
             (tradeConfig.sendCurrency.coinDenom !== router.query.from ||
-              tradeConfig.outCurrency.coinDenom !== router.query.to) &&
-            tradeConfig.sendableCurrencies.length >= balances.length
+              tradeConfig.outCurrency.coinDenom !== router.query.to)
           ) {
             // If ibc registry not loaded (i.e. first load of app in browser), `sendCurrency` and `outCurrency` will return
             // first two assets in `sendableCurrencies` which will be inexhaustive. This will

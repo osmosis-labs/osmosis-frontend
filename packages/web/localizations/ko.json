@@ -24,7 +24,7 @@
     "error": {
       "findCurrency": "토큰 A {currency}를 찾을 수 없습니다"
     },
-    "autoRouter": "최적화된 경로",
+    "autoRouter": "노선",
     "routerTooltipFee": "회비",
     "autoRouterToggle": { "show": "보여주다", "hide": "숨다" },
     "pool": "풀 #{id}"
