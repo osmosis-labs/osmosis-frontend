@@ -396,5 +396,8 @@
   "Amount is empty": "Amount is empty",
   "Insufficient amount": "Insufficient amount",
   "Amount is zero": "Amount is zero",
-  "Minimum of 2 assets required": "Minimum of 2 assets required"
+  "Minimum of 2 assets required": "Minimum of 2 assets required",
+  "stablecoinTypes": {
+    "collateralized": "collateralized"
+  }
 }
