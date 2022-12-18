@@ -284,32 +284,31 @@ export const AssetsTable: FunctionComponent<Props> = observer(
       ["chainName", "chainId", "coinDenom", "amount", "fiatValue", "queryTags"]
     );
 
-    const tableData = showAllAssets
-      ? filteredSortedCells
-      : filteredSortedCells.slice(0, 10);
-
-    const favoritesData: TableCell[] = useMemo(() => {
-      return tableData
-        .map((coin) => {
-          if (favoritesList.includes(coin.coinDenom)) {
-            coin.isFavorite = true;
-            coin.onToggleFavorite = () => {
-              const newFavorites = favoritesList.filter(
-                (d) => d !== coin.coinDenom
-              );
-              onSetFavoritesList(newFavorites);
-            };
-          } else {
-            coin.isFavorite = false;
-            coin.onToggleFavorite = () => {
-              const newFavorites = [...favoritesList, coin.coinDenom];
-              onSetFavoritesList(newFavorites);
-            };
-          }
-          return coin;
-        })
-        .sort((a, b) => Number(b.isFavorite) - Number(a.isFavorite));
-    }, [favoritesList, tableData]);
+    const tableData = useMemo(() => {
+      const data: TableCell[] = [];
+      const favorites: TableCell[] = [];
+      filteredSortedCells.forEach((coin) => {
+        if (favoritesList.includes(coin.coinDenom)) {
+          coin.isFavorite = true;
+          coin.onToggleFavorite = () => {
+            const newFavorites = favoritesList.filter(
+              (d) => d !== coin.coinDenom
+            );
+            onSetFavoritesList(newFavorites);
+          };
+          favorites.push(coin);
+        } else {
+          coin.isFavorite = false;
+          coin.onToggleFavorite = () => {
+            const newFavorites = [...favoritesList, coin.coinDenom];
+            onSetFavoritesList(newFavorites);
+          };
+          data.push(coin);
+        }
+      });
+      const tableData = favorites.concat(data);
+      return showAllAssets ? tableData : tableData.slice(0, 10);
+    }, [favoritesList, filteredSortedCells, onSetFavoritesList, showAllAssets]);
 
     return (
       <section>
@@ -428,7 +427,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
         )}
         {isMobile ? (
           <div className="flex flex-col gap-3 my-7">
-            {favoritesData.map((assetData) => (
+            {tableData.map((assetData) => (
               <div
                 key={assetData.coinDenom}
                 className="w-full flex items-center place-content-between bg-osmoverse-800 rounded-xl px-3 py-3"
@@ -534,7 +533,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                     },
                   ] as ColumnDef<TableCell>[])),
             ]}
-            data={favoritesData.map((cell) => [
+            data={tableData.map((cell) => [
               cell,
               cell,
               ...(mergeWithdrawCol ? [cell] : [cell, cell]),
