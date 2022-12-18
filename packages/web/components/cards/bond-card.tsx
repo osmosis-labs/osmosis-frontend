@@ -15,6 +15,8 @@ import { useTranslation } from "react-multi-lang";
 import { coinFormatter, priceFormatter } from "../../utils/formatter";
 import { UnlockIcon } from "../assets/unlock-icon";
 import { RightArrowIcon } from "../assets/right-arrow-icon";
+import { useAmplitudeAnalytics } from "../../hooks";
+import { EventName } from "../../config";
 
 export const BondCard: FunctionComponent<
   BondDuration & {
@@ -393,6 +395,7 @@ const SwapFeeBreakdownRow: FunctionComponent<{
   swapFeeDailyReward: PricePretty;
 }> = ({ swapFeeApr, swapFeeDailyReward }) => {
   const t = useTranslation();
+  const { logEvent } = useAmplitudeAnalytics();
   return (
     <div className="flex place-content-between items-start">
       <div className="flex items-center gap-2">
@@ -411,6 +414,11 @@ const SwapFeeBreakdownRow: FunctionComponent<{
           <a
             rel="noreferrer"
             target="_blank"
+            onClick={() => {
+              logEvent([
+                EventName.PoolDetail.CardDetail.swapFeesLinkOutClicked,
+              ]);
+            }}
             href="https://docs.osmosis.zone/overview/getting-started/#swap-fees"
           >
             <u>{t("pool.swapFees")}</u>

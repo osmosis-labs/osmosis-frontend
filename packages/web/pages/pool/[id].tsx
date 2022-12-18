@@ -158,6 +158,7 @@ const Pool: FunctionComponent = observer(() => {
       poolName,
       poolWeight,
       isSuperfluidPool: superfluidPoolConfig?.isSuperfluid ?? false,
+      isStableswapPool: pool?.type === "stable",
     }),
     [poolId, poolName, poolWeight, superfluidPoolConfig?.isSuperfluid]
   );
@@ -506,7 +507,10 @@ const Pool: FunctionComponent = observer(() => {
           </div>
           <div
             className="mx-auto flex cursor-pointer select-none items-center gap-1"
-            onClick={() => setShowPoolDetails(!showPoolDetails)}
+            onClick={() => {
+              logEvent([E.showHidePoolDetails]);
+              setShowPoolDetails(!showPoolDetails);
+            }}
           >
             <span className="subtitle2 text-wosmongton-200">
               {showPoolDetails
@@ -618,6 +622,9 @@ const Pool: FunctionComponent = observer(() => {
               rel="noreferrer"
               className="text-wosmongton-300 underline"
               target="_blank"
+              onClick={() => {
+                logEvent([E.PutYourAssetsToWork.learnMoreClicked]);
+              }}
               href="https://docs.osmosis.zone/overview/getting-started#bonded-liquidity-gauges"
             >
               {t("pool.learnMore")}
@@ -751,7 +758,10 @@ const Pool: FunctionComponent = observer(() => {
                         levelCta === 2,
                     })}
                     disabled={levelCta !== 2}
-                    onClick={() => setShowLockLPTokenModal(true)}
+                    onClick={() => {
+                      logEvent([E.bondSharesClicked, baseEventInfo]);
+                      setShowLockLPTokenModal(true);
+                    }}
                   >
                     {t("pool.bondShares")}
                   </Button>

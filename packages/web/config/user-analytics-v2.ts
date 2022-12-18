@@ -65,6 +65,7 @@ export const EventName = {
     switchClicked: "Swap: Switch clicked",
     swapStarted: "Swap: Swap started",
     swapCompleted: "Swap: Swap completed",
+    dropdownAssetSelected: "Swap: Dropdown asset selected",
   },
   // Events in Sidebar UI
   Sidebar: {
@@ -99,7 +100,7 @@ export const EventName = {
   PoolDetail: {
     pageViewed: "Pool detail: Page viewed",
     swapTokensClicked: "Pool detail: Swap tokens clicked",
-    startEarningClicked: "Pool detail: Start earning clicked",
+    bondSharesClicked: "Pool detail: Bond Shares clicked",
     unbondAllStarted: "Pool detail: Unbond all started",
     unbondAllCompleted: "Pool detail: Unbond all completed",
     singleAssetClicked: "Manage liquidity: Single asset clicked",
@@ -115,6 +116,13 @@ export const EventName = {
     earnMoreByBondingClicked: "Pool detail: Earn more by bonding clicked",
     goSuperfluidClicked: "Pool detail: Go Superfluid clicked",
     unbondClicked: "Pool detail: Unbond clicked",
+    showHidePoolDetails: "Pool detail: Show/Hide pool details",
+    CardDetail: {
+      swapFeesLinkOutClicked: "Card detail: swap fees link-out clicked",
+    },
+    PutYourAssetsToWork: {
+      learnMoreClicked: "Put your assets to work: Learn more clicked",
+    },
   },
   // Events in assets page
   Assets: {

@@ -336,7 +336,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                           <h6 className="button font-button text-white-full">
                             {justDenom}
                           </h6>
-                          <div className="caption text-left font-semibold font-medium text-osmoverse-400">
+                          <div className="caption text-left font-medium text-osmoverse-400">
                             {showChannel
                               ? `${networkName} ${channel}`
                               : networkName}

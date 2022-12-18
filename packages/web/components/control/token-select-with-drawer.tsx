@@ -4,9 +4,11 @@ import { observer } from "mobx-react-lite";
 import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { useStore } from "../../stores";
-import { useWindowSize } from "../../hooks";
+import { useAmplitudeAnalytics, useWindowSize } from "../../hooks";
 import classNames from "classnames";
 import { TokenSelectDrawer } from "../drawers/token-select-drawer";
+import { useRouter } from "next/router";
+import { EventName } from "../../config";
 
 /** Will display balances if provided `CoinPretty` objects. Assumes denoms are unique. */
 export const TokenSelectWithDrawer: FunctionComponent<{
@@ -20,13 +22,15 @@ export const TokenSelectWithDrawer: FunctionComponent<{
   ({
     selectedTokenDenom,
     tokens,
-    onSelect,
+    onSelect: onSelectProp,
     sortByBalances = false,
     dropdownOpen,
     setDropdownState,
   }) => {
     const { chainStore, priceStore } = useStore();
     const { isMobile } = useWindowSize();
+    const router = useRouter();
+    const { logEvent } = useAmplitudeAnalytics();
 
     // parent overrideable state
     const [isSelectOpenLocal, setIsSelectOpenLocal] = useState(false);
@@ -91,6 +95,14 @@ export const TokenSelectWithDrawer: FunctionComponent<{
       selectedCurrency?.coinDenom.split(" ").slice(0, 1).join(" ") ?? "";
 
     const canSelectTokens = tokens.length > 1;
+
+    const onSelect = (tokenDenom: string) => {
+      logEvent([
+        EventName.Swap.dropdownAssetSelected,
+        { tokenName: tokenDenom, isOnHome: router.pathname === "/" },
+      ]);
+      onSelectProp(tokenDenom);
+    };
 
     return (
       <div className="flex items-center justify-center md:justify-start">

@@ -122,7 +122,7 @@ const TradeRoute: FunctionComponent<{
             </div>
 
             <div className="relative flex w-full items-center justify-center">
-              <div className="relative flex w-full items-center space-x-1">
+              <div className="relative flex w-full items-center gap-0.5">
                 <Dots className="animate-[pulse_3s_ease-in-out_0s_infinite]" />
                 <Dots className="animate-[pulse_3s_ease-in-out_0.5s_infinite]" />
                 <Dots className="animate-[pulse_3s_ease-in-out_0.7s_infinite]" />
