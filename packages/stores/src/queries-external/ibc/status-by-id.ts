@@ -37,9 +37,14 @@ class ObservableQueryIbcChainStatus extends ObservableQueryExternalBase<
 
   readonly getIbcStatus = computedFn(
     (channelId: string): IbcStatus | undefined => {
-      const channelData = this.response?.data.find(
-        (channel) => channel.channel_id === channelId
-      );
+      const channelData =
+        this.response &&
+        "data" in this.response &&
+        Array.isArray(this.response.data)
+          ? this.response.data.find(
+              (channel) => channel.channel_id === channelId
+            )
+          : undefined;
       if (channelData) {
         if (channelData.size_queue > 5) {
           if (channelData.duration_minutes > 20) return "congested";
