@@ -18,7 +18,9 @@ export const SourceChainConfigs: {
       transferFeeMinAmount: IS_TESTNET ? "150000" : "10500000", // From https://docs.axelar.dev/resources/mainnet#cross-chain-relayer-gas-fee
     },
     avalanche: {
-      id: "Avalanche" as const,
+      id: IS_TESTNET
+        ? ("Avalanche Fuji Testnet" as const)
+        : ("Avalanche" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0x57F1c63497AEe0bE305B8852b354CEc793da43bB"
         : "0xfaB550568C688d5D8A52C7d794cb93Edc26eC0eC",
@@ -36,7 +38,7 @@ export const SourceChainConfigs: {
       transferFeeMinAmount: IS_TESTNET ? "150000" : "1500000",
     },
     fantom: {
-      id: "Fantom" as const,
+      id: IS_TESTNET ? ("Fantom Testnet" as const) : ("Fantom" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0x75Cc4fDf1ee3E781C1A3Ee9151D5c6Ce34Cf5C61"
         : "0x1B6382DBDEa11d97f24495C9A90b7c88469134a4",
@@ -52,7 +54,7 @@ export const SourceChainConfigs: {
       transferFeeMinAmount: IS_TESTNET ? "150000" : "1500000",
     },
     polygon: {
-      id: "Polygon" as const,
+      id: IS_TESTNET ? ("Mumbai" as const) : ("Polygon" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0x2c852e740B62308c46DD29B982FBb650D063Bd07"
         : "0x750e4C4984a9e0f12978eA6742Bc1c5D248f40ed",
