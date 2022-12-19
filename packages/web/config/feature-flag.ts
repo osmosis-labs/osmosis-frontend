@@ -1230,6 +1230,16 @@ export const ExternalIncentiveGaugeAllowList: {
       denom:
         "ibc/C822645522FC3EECF817609AA38C24B64D04F5C267A23BCCF8F2E3BC5755FA88",
     },
+    {
+      gaugeId: "30246",
+      denom:
+        "ibc/C822645522FC3EECF817609AA38C24B64D04F5C267A23BCCF8F2E3BC5755FA88",
+    },
+    {
+      gaugeId: "30247",
+      denom:
+        "ibc/C822645522FC3EECF817609AA38C24B64D04F5C267A23BCCF8F2E3BC5755FA88",
+    }
   ],
   "858": [
     {
