@@ -57,6 +57,14 @@ const chainInfos = (
           coinGeckoId: "pool:uion",
           coinImageUrl: "/tokens/ion.png",
         },
+        ...(IS_TESTNET ? [
+          {
+            coinDenom: "IBCX",
+            coinMinimalDenom: "factory/osmo1qsxmeayz5h00d75gtkevzpmne9rnc37fn5sw9eyxvueq9mm3z9hslch5rh/uibc",
+            coinDecimals: 6,
+            coinImageUrl: "/tokens/ibcx.svg",
+          },
+        ] : [])
       ],
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx:
