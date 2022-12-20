@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
 import { Dec } from "@keplr-wallet/unit";
-import { BUY_OSMO_TRANSAK, initialAssetsSort } from "../../config";
+import { BUY_OSMO_TRANSAK, initialAssetsSort, IS_FRONTIER } from "../../config";
 import {
   IBCBalance,
   IBCCW20ContractBalance,
@@ -37,6 +37,8 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
+  getSortedRowModel,
+  SortingState,
 } from "@tanstack/react-table";
 
 const columnHelper = createColumnHelper<TableCell>();
@@ -126,7 +128,6 @@ export const AssetsTable: FunctionComponent<Props> = observer(
       !ibcBalance.balance.toDec().isZero() ? ibcBalance.fiatValue : undefined
     );
 
-    const mergeWithdrawCol = width < 1000 && !isMobile;
     // Assemble cells with all data needed for any place in the table.
     const cells: TableCell[] = useMemo(
       () => [
@@ -219,6 +220,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
       ]
     );
 
+    // TODO: use TanStack Table sort api
     // Sort data based on user's input either with the table column headers or the sort menu.
     const [
       sortKey,
@@ -244,60 +246,6 @@ export const AssetsTable: FunctionComponent<Props> = observer(
       [sortDirection]
     );
 
-    // Table column def to determine how the first 2 column headers handle user click.
-    const sortColumnWithKeys = useCallback(
-      (
-        /** Possible cell keys/members this column can sort on. First key is default
-         *  sort key if this column header is selected.
-         */
-        sortKeys: string[],
-        /** Default sort direction when this column is first selected. */
-        onClickSortDirection: SortDirection = "descending"
-      ) => {
-        const isSorting = sortKeys.some((key) => key === sortKey);
-        const firstKey = sortKeys.find((_, i) => i === 0);
-
-        return {
-          currentDirection: isSorting ? sortDirection : undefined,
-          // Columns can sort by more than one key. If the column is already sorting by
-          // one of it's sort keys (one that the user may have selected from the sort menu),
-          // then it will toggle sort direction on that key.
-          // If it wasn't sorting (aka first time it is clicked), then it will sort on the first
-          // key by default.
-          onClickHeader: isSorting
-            ? () => {
-                logEvent([
-                  EventName.Assets.assetsListSorted,
-                  {
-                    sortedBy: firstKey,
-                    sortDirection:
-                      sortDirection === "descending"
-                        ? "ascending"
-                        : "descending",
-                    sortedOn: "table-head",
-                  },
-                ]);
-                toggleSortDirection();
-              }
-            : () => {
-                if (firstKey) {
-                  logEvent([
-                    EventName.Assets.assetsListSorted,
-                    {
-                      sortedBy: firstKey,
-                      sortDirection: onClickSortDirection,
-                      sortedOn: "table-head",
-                    },
-                  ]);
-                  setSortKey(firstKey);
-                  setSortDirection(onClickSortDirection);
-                }
-              },
-        };
-      },
-      [sortKey, sortDirection]
-    );
-
     // User toggles for showing 10+ pools and assets with > 0 fiat value
     const [showAllAssets, setShowAllAssets] = useState(false);
     const [hideZeroBalances, setHideZeroBalances] = useLocalStorageState(
@@ -314,15 +262,20 @@ export const AssetsTable: FunctionComponent<Props> = observer(
       ["chainName", "chainId", "coinDenom", "amount", "fiatValue", "queryTags"]
     );
 
-    const tableData = showAllAssets
-      ? filteredSortedCells
-      : filteredSortedCells.slice(0, 10);
+    const [sorting, setSorting] = useState<SortingState>([]);
 
     const table = useReactTable({
-      data: tableData ? tableData : [],
+      data: filteredSortedCells,
       columns,
+      state: {
+        sorting,
+      },
+      onSortingChange: setSorting,
       getCoreRowModel: getCoreRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+      debugTable: true,
     });
+
     return (
       <section>
         {isMobile ? (
@@ -445,12 +398,47 @@ export const AssetsTable: FunctionComponent<Props> = observer(
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
+                    {header.isPlaceholder ? null : (
+                      <div
+                        {...{
+                          className: header.column.getCanSort()
+                            ? "cursor-pointer select-none"
+                            : "",
+                          onClick: header.column.getToggleSortingHandler(),
+                        }}
+                      >
+                        {flexRender(
                           header.column.columnDef.header,
                           header.getContext()
                         )}
+                        {{
+                          asc: (
+                            <Image
+                              alt="ascending"
+                              src={
+                                IS_FRONTIER
+                                  ? "/icons/sort-up-white.svg"
+                                  : "/icons/sort-up.svg"
+                              }
+                              height={16}
+                              width={16}
+                            />
+                          ),
+                          desc: (
+                            <Image
+                              alt="descending"
+                              src={
+                                IS_FRONTIER
+                                  ? "/icons/sort-down-white.svg"
+                                  : "/icons/sort-down.svg"
+                              }
+                              height={16}
+                              width={16}
+                            />
+                          ),
+                        }[header.column.getIsSorted() as string] ?? null}
+                      </div>
+                    )}
                   </th>
                 ))}
               </tr>
@@ -459,11 +447,17 @@ export const AssetsTable: FunctionComponent<Props> = observer(
           <tbody>
             {table.getRowModel().rows.map((row) => (
               <tr key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
+                {row
+                  .getVisibleCells()
+                  .slice(0, showAllAssets ? undefined : 10)
+                  .map((cell) => (
+                    <td key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
               </tr>
             ))}
           </tbody>
@@ -491,123 +485,3 @@ export const AssetsTable: FunctionComponent<Props> = observer(
     );
   }
 );
-
-{
-  /* 
-        {isMobile ? (
-          <div className="flex flex-col gap-3 my-7">
-            {tableData.map((assetData) => (
-              <div
-                key={assetData.coinDenom}
-                className="w-full flex items-center place-content-between bg-osmoverse-800 rounded-xl px-3 py-3"
-                onClick={
-                  assetData.chainId === undefined ||
-                  (assetData.chainId &&
-                    assetData.chainId === chainStore.osmosis.chainId)
-                    ? undefined
-                    : () => {
-                        if (assetData.chainId && assetData.coinDenom) {
-                          onDeposit(assetData.chainId, assetData.coinDenom);
-                        }
-                      }
-                }
-              >
-                <div className="flex items-center gap-2">
-                  {assetData.coinImageUrl && (
-                    <div className="flex items-center w-10 shrink-0">
-                      <Image
-                        alt="token icon"
-                        src={assetData.coinImageUrl}
-                        height={40}
-                        width={40}
-                      />
-                    </div>
-                  )}
-                  <div className="flex flex-col shrink gap-1 text-ellipsis">
-                    <h6>{assetData.coinDenom}</h6>
-                    {assetData.chainName && (
-                      <span className="caption text-osmoverse-400">
-                        {assetData.chainName}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex flex-col items-end gap-1 shrink-0">
-                    <h5 className="sm:text-h6 sm:font-h6 xs:text-subtitle2 xs:font-subtitle2">
-                      {assetData.amount}
-                    </h5>
-                    {assetData.fiatValue && (
-                      <span className="caption">{assetData.fiatValue}</span>
-                    )}
-                  </div>
-                  {!(
-                    assetData.chainId === undefined ||
-                    (assetData.chainId &&
-                      assetData.chainId === chainStore.osmosis.chainId)
-                  ) && (
-                    <Image
-                      alt="select asset"
-                      src="/icons/chevron-right-disabled.svg"
-                      width={30}
-                      height={30}
-                    />
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <Table<TableCell>
-            className="w-full my-5"
-            columnDefs={[
-              {
-                display: t("assets.table.columns.assetChain"),
-                displayCell: AssetNameCell,
-                sort: sortColumnWithKeys(["coinDenom", "chainName"]),
-              },
-              {
-                display: t("assets.table.columns.balance"),
-                displayCell: BalanceCell,
-                sort: sortColumnWithKeys(["fiatValueRaw"], "descending"),
-                className: "text-right pr-24 lg:pr-8 1.5md:pr-1",
-              },
-              ...(mergeWithdrawCol
-                ? ([
-                    {
-                      display: t("assets.table.columns.transfer"),
-                      displayCell: (cell) => (
-                        <div>
-                          <TransferButtonCell type="deposit" {...cell} />
-                          <TransferButtonCell type="withdraw" {...cell} />
-                        </div>
-                      ),
-                      className: "text-left max-w-[5rem]",
-                    },
-                  ] as ColumnDef<TableCell>[])
-                : ([
-                    {
-                      display: t("assets.table.columns.deposit"),
-                      displayCell: (cell) => (
-                        <TransferButtonCell type="deposit" {...cell} />
-                      ),
-                      className: "text-left max-w-[5rem]",
-                    },
-                    {
-                      display: t("assets.table.columns.withdraw"),
-                      displayCell: (cell) => (
-                        <TransferButtonCell type="withdraw" {...cell} />
-                      ),
-                      className: "text-left max-w-[5rem]",
-                    },
-                  ] as ColumnDef<TableCell>[])),
-            ]}
-            data={tableData.map((cell) => [
-              cell,
-              cell,
-              ...(mergeWithdrawCol ? [cell] : [cell, cell]),
-            ])}
-            headerTrClassName="!h-12 !body2"
-          />
-        )} */
-}
