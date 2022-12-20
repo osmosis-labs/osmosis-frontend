@@ -114,44 +114,12 @@ const NavbarOsmoPrice = observer(() => {
         </SkeletonLoader>
       </div>
 
-      {/* <Button mode="primary">test</Button>
-      <Button mode="primary" disabled>
-        test
-      </Button>
-      <Button mode="primary-warning">test</Button>
-      <Button mode="secondary">test</Button>
-      <Button mode="secondary" disabled>
-        test
-      </Button>
-      <Button mode="primary" size="sm">
-        test
-      </Button>
-      <Button mode="secondary" size="sm">
-        test
-      </Button>
-      <Button mode="tertiary">Tertiary</Button>
-      <Button mode="tertiary" size="sm">
-        Tertiary
-      </Button>
-      <Button mode="text" className="self-start">
-        Text
-      </Button>
-      <Button mode="framed-primary" className="self-start">
-        test
-      </Button>
-      <Button mode="framed-secondary" className="self-start">
-        test
-      </Button>
-      <Button mode="amount" className="self-start">
-        test
-      </Button> */}
-
       {account.walletStatus === WalletStatus.Loaded && (
         <SkeletonLoader isLoaded={osmoPrice.isReady}>
           <Button
-            mode="tertiary"
+            mode="unstyled"
             className={classNames(
-              "button group relative flex !h-11 items-center justify-center gap-2 overflow-hidden !rounded-full !border-osmoverse-700 !py-1 font-bold text-osmoverse-100 !transition-all !duration-300 !ease-in-out",
+              "button group relative flex h-11 items-center justify-center gap-2 overflow-hidden rounded-full border-2 !border-osmoverse-700 !py-1 font-bold text-osmoverse-100 transition-all duration-300 ease-in-out",
               "hover:border-none hover:bg-gradient-positive hover:text-osmoverse-1000"
             )}
             onClick={() => {

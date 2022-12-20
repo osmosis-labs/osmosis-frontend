@@ -43,8 +43,9 @@ const button = cva(
         tertiary: [
           "border-2",
           "bg-transparent",
-          "border-osmoverse-400",
+          "border-wosmongton-400",
           "rounded-md",
+          "text-wosmongton-200",
         ],
         text: [
           "text-wosmongton-200",
@@ -81,6 +82,7 @@ const button = cva(
           "disabled:border-osmoverse-600",
           "disabled:text-osmoverse-400",
         ],
+        "special-1": ["bg-positive-gradient", "rounded-xl"],
         unstyled: null,
       },
       size: {

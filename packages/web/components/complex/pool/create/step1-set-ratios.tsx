@@ -7,7 +7,7 @@ import { InputBox } from "../../../input";
 import { StepProps } from "./types";
 import { StepBase } from "./step-base";
 import { useWindowSize } from "../../../../hooks";
-import { BorderButton } from "../../../buttons";
+import { Button } from "../../../buttons";
 import { useTranslation } from "react-multi-lang";
 
 export const Step1SetRatios: FunctionComponent<StepProps> = observer(
@@ -45,14 +45,15 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
                 />
                 <div className="md:subtitle1 flex items-center gap-2.5 text-h6 font-h6 md:gap-1">
                   {config.poolType === "weighted" && (
-                    <BorderButton
-                      className={classNames("!h-full md:p-1 md:py-0", {
+                    <Button
+                      mode="amount"
+                      className={classNames("!h-auto md:p-1 md:py-0", {
                         hidden: config.assets.length < 2,
                       })}
                       onClick={() => config.setBalancedPercentages()}
                     >
                       {config.balancedPercentage.maxDecimals(0).toString()}
-                    </BorderButton>
+                    </Button>
                   )}
                   <InputBox
                     type="number"
