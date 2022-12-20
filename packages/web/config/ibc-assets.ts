@@ -148,7 +148,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: IS_TESTNET ? "channel-22" : "channel-3",
     coinMinimalDenom: "wmatic-wei",
     sourceChainNameOverride: IS_TESTNET ? "Mumbai" : "Polygon",
-    isVerified: false,
+    isVerified: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const],
