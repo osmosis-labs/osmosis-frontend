@@ -124,6 +124,22 @@ const NavbarOsmoPrice = observer(() => {
             )}
             onClick={() => {
               transferConfig.buyOsmo();
+
+              const cryptoBalance = nativeBalances.find(
+                (coin) => coin.balance.denom.toLowerCase() === "OSMO"
+              );
+
+              logEvent([
+                EventName.Sidebar.buyOsmoClicked,
+                {
+                  tokenName: "OSMO",
+                  tokenAmount: (
+                    cryptoBalance?.fiatValue ?? cryptoBalance?.balance
+                  )
+                    ?.maxDecimals(4)
+                    .toString(),
+                },
+              ]);
             }}
           >
             <CreditCardIcon
@@ -153,22 +169,13 @@ const NavbarOsmoPrice = observer(() => {
       {transferConfig?.fiatRampsModal && (
         <FiatRampsModal
           transakModalProps={{
-            onOpen: (data) => {
-              const cryptoBalance = nativeBalances.find(
-                (coin) =>
-                  coin.balance.denom.toLowerCase() ===
-                  data.initialTokenName.toLowerCase()
-              );
-
+            onCreateOrder: (data) => {
               logEvent([
-                EventName.Sidebar.buyOsmoStarted,
+                EventName.Sidebar.buyOsmoCompleted,
                 {
-                  tokenName: data.initialTokenName,
-                  tokenAmount: (
-                    cryptoBalance?.fiatValue ?? cryptoBalance?.balance
-                  )
-                    ?.maxDecimals(4)
-                    .toString(),
+                  tokenName: data.status.cryptoCurrency,
+                  tokenAmount:
+                    data.status?.fiatAmountInUsd ?? data.status.cryptoAmount,
                 },
               ]);
             },

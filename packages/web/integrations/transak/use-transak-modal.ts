@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { useStore } from "../../stores";
-import { TransakSuccessfulOrder } from "./types";
+import { TransakCreatedOrder, TransakSuccessfulOrder } from "./types";
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
@@ -11,12 +11,12 @@ export function useTransakModal(
     onRequestClose,
     showOnMount,
     onSuccessfulOrder,
-    onOpen,
+    onCreateOrder,
   }: {
     onRequestClose?: () => void;
     showOnMount?: boolean;
     onSuccessfulOrder?: (orderData: TransakSuccessfulOrder) => void;
-    onOpen?: (data: { initialTokenName: string }) => void;
+    onCreateOrder?: (orderData: TransakCreatedOrder) => void;
   } = { showOnMount: false }
 ): {
   setModal: (show: boolean) => void;
@@ -53,7 +53,6 @@ export function useTransakModal(
         // This will trigger when the widget is opened
         transak.on(transak.EVENTS.TRANSAK_WIDGET_INITIALISED, () => {
           document.documentElement.classList.remove("html-transak-closed");
-          onOpen?.({ initialTokenName: defaultCryptoCurrency });
         });
 
         // This will trigger when the user closed the widget
@@ -63,6 +62,14 @@ export function useTransakModal(
           onRequestClose?.();
           document.documentElement.classList.add("html-transak-closed");
         });
+
+        transak.on(
+          transak.EVENTS.TRANSAK_ORDER_CREATED,
+          (data: TransakCreatedOrder) => {
+            document.documentElement.classList.remove("html-transak-closed");
+            onCreateOrder?.(data);
+          }
+        );
 
         // This will trigger when the user marks payment is made.
         transak.on(

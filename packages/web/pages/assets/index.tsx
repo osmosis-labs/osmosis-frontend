@@ -162,22 +162,13 @@ const Assets: NextPage = observer(() => {
       {transferConfig?.fiatRampsModal && (
         <FiatRampsModal
           transakModalProps={{
-            onOpen: (data) => {
-              const cryptoBalance = nativeBalances.find(
-                (coin) =>
-                  coin.balance.denom.toLowerCase() ===
-                  data.initialTokenName.toLowerCase()
-              );
-
+            onCreateOrder: (data) => {
               logEvent([
-                EventName.Assets.buyOsmoStarted,
+                EventName.Assets.buyOsmoCompleted,
                 {
-                  tokenName: data.initialTokenName,
-                  tokenAmount: (
-                    cryptoBalance?.fiatValue ?? cryptoBalance?.balance
-                  )
-                    ?.maxDecimals(4)
-                    .toString(),
+                  tokenName: data.status.cryptoCurrency,
+                  tokenAmount:
+                    data.status?.fiatAmountInUsd ?? data.status.cryptoAmount,
                 },
               ]);
             },
@@ -207,7 +198,23 @@ const Assets: NextPage = observer(() => {
         ibcBalances={ibcBalances}
         onDeposit={onTableDeposit}
         onWithdraw={onTableWithdraw}
-        onBuyOsmo={() => transferConfig?.buyOsmo()}
+        onBuyOsmo={() => {
+          transferConfig?.buyOsmo();
+
+          const cryptoBalance = nativeBalances.find(
+            (coin) => coin.balance.denom.toLowerCase() === "OSMO"
+          );
+
+          logEvent([
+            EventName.Assets.buyOsmoClicked,
+            {
+              tokenName: "OSMO",
+              tokenAmount: (cryptoBalance?.fiatValue ?? cryptoBalance?.balance)
+                ?.maxDecimals(4)
+                .toString(),
+            },
+          ]);
+        }}
       />
       {!isMobile && <PoolAssets />}
       <section className="bg-osmoverse-900">

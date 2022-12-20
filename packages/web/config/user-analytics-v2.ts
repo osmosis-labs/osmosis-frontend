@@ -73,8 +73,9 @@ export const EventName = {
     voteClicked: "Sidebar: Vote clicked",
     infoClicked: "Sidebar: Info clicked",
     supportClicked: "Sidebar: Support clicked",
-    buyOsmoStarted: "Sidebar: Buy Osmo started",
-    buyOsmoCompleted: "Sidebar: Buy Osmo completed",
+    buyOsmoClicked: "Sidebar: Buy OSMO clicked",
+    buyOsmoStarted: "Sidebar: Buy OSMO started",
+    buyOsmoCompleted: "Sidebar: Buy OSMO completed",
   },
   // Events in Topnav UI
   Topnav: {
@@ -140,7 +141,8 @@ export const EventName = {
     depositAssetCompleted: "Deposit asset: Deposit completed",
     withdrawAssetStarted: "Withdraw asset: Withdraw started",
     withdrawAssetCompleted: "Withdraw asset: Withdraw completed",
-    buyOsmoStarted: "Assets: Buy Osmo started",
-    buyOsmoCompleted: "Assets: Buy Osmo completed",
+    buyOsmoClicked: "Assets: Buy OSMO clicked",
+    buyOsmoStarted: "Assets: Buy OSMO started",
+    buyOsmoCompleted: "Assets: Buy OSMO completed",
   },
 };
