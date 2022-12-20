@@ -95,7 +95,7 @@ const TransferButton: FunctionComponent<{
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      <span>{label}</span>
+      <span className="mb-[3.3px]">{label}</span>
       {isHovering ? (
         <div className="h-fit shrink-0">
           <Image

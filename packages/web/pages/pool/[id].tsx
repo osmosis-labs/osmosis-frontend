@@ -158,6 +158,7 @@ const Pool: FunctionComponent = observer(() => {
       poolName,
       poolWeight,
       isSuperfluidPool: superfluidPoolConfig?.isSuperfluid ?? false,
+      isStableswapPool: pool?.type === "stable",
     }),
     [poolId, poolName, poolWeight, superfluidPoolConfig?.isSuperfluid]
   );
@@ -213,7 +214,7 @@ const Pool: FunctionComponent = observer(() => {
         unbondingPeriod: duration.asDays(),
       };
 
-      logEvent([E.bondStarted, lockInfo]);
+      logEvent([E.bondingStarted, lockInfo]);
 
       if (electSuperfluid) {
         setShowSuperfluidValidatorsModal(true);
@@ -221,7 +222,7 @@ const Pool: FunctionComponent = observer(() => {
         // `sendLockAndSuperfluidDelegateMsg` will be sent after superfluid modal
       } else {
         lockToken(duration)
-          .then(() => logEvent([E.bondCompleted, lockInfo]))
+          .then(() => logEvent([E.bondingCompleted, lockInfo]))
           .finally(() => setShowLockLPTokenModal(false));
       }
     },
@@ -266,6 +267,7 @@ const Pool: FunctionComponent = observer(() => {
         validatorName: queryCosmos.queryValidators
           .getQueryStatus(Staking.BondStatus.Bonded)
           .getValidator(validatorAddress)?.description.moniker,
+        isSuperfluidEnabled,
       };
 
       logEvent([E.superfluidStakeStarted, poolInfo]);
@@ -314,6 +316,14 @@ const Pool: FunctionComponent = observer(() => {
     ?.day.mul(highestAPRDailyPeriodicRate)
     .maxDecimals(3)
     .inequalitySymbol(false);
+
+  /**
+   * In mainnet, highestAPRBondableDuration should be superfluid as the highest gauge index.
+   */
+  const isSuperfluidEnabled =
+    highestAPRBondableDuration?.userShares?.toDec().gt(new Dec(0)) &&
+    (Boolean(highestAPRBondableDuration?.superfluid?.delegated) ||
+      Boolean(highestAPRBondableDuration?.superfluid?.undelegating));
 
   return (
     <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
@@ -497,7 +507,10 @@ const Pool: FunctionComponent = observer(() => {
           </div>
           <div
             className="mx-auto flex cursor-pointer select-none items-center gap-1"
-            onClick={() => setShowPoolDetails(!showPoolDetails)}
+            onClick={() => {
+              logEvent([E.showHidePoolDetails]);
+              setShowPoolDetails(!showPoolDetails);
+            }}
           >
             <span className="subtitle2 text-wosmongton-200">
               {showPoolDetails
@@ -579,7 +592,10 @@ const Pool: FunctionComponent = observer(() => {
                   .gt(new Dec(0)) && (
                   <ArrowButton
                     className="text-left"
-                    onClick={() => setShowLockLPTokenModal(true)}
+                    onClick={() => {
+                      logEvent([E.earnMoreByBondingClicked, baseEventInfo]);
+                      setShowLockLPTokenModal(true);
+                    }}
                   >
                     {t("pool.earnMore", {
                       amount: additionalRewardsByBonding
@@ -606,6 +622,9 @@ const Pool: FunctionComponent = observer(() => {
               rel="noreferrer"
               className="text-wosmongton-300 underline"
               target="_blank"
+              onClick={() => {
+                logEvent([E.PutYourAssetsToWork.learnMoreClicked]);
+              }}
               href="https://docs.osmosis.zone/overview/getting-started#bonded-liquidity-gauges"
             >
               {t("pool.learnMore")}
@@ -739,7 +758,10 @@ const Pool: FunctionComponent = observer(() => {
                         levelCta === 2,
                     })}
                     disabled={levelCta !== 2}
-                    onClick={() => setShowLockLPTokenModal(true)}
+                    onClick={() => {
+                      logEvent([E.bondSharesClicked, baseEventInfo]);
+                      setShowLockLPTokenModal(true);
+                    }}
                   >
                     {t("pool.bondShares")}
                   </Button>
@@ -750,10 +772,37 @@ const Pool: FunctionComponent = observer(() => {
                   <BondCard
                     key={bondDuration.duration.asMilliseconds()}
                     {...bondDuration}
-                    onUnbond={() => onUnlockTokens(bondDuration.duration)}
-                    onGoSuperfluid={() =>
-                      setShowSuperfluidValidatorsModal(true)
-                    }
+                    onUnbond={() => {
+                      logEvent([
+                        E.unbondClicked,
+                        {
+                          ...baseEventInfo,
+                          unbondingPeriod: bondDuration.duration.asDays(),
+                        },
+                      ]);
+                      onUnlockTokens(bondDuration.duration);
+                    }}
+                    onToggleDetails={(nextValue) => {
+                      if (nextValue)
+                        logEvent([
+                          E.cardDetailsExpanded,
+                          {
+                            ...baseEventInfo,
+                            unbondingPeriod: bondDuration.duration.asDays(),
+                          },
+                        ]);
+                    }}
+                    onGoSuperfluid={() => {
+                      logEvent([
+                        E.goSuperfluidClicked,
+                        {
+                          ...baseEventInfo,
+                          unbondingPeriod: bondDuration.duration.asDays(),
+                          isSuperfluidEnabled,
+                        },
+                      ]);
+                      setShowSuperfluidValidatorsModal(true);
+                    }}
                     splashImageSrc={
                       poolDetailConfig && poolDetailConfig.isIncentivized
                         ? poolDetailConfig.lockableDurations.length > 0 &&

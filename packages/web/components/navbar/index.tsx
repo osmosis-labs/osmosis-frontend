@@ -5,11 +5,16 @@ import classNames from "classnames";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { Button } from "../buttons";
 import { useStore } from "../../stores";
-import { useBooleanWithWindowEvent, useWindowSize } from "../../hooks";
+import {
+  useAmplitudeAnalytics,
+  useBooleanWithWindowEvent,
+  useWindowSize,
+} from "../../hooks";
 import { IUserSetting } from "../../stores/user-settings";
 import { useTranslation } from "react-multi-lang";
 import { MainLayoutMenu, CustomClasses } from "../types";
 import { MainMenu } from "../main-menu";
+import { EventName } from "../../config";
 
 export const NavBar: FunctionComponent<
   {
@@ -181,6 +186,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
     } = useStore();
     const t = useTranslation();
     const { isMobile } = useWindowSize();
+    const { logEvent } = useAmplitudeAnalytics();
 
     // wallet
     const account = accountStore.getAccount(chainId);
@@ -196,6 +202,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
           <Button
             className="!h-10 w-40 lg:w-36 md:w-full"
             onClick={() => {
+              logEvent([EventName.Topnav.connectWalletClicked]);
               account.init();
               setHoverWalletInfo(false);
             }}
@@ -208,6 +215,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
             mode="secondary"
             onMouseLeave={() => setHoverWalletInfo(false)}
             onClick={() => {
+              logEvent([EventName.Topnav.signOutClicked]);
               account.disconnect();
               setHoverWalletInfo(false);
             }}

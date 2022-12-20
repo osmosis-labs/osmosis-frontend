@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { useStore } from "../../stores";
+import { TransakCreatedOrder, TransakSuccessfulOrder } from "./types";
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
@@ -9,9 +10,13 @@ export function useTransakModal(
   {
     onRequestClose,
     showOnMount,
+    onSuccessfulOrder,
+    onCreateOrder,
   }: {
     onRequestClose?: () => void;
     showOnMount?: boolean;
+    onSuccessfulOrder?: (orderData: TransakSuccessfulOrder) => void;
+    onCreateOrder?: (orderData: TransakCreatedOrder) => void;
   } = { showOnMount: false }
 ): {
   setModal: (show: boolean) => void;
@@ -26,6 +31,8 @@ export function useTransakModal(
   useEffect(() => {
     if (account.walletStatus === WalletStatus.Loaded) {
       import("@transak/transak-sdk" as any).then(({ default: transakSdk }) => {
+        const defaultCryptoCurrency = "OSMO";
+
         const transak = new transakSdk({
           apiKey: IS_TESTNET
             ? "1cb6bc52-acd6-4633-ba31-195843d0c69f" // STAGING API Key
@@ -34,7 +41,7 @@ export function useTransakModal(
           widgetHeight: "635px",
           widgetWidth: "500px",
           // Examples of some of the customization parameters you can pass
-          defaultCryptoCurrency: "OSMO", // Example 'ETH'
+          defaultCryptoCurrency, // Example 'ETH'
           walletAddress: account.bech32Address, // Your customer's wallet address
           themeColor: "6A67EA", // App theme color // wosmongton-700
           email: "", // Your customer's email address
@@ -43,6 +50,7 @@ export function useTransakModal(
 
         setTransak(transak);
 
+        // This will trigger when the widget is opened
         transak.on(transak.EVENTS.TRANSAK_WIDGET_INITIALISED, () => {
           document.documentElement.classList.remove("html-transak-closed");
         });
@@ -55,12 +63,24 @@ export function useTransakModal(
           document.documentElement.classList.add("html-transak-closed");
         });
 
+        transak.on(
+          transak.EVENTS.TRANSAK_ORDER_CREATED,
+          (data: TransakCreatedOrder) => {
+            document.documentElement.classList.remove("html-transak-closed");
+            onCreateOrder?.(data);
+          }
+        );
+
         // This will trigger when the user marks payment is made.
-        transak.on(transak.EVENTS.TRANSAK_ORDER_SUCCESSFUL, () => {
-          transak.close();
-          setShouldShow(false);
-          onRequestClose?.();
-        });
+        transak.on(
+          transak.EVENTS.TRANSAK_ORDER_SUCCESSFUL,
+          (data: TransakSuccessfulOrder) => {
+            onSuccessfulOrder?.(data);
+            transak.close();
+            setShouldShow(false);
+            onRequestClose?.();
+          }
+        );
       });
     } else {
       setTransak(null);

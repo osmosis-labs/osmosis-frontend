@@ -159,7 +159,31 @@ const Assets: NextPage = observer(() => {
         <BridgeTransferModal {...transferConfig.bridgeTransferModal} />
       )}
       {transferConfig?.fiatRampsModal && (
-        <FiatRampsModal {...transferConfig.fiatRampsModal} />
+        <FiatRampsModal
+          transakModalProps={{
+            onCreateOrder: (data) => {
+              logEvent([
+                EventName.Assets.buyOsmoCompleted,
+                {
+                  tokenName: data.status.cryptoCurrency,
+                  tokenAmount:
+                    data.status?.fiatAmountInUsd ?? data.status.cryptoAmount,
+                },
+              ]);
+            },
+            onSuccessfulOrder: (data) => {
+              logEvent([
+                EventName.Assets.buyOsmoCompleted,
+                {
+                  tokenName: data.status.cryptoCurrency,
+                  tokenAmount:
+                    data.status?.fiatAmountInUsd ?? data.status.cryptoAmount,
+                },
+              ]);
+            },
+          }}
+          {...transferConfig.fiatRampsModal}
+        />
       )}
       {transferConfig?.walletConnectEth.sessionConnectUri && (
         <WalletConnectQRModal
@@ -173,7 +197,25 @@ const Assets: NextPage = observer(() => {
         ibcBalances={ibcBalances}
         onDeposit={onTableDeposit}
         onWithdraw={onTableWithdraw}
-        onBuyOsmo={() => transferConfig?.buyOsmo()}
+        onBuyOsmo={() => {
+          transferConfig?.buyOsmo();
+          const tokenName = "OSMO";
+
+          const cryptoBalance = nativeBalances.find(
+            (coin) =>
+              coin.balance.denom.toLowerCase() === tokenName.toLowerCase()
+          );
+
+          logEvent([
+            EventName.Assets.buyOsmoClicked,
+            {
+              tokenName,
+              tokenAmount: (cryptoBalance?.fiatValue ?? cryptoBalance?.balance)
+                ?.maxDecimals(4)
+                .toString(),
+            },
+          ]);
+        }}
       />
       {!isMobile && <PoolAssets />}
       <section className="bg-osmoverse-900">
