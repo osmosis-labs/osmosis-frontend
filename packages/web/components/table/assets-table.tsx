@@ -1,45 +1,41 @@
-import Image from "next/image";
-import { FunctionComponent, useCallback, useMemo, useState } from "react";
 import { Dec } from "@keplr-wallet/unit";
-import { BUY_OSMO_TRANSAK, initialAssetsSort, IS_FRONTIER } from "../../config";
-import {
-  IBCBalance,
-  IBCCW20ContractBalance,
-  CoinBalance,
-} from "../../stores/assets";
-import { useStore } from "../../stores";
-import { useSortedData, useFilteredData } from "../../hooks/data";
-import {
-  useLocalStorageState,
-  useWindowSize,
-  useAmplitudeAnalytics,
-  useShowDustUserSetting,
-} from "../../hooks";
-import { ShowMoreButton } from "../buttons/show-more";
-import { SearchBox } from "../input";
-import { SortMenu, Switch } from "../control";
-import { SortDirection } from "../types";
-import {
-  AssetNameCell,
-  BalanceCell,
-  TransferButtonCell,
-  AssetCell as TableCell,
-} from "./cells";
-import { TransferHistoryTable } from "./transfer-history";
-import { ColumnDef } from "./types";
-import { Table } from ".";
-import { EventName } from "../../config/user-analytics-v2";
-import { observer } from "mobx-react-lite";
-import { useTranslation } from "react-multi-lang";
-
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
-  useReactTable,
   getSortedRowModel,
   SortingState,
+  useReactTable,
 } from "@tanstack/react-table";
+import { observer } from "mobx-react-lite";
+import Image from "next/image";
+import { FunctionComponent, useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-multi-lang";
+import { BUY_OSMO_TRANSAK, initialAssetsSort, IS_FRONTIER } from "../../config";
+import { EventName } from "../../config/user-analytics-v2";
+import {
+  useAmplitudeAnalytics,
+  useLocalStorageState,
+  useShowDustUserSetting,
+  useWindowSize,
+} from "../../hooks";
+import { useFilteredData, useSortedData } from "../../hooks/data";
+import { useStore } from "../../stores";
+import {
+  CoinBalance,
+  IBCBalance,
+  IBCCW20ContractBalance,
+} from "../../stores/assets";
+import { ShowMoreButton } from "../buttons/show-more";
+import { SortMenu, Switch } from "../control";
+import { SearchBox } from "../input";
+import {
+  AssetCell as TableCell,
+  AssetNameCell,
+  BalanceCell,
+  TransferButtonCell,
+} from "./cells";
+import { TransferHistoryTable } from "./transfer-history";
 
 const columnHelper = createColumnHelper<TableCell>();
 
