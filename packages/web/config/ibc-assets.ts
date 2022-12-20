@@ -283,7 +283,6 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-2",
     coinMinimalDenom: "uiov",
     isVerified: true,
-    isUnstable: true,
   },
   {
     counterpartyChainId: "emoney-3",
