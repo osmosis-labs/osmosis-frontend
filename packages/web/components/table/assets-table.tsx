@@ -89,7 +89,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
     onBuyOsmo,
   }) => {
     const { chainStore } = useStore();
-    const { width, isMobile } = useWindowSize();
+    const { isMobile } = useWindowSize();
     const t = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
 
@@ -222,7 +222,8 @@ export const AssetsTable: FunctionComponent<Props> = observer(
       sortKey,
       do_setSortKey,
       sortDirection,
-      setSortDirection,
+      // setSortDirection,
+      _,
       toggleSortDirection,
       sortedCells,
     ] = useSortedData(cells);
