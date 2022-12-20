@@ -94,6 +94,7 @@ module.exports = {
       superfluid: "#8A86FF",
       transparent: "transparent",
       black: "black",
+      inherit: "inherit",
     },
     fontSize: {
       xxs: "0.5rem",

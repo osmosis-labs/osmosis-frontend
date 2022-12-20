@@ -82,13 +82,17 @@ const button = cva(
           "disabled:border-osmoverse-600",
           "disabled:text-osmoverse-400",
         ],
-        "special-1": ["bg-positive-gradient", "rounded-xl"],
+        "special-1": [
+          "bg-gradient-positive",
+          "rounded-xl",
+          "text-osmoverse-1000",
+        ],
         unstyled: null,
       },
       size: {
         sm: "h-10 px-5 button tracking-wide",
         normal: "h-[56px] px-6 subtitle1 tracking-wide",
-        text: "w-auto h-auto block text-start tracking-wide",
+        text: "w-auto h-auto block py-0 text-start tracking-wide",
         framed:
           "h-auto px-2 py-1 w-auto text-caption font-semibold tracking-wider",
         amount:
