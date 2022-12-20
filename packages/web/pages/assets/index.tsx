@@ -200,15 +200,17 @@ const Assets: NextPage = observer(() => {
         onWithdraw={onTableWithdraw}
         onBuyOsmo={() => {
           transferConfig?.buyOsmo();
+          const tokenName = "OSMO";
 
           const cryptoBalance = nativeBalances.find(
-            (coin) => coin.balance.denom.toLowerCase() === "OSMO"
+            (coin) =>
+              coin.balance.denom.toLowerCase() === tokenName.toLowerCase()
           );
 
           logEvent([
             EventName.Assets.buyOsmoClicked,
             {
-              tokenName: "OSMO",
+              tokenName,
               tokenAmount: (cryptoBalance?.fiatValue ?? cryptoBalance?.balance)
                 ?.maxDecimals(4)
                 .toString(),

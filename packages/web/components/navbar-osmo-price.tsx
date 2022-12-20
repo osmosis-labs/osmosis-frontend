@@ -124,15 +124,17 @@ const NavbarOsmoPrice = observer(() => {
             )}
             onClick={() => {
               transferConfig.buyOsmo();
+              const tokenName = "OSMO";
 
               const cryptoBalance = nativeBalances.find(
-                (coin) => coin.balance.denom.toLowerCase() === "OSMO"
+                (coin) =>
+                  coin.balance.denom.toLowerCase() === tokenName.toLowerCase()
               );
 
               logEvent([
                 EventName.Sidebar.buyOsmoClicked,
                 {
-                  tokenName: "OSMO",
+                  tokenName,
                   tokenAmount: (
                     cryptoBalance?.fiatValue ?? cryptoBalance?.balance
                   )
