@@ -7,6 +7,7 @@ interface RedirectionRequestData {
 
 interface StatusHistory {
   status: string;
+  /** Date string */
   createdAt: string;
   message: string;
   isEmailSentToUser: boolean;
@@ -16,7 +17,8 @@ interface StatusHistory {
 interface Status {
   id: string;
   walletAddress: string;
-  createdAt: Date;
+  /** Date string */
+  createdAt: string;
   status: string;
   fiatCurrency: string;
   userId: string;
@@ -47,6 +49,7 @@ interface CardPaymentData {
   paymentId: string;
   pgData: PGData;
   liquidityProvider: string;
+  /** Date string */
   updatedAt?: string;
   status: string;
   processedOn?: string;
