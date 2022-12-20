@@ -32,6 +32,40 @@ import { EventName } from "../../config/user-analytics-v2";
 import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-multi-lang";
 
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+
+const columnHelper = createColumnHelper<TableCell>();
+
+const columns = [
+  columnHelper.accessor("coinDenom", {
+    cell: (props) => <AssetNameCell {...props.row.original} />,
+    header: "Asset/Chain",
+  }),
+  columnHelper.accessor("amount", {
+    cell: (props) => <BalanceCell {...props.row.original} />,
+    header: "Balance",
+  }),
+  columnHelper.display({
+    id: "deposit",
+    cell: (props) => (
+      <TransferButtonCell type="deposit" {...props.row.original} />
+    ),
+    header: "Deposit",
+  }),
+  columnHelper.display({
+    id: "withdraw",
+    cell: (props) => (
+      <TransferButtonCell type="withdraw" {...props.row.original} />
+    ),
+    header: "Withdraw",
+  }),
+];
+
 interface Props {
   nativeBalances: CoinBalance[];
   ibcBalances: ((IBCBalance | IBCCW20ContractBalance) & {
@@ -284,6 +318,11 @@ export const AssetsTable: FunctionComponent<Props> = observer(
       ? filteredSortedCells
       : filteredSortedCells.slice(0, 10);
 
+    const table = useReactTable({
+      data: tableData ? tableData : [],
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+    });
     return (
       <section>
         {isMobile ? (
@@ -399,6 +438,62 @@ export const AssetsTable: FunctionComponent<Props> = observer(
             </div>
           </div>
         )}
+
+        <table className="w-full my-5">
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <div className="relative flex h-12 justify-center">
+          {filteredSortedCells.length > 10 && (
+            <ShowMoreButton
+              className="m-auto"
+              isOn={showAllAssets}
+              onToggle={() => {
+                logEvent([
+                  EventName.Assets.assetsListMoreClicked,
+                  {
+                    isOn: !showAllAssets,
+                  },
+                ]);
+                setShowAllAssets(!showAllAssets);
+              }}
+            />
+          )}
+        </div>
+        <TransferHistoryTable className="mt-8 md:w-screen md:-mx-4" />
+      </section>
+    );
+  }
+);
+
+{
+  /* 
         {isMobile ? (
           <div className="flex flex-col gap-3 my-7">
             {tableData.map((assetData) => (
@@ -514,26 +609,5 @@ export const AssetsTable: FunctionComponent<Props> = observer(
             ])}
             headerTrClassName="!h-12 !body2"
           />
-        )}
-        <div className="relative flex h-12 justify-center">
-          {filteredSortedCells.length > 10 && (
-            <ShowMoreButton
-              className="m-auto"
-              isOn={showAllAssets}
-              onToggle={() => {
-                logEvent([
-                  EventName.Assets.assetsListMoreClicked,
-                  {
-                    isOn: !showAllAssets,
-                  },
-                ]);
-                setShowAllAssets(!showAllAssets);
-              }}
-            />
-          )}
-        </div>
-        <TransferHistoryTable className="mt-8 md:w-screen md:-mx-4" />
-      </section>
-    );
-  }
-);
+        )} */
+}
