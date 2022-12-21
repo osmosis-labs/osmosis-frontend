@@ -684,7 +684,10 @@ const Pool: FunctionComponent = observer(() => {
                       disabled={poolDetailConfig?.userAvailableValue
                         .toDec()
                         .isZero()}
-                      onClick={() => setShowRemoveLiquidityModal(true)}
+                      onClick={() => {
+                        logEvent([E.removeLiquidityClicked, baseEventInfo]);
+                        setShowRemoveLiquidityModal(true);
+                      }}
                     >
                       {t("removeLiquidity.title")}
                     </Button>
@@ -693,7 +696,10 @@ const Pool: FunctionComponent = observer(() => {
                         "!border-0 bg-gradient-positive text-osmoverse-900":
                           levelCta === 1,
                       })}
-                      onClick={() => setShowAddLiquidityModal(true)}
+                      onClick={() => {
+                        logEvent([E.addLiquidityClicked, baseEventInfo]);
+                        setShowAddLiquidityModal(true);
+                      }}
                     >
                       {t("addLiquidity.title")}
                     </Button>
