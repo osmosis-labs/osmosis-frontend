@@ -133,7 +133,7 @@ const Home: NextPage = observer(function () {
   );
 
   useAmplitudeAnalytics({
-    onLoadEvent: [EventName.Swap.pageViewed],
+    onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
   });
 
   return (
