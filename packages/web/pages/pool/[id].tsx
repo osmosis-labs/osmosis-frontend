@@ -167,6 +167,7 @@ const Pool: FunctionComponent = observer(() => {
       const poolInfo = {
         ...baseEventInfo,
         isSingleAsset: config.isSingleAmountIn,
+        isSuperfluidEnabled,
         providingLiquidity:
           config.isSingleAmountIn && config.singleAmountInConfig
             ? {
@@ -210,7 +211,7 @@ const Pool: FunctionComponent = observer(() => {
     (duration: Duration, electSuperfluid?: boolean) => {
       const lockInfo = {
         ...baseEventInfo,
-        isSuperfluidEnabled: electSuperfluid,
+        isSuperfluidEnabled: Boolean(electSuperfluid),
         unbondingPeriod: duration.asDays(),
       };
 
@@ -685,7 +686,10 @@ const Pool: FunctionComponent = observer(() => {
                         .toDec()
                         .isZero()}
                       onClick={() => {
-                        logEvent([E.removeLiquidityClicked, baseEventInfo]);
+                        logEvent([
+                          E.removeLiquidityClicked,
+                          { ...baseEventInfo, isSuperfluidEnabled },
+                        ]);
                         setShowRemoveLiquidityModal(true);
                       }}
                     >
@@ -697,7 +701,10 @@ const Pool: FunctionComponent = observer(() => {
                           levelCta === 1,
                       })}
                       onClick={() => {
-                        logEvent([E.addLiquidityClicked, baseEventInfo]);
+                        logEvent([
+                          E.addLiquidityClicked,
+                          { ...baseEventInfo, isSuperfluidEnabled },
+                        ]);
                         setShowAddLiquidityModal(true);
                       }}
                     >
