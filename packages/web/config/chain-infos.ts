@@ -60,7 +60,7 @@ const chainInfos = (
         ...(IS_TESTNET ? [
           {
             coinDenom: "IBCX",
-            coinMinimalDenom: "factory/osmo1qsxmeayz5h00d75gtkevzpmne9rnc37fn5sw9eyxvueq9mm3z9hslch5rh/uibc",
+            coinMinimalDenom: "factory/osmo13t90mkyvdnmn9wm8hfen6jk3hnlt8uqx8savlvjd5xghy5z6ye2qymy6cy/uibcx",
             coinDecimals: 6,
             coinImageUrl: "/tokens/ibcx.svg",
           },
