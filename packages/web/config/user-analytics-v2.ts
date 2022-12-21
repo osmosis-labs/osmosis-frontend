@@ -65,20 +65,22 @@ export const EventName = {
     switchClicked: "Swap: Switch clicked",
     swapStarted: "Swap: Swap started",
     swapCompleted: "Swap: Swap completed",
+    dropdownAssetSelected: "Swap: Dropdown asset selected",
   },
   // Events in Sidebar UI
   Sidebar: {
     stakeClicked: "Sidebar: Stake clicked",
     voteClicked: "Sidebar: Vote clicked",
     infoClicked: "Sidebar: Info clicked",
-    connectWalletClicked: "Sidebar: Connect wallet clicked",
-    signOutClicked: "Sidebar: Sign out clicked",
-    twitterClicked: "Sidebar: Twitter clicked",
-    mediumClicked: "Sidebar: Medium clicked",
-    commonwealthClicked: "Sidebar: Commonwealth clicked",
-    discordClicked: "Sidebar: Discord clicked",
-    telegramClicked: "Sidebar: Telegram clicked",
     supportClicked: "Sidebar: Support clicked",
+    buyOsmoClicked: "Sidebar: Buy OSMO clicked",
+    buyOsmoStarted: "Sidebar: Buy OSMO started",
+    buyOsmoCompleted: "Sidebar: Buy OSMO completed",
+  },
+  // Events in Topnav UI
+  Topnav: {
+    connectWalletClicked: "Topnav: Connect wallet clicked",
+    signOutClicked: "Topnav: Sign out clicked",
   },
   // Events in Pools page
   Pools: {
@@ -98,9 +100,8 @@ export const EventName = {
   // Events in Pool detail page
   PoolDetail: {
     pageViewed: "Pool detail: Page viewed",
-    addOrRemoveLiquidityClicked: "Pool detail: Add/Remove liquidity clicked",
     swapTokensClicked: "Pool detail: Swap tokens clicked",
-    startEarningClicked: "Pool detail: Start earning clicked",
+    bondSharesClicked: "Pool detail: Bond Shares clicked",
     unbondAllStarted: "Pool detail: Unbond all started",
     unbondAllCompleted: "Pool detail: Unbond all completed",
     singleAssetClicked: "Manage liquidity: Single asset clicked",
@@ -108,10 +109,21 @@ export const EventName = {
     addLiquidityCompleted: "Manage liquidity: Add liquidity completed",
     removeLiquidityStarted: "Manage liquidity: Remove liquidity started",
     removeLiquidityCompleted: "Manage liquidity: Remove liquidity completed",
-    bondStarted: "Liquidity bonding: Bond started",
-    bondCompleted: "Liquidity bonding: Bond completed",
+    bondingStarted: "Pool detail: Bonding started",
+    bondingCompleted: "Pool detail: Bonding completed",
     superfluidStakeStarted: "Liquidity bonding: Superfluid stake started",
     superfluidStakeCompleted: "Liquidity bonding: Superfluid stake completed",
+    cardDetailsExpanded: "Pool detail: Card details expanded",
+    earnMoreByBondingClicked: "Pool detail: Earn more by bonding clicked",
+    goSuperfluidClicked: "Pool detail: Go Superfluid clicked",
+    unbondClicked: "Pool detail: Unbond clicked",
+    showHidePoolDetails: "Pool detail: Show/Hide pool details",
+    CardDetail: {
+      swapFeesLinkOutClicked: "Card detail: swap fees link-out clicked",
+    },
+    PutYourAssetsToWork: {
+      learnMoreClicked: "Put your assets to work: Learn more clicked",
+    },
   },
   // Events in assets page
   Assets: {
@@ -129,5 +141,8 @@ export const EventName = {
     depositAssetCompleted: "Deposit asset: Deposit completed",
     withdrawAssetStarted: "Withdraw asset: Withdraw started",
     withdrawAssetCompleted: "Withdraw asset: Withdraw completed",
+    buyOsmoClicked: "Assets: Buy OSMO clicked",
+    buyOsmoStarted: "Assets: Buy OSMO started",
+    buyOsmoCompleted: "Assets: Buy OSMO completed",
   },
 };

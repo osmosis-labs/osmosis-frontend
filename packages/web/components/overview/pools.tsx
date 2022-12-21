@@ -60,27 +60,27 @@ export const PoolsOverview: FunctionComponent<{} & CustomClasses> = ({
   return (
     <div
       className={classNames(
-        "relative flex md:flex-col items-center md:items-start gap-32 lg:gap-8 md:gap-3 h-48 md:h-fit rounded-[32px] bg-osmoverse-1000 px-20 lg:px-10 md:px-4 md:py-5",
+        "relative flex h-48 items-center gap-32 rounded-[32px] bg-osmoverse-800 px-20 lg:gap-8 lg:px-10 md:h-fit md:flex-col md:items-start md:gap-3 md:px-4 md:py-5",
         className
       )}
     >
       <div className="flex flex-col gap-5 md:gap-2">
-        <h6 className="md:font-subtitle1 md:text-subtitle1">
+        <h6 className="md:text-subtitle1 md:font-subtitle1">
           {t("pools.priceOsmo")}
         </h6>
-        <h2 className="text-wosmongton-100 md:font-h4 md:text-h4">
+        <h2 className="text-white-full md:text-h4 md:font-h4">
           {osmoPrice?.toString()}
         </h2>
       </div>
-      <div className="flex flex-col gap-5 md:gap-2 bg-osmoverse-1000/80 shadow-2xl z-50 pr-2 rounded-2xl">
-        <h6 className="md:font-subtitle1 md:text-subtitle1">
+      <div className="z-40 flex flex-col gap-5 rounded-2xl bg-osmoverse-800/80 pr-2 shadow-2xl md:gap-2">
+        <h6 className="md:text-subtitle1 md:font-subtitle1">
           {t("pools.rewardDistribution")}
         </h6>
-        <h2 className="text-transparent bg-clip-text bg-superfluid md:font-h4 md:text-h4">
+        <h2 className="bg-superfluid bg-clip-text text-transparent md:text-h4 md:font-h4">
           {timeRemaining}
         </h2>
       </div>
-      <div className="absolute xs:hidden h-[212px] md:h-[100px] 1.5xl:h-[200px] xl:h-[188px] right-0 -bottom-[0.025rem] overflow-clip rounded-br-[32px]">
+      <div className="absolute right-0 -bottom-[0.025rem] h-[212px] overflow-clip rounded-br-[32px] 1.5xl:h-[200px] xl:h-[188px] md:h-[100px] xs:hidden">
         <Image
           alt="lab machine"
           src="/images/lab-machine.svg"

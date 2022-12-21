@@ -41,17 +41,17 @@ In case you need to build images only:
 ### Main
 
 ```bash
-docker-compose build frontend -t osmosis-frontend:main
+docker-compose build frontend
 ```
 
 ### Frontier
 
 ```bash
-docker-compose build frontend-frontier -t osmosis-frontend:frontier
+docker-compose build frontend-frontier
 ```
 
 ### Testnet
 
 ```bash
-docker-compose build frontend-testnet -t osmosis-frontend:testnet
+docker-compose build frontend-testnet
 ```

@@ -18,8 +18,8 @@ export const PoolAssetsIcon: FunctionComponent<Props> = ({
       <div
         className={classNames(
           {
-            "w-[3.125rem] h-[3.125rem]": size === "md",
-            "w-[2.5rem] h-[2.5rem]": size === "sm",
+            "h-[3.125rem] w-[3.125rem]": size === "md",
+            "h-[2.5rem] w-[2.5rem]": size === "sm",
           },
           "absolute z-10 flex items-center justify-center overflow-hidden"
         )}
@@ -43,14 +43,14 @@ export const PoolAssetsIcon: FunctionComponent<Props> = ({
       <div
         className={classNames(
           {
-            "w-[3.125rem] h-[3.125rem] ml-10": size === "md",
-            "w-[2.5rem] h-[2.5rem] ml-5": size === "sm",
+            "ml-10 h-[3.125rem] w-[3.125rem]": size === "md",
+            "ml-5 h-[2.5rem] w-[2.5rem]": size === "sm",
           },
-          "shrink-0 flex items-center justify-center overflow-hidden"
+          "flex shrink-0 items-center justify-center overflow-hidden"
         )}
       >
         {assets.length >= 3 ? (
-          <div className="body1 text-white-mid ml-2.5">{`+${
+          <div className="body1 ml-2.5 text-white-mid">{`+${
             assets.length - 1
           }`}</div>
         ) : assets[1].coinImageUrl ? (

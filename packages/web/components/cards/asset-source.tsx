@@ -26,7 +26,7 @@ export const AssetSourceCard: FunctionComponent<
   <button disabled={disabled} onClick={onClick}>
     <div
       className={classNames({
-        "p-0.5 bg-wosmongton-200 rounded-2xl": isConnected,
+        "rounded-2xl bg-wosmongton-200 p-0.5": isConnected,
       })}
     >
       <div

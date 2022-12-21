@@ -50,7 +50,7 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
 
       return (
         <div className="flex flex-col gap-5">
-          <span className="body2 text-center md:caption md:mt-4">
+          <span className="body2 md:caption text-center md:mt-4">
             {step === 1
               ? config.poolType === "weighted"
                 ? t("pools.createPool.step.one.weighted", {

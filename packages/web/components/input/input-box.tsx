@@ -51,7 +51,7 @@ export const InputBox: FunctionComponent<Props> = ({
   return (
     <div
       className={classNames(
-        "flex flex-nowrap justify-between w-full h-fit rounded-lg px-2 text-white-high bg-osmoverse-1000",
+        "flex h-fit w-full flex-nowrap justify-between rounded-lg bg-osmoverse-1000 px-2 text-white-high",
         {
           border: style !== "no-border",
           "border-osmoverse-200":
@@ -59,13 +59,13 @@ export const InputBox: FunctionComponent<Props> = ({
           "border-osmoverse-1000":
             style !== "no-border" && style === "enabled" && !inputFocused,
           "border-missionError": style === "error",
-          "cursor-default bg-osmoverse-800 border-white-disabled": disabled,
+          "cursor-default border-white-disabled bg-osmoverse-800": disabled,
         },
         className
       )}
     >
       <label
-        className="flex items-center grow shrink w-full"
+        className="flex w-full shrink grow items-center"
         htmlFor="text-input"
       >
         {isAutosize ? (
@@ -89,11 +89,11 @@ export const InputBox: FunctionComponent<Props> = ({
             ref={inputRef}
             id="text-input"
             className={classNames(
-              "w-full appearance-none bg-transparent align-middle leading-10 md:leading-0 pt-px md:p-0 placeholder:text-osmoverse-500",
+              "md:leading-0 w-full appearance-none bg-transparent pt-px align-middle leading-10 placeholder:text-osmoverse-500 md:p-0",
               {
                 "text-white-disabled": disabled,
                 "text-white-high": currentValue != "" && !disabled,
-                "text-right float-right": rightEntry,
+                "float-right text-right": rightEntry,
                 "pr-1": !trailingSymbol,
               },
               inputClassName
@@ -133,7 +133,7 @@ export const InputBox: FunctionComponent<Props> = ({
                   <button
                     key={index}
                     className={classNames(
-                      "button h-[1.375rem] border-2 border-wosmongton-200 rounded-lg mt-2.5 bg-wosmongton-200/30 select-none",
+                      "button mt-2.5 h-[1.375rem] select-none rounded-lg border-2 border-wosmongton-200 bg-wosmongton-200/30",
                       {
                         "opacity-30": disabled || labelButtonDisabled,
                         "hover:bg-wosmongton-200/60":

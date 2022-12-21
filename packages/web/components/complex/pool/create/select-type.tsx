@@ -25,7 +25,7 @@ export const SelectType: FunctionComponent<{
 
   return (
     <div className="flex flex-col gap-8 pt-8">
-      <div className="w-full flex gap-4">
+      <div className="flex w-full gap-4">
         {types.map((type) => (
           <button
             className="w-full"
@@ -34,7 +34,7 @@ export const SelectType: FunctionComponent<{
           >
             <div
               className={classNames(
-                "flex flex-col gap-4 bg-osmoverse-900 py-10 rounded-2xl",
+                "flex flex-col gap-4 rounded-2xl bg-osmoverse-900 py-10",
                 {
                   "bg-wosmongton-500": selectedType === type,
                 }

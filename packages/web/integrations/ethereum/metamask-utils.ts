@@ -1,6 +1,6 @@
 import { numberToHex } from "web3-utils";
+import { getKeyByValue } from "../../utils/object";
 import type { EthereumProvider } from "../../window";
-import { getKeyByValue } from "../../components/utils";
 import { SendFn, ChainNames } from "./types";
 
 export function switchToChain(

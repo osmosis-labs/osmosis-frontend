@@ -17,10 +17,10 @@ export const Toggle: FunctionComponent<
         <input
           type="checkbox"
           className={classNames(
-            "absolute h-6 w-full rounded-lg appearance-none",
+            "absolute h-6 w-full appearance-none rounded-lg",
             {
-              "opacity-30 bg-osmoverse-400": disabled && isOn,
-              "opacity-10 bg-osmoverse-400": disabled && !isOn,
+              "bg-osmoverse-400 opacity-30": disabled && isOn,
+              "bg-osmoverse-400 opacity-10": disabled && !isOn,
               "bg-wosmongton-200": !disabled && isOn,
               "cursor-pointer": isHovered && !disabled,
               "bg-wosmongton-100": isHovered && !disabled && isOn,
@@ -34,7 +34,7 @@ export const Toggle: FunctionComponent<
         />
         <div
           className={classNames(
-            "relative top-1.5 px-2 select-none text-caption",
+            "relative top-1.5 select-none px-2 text-caption",
             {
               "cursor-default": disabled,
               "cursor-pointer": isHovered && !disabled,

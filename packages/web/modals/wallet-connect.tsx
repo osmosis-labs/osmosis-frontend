@@ -75,14 +75,14 @@ export const WalletConnectQRModal: FunctionComponent<
             const QRCode = dynamic(() => import("qrcode.react"));
 
             return (
-              <div className="bg-white-high p-3.5 md:w-80 md:mx-auto">
+              <div className="bg-white-high p-3.5 md:mx-auto md:w-80">
                 <QRCode size={isMobile ? 290 : 480} value={uri} />
               </div>
             );
           })()
         ) : (
           <Button
-            className="py-4 my-3"
+            className="my-3 py-4"
             onClick={() => {
               if (navigateToAppURL) {
                 window.location.href = navigateToAppURL;

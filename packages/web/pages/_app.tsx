@@ -12,6 +12,7 @@ import { OgpMeta } from "../components/ogp-meta";
 import { MainLayoutMenu } from "../components/types";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
+import updateLocale from "dayjs/plugin/updateLocale";
 import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 import { GetKeplrProvider } from "../hooks";
@@ -32,10 +33,15 @@ import {
 
 import en from "../localizations/en.json";
 import { Formatted } from "../components/localization";
+import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
+import dayjsLocaleKo from "../localizations/dayjs-locale-ko.js";
 
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
 dayjs.extend(utc);
+dayjs.extend(updateLocale);
+dayjs.updateLocale("es", dayjsLocaleEs);
+dayjs.updateLocale("ko", dayjsLocaleKo);
 enableStaticRendering(typeof window === "undefined");
 
 const DEFAULT_LANGUAGE = "en";

@@ -345,7 +345,7 @@ export class OptimizedRoutes {
               id: routePool.id,
               isIncentivized: this._incentivizedPoolIds.includes(routePool.id),
             })),
-            outDenom,
+            route.tokenOutDenoms[0],
             this.stakeCurrencyMinDenom
           )
         ) {

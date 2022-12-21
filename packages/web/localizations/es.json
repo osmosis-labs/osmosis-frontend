@@ -23,7 +23,11 @@
     "minimumSlippage": "Mínimo recibido después del deslizamiento ({slippage})",
     "error": {
       "findCurrency": "No se pudo encontrar la moneda {currency}"
-    }
+    },
+    "autoRouter": "Ruta",
+    "routerTooltipFee": "Tarifa",
+    "autoRouterToggle": { "show": "Mostrar", "hide": "Ocultar" },
+    "pool": "Piscina #{id}"
   },
   "pools": {
     "title": "Piscinas Activas",
@@ -34,6 +38,7 @@
     "APR": "TPA",
     "available": "Disponible",
     "liquidity": "Liquidez",
+    "myLiquidity": "Mi Liquidez",
     "bonded": "Abonado",
     "incentivized": "Incentivada",
     "all": "Todas las piscinas",
@@ -54,7 +59,7 @@
       "search": "Buscar piscinas",
       "displayLowLiquidity": "Mostrar piscinas < {value}",
       "sort": {
-        "poolName": "Nombre de la Piscina",
+        "poolName": "Nombre/Número de piscina",
         "liquidity": "Liquidez",
         "volume24h": "Volumen (24h)",
         "fees": "Tarifas (7d)",
@@ -64,12 +69,12 @@
       }
     },
     "externalIncentivized": {
-      "title": "Incentivos externos",
+      "title": "Fondos comunes con incentivos externos",
       "TVL": "VTB",
       "APR": "TPA",
       "search": "Buscar por símbolo",
       "sort": {
-        "poolName": "Nombre de la Piscina",
+        "poolName": "Nombre/Número de piscina",
         "liquidity": "Liquidez",
         "APR": "TPA",
         "epochs": "Épocas restantes",
@@ -113,10 +118,11 @@
     "24hrTradingVolume": "Volumen Últimas 24h",
     "liquidity": "Liquidez",
     "swapFee": "Tarifa de intercambio",
-    "yourStats": "Tus estadísticas",
+    "yourStats": "Su saldo de la piscina",
     "sharesAmount": "{shares} acciones",
     "currentDailyEarn": "Actualmente estás ganando",
-    "earnMore": "Gane más por abonar",
+    "earnMore": "Gane {amount} más por abonar",
+    "day": "día",
     "dailyEarnAmount": "{amount} / día",
     "putAssetsToWork": "Pon tus activos a trabajar.",
     "putAssetsToWorkCaption": "Agregue sus activos a esta piscina para obtener TPAs increíbles. Mientras más tiempo sea su período para desabonarse, más generará.",
@@ -132,8 +138,7 @@
     "bondSuperfluidLiquidityCaption": "Activar superfluidez para obtener las recompensas máximas.",
     "bondShares": "Participaciones abonadas",
     "amountDaysUnbonding": "{numDays} días para desabonar",
-    "shares": "Participaciones",
-    "unbonded": "Desabonado",
+    "available": "Disponible",
     "unbond": "Desabonar",
     "bonded": "Abonado",
     "showDetails": "Mostrar detalles",
@@ -195,7 +200,7 @@
     }
   },
   "assets": {
-    "totalAssets": "Total",
+    "totalAssets": "Los activos totales",
     "unbondedAssets": "No abonado",
     "bondedAssets": "Abonado",
     "stakedAssets": "OSMO Abonado",
@@ -209,13 +214,17 @@
     "poolCards": {
       "APR": "TPA",
       "FeeAPY": "Tarifa TAI",
-      "liquidity": "Liquidez",
+      "liquidity": "Mi Liquidez",
       "bonded": "Abonado",
       "myLiquidity": "Mi liquidez"
     },
     "ibcTransfer": {
       "titleWithdraw": "Retirar {coinDenom}",
       "titleDeposit": "Depositar {coinDenom}",
+      "channelCongested": "Canal impugnado",
+      "channelCongestedWithdraw": "Retirar (Canal impugnado)",
+      "channelCongestedDeposit": "Depositar (Canal impugnado)",
+      "channelBlocked": "Canal bloqueado",
       "selectAmount": "Cantidad seleccionada",
       "estimatedTime": "Tiempo estimado",
       "waitTime": "20 segundos",
@@ -261,8 +270,8 @@
     "table": {
       "depositButton": "Depositar",
       "withdrawButton": "Retirar",
-      "search": "Filtrar por símbolo",
-      "title": "Activos",
+      "search": "Buscar",
+      "title": "Todos los activos",
       "hideZero": "Ocultar saldos cero",
       "buyOsmo": "Comprar",
       "preTransfer": {
@@ -313,7 +322,10 @@
       "mobileMenu": "Ordenar por"
     },
     "MAX": "Máximo",
-    "searchTokens": "Buscar tokens"
+    "searchTokens": "Buscar",
+    "selectToken": {
+      "title": "Seleccione un token"
+    }
   },
   "menu": {
     "swap": "Intercambio",
@@ -324,12 +336,13 @@
     "info": "Estadísticas",
     "signOut": "Desconectar",
     "help": "Obtener ayuda para el laboratorio de soporte",
-    "learnMoreFrontier": "Obtenga más información <br/> sobre <br2/> <name> Osmosis Frontier </name>"
+    "learnMoreFrontier": "Obtenga más información <br/> sobre <br2/> <name> Osmosis Frontier </name>",
+    "buyTokens": "Comprar fichas"
   },
   "settings": {
     "title": "Ajustes",
     "titleLanguage": "Idioma",
-    "titleShowDust": "Mostrar piscinas/activos <{fiatSymbol} 0.01"
+    "titleHideDust": "Ocultar piscinas con <{fiatSymbol} 0.01"
   },
   "404": {
     "title": "No encontrado"
@@ -374,7 +387,7 @@
   "protocolDisclaimer": "Deslindo de responsabilidad al protocolo",
   "Transaction Failed": "Transacción fallida",
   "Transaction Successful": "Transacción exitosa",
-  "Transaction Broadcasting": "Transacción de transacción",
+  "Transaction Broadcasting": "Ejecutando transacción",
   "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.": "El intercambio falló. La liquidez puede no ser suficiente. Intente ajustar el deslizamiento permitido.",
   "Waiting for transaction to be included in the block": "Esperando que la transacción se incluya en el bloque",
   "view explorer": "Ver Explorador",
@@ -383,5 +396,8 @@
   "Amount is empty": "La cantidad está vacía",
   "Insufficient amount": "Cantidad insuficiente",
   "Amount is zero": "La cantidad es cero",
-  "Minimum of 2 assets required": "Mínimo de 2 activos requeridos"
+  "Minimum of 2 assets required": "Mínimo de 2 activos requeridos",
+  "stablecoinTypes": {
+    "collateralized": "colateralizado"
+  }
 }

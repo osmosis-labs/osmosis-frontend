@@ -137,10 +137,10 @@ const Home: NextPage = observer(function () {
   });
 
   return (
-    <main className="relative bg-osmoverse-900 h-full">
-      <div className="absolute w-full h-full bg-home-bg-pattern bg-repeat-x bg-cover">
+    <main className="relative h-full bg-osmoverse-900">
+      <div className="absolute h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">
         <svg
-          className="absolute w-full h-full lg:hidden"
+          className="absolute h-full w-full lg:hidden"
           pointerEvents="none"
           viewBox="0 0 1300 900"
           height="900"
@@ -176,7 +176,7 @@ const Home: NextPage = observer(function () {
           </g>
         </svg>
       </div>
-      <div className="w-full h-full flex items-center overflow-x-hidden overflow-y-auto">
+      <div className="flex h-full w-full items-center overflow-y-auto overflow-x-hidden">
         <TradeClipboard
           containerClassName="w-[27rem] md:mt-mobile-header ml-auto mr-[15%] lg:mx-auto"
           pools={pools}

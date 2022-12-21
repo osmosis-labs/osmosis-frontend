@@ -7,7 +7,7 @@ import {
   ComponentProps,
   useCallback,
 } from "react";
-import { PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { useStore } from "../../stores";
 import { AssetsTable } from "../../components/table/assets-table";
@@ -16,7 +16,6 @@ import { ShowMoreButton } from "../../components/buttons/show-more";
 import { PoolCard } from "../../components/cards/";
 import { Metric } from "../../components/types";
 import { MetricLoader } from "../../components/loaders";
-import { priceFormatter } from "../../components/utils";
 import { useTranslation } from "react-multi-lang";
 import {
   IbcTransferModal,
@@ -31,7 +30,7 @@ import {
   useWindowSize,
   useAmplitudeAnalytics,
   useNavBar,
-  useShowDustUserSetting,
+  useHideDustUserSetting,
   useTransferConfig,
 } from "../../hooks";
 import { EventName, ExternalIncentiveGaugeAllowList } from "../../config";
@@ -142,7 +141,7 @@ const Assets: NextPage = observer(() => {
   );
 
   return (
-    <main className="max-w-container mx-auto flex flex-col gap-20 md:gap-8 bg-osmoverse-900 p-8 md:p-4">
+    <main className="mx-auto flex max-w-container flex-col gap-20 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
       <AssetsOverview />
       {isMobile && preTransferModalProps && (
         <PreTransferModal {...preTransferModalProps} />
@@ -160,7 +159,31 @@ const Assets: NextPage = observer(() => {
         <BridgeTransferModal {...transferConfig.bridgeTransferModal} />
       )}
       {transferConfig?.fiatRampsModal && (
-        <FiatRampsModal {...transferConfig.fiatRampsModal} />
+        <FiatRampsModal
+          transakModalProps={{
+            onCreateOrder: (data) => {
+              logEvent([
+                EventName.Assets.buyOsmoCompleted,
+                {
+                  tokenName: data.status.cryptoCurrency,
+                  tokenAmount:
+                    data.status?.fiatAmountInUsd ?? data.status.cryptoAmount,
+                },
+              ]);
+            },
+            onSuccessfulOrder: (data) => {
+              logEvent([
+                EventName.Assets.buyOsmoCompleted,
+                {
+                  tokenName: data.status.cryptoCurrency,
+                  tokenAmount:
+                    data.status?.fiatAmountInUsd ?? data.status.cryptoAmount,
+                },
+              ]);
+            },
+          }}
+          {...transferConfig.fiatRampsModal}
+        />
       )}
       {transferConfig?.walletConnectEth.sessionConnectUri && (
         <WalletConnectQRModal
@@ -174,12 +197,30 @@ const Assets: NextPage = observer(() => {
         ibcBalances={ibcBalances}
         onDeposit={onTableDeposit}
         onWithdraw={onTableWithdraw}
-        onBuyOsmo={() => transferConfig?.buyOsmo()}
+        onBuyOsmo={() => {
+          transferConfig?.buyOsmo();
+          const tokenName = "OSMO";
+
+          const cryptoBalance = nativeBalances.find(
+            (coin) =>
+              coin.balance.denom.toLowerCase() === tokenName.toLowerCase()
+          );
+
+          logEvent([
+            EventName.Assets.buyOsmoClicked,
+            {
+              tokenName,
+              tokenAmount: (cryptoBalance?.fiatValue ?? cryptoBalance?.balance)
+                ?.maxDecimals(4)
+                .toString(),
+            },
+          ]);
+        }}
       />
       {!isMobile && <PoolAssets />}
       <section className="bg-osmoverse-900">
         <DepoolingTable
-          className="p-10 md:p-5 max-w-container mx-auto"
+          className="mx-auto max-w-container p-10 md:p-5"
           tableClassName="md:w-screen md:-mx-5"
         />
       </section>
@@ -232,17 +273,8 @@ const AssetsOverview: FunctionComponent = observer(() => {
     stakedAssetsValue.toString(),
   ]);
 
-  const Metric: FunctionComponent<Metric> = ({ label, value }) => (
-    <div className="flex flex-col gap-5 md:gap-2 shrink-0">
-      <h6 className="md:text-subtitle1 md:font-subtitle1">{label}</h6>
-      <h2 className="lg:text-h3 lg:font-h3 md:text-h4 md:font-h4 text-wosmongton-100">
-        {value}
-      </h2>
-    </div>
-  );
-
   return (
-    <div className="w-full flex md:flex-col items-center md:items-start gap-[100px] lg:gap-5 md:gap-3 bg-osmoverse-1000 rounded-[32px] px-20 lg:px-10 md:px-4 py-10 md:py-5">
+    <div className="flex w-full items-center gap-[100px] rounded-[32px] bg-osmoverse-1000 px-8 py-9 lg:gap-5 lg:px-10 md:flex-col md:items-start md:gap-3 md:px-4 md:py-5">
       <Metric
         label={t("assets.totalAssets")}
         value={totalAssetsValue.toString()}
@@ -255,9 +287,22 @@ const AssetsOverview: FunctionComponent = observer(() => {
         label={t("assets.unbondedAssets")}
         value={availableAssetsValue.toString()}
       />
+      <Metric
+        label={t("assets.stakedAssets")}
+        value={stakedAssetsValue.toString()}
+      />
     </div>
   );
 });
+
+const Metric: FunctionComponent<Metric> = ({ label, value }) => (
+  <div className="flex shrink-0 flex-col gap-1 md:gap-2">
+    <h6 className="md:text-subtitle1 md:font-subtitle1">{label}</h6>
+    <h2 className="text-h3 font-h3 text-wosmongton-100 md:text-h4 md:font-h4">
+      {value}
+    </h2>
+  </div>
+);
 
 const PoolAssets: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
@@ -277,7 +322,7 @@ const PoolAssets: FunctionComponent = observer(() => {
     setUserProperty("myPoolsCount", ownedPoolIds.length);
   }, [ownedPoolIds.length]);
 
-  const dustedPoolIds = useShowDustUserSetting(ownedPoolIds, (poolId) =>
+  const dustedPoolIds = useHideDustUserSetting(ownedPoolIds, (poolId) =>
     queryOsmosis.queryGammPools
       .getPool(poolId)
       ?.computeTotalValueLocked(priceStore)
@@ -311,7 +356,7 @@ const PoolCards: FunctionComponent<{
   const { logEvent } = useAmplitudeAnalytics();
   return (
     <>
-      <div className="my-5 grid grid-cards">
+      <div className="grid-cards my-5 grid">
         <PoolCardsDisplayer
           poolIds={
             showAllPools
@@ -464,7 +509,21 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                 },
             {
               label: t("assets.poolCards.liquidity"),
-              value: priceFormatter(pool.computeTotalValueLocked(priceStore)),
+              value: (!pool.totalShare.toDec().equals(new Dec(0))
+                ? pool
+                    .computeTotalValueLocked(priceStore)
+                    .mul(
+                      queryOsmosis.queryGammPoolShare
+                        .getAvailableGammShare(bech32Address, pool.id)
+                        .quo(pool.totalShare)
+                    )
+                : new PricePretty(
+                    priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
+                    new Dec(0)
+                  )
+              )
+                .maxDecimals(2)
+                .toString(),
             },
             queryOsmosis.queryIncentivizedPools.isIncentivized(poolId)
               ? {

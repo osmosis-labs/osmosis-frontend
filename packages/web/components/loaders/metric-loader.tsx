@@ -14,11 +14,11 @@ export const MetricLoader: FunctionComponent<Props> = ({
   return isLoading ? (
     <div
       className={classNames(
-        "relative overflow-hidden rounded-sm min-w-[3.75rem] min-h-[1rem] bg-white-faint mt-[0.4375rem]",
+        "relative mt-[0.4375rem] min-h-[1rem] min-w-[3.75rem] overflow-hidden rounded-sm bg-white-faint",
         className
       )}
     >
-      <div className="absolute left-0 -translate-x-[calc(-150%)] h-full w-1/2 bg-loading-bar animate-loading" />
+      <div className="absolute left-0 h-full w-1/2 -translate-x-[calc(-150%)] animate-loading bg-loading-bar" />
     </div>
   ) : (
     <>{children}</>

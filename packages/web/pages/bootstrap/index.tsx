@@ -11,8 +11,8 @@ import { PromotedLBPPoolIds } from "../../config";
 
 const BootstrapPage: NextPage = observer(() => {
   return (
-    <div className="w-full h-full bg-osmoverse-900">
-      <div className="pt-10 md:pt-20 px-5 pb-5 md:p-10">
+    <div className="h-full w-full bg-osmoverse-900">
+      <div className="px-5 pt-10 pb-5 md:p-10 md:pt-20">
         <div className="max-w-page mx-auto">
           <LBPOverview
             title="Liquidity Bootstrapping Pools"
@@ -57,19 +57,19 @@ export const LBPOverview: FunctionComponent<{
 
   return (
     <section className="w-full">
-      <div className="flex items-center mb-4 md:mb-6">
+      <div className="mb-4 flex items-center md:mb-6">
         <h4 className="leading-snug">{title}</h4>
       </div>
-      <div className="flex flex-col md:flex-row md:gap-21.5">
-        <div className="flex items-center gap-10 md:gap-21.5 mb-2.5 md:mb-0">
+      <div className="md:gap-21.5 flex flex-col md:flex-row">
+        <div className="md:gap-21.5 mb-2.5 flex items-center gap-10 md:mb-0">
           <OverviewLabelValue label="Active Pools">
-            <h5 className="inline md:text-sm text-xl">{activePools.length}</h5>
+            <h5 className="inline text-xl md:text-sm">{activePools.length}</h5>
           </OverviewLabelValue>
           <OverviewLabelValue label="Total Pools">
-            <h5 className="inline md:text-sm text-xl">{poolIds.length}</h5>
+            <h5 className="inline text-xl md:text-sm">{poolIds.length}</h5>
           </OverviewLabelValue>
           <OverviewLabelValue label="Total Pool Value">
-            <h5 className="inline md:text-sm text-xl">
+            <h5 className="inline text-xl md:text-sm">
               {totalPoolValue.toString()}
             </h5>
           </OverviewLabelValue>
@@ -85,7 +85,7 @@ const OverviewLabelValue: FunctionComponent<Record<"label", string>> = ({
 }) => {
   return (
     <div className="flex flex-col">
-      <p className="mb-2.5 md:mb-3 text-sm md:text-xs text-white-mid whitespace-nowrap">
+      <p className="mb-2.5 whitespace-nowrap text-sm text-white-mid md:mb-3 md:text-xs">
         {label}
       </p>
       {children}
@@ -133,15 +133,15 @@ const SynthesisItem: FunctionComponent<{
 
   return (
     <li
-      className="w-full rounded-xl p-5 md:py-6 md:px-7.5 bg-osmoverse-700 cursor-pointer border border-transparent border-opacity-40"
+      className="md:px-7.5 w-full cursor-pointer rounded-xl border border-transparent border-opacity-40 bg-osmoverse-700 p-5 md:py-6"
       onClick={(e) => {
         e.preventDefault();
 
         router.push(`/pool/${poolId}`);
       }}
     >
-      <section className="flex items-center mb-5">
-        <div className="w-fit mx-4">
+      <section className="mb-5 flex items-center">
+        <div className="mx-4 w-fit">
           <Image
             alt="image"
             src={baseCurrency?.coinImageUrl ?? "/images/bubbles.svg"}
@@ -149,8 +149,8 @@ const SynthesisItem: FunctionComponent<{
             width={80}
           />
         </div>
-        <div className="flex flex-col md:flex-row justify-between md:items-center md:w-full">
-          <div className="mr-2 flex flex-col mb-3 md:mb-0">
+        <div className="flex flex-col justify-between md:w-full md:flex-row md:items-center">
+          <div className="mr-2 mb-3 flex flex-col md:mb-0">
             <p className="mb-2 text-sm font-semibold text-white-mid">
               {pool.smoothWeightChange.initialPoolWeights
                 .map((w) => w.currency.coinDenom.toUpperCase())

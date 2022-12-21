@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { CustomClasses, Disableable } from "../types";
 import { NumberSelectProps } from "./types";
-import { normalize } from "../utils";
+import { normalize } from "../../utils/math";
 
 interface Props
   extends Omit<NumberSelectProps, "placeholder">,

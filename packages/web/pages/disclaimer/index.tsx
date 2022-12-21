@@ -2,11 +2,11 @@ import type { NextPage } from "next";
 
 const Disclaimer: NextPage = () => (
   <section className="bg-osmoverse-900 pt-20">
-    <div className="max-w-container mx-auto p-5 md:h-full overflow-y-auto">
+    <div className="mx-auto max-w-container overflow-y-auto p-5 md:h-full">
       <div className="text-center">
         <span>Osmosis Disclaimer</span>
       </div>
-      <div className="p-4 my-5 mx-auto rounded-xl max-w-lg bg-osmoverse-700 text-white-mid text-xs md:caption">
+      <div className="md:caption my-5 mx-auto max-w-lg rounded-xl bg-osmoverse-700 p-4 text-xs text-white-mid">
         Osmosis is a decentralized peer-to-peer blockchain that people can use
         to create liquidity and trade IBC enabled tokens. The Osmosis blockchain
         is made up of free, public, and open-source software. Your use of
@@ -38,20 +38,20 @@ const Disclaimer: NextPage = () => (
         cryptocurrencies, tokens, or anything else of value.
       </div>
     </div>
-    <div className="max-w-container mx-auto p-5 md:h-full overflow-y-auto">
+    <div className="mx-auto max-w-container overflow-y-auto p-5 md:h-full">
       <div className="text-center">
         <span>Osmosis Privacy Policy</span>
       </div>
-      <div className="p-4 my-5 mx-auto rounded-xl max-w-lg bg-osmoverse-700 text-white-mid text-xs md:caption">
+      <div className="md:caption my-5 mx-auto max-w-lg rounded-xl bg-osmoverse-700 p-4 text-xs text-white-mid">
         By using this app you consent to anonymous usage analytics data being
         collected to improve the overall user experience.
       </div>
     </div>
-    <div className="max-w-container mx-auto p-5 md:h-full overflow-y-auto">
+    <div className="mx-auto max-w-container overflow-y-auto p-5 md:h-full">
       <div className="text-center">
         <span>Osmosis Rektdrop Disclaimer</span>
       </div>
-      <div className="p-4 my-5 mx-auto rounded-xl max-w-lg bg-osmoverse-700 text-white-mid text-xs md:caption">
+      <div className="md:caption my-5 mx-auto max-w-lg rounded-xl bg-osmoverse-700 p-4 text-xs text-white-mid">
         On June 7, 2022, a software bug related to Osmosis liquidity pool led to
         an incorrect, excessive amount of LP shares to be distributed. While
         under no obligation to do so, Osmosis Foundation has decided to take

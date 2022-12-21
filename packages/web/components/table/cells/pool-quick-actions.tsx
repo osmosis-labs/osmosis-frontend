@@ -107,14 +107,14 @@ export const PoolQuickActionCell: FunctionComponent<
       }}
     >
       <div
-        className="absolute hover:pointer-cursor"
+        className="hover:pointer-cursor absolute"
         onClick={(e) => {
           e.preventDefault();
         }}
       >
         <Image alt="menu" src="/icons/more-menu.svg" width={24} height={24} />
         <MenuDropdown
-          className="w-44 top-full right-0"
+          className="top-full right-0 w-44"
           isOpen={dropdownOpen}
           options={menuOptions}
           onSelect={(id) => doAction(id)}

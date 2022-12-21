@@ -1,6 +1,7 @@
 import { FunctionComponent } from "react";
 import classNames from "classnames";
 import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
+import { truncateString } from "../../utils/string";
 
 const ColorCycle = [
   "bg-ion-500",
@@ -27,7 +28,7 @@ export const AssetBreakdownChart: FunctionComponent<{
   return (
     <div
       className={classNames(
-        "grid w-full md:!grid-cols-2 md:p-6 md:rounded-2xl md:bg-osmoverse-900"
+        "grid w-full md:!grid-cols-2 md:rounded-2xl md:bg-osmoverse-900 md:p-6"
       )}
       style={{
         gridTemplateColumns: gridTemplateColumns.join(" "),
@@ -42,22 +43,25 @@ export const AssetBreakdownChart: FunctionComponent<{
             <div className="md:flex md:items-center md:gap-1">
               <div
                 className={classNames(
-                  "hidden md:block h-4 w-4 rounded-full",
+                  "hidden h-4 w-4 rounded-full md:block",
                   colorCycle[index % colorCycle.length]
                 )}
               />
-              <span className="subtitle1 md:body2 text-osmoverse-400">
-                {amount.currency.coinDenom}:{" "}
+              <span
+                className="subtitle1 md:body2 text-osmoverse-400"
+                title={amount.currency.coinDenom}
+              >
+                {truncateString(amount.currency.coinDenom, 6)}:{" "}
                 {assetPercentages[index].toString()}%
               </span>
             </div>
-            <h5 className="md:subtitle2 text-osmoverse-100">
+            <h6 className="md:subtitle2 text-osmoverse-100">
               {amount.maxDecimals(0).hideDenom(true).toString()}
-            </h5>
+            </h6>
           </div>
           <div
             className={classNames(
-              "md:hidden flex w-full h-3",
+              "flex h-2 w-full md:hidden",
               colorCycle[index % colorCycle.length],
               {
                 "rounded-l-full": index === 0,

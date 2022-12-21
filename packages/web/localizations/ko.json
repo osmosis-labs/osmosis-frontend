@@ -23,7 +23,11 @@
     "minimumSlippage": "슬리피지 이후 받을 최소수량 ({slippage})",
     "error": {
       "findCurrency": "토큰 A {currency}를 찾을 수 없습니다"
-    }
+    },
+    "autoRouter": "노선",
+    "routerTooltipFee": "회비",
+    "autoRouterToggle": { "show": "보여주다", "hide": "숨다" },
+    "pool": "풀 #{id}"
   },
   "pools": {
     "title": "활성화된 풀",
@@ -33,7 +37,8 @@
     "myPools": "내 풀",
     "APR": "APR",
     "available": "가능 수량",
-    "liquidity": "풀 유동성",
+    "liquidity": "유동성",
+    "myLiquidity": "내 유동성",
     "bonded": "예치된 자산",
     "incentivized": "인센티브",
     "all": "전체 풀",
@@ -42,7 +47,7 @@
       "title": "Superfluid Pools",
       "tab": "Superfluid",
       "APR": "APR",
-      "liquidity": "풀 유동성",
+      "liquidity": "유동성",
       "fees7D": "수수료 (7D)"
     },
     "allPools": {
@@ -54,7 +59,7 @@
       "search": "풀 검색하기",
       "displayLowLiquidity": "풀 보기 < {value}",
       "sort": {
-        "poolName": "풀 이름",
+        "poolName": "풀 이름/번호",
         "liquidity": "유동성",
         "volume24h": "거래량 (24H)",
         "fees": "수수료 (7D)",
@@ -64,12 +69,12 @@
       }
     },
     "externalIncentivized": {
-      "title": "외부 인센티브",
+      "title": "외부 인센티브 풀",
       "TVL": "TVL",
       "APR": "APR",
       "search": "심볼로 검색하기",
       "sort": {
-        "poolName": "풀 이름",
+        "poolName": "풀 이름/번호",
         "liquidity": "유동성",
         "APR": "APR",
         "epochs": "남은 기간",
@@ -113,13 +118,14 @@
     "24hrTradingVolume": "24시간 거래량",
     "liquidity": "풀 유동성",
     "swapFee": "수수료",
-    "yourStats": "내 상태",
-    "sharesAmount": "{shares} 지분 토큰",
+    "yourStats": "풀 잔액",
+    "sharesAmount": "{shares} LP",
     "currentDailyEarn": "내 일일 보상",
-    "earnMore": "예치하고 보상 더 받기",
+    "earnMore": "본딩으로 {amount} 더 벌기",
+    "day": "일",
     "dailyEarnAmount": "{amount} / 일",
-    "putAssetsToWork": "자산을 불려보세요.",
-    "putAssetsToWorkCaption": "이 풀에 자산을 추가하고 두근되는 APR을 확인하세요. 더 긴 해지 긴간을 예치하면, 더 많은 보상을 얻을 수 있어요",
+    "putAssetsToWork": "자산을 늘리세요.",
+    "putAssetsToWorkCaption": "이 풀에 자산을 추가하고 두근되는 APR을 확인하세요. 더 긴 해지 기간을 선택하면, 더 많은 보상을 얻을 수 있어요",
     "learnMore": "더 알아보기",
     "level": "레벨 {level}",
     "earnSwapFees": "교환 수수료를 받으세요",
@@ -132,8 +138,8 @@
     "bondSuperfluidLiquidityCaption": "Superfluid 를 통해 최대 보상을 받으세요.",
     "bondShares": "유동성 예치",
     "amountDaysUnbonding": "예치 해제 {numDays}일",
-    "shares": "주식",
-    "unbonded": "예치되지 않은 자산",
+    "shares": "LP",
+    "available": "사용 가능",
     "unbond": "예치 해재하기",
     "bonded": "예치된 자산",
     "showDetails": "자세히 보기",
@@ -156,7 +162,7 @@
   "removeLiquidity": {
     "title": "유동성 해제하기",
     "titleInPool": "{poolId}풀에서 유동성을 제거합니다.",
-    "sharesAmount": "{shares}주"
+    "sharesAmount": "{shares} LP"
   },
   "addLiquidity": {
     "title": "유동성 추가",
@@ -195,8 +201,8 @@
     }
   },
   "assets": {
-    "totalAssets": "전체",
-    "unbondedAssets": "예치되지 않은 ",
+    "totalAssets": "총 자산",
+    "unbondedAssets": "예치되지 않은 자산",
     "bondedAssets": "예치된 자산",
     "stakedAssets": "스테이킹된 OSMO",
     "myPools": "내 풀",
@@ -209,13 +215,17 @@
     "poolCards": {
       "APR": "APR",
       "FeeAPY": "수수료 APY",
-      "liquidity": "풀 유동성",
+      "liquidity": "내 유동성",
       "bonded": "예치된 자산",
       "myLiquidity": "내 유동성"
     },
     "ibcTransfer": {
       "titleWithdraw": "{coinDenom} 출금",
       "titleDeposit": "{coinDenom} 입금",
+      "channelCongested": "채널 혼잡",
+      "channelCongestedWithdraw": "출금 (채널 혼잡)",
+      "channelCongestedDeposit": "입금 (채널 혼잡)",
+      "channelBlocked": "채널이 차단됨",
       "selectAmount": "수량 선택",
       "estimatedTime": "예상 시간",
       "waitTime": "20초",
@@ -261,8 +271,8 @@
     "table": {
       "depositButton": "입금",
       "withdrawButton": "출금",
-      "search": "심볼로 필터",
-      "title": "자산",
+      "search": "검색",
+      "title": "모든 자산",
       "hideZero": "작은 자산 숨기기",
       "buyOsmo": "구매",
       "preTransfer": {
@@ -305,7 +315,7 @@
       "less": "숨기기"
     },
     "table": {
-      "poolId": "수영장 {id}"
+      "poolId": "풀 {id}"
     },
     "sort": {
       "SORT": "정렬",
@@ -313,7 +323,10 @@
       "mobileMenu": "정렬"
     },
     "MAX": "MAX",
-    "searchTokens": "토큰 검색"
+    "searchTokens": "검색",
+    "selectToken": {
+      "title": "토큰 선택"
+    }
   },
   "menu": {
     "swap": "교환",
@@ -324,12 +337,13 @@
     "info": "정보",
     "signOut": "연결해제",
     "help": "연구실 고객센터",
-    "learnMoreFrontier": "<name>오스모시스 프론티어</name> 에 대해서 <br/> 더 자세히 <br2/> 알아보기"
+    "learnMoreFrontier": "<name>오스모시스 프론티어</name> 에 대해서 <br/> 더 자세히 <br2/> 알아보기",
+    "buyTokens": "토큰 구매"
   },
   "settings": {
     "title": "설정",
     "titleLanguage": "언어",
-    "titleShowDust": "< {fiatSymbol}0.01 이하 자산/풀 보여주기"
+    "titleHideDust": "< {fiatSymbol}0.01 미만인 풀 숨기기"
   },
   "404": {
     "title": "페이지를 찾을 수 없습니다"

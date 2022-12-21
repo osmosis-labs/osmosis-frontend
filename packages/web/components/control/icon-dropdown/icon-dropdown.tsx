@@ -30,7 +30,7 @@ export const IconDropdown: FunctionComponent<IconDropdownProps> = observer(
       <div className="relative">
         <button
           className={classNames(
-            "flex items-center border rounded-xl bg-osmoverse-900 hover:bg-osmoverse-700 transition-colors",
+            "flex items-center rounded-xl border bg-osmoverse-900 transition-colors hover:bg-osmoverse-700",
             dropdownOpen
               ? "border-osmoverse-200"
               : "border-osmoverse-600 hover:border-osmoverse-700"
@@ -40,9 +40,9 @@ export const IconDropdown: FunctionComponent<IconDropdownProps> = observer(
             setDropdownOpen(!dropdownOpen);
           }}
         >
-          <span className="flex items-center my-1 md:ml-1.5 ml-1 leading-loose select-none text-center body md:caption overflow-hidden">
+          <span className="body md:caption my-1 ml-1 flex select-none items-center overflow-hidden text-center leading-loose md:ml-1.5">
             {currentOption && currentOption.iconUrl && currentOption.display && (
-              <div className="flex items-center justify-center min-w-[24px]">
+              <div className="flex min-w-[24px] items-center justify-center">
                 <Image
                   src={currentOption.iconUrl}
                   width={24}
@@ -52,7 +52,7 @@ export const IconDropdown: FunctionComponent<IconDropdownProps> = observer(
               </div>
             )}
             <p className="mx-3">{t(currentOption?.display ?? "")}</p>
-            <div className="flex items-center justify-center min-w-[24px] mr-3">
+            <div className="mr-3 flex min-w-[24px] items-center justify-center">
               {currentOption && currentOption.display && (
                 <Image
                   src={"/icons/chevron-down.svg"}

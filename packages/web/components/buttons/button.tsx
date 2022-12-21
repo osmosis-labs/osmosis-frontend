@@ -16,17 +16,17 @@ export const Button: FunctionComponent<
     <button
       {...props}
       className={classNames(
-        "flex w-full items-center text-center place-content-center disabled:cursor-default transition-colors py-2",
+        "flex w-full place-content-center items-center py-2 text-center transition-colors disabled:cursor-default",
         size === "sm" ? "h-10 px-5" : "h-[56px] px-6",
         mode === "tertiary" ? "rounded-md" : "rounded-xl",
         {
-          "border-2 border-wosmongton-700 bg-wosmongton-700 hover:bg-wosmongton-400 hover:border-wosmongton-400":
+          "border-2 border-wosmongton-700 bg-wosmongton-700 hover:border-wosmongton-400 hover:bg-wosmongton-400":
             mode === "primary" && !props.disabled,
           "border-2 border-osmoverse-500 bg-osmoverse-500 text-osmoverse-100":
             (mode === "primary" || mode === "primary-warning") &&
             props.disabled,
           "border-0 bg-gradient-negative": mode === "primary-warning",
-          "bg-transparent border-2":
+          "border-2 bg-transparent":
             mode === "secondary" || mode === "tertiary",
           "border-wosmongton-400 hover:border-wosmongton-200":
             mode === "secondary" && !props.disabled,
@@ -47,9 +47,9 @@ export const Button: FunctionComponent<
             {children}
           </span>
         ) : (
-          <h6 className="mx-auto md:text-subtitle1 md:font-subtitle1">
+          <span className="mx-auto text-subtitle1 font-subtitle1">
             {children}
-          </h6>
+          </span>
         )
       ) : (
         children

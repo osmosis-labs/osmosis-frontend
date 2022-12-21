@@ -31,21 +31,21 @@ export const CheckBox: FunctionComponent<
   return (
     <label
       className={classNames(
-        "relative flex items-center gap-4 select-none",
+        "relative flex select-none items-center gap-4",
         labelClassName
       )}
     >
       {isOn && showImg && (
         <div
           className={classNames(
-            "cursor-pointer absolute top-0 left-0 h-5 w-5 z-20",
+            "absolute top-0 left-0 z-20 h-5 w-5 cursor-pointer",
             disabled ? "cursor-default opacity-50" : null,
             checkClassName
           )}
         >
           <img
             className={classNames(
-              "absolute h-5 w-5 top-0 left-0",
+              "absolute top-0 left-0 h-5 w-5",
               checkMarkClassName
             )}
             alt=""
@@ -56,12 +56,12 @@ export const CheckBox: FunctionComponent<
       <input
         type="checkbox"
         className={classNames(
-          "absolute top-0 left-0 cursor-pointer h-5 w-5 appearance-none",
-          "after:absolute after:h-5 after:w-5 after:rounded z-10", // box
+          "absolute top-0 left-0 h-5 w-5 cursor-pointer appearance-none",
+          "z-10 after:absolute after:h-5 after:w-5 after:rounded", // box
           disabled
             ? isOn
-              ? "opacity-30 cursor-default checked:after:bg-osmoverse-400" // disabled AND on
-              : "opacity-30 cursor-default after:border-2 after:border-osmoverse-400"
+              ? "cursor-default opacity-30 checked:after:bg-osmoverse-400" // disabled AND on
+              : "cursor-default opacity-30 after:border-2 after:border-osmoverse-400"
             : isOn
             ? "after:bg-wosmongton-200" // not disabled AND on
             : "after:border-2 after:border-wosmongton-200",

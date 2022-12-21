@@ -70,7 +70,7 @@ export const SelectAssetSourceModal: FunctionComponent<
           : t("assets.selectAssetSource.titleDeposit")
       }
     >
-      <div className="grid grid-cols-3 md:grid-cols-2 gap-4 m-4">
+      <div className="m-4 grid grid-cols-3 gap-4 md:grid-cols-2">
         {props.wallets.map((wallet, index) => (
           <AssetSourceCard
             key={index}

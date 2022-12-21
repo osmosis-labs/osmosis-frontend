@@ -43,15 +43,15 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
         overlayClassName
       )}
       className={classNames(
-        "absolute outline-none md:w-[98%] w-full p-8 md:px-4 bg-osmoverse-800 rounded-2xl flex flex-col max-w-modal",
+        "absolute flex w-full max-w-modal flex-col rounded-2xl bg-osmoverse-800 p-8 outline-none md:w-[98%] md:px-4",
         className
       )}
     >
-      <div className="flex items-center place-content-between">
+      <div className="flex place-content-between items-center">
         {onRequestBack && (
           <button
             aria-label="back"
-            className="absolute md:top-7 md:left-7 top-8 left-8 cursor-pointer z-50"
+            className="absolute top-8 left-8 z-50 cursor-pointer md:top-7 md:left-7"
             onClick={onRequestBack}
           >
             <Image
@@ -72,7 +72,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
         {!hideCloseButton && (
           <button
             aria-label="close"
-            className="absolute md:top-7 md:right-7 top-8 right-8 cursor-pointer z-50"
+            className="absolute top-8 right-8 z-50 cursor-pointer md:top-7 md:right-7"
             onClick={onRequestClose}
           >
             <Image

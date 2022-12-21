@@ -44,8 +44,8 @@ export const Radio: FunctionComponent<Props> = ({
         {isOn && (
           <div
             className={classNames(
-              "cursor-pointer absolute z-10",
-              disabled ? "cursor-default opacity-38" : null
+              "absolute z-10 cursor-pointer",
+              disabled ? "opacity-38 cursor-default" : null
             )}
           >
             <Image alt="" src="/icons/dot.svg" height={20} width={20} />
@@ -54,12 +54,12 @@ export const Radio: FunctionComponent<Props> = ({
         <input
           type="radio"
           className={classNames(
-            "cursor-pointer h-5 w-5 appearance-none",
+            "h-5 w-5 cursor-pointer appearance-none",
             "after:absolute after:h-5 after:w-5 after:rounded-full", // box
             disabled
               ? isOn
-                ? "opacity-30 cursor-default checked:after:bg-osmoverse-400" // disabled AND on
-                : "opacity-30 cursor-default after:border-2 after:border-osmoverse-400"
+                ? "cursor-default opacity-30 checked:after:bg-osmoverse-400" // disabled AND on
+                : "cursor-default opacity-30 after:border-2 after:border-osmoverse-400"
               : isOn
               ? "after:bg-wosmongton-200" // not disabled AND on
               : "after:border-2 after:border-wosmongton-200",

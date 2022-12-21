@@ -30,7 +30,7 @@ export const TempBanner: FunctionComponent<{
           : undefined,
       }}
       className={classNames(
-        "fixed flex place-content-between right-3 top-3 text-white-high md:w-[330px] w-[596px] rounded-2xl",
+        "fixed right-3 top-3 flex w-[596px] place-content-between rounded-2xl text-white-high md:w-[330px]",
         {
           "bg-osmoverse-900": !IS_FRONTIER,
         },
@@ -39,7 +39,7 @@ export const TempBanner: FunctionComponent<{
     >
       {IS_FRONTIER && !shouldPersist && (
         <button
-          className="absolute w-[20px] -top-1.5 -left-1.5 cursor-pointer"
+          className="absolute -top-1.5 -left-1.5 w-[20px] cursor-pointer"
           onClick={() => setShowBanner(false)}
         >
           <Image
@@ -50,9 +50,9 @@ export const TempBanner: FunctionComponent<{
           />
         </button>
       )}
-      <div className="flex w-full place-content-between items-center md:px-1 px-2 md:gap-1 gap-4">
+      <div className="flex w-full place-content-between items-center gap-4 px-2 md:gap-1 md:px-1">
         <div className="flex items-center gap-4 md:gap-1">
-          <div className="pt-1.5 mx-2 shrink-0">
+          <div className="mx-2 shrink-0 pt-1.5">
             <Image
               alt="info"
               src="/icons/info-white-emphasis.svg"
@@ -67,7 +67,7 @@ export const TempBanner: FunctionComponent<{
               <>{title}</>
             )}
             <div
-              className={classNames("text-xs font-body gap-1", {
+              className={classNames("font-body gap-1 text-xs", {
                 "text-white-mid": !IS_FRONTIER,
               })}
             >
@@ -77,7 +77,7 @@ export const TempBanner: FunctionComponent<{
         </div>
         {!IS_FRONTIER && !shouldPersist && (
           <button
-            className="flex items-center shrink-0 w-[40px] cursor-pointer"
+            className="flex w-[40px] shrink-0 cursor-pointer items-center"
             onClick={() => setShowBanner(false)}
           >
             <Image

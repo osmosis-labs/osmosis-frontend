@@ -56,7 +56,7 @@ export const AddLiquidity: FunctionComponent<
             )}
           </div>
         )}
-        <div className="flex flex-col gap-2.5 max-h-96 overflow-y-auto">
+        <div className="flex max-h-96 flex-col gap-2.5 overflow-y-auto">
           {(addLiquidityConfig.isSingleAmountIn &&
           addLiquidityConfig.singleAmountInAsset
             ? [addLiquidityConfig.singleAmountInAsset]
@@ -96,9 +96,9 @@ export const AddLiquidity: FunctionComponent<
             return (
               <div
                 key={currency.coinDenom}
-                className="flex flex-col gap-1 w-full md:p-3 p-4 border border-osmoverse-700 md:rounded-xl rounded-2xl"
+                className="flex w-full flex-col gap-1 rounded-2xl border border-osmoverse-700 p-4 md:rounded-xl md:p-3"
               >
-                <div className="flex items-center w-full place-content-between">
+                <div className="flex w-full place-content-between items-center">
                   {addLiquidityConfig.isSingleAmountIn ? (
                     <PoolTokenSelect
                       tokens={addLiquidityConfig.poolAssets.map(
@@ -133,14 +133,14 @@ export const AddLiquidity: FunctionComponent<
                   )}
                   <div className="flex flex-col gap-2">
                     {!isMobile && (
-                      <div className="flex gap-2 text-caption font-caption justify-end">
+                      <div className="flex justify-end gap-2 text-caption font-caption">
                         <span className="my-auto">
                           {t("addLiquidity.available")}
                         </span>
                         {assetBalance && (
                           <span
                             className={classNames(
-                              "text-wosmongton-300 my-auto",
+                              "my-auto text-wosmongton-300",
                               assetBalance?.toDec().isZero()
                                 ? "opacity-70"
                                 : "cursor-pointer"
@@ -152,7 +152,7 @@ export const AddLiquidity: FunctionComponent<
                         )}
                       </div>
                     )}
-                    <div className="flex items-center place-content-end gap-1">
+                    <div className="flex place-content-end items-center gap-1">
                       <div className="flex flex-col rounded-lg bg-osmoverse-1000 p-1">
                         <InputBox
                           style="no-border"
@@ -163,7 +163,7 @@ export const AddLiquidity: FunctionComponent<
                           placeholder=""
                         />
                         {!isMobile && (
-                          <span className="text-right text-xs font-caption text-osmoverse-400 leading-5 pr-3">
+                          <span className="pr-3 text-right text-xs font-caption leading-5 text-osmoverse-400">
                             {!inputAmountValue ||
                             inputAmountValue.toDec().isZero() ? (
                               <br />
@@ -191,7 +191,10 @@ export const AddLiquidity: FunctionComponent<
                     textClassName="w-full text-center"
                     message={t("addLiquidity.stablecoinWarning", {
                       denom: currency!.originCurrency!.coinDenom,
-                      mechanism: currency.originCurrency!.pegMechanism!,
+                      mechanism: t(
+                        `stablecoinTypes.${currency.originCurrency!
+                          .pegMechanism!}`
+                      ),
                     })}
                   />
                 )}
@@ -200,7 +203,7 @@ export const AddLiquidity: FunctionComponent<
           })}
         </div>
         {addLiquidityConfig.singleAmountInPriceImpact && (
-          <div className="flex place-content-between p-4 caption text-osmoverse-300">
+          <div className="caption flex place-content-between p-4 text-osmoverse-300">
             <span>Price impact</span>
             <span>
               {addLiquidityConfig.singleAmountInPriceImpact.toString()}

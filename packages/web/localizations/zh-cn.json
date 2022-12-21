@@ -23,7 +23,11 @@
     "minimumSlippage": "扣除滑点后最少获得 ({slippage})",
     "error": {
       "findCurrency": "无法找到代币 {currency}"
-    }
+    },
+    "autoRouter": "路线",
+    "routerTooltipFee": "费用",
+    "autoRouterToggle": { "show": "节目", "hide": "隐藏" },
+    "pool": "资金池 #{id}"
   },
   "pools": {
     "title": "活跃资金池",
@@ -33,7 +37,8 @@
     "myPools": "我的资金池",
     "APR": "APR",
     "available": "可用",
-    "liquidity": "资金池流动性",
+    "liquidity": "流动性",
+    "myLiquidity": "我的流动性",
     "bonded": "已绑定",
     "incentivized": "激励池",
     "all": "所有池",
@@ -42,7 +47,7 @@
       "title": "超流质押池",
       "tab": "超流质押",
       "APR": "APR",
-      "liquidity": "资金池流动性",
+      "liquidity": "流动性",
       "fees7D": "交易费 (7天)"
     },
     "allPools": {
@@ -54,7 +59,7 @@
       "search": "搜索资金池",
       "displayLowLiquidity": "显示资金池 < {value}",
       "sort": {
-        "poolName": "资金池名称",
+        "poolName": "池名称/编号",
         "liquidity": "流动性",
         "volume24h": "成交额 (24时)",
         "fees": "交易费 (7天)",
@@ -64,12 +69,12 @@
       }
     },
     "externalIncentivized": {
-      "title": "额外激励池",
+      "title": "外部激励矿池",
       "TVL": "TVL",
       "APR": "APR",
       "search": "搜索代币",
       "sort": {
-        "poolName": "资金池名称",
+        "poolName": "池名称/编号",
         "liquidity": "流动性",
         "APR": "APR",
         "epochs": "剩余奖励周期",
@@ -113,10 +118,11 @@
     "24hrTradingVolume": "24时成交额",
     "liquidity": "资金池流动性",
     "swapFee": "交易费",
-    "yourStats": "您的状态",
+    "yourStats": "您的资金池余额",
     "sharesAmount": "{shares} 份额",
     "currentDailyEarn": "您当前正在赚取",
-    "earnMore": "通过绑定赚取更多",
+    "earnMore": "通过结合赚取 {amount}",
+    "day": "天",
     "dailyEarnAmount": "{amount} / 天",
     "putAssetsToWork": "让您的资产发挥作用.",
     "putAssetsToWorkCaption": "将您的资产添加到此资金池中以解锁令人兴奋的 APR，解绑期越长您赚得越多.",
@@ -132,8 +138,7 @@
     "bondSuperfluidLiquidityCaption": "去超流质押获得最大收益.",
     "bondShares": "绑定份额",
     "amountDaysUnbonding": "{numDays} 天解绑期",
-    "shares": "份额",
-    "unbonded": "已解绑",
+    "available": "可用的",
     "unbond": "解绑",
     "bonded": "绑定",
     "showDetails": "显示详情",
@@ -194,7 +199,7 @@
     }
   },
   "assets": {
-    "totalAssets": "资产总额",
+    "totalAssets": "总资产",
     "unbondedAssets": "未绑定资产",
     "bondedAssets": "已绑定资产",
     "stakedAssets": "质押 OSMO",
@@ -208,13 +213,17 @@
     "poolCards": {
       "APR": "APR",
       "FeeAPY": "费用 APY",
-      "liquidity": "资金池流动性",
+      "liquidity": "我的流动性",
       "bonded": "已绑定",
       "myLiquidity": "我的流动性"
     },
     "ibcTransfer": {
       "titleWithdraw": "提币 {coinDenom}",
       "titleDeposit": "存入 {coinDenom}",
+      "channelCongested": "频道争抢",
+      "channelCongestedWithdraw": "提币 (频道争抢)",
+      "channelCongestedDeposit": "存入 (频道争抢)",
+      "channelBlocked": "频道被封锁",
       "selectAmount": "选择数量",
       "estimatedTime": "预估时间",
       "waitTime": "20 秒",
@@ -260,8 +269,8 @@
     "table": {
       "depositButton": "存入",
       "withdrawButton": "提币",
-      "search": "搜索代币",
-      "title": "资产",
+      "search": "搜索",
+      "title": "所有资产",
       "hideZero": "隐藏0余额",
       "buyOsmo": "买入",
       "preTransfer": {
@@ -312,7 +321,10 @@
       "mobileMenu": "排序"
     },
     "MAX": "最大",
-    "searchTokens": "搜索代币"
+    "searchTokens": "搜索",
+    "selectToken": {
+      "title": "选择一个代币"
+    }
   },
   "menu": {
     "swap": "兑换",
@@ -323,12 +335,13 @@
     "info": "统计数据",
     "signOut": "断开连接",
     "help": "获取 Support Lab 帮助",
-    "learnMoreFrontier": "了解更多<br/>关于 <br2/> <name>Osmosis Frontier</name>"
+    "learnMoreFrontier": "了解更多<br/>关于 <br2/> <name>Osmosis Frontier</name>",
+    "buyTokens": "购买代币"
   },
   "settings": {
     "title": "设置",
     "titleLanguage": "语言",
-    "titleShowDust": "显示资金池/资金 < {fiatSymbol}0.01"
+    "titleHideDust": "使用 < {fiatSymbol}0.01 隐藏矿池"
   },
   "404": {
     "title": "未找到"

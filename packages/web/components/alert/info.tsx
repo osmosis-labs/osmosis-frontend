@@ -23,13 +23,13 @@ export const Info: FunctionComponent<
   size === "subtle" ? (
     <div
       className={classNames(
-        "w-full p-2 rounded-lg border border-rust-500",
+        "w-full rounded-lg border border-rust-500 p-2",
         className
       )}
     >
       <span
         className={classNames(
-          "subtitle1 text-wosmongton-100 md:caption",
+          "subtitle1 md:caption text-wosmongton-100",
           textClassName
         )}
       >
@@ -39,13 +39,13 @@ export const Info: FunctionComponent<
   ) : (
     <div
       className={classNames(
-        "flex gap-3 md:gap-1.5 w-full rounded-2xl bg-gradient-neutral p-px",
+        "flex w-full gap-3 rounded-2xl bg-gradient-neutral p-px md:gap-1.5",
         borderClassName
       )}
     >
       <div
         className={classNames(
-          "flex grow place-content-between md:gap-1 px-3 py-2 md:p-2 bg-osmoverse-800 rounded-2xlinset",
+          "flex grow place-content-between rounded-2xlinset bg-osmoverse-800 px-3 py-2 md:gap-1 md:p-2",
           {
             "items-center": !data,
           },
@@ -66,7 +66,7 @@ export const Info: FunctionComponent<
           {caption && (
             <span
               className={classNames(
-                "text-wosmongton-100 body2 md:caption",
+                "body2 md:caption text-wosmongton-100",
                 textClassName
               )}
             >

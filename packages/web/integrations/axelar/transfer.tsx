@@ -14,7 +14,6 @@ import { IBCBalance } from "../../stores/assets";
 import { useStore } from "../../stores";
 import { Transfer } from "../../components/complex/transfer";
 import { Button } from "../../components/buttons";
-import { getKeyByValue } from "../../components/utils";
 import { displayToast, ToastType } from "../../components/alert";
 import { BridgeIntegrationProps } from "../../modals";
 import { queryErc20Balance } from "../ethereum/queries";
@@ -36,6 +35,7 @@ import { SourceChain, EthClientChainIds_SourceChainMap } from "../bridge-info";
 import { useAmplitudeAnalytics } from "../../hooks/use-amplitude-analytics";
 import { EventName } from "../../config/user-analytics-v2";
 import { useTranslation } from "react-multi-lang";
+import { getKeyByValue } from "../../utils/object";
 
 /** Axelar-specific bridge transfer integration UI. */
 const AxelarTransfer: FunctionComponent<
@@ -497,11 +497,11 @@ const AxelarTransfer: FunctionComponent<
             </a>
           </div>
         )}
-        <div className="w-full md:mt-4 mt-6 flex items-center justify-center">
+        <div className="mt-6 flex w-full items-center justify-center md:mt-4">
           {connectCosmosWalletButtonOverride ?? (
             <Button
               className={classNames(
-                "hover:opacity-75 transition-opacity duration-300",
+                "transition-opacity duration-300 hover:opacity-75",
                 { "opacity-30": isDepositAddressLoading }
               )}
               disabled={

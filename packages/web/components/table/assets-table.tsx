@@ -13,7 +13,6 @@ import {
   useLocalStorageState,
   useWindowSize,
   useAmplitudeAnalytics,
-  useShowDustUserSetting,
 } from "../../hooks";
 import { ShowMoreButton } from "../buttons/show-more";
 import { SearchBox } from "../input";
@@ -88,10 +87,6 @@ export const AssetsTable: FunctionComponent<Props> = observer(
       [do_onWithdraw, logEvent]
     );
 
-    const dustIbcBalances = useShowDustUserSetting(ibcBalances, (ibcBalance) =>
-      !ibcBalance.balance.toDec().isZero() ? ibcBalance.fiatValue : undefined
-    );
-
     const mergeWithdrawCol = width < 1000 && !isMobile;
     // Assemble cells with all data needed for any place in the table.
     const cells: TableCell[] = useMemo(
@@ -128,7 +123,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
           };
         }),
         ...initialAssetsSort(
-          dustIbcBalances.map((ibcBalance) => {
+          ibcBalances.map((ibcBalance) => {
             const {
               chainInfo: { chainId, chainName },
               balance,
@@ -179,7 +174,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
       [
         nativeBalances,
         chainStore.osmosis.chainId,
-        dustIbcBalances,
+        ibcBalances,
         onDeposit,
         onWithdraw,
       ]
@@ -290,7 +285,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
           <div className="flex flex-col gap-5">
             <h6 className="px-3">{t("assets.table.title")}</h6>
             <SearchBox
-              className="!w-full h-11"
+              className="h-11 !w-full"
               currentValue={query}
               onInput={(query) => {
                 setHideZeroBalances(false);
@@ -298,7 +293,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
               }}
               placeholder={t("assets.table.search")}
             />
-            <div className="flex flex-wrap gap-3 items-center place-content-between">
+            <div className="flex flex-wrap place-content-between items-center gap-3">
               <Switch
                 isOn={hideZeroBalances}
                 disabled={!canHideZeroBalances}
@@ -342,8 +337,8 @@ export const AssetsTable: FunctionComponent<Props> = observer(
           </div>
         ) : (
           <div className="flex flex-col gap-5">
-            <div className="flex flex-wrap items-center place-content-between">
-              <h5 className="shrink-0 mr-5">{t("assets.table.title")}</h5>
+            <div className="flex flex-wrap place-content-between items-center">
+              <h5 className="mr-5 shrink-0">{t("assets.table.title")}</h5>
               <div className="flex items-center gap-3 lg:gap-2">
                 <Switch
                   isOn={hideZeroBalances}
@@ -400,11 +395,11 @@ export const AssetsTable: FunctionComponent<Props> = observer(
           </div>
         )}
         {isMobile ? (
-          <div className="flex flex-col gap-3 my-7">
+          <div className="my-7 flex flex-col gap-3">
             {tableData.map((assetData) => (
               <div
                 key={assetData.coinDenom}
-                className="w-full flex items-center place-content-between bg-osmoverse-800 rounded-xl px-3 py-3"
+                className="flex w-full place-content-between items-center rounded-xl bg-osmoverse-800 px-3 py-3"
                 onClick={
                   assetData.chainId === undefined ||
                   (assetData.chainId &&
@@ -419,7 +414,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
               >
                 <div className="flex items-center gap-2">
                   {assetData.coinImageUrl && (
-                    <div className="flex items-center w-10 shrink-0">
+                    <div className="flex w-10 shrink-0 items-center">
                       <Image
                         alt="token icon"
                         src={assetData.coinImageUrl}
@@ -428,7 +423,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                       />
                     </div>
                   )}
-                  <div className="flex flex-col shrink gap-1 text-ellipsis">
+                  <div className="flex shrink flex-col gap-1 text-ellipsis">
                     <h6>{assetData.coinDenom}</h6>
                     {assetData.chainName && (
                       <span className="caption text-osmoverse-400">
@@ -438,7 +433,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="flex flex-col items-end gap-1 shrink-0">
+                  <div className="flex shrink-0 flex-col items-end gap-1">
                     <h5 className="sm:text-h6 sm:font-h6 xs:text-subtitle2 xs:font-subtitle2">
                       {assetData.amount}
                     </h5>
@@ -464,7 +459,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
           </div>
         ) : (
           <Table<TableCell>
-            className="w-full my-5"
+            className="my-5 w-full"
             columnDefs={[
               {
                 display: t("assets.table.columns.assetChain"),
@@ -532,7 +527,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
             />
           )}
         </div>
-        <TransferHistoryTable className="mt-8 md:w-screen md:-mx-4" />
+        <TransferHistoryTable className="mt-8 md:-mx-4 md:w-screen" />
       </section>
     );
   }

@@ -1,6 +1,6 @@
 {
   "name": "@osmosis-labs/stores",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "main": "build/index.js",
   "author": "osmosis-labs",
   "homepage": "https://github.com/osmosis-labs/osmosis-frontend/tree/master/packages/stores#readme",
@@ -52,8 +52,8 @@
     "@keplr-wallet/stores": "^0.10.24",
     "@keplr-wallet/types": "^0.10.24",
     "@keplr-wallet/unit": "^0.10.24",
-    "@osmosis-labs/math": "^3.0.0",
-    "@osmosis-labs/pools": "^3.0.0",
+    "@osmosis-labs/math": "^4.0.0",
+    "@osmosis-labs/pools": "^4.0.0",
     "axios": "^0.27.2",
     "buffer": "^6.0.3",
     "dayjs": "^1.10.7",

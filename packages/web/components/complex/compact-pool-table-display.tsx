@@ -39,9 +39,9 @@ export const CompactPoolTableDisplay: FunctionComponent<{
   return (
     <div className="flex flex-col gap-5 pb-8">
       {searchBoxProps && (
-        <SearchBox className="!w-full h-11" {...searchBoxProps} />
+        <SearchBox className="h-11 !w-full" {...searchBoxProps} />
       )}
-      <div className="flex flex-wrap gap-3 items-center place-content-between">
+      <div className="flex flex-wrap place-content-between items-center gap-3">
         {minTvlToggleProps && (
           <Switch {...minTvlToggleProps} containerClassName="shrink flex-wrap">
             <span className="text-osmoverse-200">
@@ -70,7 +70,7 @@ export const CompactPoolTableDisplay: FunctionComponent<{
           />
         ))}
       </div>
-      <div className="flex items-center justify-center flex-wrap gap-2 py-4">
+      <div className="flex flex-wrap items-center justify-center gap-2 py-4">
         {pageListProps && pageListProps.max > 1 && (
           <PageList {...pageListProps} editField={false} />
         )}

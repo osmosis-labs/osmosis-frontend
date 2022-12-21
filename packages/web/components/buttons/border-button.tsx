@@ -8,7 +8,7 @@ export const BorderButton: FunctionComponent<
 > = ({ onClick, className, disabled, children }) => (
   <button
     className={classNames(
-      "border-[1.5px] border-wosmongton-300 hover:border-wosmongton-100 text-wosmongton-300 hover:text-wosmongton-100 py-2 px-5 rounded-lg transition-colors",
+      "rounded-lg border-[1.5px] border-wosmongton-300 py-2 px-5 text-wosmongton-300 transition-colors hover:border-wosmongton-100 hover:text-wosmongton-100",
       className
     )}
     disabled={disabled}

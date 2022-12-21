@@ -23,7 +23,11 @@
     "minimumSlippage": "Minimum reçu après glissement ({slippage})",
     "error": {
       "findCurrency": "Impossible de trouver la devise {currency}"
-    }
+    },
+    "autoRouter": "Itinéraire",
+    "routerTooltipFee": "Frais",
+    "autoRouterToggle": { "show": "Montrer", "hide": "Cacher" },
+    "pool": "Bassin n°{id}"
   },
   "pools": {
     "title": "Bassins actifs",
@@ -33,7 +37,8 @@
     "myPools": "Mes Bassins",
     "APR": "TAP",
     "available": "Disponible",
-    "liquidity": "Liquidité Bassin",
+    "liquidity": "Liquidité",
+    "myLiquidity": "Ma liquidité",
     "bonded": "Cautionné",
     "incentivized": "Bassins incités",
     "all": "Tous les Bassins",
@@ -42,7 +47,7 @@
       "title": "Bassins superfluides",
       "tab": "Superfluides",
       "APR": "TAP",
-      "liquidity": "Liquidité Bassin",
+      "liquidity": "Liquidité",
       "fees7D": "Frais (7J)"
     },
     "allPools": {
@@ -54,7 +59,7 @@
       "search": "Rechercher dans les bassins",
       "displayLowLiquidity": "Afficher les bassins avec moins de {value}",
       "sort": {
-        "poolName": "Nom du bassin",
+        "poolName": "Nom/Numéro du pool",
         "liquidity": "Liquidité",
         "volume24h": "Volume (24H)",
         "fees": "Frais (7J)",
@@ -64,12 +69,12 @@
       }
     },
     "externalIncentivized": {
-      "title": "Bassins externes conseillés",
+      "title": "Pools incités à l'externe",
       "TVL": "VTB",
       "APR": "TAP",
       "search": "Rechercher par devise",
       "sort": {
-        "poolName": "Nom du bassin",
+        "poolName": "Nom/Numéro du pool",
         "liquidity": "Liquidité",
         "APR": "TAP",
         "epochs": "Cycles restants",
@@ -113,10 +118,11 @@
     "24hrTradingVolume": "Volume de transactions sur 24h",
     "liquidity": "Liquidité du bassin",
     "swapFee": "Frais d'échange",
-    "yourStats": "Vos statistiques",
+    "yourStats": "Le solde de votre piscine",
     "sharesAmount": "{shares} actions",
     "currentDailyEarn": "Vous gagnez actuellement",
-    "earnMore": "Gagnez plus en blocant",
+    "earnMore": "Gagnez {amount} plus en blocant",
+    "day": "jour",
     "dailyEarnAmount": "{amount} / jour",
     "putAssetsToWork": "Mettez vos actifs au travail.",
     "putAssetsToWorkCaption": "Ajoutez vos actifs à ce bassin pour débloquer des taux d'intérêt attractifs. Plus votre période de désengagement est longue, plus vous gagnez.",
@@ -132,9 +138,8 @@
     "bondSuperfluidLiquidityCaption": "Passez au superfluide pour un maximum de récompenses.",
     "bondShares": "Déléguer les actifs",
     "amountDaysUnbonding": "{numDays} jours de blocage",
-    "shares": "actifs",
     "unbond": "Débloquer",
-    "unbonded": "Débloqués",
+    "available": "Disponible",
     "bonded": "Bloqués",
     "showDetails": "Afficher details",
     "collapseDetails": "Cacher details",
@@ -194,7 +199,7 @@
     }
   },
   "assets": {
-    "totalAssets": "Actifs totaux",
+    "totalAssets": "Total des actifs",
     "unbondedAssets": "Actifs non liés",
     "bondedAssets": "Actifs liés",
     "stakedAssets": "OSMO cautionné",
@@ -208,13 +213,17 @@
     "poolCards": {
       "APR": "TAP",
       "FeeAPY": "Frais PAR",
-      "liquidity": "Liquidité Bassin",
+      "liquidity": "Ma liquidité",
       "bonded": "Liés",
       "myLiquidity": "Ma liquidité"
     },
     "ibcTransfer": {
       "titleWithdraw": "Retirer {coinDenom}",
       "titleDeposit": "Déposer {coinDenom}",
+      "channelCongested": "Canal conjecturé",
+      "channelCongestedWithdraw": "Retirer (Canal conjecturé)",
+      "channelCongestedDeposit": "Déposer (Canal conjecturé)",
+      "channelBlocked": "Chaîne bloquée",
       "selectAmount": "Sélectionnez le montant",
       "estimatedTime": "Temps estimé",
       "waitTime": "20 secondes",
@@ -260,8 +269,8 @@
     "table": {
       "depositButton": "Déposer",
       "withdrawButton": "Retirer",
-      "search": "Rechercher par devise",
-      "title": "Actifs",
+      "search": "Chercher",
+      "title": "Tous les actifs",
       "hideZero": "Cacher les fonds à zéro",
       "buyOsmo": "Acheter",
       "preTransfer": {
@@ -312,7 +321,10 @@
       "mobileMenu": "Trier par"
     },
     "MAX": "MAX",
-    "searchTokens": "Recherche de jetons"
+    "searchTokens": "Chercher",
+    "selectToken": {
+      "title": "Sélectionnez un jeton"
+    }
   },
   "menu": {
     "swap": "Échanger",
@@ -323,12 +335,13 @@
     "info": "Info",
     "signOut": "Déconnecter",
     "help": "Obtenir de l'aide",
-    "learnMoreFrontier": "En apprendre<br/>plus sur<br2/> <name>Osmosis Frontier</name>"
+    "learnMoreFrontier": "En apprendre<br/>plus sur<br2/> <name>Osmosis Frontier</name>",
+    "buyTokens": "Acheter jetons"
   },
   "settings": {
     "title": "Paramètres",
     "titleLanguage": "Langue",
-    "titleShowDust": "Afficher les pools/actifs < 0.01{fiatSymbol}"
+    "titleHideDust": "Masquer les piscines avec < 0.01{fiatSymbol}"
   },
   "404": {
     "title": "Page non trouvée"

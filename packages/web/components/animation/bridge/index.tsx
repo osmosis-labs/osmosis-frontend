@@ -2,11 +2,11 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { FunctionComponent, useEffect, useState } from "react";
 import classNames from "classnames";
-import { truncateString } from "../../utils";
 import { useWindowSize } from "../../../hooks";
 import { CustomClasses, LoadingProps } from "../../types";
 import { Animation as AnimationProps } from "../types";
 import { useTranslation } from "react-multi-lang";
+import { truncateString } from "../../../utils/string";
 
 const Lottie = dynamic(() => import("react-lottie"), { ssr: false });
 
@@ -63,13 +63,13 @@ export const BridgeAnimation: FunctionComponent<
   return (
     <div
       className={classNames(
-        "relative w-[600px] md:w-[300px] h-[110px]",
+        "relative h-[110px] w-[600px] md:w-[300px]",
         className
       )}
     >
       <div
         className={classNames(
-          "absolute w-1/3 h-full text-center",
+          "absolute h-full w-1/3 text-center",
           bridge ? "left-[8%] md:left-[2%]" : "left-[10%] md:left-[2.5%]"
         )}
       >
@@ -83,8 +83,8 @@ export const BridgeAnimation: FunctionComponent<
               : "md:subtitle2",
             bridge
               ? longFromName
-                ? "left-[82px] md:-left-[4px] top-[10px]"
-                : "left-[94px] md:left-0 top-[10px]"
+                ? "left-[82px] top-[10px] md:-left-[4px]"
+                : "left-[94px] top-[10px] md:left-0"
               : longFromName
               ? "left-[90px] md:-left-[4px]"
               : "left-[122px] md:left-[10px]",
@@ -96,10 +96,10 @@ export const BridgeAnimation: FunctionComponent<
         </span>
       </div>
       {bridge?.bridgeName && (
-        <div className="absolute w-1/3 h-full left-[35%] text-center">
+        <div className="absolute left-[35%] h-full w-1/3 text-center">
           <span
             className={classNames(
-              "whitespace-nowrap w-fit top-[10px]",
+              "top-[10px] w-fit whitespace-nowrap",
               longFromName || longToName
                 ? isMobile
                   ? "caption"
@@ -122,20 +122,20 @@ export const BridgeAnimation: FunctionComponent<
       )}
       <div
         className={classNames(
-          "absolute w-1/3 h-full text-center",
+          "absolute h-full w-1/3 text-center",
           bridge ? "right-[6%] md:-right-[2.5%]" : "right-[10%] md:-right-[1%]"
         )}
       >
         <span
           className={classNames(
-            "whitespace-nowrap w-fit transition-opacity duration-300",
+            "w-fit whitespace-nowrap transition-opacity duration-300",
             longFromName || longToName
               ? isMobile
                 ? "caption"
                 : "subtitle1"
               : "md:subtitle2",
             bridge
-              ? "left-[420px] md:left-[222px] top-[10px]"
+              ? "left-[420px] top-[10px] md:left-[222px]"
               : "left-[405px] md:left-[210px]",
             { "opacity-30": bridge?.isLoading }
           )}
@@ -144,7 +144,7 @@ export const BridgeAnimation: FunctionComponent<
           {truncateString(to.networkName, bridge ? (isMobile ? 10 : 12) : 18)}
         </span>
       </div>
-      <div className="absolute left-[105px] md:left-[30px] top-[20px]">
+      <div className="absolute left-[105px] top-[20px] md:left-[30px]">
         <div
           className={classNames("transition-opacity duration-300", {
             "opacity-30": bridge?.isLoading,
@@ -162,7 +162,7 @@ export const BridgeAnimation: FunctionComponent<
           />
         </div>
         {bridge?.isLoading && (
-          <div className="absolute left-[120px] md:left-[78px] -top-[26px] md:-top-[8px]">
+          <div className="absolute left-[120px] -top-[26px] md:left-[78px] md:-top-[8px]">
             <Lottie
               options={{
                 loop: true,
@@ -179,8 +179,8 @@ export const BridgeAnimation: FunctionComponent<
           className={classNames(
             "absolute transition-opacity duration-300",
             bridge
-              ? "left-[123px] md:left-[41px] top-[48px] md:top-[45px]"
-              : "left-[139px] md:left-[40px] top-[40px] md:top-[42px]",
+              ? "left-[123px] top-[48px] md:left-[41px] md:top-[45px]"
+              : "left-[139px] top-[40px] md:left-[40px] md:top-[42px]",
             { "opacity-30": bridge?.isLoading }
           )}
         >
@@ -188,7 +188,7 @@ export const BridgeAnimation: FunctionComponent<
         </div>
       )}
       {bridge?.bridgeIconUrl && (
-        <div className="absolute left-[284px] md:left-[142px] top-[48px] md:top-[45px]">
+        <div className="absolute left-[284px] top-[48px] md:left-[142px] md:top-[45px]">
           <Image
             alt="token icon"
             src={bridge?.bridgeIconUrl}
@@ -201,8 +201,8 @@ export const BridgeAnimation: FunctionComponent<
           className={classNames(
             "absolute transition-opacity duration-300",
             bridge
-              ? "left-[440px] md:left-[243px] top-[48px] md:top-[45px]"
-              : "left-[424px] md:left-[237px] top-[40px] md:top-[42px]",
+              ? "left-[440px] top-[48px] md:left-[243px] md:top-[45px]"
+              : "left-[424px] top-[40px] md:left-[237px] md:top-[42px]",
             { "opacity-30": bridge?.isLoading }
           )}
         >

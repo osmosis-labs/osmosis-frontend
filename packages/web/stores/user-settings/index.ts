@@ -58,5 +58,5 @@ export class UserSettings {
   });
 }
 
-export * from "./show-dust";
+export * from "./hide-dust";
 export * from "./language";

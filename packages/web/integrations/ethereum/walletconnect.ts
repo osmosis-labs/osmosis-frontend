@@ -9,9 +9,9 @@ import { computedFn } from "mobx-utils";
 import WalletConnect from "@walletconnect/client";
 import { toHex, isAddress, numberToHex } from "web3-utils";
 import { KVStore } from "@keplr-wallet/common";
-import { getKeyByValue } from "../../components/utils";
 import { WalletDisplay, WalletKey } from "../wallets";
 import { ChainNames, EthWallet } from "./types";
+import { getKeyByValue } from "../../utils/object";
 
 const CONNECTED_ACCOUNT_KEY = "wc-eth-connected-account";
 const CONNECTED_ACCOUNT_CHAINID = "wc-eth-connected-chainId";

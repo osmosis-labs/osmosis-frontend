@@ -21,7 +21,7 @@ export const MenuDropdownIcon: FunctionComponent<Props> = ({
   return (
     <div
       className={classNames(
-        "absolute flex flex-col bg-osmoverse-900 border border-osmoverse-600 select-none z-[1000] rounded-xl top-[110%] right-0",
+        "absolute top-[110%] right-0 z-[1000] flex select-none flex-col rounded-xl border border-osmoverse-600 bg-osmoverse-900",
         {
           hidden: !isOpen,
         }

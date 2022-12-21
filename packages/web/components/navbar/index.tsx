@@ -5,11 +5,16 @@ import classNames from "classnames";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { Button } from "../buttons";
 import { useStore } from "../../stores";
-import { useBooleanWithWindowEvent, useWindowSize } from "../../hooks";
+import {
+  useAmplitudeAnalytics,
+  useBooleanWithWindowEvent,
+  useWindowSize,
+} from "../../hooks";
 import { IUserSetting } from "../../stores/user-settings";
 import { useTranslation } from "react-multi-lang";
 import { MainLayoutMenu, CustomClasses } from "../types";
 import { MainMenu } from "../main-menu";
+import { EventName } from "../../config";
 
 export const NavBar: FunctionComponent<
   {
@@ -32,11 +37,11 @@ export const NavBar: FunctionComponent<
     <>
       <div
         className={classNames(
-          "fixed z-[100] flex place-content-between md:place-content-start lg:gap-5 items-center bg-osmoverse-900 h-navbar md:h-navbar-mobile w-[calc(100vw_-_12.875rem)] md:w-full px-8 md:px-4",
+          "fixed z-50 flex h-navbar w-[calc(100vw_-_12.875rem)] place-content-between items-center bg-osmoverse-900 px-8 shadow-md lg:gap-5 md:h-navbar-mobile md:w-full md:place-content-start md:px-4",
           className
         )}
       >
-        <div className="relative hidden md:flex items-center shrink-0">
+        <div className="relative hidden shrink-0 items-center md:flex">
           <Image
             alt="mobile menu"
             src="/icons/hamburger.svg"
@@ -51,7 +56,7 @@ export const NavBar: FunctionComponent<
           )}
           {mobileNavMenuOptionsOpen && (
             <div
-              className="absolute flex flex-col gap-2 w-52 top-[100%] top-navbar-mobile py-4 px-3 bg-osmoverse-800 rounded-3xl"
+              className="top-navbar-mobile absolute top-[100%] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3"
               onClick={(e) => {
                 e.stopPropagation();
               }}
@@ -71,14 +76,14 @@ export const NavBar: FunctionComponent<
             </div>
           )}
         </div>
-        <div className="grow flex items-center md:place-content-between shrink-0 gap-9 lg:gap-2 md:gap-1">
-          <h4 className="md:font-h6 md:text-h6">
+        <div className="flex shrink-0 grow items-center gap-9 lg:gap-2 md:place-content-between md:gap-1">
+          <h4 className="md:text-h6 md:font-h6">
             {navBarStore.title || title}
           </h4>
           <div className="flex items-center gap-3 lg:gap-1">
             {navBarStore.callToActionButtons.map((button, index) => (
               <Button
-                className="w-[180px] lg:w-fit h-fit lg:px-2"
+                className="h-fit w-[180px] lg:w-fit lg:px-2"
                 mode={index > 0 ? "secondary" : undefined}
                 key={index}
                 {...button}
@@ -88,7 +93,7 @@ export const NavBar: FunctionComponent<
             ))}
           </div>
         </div>
-        <div className="md:hidden flex gap-3 lg:gap-2 shrink-0 items-center">
+        <div className="flex shrink-0 items-center gap-3 lg:gap-2 md:hidden">
           <div className="relative">
             <NavBarButton
               iconurl="/icons/setting.svg"
@@ -108,7 +113,7 @@ export const NavBar: FunctionComponent<
       {/* Back-layer element to occupy space for the caller */}
       <div
         className={classNames(
-          "bg-osmoverse-900 h-navbar md:h-navbar-mobile",
+          "h-navbar bg-osmoverse-900 md:h-navbar-mobile",
           backElementClassNames
         )}
       />
@@ -130,7 +135,7 @@ const NavBarButton: FunctionComponent<
       {...props}
       onMouseOver={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="flex bg-osmoverse-700 items-center px-3 py-2 rounded-xl hover:bg-osmoverse-600 transition-colors"
+      className="flex items-center rounded-xl bg-osmoverse-700 px-3 py-2 transition-colors hover:bg-osmoverse-600"
     >
       <Image
         alt="settings"
@@ -149,17 +154,17 @@ const SettingsDropdown: FunctionComponent<{
   const t = useTranslation();
   return (
     <div
-      className="absolute top-[110%] md:top-navbar-mobile left-[50%] md:left-0 -translate-x-1/2 md:translate-x-0 flex flex-col gap-10 min-w-[385px] md:w-[90vw] md:min-w-min md:max-w-[385px] text-left bg-osmoverse-800 p-8 rounded-3xl"
+      className="md:top-navbar-mobile absolute top-[110%] left-[50%] flex min-w-[385px] -translate-x-1/2 flex-col gap-10 rounded-3xl bg-osmoverse-800 p-8 text-left shadow-md md:left-0 md:w-[90vw] md:min-w-min md:max-w-[385px] md:translate-x-0"
       onClick={(e) => e.stopPropagation()}
     >
       <h5>{t("settings.title")}</h5>
       <div className="flex flex-col gap-7">
         {userSettings.map((setting) => (
           <div
-            className="flex items-center w-full place-content-between"
+            className="flex w-full place-content-between items-center"
             key={setting.id}
           >
-            <span className="flex-nowrap subtitle1 text-osmoverse-100">
+            <span className="subtitle1 flex-nowrap text-osmoverse-100">
               {setting.getLabel(t)}
             </span>
             {setting.controlComponent(setting.state as any, setting.setState)}
@@ -181,6 +186,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
     } = useStore();
     const t = useTranslation();
     const { isMobile } = useWindowSize();
+    const { logEvent } = useAmplitudeAnalytics();
 
     // wallet
     const account = accountStore.getAccount(chainId);
@@ -191,32 +197,34 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
     const [mobileTapInfo, setMobileTapInfo] = useState(false);
 
     return (
-      <div className={classNames("w-40 lg:w-36 md:w-full shrink-0", className)}>
+      <div className={classNames("w-40 shrink-0 lg:w-36 md:w-full", className)}>
         {!walletConnected ? (
           <Button
-            className="w-40 lg:w-36 md:w-full !h-10"
+            className="!h-10 w-40 lg:w-36 md:w-full"
             onClick={() => {
+              logEvent([EventName.Topnav.connectWalletClicked]);
               account.init();
               setHoverWalletInfo(false);
             }}
           >
-            <span className="mx-auto button">{t("connectWallet")}</span>
+            <span className="button mx-auto">{t("connectWallet")}</span>
           </Button>
         ) : hoverWalletInfo || mobileTapInfo ? (
           <Button
-            className="w-40 lg:w-36 md:w-full !h-10"
+            className="!h-10 w-40 lg:w-36 md:w-full"
             mode="secondary"
             onMouseLeave={() => setHoverWalletInfo(false)}
             onClick={() => {
+              logEvent([EventName.Topnav.signOutClicked]);
               account.disconnect();
               setHoverWalletInfo(false);
             }}
           >
-            <span className="mx-auto button">{t("menu.signOut")}</span>
+            <span className="button mx-auto">{t("menu.signOut")}</span>
           </Button>
         ) : (
           <div
-            className="flex items-center gap-3 place-content-between px-2 py-1 rounded-xl border border-osmoverse-700"
+            className="flex place-content-between items-center gap-3 rounded-xl border border-osmoverse-700 px-2 py-1"
             onMouseOver={() => {
               if (!isMobile) setHoverWalletInfo(true);
             }}
@@ -224,7 +232,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
               if (isMobile) setMobileTapInfo(true);
             }}
           >
-            <div className="w-7 h-7 shrink-0">
+            <div className="h-7 w-7 shrink-0">
               <Image
                 alt="wallet-icon"
                 src={navBarStore.walletInfo.logoUrl}
@@ -233,7 +241,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
               />
             </div>
 
-            <div className="flex w-full leading-tight flex-col text-center truncate">
+            <div className="flex w-full flex-col truncate text-center leading-tight">
               <span className="text-button font-button">
                 {navBarStore.walletInfo.balance.toString()}
               </span>
