@@ -1,8 +1,10 @@
 import Image from "next/image";
 import classNames from "classnames";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent } from "react";
 import { AssetCell as Cell } from "./types";
 import { useTranslation } from "react-multi-lang";
+import { Button } from "../../buttons";
+import { ChevronRightIcon } from "../../assets";
 
 export const TransferButtonCell: FunctionComponent<
   {
@@ -47,7 +49,6 @@ const TransferButton: FunctionComponent<{
   label: string;
   action: () => void;
 }> = ({ externalUrl, disabled, label, action }) => {
-  const [isHovering, setIsHovering] = useState(false);
   return externalUrl ? (
     <a
       className={classNames(
@@ -73,35 +74,12 @@ const TransferButton: FunctionComponent<{
       </div>
     </a>
   ) : (
-    <button
-      className="subtitle1 flex items-center gap-1 text-wosmongton-200 transition-colors hover:text-rust-300 disabled:opacity-30 hover:disabled:text-wosmongton-200"
-      onClick={action}
-      disabled={disabled}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
-    >
-      <span className="mb-[3.3px]">{label}</span>
-      {isHovering ? (
-        <div className="h-fit shrink-0">
-          <Image
-            alt="chevron"
-            src="/icons/chevron-right-rust.svg"
-            height={13}
-            width={13}
-            priority={true}
-          />
-        </div>
-      ) : (
-        <div className="h-fit shrink-0">
-          <Image
-            alt="chevron"
-            src="/icons/chevron-right.svg"
-            height={13}
-            width={13}
-            priority={true}
-          />
-        </div>
-      )}
-    </button>
+    <Button mode="text" className="gap-2" onClick={action} disabled={disabled}>
+      <span>{label}</span>
+
+      <div className="h-fit shrink-0">
+        <ChevronRightIcon />
+      </div>
+    </Button>
   );
 };

@@ -97,6 +97,7 @@ const button = cva(
           "h-auto px-2 py-1 w-auto text-caption font-semibold tracking-wider",
         amount:
           "h-[24px] px-2 py-1 w-auto text-caption font-semibold tracking-wider",
+        unstyled: null,
       },
       frontier: {
         true: null,
@@ -127,6 +128,7 @@ const modeToDefaultSize: Partial<
   "framed-secondary": "framed",
   amount: "amount",
   text: "text",
+  unstyled: "unstyled",
 };
 
 export const Button: FunctionComponent<

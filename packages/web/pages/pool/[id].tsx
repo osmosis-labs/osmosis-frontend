@@ -40,14 +40,13 @@ import {
   AssetBreakdownChart,
   PriceBreakdownChart,
 } from "../../components/chart";
-import { PoolAssetsIcon } from "../../components/assets";
+import { ChevronDownIcon, PoolAssetsIcon } from "../../components/assets";
 import { BondCard } from "../../components/cards";
 import { Disableable } from "../../components/types";
 import { Button, ArrowButton } from "../../components/buttons";
 import { useTranslation } from "react-multi-lang";
 import PoolComposition from "../../components/chart/pool-composition";
 import useMeasure from "../../hooks/use-measure";
-import { DownChevronIcon } from "../../components/assets/down-chevron-icon";
 
 const E = EventName.PoolDetail;
 
@@ -525,7 +524,7 @@ const Pool: FunctionComponent = observer(() => {
                 "rotate-180": showPoolDetails,
               })}
             >
-              <DownChevronIcon classes={{ container: "!text-inherit" }} />
+              <ChevronDownIcon />
             </div>
           </Button>
         </div>
