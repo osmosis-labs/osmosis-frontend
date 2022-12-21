@@ -7,6 +7,14 @@ const button = cva(
   "flex w-full place-content-center items-center py-2 text-center transition-colors disabled:cursor-default",
   {
     variants: {
+      /**
+       * Modes should modify the following properties:
+       * - border
+       * - border color
+       * - border radius
+       * - background color
+       * - text color
+       */
       mode: {
         primary: [
           "border-2",
@@ -89,6 +97,16 @@ const button = cva(
         ],
         unstyled: null,
       },
+      /**
+       * Sizes should modify the following properties:
+       * - height
+       * - width
+       * - padding
+       * - font size
+       * - font weight
+       * - line height
+       * - letter spacing
+       */
       size: {
         sm: "h-10 px-5 button tracking-wide",
         normal: "h-[56px] px-6 subtitle1 tracking-wide",
