@@ -1,8 +1,7 @@
 import { IBCAsset } from "../stores/assets";
 import { SourceChainConfigs as AxelarSourceChainConfigs } from "../integrations/axelar";
+import { IS_TESTNET } from "./env";
 
-const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
-export const IS_FRONTIER = process.env.NEXT_PUBLIC_IS_FRONTIER === "true";
 export const UNSTABLE_MSG = "Transfers are disabled due to instability";
 
 /**

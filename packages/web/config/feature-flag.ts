@@ -1,4 +1,4 @@
-import { IS_FRONTIER } from "./ibc-assets";
+import { IS_FRONTIER } from "./env";
 
 /** UI will go into "halt mode" if `true`. */
 export const IS_HALTED = false;
@@ -1234,7 +1234,7 @@ export const ExternalIncentiveGaugeAllowList: {
       gaugeId: "30247",
       denom:
         "ibc/C822645522FC3EECF817609AA38C24B64D04F5C267A23BCCF8F2E3BC5755FA88",
-    }
+    },
   ],
   "858": [
     {
