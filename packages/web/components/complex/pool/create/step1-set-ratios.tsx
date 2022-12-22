@@ -47,9 +47,12 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
                   {config.poolType === "weighted" && (
                     <Button
                       mode="amount"
-                      className={classNames("!h-auto md:p-1 md:py-0", {
-                        hidden: config.assets.length < 2,
-                      })}
+                      className={classNames(
+                        "!h-auto !text-subtitle1 md:p-1 md:py-0",
+                        {
+                          hidden: config.assets.length < 2,
+                        }
+                      )}
                       onClick={() => config.setBalancedPercentages()}
                     >
                       {config.balancedPercentage.maxDecimals(0).toString()}
