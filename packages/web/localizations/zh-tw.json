@@ -394,5 +394,8 @@
   "Amount is empty": "未提供幣額",
   "Insufficient amount": "幣額不足",
   "Amount is zero": "幣額為零",
-  "Minimum of 2 assets required": "最少需要兩種資產"
+  "Minimum of 2 assets required": "最少需要兩種資產",
+  "stablecoinTypes": {
+    "collateralized": "抵押"
+  }
 }

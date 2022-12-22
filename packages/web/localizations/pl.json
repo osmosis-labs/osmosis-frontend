@@ -399,5 +399,8 @@
   "Amount is empty": "Ilość jest pusta",
   "Insufficient amount": "Niewystarczająca ilość",
   "Amount is zero": "Ilość jest zerowa",
-  "Minimum of 2 assets required": "Wymagane są conajmniej 2 tokeny"
+  "Minimum of 2 assets required": "Wymagane są conajmniej 2 tokeny",
+  "stablecoinTypes": {
+    "collateralized": "zabezpieczone"
+  }
 }

@@ -395,5 +395,8 @@
   "Amount is empty": "Le montant est vide",
   "Insufficient amount": "Montant insuffisant",
   "Amount is zero": "Le montant est de zéro.",
-  "Minimum of 2 assets required": "Minimum de 2 actifs requis"
+  "Minimum of 2 assets required": "Minimum de 2 actifs requis",
+  "stablecoinTypes": {
+    "collateralized": "garanti"
+  }
 }

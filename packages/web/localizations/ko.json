@@ -396,5 +396,8 @@
   "Amount is empty": "수량이 비어있습니다",
   "Insufficient amount": "수량이 부족합니다",
   "Amount is zero": "수량이 0입니다",
-  "Minimum of 2 assets required": "2개 이상의 자산이 필요합니다"
+  "Minimum of 2 assets required": "2개 이상의 자산이 필요합니다",
+  "stablecoinTypes": {
+    "collateralized": "담보"
+  }
 }
