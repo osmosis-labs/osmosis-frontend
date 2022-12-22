@@ -1,7 +1,8 @@
 import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter, QueryResponse } from "@keplr-wallet/stores";
-import { action, autorun, makeObservable, observable, runInAction } from "mobx";
+import { makeObservable, observable, runInAction } from "mobx";
 import { computedFn } from "mobx-utils";
+import { ObservableQueryNumPools } from "../../queries/pools";
 import { ObservableQueryPool } from "../../queries/pools/pool";
 import { IPoolGetter } from "../../queries/pools/types";
 import { IMPERATOR_HISTORICAL_DATA_BASEURL } from "..";
@@ -23,23 +24,22 @@ export class ObservableQueryFilteredPools
   protected _pools: Map<string, ObservableQueryPool> = new Map();
 
   protected _fetchingPoolIds: Set<string> = new Set();
-
-  @observable
   protected _queryParams: Filters & Pagination;
 
   constructor(
     protected readonly kvStore: KVStore,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter,
+    protected readonly queryNumPools: ObservableQueryNumPools,
     protected readonly baseUrl = IMPERATOR_HISTORICAL_DATA_BASEURL,
     protected readonly initialFilters: Filters = {
-      min_liquidity: 1000,
+      min_liquidity: 10_000,
       order_key: "liquidity",
-      order_by: "asc",
+      order_by: "desc",
     },
     protected readonly initialPagination: Pagination = {
       offset: 0,
-      limit: 230,
+      limit: 160,
     }
   ) {
     super(
@@ -54,17 +54,6 @@ export class ObservableQueryFilteredPools
     this._queryParams = { ...initialFilters, ...initialPagination };
 
     makeObservable(this);
-
-    // update query params and fetch when filters or pagination change
-    autorun(() => {
-      this.setUrl(
-        `${this.baseUrl}/pools/v2beta3/all?${objToQueryParams(
-          this._queryParams
-        )}`
-      );
-      // always force fetch
-      this.waitFreshResponse();
-    });
   }
 
   protected setResponse(response: Readonly<QueryResponse<FilteredPools>>) {
@@ -146,8 +135,24 @@ export class ObservableQueryFilteredPools
       .filter((pool): pool is ObservableQueryPool => pool !== undefined);
   });
 
-  @action
   paginate() {
     this._queryParams.offset += this._queryParams.limit;
+    this.updateUrlAndFetch();
+  }
+
+  fetchRemainingPools() {
+    this.queryNumPools.waitResponse().then(() => {
+      this._queryParams.offset += this._queryParams.limit;
+      this._queryParams.limit = this.queryNumPools.numPools;
+      this._queryParams.min_liquidity = 0;
+      this.updateUrlAndFetch();
+    });
+  }
+
+  protected updateUrlAndFetch() {
+    this.setUrl(
+      `${this.baseUrl}/pools/v2beta3/all?${objToQueryParams(this._queryParams)}`
+    );
+    this.waitFreshResponse();
   }
 }

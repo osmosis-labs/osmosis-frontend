@@ -132,7 +132,8 @@ export class OsmosisQueriesImpl {
     this.queryGammPools = new ObservableQueryFilteredPools(
       kvStore,
       chainId,
-      chainGetter
+      chainGetter,
+      this.queryGammNumPools
     );
 
     this.queryGammPoolShare = new ObservableQueryGammPoolShare(
