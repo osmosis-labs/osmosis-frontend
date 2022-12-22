@@ -4,17 +4,17 @@ import {
   ObservableChainQuery,
   QueryResponse,
 } from "@keplr-wallet/stores";
-import { Dec } from "@keplr-wallet/unit";
-import { PricePretty } from "@keplr-wallet/unit/build/price-pretty";
 import { autorun, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
-import { IPriceStore } from "../../price";
 import { ObservableQueryNumPools } from "./num-pools";
 import { ObservableQueryPool } from "./pool";
-import { Pools } from "./types";
+import { Pools, IPoolGetter } from "./types";
 import { GET_POOLS_PAGINATION_LIMIT } from ".";
 
-export class ObservableQueryPools extends ObservableChainQuery<Pools> {
+export class ObservableQueryPools
+  extends ObservableChainQuery<Pools>
+  implements IPoolGetter
+{
   /** Maintain references of ObservableQueryPool objects to prevent breaking observers. */
   protected _pools: Map<string, ObservableQueryPool> = new Map<
     string,
@@ -71,7 +71,6 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
   /** Returns `undefined` if the pool does not exist or the data has not loaded. */
   getPool(id: string): ObservableQueryPool | undefined {
     if (!this.response && !this._pools.get(id)) {
-      // TODO: consider constructing individual `ObservableQueryPool` and fetching, adding to array, and returning
       return undefined;
     }
 
@@ -88,28 +87,6 @@ export class ObservableQueryPools extends ObservableChainQuery<Pools> {
       }
     },
     true
-  );
-
-  readonly computeAllTotalValueLocked = computedFn(
-    (priceStore: IPriceStore): PricePretty => {
-      const fiatCurrency = priceStore.getFiatCurrency(
-        priceStore.defaultVsCurrency
-      )!;
-      let price = new PricePretty(fiatCurrency, new Dec(0));
-      if (!this.response) {
-        return price;
-      }
-
-      this.response.data.pools.forEach((raw) => {
-        const pool = this.getPool(raw.id);
-
-        if (pool) {
-          price = price.add(pool.computeTotalValueLocked(priceStore));
-        }
-      });
-
-      return price;
-    }
   );
 
   readonly getAllPools = computedFn((): ObservableQueryPool[] => {

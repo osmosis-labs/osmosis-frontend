@@ -1,6 +1,14 @@
+import { ObservableQuery } from "@keplr-wallet/stores";
 import { WeightedPoolRaw, StablePoolRaw } from "@osmosis-labs/pools";
 import { Duration } from "dayjs/plugin/duration";
 import { CoinPretty } from "@keplr-wallet/unit";
+import { ObservableQueryPool } from "./pool";
+
+export interface IPoolGetter extends ObservableQuery {
+  getPool(id: string): ObservableQueryPool | undefined;
+  poolExists(id: string): boolean | undefined;
+  getAllPools(): ObservableQueryPool[];
+}
 
 export type Pools = {
   pools: (WeightedPoolRaw | StablePoolRaw)[];
@@ -17,3 +25,7 @@ export type ExternalGauge = {
   rewardAmount?: CoinPretty;
   remainingEpochs: number;
 };
+
+export type Head<T extends any[]> = T extends [...infer Head, any]
+  ? Head
+  : any[];

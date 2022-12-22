@@ -11,7 +11,7 @@ import {
   ObservableQueryEpochProvisions,
   ObservableQueryMintParmas,
 } from "../mint";
-import { ObservableQueryPools } from "../pools";
+import { IPoolGetter } from "../pools";
 import { IPriceStore } from "../../price";
 import { ObservableQueryDistrInfo } from "./distr-info";
 import { ObservableQueryLockableDurations } from "./lockable-durations";
@@ -25,7 +25,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
     chainGetter: ChainGetter,
     protected readonly queryLockableDurations: ObservableQueryLockableDurations,
     protected readonly queryDistrInfo: ObservableQueryDistrInfo,
-    protected readonly queryPools: ObservableQueryPools,
+    protected readonly queryPools: IPoolGetter,
     protected readonly queryMintParmas: ObservableQueryMintParmas,
     protected readonly queryEpochProvision: ObservableQueryEpochProvisions,
     protected readonly queryEpochs: ObservableQueryEpochs,

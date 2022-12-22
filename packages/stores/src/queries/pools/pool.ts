@@ -26,8 +26,9 @@ import { computedFn } from "mobx-utils";
 import { IPriceStore } from "src/price";
 import { Duration } from "dayjs/plugin/duration";
 import dayjs from "dayjs";
+import { Head } from "./types";
 
-type PoolRaw = WeightedPoolRaw | StablePoolRaw;
+export type PoolRaw = WeightedPoolRaw | StablePoolRaw;
 
 const STABLE_POOL_TYPE = "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool";
 // const WEIGHTED_POOL_TYPE = "/osmosis.gamm.v1beta1.Pool";
@@ -39,10 +40,10 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   @observable.ref
   protected raw: PoolRaw;
 
-  /** Constructed with the assumption that initial pool data has already been fetched
-   *  using the `/pools` endpoint.
-   **/
-  // TODO: overload construction with only pool id
+  protected static makeEndpointUrl(poolId: string) {
+    return `/osmosis/gamm/v1beta1/pools/${poolId}`;
+  }
+
   constructor(
     readonly kvStore: KVStore,
     chainId: string,
@@ -53,12 +54,48 @@ export class ObservableQueryPool extends ObservableChainQuery<{
       kvStore,
       chainId,
       chainGetter,
-      `/osmosis/gamm/v1beta1/pools/${raw.id}`
+      ObservableQueryPool.makeEndpointUrl(raw.id)
     );
 
+    ObservableQueryPool.addUnknownCurrencies(raw, chainGetter, chainId);
     this.raw = raw;
 
     makeObservable(this);
+  }
+
+  static makeWithoutRaw(
+    poolId: string,
+    ...[kvStore, chainId, chainGetter]: Head<
+      ConstructorParameters<typeof ObservableQueryPool>
+    >
+  ): Promise<ObservableQueryPool> {
+    return new Promise((resolve, reject) => {
+      let lcdUrl = chainGetter.getChain(chainId).rest;
+      if (lcdUrl.endsWith("/")) lcdUrl = lcdUrl.slice(0, lcdUrl.length - 1);
+      const endpoint = ObservableQueryPool.makeEndpointUrl(poolId);
+      fetch(lcdUrl + endpoint)
+        .then((response) => {
+          response
+            .json()
+            .then((data) => {
+              if (response.ok) {
+                resolve(
+                  new ObservableQueryPool(
+                    kvStore,
+                    chainId,
+                    chainGetter,
+                    data.pool
+                  )
+                );
+              } else {
+                console.log(data);
+                reject("not-found");
+              }
+            })
+            .catch(reject);
+        })
+        .catch(reject);
+    });
   }
 
   protected setResponse(
@@ -73,9 +110,12 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     this.setRaw(response.data.pool);
   }
 
-  @action
-  setRaw(raw: PoolRaw) {
-    const chainInfo = this.chainGetter.getChain(this.chainId);
+  protected static addUnknownCurrencies(
+    raw: PoolRaw,
+    chainGetter: ChainGetter,
+    chainId: string
+  ) {
+    const chainInfo = chainGetter.getChain(chainId);
     const denomsInPool: string[] = [];
     // Try to register the Denom of Asset in the Pool in Response.(For IBC tokens)
     if ("pool_assets" in raw) {
@@ -91,6 +131,15 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     }
 
     chainInfo.addUnknownCurrencies(...denomsInPool);
+  }
+
+  @action
+  setRaw(raw: PoolRaw) {
+    ObservableQueryPool.addUnknownCurrencies(
+      raw,
+      this.chainGetter,
+      this.chainId
+    );
 
     this.raw = raw;
   }
