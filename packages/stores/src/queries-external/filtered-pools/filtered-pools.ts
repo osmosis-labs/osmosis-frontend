@@ -4,7 +4,7 @@ import { makeObservable, observable, runInAction } from "mobx";
 import { computedFn } from "mobx-utils";
 import { ObservableQueryNumPools } from "../../queries/pools";
 import { ObservableQueryPool } from "../../queries/pools/pool";
-import { IPoolGetter } from "../../queries/pools/types";
+import { PoolGetter } from "../../queries/pools/types";
 import { IMPERATOR_HISTORICAL_DATA_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
 import { Filters, objToQueryParams, Pagination, FilteredPools } from "./types";
@@ -13,7 +13,7 @@ import { makePoolRawFromFilteredPool } from "./utils";
 /** TEMPORARY: use imperator query to fetch filtered, sorted pools */
 export class ObservableQueryFilteredPools
   extends ObservableQueryExternalBase<FilteredPools>
-  implements IPoolGetter
+  implements PoolGetter
 {
   @observable
   protected _pools: Map<string, ObservableQueryPool> = new Map();

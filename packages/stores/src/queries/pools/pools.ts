@@ -8,12 +8,12 @@ import { autorun, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { ObservableQueryNumPools } from "./num-pools";
 import { ObservableQueryPool } from "./pool";
-import { Pools, IPoolGetter } from "./types";
+import { Pools, PoolGetter } from "./types";
 import { GET_POOLS_PAGINATION_LIMIT } from ".";
 
 export class ObservableQueryPools
   extends ObservableChainQuery<Pools>
-  implements IPoolGetter
+  implements PoolGetter
 {
   /** Maintain references of ObservableQueryPool objects to prevent breaking observers. */
   protected _pools: Map<string, ObservableQueryPool> = new Map<

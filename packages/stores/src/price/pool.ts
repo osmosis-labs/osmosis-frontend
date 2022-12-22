@@ -3,7 +3,7 @@ import { CoinGeckoPriceStore, ChainGetter } from "@keplr-wallet/stores";
 import { FiatCurrency } from "@keplr-wallet/types";
 import { Dec } from "@keplr-wallet/unit";
 import { KVStore } from "@keplr-wallet/common";
-import { IPoolGetter } from "../queries";
+import { PoolGetter } from "../queries";
 import { IntermediateRoute, IPriceStore } from "./types";
 import { computedFn } from "mobx-utils";
 
@@ -26,7 +26,7 @@ export class PoolFallbackPriceStore
       [vsCurrency: string]: FiatCurrency;
     },
     defaultVsCurrency: string,
-    protected readonly queryPool: IPoolGetter,
+    protected readonly queryPool: PoolGetter,
     intermidiateRoutes: IntermediateRoute[]
   ) {
     super(kvStore, supportedVsCurrencies, defaultVsCurrency, {

@@ -4,7 +4,7 @@ import { Duration } from "dayjs/plugin/duration";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "./pool";
 
-export interface IPoolGetter extends ObservableQuery {
+export interface PoolGetter extends ObservableQuery {
   getPool(id: string): ObservableQueryPool | undefined;
   poolExists(id: string): boolean | undefined;
   getAllPools(): ObservableQueryPool[];

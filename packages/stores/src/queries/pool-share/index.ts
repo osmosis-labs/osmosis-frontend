@@ -15,7 +15,7 @@ import {
   ObservableQueryAccountLockedCoins,
   ObservableQueryAccountUnlockingCoins,
 } from "../lockup";
-import { IPoolGetter } from "../pools";
+import { PoolGetter } from "../pools";
 
 export class ObservableQueryGammPoolShare {
   static getShareCurrency(poolId: string): Currency {
@@ -27,7 +27,7 @@ export class ObservableQueryGammPoolShare {
   }
 
   constructor(
-    protected readonly queryPools: IPoolGetter,
+    protected readonly queryPools: PoolGetter,
     protected readonly queryBalances: ObservableQueryBalances,
     protected readonly queryAccountLocked: ObservableQueryAccountLocked,
     protected readonly queryLockedCoins: ObservableQueryAccountLockedCoins,

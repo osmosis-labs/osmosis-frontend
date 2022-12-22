@@ -3,7 +3,7 @@ import { computedFn } from "mobx-utils";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
 import { IPriceStore } from "../../price";
-import { ObservableQueryGammPoolShare, IPoolGetter } from "../../queries";
+import { ObservableQueryGammPoolShare, PoolGetter } from "../../queries";
 import { ManageLiquidityConfigBase } from "./base";
 import { NoAvailableSharesError } from "./errors";
 
@@ -15,7 +15,7 @@ export class ObservableRemoveLiquidityConfig extends ManageLiquidityConfigBase {
   protected _percentage: string;
 
   @observable
-  protected _queryPools: IPoolGetter;
+  protected _queryPools: PoolGetter;
 
   constructor(
     chainGetter: ChainGetter,
@@ -24,7 +24,7 @@ export class ObservableRemoveLiquidityConfig extends ManageLiquidityConfigBase {
     sender: string,
     queriesStore: IQueriesStore,
     queryPoolShare: ObservableQueryGammPoolShare,
-    queryPools: IPoolGetter,
+    queryPools: PoolGetter,
     initialPercentage: string
   ) {
     super(
