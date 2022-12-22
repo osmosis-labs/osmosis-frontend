@@ -17,6 +17,7 @@ import { UnlockIcon } from "../assets/unlock-icon";
 import { RightArrowIcon } from "../assets/right-arrow-icon";
 import { useAmplitudeAnalytics } from "../../hooks";
 import { EventName } from "../../config";
+import useMeasure from "../../hooks/use-measure";
 
 export const BondCard: FunctionComponent<
   BondDuration & {
@@ -434,14 +435,28 @@ const UnbondButton: FunctionComponent<
   ButtonHTMLAttributes<HTMLButtonElement>
 > = (props) => {
   const t = useTranslation();
+  const [leftContentRef, { width: leftContentWidth }] =
+    useMeasure<HTMLSpanElement>();
+
   return (
     <button
       {...props}
-      className="group max-w-[113px] overflow-hidden rounded-lg border-2 border-wosmongton-300 transition-all duration-300 ease-inOutBack hover:border-rust-300"
+      className="group overflow-hidden rounded-lg border-2 border-wosmongton-300 transition-all duration-300 ease-inOutBack hover:border-rust-300"
+      style={{
+        width:
+          (leftContentWidth ?? 87) +
+          12 + // padding
+          15, // gap
+      }}
     >
-      <div className="flex transform items-center gap-2.5 self-start px-3 py-1.5 text-base font-button text-wosmongton-200 duration-300 ease-inOutBack group-hover:-translate-x-[30px] group-hover:text-rust-300">
-        <UnlockIcon classes={{ container: "flex-shrink-0" }} />
-        {t("pool.unbond")}
+      <div className="flex transform items-center gap-[10px] self-start px-[12px] py-1.5 text-base font-button text-wosmongton-200 duration-300 ease-inOutBack group-hover:-translate-x-[30px] group-hover:text-rust-300">
+        <span
+          ref={leftContentRef}
+          className="flex flex-shrink-0 items-center gap-[10px]"
+        >
+          <UnlockIcon />
+          <span>{t("pool.unbond")}</span>
+        </span>
         <RightArrowIcon classes={{ container: "flex-shrink-0" }} />
       </div>
     </button>
