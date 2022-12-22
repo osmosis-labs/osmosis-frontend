@@ -174,7 +174,7 @@ const AxelarTransfer: FunctionComponent<
     /** Amount, with decimals. e.g. 1.2 USDC */
     const amount = isWithdraw ? withdrawAmountConfig.amount : depositAmount;
 
-    const { transferFee: transferFeeMinAmount } = useTransferFeeQuery(
+    const { transferFee } = useTransferFeeQuery(
       sourceChain,
       destChain,
       originCurrency.coinMinimalDenom,
@@ -400,7 +400,7 @@ const AxelarTransfer: FunctionComponent<
       (isWithdraw && osmosisAccount.txTypeInProgress === "");
     const isInsufficientFee =
       amount !== "" &&
-      transferFeeMinAmount !== undefined &&
+      transferFee !== undefined &&
       new CoinPretty(
         originCurrency,
         new Dec(amount).mul(
@@ -410,7 +410,7 @@ const AxelarTransfer: FunctionComponent<
       )
         .moveDecimalPointRight(originCurrency.coinDecimals)
         .toDec()
-        .lt(transferFeeMinAmount.toDec());
+        .lt(transferFee.toDec());
     const isInsufficientBal =
       amount !== "" &&
       availableBalance &&
@@ -480,7 +480,7 @@ const AxelarTransfer: FunctionComponent<
               toggleIsDepositAmtMax();
             }
           }}
-          transferFee={transferFeeMinAmount}
+          transferFee={transferFee}
           waitTime={waitBySourceChain(selectedSourceChainKey)}
           disabled={!userCanInteract}
           disablePanel={
