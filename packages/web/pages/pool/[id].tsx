@@ -43,7 +43,7 @@ import { Disableable } from "../../components/types";
 import { Button, ArrowButton } from "../../components/buttons";
 import { useTranslation } from "react-multi-lang";
 import PoolComposition from "../../components/chart/pool-composition";
-import useMeasure from "../../hooks/use-measure";
+import { useMeasure } from "react-use";
 
 const E = EventName.PoolDetail;
 

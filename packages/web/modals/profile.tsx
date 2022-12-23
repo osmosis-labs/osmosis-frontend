@@ -1,10 +1,15 @@
-import { FunctionComponent } from "react";
+import { ButtonHTMLAttributes, FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { ModalBase, ModalBaseProps } from "./base";
 import { useTranslation } from "react-multi-lang";
 import Image from "next/image";
 import { CreditCardIcon } from "../components/assets/credit-card-icon";
 import { useStore } from "../stores";
+import { FiatRampsModal } from "./fiat-ramps";
+import { useAmplitudeAnalytics, useTransferConfig } from "../hooks";
+import { EventName } from "../config";
+import { getShortAddress } from "../utils/string";
+import { useCopyToClipboard, useTimeoutFn } from "react-use";
 
 export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
   (props) => {
@@ -14,8 +19,20 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
         osmosis: { chainId },
       },
       accountStore,
+      priceStore,
       navBarStore,
     } = useStore();
+    const { logEvent } = useAmplitudeAnalytics();
+
+    const transferConfig = useTransferConfig();
+    const account = accountStore.getAccount(chainId);
+
+    const [hasCopied, setHasCopied] = useState(false);
+    const [_state, copyToClipboard] = useCopyToClipboard();
+    const [_isReady, _cancel, reset] = useTimeoutFn(
+      () => setHasCopied(false),
+      2000
+    );
 
     return (
       <ModalBase
@@ -54,13 +71,23 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
           <div className="flex justify-between">
             <div>
               <h6 className="mb-[3px] tracking-wide text-osmoverse-100">
-                $21,594,023.12
+                {priceStore
+                  .calculatePrice(
+                    navBarStore.walletInfo.balance,
+                    priceStore.defaultVsCurrency
+                  )
+                  ?.toString()}
               </h6>
-              <p className="text-h4 font-h4">2,958,0246 OSMO</p>
+              <p className="text-h4 font-h4">
+                {navBarStore.walletInfo.balance.toString()}
+              </p>
             </div>
 
-            <button className="flex items-center gap-[10px] self-end rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-[6px] px-5">
-              <CreditCardIcon />
+            <button
+              onClick={() => transferConfig?.buyOsmo()}
+              className="group flex items-center gap-[10px] self-end rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-[6px] px-5 hover:border-wosmongton-200"
+            >
+              <CreditCardIcon isAnimated />
               Buy Tokens
             </button>
           </div>
@@ -90,36 +117,52 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
 
               <div className="subtitle-1 tracking-wide">
                 <p>Cosmos</p>
-                <p className="text-osmoverse-100">cos19b...9301x</p>
+                <p className="text-osmoverse-100">
+                  {getShortAddress(account.bech32Address)}
+                </p>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <button
+              <ActionButton
                 title="Copy Address"
-                className="h-9 w-9 rounded-lg bg-osmoverse-600 p-1.5"
+                onClick={() => {
+                  copyToClipboard(account.bech32Address);
+                  setHasCopied(true);
+                  reset();
+                }}
               >
-                <Image
-                  src="/icons/copy-white.svg"
-                  alt="Osmo icon"
-                  width={24}
-                  height={24}
-                />
-              </button>
-              <button
-                title="Show QR Code"
-                className="h-9 w-9 rounded-lg bg-osmoverse-600 p-1.5"
-              >
+                {hasCopied ? (
+                  <Image
+                    src="/icons/check-mark.svg"
+                    alt="Check mark icon"
+                    width={20}
+                    height={20}
+                  />
+                ) : (
+                  <Image
+                    src="/icons/copy-white.svg"
+                    alt="Osmo icon"
+                    width={24}
+                    height={24}
+                  />
+                )}
+              </ActionButton>
+              <ActionButton title="Show QR Code">
                 <Image
                   src="/icons/qr.svg"
                   alt="Osmo icon"
                   width={24}
                   height={24}
                 />
-              </button>
-              <button
+              </ActionButton>
+              <ActionButton
                 title="Sign Out"
-                className="h-9 w-9 rounded-lg bg-osmoverse-600 p-1.5"
+                onClick={() => {
+                  logEvent([EventName.Topnav.signOutClicked]);
+                  props.onRequestClose();
+                  account.disconnect();
+                }}
               >
                 <Image
                   src="/icons/log-out.svg"
@@ -127,11 +170,28 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
                   width={24}
                   height={24}
                 />
-              </button>
+              </ActionButton>
             </div>
           </div>
         </div>
+
+        {transferConfig?.fiatRampsModal && (
+          <FiatRampsModal {...transferConfig.fiatRampsModal} />
+        )}
       </ModalBase>
     );
   }
 );
+
+const ActionButton: FunctionComponent<
+  ButtonHTMLAttributes<HTMLButtonElement>
+> = (props) => {
+  return (
+    <button
+      {...props}
+      className="flex h-9 w-9 items-center justify-center rounded-lg bg-osmoverse-600 p-1.5 hover:bg-osmoverse-500"
+    >
+      {props.children}
+    </button>
+  );
+};
