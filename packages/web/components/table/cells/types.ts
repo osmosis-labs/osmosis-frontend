@@ -14,6 +14,7 @@ export type AssetCell = BaseCell & {
    */
   queryTags?: string[];
   isUnstable?: boolean;
+  isFavorite?: boolean;
   onWithdraw?: (
     chainId: string,
     coinDenom: string,
@@ -25,6 +26,7 @@ export type AssetCell = BaseCell & {
     externalUrl?: string
   ) => void;
   onBuyOsmo?: () => void;
+  onToggleFavorite?: () => void;
 };
 
 export interface ValidatorInfo extends BaseCell {
