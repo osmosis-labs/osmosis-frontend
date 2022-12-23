@@ -8,3 +8,4 @@ export * from "./user-settings";
 export * from "./use-boolean-with-window-event";
 export * from "./use-ibc-transfer";
 export * from "./use-amplitude-analytics";
+export * from "./use-disclosure";
