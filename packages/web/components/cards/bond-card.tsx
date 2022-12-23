@@ -17,7 +17,7 @@ import { UnlockIcon } from "../assets/unlock-icon";
 import { RightArrowIcon } from "../assets/right-arrow-icon";
 import { useAmplitudeAnalytics } from "../../hooks";
 import { EventName } from "../../config";
-import useMeasure from "../../hooks/use-measure";
+import { useMeasure } from "react-use";
 
 export const BondCard: FunctionComponent<
   BondDuration & {

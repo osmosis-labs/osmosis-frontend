@@ -182,7 +182,12 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
     const walletConnected = account.walletStatus === WalletStatus.Loaded;
 
     return (
-      <div className={classNames("w-40 shrink-0 lg:w-36 md:w-full", className)}>
+      <div
+        className={classNames(
+          "max-w-[10rem] shrink-0 lg:max-w-[9rem] md:w-full",
+          className
+        )}
+      >
         {!walletConnected ? (
           <Button
             className="!h-10 w-40 lg:w-36 md:w-full"
@@ -196,23 +201,23 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
         ) : (
           <button
             onClick={onOpenProfile}
-            className="flex w-full place-content-between items-center gap-3 rounded-xl border border-osmoverse-700 px-2 py-1"
+            className="flex place-content-between items-center gap-3 rounded-xl border border-osmoverse-700 px-2 py-1 hover:border-wosmongton-200"
           >
-            <div className="h-7 w-7 shrink-0">
+            <div className="h-8 w-8 shrink-0 overflow-hidden rounded-lg">
               <Image
-                alt="wallet-icon"
-                src={navBarStore.walletInfo.logoUrl}
-                height={28}
-                width={28}
+                alt="Wosmongton profile"
+                src="/images/profile-woz.png"
+                height={32}
+                width={32}
               />
             </div>
 
-            <div className="flex w-full flex-col truncate text-center leading-tight">
-              <span className="text-button font-button">
-                {navBarStore.walletInfo.balance.toString()}
-              </span>
-              <span className="caption truncate">
+            <div className="flex w-full flex-col truncate text-right leading-tight">
+              <span className="caption truncate font-bold">
                 {navBarStore.walletInfo.name}
+              </span>
+              <span className="caption font-medium text-osmoverse-200">
+                {navBarStore.walletInfo.balance.toString()}
               </span>
             </div>
           </button>
