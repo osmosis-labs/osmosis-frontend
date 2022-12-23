@@ -88,7 +88,6 @@ export class ObservableQueryPool extends ObservableChainQuery<{
                   )
                 );
               } else {
-                console.log(data);
                 reject("not-found");
               }
             })

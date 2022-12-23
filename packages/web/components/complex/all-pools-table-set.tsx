@@ -85,6 +85,10 @@ export const AllPoolsTableSet: FunctionComponent<{
     const selectOption = (optionId: string) => {
       if (optionId === "incentivized-pools" || optionId === "all-pools") {
         setActiveOptionId(optionId);
+
+        if (optionId === "all-pools") {
+          queriesOsmosis.queryGammPools.fetchRemainingPools();
+        }
       }
     };
     const [isPoolTvlFiltered, do_setIsPoolTvlFiltered] = useState(false);

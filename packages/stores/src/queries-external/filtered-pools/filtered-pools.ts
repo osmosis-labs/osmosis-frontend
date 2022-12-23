@@ -59,20 +59,22 @@ export class ObservableQueryFilteredPools
       const existingQueryPool = this._pools.get(
         filteredPoolRaw.pool_id.toString()
       );
-      const poolRaw = makePoolRawFromFilteredPool(filteredPoolRaw);
-      if (existingQueryPool) {
-        existingQueryPool.setRaw(poolRaw);
-      } else {
-        this._pools.set(
-          poolRaw.id,
-          new ObservableQueryPool(
-            this.kvStore,
-            this.chainId,
-            this.chainGetter,
-            poolRaw
-          )
-        );
-      }
+      try {
+        const poolRaw = makePoolRawFromFilteredPool(filteredPoolRaw);
+        if (existingQueryPool) {
+          existingQueryPool.setRaw(poolRaw);
+        } else {
+          this._pools.set(
+            poolRaw.id,
+            new ObservableQueryPool(
+              this.kvStore,
+              this.chainId,
+              this.chainGetter,
+              poolRaw
+            )
+          );
+        }
+      } catch {}
     }
   }
 
@@ -87,6 +89,7 @@ export class ObservableQueryFilteredPools
 
       if (
         this.response &&
+        !this.isFetching &&
         !this._pools.has(id) &&
         !this._fetchingPoolIds.has(id)
       ) {
@@ -123,11 +126,7 @@ export class ObservableQueryFilteredPools
       return [];
     }
 
-    return this.response.data.pools
-      .map((raw) => {
-        return this.getPool(raw.pool_id.toString());
-      })
-      .filter((pool): pool is ObservableQueryPool => pool !== undefined);
+    return Array.from(this._pools.values());
   });
 
   paginate() {
@@ -137,10 +136,11 @@ export class ObservableQueryFilteredPools
 
   fetchRemainingPools() {
     this.queryNumPools.waitResponse().then(() => {
-      this._queryParams.offset += this._queryParams.limit;
-      this._queryParams.limit = this.queryNumPools.numPools;
-      this._queryParams.min_liquidity = 0;
-      this.updateUrlAndFetch();
+      if (this._queryParams.limit !== this.queryNumPools.numPools) {
+        this._queryParams.limit = this.queryNumPools.numPools;
+        this._queryParams.min_liquidity = 0;
+        this.updateUrlAndFetch();
+      }
     });
   }
 
@@ -148,6 +148,6 @@ export class ObservableQueryFilteredPools
     this.setUrl(
       `${this.baseUrl}/pools/v2beta3/all?${objToQueryParams(this._queryParams)}`
     );
-    this.waitFreshResponse();
+    return this.waitFreshResponse();
   }
 }
