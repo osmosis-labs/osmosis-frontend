@@ -149,30 +149,32 @@ const Home: NextPage = observer(function () {
           <g>
             {!IS_FRONTIER && (
               <ProgressiveSvgImage
-                lowResXlinkHref="/images/osmosis-home-bg-low.png"
-                xlinkHref="/images/osmosis-home-bg.png"
-                x="56"
-                y="220"
-                width="578.7462"
-                height="725.6817"
+                lowResXlinkHref="/images/Xmas2022.png"
+                xlinkHref="/images/Xmas2022.png"
+                x="0"
+                y="0"
+                width="100%"
+                height="100%"
               />
             )}
-            <ProgressiveSvgImage
-              lowResXlinkHref={
-                IS_FRONTIER
-                  ? "/images/osmosis-cowboy-woz-low.png"
-                  : "/images/osmosis-home-fg-low.png"
-              }
-              xlinkHref={
-                IS_FRONTIER
-                  ? "/images/osmosis-cowboy-woz.png"
-                  : "/images/osmosis-home-fg.png"
-              }
-              x={IS_FRONTIER ? "-100" : "61"}
-              y={IS_FRONTIER ? "100" : "682"}
-              width={IS_FRONTIER ? "800" : "448.8865"}
-              height={IS_FRONTIER ? "800" : "285.1699"}
-            />
+            {IS_FRONTIER && (
+              <ProgressiveSvgImage
+                lowResXlinkHref={
+                  IS_FRONTIER
+                    ? "/images/osmosis-cowboy-woz-low.png"
+                    : "/images/osmosis-home-fg-low.png"
+                }
+                xlinkHref={
+                  IS_FRONTIER
+                    ? "/images/osmosis-cowboy-woz.png"
+                    : "/images/osmosis-home-fg.png"
+                }
+                x={IS_FRONTIER ? "-100" : "61"}
+                y={IS_FRONTIER ? "100" : "682"}
+                width={IS_FRONTIER ? "800" : "448.8865"}
+                height={IS_FRONTIER ? "800" : "285.1699"}
+              />
+            )}
           </g>
         </svg>
       </div>
