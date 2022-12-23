@@ -51,8 +51,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
         </div>
 
         <div className="mt-3 text-center">
-          <h5>dogemos.osmo</h5>
-          <p className="text-osmoverse-300">Osmonaut since June 19, 2021</p>
+          <h5>{getShortAddress(account.bech32Address)}</h5>
         </div>
 
         <div className="mt-10 flex w-full flex-col gap-[30px] rounded-[20px] border border-osmoverse-700 bg-osmoverse-800 px-6 py-5">
@@ -85,9 +84,16 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
 
             <button
               onClick={() => transferConfig?.buyOsmo()}
-              className="group flex items-center gap-[10px] self-end rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-[6px] px-5 hover:border-wosmongton-200"
+              className="subtitle1 group flex h-[44px] w-[156px] items-center gap-[10px] rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-[6px] px-3 hover:border-none hover:bg-gradient-positive hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)]"
             >
-              <CreditCardIcon isAnimated />
+              <CreditCardIcon
+                isAnimated
+                classes={{
+                  backCard: "group-hover:stroke-[2]",
+                  frontCard:
+                    "group-hover:fill-[#71B5EB] group-hover:stroke-[2]",
+                }}
+              />
               Buy Tokens
             </button>
           </div>
