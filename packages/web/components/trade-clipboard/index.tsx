@@ -1,4 +1,11 @@
-import { FunctionComponent, useEffect, useRef, useState, useMemo } from "react";
+import {
+  FunctionComponent,
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+  useCallback,
+} from "react";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
@@ -47,7 +54,12 @@ export const TradeClipboard: FunctionComponent<{
     const { isMobile } = useWindowSize();
     const { logEvent } = useAmplitudeAnalytics();
 
-    const allTokenBalances = nativeBalances.concat(ibcBalances);
+    /** If in modal, show all currencies. Otherwise, get approved currencies from assets store. */
+    const availableOsmosisCurrencies = isInModal
+      ? chainStore.getChain(chainStore.osmosis.chainId).currencies
+      : nativeBalances
+          .concat(ibcBalances)
+          .map(({ balance }) => balance.currency);
 
     const account = accountStore.getAccount(chainId);
     const queries = queriesStore.get(chainId);
@@ -115,7 +127,11 @@ export const TradeClipboard: FunctionComponent<{
       fromAmountInput.current?.focus();
     }, [tradeTokenInConfig.sendCurrency]);
 
-    useTokenSwapQueryParams(tradeTokenInConfig, allTokenBalances, isInModal);
+    useTokenSwapQueryParams(
+      tradeTokenInConfig,
+      availableOsmosisCurrencies,
+      isInModal
+    );
 
     const showPriceImpactWarning = useMemo(
       () =>
@@ -240,6 +256,24 @@ export const TradeClipboard: FunctionComponent<{
           .hideDenom(true)
           .toString(),
       [tradeTokenInConfig.expectedSwapResult.amount]
+    );
+
+    /** Filters tokens (by denom) on
+     * 1. not given token selected in other token select component
+     * 2. not in sendable currencies
+     */
+    const getTokenSelectTokens = useCallback(
+      (otherSelectedToken: string) => {
+        return availableOsmosisCurrencies
+          .filter((currency) => currency.coinDenom !== otherSelectedToken)
+          .filter((currency) =>
+            tradeTokenInConfig.sendableCurrencies.some(
+              (sendableCurrency) =>
+                sendableCurrency.coinDenom === currency.coinDenom
+            )
+          );
+      },
+      [availableOsmosisCurrencies, tradeTokenInConfig.sendableCurrencies]
     );
 
     // user action
@@ -626,30 +660,16 @@ export const TradeClipboard: FunctionComponent<{
                     closeTokenSelectDropdowns();
                   }
                 }}
-                tokens={allTokenBalances
-                  .filter(
-                    (tokenBalance) =>
-                      tokenBalance.balance.currency.coinDenom !==
-                      tradeTokenInConfig.outCurrency.coinDenom
-                  )
-                  .filter((tokenBalance) =>
-                    tradeTokenInConfig.sendableCurrencies.some(
-                      (sendableCurrency) =>
-                        sendableCurrency.coinDenom ===
-                        tokenBalance.balance.currency.coinDenom
-                    )
-                  )
-                  .map((tokenBalance) => tokenBalance.balance)}
+                tokens={getTokenSelectTokens(
+                  tradeTokenInConfig.outCurrency.coinDenom
+                )}
                 selectedTokenDenom={tradeTokenInConfig.sendCurrency.coinDenom}
                 onSelect={(tokenDenom: string) => {
-                  const tokenInBalance = allTokenBalances.find(
-                    (tokenBalance) =>
-                      tokenBalance.balance.currency.coinDenom === tokenDenom
+                  const tokenInCurrency = availableOsmosisCurrencies.find(
+                    (currency) => currency.coinDenom === tokenDenom
                   );
-                  if (tokenInBalance) {
-                    tradeTokenInConfig.setSendCurrency(
-                      tokenInBalance.balance.currency
-                    );
+                  if (tokenInCurrency) {
+                    tradeTokenInConfig.setSendCurrency(tokenInCurrency);
                   }
                   closeTokenSelectDropdowns();
                 }}
@@ -802,30 +822,16 @@ export const TradeClipboard: FunctionComponent<{
                   }
                 }}
                 sortByBalances
-                tokens={allTokenBalances
-                  .filter(
-                    (tokenBalance) =>
-                      tokenBalance.balance.currency.coinDenom !==
-                      tradeTokenInConfig.sendCurrency.coinDenom
-                  )
-                  .filter((tokenBalance) =>
-                    tradeTokenInConfig.sendableCurrencies.some(
-                      (sendableCurrency) =>
-                        sendableCurrency.coinDenom ===
-                        tokenBalance.balance.currency.coinDenom
-                    )
-                  )
-                  .map((tokenBalance) => tokenBalance.balance)}
+                tokens={getTokenSelectTokens(
+                  tradeTokenInConfig.sendCurrency.coinDenom
+                )}
                 selectedTokenDenom={tradeTokenInConfig.outCurrency.coinDenom}
                 onSelect={(tokenDenom: string) => {
-                  const tokenOutBalance = allTokenBalances.find(
-                    (tokenBalance) =>
-                      tokenBalance.balance.currency.coinDenom === tokenDenom
+                  const tokenOutCurrency = availableOsmosisCurrencies.find(
+                    (currency) => currency.coinDenom === tokenDenom
                   );
-                  if (tokenOutBalance) {
-                    tradeTokenInConfig.setOutCurrency(
-                      tokenOutBalance.balance.currency
-                    );
+                  if (tokenOutCurrency) {
+                    tradeTokenInConfig.setOutCurrency(tokenOutCurrency);
                   }
                   closeTokenSelectDropdowns();
                 }}

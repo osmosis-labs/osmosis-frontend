@@ -34,17 +34,17 @@ export class ObservableQueryFilteredPools
   protected _canFetch = false;
 
   constructor(
-    protected readonly kvStore: KVStore,
+    kvStore: KVStore,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter,
     protected readonly queryNumPools: ObservableQueryNumPools,
     protected readonly baseUrl = IMPERATOR_HISTORICAL_DATA_BASEURL,
-    protected readonly initialFilters: Filters = {
+    initialFilters: Filters = {
       min_liquidity: 10_000,
       order_key: "liquidity",
       order_by: "desc",
     },
-    protected readonly initialPagination: Pagination = {
+    initialPagination: Pagination = {
       offset: 0,
       limit: 160,
     }
