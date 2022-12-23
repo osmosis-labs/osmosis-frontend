@@ -10,7 +10,16 @@ import { ObservableQueryExternalBase } from "../base";
 import { Filters, objToQueryParams, Pagination, FilteredPools } from "./types";
 import { makePoolRawFromFilteredPool } from "./utils";
 
-/** TEMPORARY: use imperator query to fetch filtered, sorted pools */
+/** TEMPORARY: use imperator query to fetch filtered, sorted pools.
+ *
+ *  Avoids fetching pools until necessary. Will fetch pools individually until all pools are requested,
+ *    then it will fetch the top pools by liquidity until the remaining pools are explicitly requested.
+ *
+ *  TODO: This query includes token price and pool liquidity and volume data that is currently ignored.
+ *        we could use that data to prevent other queries in the app, perhaps by adding some sort of
+ *        store hydration mechanism to get this data into other query stores and preventing those stores from querying until needed.
+ *        This could potentially grant additional performance improvements.
+ */
 export class ObservableQueryFilteredPools
   extends ObservableQueryExternalBase<FilteredPools>
   implements PoolGetter
@@ -20,6 +29,9 @@ export class ObservableQueryFilteredPools
 
   protected _fetchingPoolIds: Set<string> = new Set();
   protected _queryParams: Filters & Pagination;
+
+  @observable
+  protected _canFetch = false;
 
   constructor(
     protected readonly kvStore: KVStore,
@@ -49,6 +61,11 @@ export class ObservableQueryFilteredPools
     this._queryParams = { ...initialFilters, ...initialPagination };
 
     makeObservable(this);
+  }
+
+  /** We'll only use the pools query if all pools are requested. */
+  protected canFetch() {
+    return this._canFetch;
   }
 
   protected setResponse(response: Readonly<QueryResponse<FilteredPools>>) {
@@ -81,15 +98,12 @@ export class ObservableQueryFilteredPools
   /** Returns `undefined` if the pool does not exist or the data has not loaded. */
   readonly getPool: (id: string) => ObservableQueryPool | undefined =
     computedFn((id: string) => {
-      if (!this.response && !this._pools.get(id)) {
-        // if the data has not loaded, and the pool is not in the map, then fetch the individual pool
-
+      if (!this.response && this._canFetch && !this._pools.has(id)) {
         return undefined;
       }
 
       if (
-        this.response &&
-        !this.isFetching &&
+        ((this.response && !this.isFetching) || !this._canFetch) &&
         !this._pools.has(id) &&
         !this._fetchingPoolIds.has(id)
       ) {
@@ -122,6 +136,8 @@ export class ObservableQueryFilteredPools
 
   /** Gets all pools that have been fetched with current filter settings. Does not guarauntee any sort of order. */
   readonly getAllPools: () => ObservableQueryPool[] = computedFn(() => {
+    runInAction(() => (this._canFetch = true));
+
     if (!this.response) {
       return [];
     }

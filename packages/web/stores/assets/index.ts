@@ -151,7 +151,14 @@ export class ObservableAssets {
         } = {
           chainInfo: chainInfo,
           balance,
-          fiatValue: this.priceStore.calculatePrice(balance),
+          fiatValue: balance.toDec().isZero()
+            ? new PricePretty(
+                this.priceStore.getFiatCurrency(
+                  this.priceStore.defaultVsCurrency
+                )!,
+                0
+              )
+            : this.priceStore.calculatePrice(balance),
           sourceChannelId: ibcAsset.sourceChannelId,
           destChannelId: ibcAsset.destChannelId,
           isUnstable: ibcAsset.isUnstable,
