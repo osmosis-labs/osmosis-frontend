@@ -1,0 +1,19 @@
+<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M16.5 2H20.5C21.6046 2 22.5 2.89543 22.5 4V8" stroke="white" stroke-width="2" stroke-linecap="round"/>
+<path d="M8.5 22L4.5 22C3.39543 22 2.5 21.1046 2.5 20L2.5 16" stroke="white" stroke-width="2" stroke-linecap="round"/>
+<path d="M22.5 16L22.5 20C22.5 21.1046 21.6046 22 20.5 22L16.5 22" stroke="white" stroke-width="2" stroke-linecap="round"/>
+<path d="M2.5 8L2.5 4C2.5 2.89543 3.39543 2 4.5 2L8.5 2" stroke="white" stroke-width="2" stroke-linecap="round"/>
+<mask id="path-5-inside-1_195_212" fill="white">
+<rect x="5.5" y="5" width="6" height="6" rx="1"/>
+</mask>
+<rect x="5.5" y="5" width="6" height="6" rx="1" stroke="white" stroke-width="3" mask="url(#path-5-inside-1_195_212)"/>
+<mask id="path-6-inside-2_195_212" fill="white">
+<rect x="13.5" y="10" width="6" height="6" rx="1"/>
+</mask>
+<rect x="13.5" y="10" width="6" height="6" rx="1" stroke="white" stroke-width="3" mask="url(#path-6-inside-2_195_212)"/>
+<mask id="path-7-inside-3_195_212" fill="white">
+<rect x="5.5" y="13" width="6" height="6" rx="1"/>
+</mask>
+<rect x="5.5" y="13" width="6" height="6" rx="1" stroke="white" stroke-width="3" mask="url(#path-7-inside-3_195_212)"/>
+<path d="M13.5 18H19M14.5 6H18.75C18.8881 6 19 6.11193 19 6.25V8" stroke="white" stroke-width="2" stroke-linecap="round"/>
+</svg>

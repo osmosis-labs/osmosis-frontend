@@ -18,7 +18,10 @@ export const CreditCardIcon: FunctionComponent<{
           stroke="currentcolor"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className={classes?.backCard}
+          className={
+            classes?.backCard ??
+            "translate-x-[6px] -translate-y-[1px] rotate-[17.37deg]"
+          }
         />
         <path
           d="M20.5 5H7C6.17157 5 5.5 5.67157 5.5 6.5V15.5C5.5 16.3284 6.17157 17 7 17H20.5C21.3284 17 22 16.3284 22 15.5V6.5C22 5.67157 21.3284 5 20.5 5Z"

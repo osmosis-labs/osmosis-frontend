@@ -8,13 +8,14 @@ import { useStore } from "../../stores";
 import {
   useAmplitudeAnalytics,
   useBooleanWithWindowEvent,
-  useWindowSize,
+  useDisclosure,
 } from "../../hooks";
 import { IUserSetting } from "../../stores/user-settings";
 import { useTranslation } from "react-multi-lang";
 import { MainLayoutMenu, CustomClasses } from "../types";
 import { MainMenu } from "../main-menu";
 import { EventName } from "../../config";
+import { ProfileModal } from "../../modals/profile";
 import IconButton from "../buttons/icon-button";
 import { Icon } from "../assets";
 
@@ -168,17 +169,17 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
       accountStore,
       navBarStore,
     } = useStore();
+    const {
+      isOpen: isProfileOpen,
+      onOpen: onOpenProfile,
+      onClose: onCloseProfile,
+    } = useDisclosure();
     const t = useTranslation();
-    const { isMobile } = useWindowSize();
     const { logEvent } = useAmplitudeAnalytics();
 
     // wallet
     const account = accountStore.getAccount(chainId);
     const walletConnected = account.walletStatus === WalletStatus.Loaded;
-    const [hoverWalletInfo, setHoverWalletInfo] = useState(false);
-
-    // mobile: show disconnect on tap vs hover
-    const [mobileTapInfo, setMobileTapInfo] = useState(false);
 
     return (
       <div className={classNames("w-40 shrink-0 lg:w-36 md:w-full", className)}>
@@ -188,33 +189,14 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
             onClick={() => {
               logEvent([EventName.Topnav.connectWalletClicked]);
               account.init();
-              setHoverWalletInfo(false);
             }}
           >
             <span className="button mx-auto">{t("connectWallet")}</span>
           </Button>
-        ) : hoverWalletInfo || mobileTapInfo ? (
-          <Button
-            className="!h-10 w-40 lg:w-36 md:w-full"
-            mode="secondary"
-            onMouseLeave={() => setHoverWalletInfo(false)}
-            onClick={() => {
-              logEvent([EventName.Topnav.signOutClicked]);
-              account.disconnect();
-              setHoverWalletInfo(false);
-            }}
-          >
-            <span className="button mx-auto">{t("menu.signOut")}</span>
-          </Button>
         ) : (
-          <div
-            className="flex place-content-between items-center gap-3 rounded-xl border border-osmoverse-700 px-2 py-1"
-            onMouseOver={() => {
-              if (!isMobile) setHoverWalletInfo(true);
-            }}
-            onClick={() => {
-              if (isMobile) setMobileTapInfo(true);
-            }}
+          <button
+            onClick={onOpenProfile}
+            className="flex w-full place-content-between items-center gap-3 rounded-xl border border-osmoverse-700 px-2 py-1"
           >
             <div className="h-7 w-7 shrink-0">
               <Image
@@ -233,8 +215,9 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
                 {navBarStore.walletInfo.name}
               </span>
             </div>
-          </div>
+          </button>
         )}
+        <ProfileModal isOpen={isProfileOpen} onRequestClose={onCloseProfile} />
       </div>
     );
   }
