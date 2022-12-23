@@ -76,6 +76,7 @@ export const AllPoolsTableSet: FunctionComponent<{
     const { logEvent } = useAmplitudeAnalytics();
 
     const [activeOptionId, setActiveOptionId] = useState(tableSet);
+    const fetchedRemainingPoolsRef = useRef(false);
 
     const poolsMenuOptions = [
       { id: "incentivized-pools", display: t("pools.incentivized") },
@@ -86,8 +87,9 @@ export const AllPoolsTableSet: FunctionComponent<{
       if (optionId === "incentivized-pools" || optionId === "all-pools") {
         setActiveOptionId(optionId);
 
-        if (optionId === "all-pools") {
+        if (optionId === "all-pools" && !fetchedRemainingPoolsRef.current) {
           queriesOsmosis.queryGammPools.fetchRemainingPools();
+          fetchedRemainingPoolsRef.current = true;
         }
       }
     };
@@ -258,11 +260,10 @@ export const AllPoolsTableSet: FunctionComponent<{
         "pool.poolAssets.amount.currency.originCurrency.pegMechanism",
       ]
     );
-    const fetchedRemainingRef = useRef(false);
     const setQuery = (search: string) => {
-      if (search !== "" && !fetchedRemainingRef.current) {
+      if (search !== "" && !fetchedRemainingPoolsRef.current) {
         queriesOsmosis.queryGammPools.fetchRemainingPools();
-        fetchedRemainingRef.current = true;
+        fetchedRemainingPoolsRef.current = true;
       }
       do_setQuery(search);
     };
