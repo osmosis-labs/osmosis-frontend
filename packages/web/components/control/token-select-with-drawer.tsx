@@ -61,27 +61,34 @@ export const TokenSelectWithDrawer: FunctionComponent<{
           )?.chainName ?? "",
       }))
       .sort((a, b) => {
+        // provided tokens don't have balances, or not sorting by balance, don't sort
         if (
           !(a.token instanceof CoinPretty) ||
-          !(b.token instanceof CoinPretty)
+          !(b.token instanceof CoinPretty) ||
+          !sortByBalances
         )
           return 0;
 
+        // 0 balance tokens short circuit sorting
+        if (a.token.toDec().isZero() && b.token.toDec().isZero()) return 0;
+        if (a.token.toDec().isZero()) return -1;
+        if (b.token.toDec().isZero()) return 1;
+
+        // calculate prices for tokens with > 0 balance
         const aFiatValue = priceStore.calculatePrice(a.token);
         const bFiatValue = priceStore.calculatePrice(b.token);
 
+        // sort by positive balances
         if (
           aFiatValue &&
           bFiatValue &&
-          aFiatValue.toDec().gt(bFiatValue.toDec()) &&
-          sortByBalances
+          aFiatValue.toDec().gt(bFiatValue.toDec())
         )
           return -1;
         if (
           aFiatValue &&
           bFiatValue &&
-          aFiatValue.toDec().lt(bFiatValue.toDec()) &&
-          sortByBalances
+          aFiatValue.toDec().lt(bFiatValue.toDec())
         )
           return 1;
         return 0;
