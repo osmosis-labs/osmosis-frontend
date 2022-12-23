@@ -249,7 +249,7 @@ export const AllPoolsTableSet: FunctionComponent<{
       sortedAllPoolsWithMetrics,
     ] = useSortedData(tvlFilteredPools, initialKeyPath, initialSortDirection);
 
-    const [query, setQuery, filteredPools] = useFilteredData(
+    const [query, do_setQuery, filteredPools] = useFilteredData(
       sortedAllPoolsWithMetrics,
       [
         "pool.id",
@@ -258,6 +258,14 @@ export const AllPoolsTableSet: FunctionComponent<{
         "pool.poolAssets.amount.currency.originCurrency.pegMechanism",
       ]
     );
+    const fetchedRemainingRef = useRef(false);
+    const setQuery = (search: string) => {
+      if (search !== "" && !fetchedRemainingRef.current) {
+        queriesOsmosis.queryGammPools.fetchRemainingPools();
+        fetchedRemainingRef.current = true;
+      }
+      do_setQuery(search);
+    };
 
     const [page, setPage, minPage, numPages, allData] = usePaginatedData(
       filteredPools,
@@ -461,13 +469,13 @@ export const AllPoolsTableSet: FunctionComponent<{
         } else {
           if (activeOptionId === "incentivized-pools")
             didAutoSwitchActiveSet.current = true;
-          setActiveOptionId("all-pools");
+          selectOption("all-pools");
         }
       }
 
       // reset filter states when query cleared only if auto switched
       if (query === "" && didAutoSwitchActiveSet.current) {
-        setActiveOptionId("incentivized-pools");
+        selectOption("incentivized-pools");
         didAutoSwitchActiveSet.current = false;
       }
       if (query === "" && didAutoSwitchTVLFilter.current) {

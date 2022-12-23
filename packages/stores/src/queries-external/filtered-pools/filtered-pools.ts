@@ -120,7 +120,7 @@ export class ObservableQueryFilteredPools
     true
   );
 
-  /** Gets all pools that have been fetched with current filter settings. */
+  /** Gets all pools that have been fetched with current filter settings. Does not guarauntee any sort of order. */
   readonly getAllPools: () => ObservableQueryPool[] = computedFn(() => {
     if (!this.response) {
       return [];
