@@ -18,6 +18,7 @@ import { EventName } from "../../config";
 import { ProfileModal } from "../../modals/profile";
 import IconButton from "../buttons/icon-button";
 import { Icon } from "../assets";
+import { getShortAddress } from "../../utils/string";
 
 export const NavBar: FunctionComponent<
   {
@@ -201,12 +202,12 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
         ) : (
           <button
             onClick={onOpenProfile}
-            className="flex place-content-between items-center gap-3 rounded-xl border border-osmoverse-700 px-2 py-1 hover:border-wosmongton-200"
+            className="group flex place-content-between items-center gap-3 rounded-xl border-2 border-osmoverse-700 px-2 py-1 hover:border-wosmongton-300 hover:bg-osmoverse-800"
           >
-            <div className="h-8 w-8 shrink-0 overflow-hidden rounded-lg">
+            <div className="h-8 w-8 shrink-0 overflow-hidden rounded-lg bg-osmoverse-700 group-hover:bg-gradient-positive">
               <Image
                 alt="Wosmongton profile"
-                src="/images/profile-woz.png"
+                src="/images/profile-woz-transparent.png"
                 height={32}
                 width={32}
               />
@@ -214,7 +215,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
 
             <div className="flex w-full flex-col truncate text-right leading-tight">
               <span className="caption truncate font-bold">
-                {navBarStore.walletInfo.name}
+                {getShortAddress(account.bech32Address)}
               </span>
               <span className="caption font-medium text-osmoverse-200">
                 {navBarStore.walletInfo.balance.toString()}
