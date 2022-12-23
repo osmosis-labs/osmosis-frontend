@@ -138,7 +138,13 @@ const Home: NextPage = observer(function () {
 
   return (
     <main className="relative h-full bg-osmoverse-900">
-      <div className="absolute h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">
+      <div
+        className={
+          IS_FRONTIER
+            ? "absolute h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x"
+            : ""
+        }
+      >
         <svg
           className="absolute h-full w-full lg:hidden"
           pointerEvents="none"
