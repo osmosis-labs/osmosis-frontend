@@ -14,12 +14,12 @@ export const CopyIcon: FunctionComponent<{
         container: classNames("group text-inherit", classes?.container),
         backCube: classNames(
           "transform transition-transform duration-150 ease-in",
-          "group-hover:-translate-x-[1px] group-hover:-translate-y-[1px] group-hover:stroke-[2.5]",
+          "group-hover:-translate-x-[1px] group-hover:-translate-y-[1px]",
           classes?.backCube
         ),
         frontCube: classNames(
           "transform transition-transform duration-150 ease-in",
-          "group-hover:translate-x-[1px] group-hover:translate-y-[1px] group-hover:stroke-[2.5]",
+          "group-hover:translate-x-[1px] group-hover:translate-y-[1px]",
           classes?.frontCube
         ),
       }

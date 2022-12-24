@@ -12,6 +12,13 @@ import { getShortAddress } from "../utils/string";
 import { useCopyToClipboard, useTimeoutFn } from "react-use";
 import { CopyIcon, LogOutIcon, QRIcon } from "../components/assets";
 import classNames from "classnames";
+import {
+  Drawer,
+  DrawerButton,
+  DrawerOverlay,
+  DrawerPanel,
+} from "../components/drawers";
+import QRCode from "qrcode.react";
 
 export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
   (props) => {
@@ -36,12 +43,18 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
       2000
     );
 
+    const onCopyAddress = () => {
+      copyToClipboard(account.bech32Address);
+      setHasCopied(true);
+      reset();
+    };
+
     return (
       <ModalBase
         title={t("profile.modalTitle")}
         {...props}
         isOpen={props.isOpen}
-        className="flex flex-col items-center"
+        className="relative flex flex-col items-center overflow-hidden"
       >
         <div className="mt-10 h-[140px] w-[140px] overflow-hidden rounded-[40px]">
           <Image
@@ -134,11 +147,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
             <div className="flex items-center gap-3">
               <ActionButton
                 title="Copy Address"
-                onClick={() => {
-                  copyToClipboard(account.bech32Address);
-                  setHasCopied(true);
-                  reset();
-                }}
+                onClick={onCopyAddress}
                 className="group"
               >
                 {hasCopied ? (
@@ -152,9 +161,42 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
                   <CopyIcon isAnimated />
                 )}
               </ActionButton>
-              <ActionButton title="Show QR Code" className="group">
-                <QRIcon isAnimated />
-              </ActionButton>
+
+              <Drawer>
+                <DrawerOverlay />
+
+                <DrawerButton>
+                  <ActionButton title="Show QR Code" className="group">
+                    <QRIcon isAnimated />
+                  </ActionButton>
+                </DrawerButton>
+
+                <DrawerPanel className="flex h-fit items-center justify-center pt-7 pb-7">
+                  <h6 className="mb-8">Cosmos</h6>
+                  <div className="mb-7 rounded-xl bg-white-high p-3.5">
+                    <QRCode value={account.bech32Address} size={260} />
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <p className="subtitle1 text-osmoverse-300">
+                      {getShortAddress(account.bech32Address)}
+                    </p>
+                    <button onClick={onCopyAddress}>
+                      {hasCopied ? (
+                        <Image
+                          src="/icons/check-mark.svg"
+                          alt="Check mark icon"
+                          width={20}
+                          height={20}
+                        />
+                      ) : (
+                        <CopyIcon isAnimated />
+                      )}
+                    </button>
+                  </div>
+                </DrawerPanel>
+              </Drawer>
+
               <ActionButton
                 title="Sign Out"
                 onClick={() => {
