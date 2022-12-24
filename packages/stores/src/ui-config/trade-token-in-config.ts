@@ -37,20 +37,12 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     sender: string,
     feeConfig: IFeeConfig | undefined,
     pools: Pool[],
-    incentivizedPoolIds: string[] = [],
-    initialTokenMinDenoms: { sendMinDenom?: string; outMinDenom?: string } = {
-      sendMinDenom: "uatom",
-      outMinDenom: "uosmo",
-    }
+    incentivizedPoolIds: string[] = []
   ) {
     super(chainGetter, queriesStore, initialChainId, sender, feeConfig);
 
     this._pools = pools;
     this._incentivizedPoolIds = incentivizedPoolIds;
-
-    const { sendMinDenom, outMinDenom } = initialTokenMinDenoms;
-    this._sendCurrencyMinDenom = sendMinDenom;
-    this._outCurrencyMinDenom = outMinDenom;
 
     makeObservable(this);
   }
