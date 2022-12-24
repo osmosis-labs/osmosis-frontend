@@ -9,8 +9,12 @@ export function makePoolRawFromFilteredPool(
     "@type": `/${filteredPool.type}`,
     id: filteredPool.pool_id.toString(),
     pool_params: {
-      exit_fee: filteredPool.exit_fees.toString(),
-      swap_fee: filteredPool.swap_fees.toString(),
+      exit_fee: new Dec(filteredPool.exit_fees.toString())
+        .mul(DecUtils.getTenExponentN(-2))
+        .toString(),
+      swap_fee: new Dec(filteredPool.swap_fees.toString())
+        .mul(DecUtils.getTenExponentN(-2))
+        .toString(),
       smooth_weight_change_params: null,
     },
     total_shares: filteredPool.total_shares,
