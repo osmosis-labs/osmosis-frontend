@@ -102,6 +102,7 @@ export class ObservableQueryFilteredPools
         return undefined;
       }
 
+      // if allPools() haven't been requested yet, fetch individual pools
       if (
         ((this.response && !this.isFetching) || !this._canFetch) &&
         !this._pools.has(id) &&
@@ -136,7 +137,7 @@ export class ObservableQueryFilteredPools
 
   /** Gets all pools that have been fetched with current filter settings. Does not guarauntee any sort of order. */
   readonly getAllPools: () => ObservableQueryPool[] = computedFn(() => {
-    runInAction(() => (this._canFetch = true));
+    runInAction(() => (this._canFetch = true)); // allow fetching all pools
 
     if (!this.response) {
       return [];
