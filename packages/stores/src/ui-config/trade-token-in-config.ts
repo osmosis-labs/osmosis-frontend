@@ -24,9 +24,9 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   protected _incentivizedPoolIds: string[];
 
   @observable
-  protected _inCurrencyMinimalDenom: string | undefined = undefined;
+  protected _sendCurrencyMinDenom: string | undefined = undefined;
   @observable
-  protected _outCurrencyMinimalDenom: string | undefined = undefined;
+  protected _outCurrencyMinDenom: string | undefined = undefined;
   @observable
   protected _error: Error | undefined = undefined;
 
@@ -37,12 +37,20 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     sender: string,
     feeConfig: IFeeConfig | undefined,
     pools: Pool[],
-    incentivizedPoolIds: string[] = []
+    incentivizedPoolIds: string[] = [],
+    initialTokenMinDenoms: { sendMinDenom?: string; outMinDenom?: string } = {
+      sendMinDenom: "uatom",
+      outMinDenom: "uosmo",
+    }
   ) {
     super(chainGetter, queriesStore, initialChainId, sender, feeConfig);
 
     this._pools = pools;
     this._incentivizedPoolIds = incentivizedPoolIds;
+
+    const { sendMinDenom, outMinDenom } = initialTokenMinDenoms;
+    this._sendCurrencyMinDenom = sendMinDenom;
+    this._outCurrencyMinDenom = outMinDenom;
 
     makeObservable(this);
   }
@@ -60,18 +68,18 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   @override
   setSendCurrency(currency: AppCurrency | undefined) {
     if (currency) {
-      this._inCurrencyMinimalDenom = currency.coinMinimalDenom;
+      this._sendCurrencyMinDenom = currency.coinMinimalDenom;
     } else {
-      this._inCurrencyMinimalDenom = undefined;
+      this._sendCurrencyMinDenom = undefined;
     }
   }
 
   @action
   setOutCurrency(currency: AppCurrency | undefined) {
     if (currency) {
-      this._outCurrencyMinimalDenom = currency.coinMinimalDenom;
+      this._outCurrencyMinDenom = currency.coinMinimalDenom;
     } else {
-      this._outCurrencyMinimalDenom = undefined;
+      this._outCurrencyMinDenom = undefined;
     }
   }
 
@@ -96,8 +104,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     const prevInCurrency = this.sendCurrency.coinMinimalDenom;
     const prevOutCurrency = this.outCurrency.coinMinimalDenom;
 
-    this._inCurrencyMinimalDenom = prevOutCurrency;
-    this._outCurrencyMinimalDenom = prevInCurrency;
+    this._sendCurrencyMinDenom = prevOutCurrency;
+    this._outCurrencyMinDenom = prevInCurrency;
   }
 
   get pools(): Pool[] {
@@ -124,8 +132,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       };
     }
 
-    if (this._inCurrencyMinimalDenom) {
-      const currency = this.currencyMap.get(this._inCurrencyMinimalDenom);
+    if (this._sendCurrencyMinDenom) {
+      const currency = this.currencyMap.get(this._sendCurrencyMinDenom);
       if (currency) {
         return currency;
       }
@@ -146,8 +154,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       };
     }
 
-    if (this._outCurrencyMinimalDenom) {
-      const currency = this.currencyMap.get(this._outCurrencyMinimalDenom);
+    if (this._outCurrencyMinDenom) {
+      const currency = this.currencyMap.get(this._outCurrencyMinDenom);
       if (currency) {
         return currency;
       }
