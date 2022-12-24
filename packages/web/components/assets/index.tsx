@@ -5,6 +5,9 @@ export * from "./rate-ring";
 export * from "./token";
 export * from "./types";
 export * from "./denom-image";
+export * from "./log-out-icon";
+export * from "./qr-icon";
+export * from "./copy-icon";
 export * from "./icon";
 
 export const ringFillColors = [

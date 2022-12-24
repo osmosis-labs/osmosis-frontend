@@ -10,6 +10,8 @@ import { useAmplitudeAnalytics, useTransferConfig } from "../hooks";
 import { EventName } from "../config";
 import { getShortAddress } from "../utils/string";
 import { useCopyToClipboard, useTimeoutFn } from "react-use";
+import { CopyIcon, LogOutIcon, QRIcon } from "../components/assets";
+import classNames from "classnames";
 
 export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
   (props) => {
@@ -137,6 +139,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
                   setHasCopied(true);
                   reset();
                 }}
+                className="group"
               >
                 {hasCopied ? (
                   <Image
@@ -146,21 +149,11 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
                     height={20}
                   />
                 ) : (
-                  <Image
-                    src="/icons/copy-white.svg"
-                    alt="Osmo icon"
-                    width={24}
-                    height={24}
-                  />
+                  <CopyIcon isAnimated />
                 )}
               </ActionButton>
-              <ActionButton title="Show QR Code">
-                <Image
-                  src="/icons/qr.svg"
-                  alt="Osmo icon"
-                  width={24}
-                  height={24}
-                />
+              <ActionButton title="Show QR Code" className="group">
+                <QRIcon isAnimated />
               </ActionButton>
               <ActionButton
                 title="Sign Out"
@@ -169,13 +162,9 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
                   props.onRequestClose();
                   account.disconnect();
                 }}
+                className="group hover:text-rust-500"
               >
-                <Image
-                  src="/icons/log-out.svg"
-                  alt="Osmo icon"
-                  width={24}
-                  height={24}
-                />
+                <LogOutIcon isAnimated />
               </ActionButton>
             </div>
           </div>
@@ -195,7 +184,10 @@ const ActionButton: FunctionComponent<
   return (
     <button
       {...props}
-      className="flex h-9 w-9 items-center justify-center rounded-lg bg-osmoverse-600 p-1.5 hover:bg-osmoverse-500"
+      className={classNames(
+        "flex h-9 w-9 items-center justify-center rounded-lg bg-osmoverse-600 p-1.5",
+        props.className
+      )}
     >
       {props.children}
     </button>
