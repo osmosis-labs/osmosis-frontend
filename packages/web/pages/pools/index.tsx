@@ -270,7 +270,12 @@ const Pools: NextPage = observer(function () {
       )
         .map((myPoolId) => queryOsmosis.queryGammPools.getPool(myPoolId))
         .filter((pool): pool is ObservableQueryPool => !!pool),
-    [isMobile, showMoreMyPools, myPoolIds, queryOsmosis.queryGammPools.response]
+    [
+      isMobile,
+      showMoreMyPools,
+      myPoolIds,
+      queryOsmosis.queryGammPools.isFetching,
+    ]
   );
   const dustFilteredPools = useHideDustUserSetting(myPools, (pool) =>
     pool

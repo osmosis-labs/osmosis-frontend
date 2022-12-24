@@ -161,7 +161,7 @@ export const AllPoolsTableSet: FunctionComponent<{
         // `useMemo` is needed in this file to avoid "debounce" with the hundreds of re-renders by mobx as the 200+ API requests come in and populate 1000+ observables (otherwise the UI is unresponsive for 30+ seconds)
         // also, the higher level `useMemo`s (i.e. this one) gain the most performance as other React renders are prevented down the line as data is calculated (remember, renders are initiated by both mobx and react)
         allPools,
-        queriesOsmosis.queryGammPools.response,
+        queriesOsmosis.queryGammPools.isFetching,
         queriesExternalStore.queryGammPoolFeeMetrics.response,
         queriesOsmosis.queryAccountLocked.get(account.bech32Address).response,
         queriesOsmosis.queryLockedCoins.get(account.bech32Address).response,
