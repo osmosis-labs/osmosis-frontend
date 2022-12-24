@@ -22,6 +22,7 @@ import classNames from "classnames";
 import {
   Drawer,
   DrawerButton,
+  DrawerContent,
   DrawerOverlay,
   DrawerPanel,
 } from "../components/drawers";
@@ -66,7 +67,6 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
         className="relative flex flex-col items-center overflow-hidden"
       >
         <Drawer>
-          <DrawerOverlay />
           <DrawerButton>
             {true ? (
               <AmmeliaAvatar className="mt-10" aria-label="Select avatar" />
@@ -74,24 +74,28 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
               <WosmongtonAvatar className="mt-10" aria-label="Select avatar" />
             )}
           </DrawerButton>
-          <DrawerPanel className="flex h-fit items-center justify-center pt-7 pb-7">
-            <h6 className="mb-8">Select an avatar</h6>
-            <div className="flex gap-8">
-              <div className="text-center">
-                <WosmongtonAvatar isSelectable />
-                <p className="subtitle1 mt-4 tracking-wide text-osmoverse-300">
-                  Wosmongton
-                </p>
-              </div>
 
-              <div className="text-center">
-                <AmmeliaAvatar isSelectable />
-                <p className="subtitle1 mt-4 tracking-wide text-osmoverse-300">
-                  Ammelia
-                </p>
+          <DrawerContent>
+            <DrawerOverlay />
+            <DrawerPanel className="flex h-fit items-center justify-center pt-7 pb-7">
+              <h6 className="mb-8">Select an avatar</h6>
+              <div className="flex gap-8">
+                <div className="text-center">
+                  <WosmongtonAvatar isSelectable />
+                  <p className="subtitle1 mt-4 tracking-wide text-osmoverse-300">
+                    Wosmongton
+                  </p>
+                </div>
+
+                <div className="text-center">
+                  <AmmeliaAvatar isSelectable />
+                  <p className="subtitle1 mt-4 tracking-wide text-osmoverse-300">
+                    Ammelia
+                  </p>
+                </div>
               </div>
-            </div>
-          </DrawerPanel>
+            </DrawerPanel>
+          </DrawerContent>
         </Drawer>
 
         <div className="mt-3 text-center">
@@ -192,46 +196,50 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
               </ActionButton>
 
               <Drawer>
-                <DrawerOverlay />
-
                 <DrawerButton>
                   <ActionButton title="Show QR Code" className="group">
                     <QRIcon isAnimated />
                   </ActionButton>
                 </DrawerButton>
 
-                <DrawerPanel className="flex h-fit items-center justify-center pt-7 pb-7">
-                  <h6 className="mb-8">Cosmos</h6>
-                  <div className="mb-7 flex items-center justify-center rounded-xl bg-white-high p-3.5">
-                    <QRCode value={address} size={260} />
-                  </div>
+                <DrawerContent>
+                  <DrawerOverlay />
+                  <DrawerPanel className="flex h-fit items-center justify-center pt-7 pb-7">
+                    <h6 className="mb-8">Cosmos</h6>
+                    <div className="mb-7 flex items-center justify-center rounded-xl bg-white-high p-3.5">
+                      <QRCode value={address} size={260} />
+                    </div>
 
-                  <div className="flex items-center gap-4 rounded-3xl bg-osmoverse-700 px-5 py-1">
-                    <p title={address} className="subtitle1 text-osmoverse-300">
-                      {getShortAddress(address, {
-                        prefixLength: 9,
-                        suffixLength: 6,
-                      })}
-                    </p>
-                    <button
-                      className="flex h-9 w-9 items-center justify-center"
-                      onClick={onCopyAddress}
-                    >
-                      {hasCopied ? (
-                        <div className="h-6 w-6">
-                          <Image
-                            src="/icons/check-mark.svg"
-                            alt="Check mark icon"
-                            width={24}
-                            height={24}
-                          />
-                        </div>
-                      ) : (
-                        <CopyIcon isAnimated />
-                      )}
-                    </button>
-                  </div>
-                </DrawerPanel>
+                    <div className="flex items-center gap-4 rounded-3xl bg-osmoverse-700 px-5 py-1">
+                      <p
+                        title={address}
+                        className="subtitle1 text-osmoverse-300"
+                      >
+                        {getShortAddress(address, {
+                          prefixLength: 9,
+                          suffixLength: 6,
+                        })}
+                      </p>
+                      <button
+                        className="flex h-9 w-9 items-center justify-center"
+                        onClick={onCopyAddress}
+                      >
+                        {hasCopied ? (
+                          <div className="h-6 w-6">
+                            <Image
+                              src="/icons/check-mark.svg"
+                              alt="Check mark icon"
+                              width={24}
+                              height={24}
+                            />
+                          </div>
+                        ) : (
+                          <CopyIcon isAnimated />
+                        )}
+                      </button>
+                    </div>
+                  </DrawerPanel>
+                </DrawerContent>
               </Drawer>
 
               <ActionButton
@@ -316,7 +324,7 @@ const WosmongtonAvatar = forwardRef<any, ComponentProps<typeof BaseAvatar>>(
         className={classNames(
           "bg-[linear-gradient(139.12deg,#A247B9_7.8%,#460E7F_88.54%)]",
           props.isSelectable &&
-            "hover:bg-[linear-gradient(139.12deg,#F35DC7_7.8%,#7B0DE2_88.54%)] hover:shadow-[0px_4px_20px_4px_#AA4990]",
+            "hover:bg-[linear-gradient(139.12deg,#F35DC7_7.8%,#7B0DE2_88.54%)] hover:shadow-[0px_4px_20px_4px_#AA4990] focus:bg-[linear-gradient(139.12deg,#F35DC7_7.8%,#7B0DE2_88.54%)] focus:shadow-[0px_4px_20px_4px_#AA4990]",
           props.className
         )}
       >
@@ -340,7 +348,7 @@ const AmmeliaAvatar = forwardRef<any, ComponentProps<typeof BaseAvatar>>(
         className={classNames(
           "bg-[linear-gradient(139.12deg,#462ADF_7.8%,#4ECAFF_88.54%)]",
           props.isSelectable &&
-            "hover:bg-[linear-gradient(139.12deg,#9044F2_7.8%,#6BFFFF_88.54%)] hover:shadow-[0px_0px_20px_4px_#60ADD3]",
+            "hover:bg-[linear-gradient(139.12deg,#9044F2_7.8%,#6BFFFF_88.54%)] hover:shadow-[0px_0px_20px_4px_#60ADD3] focus:bg-[linear-gradient(139.12deg,#9044F2_7.8%,#6BFFFF_88.54%)] focus:shadow-[0px_0px_20px_4px_#60ADD3]",
           props.className
         )}
       >

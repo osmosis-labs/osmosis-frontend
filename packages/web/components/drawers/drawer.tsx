@@ -1,45 +1,96 @@
 import { Disclosure, Transition } from "@headlessui/react";
 import classNames from "classnames";
-import { Fragment, FunctionComponent, HTMLProps } from "react";
+import FocusTrap from "focus-trap-react";
+import {
+  Fragment,
+  FunctionComponent,
+  HTMLProps,
+  useMemo,
+  useState,
+} from "react";
+import { useControllableState } from "../../hooks/use-controllable-state";
 import { runIfFn } from "../../utils/function";
 import { createContext } from "../../utils/react-context";
 
-const [DrawerPropsProvider, useDrawerProps] = createContext<{
-  open: boolean;
-  close: () => void;
-}>();
+interface DrawerContext {
+  isOpen: boolean;
+  isAnimationComplete: boolean;
+  setIsAnimationComplete: (value: boolean) => void;
+  onClose: () => void;
+  onOpen: () => void;
+}
 
-export const Drawer: FunctionComponent<Parameters<typeof Disclosure>[0]> = (
-  props
-) => {
+const [DrawerPropsProvider, useDrawerProps] = createContext<DrawerContext>();
+
+export const Drawer: FunctionComponent<{
+  isOpen?: boolean;
+  onClose?: () => void;
+  children: React.ReactNode | ((props: DrawerContext) => React.ReactNode);
+}> = (props) => {
+  const [isOpen, setIsOpen] = useControllableState({
+    defaultValue: false,
+    value: props.isOpen,
+  });
+  const [isAnimationComplete, setIsAnimationComplete] = useState(false);
+
+  const context = useMemo<DrawerContext>(
+    () => ({
+      isOpen,
+      isAnimationComplete,
+      setIsAnimationComplete,
+      onOpen: () => setIsOpen(true),
+      onClose: () => {
+        setIsAnimationComplete(false);
+        setIsOpen(false);
+      },
+    }),
+    [isOpen, isAnimationComplete, setIsOpen]
+  );
+
   return (
-    <Disclosure {...props}>
-      {(ctx) => (
-        <DrawerPropsProvider value={ctx}>
-          {runIfFn(props.children, ctx)}
-        </DrawerPropsProvider>
-      )}
-    </Disclosure>
+    <DrawerPropsProvider value={context}>
+      <div>{runIfFn(props.children, context)}</div>
+    </DrawerPropsProvider>
   );
 };
 
-export const DrawerButton: FunctionComponent<
-  Parameters<typeof Disclosure.Button>[0]
-> = (props) => (
-  <Disclosure.Button
-    as={typeof props.children === "string" ? "button" : Fragment}
-    {...props}
-  />
-);
+export const DrawerButton: FunctionComponent<{ className?: string }> = (
+  props
+) => {
+  const { onOpen, isOpen } = useDrawerProps();
+  const Component = typeof props.children === "string" ? "button" : "div";
+  return (
+    <Component
+      onClick={onOpen}
+      {...props}
+      className={classNames(isOpen && "", props.className)}
+    />
+  );
+};
+
+export const DrawerContent: FunctionComponent<{ className?: string }> = (
+  props
+) => {
+  const { isAnimationComplete, isOpen } = useDrawerProps();
+
+  return (
+    <FocusTrap
+      focusTrapOptions={{ allowOutsideClick: true }}
+      active={isAnimationComplete && isOpen}
+    >
+      <div className={props.className}>{props.children}</div>
+    </FocusTrap>
+  );
+};
 
 export const DrawerOverlay: FunctionComponent<
   HTMLProps<HTMLDivElement>
 > = () => {
-  const { open, close } = useDrawerProps();
+  const { isOpen, onClose } = useDrawerProps();
   return (
     <Transition
       as={Fragment}
-      show={open}
+      show={isOpen}
       enter="transition duration-300 ease-inOutBack"
       enterFrom="invisible opacity-0"
       enterTo="visible opacity-100"
@@ -48,7 +99,7 @@ export const DrawerOverlay: FunctionComponent<
       leaveTo="visible opacity-0"
     >
       <div
-        onClick={() => close()}
+        onClick={() => onClose()}
         className="absolute inset-0 z-40 bg-osmoverse-1000/40"
       />
     </Transition>
@@ -57,22 +108,27 @@ export const DrawerOverlay: FunctionComponent<
 
 export const DrawerPanel: FunctionComponent<
   Parameters<typeof Disclosure.Panel>[0]
-> = (props) => (
-  <Transition
-    as={Fragment}
-    enter="transition duration-300 ease-inOutBack"
-    enterFrom="invisible opacity-0 translate-y-[15%]"
-    enterTo="visible opacity-100 translate-y-0"
-    leave="transition duration-300 ease-inOutBack"
-    leaveFrom="visible opacity-100 translate-y-0"
-    leaveTo="visible opacity-0 translate-y-[15%]"
-  >
-    <Disclosure.Panel
-      {...props}
-      className={classNames(
-        "absolute left-0 right-0 bottom-0 z-50 mt-16 flex h-full w-full flex-col overflow-hidden rounded-[24px] bg-osmoverse-800 pb-16",
-        props.className
-      )}
-    />
-  </Transition>
-);
+> = (props) => {
+  const { isOpen, setIsAnimationComplete } = useDrawerProps();
+  return (
+    <Transition
+      as={Fragment}
+      show={isOpen}
+      enter="transition duration-300 ease-inOutBack"
+      enterFrom="invisible opacity-0 translate-y-[15%]"
+      enterTo="visible opacity-100 translate-y-0"
+      leave="transition duration-300 ease-inOutBack"
+      leaveFrom="visible opacity-100 translate-y-0"
+      leaveTo="visible opacity-0 translate-y-[15%]"
+      afterEnter={() => setIsAnimationComplete(true)}
+    >
+      <div
+        {...props}
+        className={classNames(
+          "absolute left-0 right-0 bottom-0 z-50 mt-16 flex h-full w-full flex-col overflow-hidden rounded-[24px] bg-osmoverse-800 pb-16",
+          props.className
+        )}
+      />
+    </Transition>
+  );
+};
