@@ -207,7 +207,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
             <div className="h-8 w-8 shrink-0 overflow-hidden rounded-lg bg-osmoverse-700 group-hover:bg-gradient-positive">
               <Image
                 alt="Wosmongton profile"
-                src="/images/profile-woz-transparent.png"
+                src="/images/profile-woz.png"
                 height={32}
                 width={32}
               />
