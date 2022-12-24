@@ -13,7 +13,11 @@ import Image from "next/image";
 import { CreditCardIcon } from "../components/assets/credit-card-icon";
 import { useStore } from "../stores";
 import { FiatRampsModal } from "./fiat-ramps";
-import { useAmplitudeAnalytics, useTransferConfig } from "../hooks";
+import {
+  useAmplitudeAnalytics,
+  useDisclosure,
+  useTransferConfig,
+} from "../hooks";
 import { EventName } from "../config";
 import { getShortAddress } from "../utils/string";
 import { useCopyToClipboard, useTimeoutFn } from "react-use";
@@ -41,6 +45,17 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
     } = useStore();
     const { logEvent } = useAmplitudeAnalytics();
 
+    const {
+      isOpen: isAvatarSelectOpen,
+      onClose: onCloseAvatarSelect,
+      onOpen: onOpenAvatarSelect,
+    } = useDisclosure();
+    const {
+      isOpen: isQROpen,
+      onClose: onCloseQR,
+      onOpen: onOpenQR,
+    } = useDisclosure();
+
     const transferConfig = useTransferConfig();
     const account = accountStore.getAccount(chainId);
 
@@ -64,9 +79,21 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
         title={t("profile.modalTitle")}
         {...props}
         isOpen={props.isOpen}
+        onRequestClose={() => {
+          // Do not close the modal if the drawers are open
+          if (!isQROpen && !isAvatarSelectOpen) return props.onRequestClose?.();
+
+          // Close the drawers
+          onCloseAvatarSelect();
+          onCloseQR();
+        }}
         className="relative flex flex-col items-center overflow-hidden"
       >
-        <Drawer>
+        <Drawer
+          isOpen={isAvatarSelectOpen}
+          onOpen={onOpenAvatarSelect}
+          onClose={onCloseAvatarSelect}
+        >
           <DrawerButton>
             {true ? (
               <AmmeliaAvatar className="mt-10" aria-label="Select avatar" />
@@ -195,7 +222,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
                 )}
               </ActionButton>
 
-              <Drawer>
+              <Drawer isOpen={isQROpen} onOpen={onOpenQR} onClose={onCloseQR}>
                 <DrawerButton>
                   <ActionButton title="Show QR Code" className="group">
                     <QRIcon isAnimated />

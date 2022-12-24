@@ -5,6 +5,7 @@ import {
   Fragment,
   FunctionComponent,
   HTMLProps,
+  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -22,9 +23,13 @@ interface DrawerContext {
 
 const [DrawerPropsProvider, useDrawerProps] = createContext<DrawerContext>();
 
+/**
+ * The drawer component is a UI element that can be used to display additional content in a compact, slide-out panel.
+ */
 export const Drawer: FunctionComponent<{
   isOpen?: boolean;
   onClose?: () => void;
+  onOpen?: () => void;
   children: React.ReactNode | ((props: DrawerContext) => React.ReactNode);
 }> = (props) => {
   const [isOpen, setIsOpen] = useControllableState({
@@ -33,15 +38,22 @@ export const Drawer: FunctionComponent<{
   });
   const [isAnimationComplete, setIsAnimationComplete] = useState(false);
 
+  useEffect(() => {
+    if (!isOpen) setIsAnimationComplete(false);
+  }, [isOpen]);
+
   const context = useMemo<DrawerContext>(
     () => ({
       isOpen,
       isAnimationComplete,
       setIsAnimationComplete,
-      onOpen: () => setIsOpen(true),
+      onOpen: () => {
+        setIsOpen(true);
+        props.onOpen?.();
+      },
       onClose: () => {
-        setIsAnimationComplete(false);
         setIsOpen(false);
+        props.onClose?.();
       },
     }),
     [isOpen, isAnimationComplete, setIsOpen]
@@ -68,6 +80,9 @@ export const DrawerButton: FunctionComponent<{ className?: string }> = (
   );
 };
 
+/**
+ * Container for the content of the drawer. It's necessary to lock focus in the content.
+ */
 export const DrawerContent: FunctionComponent<{ className?: string }> = (
   props
 ) => {
@@ -75,7 +90,7 @@ export const DrawerContent: FunctionComponent<{ className?: string }> = (
 
   return (
     <FocusTrap
-      focusTrapOptions={{ allowOutsideClick: true }}
+      focusTrapOptions={{ allowOutsideClick: true, escapeDeactivates: false }}
       active={isAnimationComplete && isOpen}
     >
       <div className={props.className}>{props.children}</div>
