@@ -444,7 +444,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
   @computed
   get isAprFetching(): boolean {
     if (
-      (!this.queryPools.response && !this.queryPools.error) ||
+      this.queryPools.isFetching ||
       (!this.queryMintParmas.response && !this.queryPools.error) ||
       (!this.queryEpochs.response && !this.queryEpochs.error) ||
       (!this.queryDistrInfo.response && !this.queryDistrInfo.error) ||
