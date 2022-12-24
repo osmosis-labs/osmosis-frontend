@@ -1,4 +1,11 @@
-import { ButtonHTMLAttributes, FunctionComponent, useState } from "react";
+import {
+  ButtonHTMLAttributes,
+  ComponentProps,
+  forwardRef,
+  FunctionComponent,
+  HTMLAttributes,
+  useState,
+} from "react";
 import { observer } from "mobx-react-lite";
 import { ModalBase, ModalBaseProps } from "./base";
 import { useTranslation } from "react-multi-lang";
@@ -49,6 +56,8 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
       reset();
     };
 
+    const address = account.bech32Address;
+
     return (
       <ModalBase
         title={t("profile.modalTitle")}
@@ -56,17 +65,37 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
         isOpen={props.isOpen}
         className="relative flex flex-col items-center overflow-hidden"
       >
-        <div className="mt-10 h-[140px] w-[140px] overflow-hidden rounded-[40px]">
-          <Image
-            alt="Wosmongton profile"
-            src="/images/profile-woz.png"
-            width={140}
-            height={140}
-          />
-        </div>
+        <Drawer>
+          <DrawerOverlay />
+          <DrawerButton>
+            {true ? (
+              <AmmeliaAvatar className="mt-10" aria-label="Select avatar" />
+            ) : (
+              <WosmongtonAvatar className="mt-10" aria-label="Select avatar" />
+            )}
+          </DrawerButton>
+          <DrawerPanel className="flex h-fit items-center justify-center pt-7 pb-7">
+            <h6 className="mb-8">Select an avatar</h6>
+            <div className="flex gap-8">
+              <div className="text-center">
+                <WosmongtonAvatar isSelectable />
+                <p className="subtitle1 mt-4 tracking-wide text-osmoverse-300">
+                  Wosmongton
+                </p>
+              </div>
+
+              <div className="text-center">
+                <AmmeliaAvatar isSelectable />
+                <p className="subtitle1 mt-4 tracking-wide text-osmoverse-300">
+                  Ammelia
+                </p>
+              </div>
+            </div>
+          </DrawerPanel>
+        </Drawer>
 
         <div className="mt-3 text-center">
-          <h5>{getShortAddress(account.bech32Address)}</h5>
+          <h5>{getShortAddress(address)}</h5>
         </div>
 
         <div className="mt-10 flex w-full flex-col gap-[30px] rounded-[20px] border border-osmoverse-700 bg-osmoverse-800 px-6 py-5">
@@ -138,8 +167,8 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
 
               <div className="subtitle-1 tracking-wide">
                 <p>Cosmos</p>
-                <p className="text-osmoverse-100">
-                  {getShortAddress(account.bech32Address)}
+                <p title={address} className="text-osmoverse-100">
+                  {getShortAddress(address)}
                 </p>
               </div>
             </div>
@@ -173,22 +202,30 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
 
                 <DrawerPanel className="flex h-fit items-center justify-center pt-7 pb-7">
                   <h6 className="mb-8">Cosmos</h6>
-                  <div className="mb-7 rounded-xl bg-white-high p-3.5">
-                    <QRCode value={account.bech32Address} size={260} />
+                  <div className="mb-7 flex items-center justify-center rounded-xl bg-white-high p-3.5">
+                    <QRCode value={address} size={260} />
                   </div>
 
-                  <div className="flex items-center gap-3">
-                    <p className="subtitle1 text-osmoverse-300">
-                      {getShortAddress(account.bech32Address)}
+                  <div className="flex items-center gap-4 rounded-3xl bg-osmoverse-700 px-5 py-1">
+                    <p title={address} className="subtitle1 text-osmoverse-300">
+                      {getShortAddress(address, {
+                        prefixLength: 9,
+                        suffixLength: 6,
+                      })}
                     </p>
-                    <button onClick={onCopyAddress}>
+                    <button
+                      className="flex h-9 w-9 items-center justify-center"
+                      onClick={onCopyAddress}
+                    >
                       {hasCopied ? (
-                        <Image
-                          src="/icons/check-mark.svg"
-                          alt="Check mark icon"
-                          width={20}
-                          height={20}
-                        />
+                        <div className="h-6 w-6">
+                          <Image
+                            src="/icons/check-mark.svg"
+                            alt="Check mark icon"
+                            width={24}
+                            height={24}
+                          />
+                        </div>
                       ) : (
                         <CopyIcon isAnimated />
                       )}
@@ -220,18 +257,100 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
   }
 );
 
-const ActionButton: FunctionComponent<
-  ButtonHTMLAttributes<HTMLButtonElement>
-> = (props) => {
+const ActionButton = forwardRef<any, ButtonHTMLAttributes<HTMLButtonElement>>(
+  (props, ref) => {
+    return (
+      <button
+        {...props}
+        ref={ref}
+        className={classNames(
+          "flex h-9 w-9 items-center justify-center rounded-lg bg-osmoverse-600 p-1.5",
+          props.className
+        )}
+      >
+        {props.children}
+      </button>
+    );
+  }
+);
+
+const BaseAvatar = forwardRef<
+  any,
+  HTMLAttributes<HTMLButtonElement> & {
+    isSelectable?: boolean;
+    isSelected?: boolean;
+  }
+>(({ isSelectable, isSelected, ...props }, ref) => {
   return (
     <button
       {...props}
+      ref={ref}
       className={classNames(
-        "flex h-9 w-9 items-center justify-center rounded-lg bg-osmoverse-600 p-1.5",
+        "h-[140px] w-[140px] overflow-hidden rounded-[40px]",
+        {
+          "group transition-all duration-300 ease-in-out active:border-[3px] active:border-osmoverse-100":
+            isSelectable,
+        },
         props.className
       )}
     >
-      {props.children}
+      <div
+        className={classNames({
+          "transform transition-transform duration-300 ease-in-out group-hover:scale-110":
+            isSelectable,
+          "border-[3px] border-osmoverse-100": isSelected,
+        })}
+      >
+        {props.children}
+      </div>
     </button>
   );
-};
+});
+
+const WosmongtonAvatar = forwardRef<any, ComponentProps<typeof BaseAvatar>>(
+  (props, ref) => {
+    return (
+      <BaseAvatar
+        {...props}
+        ref={ref}
+        className={classNames(
+          "bg-[linear-gradient(139.12deg,#A247B9_7.8%,#460E7F_88.54%)]",
+          props.isSelectable &&
+            "hover:bg-[linear-gradient(139.12deg,#F35DC7_7.8%,#7B0DE2_88.54%)] hover:shadow-[0px_4px_20px_4px_#AA4990]",
+          props.className
+        )}
+      >
+        <Image
+          alt="Wosmongton profile avatar"
+          src="/images/profile-woz.png"
+          width={140}
+          height={140}
+        />
+      </BaseAvatar>
+    );
+  }
+);
+
+const AmmeliaAvatar = forwardRef<any, ComponentProps<typeof BaseAvatar>>(
+  (props, ref) => {
+    return (
+      <BaseAvatar
+        {...props}
+        ref={ref}
+        className={classNames(
+          "bg-[linear-gradient(139.12deg,#462ADF_7.8%,#4ECAFF_88.54%)]",
+          props.isSelectable &&
+            "hover:bg-[linear-gradient(139.12deg,#9044F2_7.8%,#6BFFFF_88.54%)] hover:shadow-[0px_0px_20px_4px_#60ADD3]",
+          props.className
+        )}
+      >
+        <Image
+          alt="Wosmongton profile avatar"
+          src="/images/profile-ammelia.png"
+          width={140}
+          height={140}
+        />
+      </BaseAvatar>
+    );
+  }
+);

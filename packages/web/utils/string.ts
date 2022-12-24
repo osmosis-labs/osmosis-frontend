@@ -6,10 +6,16 @@ export function truncateString(str: string, num = 8) {
   return str.slice(0, num) + "...";
 }
 
-export function getShortAddress(address: string) {
+export function getShortAddress(
+  address: string,
+  opts?: { prefixLength?: number; suffixLength?: number }
+) {
   return (
-    address.substring(0, 6) +
+    address.substring(0, opts?.prefixLength ?? 6) +
     "..." +
-    address.substring(address.length - 4, address.length)
+    address.substring(
+      address.length - (opts?.suffixLength ?? 5),
+      address.length
+    )
   );
 }
