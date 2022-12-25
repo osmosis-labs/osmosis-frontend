@@ -288,6 +288,14 @@ const Pools: NextPage = observer(function () {
       )
   );
 
+  const [mobilePoolsTabIndex, _setMobilePoolsTabIndex] = useState(0);
+  const setMobilePoolsTabIndex = useCallback((tabIndex: number) => {
+    if (tabIndex === 1) {
+      queryOsmosis.queryGammPools.fetchRemainingPools();
+    }
+    _setMobilePoolsTabIndex(tabIndex);
+  }, []);
+
   return (
     <main className="m-auto max-w-container bg-osmoverse-900 px-8 md:px-3">
       <CreatePoolModal
@@ -651,6 +659,10 @@ const Pools: NextPage = observer(function () {
                 className: "!border-superfluid",
               },
             ]}
+            tabSelection={{
+              selectedTabIndex: mobilePoolsTabIndex,
+              onTabSelected: setMobilePoolsTabIndex,
+            }}
           />
         </section>
       ) : (
