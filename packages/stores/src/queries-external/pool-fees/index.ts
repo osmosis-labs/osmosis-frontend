@@ -24,47 +24,51 @@ export class ObservableQueryPoolFeesMetrics extends ObservableQueryExternalBase<
         throw new Error("There is no fiat currency in priceStore");
       }
 
-      const poolFeesMetricsRaw = this.response?.data.data.find(
-        (poolMetric) => poolMetric.pool_id === poolId
-      );
-      if (!poolFeesMetricsRaw) {
-        const zeroPrice = new PricePretty(fiatCurrency, new Dec(0)).ready(
-          false
-        );
-        return {
-          volume24h: zeroPrice,
-          volume7d: zeroPrice,
-          feesSpent24h: zeroPrice,
-          feesSpent7d: zeroPrice,
-          feesPercentage: "",
-        };
-      }
-
-      const volume24h = new PricePretty(
-        fiatCurrency,
-        new Dec(poolFeesMetricsRaw.volume_24h)
-      );
-      const volume7d = new PricePretty(
-        fiatCurrency,
-        new Dec(poolFeesMetricsRaw.volume_7d)
-      );
-      const feesSpent24h = new PricePretty(
-        fiatCurrency,
-        new Dec(poolFeesMetricsRaw.fees_spent_24h)
-      );
-      const feesSpent7d = new PricePretty(
-        fiatCurrency,
-        new Dec(poolFeesMetricsRaw.fees_spent_7d)
-      );
-      const feesPercentage = poolFeesMetricsRaw.fees_percentage;
-
-      return {
-        volume24h,
-        volume7d,
-        feesSpent24h,
-        feesSpent7d,
-        feesPercentage,
+      const zeroPrice = new PricePretty(fiatCurrency, new Dec(0)).ready(false);
+      const zeroMetrics = {
+        volume24h: zeroPrice,
+        volume7d: zeroPrice,
+        feesSpent24h: zeroPrice,
+        feesSpent7d: zeroPrice,
+        feesPercentage: "",
       };
+
+      try {
+        const poolFeesMetricsRaw = this.response?.data.data.find(
+          (poolMetric) => poolMetric.pool_id === poolId
+        );
+        if (!poolFeesMetricsRaw) {
+          return zeroMetrics;
+        }
+
+        const volume24h = new PricePretty(
+          fiatCurrency,
+          new Dec(poolFeesMetricsRaw.volume_24h)
+        );
+        const volume7d = new PricePretty(
+          fiatCurrency,
+          new Dec(poolFeesMetricsRaw.volume_7d)
+        );
+        const feesSpent24h = new PricePretty(
+          fiatCurrency,
+          new Dec(poolFeesMetricsRaw.fees_spent_24h)
+        );
+        const feesSpent7d = new PricePretty(
+          fiatCurrency,
+          new Dec(poolFeesMetricsRaw.fees_spent_7d)
+        );
+        const feesPercentage = poolFeesMetricsRaw.fees_percentage;
+
+        return {
+          volume24h,
+          volume7d,
+          feesSpent24h,
+          feesSpent7d,
+          feesPercentage,
+        };
+      } catch {
+        return zeroMetrics;
+      }
     }
   );
 

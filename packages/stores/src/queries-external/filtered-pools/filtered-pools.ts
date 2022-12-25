@@ -91,7 +91,9 @@ export class ObservableQueryFilteredPools
             )
           );
         }
-      } catch {}
+      } catch {
+        console.error("Failed to make pool raw from filtered pool raw.");
+      }
     }
   }
 
