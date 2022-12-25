@@ -153,8 +153,12 @@ export class ObservableQueryFilteredPools
   });
 
   paginate() {
-    this._queryParams.offset += this._queryParams.limit;
-    this.updateUrlAndFetch();
+    this.queryNumPools.waitResponse().then(() => {
+      if (this._queryParams.limit < this.queryNumPools.numPools) {
+        this._queryParams.offset += this._queryParams.limit;
+        this.updateUrlAndFetch();
+      }
+    });
   }
 
   fetchRemainingPools() {
