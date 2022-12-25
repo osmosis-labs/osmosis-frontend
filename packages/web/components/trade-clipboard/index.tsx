@@ -7,7 +7,7 @@ import {
   useCallback,
 } from "react";
 import { WalletStatus } from "@keplr-wallet/stores";
-import { Currency } from "@keplr-wallet/types";
+import { AppCurrency, Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { Pool } from "@osmosis-labs/pools";
 import classNames from "classnames";
@@ -55,7 +55,7 @@ export const TradeClipboard: FunctionComponent<{
     const { logEvent } = useAmplitudeAnalytics();
 
     /** If in modal, show all currencies. Otherwise, get approved currencies from assets store. */
-    const availableOsmosisCurrencies = isInModal
+    const availableOsmosisCoins = isInModal
       ? chainStore.getChain(chainStore.osmosis.chainId).currencies
       : nativeBalances
           .concat(ibcBalances)
@@ -129,7 +129,7 @@ export const TradeClipboard: FunctionComponent<{
 
     useTokenSwapQueryParams(
       tradeTokenInConfig,
-      availableOsmosisCurrencies,
+      availableOsmosisCoins,
       isInModal
     );
 
@@ -264,16 +264,35 @@ export const TradeClipboard: FunctionComponent<{
      */
     const getTokenSelectTokens = useCallback(
       (otherSelectedToken: string) => {
-        return availableOsmosisCurrencies
+        return availableOsmosisCoins
           .filter((currency) => currency.coinDenom !== otherSelectedToken)
           .filter((currency) =>
             tradeTokenInConfig.sendableCurrencies.some(
               (sendableCurrency) =>
                 sendableCurrency.coinDenom === currency.coinDenom
             )
+          )
+          .map((currency) => {
+            // return balances or currencies if in modal
+            if (isInModal) {
+              return currency;
+            }
+            const coins = nativeBalances.concat(ibcBalances);
+            return coins.find(
+              (coin) => coin.balance.denom === currency.coinDenom
+            )?.balance;
+          })
+          .filter(
+            (coin): coin is CoinPretty | AppCurrency => coin !== undefined
           );
       },
-      [availableOsmosisCurrencies, tradeTokenInConfig.sendableCurrencies]
+      [
+        availableOsmosisCoins,
+        tradeTokenInConfig.sendableCurrencies,
+        isInModal,
+        nativeBalances,
+        ibcBalances,
+      ]
     );
 
     // user action
@@ -665,7 +684,7 @@ export const TradeClipboard: FunctionComponent<{
                 )}
                 selectedTokenDenom={tradeTokenInConfig.sendCurrency.coinDenom}
                 onSelect={(tokenDenom: string) => {
-                  const tokenInCurrency = availableOsmosisCurrencies.find(
+                  const tokenInCurrency = availableOsmosisCoins.find(
                     (currency) => currency.coinDenom === tokenDenom
                   );
                   if (tokenInCurrency) {
@@ -827,7 +846,7 @@ export const TradeClipboard: FunctionComponent<{
                 )}
                 selectedTokenDenom={tradeTokenInConfig.outCurrency.coinDenom}
                 onSelect={(tokenDenom: string) => {
-                  const tokenOutCurrency = availableOsmosisCurrencies.find(
+                  const tokenOutCurrency = availableOsmosisCoins.find(
                     (currency) => currency.coinDenom === tokenDenom
                   );
                   if (tokenOutCurrency) {

@@ -71,8 +71,8 @@ export const TokenSelectWithDrawer: FunctionComponent<{
 
         // 0 balance tokens short circuit sorting
         if (a.token.toDec().isZero() && b.token.toDec().isZero()) return 0;
-        if (a.token.toDec().isZero()) return -1;
-        if (b.token.toDec().isZero()) return 1;
+        if (a.token.toDec().isZero()) return 1;
+        if (b.token.toDec().isZero()) return -1;
 
         // calculate prices for tokens with > 0 balance
         const aFiatValue = priceStore.calculatePrice(a.token);
