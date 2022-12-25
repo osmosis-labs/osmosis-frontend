@@ -197,25 +197,6 @@ const Assets: NextPage = observer(() => {
         ibcBalances={ibcBalances}
         onDeposit={onTableDeposit}
         onWithdraw={onTableWithdraw}
-        onBuyOsmo={() => {
-          transferConfig?.buyOsmo();
-          const tokenName = "OSMO";
-
-          const cryptoBalance = nativeBalances.find(
-            (coin) =>
-              coin.balance.denom.toLowerCase() === tokenName.toLowerCase()
-          );
-
-          logEvent([
-            EventName.Assets.buyOsmoClicked,
-            {
-              tokenName,
-              tokenAmount: (cryptoBalance?.fiatValue ?? cryptoBalance?.balance)
-                ?.maxDecimals(4)
-                .toString(),
-            },
-          ]);
-        }}
       />
       {!isMobile && <PoolAssets />}
       <section className="bg-osmoverse-900">

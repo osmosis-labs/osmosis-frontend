@@ -44,7 +44,6 @@ interface Props {
     externalUrl?: string
   ) => void;
   onDeposit: (chainId: string, coinDenom: string, externalUrl?: string) => void;
-  onBuyOsmo: () => void;
 }
 
 export const AssetsTable: FunctionComponent<Props> = observer(
@@ -53,7 +52,6 @@ export const AssetsTable: FunctionComponent<Props> = observer(
     ibcBalances,
     onDeposit: _onDeposit,
     onWithdraw: _onWithdraw,
-    onBuyOsmo,
   }) => {
     const { chainStore } = useStore();
     const { width, isMobile } = useWindowSize();
@@ -116,10 +114,6 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                 ? value?.toDec().toString()
                 : "0",
             isCW20: false,
-            onBuyOsmo:
-              balance.denom === "OSMO" && BUY_OSMO_TRANSAK
-                ? onBuyOsmo
-                : undefined,
           };
         }),
         ...initialAssetsSort(

@@ -24,7 +24,6 @@ export type AssetCell = BaseCell & {
     coinDenom: string,
     externalUrl?: string
   ) => void;
-  onBuyOsmo?: () => void;
 };
 
 export interface ValidatorInfo extends BaseCell {

@@ -1,9 +1,7 @@
 import Image from "next/image";
 import classNames from "classnames";
 import { FunctionComponent, useState } from "react";
-import { WalletStatus } from "@keplr-wallet/stores";
 import { AssetCell as Cell } from "./types";
-import { useStore } from "../../../stores";
 import { useTranslation } from "react-multi-lang";
 
 export const TransferButtonCell: FunctionComponent<
@@ -21,12 +19,8 @@ export const TransferButtonCell: FunctionComponent<
   isUnstable,
   onWithdraw,
   onDeposit,
-  onBuyOsmo,
 }) => {
   const t = useTranslation();
-  const { chainStore, accountStore } = useStore();
-
-  const account = accountStore.getAccount(chainStore.osmosis.chainId);
 
   return type === "withdraw" ? (
     chainId && coinDenom && onWithdraw ? (
@@ -37,21 +31,12 @@ export const TransferButtonCell: FunctionComponent<
         action={() => onWithdraw?.(chainId, coinDenom, withdrawUrlOverride)}
       />
     ) : null
-  ) : chainId && coinDenom && (onDeposit || onBuyOsmo) ? (
+  ) : chainId && coinDenom && onDeposit ? (
     <TransferButton
-      disabled={
-        isUnstable ||
-        (onBuyOsmo && account.walletStatus !== WalletStatus.Loaded)
-      }
+      disabled={isUnstable}
       externalUrl={depositUrlOverride}
-      label={
-        onBuyOsmo ? t("assets.table.buyOsmo") : t("assets.table.depositButton")
-      }
-      action={
-        onBuyOsmo
-          ? onBuyOsmo
-          : () => onDeposit?.(chainId, coinDenom, depositUrlOverride)
-      }
+      label={t("assets.table.depositButton")}
+      action={() => onDeposit?.(chainId, coinDenom, depositUrlOverride)}
     />
   ) : null;
 };
