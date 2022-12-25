@@ -344,8 +344,7 @@
     "info": "Statystyki",
     "signOut": "Rozłącz",
     "help": "Uzyskaj Pomoc od Support Lab",
-    "learnMoreFrontier": "Dowiedz się więcej o <br/> <name>Osmosis Frontier</name>",
-    "buyTokens": "Kup tokeny"
+    "learnMoreFrontier": "Dowiedz się więcej o <br/> <name>Osmosis Frontier</name>"
   },
   "settings": {
     "title": "Ustawienia",
@@ -378,6 +377,12 @@
     "generic": "Błąd"
   },
   "connectWallet": "Połącz portfel",
+  "buyTokens": "Kup tokeny",
+  "profile": {
+    "modalTitle": "Profil",
+    "balance": "Balansować",
+    "wallet": "Portfel"
+  },
   "keplr": {
     "install": "Zainstaluj Keplr",
     "wallet": "Keplr Portfel",

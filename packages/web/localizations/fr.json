@@ -343,8 +343,7 @@
     "info": "Info",
     "signOut": "Déconnecter",
     "help": "Obtenir de l'aide",
-    "learnMoreFrontier": "En apprendre<br/>plus sur<br2/> <name>Osmosis Frontier</name>",
-    "buyTokens": "Acheter jetons"
+    "learnMoreFrontier": "En apprendre<br/>plus sur<br2/> <name>Osmosis Frontier</name>"
   },
   "settings": {
     "title": "Paramètres",
@@ -377,6 +376,12 @@
     "generic": "Erreur"
   },
   "connectWallet": "Connecter le portefeuille",
+  "buyTokens": "Acheter jetons",
+  "profile": {
+    "modalTitle": "Le profil",
+    "balance": "Solde",
+    "wallet": "Portefeuille"
+  },
   "keplr": {
     "install": "Installer Keplr",
     "wallet": "Portefeuille Keplr",

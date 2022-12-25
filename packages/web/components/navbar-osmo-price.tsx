@@ -152,9 +152,7 @@ const NavbarOsmoPrice = observer(() => {
                 frontCard: "group-hover:fill-[#71B5EB] group-hover:stroke-[2]",
               }}
             />{" "}
-            <span className="z-10 mt-0.5 flex-shrink-0">
-              {t("menu.buyTokens")}
-            </span>{" "}
+            <span className="z-10 mt-0.5 flex-shrink-0">{t("buyTokens")}</span>{" "}
             <CoinsIcon
               className={classNames(
                 "invisible absolute top-0 -translate-y-full transform transition-transform ease-linear",
