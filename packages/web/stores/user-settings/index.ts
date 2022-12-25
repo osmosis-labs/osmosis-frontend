@@ -9,8 +9,16 @@ import {
 import { FunctionComponent } from "react";
 import { computedFn } from "mobx-utils";
 import { KVStore } from "@keplr-wallet/common";
+import { HideDustUserSetting } from "./hide-dust";
+import { AvatarUserSetting } from "./avatar";
+import { LanguageUserSetting } from "./language";
 
-export interface IUserSetting<TState = any> {
+type UserSettingName =
+  | HideDustUserSetting["id"]
+  | AvatarUserSetting["id"]
+  | LanguageUserSetting["id"];
+
+export interface UserSetting<TState = any> {
   readonly id: string;
   readonly state: TState;
   readonly getLabel: (t: Function) => string;
@@ -20,9 +28,9 @@ export interface IUserSetting<TState = any> {
 
 export class UserSettings {
   @observable
-  private _settings: IUserSetting[];
+  private _settings: UserSetting[];
 
-  constructor(protected readonly kvStore: KVStore, settings: IUserSetting[]) {
+  constructor(protected readonly kvStore: KVStore, settings: UserSetting[]) {
     this._settings = settings;
     makeObservable(this);
 
@@ -49,14 +57,17 @@ export class UserSettings {
   }
 
   @computed
-  get userSettings(): IUserSetting[] {
+  get userSettings(): UserSetting[] {
     return this._settings;
   }
 
-  getUserSettingById = computedFn((id: string) => {
-    return this._settings.find(({ id: settingId }) => settingId === id);
-  });
+  getUserSettingById = computedFn(
+    <T>(id: UserSettingName): UserSetting<T> | undefined => {
+      return this._settings.find(({ id: settingId }) => settingId === id);
+    }
+  );
 }
 
 export * from "./hide-dust";
 export * from "./language";
+export * from "./avatar";

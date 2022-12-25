@@ -1,6 +1,6 @@
 import { action, makeObservable, observable, computed } from "mobx";
 import { FunctionComponent } from "react";
-import { IUserSetting } from ".";
+import { UserSetting } from ".";
 import React from "react";
 import {
   LanguageSelect,
@@ -52,7 +52,7 @@ const SUPPORTED_LANGUAGES: MenuDropdownIconItemProps[] = [
   },
 ];
 
-export class LanguageUserSetting implements IUserSetting<LanguageState> {
+export class LanguageUserSetting implements UserSetting<LanguageState> {
   readonly id = "language";
   readonly defaultLanguage: MenuDropdownIconItemProps;
   readonly controlComponent: FunctionComponent<LanguageState> = ({}) => {

@@ -10,7 +10,7 @@ import {
   useBooleanWithWindowEvent,
   useDisclosure,
 } from "../../hooks";
-import { IUserSetting } from "../../stores/user-settings";
+import { AvatarState, UserSetting } from "../../stores/user-settings";
 import { useTranslation } from "react-multi-lang";
 import { MainLayoutMenu, CustomClasses } from "../types";
 import { MainMenu } from "../main-menu";
@@ -135,7 +135,7 @@ export const NavBar: FunctionComponent<
 });
 
 const SettingsDropdown: FunctionComponent<{
-  userSettings: IUserSetting[];
+  userSettings: UserSetting[];
 }> = observer(({ userSettings }) => {
   const t = useTranslation();
   return (
@@ -169,6 +169,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
       },
       accountStore,
       navBarStore,
+      userSettings,
     } = useStore();
     const {
       isOpen: isProfileOpen,
@@ -181,6 +182,9 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
     // wallet
     const account = accountStore.getAccount(chainId);
     const walletConnected = account.walletStatus === WalletStatus.Loaded;
+
+    const avatarSettings =
+      userSettings.getUserSettingById<AvatarState>("avatar");
 
     return (
       <div
@@ -205,12 +209,21 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
             className="group flex place-content-between items-center gap-3 rounded-xl border-2 border-osmoverse-700 px-2 py-1 hover:border-wosmongton-300 hover:bg-osmoverse-800"
           >
             <div className="h-8 w-8 shrink-0 overflow-hidden rounded-lg bg-osmoverse-700 group-hover:bg-gradient-positive">
-              <Image
-                alt="Wosmongton profile"
-                src="/images/profile-woz.png"
-                height={32}
-                width={32}
-              />
+              {avatarSettings?.state.avatar === "ammelia" ? (
+                <Image
+                  alt="Wosmongton profile"
+                  src="/images/profile-ammelia.png"
+                  height={32}
+                  width={32}
+                />
+              ) : (
+                <Image
+                  alt="Wosmongton profile"
+                  src="/images/profile-woz.png"
+                  height={32}
+                  width={32}
+                />
+              )}
             </div>
 
             <div className="flex w-full flex-col truncate text-right leading-tight">

@@ -31,6 +31,7 @@ import {
   DrawerPanel,
 } from "../components/drawers";
 import QRCode from "qrcode.react";
+import { AvatarState } from "../stores/user-settings";
 
 export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
   (props) => {
@@ -42,6 +43,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
       accountStore,
       priceStore,
       navBarStore,
+      userSettings,
     } = useStore();
     const { logEvent } = useAmplitudeAnalytics();
 
@@ -58,6 +60,8 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
 
     const transferConfig = useTransferConfig();
     const account = accountStore.getAccount(chainId);
+    const avatarSetting =
+      userSettings.getUserSettingById<AvatarState>("avatar");
 
     const [hasCopied, setHasCopied] = useState(false);
     const [_state, copyToClipboard] = useCopyToClipboard();
@@ -95,7 +99,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
           onClose={onCloseAvatarSelect}
         >
           <DrawerButton>
-            {true ? (
+            {avatarSetting?.state.avatar === "ammelia" ? (
               <AmmeliaAvatar className="mt-10" aria-label="Select avatar" />
             ) : (
               <WosmongtonAvatar className="mt-10" aria-label="Select avatar" />
@@ -106,16 +110,32 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
             <DrawerOverlay />
             <DrawerPanel className="flex h-fit items-center justify-center pt-7 pb-7">
               <h6 className="mb-8">Select an avatar</h6>
-              <div className="flex gap-8">
+              <div className="flex gap-8 xs:gap-3">
                 <div className="text-center">
-                  <WosmongtonAvatar isSelectable />
+                  <WosmongtonAvatar
+                    isSelectable
+                    isSelected={avatarSetting?.state.avatar === "wosmongton"}
+                    onSelect={() => {
+                      onCloseAvatarSelect();
+                      avatarSetting?.setState({ avatar: "wosmongton" });
+                    }}
+                    className="outline-none"
+                  />
                   <p className="subtitle1 mt-4 tracking-wide text-osmoverse-300">
                     Wosmongton
                   </p>
                 </div>
 
                 <div className="text-center">
-                  <AmmeliaAvatar isSelectable />
+                  <AmmeliaAvatar
+                    isSelectable
+                    isSelected={avatarSetting?.state.avatar === "ammelia"}
+                    onSelect={() => {
+                      onCloseAvatarSelect();
+                      avatarSetting?.setState({ avatar: "ammelia" });
+                    }}
+                    className="outline-none"
+                  />
                   <p className="subtitle1 mt-4 tracking-wide text-osmoverse-300">
                     Ammelia
                   </p>
@@ -142,7 +162,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
             </p>
           </div>
 
-          <div className="flex justify-between">
+          <div className="flex justify-between 1.5xs:flex-col 1.5xs:gap-4">
             <div>
               <h6 className="mb-[3px] tracking-wide text-osmoverse-100">
                 {priceStore
@@ -185,7 +205,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
             <p className="subtitle1 tracking-wide text-osmoverse-300">Wallet</p>
           </div>
 
-          <div className="flex justify-between">
+          <div className="flex justify-between 1.5xl:gap-4 1.5xs:flex-col">
             <div className="flex gap-3">
               <div className="h-12 w-12 shrink-0">
                 <Image
@@ -314,6 +334,7 @@ const BaseAvatar = forwardRef<
   HTMLAttributes<HTMLButtonElement> & {
     isSelectable?: boolean;
     isSelected?: boolean;
+    onSelect?: () => void;
   }
 >(({ isSelectable, isSelected, ...props }, ref) => {
   return (
@@ -325,15 +346,16 @@ const BaseAvatar = forwardRef<
         {
           "group transition-all duration-300 ease-in-out active:border-[3px] active:border-osmoverse-100":
             isSelectable,
+          "border-[3px] border-osmoverse-100": isSelected,
         },
         props.className
       )}
+      onClick={() => props.onSelect?.()}
     >
       <div
         className={classNames({
           "transform transition-transform duration-300 ease-in-out group-hover:scale-110":
             isSelectable,
-          "border-[3px] border-osmoverse-100": isSelected,
         })}
       >
         {props.children}

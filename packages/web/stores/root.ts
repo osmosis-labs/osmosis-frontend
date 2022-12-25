@@ -39,6 +39,7 @@ import {
   UserSettings,
   HideDustUserSetting,
   LanguageUserSetting,
+  AvatarUserSetting,
 } from "./user-settings";
 const semver = require("semver");
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
@@ -287,6 +288,7 @@ export class RootStore {
         this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)
           ?.symbol ?? "$"
       ),
+      new AvatarUserSetting(),
     ]);
   }
 }

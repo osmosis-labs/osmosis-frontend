@@ -1,10 +1,10 @@
 import { action, makeObservable, observable, computed } from "mobx";
 import { FunctionComponent } from "react";
 import { Switch } from "../../components/control";
-import { IUserSetting } from ".";
+import { UserSetting } from ".";
 
 export type HideDustState = { hideDust: boolean };
-export class HideDustUserSetting implements IUserSetting<HideDustState> {
+export class HideDustUserSetting implements UserSetting<HideDustState> {
   readonly id = "hide-dust";
   readonly controlComponent: FunctionComponent<HideDustState> = ({
     hideDust,
