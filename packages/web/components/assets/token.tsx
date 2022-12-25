@@ -24,7 +24,7 @@ export const Token: FunctionComponent<
       {poolShare && !isMobile && (
         <RateRing
           className="my-auto"
-          percentage={poolShare}
+          percentage={poolShare.maxDecimals(0)}
           colorIndex={ringColorIndex}
         />
       )}
@@ -39,7 +39,7 @@ export const Token: FunctionComponent<
         )}
         {poolShare && isMobile && (
           <span className="caption text-osmoverse-400">
-            {poolShare.toString()}
+            {poolShare.maxDecimals(0).toString()}
           </span>
         )}
       </div>

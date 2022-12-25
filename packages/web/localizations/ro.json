@@ -38,6 +38,7 @@
     "APR": "APR",
     "available": "Disponibil",
     "liquidity": "Lichiditate pool",
+    "myLiquidity": "Lichiditatea mea",
     "bonded": "Blocate",
     "incentivized": "Stimulat",
     "all": "Toate Pool-urile",
@@ -137,7 +138,6 @@
     "bondSuperfluidLiquidityCaption": "Foloseste Superfluid pentru recompense maxime.",
     "bondShares": "Blocheaza Actiuni",
     "amountDaysUnbonding": "{numDays} zile blocate",
-    "shares": "actiuni",
     "unbonded": "Deblocate",
     "unbond": "Deblocate",
     "bonded": "Blocate",
@@ -273,7 +273,6 @@
       "search": "Filtreaza dupa simbol",
       "title": "Active",
       "hideZero": "Ascunde balantele zero",
-      "buyOsmo": "Cumpara",
       "preTransfer": {
         "deposit": "Depoziteaza",
         "withdraw": "Retrage",
@@ -322,7 +321,10 @@
       "mobileMenu": "Sorteaza dupa"
     },
     "MAX": "MAX",
-    "searchTokens": "Cauta tokeni"
+    "searchTokens": "Cauta tokeni",
+    "selectToken": {
+      "title": "Selectați un simbol"
+    }
   },
   "menu": {
     "swap": "Schimba",
@@ -333,7 +335,8 @@
     "info": "Statistici",
     "signOut": "Deconectare",
     "help": "Support Lab Help",
-    "learnMoreFrontier": "Invata mai multe<br/>Despre <br2/> <name>Osmosis Frontier</name>"
+    "learnMoreFrontier": "Invata mai multe<br/>Despre <br2/> <name>Osmosis Frontier</name>",
+    "buyTokens": "Cumpara"
   },
   "settings": {
     "title": "Setari",

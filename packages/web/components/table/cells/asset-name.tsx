@@ -15,7 +15,7 @@ export const AssetNameCell: FunctionComponent<Partial<Cell>> = ({
   const [showStar, setShowStar] = useState(false);
   return (
     <div
-      className="flex gap-2 items-center"
+      className="flex items-center gap-2"
       onMouseEnter={() => setShowStar(true)}
       onMouseLeave={() => setShowStar(false)}
     >

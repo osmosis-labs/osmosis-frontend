@@ -155,7 +155,6 @@ export class ObservableQueryPoolDetails extends UserConfig {
       const totalWeight = this.queryPool.weightedPoolInfo?.totalWeight;
 
       return {
-        // TODO: test
         ratio:
           weightedAsset && totalWeight
             ? new RatePretty(weightedAsset.weight.quo(totalWeight))

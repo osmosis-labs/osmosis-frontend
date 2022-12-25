@@ -273,7 +273,6 @@
       "search": "Search",
       "title": "All Assets",
       "hideZero": "Hide zero balances",
-      "buyOsmo": "Buy",
       "preTransfer": {
         "deposit": "Deposit",
         "withdraw": "Withdraw",

@@ -46,9 +46,13 @@ export class ObservableQueryTokenHistoricalChart extends ObservableQueryExternal
 
     if (!this.response || !fiat) return undefined;
 
-    return this.response.data.map(
-      ({ close }) => new PricePretty(fiat, new Dec(close))
-    );
+    try {
+      return this.response.data.map(
+        ({ close }) => new PricePretty(fiat, new Dec(close))
+      );
+    } catch {
+      return undefined;
+    }
   }
 }
 

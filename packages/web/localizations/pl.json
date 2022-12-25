@@ -24,8 +24,6 @@
     "error": {
       "findCurrency": "Nie udało się znaleźć waluty {currency}"
     },
-    "wrapNativeLink": "Konwertuj {fromDenom} na {toDenom} na {platformName}",
-    "waitTime": "{minutes} minuty",
     "autoRouter": "Trasa",
     "routerTooltipFee": "Opłata",
     "autoRouterToggle": { "show": "Mostrar", "hide": "Esconder" },
@@ -274,7 +272,6 @@
       "search": "Szukaj",
       "title": "Wszystkie aktywa",
       "hideZero": "Ukryj puste salda",
-      "buyOsmo": "Kup",
       "preTransfer": {
         "deposit": "Wpłać",
         "withdraw": "Wypłać",

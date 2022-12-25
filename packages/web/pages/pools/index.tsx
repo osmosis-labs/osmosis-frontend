@@ -270,7 +270,12 @@ const Pools: NextPage = observer(function () {
       )
         .map((myPoolId) => queryOsmosis.queryGammPools.getPool(myPoolId))
         .filter((pool): pool is ObservableQueryPool => !!pool),
-    [isMobile, showMoreMyPools, myPoolIds, queryOsmosis.queryGammPools.response]
+    [
+      isMobile,
+      showMoreMyPools,
+      myPoolIds,
+      queryOsmosis.queryGammPools.isFetching,
+    ]
   );
   const dustFilteredPools = useHideDustUserSetting(myPools, (pool) =>
     pool
@@ -282,6 +287,14 @@ const Pools: NextPage = observer(function () {
         )
       )
   );
+
+  const [mobilePoolsTabIndex, _setMobilePoolsTabIndex] = useState(0);
+  const setMobilePoolsTabIndex = useCallback((tabIndex: number) => {
+    if (tabIndex === 1) {
+      queryOsmosis.queryGammPools.fetchRemainingPools();
+    }
+    _setMobilePoolsTabIndex(tabIndex);
+  }, []);
 
   return (
     <main className="m-auto max-w-container bg-osmoverse-900 px-8 md:px-3">
@@ -646,6 +659,10 @@ const Pools: NextPage = observer(function () {
                 className: "!border-superfluid",
               },
             ]}
+            tabSelection={{
+              selectedTabIndex: mobilePoolsTabIndex,
+              onTabSelected: setMobilePoolsTabIndex,
+            }}
           />
         </section>
       ) : (
