@@ -158,7 +158,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
               height={24}
             />
             <p className="subtitle1 tracking-wide text-osmoverse-300">
-              Balance
+              {t("profile.balance")}
             </p>
           </div>
 
@@ -179,7 +179,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
 
             <button
               onClick={() => transferConfig?.buyOsmo()}
-              className="subtitle1 group flex h-[44px] w-[156px] items-center gap-[10px] rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-[6px] px-3 hover:border-none hover:bg-gradient-positive hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)]"
+              className="subtitle1 group flex h-[44px] items-center gap-[10px] rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-[6px] px-3.5 hover:border-none hover:bg-gradient-positive hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)] 1.5xs:self-start"
             >
               <CreditCardIcon
                 isAnimated
@@ -189,7 +189,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
                     "group-hover:fill-[#71B5EB] group-hover:stroke-[2]",
                 }}
               />
-              Buy Tokens
+              <span>{t("buyTokens")}</span>
             </button>
           </div>
         </div>
@@ -202,7 +202,9 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
               width={24}
               height={24}
             />
-            <p className="subtitle1 tracking-wide text-osmoverse-300">Wallet</p>
+            <p className="subtitle1 tracking-wide text-osmoverse-300">
+              {t("profile.wallet")}
+            </p>
           </div>
 
           <div className="flex justify-between 1.5xl:gap-4 1.5xs:flex-col">
@@ -226,7 +228,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
 
             <div className="flex items-center gap-3">
               <ActionButton
-                title="Copy Address"
+                title="Copy"
                 onClick={onCopyAddress}
                 className="group"
               >
@@ -244,7 +246,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
 
               <Drawer isOpen={isQROpen} onOpen={onOpenQR} onClose={onCloseQR}>
                 <DrawerButton>
-                  <ActionButton title="Show QR Code" className="group">
+                  <ActionButton title="QR Code" className="group">
                     <QRIcon isAnimated />
                   </ActionButton>
                 </DrawerButton>
@@ -290,7 +292,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
               </Drawer>
 
               <ActionButton
-                title="Sign Out"
+                title="Log Out"
                 onClick={() => {
                   logEvent([EventName.Topnav.signOutClicked]);
                   props.onRequestClose();

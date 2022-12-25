@@ -379,6 +379,12 @@
     "generic": "Eroare"
   },
   "connectWallet": "Conecteaza Portofel",
+  "buyTokens": "Cumpărați jetoane",
+  "profile": {
+    "modalTitle": "Profil",
+    "balance": "Balanta",
+    "wallet": "Portofel"
+  },
   "keplr": {
     "install": "Instaleaza Keplr",
     "wallet": "Portofel Keplr",
