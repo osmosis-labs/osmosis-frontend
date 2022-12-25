@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
 import { Dec } from "@keplr-wallet/unit";
-import { BUY_OSMO_TRANSAK, initialAssetsSort } from "../../config";
+import { initialAssetsSort } from "../../config";
 import {
   IBCBalance,
   IBCCW20ContractBalance,
