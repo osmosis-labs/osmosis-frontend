@@ -167,6 +167,7 @@ const Pool: FunctionComponent = observer(() => {
       const poolInfo = {
         ...baseEventInfo,
         isSingleAsset: config.isSingleAmountIn,
+        isSuperfluidEnabled,
         providingLiquidity:
           config.isSingleAmountIn && config.singleAmountInConfig
             ? {
@@ -210,7 +211,7 @@ const Pool: FunctionComponent = observer(() => {
     (duration: Duration, electSuperfluid?: boolean) => {
       const lockInfo = {
         ...baseEventInfo,
-        isSuperfluidEnabled: electSuperfluid,
+        isSuperfluidEnabled: Boolean(electSuperfluid),
         unbondingPeriod: duration.asDays(),
       };
 
@@ -684,7 +685,13 @@ const Pool: FunctionComponent = observer(() => {
                       disabled={poolDetailConfig?.userAvailableValue
                         .toDec()
                         .isZero()}
-                      onClick={() => setShowRemoveLiquidityModal(true)}
+                      onClick={() => {
+                        logEvent([
+                          E.removeLiquidityClicked,
+                          { ...baseEventInfo, isSuperfluidEnabled },
+                        ]);
+                        setShowRemoveLiquidityModal(true);
+                      }}
                     >
                       {t("removeLiquidity.title")}
                     </Button>
@@ -693,7 +700,13 @@ const Pool: FunctionComponent = observer(() => {
                         "!border-0 bg-gradient-positive text-osmoverse-900":
                           levelCta === 1,
                       })}
-                      onClick={() => setShowAddLiquidityModal(true)}
+                      onClick={() => {
+                        logEvent([
+                          E.addLiquidityClicked,
+                          { ...baseEventInfo, isSuperfluidEnabled },
+                        ]);
+                        setShowAddLiquidityModal(true);
+                      }}
                     >
                       {t("addLiquidity.title")}
                     </Button>

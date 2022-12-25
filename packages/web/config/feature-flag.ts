@@ -1,4 +1,4 @@
-import { IS_FRONTIER } from "./ibc-assets";
+import { IS_FRONTIER, IS_TESTNET } from "./env";
 
 /** UI will go into "halt mode" if `true`. */
 export const IS_HALTED = false;
@@ -66,8 +66,29 @@ export const PromotedLBPPoolIds: {
     ]
   : [];
 
-/** Gauges to be rendered in pool's respective pool detail page. */
-export const ExternalIncentiveGaugeAllowList: {
+const TestnetExternalIncentiveGaugeAllowList: {
+  [poolId: string]: {
+    gaugeId: string;
+    denom: string;
+  }[];
+} = {
+  "762": [
+    {
+      gaugeId: "2508",
+      denom: "uosmo",
+    },
+    {
+      gaugeId: "2509",
+      denom: "uosmo",
+    },
+    {
+      gaugeId: "2510",
+      denom: "uosmo",
+    },
+  ],
+};
+
+const MainnetExternalIncentiveGaugeAllowList: {
   [poolId: string]: {
     gaugeId: string;
     denom: string;
@@ -1234,7 +1255,7 @@ export const ExternalIncentiveGaugeAllowList: {
       gaugeId: "30247",
       denom:
         "ibc/C822645522FC3EECF817609AA38C24B64D04F5C267A23BCCF8F2E3BC5755FA88",
-    }
+    },
   ],
   "858": [
     {
@@ -1254,3 +1275,13 @@ export const ExternalIncentiveGaugeAllowList: {
     },
   ],
 };
+
+/** Gauges to be rendered in pool's respective pool detail page. */
+export const ExternalIncentiveGaugeAllowList: {
+  [poolId: string]: {
+    gaugeId: string;
+    denom: string;
+  }[];
+} = IS_TESTNET
+  ? TestnetExternalIncentiveGaugeAllowList
+  : MainnetExternalIncentiveGaugeAllowList;

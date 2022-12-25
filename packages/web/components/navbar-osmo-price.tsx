@@ -135,11 +135,11 @@ const NavbarOsmoPrice = observer(() => {
                 EventName.Sidebar.buyOsmoClicked,
                 {
                   tokenName,
-                  tokenAmount: (
-                    cryptoBalance?.fiatValue ?? cryptoBalance?.balance
-                  )
-                    ?.maxDecimals(4)
-                    .toString(),
+                  tokenAmount: Number(
+                    (cryptoBalance?.fiatValue ?? cryptoBalance?.balance)
+                      ?.maxDecimals(4)
+                      .toString()
+                  ),
                 },
               ]);
             }}
@@ -173,11 +173,12 @@ const NavbarOsmoPrice = observer(() => {
           transakModalProps={{
             onCreateOrder: (data) => {
               logEvent([
-                EventName.Sidebar.buyOsmoCompleted,
+                EventName.Sidebar.buyOsmoStarted,
                 {
                   tokenName: data.status.cryptoCurrency,
-                  tokenAmount:
-                    data.status?.fiatAmountInUsd ?? data.status.cryptoAmount,
+                  tokenAmount: Number(
+                    data.status?.fiatAmountInUsd ?? data.status.cryptoAmount
+                  ),
                 },
               ]);
             },
@@ -186,8 +187,9 @@ const NavbarOsmoPrice = observer(() => {
                 EventName.Sidebar.buyOsmoCompleted,
                 {
                   tokenName: data.status.cryptoCurrency,
-                  tokenAmount:
-                    data.status?.fiatAmountInUsd ?? data.status.cryptoAmount,
+                  tokenAmount: Number(
+                    data.status?.fiatAmountInUsd ?? data.status.cryptoAmount
+                  ),
                 },
               ]);
             },

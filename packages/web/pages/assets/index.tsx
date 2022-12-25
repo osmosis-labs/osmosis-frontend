@@ -163,11 +163,12 @@ const Assets: NextPage = observer(() => {
           transakModalProps={{
             onCreateOrder: (data) => {
               logEvent([
-                EventName.Assets.buyOsmoCompleted,
+                EventName.Assets.buyOsmoStarted,
                 {
                   tokenName: data.status.cryptoCurrency,
-                  tokenAmount:
-                    data.status?.fiatAmountInUsd ?? data.status.cryptoAmount,
+                  tokenAmount: Number(
+                    data.status?.fiatAmountInUsd ?? data.status.cryptoAmount
+                  ),
                 },
               ]);
             },
@@ -176,8 +177,9 @@ const Assets: NextPage = observer(() => {
                 EventName.Assets.buyOsmoCompleted,
                 {
                   tokenName: data.status.cryptoCurrency,
-                  tokenAmount:
-                    data.status?.fiatAmountInUsd ?? data.status.cryptoAmount,
+                  tokenAmount: Number(
+                    data.status?.fiatAmountInUsd ?? data.status.cryptoAmount
+                  ),
                 },
               ]);
             },
