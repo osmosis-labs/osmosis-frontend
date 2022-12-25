@@ -93,7 +93,7 @@ export const AllPoolsTableSet: FunctionComponent<{
         }
       }
     };
-    const [isPoolTvlFiltered, do_setIsPoolTvlFiltered] = useState(false);
+    const [isPoolTvlFiltered, _setIsPoolTvlFiltered] = useState(false);
     const tvlFilterLabel = t("pools.allPools.displayLowLiquidity", {
       value: new PricePretty(
         priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
@@ -108,7 +108,7 @@ export const AllPoolsTableSet: FunctionComponent<{
           isFilterOn: isFiltered,
         },
       ]);
-      do_setIsPoolTvlFiltered(isFiltered);
+      _setIsPoolTvlFiltered(isFiltered);
     }, []);
 
     const { chainId } = chainStore.osmosis;
@@ -251,7 +251,7 @@ export const AllPoolsTableSet: FunctionComponent<{
       sortedAllPoolsWithMetrics,
     ] = useSortedData(tvlFilteredPools, initialKeyPath, initialSortDirection);
 
-    const [query, do_setQuery, filteredPools] = useFilteredData(
+    const [query, _setQuery, filteredPools] = useFilteredData(
       sortedAllPoolsWithMetrics,
       [
         "pool.id",
@@ -265,7 +265,7 @@ export const AllPoolsTableSet: FunctionComponent<{
         queriesOsmosis.queryGammPools.fetchRemainingPools();
         fetchedRemainingPoolsRef.current = true;
       }
-      do_setQuery(search);
+      _setQuery(search);
     };
 
     const [page, setPage, minPage, numPages, allData] = usePaginatedData(

@@ -51,8 +51,8 @@ export const AssetsTable: FunctionComponent<Props> = observer(
   ({
     nativeBalances,
     ibcBalances,
-    onDeposit: do_onDeposit,
-    onWithdraw: do_onWithdraw,
+    onDeposit: _onDeposit,
+    onWithdraw: _onWithdraw,
     onBuyOsmo,
   }) => {
     const { chainStore } = useStore();
@@ -61,8 +61,8 @@ export const AssetsTable: FunctionComponent<Props> = observer(
     const { logEvent } = useAmplitudeAnalytics();
 
     const onDeposit = useCallback(
-      (...depositParams: Parameters<typeof do_onDeposit>) => {
-        do_onDeposit(...depositParams);
+      (...depositParams: Parameters<typeof _onDeposit>) => {
+        _onDeposit(...depositParams);
         logEvent([
           EventName.Assets.assetsItemDepositClicked,
           {
@@ -71,11 +71,11 @@ export const AssetsTable: FunctionComponent<Props> = observer(
           },
         ]);
       },
-      [do_onDeposit, logEvent]
+      [_onDeposit, logEvent]
     );
     const onWithdraw = useCallback(
-      (...withdrawParams: Parameters<typeof do_onWithdraw>) => {
-        do_onWithdraw(...withdrawParams);
+      (...withdrawParams: Parameters<typeof _onWithdraw>) => {
+        _onWithdraw(...withdrawParams);
         logEvent([
           EventName.Assets.assetsItemWithdrawClicked,
           {
@@ -84,7 +84,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
           },
         ]);
       },
-      [do_onWithdraw, logEvent]
+      [_onWithdraw, logEvent]
     );
 
     const mergeWithdrawCol = width < 1000 && !isMobile;
@@ -183,7 +183,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
     // Sort data based on user's input either with the table column headers or the sort menu.
     const [
       sortKey,
-      do_setSortKey,
+      _setSortKey,
       sortDirection,
       setSortDirection,
       toggleSortDirection,
@@ -200,7 +200,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
             sortedOn: "dropdown",
           },
         ]);
-        do_setSortKey(term);
+        _setSortKey(term);
       },
       [sortDirection]
     );
