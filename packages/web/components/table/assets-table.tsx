@@ -9,7 +9,13 @@ import {
 } from "@tanstack/react-table";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { FunctionComponent, useCallback, useMemo, useState } from "react";
+import {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useTranslation } from "react-multi-lang";
 import { BUY_OSMO_TRANSAK, initialAssetsSort, IS_FRONTIER } from "../../config";
 import { EventName } from "../../config/user-analytics-v2";
@@ -27,7 +33,8 @@ import {
   IBCCW20ContractBalance,
 } from "../../stores/assets";
 import { ShowMoreButton } from "../buttons/show-more";
-import { SortMenu, Switch } from "../control";
+import { Switch } from "../control";
+import { SortMenu } from "./sort-menu";
 import { SearchBox } from "../input";
 import {
   AssetCell as TableCell,
@@ -44,7 +51,7 @@ const columns = [
     cell: (props) => <AssetNameCell {...props.row.original} />,
     header: "Asset/Chain",
   }),
-  columnHelper.accessor("amount", {
+  columnHelper.accessor("fiatValueRaw", {
     cell: (props) => <BalanceCell {...props.row.original} />,
     header: "Balance",
   }),
@@ -61,6 +68,10 @@ const columns = [
       <TransferButtonCell type="withdraw" {...props.row.original} />
     ),
     header: "Withdraw",
+  }),
+  columnHelper.accessor("chainName", {
+    cell: () => <></>,
+    header: "",
   }),
 ];
 
@@ -272,6 +283,11 @@ export const AssetsTable: FunctionComponent<Props> = observer(
       getSortedRowModel: getSortedRowModel(),
       debugTable: true,
     });
+    console.log("🚀 ~ filteredSortedCells", filteredSortedCells);
+    console.log(table.getAllColumns());
+    useEffect(() => {
+      table.getColumn("chainName").toggleSorting(false);
+    }, [table]);
 
     return (
       <section>
@@ -351,6 +367,8 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                   }}
                   placeholder={t("assets.table.search")}
                 />
+                {/* TODO: manage state for sorting in this component, create dict of handlers and currKey, pass functions as props to sort-menu */}
+                {/* Basically maintain API of sort-menu, probably can reuse same component */}
                 <SortMenu
                   selectedOptionId={sortKey}
                   onSelect={setSortKey}
