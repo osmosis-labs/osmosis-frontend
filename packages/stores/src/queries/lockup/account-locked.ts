@@ -106,8 +106,6 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
 
             map.set(denom, curDenomValue);
           }
-        } else {
-          console.warn(`Unknown currency when processing locks: ${denom}`);
         }
       }
     }
