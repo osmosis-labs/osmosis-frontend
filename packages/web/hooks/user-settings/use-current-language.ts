@@ -1,12 +1,13 @@
 import { useEffect } from "react";
 import { setLanguage, setTranslations } from "react-multi-lang";
 import { useStore } from "../../stores";
+import { LanguageState } from "../../stores/user-settings";
 
 /** Use current user-set laungage. */
 export function useCurrentLanguage() {
   const { userSettings } = useStore();
   const currentLanguage: string | undefined =
-    userSettings.getUserSettingById("language")?.state.language;
+    userSettings.getUserSettingById<LanguageState>("language")?.state.language;
 
   useEffect(() => {
     if (currentLanguage) {
