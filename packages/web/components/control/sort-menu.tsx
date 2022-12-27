@@ -57,10 +57,8 @@ export const SortMenu: FunctionComponent<Props> = ({
             e.stopPropagation();
             if (!disabled) {
               if (onToggleSortDirection && selectedOption) {
-                console.log("good");
                 onToggleSortDirection();
               } else {
-                console.log("bad");
                 setDropdownOpen(!dropdownOpen);
               }
             }
