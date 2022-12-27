@@ -138,7 +138,6 @@
     "bondSuperfluidLiquidityCaption": "Superfluid 를 통해 최대 보상을 받으세요.",
     "bondShares": "유동성 예치",
     "amountDaysUnbonding": "예치 해제 {numDays}일",
-    "shares": "LP",
     "available": "사용 가능",
     "unbond": "예치 해재하기",
     "bonded": "예치된 자산",

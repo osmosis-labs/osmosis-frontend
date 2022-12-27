@@ -169,7 +169,8 @@
     "allAssets": "Wszystkie tokeny",
     "singleAsset": "Jeden token",
     "available": "Dostępne",
-    "autoswapCaption": "Użyj autowymiany, żeby dodać płynność jednym tokenem."
+    "autoswapCaption": "Użyj autowymiany, żeby dodać płynność jednym tokenem.",
+    "stablecoinWarning": "Dodajesz płynność do {denom}, stablecoina {mechanism} zabezpieczeniem."
   },
   "lockToken": {
     "title": "Zwiąż Aktywa Płynności",
