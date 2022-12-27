@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
 import { Dec } from "@keplr-wallet/unit";
-import { BUY_OSMO_TRANSAK, initialAssetsSort } from "../../config";
+import { initialAssetsSort } from "../../config";
 import {
   IBCBalance,
   IBCCW20ContractBalance,
@@ -44,16 +44,14 @@ interface Props {
     externalUrl?: string
   ) => void;
   onDeposit: (chainId: string, coinDenom: string, externalUrl?: string) => void;
-  onBuyOsmo: () => void;
 }
 
 export const AssetsTable: FunctionComponent<Props> = observer(
   ({
     nativeBalances,
     ibcBalances,
-    onDeposit: do_onDeposit,
-    onWithdraw: do_onWithdraw,
-    onBuyOsmo,
+    onDeposit: _onDeposit,
+    onWithdraw: _onWithdraw,
   }) => {
     const { chainStore } = useStore();
     const { width, isMobile } = useWindowSize();
@@ -65,8 +63,8 @@ export const AssetsTable: FunctionComponent<Props> = observer(
     );
 
     const onDeposit = useCallback(
-      (...depositParams: Parameters<typeof do_onDeposit>) => {
-        do_onDeposit(...depositParams);
+      (...depositParams: Parameters<typeof _onDeposit>) => {
+        _onDeposit(...depositParams);
         logEvent([
           EventName.Assets.assetsItemDepositClicked,
           {
@@ -75,11 +73,11 @@ export const AssetsTable: FunctionComponent<Props> = observer(
           },
         ]);
       },
-      [do_onDeposit, logEvent]
+      [_onDeposit, logEvent]
     );
     const onWithdraw = useCallback(
-      (...withdrawParams: Parameters<typeof do_onWithdraw>) => {
-        do_onWithdraw(...withdrawParams);
+      (...withdrawParams: Parameters<typeof _onWithdraw>) => {
+        _onWithdraw(...withdrawParams);
         logEvent([
           EventName.Assets.assetsItemWithdrawClicked,
           {
@@ -88,7 +86,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
           },
         ]);
       },
-      [do_onWithdraw, logEvent]
+      [_onWithdraw, logEvent]
     );
 
     const mergeWithdrawCol = width < 1000 && !isMobile;
@@ -120,10 +118,6 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                 ? value?.toDec().toString()
                 : "0",
             isCW20: false,
-            onBuyOsmo:
-              balance.denom === "OSMO" && BUY_OSMO_TRANSAK
-                ? onBuyOsmo
-                : undefined,
           };
         }),
         ...initialAssetsSort(
@@ -187,7 +181,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
     // Sort data based on user's input either with the table column headers or the sort menu.
     const [
       sortKey,
-      do_setSortKey,
+      _setSortKey,
       sortDirection,
       setSortDirection,
       toggleSortDirection,
@@ -204,7 +198,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
             sortedOn: "dropdown",
           },
         ]);
-        do_setSortKey(term);
+        _setSortKey(term);
       },
       [sortDirection]
     );

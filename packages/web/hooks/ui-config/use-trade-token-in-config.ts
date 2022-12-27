@@ -34,7 +34,20 @@ export function useTradeTokenInConfig(
         osmosisChainId,
         bech32Address,
         undefined,
-        pools
+        pools,
+        undefined,
+        {
+          send: {
+            coinDenom: "ATOM",
+            coinMinimalDenom: "uatom",
+            coinDecimals: 6,
+          },
+          out: {
+            coinDenom: "OSMO",
+            coinMinimalDenom: "uosmo",
+            coinDecimals: 6,
+          },
+        }
       )
   );
 

@@ -1,7 +1,8 @@
-import { ObservableQueryPools, ObservableQueryNumPools } from "./pools";
 import { ChainGetter, QueriesSetBase } from "@keplr-wallet/stores";
 import { KVStore } from "@keplr-wallet/common";
 import { DeepReadonly } from "utility-types";
+import { ObservableQueryFilteredPools } from "../queries-external/filtered-pools/filtered-pools";
+import { ObservableQueryNumPools } from "./pools";
 import { ObservableQueryGammPoolShare } from "./pool-share";
 import {
   ObservableQueryIncentivizedPools,
@@ -67,7 +68,7 @@ export const OsmosisQueries = {
 
 /** Root queries store for all Osmosis queries. */
 export class OsmosisQueriesImpl {
-  public readonly queryGammPools: DeepReadonly<ObservableQueryPools>;
+  public readonly queryGammPools: DeepReadonly<ObservableQueryFilteredPools>;
   public readonly queryGammNumPools: DeepReadonly<ObservableQueryNumPools>;
   public readonly queryGammPoolShare: DeepReadonly<ObservableQueryGammPoolShare>;
 
@@ -128,7 +129,7 @@ export class OsmosisQueriesImpl {
       chainId,
       chainGetter
     );
-    this.queryGammPools = new ObservableQueryPools(
+    this.queryGammPools = new ObservableQueryFilteredPools(
       kvStore,
       chainId,
       chainGetter,

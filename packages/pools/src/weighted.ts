@@ -7,7 +7,6 @@ export interface WeightedPoolRaw {
   "@type": string;
   id: string;
   pool_params: {
-    lock: boolean;
     // Dec
     swap_fee: string;
     // Dec
@@ -44,17 +43,15 @@ export interface WeightedPoolRaw {
     // Int
     amount: string;
   };
-  pool_assets: [
-    {
+  pool_assets: {
+    // Int
+    weight: string;
+    token: {
+      denom: string;
       // Int
-      weight: string;
-      token: {
-        denom: string;
-        // Int
-        amount: string;
-      };
-    }
-  ];
+      amount: string;
+    };
+  }[];
 }
 
 // TODO: use Int, and Duration types instead of raw strings

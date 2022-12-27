@@ -40,7 +40,7 @@ export const LockTokensModal: FunctionComponent<
   // initialize pool data stores once root pool store is loaded
   const { poolDetailConfig } = usePoolDetailConfig(poolId);
   const { superfluidPoolConfig } = useSuperfluidPoolConfig(poolDetailConfig);
-  const bondLiquidityConfig = useBondLiquidityConfig(bech32Address, poolId);
+  const bondLiquidityConfig = useBondLiquidityConfig(poolId);
 
   const bondDurations =
     bondLiquidityConfig?.getAllowedBondDurations(

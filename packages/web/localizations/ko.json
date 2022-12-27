@@ -138,7 +138,6 @@
     "bondSuperfluidLiquidityCaption": "Superfluid 를 통해 최대 보상을 받으세요.",
     "bondShares": "유동성 예치",
     "amountDaysUnbonding": "예치 해제 {numDays}일",
-    "shares": "LP",
     "available": "사용 가능",
     "unbond": "예치 해재하기",
     "bonded": "예치된 자산",
@@ -274,7 +273,6 @@
       "search": "검색",
       "title": "모든 자산",
       "hideZero": "작은 자산 숨기기",
-      "buyOsmo": "구매",
       "preTransfer": {
         "deposit": "입금",
         "withdraw": "출금",
@@ -370,6 +368,7 @@
     "negativeSlippage": "슬리피지가 음수입니다",
     "invalidSlippage": "잘못된 슬리피지",
     "noSendCurrency": "전송할 토큰이 설정되지 않았습니다",
+    "insufficientBal": "잔액 불충분",
     "notInitialized": "초기화 되지 않았습니다",
     "calculatingShareOutAmount": "수량을 계산하는데 오류가 발생했습니다",
     "noAvailableShares": "사용 가능한 {denom}이 없습니다",
@@ -396,5 +395,8 @@
   "Amount is empty": "수량이 비어있습니다",
   "Insufficient amount": "수량이 부족합니다",
   "Amount is zero": "수량이 0입니다",
-  "Minimum of 2 assets required": "2개 이상의 자산이 필요합니다"
+  "Minimum of 2 assets required": "2개 이상의 자산이 필요합니다",
+  "stablecoinTypes": {
+    "collateralized": "담보"
+  }
 }

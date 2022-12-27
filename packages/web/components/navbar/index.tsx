@@ -59,6 +59,7 @@ export const NavBar: FunctionComponent<
               className="top-navbar-mobile absolute top-[100%] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3"
               onClick={(e) => {
                 e.stopPropagation();
+                setMobileNavMenuOptionsOpen(false);
               }}
             >
               <MainMenu

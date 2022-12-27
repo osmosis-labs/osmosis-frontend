@@ -4,12 +4,19 @@ import { ObservableBondLiquidityConfig } from "@osmosis-labs/stores";
 import { usePoolDetailConfig } from "./use-pool-detail-config";
 import { useSuperfluidPoolConfig } from "./use-superfluid-pool-config";
 
-export function useBondLiquidityConfig(bech32Address: string, poolId?: string) {
-  const { chainStore, queriesStore, priceStore, queriesExternalStore } =
-    useStore();
+export function useBondLiquidityConfig(poolId?: string) {
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    priceStore,
+    queriesExternalStore,
+  } = useStore();
 
   const { poolDetailConfig } = usePoolDetailConfig(poolId);
   const { superfluidPoolConfig } = useSuperfluidPoolConfig(poolDetailConfig);
+  const account = accountStore.getAccount(chainStore.osmosis.chainId);
+  const { bech32Address } = account;
   const queryOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
   const [bondLiquidityConfig, setBondLiquidityConfig] =

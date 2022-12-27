@@ -138,7 +138,6 @@
     "bondSuperfluidLiquidityCaption": "啟用超流體質押以賺取最多獎勵",
     "bondShares": "鎖定份額",
     "amountDaysUnbonding": "解鎖中 ({numDays} 日)",
-    "shares": "份額",
     "available": "可用的",
     "unbond": "解鎖",
     "bonded": "已鎖定",
@@ -274,7 +273,6 @@
       "search": "搜索",
       "title": "所有資產",
       "hideZero": "隱藏結餘為零的項目",
-      "buyOsmo": "買",
       "preTransfer": {
         "deposit": "存入",
         "withdraw": "轉出",
@@ -323,7 +321,10 @@
       "mobileMenu": "排序"
     },
     "MAX": "全部",
-    "searchTokens": "搜尋代幣"
+    "searchTokens": "搜尋代幣",
+    "selectToken": {
+      "title": "選擇權杖"
+    }
   },
   "menu": {
     "swap": "兌換",
@@ -394,5 +395,8 @@
   "Amount is empty": "未提供幣額",
   "Insufficient amount": "幣額不足",
   "Amount is zero": "幣額為零",
-  "Minimum of 2 assets required": "最少需要兩種資產"
+  "Minimum of 2 assets required": "最少需要兩種資產",
+  "stablecoinTypes": {
+    "collateralized": "抵押"
+  }
 }

@@ -273,7 +273,6 @@
       "search": "Arama",
       "title": "Tüm Varlıklar",
       "hideZero": "Sıfır bakiyeyi gizle",
-      "buyOsmo": "Al",
       "preTransfer": {
         "deposit": "Yatır",
         "withdraw": "Çek",
@@ -396,5 +395,8 @@
   "Amount is empty": "Miktar alanı boş",
   "Insufficient amount": "Yetersiz miktar",
   "Amount is zero": "Miktar sıfır",
-  "Minimum of 2 assets required": "En az 2 varlık gerekli"
+  "Minimum of 2 assets required": "En az 2 varlık gerekli",
+  "stablecoinTypes": {
+    "collateralized": "teminatlandırılmış"
+  }
 }

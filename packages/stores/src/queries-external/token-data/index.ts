@@ -27,9 +27,13 @@ export class ObservableQueryTokenData extends ObservableQueryExternalBase<
   get get24hrChange(): RatePretty | undefined {
     if (!this.response) return undefined;
 
-    return new RatePretty(
-      new Dec(this.response.data[0].price_24h_change / 100)
-    );
+    try {
+      return new RatePretty(
+        new Dec(this.response.data[0].price_24h_change / 100)
+      );
+    } catch {
+      return undefined;
+    }
   }
 }
 

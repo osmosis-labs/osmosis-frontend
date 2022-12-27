@@ -76,6 +76,7 @@ export const AllPoolsTableSet: FunctionComponent<{
     const { logEvent } = useAmplitudeAnalytics();
 
     const [activeOptionId, setActiveOptionId] = useState(tableSet);
+    const fetchedRemainingPoolsRef = useRef(false);
 
     const poolsMenuOptions = [
       { id: "incentivized-pools", display: t("pools.incentivized") },
@@ -85,9 +86,14 @@ export const AllPoolsTableSet: FunctionComponent<{
     const selectOption = (optionId: string) => {
       if (optionId === "incentivized-pools" || optionId === "all-pools") {
         setActiveOptionId(optionId);
+
+        if (optionId === "all-pools" && !fetchedRemainingPoolsRef.current) {
+          queriesOsmosis.queryGammPools.fetchRemainingPools();
+          fetchedRemainingPoolsRef.current = true;
+        }
       }
     };
-    const [isPoolTvlFiltered, do_setIsPoolTvlFiltered] = useState(false);
+    const [isPoolTvlFiltered, _setIsPoolTvlFiltered] = useState(false);
     const tvlFilterLabel = t("pools.allPools.displayLowLiquidity", {
       value: new PricePretty(
         priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
@@ -102,7 +108,7 @@ export const AllPoolsTableSet: FunctionComponent<{
           isFilterOn: isFiltered,
         },
       ]);
-      do_setIsPoolTvlFiltered(isFiltered);
+      _setIsPoolTvlFiltered(isFiltered);
     }, []);
 
     const { chainId } = chainStore.osmosis;
@@ -155,7 +161,7 @@ export const AllPoolsTableSet: FunctionComponent<{
         // `useMemo` is needed in this file to avoid "debounce" with the hundreds of re-renders by mobx as the 200+ API requests come in and populate 1000+ observables (otherwise the UI is unresponsive for 30+ seconds)
         // also, the higher level `useMemo`s (i.e. this one) gain the most performance as other React renders are prevented down the line as data is calculated (remember, renders are initiated by both mobx and react)
         allPools,
-        queriesOsmosis.queryGammPools.response,
+        queriesOsmosis.queryGammPools.isFetching,
         queriesExternalStore.queryGammPoolFeeMetrics.response,
         queriesOsmosis.queryAccountLocked.get(account.bech32Address).response,
         queriesOsmosis.queryLockedCoins.get(account.bech32Address).response,
@@ -245,7 +251,7 @@ export const AllPoolsTableSet: FunctionComponent<{
       sortedAllPoolsWithMetrics,
     ] = useSortedData(tvlFilteredPools, initialKeyPath, initialSortDirection);
 
-    const [query, setQuery, filteredPools] = useFilteredData(
+    const [query, _setQuery, filteredPools] = useFilteredData(
       sortedAllPoolsWithMetrics,
       [
         "pool.id",
@@ -254,6 +260,13 @@ export const AllPoolsTableSet: FunctionComponent<{
         "pool.poolAssets.amount.currency.originCurrency.pegMechanism",
       ]
     );
+    const setQuery = (search: string) => {
+      if (search !== "" && !fetchedRemainingPoolsRef.current) {
+        queriesOsmosis.queryGammPools.fetchRemainingPools();
+        fetchedRemainingPoolsRef.current = true;
+      }
+      _setQuery(search);
+    };
 
     const [page, setPage, minPage, numPages, allData] = usePaginatedData(
       filteredPools,
@@ -457,13 +470,13 @@ export const AllPoolsTableSet: FunctionComponent<{
         } else {
           if (activeOptionId === "incentivized-pools")
             didAutoSwitchActiveSet.current = true;
-          setActiveOptionId("all-pools");
+          selectOption("all-pools");
         }
       }
 
       // reset filter states when query cleared only if auto switched
       if (query === "" && didAutoSwitchActiveSet.current) {
-        setActiveOptionId("incentivized-pools");
+        selectOption("incentivized-pools");
         didAutoSwitchActiveSet.current = false;
       }
       if (query === "" && didAutoSwitchTVLFilter.current) {

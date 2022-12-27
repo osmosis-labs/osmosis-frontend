@@ -25,7 +25,6 @@ export type AssetCell = BaseCell & {
     coinDenom: string,
     externalUrl?: string
   ) => void;
-  onBuyOsmo?: () => void;
   onToggleFavorite?: () => void;
 };
 

@@ -1,8 +1,5 @@
 import { useEffect, useCallback, useMemo } from "react";
-import {
-  displayToast as do_displayToast,
-  ToastType,
-} from "../components/alert";
+import { displayToast as _displayToast, ToastType } from "../components/alert";
 import { Wallet, GeneralTxEvent } from "./wallets";
 
 /** Displays toasts messages for a non-inter chain client. Presents block explorer urls.
@@ -13,7 +10,7 @@ export function useTxEventToasts(
 ) {
   const displayToast = useCallback(
     (status: GeneralTxEvent, txHash?: string) =>
-      do_displayToast(
+      _displayToast(
         {
           message:
             status === "pending"
