@@ -11,9 +11,7 @@
   "use strict";
   return {
     name: "en",
-    weekdays: "Duminica_Luni_Marti_Miercuri_Joi_Vineri_Sambata".split(
-      "_"
-    ),
+    weekdays: "Duminica_Luni_Marti_Miercuri_Joi_Vineri_Sambata".split("_"),
     months:
       "Ianuarie_Februarie_Martie_Aprilie_Mai_Iunie_Iulie_August_Septembrie_Octombrie_Noiembrie_Decembrie".split(
         "_"
