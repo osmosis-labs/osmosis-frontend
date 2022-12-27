@@ -9,13 +9,7 @@ import {
 } from "@tanstack/react-table";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { FunctionComponent, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 import { BUY_OSMO_TRANSAK, initialAssetsSort, IS_FRONTIER } from "../../config";
 import { EventName } from "../../config/user-analytics-v2";
@@ -25,7 +19,7 @@ import {
   useShowDustUserSetting,
   useWindowSize,
 } from "../../hooks";
-import { useFilteredData, useSortedData } from "../../hooks/data";
+import { useFilteredData } from "../../hooks/data";
 import { useStore } from "../../stores";
 import {
   CoinBalance,
@@ -34,7 +28,7 @@ import {
 } from "../../stores/assets";
 import { ShowMoreButton } from "../buttons/show-more";
 import { Switch } from "../control";
-import { SortMenu } from "./sort-menu";
+import { SortMenu } from "../control/sort-menu";
 import { SearchBox } from "../input";
 import {
   AssetCell as TableCell,
@@ -227,33 +221,6 @@ export const AssetsTable: FunctionComponent<Props> = observer(
       ]
     );
 
-    // TODO: use TanStack Table sort api
-    // Sort data based on user's input either with the table column headers or the sort menu.
-    const [
-      sortKey,
-      do_setSortKey,
-      sortDirection,
-      // setSortDirection,
-      _,
-      toggleSortDirection,
-      sortedCells,
-    ] = useSortedData(cells);
-    const setSortKey = useCallback(
-      (term: string) => {
-        logEvent([
-          EventName.Assets.assetsListSorted,
-          {
-            sortedBy: term,
-            sortDirection,
-
-            sortedOn: "dropdown",
-          },
-        ]);
-        do_setSortKey(term);
-      },
-      [sortDirection]
-    );
-
     // User toggles for showing 10+ pools and assets with > 0 fiat value
     const [showAllAssets, setShowAllAssets] = useState(false);
     const [hideZeroBalances, setHideZeroBalances] = useLocalStorageState(
@@ -264,9 +231,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
 
     // Filter data based on user's input in the search box.
     const [query, setQuery, filteredSortedCells] = useFilteredData(
-      hideZeroBalances
-        ? sortedCells.filter((cell) => cell.amount !== "0")
-        : sortedCells,
+      hideZeroBalances ? cells.filter((cell) => cell.amount !== "0") : cells,
       ["chainName", "chainId", "coinDenom", "amount", "fiatValue", "queryTags"]
     );
 
@@ -281,13 +246,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
       onSortingChange: setSorting,
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: getSortedRowModel(),
-      debugTable: true,
     });
-    console.log("🚀 ~ filteredSortedCells", filteredSortedCells);
-    console.log(table.getAllColumns());
-    useEffect(() => {
-      table.getColumn("chainName").toggleSorting(false);
-    }, [table]);
 
     return (
       <section>
@@ -295,7 +254,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
           <div className="flex flex-col gap-5">
             <h6 className="px-3">{t("assets.table.title")}</h6>
             <SearchBox
-              className="!w-full h-11"
+              className="h-11 !w-full"
               currentValue={query}
               onInput={(query) => {
                 setHideZeroBalances(false);
@@ -303,7 +262,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
               }}
               placeholder={t("assets.table.search")}
             />
-            <div className="flex flex-wrap gap-3 items-center place-content-between">
+            <div className="flex flex-wrap place-content-between items-center gap-3">
               <Switch
                 isOn={hideZeroBalances}
                 disabled={!canHideZeroBalances}
@@ -324,9 +283,17 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                 </span>
               </Switch>
               <SortMenu
-                selectedOptionId={sortKey}
-                onSelect={setSortKey}
-                onToggleSortDirection={toggleSortDirection}
+                selectedOptionId={sorting[0]?.id}
+                onSelect={(id: string) => {
+                  table.reset();
+                  table.getColumn(id).toggleSorting(false);
+                }}
+                onToggleSortDirection={() => {
+                  setSorting((prev) => {
+                    const [first] = prev;
+                    return [{ ...first, desc: !first.desc }];
+                  });
+                }}
                 options={[
                   {
                     id: "coinDenom",
@@ -347,8 +314,8 @@ export const AssetsTable: FunctionComponent<Props> = observer(
           </div>
         ) : (
           <div className="flex flex-col gap-5">
-            <div className="flex flex-wrap items-center place-content-between">
-              <h5 className="shrink-0 mr-5">{t("assets.table.title")}</h5>
+            <div className="flex flex-wrap place-content-between items-center">
+              <h5 className="mr-5 shrink-0">{t("assets.table.title")}</h5>
               <div className="flex items-center gap-3 lg:gap-2">
                 <Switch
                   isOn={hideZeroBalances}
@@ -370,21 +337,26 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                 {/* TODO: manage state for sorting in this component, create dict of handlers and currKey, pass functions as props to sort-menu */}
                 {/* Basically maintain API of sort-menu, probably can reuse same component */}
                 <SortMenu
-                  selectedOptionId={sortKey}
-                  onSelect={setSortKey}
+                  selectedOptionId={sorting[0]?.id}
+                  onSelect={(id: string) => {
+                    table.reset();
+                    table.getColumn(id).toggleSorting(false);
+                  }}
                   onToggleSortDirection={() => {
                     logEvent([
                       EventName.Assets.assetsListSorted,
                       {
-                        sortedBy: sortKey,
-                        sortDirection:
-                          sortDirection === "descending"
-                            ? "ascending"
-                            : "descending",
+                        sortedBy: sorting[0]?.id,
+                        sortDirection: sorting[0]?.desc
+                          ? "descending"
+                          : "ascending",
                         sortedOn: "dropdown",
                       },
                     ]);
-                    toggleSortDirection();
+                    setSorting((prev) => {
+                      const [first] = prev;
+                      return [{ ...first, desc: !first.desc }];
+                    });
                   }}
                   options={[
                     {
@@ -407,53 +379,53 @@ export const AssetsTable: FunctionComponent<Props> = observer(
           </div>
         )}
 
-        <table className="w-full my-5">
+        <table className="my-5 w-full">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th key={header.id}>
-                    {header.isPlaceholder ? null : (
-                      <div
-                        {...{
-                          className: header.column.getCanSort()
-                            ? "cursor-pointer select-none"
-                            : "",
-                          onClick: header.column.getToggleSortingHandler(),
-                        }}
-                      >
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                        {{
-                          asc: (
-                            <Image
-                              alt="ascending"
-                              src={
-                                IS_FRONTIER
-                                  ? "/icons/sort-up-white.svg"
-                                  : "/icons/sort-up.svg"
-                              }
-                              height={16}
-                              width={16}
-                            />
-                          ),
-                          desc: (
-                            <Image
-                              alt="descending"
-                              src={
-                                IS_FRONTIER
-                                  ? "/icons/sort-down-white.svg"
-                                  : "/icons/sort-down.svg"
-                              }
-                              height={16}
-                              width={16}
-                            />
-                          ),
-                        }[header.column.getIsSorted() as string] ?? null}
-                      </div>
-                    )}
+                    <div
+                      {...{
+                        className: header.column.getCanSort()
+                          ? "cursor-pointer select-none"
+                          : "",
+                        onClick: header.column.getToggleSortingHandler(),
+                      }}
+                    >
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                      {header.id !== "chainName"
+                        ? {
+                            asc: (
+                              <Image
+                                alt="ascending"
+                                src={
+                                  IS_FRONTIER
+                                    ? "/icons/sort-up-white.svg"
+                                    : "/icons/sort-up.svg"
+                                }
+                                height={16}
+                                width={16}
+                              />
+                            ),
+                            desc: (
+                              <Image
+                                alt="descending"
+                                src={
+                                  IS_FRONTIER
+                                    ? "/icons/sort-down-white.svg"
+                                    : "/icons/sort-down.svg"
+                                }
+                                height={16}
+                                width={16}
+                              />
+                            ),
+                          }[header.column.getIsSorted() as string] ?? null
+                        : null}
+                    </div>
                   </th>
                 ))}
               </tr>
@@ -495,7 +467,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
             />
           )}
         </div>
-        <TransferHistoryTable className="mt-8 md:w-screen md:-mx-4" />
+        <TransferHistoryTable className="mt-8 md:-mx-4 md:w-screen" />
       </section>
     );
   }

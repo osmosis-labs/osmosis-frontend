@@ -31,10 +31,10 @@ export const SortMenu: FunctionComponent<Props> = ({
   return (
     <div
       className={classNames(
-        "relative shrink-0 px-6 py-2 cursor-pointer transition-colors",
+        "relative shrink-0 cursor-pointer px-6 py-2 transition-colors",
         dropdownOpen
-          ? "rounded-t-xl border-t border-x border-osmoverse-600"
-          : "border rounded-xl border-osmoverse-500"
+          ? "rounded-t-xl border-x border-t border-osmoverse-600"
+          : "rounded-xl border border-osmoverse-500"
       )}
       onClick={() => {
         if (!disabled) {
@@ -46,19 +46,21 @@ export const SortMenu: FunctionComponent<Props> = ({
         className={classNames(
           "flex w-fit",
           {
-            "opacity-50 cursor-default": disabled,
+            "cursor-default opacity-50": disabled,
           },
           className
         )}
       >
         <button
-          className="flex items-center shrink-0"
+          className="flex shrink-0 items-center"
           onClick={(e) => {
             e.stopPropagation();
             if (!disabled) {
               if (onToggleSortDirection && selectedOption) {
+                console.log("good");
                 onToggleSortDirection();
               } else {
+                console.log("bad");
                 setDropdownOpen(!dropdownOpen);
               }
             }
@@ -80,7 +82,7 @@ export const SortMenu: FunctionComponent<Props> = ({
             }
           }}
         >
-          <span className="block m-auto ml-2 leading-loose text-osmoverse-200 min-w-[3.75rem] select-none text-center body2 md:caption overflow-hidden">
+          <span className="body2 md:caption m-auto ml-2 block min-w-[3.75rem] select-none overflow-hidden text-center leading-loose text-osmoverse-200">
             {isMobile
               ? t("components.sort.SORTMobile")
               : t("components.sort.SORT")}
@@ -98,7 +100,7 @@ export const SortMenu: FunctionComponent<Props> = ({
         />
       ) : (
         <MenuDropdown
-          className="w-[calc(100%_+_2px)] top-full -left-px"
+          className="top-full -left-px w-[calc(100%_+_2px)]"
           options={options}
           selectedOptionId={selectedOptionId}
           onSelect={onSelect}
