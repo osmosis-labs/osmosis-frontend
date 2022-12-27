@@ -48,13 +48,12 @@ export const TokenSelectWithDrawer: FunctionComponent<{
     const dropdownTokens = tokens
       .filter(
         (token) =>
-          !(
-            token instanceof CoinPretty ? token.denom : token.coinDenom
-          ).includes(selectedTokenDenom)
+          (token instanceof CoinPretty ? token.denom : token.coinDenom) !==
+          selectedTokenDenom
       )
       .map((token) => ({
         token,
-        // filter by chain name
+        // get chain name
         chainName:
           chainStore.getChainFromCurrency(
             token instanceof CoinPretty ? token.denom : token.coinDenom
