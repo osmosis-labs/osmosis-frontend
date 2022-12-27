@@ -137,7 +137,7 @@
     "bondLiquidityCaption": "قفل أسهمك لمدد أطول للحصول على أسعار العودة السنوية الأعلى",
     "bondSuperfluidLiquidityCaption": "تفعيل سوبر فلويد تحقيق أقصى عائد",
     "bondShares": "قفل المشاركات",
-    "amountDaysUnbonding": "{numDays} أيام الغاء القفل",
+    "amountDaysUnbonding": "أيام الغاء القفل {numDays}",
     "available": "متاح",
     "unbond": "الغاء القفل",
     "bonded": "مقفل",
