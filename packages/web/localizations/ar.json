@@ -27,11 +27,11 @@
     "autoRouter": "طريق",
     "routerTooltipFee": "رسوم",
     "autoRouterToggle": { "show": "إظهار", "hide": "إخفاء" },
-    "pool": "تجمع {id}#"
+    "pool": "{id}# تجمع"
   },
   "pools": {
     "title": "مجموعات النشطة",
-    "poolId": "تجمع {id}#",
+    "poolId": "{id}# تجمع",
     "priceOsmo": "OSMO سعر",
     "rewardDistribution": "توزيع المكافأة في",
     "myPools": "مجموعاتي",
@@ -111,7 +111,7 @@
     }
   },
   "pool": {
-    "title": "تجمع {id}#",
+    "title": "{id}# تجمع",
     "swap": "زوجين الصرف",
     "superfluidEnabled": "سوبر فلويد نشيط",
     "stableswapEnabled": "ستابلسواب نشيط",
