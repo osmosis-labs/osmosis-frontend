@@ -5,6 +5,8 @@
 *.ico
 *.svg
 *.png
+*.jpg
+*.env
 
 yarn.lock
 .DS_Store
