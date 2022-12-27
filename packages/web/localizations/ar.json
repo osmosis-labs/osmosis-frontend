@@ -2,7 +2,7 @@
   "app": {
     "banner": {
       "title": "أنت تشاهد كل التوكن بدون إذن",
-      "linkText": "أنت تشاهد كل التوكن بدون إذن. <link>انقر هنا للعودة إلى التطبيق الرئيسي</link>."
+      "linkText": "أنت تشاهد كل التوكن بدون إذن <link>انقر هنا للعودة إلى التطبيق الرئيسي</link>."
     }
   },
   "swap": {
@@ -32,7 +32,7 @@
   "pools": {
     "title": "مجموعات النشطة",
     "poolId": "تجمع #{id}",
-    "priceOsmo": "سعر OSMO",
+    "priceOsmo": "OSMO سعر",
     "rewardDistribution": "توزيع المكافأة في",
     "myPools": "مجموعاتي",
     "APR": "APR",
@@ -125,7 +125,7 @@
     "day": "يوم",
     "dailyEarnAmount": "{amount} / يوم",
     "putAssetsToWork": "كسب من الأصول الخاصة بك",
-    "putAssetsToWorkCaption": "أضف ممتلكاتك إلى هذا التجمع لتفتح عوائد أكبر. كلما قمت بقفل أطول ، زاد العائد",
+    "putAssetsToWorkCaption": "أضف ممتلكاتك إلى هذا التجمع لتفتح عوائد أكبر. كلما قمت بقفل أطول ، زاد العائد.",
     "learnMore": "يتعلم أكثر",
     "level": "مستوى {level}",
     "earnSwapFees": "كسب رسوم الصرف",
@@ -137,7 +137,7 @@
     "bondLiquidityCaption": "قفل أسهمك لمدد أطول للحصول على أسعار العودة السنوية الأعلى",
     "bondSuperfluidLiquidityCaption": "تفعيل سوبر فلويد تحقيق أقصى عائد",
     "bondShares": "قفل المشاركات",
-    "amountDaysUnbonding": "أيام فتح {numDays}",
+    "amountDaysUnbonding": "{numDays} أيام الغاء القفل",
     "available": "متاح",
     "unbond": "الغاء القفل",
     "bonded": "مقفل",
@@ -214,7 +214,7 @@
     "poolCards": {
       "APR": "APR",
       "FeeAPY": "APY مصاريف",
-      "liquidity": "السيولة الخاصة بي",
+      "liquidity": "السيولة",
       "bonded": "مربوط",
       "myLiquidity": "السيولة الخاصة بي"
       },
