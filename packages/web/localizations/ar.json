@@ -2,7 +2,7 @@
   "app": {
     "banner": {
       "title": "أنت تشاهد كل التوكن بدون إذن",
-      "linkText": "أنت تشاهد كل التوكن بدون إذن <link>انقر هنا للعودة إلى التطبيق الرئيسي</link>."
+      "linkText": ".أنت تشاهد كل التوكن بدون إذن <link>انقر هنا للعودة إلى التطبيق الرئيسي</link>"
     }
   },
   "swap": {
@@ -27,11 +27,11 @@
     "autoRouter": "طريق",
     "routerTooltipFee": "رسوم",
     "autoRouterToggle": { "show": "إظهار", "hide": "إخفاء" },
-    "pool": "تجمع #{id}"
+    "pool": "تجمع {id}#"
   },
   "pools": {
     "title": "مجموعات النشطة",
-    "poolId": "تجمع #{id}",
+    "poolId": "تجمع {id}#",
     "priceOsmo": "OSMO سعر",
     "rewardDistribution": "توزيع المكافأة في",
     "myPools": "مجموعاتي",
@@ -111,7 +111,7 @@
     }
   },
   "pool": {
-    "title": "تجمع #{id}",
+    "title": "تجمع {id}#",
     "swap": "زوجين الصرف",
     "superfluidEnabled": "سوبر فلويد نشيط",
     "stableswapEnabled": "ستابلسواب نشيط",
@@ -160,12 +160,12 @@
   },
     "removeLiquidity": {
       "title": "إزالة السيولة",
-      "titleInPool": "#{poolId} إزالة السيولة من تجمع",
-      "sharesAmount": "{shares} سهم"
+      "titleInPool": "{poolId}# إزالة السيولة من تجمع",
+      "sharesAmount": "سهم {shares}"
     },
     "addLiquidity": {
       "title": "إضافة السيولة",
-      "titleInPool": "#{poolId} إضافة السيولة إلى تجمع",
+      "titleInPool": "{poolId}# إضافة السيولة إلى تجمع",
       "allAssets": "جميع الأصول",
       "singleAsset": "أصل واحد",
       "available": "متاح",
@@ -174,7 +174,7 @@
   },
   "lockToken": {
     "title": "LP قفل حصة",
-    "titleInPool": "#{poolId} قفل أسهم في تجمع",
+    "titleInPool": "{poolId}# قفل أسهم في تجمع",
     "selectPeriod": "حدد الفترة قفله",
     "availableToken": "متاح",
     "amountToBond": "المبلغ المراد ربطه",
@@ -249,7 +249,7 @@
       "to": "إلى",
       "via": "عبر",
       "loading": "جار التحميل",
-      "availableOn": "متاح في {network}",
+      "availableOn": "{network} متاح في",
       "availableMobile": "متاح",
       "transferFee": "رسوم التحويل",
       "errors": {
@@ -314,7 +314,7 @@
       "less": "عرض أقل"
     },
     "table": {
-      "poolId": "تجمع #{id}"
+      "poolId": "تجمع {id}#"
     },
     "sort": {
       "SORT": "ترتيب حسب",
