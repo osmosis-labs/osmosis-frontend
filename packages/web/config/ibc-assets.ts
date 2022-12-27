@@ -504,6 +504,7 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-47",
     destChannelId: "channel-17",
     coinMinimalDenom: "rowan",
+    isUnstable: true,
   },
   {
     counterpartyChainId: "shentu-2.2",
