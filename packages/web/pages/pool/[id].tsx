@@ -93,7 +93,7 @@ const Pool: FunctionComponent = observer(() => {
   const { poolDetailConfig, pool } = usePoolDetailConfig(poolId);
   const { superfluidPoolConfig, superfluidDelegateToValidator } =
     useSuperfluidPoolConfig(poolDetailConfig);
-  const bondLiquidityConfig = useBondLiquidityConfig(bech32Address, pool?.id);
+  const bondLiquidityConfig = useBondLiquidityConfig(pool?.id);
 
   // user analytics
   const { poolName, poolWeight } = useMemo(
