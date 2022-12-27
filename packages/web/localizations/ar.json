@@ -1,0 +1,400 @@
+{
+  "app": {
+    "banner": {
+      "title": "أنت تشاهد كل التوكن بدون إذن",
+      "linkText": "أنت تشاهد كل التوكن بدون إذن. <link>انقر هنا للعودة إلى التطبيق الرئيسي</link>."
+    }
+  },
+  "swap": {
+    "title": "تبديل",
+    "settings": {
+      "title": "إعدادات المعاملة",
+      "slippage": "انزلاق التفاوت المسموح",
+      "slippageInfo": "سيتم إرجاع معاملتك إذا تغير السعر بشكل غير موات بأكثر من هذه النسبة المئوية"
+    },
+    "available": "متاح",
+    "MAX": "أقصى",
+    "HALF": "نصف",
+    "button": "تبديل",
+    "buttonError": "تبادل على أي حال",
+    "priceImpact": "أثر السعر",
+    "fee": "رسوم التبديل ({fee})",
+    "expectedOutput": "المخرج المتوقع",
+    "minimumSlippage": "الحد الأدنى الذي سيتم الحصول عليه بعد انزلاق ({slippage})",
+    "error": {
+      "findCurrency": "فشل في العثور على العملة {currency}"
+    },
+    "autoRouter": "طريق",
+    "routerTooltipFee": "رسوم",
+    "autoRouterToggle": { "show": "إظهار", "hide": "إخفاء" },
+    "pool": "تجمع #{id}"
+  },
+  "pools": {
+    "title": "مجموعات النشطة",
+    "poolId": "تجمع #{id}",
+    "priceOsmo": "سعر OSMO",
+    "rewardDistribution": "توزيع المكافأة في",
+    "myPools": "مجموعاتي",
+    "APR": "APR",
+    "available": "متاح",
+    "liquidity": "سيولة",
+    "myLiquidity": "سيولتي",
+    "bonded": "المستعبدين",
+    "incentivized": "تحفيز",
+    "all": "جميع مجموعات",
+    "allTab": "كل",
+    "superfluid": {
+      "title": "مجموعات سوبر فلويد",
+      "tab": "سوبر فلويد",
+      "APR": "APR",
+      "liquidity": "سيولة",
+      "fees7D": "الرسوم (7 يوم)"
+    },
+    "allPools": {
+      "title": "كل مجموعات",
+      "myLiquidity": "سيولتي",
+      "TVL": "TVL",
+      "APR": "APR",
+      "APRIncentivized": "حجم (7 يوم)",
+      "search": "بحث المجموعات",
+      "displayLowLiquidity": "عرض المجموعات < {value}",
+      "sort": {
+        "poolName": "اسم/رقم النظام",
+        "liquidity": "سيولة",
+        "volume24h": "الحجم (24 ساعة)",
+        "fees": "الرسوم (7 يوم)",
+        "APRIncentivized": "APR",
+        "APR": "سيولتي",
+        "poolId": "رقم التجمع"
+      }
+    },
+    "externalIncentivized": {
+      "title": "مجموعات تحفيز خارجياً",
+      "TVL": "TVL",
+      "APR": "APR",
+      "search": "بحث بالرمز",
+      "sort": {
+        "poolName": "اسم/رقم التجمع",
+        "liquidity": "سيولة",
+        "APR": "APR",
+        "epochs": "عدد الدورات المتبقية",
+        "myLiquidity": "سيولتي"
+      }
+    },
+    "createPool": {
+      "title": "إنشاء تجمع جديد",
+      "button": "إنشاء تجمع جديد",
+      "weightedPool": "تجمع موزون",
+      "stablePool": "تجمع مستقر",
+      "step": {
+        "one": {
+          "weighted": "خطوة {step} / {nbStep} - تعيين نسب العملات",
+          "stable": "خطوة {step} / {nbStep} - تعيين معاملات التدرج"
+        },
+        "two": "خطوة {step} / {nbStep} - إدخال المبلغ المراد إضافته",
+        "three": "خطوة {step} / {nbStep} - تأكيد نسبة التجمع"
+      },
+      "infoMessage": "تجمع رسوم الإنشاء",
+      "infoCaption": "نقل إلى تجمع المجتمع Osmosis",
+      "buttonCreate": "إنشاء تجمع",
+      "buttonNext": "التالي",
+      "buttonBack": "السابق",
+      "buttonAddToken": "إضافة عملة جديدة",
+      "available": "متاح",
+      "amount": "المبلغ",
+      "token": "العملة",
+      "swapFee": "تعيين رسوم التبديل",
+      "scalingFactorController": "تعيين معالج معاملات التدرج (اختياري)",
+      "undersandCost": "أنا أدرك أن إنشاء تجمع جديد سيكلف  {POOL_CREATION_FEE}.",
+      "interestedCreate": "هل ترغب في إنشاء تجمع جديد؟",
+      "startProcess": "انقر هنا لبدء العملية"
+    }
+  },
+  "pool": {
+    "title": "تجمع #{id}",
+    "swap": "زوجين الصرف",
+    "superfluidEnabled": "سوبر فلويد نشيط",
+    "stableswapEnabled": "ستابلسواب نشيط",
+    "24hrTradingVolume": "حجم التداول في 24 ساعة",
+    "liquidity": "السيولة في التجمع",
+    "swapFee": "رسوم التبادل",
+    "yourStats": "رصيد تجمعك",
+    "sharesAmount": "{shares} سهم",
+    "currentDailyEarn": "أنت تكسب الآن",
+    "earnMore": "أكثر عن طريق القفل {amount} كسب",
+    "day": "يوم",
+    "dailyEarnAmount": "{amount} / يوم",
+    "putAssetsToWork": "كسب من الأصول الخاصة بك",
+    "putAssetsToWorkCaption": "أضف ممتلكاتك إلى هذا التجمع لتفتح عوائد أكبر. كلما قمت بقفل أطول ، زاد العائد",
+    "learnMore": "يتعلم أكثر",
+    "level": "مستوى {level}",
+    "earnSwapFees": "كسب رسوم الصرف",
+    "earnSwapFeesCaption": "قم بتحويل الرموز المميزة الخاصة بك إلى أسهم واكسب من كل بورصة",
+    "APR": "APR",
+    "bondLiquidity": "سيولة",
+    "bondLiquidityUnavailable": "سيولة (غير متاح)",
+    "checkBackForBondingRewards": "تحقق مرة أخرى قريبًا للحصول على مكافآت",
+    "bondLiquidityCaption": "قفل أسهمك لمدد أطول للحصول على أسعار العودة السنوية الأعلى",
+    "bondSuperfluidLiquidityCaption": "تفعيل سوبر فلويد تحقيق أقصى عائد",
+    "bondShares": "قفل المشاركات",
+    "amountDaysUnbonding": "أيام فتح {numDays}",
+    "available": "متاح",
+    "unbond": "الغاء القفل",
+    "bonded": "مقفل",
+    "showDetails": "عرض الاتساق التجمع",
+    "collapseDetails": "إخفاء الاتساق التجمع",
+    "sharesAvailableIn": "متاح في",
+    "unbonding": "فتح",
+    "superfluidEarnMore": "المزيد مع سوبر فلويد {rate} كسب",
+    "incentives": "الحوافز",
+    "details": "التفاصيل",
+    "rewardDistribution": "تم توزيع المكافآت على جميع مزودي السيولة",
+    "superfluidStaking": "سوبر فلويد قفل",
+    "delegated": "فوض",
+    "undelegating": "إلغاء مفوض",
+    "commission": "عمولة",
+    "numDaysRemaining": "يوم متبقي {numDays}",
+    "from": "من",
+    "swapFees": "رسوم التبادل",
+    "7davg": "(متوسط 7 يوم)"
+  },
+    "removeLiquidity": {
+      "title": "إزالة السيولة",
+      "titleInPool": "#{poolId} إزالة السيولة من تجمع",
+      "sharesAmount": "{shares} سهم"
+    },
+    "addLiquidity": {
+      "title": "إضافة السيولة",
+      "titleInPool": "#{poolId} إضافة السيولة إلى تجمع",
+      "allAssets": "جميع الأصول",
+      "singleAsset": "أصل واحد",
+      "available": "متاح",
+      "autoswapCaption": "استخدم autoswap لإضافة السيولة باستخدام أصل واحد",
+      "stablecoinWarning": "{mechanism} وهي مدعومة بواسطة ,{denom} أنت تضيف السيولة إلى"
+  },
+  "lockToken": {
+    "title": "LP قفل حصة",
+    "titleInPool": "#{poolId} قفل أسهم في تجمع",
+    "selectPeriod": "حدد الفترة قفله",
+    "availableToken": "متاح",
+    "amountToBond": "المبلغ المراد ربطه",
+    "superfluidStake": "سوبر فلويد قفل",
+    "bondingRequirement": "شرط ربطه لمدة {numDays} يوم",
+    "buttonNext": "التالي",
+    "buttonBond": "قفله",
+    "buttonBondStake": "قفله و فوض"
+  },
+  "superfluidValidator": {
+    "title": "اختيار سوبر فلويد المصادق",
+    "titleMobile": "اختيار المصادق",
+    "choose": "اختيار سوبر فلويد المصادق",
+    "search": "بحث بالاسم",
+    "bondedAmount": "المبلغ المربوط",
+    "estimation": "سوبر فلويد المبلغ المتوقع",
+    "estimationMobile": "المبلغ المتوقع",
+    "estimationInfo": " في التجمع OSMO قيمة هذا المبلغ يتغير ويتم تقديره على أساس المبلغ الموجود من",
+    "buttonBond": "قفله و فوض",
+    "columns": {
+      "validator": "المتحكم",
+      "commission": "اللجنة"
+    }
+  },
+  "assets": {
+    "totalAssets": "إجمالي الأصول",
+    "unbondedAssets": "غير مربوط",
+    "bondedAssets": "مربوط",
+    "stakedAssets": "OSMO مربوط",
+    "myPools": "مجموعاتي",
+    "transferAssetSelect": {
+      "deposit": "إيداع",
+      "withdraw": "سحب",
+      "network": "شبكة",
+      "buttonNext": "التالي"
+    },
+    "poolCards": {
+      "APR": "APR",
+      "FeeAPY": "APY مصاريف",
+      "liquidity": "السيولة الخاصة بي",
+      "bonded": "مربوط",
+      "myLiquidity": "السيولة الخاصة بي"
+      },
+    "ibcTransfer": {
+      "titleWithdraw": "{coinDenom} انسحب",
+      "titleDeposit": "{coinDenom} إيداع",
+      "channelCongested": "القناة مزدحمة",
+      "channelCongestedWithdraw": "انسحب (القناة مزدحمة)",
+      "channelCongestedDeposit": "إيداع (القناة مزدحمة)",
+      "channelBlocked": "القناة محجوبة",
+      "selectAmount": "اختر المبلغ",
+      "estimatedTime": "الوقت المقدر",
+      "waitTime": "20 ثانية",
+      "copied": "نسخ!",
+      "IBCTransfer": "نقل IBC",
+      "from": "من",
+      "to": "إلى",
+      "warningLossFunds": "تحذير: سيتم فقدان الأموال عند الإرسال إلى عنوان منصة تداول مركزية",
+      "buttonEnter": "البدء",
+      "checkboxVerify": "أؤكد أنني لا أرسل إلى عنوان منصة تداول.",
+      "buttonEdit": "تعديل",
+      "amoutWithdraw": "المبلغ المراد خصمه",
+      "amoutDeposit": "المبلغ المراد إيداعه",
+      "availableBalance": "الرصيد المتاح:",
+      "MAX": "أقصى"
+    },
+    "transfer": {
+      "titleWithdraw": "انسحب {coinDenom}",
+      "titleDeposit": "إيداع {coinDenom}",
+      "warnDepositAddressDifferent": "تحذير: الحساب المحدد في {address} يختلف عن الحساب الذي أودعت معه في المرة الأخيرة.",
+      "from": "من",
+      "to": "إلى",
+      "via": "عبر",
+      "loading": "جار التحميل",
+      "availableOn": "متاح في {network}",
+      "availableMobile": "متاح",
+      "transferFee": "رسوم التحويل",
+      "errors": {
+        "reconnectWallet": "إعادة الاتصال بـ {walletName}",
+        "wrongNetworkInWallet": "شبكة خاطئة في {walletName}",
+        "insufficientFee": "رسوم غير كافٍ",
+        "insufficientBal": "رصيد غير كافٍ"
+      },
+      "wrapNativeLink": "تحويل {fromDenom} إلى {toDenom} على {platformName}",
+      "waitTime": "{minutes} دقائق"
+    },
+    "selectAssetSource": {
+      "titleWithdraw": "انسحب إلى",
+      "titleDeposit": "إيداع من",
+      "next": "التالي",
+      "installWallet": "تثبيت {walletName}"
+    },
+    "table": {
+      "depositButton": "إيداع",
+      "withdrawButton": "انسحب",
+      "search": "بحث",
+      "title": "جميع الأصول",
+      "hideZero": "إخفاء الرصيديات الصفرية",
+      "buyOsmo": "شراء",
+      "preTransfer": {
+        "deposit": "إيداع",
+        "withdraw": "انسحب",
+        "currentBal": "الرصيد الحالي"
+      },
+      "columns": {
+        "assetChain": "رمز / بلوكشين",
+        "balance": "الرصيد",
+        "transfer": "تحويل",
+        "deposit": "إيداع",
+        "withdraw": "انسحب"
+      },
+      "sort": {
+        "symbol": "رمز",
+        "network": "شبكة",
+        "balance": "الرصيد"
+      }
+    },
+    "historyTable": {
+      "title": "تاريخ التحويل",
+      "pending": "قيد الانتظار",
+      "success": "نجاح",
+      "refunded": "استرداد",
+      "pendingRefunded": "فشل: استرداد ريثما",
+      "colums": {
+        "transactionHash": "المعاملة hash",
+        "type": "نوع",
+        "amount": "المبلغ",
+        "status": "الحالة",
+        "deposit": "إيداع",
+        "withdraw": "انسحب"
+      }
+    }
+  },
+  "components": {
+    "show": {
+      "more": "عرض المزيد",
+      "less": "عرض أقل"
+    },
+    "table": {
+      "poolId": "تجمع #{id}"
+    },
+    "sort": {
+      "SORT": "ترتيب حسب",
+      "SORTMobile": "ترتيب",
+      "mobileMenu": "ترتيب حسب"
+    },
+    "MAX": "أقصى",
+    "searchTokens": "بحث",
+    "selectToken": {
+      "title": "اختيار نوع العملة"
+    }
+  },
+  "menu": {
+    "swap": "التبادل",
+    "pools": "مجموعات",
+    "assets": "أرصدة",
+    "stake": "ستايكين",
+    "vote": "تصويت",
+    "info": "إحصائيات",
+    "signOut": "قطع الاتصال",
+    "help": "الحصول على الدعم",
+    "learnMoreFrontier": "تعلم المزيد<br/>عن<br2/><name>Osmosis Frontier</name>",
+    "buyTokens": "شراء نوع العملة"
+  },
+  "settings": {
+    "title": "إعدادات",
+    "titleLanguage": "لغة",
+    "titleHideDust": "إخفاء المجموعات مع < {fiatSymbol}0.01"
+  },
+  "404": {
+    "title": "غير موجود"
+  },
+  "500": {
+    "title": "خطأ في الخادم"
+  },
+  "errors": {
+    "emptyAmount": "المبلغ فارغ",
+    "invalidNumberAmount": "صيغة رقم غير صحيحة",
+    "zeroAmount": "المبلغ هو صفر",
+    "negativeAmount": "المبلغ سالب",
+    "insufficientAmount": "المبلغ غير كاف",
+    "negativeSwapFee": "رسوم التبادل سالبة",
+    "highSwapFee": "رسوم التبادل مرتفعة جداً",
+    "invalidSwapFee": "رسوم التبادل غير صحيحة",
+    "invalidScalingFactorControllerAddress": "عنوان غير صحيح",
+    "minAssetsCount": "يتطلب ما لا يقل عن {num} أصول",
+    "maxAssetsCount": "يسمح بأقصى {num} أصول",
+    "negativePercentage": "النسبة المئوية يجب أن تكون موجبة",
+    "scalingFactorTooLow": "عامل التدرج أدنى من اللازم",
+    "percentageSum": "إجمالي النسب المئوية ليس 100",
+    "depositNoBalance": "ليس لديك أصول للإيداع",
+    "negativeSlippage": "لا يمكن أن تكون الزلل سالبة",
+    "invalidSlippage": "الزلل غير صحيحة",
+    "noSendCurrency": "لم يتم تعيين العملة للإرسال",
+    "insufficientBal": "رصيد غير كاف",
+    "notInitialized": "لم يتم التهيئة",
+    "calculatingShareOutAmount": "مشكلة في حساب المبلغ الخارج",
+    "noAvailableShares": "لا توجد أسهم {denom} متاحة",
+    "generic": "خطأ"
+  },
+  "connectWallet": "ربط المحفظة",
+  "keplr": {
+    "install": "تثبيت Keplr",
+    "wallet": "محفظة Keplr",
+    "extension": "ملحق متصفح Keplr",
+    "walletConnect": "WalletConnect",
+    "mobile": "Keplr المحمولة"
+  },
+  "connectDisclaimer": "من خلال توصيل المحفظة ، فإنك تقر بأنك قد قرأت وفهمت Osmosis",
+  "protocolDisclaimer": "إخلاء مسؤولية بروتوكول",
+  "Transaction Failed": "فشل المعاملة",
+  "Transaction Successful": "نجحت المعاملة",
+  "Transaction Broadcasting": "بث المعاملة",
+  "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.": "فشل التبادل. قد لا يكون السيولة المتاحة كافية. حاول ضبط اللحظة المسموح بها",
+  "Waiting for transaction to be included in the block": "بانتظار تضمين المعاملة في الكتلة",
+  "view explorer": "عرض المستكشف",
+  "Unknown error": "خطأ غير معروف",
+  "Request rejected": "تم رفض الطلب",
+  "Amount is empty": "المبلغ فارغ",
+  "Insufficient amount": "المبلغ غير كاف",
+  "Amount is zero": "المبلغ هو صفر",
+  "Minimum of 2 assets required": "يتطلب ما لا يقل عن 2 أصول"
+}

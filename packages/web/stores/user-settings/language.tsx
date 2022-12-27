@@ -11,6 +11,10 @@ export type LanguageState = { language: string };
 
 const SUPPORTED_LANGUAGES: MenuDropdownIconItemProps[] = [
   {
+    value: "ar",
+    display: "العربية",
+  },
+  {
     value: "en",
     display: "English",
   },
