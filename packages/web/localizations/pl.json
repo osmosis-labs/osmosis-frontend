@@ -139,7 +139,7 @@
     "bondShares": "Zwiąż Aktywa",
     "amountDaysUnbonding": "{numDays} dni rozwiązywania",
     "available": "Do dyspozycji",
-    "unbond": "Zwiąż",
+    "unbond": "Odwiąż",
     "bonded": "Związane",
     "showDetails": "Pokaż szczegóły",
     "collapseDetails": "Ukryj szczegóły",
@@ -169,7 +169,8 @@
     "allAssets": "Wszystkie tokeny",
     "singleAsset": "Jeden token",
     "available": "Dostępne",
-    "autoswapCaption": "Użyj autowymiany, żeby dodać płynność jednym tokenem."
+    "autoswapCaption": "Użyj autowymiany, żeby dodać płynność jednym tokenem.",
+    "stablecoinWarning": "Dodajesz płynność do {denom}, stablecoina {mechanism} zabezpieczeniem."
   },
   "lockToken": {
     "title": "Zwiąż Aktywa Płynności",
@@ -394,5 +395,8 @@
   "Amount is empty": "Ilość jest pusta",
   "Insufficient amount": "Niewystarczająca ilość",
   "Amount is zero": "Ilość jest zerowa",
-  "Minimum of 2 assets required": "Wymagane są conajmniej 2 tokeny"
+  "Minimum of 2 assets required": "Wymagane są conajmniej 2 tokeny",
+  "stablecoinTypes": {
+    "collateralized": "zabezpieczone"
+  }
 }

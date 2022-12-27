@@ -394,5 +394,8 @@
   "Amount is empty": "数量为空",
   "Insufficient amount": "数量不足",
   "Amount is zero": "数量为零",
-  "Minimum of 2 assets required": "最少需要两种资产"
+  "Minimum of 2 assets required": "最少需要两种资产",
+  "stablecoinTypes": {
+    "collateralized": "抵押的"
+  }
 }

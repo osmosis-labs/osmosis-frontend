@@ -138,7 +138,6 @@
     "bondSuperfluidLiquidityCaption": "Superfluid 를 통해 최대 보상을 받으세요.",
     "bondShares": "유동성 예치",
     "amountDaysUnbonding": "예치 해제 {numDays}일",
-    "shares": "LP",
     "available": "사용 가능",
     "unbond": "예치 해재하기",
     "bonded": "예치된 자산",
@@ -396,5 +395,8 @@
   "Amount is empty": "수량이 비어있습니다",
   "Insufficient amount": "수량이 부족합니다",
   "Amount is zero": "수량이 0입니다",
-  "Minimum of 2 assets required": "2개 이상의 자산이 필요합니다"
+  "Minimum of 2 assets required": "2개 이상의 자산이 필요합니다",
+  "stablecoinTypes": {
+    "collateralized": "담보"
+  }
 }
