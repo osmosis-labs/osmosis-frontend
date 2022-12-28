@@ -197,7 +197,6 @@ export const SourceChainConfigs: {
       id: "Ethereum" as const,
       erc20ContractAddress: "0x4Fabb145d64652a948d72533023f6E7A623C7C53",
       logoUrl: "/networks/ethereum.svg",
-      transferFeeMinAmount: "10500000000000000000",
     },
   },
 };

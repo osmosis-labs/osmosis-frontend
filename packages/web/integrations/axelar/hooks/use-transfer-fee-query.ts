@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Environment, AxelarQueryAPI } from "@axelar-network/axelarjs-sdk";
+import debounce from "debounce";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { AppCurrency } from "@keplr-wallet/types";
 
@@ -40,11 +41,10 @@ export function useTransferFeeQuery(
         throw new Error("Requested fee amount is not a number.");
       }
     };
-    let timeout: NodeJS.Timeout | undefined;
 
     setIsLoading(true);
-    // debounce query on user typing
-    timeout = setTimeout(() => {
+
+    return debounce(() => {
       queryTransferFee()
         .then((resp) => {
           if (resp.fee) {
@@ -56,10 +56,6 @@ export function useTransferFeeQuery(
         })
         .finally(() => setIsLoading(false));
     }, inputDebounceMs);
-
-    return () => {
-      if (timeout) clearTimeout(timeout);
-    };
   }, [
     environment,
     sourceChain,
