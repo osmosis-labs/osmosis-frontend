@@ -1,4 +1,5 @@
 import dynamic from "next/dynamic";
+import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 import type { SourceChainKey } from "../integrations/bridge-info";
 import type { EthWallet } from "../integrations/ethereum";
@@ -27,7 +28,7 @@ export const BridgeTransferModal: FunctionComponent<
     walletClient: Wallet;
     onRequestSwitchWallet: () => void;
   }
-> = (props) => {
+> = observer((props) => {
   const {
     isWithdraw,
     balance,
@@ -92,4 +93,4 @@ export const BridgeTransferModal: FunctionComponent<
       })()}
     </ModalBase>
   );
-};
+});

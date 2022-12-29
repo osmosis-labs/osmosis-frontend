@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { Environment, AxelarQueryAPI } from "@axelar-network/axelarjs-sdk";
 import debounce from "debounce";
 import { CoinPretty } from "@keplr-wallet/unit";
@@ -18,53 +18,47 @@ export function useTransferFeeQuery(
 ): { transferFee?: CoinPretty; isLoading: boolean } {
   const [transferFee, setTransferFee] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const api = useMemo(() => new AxelarQueryAPI({ environment }), [environment]);
 
-  useEffect(() => {
-    const queryTransferFee = async () => {
-      const api = new AxelarQueryAPI({
-        environment,
-      });
+  const queryTransferFee = useCallback(
+    (amountMinDenom: string) => {
+      if (amountMinDenom === "") {
+        return;
+      }
+
       const amount = Number(
-        new CoinPretty(
-          currency,
-          amountMinDenom === "" ? "0" : amountMinDenom
-        ).toCoin().amount
+        new CoinPretty(currency, amountMinDenom).toCoin().amount
       );
       if (!isNaN(amount)) {
-        return await api.getTransferFee(
-          sourceChain,
-          destChain,
-          tokenMinDenom,
-          amount
-        );
+        console.log("get transfer fee", { amountMinDenom });
+        setIsLoading(true);
+        api
+          .getTransferFee(sourceChain, destChain, tokenMinDenom, amount)
+          .then((resp) => {
+            console.log("successful transfer fee query", resp.fee?.amount);
+            if (resp.fee && resp.fee.amount !== transferFee) {
+              setTransferFee(resp.fee.amount);
+            }
+          })
+          .catch((e) => {
+            console.error("useTransferFeeQuery", e);
+          })
+          .finally(() => setIsLoading(false));
       } else {
         throw new Error("Requested fee amount is not a number.");
       }
-    };
+    },
+    [api, sourceChain, destChain, tokenMinDenom, currency]
+  );
 
-    setIsLoading(true);
+  const debouncedTransferFeeQuery = useCallback(
+    debounce(queryTransferFee, inputDebounceMs),
+    [queryTransferFee, inputDebounceMs]
+  );
 
-    return debounce(() => {
-      queryTransferFee()
-        .then((resp) => {
-          if (resp.fee) {
-            setTransferFee(resp.fee.amount);
-          }
-        })
-        .catch((e) => {
-          console.error("useTransferFeeQuery", e);
-        })
-        .finally(() => setIsLoading(false));
-    }, inputDebounceMs);
-  }, [
-    environment,
-    sourceChain,
-    destChain,
-    tokenMinDenom,
-    amountMinDenom,
-    currency,
-    inputDebounceMs,
-  ]);
+  useEffect(() => {
+    debouncedTransferFeeQuery(amountMinDenom);
+  }, [debouncedTransferFeeQuery, amountMinDenom]);
 
   return {
     transferFee:
