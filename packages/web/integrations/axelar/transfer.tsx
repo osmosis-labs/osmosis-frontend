@@ -5,6 +5,7 @@ import { Environment } from "@axelar-network/axelarjs-sdk";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { basicIbcTransfer } from "@osmosis-labs/stores";
+import { IS_TESTNET } from "../../config";
 import {
   useFakeFeeConfig,
   useAmountConfig,
@@ -25,7 +26,7 @@ import {
   useTxReceiptState,
 } from "../ethereum";
 import { useGeneralAmountConfig } from "../use-general-amount-config";
-import { useDepositAddress } from "./hooks";
+import { useDepositAddress, useTransferFeeQuery } from "./hooks";
 import {
   AxelarBridgeConfig,
   AxelarChainIds_SourceChainMap,
@@ -105,7 +106,6 @@ const AxelarTransfer: FunctionComponent<
     );
 
     const erc20ContractAddress = sourceChainConfig?.erc20ContractAddress;
-    const transferFeeMinAmount = sourceChainConfig?.transferFeeMinAmount ?? "0";
 
     const axelarChainId =
       chainStore.getChainFromCurrency(originCurrency.coinDenom)?.chainId ||
@@ -168,12 +168,27 @@ const AxelarTransfer: FunctionComponent<
       iconUrl: originCurrency.coinImageUrl,
     };
 
-    const sourceChain = isWithdraw ? "osmosis" : selectedSourceChainAxelarKey;
-    const destChain = isWithdraw ? selectedSourceChainAxelarKey : "osmosis";
+    /** Osmosis chain ID accepted by Axelar APIs. */
+    const osmosisAxelarChainId = IS_TESTNET ? "osmosis-4" : "osmosis";
+    const sourceChain = isWithdraw
+      ? osmosisAxelarChainId
+      : selectedSourceChainAxelarKey;
+    const destChain = isWithdraw
+      ? selectedSourceChainAxelarKey
+      : osmosisAxelarChainId;
     const address = isWithdraw ? ethWalletClient.accountAddress : bech32Address;
 
     /** Amount, with decimals. e.g. 1.2 USDC */
     const amount = isWithdraw ? withdrawAmountConfig.amount : depositAmount;
+
+    const { transferFee } = useTransferFeeQuery(
+      sourceChain,
+      destChain,
+      originCurrency.coinMinimalDenom,
+      amount,
+      originCurrency,
+      isTestNet ? Environment.TESTNET : Environment.MAINNET
+    );
 
     const availableBalance = isWithdraw
       ? balanceOnOsmosis.balance
@@ -392,6 +407,7 @@ const AxelarTransfer: FunctionComponent<
       (isWithdraw && osmosisAccount.txTypeInProgress === "");
     const isInsufficientFee =
       amount !== "" &&
+      transferFee !== undefined &&
       new CoinPretty(
         originCurrency,
         new Dec(amount).mul(
@@ -401,17 +417,7 @@ const AxelarTransfer: FunctionComponent<
       )
         .moveDecimalPointRight(originCurrency.coinDecimals)
         .toDec()
-        .lt(
-          new CoinPretty(
-            originCurrency,
-            new Dec(transferFeeMinAmount).mul(
-              // CoinPretty only accepts whole amounts
-              DecUtils.getTenExponentNInPrecisionRange(
-                originCurrency.coinDecimals
-              )
-            )
-          ).toDec()
-        );
+        .lt(transferFee.toDec());
     const isInsufficientBal =
       amount !== "" &&
       availableBalance &&
@@ -481,9 +487,7 @@ const AxelarTransfer: FunctionComponent<
               toggleIsDepositAmtMax();
             }
           }}
-          transferFee={
-            new CoinPretty(originCurrency, new Dec(transferFeeMinAmount))
-          }
+          transferFee={transferFee}
           waitTime={waitBySourceChain(selectedSourceChainKey)}
           disabled={!userCanInteract}
           disablePanel={
