@@ -5,6 +5,7 @@ import type { SourceChainKey } from "../integrations/bridge-info";
 import type { EthWallet } from "../integrations/ethereum";
 import type { Wallet } from "../integrations/wallets";
 import { IBCBalance } from "../stores/assets";
+import { IS_TESTNET } from "../config";
 import { useConnectWalletModalRedirect } from "../hooks";
 import { ModalBaseProps, ModalBase } from "./base";
 import { useTranslation } from "react-multi-lang";
@@ -85,6 +86,7 @@ export const BridgeTransferModal: FunctionComponent<
                 connectCosmosWalletButtonOverride={
                   walletConnected ? undefined : connectWalletButton
                 }
+                isTestNet={IS_TESTNET}
               />
             );
           default:

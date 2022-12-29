@@ -5,7 +5,6 @@ import { Environment } from "@axelar-network/axelarjs-sdk";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { basicIbcTransfer } from "@osmosis-labs/stores";
-import { IS_TESTNET } from "../../config";
 import {
   useFakeFeeConfig,
   useAmountConfig,
@@ -169,7 +168,7 @@ const AxelarTransfer: FunctionComponent<
     };
 
     /** Osmosis chain ID accepted by Axelar APIs. */
-    const osmosisAxelarChainId = IS_TESTNET ? "osmosis-4" : "osmosis";
+    const osmosisAxelarChainId = isTestNet ? "osmosis-4" : "osmosis";
     const sourceChain = isWithdraw
       ? osmosisAxelarChainId
       : selectedSourceChainAxelarKey;
