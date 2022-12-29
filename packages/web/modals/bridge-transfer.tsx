@@ -1,9 +1,11 @@
 import dynamic from "next/dynamic";
+import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 import type { SourceChainKey } from "../integrations/bridge-info";
 import type { EthWallet } from "../integrations/ethereum";
 import type { Wallet } from "../integrations/wallets";
 import { IBCBalance } from "../stores/assets";
+import { IS_TESTNET } from "../config";
 import { useConnectWalletModalRedirect } from "../hooks";
 import { ModalBaseProps, ModalBase } from "./base";
 import { useTranslation } from "react-multi-lang";
@@ -27,7 +29,7 @@ export const BridgeTransferModal: FunctionComponent<
     walletClient: Wallet;
     onRequestSwitchWallet: () => void;
   }
-> = (props) => {
+> = observer((props) => {
   const {
     isWithdraw,
     balance,
@@ -84,6 +86,7 @@ export const BridgeTransferModal: FunctionComponent<
                 connectCosmosWalletButtonOverride={
                   walletConnected ? undefined : connectWalletButton
                 }
+                isTestNet={IS_TESTNET}
               />
             );
           default:
@@ -92,4 +95,4 @@ export const BridgeTransferModal: FunctionComponent<
       })()}
     </ModalBase>
   );
-};
+});

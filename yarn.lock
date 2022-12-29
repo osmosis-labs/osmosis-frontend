@@ -38,26 +38,33 @@
   resolved "https://registry.npmjs.org/@amplitude/ua-parser-js/-/ua-parser-js-0.7.31.tgz"
   integrity sha512-+z8UGRaj13Pt5NDzOnkTBy49HE2CX64jeL0ArB86HAtilpnfkPB7oqkigN7Lf2LxscMg4QhFD7mmCfedh3rqTg==
 
-"@axelar-network/axelarjs-sdk@^0.6.14":
-  version "0.6.18"
-  resolved "https://registry.npmjs.org/@axelar-network/axelarjs-sdk/-/axelarjs-sdk-0.6.18.tgz"
-  integrity sha512-p4VaPC9W7hTJDezlbQrYDKhMZ71GWwdQE5VdjxYC9aLD1OQ6TFVCmrZIMT+jEEY24byXGM7M4xcdCEfCnjNVXQ==
+"@axelar-network/axelar-cgp-solidity@^4.3.0":
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/@axelar-network/axelar-cgp-solidity/-/axelar-cgp-solidity-4.3.1.tgz#49877b2599083fdd4bda92d3eb0ccdfcfeff3785"
+  integrity sha512-efJsTvoGITUPr50PQc8fCwzT9JOJMnchW+WnXAivXaEm/mw2bcEAYX6dCcZn4j6tgFTAVZnYqrABItQwDaStag==
+
+"@axelar-network/axelarjs-sdk@^0.11.7":
+  version "0.11.8"
+  resolved "https://registry.yarnpkg.com/@axelar-network/axelarjs-sdk/-/axelarjs-sdk-0.11.8.tgz#870312ad5edcb81f0ffebe9fe143e14028b1ea53"
+  integrity sha512-KVORyvO0i8dH7I0BmmNumopDls/f0fgsCVKRUAvR+izcPGHOG/8u4RDkUOeBHaPWBRSJUHIXdeQSm7MIYvpwUw==
   dependencies:
-    "@axelar-network/axelarjs-types" "^0.0.3"
+    "@axelar-network/axelar-cgp-solidity" "^4.3.0"
+    "@axelar-network/axelarjs-types" "^0.24.0"
     "@cosmjs/stargate" "^0.28.4"
     "@types/uuid" "^8.3.1"
     bech32 "^2.0.0"
     clone-deep "^4.0.1"
     cross-fetch "^3.1.5"
-    eslint-plugin-import "^2.25.4"
     ethers "^5.4.7"
     socket.io-client "^4.2.0"
+    standard-http-error "^2.0.1"
+    string-similarity-js "^2.1.4"
     uuid "^8.3.2"
 
-"@axelar-network/axelarjs-types@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.npmjs.org/@axelar-network/axelarjs-types/-/axelarjs-types-0.0.3.tgz"
-  integrity sha512-Y3CgKAHOnVyU/0JFulUyZkSxeVkMEvt4eTbrXy8bx3GCAhqx7rc45fz2VJPVr1f24lFwEAGGc5VbeGrXZodssw==
+"@axelar-network/axelarjs-types@^0.24.0":
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/@axelar-network/axelarjs-types/-/axelarjs-types-0.24.0.tgz#ab9cc52690206a36475a1e026aefc74d578ea229"
+  integrity sha512-L353tkWLnujTcaEc3hMK51aiqY7DzEPfBNU9mluvtZIN9WsAbW2F3Rpj3UceSDLG0F98233HDhpPxWiGjIpiFg==
   dependencies:
     long "^4.0.0"
     protobufjs "~6.11.2"
@@ -10751,6 +10758,18 @@ stacktrace-parser@0.1.10:
   dependencies:
     type-fest "^0.7.1"
 
+"standard-error@>= 1.1.0 < 2":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/standard-error/-/standard-error-1.1.0.tgz#23e5168fa1c0820189e5812701a79058510d0d34"
+  integrity sha512-4v7qzU7oLJfMI5EltUSHCaaOd65J6S4BqKRWgzMi4EYaE5fvNabPxmAPGdxpGXqrcWjhDGI/H09CIdEuUOUeXg==
+
+standard-http-error@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/standard-http-error/-/standard-http-error-2.0.1.tgz#f8ae9172e3cef9cb38d2e7084a1925f57a7c34bd"
+  integrity sha512-DX/xPIoyXQTuY6BMZK4Utyi4l3A4vFoafsfqrU6/dO4Oe/59c7PyqPd2IQj9m+ZieDg2K3RL9xOYJsabcD9IUA==
+  dependencies:
+    standard-error ">= 1.1.0 < 2"
+
 "statuses@>= 1.5.0 < 2":
   version "1.5.0"
   resolved "https://registry.npmjs.org/statuses/-/statuses-1.5.0.tgz"
@@ -10803,6 +10822,11 @@ string-length@^4.0.1:
   dependencies:
     char-regex "^1.0.2"
     strip-ansi "^6.0.0"
+
+string-similarity-js@^2.1.4:
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/string-similarity-js/-/string-similarity-js-2.1.4.tgz#73716330691946f2ebc435859aba8327afd31307"
+  integrity sha512-uApODZNjCHGYROzDSAdCmAHf60L/pMDHnP/yk6TAbvGg7JSPZlSto/ceCI7hZEqzc53/juU2aOJFkM2yUVTMTA==
 
 string-width@^1.0.1:
   version "1.0.2"
