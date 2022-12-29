@@ -108,7 +108,8 @@ export class ObservableQueryFilteredPools
       if (
         ((this.response && !this.isFetching) || !this._canFetch) &&
         !this._pools.has(id) &&
-        !this._fetchingPoolIds.has(id)
+        !this._fetchingPoolIds.has(id) &&
+        parseInt(id) > 0
       ) {
         this._fetchingPoolIds.add(id);
         ObservableQueryPool.makeWithoutRaw(

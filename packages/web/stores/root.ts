@@ -8,7 +8,7 @@ import {
   IBCCurrencyRegsitrar,
   QueriesStore,
 } from "@keplr-wallet/stores";
-import { ChainInfos, IBCAssetInfos } from "../config";
+import { ChainInfos, IBCAssetInfos, IS_FRONTIER } from "../config";
 import EventEmitter from "eventemitter3";
 import { ChainStore, ChainInfoWithExplorer } from "./chain";
 import {
@@ -180,6 +180,14 @@ export class RootStore {
       makeIndexedKVStore("store_web_queries"),
       this.priceStore,
       this.chainStore.osmosis.chainId,
+      this.queriesStore.get(
+        this.chainStore.osmosis.chainId
+      ).osmosis!.queryGauge,
+      typeof window !== "undefined"
+        ? window.origin
+        : IS_FRONTIER
+        ? "https://frontier.osmosis.zone"
+        : "https://app.osmosis.zone",
       IS_TESTNET ? "https://api.testnet.osmosis.zone/" : undefined
     );
 

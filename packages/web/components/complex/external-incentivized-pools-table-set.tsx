@@ -1,9 +1,9 @@
-import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo, useCallback, useState } from "react";
 import EventEmitter from "eventemitter3";
-import { EventName, ExternalIncentiveGaugeAllowList } from "../../config";
+import { EventName } from "../../config";
 import {
   useFilteredData,
   usePaginatedData,
@@ -45,10 +45,11 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
     const { chainId } = chainStore.osmosis;
     const queryCosmos = queriesStore.get(chainId).cosmos;
     const queryOsmosis = queriesStore.get(chainId).osmosis!;
+    const queryActiveGauges = queriesExternalStore.queryActiveGauges;
     const account = accountStore.getAccount(chainId);
 
-    const pools = Object.keys(ExternalIncentiveGaugeAllowList).map((poolId) =>
-      queryOsmosis.queryGammPools.getPool(poolId)
+    const pools = Object.keys(queryActiveGauges.poolIdsForActiveGauges).map(
+      (poolId) => queryOsmosis.queryGammPools.getPool(poolId)
     );
 
     const externalIncentivizedPools = useMemo(
@@ -61,16 +62,11 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
               return false;
             }
 
-            const inner = ExternalIncentiveGaugeAllowList[pool.id];
-            const data = Array.isArray(inner) ? inner : [inner];
+            const gauges = queryActiveGauges.getExternalGaugesForPool(pool.id);
 
-            if (data.length === 0) {
+            if (!gauges || gauges.length === 0) {
               return false;
             }
-            const gaugeIds = data.map((d) => d.gaugeId);
-            const gauges = gaugeIds.map((gaugeId) =>
-              queryOsmosis.queryGauge.get(gaugeId)
-            );
 
             let maxRemainingEpoch = 0;
             for (const gauge of gauges) {
@@ -82,32 +78,16 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
             return maxRemainingEpoch > 0;
           }
         ),
-      [pools]
+      [pools, queryActiveGauges.response]
     );
 
     const externalIncentivizedPoolsWithMetrics = useMemo(
       () =>
         externalIncentivizedPools.map((pool) => {
-          const inner = ExternalIncentiveGaugeAllowList[pool.id];
-          const data = Array.isArray(inner) ? inner : [inner];
-          const gaugeIds = data.map((d) => d.gaugeId);
-          const gauges = gaugeIds.map((gaugeId) => {
-            return queryOsmosis.queryGauge.get(gaugeId);
-          });
-          const incentiveDenom = data[0].denom;
-          const currency = chainStore
-            .getChain(chainId)
-            .forceFindCurrency(incentiveDenom);
-          let sumRemainingBonus: CoinPretty = new CoinPretty(
-            currency,
-            new Dec(0)
-          );
-          let maxRemainingEpoch = 0;
-          for (const gauge of gauges) {
-            sumRemainingBonus = sumRemainingBonus.add(
-              gauge.getRemainingCoin(currency)
-            );
+          const gauges = queryActiveGauges.getExternalGaugesForPool(pool.id);
 
+          let maxRemainingEpoch = 0;
+          for (const gauge of gauges ?? []) {
             if (gauge.remainingEpoch > maxRemainingEpoch) {
               maxRemainingEpoch = gauge.remainingEpoch;
             }
@@ -132,35 +112,34 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
               pool,
               priceStore
             );
-          const whitelistedGauges =
-            ExternalIncentiveGaugeAllowList?.[pool.id] ?? undefined;
           const highestDuration =
             queryOsmosis.queryLockableDurations.highestDuration;
 
-          const externalApr = (whitelistedGauges ?? []).reduce(
-            (sum, { gaugeId, denom }) => {
-              const gauge = queryOsmosis.queryGauge.get(gaugeId);
+          const externalApr = (gauges ?? []).reduce((sum, gauge) => {
+            if (
+              !gauge ||
+              !highestDuration ||
+              gauge.lockupDuration.asMilliseconds() !==
+                highestDuration.asMilliseconds()
+            ) {
+              return sum;
+            }
 
-              if (
-                !gauge ||
-                !highestDuration ||
-                gauge.lockupDuration.asMilliseconds() !==
-                  highestDuration.asMilliseconds()
-              ) {
-                return sum;
-              }
-
-              return sum.add(
-                queryOsmosis.queryIncentivizedPools.computeExternalIncentiveGaugeAPR(
-                  pool.id,
-                  gaugeId,
-                  denom,
-                  priceStore
-                )
-              );
-            },
-            new RatePretty(0)
-          );
+            const gaugeData = gauge.gauge;
+            if (gaugeData) {
+              gaugeData.coins.forEach((coin) => {
+                return sum.add(
+                  queryOsmosis.queryIncentivizedPools.computeExternalIncentiveGaugeAPR(
+                    pool.id,
+                    gaugeData.id,
+                    coin.denom,
+                    priceStore
+                  )
+                );
+              });
+            }
+            return sum;
+          }, new RatePretty(0));
           const superfluidApr =
             queryOsmosis.querySuperfluidPools.isSuperfluidPool(pool.id)
               ? new RatePretty(
@@ -218,6 +197,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
         queryCosmos.queryInflation.isFetching,
         queriesExternalStore.queryGammPoolFeeMetrics.response,
         queryOsmosis.queryGammPools.response,
+        queryActiveGauges.response,
         priceStore,
         account,
         chainStore,
