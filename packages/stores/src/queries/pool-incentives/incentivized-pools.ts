@@ -15,7 +15,7 @@ import { PoolGetter } from "../pools";
 import { IPriceStore } from "../../price";
 import { ObservableQueryDistrInfo } from "./distr-info";
 import { ObservableQueryLockableDurations } from "./lockable-durations";
-import { ObservableQueryGauge } from "../incentives";
+import { ObservableQueryGauges } from "../incentives";
 import { IncentivizedPools } from "./types";
 
 export class ObservableQueryIncentivizedPools extends ObservableChainQuery<IncentivizedPools> {
@@ -29,7 +29,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
     protected readonly queryMintParmas: ObservableQueryMintParmas,
     protected readonly queryEpochProvision: ObservableQueryEpochProvisions,
     protected readonly queryEpochs: ObservableQueryEpochs,
-    protected readonly queryGauge: ObservableQueryGauge
+    protected readonly queryGauge: ObservableQueryGauges
   ) {
     super(
       kvStore,

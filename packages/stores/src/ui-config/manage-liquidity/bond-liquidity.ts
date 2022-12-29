@@ -9,12 +9,12 @@ import {
   IntPretty,
 } from "@keplr-wallet/unit";
 import { AppCurrency } from "@keplr-wallet/types";
-import { ObservableQueryGaugeById } from "../../queries/incentives";
+import { ObservableQueryGauge } from "../../queries/incentives";
 import {
   ObservableQueryPoolDetails,
   ObservableQuerySuperfluidPool,
   ObservableQueryAccountLocked,
-  ObservableQueryGauge,
+  ObservableQueryGauges,
   ObservableQueryIncentivizedPools,
 } from "../../queries";
 import {
@@ -63,7 +63,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
     },
     protected readonly queries: {
       queryAccountLocked: ObservableQueryAccountLocked;
-      queryGauge: ObservableQueryGauge;
+      queryGauge: ObservableQueryGauges;
       queryIncentivizedPools: ObservableQueryIncentivizedPools;
     }
   ) {
@@ -159,7 +159,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
             (gauge) => gauge.duration.asMilliseconds() === durationMs
           );
           const externalGaugesOfDuration = externalGauges.reduce<
-            ObservableQueryGaugeById[]
+            ObservableQueryGauge[]
           >((gauges, externalGauge) => {
             if (externalGauge.lockupDuration.asMilliseconds() === durationMs) {
               gauges.push(externalGauge);

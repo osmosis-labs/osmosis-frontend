@@ -12,7 +12,7 @@ import {
   ObservableQueryLockableDurations,
   ObservableQueryPoolsGaugeIds,
 } from "../pool-incentives";
-import { ObservableQueryGauge } from "../incentives";
+import { ObservableQueryGauges } from "../incentives";
 import {
   ObservableQueryAccountLocked,
   ObservableQueryAccountLockedCoins,
@@ -32,7 +32,7 @@ export class ObservableQueryPoolDetails extends UserConfig {
       queryAccountLocked: ObservableQueryAccountLocked;
       queryLockedCoins: ObservableQueryAccountLockedCoins;
       queryUnlockingCoins: ObservableQueryAccountUnlockingCoins;
-      queryGauge: ObservableQueryGauge;
+      queryGauge: ObservableQueryGauges;
       queryLockableDurations: ObservableQueryLockableDurations;
       queryPoolsGaugeIds: ObservableQueryPoolsGaugeIds;
     },

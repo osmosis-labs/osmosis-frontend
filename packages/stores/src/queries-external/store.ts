@@ -1,7 +1,7 @@
 import { KVStore } from "@keplr-wallet/common";
 import { DeepReadonly } from "utility-types";
 import { IPriceStore } from "../price";
-import { ObservableQueryGauge } from "../queries/incentives";
+import { ObservableQueryGauges } from "../queries/incentives";
 import { ObservableQueryActiveGauges } from "./active-gauges";
 import { ObservableQueryPoolFeesMetrics } from "./pool-fees";
 import { ObservableQueryAccountsPoolRewards } from "./pool-rewards";
@@ -26,7 +26,7 @@ export class QueriesExternalStore {
     kvStore: KVStore,
     priceStore: IPriceStore,
     chainId: string,
-    observableQueryGuage: ObservableQueryGauge,
+    observableQueryGuage: ObservableQueryGauges,
     webApiBaseUrl: string,
     feeMetricsBaseURL = IMPERATOR_HISTORICAL_DATA_BASEURL,
     poolRewardsBaseUrl = IMPERATOR_TX_REWARD_BASEURL

@@ -13,7 +13,8 @@ import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { Duration } from "dayjs/plugin/duration";
 import dayjs from "dayjs";
 
-export class ObservableQueryGaugeById extends ObservableChainQuery<GaugeById> {
+/** Individual gauge that can be fetched individually, as well as initialized with data statically (and later refreshed). */
+export class ObservableQueryGauge extends ObservableChainQuery<GaugeById> {
   @observable.ref
   protected _raw?: Gauge;
 
@@ -40,7 +41,7 @@ export class ObservableQueryGaugeById extends ObservableChainQuery<GaugeById> {
     chainGetter: ChainGetter,
     gauge: Gauge
   ) {
-    const queryGauge = new ObservableQueryGaugeById(
+    const queryGauge = new ObservableQueryGauge(
       kvStore,
       chainId,
       chainGetter,
@@ -170,7 +171,7 @@ export class ObservableQueryGaugeById extends ObservableChainQuery<GaugeById> {
   );
 }
 
-export class ObservableQueryGauge extends ObservableChainQueryMap<GaugeById> {
+export class ObservableQueryGauges extends ObservableChainQueryMap<GaugeById> {
   protected _fetchingGaugeIds: Set<string> = new Set();
 
   constructor(
@@ -179,12 +180,12 @@ export class ObservableQueryGauge extends ObservableChainQueryMap<GaugeById> {
     protected readonly chainGetter: ChainGetter
   ) {
     super(kvStore, chainId, chainGetter, (id: string) => {
-      return new ObservableQueryGaugeById(kvStore, chainId, chainGetter, id);
+      return new ObservableQueryGauge(kvStore, chainId, chainGetter, id);
     });
   }
 
-  get(id: string): ObservableQueryGaugeById {
-    const gauge = super.get(id) as ObservableQueryGaugeById;
+  get(id: string): ObservableQueryGauge {
+    const gauge = super.get(id) as ObservableQueryGauge;
 
     // If the requested gauge does not have data, fetch it.
     if (!gauge.hasData && !this._fetchingGaugeIds.has(id)) {
@@ -199,7 +200,7 @@ export class ObservableQueryGauge extends ObservableChainQueryMap<GaugeById> {
   /** Adds a gauge to the map store with prepopulated data. */
   @action
   setWithGauge(gauge: Gauge) {
-    const queryGauge = ObservableQueryGaugeById.makeWithRaw(
+    const queryGauge = ObservableQueryGauge.makeWithRaw(
       this.kvStore,
       this.chainId,
       this.chainGetter,
