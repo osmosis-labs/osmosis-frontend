@@ -131,11 +131,18 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       }
     }
 
-    return (
-      this.sendableCurrencies.find(
-        (c) => c.coinDenom === this.initialSelectCurrencies.send.coinDenom
-      ) ?? this.sendableCurrencies[0]
+    const initialSendCurrency = this.sendableCurrencies.find(
+      (c) => c.coinDenom === this.initialSelectCurrencies.send.coinDenom
     );
+    const initialCurrency =
+      initialSendCurrency &&
+      this.sendableCurrencies.find(
+        (c) => c.coinDenom === this.initialSelectCurrencies.out.coinDenom
+      )
+        ? initialSendCurrency
+        : undefined;
+
+    return initialCurrency ?? this.sendableCurrencies[0];
   }
 
   @computed
@@ -152,11 +159,18 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       }
     }
 
-    return (
-      this.sendableCurrencies.find(
-        (c) => c.coinDenom === this.initialSelectCurrencies.out.coinDenom
-      ) ?? this.sendableCurrencies[1]
+    const initialOutCurrency = this.sendableCurrencies.find(
+      (c) => c.coinDenom === this.initialSelectCurrencies.out.coinDenom
     );
+    const initialCurrency =
+      initialOutCurrency &&
+      this.sendableCurrencies.find(
+        (c) => c.coinDenom === this.initialSelectCurrencies.send.coinDenom
+      )
+        ? initialOutCurrency
+        : undefined;
+
+    return initialCurrency ?? this.sendableCurrencies[1];
   }
 
   @computed

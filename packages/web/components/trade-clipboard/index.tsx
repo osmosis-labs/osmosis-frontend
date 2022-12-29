@@ -54,12 +54,9 @@ export const TradeClipboard: FunctionComponent<{
     const { isMobile } = useWindowSize();
     const { logEvent } = useAmplitudeAnalytics();
 
-    /** If in modal, show all currencies. Otherwise, get approved currencies from assets store. */
-    const availableOsmosisCoins = isInModal
-      ? chainStore.getChain(chainStore.osmosis.chainId).currencies
-      : nativeBalances
-          .concat(ibcBalances)
-          .map(({ balance }) => balance.currency);
+    const tradeableCurrencies = chainStore.getChain(
+      chainStore.osmosis.chainId
+    ).currencies;
 
     const account = accountStore.getAccount(chainId);
     const queries = queriesStore.get(chainId);
@@ -127,11 +124,7 @@ export const TradeClipboard: FunctionComponent<{
       fromAmountInput.current?.focus();
     }, [tradeTokenInConfig.sendCurrency]);
 
-    useTokenSwapQueryParams(
-      tradeTokenInConfig,
-      availableOsmosisCoins,
-      isInModal
-    );
+    useTokenSwapQueryParams(tradeTokenInConfig, tradeableCurrencies, isInModal);
 
     const showPriceImpactWarning = useMemo(
       () =>
@@ -264,9 +257,10 @@ export const TradeClipboard: FunctionComponent<{
      */
     const getTokenSelectTokens = useCallback(
       (otherSelectedToken: string) => {
-        return availableOsmosisCoins
+        return tradeableCurrencies
           .filter((currency) => currency.coinDenom !== otherSelectedToken)
           .filter((currency) =>
+            // is in the sendable currencies list. AKA in the given pools
             tradeTokenInConfig.sendableCurrencies.some(
               (sendableCurrency) =>
                 sendableCurrency.coinDenom === currency.coinDenom
@@ -287,7 +281,7 @@ export const TradeClipboard: FunctionComponent<{
           );
       },
       [
-        availableOsmosisCoins,
+        tradeableCurrencies,
         tradeTokenInConfig.sendableCurrencies,
         isInModal,
         nativeBalances,
@@ -684,7 +678,7 @@ export const TradeClipboard: FunctionComponent<{
                 )}
                 selectedTokenDenom={tradeTokenInConfig.sendCurrency.coinDenom}
                 onSelect={(tokenDenom: string) => {
-                  const tokenInCurrency = availableOsmosisCoins.find(
+                  const tokenInCurrency = tradeableCurrencies.find(
                     (currency) => currency.coinDenom === tokenDenom
                   );
                   if (tokenInCurrency) {
@@ -846,7 +840,7 @@ export const TradeClipboard: FunctionComponent<{
                 )}
                 selectedTokenDenom={tradeTokenInConfig.outCurrency.coinDenom}
                 onSelect={(tokenDenom: string) => {
-                  const tokenOutCurrency = availableOsmosisCoins.find(
+                  const tokenOutCurrency = tradeableCurrencies.find(
                     (currency) => currency.coinDenom === tokenDenom
                   );
                   if (tokenOutCurrency) {
