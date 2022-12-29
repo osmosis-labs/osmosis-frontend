@@ -58,7 +58,7 @@ const AxelarTransfer: FunctionComponent<
     onRequestClose,
     onRequestSwitchWallet,
     sourceChains,
-    isTestNet = process.env.NEXT_PUBLIC_IS_TESTNET === "true",
+    isTestNet = false,
     wrapAssetConfig,
     connectCosmosWalletButtonOverride,
   }) => {
