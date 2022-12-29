@@ -4,7 +4,7 @@ import { KVStore } from "@keplr-wallet/common";
 import { QueryResponse } from "@keplr-wallet/stores";
 import { ObservableQueryExternalBase } from "../base";
 import { ActiveGauges } from "./types";
-import { ObservableQueryGuage } from "../../queries/incentives";
+import { ObservableQueryGauge } from "../../queries/incentives";
 
 /** Queries web server API for active external gauges, and stores returned gauges in ObservableQueryGauge map store.
  *  Replaces manual prior config.
@@ -15,7 +15,7 @@ export class ObservableQueryActiveGauges extends ObservableQueryExternalBase<Act
   constructor(
     kvStore: KVStore,
     baseURL: string,
-    protected readonly queryGauge: ObservableQueryGuage
+    protected readonly queryGauge: ObservableQueryGauge
   ) {
     super(kvStore, baseURL, "/api/active-gauges");
   }
