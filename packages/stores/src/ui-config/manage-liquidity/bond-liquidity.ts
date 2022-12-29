@@ -1,4 +1,3 @@
-import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { Duration } from "dayjs/plugin/duration";
 import dayjs from "dayjs";
@@ -10,15 +9,18 @@ import {
   IntPretty,
 } from "@keplr-wallet/unit";
 import { AppCurrency } from "@keplr-wallet/types";
+import { ObservableQueryGaugeById } from "../../queries/incentives";
 import {
   ObservableQueryPoolDetails,
   ObservableQuerySuperfluidPool,
-  ExternalGauge,
   ObservableQueryAccountLocked,
-  ObservableQueryGuage,
+  ObservableQueryGauge,
   ObservableQueryIncentivizedPools,
 } from "../../queries";
-import { ObservableQueryPoolFeesMetrics } from "../../queries-external";
+import {
+  ObservableQueryPoolFeesMetrics,
+  ObservableQueryActiveGauges,
+} from "../../queries-external";
 import { IPriceStore } from "../../price";
 import { UserConfig } from "../user-config";
 
@@ -55,15 +57,17 @@ export class ObservableBondLiquidityConfig extends UserConfig {
     protected readonly poolDetails: ObservableQueryPoolDetails,
     protected readonly superfluidPool: ObservableQuerySuperfluidPool,
     protected readonly priceStore: IPriceStore,
-    protected readonly queryFeeMetrics: ObservableQueryPoolFeesMetrics,
+    protected readonly externalQueries: {
+      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryActiveGauges: ObservableQueryActiveGauges;
+    },
     protected readonly queries: {
       queryAccountLocked: ObservableQueryAccountLocked;
-      queryGauge: ObservableQueryGuage;
+      queryGauge: ObservableQueryGauge;
       queryIncentivizedPools: ObservableQueryIncentivizedPools;
     }
   ) {
     super();
-    makeObservable(this);
   }
 
   /** Calculates the stop in the bonding process the user is in.
@@ -86,22 +90,21 @@ export class ObservableBondLiquidityConfig extends UserConfig {
   /** Gets all durations for user to bond in, or has locked tokens for, with a breakdown of the assets incentivizing the duration. Internal OSMO incentives & swap fees included in breakdown. */
   readonly getAllowedBondDurations = computedFn(
     (
-      findCurrency: (denom: string) => AppCurrency | undefined,
-      allowedGauges: { gaugeId: string; denom: string }[] | undefined
+      findCurrency: (denom: string) => AppCurrency | undefined
     ): BondDuration[] => {
       const poolId = this.poolDetails.pool.id;
-      const gauges = this.superfluidPool.gaugesWithSuperfluidApr;
+      const internalGauges = this.superfluidPool.gaugesWithSuperfluidApr;
 
       const queryLockedCoin = this.queries.queryAccountLocked.get(
         this.bech32Address
       );
 
-      const externalGauges = allowedGauges
-        ? this.poolDetails.queryAllowedExternalGauges(
-            findCurrency,
-            allowedGauges
-          )
-        : [];
+      const externalGauges =
+        this.externalQueries.queryActiveGauges.getExternalGaugesForPool(
+          poolId
+        ) ?? [];
+
+      console.log(internalGauges.map(({ apr }) => apr.toString()));
 
       /** Set of all available durations. */
       const durationsMsSet = new Set<number>();
@@ -123,8 +126,12 @@ export class ObservableBondLiquidityConfig extends UserConfig {
           }
         });
 
-      (gauges as { duration: Duration }[])
-        .concat(externalGauges as { duration: Duration }[])
+      (internalGauges as { duration: Duration }[])
+        .concat(
+          externalGauges.map((gauge) => ({
+            duration: gauge.lockupDuration,
+          }))
+        )
         .forEach((gauge) => {
           durationsMsSet.add(gauge.duration.asMilliseconds());
         });
@@ -148,13 +155,13 @@ export class ObservableBondLiquidityConfig extends UserConfig {
           );
 
           /** There is only one internal gauge of a chain-configured lockable duration (1,7,14 days). */
-          const internalGaugeOfDuration = gauges.find(
+          const internalGaugeOfDuration = internalGauges.find(
             (gauge) => gauge.duration.asMilliseconds() === durationMs
           );
           const externalGaugesOfDuration = externalGauges.reduce<
-            ExternalGauge[]
+            ObservableQueryGaugeById[]
           >((gauges, externalGauge) => {
-            if (externalGauge.duration.asMilliseconds() === durationMs) {
+            if (externalGauge.lockupDuration.asMilliseconds() === durationMs) {
               gauges.push(externalGauge);
             }
             return gauges;
@@ -205,30 +212,28 @@ export class ObservableBondLiquidityConfig extends UserConfig {
           }
 
           // push external incentives to current duration
-          externalGaugesOfDuration.forEach(({ id }) => {
-            const queryGauge = this.queries.queryGauge.get(id);
-            const allowedGauge = allowedGauges?.find(
-              ({ gaugeId }) => gaugeId === id
-            );
-            if (!allowedGauge) return;
+          externalGaugesOfDuration.forEach((gauge) => {
+            if (!gauge.gauge) return;
 
-            const currency = findCurrency(allowedGauge.denom);
+            const incentiveCoin = gauge.gauge.coins[0];
+
+            const currency = findCurrency(incentiveCoin.denom);
             const fiatCurrency = this.priceStore.getFiatCurrency(
               this.priceStore.defaultVsCurrency
             );
             if (!currency || !fiatCurrency) return;
 
             incentivesBreakdown.push({
-              dailyPoolReward: queryGauge
+              dailyPoolReward: gauge
                 .getRemainingCoin(currency)
-                .quo(new Dec(queryGauge.remainingEpoch)),
+                .quo(new Dec(gauge.remainingEpoch)),
               apr: this.queries.queryIncentivizedPools.computeExternalIncentiveGaugeAPR(
                 poolId,
-                allowedGauge.gaugeId,
-                allowedGauge.denom,
+                gauge.gauge.id,
+                incentiveCoin.denom,
                 this.priceStore
               ),
-              numDaysRemaining: queryGauge.remainingEpoch,
+              numDaysRemaining: gauge.remainingEpoch,
             });
           });
 
@@ -269,10 +274,11 @@ export class ObservableBondLiquidityConfig extends UserConfig {
             (sum, { apr }) => sum.add(apr),
             new RatePretty(0)
           );
-          const swapFeeApr = this.queryFeeMetrics.get7dPoolFeeApr(
-            this.poolDetails.pool,
-            this.priceStore
-          );
+          const swapFeeApr =
+            this.externalQueries.queryGammPoolFeeMetrics.get7dPoolFeeApr(
+              this.poolDetails.pool,
+              this.priceStore
+            );
           aggregateApr = aggregateApr.add(swapFeeApr);
           if (superfluid) aggregateApr = aggregateApr.add(superfluid.apr);
 
@@ -286,7 +292,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
             userUnlockingShares,
             aggregateApr,
             swapFeeApr,
-            swapFeeDailyReward: this.queryFeeMetrics
+            swapFeeDailyReward: this.externalQueries.queryGammPoolFeeMetrics
               .getPoolFeesMetrics(poolId, this.priceStore)
               .feesSpent7d.quo(new Dec(7)),
             incentivesBreakdown,

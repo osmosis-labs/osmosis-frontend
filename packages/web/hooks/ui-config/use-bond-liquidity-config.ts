@@ -29,7 +29,7 @@ export function useBondLiquidityConfig(poolId?: string) {
           poolDetailConfig,
           superfluidPoolConfig,
           priceStore,
-          queriesExternalStore.queryGammPoolFeeMetrics,
+          queriesExternalStore,
           queryOsmosis
         )
       );

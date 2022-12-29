@@ -30,7 +30,12 @@ export class ObservableQueryActiveGauges extends ObservableQueryExternalBase<Act
   /** Active external gauges for a given pool. */
   readonly getExternalGaugesForPool = computedFn((poolId: string) => {
     return this.response?.data?.data
-      .filter((gauge) => gauge.distribute_to.denom.includes(poolId))
+      .filter((gauge) => {
+        if (!gauge.distribute_to.denom.includes("gamm/")) return false;
+
+        const distributePoolId = gauge.distribute_to.denom.split("/")[2];
+        return poolId === distributePoolId;
+      })
       .map((gauge) => this.queryGauge.get(gauge.id));
   });
 

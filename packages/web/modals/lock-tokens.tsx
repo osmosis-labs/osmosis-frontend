@@ -15,7 +15,6 @@ import {
   useSuperfluidPoolConfig,
   useCurrentLanguage,
 } from "../hooks";
-import { ExternalIncentiveGaugeAllowList } from "../config";
 import { useTranslation } from "react-multi-lang";
 
 export const LockTokensModal: FunctionComponent<
@@ -43,9 +42,8 @@ export const LockTokensModal: FunctionComponent<
   const bondLiquidityConfig = useBondLiquidityConfig(poolId);
 
   const bondDurations =
-    bondLiquidityConfig?.getAllowedBondDurations(
-      (denom) => chainStore.getChain(chainId).forceFindCurrency(denom),
-      ExternalIncentiveGaugeAllowList[poolId]
+    bondLiquidityConfig?.getAllowedBondDurations((denom) =>
+      chainStore.getChain(chainId).forceFindCurrency(denom)
     ) ?? [];
   const availableToken = queryOsmosis.queryGammPoolShare.getAvailableGammShare(
     bech32Address,
