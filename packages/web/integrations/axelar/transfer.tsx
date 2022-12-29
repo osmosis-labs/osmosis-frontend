@@ -180,14 +180,15 @@ const AxelarTransfer: FunctionComponent<
     /** Amount, with decimals. e.g. 1.2 USDC */
     const amount = isWithdraw ? withdrawAmountConfig.amount : depositAmount;
 
-    const { transferFee } = useTransferFeeQuery(
-      sourceChain,
-      destChain,
-      originCurrency.coinMinimalDenom,
-      amount,
-      originCurrency,
-      isTestNet ? Environment.TESTNET : Environment.MAINNET
-    );
+    const { transferFee, isLoading: isLoadingTransferFee } =
+      useTransferFeeQuery(
+        sourceChain,
+        destChain,
+        originCurrency.coinMinimalDenom,
+        amount,
+        originCurrency,
+        isTestNet ? Environment.TESTNET : Environment.MAINNET
+      );
 
     const availableBalance = isWithdraw
       ? balanceOnOsmosis.balance
@@ -513,7 +514,8 @@ const AxelarTransfer: FunctionComponent<
                 (isWithdraw && amount === "") ||
                 isInsufficientFee ||
                 isInsufficientBal ||
-                isSendTxPending
+                isSendTxPending ||
+                isLoadingTransferFee
               }
               onClick={() => {
                 if (!isWithdraw && userDisconnectedEthWallet)
