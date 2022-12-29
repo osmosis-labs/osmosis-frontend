@@ -23,7 +23,6 @@ import {
   useSuperfluidPoolConfig,
   useWindowSize,
   useAmplitudeAnalytics,
-  usePoolGauges,
   usePoolDetailConfig,
   useNavBar,
   useBondLiquidityConfig,
@@ -133,18 +132,12 @@ const Pool: FunctionComponent = observer(() => {
   } = useLockTokenConfig(
     pool ? queryOsmosis.queryGammPoolShare.getShareCurrency(pool.id) : undefined
   );
-  const {
-    allAggregatedGauges,
-    allowedAggregatedGauges,
-    internalGauges: _,
-  } = usePoolGauges(poolId);
   const [showSuperfluidValidatorModal, setShowSuperfluidValidatorsModal] =
     useState(false);
   const [showPoolDetails, setShowPoolDetails] = useState(false);
   const bondDurations = pool
-    ? bondLiquidityConfig?.getAllowedBondDurations(
-        (denom) => chainStore.getChain(chainId).forceFindCurrency(denom),
-        ExternalIncentiveGaugeAllowList[pool.id]
+    ? bondLiquidityConfig?.getAllowedBondDurations((denom) =>
+        chainStore.getChain(chainId).forceFindCurrency(denom)
       ) ?? []
     : [];
 
@@ -227,7 +220,7 @@ const Pool: FunctionComponent = observer(() => {
           .finally(() => setShowLockLPTokenModal(false));
       }
     },
-    [allAggregatedGauges, baseEventInfo, logEvent, lockToken]
+    [baseEventInfo, logEvent, lockToken]
   );
   const onUnlockTokens = useCallback(
     (duration: Duration) => {
@@ -358,18 +351,16 @@ const Pool: FunctionComponent = observer(() => {
           pools={[pool.pool]}
         />
       )}
-      {lockLPTokensConfig &&
-        allowedAggregatedGauges &&
-        showLockLPTokenModal && (
-          <LockTokensModal
-            poolId={poolId}
-            isOpen={showLockLPTokenModal}
-            title={t("lockToken.title")}
-            onRequestClose={() => setShowLockLPTokenModal(false)}
-            amountConfig={lockLPTokensConfig}
-            onLockToken={onLockToken}
-          />
-        )}
+      {lockLPTokensConfig && showLockLPTokenModal && (
+        <LockTokensModal
+          poolId={poolId}
+          isOpen={showLockLPTokenModal}
+          title={t("lockToken.title")}
+          onRequestClose={() => setShowLockLPTokenModal(false)}
+          amountConfig={lockLPTokensConfig}
+          onLockToken={onLockToken}
+        />
+      )}
       {superfluidPoolConfig?.superfluid &&
         pool &&
         lockLPTokensConfig &&
