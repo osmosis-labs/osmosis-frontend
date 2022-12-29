@@ -30,12 +30,10 @@ export function useTransferFeeQuery(
         new CoinPretty(currency, amountMinDenom).toCoin().amount
       );
       if (!isNaN(amount)) {
-        console.log("get transfer fee", { amountMinDenom });
         setIsLoading(true);
         api
           .getTransferFee(sourceChain, destChain, tokenMinDenom, amount)
           .then((resp) => {
-            console.log("successful transfer fee query", resp.fee?.amount);
             if (resp.fee && resp.fee.amount !== transferFee) {
               setTransferFee(resp.fee.amount);
             }
