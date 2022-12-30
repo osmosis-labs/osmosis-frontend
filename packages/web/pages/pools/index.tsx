@@ -10,7 +10,10 @@ import {
 import { observer } from "mobx-react-lite";
 import { useState, ComponentProps, useMemo, useCallback } from "react";
 import { Duration } from "dayjs/plugin/duration";
-import { ObservableQueryPool } from "@osmosis-labs/stores";
+import {
+  ObservablePoolDetail,
+  ObservableQueryPool,
+} from "@osmosis-labs/stores";
 import { PoolCard } from "../../components/cards";
 import { AllPoolsTableSet } from "../../components/complex/all-pools-table-set";
 import { ExternalIncentivizedPoolsTableSet } from "../../components/complex/external-incentivized-pools-table-set";
@@ -55,6 +58,7 @@ const Pools: NextPage = observer(function () {
     priceStore,
     queriesStore,
     queriesExternalStore,
+    derivedDataStore,
   } = useStore();
   const t = useTranslation();
   const { isMobile } = useWindowSize();
@@ -156,9 +160,7 @@ const Pools: NextPage = observer(function () {
   };
 
   // lock tokens (& possibly select sfs validator) quick action state
-  const { superfluidDelegateToValidator } = useSuperfluidPool(
-    lockLpTokenModalPoolId ?? ""
-  );
+  const { superfluidDelegateToValidator } = useSuperfluidPool();
   const selectedPoolShareCurrency = lockLpTokenModalPoolId
     ? queryOsmosis.queryGammPoolShare.getShareCurrency(lockLpTokenModalPoolId)
     : undefined;
@@ -265,8 +267,8 @@ const Pools: NextPage = observer(function () {
         ? myPoolIds.slice(0, poolCountShowMoreThreshold)
         : myPoolIds
       )
-        .map((myPoolId) => queryOsmosis.queryGammPools.getPool(myPoolId))
-        .filter((pool): pool is ObservableQueryPool => !!pool),
+        .map((myPoolId) => derivedDataStore.poolDetails.get(myPoolId))
+        .filter((pool): pool is ObservablePoolDetail => !!pool),
     [
       isMobile,
       showMoreMyPools,
@@ -274,16 +276,16 @@ const Pools: NextPage = observer(function () {
       queryOsmosis.queryGammPools.isFetching,
     ]
   );
-  const dustFilteredPools = useHideDustUserSetting(myPools, (pool) =>
-    pool
-      .computeTotalValueLocked(priceStore)
-      .mul(
-        queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
-          account.bech32Address,
-          pool.id
-        )
+  const dustFilteredPools = useHideDustUserSetting(myPools, (pool) => {
+    const _queryPool = pool.pool;
+    if (!_queryPool) return;
+    return pool.totalValueLocked.mul(
+      queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
+        account.bech32Address,
+        _queryPool.id
       )
-  );
+    );
+  });
 
   const [mobilePoolsTabIndex, _setMobilePoolsTabIndex] = useState(0);
   const setMobilePoolsTabIndex = useCallback((tabIndex: number) => {
@@ -345,90 +347,24 @@ const Pools: NextPage = observer(function () {
           <div className="flex flex-col gap-4">
             <div className="grid-cards mt-5 grid md:gap-3">
               {dustFilteredPools.map((myPool) => {
-                // TODO: refactor to use new pool detail stores
+                const _queryPool = myPool.pool;
 
-                const internalIncentiveApr =
-                  queryOsmosis.queryIncentivizedPools.computeMostApr(
-                    myPool.id,
-                    priceStore
-                  );
-                const swapFeeApr =
-                  queriesExternalStore.queryGammPoolFeeMetrics.get7dPoolFeeApr(
-                    myPool,
-                    priceStore
-                  );
-                const whitelistedGauges =
-                  ExternalIncentiveGaugeAllowList?.[myPool.id] ?? undefined;
-                const highestDuration =
-                  queryOsmosis.queryLockableDurations.highestDuration;
+                if (!_queryPool) return null;
 
-                const externalApr = (whitelistedGauges ?? []).reduce(
-                  (sum, { gaugeId, denom }) => {
-                    const gauge = queryOsmosis.queryGauge.get(gaugeId);
-
-                    if (
-                      !gauge ||
-                      !highestDuration ||
-                      gauge.lockupDuration.asMilliseconds() !==
-                        highestDuration.asMilliseconds()
-                    ) {
-                      return sum;
-                    }
-
-                    return sum.add(
-                      queryOsmosis.queryIncentivizedPools.computeExternalIncentiveGaugeAPR(
-                        myPool.id,
-                        gaugeId,
-                        denom,
-                        priceStore
-                      )
-                    );
-                  },
-                  new RatePretty(0)
+                const poolBonding = derivedDataStore.poolsBonding.get(
+                  _queryPool.id
                 );
-                const superfluidApr =
-                  queryOsmosis.querySuperfluidPools.isSuperfluidPool(myPool.id)
-                    ? new RatePretty(
-                        queryCosmos.queryInflation.inflation
-                          .mul(
-                            queryOsmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
-                              myPool.id
-                            )
-                          )
-                          .moveDecimalPointLeft(2)
-                      )
-                    : new RatePretty(0);
-                const apr = internalIncentiveApr
-                  .add(swapFeeApr)
-                  .add(externalApr)
-                  .add(superfluidApr);
+                const bondDurations = poolBonding.getAllowedBondDurations(
+                  (denom) =>
+                    chainStore.getChain(chainId).forceFindCurrency(denom)
+                );
+                const apr =
+                  bondDurations.find((_, i) => i === bondDurations.length - 1)
+                    ?.aggregateApr ?? new RatePretty(0);
 
-                const poolLiquidity =
-                  myPool.computeTotalValueLocked(priceStore);
-                const myBonded =
-                  queryOsmosis.queryGammPoolShare.getLockedGammShareValue(
-                    account.bech32Address,
-                    myPool.id,
-                    poolLiquidity,
-                    priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!
-                  );
-                const myLiquidity = !myPool.totalShare
-                  .toDec()
-                  .equals(new Dec(0))
-                  ? myPool
-                      .computeTotalValueLocked(priceStore)
-                      .mul(
-                        queryOsmosis.queryGammPoolShare
-                          .getAvailableGammShare(
-                            account.bech32Address,
-                            myPool.id
-                          )
-                          .quo(myPool.totalShare)
-                      )
-                  : new PricePretty(
-                      priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
-                      new Dec(0)
-                    );
+                const poolLiquidity = myPool.totalValueLocked;
+                const myBonded = myPool.userBondedValue;
+                const myLiquidity = myPool.userAvailableValue;
 
                 let myPoolMetrics = [
                   {
@@ -482,35 +418,35 @@ const Pools: NextPage = observer(function () {
 
                 return (
                   <PoolCard
-                    key={myPool.id}
-                    poolId={myPool.id}
-                    poolAssets={myPool.poolAssets.map((poolAsset) => ({
+                    key={_queryPool.id}
+                    poolId={_queryPool.id}
+                    poolAssets={_queryPool.poolAssets.map((poolAsset) => ({
                       coinImageUrl: poolAsset.amount.currency.coinImageUrl,
                       coinDenom: poolAsset.amount.currency.coinDenom,
                     }))}
                     poolMetrics={myPoolMetrics}
                     isSuperfluid={queryOsmosis.querySuperfluidPools.isSuperfluidPool(
-                      myPool.id
+                      _queryPool.id
                     )}
                     mobileShowFirstLabel
                     onClick={() =>
                       logEvent([
                         EventName.Pools.myPoolsCardClicked,
                         {
-                          poolId: myPool.id,
-                          poolName: myPool.poolAssets
+                          poolId: _queryPool.id,
+                          poolName: _queryPool.poolAssets
                             .map(
                               (poolAsset) => poolAsset.amount.currency.coinDenom
                             )
                             .join(" / "),
-                          poolWeight: myPool.weightedPoolInfo?.assets
+                          poolWeight: _queryPool.weightedPoolInfo?.assets
                             .map((poolAsset) =>
                               poolAsset.weightFraction?.toString()
                             )
                             .join(" / "),
                           isSuperfluidPool:
                             queryOsmosis.querySuperfluidPools.isSuperfluidPool(
-                              myPool.id
+                              _queryPool.id
                             ),
                         },
                       ])

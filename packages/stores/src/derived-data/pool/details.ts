@@ -36,7 +36,7 @@ export class ObservablePoolDetail {
   }
 
   @computed
-  protected get pool() {
+  get pool() {
     return this.queries.queryGammPools.getPool(this.poolId);
   }
 
