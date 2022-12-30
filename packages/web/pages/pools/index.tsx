@@ -42,7 +42,7 @@ import {
 } from "../../hooks";
 import { CompactPoolTableDisplay } from "../../components/complex/compact-pool-table-display";
 import { ShowMoreButton } from "../../components/buttons/show-more";
-import { EventName, ExternalIncentiveGaugeAllowList } from "../../config";
+import { EventName } from "../../config";
 import { POOLS_PER_PAGE } from "../../components/complex";
 import { useTranslation } from "react-multi-lang";
 import { priceFormatter } from "../../utils/formatter";
@@ -67,7 +67,6 @@ const Pools: NextPage = observer(function () {
   });
 
   const { chainId } = chainStore.osmosis;
-  const queryCosmos = queriesStore.get(chainId).cosmos;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const account = accountStore.getAccount(chainId);
 
@@ -176,13 +175,25 @@ const Pools: NextPage = observer(function () {
           selectedPoolShareCurrency,
           lockLpTokenConfig.getAmountPrimitive().amount
         ),
-        onSelectValidator: (address) =>
-          superfluidDelegateToValidator(address, lockLpTokenConfig).finally(
-            () => {
-              setSuperfluidDelegateModalProps(null);
-              lockLpTokenConfig.setAmount("");
-            }
-          ),
+        onSelectValidator: (address) => {
+          if (!lockLpTokenModalPoolId) {
+            console.error(
+              "onSelectValidator: lockLpTokenModalPoolId is undefined"
+            );
+            setSuperfluidDelegateModalProps(null);
+            lockLpTokenConfig.setAmount("");
+            return;
+          }
+
+          superfluidDelegateToValidator(
+            lockLpTokenModalPoolId,
+            address,
+            lockLpTokenConfig
+          ).finally(() => {
+            setSuperfluidDelegateModalProps(null);
+            lockLpTokenConfig.setAmount("");
+          });
+        },
         onRequestClose: () => setSuperfluidDelegateModalProps(null),
       });
       setLockLpTokenModalPoolId(null);
