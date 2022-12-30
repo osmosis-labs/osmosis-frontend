@@ -4,13 +4,13 @@ import {
   CosmosQueries,
   Staking,
   HasMapStore,
-  QueriesStore,
-  AccountStore,
+  IQueriesStore,
+  IAccountStore,
 } from "@keplr-wallet/stores";
 import { Dec, RatePretty, CoinPretty } from "@keplr-wallet/unit";
-import { ObservablePoolDetails } from "./details";
 import { OsmosisQueries } from "../../queries/store";
 import { IPriceStore } from "../../price";
+import { ObservablePoolDetails } from "./details";
 
 /** Convenience store getting common superfluid data for a pool via superfluid stores. */
 export class ObservableSuperfluidPoolDetail {
@@ -19,10 +19,10 @@ export class ObservableSuperfluidPoolDetail {
   constructor(
     protected readonly poolId: string,
     protected readonly osmosisChainId: string,
-    protected readonly queriesStore: QueriesStore<
-      [CosmosQueries, OsmosisQueries]
+    protected readonly queriesStore: IQueriesStore<
+      CosmosQueries & OsmosisQueries
     >,
-    protected readonly accountStore: AccountStore<[]>,
+    protected readonly accountStore: IAccountStore,
     protected readonly poolDetails: ObservablePoolDetails,
     protected readonly priceStore: IPriceStore
   ) {
@@ -241,10 +241,10 @@ export class ObservableSuperfluidPoolDetail {
 export class ObservableSuperfluidPoolDetails extends HasMapStore<ObservableSuperfluidPoolDetail> {
   constructor(
     protected readonly osmosisChainId: string,
-    protected readonly queriesStore: QueriesStore<
-      [CosmosQueries, OsmosisQueries]
+    protected readonly queriesStore: IQueriesStore<
+      CosmosQueries & OsmosisQueries
     >,
-    protected readonly accountStore: AccountStore<[]>,
+    protected readonly accountStore: IAccountStore,
     protected readonly poolDetails: ObservablePoolDetails,
     protected readonly priceStore: IPriceStore
   ) {

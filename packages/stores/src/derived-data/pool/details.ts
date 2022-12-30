@@ -3,7 +3,11 @@ import { Duration } from "dayjs/plugin/duration";
 import dayjs from "dayjs";
 import { FiatCurrency } from "@keplr-wallet/types";
 import { PricePretty, Dec, RatePretty, CoinPretty } from "@keplr-wallet/unit";
-import { QueriesStore, AccountStore, HasMapStore } from "@keplr-wallet/stores";
+import {
+  IQueriesStore,
+  IAccountStore,
+  HasMapStore,
+} from "@keplr-wallet/stores";
 import { OsmosisQueries } from "../../queries/store";
 import { IPriceStore } from "../../price";
 import { ExternalGauge } from "./types";
@@ -15,8 +19,8 @@ export class ObservablePoolDetail {
   constructor(
     protected readonly poolId: string,
     protected readonly osmosisChainId: string,
-    protected readonly queriesStore: QueriesStore<[OsmosisQueries]>,
-    protected readonly accountStore: AccountStore<[]>,
+    protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
+    protected readonly accountStore: IAccountStore,
     protected readonly priceStore: IPriceStore
   ) {
     const fiat = this.priceStore.getFiatCurrency(
@@ -348,8 +352,8 @@ export class ObservablePoolDetail {
 export class ObservablePoolDetails extends HasMapStore<ObservablePoolDetail> {
   constructor(
     protected readonly osmosisChainId: string,
-    protected readonly queriesStore: QueriesStore<[OsmosisQueries]>,
-    protected readonly accountStore: AccountStore<[]>,
+    protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
+    protected readonly accountStore: IAccountStore,
     protected readonly priceStore: IPriceStore
   ) {
     super(

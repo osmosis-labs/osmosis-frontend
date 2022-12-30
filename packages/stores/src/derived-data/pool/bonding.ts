@@ -4,7 +4,11 @@ import { Duration } from "dayjs/plugin/duration";
 import dayjs from "dayjs";
 import { CoinPretty, RatePretty, Dec, IntPretty } from "@keplr-wallet/unit";
 import { AppCurrency } from "@keplr-wallet/types";
-import { HasMapStore, QueriesStore, AccountStore } from "@keplr-wallet/stores";
+import {
+  HasMapStore,
+  IQueriesStore,
+  IAccountStore,
+} from "@keplr-wallet/stores";
 import { OsmosisQueries } from "../../queries";
 import { ObservableQueryGauge } from "../../queries/incentives";
 import {
@@ -13,7 +17,8 @@ import {
 } from "../../queries-external";
 import { IPriceStore } from "../../price";
 import { BondDuration } from "./types";
-import { ObservablePoolDetails, ObservableSuperfluidPoolDetails } from ".";
+import { ObservablePoolDetails } from "./details";
+import { ObservableSuperfluidPoolDetails } from "./superfluid";
 
 /** Provides info for the current account's bonding status in a pool. */
 export class ObservablePoolBonding {
@@ -27,8 +32,8 @@ export class ObservablePoolBonding {
       queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
-    protected readonly accountStore: AccountStore<[]>,
-    protected readonly queriesStore: QueriesStore<[OsmosisQueries]>
+    protected readonly accountStore: IAccountStore,
+    protected readonly queriesStore: IQueriesStore<OsmosisQueries>
   ) {
     makeObservable(this);
   }
@@ -306,8 +311,8 @@ export class ObservablePoolsBonding extends HasMapStore<ObservablePoolBonding> {
       queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
-    protected readonly accountStore: AccountStore<[]>,
-    protected readonly queriesStore: QueriesStore<[OsmosisQueries]>
+    protected readonly accountStore: IAccountStore,
+    protected readonly queriesStore: IQueriesStore<OsmosisQueries>
   ) {
     super(
       (poolId) =>
@@ -322,5 +327,9 @@ export class ObservablePoolsBonding extends HasMapStore<ObservablePoolBonding> {
           this.queriesStore
         )
     );
+  }
+
+  get(poolId: string): ObservablePoolBonding {
+    return super.get(poolId);
   }
 }

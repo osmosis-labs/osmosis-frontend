@@ -34,8 +34,7 @@ import {
   useCreatePoolConfig,
   useAmplitudeAnalytics,
   useLockTokenConfig,
-  usePoolDetailConfig,
-  useSuperfluidPoolConfig,
+  useSuperfluidPool,
   useHideDustUserSetting,
 } from "../../hooks";
 import { CompactPoolTableDisplay } from "../../components/complex/compact-pool-table-display";
@@ -157,11 +156,9 @@ const Pools: NextPage = observer(function () {
   };
 
   // lock tokens (& possibly select sfs validator) quick action state
-  const { poolDetailConfig } = usePoolDetailConfig(
-    lockLpTokenModalPoolId ?? undefined
+  const { superfluidDelegateToValidator } = useSuperfluidPool(
+    lockLpTokenModalPoolId ?? ""
   );
-  const { superfluidPoolConfig: _, superfluidDelegateToValidator } =
-    useSuperfluidPoolConfig(poolDetailConfig);
   const selectedPoolShareCurrency = lockLpTokenModalPoolId
     ? queryOsmosis.queryGammPoolShare.getShareCurrency(lockLpTokenModalPoolId)
     : undefined;
@@ -348,6 +345,8 @@ const Pools: NextPage = observer(function () {
           <div className="flex flex-col gap-4">
             <div className="grid-cards mt-5 grid md:gap-3">
               {dustFilteredPools.map((myPool) => {
+                // TODO: refactor to use new pool detail stores
+
                 const internalIncentiveApr =
                   queryOsmosis.queryIncentivizedPools.computeMostApr(
                     myPool.id,
