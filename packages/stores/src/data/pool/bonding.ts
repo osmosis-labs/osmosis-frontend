@@ -1,73 +1,63 @@
+import { makeObservable, computed } from "mobx";
 import { computedFn } from "mobx-utils";
 import { Duration } from "dayjs/plugin/duration";
 import dayjs from "dayjs";
-import {
-  CoinPretty,
-  RatePretty,
-  Dec,
-  PricePretty,
-  IntPretty,
-} from "@keplr-wallet/unit";
+import { CoinPretty, RatePretty, Dec, IntPretty } from "@keplr-wallet/unit";
 import { AppCurrency } from "@keplr-wallet/types";
+import { HasMapStore, QueriesStore, AccountStore } from "@keplr-wallet/stores";
+import { OsmosisQueries } from "../../queries";
 import { ObservableQueryGauge } from "../../queries/incentives";
-import {
-  ObservableQueryPoolDetails,
-  ObservableQuerySuperfluidPool,
-  ObservableQueryAccountLocked,
-  ObservableQueryGauges,
-  ObservableQueryIncentivizedPools,
-} from "../../queries";
 import {
   ObservableQueryPoolFeesMetrics,
   ObservableQueryActiveGauges,
 } from "../../queries-external";
 import { IPriceStore } from "../../price";
-import { UserConfig } from "../user-config";
+import { BondDuration } from "./types";
+import { ObservablePoolDetails, ObservableSuperfluidPoolDetails } from ".";
 
-export type BondDuration = {
-  duration: Duration;
-  /** Bondable if there's any active gauges for this duration. */
-  bondable: boolean;
-  userShares: CoinPretty;
-  userLockedShareValue: PricePretty;
-  userUnlockingShares?: { shares: CoinPretty; endTime?: Date };
-  aggregateApr: RatePretty;
-  swapFeeApr: RatePretty;
-  swapFeeDailyReward: PricePretty;
-  incentivesBreakdown: {
-    dailyPoolReward: CoinPretty;
-    apr: RatePretty;
-    numDaysRemaining?: number;
-  }[];
-  /** Both `delegated` and `undelegating` will be `undefined` if the user may "Go superfluid". */
-  superfluid?: {
-    /** Duration users can bond to for superfluid participation. Assumed to be longest duration on lock durations chain param. */
-    duration: Duration;
-    apr: RatePretty;
-    commission?: RatePretty;
-    validatorMoniker?: string;
-    validatorLogoUrl?: string;
-    delegated?: CoinPretty;
-    undelegating?: CoinPretty;
-  };
-};
-
-export class ObservableBondLiquidityConfig extends UserConfig {
+/** Provides info for the current account's bonding status in a pool. */
+export class ObservablePoolBonding {
   constructor(
-    protected readonly poolDetails: ObservableQueryPoolDetails,
-    protected readonly superfluidPool: ObservableQuerySuperfluidPool,
+    protected readonly poolId: string,
+    protected readonly osmosisChainId: string,
+    protected readonly poolDetails: ObservablePoolDetails,
+    protected readonly superfluidPoolDetails: ObservableSuperfluidPoolDetails,
     protected readonly priceStore: IPriceStore,
     protected readonly externalQueries: {
       queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
-    protected readonly queries: {
-      queryAccountLocked: ObservableQueryAccountLocked;
-      queryGauge: ObservableQueryGauges;
-      queryIncentivizedPools: ObservableQueryIncentivizedPools;
-    }
+    protected readonly accountStore: AccountStore<[]>,
+    protected readonly queriesStore: QueriesStore<[OsmosisQueries]>
   ) {
-    super();
+    makeObservable(this);
+  }
+
+  @computed
+  protected get bech32Address() {
+    return this.accountStore.getAccount(this.osmosisChainId).bech32Address;
+  }
+
+  @computed
+  protected get queries() {
+    const osmosisQueries = this.queriesStore.get(this.osmosisChainId).osmosis;
+    if (!osmosisQueries) throw Error("Did not supply Osmosis chain ID");
+    return osmosisQueries;
+  }
+
+  @computed
+  protected get queryPool() {
+    return this.queries.queryGammPools.getPool(this.poolId);
+  }
+
+  @computed
+  protected get poolDetail() {
+    return this.poolDetails.get(this.poolId);
+  }
+
+  @computed
+  protected get superfluidPoolDetail() {
+    return this.superfluidPoolDetails.get(this.poolId);
   }
 
   /** Calculates the stop in the bonding process the user is in.
@@ -78,12 +68,12 @@ export class ObservableBondLiquidityConfig extends UserConfig {
   readonly calculateBondLevel = computedFn(
     (bondDurations: BondDuration[]): 1 | 2 | undefined => {
       if (
-        this.poolDetails?.userAvailableValue.toDec().gt(new Dec(0)) &&
+        this.poolDetail.userAvailableValue.toDec().gt(new Dec(0)) &&
         bondDurations.some((duration) => duration.bondable)
       )
         return 2;
 
-      if (this.poolDetails?.userAvailableValue.toDec().isZero()) return 1;
+      if (this.poolDetail?.userAvailableValue.toDec().isZero()) return 1;
     }
   );
 
@@ -92,8 +82,10 @@ export class ObservableBondLiquidityConfig extends UserConfig {
     (
       findCurrency: (denom: string) => AppCurrency | undefined
     ): BondDuration[] => {
-      const poolId = this.poolDetails.pool.id;
-      const internalGauges = this.superfluidPool.gaugesWithSuperfluidApr;
+      const internalGauges = this.superfluidPoolDetail.gaugesWithSuperfluidApr;
+      const _queryPool = this.queryPool;
+
+      if (!_queryPool) return [];
 
       const queryLockedCoin = this.queries.queryAccountLocked.get(
         this.bech32Address
@@ -101,10 +93,8 @@ export class ObservableBondLiquidityConfig extends UserConfig {
 
       const externalGauges =
         this.externalQueries.queryActiveGauges.getExternalGaugesForPool(
-          poolId
+          this.poolId
         ) ?? [];
-
-      console.log(internalGauges.map(({ apr }) => apr.toString()));
 
       /** Set of all available durations. */
       const durationsMsSet = new Set<number>();
@@ -120,7 +110,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
         .forEach((coin) => {
           if (
             coin.amount.currency.coinMinimalDenom ===
-            this.poolDetails.poolShareCurrency.coinMinimalDenom
+            this.poolDetail.poolShareCurrency.coinMinimalDenom
           ) {
             durationsMsSet.add(coin.duration.asMilliseconds());
           }
@@ -144,14 +134,12 @@ export class ObservableBondLiquidityConfig extends UserConfig {
             milliseconds: durationMs,
           });
           const lockedUserShares = queryLockedCoin.getLockedCoinWithDuration(
-            this.poolDetails.poolShareCurrency,
+            this.poolDetail.poolShareCurrency,
             curDuration
           ).amount;
 
-          const userLockedShareValue = this.poolDetails.totalValueLocked.mul(
-            new IntPretty(
-              lockedUserShares.quo(this.poolDetails.pool.totalShare)
-            )
+          const userLockedShareValue = this.poolDetail.totalValueLocked.mul(
+            new IntPretty(lockedUserShares.quo(_queryPool.totalShare))
           );
 
           /** There is only one internal gauge of a chain-configured lockable duration (1,7,14 days). */
@@ -169,7 +157,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
 
           const unlockingUserShares =
             queryLockedCoin.getUnlockingCoinWithDuration(
-              this.poolDetails.poolShareCurrency,
+              this.poolDetail.poolShareCurrency,
               curDuration
             );
           const userUnlockingShares =
@@ -178,7 +166,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
                   // only return soonest unlocking shares
                   shares:
                     unlockingUserShares[0].amount ??
-                    new CoinPretty(this.poolDetails.poolShareCurrency, 0),
+                    new CoinPretty(this.poolDetail.poolShareCurrency, 0),
                   endTime: unlockingUserShares[0].endTime,
                 }
               : undefined;
@@ -196,7 +184,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
             if (fiatCurrency) {
               const dailyPoolReward =
                 this.queries.queryIncentivizedPools.computeDailyRewardForDuration(
-                  poolId,
+                  this.poolId,
                   curDuration,
                   this.priceStore,
                   fiatCurrency
@@ -228,7 +216,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
                 .getRemainingCoin(currency)
                 .quo(new Dec(gauge.remainingEpoch)),
               apr: this.queries.queryIncentivizedPools.computeExternalIncentiveGaugeAPR(
-                poolId,
+                this.poolId,
                 gauge.gauge.id,
                 incentiveCoin.denom,
                 this.priceStore
@@ -238,31 +226,35 @@ export class ObservableBondLiquidityConfig extends UserConfig {
           });
 
           // add superfluid data if highest duration
-          const sfsDuration = this.poolDetails.longestDuration;
+          const sfsDuration = this.poolDetail.longestDuration;
           let superfluid: BondDuration["superfluid"] | undefined;
           if (
-            this.superfluidPool.isSuperfluid &&
-            this.superfluidPool.superfluid &&
+            this.superfluidPoolDetail.isSuperfluid &&
+            this.superfluidPoolDetail.superfluid &&
             sfsDuration &&
             curDuration.asSeconds() === sfsDuration.asSeconds()
           ) {
             const delegation =
-              (this.superfluidPool.superfluid.delegations?.length ?? 0) > 0
-                ? this.superfluidPool.superfluid.delegations?.[0]
+              (this.superfluidPoolDetail.superfluid.delegations?.length ?? 0) >
+              0
+                ? this.superfluidPoolDetail.superfluid.delegations?.[0]
                 : undefined;
             const undelegation =
-              (this.superfluidPool.superfluid.undelegations?.length ?? 0) > 0
-                ? this.superfluidPool.superfluid.undelegations?.[0]
+              (this.superfluidPoolDetail.superfluid.undelegations?.length ??
+                0) > 0
+                ? this.superfluidPoolDetail.superfluid.undelegations?.[0]
                 : undefined;
 
             superfluid = {
               duration: sfsDuration,
-              apr: this.superfluidPool.superfluidApr,
+              apr: this.superfluidPoolDetail.superfluidApr,
               commission: delegation?.validatorCommission,
-              delegated: !this.superfluidPool.superfluid.upgradeableLpLockIds
+              delegated: !this.superfluidPoolDetail.superfluid
+                .upgradeableLpLockIds
                 ? delegation?.amount
                 : undefined,
-              undelegating: !this.superfluidPool.superfluid.upgradeableLpLockIds
+              undelegating: !this.superfluidPoolDetail.superfluid
+                .upgradeableLpLockIds
                 ? undelegation?.amount
                 : undefined,
               validatorMoniker: delegation?.validatorName,
@@ -276,7 +268,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
           );
           const swapFeeApr =
             this.externalQueries.queryGammPoolFeeMetrics.get7dPoolFeeApr(
-              this.poolDetails.pool,
+              _queryPool,
               this.priceStore
             );
           aggregateApr = aggregateApr.add(swapFeeApr);
@@ -293,7 +285,7 @@ export class ObservableBondLiquidityConfig extends UserConfig {
             aggregateApr,
             swapFeeApr,
             swapFeeDailyReward: this.externalQueries.queryGammPoolFeeMetrics
-              .getPoolFeesMetrics(poolId, this.priceStore)
+              .getPoolFeesMetrics(this.poolId, this.priceStore)
               .feesSpent7d.quo(new Dec(7)),
             incentivesBreakdown,
             superfluid,
@@ -301,4 +293,34 @@ export class ObservableBondLiquidityConfig extends UserConfig {
         });
     }
   );
+}
+
+/** Map of current accounts bonding info for all pools by pool ID. */
+export class ObservablePoolsBonding extends HasMapStore<ObservablePoolBonding> {
+  constructor(
+    protected readonly osmosisChainId: string,
+    protected readonly poolDetails: ObservablePoolDetails,
+    protected readonly superfluidPoolDetails: ObservableSuperfluidPoolDetails,
+    protected readonly priceStore: IPriceStore,
+    protected readonly externalQueries: {
+      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryActiveGauges: ObservableQueryActiveGauges;
+    },
+    protected readonly accountStore: AccountStore<[]>,
+    protected readonly queriesStore: QueriesStore<[OsmosisQueries]>
+  ) {
+    super(
+      (poolId) =>
+        new ObservablePoolBonding(
+          poolId,
+          this.osmosisChainId,
+          this.poolDetails,
+          this.superfluidPoolDetails,
+          this.priceStore,
+          this.externalQueries,
+          this.accountStore,
+          this.queriesStore
+        )
+    );
+  }
 }

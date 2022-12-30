@@ -7,3 +7,4 @@ export * from "./price";
 export * from "./currency-registrar";
 export * from "./tx";
 export * from "./ui-config";
+export * from "./data";
