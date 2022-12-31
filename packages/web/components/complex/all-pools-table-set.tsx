@@ -1,27 +1,38 @@
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { ObservableQueryPool } from "@osmosis-labs/stores";
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+} from "@tanstack/react-table";
+import EventEmitter from "eventemitter3";
 import { observer } from "mobx-react-lite";
+import Image from "next/image";
 import {
   FunctionComponent,
-  useState,
-  useMemo,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
+  useState,
 } from "react";
-import EventEmitter from "eventemitter3";
-import { ObservableQueryPool } from "@osmosis-labs/stores";
-import { EventName } from "../../config";
+import { useTranslation } from "react-multi-lang";
+import { POOLS_PER_PAGE } from ".";
+import { EventName, IS_FRONTIER } from "../../config";
 import {
+  useAmplitudeAnalytics,
   useFilteredData,
   usePaginatedData,
   useSortedData,
   useWindowSize,
-  useAmplitudeAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
-import { Switch, MenuToggle, PageList, SortMenu, MenuOption } from "../control";
+import { MenuOption, MenuToggle, PageList, SortMenu, Switch } from "../control";
 import { SearchBox } from "../input";
-import { ColumnDef, RowDef, Table } from "../table";
+import { ColumnDef } from "../table";
 import {
   MetricLoaderCell,
   PoolCompositionCell,
@@ -29,8 +40,6 @@ import {
 } from "../table/cells";
 import { Breakpoint } from "../types";
 import { CompactPoolTableDisplay } from "./compact-pool-table-display";
-import { POOLS_PER_PAGE } from ".";
-import { useTranslation } from "react-multi-lang";
 
 type PoolCell = PoolCompositionCell & MetricLoaderCell & PoolQuickActionCell;
 
@@ -50,6 +59,36 @@ type PoolWithMetrics = {
   feesSpent7d: PricePretty;
   feesPercentage: string;
 };
+
+type Pool = [
+  {
+    poolId: string;
+    poolAssets: { coinImageUrl: string | undefined; coinDenom: string }[];
+    stableswapPool: boolean;
+  },
+  {
+    value: PricePretty;
+  },
+  {
+    value: PricePretty;
+    isLoading?: boolean;
+  },
+  {
+    value: PricePretty;
+    isLoading?: boolean;
+  },
+  {
+    value: PricePretty | RatePretty | undefined;
+    isLoading?: boolean;
+  },
+  {
+    poolId: string;
+    cellGroupEventEmitter: EventEmitter<string | symbol, any>;
+    onAddLiquidity?: () => void;
+    onRemoveLiquidity?: () => void;
+    onLockTokens?: () => void;
+  }
+];
 
 export const AllPoolsTableSet: FunctionComponent<{
   tableSet?: "incentivized-pools" | "all-pools";
@@ -357,38 +396,10 @@ export const AllPoolsTableSet: FunctionComponent<{
       [isIncentivizedPools, t]
     );
 
-    const tableRows: RowDef[] = useMemo(
-      () =>
-        allData.map((poolWithFeeMetrics) => ({
-          link: `/pool/${poolWithFeeMetrics.pool.id}`,
-          onClick: () => {
-            logEvent([
-              isIncentivizedPools
-                ? EventName.Pools.incentivizedPoolsItemClicked
-                : EventName.Pools.allPoolsItemClicked,
-              {
-                poolId: poolWithFeeMetrics.pool.id,
-                poolName: poolWithFeeMetrics.pool.poolAssets
-                  .map((poolAsset) => poolAsset.amount.denom)
-                  .join(" / "),
-                poolWeight: poolWithFeeMetrics.pool.weightedPoolInfo?.assets
-                  .map((poolAsset) => poolAsset.weightFraction?.toString())
-                  .join(" / "),
-                isSuperfluidPool:
-                  queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
-                    poolWithFeeMetrics.pool.id
-                  ),
-              },
-            ]);
-          },
-        })),
-      [allData]
-    );
-
     const [cellGroupEventEmitter] = useState(() => new EventEmitter());
-    const tableData = useMemo(
+    const tableData: Pool[] = useMemo(
       () =>
-        allData.map((poolWithMetrics) => {
+        tvlFilteredPools.map((poolWithMetrics) => {
           const poolId = poolWithMetrics.pool.id;
           const poolAssets = poolWithMetrics.pool.poolAssets.map(
             (poolAsset) => ({
@@ -397,25 +408,25 @@ export const AllPoolsTableSet: FunctionComponent<{
             })
           );
 
-          return [
+          const pool: Pool = [
             {
               poolId,
               poolAssets,
               stableswapPool: poolWithMetrics.pool.type === "stable",
             },
-            { value: poolWithMetrics.liquidity.toString() },
+            { value: poolWithMetrics.liquidity },
             {
-              value: poolWithMetrics.volume24h.toString(),
+              value: poolWithMetrics.volume24h,
               isLoading: !queriesExternalStore.queryGammPoolFeeMetrics.response,
             },
             {
-              value: poolWithMetrics.feesSpent7d.toString(),
+              value: poolWithMetrics.feesSpent7d,
               isLoading: !queriesExternalStore.queryGammPoolFeeMetrics.response,
             },
             {
               value: isIncentivizedPools
-                ? poolWithMetrics.apr?.toString()
-                : poolWithMetrics.myLiquidity?.toString(),
+                ? poolWithMetrics.apr
+                : poolWithMetrics.myLiquidity,
               isLoading: isIncentivizedPools
                 ? queriesOsmosis.queryIncentivizedPools.isAprFetching
                 : false,
@@ -436,6 +447,7 @@ export const AllPoolsTableSet: FunctionComponent<{
                 : undefined,
             },
           ];
+          return pool;
         }),
       [
         allData,
@@ -471,6 +483,92 @@ export const AllPoolsTableSet: FunctionComponent<{
         didAutoSwitchTVLFilter.current = false;
       }
     }, [query, filteredPools, isPoolTvlFiltered, activeOptionId]);
+
+    const columnHelper = createColumnHelper<Pool>();
+
+    const columns = [
+      columnHelper.accessor((row) => row[0].poolId, {
+        cell: (props) => <PoolCompositionCell {...props.row.original[0]} />,
+        header: t("pools.allPools.sort.poolName"),
+        id: "id",
+      }),
+      columnHelper.accessor(
+        (row) => row[1].value.toDec().truncate().toString(),
+        {
+          cell: (props) => props.row.original[1].value.toString(),
+          header: t("pools.allPools.sort.liquidity"),
+          id: "liquidity",
+        }
+      ),
+      columnHelper.accessor(
+        (row) => row[2].value.toDec().truncate().toString(),
+        {
+          cell: (props) => (
+            <MetricLoaderCell
+              value={props.row.original[2].value.toString()}
+              isLoading={props.row.original[2].isLoading}
+            />
+          ),
+          header: t("pools.allPools.sort.volume24h"),
+          id: "volume24h",
+        }
+      ),
+      columnHelper.accessor(
+        (row) => row[3].value.toDec().truncate().toString(),
+        {
+          cell: (props) => (
+            <MetricLoaderCell
+              value={props.row.original[3].value.toString()}
+              isLoading={props.row.original[3].isLoading}
+            />
+          ),
+          header: t("pools.allPools.sort.fees"),
+          id: "fees",
+        }
+      ),
+      columnHelper.accessor(
+        (row) =>
+          isIncentivizedPools
+            ? row[4].value?.toDec().toString()
+            : row[4].value?.toDec().truncate().toString(),
+        {
+          cell: (props) =>
+            isIncentivizedPools ? (
+              <MetricLoaderCell
+                value={props.row.original[4].value?.toString()}
+                isLoading={props.row.original[4].isLoading}
+              />
+            ) : (
+              props.row.original[1].value.toString()
+            ),
+          header: isIncentivizedPools
+            ? t("pools.allPools.sort.APRIncentivized")
+            : t("pools.allPools.sort.APR"),
+          id: isIncentivizedPools ? "apr" : "myLiquidity",
+        }
+      ),
+      columnHelper.accessor((row) => row[5], {
+        cell: (props) => {
+          // @ts-ignore
+          return <PoolQuickActionCell {...props.row.original[5]} />;
+        },
+        header: "",
+        id: "actions",
+      }),
+    ];
+
+    const [sorting, setSorting] = useState<SortingState>([]);
+
+    const table = useReactTable({
+      data: tableData,
+      columns,
+      state: {
+        sorting,
+      },
+      onSortingChange: setSorting,
+      getCoreRowModel: getCoreRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+    });
 
     if (isMobile) {
       return (
@@ -632,12 +730,91 @@ export const AllPoolsTableSet: FunctionComponent<{
             </div>
           </div>
         </div>
-        <Table<PoolCell>
+        <table className="my-5 w-full">
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id}>
+                    <div
+                      {...{
+                        className: header.column.getCanSort()
+                          ? "cursor-pointer select-none"
+                          : "",
+                        onClick: header.column.getToggleSortingHandler(),
+                      }}
+                    >
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                      {{
+                        asc: (
+                          <Image
+                            alt="ascending"
+                            src={
+                              IS_FRONTIER
+                                ? "/icons/sort-up-white.svg"
+                                : "/icons/sort-up.svg"
+                            }
+                            height={16}
+                            width={16}
+                          />
+                        ),
+                        desc: (
+                          <Image
+                            alt="descending"
+                            src={
+                              IS_FRONTIER
+                                ? "/icons/sort-down-white.svg"
+                                : "/icons/sort-down.svg"
+                            }
+                            height={16}
+                            width={16}
+                          />
+                        ),
+                      }[header.column.getIsSorted() as string] ?? null}
+                    </div>
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            {table.getFooterGroups().map((footerGroup) => (
+              <tr key={footerGroup.id}>
+                {footerGroup.headers.map((header) => (
+                  <th key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.footer,
+                          header.getContext()
+                        )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </tfoot>
+        </table>
+
+        {/* <Table<PoolCell>
           className="my-5 w-full lg:text-sm"
           columnDefs={tableCols}
           rowDefs={tableRows}
           data={tableData}
-        />
+        /> */}
         <div className="flex items-center place-content-center">
           <PageList
             currentValue={page}
