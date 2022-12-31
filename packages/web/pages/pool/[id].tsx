@@ -588,27 +588,26 @@ const Pool: FunctionComponent = observer(() => {
                   </h4>
                 </div>
 
-                {poolDetailConfig?.userAvailableValue
-                  .toDec()
-                  .gt(new Dec(0)) && (
-                  <ArrowButton
-                    className="text-left"
-                    onClick={() => {
-                      logEvent([E.earnMoreByBondingClicked, baseEventInfo]);
-                      setShowLockLPTokenModal(true);
-                    }}
-                  >
-                    {t("pool.earnMore", {
-                      amount: additionalRewardsByBonding
-                        ?.toDec()
-                        .gte(new Dec(0.001))
-                        ? `$${additionalRewardsByBonding?.toString()}/${t(
-                            "pool.day"
-                          )}`
-                        : "",
-                    })}
-                  </ArrowButton>
-                )}
+                {poolDetailConfig?.userAvailableValue.toDec().gt(new Dec(0)) &&
+                  bondDurations.some((duration) => duration.bondable) && (
+                    <ArrowButton
+                      className="text-left"
+                      onClick={() => {
+                        logEvent([E.earnMoreByBondingClicked, baseEventInfo]);
+                        setShowLockLPTokenModal(true);
+                      }}
+                    >
+                      {t("pool.earnMore", {
+                        amount: additionalRewardsByBonding
+                          ?.toDec()
+                          .gte(new Dec(0.001))
+                          ? `$${additionalRewardsByBonding?.toString()}/${t(
+                              "pool.day"
+                            )}`
+                          : "",
+                      })}
+                    </ArrowButton>
+                  )}
               </div>
             </div>
           </div>
