@@ -199,7 +199,8 @@ export class RootStore {
       this.queriesStore,
       this.queriesExternalStore,
       this.accountStore,
-      this.priceStore
+      this.priceStore,
+      this.chainStore
     );
 
     this.ibcTransferHistoryStore = new IBCTransferHistoryStore(

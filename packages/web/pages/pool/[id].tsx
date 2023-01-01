@@ -135,11 +135,7 @@ const Pool: FunctionComponent = observer(() => {
   const [showSuperfluidValidatorModal, setShowSuperfluidValidatorsModal] =
     useState(false);
   const [showPoolDetails, setShowPoolDetails] = useState(false);
-  const bondDurations = pool
-    ? poolBonding?.getAllowedBondDurations((denom) =>
-        chainStore.getChain(chainId).forceFindCurrency(denom)
-      ) ?? []
-    : [];
+  const bondDurations = pool ? poolBonding?.allowedBondDurations ?? [] : [];
 
   // swap modal
   const [showTradeTokenModal, setShowTradeTokenModal] = useState(false);

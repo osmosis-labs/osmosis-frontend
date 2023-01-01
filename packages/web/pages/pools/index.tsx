@@ -365,13 +365,9 @@ const Pools: NextPage = observer(function () {
                 const poolBonding = derivedDataStore.poolsBonding.get(
                   _queryPool.id
                 );
-                const bondDurations = poolBonding.getAllowedBondDurations(
-                  (denom) =>
-                    chainStore.getChain(chainId).forceFindCurrency(denom)
-                );
                 const apr =
-                  bondDurations.find((_, i) => i === bondDurations.length - 1)
-                    ?.aggregateApr ?? new RatePretty(0);
+                  poolBonding.highestBondDuration?.aggregateApr ??
+                  new RatePretty(0);
 
                 const poolLiquidity = myPool.totalValueLocked;
                 const myBonded = myPool.userBondedValue;
