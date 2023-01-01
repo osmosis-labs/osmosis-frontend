@@ -31,6 +31,7 @@
     "@osmosis-labs/math": "^4.0.0",
     "@osmosis-labs/pools": "^4.0.0",
     "@osmosis-labs/stores": "^4.0.0",
+    "@tanstack/react-table": "^8.7.4",
     "@tippyjs/react": "^4.2.6",
     "@transak/transak-sdk": "^1.2.2",
     "@walletconnect/browser-utils": "^1.7.0",
