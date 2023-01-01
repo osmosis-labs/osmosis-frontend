@@ -64,7 +64,10 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
 
     const matchedLocks = this.response.data.locks.filter((lock) => {
       // Locked tokens have 0 datetime
-      return new Date(lock.end_time).getFullYear() === 0;
+      return (
+        new Date(lock.end_time).getFullYear() === 0 ||
+        new Date(lock.end_time).getFullYear() === 1
+      );
     });
 
     const coinDenomMap: Map<
