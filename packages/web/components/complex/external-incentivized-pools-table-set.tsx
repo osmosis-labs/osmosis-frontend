@@ -48,8 +48,8 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
     const queryActiveGauges = queriesExternalStore.queryActiveGauges;
     const account = accountStore.getAccount(chainId);
 
-    const pools = Object.keys(queryActiveGauges.poolIdsForActiveGauges).map(
-      (poolId) => queryOsmosis.queryGammPools.getPool(poolId)
+    const pools = queryActiveGauges.poolIdsForActiveGauges.map((poolId) =>
+      queryOsmosis.queryGammPools.getPool(poolId)
     );
 
     const externalIncentivizedPools = useMemo(
