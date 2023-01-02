@@ -707,7 +707,7 @@ const MainnetExternalIncentiveGaugeAllowList: {
   ],
   "833": [
     {
-      gaugeId: "30124",
+      gaugeId: "30290",
       denom:
         "ibc/A8CA5EE328FA10C9519DF6057DA1F69682D28F7D0F5CCC7ECB72E3DCA2D157A4",
     },
