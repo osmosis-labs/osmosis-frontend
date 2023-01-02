@@ -96,7 +96,7 @@ export class ObservablePoolDetail {
 
         const apr = this.queries.queryIncentivizedPools.computeApr(
           this.poolId,
-          duration,
+          gauge.lockupDuration,
           this.priceStore,
           this._fiatCurrency
         );
