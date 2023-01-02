@@ -369,102 +369,27 @@ const PoolCards: FunctionComponent<{
 
 const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
   ({ poolIds }) => {
-    const {
-      chainStore,
-      queriesStore,
-      queriesExternalStore,
-      priceStore,
-      accountStore,
-    } = useStore();
+    const { chainStore, queriesStore, derivedDataStore } = useStore();
     const t = useTranslation();
 
-    const queryCosmos = queriesStore.get(chainStore.osmosis.chainId).cosmos;
     const queryOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
-    const { bech32Address } = accountStore.getAccount(
-      chainStore.osmosis.chainId
-    );
 
     const pools = poolIds
       .map((poolId) => {
-        const pool = queryOsmosis.queryGammPools.getPool(poolId);
+        const poolDetail = derivedDataStore.poolDetails.get(poolId);
+        const poolBonding = derivedDataStore.poolsBonding.get(poolId);
+        const pool = poolDetail.pool;
+
+        const apr =
+          poolBonding.highestBondDuration?.aggregateApr ?? new RatePretty(0);
 
         if (!pool) {
           return undefined;
         }
-        const internalIncentiveApr =
-          queryOsmosis.queryIncentivizedPools.computeMostApr(
-            pool.id,
-            priceStore
-          );
-        const swapFeeApr =
-          queriesExternalStore.queryGammPoolFeeMetrics.get7dPoolFeeApr(
-            pool,
-            priceStore
-          );
-        const whitelistedGauges =
-          ExternalIncentiveGaugeAllowList?.[pool.id] ?? undefined;
-        const highestDuration =
-          queryOsmosis.queryLockableDurations.highestDuration;
-
-        const externalApr = (whitelistedGauges ?? []).reduce(
-          (sum, { gaugeId, denom }) => {
-            const gauge = queryOsmosis.queryGauge.get(gaugeId);
-
-            if (
-              !gauge ||
-              !highestDuration ||
-              gauge.lockupDuration.asMilliseconds() !==
-                highestDuration.asMilliseconds()
-            ) {
-              return sum;
-            }
-
-            return sum.add(
-              queryOsmosis.queryIncentivizedPools.computeExternalIncentiveGaugeAPR(
-                pool.id,
-                gaugeId,
-                denom,
-                priceStore
-              )
-            );
-          },
-          new RatePretty(0)
-        );
-        const superfluidApr =
-          queryOsmosis.querySuperfluidPools.isSuperfluidPool(pool.id)
-            ? new RatePretty(
-                queryCosmos.queryInflation.inflation
-                  .mul(
-                    queryOsmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
-                      pool.id
-                    )
-                  )
-                  .moveDecimalPointLeft(2)
-              )
-            : new RatePretty(0);
-        const apr = internalIncentiveApr
-          .add(swapFeeApr)
-          .add(externalApr)
-          .add(superfluidApr);
-
-        const tvl = pool.computeTotalValueLocked(priceStore);
-        const shareRatio = queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
-          bech32Address,
-          pool.id
-        );
-        const actualShareRatio = shareRatio.moveDecimalPointLeft(2);
-
-        const lockedShareRatio =
-          queryOsmosis.queryGammPoolShare.getLockedGammShareRatio(
-            bech32Address,
-            pool.id
-          );
-        const actualLockedShareRatio =
-          lockedShareRatio.moveDecimalPointRight(2);
 
         return [
           pool,
-          tvl.mul(actualShareRatio).moveDecimalPointRight(2),
+          poolDetail.userShareValue,
           [
             queryOsmosis.queryIncentivizedPools.isIncentivized(poolId)
               ? {
@@ -481,43 +406,24 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                 }
               : {
                   label: t("assets.poolCards.FeeAPY"),
-                  value: (() => {
-                    return queriesExternalStore.queryGammPoolFeeMetrics.get7dPoolFeeApr(
-                      pool,
-                      priceStore
-                    );
-                  })()
-                    .maxDecimals(2)
-                    .toString(),
+                  value:
+                    poolBonding.highestBondDuration?.swapFeeApr
+                      .maxDecimals(2)
+                      .toString() ?? new RatePretty(0).toString(),
                 },
             {
               label: t("assets.poolCards.liquidity"),
-              value: (!pool.totalShare.toDec().equals(new Dec(0))
-                ? pool
-                    .computeTotalValueLocked(priceStore)
-                    .mul(
-                      queryOsmosis.queryGammPoolShare
-                        .getAvailableGammShare(bech32Address, pool.id)
-                        .quo(pool.totalShare)
-                    )
-                : new PricePretty(
-                    priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
-                    new Dec(0)
-                  )
-              )
-                .maxDecimals(2)
-                .toString(),
+              value: poolDetail.userAvailableValue.maxDecimals(2).toString(),
             },
             queryOsmosis.queryIncentivizedPools.isIncentivized(poolId)
               ? {
                   label: t("assets.poolCards.bonded"),
-                  value: tvl.mul(actualLockedShareRatio).toString(),
+                  value: poolDetail.userBondedValue.toString(),
                 }
               : {
                   label: t("assets.poolCards.myLiquidity"),
-                  value: tvl
-                    .mul(actualShareRatio)
-                    .moveDecimalPointRight(2)
+                  value: poolDetail.userAvailableValue
+                    .add(poolDetail.userBondedValue)
                     .toString(),
                 },
           ],
