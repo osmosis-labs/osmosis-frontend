@@ -7,7 +7,7 @@ import {
   ComponentProps,
   useCallback,
 } from "react";
-import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { useStore } from "../../stores";
 import { AssetsTable } from "../../components/table/assets-table";
@@ -33,7 +33,7 @@ import {
   useHideDustUserSetting,
   useTransferConfig,
 } from "../../hooks";
-import { EventName, ExternalIncentiveGaugeAllowList } from "../../config";
+import { EventName } from "../../config";
 
 const INIT_POOL_CARD_COUNT = 6;
 
