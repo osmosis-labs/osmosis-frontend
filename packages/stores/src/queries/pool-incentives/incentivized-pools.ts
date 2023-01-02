@@ -147,11 +147,15 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
         return new RatePretty(new Dec(0));
       }
 
-      const rewardAmount = observableGauge.getRemainingCoin(mintCurrency);
+      const rewardAmount = observableGauge.coins.find(
+        (coin) =>
+          coin.remaining.currency.coinMinimalDenom ===
+          mintCurrency.coinMinimalDenom
+      )?.remaining;
 
       const pool = this.queryPools.getPool(poolId);
 
-      if (!pool) {
+      if (!pool || !rewardAmount) {
         return new RatePretty(new Dec(0));
       }
 

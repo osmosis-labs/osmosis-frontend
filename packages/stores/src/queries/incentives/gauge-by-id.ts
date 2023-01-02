@@ -5,7 +5,6 @@ import {
   QueryResponse,
 } from "@keplr-wallet/stores";
 import { KVStore } from "@keplr-wallet/common";
-import { Gauge, GaugeById } from "./types";
 import {
   action,
   computed,
@@ -13,10 +12,9 @@ import {
   observable,
   runInAction,
 } from "mobx";
-import { computedFn } from "mobx-utils";
-import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { Duration } from "dayjs/plugin/duration";
+import { Gauge, GaugeById } from "./types";
 import dayjs from "dayjs";
 
 /** Individual gauge that can be fetched individually, as well as initialized with data statically (and later refreshed). */
@@ -141,41 +139,29 @@ export class ObservableQueryGauge extends ObservableChainQuery<GaugeById> {
     return parseInt(this._raw.num_epochs_paid_over);
   }
 
-  readonly getCoin = computedFn((currency: AppCurrency): CoinPretty => {
-    if (!this._raw) {
-      return new CoinPretty(currency, new Dec(0));
+  @computed
+  get coins(): { distributed: CoinPretty; remaining: CoinPretty }[] {
+    const gauge = this._raw;
+    if (!gauge) {
+      return [];
     }
 
-    const primitive = this._raw.coins.find(
-      (coin) => coin.denom === currency.coinMinimalDenom
-    );
-    if (!primitive) {
-      return new CoinPretty(currency, new Dec(0));
-    }
-    return new CoinPretty(currency, new Dec(primitive.amount));
-  });
-
-  readonly getDistributedCoin = computedFn(
-    (currency: AppCurrency): CoinPretty => {
-      if (!this._raw) {
-        return new CoinPretty(currency, new Dec(0));
-      }
-
-      const primitive = this._raw.distributed_coins.find(
-        (coin) => coin.denom === currency.coinMinimalDenom
+    return gauge.coins.map((coin, index) => {
+      const currency = this.chainGetter
+        .getChain(this.chainId)
+        .forceFindCurrency(coin.denom);
+      const distributed = new CoinPretty(
+        currency,
+        new Dec(gauge.distributed_coins[index].amount)
       );
-      if (!primitive) {
-        return new CoinPretty(currency, new Dec(0));
-      }
-      return new CoinPretty(currency, new Dec(primitive.amount));
-    }
-  );
-
-  readonly getRemainingCoin = computedFn(
-    (currency: AppCurrency): CoinPretty => {
-      return this.getCoin(currency).sub(this.getDistributedCoin(currency));
-    }
-  );
+      return {
+        distributed,
+        remaining: new CoinPretty(currency, new Dec(coin.amount)).sub(
+          distributed
+        ),
+      };
+    });
+  }
 }
 
 export class ObservableQueryGauges extends ObservableChainQueryMap<GaugeById> {

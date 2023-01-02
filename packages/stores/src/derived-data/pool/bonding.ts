@@ -209,28 +209,18 @@ export class ObservablePoolBonding {
         externalGaugesOfDuration.forEach((gauge) => {
           if (!gauge.gauge) return;
 
-          const incentiveCoin = gauge.gauge.coins[0];
-
-          const currency = this.chainGetter
-            .getChain(this.osmosisChainId)
-            .forceFindCurrency(incentiveCoin.denom);
-          const fiatCurrency = this.priceStore.getFiatCurrency(
-            this.priceStore.defaultVsCurrency
-          );
-          if (!currency || !fiatCurrency) return;
-
-          incentivesBreakdown.push({
-            dailyPoolReward: gauge
-              .getRemainingCoin(currency)
-              .quo(new Dec(gauge.remainingEpoch)),
-            apr: this.queries.queryIncentivizedPools.computeExternalIncentiveGaugeAPR(
-              this.poolId,
-              gauge.gauge.id,
-              incentiveCoin.denom,
-              this.priceStore
-            ),
-            numDaysRemaining: gauge.remainingEpoch,
-          });
+          for (const { remaining } of gauge.coins) {
+            incentivesBreakdown.push({
+              dailyPoolReward: remaining.quo(new Dec(gauge.remainingEpoch)),
+              apr: this.queries.queryIncentivizedPools.computeExternalIncentiveGaugeAPR(
+                this.poolId,
+                gauge.gauge.id,
+                remaining.currency.coinMinimalDenom,
+                this.priceStore
+              ),
+              numDaysRemaining: gauge.remainingEpoch,
+            });
+          }
         });
 
         // add superfluid data if highest duration
