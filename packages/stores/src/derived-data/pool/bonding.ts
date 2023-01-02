@@ -87,7 +87,7 @@ export class ObservablePoolBonding {
    *  with a breakdown of the assets incentivizing the duration.
    *  Internal OSMO incentives & swap fees included in breakdown. */
   @computed
-  get allowedBondDurations(): BondDuration[] {
+  get bondDurations(): BondDuration[] {
     const internalGauges = this.superfluidPoolDetail.gaugesWithSuperfluidApr;
     const _queryPool = this.queryPool;
 
@@ -302,8 +302,8 @@ export class ObservablePoolBonding {
 
   @computed
   get highestBondDuration(): BondDuration | undefined {
-    return this.allowedBondDurations.find(
-      (_, i) => i === this.allowedBondDurations.length - 1
+    return this.bondDurations.find(
+      (_, i) => i === this.bondDurations.length - 1
     );
   }
 }

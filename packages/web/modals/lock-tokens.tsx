@@ -35,7 +35,7 @@ export const LockTokensModal: FunctionComponent<
   const { poolDetail, superfluidPoolDetail, poolBonding } =
     derivedDataStore.getForPool(poolId);
 
-  const bondDurations = poolBonding?.allowedBondDurations ?? [];
+  const bondDurations = poolBonding?.bondDurations ?? [];
   const availableToken = queryOsmosis.queryGammPoolShare.getAvailableGammShare(
     bech32Address,
     poolId

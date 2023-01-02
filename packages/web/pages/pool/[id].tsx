@@ -135,7 +135,7 @@ const Pool: FunctionComponent = observer(() => {
   const [showSuperfluidValidatorModal, setShowSuperfluidValidatorsModal] =
     useState(false);
   const [showPoolDetails, setShowPoolDetails] = useState(false);
-  const bondDurations = pool ? poolBonding?.allowedBondDurations ?? [] : [];
+  const bondDurations = pool ? poolBonding?.bondDurations ?? [] : [];
 
   // swap modal
   const [showTradeTokenModal, setShowTradeTokenModal] = useState(false);

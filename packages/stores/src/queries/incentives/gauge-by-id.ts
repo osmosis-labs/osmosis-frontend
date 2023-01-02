@@ -6,7 +6,7 @@ import {
 } from "@keplr-wallet/stores";
 import { KVStore } from "@keplr-wallet/common";
 import { Gauge, GaugeById } from "./types";
-import { action, computed, observable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
@@ -33,6 +33,8 @@ export class ObservableQueryGauge extends ObservableChainQuery<GaugeById> {
       chainGetter,
       `/osmosis/incentives/v1beta1/gauge_by_id/${id}`
     );
+
+    makeObservable(this);
   }
 
   static makeWithRaw(
@@ -66,7 +68,6 @@ export class ObservableQueryGauge extends ObservableChainQuery<GaugeById> {
     this._raw = gauge;
   }
 
-  @computed
   get hasData() {
     return this._raw !== undefined;
   }
