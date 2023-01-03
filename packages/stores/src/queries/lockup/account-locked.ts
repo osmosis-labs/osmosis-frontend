@@ -64,10 +64,13 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
 
     const matchedLocks = this.response.data.locks.filter((lock) => {
       // Locked tokens have 0 datetime
-      return new Date(lock.end_time).getFullYear() === 0;
+      return (
+        new Date(lock.end_time).getFullYear() === 0 ||
+        new Date(lock.end_time).getFullYear() === 1
+      );
     });
 
-    const map: Map<
+    const coinDenomMap: Map<
       // key: coin denom
       string,
       {
@@ -87,15 +90,15 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
           .findCurrency(denom);
 
         if (currency) {
-          if (!map.has(denom)) {
-            map.set(denom, {
+          if (!coinDenomMap.has(denom)) {
+            coinDenomMap.set(denom, {
               amount: new CoinPretty(currency, new Dec(0)),
               lockIds: [],
               duration: curDuration,
             });
           }
 
-          const curDenomValue = map.get(denom);
+          const curDenomValue = coinDenomMap.get(denom);
 
           // list for current duration
           if (curDenomValue) {
@@ -104,13 +107,13 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
             );
             curDenomValue.lockIds.push(lock.ID);
 
-            map.set(denom, curDenomValue);
+            coinDenomMap.set(denom, curDenomValue);
           }
         }
       }
     }
 
-    return [...map.values()].sort((v1, v2) => {
+    return [...coinDenomMap.values()].sort((v1, v2) => {
       return v1.duration.asMilliseconds() > v2.duration.asMilliseconds()
         ? 1
         : -1;

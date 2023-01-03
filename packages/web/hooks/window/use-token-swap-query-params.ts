@@ -12,6 +12,7 @@ export function useTokenSwapQueryParams(
 ) {
   const router = useRouter();
   const firstQueryEffectChecker = useRef(false);
+  const setFromQueryParams = useRef(false);
   const {
     chainStore: { osmosis },
     queriesStore,
@@ -33,12 +34,12 @@ export function useTokenSwapQueryParams(
           (currency) => currency.coinDenom === router.query.from
         ) ||
         tradeConfig.sendableCurrencies.find(
-          (currency) => currency.coinMinimalDenom === router.query.from
+          (currency) => currency.coinDenom === router.query.from
         );
       const toCurrency =
         currencies.find((currency) => currency.coinDenom === router.query.to) ||
         tradeConfig.sendableCurrencies.find(
-          (currency) => currency.coinMinimalDenom === router.query.to
+          (currency) => currency.coinDenom === router.query.to
         );
       if (fromCurrency) {
         tradeConfig.setSendCurrency(fromCurrency);
@@ -47,6 +48,7 @@ export function useTokenSwapQueryParams(
         tradeConfig.setOutCurrency(toCurrency);
       }
     }
+    setFromQueryParams.current = true;
   }, [router.query.from, router.query.to, tradeConfig?.sendableCurrencies]);
 
   useEffect(() => {
@@ -64,7 +66,8 @@ export function useTokenSwapQueryParams(
             tradeConfig.sendCurrency.coinDenom !== "UNKNOWN" &&
             tradeConfig.outCurrency.coinDenom !== "UNKNOWN" &&
             (tradeConfig.sendCurrency.coinDenom !== router.query.from ||
-              tradeConfig.outCurrency.coinDenom !== router.query.to)
+              tradeConfig.outCurrency.coinDenom !== router.query.to) &&
+            setFromQueryParams.current
           ) {
             // If ibc registry not loaded (i.e. first load of app in browser), `sendCurrency` and `outCurrency` will return
             // first two assets in `sendableCurrencies` which will be inexhaustive. This will
