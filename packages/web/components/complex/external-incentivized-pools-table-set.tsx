@@ -53,6 +53,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
       queryOsmosis.queryGammPools.getPool(poolId)
     );
 
+    // External Pools
     const externalIncentivizedPools = useMemo(
       () =>
         pools.filter(

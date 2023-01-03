@@ -7,6 +7,7 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import {
@@ -28,7 +29,7 @@ import {
   useAmplitudeAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
-import { Switch, MenuToggle, PageList, SortMenu, MenuOption } from "../control";
+import { PageList, SortMenu, MenuOption } from "../control";
 import { SearchBox } from "../input";
 import { ColumnDef } from "../table";
 import {
@@ -158,6 +159,7 @@ export const AllPoolsTableSet: FunctionComponent<{
 
     const allPools = queriesOsmosis.queryGammPools.getAllPools();
 
+    // All Pools
     const allPoolsWithMetrics: PoolWithMetrics[] = useMemo(
       () =>
         allPools.map((pool) => {
@@ -212,6 +214,7 @@ export const AllPoolsTableSet: FunctionComponent<{
       ]
     );
 
+    // Incentivized Pools
     const incentivizedPoolsWithMetrics = allPoolsWithMetrics.reduce(
       (
         incentivizedPools: PoolWithMetrics[],
@@ -582,7 +585,6 @@ export const AllPoolsTableSet: FunctionComponent<{
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: getSortedRowModel(),
     });
-    console.log("🚀 ~ tableData", tableData);
 
     if (isMobile) {
       return (
@@ -681,8 +683,7 @@ export const AllPoolsTableSet: FunctionComponent<{
     return (
       <>
         <div className="mt-5 flex flex-col gap-3">
-          <div className="flex place-content-between items-center">
-            <h5>{t("pools.allPools.title")}</h5>
+          {/* <div className="flex place-content-between items-center">
             <Switch
               isOn={isPoolTvlFiltered}
               onToggle={setIsPoolTvlFiltered}
@@ -693,14 +694,33 @@ export const AllPoolsTableSet: FunctionComponent<{
                 {tvlFilterLabel}
               </span>
             </Switch>
-          </div>
+          </div> */}
           <div className="flex flex-wrap place-content-between items-center gap-4">
-            <MenuToggle
+            <div className="flex flex-wrap place-content-between items-center gap-4">
+              <div
+                className={classNames("cursor-pointer border-wosmongton-400", {
+                  "border-b-2": activeOptionId === poolsMenuOptions[1].id,
+                })}
+                onClick={() => selectOption(poolsMenuOptions[1].id)}
+              >
+                <h5>{t("pools.allPools.title")}</h5>
+              </div>
+              <div
+                className={classNames("cursor-pointer border-wosmongton-400", {
+                  "border-b-2": activeOptionId === poolsMenuOptions[0].id,
+                })}
+                onClick={() => selectOption(poolsMenuOptions[0].id)}
+              >
+                <h5>Incentivized</h5>
+              </div>
+              <h5>External</h5>
+            </div>
+            {/* <MenuToggle
               className="inline"
               options={poolsMenuOptions}
               selectedOptionId={activeOptionId}
               onSelect={selectOption}
-            />
+            /> */}
             <div className="flex flex-wrap items-center gap-3 lg:w-full lg:place-content-between">
               <SearchBox
                 currentValue={query}
@@ -742,6 +762,21 @@ export const AllPoolsTableSet: FunctionComponent<{
                 }}
               />
             </div>
+          </div>
+          <div className="flex items-center gap-4">
+            {[
+              "Superfluid",
+              "Stableswap",
+              "Concentrated Liquidity",
+              "Balancer pools",
+            ].map((pool) => (
+              <div
+                className={"rounded-xl bg-osmoverse-700 px-5 py-1"}
+                key={pool}
+              >
+                {pool}
+              </div>
+            ))}
           </div>
         </div>
         <table className="my-5 w-full">
