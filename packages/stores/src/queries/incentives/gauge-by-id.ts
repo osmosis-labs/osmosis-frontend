@@ -5,13 +5,7 @@ import {
   QueryResponse,
 } from "@keplr-wallet/stores";
 import { KVStore } from "@keplr-wallet/common";
-import {
-  action,
-  computed,
-  makeObservable,
-  observable,
-  runInAction,
-} from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { Duration } from "dayjs/plugin/duration";
 import { Gauge, GaugeById } from "./types";
@@ -83,7 +77,7 @@ export class ObservableQueryGauge extends ObservableChainQuery<GaugeById> {
       this.chainGetter.getChain(this.chainId).findCurrency(coin.denom);
     }
 
-    runInAction(() => (this._raw = response.data.gauge));
+    this.setRaw(response.data.gauge);
   }
 
   get gauge() {
@@ -101,7 +95,7 @@ export class ObservableQueryGauge extends ObservableChainQuery<GaugeById> {
 
   @computed
   get lockupDuration(): Duration {
-    if (!this.response || !this._raw) {
+    if ((this._canFetch && !this.response) || !this._raw) {
       return dayjs.duration({
         seconds: 0,
       });

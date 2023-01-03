@@ -79,8 +79,8 @@ const Pool: FunctionComponent = observer(() => {
 
   // eject to pools page if pool does not exist
   const poolExists =
-    poolId !== undefined
-      ? queryOsmosis.queryGammPools.poolExists(poolId as string)
+    typeof poolId === "string"
+      ? queryOsmosis.queryGammPools.poolExists(poolId)
       : undefined;
   useEffect(() => {
     if (poolExists === false) {
@@ -89,9 +89,15 @@ const Pool: FunctionComponent = observer(() => {
   }, [poolExists]);
 
   // initialize pool data stores once root pool store is loaded
-  const pool = queryOsmosis.queryGammPools.getPool(poolId as string);
   const { poolDetail, superfluidPoolDetail, poolBonding } =
-    derivedDataStore.getForPool(poolId as string);
+    typeof poolId === "string"
+      ? derivedDataStore.getForPool(poolId as string)
+      : {
+          poolDetail: undefined,
+          superfluidPoolDetail: undefined,
+          poolBonding: undefined,
+        };
+  const pool = poolDetail?.pool;
   const { superfluidDelegateToValidator } = useSuperfluidPool();
 
   // user analytics
