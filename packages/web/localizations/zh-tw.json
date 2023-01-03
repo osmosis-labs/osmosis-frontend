@@ -84,8 +84,8 @@
     "createPool": {
       "title": "建立新流動性池",
       "button": "建立新流動性池",
-      "weightedPool": "加權儲存區",
-      "stablePool": "穩定的池",
+      "weightedPool": "加權流動性池",
+      "stablePool": "穩定池",
       "step": {
         "one": {
           "weighted": "步驟 {step} / {nbStep} - 設定代幣比例",
@@ -104,7 +104,7 @@
       "amount": "幣額",
       "token": "代幣",
       "swapFee": "設定兌換費",
-      "scalingFactorController": "例因子控制器（可選)",
+      "scalingFactorController": "比例因子控制器（可選)",
       "undersandCost": "我明白建立一個新流動性池會需要費用 {POOL_CREATION_FEE}",
       "interestedCreate": "想建立新流動性池嗎？",
       "startProcess": "按此開始流程"
@@ -121,7 +121,7 @@
     "yourStats": "您的資金池餘額",
     "sharesAmount": "{shares} 份額",
     "currentDailyEarn": "你現在正賺取",
-    "earnMore": "通過結合賺取 {amount}",
+    "earnMore": "通過鎖定賺取 {amount}",
     "day": "日",
     "dailyEarnAmount": "{amount} / 日",
     "putAssetsToWork": "讓你的資產為你工作",
@@ -138,7 +138,7 @@
     "bondSuperfluidLiquidityCaption": "啟用超流體質押以賺取最多獎勵",
     "bondShares": "鎖定份額",
     "amountDaysUnbonding": "解鎖中 ({numDays} 日)",
-    "available": "可用的",
+    "available": "可用",
     "unbond": "解鎖",
     "bonded": "已鎖定",
     "showDetails": "顯示詳情",
@@ -221,10 +221,10 @@
     "ibcTransfer": {
       "titleWithdraw": "轉出 {coinDenom}",
       "titleDeposit": "存入 {coinDenom}",
-      "channelCongested": "通道擁擠",
-      "channelCongestedWithdraw": "轉出 (通道擁擠)",
-      "channelCongestedDeposit": "存入 (通道擁擠)",
-      "channelBlocked": "通道堵塞",
+      "channelCongested": "通道擁擠中",
+      "channelCongestedWithdraw": "轉出 (通道擁擠中)",
+      "channelCongestedDeposit": "存入 (通道擁擠中)",
+      "channelBlocked": "通道已被堵塞",
       "selectAmount": "選擇數量",
       "estimatedTime": "預計所需時間",
       "waitTime": "20 秒",
@@ -341,7 +341,7 @@
   "settings": {
     "title": "設定",
     "titleLanguage": "語言",
-    "titleHideDust": "使用 < {fiatSymbol}0.01 隱藏礦池"
+    "titleHideDust": "隱藏 < {fiatSymbol}0.01 的礦池"
   },
   "404": {
     "title": "找不到這頁面"
