@@ -17,16 +17,13 @@ import {
   ObservableRemoveLiquidityConfig,
 } from "@osmosis-labs/stores";
 import { Duration } from "dayjs/plugin/duration";
-import { EventName, ExternalIncentiveGaugeAllowList } from "../../config";
+import { EventName } from "../../config";
 import {
   useLockTokenConfig,
-  useSuperfluidPoolConfig,
+  useSuperfluidPool,
   useWindowSize,
   useAmplitudeAnalytics,
-  usePoolGauges,
-  usePoolDetailConfig,
   useNavBar,
-  useBondLiquidityConfig,
 } from "../../hooks";
 import {
   AddLiquidityModal,
@@ -58,6 +55,7 @@ const Pool: FunctionComponent = observer(() => {
     accountStore,
     priceStore,
     queriesExternalStore,
+    derivedDataStore,
   } = useStore();
   const t = useTranslation();
   const { isMobile } = useWindowSize();
@@ -81,19 +79,26 @@ const Pool: FunctionComponent = observer(() => {
 
   // eject to pools page if pool does not exist
   const poolExists =
-    poolId !== undefined
-      ? queryOsmosis.queryGammPools.poolExists(poolId as string)
+    typeof poolId === "string"
+      ? queryOsmosis.queryGammPools.poolExists(poolId)
       : undefined;
   useEffect(() => {
     if (poolExists === false) {
       router.push("/pools");
     }
   }, [poolExists]);
+
   // initialize pool data stores once root pool store is loaded
-  const { poolDetailConfig, pool } = usePoolDetailConfig(poolId);
-  const { superfluidPoolConfig, superfluidDelegateToValidator } =
-    useSuperfluidPoolConfig(poolDetailConfig);
-  const bondLiquidityConfig = useBondLiquidityConfig(pool?.id);
+  const { poolDetail, superfluidPoolDetail, poolBonding } =
+    typeof poolId === "string"
+      ? derivedDataStore.getForPool(poolId as string)
+      : {
+          poolDetail: undefined,
+          superfluidPoolDetail: undefined,
+          poolBonding: undefined,
+        };
+  const pool = poolDetail?.pool;
+  const { superfluidDelegateToValidator } = useSuperfluidPool();
 
   // user analytics
   const { poolName, poolWeight } = useMemo(
@@ -114,8 +119,8 @@ const Pool: FunctionComponent = observer(() => {
         poolId,
         poolName,
         poolWeight,
-        ...(superfluidPoolConfig && {
-          isSuperfluidPool: superfluidPoolConfig.isSuperfluid,
+        ...(superfluidPoolDetail && {
+          isSuperfluidPool: superfluidPoolDetail.isSuperfluid,
         }),
       },
     ],
@@ -133,20 +138,10 @@ const Pool: FunctionComponent = observer(() => {
   } = useLockTokenConfig(
     pool ? queryOsmosis.queryGammPoolShare.getShareCurrency(pool.id) : undefined
   );
-  const {
-    allAggregatedGauges,
-    allowedAggregatedGauges,
-    internalGauges: _,
-  } = usePoolGauges(poolId);
   const [showSuperfluidValidatorModal, setShowSuperfluidValidatorsModal] =
     useState(false);
   const [showPoolDetails, setShowPoolDetails] = useState(false);
-  const bondDurations = pool
-    ? bondLiquidityConfig?.getAllowedBondDurations(
-        (denom) => chainStore.getChain(chainId).forceFindCurrency(denom),
-        ExternalIncentiveGaugeAllowList[pool.id]
-      ) ?? []
-    : [];
+  const bondDurations = pool ? poolBonding?.bondDurations ?? [] : [];
 
   // swap modal
   const [showTradeTokenModal, setShowTradeTokenModal] = useState(false);
@@ -157,10 +152,10 @@ const Pool: FunctionComponent = observer(() => {
       poolId,
       poolName,
       poolWeight,
-      isSuperfluidPool: superfluidPoolConfig?.isSuperfluid ?? false,
+      isSuperfluidPool: superfluidPoolDetail?.isSuperfluid ?? false,
       isStableswapPool: pool?.type === "stable",
     }),
-    [poolId, poolName, poolWeight, superfluidPoolConfig?.isSuperfluid]
+    [poolId, poolName, poolWeight, superfluidPoolDetail?.isSuperfluid]
   );
   const onAddLiquidity = useCallback(
     (result: Promise<void>, config: ObservableAddLiquidityConfig) => {
@@ -227,11 +222,11 @@ const Pool: FunctionComponent = observer(() => {
           .finally(() => setShowLockLPTokenModal(false));
       }
     },
-    [allAggregatedGauges, baseEventInfo, logEvent, lockToken]
+    [baseEventInfo, logEvent, lockToken]
   );
   const onUnlockTokens = useCallback(
     (duration: Duration) => {
-      const lockIds = poolDetailConfig?.userLockedAssets.reduce<string[]>(
+      const lockIds = poolDetail?.userLockedAssets.reduce<string[]>(
         (foundLockIds, lock) => {
           if (lock.duration.asMilliseconds() === duration.asMilliseconds()) {
             return foundLockIds.concat(...lock.lockIds);
@@ -255,12 +250,12 @@ const Pool: FunctionComponent = observer(() => {
         logEvent([E.unbondAllCompleted, unlockEvent]);
       });
     },
-    [poolDetailConfig?.userLockedAssets, baseEventInfo, logEvent, unlockTokens]
+    [poolDetail?.userLockedAssets, baseEventInfo, logEvent, unlockTokens]
   );
   // TODO: re-add unpool functionality
   const handleSuperfluidDelegateToValidator = useCallback(
     (validatorAddress) => {
-      if (!baseEventInfo.isSuperfluidPool) return;
+      if (!baseEventInfo.isSuperfluidPool || !poolId) return;
 
       const poolInfo = {
         ...baseEventInfo,
@@ -273,11 +268,16 @@ const Pool: FunctionComponent = observer(() => {
 
       logEvent([E.superfluidStakeStarted, poolInfo]);
 
-      superfluidDelegateToValidator(validatorAddress, lockLPTokensConfig)
+      superfluidDelegateToValidator(
+        poolId,
+        validatorAddress,
+        lockLPTokensConfig
+      )
         .then(() => logEvent([E.superfluidStakeCompleted, poolInfo]))
         .finally(() => setShowSuperfluidValidatorsModal(false));
     },
     [
+      poolId,
       lockLPTokensConfig,
       baseEventInfo,
       queryCosmos.queryValidators.getQueryStatus(Staking.BondStatus.Bonded)
@@ -301,7 +301,7 @@ const Pool: FunctionComponent = observer(() => {
     ],
   });
 
-  const levelCta = bondLiquidityConfig?.calculateBondLevel(bondDurations);
+  const levelCta = poolBonding?.calculateBondLevel(bondDurations);
   const level2Disabled = !bondDurations.some((duration) => duration.bondable);
 
   const highestAPRBondableDuration = bondDurations[bondDurations?.length - 1];
@@ -358,19 +358,17 @@ const Pool: FunctionComponent = observer(() => {
           pools={[pool.pool]}
         />
       )}
-      {lockLPTokensConfig &&
-        allowedAggregatedGauges &&
-        showLockLPTokenModal && (
-          <LockTokensModal
-            poolId={poolId}
-            isOpen={showLockLPTokenModal}
-            title={t("lockToken.title")}
-            onRequestClose={() => setShowLockLPTokenModal(false)}
-            amountConfig={lockLPTokensConfig}
-            onLockToken={onLockToken}
-          />
-        )}
-      {superfluidPoolConfig?.superfluid &&
+      {lockLPTokensConfig && showLockLPTokenModal && (
+        <LockTokensModal
+          poolId={poolId}
+          isOpen={showLockLPTokenModal}
+          title={t("lockToken.title")}
+          onRequestClose={() => setShowLockLPTokenModal(false)}
+          amountConfig={lockLPTokensConfig}
+          onLockToken={onLockToken}
+        />
+      )}
+      {superfluidPoolDetail?.superfluid &&
         pool &&
         lockLPTokensConfig &&
         showSuperfluidValidatorModal && (
@@ -381,8 +379,8 @@ const Pool: FunctionComponent = observer(() => {
                 : t("superfluidValidator.title")
             }
             availableBondAmount={
-              superfluidPoolConfig?.superfluid.upgradeableLpLockIds
-                ? superfluidPoolConfig.superfluid.upgradeableLpLockIds.amount // is delegating amount from existing lockup
+              superfluidPoolDetail?.superfluid.upgradeableLpLockIds
+                ? superfluidPoolDetail.superfluid.upgradeableLpLockIds.amount // is delegating amount from existing lockup
                 : new CoinPretty(
                     pool.shareCurrency, // is delegating amount from new/pending lockup
                     lockLPTokensConfig.amount !== ""
@@ -429,7 +427,7 @@ const Pool: FunctionComponent = observer(() => {
                   )}
                   <h5 className="max-w-xs truncate">{poolName}</h5>
                 </div>
-                {superfluidPoolConfig?.isSuperfluid && (
+                {superfluidPoolDetail?.isSuperfluid && (
                   <span className="body2 text-superfluid-gradient">
                     {t("pool.superfluidEnabled")}
                   </span>
@@ -462,7 +460,7 @@ const Pool: FunctionComponent = observer(() => {
                     {t("pool.liquidity")}
                   </span>
                   <h4 className="text-osmoverse-100">
-                    {poolDetailConfig?.totalValueLocked.toString()}
+                    {poolDetail?.totalValueLocked.toString()}
                   </h4>
                 </div>
                 <div className="space-y-2">
@@ -532,7 +530,7 @@ const Pool: FunctionComponent = observer(() => {
             </div>
           </div>
         </div>
-        {poolDetailConfig?.userStats && (
+        {poolDetail?.userStats && (
           <div className="flex w-full gap-4 1.5lg:flex-col">
             <div className="flex flex-col gap-3 rounded-4xl bg-osmoverse-1000 px-8 py-7">
               <span className="body2 text-osmoverse-300">
@@ -541,11 +539,11 @@ const Pool: FunctionComponent = observer(() => {
               <div className="flex place-content-between  gap-6 sm:flex-col sm:items-start">
                 <div className="flex shrink-0 flex-col gap-1">
                   <h4 className="text-osmoverse-100">
-                    {poolDetailConfig.userStats.totalShareValue.toString()}
+                    {poolDetail.userStats.totalShareValue.toString()}
                   </h4>
                   <h6 className="subtitle1 text-osmoverse-300">
                     {t("pool.sharesAmount", {
-                      shares: poolDetailConfig.userStats.totalShares
+                      shares: poolDetail.userStats.totalShares
                         .maxDecimals(6)
                         .hideDenom(true)
                         .toString(),
@@ -553,7 +551,7 @@ const Pool: FunctionComponent = observer(() => {
                   </h6>
                 </div>
 
-                <PoolComposition assets={poolDetailConfig.userPoolAssets} />
+                <PoolComposition assets={poolDetail.userPoolAssets} />
               </div>
             </div>
 
@@ -563,11 +561,11 @@ const Pool: FunctionComponent = observer(() => {
                   prices={[
                     {
                       label: t("pool.bonded"),
-                      price: poolDetailConfig.userStats.bondedValue,
+                      price: poolDetail.userStats.bondedValue,
                     },
                     {
                       label: t("pool.available"),
-                      price: poolDetailConfig.userStats.unbondedValue,
+                      price: poolDetail.userStats.unbondedValue,
                     },
                   ]}
                 />
@@ -588,9 +586,7 @@ const Pool: FunctionComponent = observer(() => {
                   </h4>
                 </div>
 
-                {poolDetailConfig?.userAvailableValue
-                  .toDec()
-                  .gt(new Dec(0)) && (
+                {poolDetail?.userAvailableValue.toDec().gt(new Dec(0)) && (
                   <ArrowButton
                     className="text-left"
                     onClick={() => {
@@ -665,7 +661,7 @@ const Pool: FunctionComponent = observer(() => {
                 <div className="flex flex-col gap-4 lg:w-full">
                   <div className="hidden flex-col items-end lg:flex">
                     <h4 className="text-osmoverse-100">
-                      {poolDetailConfig?.userAvailableValue.toString()}
+                      {poolDetail?.userAvailableValue.toString()}
                     </h4>
                     <h6 className="subtitle1 text-osmoverse-300">
                       {t("pool.sharesAmount", {
@@ -682,9 +678,7 @@ const Pool: FunctionComponent = observer(() => {
                     <Button
                       className="w-fit shrink-0 xs:w-full"
                       mode="secondary"
-                      disabled={poolDetailConfig?.userAvailableValue
-                        .toDec()
-                        .isZero()}
+                      disabled={poolDetail?.userAvailableValue.toDec().isZero()}
                       onClick={() => {
                         logEvent([
                           E.removeLiquidityClicked,
@@ -715,7 +709,7 @@ const Pool: FunctionComponent = observer(() => {
               </div>
               <div className="flex flex-col items-end text-right lg:hidden">
                 <h4 className="text-osmoverse-100">
-                  {poolDetailConfig?.userAvailableValue.toString()}
+                  {poolDetail?.userAvailableValue.toString()}
                 </h4>
                 <h6 className="subtitle1 text-osmoverse-300">
                   {t("pool.sharesAmount", {
@@ -756,7 +750,7 @@ const Pool: FunctionComponent = observer(() => {
                   </div>
                   <span className="body2 text-osmoverse-200">
                     {t("pool.bondLiquidityCaption")}
-                    {superfluidPoolConfig?.isSuperfluid &&
+                    {superfluidPoolDetail?.isSuperfluid &&
                       ` ${t("pool.bondSuperfluidLiquidityCaption")}`}
                   </span>
                 </div>
@@ -817,17 +811,17 @@ const Pool: FunctionComponent = observer(() => {
                       setShowSuperfluidValidatorsModal(true);
                     }}
                     splashImageSrc={
-                      poolDetailConfig && poolDetailConfig.isIncentivized
-                        ? poolDetailConfig.lockableDurations.length > 0 &&
-                          poolDetailConfig.lockableDurations[0].asDays() ===
+                      poolDetail && poolDetail.isIncentivized
+                        ? poolDetail.lockableDurations.length > 0 &&
+                          poolDetail.lockableDurations[0].asDays() ===
                             bondDuration.duration.asDays()
                           ? "/images/small-vial.svg"
-                          : poolDetailConfig.lockableDurations.length > 1 &&
-                            poolDetailConfig.lockableDurations[1].asDays() ===
+                          : poolDetail.lockableDurations.length > 1 &&
+                            poolDetail.lockableDurations[1].asDays() ===
                               bondDuration.duration.asDays()
                           ? "/images/medium-vial.svg"
-                          : poolDetailConfig.lockableDurations.length > 2 &&
-                            poolDetailConfig.lockableDurations[2].asDays() ===
+                          : poolDetail.lockableDurations.length > 2 &&
+                            poolDetail.lockableDurations[2].asDays() ===
                               bondDuration.duration.asDays()
                           ? "/images/large-vial.svg"
                           : undefined

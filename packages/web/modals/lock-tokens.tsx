@@ -8,14 +8,7 @@ import { InputBox } from "../components/input";
 import { CheckBox } from "../components/control";
 import { tError } from "../components/localization";
 import { ModalBase, ModalBaseProps } from "./base";
-import {
-  useConnectWalletModalRedirect,
-  useBondLiquidityConfig,
-  usePoolDetailConfig,
-  useSuperfluidPoolConfig,
-  useCurrentLanguage,
-} from "../hooks";
-import { ExternalIncentiveGaugeAllowList } from "../config";
+import { useConnectWalletModalRedirect, useCurrentLanguage } from "../hooks";
 import { useTranslation } from "react-multi-lang";
 
 export const LockTokensModal: FunctionComponent<
@@ -30,7 +23,8 @@ export const LockTokensModal: FunctionComponent<
   const t = useTranslation();
   const locale = useCurrentLanguage();
 
-  const { chainStore, accountStore, queriesStore } = useStore();
+  const { chainStore, accountStore, queriesStore, derivedDataStore } =
+    useStore();
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
@@ -38,15 +32,10 @@ export const LockTokensModal: FunctionComponent<
   const { bech32Address } = account;
 
   // initialize pool data stores once root pool store is loaded
-  const { poolDetailConfig } = usePoolDetailConfig(poolId);
-  const { superfluidPoolConfig } = useSuperfluidPoolConfig(poolDetailConfig);
-  const bondLiquidityConfig = useBondLiquidityConfig(poolId);
+  const { poolDetail, superfluidPoolDetail, poolBonding } =
+    derivedDataStore.getForPool(poolId);
 
-  const bondDurations =
-    bondLiquidityConfig?.getAllowedBondDurations(
-      (denom) => chainStore.getChain(chainId).forceFindCurrency(denom),
-      ExternalIncentiveGaugeAllowList[poolId]
-    ) ?? [];
+  const bondDurations = poolBonding?.bondDurations ?? [];
   const availableToken = queryOsmosis.queryGammPoolShare.getAvailableGammShare(
     bech32Address,
     poolId
@@ -56,8 +45,8 @@ export const LockTokensModal: FunctionComponent<
    *  TODO: perhaps we should display this in the view somehow
    */
   const hasSuperfluidValidator =
-    superfluidPoolConfig?.superfluid?.delegations &&
-    superfluidPoolConfig.superfluid.delegations.length > 0;
+    superfluidPoolDetail?.superfluid?.delegations &&
+    superfluidPoolDetail.superfluid.delegations.length > 0;
   const superfluidApr =
     bondDurations[bondDurations.length - 1]?.superfluid?.apr;
 
@@ -69,7 +58,7 @@ export const LockTokensModal: FunctionComponent<
   /** Superfluid duration assumed to be longest duration in lockableDurations
    *  chain parameter.
    */
-  const longestDuration = poolDetailConfig?.longestDuration;
+  const longestDuration = poolDetail?.longestDuration;
   const superfluidDurationSelected =
     selectedDurationIndex !== null &&
     bondDurations.length > selectedDurationIndex &&
@@ -78,10 +67,10 @@ export const LockTokensModal: FunctionComponent<
 
   const [electSuperfluid, setElectSuperfluid] = useState(false);
   useEffect(() => {
-    if (superfluidPoolConfig?.isSuperfluid) {
+    if (superfluidPoolDetail?.isSuperfluid) {
       setElectSuperfluid(true);
     }
-  }, [superfluidPoolConfig?.isSuperfluid]);
+  }, [superfluidPoolDetail?.isSuperfluid]);
 
   let selectedApr =
     selectedDurationIndex !== null
@@ -115,7 +104,7 @@ export const LockTokensModal: FunctionComponent<
             // On the mainnet, this standard works well
             // Logically it could be a problem if it's not the mainnet
             hasSuperfluidValidator ||
-              !superfluidPoolConfig?.isSuperfluid ||
+              !superfluidPoolDetail?.isSuperfluid ||
               !superfluidDurationSelected
               ? undefined
               : electSuperfluid
@@ -169,7 +158,7 @@ export const LockTokensModal: FunctionComponent<
             />
           ))}
         </div>
-        {superfluidPoolConfig?.isSuperfluid && (
+        {superfluidPoolDetail?.isSuperfluid && (
           <CheckBox
             className="-top-0.5 -left-0.5 transition-all after:!h-6 after:!w-6 after:!rounded-[10px] after:!border-2 after:!border-superfluid after:!bg-transparent checked:after:border-none checked:after:bg-superfluid"
             isOn={superfluidDurationSelected && electSuperfluid}
@@ -188,12 +177,10 @@ export const LockTokensModal: FunctionComponent<
                 {t("lockToken.superfluidStake")}{" "}
                 {superfluidApr && `(+${superfluidApr.maxDecimals(0)} APR)`}
               </h6>
-              {poolDetailConfig?.longestDuration && (
+              {poolDetail?.longestDuration && (
                 <span className="caption text-osmoverse-300">
                   {t("lockToken.bondingRequirement", {
-                    numDays: poolDetailConfig.longestDuration
-                      .asDays()
-                      .toString(),
+                    numDays: poolDetail.longestDuration.asDays().toString(),
                   })}
                 </span>
               )}
