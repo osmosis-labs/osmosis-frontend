@@ -206,9 +206,9 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
         ) : (
           <button
             onClick={onOpenProfile}
-            className="group flex place-content-between items-center gap-3 rounded-xl border-2 border-osmoverse-700 px-2 py-1 hover:border-wosmongton-300 hover:bg-osmoverse-800"
+            className="group flex place-content-between items-center gap-3 rounded-xl border-2 border-osmoverse-700 px-1.5 py-1 hover:border-wosmongton-300 hover:bg-osmoverse-800"
           >
-            <div className="h-8 w-8 shrink-0 overflow-hidden rounded-lg bg-osmoverse-700 group-hover:bg-gradient-positive">
+            <div className="h-8 w-8 shrink-0 overflow-hidden rounded-[7px] bg-osmoverse-700 group-hover:bg-gradient-positive">
               {avatarSettings?.state.avatar === "ammelia" ? (
                 <Image
                   alt="Wosmongton profile"

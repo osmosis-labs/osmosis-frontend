@@ -8,6 +8,8 @@ export * from "./denom-image";
 export * from "./log-out-icon";
 export * from "./qr-icon";
 export * from "./copy-icon";
+export * from "./external-link-icon";
+export * from "./check-mark-icon";
 export * from "./icon";
 
 export const ringFillColors = [

@@ -23,7 +23,13 @@ import {
 import { EventName } from "../config";
 import { getShortAddress } from "../utils/string";
 import { useCopyToClipboard, useTimeoutFn } from "react-use";
-import { CopyIcon, LogOutIcon, QRIcon } from "../components/assets";
+import {
+  CopyIcon,
+  LogOutIcon,
+  QRIcon,
+  ExternalLinkIcon,
+  CheckMarkIcon,
+} from "../components/assets";
 import classNames from "classnames";
 import {
   Drawer,
@@ -34,8 +40,6 @@ import {
 } from "../components/drawers";
 import QRCode from "qrcode.react";
 import { AvatarState } from "../stores/user-settings";
-import { CheckMarkIcon } from "../components/assets/check-mark-icon";
-import { ExternalLinkIcon } from "../components/assets/external-link-icon";
 
 export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
   (props) => {
