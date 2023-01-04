@@ -61,7 +61,7 @@ export class UserSettings {
     return this._settings;
   }
 
-  getUserSettingById = computedFn(
+  readonly getUserSettingById = computedFn(
     <T>(id: UserSettingName): UserSetting<T> | undefined => {
       return this._settings.find(({ id: settingId }) => settingId === id);
     }
