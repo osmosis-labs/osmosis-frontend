@@ -1,6 +1,8 @@
 import {
+  AnchorHTMLAttributes,
   ButtonHTMLAttributes,
   ComponentProps,
+  ElementType,
   forwardRef,
   FunctionComponent,
   HTMLAttributes,
@@ -32,6 +34,8 @@ import {
 } from "../components/drawers";
 import QRCode from "qrcode.react";
 import { AvatarState } from "../stores/user-settings";
+import { CheckMarkIcon } from "../components/assets/check-mark-icon";
+import { ExternalLinkIcon } from "../components/assets/external-link-icon";
 
 export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
   (props) => {
@@ -220,28 +224,44 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
 
               <div className="subtitle-1 tracking-wide">
                 <p>Cosmos</p>
-                <p title={address} className="text-osmoverse-100">
-                  {getShortAddress(address)}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p title={address} className="text-osmoverse-100">
+                    {getShortAddress(address)}
+                  </p>
+                  <button
+                    title="Copy"
+                    onClick={onCopyAddress}
+                    className="group"
+                  >
+                    {hasCopied ? (
+                      <CheckMarkIcon
+                        classes={{
+                          container: "text-osmoverse-200",
+                        }}
+                      />
+                    ) : (
+                      <CopyIcon
+                        classes={{
+                          container: "w-[20px] h-[20px] text-osmoverse-200",
+                        }}
+                        isAnimated
+                      />
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
               <ActionButton
-                title="Copy"
-                onClick={onCopyAddress}
+                title="Mintscan"
+                isLink
+                href={`https://www.mintscan.io/osmosis/account/${address}`}
+                target="blank"
                 className="group"
+                rel="noopener noreferrer"
               >
-                {hasCopied ? (
-                  <Image
-                    src="/icons/check-mark.svg"
-                    alt="Check mark icon"
-                    width={20}
-                    height={20}
-                  />
-                ) : (
-                  <CopyIcon isAnimated />
-                )}
+                <ExternalLinkIcon isAnimated />
               </ActionButton>
 
               <Drawer isOpen={isQROpen} onOpen={onOpenQR} onClose={onCloseQR}>
@@ -275,15 +295,20 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
                       >
                         {hasCopied ? (
                           <div className="h-6 w-6">
-                            <Image
-                              src="/icons/check-mark.svg"
-                              alt="Check mark icon"
-                              width={24}
-                              height={24}
+                            <CheckMarkIcon
+                              classes={{
+                                container:
+                                  "w-[24px] h-[24px] text-osmoverse-200",
+                              }}
                             />
                           </div>
                         ) : (
-                          <CopyIcon isAnimated />
+                          <CopyIcon
+                            isAnimated
+                            classes={{
+                              container: "text-osmoverse-200",
+                            }}
+                          />
                         )}
                       </button>
                     </div>
@@ -314,22 +339,26 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
   }
 );
 
-const ActionButton = forwardRef<any, ButtonHTMLAttributes<HTMLButtonElement>>(
-  (props, ref) => {
-    return (
-      <button
-        {...props}
-        ref={ref}
-        className={classNames(
-          "flex h-9 w-9 items-center justify-center rounded-lg bg-osmoverse-600 p-1.5",
-          props.className
-        )}
-      >
-        {props.children}
-      </button>
-    );
-  }
-);
+const ActionButton = forwardRef<
+  any,
+  ButtonHTMLAttributes<HTMLButtonElement> &
+    AnchorHTMLAttributes<HTMLAnchorElement> & { isLink?: boolean }
+>((props, ref) => {
+  const { isLink, ...rest } = props;
+  const Component = (isLink ? "a" : "button") as ElementType<typeof props>;
+  return (
+    <Component
+      {...rest}
+      ref={ref}
+      className={classNames(
+        "flex h-9 w-9 items-center justify-center rounded-lg bg-osmoverse-600 p-1.5",
+        props.className
+      )}
+    >
+      {props.children}
+    </Component>
+  );
+});
 
 const BaseAvatar = forwardRef<
   any,
