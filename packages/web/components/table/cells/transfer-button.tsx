@@ -4,7 +4,7 @@ import { FunctionComponent } from "react";
 import { AssetCell as Cell } from "./types";
 import { useTranslation } from "react-multi-lang";
 import { Button } from "../../buttons";
-import { ChevronRightIcon } from "../../assets";
+import { Icon } from "../../assets";
 
 export const TransferButtonCell: FunctionComponent<
   {
@@ -78,7 +78,7 @@ const TransferButton: FunctionComponent<{
       <span>{label}</span>
 
       <div className="h-fit shrink-0">
-        <ChevronRightIcon />
+        <Icon id="chevron-right" width={8} height={14} />
       </div>
     </Button>
   );

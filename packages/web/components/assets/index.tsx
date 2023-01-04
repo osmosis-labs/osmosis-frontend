@@ -5,8 +5,7 @@ export * from "./rate-ring";
 export * from "./token";
 export * from "./types";
 export * from "./denom-image";
-export * from "./chevron-down-icon";
-export * from "./chevron-right-icon";
+export * from "./icon";
 
 export const ringFillColors = [
   "#89EAFB",

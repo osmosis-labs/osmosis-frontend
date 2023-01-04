@@ -80,7 +80,7 @@ const button = cva(
           "disabled:text-osmoverse-400",
         ],
         amount: [
-          "border-2",
+          "border",
           "bg-transparent",
           "border-wosmongton-300",
           "hover:border-wosmongton-200",

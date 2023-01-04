@@ -40,7 +40,7 @@ import {
   AssetBreakdownChart,
   PriceBreakdownChart,
 } from "../../components/chart";
-import { ChevronDownIcon, PoolAssetsIcon } from "../../components/assets";
+import { Icon, PoolAssetsIcon } from "../../components/assets";
 import { BondCard } from "../../components/cards";
 import { Disableable } from "../../components/types";
 import { Button, ArrowButton } from "../../components/buttons";
@@ -524,7 +524,7 @@ const Pool: FunctionComponent = observer(() => {
                 "rotate-180": showPoolDetails,
               })}
             >
-              <ChevronDownIcon />
+              <Icon id="chevron-down" width="14" height="8" />
             </div>
           </Button>
         </div>
