@@ -7,7 +7,7 @@ export const SUBQUERY_ENDPOINTS: { [chainId: string]: string } = {
 export const REGISTRY_ADDRESSES: { [chainId: string]: string } = {
   "osmosis-1": "",
   "osmo-test-4":
-    "osmo1ulqdnqjkm6v6kdehh37md4a6fs4ppyrv9jqr0ypcud9p8efygzmsstn2sy",
+    "osmo1zynr26u48vdjrcuxkgswfhcx4zh5lw58qshzycykf33p7fp5y32qkydwrp",
 };
 
 export const WRAPPER_ADDRESSES: { [chainId: string]: string } = {
