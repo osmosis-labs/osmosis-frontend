@@ -39,8 +39,8 @@ import {
   UserSettings,
   HideDustUserSetting,
   LanguageUserSetting,
-  AvatarUserSetting,
 } from "./user-settings";
+import { ProfileStore } from "./profile";
 const semver = require("semver");
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
@@ -74,6 +74,8 @@ export class RootStore {
   public readonly navBarStore: NavBarStore;
 
   public readonly userSettings: UserSettings;
+
+  public readonly profileStore: ProfileStore;
 
   constructor(
     getKeplr: () => Promise<Keplr | undefined> = () =>
@@ -288,7 +290,9 @@ export class RootStore {
         this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)
           ?.symbol ?? "$"
       ),
-      new AvatarUserSetting(),
     ]);
+
+    const profileStoreKvStore = makeLocalStorageKVStore("profile_store");
+    this.profileStore = new ProfileStore(profileStoreKvStore);
   }
 }

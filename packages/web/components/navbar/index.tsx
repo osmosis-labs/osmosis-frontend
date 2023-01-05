@@ -10,7 +10,7 @@ import {
   useBooleanWithWindowEvent,
   useDisclosure,
 } from "../../hooks";
-import { AvatarState, UserSetting } from "../../stores/user-settings";
+import { UserSetting } from "../../stores/user-settings";
 import { useTranslation } from "react-multi-lang";
 import { MainLayoutMenu, CustomClasses } from "../types";
 import { MainMenu } from "../main-menu";
@@ -169,7 +169,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
       },
       accountStore,
       navBarStore,
-      userSettings,
+      profileStore,
     } = useStore();
     const {
       isOpen: isProfileOpen,
@@ -182,9 +182,6 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
     // wallet
     const account = accountStore.getAccount(chainId);
     const walletConnected = account.walletStatus === WalletStatus.Loaded;
-
-    const avatarSettings =
-      userSettings.getUserSettingById<AvatarState>("avatar");
 
     return (
       <div
@@ -209,7 +206,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
             className="group flex place-content-between items-center gap-3 rounded-xl border-2 border-osmoverse-700 px-1.5 py-1 hover:border-wosmongton-300 hover:bg-osmoverse-800"
           >
             <div className="h-8 w-8 shrink-0 overflow-hidden rounded-[7px] bg-osmoverse-700 group-hover:bg-gradient-positive">
-              {avatarSettings?.state.avatar === "ammelia" ? (
+              {profileStore.currentAvatar === "ammelia" ? (
                 <Image
                   alt="Wosmongton profile"
                   src="/images/profile-ammelia.png"
