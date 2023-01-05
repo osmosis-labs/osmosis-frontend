@@ -1,5 +1,12 @@
 import { KVStore } from "@keplr-wallet/common";
-import { computed, makeObservable, observable, runInAction, toJS } from "mobx";
+import {
+  action,
+  computed,
+  makeObservable,
+  observable,
+  runInAction,
+  toJS,
+} from "mobx";
 
 type Avatar = "wosmongton" | "ammelia";
 
@@ -27,6 +34,7 @@ export class ProfileStore {
     return this._currentAvatar;
   }
 
+  @action
   setCurrentAvatar(value: Avatar) {
     this._currentAvatar = value;
     this.kvStorage.set(this._avatarStorageKey, toJS(this._currentAvatar));
