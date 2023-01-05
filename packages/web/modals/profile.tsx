@@ -21,7 +21,6 @@ import {
   useTransferConfig,
 } from "../hooks";
 import { EventName } from "../config";
-import { getShortAddress } from "../utils/string";
 import { useCopyToClipboard, useTimeoutFn } from "react-use";
 import {
   CopyIcon,
@@ -40,6 +39,7 @@ import {
 } from "../components/drawers";
 import QRCode from "qrcode.react";
 import { AvatarState } from "../stores/user-settings";
+import { Bech32Address } from "@keplr-wallet/cosmos";
 
 export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
   (props) => {
@@ -154,7 +154,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
         </Drawer>
 
         <div className="mt-3 text-center">
-          <h5>{getShortAddress(address)}</h5>
+          <h5>{Bech32Address.shortenAddress(address, 12)}</h5>
         </div>
 
         <div className="mt-10 flex w-full flex-col gap-[30px] rounded-[20px] border border-osmoverse-700 bg-osmoverse-800 px-6 py-5">
@@ -230,7 +230,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
                 <p>Cosmos</p>
                 <div className="flex items-center gap-2">
                   <p title={address} className="text-osmoverse-100">
-                    {getShortAddress(address)}
+                    {Bech32Address.shortenAddress(address, 12)}
                   </p>
                   <button
                     title="Copy"
@@ -288,10 +288,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
                         title={address}
                         className="subtitle1 text-osmoverse-300"
                       >
-                        {getShortAddress(address, {
-                          prefixLength: 9,
-                          suffixLength: 6,
-                        })}
+                        {Bech32Address.shortenAddress(address, 15)}
                       </p>
                       <button
                         className="flex h-9 w-9 items-center justify-center"
