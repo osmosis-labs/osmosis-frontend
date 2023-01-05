@@ -7,14 +7,14 @@ export class ProfileStore {
   @observable
   private _currentAvatar: Avatar;
 
-  private readonly avatarStorageKey = "profile_store_current_avatar";
+  private readonly _avatarStorageKey = "profile_store_current_avatar";
 
   constructor(protected readonly kvStorage: KVStore) {
     this._currentAvatar = "wosmongton";
     makeObservable(this);
 
     // Need to get previous avatar from storage
-    this.kvStorage.get(this.avatarStorageKey).then((value: unknown) => {
+    this.kvStorage.get(this._avatarStorageKey).then((value: unknown) => {
       runInAction(() => {
         if (!value) return;
         this._currentAvatar = value as Avatar;
@@ -29,6 +29,6 @@ export class ProfileStore {
 
   setCurrentAvatar(value: Avatar) {
     this._currentAvatar = value;
-    this.kvStorage.set(this.avatarStorageKey, toJS(this._currentAvatar));
+    this.kvStorage.set(this._avatarStorageKey, toJS(this._currentAvatar));
   }
 }
