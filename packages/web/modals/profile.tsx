@@ -38,7 +38,6 @@ import {
   DrawerPanel,
 } from "../components/drawers";
 import QRCode from "qrcode.react";
-import { AvatarState } from "../stores/user-settings";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 
 export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
@@ -51,7 +50,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
       accountStore,
       priceStore,
       navBarStore,
-      userSettings,
+      profileStore,
     } = useStore();
     const { logEvent } = useAmplitudeAnalytics();
 
@@ -68,8 +67,6 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
 
     const transferConfig = useTransferConfig();
     const account = accountStore.getAccount(chainId);
-    const avatarSetting =
-      userSettings.getUserSettingById<AvatarState>("avatar");
 
     const [hasCopied, setHasCopied] = useState(false);
     const [_state, copyToClipboard] = useCopyToClipboard();
@@ -107,7 +104,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
           onClose={onCloseAvatarSelect}
         >
           <DrawerButton>
-            {avatarSetting?.state.avatar === "ammelia" ? (
+            {profileStore.currentAvatar === "ammelia" ? (
               <AmmeliaAvatar className="mt-10" aria-label="Select avatar" />
             ) : (
               <WosmongtonAvatar className="mt-10" aria-label="Select avatar" />
@@ -122,10 +119,10 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
                 <div className="text-center">
                   <WosmongtonAvatar
                     isSelectable
-                    isSelected={avatarSetting?.state.avatar === "wosmongton"}
+                    isSelected={profileStore.currentAvatar === "wosmongton"}
                     onSelect={() => {
                       onCloseAvatarSelect();
-                      avatarSetting?.setState({ avatar: "wosmongton" });
+                      profileStore.setCurrentAvatar("wosmongton");
                     }}
                     className="outline-none"
                   />
@@ -137,10 +134,10 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
                 <div className="text-center">
                   <AmmeliaAvatar
                     isSelectable
-                    isSelected={avatarSetting?.state.avatar === "ammelia"}
+                    isSelected={profileStore.currentAvatar === "ammelia"}
                     onSelect={() => {
                       onCloseAvatarSelect();
-                      avatarSetting?.setState({ avatar: "ammelia" });
+                      profileStore.setCurrentAvatar("ammelia");
                     }}
                     className="outline-none"
                   />

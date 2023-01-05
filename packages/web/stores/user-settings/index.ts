@@ -10,13 +10,9 @@ import { FunctionComponent } from "react";
 import { computedFn } from "mobx-utils";
 import { KVStore } from "@keplr-wallet/common";
 import { HideDustUserSetting } from "./hide-dust";
-import { AvatarUserSetting } from "./avatar";
 import { LanguageUserSetting } from "./language";
 
-type UserSettingName =
-  | HideDustUserSetting["id"]
-  | AvatarUserSetting["id"]
-  | LanguageUserSetting["id"];
+type UserSettingName = HideDustUserSetting["id"] | LanguageUserSetting["id"];
 
 export interface UserSetting<TState = any> {
   readonly id: string;
@@ -70,4 +66,3 @@ export class UserSettings {
 
 export * from "./hide-dust";
 export * from "./language";
-export * from "./avatar";
