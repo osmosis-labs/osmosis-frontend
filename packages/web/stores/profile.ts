@@ -1,12 +1,5 @@
 import { KVStore } from "@keplr-wallet/common";
-import {
-  autorun,
-  computed,
-  makeObservable,
-  observable,
-  runInAction,
-  toJS,
-} from "mobx";
+import { computed, makeObservable, observable, runInAction, toJS } from "mobx";
 
 type Avatar = "wosmongton" | "ammelia";
 
@@ -14,21 +7,18 @@ export class ProfileStore {
   @observable
   private _currentAvatar: Avatar;
 
-  constructor(protected readonly kvStore: KVStore) {
+  private readonly avatarStorageKey = "profile_store_current_avatar";
+
+  constructor(protected readonly kvStorage: KVStore) {
     this._currentAvatar = "wosmongton";
     makeObservable(this);
 
-    const storageKey = "profile_store_current_avatar";
-
-    this.kvStore.get(storageKey).then((value: unknown) => {
+    // Need to get previous avatar from storage
+    this.kvStorage.get(this.avatarStorageKey).then((value: unknown) => {
       runInAction(() => {
         if (!value) return;
         this._currentAvatar = value as Avatar;
       });
-    });
-
-    autorun(() => {
-      this.kvStore.set(storageKey, toJS(this._currentAvatar));
     });
   }
 
@@ -39,5 +29,6 @@ export class ProfileStore {
 
   setCurrentAvatar(value: Avatar) {
     this._currentAvatar = value;
+    this.kvStorage.set(this.avatarStorageKey, toJS(this._currentAvatar));
   }
 }
