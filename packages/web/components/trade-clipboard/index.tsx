@@ -845,7 +845,7 @@ export const TradeClipboard: FunctionComponent<{
                 )}
                 selectedTokenDenom={tradeTokenInConfig.outCurrency.coinDenom}
                 onSelect={(tokenDenom: string) => {
-                  const tokenOutCurrency = tradeableCurrencies.find(
+                  const tokenOutCurrency = tradeableCurrenciesRef.current.find(
                     (currency) => currency.coinDenom === tokenDenom
                   );
                   if (tokenOutCurrency) {
