@@ -33,6 +33,7 @@ import { tError } from "../localization";
 import { TokenSelectWithDrawer } from "../control/token-select-with-drawer";
 import useMeasure from "../../hooks/use-measure";
 import { Icon } from "../assets";
+import useLatest from "../../hooks/use-latest";
 
 export const TradeClipboard: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!
@@ -58,6 +59,7 @@ export const TradeClipboard: FunctionComponent<{
     const tradeableCurrencies = chainStore.getChain(
       chainStore.osmosis.chainId
     ).currencies;
+    const tradeableCurrenciesRef = useLatest(tradeableCurrencies);
 
     const account = accountStore.getAccount(chainId);
     const queries = queriesStore.get(chainId);
@@ -681,11 +683,9 @@ export const TradeClipboard: FunctionComponent<{
                 )}
                 selectedTokenDenom={tradeTokenInConfig.sendCurrency.coinDenom}
                 onSelect={(tokenDenom: string) => {
-                  const tokenInCurrency = chainStore
-                    .getChain(chainStore.osmosis.chainId)
-                    .currencies.find(
-                      (currency) => currency.coinDenom === tokenDenom
-                    );
+                  const tokenInCurrency = tradeableCurrenciesRef.current.find(
+                    (currency) => currency.coinDenom === tokenDenom
+                  );
                   if (tokenInCurrency) {
                     tradeTokenInConfig.setSendCurrency(tokenInCurrency);
                   }
