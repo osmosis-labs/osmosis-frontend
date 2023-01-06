@@ -681,9 +681,11 @@ export const TradeClipboard: FunctionComponent<{
                 )}
                 selectedTokenDenom={tradeTokenInConfig.sendCurrency.coinDenom}
                 onSelect={(tokenDenom: string) => {
-                  const tokenInCurrency = tradeableCurrencies.find(
-                    (currency) => currency.coinDenom === tokenDenom
-                  );
+                  const tokenInCurrency = chainStore
+                    .getChain(chainStore.osmosis.chainId)
+                    .currencies.find(
+                      (currency) => currency.coinDenom === tokenDenom
+                    );
                   if (tokenInCurrency) {
                     tradeTokenInConfig.setSendCurrency(tokenInCurrency);
                   }
