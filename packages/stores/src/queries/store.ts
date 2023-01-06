@@ -21,7 +21,7 @@ import {
   ObservableQueryMintParmas,
 } from "./mint";
 import { ObservableQueryDistrInfo } from "./pool-incentives/distr-info";
-import { ObservableQueryGuage } from "./incentives";
+import { ObservableQueryGauges } from "./incentives";
 import { ObservableQueryPoolCreationFee } from "./pool-creation-fee";
 import {
   ObservableQuerySuperfluidDelegations,
@@ -85,7 +85,7 @@ export class OsmosisQueriesImpl {
   public readonly queryLockableDurations: DeepReadonly<ObservableQueryLockableDurations>;
   public readonly queryDistrInfo: DeepReadonly<ObservableQueryDistrInfo>;
   public readonly queryIncentivizedPools: DeepReadonly<ObservableQueryIncentivizedPools>;
-  public readonly queryGauge: DeepReadonly<ObservableQueryGuage>;
+  public readonly queryGauge: DeepReadonly<ObservableQueryGauges>;
   public readonly queryPoolsGaugeIds: DeepReadonly<ObservableQueryPoolsGaugeIds>;
 
   public readonly queryPoolCreationFee: DeepReadonly<ObservableQueryPoolCreationFee>;
@@ -168,7 +168,7 @@ export class OsmosisQueriesImpl {
       chainId,
       chainGetter
     );
-    this.queryGauge = new ObservableQueryGuage(kvStore, chainId, chainGetter);
+    this.queryGauge = new ObservableQueryGauges(kvStore, chainId, chainGetter);
     this.queryIncentivizedPools = new ObservableQueryIncentivizedPools(
       kvStore,
       chainId,

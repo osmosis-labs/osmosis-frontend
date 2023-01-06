@@ -8,10 +8,11 @@ import {
   IBCCurrencyRegsitrar,
   QueriesStore,
 } from "@keplr-wallet/stores";
-import { ChainInfos, IBCAssetInfos } from "../config";
+import { ChainInfos, IBCAssetInfos, IS_FRONTIER } from "../config";
 import EventEmitter from "eventemitter3";
 import { ChainStore, ChainInfoWithExplorer } from "./chain";
 import {
+  DerivedDataStore,
   OsmosisQueries,
   LPCurrencyRegistrar,
   QueriesExternalStore,
@@ -56,6 +57,8 @@ export class RootStore {
   public readonly priceStore: PoolFallbackPriceStore;
 
   public readonly queriesExternalStore: QueriesExternalStore;
+
+  public readonly derivedDataStore: DerivedDataStore;
 
   public readonly ibcTransferHistoryStore: IBCTransferHistoryStore;
   public readonly nonIbcBridgeHistoryStore: NonIbcBridgeHistoryStore;
@@ -180,7 +183,24 @@ export class RootStore {
       makeIndexedKVStore("store_web_queries"),
       this.priceStore,
       this.chainStore.osmosis.chainId,
+      this.queriesStore.get(
+        this.chainStore.osmosis.chainId
+      ).osmosis!.queryGauge,
+      typeof window !== "undefined"
+        ? window.origin
+        : IS_FRONTIER
+        ? "https://frontier.osmosis.zone"
+        : "https://app.osmosis.zone",
       IS_TESTNET ? "https://api.testnet.osmosis.zone/" : undefined
+    );
+
+    this.derivedDataStore = new DerivedDataStore(
+      this.chainStore.osmosis.chainId,
+      this.queriesStore,
+      this.queriesExternalStore,
+      this.accountStore,
+      this.priceStore,
+      this.chainStore
     );
 
     this.ibcTransferHistoryStore = new IBCTransferHistoryStore(

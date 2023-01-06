@@ -40,8 +40,9 @@ export class ObservableQueryPoolGaugeIds extends ObservableChainQuery<GaugeIdsWi
 
         return {
           gaugeId: gauge_id,
-          duration:
-            seconds !== NaN ? dayjs.duration({ seconds }) : dayjs.duration(0),
+          duration: !isNaN(seconds)
+            ? dayjs.duration({ seconds })
+            : dayjs.duration(0),
         };
       }
     );

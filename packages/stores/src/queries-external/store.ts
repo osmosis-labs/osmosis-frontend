@@ -1,6 +1,8 @@
 import { KVStore } from "@keplr-wallet/common";
 import { DeepReadonly } from "utility-types";
 import { IPriceStore } from "../price";
+import { ObservableQueryGauges } from "../queries/incentives";
+import { ObservableQueryActiveGauges } from "./active-gauges";
 import { ObservableQueryPoolFeesMetrics } from "./pool-fees";
 import { ObservableQueryAccountsPoolRewards } from "./pool-rewards";
 import { ObservableQueryIbcChainsStatus } from "./ibc";
@@ -18,11 +20,14 @@ export class QueriesExternalStore {
   public readonly queryChainStatus: DeepReadonly<ObservableQueryIbcChainsStatus>;
   public readonly queryTokenHistoricalChart: DeepReadonly<ObservableQueryTokensHistoricalChart>;
   public readonly queryTokenData: DeepReadonly<ObservableQueryTokensData>;
+  public readonly queryActiveGauges: DeepReadonly<ObservableQueryActiveGauges>;
 
   constructor(
     kvStore: KVStore,
     priceStore: IPriceStore,
     chainId: string,
+    observableQueryGuage: ObservableQueryGauges,
+    webApiBaseUrl: string,
     feeMetricsBaseURL = IMPERATOR_HISTORICAL_DATA_BASEURL,
     poolRewardsBaseUrl = IMPERATOR_TX_REWARD_BASEURL
   ) {
@@ -48,6 +53,11 @@ export class QueriesExternalStore {
     this.queryTokenData = new ObservableQueryTokensData(
       kvStore,
       feeMetricsBaseURL
+    );
+    this.queryActiveGauges = new ObservableQueryActiveGauges(
+      kvStore,
+      webApiBaseUrl,
+      observableQueryGuage
     );
   }
 }

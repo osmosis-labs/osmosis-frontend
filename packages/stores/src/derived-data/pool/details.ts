@@ -1,68 +1,73 @@
 import { computed, makeObservable } from "mobx";
-import { computedFn } from "mobx-utils";
 import { Duration } from "dayjs/plugin/duration";
 import dayjs from "dayjs";
-import { AppCurrency, FiatCurrency } from "@keplr-wallet/types";
+import { FiatCurrency } from "@keplr-wallet/types";
 import { PricePretty, Dec, RatePretty, CoinPretty } from "@keplr-wallet/unit";
+import {
+  IQueriesStore,
+  IAccountStore,
+  HasMapStore,
+} from "@keplr-wallet/stores";
+import { OsmosisQueries } from "../../queries/store";
 import { IPriceStore } from "../../price";
-import { UserConfig } from "../../ui-config";
-import { ObservableQueryGammPoolShare } from "../pool-share";
-import {
-  ObservableQueryIncentivizedPools,
-  ObservableQueryLockableDurations,
-  ObservableQueryPoolsGaugeIds,
-} from "../pool-incentives";
-import { ObservableQueryGuage } from "../incentives";
-import {
-  ObservableQueryAccountLocked,
-  ObservableQueryAccountLockedCoins,
-  ObservableQueryAccountUnlockingCoins,
-} from "../lockup";
-import { ObservableQueryPool } from "./pool";
 import { ExternalGauge } from "./types";
 
-/** Convenience store for getting common details of a pool via many other query stores. */
-export class ObservableQueryPoolDetails extends UserConfig {
+/** Convenience store for getting common details of a pool via many other lower-level query stores. */
+export class ObservablePoolDetail {
+  protected readonly _fiatCurrency: FiatCurrency;
+
   constructor(
-    protected readonly fiatCurrency: FiatCurrency,
-    protected readonly queryPool: ObservableQueryPool,
-    protected readonly queries: {
-      queryGammPoolShare: ObservableQueryGammPoolShare;
-      queryIncentivizedPools: ObservableQueryIncentivizedPools;
-      queryAccountLocked: ObservableQueryAccountLocked;
-      queryLockedCoins: ObservableQueryAccountLockedCoins;
-      queryUnlockingCoins: ObservableQueryAccountUnlockingCoins;
-      queryGauge: ObservableQueryGuage;
-      queryLockableDurations: ObservableQueryLockableDurations;
-      queryPoolsGaugeIds: ObservableQueryPoolsGaugeIds;
-    },
+    protected readonly poolId: string,
+    protected readonly osmosisChainId: string,
+    protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
+    protected readonly accountStore: IAccountStore,
     protected readonly priceStore: IPriceStore
   ) {
-    super();
+    const fiat = this.priceStore.getFiatCurrency(
+      this.priceStore.defaultVsCurrency
+    );
+
+    if (!fiat)
+      throw new Error("Could not find fiat currency from price store.");
+
+    this._fiatCurrency = fiat;
 
     makeObservable(this);
   }
 
   @computed
   get pool() {
-    return this.queryPool;
+    return this.queries.queryGammPools.getPool(this.poolId);
+  }
+
+  @computed
+  protected get bech32Address() {
+    return this.accountStore.getAccount(this.osmosisChainId).bech32Address;
+  }
+
+  @computed
+  protected get queries() {
+    const osmosisQueries = this.queriesStore.get(this.osmosisChainId).osmosis;
+    if (!osmosisQueries) throw Error("Did not supply Osmosis chain ID");
+    return osmosisQueries;
   }
 
   @computed
   get poolShareCurrency() {
-    return this.queries.queryGammPoolShare.getShareCurrency(this.queryPool.id);
+    return this.queries.queryGammPoolShare.getShareCurrency(this.poolId);
   }
 
   @computed
   get isIncentivized() {
-    return this.queries.queryIncentivizedPools.isIncentivized(
-      this.queryPool.id
-    );
+    return this.queries.queryIncentivizedPools.isIncentivized(this.poolId);
   }
 
   @computed
   get totalValueLocked(): PricePretty {
-    return this.queryPool.computeTotalValueLocked(this.priceStore);
+    return (
+      this.pool?.computeTotalValueLocked(this.priceStore) ??
+      new PricePretty(this._fiatCurrency, 0)
+    );
   }
 
   @computed
@@ -81,7 +86,7 @@ export class ObservableQueryPoolDetails extends UserConfig {
       .map((duration) => {
         const gaugeId =
           this.queries.queryIncentivizedPools.getIncentivizedGaugeId(
-            this.queryPool.id,
+            this.poolId,
             duration
           );
 
@@ -90,10 +95,10 @@ export class ObservableQueryPoolDetails extends UserConfig {
         const gauge = this.queries.queryGauge.get(gaugeId);
 
         const apr = this.queries.queryIncentivizedPools.computeApr(
-          this.queryPool.id,
+          this.poolId,
           gauge.lockupDuration,
           this.priceStore,
-          this.fiatCurrency
+          this._fiatCurrency
         );
 
         return {
@@ -120,7 +125,7 @@ export class ObservableQueryPoolDetails extends UserConfig {
     return this.totalValueLocked.mul(
       this.queries.queryGammPoolShare.getAllGammShareRatio(
         this.bech32Address,
-        this.queryPool.id
+        this.poolId
       )
     );
   }
@@ -129,47 +134,56 @@ export class ObservableQueryPoolDetails extends UserConfig {
   get userBondedValue(): PricePretty {
     return this.queries.queryGammPoolShare.getLockedGammShareValue(
       this.bech32Address,
-      this.queryPool.id,
+      this.poolId,
       this.totalValueLocked,
-      this.fiatCurrency
+      this._fiatCurrency
     );
   }
 
   @computed
   get userAvailableValue(): PricePretty {
-    return !this.queryPool.totalShare.toDec().equals(new Dec(0))
+    const queryPool = this.pool;
+
+    return queryPool &&
+      queryPool.totalShare &&
+      !queryPool.totalShare.toDec().equals(new Dec(0))
       ? this.totalValueLocked.mul(
           this.queries.queryGammPoolShare
-            .getAvailableGammShare(this.bech32Address, this.queryPool.id)
-            .quo(this.queryPool.totalShare)
+            .getAvailableGammShare(this.bech32Address, this.poolId)
+            .quo(queryPool.totalShare)
         )
-      : new PricePretty(this.fiatCurrency, new Dec(0));
+      : new PricePretty(this._fiatCurrency, new Dec(0));
   }
 
   @computed
   get userPoolAssets() {
-    return this.queryPool.poolAssets.map((asset) => {
-      const weightedAsset = this.queryPool.weightedPoolInfo?.assets.find(
-        ({ denom }) => denom === asset.amount.currency.coinMinimalDenom
-      );
-      const totalWeight = this.queryPool.weightedPoolInfo?.totalWeight;
+    const queryPool = this.pool;
+    if (!queryPool) return [];
 
-      return {
-        ratio:
-          weightedAsset && totalWeight
-            ? new RatePretty(weightedAsset.weight.quo(totalWeight))
-            : new RatePretty(0),
-        asset: asset.amount
-          .mul(
-            this.queries.queryGammPoolShare.getAllGammShareRatio(
-              this.bech32Address,
-              this.queryPool.id
+    return (
+      queryPool.poolAssets.map((asset) => {
+        const weightedAsset = queryPool.weightedPoolInfo?.assets.find(
+          ({ denom }) => denom === asset.amount.currency.coinMinimalDenom
+        );
+        const totalWeight = queryPool.weightedPoolInfo?.totalWeight;
+
+        return {
+          ratio:
+            weightedAsset && totalWeight
+              ? new RatePretty(weightedAsset.weight.quo(totalWeight))
+              : new RatePretty(0),
+          asset: asset.amount
+            .mul(
+              this.queries.queryGammPoolShare.getAllGammShareRatio(
+                this.bech32Address,
+                this.poolId
+              )
             )
-          )
-          .trim(true)
-          .shrink(true),
-      };
-    });
+            .trim(true)
+            .shrink(true),
+        };
+      }) ?? []
+    );
   }
 
   @computed
@@ -188,22 +202,20 @@ export class ObservableQueryPoolDetails extends UserConfig {
     return this.queries.queryGammPoolShare
       .getShareLockedAssets(
         this.bech32Address,
-        this.queryPool.id,
+        this.poolId,
         Array.from(durationMap.values())
       )
       .map((lockedAsset) =>
         // calculate APR% for this pool asset
         ({
           ...lockedAsset,
-          apr: this.queries.queryIncentivizedPools.isIncentivized(
-            this.queryPool.id
-          )
+          apr: this.queries.queryIncentivizedPools.isIncentivized(this.poolId)
             ? new RatePretty(
                 this.queries.queryIncentivizedPools.computeApr(
-                  this.queryPool.id,
+                  this.poolId,
                   lockedAsset.duration,
                   this.priceStore,
-                  this.fiatCurrency
+                  this._fiatCurrency
                 )
               )
             : undefined,
@@ -225,7 +237,7 @@ export class ObservableQueryPoolDetails extends UserConfig {
       );
 
     const poolShareCurrency = this.queries.queryGammPoolShare.getShareCurrency(
-      this.queryPool.id
+      this.poolId
     );
     return Array.from(durationMap.values())
       .map(
@@ -255,7 +267,7 @@ export class ObservableQueryPoolDetails extends UserConfig {
         .get(this.bech32Address)
         .lockedCoins.find(
           (coin) =>
-            coin.currency.coinMinimalDenom === `gamm/pool/${this.queryPool.id}`
+            coin.currency.coinMinimalDenom === `gamm/pool/${this.poolId}`
         )
     ) {
       return true;
@@ -266,7 +278,7 @@ export class ObservableQueryPoolDetails extends UserConfig {
         .get(this.bech32Address)
         .unlockingCoins.find(
           (coin) =>
-            coin.currency.coinMinimalDenom === `gamm/pool/${this.queryPool.id}`
+            coin.currency.coinMinimalDenom === `gamm/pool/${this.poolId}`
         )
     ) {
       return true;
@@ -277,9 +289,7 @@ export class ObservableQueryPoolDetails extends UserConfig {
 
   @computed
   get allExternalGauges(): ExternalGauge[] {
-    const queryPoolGuageIds = this.queries.queryPoolsGaugeIds.get(
-      this.queryPool.id
-    );
+    const queryPoolGuageIds = this.queries.queryPoolsGaugeIds.get(this.poolId);
 
     return (
       queryPoolGuageIds.gaugeIdsWithDuration
@@ -287,7 +297,7 @@ export class ObservableQueryPoolDetails extends UserConfig {
           const gauge = this.queries.queryGauge.get(gaugeId);
           const isInternalGauge =
             this.queries.queryIncentivizedPools.getIncentivizedGaugeId(
-              this.queryPool.id,
+              this.poolId,
               gauge.lockupDuration
             ) !== undefined;
 
@@ -324,7 +334,7 @@ export class ObservableQueryPoolDetails extends UserConfig {
     | undefined {
     const totalShares = this.queries.queryGammPoolShare.getAllGammShare(
       this.bech32Address,
-      this.queryPool.id
+      this.poolId
     );
 
     if (totalShares.toDec().isZero()) return;
@@ -336,31 +346,29 @@ export class ObservableQueryPoolDetails extends UserConfig {
       unbondedValue: this.userAvailableValue,
     };
   }
+}
 
-  readonly queryAllowedExternalGauges = computedFn(
-    (
-      findCurrency: (denom: string) => AppCurrency | undefined,
-      allowedGauges: { gaugeId: string; denom: string }[]
-    ): ExternalGauge[] => {
-      return allowedGauges
-        .map(({ gaugeId, denom }) => {
-          const observableGauge = this.queries.queryGauge.get(gaugeId);
-          const currency = findCurrency(denom);
+/** Stores a map of additional details for each pool ID. */
+export class ObservablePoolDetails extends HasMapStore<ObservablePoolDetail> {
+  constructor(
+    protected readonly osmosisChainId: string,
+    protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
+    protected readonly accountStore: IAccountStore,
+    protected readonly priceStore: IPriceStore
+  ) {
+    super(
+      (poolId: string) =>
+        new ObservablePoolDetail(
+          poolId,
+          this.osmosisChainId,
+          this.queriesStore,
+          this.accountStore,
+          this.priceStore
+        )
+    );
+  }
 
-          if (observableGauge.remainingEpoch < 1) {
-            return;
-          }
-
-          return {
-            id: gaugeId,
-            duration: observableGauge.lockupDuration,
-            rewardAmount: currency
-              ? observableGauge.getRemainingCoin(currency)
-              : undefined,
-            remainingEpochs: observableGauge.remainingEpoch,
-          } as ExternalGauge;
-        })
-        .filter((gauge): gauge is ExternalGauge => gauge !== undefined);
-    }
-  );
+  get(poolId: string): ObservablePoolDetail {
+    return super.get(poolId);
+  }
 }

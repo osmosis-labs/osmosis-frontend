@@ -15,7 +15,7 @@ import { PoolGetter } from "../pools";
 import { IPriceStore } from "../../price";
 import { ObservableQueryDistrInfo } from "./distr-info";
 import { ObservableQueryLockableDurations } from "./lockable-durations";
-import { ObservableQueryGuage } from "../incentives";
+import { ObservableQueryGauges } from "../incentives";
 import { IncentivizedPools } from "./types";
 
 export class ObservableQueryIncentivizedPools extends ObservableChainQuery<IncentivizedPools> {
@@ -29,7 +29,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
     protected readonly queryMintParmas: ObservableQueryMintParmas,
     protected readonly queryEpochProvision: ObservableQueryEpochProvisions,
     protected readonly queryEpochs: ObservableQueryEpochs,
-    protected readonly queryGauge: ObservableQueryGuage
+    protected readonly queryGauge: ObservableQueryGauges
   ) {
     super(
       kvStore,
@@ -147,11 +147,15 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
         return new RatePretty(new Dec(0));
       }
 
-      const rewardAmount = observableGauge.getRemainingCoin(mintCurrency);
+      const rewardAmount = observableGauge.coins.find(
+        (coin) =>
+          coin.remaining.currency.coinMinimalDenom ===
+          mintCurrency.coinMinimalDenom
+      )?.remaining;
 
       const pool = this.queryPools.getPool(poolId);
 
-      if (!pool) {
+      if (!pool || !rewardAmount) {
         return new RatePretty(new Dec(0));
       }
 
