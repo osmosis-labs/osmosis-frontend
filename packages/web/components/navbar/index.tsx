@@ -206,7 +206,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
               e.stopPropagation();
               onOpenProfile();
             }}
-            className="group flex place-content-between items-center gap-3 rounded-xl border-2 border-osmoverse-700 px-1.5 py-1 hover:border-wosmongton-300 hover:bg-osmoverse-800"
+            className="group flex place-content-between items-center gap-[13px] rounded-xl border border-osmoverse-700 p-1.5 hover:border-wosmongton-300 hover:bg-osmoverse-800"
           >
             <div className="h-8 w-8 shrink-0 overflow-hidden rounded-[7px] bg-osmoverse-700 group-hover:bg-gradient-positive">
               {profileStore.currentAvatar === "ammelia" ? (
@@ -227,10 +227,10 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
             </div>
 
             <div className="flex w-full flex-col truncate text-right leading-tight">
-              <span className="caption truncate font-bold">
+              <span className="body2 truncate font-bold leading-4">
                 {Bech32Address.shortenAddress(account.bech32Address, 12)}
               </span>
-              <span className="caption font-medium text-osmoverse-200">
+              <span className="caption font-medium tracking-wider text-osmoverse-200">
                 {navBarStore.walletInfo.balance.toString()}
               </span>
             </div>

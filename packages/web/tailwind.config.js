@@ -270,7 +270,7 @@ module.exports = {
       },
       letterSpacing: {
         wide: ".009375em",
-        wider: "0.025em",
+        wider: ".025em",
       },
     },
   },

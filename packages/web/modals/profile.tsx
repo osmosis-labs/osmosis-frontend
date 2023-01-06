@@ -8,6 +8,7 @@ import {
   HTMLAttributes,
   useState,
 } from "react";
+import dynamic from "next/dynamic";
 import { observer } from "mobx-react-lite";
 import { ModalBase, ModalBaseProps } from "./base";
 import { useTranslation } from "react-multi-lang";
@@ -37,8 +38,9 @@ import {
   DrawerOverlay,
   DrawerPanel,
 } from "../components/drawers";
-import QRCode from "qrcode.react";
 import { Bech32Address } from "@keplr-wallet/cosmos";
+
+const QRCode = dynamic(() => import("qrcode.react"));
 
 export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
   (props) => {
@@ -103,7 +105,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
           onOpen={onOpenAvatarSelect}
           onClose={onCloseAvatarSelect}
         >
-          <DrawerButton>
+          <DrawerButton className="transform transition-transform duration-300 ease-in-out hover:scale-105">
             {profileStore.currentAvatar === "ammelia" ? (
               <AmmeliaAvatar className="mt-10" aria-label="Select avatar" />
             ) : (
@@ -151,7 +153,9 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
         </Drawer>
 
         <div className="mt-3 text-center">
-          <h5>{Bech32Address.shortenAddress(address, 12)}</h5>
+          <p className="subtitle1">
+            {Bech32Address.shortenAddress(address, 12)}
+          </p>
         </div>
 
         <div className="mt-10 flex w-full flex-col gap-[30px] rounded-[20px] border border-osmoverse-700 bg-osmoverse-800 px-6 py-5">
@@ -169,7 +173,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
 
           <div className="flex justify-between 1.5xs:flex-col 1.5xs:gap-4">
             <div>
-              <h6 className="mb-[3px] tracking-wide text-osmoverse-100">
+              <h6 className="mb-[4px] tracking-wide text-osmoverse-100">
                 {priceStore
                   .calculatePrice(
                     navBarStore.walletInfo.balance,
@@ -177,14 +181,14 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
                   )
                   ?.toString()}
               </h6>
-              <p className="text-h4 font-h4">
+              <p className="text-h5 font-h5">
                 {navBarStore.walletInfo.balance.toString()}
               </p>
             </div>
 
             <button
               onClick={() => transferConfig?.buyOsmo()}
-              className="subtitle1 group flex h-[44px] items-center gap-[10px] rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-[6px] px-3.5 hover:border-transparent hover:bg-gradient-positive hover:bg-origin-border hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)] 1.5xs:self-start"
+              className="subtitle1 group flex h-[44px] items-center gap-[10px] self-end rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-[6px] px-3.5 hover:border-transparent hover:bg-gradient-positive hover:bg-origin-border hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)] 1.5xs:self-start"
             >
               <CreditCardIcon
                 isAnimated
@@ -373,9 +377,9 @@ const BaseAvatar = forwardRef<
       className={classNames(
         "h-[140px] w-[140px] overflow-hidden rounded-[40px]",
         {
-          "group transition-all duration-300 ease-in-out active:border-[3px] active:border-osmoverse-100":
+          "group transition-all duration-300 ease-in-out active:border-[2px] active:border-wosmongton-200":
             isSelectable,
-          "border-[3px] border-osmoverse-100": isSelected,
+          "border-[2px] border-wosmongton-200": isSelected,
         },
         props.className
       )}
@@ -383,7 +387,7 @@ const BaseAvatar = forwardRef<
     >
       <div
         className={classNames({
-          "transform transition-transform duration-300 ease-in-out group-hover:scale-110":
+          "transform transition-transform duration-300 ease-in-out group-hover:scale-[1.13]":
             isSelectable,
         })}
       >
@@ -402,7 +406,7 @@ const WosmongtonAvatar = forwardRef<any, ComponentProps<typeof BaseAvatar>>(
         className={classNames(
           "bg-[linear-gradient(139.12deg,#A247B9_7.8%,#460E7F_88.54%)]",
           props.isSelectable &&
-            "hover:bg-[linear-gradient(139.12deg,#F35DC7_7.8%,#7B0DE2_88.54%)] hover:shadow-[0px_4px_20px_4px_#AA4990] focus:bg-[linear-gradient(139.12deg,#F35DC7_7.8%,#7B0DE2_88.54%)] focus:shadow-[0px_4px_20px_4px_#AA4990]",
+            "hover:bg-[linear-gradient(139.12deg,#F35DC7_7.8%,#7B0DE2_88.54%)] hover:shadow-[0px_4px_20px_4px_#AA4990] focus:bg-[linear-gradient(139.12deg,#F35DC7_7.8%,#7B0DE2_88.54%)]",
           props.className
         )}
       >
@@ -426,7 +430,7 @@ const AmmeliaAvatar = forwardRef<any, ComponentProps<typeof BaseAvatar>>(
         className={classNames(
           "bg-[linear-gradient(139.12deg,#462ADF_7.8%,#4ECAFF_88.54%)]",
           props.isSelectable &&
-            "hover:bg-[linear-gradient(139.12deg,#9044F2_7.8%,#6BFFFF_88.54%)] hover:shadow-[0px_0px_20px_4px_#60ADD3] focus:bg-[linear-gradient(139.12deg,#9044F2_7.8%,#6BFFFF_88.54%)] focus:shadow-[0px_0px_20px_4px_#60ADD3]",
+            "hover:bg-[linear-gradient(139.12deg,#9044F2_7.8%,#6BFFFF_88.54%)] hover:shadow-[0px_0px_20px_4px_#60ADD3] focus:bg-[linear-gradient(139.12deg,#9044F2_7.8%,#6BFFFF_88.54%)]",
           props.className
         )}
       >
