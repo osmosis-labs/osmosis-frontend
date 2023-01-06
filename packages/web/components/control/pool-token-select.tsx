@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { FunctionComponent, useState } from "react";
 import classNames from "classnames";
 import { Token, PoolAssetInfo, Icon } from "../assets";
