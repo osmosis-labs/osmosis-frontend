@@ -7,6 +7,7 @@ import classNames from "classnames";
 import { MenuOptionsIconModal } from "../../../modals";
 import { useTranslation } from "react-multi-lang";
 import { onSelectIconDropdown, MenuDropdownIcon } from ".";
+import { Icon } from "../../assets";
 
 export type IconDropdownProps = {
   options: MenuDropdownIconItemProps[];
@@ -54,11 +55,11 @@ export const IconDropdown: FunctionComponent<IconDropdownProps> = observer(
             <p className="mx-3">{t(currentOption?.display ?? "")}</p>
             <div className="mr-3 flex min-w-[24px] items-center justify-center">
               {currentOption && currentOption.display && (
-                <Image
-                  src={"/icons/chevron-down.svg"}
+                <Icon
+                  id="chevron-down"
+                  className="text-osmoverse-400"
                   width={13}
                   height={20}
-                  alt={``}
                 />
               )}
             </div>

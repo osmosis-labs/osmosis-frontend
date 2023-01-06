@@ -13,6 +13,7 @@ import type { SourceChain } from "../integrations";
 import { useConnectWalletModalRedirect } from "../hooks";
 import { ModalBase, ModalBaseProps } from "./base";
 import { useTranslation } from "react-multi-lang";
+import { Icon } from "../components/assets";
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
@@ -153,11 +154,11 @@ export const TransferAssetSelectModal: FunctionComponent<
                       "rotate-180": isSourceChainDropdownOpen,
                     })}
                   >
-                    <Image
-                      alt="dropdown icon"
-                      src="/icons/chevron-down-disabled.svg"
+                    <Icon
+                      id="chevron-down"
                       height={22}
                       width={12}
+                      className="text-osmoverse-400"
                     />
                   </div>
                 )}

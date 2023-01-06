@@ -32,6 +32,7 @@ import { useTranslation } from "react-multi-lang";
 import { tError } from "../localization";
 import { TokenSelectWithDrawer } from "../control/token-select-with-drawer";
 import useMeasure from "../../hooks/use-measure";
+import { Icon } from "../assets";
 
 export const TradeClipboard: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!
@@ -935,16 +936,15 @@ export const TradeClipboard: FunctionComponent<{
                   height={24}
                   width={24}
                 />
-                <Image
+                <Icon
+                  id="chevron-down"
+                  height={isMobile ? 14 : 18}
+                  width={isMobile ? 14 : 18}
                   className={classNames(
-                    "transition-all",
+                    "text-osmoverse-400 transition-all",
                     showEstimateDetails ? "rotate-180" : "rotate-0",
                     isEstimateDetailRelevant ? "opacity-100" : "opacity-0"
                   )}
-                  alt="show estimates"
-                  src="/icons/chevron-down.svg"
-                  height={isMobile ? 14 : 18}
-                  width={isMobile ? 14 : 18}
                 />
               </div>
             </button>

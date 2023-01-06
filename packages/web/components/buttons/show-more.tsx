@@ -4,6 +4,7 @@ import classNames from "classnames";
 import { ToggleProps } from "../control";
 import { CustomClasses } from "../types";
 import { useTranslation } from "react-multi-lang";
+import { Icon } from "../assets";
 
 export const ShowMoreButton: FunctionComponent<ToggleProps & CustomClasses> = ({
   isOn,
@@ -20,11 +21,11 @@ export const ShowMoreButton: FunctionComponent<ToggleProps & CustomClasses> = ({
         {isOn ? t("components.show.less") : t("components.show.more")}
       </span>
       <div className="m-auto">
-        <Image
-          alt={isOn ? t("components.show.less") : t("components.show.more")}
-          src={isOn ? "/icons/chevron-up.svg" : "/icons/chevron-down.svg"}
+        <Icon
+          id={isOn ? "chevron-up" : "chevron-down"}
           height={14}
           width={14}
+          className="text-osmoverse-400"
         />
       </div>
     </button>

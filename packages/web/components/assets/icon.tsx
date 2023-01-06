@@ -1,6 +1,6 @@
 import { FunctionComponent, SVGAttributes } from "react";
 
-type IconId = "chevron-down" | "chevron-right";
+type IconId = "chevron-up" | "chevron-down" | "chevron-right";
 
 /**
  * It takes an icon id and returns an svg element with the corresponding icon defined in /public/icons/sprite.svg.
