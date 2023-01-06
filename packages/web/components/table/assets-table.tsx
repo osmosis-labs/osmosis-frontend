@@ -30,6 +30,7 @@ import { Table } from ".";
 import { EventName } from "../../config/user-analytics-v2";
 import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-multi-lang";
+import { Icon } from "../assets";
 
 interface Props {
   nativeBalances: CoinBalance[];
@@ -466,11 +467,11 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                     (assetData.chainId &&
                       assetData.chainId === chainStore.osmosis.chainId)
                   ) && (
-                    <Image
-                      alt="select asset"
-                      src="/icons/chevron-right-disabled.svg"
-                      width={30}
-                      height={30}
+                    <Icon
+                      id="chevron-right"
+                      className="text-osmoverse-500"
+                      width={13}
+                      height={13}
                     />
                   )}
                 </div>

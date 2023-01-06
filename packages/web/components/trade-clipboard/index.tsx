@@ -24,7 +24,7 @@ import {
   useAmplitudeAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
-import { BorderButton, Button } from "../buttons";
+import { Button } from "../buttons";
 import { InputBox } from "../input";
 import { InfoTooltip } from "../tooltip";
 import TradeRoute from "./trade-route";
@@ -32,6 +32,7 @@ import { useTranslation } from "react-multi-lang";
 import { tError } from "../localization";
 import { TokenSelectWithDrawer } from "../control/token-select-with-drawer";
 import useMeasure from "../../hooks/use-measure";
+import { Icon } from "../assets";
 
 export const TradeClipboard: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!
@@ -610,11 +611,12 @@ export const TradeClipboard: FunctionComponent<{
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <BorderButton
+                <Button
+                  mode="amount"
                   className={classNames(
                     "py-1 px-1.5 text-xs",
                     tradeTokenInConfig.fraction === 0.5
-                      ? "bg-wosmongton-100/40"
+                      ? "bg-wosmongton-100/20"
                       : "bg-transparent"
                   )}
                   onClick={() => {
@@ -634,12 +636,13 @@ export const TradeClipboard: FunctionComponent<{
                   }}
                 >
                   {t("swap.HALF")}
-                </BorderButton>
-                <BorderButton
+                </Button>
+                <Button
+                  mode="amount"
                   className={classNames(
                     "py-1 px-1.5 text-xs",
                     tradeTokenInConfig.fraction === 1
-                      ? "bg-wosmongton-100/40"
+                      ? "bg-wosmongton-100/20"
                       : "bg-transparent"
                   )}
                   onClick={() => {
@@ -659,7 +662,7 @@ export const TradeClipboard: FunctionComponent<{
                   }}
                 >
                   {t("swap.MAX")}
-                </BorderButton>
+                </Button>
               </div>
             </div>
             <div className="mt-3 flex place-content-between items-center">
@@ -933,16 +936,15 @@ export const TradeClipboard: FunctionComponent<{
                   height={24}
                   width={24}
                 />
-                <Image
+                <Icon
+                  id="chevron-down"
+                  height={isMobile ? 14 : 18}
+                  width={isMobile ? 14 : 18}
                   className={classNames(
-                    "transition-all",
+                    "text-osmoverse-400 transition-all",
                     showEstimateDetails ? "rotate-180" : "rotate-0",
                     isEstimateDetailRelevant ? "opacity-100" : "opacity-0"
                   )}
-                  alt="show estimates"
-                  src="/icons/chevron-down.svg"
-                  height={isMobile ? 14 : 18}
-                  width={isMobile ? 14 : 18}
                 />
               </div>
             </button>
