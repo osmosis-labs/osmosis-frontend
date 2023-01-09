@@ -191,6 +191,7 @@ const Pool: FunctionComponent = observer(() => {
     (result: Promise<void>, config: ObservableRemoveLiquidityConfig) => {
       const removeLiqInfo = {
         ...baseEventInfo,
+        isSuperfluidEnabled,
         poolSharePercentage: config.percentage,
       };
 
