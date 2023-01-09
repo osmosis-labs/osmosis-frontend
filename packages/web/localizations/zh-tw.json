@@ -381,7 +381,8 @@
   "profile": {
     "modalTitle": "輪廓",
     "balance": "結餘",
-    "wallet": "錢包"
+    "wallet": "錢包",
+    "viewAllAssets": "查看所有資產"
   },
   "keplr": {
     "install": "安裝 Keplr",

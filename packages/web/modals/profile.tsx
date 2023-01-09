@@ -6,6 +6,7 @@ import {
   forwardRef,
   FunctionComponent,
   HTMLAttributes,
+  useEffect,
   useState,
 } from "react";
 import dynamic from "next/dynamic";
@@ -39,6 +40,9 @@ import {
   DrawerPanel,
 } from "../components/drawers";
 import { Bech32Address } from "@keplr-wallet/cosmos";
+import { ArrowButton } from "../components/buttons";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
 const QRCode = dynamic(() => import("qrcode.react"));
 
@@ -55,6 +59,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
       profileStore,
     } = useStore();
     const { logEvent } = useAmplitudeAnalytics();
+    const router = useRouter();
 
     const {
       isOpen: isAvatarSelectOpen,
@@ -83,6 +88,12 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
       setHasCopied(true);
       reset();
     };
+
+    useEffect(() => {
+      const onCloseModal = () => props.onRequestClose?.();
+      router.events.on("routeChangeComplete", onCloseModal);
+      return () => router.events.off("routeChangeComplete", onCloseModal);
+    }, []);
 
     const address = account.bech32Address;
 
@@ -167,20 +178,20 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
           </p>
         </div>
 
-        <div className="mt-10 flex w-full flex-col gap-[30px] rounded-[20px] border border-osmoverse-700 bg-osmoverse-800 px-6 py-5">
-          <div className="flex items-center gap-1.5">
-            <Image
-              src="/icons/profile-osmo.svg"
-              alt="Osmo icon"
-              width={24}
-              height={24}
-            />
-            <p className="subtitle1 tracking-wide text-osmoverse-300">
-              {t("profile.balance")}
-            </p>
-          </div>
+        <div className="mt-7 flex w-full justify-between rounded-[20px] border border-osmoverse-700 bg-osmoverse-800 p-5 xs:flex-col">
+          <div className="flex flex-col gap-[30px]">
+            <div className="flex items-center gap-1.5">
+              <Image
+                src="/icons/profile-osmo.svg"
+                alt="Osmo icon"
+                width={24}
+                height={24}
+              />
+              <p className="subtitle1 tracking-wide text-osmoverse-300">
+                {t("profile.balance")}
+              </p>
+            </div>
 
-          <div className="flex justify-between 1.5xs:flex-col 1.5xs:gap-4">
             <div>
               <h6 className="mb-[4px] tracking-wide text-osmoverse-100">
                 {priceStore
@@ -194,7 +205,9 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
                 {navBarStore.walletInfo.balance.toString()}
               </p>
             </div>
+          </div>
 
+          <div className="flex flex-col items-end justify-between gap-[30px] xs:mt-2 xs:items-start xs:gap-2">
             <button
               onClick={() => {
                 const fiatValue = priceStore.calculatePrice(
@@ -214,7 +227,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
                 ]);
                 transferConfig?.buyOsmo();
               }}
-              className="subtitle1 group flex h-[44px] items-center gap-[10px] self-end rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-[6px] px-3.5 hover:border-transparent hover:bg-gradient-positive hover:bg-origin-border hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)] 1.5xs:self-start"
+              className="subtitle1 group flex h-[44px] items-center gap-[10px] rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-[6px] px-3.5 hover:border-transparent hover:bg-gradient-positive hover:bg-origin-border hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)] 1.5xs:self-start"
             >
               <CreditCardIcon
                 isAnimated
@@ -226,10 +239,14 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
               />
               <span>{t("buyTokens")}</span>
             </button>
+
+            <Link href="/assets" passHref>
+              <ArrowButton isLink>{t("profile.viewAllAssets")}</ArrowButton>
+            </Link>
           </div>
         </div>
 
-        <div className="mt-5 flex w-full flex-col gap-[30px] rounded-[20px] border border-osmoverse-700 bg-osmoverse-800 px-6 py-5">
+        <div className="mt-5 flex w-full flex-col gap-[30px] rounded-[20px] border border-osmoverse-700 bg-osmoverse-800 p-5">
           <div className="flex items-center gap-1.5">
             <Image
               src="/icons/profile-wallet.svg"

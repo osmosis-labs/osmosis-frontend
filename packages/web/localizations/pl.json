@@ -381,7 +381,8 @@
   "profile": {
     "modalTitle": "Profil",
     "balance": "Balansować",
-    "wallet": "Portfel"
+    "wallet": "Portfel",
+    "viewAllAssets": "Ver todos os recursos"
   },
   "keplr": {
     "install": "Zainstaluj Keplr",

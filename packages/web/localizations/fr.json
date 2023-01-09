@@ -380,7 +380,8 @@
   "profile": {
     "modalTitle": "Le profil",
     "balance": "Solde",
-    "wallet": "Portefeuille"
+    "wallet": "Portefeuille",
+    "viewAllAssets": "Voir tous les actifs"
   },
   "keplr": {
     "install": "Installer Keplr",

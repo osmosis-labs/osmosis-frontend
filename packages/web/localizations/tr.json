@@ -381,7 +381,8 @@
   "profile": {
     "modalTitle": "Profil",
     "balance": "denklemek",
-    "wallet": "Cüzdan"
+    "wallet": "Cüzdan",
+    "viewAllAssets": "Tüm varlıkları görüntüle"
   },
   "keplr": {
     "install": "Keplr Yükle",

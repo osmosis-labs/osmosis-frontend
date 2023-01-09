@@ -383,7 +383,8 @@
   "profile": {
     "modalTitle": "Profil",
     "balance": "Balanta",
-    "wallet": "Portofel"
+    "wallet": "Portofel",
+    "viewAllAssets": "Vedeți toate activele"
   },
   "keplr": {
     "install": "Instaleaza Keplr",
