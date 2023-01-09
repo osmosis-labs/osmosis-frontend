@@ -79,6 +79,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
 
     const onCopyAddress = () => {
       copyToClipboard(account.bech32Address);
+      logEvent([EventName.ProfileModal.copyWalletAddressClicked]);
       setHasCopied(true);
       reset();
     };
@@ -124,6 +125,10 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
                     isSelected={profileStore.currentAvatar === "wosmongton"}
                     onSelect={() => {
                       onCloseAvatarSelect();
+                      logEvent([
+                        EventName.ProfileModal.selectAvatarClicked,
+                        { avatar: "wosmongton" },
+                      ]);
                       profileStore.setCurrentAvatar("wosmongton");
                     }}
                     className="outline-none"
@@ -139,6 +144,10 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
                     isSelected={profileStore.currentAvatar === "ammelia"}
                     onSelect={() => {
                       onCloseAvatarSelect();
+                      logEvent([
+                        EventName.ProfileModal.selectAvatarClicked,
+                        { avatar: "ammelia" },
+                      ]);
                       profileStore.setCurrentAvatar("ammelia");
                     }}
                     className="outline-none"
@@ -187,7 +196,24 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
             </div>
 
             <button
-              onClick={() => transferConfig?.buyOsmo()}
+              onClick={() => {
+                const fiatValue = priceStore.calculatePrice(
+                  navBarStore.walletInfo.balance,
+                  priceStore.defaultVsCurrency
+                );
+                const coinValue = navBarStore.walletInfo.balance;
+
+                logEvent([
+                  EventName.ProfileModal.buyTokensClicked,
+                  {
+                    tokenName: "OSMO",
+                    tokenAmount: Number(
+                      (fiatValue ?? coinValue)?.maxDecimals(4).toString()
+                    ),
+                  },
+                ]);
+                transferConfig?.buyOsmo();
+              }}
               className="subtitle1 group flex h-[44px] items-center gap-[10px] self-end rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-[6px] px-3.5 hover:border-transparent hover:bg-gradient-positive hover:bg-origin-border hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)] 1.5xs:self-start"
             >
               <CreditCardIcon
@@ -265,11 +291,23 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
                 target="blank"
                 className="group"
                 rel="noopener noreferrer"
+                onClick={() => {
+                  logEvent([
+                    EventName.ProfileModal.blockExplorerLinkOutClicked,
+                  ]);
+                }}
               >
                 <ExternalLinkIcon isAnimated />
               </ActionButton>
 
-              <Drawer isOpen={isQROpen} onOpen={onOpenQR} onClose={onCloseQR}>
+              <Drawer
+                isOpen={isQROpen}
+                onOpen={() => {
+                  logEvent([EventName.ProfileModal.qrCodeClicked]);
+                  onOpenQR();
+                }}
+                onClose={onCloseQR}
+              >
                 <DrawerButton>
                   <ActionButton title="QR Code" className="group">
                     <QRIcon isAnimated />
@@ -321,7 +359,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
               <ActionButton
                 title="Log Out"
                 onClick={() => {
-                  logEvent([EventName.Topnav.signOutClicked]);
+                  logEvent([EventName.ProfileModal.logOutClicked]);
                   props.onRequestClose();
                   account.disconnect();
                 }}

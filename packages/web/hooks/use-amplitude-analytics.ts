@@ -19,7 +19,7 @@ export function useAmplitudeAnalytics({
 } = {}) {
   const logEvent = useCallback(
     ([eventName, eventProperties]:
-      | [string, Partial<Record<keyof EventProperties, any>> | undefined]
+      | [string, (Partial<EventProperties> & Record<string, any>) | undefined]
       | [string]) => {
       amplitudeLogEvent(eventName, eventProperties);
     },
