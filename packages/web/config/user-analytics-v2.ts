@@ -17,7 +17,7 @@ export type EventProperties = {
   filteredBy: string;
   isFilterOn: boolean;
   sortedBy: string;
-  sortedOn: "table-head" | "dropdown";
+  sortedOn: "table-head" | "dropdown" | "table";
   sortDirection: string;
   isSuperfluidPool: boolean;
   isSuperfluidEnabled: boolean;
