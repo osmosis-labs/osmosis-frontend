@@ -381,7 +381,8 @@
   "profile": {
     "modalTitle": "Perfil",
     "balance": "Balance",
-    "wallet": "Billetera"
+    "wallet": "Billetera",
+    "viewAllAssets": "Ver todos los activos"
   },
   "keplr": {
     "install": "Instalar Keplr",

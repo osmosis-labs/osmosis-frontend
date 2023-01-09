@@ -381,7 +381,8 @@
   "profile": {
     "modalTitle": "프로필",
     "balance": "잔액",
-    "wallet": "지갑"
+    "wallet": "지갑",
+    "viewAllAssets": "모든 자산 보기"
   },
   "keplr": {
     "install": "Keplr 설치하기",
