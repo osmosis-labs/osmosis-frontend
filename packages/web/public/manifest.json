@@ -465,7 +465,7 @@
       "url": "/pools",
       "icons": [
         {
-          "src": "/_next/image?url=%2Ficons%2Fpool-white.svg&amp;w=48&amp;q=75"
+          "src": "/_next/image?url=/icons/pool-white.svg&w=48&q=75"
         }
       ],
       "description": "Liquidity Pools"
