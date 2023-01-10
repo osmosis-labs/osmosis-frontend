@@ -449,7 +449,7 @@
     {
       "src": "icons/ios/512.png",
       "sizes": "512x512",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     },
     {
       "src": "icons/ios/512.png",
