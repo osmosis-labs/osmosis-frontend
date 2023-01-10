@@ -121,25 +121,25 @@ function MyApp({ Component, pageProps }: AppProps) {
             }/osmosis-logo-wc.png`}
           />
 
-          <meta name="application-name" content="PWA App" />
+          <meta name="application-name" content="Osmosis" />
           <meta name="apple-mobile-web-app-capable" content="yes" />
           <meta
             name="apple-mobile-web-app-status-bar-style"
             content="default"
           />
-          <meta name="apple-mobile-web-app-title" content="PWA App" />
-          <meta name="description" content="Best PWA App in the world" />
+          <meta name="apple-mobile-web-app-title" content="Osmosis" />
+          <meta name="description" content="" />
           <meta name="format-detection" content="telephone=no" />
           <meta name="mobile-web-app-capable" content="yes" />
           <meta
             name="msapplication-config"
             content="/icons/browserconfig.xml"
           />
-          <meta name="msapplication-TileColor" content="#2B5797" />
+          <meta name="msapplication-TileColor" content="#282750" />
           <meta name="msapplication-tap-highlight" content="no" />
-          <meta name="theme-color" content="#000000" />
+          <meta name="theme-color" content="#282750" />
 
-          <link rel="apple-touch-icon" href="/icons/touch-icon-iphone.png" />
+          <link rel="apple-touch-icon" href="/icons/ios/100.png" />
           <link
             rel="apple-touch-icon"
             sizes="152x152"
@@ -148,25 +148,25 @@ function MyApp({ Component, pageProps }: AppProps) {
           <link
             rel="apple-touch-icon"
             sizes="180x180"
-            href="/icons/touch-icon-iphone-retina.png"
+            href="/icons/ios/152.png"
           />
           <link
             rel="apple-touch-icon"
             sizes="167x167"
-            href="/icons/touch-icon-ipad-retina.png"
+            href="/icons/ios/167.png"
           />
 
           <link
             rel="icon"
             type="image/png"
             sizes="32x32"
-            href="/icons/favicon-32x32.png"
+            href="/icons/ios/32.png"
           />
           <link
             rel="icon"
             type="image/png"
             sizes="16x16"
-            href="/icons/favicon-16x16.png"
+            href="/icons/ios/16.png"
           />
           <link rel="manifest" href="/manifest.json" />
           <link
@@ -181,12 +181,9 @@ function MyApp({ Component, pageProps }: AppProps) {
           />
 
           <meta name="twitter:card" content="summary" />
-          <meta name="twitter:url" content="https://yourdomain.com" />
-          <meta name="twitter:title" content="PWA App" />
-          <meta
-            name="twitter:description"
-            content="Best PWA App in the world"
-          />
+          <meta name="twitter:url" content="https://app.osmosis.zone" />
+          <meta name="twitter:title" content="Osmosis" />
+          <meta name="twitter:description" content="Osmosis" />
           <meta
             name="twitter:image"
             content="https://yourdomain.com/icons/android-chrome-192x192.png"
