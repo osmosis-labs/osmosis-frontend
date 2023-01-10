@@ -5,7 +5,6 @@ import {
   useState,
   useMemo,
   useCallback,
-  Fragment,
 } from "react";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { AppCurrency, Currency } from "@keplr-wallet/types";
@@ -35,7 +34,6 @@ import { TokenSelectWithDrawer } from "../control/token-select-with-drawer";
 import useMeasure from "../../hooks/use-measure";
 import { Icon } from "../assets";
 import useLatest from "../../hooks/use-latest";
-import { Transition } from "@headlessui/react";
 
 export const TradeClipboard: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!
