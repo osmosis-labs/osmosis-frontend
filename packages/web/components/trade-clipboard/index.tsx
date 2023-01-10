@@ -448,26 +448,26 @@ export const TradeClipboard: FunctionComponent<{
           containerClassName
         )}
       >
+        {/** Overlay */}
+        {isSettingOpen && (
+          <div className="absolute inset-0 z-40 bg-osmoverse-1000/40" />
+        )}
+
         <div className="relative flex w-full items-center justify-end">
           <h6 className="w-full text-center">{t("swap.title")}</h6>
           <button
-            className="absolute top-0 right-3"
+            className="absolute top-0 right-3 z-50"
             onClick={(e) => {
               e.stopPropagation();
               setIsSettingOpen(!isSettingOpen);
               closeTokenSelectDropdowns();
             }}
           >
-            <Image
+            <Icon
+              id="setting"
               width={isMobile ? 20 : 28}
               height={isMobile ? 20 : 28}
-              src={
-                isSettingOpen
-                  ? "/icons/setting-white.svg"
-                  : "/icons/setting.svg"
-              }
-              alt="setting icon"
-              priority={true}
+              className={isSettingOpen ? "text-white" : "text-osmoverse-400"}
             />
           </button>
           {isSettingOpen && (
@@ -490,7 +490,9 @@ export const TradeClipboard: FunctionComponent<{
                       key={slippage.index}
                       className={classNames(
                         "flex h-8 w-full cursor-pointer items-center justify-center rounded-lg bg-osmoverse-700",
-                        { "border-2 border-wosmongton-200": slippage.selected }
+                        {
+                          "border-2 border-wosmongton-200": slippage.selected,
+                        }
                       )}
                       onClick={(e) => {
                         e.preventDefault();
