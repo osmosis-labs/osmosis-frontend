@@ -452,6 +452,11 @@
       "purpose": "any maskable"
     },
     {
+      "src": "icons/ios/512.png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
       "src": "icons/ios/1024.png",
       "sizes": "1024x1024"
     }
