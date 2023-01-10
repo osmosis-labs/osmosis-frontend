@@ -392,10 +392,6 @@
   "viewExplorer": "使用區塊瀏覽器查看",
   "unknownError": "未知錯誤",
   "requestRejected": "請求已被拒絕",
-  "Amount is empty": "未提供幣額",
-  "Insufficient amount": "幣額唔夠喎",
-  "Amount is zero": "幣額為零",
-  "Minimum of 2 assets required": "最少需要兩種資產",
   "stablecoinTypes": {
     "collateralized": "抵押"
   }

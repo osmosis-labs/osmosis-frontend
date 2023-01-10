@@ -392,10 +392,6 @@
   "viewExplorer": "vezi explorer",
   "unknownError": "Eroare necunoscuta",
   "requestRejected": "Cerere respinsa",
-  "Amount is empty": "Suma este goala",
-  "Insufficient amount": "Suma este insuficienta",
-  "Amount is zero": "Suma este zero",
-  "Minimum of 2 assets required": "Minim 2 active necesare",
   "stablecoinTypes": {
     "collateralized": "colateralizat"
   }

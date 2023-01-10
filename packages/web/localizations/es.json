@@ -392,10 +392,6 @@
   "viewExplorer": "Ver Explorador",
   "unknownError": "Error desconocido",
   "requestRejected": "Solicitud rechazada",
-  "Amount is empty": "La cantidad está vacía",
-  "Insufficient amount": "Cantidad insuficiente",
-  "Amount is zero": "La cantidad es cero",
-  "Minimum of 2 assets required": "Mínimo de 2 activos requeridos",
   "stablecoinTypes": {
     "collateralized": "colateralizado"
   }

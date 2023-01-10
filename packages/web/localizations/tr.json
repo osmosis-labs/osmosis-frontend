@@ -392,10 +392,6 @@
   "viewExplorer": "gezginde görüntüle",
   "unknownError": "Bilinmeyen hata",
   "requestRejected": "Talep reddedildi",
-  "Amount is empty": "Miktar alanı boş",
-  "Insufficient amount": "Yetersiz miktar",
-  "Amount is zero": "Miktar sıfır",
-  "Minimum of 2 assets required": "En az 2 varlık gerekli",
   "stablecoinTypes": {
     "collateralized": "teminatlandırılmış"
   }
