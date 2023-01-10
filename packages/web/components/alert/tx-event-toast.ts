@@ -61,7 +61,7 @@ export function toastOnFulfill(
             "{txHash}",
             tx.hash.toUpperCase()
           ),
-          learnMoreUrlCaption: "View explorer",
+          learnMoreUrlCaption: "viewExplorerr",
         },
         ToastType.SUCCESS
       );

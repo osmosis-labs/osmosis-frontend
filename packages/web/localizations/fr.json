@@ -388,7 +388,7 @@
   "transactionBroadcasting": "Émission de la transaction",
   "swapFailed": "L'échange a échoué. La liquitité n'est peut-être pas suffisante. Essayez d'ajuster le glissement autorisé.",
   "waitingForTransaction": "Attente de l'inclusion de la transaction dans le bloc",
-  "view explorer": "Voir dans l'exploreur",
+  "viewExplorer": "Voir dans l'exploreur",
   "unknownError": "Erreur inconnue",
   "requestRejected": "Demande rejetée",
   "Amount is empty": "Le montant est vide",

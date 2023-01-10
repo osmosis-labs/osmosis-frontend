@@ -389,7 +389,7 @@
   "transactionBroadcasting": "Transmitere tranzactie",
   "swapFailed": "Schimbul a esuata. Lichiditatea poate fi insuficienta.Incearca ajustarea tolerantei.",
   "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
-  "view explorer": "vezi explorer",
+  "viewExplorer": "vezi explorer",
   "unknownError": "Eroare necunoscuta",
   "requestRejected": "Cerere respinsa",
   "Amount is empty": "Suma este goala",

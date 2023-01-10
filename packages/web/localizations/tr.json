@@ -389,7 +389,7 @@
   "transactionBroadcasting": "İşlem Gerçekleştiriliyor",
   "swapFailed": "Takas başarısız. Likidite yetersiz olabilir. Slipaj oranında değişiklik yapmayı deneyin.",
   "waitingForTransaction": "İşlemin bloğa eklenmesi bekleniyor",
-  "view explorer": "gezginde görüntüle",
+  "viewExplorer": "gezginde görüntüle",
   "unknownError": "Bilinmeyen hata",
   "requestRejected": "Talep reddedildi",
   "Amount is empty": "Miktar alanı boş",

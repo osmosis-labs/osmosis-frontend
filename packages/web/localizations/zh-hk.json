@@ -389,7 +389,7 @@
   "transactionBroadcasting": "交易正在被廣播",
   "swapFailed": "兌換失敗，流動性可能唔夠喎，嘗試下調整允許嘅滑價啦",
   "waitingForTransaction": "正等待交易被加入到區塊中",
-  "view explorer": "使用區塊瀏覽器查看",
+  "viewExplorer": "使用區塊瀏覽器查看",
   "unknownError": "未知錯誤",
   "requestRejected": "請求已被拒絕",
   "Amount is empty": "未提供幣額",

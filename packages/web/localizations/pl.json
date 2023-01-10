@@ -389,7 +389,7 @@
   "transactionBroadcasting": "Nadawanie Transakcji",
   "swapFailed": "Wymiana nie udała się. Płynność może być niewystarczająca. Spróbuj dostosować dozwolone odchylenie.",
   "waitingForTransaction": "Oczekiwanie na dołączenie transakcji do bloku",
-  "view explorer": "zobacz eksplorer",
+  "viewExplorer": "zobacz eksplorer",
   "unknownError": "Nieznany błąd",
   "requestRejected": "Żądanie odrzucone",
   "Amount is empty": "Ilość jest pusta",

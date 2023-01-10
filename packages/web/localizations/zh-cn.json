@@ -388,7 +388,7 @@
   "transactionBroadcasting": "广播交易中",
   "swapFailed": "交易失败，流动性不足，尝试调整允许的滑点.",
   "waitingForTransaction": "等待交易打包进区块",
-  "view explorer": "浏览器查看",
+  "viewExplorer": "浏览器查看",
   "unknownError": "未知错误",
   "requestRejected": "请求拒绝",
   "Amount is empty": "数量为空",

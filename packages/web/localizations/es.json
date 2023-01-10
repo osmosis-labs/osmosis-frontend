@@ -389,7 +389,7 @@
   "transactionBroadcasting": "Ejecutando transacción",
   "swapFailed": "El intercambio falló. La liquidez puede no ser suficiente. Intente ajustar el deslizamiento permitido.",
   "waitingForTransaction": "Esperando que la transacción se incluya en el bloque",
-  "view explorer": "Ver Explorador",
+  "viewExplorer": "Ver Explorador",
   "unknownError": "Error desconocido",
   "requestRejected": "Solicitud rechazada",
   "Amount is empty": "La cantidad está vacía",

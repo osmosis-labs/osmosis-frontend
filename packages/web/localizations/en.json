@@ -389,7 +389,7 @@
   "transactionBroadcasting": "Transaction Broadcasting",
   "swapFailed": "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.",
   "waitingForTransaction": "Waiting for transaction to be included in the block",
-  "view explorer": "view explorer",
+  "viewExplorer": "view explorer",
   "unknownError": "Unknown error",
   "requestRejected": "Request rejected",
   "Amount is empty": "Amount is empty",
