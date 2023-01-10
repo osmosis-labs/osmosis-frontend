@@ -14,13 +14,13 @@ export function useTxEventToasts(
         {
           message:
             status === "pending"
-              ? "Transaction Broadcasting"
+              ? "transactionBroadcasting"
               : status === "confirmed"
-              ? "Transaction Successful"
-              : "Transaction Failed",
+              ? "transactionSuccessful"
+              : "transactionFailed",
           caption:
             status === "pending"
-              ? "Waiting for transaction to be included in the block"
+              ? "waitingForTransaction"
               : undefined,
           learnMoreUrl:
             (status === "confirmed" || status === "failed") && txHash
