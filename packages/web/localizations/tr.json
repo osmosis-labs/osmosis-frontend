@@ -1,4 +1,10 @@
 {
+  "404": {
+    "title": "Bulunamadı"
+  },
+  "500": {
+    "title": "Sunucu hatası"
+  },
   "app": {
     "banner": {
       "title": "Tüm izin gerektirmeyen varlıkları görüntülüyorsunuz",
@@ -26,7 +32,10 @@
     },
     "autoRouter": "Güzergah",
     "routerTooltipFee": "Ücret",
-    "autoRouterToggle": { "show": "Göstermek", "hide": "Saklamak" },
+    "autoRouterToggle": {
+      "show": "Göstermek",
+      "hide": "Saklamak"
+    },
     "pool": "Havuz #{id}"
   },
   "pools": {
@@ -342,12 +351,6 @@
     "title": "Ayarlar",
     "titleLanguage": "Dil",
     "titleHideDust": "olan havuzları gizle < {fiatSymbol}0.01"
-  },
-  "404": {
-    "title": "Bulunamadı"
-  },
-  "500": {
-    "title": "Sunucu hatası"
   },
   "errors": {
     "emptyAmount": "Miktar boş",

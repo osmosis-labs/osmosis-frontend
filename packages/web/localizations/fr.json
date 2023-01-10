@@ -1,4 +1,10 @@
 {
+  "404": {
+    "title": "Page non trouvée"
+  },
+  "500": {
+    "title": "Erreur serveur"
+  },
   "app": {
     "banner": {
       "title": "Vous consultez tous les actifs sans permission",
@@ -26,7 +32,10 @@
     },
     "autoRouter": "Itinéraire",
     "routerTooltipFee": "Frais",
-    "autoRouterToggle": { "show": "Montrer", "hide": "Cacher" },
+    "autoRouterToggle": {
+      "show": "Montrer",
+      "hide": "Cacher"
+    },
     "pool": "Bassin n°{id}"
   },
   "pools": {
@@ -341,12 +350,6 @@
     "title": "Paramètres",
     "titleLanguage": "Langue",
     "titleHideDust": "Masquer les piscines avec < 0.01{fiatSymbol}"
-  },
-  "404": {
-    "title": "Page non trouvée"
-  },
-  "500": {
-    "title": "Erreur serveur"
   },
   "errors": {
     "emptyAmount": "Le montant est vide",

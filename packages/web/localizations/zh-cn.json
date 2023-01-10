@@ -1,4 +1,10 @@
 {
+  "404": {
+    "title": "未找到"
+  },
+  "500": {
+    "title": "服务器错误"
+  },
   "app": {
     "banner": {
       "title": "您正在查看所有无许可资产",
@@ -26,7 +32,10 @@
     },
     "autoRouter": "路线",
     "routerTooltipFee": "费用",
-    "autoRouterToggle": { "show": "节目", "hide": "隐藏" },
+    "autoRouterToggle": {
+      "show": "节目",
+      "hide": "隐藏"
+    },
     "pool": "资金池 #{id}"
   },
   "pools": {
@@ -341,12 +350,6 @@
     "title": "设置",
     "titleLanguage": "语言",
     "titleHideDust": "使用 < {fiatSymbol}0.01 隐藏矿池"
-  },
-  "404": {
-    "title": "未找到"
-  },
-  "500": {
-    "title": "服务器错误"
   },
   "errors": {
     "emptyAmount": "数量为空",

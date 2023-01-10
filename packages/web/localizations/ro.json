@@ -1,4 +1,10 @@
 {
+  "404": {
+    "title": "Nu a fost gasit"
+  },
+  "500": {
+    "title": "Eroare server"
+  },
   "app": {
     "banner": {
       "title": "Visualizati toate activele care nu necesita permisiuni.",
@@ -26,7 +32,10 @@
     },
     "autoRouter": "Traseu",
     "routerTooltipFee": "Taxa",
-    "autoRouterToggle": { "show": "Arata", "hide": "Ascunde" },
+    "autoRouterToggle": {
+      "show": "Arata",
+      "hide": "Ascunde"
+    },
     "pool": "Pool #{id}"
   },
   "pools": {
@@ -341,13 +350,8 @@
   "settings": {
     "title": "Setari",
     "titleLanguage": "Limba",
-    "titleShowDust": "Arata pool-uri/active < {fiatSymbol}0.01"
-  },
-  "404": {
-    "title": "Nu a fost gasit"
-  },
-  "500": {
-    "title": "Eroare server"
+    "titleShowDust": "Arata pool-uri/active < {fiatSymbol}0.01",
+    "titleHideDust": "Ascundeți pool-urile cu < {fiatSymbol}0,01"
   },
   "errors": {
     "emptyAmount": "Suma lipseste",

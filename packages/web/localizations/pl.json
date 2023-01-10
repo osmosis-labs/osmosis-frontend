@@ -1,4 +1,10 @@
 {
+  "404": {
+    "title": "Nie znaleziono"
+  },
+  "500": {
+    "title": "Błąd serwera"
+  },
   "app": {
     "banner": {
       "title": "Przeglądasz środki nie wymagające uprawnień",
@@ -26,7 +32,10 @@
     },
     "autoRouter": "Trasa",
     "routerTooltipFee": "Opłata",
-    "autoRouterToggle": { "show": "Mostrar", "hide": "Esconder" },
+    "autoRouterToggle": {
+      "show": "Mostrar",
+      "hide": "Esconder"
+    },
     "pool": "Pula #{id}"
   },
   "pools": {
@@ -342,12 +351,6 @@
     "title": "Ustawienia",
     "titleLanguage": "Język",
     "titleHideDust": "Ukryj pule z < {fiatSymbol}0.01"
-  },
-  "404": {
-    "title": "Nie znaleziono"
-  },
-  "500": {
-    "title": "Błąd serwera"
   },
   "errors": {
     "emptyAmount": "Ilość jest pusta",

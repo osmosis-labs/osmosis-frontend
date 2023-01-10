@@ -1,4 +1,10 @@
 {
+  "404": {
+    "title": "No encontrado"
+  },
+  "500": {
+    "title": "Error del Servidor"
+  },
   "app": {
     "banner": {
       "title": "Estás viendo todos los activos sin permiso",
@@ -26,7 +32,10 @@
     },
     "autoRouter": "Ruta",
     "routerTooltipFee": "Tarifa",
-    "autoRouterToggle": { "show": "Mostrar", "hide": "Ocultar" },
+    "autoRouterToggle": {
+      "show": "Mostrar",
+      "hide": "Ocultar"
+    },
     "pool": "Piscina #{id}"
   },
   "pools": {
@@ -342,12 +351,6 @@
     "title": "Ajustes",
     "titleLanguage": "Idioma",
     "titleHideDust": "Ocultar piscinas con <{fiatSymbol} 0.01"
-  },
-  "404": {
-    "title": "No encontrado"
-  },
-  "500": {
-    "title": "Error del Servidor"
   },
   "errors": {
     "emptyAmount": "La cantidad es vacía",

@@ -1,4 +1,10 @@
 {
+  "404": {
+    "title": "Not found"
+  },
+  "500": {
+    "title": "Server error"
+  },
   "app": {
     "banner": {
       "title": "You're viewing all permissionless assets",
@@ -26,7 +32,10 @@
     },
     "autoRouter": "Route",
     "routerTooltipFee": "Fee",
-    "autoRouterToggle": { "show": "Show", "hide": "Hide" },
+    "autoRouterToggle": {
+      "show": "Show",
+      "hide": "Hide"
+    },
     "pool": "Pool #{id}"
   },
   "pools": {
@@ -342,12 +351,6 @@
     "title": "Settings",
     "titleLanguage": "Language",
     "titleHideDust": "Hide pools with < {fiatSymbol}0.01"
-  },
-  "404": {
-    "title": "Not found"
-  },
-  "500": {
-    "title": "Server error"
   },
   "errors": {
     "emptyAmount": "Amount is empty",

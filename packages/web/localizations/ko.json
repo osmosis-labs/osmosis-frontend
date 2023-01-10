@@ -1,4 +1,10 @@
 {
+  "404": {
+    "title": "페이지를 찾을 수 없습니다"
+  },
+  "500": {
+    "title": "서버 에러"
+  },
   "app": {
     "banner": {
       "title": "권한이 없는 모든 자산이 보여집니다.",
@@ -26,7 +32,10 @@
     },
     "autoRouter": "노선",
     "routerTooltipFee": "회비",
-    "autoRouterToggle": { "show": "보여주다", "hide": "숨다" },
+    "autoRouterToggle": {
+      "show": "보여주다",
+      "hide": "숨다"
+    },
     "pool": "풀 #{id}"
   },
   "pools": {
@@ -342,12 +351,6 @@
     "title": "설정",
     "titleLanguage": "언어",
     "titleHideDust": "< {fiatSymbol}0.01 미만인 풀 숨기기"
-  },
-  "404": {
-    "title": "페이지를 찾을 수 없습니다"
-  },
-  "500": {
-    "title": "서버 에러"
   },
   "errors": {
     "emptyAmount": "수량이 비어있습니다",

@@ -1,4 +1,10 @@
 {
+  "404": {
+    "title": "找不到這頁面"
+  },
+  "500": {
+    "title": "伺服器錯誤"
+  },
   "app": {
     "banner": {
       "title": "你正在查看所有 permissionless 資產",
@@ -26,7 +32,10 @@
     },
     "autoRouter": "路線",
     "routerTooltipFee": "費",
-    "autoRouterToggle": { "show": "顯示", "hide": "隱藏" },
+    "autoRouterToggle": {
+      "show": "顯示",
+      "hide": "隱藏"
+    },
     "pool": "流動性池 #{id}"
   },
   "pools": {
@@ -342,12 +351,6 @@
     "title": "設定",
     "titleLanguage": "語言",
     "titleHideDust": "隱藏 < {fiatSymbol}0.01 的礦池"
-  },
-  "404": {
-    "title": "找不到這頁面"
-  },
-  "500": {
-    "title": "伺服器錯誤"
   },
   "errors": {
     "emptyAmount": "未提供數量",
