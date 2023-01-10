@@ -174,7 +174,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
 
         <div className="mt-3 text-center">
           <p className="subtitle1">
-            {Bech32Address.shortenAddress(address, 12)}
+            {Bech32Address.shortenAddress(address, 13)}
           </p>
         </div>
 
@@ -274,7 +274,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
                 <p>Cosmos</p>
                 <div className="flex items-center gap-2">
                   <p title={address} className="text-osmoverse-100">
-                    {Bech32Address.shortenAddress(address, 12)}
+                    {Bech32Address.shortenAddress(address, 13)}
                   </p>
                   <button
                     title="Copy"

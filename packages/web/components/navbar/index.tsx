@@ -186,7 +186,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
     return (
       <div
         className={classNames(
-          "max-w-[10rem] shrink-0 lg:max-w-[9rem] md:w-full",
+          "max-w-[10rem] shrink-0 lg:max-w-[9rem] md:w-full md:max-w-none",
           className
         )}
       >
@@ -206,7 +206,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
               e.stopPropagation();
               onOpenProfile();
             }}
-            className="group flex place-content-between items-center gap-[13px] rounded-xl border border-osmoverse-700 p-1.5 hover:border-wosmongton-300 hover:bg-osmoverse-800"
+            className="group flex place-content-between items-center gap-[13px] rounded-xl border border-osmoverse-700 px-1.5 py-1 hover:border-[1.3px] hover:border-wosmongton-300 hover:bg-osmoverse-800 md:w-full"
           >
             <div className="h-8 w-8 shrink-0 overflow-hidden rounded-[7px] bg-osmoverse-700 group-hover:bg-gradient-positive">
               {profileStore.currentAvatar === "ammelia" ? (
@@ -228,7 +228,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
 
             <div className="flex w-full flex-col truncate text-right leading-tight">
               <span className="body2 truncate font-bold leading-4">
-                {Bech32Address.shortenAddress(account.bech32Address, 12)}
+                {Bech32Address.shortenAddress(account.bech32Address, 13)}
               </span>
               <span className="caption font-medium tracking-wider text-osmoverse-200">
                 {navBarStore.walletInfo.balance.toString()}
