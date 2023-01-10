@@ -1,10 +1,10 @@
-import { MouseEventHandler, ReactElement } from "react";
+import { MouseEventHandler, ReactElement, ReactNode } from "react";
 import { AmplitudeEvent } from "../config";
 
 export type MainLayoutMenu = {
   label: string;
   link: string | MouseEventHandler;
-  icon: string;
+  icon: string | ReactNode;
   iconSelected?: string;
   selectionTest?: RegExp;
   amplitudeEvent?: AmplitudeEvent;

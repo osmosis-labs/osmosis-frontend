@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { FunctionComponent } from "react";
+import { FunctionComponent, isValidElement } from "react";
 import classNames from "classnames";
 import { IS_FRONTIER } from "../config";
 import { useAmplitudeAnalytics } from "../hooks";
@@ -68,12 +68,16 @@ export const MainMenu: FunctionComponent<{
                       selected ? "opacity-100" : "opacity-60"
                     )}
                   >
-                    <Image
-                      src={iconSelected ?? icon}
-                      width={20}
-                      height={20}
-                      alt="menu icon"
-                    />
+                    {typeof icon === "string" ? (
+                      <Image
+                        src={iconSelected ?? icon}
+                        width={20}
+                        height={20}
+                        alt="menu icon"
+                      />
+                    ) : (
+                      icon
+                    )}
                   </div>
                   <p
                     className={classNames(

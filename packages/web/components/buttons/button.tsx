@@ -95,6 +95,15 @@ const button = cva(
           "rounded-xl",
           "text-osmoverse-1000",
         ],
+        "icon-primary": [
+          "text-osmoverse-400",
+          "hover:text-white-full",
+          "bg-osmoverse-700",
+          "hover:bg-osmoverse-600",
+          "rounded-xl",
+          "disabled:border-osmoverse-500",
+          "disabled:bg-osmoverse-500",
+        ],
         unstyled: null,
       },
       /**
@@ -108,6 +117,7 @@ const button = cva(
        * - letter spacing
        */
       size: {
+        "sm-no-padding": "h-10 button tracking-wide",
         sm: "h-10 px-5 button tracking-wide",
         normal: "h-[56px] px-6 subtitle1 tracking-wide",
         text: "w-auto h-auto block py-0 text-start tracking-wide",

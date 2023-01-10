@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { ButtonHTMLAttributes, FunctionComponent, useState } from "react";
+import { FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
 import classNames from "classnames";
 import { WalletStatus } from "@keplr-wallet/stores";
@@ -15,6 +15,8 @@ import { useTranslation } from "react-multi-lang";
 import { MainLayoutMenu, CustomClasses } from "../types";
 import { MainMenu } from "../main-menu";
 import { EventName } from "../../config";
+import IconButton from "../buttons/icon-button";
+import { Icon } from "../assets";
 
 export const NavBar: FunctionComponent<
   {
@@ -70,7 +72,14 @@ export const NavBar: FunctionComponent<
                     setMobileNavMenuOptionsOpen(false);
                     setSettingsDropdownOpen(true);
                   },
-                  icon: "/icons/setting-white.svg",
+                  icon: (
+                    <Icon
+                      id="setting"
+                      className="text-white-full"
+                      width={20}
+                      height={20}
+                    />
+                  ),
                 })}
               />
               <WalletInfo />
@@ -96,13 +105,14 @@ export const NavBar: FunctionComponent<
         </div>
         <div className="flex shrink-0 items-center gap-3 lg:gap-2 md:hidden">
           <div className="relative">
-            <NavBarButton
-              iconurl="/icons/setting.svg"
-              hovericonurl="/icons/setting-white.svg"
+            <IconButton
+              aria-label="Open settings dropdown"
+              icon={<Icon id="setting" width={24} height={24} />}
               onClick={() => {
                 // allow global event to close dropdown when clicking settings button
                 if (!settingsDropdownOpen) setSettingsDropdownOpen(true);
               }}
+              className="px-3"
             />
             {settingsDropdownOpen && (
               <SettingsDropdown userSettings={userSettings.userSettings} />
@@ -121,33 +131,6 @@ export const NavBar: FunctionComponent<
     </>
   );
 });
-
-const NavBarButton: FunctionComponent<
-  {
-    iconurl: string;
-    hovericonurl: string;
-  } & ButtonHTMLAttributes<HTMLButtonElement>
-> = (props) => {
-  const { iconurl, hovericonurl } = props;
-  const [hovered, setHovered] = useState(false);
-
-  return (
-    <button
-      {...props}
-      onMouseOver={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className="flex items-center rounded-xl bg-osmoverse-700 px-3 py-2 transition-colors hover:bg-osmoverse-600"
-    >
-      <Image
-        alt="settings"
-        src={hovered ? hovericonurl : iconurl}
-        height={24}
-        width={24}
-        priority={true}
-      />
-    </button>
-  );
-};
 
 const SettingsDropdown: FunctionComponent<{
   userSettings: IUserSetting[];
