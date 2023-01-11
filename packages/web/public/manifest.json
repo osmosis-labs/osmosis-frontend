@@ -464,7 +464,7 @@
   "theme_color": "#282750",
   "background_color": "#282750",
   "start_url": "/",
-  "display": "minimal-ui",
+  "display": "fullscreen",
   "orientation": "portrait",
   "description": "Interchain Liquidity Lab",
   "lang": "en",
