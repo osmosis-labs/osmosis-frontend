@@ -1167,6 +1167,12 @@ export const IBCAssetInfos: (IBCAsset & {
     depositUrlOverride: "https://wrap.scrt.network",
     ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
   },
+  {
+    counterpartyChainId: "onomy-mainnet-1",
+    sourceChannelId: "channel-525",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "anom",
+  },
 ].filter((ibcAsset) => {
   // validate IBC asset config
   if (
