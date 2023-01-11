@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { FunctionComponent, useState } from "react";
+import { Fragment, FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
 import classNames from "classnames";
 import { WalletStatus } from "@keplr-wallet/stores";
@@ -17,6 +17,7 @@ import { MainMenu } from "../main-menu";
 import { EventName } from "../../config";
 import IconButton from "../buttons/icon-button";
 import { Icon } from "../assets";
+import { Popover } from "@headlessui/react";
 
 export const NavBar: FunctionComponent<
   {
@@ -27,12 +28,8 @@ export const NavBar: FunctionComponent<
 > = observer(({ title, className, backElementClassNames, menus }) => {
   const { navBarStore, userSettings } = useStore();
 
-  // settings button
-  const [settingsDropdownOpen, setSettingsDropdownOpen] =
-    useBooleanWithWindowEvent(false);
-
-  // mobile nav menu
-  const [mobileNavMenuOptionsOpen, setMobileNavMenuOptionsOpen] =
+  // mobile settings menu
+  const [isMobileSettingsOpen, setIsMobileSettingsOpen] =
     useBooleanWithWindowEvent(false);
 
   return (
@@ -44,47 +41,58 @@ export const NavBar: FunctionComponent<
         )}
       >
         <div className="relative hidden shrink-0 items-center md:flex">
-          <Image
-            alt="mobile menu"
-            src="/icons/hamburger.svg"
-            height={30}
-            width={30}
-            onClick={() => {
-              if (!mobileNavMenuOptionsOpen) setMobileNavMenuOptionsOpen(true);
-            }}
-          />
-          {settingsDropdownOpen && (
-            <SettingsDropdown userSettings={userSettings.userSettings} />
-          )}
-          {mobileNavMenuOptionsOpen && (
-            <div
-              className="top-navbar-mobile absolute top-[100%] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3"
-              onClick={(e) => {
-                e.stopPropagation();
-                setMobileNavMenuOptionsOpen(false);
-              }}
-            >
-              <MainMenu
-                menus={menus.concat({
-                  label: "Settings",
-                  link: (e) => {
-                    e.stopPropagation();
-                    setMobileNavMenuOptionsOpen(false);
-                    setSettingsDropdownOpen(true);
-                  },
-                  icon: (
-                    <Icon
-                      id="setting"
-                      className="text-white-full"
-                      width={20}
-                      height={20}
-                    />
-                  ),
-                })}
-              />
-              <WalletInfo />
-            </div>
-          )}
+          <Popover>
+            {({ close: closeMobileMainMenu }) => (
+              <>
+                <Popover.Button as={Fragment}>
+                  <IconButton
+                    mode="unstyled"
+                    size="unstyled"
+                    className="py-0"
+                    aria-label="Open main menu dropdown"
+                    onClick={() => {
+                      setIsMobileSettingsOpen(false);
+                    }}
+                    icon={
+                      <Icon
+                        id="hamburger"
+                        className="text-osmoverse-200"
+                        height={30}
+                        width={30}
+                      />
+                    }
+                  />
+                </Popover.Button>
+                {isMobileSettingsOpen && (
+                  <SettingsPanel
+                    isMobile
+                    userSettings={userSettings.userSettings}
+                  />
+                )}
+                <Popover.Panel className="top-navbar-mobile absolute top-[100%] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
+                  <MainMenu
+                    menus={menus.concat({
+                      label: "Settings",
+                      link: (e) => {
+                        e.stopPropagation();
+                        setIsMobileSettingsOpen(true);
+                        closeMobileMainMenu();
+                      },
+                      icon: (
+                        <Icon
+                          id="setting"
+                          className="text-white-full"
+                          width={20}
+                          height={20}
+                        />
+                      ),
+                    })}
+                  />
+                  <WalletInfo />
+                </Popover.Panel>
+              </>
+            )}
+          </Popover>
         </div>
         <div className="flex shrink-0 grow items-center gap-9 lg:gap-2 md:place-content-between md:gap-1">
           <h4 className="md:text-h6 md:font-h6">
@@ -105,18 +113,17 @@ export const NavBar: FunctionComponent<
         </div>
         <div className="flex shrink-0 items-center gap-3 lg:gap-2 md:hidden">
           <div className="relative">
-            <IconButton
-              aria-label="Open settings dropdown"
-              icon={<Icon id="setting" width={24} height={24} />}
-              onClick={() => {
-                // allow global event to close dropdown when clicking settings button
-                if (!settingsDropdownOpen) setSettingsDropdownOpen(true);
-              }}
-              className="px-3"
-            />
-            {settingsDropdownOpen && (
-              <SettingsDropdown userSettings={userSettings.userSettings} />
-            )}
+            <Popover>
+              <Popover.Button as={Fragment}>
+                <IconButton
+                  aria-label="Open settings dropdown"
+                  icon={<Icon id="setting" width={24} height={24} />}
+                  className="px-3 outline-none"
+                />
+              </Popover.Button>
+
+              <SettingsPanel userSettings={userSettings.userSettings} />
+            </Popover>
           </div>
           <WalletInfo className="md:hidden" />
         </div>
@@ -132,14 +139,19 @@ export const NavBar: FunctionComponent<
   );
 });
 
-const SettingsDropdown: FunctionComponent<{
+const SettingsPanel: FunctionComponent<{
   userSettings: IUserSetting[];
-}> = observer(({ userSettings }) => {
+  isMobile?: boolean;
+}> = observer(({ userSettings, isMobile }) => {
   const t = useTranslation();
+  const Component = isMobile ? "div" : Popover.Panel;
+
   return (
-    <div
+    <Component
+      onClick={(e) => {
+        e.stopPropagation();
+      }}
       className="md:top-navbar-mobile absolute top-[110%] left-[50%] flex min-w-[385px] -translate-x-1/2 flex-col gap-10 rounded-3xl bg-osmoverse-800 p-8 text-left shadow-md md:left-0 md:w-[90vw] md:min-w-min md:max-w-[385px] md:translate-x-0"
-      onClick={(e) => e.stopPropagation()}
     >
       <h5>{t("settings.title")}</h5>
       <div className="flex flex-col gap-7">
@@ -155,7 +167,7 @@ const SettingsDropdown: FunctionComponent<{
           </div>
         ))}
       </div>
-    </div>
+    </Component>
   );
 });
 

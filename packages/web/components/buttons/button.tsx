@@ -1,4 +1,4 @@
-import { ButtonHTMLAttributes, FunctionComponent } from "react";
+import { ButtonHTMLAttributes, forwardRef } from "react";
 import { CustomClasses } from "../types";
 import { IS_FRONTIER } from "../../config";
 import { cva, VariantProps } from "class-variance-authority";
@@ -159,15 +159,17 @@ const modeToDefaultSize: Partial<
   unstyled: "unstyled",
 };
 
-export const Button: FunctionComponent<
+export const Button = forwardRef<
+  HTMLButtonElement,
   VariantProps<typeof button> &
     CustomClasses &
     ButtonHTMLAttributes<HTMLButtonElement>
-> = (props) => {
+>((props, ref) => {
   const { mode, size, className, children } = props;
 
   return (
     <button
+      ref={ref}
       {...props}
       className={button({
         className,
@@ -179,4 +181,4 @@ export const Button: FunctionComponent<
       {children}
     </button>
   );
-};
+});
