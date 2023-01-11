@@ -6,6 +6,7 @@ type IconId =
   | "chevron-left"
   | "chevron-right"
   | "setting"
+  | "hamburger"
   | "search"
   | "up-down-arrow"
   | "hamburger"
