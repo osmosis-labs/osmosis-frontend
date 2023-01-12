@@ -249,13 +249,6 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
-    counterpartyChainId: "core-1",
-    sourceChannelId: "channel-4",
-    destChannelId: "channel-6",
-    coinMinimalDenom: "stk/uatom",
-    isVerified: true,
-  },
-  {
     counterpartyChainId: "akashnet-2",
     sourceChannelId: "channel-1",
     destChannelId: "channel-9",
@@ -1173,6 +1166,12 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "cw20:secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852",
     depositUrlOverride: "https://wrap.scrt.network",
     ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
+  },
+  {
+    counterpartyChainId: "core-1",
+    sourceChannelId: "channel-4",
+    destChannelId: "channel-6",
+    coinMinimalDenom: "stk/uatom",
   },
 ].filter((ibcAsset) => {
   // validate IBC asset config
