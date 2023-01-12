@@ -5,6 +5,8 @@ import {
   useState,
   useMemo,
   useCallback,
+  Fragment,
+  MouseEvent,
 } from "react";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { AppCurrency, Currency } from "@keplr-wallet/types";
@@ -33,6 +35,8 @@ import { tError } from "../localization";
 import { TokenSelectWithDrawer } from "../control/token-select-with-drawer";
 import { useLatest, useMeasure } from "react-use";
 import { Icon } from "../assets";
+import IconButton from "../buttons/icon-button";
+import { Popover } from "@headlessui/react";
 
 export const TradeClipboard: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!
@@ -447,34 +451,60 @@ export const TradeClipboard: FunctionComponent<{
           containerClassName
         )}
       >
-        {/** Overlay */}
-        {isSettingOpen && (
-          <div className="absolute inset-0 z-40 bg-osmoverse-1000/40" />
-        )}
+        <Popover>
+          {/** Settings Overlay */}
+          <Popover.Overlay className="absolute inset-0 z-40 bg-osmoverse-1000/80" />
 
-        <div className="relative flex w-full items-center justify-end">
-          <h6 className="w-full text-center">{t("swap.title")}</h6>
-          <button
-            className="absolute top-0 right-3 z-50"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsSettingOpen(!isSettingOpen);
-              closeTokenSelectDropdowns();
-            }}
-          >
-            <Icon
-              id="setting"
-              width={isMobile ? 20 : 28}
-              height={isMobile ? 20 : 28}
-              className={isSettingOpen ? "text-white" : "text-osmoverse-400"}
-            />
-          </button>
-          {isSettingOpen && (
-            <div
+          <div className="relative flex w-full items-center justify-end">
+            <h6 className="w-full text-center">{t("swap.title")}</h6>
+            <Popover.Button as={Fragment}>
+              <IconButton
+                aria-label="Open swap settings"
+                className="absolute top-0 right-3 z-40 w-fit py-0"
+                size="unstyled"
+                mode="unstyled"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsSettingOpen(!isSettingOpen);
+                  closeTokenSelectDropdowns();
+                }}
+                icon={
+                  <Icon
+                    id="setting"
+                    width={isMobile ? 20 : 28}
+                    height={isMobile ? 20 : 28}
+                    className={
+                      isSettingOpen
+                        ? "text-white"
+                        : "text-osmoverse-400 hover:text-white-full"
+                    }
+                  />
+                }
+              />
+            </Popover.Button>
+
+            <Popover.Panel
               className="absolute bottom-[-0.5rem] right-0 z-40 w-full max-w-[23.875rem] translate-y-full rounded-2xl bg-osmoverse-800 p-[1.875rem] shadow-md md:p-5"
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e: MouseEvent) => e.stopPropagation()}
             >
-              <h6>{t("swap.settings.title")}</h6>
+              <div className="flex items-center justify-between">
+                <h6>{t("swap.settings.title")}</h6>
+                <IconButton
+                  aria-label="Close"
+                  mode="unstyled"
+                  size="unstyled"
+                  className="w-fit"
+                  icon={
+                    <Icon
+                      id="close"
+                      width={32}
+                      height={32}
+                      className="text-osmoverse-400"
+                    />
+                  }
+                  onClick={() => setIsSettingOpen(false)}
+                />
+              </div>
               <div className="mt-2.5 flex items-center">
                 <div className="subtitle1 mr-2 text-osmoverse-200">
                   {t("swap.settings.slippage")}
@@ -566,9 +596,9 @@ export const TradeClipboard: FunctionComponent<{
                   </span>
                 </li>
               </ul>
-            </div>
-          )}
-        </div>
+            </Popover.Panel>
+          </div>
+        </Popover>
 
         <div className="flex flex-col gap-3">
           <div
