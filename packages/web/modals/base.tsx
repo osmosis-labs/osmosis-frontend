@@ -1,8 +1,9 @@
-import Image from "next/image";
 import React, { FunctionComponent, ReactElement } from "react";
 import ReactModal, { setAppElement } from "react-modal";
 import classNames from "classnames";
 import { useWindowSize } from "../hooks";
+import IconButton from "../components/buttons/icon-button";
+import { Icon } from "../components/assets";
 
 setAppElement("body");
 
@@ -49,18 +50,14 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
     >
       <div className="flex place-content-between items-center">
         {onRequestBack && (
-          <button
-            aria-label="back"
-            className="absolute top-8 left-8 z-50 cursor-pointer md:top-7 md:left-7"
+          <IconButton
+            aria-label="Back"
+            mode="unstyled"
+            size="unstyled"
+            className="top-9.5 absolute left-8 z-50 w-fit cursor-pointer py-0 text-osmoverse-400 md:top-7 md:left-7"
+            icon={<Icon id="chevron-left" width={18} height={18} />}
             onClick={onRequestBack}
-          >
-            <Image
-              alt="back button"
-              src="/icons/left.svg"
-              height={32}
-              width={32}
-            />
-          </button>
+          />
         )}
         {typeof title === "string" ? (
           <div className="relative mx-auto">
@@ -70,18 +67,21 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
           <>{title}</>
         )}
         {!hideCloseButton && (
-          <button
-            aria-label="close"
-            className="absolute top-8 right-8 z-50 cursor-pointer md:top-7 md:right-7"
+          <IconButton
+            aria-label="Close"
+            mode="unstyled"
+            size="unstyled"
+            className="absolute top-8 right-8 z-50 w-fit cursor-pointer py-0 md:top-7 md:right-7"
+            icon={
+              <Icon
+                id="close"
+                width={32}
+                height={32}
+                className="text-osmoverse-400"
+              />
+            }
             onClick={onRequestClose}
-          >
-            <Image
-              src={"/icons/close-dark.svg"}
-              alt="close icon"
-              width={32}
-              height={32}
-            />
-          </button>
+          />
         )}
       </div>
       {children}
