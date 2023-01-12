@@ -9,7 +9,6 @@ type IconId =
   | "hamburger"
   | "search"
   | "up-down-arrow"
-  | "hamburger"
   | "close"
   | "info";
 
