@@ -17,7 +17,7 @@ import { MainMenu } from "../main-menu";
 import { EventName } from "../../config";
 import IconButton from "../buttons/icon-button";
 import { Icon } from "../assets";
-import { Popover } from "@headlessui/react";
+import { Popover } from "../popover";
 
 export const NavBar: FunctionComponent<
   {
