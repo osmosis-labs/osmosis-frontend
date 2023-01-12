@@ -27,8 +27,8 @@ export const IBCAssetInfos: (IBCAsset & {
     counterpartyChainId: IS_TESTNET
       ? "axelar-testnet-lisbon-3"
       : "axelar-dojo-1",
-    sourceChannelId: IS_TESTNET ? "channel-312" : "channel-208",
-    destChannelId: IS_TESTNET ? "channel-22" : "channel-3",
+    sourceChannelId: IS_TESTNET ? "channel-135" : "channel-1946",
+    destChannelId: IS_TESTNET ? "channel-1946" : "channel-3",
     coinMinimalDenom: IS_TESTNET ? "uausdc" : "uusdc",
     sourceChainNameOverride: IS_TESTNET ? "Goerli Ethereum" : "Ethereum",
     isVerified: true,
