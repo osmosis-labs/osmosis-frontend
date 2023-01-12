@@ -249,6 +249,13 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
+    counterpartyChainId: "core-1",
+    sourceChannelId: "channel-4",
+    destChannelId: "channel-6",
+    coinMinimalDenom: "stk/uatom",
+    isVerified: true,
+  },
+  {
     counterpartyChainId: "akashnet-2",
     sourceChannelId: "channel-1",
     destChannelId: "channel-9",

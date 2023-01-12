@@ -328,6 +328,15 @@ const chainInfos = (
           coinGeckoId: "pool:pstake",
           coinImageUrl: "/tokens/pstake.png",
         },
+        {
+          coinDenom: "STKATOM",
+          coinMinimalDenom:
+            "ibc/CAA179E40F0266B0B29FB5EAA288FB9212E628822265D4141EBD1C47C3CBFCBC",
+          coinDecimals: 6,
+          // coinGeckoId: "stkatom",
+          coinGeckoId: "pool:stk/uatom",
+          coinImageUrl: "/tokens/stkatom.png",
+        },
       ],
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/persistence/txs/{txHash}",
