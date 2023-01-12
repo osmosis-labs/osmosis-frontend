@@ -2422,6 +2422,34 @@ const chainInfos = (
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/medasdigital/txs/{txHash}",
     },
+    {
+      rpc: "https://rpc-mainnet.onomy.io",
+      rest: "https://rest-mainnet.onomy.io",
+      chainId: "onomy-mainnet-1",
+      chainName: "Onomy",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("onomy"),
+      currencies: [
+        {
+          coinDenom: "NOM",
+          coinMinimalDenom: "anom",
+          coinDecimals: 18,
+          coinGeckoId: "pool:anom",
+          coinImageUrl: "/tokens/nom.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0,
+            average: 0.03,
+            high: 0.06,
+          },
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx: "https://www.mintscan.io/onomy-protocol/txs/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
