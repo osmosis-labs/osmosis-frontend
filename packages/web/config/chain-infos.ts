@@ -330,8 +330,7 @@ const chainInfos = (
         },
         {
           coinDenom: "STKATOM",
-          coinMinimalDenom:
-            "ibc/CAA179E40F0266B0B29FB5EAA288FB9212E628822265D4141EBD1C47C3CBFCBC",
+          coinMinimalDenom: "stk/uatom",
           coinDecimals: 6,
           // coinGeckoId: "stkatom",
           coinGeckoId: "pool:stk/uatom",
