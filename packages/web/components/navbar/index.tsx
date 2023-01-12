@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
 import classNames from "classnames";
 import { WalletStatus } from "@keplr-wallet/stores";
