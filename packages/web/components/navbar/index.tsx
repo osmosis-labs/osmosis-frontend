@@ -19,7 +19,7 @@ import { ProfileModal } from "../../modals/profile";
 import IconButton from "../buttons/icon-button";
 import { Icon } from "../assets";
 import { formatICNSName, getShortAddress } from "../../utils/string";
-import { Popover } from "@headlessui/react";
+import { Popover } from "../popover";
 
 export const NavBar: FunctionComponent<
   {
