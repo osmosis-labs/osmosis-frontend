@@ -335,7 +335,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "stkatom",
           coinGeckoId: "pool:stk/uatom",
-          coinImageUrl: "/tokens/stkatom.png",
+          coinImageUrl: "/tokens/stkatom.svg",
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
