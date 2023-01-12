@@ -31,7 +31,7 @@ import TradeRoute from "./trade-route";
 import { useTranslation } from "react-multi-lang";
 import { tError } from "../localization";
 import { TokenSelectWithDrawer } from "../control/token-select-with-drawer";
-import { useMeasure } from "react-use";
+import { useLatest, useMeasure } from "react-use";
 import { Icon } from "../assets";
 
 export const TradeClipboard: FunctionComponent<{
@@ -1089,6 +1089,3 @@ export const TradeClipboard: FunctionComponent<{
     );
   }
 );
-function useLatest(tradeableCurrencies: AppCurrency[]) {
-  throw new Error("Function not implemented.");
-}
