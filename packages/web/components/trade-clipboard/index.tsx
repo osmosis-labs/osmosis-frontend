@@ -33,7 +33,6 @@ import { tError } from "../localization";
 import { TokenSelectWithDrawer } from "../control/token-select-with-drawer";
 import { useMeasure } from "react-use";
 import { Icon } from "../assets";
-import useLatest from "../../hooks/use-latest";
 
 export const TradeClipboard: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!
@@ -1090,3 +1089,6 @@ export const TradeClipboard: FunctionComponent<{
     );
   }
 );
+function useLatest(tradeableCurrencies: AppCurrency[]) {
+  throw new Error("Function not implemented.");
+}
