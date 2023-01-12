@@ -168,7 +168,7 @@ const AxelarTransfer: FunctionComponent<
     };
 
     /** Osmosis chain ID accepted by Axelar APIs. */
-    const osmosisAxelarChainId = isTestNet ? "osmosis-5" : "osmosis";
+    const osmosisAxelarChainId = isTestNet ? "osmosis-4" : "osmosis";
     const sourceChain = isWithdraw
       ? osmosisAxelarChainId
       : selectedSourceChainAxelarKey;
