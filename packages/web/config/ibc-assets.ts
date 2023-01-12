@@ -1178,8 +1178,6 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-4",
     destChannelId: "channel-6",
     coinMinimalDenom: "stk/uatom",
-    depositUrlOverride: "",
-    withdrawUrlOverride: "",
   },
 ].filter((ibcAsset) => {
   // validate IBC asset config
