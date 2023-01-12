@@ -2002,8 +2002,8 @@ const chainInfos = (
       explorerUrlToTx: "https://www.mintscan.io/crescent/txs/{txHash}",
     },
     {
-      rpc: "https://rpc.helios-1.lumenex.io",
-      rest: "https://api.helios-1.lumenex.io",
+      rpc: "https://rpc.lumenx.chaintools.tech",
+      rest: "https://api.lumenx.chaintools.tech",
       chainId: "LumenX",
       chainName: "LumenX",
       bip44: {
@@ -2027,7 +2027,7 @@ const chainInfos = (
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
-      explorerUrlToTx: "https://scope.helios-1.lumenex.io/lumenx/tx/{txHash}",
+      explorerUrlToTx: "https://explorer.chaintools.tech/lumenx/tx/{txHash}",
     },
     {
       rpc: "https://rpc.orai.io",
