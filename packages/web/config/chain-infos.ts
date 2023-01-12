@@ -329,7 +329,7 @@ const chainInfos = (
           coinImageUrl: "/tokens/pstake.png",
         },
         {
-          coinDenom: "STKATOM",
+          coinDenom: "stkATOM",
           coinMinimalDenom: "stk/uatom",
           coinDecimals: 6,
           // coinGeckoId: "stkatom",
