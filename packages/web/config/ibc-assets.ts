@@ -1181,6 +1181,12 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-6",
     coinMinimalDenom: "stk/uatom",
   },
+  {
+    counterpartyChainId: "dyson-mainnet-01",
+    sourceChannelId: "channel-526",
+    destChannelId: "channel-2",
+    coinMinimalDenom: "dys",
+  },
 ].filter((ibcAsset) => {
   // validate IBC asset config
   if (
