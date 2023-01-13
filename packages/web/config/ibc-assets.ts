@@ -210,6 +210,7 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-72",
     destChannelId: "channel-1",
     coinMinimalDenom: "uluna",
+    isVerified: true,
   },
   {
     counterpartyChainId: "columbus-5",
