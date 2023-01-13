@@ -8,7 +8,7 @@ const button = cva(
   {
     variants: {
       /**
-       * Modes should modify the following properties:
+       * Modes modify the following properties:
        * - border
        * - border color
        * - border radius
@@ -107,7 +107,7 @@ const button = cva(
         unstyled: null,
       },
       /**
-       * Sizes should modify the following properties:
+       * Sizes modify the following properties:
        * - height
        * - width
        * - padding

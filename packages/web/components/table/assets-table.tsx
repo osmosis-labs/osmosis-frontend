@@ -377,6 +377,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                     setQuery(query);
                   }}
                   placeholder={t("assets.table.search")}
+                  size="medium"
                 />
                 <SortMenu
                   selectedOptionId={sortKey}

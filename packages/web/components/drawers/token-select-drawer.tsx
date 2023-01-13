@@ -232,6 +232,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                   placeholder={t("components.searchTokens")}
                   onInput={onSearch}
                   onKeyDown={searchBarKeyDown}
+                  size="large"
                 />
               </div>
 
