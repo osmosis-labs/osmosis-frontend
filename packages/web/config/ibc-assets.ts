@@ -162,6 +162,13 @@ export const IBCAssetInfos: (IBCAsset & {
     },
   },
   {
+    counterpartyChainId: "columbus-5",
+    sourceChannelId: "channel-72",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "uluna",
+    isVerified: true,
+  },
+  {
     counterpartyChainId: "juno-1",
     sourceChannelId: "channel-42",
     destChannelId: "channel-0",
@@ -203,13 +210,6 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-88",
     destChannelId: "channel-1",
     coinMinimalDenom: "uscrt",
-    isVerified: true,
-  },
-  {
-    counterpartyChainId: "columbus-5",
-    sourceChannelId: "channel-72",
-    destChannelId: "channel-1",
-    coinMinimalDenom: "uluna",
     isVerified: true,
   },
   {
