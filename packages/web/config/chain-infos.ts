@@ -672,6 +672,17 @@ const chainInfos = (
           coinGeckoId: "posthuman",
           coinImageUrl: "/tokens/phmn.png",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1u45shlp0q4gcckvsj06ss4xuvsu0z24a0d0vr9ce6r24pht4e5xq7q995n",
+          coinDenom: "HOPERS",
+          coinMinimalDenom:
+            "cw20:juno1u45shlp0q4gcckvsj06ss4xuvsu0z24a0d0vr9ce6r24pht4e5xq7q995n:HOPERS",
+          coinDecimals: 6,
+          //coinGeckoId: "pool:hopers",
+          coinImageUrl: "/tokens/hopers.png",
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: "https://www.mintscan.io/juno/txs/{txHash}",
