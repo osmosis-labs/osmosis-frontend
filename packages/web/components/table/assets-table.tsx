@@ -306,13 +306,14 @@ export const AssetsTable: FunctionComponent<Props> = observer(
           <div className="flex flex-col gap-5">
             <h6 className="px-3">{t("assets.table.title")}</h6>
             <SearchBox
-              className="h-11 !w-full"
+              className="!w-full"
               currentValue={query}
               onInput={(query) => {
                 setHideZeroBalances(false);
                 setQuery(query);
               }}
               placeholder={t("assets.table.search")}
+              size="small"
             />
             <div className="flex flex-wrap place-content-between items-center gap-3">
               <Switch
@@ -377,7 +378,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                     setQuery(query);
                   }}
                   placeholder={t("assets.table.search")}
-                  size="medium"
+                  size="small"
                 />
                 <SortMenu
                   selectedOptionId={sortKey}

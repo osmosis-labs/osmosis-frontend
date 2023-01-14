@@ -13,7 +13,7 @@ import { useTranslation } from "react-multi-lang";
 import { SearchBox } from "../input";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-import { useFilteredData } from "../../hooks";
+import { useFilteredData, useWindowSize } from "../../hooks";
 import debounce from "debounce";
 import { useWindowKeyActions } from "../../hooks/window/use-window-key-actions";
 import { RecommendedSwapDenoms } from "../../config";
@@ -65,6 +65,7 @@ export const TokenSelectDrawer: FunctionComponent<{
   }) => {
     const t = useTranslation();
     const { priceStore } = useStore();
+    const { isMobile } = useWindowSize();
     const uniqueId = useConst(() => Math.random().toString(36).substring(2, 9));
 
     const [selectedIndex, setSelectedIndex, selectedIndexRef] = useStateRef(0);
@@ -232,7 +233,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                   placeholder={t("components.searchTokens")}
                   onInput={onSearch}
                   onKeyDown={searchBarKeyDown}
-                  size="large"
+                  size={isMobile ? "medium" : "large"}
                 />
               </div>
 

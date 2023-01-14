@@ -38,9 +38,7 @@ export const CompactPoolTableDisplay: FunctionComponent<{
 
   return (
     <div className="flex flex-col gap-5 pb-8">
-      {searchBoxProps && (
-        <SearchBox className="h-11 !w-full" {...searchBoxProps} />
-      )}
+      {searchBoxProps && <SearchBox size="small" {...searchBoxProps} />}
       <div className="flex flex-wrap place-content-between items-center gap-3">
         {minTvlToggleProps && (
           <Switch {...minTvlToggleProps} containerClassName="shrink flex-wrap">

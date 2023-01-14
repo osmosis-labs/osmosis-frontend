@@ -7,6 +7,7 @@ import { MenuSelectProps } from "./types";
 import { useBooleanWithWindowEvent, useWindowSize } from "../../hooks";
 import { MenuOptionsModal } from "../../modals";
 import { useTranslation } from "react-multi-lang";
+import { Icon } from "../assets";
 
 interface Props extends MenuSelectProps, Disableable, CustomClasses {
   onToggleSortDirection?: () => void;
@@ -31,10 +32,10 @@ export const SortMenu: FunctionComponent<Props> = ({
   return (
     <div
       className={classNames(
-        "relative shrink-0 cursor-pointer px-6 py-2 transition-colors",
+        "relative flex h-10 shrink-0 cursor-pointer items-center justify-center px-6 transition-colors",
         dropdownOpen
           ? "rounded-t-xl border-x border-t border-osmoverse-600"
-          : "rounded-xl border border-osmoverse-500"
+          : "rounded-xl border border-osmoverse-500 hover:border-2 hover:border-osmoverse-200 hover:px-[23px]"
       )}
       onClick={() => {
         if (!disabled) {
@@ -52,7 +53,7 @@ export const SortMenu: FunctionComponent<Props> = ({
         )}
       >
         <button
-          className="flex shrink-0 items-center"
+          className="flex shrink-0 items-center text-osmoverse-200"
           onClick={(e) => {
             e.stopPropagation();
             if (!disabled) {
@@ -64,11 +65,10 @@ export const SortMenu: FunctionComponent<Props> = ({
             }
           }}
         >
-          <Image
-            alt="sort"
-            src="/icons/up-down-arrow.svg"
-            height={isMobile ? 12 : 18}
-            width={isMobile ? 12 : 18}
+          <Icon
+            id="up-down-arrow"
+            height={isMobile ? 12 : 16}
+            width={isMobile ? 12 : 16}
           />
         </button>
         <button
@@ -80,7 +80,7 @@ export const SortMenu: FunctionComponent<Props> = ({
             }
           }}
         >
-          <span className="body2 md:caption m-auto ml-2 block min-w-[3.75rem] select-none overflow-hidden text-center leading-loose text-osmoverse-200">
+          <span className="body2 m-auto ml-2 block select-none overflow-hidden text-center leading-loose text-osmoverse-200">
             {isMobile
               ? t("components.sort.SORTMobile")
               : t("components.sort.SORT")}
