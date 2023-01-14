@@ -2473,7 +2473,7 @@ const chainInfos = (
           coinMinimalDenom: "dys",
           coinDecimals: 0,
           coinGeckoId: "pool:dys",
-          coinImageUrl: "/tokens/dys.png",
+          coinImageUrl: "/tokens/dys.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
