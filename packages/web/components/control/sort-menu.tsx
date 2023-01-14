@@ -1,4 +1,3 @@
-import Image from "next/image";
 import React, { FunctionComponent } from "react";
 import classNames from "classnames";
 import { MenuDropdown } from ".";
