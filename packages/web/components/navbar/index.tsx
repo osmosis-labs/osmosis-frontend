@@ -112,19 +112,11 @@ export const NavBar: FunctionComponent<
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-3 lg:gap-2 md:hidden">
-          <div className="relative">
-            <Popover>
-              <Popover.Button as={Fragment}>
-                <IconButton
-                  aria-label="Open settings dropdown"
-                  icon={<Icon id="setting" width={24} height={24} />}
-                  className="px-3 outline-none"
-                />
-              </Popover.Button>
-
-              <SettingsPanel userSettings={userSettings.userSettings} />
-            </Popover>
-          </div>
+          <IconButton
+            aria-label="Open settings dropdown"
+            icon={<Icon id="setting" width={24} height={24} />}
+            className="px-3 outline-none"
+          />
           <WalletInfo className="md:hidden" />
         </div>
       </div>
