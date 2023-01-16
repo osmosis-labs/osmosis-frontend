@@ -71,15 +71,8 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             aria-label="Close"
             mode="unstyled"
             size="unstyled"
-            className="absolute top-8 right-8 z-50 w-fit cursor-pointer py-0 md:top-7 md:right-7"
-            icon={
-              <Icon
-                id="close"
-                width={32}
-                height={32}
-                className="text-osmoverse-400"
-              />
-            }
+            className="absolute top-[1.9rem] right-8 z-50 w-fit cursor-pointer py-0 text-osmoverse-400 hover:text-white-full md:top-7 md:right-7"
+            icon={<Icon id="close" width={32} height={32} />}
             onClick={onRequestClose}
           />
         )}
