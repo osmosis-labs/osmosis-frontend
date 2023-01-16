@@ -49,8 +49,6 @@ import { priceFormatter } from "../../utils/formatter";
 
 const TVL_FILTER_THRESHOLD = 1000;
 
-const LESS_SUPERFLUID_POOLS_COUNT = 6;
-
 const Pools: NextPage = observer(function () {
   const {
     chainStore,
@@ -108,8 +106,6 @@ const Pools: NextPage = observer(function () {
   )
     .process("poolLiquidity")
     .reverse();
-  const [showMoreSfsPools, setShowMoreSfsPools] = useState(false);
-
   // create pool dialog
   const [isCreatingPool, setIsCreatingPool] = useState(false);
 

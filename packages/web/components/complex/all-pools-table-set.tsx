@@ -26,7 +26,7 @@ import { EventName, IS_FRONTIER } from "../../config";
 import {
   useAmplitudeAnalytics,
   useFilteredData,
-  useWindowSize,
+  // useWindowSize,
 } from "../../hooks";
 import { useStore } from "../../stores";
 import { SortMenu } from "../control";
@@ -113,7 +113,7 @@ export const AllPoolsTableSet: FunctionComponent<{
       accountStore,
       derivedDataStore,
     } = useStore();
-    const { isMobile } = useWindowSize();
+    // const { isMobile } = useWindowSize();
     const t = useTranslation();
 
     const { logEvent } = useAmplitudeAnalytics();
