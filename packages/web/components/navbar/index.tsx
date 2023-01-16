@@ -20,6 +20,8 @@ import IconButton from "../buttons/icon-button";
 import { Icon } from "../assets";
 import { formatICNSName, getShortAddress } from "../../utils/string";
 import { Popover } from "../popover";
+import { useDisclosure } from "../../hooks/use-disclosure";
+import { SettingsModal } from "../../modals";
 
 export const NavBar: FunctionComponent<
   {
@@ -29,6 +31,12 @@ export const NavBar: FunctionComponent<
   } & CustomClasses
 > = observer(({ title, className, backElementClassNames, menus }) => {
   const { navBarStore, userSettings } = useStore();
+
+  const {
+    isOpen: isSettingsOpen,
+    onClose: onCloseSettings,
+    onOpen: onOpenSettings,
+  } = useDisclosure();
 
   // mobile settings menu
   const [isMobileSettingsOpen, setIsMobileSettingsOpen] =
@@ -118,6 +126,11 @@ export const NavBar: FunctionComponent<
             aria-label="Open settings dropdown"
             icon={<Icon id="setting" width={24} height={24} />}
             className="px-3 outline-none"
+            onClick={onOpenSettings}
+          />
+          <SettingsModal
+            isOpen={isSettingsOpen}
+            onRequestClose={onCloseSettings}
           />
           <WalletInfo className="md:hidden" />
         </div>

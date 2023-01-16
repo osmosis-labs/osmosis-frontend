@@ -135,5 +135,41 @@
         fill="currentColor"
       />
     </symbol>
+    <symbol viewBox="0 0 24 24" fill="none" id="globe">
+      <path
+        d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M2 12H22"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M12 2C14.5013 4.73835 15.9228 8.29203 16 12C15.9228 15.708 14.5013 19.2616 12 22C9.49872 19.2616 8.07725 15.708 8 12C8.07725 8.29203 9.49872 4.73835 12 2V2Z"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </symbol>
+    <symbol viewBox="0 0 24 24" fill="none" id="dust-broom">
+      <path
+        d="M22.5 2C22.5 2 18.6479 8.29002 16.5 12M16.5 12C18.4162 12.7984 19.5 14.5 19.5 16C19.5 17.5 19.1 20.1 17.5 20.5M16.5 12C16.2585 11.8994 16.7739 12.0384 16.5 12ZM16.5 12C14.8369 11.7666 12.5 12.0657 12.5 15.5C12.5 18 10 20 9 20M16.5 12C16.7596 12.2371 17 12.5 16.5 15C16 17.5 16 20 13 20.5"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+      />
+      <circle cx="3" cy="21" r="1" fill="currentColor" />
+      <circle cx="7" cy="21" r="1" fill="currentColor" />
+      <circle cx="1.5" cy="14.5" r="0.5" fill="currentColor" />
+      <circle cx="3.5" cy="11.5" r="0.5" fill="currentColor" />
+      <circle cx="4" cy="18" r="1" fill="currentColor" />
+    </symbol>
   </defs>
 </svg>
