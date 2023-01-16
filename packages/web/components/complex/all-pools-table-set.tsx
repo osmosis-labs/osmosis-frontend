@@ -1,4 +1,5 @@
-import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { ObservableQueryPool } from "@osmosis-labs/stores";
 import {
   createColumnHelper,
   flexRender,
@@ -8,41 +9,33 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import classNames from "classnames";
+import EventEmitter from "eventemitter3";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import {
   FunctionComponent,
-  useState,
-  useMemo,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
+  useState,
 } from "react";
-import EventEmitter from "eventemitter3";
-import { ObservableQueryPool } from "@osmosis-labs/stores";
-import { IS_FRONTIER, EventName } from "../../config";
+import { useTranslation } from "react-multi-lang";
+import { POOLS_PER_PAGE } from ".";
+import { EventName, IS_FRONTIER } from "../../config";
 import {
-  useFilteredData,
-  usePaginatedData,
-  useSortedData,
-  useWindowSize,
   useAmplitudeAnalytics,
+  useFilteredData,
+  useWindowSize,
 } from "../../hooks";
 import { useStore } from "../../stores";
-import { PageList, SortMenu, MenuOption } from "../control";
+import { SortMenu } from "../control";
 import { SearchBox } from "../input";
-import { ColumnDef } from "../table";
 import {
   MetricLoaderCell,
   PoolCompositionCell,
   PoolQuickActionCell,
 } from "../table/cells";
-import { Breakpoint } from "../types";
-import { CompactPoolTableDisplay } from "./compact-pool-table-display";
-import { POOLS_PER_PAGE } from ".";
-import { useTranslation } from "react-multi-lang";
-
-type PoolCell = PoolCompositionCell & MetricLoaderCell & PoolQuickActionCell;
 
 const TVL_FILTER_THRESHOLD = 1000;
 
@@ -92,26 +85,11 @@ type Pool = [
 ];
 
 type Filter = "superfluid" | "stable" | "concentrated" | "weighted";
-// enum Filter {
-//   Superfluid = "superfluid",
-//   Stable = "stable",
-//   Concentrated = "concentrated",
-//   Weighted = "weighted",
-// }
-
-// const filters: {
-//   [key in Filter]: string
-// } = {
-//   'superfluid': 'Superfluid',
-//   'stable': 'Stableswap',
-//   'concentrated': 'Concentrated Liquidity',
-//   'weighted': 'Weighted',
-// }
 
 const Filters: Record<Filter, string> = {
-  concentrated: "Concentrated Liquidity",
-  stable: "Stableswap",
   superfluid: "Superfluid",
+  stable: "Stableswap",
+  concentrated: "Concentrated Liquidity",
   weighted: "Weighted",
 };
 
@@ -143,11 +121,6 @@ export const AllPoolsTableSet: FunctionComponent<{
     const [filter, setFilter] = useState<Filter>();
     const [activeOptionId, setActiveOptionId] = useState(tableSet);
     const fetchedRemainingPoolsRef = useRef(false);
-
-    const poolsMenuOptions = [
-      { id: "incentivized-pools", display: t("pools.incentivized") },
-      { id: "all-pools", display: t("pools.all") },
-    ];
 
     const selectOption = (optionId: string) => {
       if (optionId === "incentivized-pools" || optionId === "all-pools") {
@@ -188,11 +161,9 @@ export const AllPoolsTableSet: FunctionComponent<{
     const queryActiveGauges = queriesExternalStore.queryActiveGauges;
     const queryOsmosis = queriesStore.get(chainId).osmosis!;
 
-    const allPools = queriesOsmosis.queryGammPools.getAllPools();
-    // All Pools
     const allPoolsWithMetrics: PoolWithMetrics[] = useMemo(
       () =>
-        allPools.map((pool) => {
+        queriesOsmosis.queryGammPools.getAllPools().map((pool) => {
           const poolTvl = pool.computeTotalValueLocked(priceStore);
           const myLiquidity = poolTvl.mul(
             queriesOsmosis.queryGammPoolShare.getAllGammShareRatio(
@@ -232,7 +203,6 @@ export const AllPoolsTableSet: FunctionComponent<{
         // note: mobx only causes rerenders for values referenced *during* render. I.e. *not* within useEffect/useCallback/useMemo hooks (see: https://mobx.js.org/react-integration.html)
         // `useMemo` is needed in this file to avoid "debounce" with the hundreds of re-renders by mobx as the 200+ API requests come in and populate 1000+ observables (otherwise the UI is unresponsive for 30+ seconds)
         // also, the higher level `useMemo`s (i.e. this one) gain the most performance as other React renders are prevented down the line as data is calculated (remember, renders are initiated by both mobx and react)
-        allPools,
         queriesOsmosis.queryGammPools.isFetching,
         queriesExternalStore.queryGammPoolFeeMetrics.response,
         queriesOsmosis.queryAccountLocked.get(account.bech32Address).response,
@@ -242,54 +212,6 @@ export const AllPoolsTableSet: FunctionComponent<{
         queriesExternalStore.queryGammPoolFeeMetrics.response,
         account.bech32Address,
       ]
-    );
-
-    // Incentivized Pools
-    const incentivizedPoolsWithMetrics = allPoolsWithMetrics.reduce(
-      (
-        incentivizedPools: PoolWithMetrics[],
-        poolWithMetrics: PoolWithMetrics
-      ) => {
-        if (
-          queriesOsmosis.queryIncentivizedPools.incentivizedPools.some(
-            (incentivizedPoolId) =>
-              poolWithMetrics.pool.id === incentivizedPoolId
-          )
-        ) {
-          incentivizedPools.push({
-            ...poolWithMetrics,
-            apr: queriesOsmosis.queryIncentivizedPools
-              .computeMostApr(poolWithMetrics.pool.id, priceStore)
-              .add(
-                // swap fees
-                queriesExternalStore.queryGammPoolFeeMetrics.get7dPoolFeeApr(
-                  poolWithMetrics.pool,
-                  priceStore
-                )
-              )
-              .add(
-                // superfluid apr
-                queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
-                  poolWithMetrics.pool.id
-                )
-                  ? new RatePretty(
-                      queriesStore
-                        .get(chainId)
-                        .cosmos.queryInflation.inflation.mul(
-                          queriesOsmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
-                            poolWithMetrics.pool.id
-                          )
-                        )
-                        .moveDecimalPointLeft(2)
-                    )
-                  : new Dec(0)
-              )
-              .maxDecimals(0),
-          });
-        }
-        return incentivizedPools;
-      },
-      []
     );
 
     // TODO: Make sure external pools are not included in all pools
@@ -385,50 +307,31 @@ export const AllPoolsTableSet: FunctionComponent<{
     );
 
     const tvlFilteredPools = useMemo(() => {
-      const concatenatedPoolsWithMetrics = [
-        ...allPoolsWithMetrics,
-        ...externalIncentivizedPoolsWithMetrics,
-      ];
-      return isPoolTvlFiltered
-        ? concatenatedPoolsWithMetrics
-        : concatenatedPoolsWithMetrics.filter((poolWithMetrics) =>
-            poolWithMetrics.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
-          );
+      return [...allPoolsWithMetrics, ...externalIncentivizedPoolsWithMetrics]
+        .filter((p) =>
+          isPoolTvlFiltered
+            ? p.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
+            : true
+        )
+        .filter((p) => (filter ? p.pool.type === filter : true));
     }, [
       allPoolsWithMetrics,
       externalIncentivizedPoolsWithMetrics,
       isPoolTvlFiltered,
+      filter,
       queriesExternalStore.queryGammPoolFeeMetrics.response,
     ]);
 
-    const typeFilteredPools = useMemo(() => {
-      return tvlFilteredPools.filter((p) => {
-        return filter ? p.pool.type === filter : true;
-      });
-    }, [filter, tvlFilteredPools]);
-
     useEffect(() => {
-      //make useeffect that makes a set of all pool types
       const poolTypes = new Set();
-      typeFilteredPools.forEach((p) => {
+      tvlFilteredPools.forEach((p) => {
         poolTypes.add(p.pool.type);
       });
       console.log("🚀 ~ useEffect ~ poolTypes", poolTypes);
-    }, [typeFilteredPools]);
-
-    // const initialKeyPath = "liquidity";
-    // const initialSortDirection = "descending";
-    // const [
-    //   sortKeyPath,
-    //   setSortKeyPath,
-    //   sortDirection,
-    //   setSortDirection,
-    //   toggleSortDirection,
-    //   sortedAllPoolsWithMetrics,
-    // ] = useSortedData(tvlFilteredPools, initialKeyPath, initialSortDirection);
+    }, [tvlFilteredPools]);
 
     const [query, _setQuery, filteredPools] = useFilteredData(
-      typeFilteredPools,
+      tvlFilteredPools,
       [
         "pool.id",
         "poolName",
@@ -443,108 +346,6 @@ export const AllPoolsTableSet: FunctionComponent<{
       }
       _setQuery(search);
     };
-
-    // const [page, setPage, minPage, numPages, allData] = usePaginatedData(
-    //   filteredPools,
-    //   POOLS_PER_PAGE
-    // );
-
-    // const makeSortMechanism = useCallback(
-    //   (keyPath: string) =>
-    //     sortKeyPath === keyPath
-    //       ? {
-    //           currentDirection: sortDirection,
-    //           onClickHeader: () => {
-    //             switch (sortDirection) {
-    //               case "ascending":
-    //                 logEvent([
-    //                   EventName.Pools.allPoolsListSorted,
-    //                   {
-    //                     sortedBy: keyPath,
-    //                     sortDirection: "descending",
-    //                     sortedOn: "table",
-    //                   },
-    //                 ]);
-    //                 setSortDirection("descending");
-    //                 break;
-    //               case "descending":
-    //                 // default sort key toggles forever
-    //                 if (sortKeyPath === initialKeyPath) {
-    //                   logEvent([
-    //                     EventName.Pools.allPoolsListSorted,
-    //                     {
-    //                       sortedBy: keyPath,
-    //                       sortDirection: "ascending",
-
-    //                       sortedOn: "table",
-    //                     },
-    //                   ]);
-    //                   setSortDirection("ascending");
-    //                 } else {
-    //                   // other keys toggle then go back to default
-    //                   setSortKeyPath(initialKeyPath);
-    //                   setSortDirection(initialSortDirection);
-    //                 }
-    //             }
-    //           },
-    //         }
-    //       : {
-    //           onClickHeader: () => {
-    //             const newSortDirection = "ascending";
-    //             logEvent([
-    //               EventName.Pools.allPoolsListSorted,
-    //               {
-    //                 sortedBy: keyPath,
-    //                 sortDirection: newSortDirection,
-
-    //                 sortedOn: "table",
-    //               },
-    //             ]);
-    //             setSortKeyPath(keyPath);
-    //             setSortDirection(newSortDirection);
-    //           },
-    //         },
-    //   [sortKeyPath, sortDirection]
-    // );
-    // const tableCols: ColumnDef<PoolCell>[] = useMemo(
-    //   () => [
-    //     {
-    //       id: "pool.id",
-    //       display: t("pools.allPools.sort.poolName"),
-    //       sort: makeSortMechanism("pool.id"),
-    //       displayCell: PoolCompositionCell,
-    //     },
-    //     {
-    //       id: "liquidity",
-    //       display: t("pools.allPools.sort.liquidity"),
-    //       sort: makeSortMechanism("liquidity"),
-    //     },
-    //     {
-    //       id: "volume24h",
-    //       display: t("pools.allPools.sort.volume24h"),
-    //       sort: makeSortMechanism("volume24h"),
-    //       displayCell: MetricLoaderCell,
-    //     },
-    //     {
-    //       id: "feesSpent7d",
-    //       display: t("pools.allPools.sort.fees"),
-    //       sort: makeSortMechanism("feesSpent7d"),
-    //       displayCell: MetricLoaderCell,
-    //       collapseAt: Breakpoint.XL,
-    //     },
-    //     {
-    //       id: isIncentivizedPools ? "apr" : "myLiquidity",
-    //       display: isIncentivizedPools
-    //         ? t("pools.allPools.sort.APRIncentivized")
-    //         : t("pools.allPools.sort.APR"),
-    //       sort: makeSortMechanism(isIncentivizedPools ? "apr" : "myLiquidity"),
-    //       displayCell: isIncentivizedPools ? MetricLoaderCell : undefined,
-    //       collapseAt: Breakpoint.LG,
-    //     },
-    //     { id: "quickActions", display: "", displayCell: PoolQuickActionCell },
-    //   ],
-    //   [isIncentivizedPools, t]
-    // );
 
     const [cellGroupEventEmitter] = useState(() => new EventEmitter());
     const tableData: Pool[] = useMemo(
@@ -595,7 +396,15 @@ export const AllPoolsTableSet: FunctionComponent<{
           ];
           return pool;
         }),
-      [filteredPools, queriesOsmosis.queryIncentivizedPools.isAprFetching]
+      [
+        cellGroupEventEmitter,
+        filteredPools,
+        queriesExternalStore.queryGammPoolFeeMetrics.response,
+        queriesOsmosis.queryIncentivizedPools.isAprFetching,
+        quickAddLiquidity,
+        quickLockTokens,
+        quickRemoveLiquidity,
+      ]
     );
 
     // auto expand searchable pools set when user is actively searching
@@ -624,7 +433,14 @@ export const AllPoolsTableSet: FunctionComponent<{
         setIsPoolTvlFiltered(false);
         didAutoSwitchTVLFilter.current = false;
       }
-    }, [query, filteredPools, isPoolTvlFiltered, activeOptionId]);
+    }, [
+      query,
+      filteredPools,
+      isPoolTvlFiltered,
+      activeOptionId,
+      setIsPoolTvlFiltered,
+      selectOption,
+    ]);
 
     const columnHelper = createColumnHelper<Pool>();
 
@@ -699,14 +515,6 @@ export const AllPoolsTableSet: FunctionComponent<{
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: getSortedRowModel(),
     });
-
-    const handleSetFilter = useCallback(
-      (f: Filter) => {
-        if (filter === f) setFilter(undefined);
-        setFilter(f);
-      },
-      [filter]
-    );
 
     // if (isMobile) {
     //   return (
@@ -805,26 +613,8 @@ export const AllPoolsTableSet: FunctionComponent<{
     return (
       <>
         <div className="mt-5 flex flex-col gap-3">
-          {/* <div className="flex place-content-between items-center">
-            <Switch
-              isOn={isPoolTvlFiltered}
-              onToggle={setIsPoolTvlFiltered}
-              className="mr-2"
-              labelPosition="left"
-            >
-              <span className="subtitle1 text-osmoverse-200">
-                {tvlFilterLabel}
-              </span>
-            </Switch>
-          </div> */}
           <h5>{t("pools.allPools.title")}</h5>
           <div className="flex flex-wrap place-content-between items-center gap-4">
-            {/* <MenuToggle
-              className="inline"
-              options={poolsMenuOptions}
-              selectedOptionId={activeOptionId}
-              onSelect={selectOption}
-            /> */}
             <div className="flex flex-wrap items-center gap-3 lg:w-full lg:place-content-between">
               {Object.entries(Filters).map(([f, display]) => (
                 <div
@@ -965,22 +755,6 @@ export const AllPoolsTableSet: FunctionComponent<{
             ))}
           </tfoot>
         </table>
-
-        {/* <Table<PoolCell>
-          className="my-5 w-full lg:text-sm"
-          columnDefs={tableCols}
-          rowDefs={tableRows}
-          data={tableData}
-        /> */}
-        {/* <div className="flex place-content-center items-center">
-          <PageList
-            currentValue={page}
-            max={numPages}
-            min={minPage}
-            onInput={setPage}
-            editField
-          />
-        </div> */}
       </>
     );
   }
