@@ -439,7 +439,6 @@ export const AllPoolsTableSet: FunctionComponent<{
       isPoolTvlFiltered,
       activeOptionId,
       setIsPoolTvlFiltered,
-      selectOption,
     ]);
 
     const columnHelper = createColumnHelper<Pool>();
@@ -615,64 +614,67 @@ export const AllPoolsTableSet: FunctionComponent<{
         <div className="mt-5 flex flex-col gap-3">
           <h5>{t("pools.allPools.title")}</h5>
           <div className="flex flex-wrap place-content-between items-center gap-4">
-            <div className="flex flex-wrap items-center gap-3 lg:w-full lg:place-content-between">
-              {Object.entries(Filters).map(([f, display]) => (
-                <div
-                  className={classNames(
-                    "cursor-pointer rounded-xl bg-osmoverse-700 px-5 py-1",
-                    {
-                      "bg-osmoverse-600": filter ? f === filter : false,
-                    }
-                  )}
-                  key={f}
-                  onClick={() => {
-                    setFilter((prevFilter) =>
-                      prevFilter === f ? undefined : (f as Filter)
-                    );
+            <div className="flex w-full flex-wrap items-center justify-between lg:place-content-between">
+              <div className="flex flex-wrap gap-3">
+                {Object.entries(Filters).map(([f, display]) => (
+                  <div
+                    className={classNames(
+                      "cursor-pointer rounded-xl bg-osmoverse-700 px-2 py-2",
+                      {
+                        "bg-osmoverse-600": filter ? f === filter : false,
+                      }
+                    )}
+                    key={f}
+                    onClick={() => {
+                      setFilter((prevFilter) =>
+                        prevFilter === f ? undefined : (f as Filter)
+                      );
+                    }}
+                  >
+                    {display}
+                  </div>
+                ))}
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <SearchBox
+                  currentValue={query}
+                  onInput={setQuery}
+                  placeholder={t("pools.allPools.search")}
+                  className="!w-64"
+                />
+                <SortMenu
+                  options={table
+                    .getHeaderGroups()[0]
+                    .headers.map(({ id, column }) => {
+                      return {
+                        id,
+                        display: column.columnDef.header as string,
+                      };
+                    })}
+                  selectedOptionId={sorting[0]?.id}
+                  onSelect={(id: string) => {
+                    table.reset();
+                    table.getColumn(id).toggleSorting(false);
                   }}
-                >
-                  {display}
-                </div>
-              ))}
-              <SearchBox
-                currentValue={query}
-                onInput={setQuery}
-                placeholder={t("pools.allPools.search")}
-                className="!w-64"
-                size="small"
-              />
-              <SortMenu
-                options={table
-                  .getHeaderGroups()[0]
-                  .headers.map(({ id, column }) => {
-                    return {
-                      id,
-                      display: column.columnDef.header as string,
-                    };
-                  })}
-                selectedOptionId={sorting[0]?.id}
-                onSelect={(id: string) => {
-                  table.reset();
-                  table.getColumn(id).toggleSorting(false);
-                }}
-                onToggleSortDirection={() => {
-                  // logEvent([
-                  //   EventName.Pools.allPoolsListSorted,
-                  //   {
-                  //     sortedBy: sortKeyPath,
-                  //     sortDirection:
-                  //       sortDirection === "ascending"
-                  //         ? "descending"
-                  //         : "ascending",
-                  //     sortedOn: "dropdown",
-                  //   },
-                  // ]);
-                  setSorting((prev) => {
-                    const [first] = prev;
-                    return [{ ...first, desc: !first.desc }];
-                  });
-                }}
-              />
+                  onToggleSortDirection={() => {
+                    // logEvent([
+                    //   EventName.Pools.allPoolsListSorted,
+                    //   {
+                    //     sortedBy: sortKeyPath,
+                    //     sortDirection:
+                    //       sortDirection === "ascending"
+                    //         ? "descending"
+                    //         : "ascending",
+                    //     sortedOn: "dropdown",
+                    //   },
+                    // ]);
+                    setSorting((prev) => {
+                      const [first] = prev;
+                      return [{ ...first, desc: !first.desc }];
+                    });
+                  }}
+                />
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-4"></div>

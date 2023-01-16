@@ -100,7 +100,7 @@
   }
 
   thead > tr > th:first-child {
-    @apply rounded-l-full py-[18px] pl-10 pr-3 md:rounded-none;
+    @apply rounded-tl-lg py-[18px] pl-10 pr-3 md:rounded-none;
   }
 
   thead > tr > th {
@@ -108,7 +108,7 @@
   }
 
   thead > tr > th:last-child {
-    @apply rounded-r-full py-[18px] pl-3 pr-10 lg:pr-4 md:rounded-none;
+    @apply rounded-tr-lg py-[18px] pl-3 pr-10 lg:pr-4 md:rounded-none;
   }
 
   tbody > tr > td:first-child {
