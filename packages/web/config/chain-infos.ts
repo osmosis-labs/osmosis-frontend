@@ -328,6 +328,14 @@ const chainInfos = (
           coinGeckoId: "pool:pstake",
           coinImageUrl: "/tokens/pstake.png",
         },
+        {
+          coinDenom: "stkATOM",
+          coinMinimalDenom: "stk/uatom",
+          coinDecimals: 6,
+          // coinGeckoId: "stkatom",
+          coinGeckoId: "pool:stk/uatom",
+          coinImageUrl: "/tokens/stkatom.svg",
+        },
       ],
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/persistence/txs/{txHash}",
@@ -2002,8 +2010,8 @@ const chainInfos = (
       explorerUrlToTx: "https://www.mintscan.io/crescent/txs/{txHash}",
     },
     {
-      rpc: "https://rpc.helios-1.lumenex.io",
-      rest: "https://api.helios-1.lumenex.io",
+      rpc: "https://rpc.lumenx.chaintools.tech",
+      rest: "https://api.lumenx.chaintools.tech",
       chainId: "LumenX",
       chainName: "LumenX",
       bip44: {
@@ -2027,7 +2035,7 @@ const chainInfos = (
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
-      explorerUrlToTx: "https://scope.helios-1.lumenex.io/lumenx/tx/{txHash}",
+      explorerUrlToTx: "https://explorer.chaintools.tech/lumenx/tx/{txHash}",
     },
     {
       rpc: "https://rpc.orai.io",
@@ -2421,6 +2429,62 @@ const chainInfos = (
       ],
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/medasdigital/txs/{txHash}",
+    },
+    {
+      rpc: "https://rpc-mainnet.onomy.io",
+      rest: "https://rest-mainnet.onomy.io",
+      chainId: "onomy-mainnet-1",
+      chainName: "Onomy",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("onomy"),
+      currencies: [
+        {
+          coinDenom: "NOM",
+          coinMinimalDenom: "anom",
+          coinDecimals: 18,
+          coinGeckoId: "pool:anom",
+          coinImageUrl: "/tokens/nom.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0,
+            average: 0.03,
+            high: 0.06,
+          },
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx: "https://www.mintscan.io/onomy-protocol/txs/{txHash}",
+    },
+    {
+      rpc: "https://dys-tm.dysonprotocol.com:443",
+      rest: "https://dys-api.dysonprotocol.com:443",
+      chainId: "dyson-mainnet-01",
+      chainName: "Dyson Protocol",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("dys"),
+      currencies: [
+        {
+          coinDenom: "DYS",
+          coinMinimalDenom: "dys",
+          coinDecimals: 0,
+          coinGeckoId: "pool:dys",
+          coinImageUrl: "/tokens/dys.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.0001,
+            average: 0.0002,
+            high: 0.0003,
+          },
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx: "https://explorer.dys.dysonprotocol.com/dyson/tx/{txHash}",
     },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);

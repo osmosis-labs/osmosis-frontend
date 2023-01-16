@@ -8,7 +8,7 @@ export function toastOnBroadcastFailed(
   getChain: (chainId: string) => ChainInfoInner<ChainInfoWithExplorer>
 ) {
   return (chainId: string, e?: Error) => {
-    let caption: string = "Unknown error";
+    let caption: string = "unknownError";
     if (e instanceof Error) {
       caption = e.message;
     } else if (typeof e === "string") {
@@ -17,7 +17,7 @@ export function toastOnBroadcastFailed(
 
     displayToast(
       {
-        message: "Transaction Failed",
+        message: "transactionFailed",
         caption:
           prettifyTxError(caption, getChain(chainId).currencies) ?? caption,
       },
@@ -30,8 +30,8 @@ export function toastOnBroadcast() {
   return () => {
     displayToast(
       {
-        message: "Transaction Broadcasting",
-        caption: "Waiting for transaction to be included in the block",
+        message: "transactionBroadcasting",
+        caption: "waitingForTransaction",
       },
       ToastType.LOADING
     );
@@ -46,9 +46,9 @@ export function toastOnFulfill(
     if (tx.code) {
       displayToast(
         {
-          message: "Transaction Failed",
+          message: "transactionFailed",
           caption: isSlippageError(tx)
-            ? "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage."
+            ? "swapFailed"
             : prettifyTxError(tx.log, chainInfo.currencies) ?? tx.log,
         },
         ToastType.ERROR
@@ -56,12 +56,12 @@ export function toastOnFulfill(
     } else {
       displayToast(
         {
-          message: "Transaction Successful",
+          message: "transactionSuccessful",
           learnMoreUrl: chainInfo.raw.explorerUrlToTx.replace(
             "{txHash}",
             tx.hash.toUpperCase()
           ),
-          learnMoreUrlCaption: "View explorer",
+          learnMoreUrlCaption: "viewExplorerr",
         },
         ToastType.SUCCESS
       );

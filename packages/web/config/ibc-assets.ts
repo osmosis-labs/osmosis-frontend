@@ -81,6 +81,20 @@ export const IBCAssetInfos: (IBCAsset & {
     counterpartyChainId: "axelar-dojo-1",
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
+    coinMinimalDenom: "uusdt",
+    sourceChainNameOverride: "Ethereum",
+    isVerified: true,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.usdt.ethereum],
+    },
+  },
+  {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
     coinMinimalDenom: "dai-wei",
     sourceChainNameOverride: "Ethereum",
     isVerified: true,
@@ -97,7 +111,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-3",
     coinMinimalDenom: "busd-wei",
     sourceChainNameOverride: "Ethereum",
-    isVerified: false,
+    isVerified: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
@@ -162,6 +176,13 @@ export const IBCAssetInfos: (IBCAsset & {
     },
   },
   {
+    counterpartyChainId: "columbus-5",
+    sourceChannelId: "channel-72",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "uluna",
+    isVerified: true,
+  },
+  {
     counterpartyChainId: "juno-1",
     sourceChannelId: "channel-42",
     destChannelId: "channel-0",
@@ -204,12 +225,6 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "uscrt",
     isVerified: true,
-  },
-  {
-    counterpartyChainId: "columbus-5",
-    sourceChannelId: "channel-72",
-    destChannelId: "channel-1",
-    coinMinimalDenom: "uluna",
   },
   {
     counterpartyChainId: "columbus-5",
@@ -534,19 +549,6 @@ export const IBCAssetInfos: (IBCAsset & {
     counterpartyChainId: "axelar-dojo-1",
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
-    coinMinimalDenom: "uusdt",
-    sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChains: [AxelarSourceChainConfigs.usdt.ethereum],
-    },
-  },
-  {
-    counterpartyChainId: "axelar-dojo-1",
-    sourceChannelId: "channel-208",
-    destChannelId: "channel-3",
     coinMinimalDenom: "frax-wei",
     sourceChainNameOverride: "Ethereum",
     originBridgeInfo: {
@@ -664,6 +666,7 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-251",
     destChannelId: "channel-1",
     coinMinimalDenom: "uluna",
+    isVerified: true,
     depositUrlOverride: "https://bridge.terra.money",
     withdrawUrlOverride: "https://bridge.terra.money",
   },
@@ -1166,6 +1169,24 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "cw20:secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852",
     depositUrlOverride: "https://wrap.scrt.network",
     ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
+  },
+  {
+    counterpartyChainId: "onomy-mainnet-1",
+    sourceChannelId: "channel-525",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "anom",
+  },
+  {
+    counterpartyChainId: "core-1",
+    sourceChannelId: "channel-4",
+    destChannelId: "channel-6",
+    coinMinimalDenom: "stk/uatom",
+  },
+  {
+    counterpartyChainId: "dyson-mainnet-01",
+    sourceChannelId: "channel-526",
+    destChannelId: "channel-2",
+    coinMinimalDenom: "dys",
   },
 ].filter((ibcAsset) => {
   // validate IBC asset config

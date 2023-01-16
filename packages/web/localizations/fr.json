@@ -1,4 +1,10 @@
 {
+  "404": {
+    "title": "Page non trouvée"
+  },
+  "500": {
+    "title": "Erreur serveur"
+  },
   "app": {
     "banner": {
       "title": "Vous consultez tous les actifs sans permission",
@@ -26,7 +32,10 @@
     },
     "autoRouter": "Itinéraire",
     "routerTooltipFee": "Frais",
-    "autoRouterToggle": { "show": "Montrer", "hide": "Cacher" },
+    "autoRouterToggle": {
+      "show": "Montrer",
+      "hide": "Cacher"
+    },
     "pool": "Bassin n°{id}"
   },
   "pools": {
@@ -342,12 +351,6 @@
     "titleLanguage": "Langue",
     "titleHideDust": "Masquer les piscines avec < 0.01{fiatSymbol}"
   },
-  "404": {
-    "title": "Page non trouvée"
-  },
-  "500": {
-    "title": "Erreur serveur"
-  },
   "errors": {
     "emptyAmount": "Le montant est vide",
     "invalidNumberAmount": "Forme invalide du nombre",
@@ -383,18 +386,14 @@
   },
   "connectDisclaimer": "En connectant un portefeuille, vous reconnaissez avoir lu et compris la politique Osmosis",
   "protocolDisclaimer": "Clause de non-responsabilité du protocole",
-  "Transaction Failed": "Échec de la transaction",
-  "Transaction Successful": "Succès de la transaction",
-  "Transaction Broadcasting": "Émission de la transaction",
-  "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.": "L'échange a échoué. La liquitité n'est peut-être pas suffisante. Essayez d'ajuster le glissement autorisé.",
-  "Waiting for transaction to be included in the block": "Attente de l'inclusion de la transaction dans le bloc",
-  "view explorer": "Voir dans l'exploreur",
-  "Unknown error": "Erreur inconnue",
-  "Request rejected": "Demande rejetée",
-  "Amount is empty": "Le montant est vide",
-  "Insufficient amount": "Montant insuffisant",
-  "Amount is zero": "Le montant est de zéro.",
-  "Minimum of 2 assets required": "Minimum de 2 actifs requis",
+  "transactionFailed": "Échec de la transaction",
+  "transactionSuccessful": "Succès de la transaction",
+  "transactionBroadcasting": "Émission de la transaction",
+  "swapFailed": "L'échange a échoué. La liquitité n'est peut-être pas suffisante. Essayez d'ajuster le glissement autorisé.",
+  "waitingForTransaction": "Attente de l'inclusion de la transaction dans le bloc",
+  "viewExplorer": "Voir dans l'exploreur",
+  "unknownError": "Erreur inconnue",
+  "requestRejected": "Demande rejetée",
   "stablecoinTypes": {
     "collateralized": "garanti"
   }

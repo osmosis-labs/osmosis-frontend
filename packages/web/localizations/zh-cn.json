@@ -1,4 +1,10 @@
 {
+  "404": {
+    "title": "未找到"
+  },
+  "500": {
+    "title": "服务器错误"
+  },
   "app": {
     "banner": {
       "title": "您正在查看所有无许可资产",
@@ -26,7 +32,10 @@
     },
     "autoRouter": "路线",
     "routerTooltipFee": "费用",
-    "autoRouterToggle": { "show": "节目", "hide": "隐藏" },
+    "autoRouterToggle": {
+      "show": "节目",
+      "hide": "隐藏"
+    },
     "pool": "资金池 #{id}"
   },
   "pools": {
@@ -342,12 +351,6 @@
     "titleLanguage": "语言",
     "titleHideDust": "使用 < {fiatSymbol}0.01 隐藏矿池"
   },
-  "404": {
-    "title": "未找到"
-  },
-  "500": {
-    "title": "服务器错误"
-  },
   "errors": {
     "emptyAmount": "数量为空",
     "invalidNumberAmount": "无效的数字",
@@ -383,18 +386,14 @@
   },
   "connectDisclaimer": "连接钱包即表示您已经阅读和理解 Osmosis 相关内容",
   "protocolDisclaimer": "协议免责声明",
-  "Transaction Failed": "交易失败",
-  "Transaction Successful": "交易成功",
-  "Transaction Broadcasting": "广播交易中",
-  "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.": "交易失败，流动性不足，尝试调整允许的滑点.",
-  "Waiting for transaction to be included in the block": "等待交易打包进区块",
-  "view explorer": "浏览器查看",
-  "Unknown error": "未知错误",
-  "Request rejected": "请求拒绝",
-  "Amount is empty": "数量为空",
-  "Insufficient amount": "数量不足",
-  "Amount is zero": "数量为零",
-  "Minimum of 2 assets required": "最少需要两种资产",
+  "transactionFailed": "交易失败",
+  "transactionSuccessful": "交易成功",
+  "transactionBroadcasting": "广播交易中",
+  "swapFailed": "交易失败，流动性不足，尝试调整允许的滑点.",
+  "waitingForTransaction": "等待交易打包进区块",
+  "viewExplorer": "浏览器查看",
+  "unknownError": "未知错误",
+  "requestRejected": "请求拒绝",
   "stablecoinTypes": {
     "collateralized": "抵押的"
   }

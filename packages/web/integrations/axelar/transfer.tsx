@@ -347,7 +347,7 @@ const AxelarTransfer: FunctionComponent<
               if (typeof msg === "string") {
                 displayToast(
                   {
-                    message: "Transaction Failed",
+                    message: "transactionFailed",
                     caption: msg,
                   },
                   ToastType.ERROR
