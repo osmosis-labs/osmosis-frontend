@@ -1,4 +1,10 @@
 {
+  "404": {
+    "title": "Bulunamadı"
+  },
+  "500": {
+    "title": "Sunucu hatası"
+  },
   "app": {
     "banner": {
       "title": "Tüm izin gerektirmeyen varlıkları görüntülüyorsunuz",
@@ -26,7 +32,10 @@
     },
     "autoRouter": "Güzergah",
     "routerTooltipFee": "Ücret",
-    "autoRouterToggle": { "show": "Göstermek", "hide": "Saklamak" },
+    "autoRouterToggle": {
+      "show": "Göstermek",
+      "hide": "Saklamak"
+    },
     "pool": "Havuz #{id}"
   },
   "pools": {
@@ -343,12 +352,6 @@
     "titleLanguage": "Dil",
     "titleHideDust": "olan havuzları gizle < {fiatSymbol}0.01"
   },
-  "404": {
-    "title": "Bulunamadı"
-  },
-  "500": {
-    "title": "Sunucu hatası"
-  },
   "errors": {
     "emptyAmount": "Miktar boş",
     "invalidNumberAmount": "Geçersiz rakam",
@@ -384,18 +387,14 @@
   },
   "connectDisclaimer": "Cüzdanı bağlayarak, Osmosis'i okuyup anladığınızı kabul etmiş olursunuz.",
   "protocolDisclaimer": "Protokol Sorumluluk Reddi",
-  "Transaction Failed": "İşlem Başarısız",
-  "Transaction Successful": "İşlem Başarılı",
-  "Transaction Broadcasting": "İşlem Gerçekleştiriliyor",
-  "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.": "Takas başarısız. Likidite yetersiz olabilir. Slipaj oranında değişiklik yapmayı deneyin.",
-  "Waiting for transaction to be included in the block": "İşlemin bloğa eklenmesi bekleniyor",
-  "view explorer": "gezginde görüntüle",
-  "Unknown error": "Bilinmeyen hata",
-  "Request rejected": "Talep reddedildi",
-  "Amount is empty": "Miktar alanı boş",
-  "Insufficient amount": "Yetersiz miktar",
-  "Amount is zero": "Miktar sıfır",
-  "Minimum of 2 assets required": "En az 2 varlık gerekli",
+  "transactionFailed": "İşlem Başarısız",
+  "transactionSuccessful": "İşlem Başarılı",
+  "transactionBroadcasting": "İşlem Gerçekleştiriliyor",
+  "swapFailed": "Takas başarısız. Likidite yetersiz olabilir. Slipaj oranında değişiklik yapmayı deneyin.",
+  "waitingForTransaction": "İşlemin bloğa eklenmesi bekleniyor",
+  "viewExplorer": "gezginde görüntüle",
+  "unknownError": "Bilinmeyen hata",
+  "requestRejected": "Talep reddedildi",
   "stablecoinTypes": {
     "collateralized": "teminatlandırılmış"
   }

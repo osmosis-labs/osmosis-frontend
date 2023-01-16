@@ -1,4 +1,10 @@
 {
+  "404": {
+    "title": "搵唔到呢一頁喎"
+  },
+  "500": {
+    "title": "伺服器錯誤"
+  },
   "app": {
     "banner": {
       "title": "你睇緊所有 permissionless 資產",
@@ -26,7 +32,10 @@
     },
     "autoRouter": "路線",
     "routerTooltipFee": "費",
-    "autoRouterToggle": { "show": "顯示", "hide": "隱藏" },
+    "autoRouterToggle": {
+      "show": "顯示",
+      "hide": "隱藏"
+    },
     "pool": "流動性池 #{id}"
   },
   "pools": {
@@ -343,12 +352,6 @@
     "titleLanguage": "語言",
     "titleHideDust": "隱藏 < {fiatSymbol}0.01 嘅礦池"
   },
-  "404": {
-    "title": "搵唔到呢一頁喎"
-  },
-  "500": {
-    "title": "伺服器錯誤"
-  },
   "errors": {
     "emptyAmount": "未提供數量",
     "invalidNumberAmount": "非正確數字",
@@ -384,18 +387,14 @@
   },
   "connectDisclaimer": "連接錢包即表示您已經閱讀和理解 Osmosis 嘅",
   "protocolDisclaimer": "協定免責聲明",
-  "Transaction Failed": "交易失敗",
-  "Transaction Successful": "交易成功",
-  "Transaction Broadcasting": "交易正在被廣播",
-  "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.": "兌換失敗，流動性可能唔夠喎，嘗試下調整允許嘅滑價啦",
-  "Waiting for transaction to be included in the block": "正等待交易被加入到區塊中",
-  "view explorer": "使用區塊瀏覽器查看",
-  "Unknown error": "未知錯誤",
-  "Request rejected": "請求已被拒絕",
-  "Amount is empty": "未提供幣額",
-  "Insufficient amount": "幣額唔夠喎",
-  "Amount is zero": "幣額為零",
-  "Minimum of 2 assets required": "最少需要兩種資產",
+  "transactionFailed": "交易失敗",
+  "transactionSuccessful": "交易成功",
+  "transactionBroadcasting": "交易正在被廣播",
+  "swapFailed": "兌換失敗，流動性可能唔夠喎，嘗試下調整允許嘅滑價啦",
+  "waitingForTransaction": "正等待交易被加入到區塊中",
+  "viewExplorer": "使用區塊瀏覽器查看",
+  "unknownError": "未知錯誤",
+  "requestRejected": "請求已被拒絕",
   "stablecoinTypes": {
     "collateralized": "抵押"
   }

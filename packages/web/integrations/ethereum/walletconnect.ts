@@ -218,7 +218,7 @@ export class ObservableWalletConnect implements EthWallet {
   displayError(e: any): string | undefined {
     if (e.message === "User rejected the transaction") {
       // User denied
-      return "Request rejected";
+      return "requestRejected";
     }
   }
 
