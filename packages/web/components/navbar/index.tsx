@@ -20,7 +20,6 @@ import IconButton from "../buttons/icon-button";
 import { Icon } from "../assets";
 import { formatICNSName, getShortAddress } from "../../utils/string";
 import { Popover } from "../popover";
-import { useDisclosure } from "../../hooks/use-disclosure";
 import { SettingsModal } from "../../modals";
 
 export const NavBar: FunctionComponent<
