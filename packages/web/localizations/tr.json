@@ -348,9 +348,11 @@
     "buyTokens": "jeton satın al"
   },
   "settings": {
-    "title": "Ayarlar",
+    "title": "Genel Ayarlar",
     "titleLanguage": "Dil",
-    "titleHideDust": "olan havuzları gizle < {fiatSymbol}0.01"
+    "titleHideDust": "olan havuzları gizle < {fiatSymbol}0.01",
+    "selectLanguage": "Dil Seçin",
+    "filterDust": "Toz Filtresi"
   },
   "errors": {
     "emptyAmount": "Miktar boş",

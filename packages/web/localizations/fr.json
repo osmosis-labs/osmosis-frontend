@@ -347,9 +347,11 @@
     "buyTokens": "Acheter jetons"
   },
   "settings": {
-    "title": "Paramètres",
+    "title": "Paramètres globaux",
     "titleLanguage": "Langue",
-    "titleHideDust": "Masquer les piscines avec < 0.01{fiatSymbol}"
+    "titleHideDust": "Masquer les piscines avec < 0.01{fiatSymbol}",
+    "selectLanguage": "Choisir la langue",
+    "filterDust": "Filtrer la poussière"
   },
   "errors": {
     "emptyAmount": "Le montant est vide",

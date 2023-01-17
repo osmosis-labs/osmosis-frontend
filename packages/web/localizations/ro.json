@@ -348,9 +348,10 @@
     "buyTokens": "Cumpara"
   },
   "settings": {
-    "title": "Setari",
+    "title": "Setări globale",
     "titleLanguage": "Limba",
-    "titleShowDust": "Arata pool-uri/active < {fiatSymbol}0.01",
+    "selectLanguage": "Selecteaza limba",
+    "filterDust": "Filtru de praf",
     "titleHideDust": "Ascundeți pool-urile cu < {fiatSymbol}0,01"
   },
   "errors": {

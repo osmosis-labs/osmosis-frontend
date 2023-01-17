@@ -348,9 +348,11 @@
     "buyTokens": "Comprar fichas"
   },
   "settings": {
-    "title": "Ajustes",
+    "title": "Configuración global",
     "titleLanguage": "Idioma",
-    "titleHideDust": "Ocultar piscinas con <{fiatSymbol} 0.01"
+    "titleHideDust": "Ocultar piscinas con <{fiatSymbol} 0.01",
+    "selectLanguage": "Seleccione el idioma",
+    "filterDust": "Filtro de polvo"
   },
   "errors": {
     "emptyAmount": "La cantidad es vacía",

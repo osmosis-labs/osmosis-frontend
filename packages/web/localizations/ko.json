@@ -348,9 +348,11 @@
     "buyTokens": "토큰 구매"
   },
   "settings": {
-    "title": "설정",
+    "title": "전역 설정",
     "titleLanguage": "언어",
-    "titleHideDust": "< {fiatSymbol}0.01 미만인 풀 숨기기"
+    "titleHideDust": "< {fiatSymbol}0.01 미만인 풀 숨기기",
+    "selectLanguage": "언어 선택",
+    "filterDust": "필터 먼지"
   },
   "errors": {
     "emptyAmount": "수량이 비어있습니다",

@@ -348,9 +348,11 @@
     "buyTokens": "購買代幣"
   },
   "settings": {
-    "title": "設定",
+    "title": "全局設置",
     "titleLanguage": "語言",
-    "titleHideDust": "隱藏 < {fiatSymbol}0.01 嘅礦池"
+    "titleHideDust": "隱藏 < {fiatSymbol}0.01 嘅礦池",
+    "selectLanguage": "選擇語言",
+    "filterDust": "濾塵"
   },
   "errors": {
     "emptyAmount": "未提供數量",

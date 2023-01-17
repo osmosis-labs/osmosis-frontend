@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { FunctionComponent, useState } from "react";
+import { Fragment, FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
 import classNames from "classnames";
 import { WalletStatus } from "@keplr-wallet/stores";
@@ -13,6 +13,8 @@ import IconButton from "../buttons/icon-button";
 import { Icon } from "../assets";
 import { useDisclosure } from "../../hooks/use-disclosure";
 import { SettingsModal } from "../../modals";
+import { Popover } from "../popover";
+import { MainMenu } from "../main-menu";
 
 export const NavBar: FunctionComponent<
   {
@@ -38,21 +40,49 @@ export const NavBar: FunctionComponent<
         )}
       >
         <div className="relative hidden shrink-0 items-center md:flex">
-          <IconButton
-            mode="unstyled"
-            size="unstyled"
-            className="py-0"
-            aria-label="Open main menu dropdown"
-            onClick={onOpenSettings}
-            icon={
-              <Icon
-                id="hamburger"
-                className="text-osmoverse-200"
-                height={30}
-                width={30}
-              />
-            }
-          />
+          <Popover>
+            {({ close: closeMobileMainMenu }) => (
+              <>
+                <Popover.Button as={Fragment}>
+                  <IconButton
+                    mode="unstyled"
+                    size="unstyled"
+                    className="py-0"
+                    aria-label="Open main menu dropdown"
+                    icon={
+                      <Icon
+                        id="hamburger"
+                        className="text-osmoverse-200"
+                        height={30}
+                        width={30}
+                      />
+                    }
+                  />
+                </Popover.Button>
+                <Popover.Panel className="top-navbar-mobile absolute top-[100%] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
+                  <MainMenu
+                    menus={menus.concat({
+                      label: "Settings",
+                      link: (e) => {
+                        e.stopPropagation();
+                        onOpenSettings();
+                        closeMobileMainMenu();
+                      },
+                      icon: (
+                        <Icon
+                          id="setting"
+                          className="text-white-full"
+                          width={20}
+                          height={20}
+                        />
+                      ),
+                    })}
+                  />
+                  <WalletInfo />
+                </Popover.Panel>
+              </>
+            )}
+          </Popover>
         </div>
         <div className="flex shrink-0 grow items-center gap-9 lg:gap-2 md:place-content-between md:gap-1">
           <h4 className="md:text-h6 md:font-h6">

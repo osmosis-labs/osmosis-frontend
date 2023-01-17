@@ -58,6 +58,8 @@ const ListBoxContent: FunctionComponent<
     languageSetting: LanguageUserSetting;
   }
 > = observer(({ open, options, value, languageSetting }) => {
+  const t = useTranslation();
+
   useEffect(() => {
     languageSetting.setState({ isControlOpen: open });
   }, [open]);
@@ -75,7 +77,7 @@ const ListBoxContent: FunctionComponent<
               {value?.display}
             </span>
             <span className="caption tracking-wider text-osmoverse-200">
-              Select language
+              {t("settings.selectLanguage")}
             </span>
           </div>
 
