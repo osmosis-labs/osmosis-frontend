@@ -1,4 +1,10 @@
 {
+  "404": {
+    "title": "Nie znaleziono"
+  },
+  "500": {
+    "title": "Błąd serwera"
+  },
   "app": {
     "banner": {
       "title": "Przeglądasz środki nie wymagające uprawnień",
@@ -26,7 +32,10 @@
     },
     "autoRouter": "Trasa",
     "routerTooltipFee": "Opłata",
-    "autoRouterToggle": { "show": "Mostrar", "hide": "Esconder" },
+    "autoRouterToggle": {
+      "show": "Mostrar",
+      "hide": "Esconder"
+    },
     "pool": "Pula #{id}"
   },
   "pools": {
@@ -343,12 +352,6 @@
     "titleLanguage": "Język",
     "titleHideDust": "Ukryj pule z < {fiatSymbol}0.01"
   },
-  "404": {
-    "title": "Nie znaleziono"
-  },
-  "500": {
-    "title": "Błąd serwera"
-  },
   "errors": {
     "emptyAmount": "Ilość jest pusta",
     "invalidNumberAmount": "Nieprawidłowy format liczby",
@@ -384,18 +387,14 @@
   },
   "connectDisclaimer": "Podłączając portfel, potwierdzasz, że przeczytałeś i zrozumiałeś Osmosis",
   "protocolDisclaimer": "Zastrzeżenie Protokołu",
-  "Transaction Failed": "Transakcja Nieudana",
-  "Transaction Successful": "Transakcja Udana",
-  "Transaction Broadcasting": "Nadawanie Transakcji",
-  "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.": "Wymiana nie udała się. Płynność może być niewystarczająca. Spróbuj dostosować dozwolone odchylenie.",
-  "Waiting for transaction to be included in the block": "Oczekiwanie na dołączenie transakcji do bloku",
-  "view explorer": "zobacz eksplorer",
-  "Unknown error": "Nieznany błąd",
-  "Request rejected": "Żądanie odrzucone",
-  "Amount is empty": "Ilość jest pusta",
-  "Insufficient amount": "Niewystarczająca ilość",
-  "Amount is zero": "Ilość jest zerowa",
-  "Minimum of 2 assets required": "Wymagane są conajmniej 2 tokeny",
+  "transactionFailed": "Transakcja Nieudana",
+  "transactionSuccessful": "Transakcja Udana",
+  "transactionBroadcasting": "Nadawanie Transakcji",
+  "swapFailed": "Wymiana nie udała się. Płynność może być niewystarczająca. Spróbuj dostosować dozwolone odchylenie.",
+  "waitingForTransaction": "Oczekiwanie na dołączenie transakcji do bloku",
+  "viewExplorer": "zobacz eksplorer",
+  "unknownError": "Nieznany błąd",
+  "requestRejected": "Żądanie odrzucone",
   "stablecoinTypes": {
     "collateralized": "zabezpieczone"
   }

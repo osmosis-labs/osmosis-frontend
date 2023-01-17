@@ -232,8 +232,8 @@ export class ObservableMetamask implements EthWallet {
     if (e.code === 4001) {
       // User denied
       return {
-        message: "Transaction Failed",
-        caption: "Request rejected",
+        message: "transactionFailed",
+        caption: "requestRejected",
       };
     } else if (e.code === 4100) {
       // wallet is not logged in (but is connected)

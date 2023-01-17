@@ -1,4 +1,10 @@
 {
+  "404": {
+    "title": "No encontrado"
+  },
+  "500": {
+    "title": "Error del Servidor"
+  },
   "app": {
     "banner": {
       "title": "Estás viendo todos los activos sin permiso",
@@ -26,7 +32,10 @@
     },
     "autoRouter": "Ruta",
     "routerTooltipFee": "Tarifa",
-    "autoRouterToggle": { "show": "Mostrar", "hide": "Ocultar" },
+    "autoRouterToggle": {
+      "show": "Mostrar",
+      "hide": "Ocultar"
+    },
     "pool": "Piscina #{id}"
   },
   "pools": {
@@ -343,12 +352,6 @@
     "titleLanguage": "Idioma",
     "titleHideDust": "Ocultar piscinas con <{fiatSymbol} 0.01"
   },
-  "404": {
-    "title": "No encontrado"
-  },
-  "500": {
-    "title": "Error del Servidor"
-  },
   "errors": {
     "emptyAmount": "La cantidad es vacía",
     "invalidNumberAmount": "Forma de número inválida",
@@ -384,18 +387,14 @@
   },
   "connectDisclaimer": "Al conectar una billetera, reconoce que ha leído y comprende Osmosis",
   "protocolDisclaimer": "Deslindo de responsabilidad al protocolo",
-  "Transaction Failed": "Transacción fallida",
-  "Transaction Successful": "Transacción exitosa",
-  "Transaction Broadcasting": "Ejecutando transacción",
-  "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.": "El intercambio falló. La liquidez puede no ser suficiente. Intente ajustar el deslizamiento permitido.",
-  "Waiting for transaction to be included in the block": "Esperando que la transacción se incluya en el bloque",
-  "view explorer": "Ver Explorador",
-  "Unknown error": "Error desconocido",
-  "Request rejected": "Solicitud rechazada",
-  "Amount is empty": "La cantidad está vacía",
-  "Insufficient amount": "Cantidad insuficiente",
-  "Amount is zero": "La cantidad es cero",
-  "Minimum of 2 assets required": "Mínimo de 2 activos requeridos",
+  "transactionFailed": "Transacción fallida",
+  "transactionSuccessful": "Transacción exitosa",
+  "transactionBroadcasting": "Ejecutando transacción",
+  "swapFailed": "El intercambio falló. La liquidez puede no ser suficiente. Intente ajustar el deslizamiento permitido.",
+  "waitingForTransaction": "Esperando que la transacción se incluya en el bloque",
+  "viewExplorer": "Ver Explorador",
+  "unknownError": "Error desconocido",
+  "requestRejected": "Solicitud rechazada",
   "stablecoinTypes": {
     "collateralized": "colateralizado"
   }

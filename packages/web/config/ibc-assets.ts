@@ -666,6 +666,7 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-251",
     destChannelId: "channel-1",
     coinMinimalDenom: "uluna",
+    isVerified: true,
     depositUrlOverride: "https://bridge.terra.money",
     withdrawUrlOverride: "https://bridge.terra.money",
   },
@@ -1180,6 +1181,12 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-4",
     destChannelId: "channel-6",
     coinMinimalDenom: "stk/uatom",
+  },
+  {
+    counterpartyChainId: "dyson-mainnet-01",
+    sourceChannelId: "channel-526",
+    destChannelId: "channel-2",
+    coinMinimalDenom: "dys",
   },
   {
     counterpartyChainId: "juno-1",

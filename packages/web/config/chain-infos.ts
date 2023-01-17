@@ -2469,6 +2469,34 @@ const chainInfos = (
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/onomy-protocol/txs/{txHash}",
     },
+    {
+      rpc: "https://dys-tm.dysonprotocol.com:443",
+      rest: "https://dys-api.dysonprotocol.com:443",
+      chainId: "dyson-mainnet-01",
+      chainName: "Dyson Protocol",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("dys"),
+      currencies: [
+        {
+          coinDenom: "DYS",
+          coinMinimalDenom: "dys",
+          coinDecimals: 0,
+          coinGeckoId: "pool:dys",
+          coinImageUrl: "/tokens/dys.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.0001,
+            average: 0.0002,
+            high: 0.0003,
+          },
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx: "https://explorer.dys.dysonprotocol.com/dyson/tx/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
