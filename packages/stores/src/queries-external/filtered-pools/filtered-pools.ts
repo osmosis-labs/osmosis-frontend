@@ -46,7 +46,7 @@ export class ObservableQueryFilteredPools
     },
     initialPagination: Pagination = {
       offset: 0,
-      limit: 10,
+      limit: 160,
     }
   ) {
     super(
