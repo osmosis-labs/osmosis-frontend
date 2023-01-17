@@ -229,7 +229,8 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
             onMouseOver={() => {
               if (!isMobile) setHoverWalletInfo(true);
             }}
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               if (isMobile) setMobileTapInfo(true);
             }}
           >
