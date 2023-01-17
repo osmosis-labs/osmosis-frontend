@@ -39,10 +39,12 @@ import {
   DrawerOverlay,
   DrawerPanel,
 } from "../components/drawers";
-import { Bech32Address } from "@keplr-wallet/cosmos";
 import { ArrowButton } from "../components/buttons";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { getShortAddress } from "../utils/string";
+import { coinFormatter, priceFormatter } from "../utils/formatter";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
 
 const QRCode = dynamic(() => import("qrcode.react"));
 
@@ -173,9 +175,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
         </Drawer>
 
         <div className="mt-3 text-center">
-          <p className="subtitle1">
-            {Bech32Address.shortenAddress(address, 13)}
-          </p>
+          <p className="subtitle1">{getShortAddress(address)}</p>
         </div>
 
         <div className="mt-7 flex w-full justify-between rounded-[20px] border border-osmoverse-700 bg-osmoverse-800 p-5 xs:flex-col">
@@ -194,15 +194,28 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
 
             <div>
               <h6 className="mb-[4px] tracking-wide text-osmoverse-100">
-                {priceStore
-                  .calculatePrice(
+                {priceFormatter(
+                  priceStore.calculatePrice(
                     navBarStore.walletInfo.balance,
                     priceStore.defaultVsCurrency
-                  )
-                  ?.toString()}
+                  ) ??
+                    new PricePretty(
+                      priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
+                      new Dec(0)
+                    ),
+                  {
+                    minimumFractionDigits: 2,
+                    maximumSignificantDigits: undefined,
+                    notation: "standard",
+                  }
+                )}
               </h6>
               <p className="text-h5 font-h5">
-                {navBarStore.walletInfo.balance.toString()}
+                {coinFormatter(navBarStore.walletInfo.balance, {
+                  minimumFractionDigits: 2,
+                  maximumSignificantDigits: undefined,
+                  notation: "standard",
+                })}
               </p>
             </div>
           </div>
@@ -274,7 +287,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
                 <p>Cosmos</p>
                 <div className="flex items-center gap-2">
                   <p title={address} className="text-osmoverse-100">
-                    {Bech32Address.shortenAddress(address, 13)}
+                    {getShortAddress(address)}
                   </p>
                   <button
                     title="Copy"
@@ -344,7 +357,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
                         title={address}
                         className="subtitle1 text-osmoverse-300"
                       >
-                        {Bech32Address.shortenAddress(address, 15)}
+                        {getShortAddress(address, { prefixLength: 10 })}
                       </p>
                       <button
                         className="flex h-9 w-9 items-center justify-center"
