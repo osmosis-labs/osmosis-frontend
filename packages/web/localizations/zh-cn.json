@@ -346,9 +346,11 @@
     "learnMoreFrontier": "了解更多<br/>关于 <br2/> <name>Osmosis Frontier</name>"
   },
   "settings": {
-    "title": "设置",
+    "title": "全局设置",
     "titleLanguage": "语言",
-    "titleHideDust": "使用 < {fiatSymbol}0.01 隐藏矿池"
+    "titleHideDust": "使用 < {fiatSymbol}0.01 隐藏矿池",
+    "selectLanguage": "选择语言",
+    "filterDust": "滤尘"
   },
   "errors": {
     "emptyAmount": "数量为空",

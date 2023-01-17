@@ -347,9 +347,11 @@
     "learnMoreFrontier": "Learn More<br/>About the <br2/> <name>Osmosis Frontier</name>"
   },
   "settings": {
-    "title": "Settings",
+    "title": "Global settings",
     "titleLanguage": "Language",
-    "titleHideDust": "Hide pools with < {fiatSymbol}0.01"
+    "titleHideDust": "Hide pools with < {fiatSymbol}0.01",
+    "selectLanguage": "Select language",
+    "filterDust": "Filter Dust"
   },
   "errors": {
     "emptyAmount": "Amount is empty",

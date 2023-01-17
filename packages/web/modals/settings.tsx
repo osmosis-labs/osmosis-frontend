@@ -10,6 +10,8 @@ import { ModalBase, ModalBaseProps } from "./base";
 
 export const SettingsModal: FunctionComponent<ModalBaseProps> = observer(
   (props) => {
+    const t = useTranslation();
+
     const { userSettings } = useStore();
     const languageSetting = userSettings.getUserSettingById(
       "language"
@@ -21,8 +23,8 @@ export const SettingsModal: FunctionComponent<ModalBaseProps> = observer(
         title={
           <h1 className="w-full text-center text-h6 font-h6">
             {languageSetting.state.isControlOpen
-              ? "Language"
-              : "Global Settings"}
+              ? t("settings.titleLanguage")
+              : t("settings.title")}
           </h1>
         }
         onRequestBack={languageSetting.state.isControlOpen ? noop : undefined}
@@ -34,7 +36,6 @@ export const SettingsModal: FunctionComponent<ModalBaseProps> = observer(
 );
 
 const SettingsContent = observer(() => {
-  const t = useTranslation();
   const { userSettings } = useStore();
 
   return (

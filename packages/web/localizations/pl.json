@@ -347,9 +347,11 @@
     "learnMoreFrontier": "Dowiedz się więcej o <br/> <name>Osmosis Frontier</name>"
   },
   "settings": {
-    "title": "Ustawienia",
+    "title": "Ustawienia ogólne",
     "titleLanguage": "Język",
-    "titleHideDust": "Ukryj pule z < {fiatSymbol}0.01"
+    "titleHideDust": "Ukryj pule z < {fiatSymbol}0.01",
+    "selectLanguage": "Wybierz język",
+    "filterDust": "Filtruj kurz"
   },
   "errors": {
     "emptyAmount": "Ilość jest pusta",
