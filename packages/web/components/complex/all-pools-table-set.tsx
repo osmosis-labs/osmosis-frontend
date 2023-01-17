@@ -23,11 +23,8 @@ import {
 import { useTranslation } from "react-multi-lang";
 import { POOLS_PER_PAGE } from ".";
 import { EventName, IS_FRONTIER } from "../../config";
-import {
-  useAmplitudeAnalytics,
-  useFilteredData,
-  // useWindowSize,
-} from "../../hooks";
+import { useAmplitudeAnalytics, useFilteredData } from "../../hooks";
+import useOnScreen from "../../hooks/use-on-screen";
 import { useStore } from "../../stores";
 import { SortMenu } from "../control";
 import { SearchBox } from "../input";
@@ -161,9 +158,11 @@ export const AllPoolsTableSet: FunctionComponent<{
     const queryActiveGauges = queriesExternalStore.queryActiveGauges;
     const queryOsmosis = queriesStore.get(chainId).osmosis!;
 
+    const allPools = queriesOsmosis.queryGammPools.getAllPools();
+
     const allPoolsWithMetrics: PoolWithMetrics[] = useMemo(
       () =>
-        queriesOsmosis.queryGammPools.getAllPools().map((pool) => {
+        allPools.map((pool) => {
           const poolTvl = pool.computeTotalValueLocked(priceStore);
           const myLiquidity = poolTvl.mul(
             queriesOsmosis.queryGammPoolShare.getAllGammShareRatio(
@@ -321,14 +320,6 @@ export const AllPoolsTableSet: FunctionComponent<{
       filter,
       queriesExternalStore.queryGammPoolFeeMetrics.response,
     ]);
-
-    useEffect(() => {
-      const poolTypes = new Set();
-      tvlFilteredPools.forEach((p) => {
-        poolTypes.add(p.pool.type);
-      });
-      console.log("🚀 ~ useEffect ~ poolTypes", poolTypes);
-    }, [tvlFilteredPools]);
 
     const [query, _setQuery, filteredPools] = useFilteredData(
       tvlFilteredPools,
@@ -514,6 +505,14 @@ export const AllPoolsTableSet: FunctionComponent<{
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: getSortedRowModel(),
     });
+
+    // Pagination
+    const ref = useRef<HTMLDivElement | null>(null);
+    const entry = useOnScreen(ref, {});
+    const shouldLoad = !!entry?.isIntersecting;
+    useEffect(() => {
+      if (shouldLoad) queriesOsmosis.queryGammPools.paginate();
+    }, [queriesOsmosis.queryGammPools, shouldLoad]);
 
     // if (isMobile) {
     //   return (
@@ -739,6 +738,7 @@ export const AllPoolsTableSet: FunctionComponent<{
                 ))}
               </tr>
             ))}
+            <div ref={ref} />
           </tbody>
           <tfoot>
             {table.getFooterGroups().map((footerGroup) => (

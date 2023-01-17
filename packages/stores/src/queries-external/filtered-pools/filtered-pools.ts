@@ -175,7 +175,9 @@ export class ObservableQueryFilteredPools
 
   protected updateUrlAndFetch() {
     this.setUrl(
-      `${this.baseUrl}/pools/v2beta3/all?${objToQueryParams(this._queryParams)}`
+      `${this.baseUrl}/stream/pool/v1/all?${objToQueryParams(
+        this._queryParams
+      )}`
     );
     return this.waitFreshResponse();
   }
