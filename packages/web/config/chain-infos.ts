@@ -1367,7 +1367,7 @@ const chainInfos = (
           coinImageUrl: "/tokens/pstake.png",
         },
         {
-          coinDenom: "wBTC.grv",
+          coinDenom: "WBTC.grv",
           coinMinimalDenom: "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
           coinDecimals: 8,
           // coinGeckoId: "wrapped-bitcoin",
@@ -2573,7 +2573,7 @@ chainInfos.push({
       coinImageUrl: "/tokens/weth.svg",
     },
     {
-      coinDenom: "wBTC",
+      coinDenom: "WBTC",
       coinMinimalDenom: "wbtc-satoshi",
       coinDecimals: 8,
       // coinGeckoId: "wrapped-bitcoin",
