@@ -18,7 +18,6 @@ import { EventName } from "../../config";
 import { ProfileModal } from "../../modals/profile";
 import IconButton from "../buttons/icon-button";
 import { Icon } from "../assets";
-import { Bech32Address } from "@keplr-wallet/cosmos";
 import { getShortAddress } from "../../utils/string";
 
 export const NavBar: FunctionComponent<
