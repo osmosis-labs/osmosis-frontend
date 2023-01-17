@@ -19,6 +19,7 @@ import { ProfileModal } from "../../modals/profile";
 import IconButton from "../buttons/icon-button";
 import { Icon } from "../assets";
 import { Bech32Address } from "@keplr-wallet/cosmos";
+import { getShortAddress } from "../../utils/string";
 
 export const NavBar: FunctionComponent<
   {
@@ -228,7 +229,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
 
             <div className="flex w-full flex-col truncate text-right leading-tight">
               <span className="body2 truncate font-bold leading-4">
-                {Bech32Address.shortenAddress(account.bech32Address, 13)}
+                {getShortAddress(account.bech32Address)}
               </span>
               <span className="caption font-medium tracking-wider text-osmoverse-200">
                 {navBarStore.walletInfo.balance.toString()}
