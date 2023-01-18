@@ -726,7 +726,6 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "aave-wei",
     sourceChainNameOverride: "Ethereum",
     isUnstable: true,
-    isUnstable: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
