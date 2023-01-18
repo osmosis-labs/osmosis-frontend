@@ -185,6 +185,7 @@ export class RootStore {
     this.queriesExternalStore = new QueriesExternalStore(
       makeIndexedKVStore("store_web_queries"),
       this.priceStore,
+      this.chainStore,
       this.chainStore.osmosis.chainId,
       this.queriesStore.get(
         this.chainStore.osmosis.chainId
