@@ -32,6 +32,7 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: IS_TESTNET ? "uausdc" : "uusdc",
     sourceChainNameOverride: IS_TESTNET ? "Goerli Ethereum" : "Ethereum",
     isVerified: true,
+    isUnstable: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
@@ -56,6 +57,7 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "weth-wei",
     sourceChainNameOverride: IS_TESTNET ? "Goerli Ethereum" : "Ethereum",
     isVerified: true,
+    isUnstable: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
@@ -70,6 +72,7 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "wbtc-satoshi",
     sourceChainNameOverride: "Ethereum",
     isVerified: true,
+    isUnstable: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
@@ -84,6 +87,7 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "uusdt",
     sourceChainNameOverride: "Ethereum",
     isVerified: true,
+    isUnstable: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
@@ -98,6 +102,7 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "dai-wei",
     sourceChainNameOverride: "Ethereum",
     isVerified: true,
+    isUnstable: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
@@ -112,6 +117,7 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "busd-wei",
     sourceChainNameOverride: "Ethereum",
     isVerified: true,
+    isUnstable: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
@@ -140,6 +146,7 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "wbnb-wei",
     sourceChainNameOverride: "Binance Smart Chain",
     isVerified: true,
+    isUnstable: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const],
@@ -162,6 +169,7 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "wmatic-wei",
     sourceChainNameOverride: IS_TESTNET ? "Mumbai" : "Polygon",
     isVerified: true,
+    isUnstable: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const],
@@ -196,6 +204,7 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "dot-planck",
     sourceChainNameOverride: "Moonbeam",
     isVerified: true,
+    isUnstable: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
@@ -551,6 +560,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-3",
     coinMinimalDenom: "frax-wei",
     sourceChainNameOverride: "Ethereum",
+    isUnstable: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
@@ -695,6 +705,7 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "link-wei",
     sourceChainNameOverride: "Ethereum",
     isVerified: true,
+    isUnstable: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
@@ -714,6 +725,8 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-3",
     coinMinimalDenom: "aave-wei",
     sourceChainNameOverride: "Ethereum",
+    isUnstable: true,
+    isUnstable: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
@@ -727,6 +740,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-3",
     coinMinimalDenom: "ape-wei",
     sourceChainNameOverride: "Ethereum",
+    isUnstable: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
@@ -740,6 +754,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-3",
     coinMinimalDenom: "axs-wei",
     sourceChainNameOverride: "Ethereum",
+    isUnstable: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
@@ -754,6 +769,7 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "mkr-wei",
     sourceChainNameOverride: "Ethereum",
     isVerified: true,
+    isUnstable: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
@@ -767,6 +783,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-3",
     coinMinimalDenom: "rai-wei",
     sourceChainNameOverride: "Ethereum",
+    isUnstable: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
@@ -780,6 +797,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-3",
     coinMinimalDenom: "shib-wei",
     sourceChainNameOverride: "Ethereum",
+    isUnstable: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
@@ -793,6 +811,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-3",
     coinMinimalDenom: "uni-wei",
     sourceChainNameOverride: "Ethereum",
+    isUnstable: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
@@ -806,6 +825,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-3",
     coinMinimalDenom: "xcn-wei",
     sourceChainNameOverride: "Ethereum",
+    isUnstable: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
@@ -874,6 +894,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: IS_TESTNET ? "channel-22" : "channel-3",
     coinMinimalDenom: IS_TESTNET ? "wdev-wei" : "wglmr-wei",
     sourceChainNameOverride: IS_TESTNET ? "Moonbase Alpha" : "Moonbeam",
+    isUnstable: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const, "walletconnect" as const],
