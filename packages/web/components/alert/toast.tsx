@@ -103,7 +103,7 @@ const SuccessToast: FunctionComponent<Alert> = ({
             href={learnMoreUrl}
             className="inline cursor-pointer text-sm hover:opacity-75 md:text-xs"
           >
-            {t(learnMoreUrlCaption) ?? t("Learn more")}
+            {t(learnMoreUrlCaption ?? "Learn more")}
             <div className="mb-0.75 ml-2 inline-block">
               <Image
                 alt="link"
