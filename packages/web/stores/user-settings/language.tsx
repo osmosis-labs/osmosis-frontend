@@ -9,7 +9,7 @@ import {
 
 export type LanguageState = { language: string; isControlOpen: boolean };
 
-export const SUPPORTED_LANGUAGES: MenuDropdownIconItemProps[] = [
+const SUPPORTED_LANGUAGES: MenuDropdownIconItemProps[] = [
   {
     value: "en",
     display: "English",
