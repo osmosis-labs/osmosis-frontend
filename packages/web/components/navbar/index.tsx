@@ -19,6 +19,7 @@ import { ProfileModal } from "../../modals/profile";
 import IconButton from "../buttons/icon-button";
 import { Icon } from "../assets";
 import { getShortAddress } from "../../utils/string";
+import { useICNSConfig } from "../../hooks/ui-config/use-icns-config";
 
 export const NavBar: FunctionComponent<
   {
@@ -170,6 +171,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
       accountStore,
       navBarStore,
       profileStore,
+      queriesExternalStore,
     } = useStore();
     const {
       isOpen: isProfileOpen,
@@ -182,6 +184,12 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
     // wallet
     const account = accountStore.getAccount(chainId);
     const walletConnected = account.walletStatus === WalletStatus.Loaded;
+
+    const { icnsInfo } = useICNSConfig();
+    const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(
+      icnsInfo?.resolverContractAddress!,
+      account.bech32Address
+    );
 
     return (
       <div
