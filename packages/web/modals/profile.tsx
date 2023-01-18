@@ -54,7 +54,7 @@ export const ProfileModal: FunctionComponent<
   ModalBaseProps & { icnsName?: string }
 > = observer((props) => {
   const t = useTranslation();
-  const { isMobile, width } = useWindowSize();
+  const { width } = useWindowSize();
   const {
     chainStore: {
       osmosis: { chainId },
