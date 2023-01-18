@@ -67,7 +67,7 @@ const chainInfos = (
             ]
           : []),
       ],
-      features: ["ibc-transfer", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
       explorerUrlToTx:
         OSMOSIS_EXPLORER_URL_OVERWRITE ??
         (IS_TESTNET
@@ -2484,7 +2484,8 @@ const chainInfos = (
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
-      explorerUrlToTx: "https://explorer.dys.dysonprotocol.com/dyson/tx/{txHash}",
+      explorerUrlToTx:
+        "https://explorer.dys.dysonprotocol.com/dyson/tx/{txHash}",
     },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);

@@ -2,6 +2,7 @@ import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter, ObservableChainQueryMap } from "@keplr-wallet/stores";
 import { ObservableCosmwasmContractChainQuery } from "@keplr-wallet/stores/build/query/cosmwasm/contract-query";
 import { computed } from "mobx";
+import { ICNS_RESOLVER_CONTRACT_ADDRESS } from "..";
 import { ICNSNames } from "./types";
 
 export class ObservableQueryICNSNamesInner extends ObservableCosmwasmContractChainQuery<ICNSNames> {
@@ -15,6 +16,10 @@ export class ObservableQueryICNSNamesInner extends ObservableCosmwasmContractCha
     super(kvStore, chainId, chainGetter, contractAddress, {
       icns_names: { address: address },
     });
+  }
+
+  protected canFetch(): boolean {
+    return Boolean(this.address) && this.contractAddress.length !== 0;
   }
 
   @computed
@@ -43,6 +48,7 @@ export class ObservableQueryICNSNames extends ObservableChainQueryMap<ICNSNames>
     protected readonly chainGetter: ChainGetter
   ) {
     super(kvStore, chainId, chainGetter, (key: string) => {
+      console.log(chainId, chainGetter.getChain(chainId));
       const split = key.split("/");
       return new ObservableQueryICNSNamesInner(
         this.kvStore,
@@ -54,12 +60,9 @@ export class ObservableQueryICNSNames extends ObservableChainQueryMap<ICNSNames>
     });
   }
 
-  getQueryContract(
-    contractAddress: string,
-    address: string
-  ): ObservableQueryICNSNamesInner {
+  getQueryContract(address: string): ObservableQueryICNSNamesInner {
     return this.get(
-      `${contractAddress}/${address}`
+      `${ICNS_RESOLVER_CONTRACT_ADDRESS}/${address}`
     ) as ObservableQueryICNSNamesInner;
   }
 }
