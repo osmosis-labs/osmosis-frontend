@@ -205,8 +205,6 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
       account.bech32Address
     );
 
-    const name = "superlongnameforosmosischain.osmo";
-
     return (
       <div className={className}>
         {!walletConnected ? (
@@ -246,7 +244,10 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
             </div>
 
             <div className="flex w-full  flex-col truncate text-right leading-tight">
-              <span className="body2 font-bold leading-4" title={name}>
+              <span
+                className="body2 font-bold leading-4"
+                title={icnsQuery?.primaryName}
+              >
                 {Boolean(icnsQuery?.primaryName)
                   ? formatICNSName(icnsQuery.primaryName)
                   : getShortAddress(account.bech32Address)}
