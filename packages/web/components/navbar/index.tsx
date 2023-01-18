@@ -161,6 +161,23 @@ const SettingsDropdown: FunctionComponent<{
   );
 });
 
+export const formatICNSName = (name?: string, maxLength = 28) => {
+  if (!name) return undefined;
+  if (name.length <= maxLength) return name;
+
+  const nameParts = name.split(".");
+  const userName = nameParts[0];
+  const chain = nameParts[1];
+
+  return (
+    userName.substring(0, 10) +
+    "..." +
+    userName.substring(userName.length - 5, userName.length) +
+    "." +
+    chain
+  );
+};
+
 const WalletInfo: FunctionComponent<CustomClasses> = observer(
   ({ className }) => {
     const {
@@ -188,13 +205,10 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
       account.bech32Address
     );
 
+    const name = "superlongnameforosmosischain.osmo";
+
     return (
-      <div
-        className={classNames(
-          "max-w-[10rem] shrink-0 lg:max-w-[9rem] md:w-full md:max-w-none",
-          className
-        )}
-      >
+      <div className={className}>
         {!walletConnected ? (
           <Button
             className="!h-10 w-40 lg:w-36 md:w-full"
@@ -231,10 +245,10 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
               )}
             </div>
 
-            <div className="flex w-full flex-col truncate text-right leading-tight">
-              <span className="body2 truncate font-bold leading-4">
+            <div className="flex w-full  flex-col truncate text-right leading-tight">
+              <span className="body2 font-bold leading-4" title={name}>
                 {Boolean(icnsQuery?.primaryName)
-                  ? icnsQuery?.primaryName
+                  ? formatICNSName(icnsQuery.primaryName)
                   : getShortAddress(account.bech32Address)}
               </span>
               <span className="caption font-medium tracking-wider text-osmoverse-200">
@@ -243,7 +257,11 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
             </div>
           </button>
         )}
-        <ProfileModal isOpen={isProfileOpen} onRequestClose={onCloseProfile} />
+        <ProfileModal
+          isOpen={isProfileOpen}
+          onRequestClose={onCloseProfile}
+          icnsName={icnsQuery?.primaryName}
+        />
       </div>
     );
   }
