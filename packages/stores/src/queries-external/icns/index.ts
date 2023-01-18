@@ -48,7 +48,6 @@ export class ObservableQueryICNSNames extends ObservableChainQueryMap<ICNSNames>
     protected readonly chainGetter: ChainGetter
   ) {
     super(kvStore, chainId, chainGetter, (key: string) => {
-      console.log(chainId, chainGetter.getChain(chainId));
       const split = key.split("/");
       return new ObservableQueryICNSNamesInner(
         this.kvStore,
