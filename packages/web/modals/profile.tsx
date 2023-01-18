@@ -59,6 +59,7 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
       priceStore,
       navBarStore,
       profileStore,
+      queriesExternalStore,
     } = useStore();
     const { logEvent } = useAmplitudeAnalytics();
     const router = useRouter();
@@ -98,6 +99,9 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
     }, []);
 
     const address = account.bech32Address;
+
+    const icnsQuery =
+      queriesExternalStore.queryICNSNames.getQueryContract(address);
 
     return (
       <ModalBase
@@ -175,7 +179,11 @@ export const ProfileModal: FunctionComponent<ModalBaseProps> = observer(
         </Drawer>
 
         <div className="mt-3 text-center">
-          <p className="subtitle1">{getShortAddress(address)}</p>
+          <p className="subtitle1">
+            {Boolean(icnsQuery?.primaryName)
+              ? icnsQuery?.primaryName
+              : getShortAddress(address)}
+          </p>
         </div>
 
         <div className="mt-7 flex w-full justify-between rounded-[20px] border border-osmoverse-700 bg-osmoverse-800 p-5 xs:flex-col">

@@ -19,7 +19,6 @@ import { ProfileModal } from "../../modals/profile";
 import IconButton from "../buttons/icon-button";
 import { Icon } from "../assets";
 import { getShortAddress } from "../../utils/string";
-import { useICNSConfig } from "../../hooks/ui-config/use-icns-config";
 
 export const NavBar: FunctionComponent<
   {
@@ -185,9 +184,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
     const account = accountStore.getAccount(chainId);
     const walletConnected = account.walletStatus === WalletStatus.Loaded;
 
-    const { icnsInfo } = useICNSConfig();
     const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(
-      icnsInfo?.resolverContractAddress!,
       account.bech32Address
     );
 
@@ -236,7 +233,9 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
 
             <div className="flex w-full flex-col truncate text-right leading-tight">
               <span className="body2 truncate font-bold leading-4">
-                {getShortAddress(account.bech32Address)}
+                {Boolean(icnsQuery?.primaryName)
+                  ? icnsQuery?.primaryName
+                  : getShortAddress(account.bech32Address)}
               </span>
               <span className="caption font-medium tracking-wider text-osmoverse-200">
                 {navBarStore.walletInfo.balance.toString()}
