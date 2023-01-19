@@ -2685,6 +2685,11 @@ chainInfos.push({
       coinDecimals: 6,
       coinGeckoId: "axelar",
       coinImageUrl: "/tokens/axl.svg",
+      gasPriceStep: {
+        low: 0.00005,
+        average: 0.00007,
+        high: 0.00009,
+      },
     },
   ],
   features: ["ibc-transfer", "ibc-go"],
