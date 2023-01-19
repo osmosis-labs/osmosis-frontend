@@ -67,6 +67,7 @@ export const PromotedLBPPoolIds: {
   : [];
 
 export const ICNSInfo = {
+  /** @see https://www.mintscan.io/osmosis/wasm/contract/osmo1xk0s8xgktn9x5vwcgtjdxqzadg88fgn33p8u9cnpdxwemvxscvast52cdd */
   resolverContractAddress:
     "osmo1xk0s8xgktn9x5vwcgtjdxqzadg88fgn33p8u9cnpdxwemvxscvast52cdd",
 };
