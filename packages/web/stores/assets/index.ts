@@ -4,6 +4,7 @@ import { Dec, PricePretty, CoinPretty } from "@keplr-wallet/unit";
 import {
   CosmosQueries,
   CosmwasmQueries,
+  ICNSQueries,
   QueriesStore,
 } from "@keplr-wallet/stores";
 import { IS_FRONTIER } from "../../config";
@@ -39,7 +40,7 @@ export class ObservableAssets {
       };
     },
     protected readonly queriesStore: QueriesStore<
-      [CosmosQueries, CosmwasmQueries, OsmosisQueries]
+      [CosmosQueries, CosmwasmQueries, OsmosisQueries, ICNSQueries]
     >,
     protected readonly priceStore: IPriceStore,
     protected readonly chainId: string
