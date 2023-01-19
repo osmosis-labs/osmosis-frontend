@@ -60,8 +60,8 @@ export const SourceChainConfigs: {
     ethereum: {
       id: IS_TESTNET ? ("Goerli Testnet" as const) : ("Ethereum" as const),
       erc20ContractAddress: IS_TESTNET
-        ? "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"
-        : "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        ? "wei"
+        : "wei",
       logoUrl: "/networks/ethereum.svg",
     },
   },
@@ -69,8 +69,8 @@ export const SourceChainConfigs: {
     moonbeam: {
       id: IS_TESTNET ? ("Moonbase Alpha" as const) : ("Moonbeam" as const),
       erc20ContractAddress: IS_TESTNET
-        ? "0x1436aE0dF0A8663F18c0Ec51d7e2E46591730715"
-        : "0xAcc15dC74880C9944775448304B263D191c6077F",
+        ? "wei"
+        : "wei",
       logoUrl: "/networks/moonbeam.svg",
     },
   },
@@ -178,8 +178,8 @@ export const SourceChainConfigs: {
         ? ("BSC Testnet" as const)
         : ("Binance Smart Chain" as const),
       erc20ContractAddress: IS_TESTNET
-        ? "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd"
-        : "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+        ? "wei"
+        : "Wei",
       logoUrl: "/networks/binance.svg",
     },
   },
@@ -187,8 +187,8 @@ export const SourceChainConfigs: {
     polygon: {
       id: IS_TESTNET ? ("Mumbai" as const) : ("Polygon" as const),
       erc20ContractAddress: IS_TESTNET
-        ? "0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889"
-        : "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+        ? "wei"
+        : "wei",
       logoUrl: "/networks/polygon.svg",
     },
   },
