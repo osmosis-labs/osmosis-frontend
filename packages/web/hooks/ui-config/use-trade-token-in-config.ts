@@ -4,6 +4,7 @@ import {
   QueriesStore,
   CosmosQueries,
   CosmwasmQueries,
+  ICNSQueries,
 } from "@keplr-wallet/stores";
 import { Pool } from "@osmosis-labs/pools";
 import {
@@ -20,7 +21,9 @@ export function useTradeTokenInConfig(
   chainGetter: ChainGetter,
   osmosisChainId: string,
   bech32Address: string,
-  queriesStore: QueriesStore<[CosmosQueries, CosmwasmQueries, OsmosisQueries]>,
+  queriesStore: QueriesStore<
+    [CosmosQueries, CosmwasmQueries, OsmosisQueries, ICNSQueries]
+  >,
   pools: Pool[],
   requeryIntervalMs = 8000
 ) {
