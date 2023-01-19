@@ -1,5 +1,5 @@
-import { IBCAsset } from "../stores/assets";
 import { SourceChainConfigs as AxelarSourceChainConfigs } from "../integrations/axelar";
+import { IBCAsset } from "../stores/assets";
 import { IS_TESTNET } from "./env";
 
 export const UNSTABLE_MSG = "Transfers are disabled due to instability";
@@ -1189,11 +1189,11 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "dys",
   },
   {
-    counterpartyChainId: "ares-1",
-    sourceChannelId: "channel-2083",
-    destChannelId: "channel-2",
-    coinMinimalDenom: "umars",
-    isVerified: true,
+    counterpartyChainId: IS_TESTNET ? "ares-1" : "",
+    sourceChannelId: IS_TESTNET ? "channel-2083" : "",
+    destChannelId: IS_TESTNET ? "channel-2" : "",
+    coinMinimalDenom: IS_TESTNET ? "umars" : "",
+    isVerified: IS_TESTNET ? true : false,
   },
 ].filter((ibcAsset) => {
   // validate IBC asset config
