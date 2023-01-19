@@ -1219,6 +1219,12 @@ export const IBCAssetInfos: (IBCAsset & {
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
   },
+  {
+    counterpartyChainId: "planq_7070-2",
+    sourceChannelId: "channel-492",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "aplanq",
+  },
 ].filter((ibcAsset) => {
   // validate IBC asset config
   if (
