@@ -18,7 +18,7 @@ import { EventName, ICNSInfo } from "../../config";
 import { ProfileModal } from "../../modals/profile";
 import IconButton from "../buttons/icon-button";
 import { Icon } from "../assets";
-import { getShortAddress } from "../../utils/string";
+import { formatICNSName, getShortAddress } from "../../utils/string";
 
 export const NavBar: FunctionComponent<
   {
@@ -160,23 +160,6 @@ const SettingsDropdown: FunctionComponent<{
     </div>
   );
 });
-
-export const formatICNSName = (name?: string, maxLength = 28) => {
-  if (!name) return undefined;
-  if (name.length <= maxLength) return name;
-
-  const nameParts = name.split(".");
-  const userName = nameParts[0];
-  const chain = nameParts[1];
-
-  return (
-    userName.substring(0, 10) +
-    "..." +
-    userName.substring(userName.length - 5, userName.length) +
-    "." +
-    chain
-  );
-};
 
 const WalletInfo: FunctionComponent<CustomClasses> = observer(
   ({ className }) => {

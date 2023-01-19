@@ -43,10 +43,9 @@ import {
 import { ArrowButton } from "../components/buttons";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { getShortAddress } from "../utils/string";
+import { formatICNSName, getShortAddress } from "../utils/string";
 import { coinFormatter, priceFormatter } from "../utils/formatter";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
-import { formatICNSName } from "../components/navbar";
 
 const QRCode = dynamic(() => import("qrcode.react"));
 
