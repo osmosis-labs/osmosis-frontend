@@ -37,8 +37,8 @@
     ]
   },
   "dependencies": {
-    "@keplr-wallet/types": "^0.10.24",
-    "@keplr-wallet/unit": "^0.10.24",
+    "@keplr-wallet/types": "^0.11.34",
+    "@keplr-wallet/unit": "^0.11.34",
     "big-integer": "^1.6.48"
   }
 }

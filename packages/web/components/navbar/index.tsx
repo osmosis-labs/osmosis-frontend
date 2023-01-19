@@ -14,7 +14,7 @@ import { UserSetting } from "../../stores/user-settings";
 import { useTranslation } from "react-multi-lang";
 import { MainLayoutMenu, CustomClasses } from "../types";
 import { MainMenu } from "../main-menu";
-import { EventName } from "../../config";
+import { EventName, ICNSInfo } from "../../config";
 import { ProfileModal } from "../../modals/profile";
 import IconButton from "../buttons/icon-button";
 import { Icon } from "../assets";
@@ -187,7 +187,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
       accountStore,
       navBarStore,
       profileStore,
-      queriesExternalStore,
+      queriesStore,
     } = useStore();
     const {
       isOpen: isProfileOpen,
@@ -201,9 +201,13 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
     const account = accountStore.getAccount(chainId);
     const walletConnected = account.walletStatus === WalletStatus.Loaded;
 
-    const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(
-      account.bech32Address
-    );
+    const icnsQuery = queriesStore
+      .get(chainId)
+      .icns.queryICNSNames.getQueryContract(
+        // Avoid extra request by passing an empty contract string
+        account.bech32Address ? ICNSInfo.resolverContractAddress : "",
+        account.bech32Address
+      );
 
     return (
       <div className={className}>

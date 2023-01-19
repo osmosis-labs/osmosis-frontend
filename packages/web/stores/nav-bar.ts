@@ -7,6 +7,7 @@ import {
   QueriesStore,
   CosmosQueries,
   CosmwasmQueries,
+  ICNSQueries,
 } from "@keplr-wallet/stores";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { OsmosisAccount, OsmosisQueries } from "@osmosis-labs/stores";
@@ -29,7 +30,7 @@ export class NavBarStore {
       AccountSetBase & CosmosAccount & CosmwasmAccount & OsmosisAccount
     >,
     protected readonly queriesStore: QueriesStore<
-      [CosmosQueries, CosmwasmQueries, OsmosisQueries]
+      [CosmosQueries, CosmwasmQueries, OsmosisQueries, ICNSQueries]
     >
   ) {
     makeObservable(this);
