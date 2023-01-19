@@ -2687,6 +2687,13 @@ chainInfos.push({
       coinGeckoId: "binance-usd",
       coinImageUrl: "/tokens/busd.png",
     },
+    {
+      coinDenom: "WAVAX",
+      coinMinimalDenom: "wavax-wei",
+      coinDecimals: 18,
+      coinGeckoId: "avalanche-2",
+      coinImageUrl: "/tokens/wavax.svg",
+    },
   ],
   feeCurrencies: [
     {
