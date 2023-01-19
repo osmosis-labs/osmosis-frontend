@@ -1375,7 +1375,7 @@ const chainInfos = (
           coinImageUrl: "/tokens/gwbtc.png",
         },
         {
-          coinDenom: "WETH.grv",
+          coinDenom: "wETH.grv",
           coinMinimalDenom: "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
           coinDecimals: 18,
           // coinGeckoId: "weth",
@@ -2565,7 +2565,7 @@ chainInfos.push({
       pegMechanism: "collateralized",
     },
     {
-      coinDenom: "WETH",
+      coinDenom: "wETH",
       coinMinimalDenom: "weth-wei",
       coinDecimals: 18,
       // coinGeckoId: "weth",
@@ -2653,7 +2653,7 @@ chainInfos.push({
       coinImageUrl: "/tokens/xcn.svg",
     },
     {
-      coinDenom: "WGLMR",
+      coinDenom: "wGLMR",
       coinMinimalDenom: "wglmr-wei",
       coinDecimals: 18,
       coinGeckoId: "wrapped-moonbeam",
@@ -2667,14 +2667,14 @@ chainInfos.push({
       coinImageUrl: "/tokens/dot.svg",
     },
     {
-      coinDenom: "WBNB",
+      coinDenom: "wBNB",
       coinMinimalDenom: "wbnb-wei",
       coinDecimals: 18,
       coinGeckoId: "wbnb",
       coinImageUrl: "/tokens/wbnb.svg",
     },
     {
-      coinDenom: "WMATIC",
+      coinDenom: "wMATIC",
       coinMinimalDenom: "wmatic-wei",
       coinDecimals: 18,
       coinGeckoId: "wmatic",
