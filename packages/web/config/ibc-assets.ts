@@ -1189,6 +1189,15 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "dys",
   },
   {
+    counterpartyChainId: "juno-1",
+    sourceChannelId: "channel-169",
+    destChannelId: "channel-47",
+    coinMinimalDenom:
+      "cw20:juno1u45shlp0q4gcckvsj06ss4xuvsu0z24a0d0vr9ce6r24pht4e5xq7q995n",
+    ics20ContractAddress:
+      "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+  },
+  {
     counterpartyChainId: "acre_9052-1",
     sourceChannelId: "channel-490",
     destChannelId: "channel-0",
