@@ -1188,6 +1188,12 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-2",
     coinMinimalDenom: "dys",
   },
+  {
+    counterpartyChainId: "acre_9052-1",
+    sourceChannelId: "channel-490",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "erc20/0x2Cbea61fdfDFA520Ee99700F104D5b75ADf50B0c",
+  },
 ].filter((ibcAsset) => {
   // validate IBC asset config
   if (
