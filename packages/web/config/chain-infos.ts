@@ -2570,7 +2570,7 @@ chainInfos.push({
       coinDecimals: 18,
       // coinGeckoId: "weth",
       coinGeckoId: "pool:weth-wei",
-      coinImageUrl: "/tokens/weth.svg",
+      coinImageUrl: "/tokens/eth.png",
     },
     {
       coinDenom: "WBTC",
@@ -2671,14 +2671,14 @@ chainInfos.push({
       coinMinimalDenom: "wbnb-wei",
       coinDecimals: 18,
       coinGeckoId: "wbnb",
-      coinImageUrl: "/tokens/wbnb.svg",
+      coinImageUrl: "/tokens/bnb.svg",
     },
     {
       coinDenom: "wMATIC",
       coinMinimalDenom: "wmatic-wei",
       coinDecimals: 18,
       coinGeckoId: "wmatic",
-      coinImageUrl: "/tokens/wmatic.svg",
+      coinImageUrl: "/tokens/matic.png",
     },
     {
       coinDenom: "BUSD",
