@@ -469,7 +469,7 @@ const Pools: NextPage = observer(function () {
           </div>
         </div>
       </section>
-      {isMobile ? (
+      {/* {isMobile ? (
         <section>
           <h5 className="md:px-3">{t("pools.all")}</h5>
           <TabBox
@@ -611,7 +611,12 @@ const Pools: NextPage = observer(function () {
             </div>
           </section>
         </>
-      )}
+      )} */}
+      <section>
+        <div className="mx-auto py-[3.75rem]">
+          <AllPoolsTableSet {...quickActionProps} />
+        </div>
+      </section>
       <section className="pb-4">
         <div className="flex w-full items-center rounded-full bg-osmoverse-800 px-5 py-4">
           <span className="subtitle1 flex items-center gap-1 md:text-subtitle2 md:font-subtitle2">

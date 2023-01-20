@@ -2,7 +2,6 @@ import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import {
   createColumnHelper,
-  flexRender,
   getCoreRowModel,
   getSortedRowModel,
   SortingState,
@@ -11,7 +10,6 @@ import {
 import classNames from "classnames";
 import EventEmitter from "eventemitter3";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import {
   FunctionComponent,
   useCallback,
@@ -22,9 +20,8 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 import { POOLS_PER_PAGE } from ".";
-import { EventName, IS_FRONTIER } from "../../config";
+import { EventName } from "../../config";
 import { useAmplitudeAnalytics, useFilteredData } from "../../hooks";
-import useOnScreen from "../../hooks/use-on-screen";
 import { useStore } from "../../stores";
 import { SortMenu } from "../control";
 import { SearchBox } from "../input";
@@ -495,6 +492,7 @@ export const AllPoolsTableSet: FunctionComponent<{
     ];
 
     const [sorting, setSorting] = useState<SortingState>([]);
+    console.log("🚀 ~ sorting", sorting);
 
     const table = useReactTable({
       data: tableData,
@@ -507,169 +505,83 @@ export const AllPoolsTableSet: FunctionComponent<{
       getSortedRowModel: getSortedRowModel(),
     });
 
-    // if (isMobile) {
-    //   return (
-    //     <CompactPoolTableDisplay
-    //       pools={allData.map((poolData) => ({
-    //         id: poolData.pool.id,
-    //         assets: poolData.pool.poolAssets.map(
-    //           ({
-    //             amount: {
-    //               currency: { coinDenom, coinImageUrl },
-    //             },
-    //           }) => ({
-    //             coinDenom,
-    //             coinImageUrl,
-    //           })
-    //         ),
-    //         metrics: [
-    //           ...[
-    //             sortKeyPath === "volume24h"
-    //               ? {
-    //                   label: t("pools.allPools.sort.volume24h"),
-    //                   value: poolData.volume24h.toString(),
-    //                 }
-    //               : sortKeyPath === "feesSpent7d"
-    //               ? {
-    //                   label: t("pools.allPools.sort.fees"),
-    //                   value: poolData.feesSpent7d.toString(),
-    //                 }
-    //               : sortKeyPath === "apr"
-    //               ? {
-    //                   label: t("pools.allPools.sort.APRIncentivized"),
-    //                   value: poolData.apr?.toString() ?? "0%",
-    //                 }
-    //               : sortKeyPath === "myLiquidity"
-    //               ? {
-    //                   label: t("pools.allPools.myLiquidity"),
-    //                   value:
-    //                     poolData.myLiquidity?.toString() ?? `0${fiat.symbol}`,
-    //                 }
-    //               : {
-    //                   label: t("pools.allPools.TVL"),
-    //                   value: poolData.liquidity.toString(),
-    //                 },
-    //           ],
-    //           ...[
-    //             sortKeyPath === "apr"
-    //               ? {
-    //                   label: t("pools.allPools.TVL"),
-    //                   value: poolData.liquidity.toString(),
-    //                 }
-    //               : {
-    //                   label: isIncentivizedPools
-    //                     ? t("pools.allPools.APR")
-    //                     : t("pools.allPools.APRIncentivized"),
-    //                   value: isIncentivizedPools
-    //                     ? poolData.apr?.toString() ?? "0%"
-    //                     : poolData.volume7d.toString(),
-    //                 },
-    //           ],
-    //         ],
-    //         isSuperfluidPool:
-    //           queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
-    //             poolData.pool.id
-    //           ),
-    //       }))}
-    //       searchBoxProps={{
-    //         currentValue: query,
-    //         onInput: setQuery,
-    //         placeholder: t("pools.allPools.search"),
-    //       }}
-    //       sortMenuProps={{
-    //         options: tableCols.filter(
-    //           (col) =>
-    //             typeof col.display === "string" && col.display.length !== 0
-    //         ) as MenuOption[],
-    //         selectedOptionId: sortKeyPath,
-    //         onSelect: (id) =>
-    //           id === sortKeyPath ? setSortKeyPath("") : setSortKeyPath(id),
-    //         onToggleSortDirection: toggleSortDirection,
-    //       }}
-    //       pageListProps={{
-    //         currentValue: page,
-    //         max: numPages,
-    //         min: minPage,
-    //         onInput: setPage,
-    //       }}
-    //       minTvlToggleProps={{
-    //         isOn: isPoolTvlFiltered,
-    //         onToggle: setIsPoolTvlFiltered,
-    //         label: tvlFilterLabel,
-    //       }}
-    //     />
-    //   );
-    // }
-
     return (
       <>
         <div className="mt-5 flex flex-col gap-3">
-          <h5>{t("pools.allPools.title")}</h5>
+          <div className="flex place-content-between items-center">
+            <h5>{t("pools.allPools.title")}</h5>
+            {/* <Switch
+              isOn={isPoolTvlFiltered}
+              onToggle={setIsPoolTvlFiltered}
+              className="mr-2"
+              labelPosition="left"
+            >
+              <span className="subtitle1 text-osmoverse-200">
+                {tvlFilterLabel}
+              </span>
+            </Switch> */}
+          </div>
           <div className="flex flex-wrap place-content-between items-center gap-4">
-            <div className="flex w-full flex-wrap items-center justify-between lg:place-content-between">
-              <div className="flex flex-wrap gap-3">
-                {Object.entries(Filters).map(([f, display]) => (
-                  <div
-                    className={classNames(
-                      "cursor-pointer rounded-xl bg-osmoverse-700 px-2 py-2",
-                      {
-                        "bg-osmoverse-600": filter ? f === filter : false,
-                      }
-                    )}
-                    key={f}
-                    onClick={() => {
-                      setFilter((prevFilter) =>
-                        prevFilter === f ? undefined : (f as Filter)
-                      );
-                    }}
-                  >
-                    {display}
-                  </div>
-                ))}
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <SearchBox
-                  currentValue={query}
-                  onInput={setQuery}
-                  placeholder={t("pools.allPools.search")}
-                  className="!w-64"
-                />
-                <SortMenu
-                  options={table
-                    .getHeaderGroups()[0]
-                    .headers.map(({ id, column }) => {
-                      return {
-                        id,
-                        display: column.columnDef.header as string,
-                      };
-                    })}
-                  selectedOptionId={sorting[0]?.id}
-                  onSelect={(id: string) => {
-                    table.reset();
-                    table.getColumn(id).toggleSorting(false);
+            <div className="flex gap-3">
+              {Object.entries(Filters).map(([f, display]) => (
+                <div
+                  className={classNames(
+                    "cursor-pointer self-start  rounded-xl bg-osmoverse-700 px-2 py-2",
+                    {
+                      "bg-osmoverse-600": filter ? f === filter : false,
+                    }
+                  )}
+                  key={f}
+                  onClick={() => {
+                    setFilter((prevFilter) =>
+                      prevFilter === f ? undefined : (f as Filter)
+                    );
                   }}
-                  onToggleSortDirection={() => {
-                    // logEvent([
-                    //   EventName.Pools.allPoolsListSorted,
-                    //   {
-                    //     sortedBy: sortKeyPath,
-                    //     sortDirection:
-                    //       sortDirection === "ascending"
-                    //         ? "descending"
-                    //         : "ascending",
-                    //     sortedOn: "dropdown",
-                    //   },
-                    // ]);
-                    setSorting((prev) => {
-                      const [first] = prev;
-                      return [{ ...first, desc: !first.desc }];
-                    });
-                  }}
-                />
-              </div>
+                >
+                  {display}
+                </div>
+              ))}
+            </div>
+            <div className="flex items-center justify-between gap-3 lg:w-full lg:place-content-between">
+              <SearchBox
+                currentValue={query}
+                onInput={setQuery}
+                placeholder={t("pools.allPools.search")}
+                className="!w-64"
+              />
+              <SortMenu
+                options={table
+                  .getHeaderGroups()[0]
+                  .headers.map(({ id, column }) => {
+                    return {
+                      id,
+                      display: column.columnDef.header as string,
+                    };
+                  })}
+                selectedOptionId={sorting[0]?.id}
+                onSelect={(id: string) => {
+                  table.reset();
+                  table.getColumn(id).toggleSorting(false);
+                }}
+                onToggleSortDirection={() => {
+                  logEvent([
+                    EventName.Pools.allPoolsListSorted,
+                    {
+                      sortedBy: sorting[0]?.id,
+                      sortDirection: sorting[0].desc
+                        ? "ascending"
+                        : "descending",
+                      sortedOn: "dropdown",
+                    },
+                  ]);
+                  setSorting((prev) => {
+                    const [first] = prev;
+                    return [{ ...first, desc: !first.desc }];
+                  });
+                }}
+              />
             </div>
           </div>
-          <div className="flex items-center gap-4"></div>
         </div>
         <PaginatedTable
           paginate={() => queriesOsmosis.queryGammPools.paginate()}
