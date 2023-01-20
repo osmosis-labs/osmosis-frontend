@@ -672,6 +672,17 @@ const chainInfos = (
           coinGeckoId: "posthuman",
           coinImageUrl: "/tokens/phmn.png",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1u45shlp0q4gcckvsj06ss4xuvsu0z24a0d0vr9ce6r24pht4e5xq7q995n",
+          coinDenom: "HOPERS",
+          coinMinimalDenom:
+            "cw20:juno1u45shlp0q4gcckvsj06ss4xuvsu0z24a0d0vr9ce6r24pht4e5xq7q995n:HOPERS",
+          coinDecimals: 6,
+          //coinGeckoId: "pool:hopers",
+          coinImageUrl: "/tokens/hopers.png",
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: "https://www.mintscan.io/juno/txs/{txHash}",
@@ -1364,7 +1375,7 @@ const chainInfos = (
           coinImageUrl: "/tokens/gwbtc.png",
         },
         {
-          coinDenom: "WETH.grv",
+          coinDenom: "wETH.grv",
           coinMinimalDenom: "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
           coinDecimals: 18,
           // coinGeckoId: "weth",
@@ -2369,6 +2380,13 @@ const chainInfos = (
             high: 40000000000,
           },
         },
+        {
+          coinDenom: "arUSD",
+          coinMinimalDenom: "erc20/0x2Cbea61fdfDFA520Ee99700F104D5b75ADf50B0c",
+          coinDecimals: 18,
+          coinGeckoId: "pool:erc20/0x2Cbea61fdfDFA520Ee99700F104D5b75ADf50B0c",
+          coinImageUrl: "/tokens/arusd.png",
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
       explorerUrlToTx: "https://cosmosrun.info/acre-mainnet/tx/{txHash}",
@@ -2583,7 +2601,7 @@ chainInfos.push({
       pegMechanism: "collateralized",
     },
     {
-      coinDenom: "WETH",
+      coinDenom: "wETH",
       coinMinimalDenom: "weth-wei",
       coinDecimals: 18,
       // coinGeckoId: "weth",
@@ -2671,7 +2689,7 @@ chainInfos.push({
       coinImageUrl: "/tokens/xcn.svg",
     },
     {
-      coinDenom: "WGLMR",
+      coinDenom: "wGLMR",
       coinMinimalDenom: "wglmr-wei",
       coinDecimals: 18,
       coinGeckoId: "wrapped-moonbeam",
@@ -2685,14 +2703,14 @@ chainInfos.push({
       coinImageUrl: "/tokens/dot.svg",
     },
     {
-      coinDenom: "WBNB",
+      coinDenom: "wBNB",
       coinMinimalDenom: "wbnb-wei",
       coinDecimals: 18,
       coinGeckoId: "wbnb",
       coinImageUrl: "/tokens/wbnb.svg",
     },
     {
-      coinDenom: "WMATIC",
+      coinDenom: "wMATIC",
       coinMinimalDenom: "wmatic-wei",
       coinDecimals: 18,
       coinGeckoId: "wmatic",
@@ -2704,6 +2722,13 @@ chainInfos.push({
       coinDecimals: 18,
       coinGeckoId: "binance-usd",
       coinImageUrl: "/tokens/busd.png",
+    },
+    {
+      coinDenom: "WAVAX",
+      coinMinimalDenom: "wavax-wei",
+      coinDecimals: 18,
+      coinGeckoId: "avalanche-2",
+      coinImageUrl: "/tokens/wavax.svg",
     },
   ],
   feeCurrencies: [

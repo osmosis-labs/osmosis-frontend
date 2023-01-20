@@ -701,6 +701,8 @@ export const TradeClipboard: FunctionComponent<{
                   onChange={(e) => {
                     e.preventDefault();
                     if (
+                      !isNaN(Number(e.target.value)) &&
+                      Number(e.target.value) >= 0 &&
                       Number(e.target.value) <= Number.MAX_SAFE_INTEGER &&
                       e.target.value.length <= (isMobile ? 19 : 26)
                     ) {

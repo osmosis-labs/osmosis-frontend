@@ -97,7 +97,7 @@ const SuccessToast: FunctionComponent<Alert> = ({
       </div>
       <div className="text-white-high">
         <h6 className="mb-2 text-lg md:text-base">{t(message)}</h6>
-        {learnMoreUrl && (
+        {learnMoreUrl && learnMoreUrlCaption && (
           <a
             target="__blank"
             href={learnMoreUrl}

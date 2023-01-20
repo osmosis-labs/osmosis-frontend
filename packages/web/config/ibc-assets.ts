@@ -176,6 +176,28 @@ export const IBCAssetInfos: (IBCAsset & {
     },
   },
   {
+    counterpartyChainId: IS_TESTNET
+      ? "axelar-testnet-lisbon-3"
+      : "axelar-dojo-1",
+    sourceChannelId: IS_TESTNET ? "channel-1946" : "channel-208",
+    destChannelId: IS_TESTNET ? "channel-135" : "channel-3",
+    coinMinimalDenom: "wavax-wei",
+    sourceChainNameOverride: IS_TESTNET ? "Avalanche Fuji Testnet" : "Avalanche",
+    isVerified: false,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.wavax.avalanche],
+      wrapAssetConfig: {
+        url: "https://app.sushi.com/swap?inputCurrency=AVAX&outputCurrency=0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7&chainId=43114",
+        fromDenom: "AVAX",
+        toDenom: "WAVAX",
+        platformName: "SushiSwap",
+      },
+    },
+  },
+  {
     counterpartyChainId: "columbus-5",
     sourceChannelId: "channel-72",
     destChannelId: "channel-1",
@@ -1194,6 +1216,23 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: IS_TESTNET ? "channel-2" : "",
     coinMinimalDenom: IS_TESTNET ? "umars" : "",
     isVerified: IS_TESTNET ? true : false,
+  },
+  {
+    counterpartyChainId: "juno-1",
+    sourceChannelId: "channel-169",
+    destChannelId: "channel-47",
+    coinMinimalDenom:
+      "cw20:juno1u45shlp0q4gcckvsj06ss4xuvsu0z24a0d0vr9ce6r24pht4e5xq7q995n",
+    ics20ContractAddress:
+      "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+  },
+  {
+    counterpartyChainId: "acre_9052-1",
+    sourceChannelId: "channel-490",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "erc20/0x2Cbea61fdfDFA520Ee99700F104D5b75ADf50B0c",
+    depositUrlOverride: "https://app.arable.finance/#/ibc",
+    withdrawUrlOverride: "https://app.arable.finance/#/ibc",
   },
 ].filter((ibcAsset) => {
   // validate IBC asset config

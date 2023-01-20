@@ -679,7 +679,10 @@ const Pool: FunctionComponent = observer(() => {
                     <Button
                       className="w-fit shrink-0 xs:w-full"
                       mode="secondary"
-                      disabled={poolDetail?.userAvailableValue.toDec().isZero()}
+                      disabled={queryOsmosis.queryGammPoolShare
+                        .getAvailableGammShare(bech32Address, poolId)
+                        .toDec()
+                        .isZero()}
                       onClick={() => {
                         logEvent([
                           E.removeLiquidityClicked,
