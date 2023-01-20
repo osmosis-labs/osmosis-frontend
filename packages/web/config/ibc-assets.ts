@@ -1134,8 +1134,6 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-490",
     destChannelId: "channel-0",
     coinMinimalDenom: "aacre",
-    depositUrlOverride: "https://app.arable.finance/#/ibc",
-    withdrawUrlOverride: "https://app.arable.finance/#/ibc",
   },
   {
     counterpartyChainId: "comdex-1",
@@ -1204,6 +1202,8 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-490",
     destChannelId: "channel-0",
     coinMinimalDenom: "erc20/0x2Cbea61fdfDFA520Ee99700F104D5b75ADf50B0c",
+    depositUrlOverride: "https://app.arable.finance/#/ibc",
+    withdrawUrlOverride: "https://app.arable.finance/#/ibc",
   },
 ].filter((ibcAsset) => {
   // validate IBC asset config
