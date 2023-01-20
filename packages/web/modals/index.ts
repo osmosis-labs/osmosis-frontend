@@ -6,7 +6,6 @@ export * from "./fiat-ramps";
 export * from "./ibc-transfer";
 export * from "./keplr-connection-selection";
 export * from "./lock-tokens";
-export * from "./menu-options-icon";
 export * from "./menu-options";
 export * from "./pre-transfer";
 export * from "./remove-liquidity";
