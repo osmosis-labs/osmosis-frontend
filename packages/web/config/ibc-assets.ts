@@ -22,7 +22,7 @@ export const IBCAssetInfos: (IBCAsset & {
    *  voted on its incentivization or general approval (amongst other possibilities).
    */
   isVerified?: boolean;
-})[] = [
+})[] = IS_TESTNET ? [] : [
   {
     counterpartyChainId: IS_TESTNET
       ? "axelar-testnet-lisbon-3"
@@ -1226,6 +1226,13 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "erc20/0x2Cbea61fdfDFA520Ee99700F104D5b75ADf50B0c",
     depositUrlOverride: "https://app.arable.finance/#/ibc",
     withdrawUrlOverride: "https://app.arable.finance/#/ibc",
+  },
+  {
+    counterpartyChainId: "ares-1",
+    sourceChannelId: "channel-2083",
+    destChannelId: "channel-2",
+    coinMinimalDenom: "umars",
+    isVerified: true,
   },
 ].filter((ibcAsset) => {
   // validate IBC asset config
