@@ -10,7 +10,7 @@ import { Button } from "../buttons";
 import classNames from "classnames";
 
 export type LanguageSelectProps = {
-  options: MenuDropdownIconItemProps[];
+  options: { value: string; display: string }[];
 };
 
 export const LanguageSelect: FunctionComponent<LanguageSelectProps> = observer(
