@@ -1219,6 +1219,14 @@ export const IBCAssetInfos: (IBCAsset & {
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
   },
+  {
+    counterpartyChainId: "acre_9052-1",
+    sourceChannelId: "channel-490",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "erc20/0x2Cbea61fdfDFA520Ee99700F104D5b75ADf50B0c",
+    depositUrlOverride: "https://app.arable.finance/#/ibc",
+    withdrawUrlOverride: "https://app.arable.finance/#/ibc",
+  },
 ].filter((ibcAsset) => {
   // validate IBC asset config
   if (
