@@ -2690,7 +2690,7 @@ chainInfos.push({
     },
     {
       coinDenom: "wGLMR",
-      coinMinimalDenom: "wglmr-wei",
+      coinMinimalDenom: IS_TESTNET ? "wdev-wei" : "wglmr-wei",
       coinDecimals: 18,
       coinGeckoId: "wrapped-moonbeam",
       coinImageUrl: "/tokens/glmr.svg",
