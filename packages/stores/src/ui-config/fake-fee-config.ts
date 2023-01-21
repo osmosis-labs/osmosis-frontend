@@ -31,23 +31,16 @@ interface FeeCurrency extends Currency {
  */
 export class FakeFeeConfig extends TxChainSetter implements IFeeConfig {
   @observable
-  protected _sender: string;
-
-  @observable
   protected _gas: number;
 
   @observable
   protected _shouldZero: boolean = false;
-
-  @observable
-  protected _autoFeeCoinMinimalDenom: string | undefined = undefined;
 
   constructor(chainGetter: ChainGetter, initialChainId: string, gas: number) {
     super(chainGetter, initialChainId);
 
     this._gas = gas;
     this._chainId = initialChainId;
-    this._sender = "";
 
     makeObservable(this);
   }
@@ -126,25 +119,6 @@ export class FakeFeeConfig extends TxChainSetter implements IFeeConfig {
 
   setFeeType(_feeType: FeeType | undefined): void {
     // noop
-  }
-
-  get sender(): string {
-    return this._sender;
-  }
-
-  @action
-  setSender(sender: string) {
-    this._sender = sender;
-  }
-
-  @action
-  setAutoFeeCoinMinimalDenom(denom: string | undefined) {
-    this._autoFeeCoinMinimalDenom = denom;
-  }
-
-  getFeeTypePrettyForFeeCurrency(_feeCurrency: FeeCurrency, _feeType: FeeType) {
-    // noop
-    return new CoinPretty(this.feeCurrency!, new Dec(0));
   }
 
   toStdFee(): StdFee {
