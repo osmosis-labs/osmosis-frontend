@@ -52,7 +52,7 @@ export class ObservableQueryFilteredPools
     super(
       kvStore,
       baseUrl,
-      `/pools/v2beta3/all?${objToQueryParams({
+      `/stream/pool/v1/all?${objToQueryParams({
         ...initialFilters,
         ...initialPagination,
       })}`

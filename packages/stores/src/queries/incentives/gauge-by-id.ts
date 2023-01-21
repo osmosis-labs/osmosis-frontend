@@ -146,7 +146,7 @@ export class ObservableQueryGauge extends ObservableChainQuery<GaugeById> {
         .forceFindCurrency(coin.denom);
       const distributed = new CoinPretty(
         currency,
-        new Dec(gauge.distributed_coins[index].amount)
+        new Dec(gauge.distributed_coins[index]?.amount ?? "0")
       );
       return {
         distributed,

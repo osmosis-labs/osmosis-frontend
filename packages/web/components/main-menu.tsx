@@ -68,12 +68,16 @@ export const MainMenu: FunctionComponent<{
                       selected ? "opacity-100" : "opacity-60"
                     )}
                   >
-                    <Image
-                      src={iconSelected ?? icon}
-                      width={20}
-                      height={20}
-                      alt="menu icon"
-                    />
+                    {typeof icon === "string" ? (
+                      <Image
+                        src={iconSelected ?? icon}
+                        width={20}
+                        height={20}
+                        alt="menu icon"
+                      />
+                    ) : (
+                      icon
+                    )}
                   </div>
                   <p
                     className={classNames(

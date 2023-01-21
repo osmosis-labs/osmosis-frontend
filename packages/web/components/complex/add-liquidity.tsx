@@ -11,7 +11,7 @@ import { InputBox } from "../../components/input";
 import { Info } from "../../components/alert";
 import { PoolTokenSelect } from "../../components/control/pool-token-select";
 import { CustomClasses } from "../types";
-import { BorderButton } from "../buttons";
+import { Button } from "../buttons";
 import { useTranslation } from "react-multi-lang";
 
 export const AddLiquidity: FunctionComponent<
@@ -174,12 +174,13 @@ export const AddLiquidity: FunctionComponent<
                         )}
                       </div>
                       {isMobile && (
-                        <BorderButton
+                        <Button
+                          mode="amount"
                           className="py-0.5"
                           onClick={() => addLiquidityConfig.setMax()}
                         >
                           {t("components.MAX")}
-                        </BorderButton>
+                        </Button>
                       )}
                     </div>
                   </div>

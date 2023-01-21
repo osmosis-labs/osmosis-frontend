@@ -3,6 +3,7 @@ import React, { FunctionComponent, useState, useRef, useEffect } from "react";
 import classNames from "classnames";
 import { NumberSelectProps } from "./types";
 import { CustomClasses } from "../types";
+import { Icon } from "../assets";
 
 interface Props extends Omit<NumberSelectProps, "placeholder">, CustomClasses {
   /** Allow user to edit page number directly. Off by default. */
@@ -55,9 +56,9 @@ export const PageList: FunctionComponent<Props> = ({
         )}
       >
         <div className={isEditingText ? "pt-2.5 pr-2" : undefined}>
-          <Image
-            alt="left"
-            src="/icons/chevron-left.svg"
+          <Icon
+            id="chevron-left"
+            className="text-wosmongton-200"
             height={18}
             width={18}
             onClick={() =>
@@ -132,9 +133,9 @@ export const PageList: FunctionComponent<Props> = ({
               width={22}
             />
           ) : (
-            <Image
-              alt="right"
-              src="/icons/chevron-right.svg"
+            <Icon
+              id="chevron-right"
+              className="text-osmoverse-200"
               height={18}
               width={18}
             />

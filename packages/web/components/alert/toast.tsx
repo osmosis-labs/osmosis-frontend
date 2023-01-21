@@ -97,13 +97,13 @@ const SuccessToast: FunctionComponent<Alert> = ({
       </div>
       <div className="text-white-high">
         <h6 className="mb-2 text-lg md:text-base">{t(message)}</h6>
-        {learnMoreUrl && (
+        {learnMoreUrl && learnMoreUrlCaption && (
           <a
             target="__blank"
             href={learnMoreUrl}
             className="inline cursor-pointer text-sm hover:opacity-75 md:text-xs"
           >
-            {t(learnMoreUrlCaption) ?? t("Learn more")}
+            {t(learnMoreUrlCaption ?? "Learn more")}
             <div className="mb-0.75 ml-2 inline-block">
               <Image
                 alt="link"
