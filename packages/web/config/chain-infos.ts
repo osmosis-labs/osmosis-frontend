@@ -2380,6 +2380,13 @@ const chainInfos = (
             high: 40000000000,
           },
         },
+        {
+          coinDenom: "arUSD",
+          coinMinimalDenom: "erc20/0x2Cbea61fdfDFA520Ee99700F104D5b75ADf50B0c",
+          coinDecimals: 18,
+          coinGeckoId: "pool:erc20/0x2Cbea61fdfDFA520Ee99700F104D5b75ADf50B0c",
+          coinImageUrl: "/tokens/arusd.png",
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
       explorerUrlToTx: "https://cosmosrun.info/acre-mainnet/tx/{txHash}",
@@ -2495,7 +2502,8 @@ const chainInfos = (
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
-      explorerUrlToTx: "https://explorer.dys.dysonprotocol.com/dyson/tx/{txHash}",
+      explorerUrlToTx:
+        "https://explorer.dys.dysonprotocol.com/dyson/tx/{txHash}",
     },
     {
       rpc: "https://rpc.planq.network/",
@@ -2598,7 +2606,7 @@ chainInfos.push({
       coinDecimals: 18,
       // coinGeckoId: "weth",
       coinGeckoId: "pool:weth-wei",
-      coinImageUrl: "/tokens/weth.svg",
+      coinImageUrl: "/tokens/eth.png",
     },
     {
       coinDenom: "WBTC",
@@ -2699,14 +2707,14 @@ chainInfos.push({
       coinMinimalDenom: "wbnb-wei",
       coinDecimals: 18,
       coinGeckoId: "wbnb",
-      coinImageUrl: "/tokens/wbnb.svg",
+      coinImageUrl: "/tokens/bnb.svg",
     },
     {
       coinDenom: "wMATIC",
       coinMinimalDenom: "wmatic-wei",
       coinDecimals: 18,
       coinGeckoId: "wmatic",
-      coinImageUrl: "/tokens/wmatic.svg",
+      coinImageUrl: "/tokens/matic.png",
     },
     {
       coinDenom: "BUSD",
@@ -2716,11 +2724,11 @@ chainInfos.push({
       coinImageUrl: "/tokens/busd.png",
     },
     {
-      coinDenom: "WAVAX",
+      coinDenom: "wAVAX",
       coinMinimalDenom: "wavax-wei",
       coinDecimals: 18,
       coinGeckoId: "avalanche-2",
-      coinImageUrl: "/tokens/wavax.svg",
+      coinImageUrl: "/tokens/avax.svg",
     },
   ],
   feeCurrencies: [

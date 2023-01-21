@@ -1,7 +1,6 @@
-import Image from "next/image";
 import { FunctionComponent, useState } from "react";
 import classNames from "classnames";
-import { Token, PoolAssetInfo } from "../assets";
+import { Token, PoolAssetInfo, Icon } from "../assets";
 import { CustomClasses, MobileProps } from "../types";
 
 /** Used to select a token token from within a pool. */
@@ -50,13 +49,15 @@ export const PoolTokenSelect: FunctionComponent<
             isMobile={isMobile}
           />
           <div
-            className={classNames("my-auto shrink-0 pt-1 transition", {
-              "rotate-180": isToggleOpen,
-            })}
+            className={classNames(
+              "my-auto shrink-0 pt-1 text-osmoverse-400 transition",
+              {
+                "rotate-180": isToggleOpen,
+              }
+            )}
           >
-            <Image
-              alt=""
-              src="/icons/chevron-down.svg"
+            <Icon
+              id="chevron-down"
               height={isMobile ? 15 : 20}
               width={isMobile ? 15 : 20}
             />

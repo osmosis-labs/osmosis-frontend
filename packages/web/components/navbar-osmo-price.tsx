@@ -117,9 +117,9 @@ const NavbarOsmoPrice = observer(() => {
       {account.walletStatus === WalletStatus.Loaded && (
         <SkeletonLoader isLoaded={osmoPrice.isReady}>
           <Button
-            mode="tertiary"
+            mode="unstyled"
             className={classNames(
-              "button group relative flex !h-11 items-center justify-center gap-2 overflow-hidden !rounded-full !border-osmoverse-700 !py-1 font-bold text-osmoverse-100 !transition-all !duration-300 !ease-in-out",
+              "button group relative flex h-11 items-center justify-center gap-2 overflow-hidden rounded-full border-2 !border-osmoverse-700 !py-1 font-bold text-osmoverse-100 transition-all duration-300 ease-in-out",
               "hover:border-none hover:bg-gradient-positive hover:text-osmoverse-1000"
             )}
             onClick={() => {

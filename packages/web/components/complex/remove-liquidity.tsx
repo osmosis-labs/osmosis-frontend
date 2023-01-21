@@ -6,7 +6,7 @@ import { useTranslation } from "react-multi-lang";
 import { Dec } from "@keplr-wallet/unit";
 import { ObservableRemoveLiquidityConfig } from "@osmosis-labs/stores";
 import { Slider } from "../../components/control";
-import { BorderButton } from "../buttons";
+import { Button } from "../buttons";
 import { CustomClasses } from "../types";
 import { useStore } from "../../stores";
 
@@ -71,38 +71,46 @@ export const RemoveLiquidity: FunctionComponent<
           step={1}
         />
         <div className="mb-14 grid h-9 w-full grid-cols-4 gap-5 md:mb-6 md:gap-1">
-          <BorderButton
+          <Button
+            className="!h-full"
+            mode="amount"
             onClick={() => removeLiquidityConfig.setPercentage("25")}
             disabled={removeLiquidityConfig.poolShareWithPercentage
               .toDec()
               .equals(new Dec(0))}
           >
             25%
-          </BorderButton>
-          <BorderButton
+          </Button>
+          <Button
+            className="!h-full"
+            mode="amount"
             onClick={() => removeLiquidityConfig.setPercentage("50")}
             disabled={removeLiquidityConfig.poolShareWithPercentage
               .toDec()
               .equals(new Dec(0))}
           >
             50%
-          </BorderButton>
-          <BorderButton
+          </Button>
+          <Button
+            className="!h-full"
+            mode="amount"
             onClick={() => removeLiquidityConfig.setPercentage("75")}
             disabled={removeLiquidityConfig.poolShareWithPercentage
               .toDec()
               .equals(new Dec(0))}
           >
             75%
-          </BorderButton>
-          <BorderButton
+          </Button>
+          <Button
+            className="!h-full"
+            mode="amount"
             onClick={() => removeLiquidityConfig.setPercentage("100")}
             disabled={removeLiquidityConfig.poolShareWithPercentage
               .toDec()
               .equals(new Dec(0))}
           >
             {t("components.MAX")}
-          </BorderButton>
+          </Button>
         </div>
       </div>
       {actionButton}
