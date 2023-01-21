@@ -32,6 +32,11 @@ const Home: NextPage = observer(function () {
             return true;
           }
 
+          // https://github.com/osmosis-labs/osmosis-frontend/issues/843
+          if (pool.id === "800") {
+            return false;
+          }
+
           // There is currently no good way to pick a pool that is worthwhile.
           // For now, based on the mainnet, only those pools with assets above a certain value are calculated for swap.
 
