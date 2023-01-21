@@ -24,6 +24,20 @@ export const IBCAssetInfos: (IBCAsset & {
   isVerified?: boolean;
 })[] = [
   {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "wbtc-satoshi",
+    sourceChainNameOverride: "Ethereum",
+    isVerified: true,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.wbtc.ethereum],
+    },
+  },
+  {
     counterpartyChainId: IS_TESTNET
       ? "axelar-testnet-lisbon-3"
       : "axelar-dojo-1",
@@ -207,20 +221,6 @@ export const IBCAssetInfos: (IBCAsset & {
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
       sourceChains: [AxelarSourceChainConfigs.uni.ethereum],
-    },
-  },
-  {
-    counterpartyChainId: "axelar-dojo-1",
-    sourceChannelId: "channel-208",
-    destChannelId: "channel-3",
-    coinMinimalDenom: "wbtc-satoshi",
-    sourceChainNameOverride: "Ethereum",
-    isVerified: true,
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChains: [AxelarSourceChainConfigs.wbtc.ethereum],
     },
   },
   {
