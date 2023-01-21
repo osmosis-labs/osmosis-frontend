@@ -2477,6 +2477,34 @@ const chainInfos = (
       explorerUrlToTx: "https://www.mintscan.io/onomy-protocol/txs/{txHash}",
     },
     {
+      rpc: "https://rpc.planq.network/",
+      rest: "https://rest.planq.network/",
+      chainId: "planq_7070-2",
+      chainName: "Planq",
+      bip44: {
+        coinType: 60,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("plq"),
+      currencies: [
+        {
+          coinDenom: "PLANQ",
+          coinMinimalDenom: "aplanq",
+          coinDecimals: 18,
+          coinGeckoId: "pool:aplanq",
+          coinImageUrl: "/tokens/planq.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 20000000000,
+            average: 25000000000,
+            high: 40000000000,
+          },
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
+      explorerUrlToTx: "https://ping.pub/planq/tx/{txHash}",
+    },
+    {
       rpc: "https://dys-tm.dysonprotocol.com:443",
       rest: "https://dys-api.dysonprotocol.com:443",
       chainId: "dyson-mainnet-01",

@@ -1346,6 +1346,12 @@ export const IBCAssetInfos: (IBCAsset & {
     depositUrlOverride: "https://app.arable.finance/#/ibc",
     withdrawUrlOverride: "https://app.arable.finance/#/ibc",
   },
+  {
+    counterpartyChainId: "planq_7070-2",
+    sourceChannelId: "channel-492",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "aplanq",
+  },
 ].filter((ibcAsset) => {
   // validate IBC asset config
   if (
