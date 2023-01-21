@@ -28,7 +28,7 @@ export const Switch: FunctionComponent<
       containerClassName
     )}
   >
-    {labelPosition === "left" && (
+    {labelPosition === "left" && children && (
       <div
         className={classNames(
           "mr-2 lg:mr-1",
@@ -53,7 +53,7 @@ export const Switch: FunctionComponent<
       disabled={disabled}
       onChange={(e) => onToggle(e.target.checked)}
     />
-    {labelPosition === "right" && (
+    {labelPosition === "right" && children && (
       <div
         className={classNames(
           "ml-2 lg:ml-1",

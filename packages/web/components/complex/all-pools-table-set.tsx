@@ -608,6 +608,7 @@ export const AllPoolsTableSet: FunctionComponent<{
                 onInput={setQuery}
                 placeholder={t("pools.allPools.search")}
                 className="!w-64"
+                size="small"
               />
               <SortMenu
                 options={tableCols as MenuOption[]}
