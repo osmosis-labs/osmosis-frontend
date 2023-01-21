@@ -2700,7 +2700,7 @@ chainInfos.push({
       coinMinimalDenom: "wavax-wei",
       coinDecimals: 18,
       coinGeckoId: "avalanche-2",
-      coinImageUrl: "/tokens/wavax.svg",
+      coinImageUrl: "/tokens/avax.svg",
     },
   ],
   feeCurrencies: [
