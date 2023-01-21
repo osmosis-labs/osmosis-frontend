@@ -4,10 +4,10 @@
  * More information about the config is available here 
  * https://inlang.com/documentation/config
  */
-export async function initializeConfig(env) {
+export async function defineConfig(env) {
     // importing inlang-plugin-json from https://github.com/samuelstroschein/inlang-plugin-json
 	const plugin = await env.$import(
-		"https://cdn.jsdelivr.net/gh/samuelstroschein/inlang-plugin-json@1.0.0/dist/index.js"
+		"https://cdn.jsdelivr.net/gh/samuelstroschein/inlang-plugin-json@1/dist/index.js"
 	);
 
 	const pluginConfig = {
