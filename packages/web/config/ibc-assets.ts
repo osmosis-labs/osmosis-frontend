@@ -22,7 +22,125 @@ export const IBCAssetInfos: (IBCAsset & {
    *  voted on its incentivization or general approval (amongst other possibilities).
    */
   isVerified?: boolean;
-})[] = [
+})[] = IS_TESTNET ? [
+  {
+    counterpartyChainId: "axelar-testnet-lisbon-3",
+    sourceChannelId: "channel-1946",
+    destChannelId: "channel-135",
+    coinMinimalDenom: "uausdc",
+    sourceChainNameOverride: "Goerli Ethereum",
+    isVerified: true,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [
+        AxelarSourceChainConfigs.usdc.ethereum,
+        AxelarSourceChainConfigs.usdc.binance,
+        AxelarSourceChainConfigs.usdc.moonbeam,
+        AxelarSourceChainConfigs.usdc.polygon,
+        AxelarSourceChainConfigs.usdc.avalanche,
+        AxelarSourceChainConfigs.usdc.fantom,
+      ],
+    },
+    fiatRamps: [{ rampKey: "kado" as const, assetKey: "USDC" }],
+  },
+  {
+    counterpartyChainId: "axelar-testnet-lisbon-3",
+    sourceChannelId: "channel-1946",
+    destChannelId: "channel-135",
+    coinMinimalDenom: "weth-wei",
+    sourceChainNameOverride: "Goerli Ethereum",
+    isVerified: true,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.weth.ethereum],
+    },
+  },
+  {
+    counterpartyChainId: "axelar-testnet-lisbon-3",
+    sourceChannelId: "channel-1946",
+    destChannelId: "channel-135",
+    coinMinimalDenom: "wbnb-wei",
+    sourceChainNameOverride: "Binance Smart Chain",
+    isVerified: true,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.wbnb.binance],
+      wrapAssetConfig: {
+        url: "https://pancakeswap.finance/swap?outputCurrency=0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+        fromDenom: "BNB",
+        toDenom: "WBNB",
+        platformName: "PancakeSwap",
+      },
+    },
+  },
+  {
+    counterpartyChainId: "axelar-testnet-lisbon-3",
+    sourceChannelId: "channel-1946",
+    destChannelId: "channel-135",
+    coinMinimalDenom: "wmatic-wei",
+    sourceChainNameOverride: "Mumbai",
+    isVerified: true,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.wmatic.polygon],
+      wrapAssetConfig: {
+        url: "https://v2.swapmatic.io/?#/matic/swap?outputCurrency=0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270&inputCurrency=MATIC",
+        fromDenom: "MATIC",
+        toDenom: "WMATIC",
+        platformName: "SwapMatic",
+      },
+    },
+  },
+  {
+    counterpartyChainId: "axelar-testnet-lisbon-3",
+    sourceChannelId: "channel-1946",
+    destChannelId: "channel-135",
+    coinMinimalDenom: "wavax-wei",
+    sourceChainNameOverride: "Avalanche Fuji Testnet",
+    isVerified: true,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.wavax.avalanche],
+      wrapAssetConfig: {
+        url: "https://app.sushi.com/swap?inputCurrency=AVAX&outputCurrency=0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7&chainId=43114",
+        fromDenom: "AVAX",
+        toDenom: "WAVAX",
+        platformName: "SushiSwap",
+      },
+    },
+  },
+  {
+    counterpartyChainId: "axelar-testnet-lisbon-3",
+    sourceChannelId: "channel-1946",
+    destChannelId: "channel-135",
+    coinMinimalDenom: "wdev-wei",
+    sourceChainNameOverride: "Moonbase Alpha",
+    isVerified: true,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.wglmr.moonbeam],
+    },
+  },
+  {
+    counterpartyChainId: "ares-1",
+    sourceChannelId: "channel-2083",
+    destChannelId: "channel-2",
+    coinMinimalDenom: "umars",
+    isVerified: true,
+  },
+] : [
   {
     counterpartyChainId: "axelar-dojo-1",
     sourceChannelId: "channel-208",

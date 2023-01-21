@@ -2505,6 +2505,34 @@ const chainInfos = (
       explorerUrlToTx:
         "https://explorer.dys.dysonprotocol.com/dyson/tx/{txHash}",
     },
+    {
+      rpc: "https://testnet-rpc.marsprotocol.io/",
+      rest: "https://testnet-rest.marsprotocol.io/",
+      chainId: "ares-1",
+      chainName: "Mars Hub Testnet",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("mars"),
+      currencies: [
+        {
+          coinDenom: "MARS",
+          coinMinimalDenom: "umars",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/mars.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0,
+            average: 0,
+            high: 0.025,
+          },
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx:
+        "https://testnet-explorer.marsprotocol.io/transactions/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
@@ -2662,7 +2690,7 @@ chainInfos.push({
     },
     {
       coinDenom: "wGLMR",
-      coinMinimalDenom: "wglmr-wei",
+      coinMinimalDenom: IS_TESTNET ? "wdev-wei" : "wglmr-wei",
       coinDecimals: 18,
       coinGeckoId: "wrapped-moonbeam",
       coinImageUrl: "/tokens/glmr.svg",
