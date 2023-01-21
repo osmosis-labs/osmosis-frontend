@@ -182,9 +182,7 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: IS_TESTNET ? "channel-1946" : "channel-208",
     destChannelId: IS_TESTNET ? "channel-135" : "channel-3",
     coinMinimalDenom: "wavax-wei",
-    sourceChainNameOverride: IS_TESTNET
-      ? "Avalanche Fuji Testnet"
-      : "Avalanche",
+    sourceChainNameOverride: IS_TESTNET ? "Avalanche Fuji Testnet" : "Avalanche",
     isVerified: false,
     originBridgeInfo: {
       bridge: "axelar" as const,

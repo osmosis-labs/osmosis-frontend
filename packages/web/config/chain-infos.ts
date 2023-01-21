@@ -2495,8 +2495,7 @@ const chainInfos = (
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
-      explorerUrlToTx:
-        "https://explorer.dys.dysonprotocol.com/dyson/tx/{txHash}",
+      explorerUrlToTx: "https://explorer.dys.dysonprotocol.com/dyson/tx/{txHash}",
     },
     {
       rpc: "https://rpc.planq.network/",
