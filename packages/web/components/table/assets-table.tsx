@@ -60,7 +60,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
     const { logEvent } = useAmplitudeAnalytics();
     const [favoritesList, onSetFavoritesList] = useLocalStorageState(
       "favoritesList",
-      ["OSMO"]
+      ["OSMO", "ATOM"]
     );
 
     const onDeposit = useCallback(
