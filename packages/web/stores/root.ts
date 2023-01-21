@@ -7,7 +7,6 @@ import {
   CosmwasmAccount,
   IBCCurrencyRegsitrar,
   QueriesStore,
-  ICNSQueries,
 } from "@keplr-wallet/stores";
 import { ChainInfos, IBCAssetInfos, IS_FRONTIER } from "../config";
 import EventEmitter from "eventemitter3";
@@ -49,7 +48,7 @@ export class RootStore {
   public readonly chainStore: ChainStore;
 
   public readonly queriesStore: QueriesStore<
-    [CosmosQueries, CosmwasmQueries, OsmosisQueries, ICNSQueries]
+    [CosmosQueries, CosmwasmQueries, OsmosisQueries]
   >;
 
   public readonly accountStore: AccountStore<
@@ -112,8 +111,7 @@ export class RootStore {
       this.chainStore,
       CosmosQueries.use(),
       CosmwasmQueries.use(),
-      OsmosisQueries.use(this.chainStore.osmosis.chainId),
-      ICNSQueries.use()
+      OsmosisQueries.use(this.chainStore.osmosis.chainId)
     );
 
     this.accountStore = new AccountStore(
@@ -187,6 +185,7 @@ export class RootStore {
     this.queriesExternalStore = new QueriesExternalStore(
       makeIndexedKVStore("store_web_queries"),
       this.priceStore,
+      this.chainStore,
       this.chainStore.osmosis.chainId,
       this.queriesStore.get(
         this.chainStore.osmosis.chainId
