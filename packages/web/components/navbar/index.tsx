@@ -14,11 +14,11 @@ import { UserSetting } from "../../stores/user-settings";
 import { useTranslation } from "react-multi-lang";
 import { MainLayoutMenu, CustomClasses } from "../types";
 import { MainMenu } from "../main-menu";
-import { EventName } from "../../config";
+import { EventName, ICNSInfo } from "../../config";
 import { ProfileModal } from "../../modals/profile";
 import IconButton from "../buttons/icon-button";
 import { Icon } from "../assets";
-import { getShortAddress } from "../../utils/string";
+import { formatICNSName, getShortAddress } from "../../utils/string";
 
 export const NavBar: FunctionComponent<
   {
@@ -170,6 +170,7 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
       accountStore,
       navBarStore,
       profileStore,
+      queriesStore,
     } = useStore();
     const {
       isOpen: isProfileOpen,
@@ -183,13 +184,16 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
     const account = accountStore.getAccount(chainId);
     const walletConnected = account.walletStatus === WalletStatus.Loaded;
 
+    const icnsQuery = queriesStore
+      .get(chainId)
+      .icns.queryICNSNames.getQueryContract(
+        // Avoid extra request by passing an empty contract string
+        account.bech32Address ? ICNSInfo.resolverContractAddress : "",
+        account.bech32Address
+      );
+
     return (
-      <div
-        className={classNames(
-          "max-w-[10rem] shrink-0 lg:max-w-[9rem] md:w-full md:max-w-none",
-          className
-        )}
-      >
+      <div className={className}>
         {!walletConnected ? (
           <Button
             className="!h-10 w-40 lg:w-36 md:w-full"
@@ -226,9 +230,14 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
               )}
             </div>
 
-            <div className="flex w-full flex-col truncate text-right leading-tight">
-              <span className="body2 truncate font-bold leading-4">
-                {getShortAddress(account.bech32Address)}
+            <div className="flex w-full  flex-col truncate text-right leading-tight">
+              <span
+                className="body2 font-bold leading-4"
+                title={icnsQuery?.primaryName}
+              >
+                {Boolean(icnsQuery?.primaryName)
+                  ? formatICNSName(icnsQuery.primaryName)
+                  : getShortAddress(account.bech32Address)}
               </span>
               <span className="caption font-medium tracking-wider text-osmoverse-200">
                 {navBarStore.walletInfo.balance.toString()}
@@ -236,7 +245,11 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
             </div>
           </button>
         )}
-        <ProfileModal isOpen={isProfileOpen} onRequestClose={onCloseProfile} />
+        <ProfileModal
+          isOpen={isProfileOpen}
+          onRequestClose={onCloseProfile}
+          icnsName={icnsQuery?.primaryName}
+        />
       </div>
     );
   }

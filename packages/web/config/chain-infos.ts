@@ -67,7 +67,7 @@ const chainInfos = (
             ]
           : []),
       ],
-      features: ["ibc-transfer", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
       explorerUrlToTx:
         OSMOSIS_EXPLORER_URL_OVERWRITE ??
         (IS_TESTNET
@@ -2484,7 +2484,8 @@ const chainInfos = (
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
-      explorerUrlToTx: "https://explorer.dys.dysonprotocol.com/dyson/tx/{txHash}",
+      explorerUrlToTx:
+        "https://explorer.dys.dysonprotocol.com/dyson/tx/{txHash}",
     },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
@@ -2684,13 +2685,13 @@ chainInfos.push({
       coinDecimals: 6,
       coinGeckoId: "axelar",
       coinImageUrl: "/tokens/axl.svg",
+      gasPriceStep: {
+        low: 0.00005,
+        average: 0.00007,
+        high: 0.00009,
+      },
     },
   ],
-  gasPriceStep: {
-    low: 0.00005,
-    average: 0.00007,
-    high: 0.00009,
-  },
   features: ["ibc-transfer", "ibc-go"],
   explorerUrlToTx: IS_TESTNET
     ? "https://testnet.axelarscan.io/tx/{txHash}"

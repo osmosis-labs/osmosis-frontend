@@ -1,9 +1,9 @@
 import { useState, useCallback } from "react";
 import {
   ChainGetter,
-  QueriesStore,
   CosmosQueries,
   CosmwasmQueries,
+  IQueriesStore,
 } from "@keplr-wallet/stores";
 import {
   OsmosisQueries,
@@ -18,7 +18,7 @@ export function useAddLiquidityConfig(
   chainGetter: ChainGetter,
   osmosisChainId: string,
   poolId: string,
-  queriesStore: QueriesStore<[CosmosQueries, CosmwasmQueries, OsmosisQueries]>
+  queriesStore: IQueriesStore<CosmosQueries & CosmwasmQueries & OsmosisQueries>
 ): {
   config: ObservableAddLiquidityConfig;
   addLiquidity: () => Promise<void>;

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import {
   ChainGetter,
-  QueriesStore,
   CosmosQueries,
   CosmwasmQueries,
+  IQueriesStore,
 } from "@keplr-wallet/stores";
 import { Pool } from "@osmosis-labs/pools";
 import {
@@ -20,7 +20,7 @@ export function useTradeTokenInConfig(
   chainGetter: ChainGetter,
   osmosisChainId: string,
   bech32Address: string,
-  queriesStore: QueriesStore<[CosmosQueries, CosmwasmQueries, OsmosisQueries]>,
+  queriesStore: IQueriesStore<CosmosQueries & CosmwasmQueries & OsmosisQueries>,
   pools: Pool[],
   requeryIntervalMs = 8000
 ) {
