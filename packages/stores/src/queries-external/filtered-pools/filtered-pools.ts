@@ -78,23 +78,29 @@ export class ObservableQueryFilteredPools
       const existingQueryPool = this._pools.get(
         filteredPoolRaw.pool_id.toString()
       );
+      let poolRaw: ReturnType<typeof makePoolRawFromFilteredPool> | undefined;
       try {
-        const poolRaw = makePoolRawFromFilteredPool(filteredPoolRaw);
-        if (existingQueryPool) {
-          existingQueryPool.setRaw(poolRaw);
-        } else {
-          this._pools.set(
-            poolRaw.id,
-            new ObservableQueryPool(
-              this.kvStore,
-              this.chainId,
-              this.chainGetter,
-              poolRaw
-            )
-          );
-        }
-      } catch {
-        console.error("Failed to make pool raw from filtered pool raw.");
+        poolRaw = makePoolRawFromFilteredPool(filteredPoolRaw);
+      } catch (e: any) {
+        console.error(
+          `Failed to make pool raw from filtered pool raw. ID: ${filteredPoolRaw.pool_id}, ${e.message}`
+        );
+      }
+
+      if (!poolRaw) continue;
+
+      if (existingQueryPool) {
+        existingQueryPool.setRaw(poolRaw);
+      } else {
+        this._pools.set(
+          poolRaw.id,
+          new ObservableQueryPool(
+            this.kvStore,
+            this.chainId,
+            this.chainGetter,
+            poolRaw
+          )
+        );
       }
     }
   }
