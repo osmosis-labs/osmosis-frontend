@@ -1,8 +1,5 @@
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
-import {
-  ObservablePoolDetail,
-  ObservableQueryPool,
-} from "@osmosis-labs/stores";
+import { ObservablePoolDetail } from "@osmosis-labs/stores";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
@@ -11,7 +8,6 @@ import { ComponentProps, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 import { ShowMoreButton } from "../../components/buttons/show-more";
 import { PoolCard } from "../../components/cards";
-import { POOLS_PER_PAGE } from "../../components/complex";
 import { AllPoolsTableSet } from "../../components/complex/all-pools-table-set";
 import { MetricLoader } from "../../components/loaders";
 import { PoolsOverview } from "../../components/overview/pools";
@@ -19,15 +15,11 @@ import { EventName } from "../../config";
 import {
   useAmplitudeAnalytics,
   useCreatePoolConfig,
-  useFilteredData,
   useHideDustUserSetting,
   useLockTokenConfig,
-  usePaginatedData,
-  useSortedData,
   useSuperfluidPool,
   useWindowSize,
 } from "../../hooks";
-import { DataSorter } from "../../hooks/data/data-sorter";
 import {
   AddLiquidityModal,
   CreatePoolModal,
@@ -39,14 +31,8 @@ import { useStore } from "../../stores";
 import { priceFormatter } from "../../utils/formatter";
 
 const Pools: NextPage = observer(function () {
-  const {
-    chainStore,
-    accountStore,
-    priceStore,
-    queriesStore,
-    queriesExternalStore,
-    derivedDataStore,
-  } = useStore();
+  const { chainStore, accountStore, queriesStore, derivedDataStore } =
+    useStore();
   const t = useTranslation();
   const { isMobile } = useWindowSize();
   const { logEvent } = useAmplitudeAnalytics({
@@ -57,44 +43,6 @@ const Pools: NextPage = observer(function () {
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const account = accountStore.getAccount(chainId);
 
-  const superfluidPoolIds = queryOsmosis.querySuperfluidPools.superfluidPoolIds;
-  const superfluidPools = new DataSorter(
-    superfluidPoolIds
-      ?.map((poolId) => queryOsmosis.queryGammPools.getPool(poolId))
-      .filter((pool): pool is ObservableQueryPool => pool !== undefined)
-      .map((superfluidPool) => ({
-        id: superfluidPool.id,
-        poolFeesMetrics:
-          queriesExternalStore.queryGammPoolFeeMetrics.getPoolFeesMetrics(
-            superfluidPool.id,
-            priceStore
-          ),
-        apr: queryOsmosis.queryIncentivizedPools.computeMostApr(
-          superfluidPool.id,
-          priceStore
-        ),
-        poolLiquidity: superfluidPool.computeTotalValueLocked(priceStore),
-        assets: superfluidPool.poolAssets.map((asset) => {
-          const weightedAsset = superfluidPool.weightedPoolInfo?.assets.find(
-            (weightedAsset) =>
-              weightedAsset.denom === asset.amount.currency.coinMinimalDenom
-          );
-          const weightFraction =
-            weightedAsset?.weightFraction ??
-            new RatePretty(
-              new Dec(1).quo(new Dec(superfluidPool.poolAssets.length))
-            ); // stableswap pools have consistent weight fraction
-
-          return {
-            coinImageUrl: asset.amount.currency.coinImageUrl,
-            coinDenom: asset.amount.currency.coinDenom,
-            weightFraction,
-          };
-        }),
-      })) ?? []
-  )
-    .process("poolLiquidity")
-    .reverse();
   // create pool dialog
   const [isCreatingPool, setIsCreatingPool] = useState(false);
 
@@ -107,20 +55,6 @@ const Pools: NextPage = observer(function () {
 
   // Mobile only - pools (superfluid) pools sorting/filtering
   const [showMoreMyPools, setShowMoreMyPools] = useState(false);
-  const [query, setQuery, fiteredSfsPools] = useFilteredData(
-    superfluidPools ?? [],
-    ["id", "assets.coinDenom"]
-  );
-
-  const [sortKeyPath, setSortKeyPath, , , toggleSortDirection, sortedSfsPools] =
-    useSortedData(fiteredSfsPools, "apr", "descending");
-
-  const [page, setPage, minPage, numPages, sfsPoolsPage] = usePaginatedData(
-    sortedSfsPools,
-    POOLS_PER_PAGE
-  );
-  /// show pools > $1k TVL
-  const [isPoolTvlFiltered, setIsPoolTvlFiltered] = useState(false);
 
   // pool quick action modals
   const [addLiquidityModalPoolId, setAddLiquidityModalPoolId] = useState<
@@ -282,14 +216,6 @@ const Pools: NextPage = observer(function () {
       )
     );
   });
-
-  const [mobilePoolsTabIndex, _setMobilePoolsTabIndex] = useState(0);
-  const setMobilePoolsTabIndex = useCallback((tabIndex: number) => {
-    if (tabIndex === 1) {
-      queryOsmosis.queryGammPools.fetchRemainingPools();
-    }
-    _setMobilePoolsTabIndex(tabIndex);
-  }, []);
 
   return (
     <main className="m-auto max-w-container bg-osmoverse-900 px-8 md:px-3">
@@ -458,149 +384,6 @@ const Pools: NextPage = observer(function () {
           </div>
         </div>
       </section>
-      {/* {isMobile ? (
-        <section>
-          <h5 className="md:px-3">{t("pools.all")}</h5>
-          <TabBox
-            tabs={[
-              {
-                title: t("pools.incentivized"),
-                content: (
-                  <AllPoolsTableSet
-                    tableSet="incentivized-pools"
-                    {...quickActionProps}
-                  />
-                ),
-              },
-              {
-                title: t("pools.allTab"),
-                content: (
-                  <AllPoolsTableSet
-                    tableSet="all-pools"
-                    {...quickActionProps}
-                  />
-                ),
-              },
-              {
-                title: t("pools.externalIncentivized.title"),
-                content: (
-                  <ExternalIncentivizedPoolsTableSet {...quickActionProps} />
-                ),
-              },
-              {
-                title: (
-                  <span className="text-superfluid">
-                    {t("pools.superfluid.tab")}
-                  </span>
-                ),
-                content: (
-                  <CompactPoolTableDisplay
-                    pools={
-                      sfsPoolsPage?.map(
-                        ({ id, poolLiquidity, apr, assets }) => ({
-                          id,
-                          assets: assets ?? [],
-                          metrics: [
-                            ...[
-                              sortKeyPath === "poolLiquidity"
-                                ? {
-                                    label: t("pools.allPools.TVL"),
-                                    value: poolLiquidity.toString(),
-                                  }
-                                : sortKeyPath === "apr"
-                                ? {
-                                    label: t("pools.allPools.APR"),
-                                    value: apr
-                                      .maxDecimals(2)
-                                      .trim(true)
-                                      .toString(),
-                                  }
-                                : {
-                                    label: t("pools.allPools.APR"),
-                                    value: apr
-                                      .maxDecimals(2)
-                                      .trim(true)
-                                      .toString(),
-                                  },
-                            ],
-                            ...[
-                              sortKeyPath === "poolLiquidity"
-                                ? {
-                                    label: t("pools.allPools.APR"),
-                                    value: apr
-                                      .maxDecimals(2)
-                                      .trim(true)
-                                      .toString(),
-                                  }
-                                : {
-                                    label: t("pools.allPools.TVL"),
-                                    value: poolLiquidity.toString(),
-                                  },
-                            ],
-                          ],
-                          isSuperfluid: true,
-                        })
-                      ) ?? []
-                    }
-                    searchBoxProps={{
-                      currentValue: query,
-                      onInput: setQuery,
-                      placeholder: "Filter by symbol",
-                    }}
-                    sortMenuProps={{
-                      options: [
-                        { id: "id", display: t("pools.allPools.sort.poolId") },
-                        { id: "apr", display: t("pools.allPools.APR") },
-                        {
-                          id: "poolLiquidity",
-                          display: t("pools.allPools.sort.liquidity"),
-                        },
-                      ],
-                      selectedOptionId: sortKeyPath,
-                      onSelect: (id) =>
-                        id === sortKeyPath
-                          ? setSortKeyPath("")
-                          : setSortKeyPath(id),
-                      onToggleSortDirection: toggleSortDirection,
-                    }}
-                    pageListProps={{
-                      currentValue: page,
-                      max: numPages,
-                      min: minPage,
-                      onInput: setPage,
-                    }}
-                    minTvlToggleProps={{
-                      isOn: isPoolTvlFiltered,
-                      onToggle: setIsPoolTvlFiltered,
-                      label: t("pools.allPools.displayLowLiquidity", {
-                        value: new PricePretty(
-                          priceStore.getFiatCurrency(
-                            priceStore.defaultVsCurrency
-                          )!,
-                          TVL_FILTER_THRESHOLD
-                        ).toString(),
-                      }),
-                    }}
-                  />
-                ),
-                className: "!border-superfluid",
-              },
-            ]}
-            tabSelection={{
-              selectedTabIndex: mobilePoolsTabIndex,
-              onTabSelected: setMobilePoolsTabIndex,
-            }}
-          />
-        </section>
-      ) : (
-        <>
-          <section>
-            <div className="mx-auto py-[3.75rem]">
-              <AllPoolsTableSet {...quickActionProps} />
-            </div>
-          </section>
-        </>
-      )} */}
       <section>
         <div className="mx-auto py-[3.75rem]">
           <AllPoolsTableSet {...quickActionProps} />

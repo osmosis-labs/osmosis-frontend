@@ -108,7 +108,6 @@ export const AllPoolsTableSet: FunctionComponent<{
       accountStore,
       derivedDataStore,
     } = useStore();
-    // const { isMobile } = useWindowSize();
     const t = useTranslation();
 
     const { logEvent } = useAmplitudeAnalytics();
@@ -492,7 +491,6 @@ export const AllPoolsTableSet: FunctionComponent<{
     ];
 
     const [sorting, setSorting] = useState<SortingState>([]);
-    console.log("🚀 ~ sorting", sorting);
 
     const table = useReactTable({
       data: tableData,

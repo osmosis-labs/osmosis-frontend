@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { IS_FRONTIER } from "../../config";
 import useOnScreen from "../../hooks/use-on-screen";
+import { useRouter } from "next/router";
 
 type Props<T> = {
   paginate: () => void;
@@ -12,6 +13,7 @@ type Props<T> = {
 const PaginatedTable = <T extends object>({ paginate, table }: Props<T>) => {
   // Pagination
   const ref = useRef<HTMLDivElement | null>(null);
+  const router = useRouter();
   const entry = useOnScreen(ref, {});
   const shouldLoad = !!entry?.isIntersecting;
 
@@ -74,7 +76,12 @@ const PaginatedTable = <T extends object>({ paginate, table }: Props<T>) => {
       </thead>
       <tbody>
         {table.getRowModel().rows.map((row) => (
-          <tr key={row.id}>
+          <tr
+            key={row.id}
+            className="h-20 transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none  hover:cursor-pointer hover:bg-osmoverse-800"
+            //@ts-ignore
+            onClick={() => router.push(`/pool/${row.original[0].poolId}`)}
+          >
             {row.getVisibleCells().map((cell) => (
               <td key={cell.id}>
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
