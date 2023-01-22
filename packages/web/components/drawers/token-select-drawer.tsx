@@ -194,7 +194,7 @@ export const TokenSelectDrawer: FunctionComponent<{
         >
           <div
             onClick={() => onClose?.()}
-            className="absolute inset-0 z-40 bg-osmoverse-1000/60"
+            className="absolute inset-0 z-40 bg-osmoverse-1000/80"
           />
         </Transition>
 
