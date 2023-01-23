@@ -148,7 +148,7 @@ export const TradeClipboard: FunctionComponent<{
         fetchedRemainingPoolsRef.current = true;
         queries.osmosis?.queryGammPools.fetchRemainingPools();
       }
-    }, [fetchedRemainingPoolsRef]);
+    }, []);
     const [showFromTokenSelectDropdown, _setFromTokenSelectDropdownLocal] =
       useState(false);
     const setFromTokenSelectDropdownLocal = useCallback(
