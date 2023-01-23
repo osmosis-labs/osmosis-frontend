@@ -9,6 +9,7 @@ import classNames from "classnames";
 import { TokenSelectDrawer } from "../drawers/token-select-drawer";
 import { useRouter } from "next/router";
 import { EventName } from "../../config";
+import { Icon } from "../assets";
 
 /** Will display balances if provided `CoinPretty` objects. Assumes denoms are unique. */
 export const TokenSelectWithDrawer: FunctionComponent<{
@@ -39,10 +40,10 @@ export const TokenSelectWithDrawer: FunctionComponent<{
     const setIsSelectOpen =
       setDropdownState === undefined ? setIsSelectOpenLocal : setDropdownState;
 
-    const selectedToken = tokens.find((token) =>
-      (token instanceof CoinPretty ? token.denom : token.coinDenom).includes(
+    const selectedToken = tokens.find(
+      (token) =>
+        (token instanceof CoinPretty ? token.denom : token.coinDenom) ===
         selectedTokenDenom
-      )
     );
 
     const dropdownTokens = tokens
@@ -144,14 +145,13 @@ export const TokenSelectWithDrawer: FunctionComponent<{
                 )}
                 {canSelectTokens && (
                   <div className="ml-3 w-5 md:ml-2 md:pb-1.5">
-                    <Image
-                      className={`opacity-40 transition-transform duration-100 group-hover:opacity-100 ${
-                        isSelectOpen ? "rotate-180" : "rotate-0"
-                      }`}
-                      src="/icons/chevron-down.svg"
-                      alt="select icon"
+                    <Icon
+                      id="chevron-down"
                       width={20}
                       height={8}
+                      className={`text-osmoverse-400 opacity-40 transition-transform duration-100 group-hover:opacity-100 ${
+                        isSelectOpen ? "rotate-180" : "rotate-0"
+                      }`}
                     />
                   </div>
                 )}

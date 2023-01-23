@@ -42,6 +42,7 @@ export const TokenSelectModal: FunctionComponent<
           currentValue={props.currentValue}
           onInput={(value) => props.onInput(value)}
           onFocus={props.onFocus}
+          size="large"
         />
       </div>
       <ul className="flex max-h-64 flex-col overflow-y-auto">

@@ -96,10 +96,11 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
               {t("superfluidValidator.choose")}
             </span>
             <SearchBox
-              className={isMobile ? "h-11 !w-full !rounded" : undefined}
+              className={isMobile ? "!w-full !rounded" : undefined}
               currentValue={query}
               onInput={setQuery}
               placeholder={t("superfluidValidator.search")}
+              size={isMobile ? "medium" : "small"}
             />
           </div>
           <div className="h-72 overflow-x-clip overflow-y-scroll">

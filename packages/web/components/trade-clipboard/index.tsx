@@ -24,7 +24,7 @@ import {
   useAmplitudeAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
-import { BorderButton, Button } from "../buttons";
+import { Button } from "../buttons";
 import { InputBox } from "../input";
 import { InfoTooltip } from "../tooltip";
 import TradeRoute from "./trade-route";
@@ -32,6 +32,8 @@ import { useTranslation } from "react-multi-lang";
 import { tError } from "../localization";
 import { TokenSelectWithDrawer } from "../control/token-select-with-drawer";
 import useMeasure from "../../hooks/use-measure";
+import { Icon } from "../assets";
+import useLatest from "../../hooks/use-latest";
 
 export const TradeClipboard: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!
@@ -57,6 +59,7 @@ export const TradeClipboard: FunctionComponent<{
     const tradeableCurrencies = chainStore.getChain(
       chainStore.osmosis.chainId
     ).currencies;
+    const tradeableCurrenciesRef = useLatest(tradeableCurrencies);
 
     const account = accountStore.getAccount(chainId);
     const queries = queriesStore.get(chainId);
@@ -142,10 +145,31 @@ export const TradeClipboard: FunctionComponent<{
     }, [isSettingOpen]);
 
     // token select dropdown
-    const [showFromTokenSelectDropdown, setFromTokenSelectDropdownLocal] =
+    const fetchedRemainingPoolsRef = useRef(false);
+    const fetchRemainingPoolsOnce = useCallback(() => {
+      if (!fetchedRemainingPoolsRef.current) {
+        fetchedRemainingPoolsRef.current = true;
+        queries.osmosis?.queryGammPools.fetchRemainingPools();
+      }
+    }, []);
+    const [showFromTokenSelectDropdown, _setFromTokenSelectDropdownLocal] =
       useState(false);
-    const [showToTokenSelectDropdown, setToTokenSelectDropdownLocal] =
+    const setFromTokenSelectDropdownLocal = useCallback(
+      (val: boolean) => {
+        fetchRemainingPoolsOnce();
+        _setFromTokenSelectDropdownLocal(val);
+      },
+      [fetchRemainingPoolsOnce]
+    );
+    const [showToTokenSelectDropdown, _setToTokenSelectDropdownLocal] =
       useState(false);
+    const setToTokenSelectDropdownLocal = useCallback(
+      (val: boolean) => {
+        fetchRemainingPoolsOnce();
+        _setToTokenSelectDropdownLocal(val);
+      },
+      [fetchRemainingPoolsOnce]
+    );
     const setOneTokenSelectOpen = (dropdown: "to" | "from") => {
       if (dropdown === "to") {
         setToTokenSelectDropdownLocal(true);
@@ -445,26 +469,26 @@ export const TradeClipboard: FunctionComponent<{
           containerClassName
         )}
       >
+        {/** Overlay */}
+        {isSettingOpen && (
+          <div className="absolute inset-0 z-40 bg-osmoverse-1000/40" />
+        )}
+
         <div className="relative flex w-full items-center justify-end">
           <h6 className="w-full text-center">{t("swap.title")}</h6>
           <button
-            className="absolute top-0 right-3"
+            className="absolute top-0 right-3 z-50"
             onClick={(e) => {
               e.stopPropagation();
               setIsSettingOpen(!isSettingOpen);
               closeTokenSelectDropdowns();
             }}
           >
-            <Image
+            <Icon
+              id="setting"
               width={isMobile ? 20 : 28}
               height={isMobile ? 20 : 28}
-              src={
-                isSettingOpen
-                  ? "/icons/setting-white.svg"
-                  : "/icons/setting.svg"
-              }
-              alt="setting icon"
-              priority={true}
+              className={isSettingOpen ? "text-white" : "text-osmoverse-400"}
             />
           </button>
           {isSettingOpen && (
@@ -487,7 +511,9 @@ export const TradeClipboard: FunctionComponent<{
                       key={slippage.index}
                       className={classNames(
                         "flex h-8 w-full cursor-pointer items-center justify-center rounded-lg bg-osmoverse-700",
-                        { "border-2 border-wosmongton-200": slippage.selected }
+                        {
+                          "border-2 border-wosmongton-200": slippage.selected,
+                        }
                       )}
                       onClick={(e) => {
                         e.preventDefault();
@@ -610,11 +636,12 @@ export const TradeClipboard: FunctionComponent<{
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <BorderButton
+                <Button
+                  mode="amount"
                   className={classNames(
                     "py-1 px-1.5 text-xs",
                     tradeTokenInConfig.fraction === 0.5
-                      ? "bg-wosmongton-100/40"
+                      ? "bg-wosmongton-100/20"
                       : "bg-transparent"
                   )}
                   onClick={() => {
@@ -634,12 +661,13 @@ export const TradeClipboard: FunctionComponent<{
                   }}
                 >
                   {t("swap.HALF")}
-                </BorderButton>
-                <BorderButton
+                </Button>
+                <Button
+                  mode="amount"
                   className={classNames(
                     "py-1 px-1.5 text-xs",
                     tradeTokenInConfig.fraction === 1
-                      ? "bg-wosmongton-100/40"
+                      ? "bg-wosmongton-100/20"
                       : "bg-transparent"
                   )}
                   onClick={() => {
@@ -659,7 +687,7 @@ export const TradeClipboard: FunctionComponent<{
                   }}
                 >
                   {t("swap.MAX")}
-                </BorderButton>
+                </Button>
               </div>
             </div>
             <div className="mt-3 flex place-content-between items-center">
@@ -678,7 +706,7 @@ export const TradeClipboard: FunctionComponent<{
                 )}
                 selectedTokenDenom={tradeTokenInConfig.sendCurrency.coinDenom}
                 onSelect={(tokenDenom: string) => {
-                  const tokenInCurrency = tradeableCurrencies.find(
+                  const tokenInCurrency = tradeableCurrenciesRef.current.find(
                     (currency) => currency.coinDenom === tokenDenom
                   );
                   if (tokenInCurrency) {
@@ -701,6 +729,8 @@ export const TradeClipboard: FunctionComponent<{
                   onChange={(e) => {
                     e.preventDefault();
                     if (
+                      !isNaN(Number(e.target.value)) &&
+                      Number(e.target.value) >= 0 &&
                       Number(e.target.value) <= Number.MAX_SAFE_INTEGER &&
                       e.target.value.length <= (isMobile ? 19 : 26)
                     ) {
@@ -840,7 +870,7 @@ export const TradeClipboard: FunctionComponent<{
                 )}
                 selectedTokenDenom={tradeTokenInConfig.outCurrency.coinDenom}
                 onSelect={(tokenDenom: string) => {
-                  const tokenOutCurrency = tradeableCurrencies.find(
+                  const tokenOutCurrency = tradeableCurrenciesRef.current.find(
                     (currency) => currency.coinDenom === tokenDenom
                   );
                   if (tokenOutCurrency) {
@@ -933,16 +963,15 @@ export const TradeClipboard: FunctionComponent<{
                   height={24}
                   width={24}
                 />
-                <Image
+                <Icon
+                  id="chevron-down"
+                  height={isMobile ? 14 : 18}
+                  width={isMobile ? 14 : 18}
                   className={classNames(
-                    "transition-all",
+                    "text-osmoverse-400 transition-all",
                     showEstimateDetails ? "rotate-180" : "rotate-0",
                     isEstimateDetailRelevant ? "opacity-100" : "opacity-0"
                   )}
-                  alt="show estimates"
-                  src="/icons/chevron-down.svg"
-                  height={isMobile ? 14 : 18}
-                  width={isMobile ? 14 : 18}
                 />
               </div>
             </button>

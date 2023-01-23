@@ -1,11 +1,39 @@
-import Image from "next/image";
 import { DOMAttributes, forwardRef, useState } from "react";
 import classNames from "classnames";
 import { InputProps, Disableable, CustomClasses } from "../types";
+import { Icon } from "../assets";
+import { cva, VariantProps } from "class-variance-authority";
+
+const searchBoxClasses = cva(
+  "flex flex-nowrap items-center justify-between gap-2 rounded-xl border border-osmoverse-500 transition-colors [&_input]:placeholder:text-osmoverse-500 [&_input]:placeholder:font-medium",
+  {
+    variants: {
+      /**
+       * Sizes modify the following properties:
+       * - height
+       * - width
+       * - padding
+       * - font size
+       * - font weight
+       * - line height
+       * - letter spacing
+       */
+      size: {
+        small: "h-10 px-5 w-max [&_input]:text-body2 [&_input]:font-body2",
+        medium: "h-12 px-5 w-max [&_input]:text-body2 [&_input]:font-body2",
+        large: "h-14 px-5 w-max [&_input]:text-body1 [&_input]:font-body2",
+      },
+    },
+    defaultVariants: {
+      size: "medium",
+    },
+  }
+);
 
 type SearchBoxProps = Omit<InputProps<string>, "currentValue"> &
   Disableable &
-  CustomClasses & {
+  CustomClasses &
+  VariantProps<typeof searchBoxClasses> & {
     type?: string;
     currentValue?: string;
     onKeyDown?: DOMAttributes<HTMLInputElement>["onKeyDown"];
@@ -23,6 +51,7 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
       autoFocus,
       className,
       onKeyDown,
+      size,
     },
     ref
   ) {
@@ -31,22 +60,21 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
     return (
       <div
         className={classNames(
-          "flex w-max flex-nowrap items-center justify-between gap-2 rounded-xl border border-osmoverse-500 py-[10px] px-5 transition-colors",
+          searchBoxClasses({ size }),
           {
             "opacity-50": disabled,
-            "-m-px mx-0 border-2 border-osmoverse-200 px-[19px] md:m-0":
-              isFocused,
+            "border-2 border-osmoverse-200 px-[19px]": isFocused,
           },
           className
         )}
       >
-        <div className="mb-1 h-4 w-4 shrink-0">
-          <Image alt="search" src="/icons/search.svg" height={16} width={16} />
+        <div className="h-4 w-4 shrink-0 text-osmoverse-300">
+          <Icon id="search" height={16} width={16} />
         </div>
         <label className="shrink grow">
           <input
             ref={ref}
-            className="placeholder:body2 h-full w-full appearance-none bg-transparent transition-colors placeholder:text-osmoverse-500"
+            className="h-full w-full appearance-none bg-transparent tracking-wider transition-colors"
             value={currentValue}
             type={type}
             autoFocus={autoFocus}

@@ -1,4 +1,10 @@
 {
+  "404": {
+    "title": "Nu a fost gasit"
+  },
+  "500": {
+    "title": "Eroare server"
+  },
   "app": {
     "banner": {
       "title": "Visualizati toate activele care nu necesita permisiuni.",
@@ -26,7 +32,10 @@
     },
     "autoRouter": "Traseu",
     "routerTooltipFee": "Taxa",
-    "autoRouterToggle": { "show": "Arata", "hide": "Ascunde" },
+    "autoRouterToggle": {
+      "show": "Arata",
+      "hide": "Ascunde"
+    },
     "pool": "Pool #{id}"
   },
   "pools": {
@@ -341,13 +350,8 @@
   "settings": {
     "title": "Setari",
     "titleLanguage": "Limba",
-    "titleShowDust": "Arata pool-uri/active < {fiatSymbol}0.01"
-  },
-  "404": {
-    "title": "Nu a fost gasit"
-  },
-  "500": {
-    "title": "Eroare server"
+    "titleShowDust": "Arata pool-uri/active < {fiatSymbol}0.01",
+    "titleHideDust": "Ascundeți pool-urile cu < {fiatSymbol}0,01"
   },
   "errors": {
     "emptyAmount": "Suma lipseste",
@@ -384,18 +388,14 @@
   },
   "connectDisclaimer": "Conectand un portofel declari ca ai inteles cum functioneaza Osmosis.",
   "protocolDisclaimer": "Protocol Disclaimer",
-  "Transaction Failed": "Tranzactie Esuata",
-  "Transaction Successful": "Tranzactie Finalizata",
-  "Transaction Broadcasting": "Transmitere tranzactie",
-  "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.": "Schimbul a esuata. Lichiditatea poate fi insuficienta.Incearca ajustarea tolerantei.",
-  "Waiting for transaction to be included in the block": "Se asteapta includerea tranzactiei intr-un bloc.",
-  "view explorer": "vezi explorer",
-  "Unknown error": "Eroare necunoscuta",
-  "Request rejected": "Cerere respinsa",
-  "Amount is empty": "Suma este goala",
-  "Insufficient amount": "Suma este insuficienta",
-  "Amount is zero": "Suma este zero",
-  "Minimum of 2 assets required": "Minim 2 active necesare",
+  "transactionFailed": "Tranzactie Esuata",
+  "transactionSuccessful": "Tranzactie Finalizata",
+  "transactionBroadcasting": "Transmitere tranzactie",
+  "swapFailed": "Schimbul a esuata. Lichiditatea poate fi insuficienta.Incearca ajustarea tolerantei.",
+  "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
+  "viewExplorer": "vezi explorer",
+  "unknownError": "Eroare necunoscuta",
+  "requestRejected": "Cerere respinsa",
   "stablecoinTypes": {
     "collateralized": "colateralizat"
   }

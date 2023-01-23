@@ -1,4 +1,10 @@
 {
+  "404": {
+    "title": "페이지를 찾을 수 없습니다"
+  },
+  "500": {
+    "title": "서버 에러"
+  },
   "app": {
     "banner": {
       "title": "권한이 없는 모든 자산이 보여집니다.",
@@ -26,7 +32,10 @@
     },
     "autoRouter": "노선",
     "routerTooltipFee": "회비",
-    "autoRouterToggle": { "show": "보여주다", "hide": "숨다" },
+    "autoRouterToggle": {
+      "show": "보여주다",
+      "hide": "숨다"
+    },
     "pool": "풀 #{id}"
   },
   "pools": {
@@ -343,12 +352,6 @@
     "titleLanguage": "언어",
     "titleHideDust": "< {fiatSymbol}0.01 미만인 풀 숨기기"
   },
-  "404": {
-    "title": "페이지를 찾을 수 없습니다"
-  },
-  "500": {
-    "title": "서버 에러"
-  },
   "errors": {
     "emptyAmount": "수량이 비어있습니다",
     "invalidNumberAmount": "잘못된 숫자 형식입니다",
@@ -384,18 +387,14 @@
   },
   "connectDisclaimer": "지갑을 연결함으로써 귀하는 Osmosis를 읽고 이해했음을 인정합니다",
   "protocolDisclaimer": "프로토콜 면책 조항",
-  "Transaction Failed": "전송 실패",
-  "Transaction Successful": "전송 성공",
-  "Transaction Broadcasting": "전송 진행중",
-  "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.": "교환에 실패했습니다. 교환에 필요한 유동성이 충분하지 않을 수 있습니다. 슬리피지를 조정하고 다시 시도해주세요.",
-  "Waiting for transaction to be included in the block": "트랜잭션이 블록에 포함중입니다",
-  "view explorer": "블록 익스플로러 보기",
-  "Unknown error": "알 수 없는 에러",
-  "Request rejected": "요청이 거부됨",
-  "Amount is empty": "수량이 비어있습니다",
-  "Insufficient amount": "수량이 부족합니다",
-  "Amount is zero": "수량이 0입니다",
-  "Minimum of 2 assets required": "2개 이상의 자산이 필요합니다",
+  "transactionFailed": "전송 실패",
+  "transactionSuccessful": "전송 성공",
+  "transactionBroadcasting": "전송 진행중",
+  "swapFailed": "교환에 실패했습니다. 교환에 필요한 유동성이 충분하지 않을 수 있습니다. 슬리피지를 조정하고 다시 시도해주세요.",
+  "waitingForTransaction": "트랜잭션이 블록에 포함중입니다",
+  "viewExplorer": "블록 익스플로러 보기",
+  "unknownError": "알 수 없는 에러",
+  "requestRejected": "요청이 거부됨",
   "stablecoinTypes": {
     "collateralized": "담보"
   }

@@ -1,4 +1,10 @@
 {
+  "404": {
+    "title": "Not found"
+  },
+  "500": {
+    "title": "Server error"
+  },
   "app": {
     "banner": {
       "title": "You're viewing all permissionless assets",
@@ -26,7 +32,10 @@
     },
     "autoRouter": "Route",
     "routerTooltipFee": "Fee",
-    "autoRouterToggle": { "show": "Show", "hide": "Hide" },
+    "autoRouterToggle": {
+      "show": "Show",
+      "hide": "Hide"
+    },
     "pool": "Pool #{id}"
   },
   "pools": {
@@ -343,12 +352,6 @@
     "titleLanguage": "Language",
     "titleHideDust": "Hide pools with < {fiatSymbol}0.01"
   },
-  "404": {
-    "title": "Not found"
-  },
-  "500": {
-    "title": "Server error"
-  },
   "errors": {
     "emptyAmount": "Amount is empty",
     "invalidNumberAmount": "Invalid form of number",
@@ -384,18 +387,14 @@
   },
   "connectDisclaimer": "By connecting a wallet, you acknowledge that you have read and understand the Osmosis",
   "protocolDisclaimer": "Protocol Disclaimer",
-  "Transaction Failed": "Transaction Failed",
-  "Transaction Successful": "Transaction Successful",
-  "Transaction Broadcasting": "Transaction Broadcasting",
-  "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.": "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.",
-  "Waiting for transaction to be included in the block": "Waiting for transaction to be included in the block",
-  "view explorer": "view explorer",
-  "Unknown error": "Unknown error",
-  "Request rejected": "Request rejected",
-  "Amount is empty": "Amount is empty",
-  "Insufficient amount": "Insufficient amount",
-  "Amount is zero": "Amount is zero",
-  "Minimum of 2 assets required": "Minimum of 2 assets required",
+  "transactionFailed": "Transaction Failed",
+  "transactionSuccessful": "Transaction Successful",
+  "transactionBroadcasting": "Transaction Broadcasting",
+  "swapFailed": "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.",
+  "waitingForTransaction": "Waiting for transaction to be included in the block",
+  "viewExplorer": "View explorer",
+  "unknownError": "Unknown error",
+  "requestRejected": "Request rejected",
   "stablecoinTypes": {
     "collateralized": "collateralized"
   }
