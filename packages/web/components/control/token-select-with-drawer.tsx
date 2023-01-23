@@ -40,10 +40,10 @@ export const TokenSelectWithDrawer: FunctionComponent<{
     const setIsSelectOpen =
       setDropdownState === undefined ? setIsSelectOpenLocal : setDropdownState;
 
-    const selectedToken = tokens.find((token) =>
-      (token instanceof CoinPretty ? token.denom : token.coinDenom).includes(
+    const selectedToken = tokens.find(
+      (token) =>
+        (token instanceof CoinPretty ? token.denom : token.coinDenom) ===
         selectedTokenDenom
-      )
     );
 
     const dropdownTokens = tokens

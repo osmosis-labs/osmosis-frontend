@@ -10,6 +10,8 @@ import { ObservableQueryExternalBase } from "../base";
 import { Filters, objToQueryParams, Pagination, FilteredPools } from "./types";
 import { makePoolRawFromFilteredPool } from "./utils";
 
+const ENDPOINT = "/stream/pool/v1/all";
+
 /** TEMPORARY: use imperator query to fetch filtered, sorted pools.
  *
  *  Avoids fetching pools until necessary. Will fetch pools individually until all pools are requested,
@@ -52,7 +54,7 @@ export class ObservableQueryFilteredPools
     super(
       kvStore,
       baseUrl,
-      `/stream/pool/v1/all?${objToQueryParams({
+      `${ENDPOINT}?${objToQueryParams({
         ...initialFilters,
         ...initialPagination,
       })}`
@@ -76,23 +78,29 @@ export class ObservableQueryFilteredPools
       const existingQueryPool = this._pools.get(
         filteredPoolRaw.pool_id.toString()
       );
+      let poolRaw: ReturnType<typeof makePoolRawFromFilteredPool> | undefined;
       try {
-        const poolRaw = makePoolRawFromFilteredPool(filteredPoolRaw);
-        if (existingQueryPool) {
-          existingQueryPool.setRaw(poolRaw);
-        } else {
-          this._pools.set(
-            poolRaw.id,
-            new ObservableQueryPool(
-              this.kvStore,
-              this.chainId,
-              this.chainGetter,
-              poolRaw
-            )
-          );
-        }
-      } catch {
-        console.error("Failed to make pool raw from filtered pool raw.");
+        poolRaw = makePoolRawFromFilteredPool(filteredPoolRaw);
+      } catch (e: any) {
+        console.error(
+          `Failed to make pool raw from filtered pool raw. ID: ${filteredPoolRaw.pool_id}, ${e.message}`
+        );
+      }
+
+      if (!poolRaw) continue;
+
+      if (existingQueryPool) {
+        existingQueryPool.setRaw(poolRaw);
+      } else {
+        this._pools.set(
+          poolRaw.id,
+          new ObservableQueryPool(
+            this.kvStore,
+            this.chainId,
+            this.chainGetter,
+            poolRaw
+          )
+        );
       }
     }
   }
@@ -175,7 +183,7 @@ export class ObservableQueryFilteredPools
 
   protected updateUrlAndFetch() {
     this.setUrl(
-      `${this.baseUrl}/pools/v2beta3/all?${objToQueryParams(this._queryParams)}`
+      `${this.baseUrl}${ENDPOINT}?${objToQueryParams(this._queryParams)}`
     );
     return this.waitFreshResponse();
   }
