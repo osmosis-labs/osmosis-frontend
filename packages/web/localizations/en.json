@@ -392,7 +392,7 @@
   "transactionBroadcasting": "Transaction Broadcasting",
   "swapFailed": "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.",
   "waitingForTransaction": "Waiting for transaction to be included in the block",
-  "viewExplorer": "view explorer",
+  "viewExplorer": "View explorer",
   "unknownError": "Unknown error",
   "requestRejected": "Request rejected",
   "stablecoinTypes": {
