@@ -23,7 +23,7 @@ import {
   useAmplitudeAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
-import { BorderButton, Button } from "../buttons";
+import { Button } from "../buttons";
 import { TokenSelect } from "../control/token-select";
 import { InputBox } from "../input";
 import { InfoTooltip } from "../tooltip";
@@ -374,11 +374,12 @@ export const TradeClipboard: FunctionComponent<{
               </span>
             </div>
             <div className="flex items-center gap-1.5">
-              <BorderButton
+              <Button
+                mode="amount"
                 className={classNames(
                   "py-1 px-1.5 text-xs",
                   orderTokenInConfig.fraction === 1
-                    ? "bg-wosmongton-100/40"
+                    ? "bg-wosmongton-100/20"
                     : "bg-transparent"
                 )}
                 onClick={() => {
@@ -398,12 +399,13 @@ export const TradeClipboard: FunctionComponent<{
                 }}
               >
                 {t("swap.MAX")}
-              </BorderButton>
-              <BorderButton
+              </Button>
+              <Button
+                mode="amount"
                 className={classNames(
                   "py-1 px-1.5 text-xs",
                   orderTokenInConfig.fraction === 0.5
-                    ? "bg-wosmongton-100/40"
+                    ? "bg-wosmongton-100/20"
                     : "bg-transparent"
                 )}
                 onClick={() => {
@@ -423,7 +425,7 @@ export const TradeClipboard: FunctionComponent<{
                 }}
               >
                 {t("swap.HALF")}
-              </BorderButton>
+              </Button>
             </div>
           </div>
           <div className="mt-3 flex place-content-between items-center">
