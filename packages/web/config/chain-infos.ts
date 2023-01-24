@@ -2576,6 +2576,7 @@ const chainInfos = (
           coinMinimalDenom: "acanto",
           coinDecimals: 18,
           coinImageUrl: "/tokens/canto.png",
+          coinGeckoId: "pool:acanto",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
