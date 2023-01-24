@@ -10,7 +10,13 @@ export interface UseControllableStateProps<T> {
 
 /**
  * The `useControllableState` hook returns the state and function that updates the state, just like React.useState does.
+ * It allows components to handle both controlled and uncontrolled modes, providing control over its internal state
+ * when needed.
  *
+ * @example
+ * A modal that allows the developer to send a `isOpen` prop
+ * when the modal should be controlled by the parent. If the prop is not
+ * sent, the modal will handle `isOpen` on its own.
  */
 export function useControllableState<T>(props: UseControllableStateProps<T>) {
   const {
