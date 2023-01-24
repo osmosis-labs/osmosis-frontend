@@ -8,3 +8,4 @@ export * from "./use-slippage-config";
 export * from "./use-superfluid-pool";
 export * from "./use-trade-token-in-config";
 export * from "./use-transfer-config";
+export * from "./use-order-token-in-config";

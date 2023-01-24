@@ -15,6 +15,7 @@
   "dependencies": {
     "@amplitude/analytics-browser": "^1.2.3",
     "@axelar-network/axelarjs-sdk": "^0.11.7",
+    "@cosmjs/cosmwasm-stargate": "^0.29.3",
     "@cosmjs/launchpad": "^0.26.5",
     "@ethersproject/abi": "^5.7.0",
     "@headlessui/react": "^1.7.4",
@@ -41,6 +42,8 @@
     "debounce": "^1.2.1",
     "eventemitter3": "^4.0.7",
     "fuse.js": "^6.5.3",
+    "graphql": "^16.6.0",
+    "graphql-request": "^5.1.0",
     "highcharts": "^9.1.0",
     "highcharts-react-official": "^3.0.0",
     "mobx": "^6.3.10",
