@@ -2758,6 +2758,13 @@ chainInfos.push({
       coinGeckoId: "avalanche-2",
       coinImageUrl: "/tokens/avax.svg",
     },
+    {
+      coinDenom: "wFTM",
+      coinMinimalDenom: "wftm-wei",
+      coinDecimals: 18,
+      coinGeckoId: "fantom",
+      coinImageUrl: "/tokens/ftm.png",
+    },
   ],
   feeCurrencies: [
     {
