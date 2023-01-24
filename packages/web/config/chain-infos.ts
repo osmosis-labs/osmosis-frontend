@@ -2768,7 +2768,11 @@ chainInfos.push({
       coinImageUrl: "/tokens/axl.svg",
     },
   ],
-  gasPriceStep: {
+  gasPriceStep: IS_TESTNET ? {
+    low: 0.007,
+    average: 0.125,
+    high:0.2,
+  } : {
     low: 0.00005,
     average: 0.00007,
     high: 0.00009,
