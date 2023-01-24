@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Fragment, FunctionComponent } from "react";
+import { Fragment, FunctionComponent, useEffect, useRef } from "react";
 import { observer } from "mobx-react-lite";
 import classNames from "classnames";
 import { WalletStatus } from "@keplr-wallet/stores";
@@ -16,6 +16,8 @@ import { Icon } from "../assets";
 import { formatICNSName, getShortAddress } from "../../utils/string";
 import { Popover } from "../popover";
 import { SettingsModal } from "../../modals";
+import { noop } from "../../utils/function";
+import { useRouter } from "next/router";
 
 export const NavBar: FunctionComponent<
   {
@@ -24,13 +26,43 @@ export const NavBar: FunctionComponent<
     menus: MainLayoutMenu[];
   } & CustomClasses
 > = observer(({ title, className, backElementClassNames, menus }) => {
-  const { navBarStore } = useStore();
+  const {
+    navBarStore,
+    queriesExternalStore,
+    chainStore: {
+      osmosis: { chainId },
+    },
+    accountStore,
+  } = useStore();
 
   const {
     isOpen: isSettingsOpen,
     onClose: onCloseSettings,
     onOpen: onOpenSettings,
   } = useDisclosure();
+
+  const {
+    isOpen: isProfileOpen,
+    onOpen: onOpenProfile,
+    onClose: onCloseProfile,
+  } = useDisclosure();
+
+  const closeMobileMenuRef = useRef(noop);
+  const router = useRouter();
+
+  useEffect(() => {
+    const handler = () => {
+      closeMobileMenuRef.current();
+    };
+
+    router.events.on("routeChangeComplete", handler);
+    return () => router.events.off("routeChangeComplete", handler);
+  }, []);
+
+  const account = accountStore.getAccount(chainId);
+  const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(
+    account.bech32Address
+  );
 
   return (
     <>
@@ -42,47 +74,50 @@ export const NavBar: FunctionComponent<
       >
         <div className="relative hidden shrink-0 items-center md:flex">
           <Popover>
-            {({ close: closeMobileMainMenu }) => (
-              <>
-                <Popover.Button as={Fragment}>
-                  <IconButton
-                    mode="unstyled"
-                    size="unstyled"
-                    className="py-0"
-                    aria-label="Open main menu dropdown"
-                    icon={
-                      <Icon
-                        id="hamburger"
-                        className="text-osmoverse-200"
-                        height={30}
-                        width={30}
-                      />
-                    }
-                  />
-                </Popover.Button>
-                <Popover.Panel className="top-navbar-mobile absolute top-[100%] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
-                  <MainMenu
-                    menus={menus.concat({
-                      label: "Settings",
-                      link: (e) => {
-                        e.stopPropagation();
-                        onOpenSettings();
-                        closeMobileMainMenu();
-                      },
-                      icon: (
+            {({ close: closeMobileMainMenu }) => {
+              closeMobileMenuRef.current = closeMobileMainMenu;
+              return (
+                <>
+                  <Popover.Button as={Fragment}>
+                    <IconButton
+                      mode="unstyled"
+                      size="unstyled"
+                      className="py-0"
+                      aria-label="Open main menu dropdown"
+                      icon={
                         <Icon
-                          id="setting"
-                          className="text-white-full"
-                          width={20}
-                          height={20}
+                          id="hamburger"
+                          className="text-osmoverse-200"
+                          height={30}
+                          width={30}
                         />
-                      ),
-                    })}
-                  />
-                  <WalletInfo />
-                </Popover.Panel>
-              </>
-            )}
+                      }
+                    />
+                  </Popover.Button>
+                  <Popover.Panel className="top-navbar-mobile absolute top-[100%] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
+                    <MainMenu
+                      menus={menus.concat({
+                        label: "Settings",
+                        link: (e) => {
+                          e.stopPropagation();
+                          onOpenSettings();
+                          closeMobileMainMenu();
+                        },
+                        icon: (
+                          <Icon
+                            id="setting"
+                            className="text-white-full"
+                            width={20}
+                            height={20}
+                          />
+                        ),
+                      })}
+                    />
+                    <WalletInfo onOpenProfile={onOpenProfile} />
+                  </Popover.Panel>
+                </>
+              );
+            }}
           </Popover>
         </div>
         <div className="flex shrink-0 grow items-center gap-9 lg:gap-2 md:place-content-between md:gap-1">
@@ -113,7 +148,7 @@ export const NavBar: FunctionComponent<
             isOpen={isSettingsOpen}
             onRequestClose={onCloseSettings}
           />
-          <WalletInfo className="md:hidden" />
+          <WalletInfo className="md:hidden" onOpenProfile={onOpenProfile} />
         </div>
       </div>
       {/* Back-layer element to occupy space for the caller */}
@@ -123,96 +158,84 @@ export const NavBar: FunctionComponent<
           backElementClassNames
         )}
       />
+      <ProfileModal
+        isOpen={isProfileOpen}
+        onRequestClose={onCloseProfile}
+        icnsName={icnsQuery?.primaryName}
+      />
     </>
   );
 });
 
-const WalletInfo: FunctionComponent<CustomClasses> = observer(
-  ({ className }) => {
-    const {
-      chainStore: {
-        osmosis: { chainId },
-      },
-      accountStore,
-      navBarStore,
-      profileStore,
-      queriesExternalStore,
-    } = useStore();
-    const {
-      isOpen: isProfileOpen,
-      onOpen: onOpenProfile,
-      onClose: onCloseProfile,
-    } = useDisclosure();
-    const t = useTranslation();
-    const { logEvent } = useAmplitudeAnalytics();
+const WalletInfo: FunctionComponent<
+  CustomClasses & { onOpenProfile: () => void; icnsName?: string }
+> = observer(({ className, onOpenProfile, icnsName }) => {
+  const {
+    chainStore: {
+      osmosis: { chainId },
+    },
+    accountStore,
+    navBarStore,
+    profileStore,
+  } = useStore();
 
-    // wallet
-    const account = accountStore.getAccount(chainId);
-    const walletConnected = account.walletStatus === WalletStatus.Loaded;
+  const t = useTranslation();
+  const { logEvent } = useAmplitudeAnalytics();
 
-    const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(
-      account.bech32Address
-    );
+  // wallet
+  const account = accountStore.getAccount(chainId);
+  const walletConnected = account.walletStatus === WalletStatus.Loaded;
 
-    return (
-      <div className={className}>
-        {!walletConnected ? (
-          <Button
-            className="!h-10 w-40 lg:w-36 md:w-full"
-            onClick={() => {
-              logEvent([EventName.Topnav.connectWalletClicked]);
-              account.init();
-            }}
-          >
-            <span className="button mx-auto">{t("connectWallet")}</span>
-          </Button>
-        ) : (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpenProfile();
-            }}
-            className="group flex place-content-between items-center gap-[13px] rounded-xl border border-osmoverse-700 px-1.5 py-1 hover:border-[1.3px] hover:border-wosmongton-300 hover:bg-osmoverse-800 md:w-full"
-          >
-            <div className="h-8 w-8 shrink-0 overflow-hidden rounded-[7px] bg-osmoverse-700 group-hover:bg-gradient-positive">
-              {profileStore.currentAvatar === "ammelia" ? (
-                <Image
-                  alt="Wosmongton profile"
-                  src="/images/profile-ammelia.png"
-                  height={32}
-                  width={32}
-                />
-              ) : (
-                <Image
-                  alt="Wosmongton profile"
-                  src="/images/profile-woz.png"
-                  height={32}
-                  width={32}
-                />
-              )}
-            </div>
+  return (
+    <div className={className}>
+      {!walletConnected ? (
+        <Button
+          className="!h-10 w-40 lg:w-36 md:w-full"
+          onClick={() => {
+            logEvent([EventName.Topnav.connectWalletClicked]);
+            account.init();
+          }}
+        >
+          <span className="button mx-auto">{t("connectWallet")}</span>
+        </Button>
+      ) : (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpenProfile();
+          }}
+          className="group flex place-content-between items-center gap-[13px] rounded-xl border border-osmoverse-700 px-1.5 py-1 hover:border-[1.3px] hover:border-wosmongton-300 hover:bg-osmoverse-800 md:w-full"
+        >
+          <div className="h-8 w-8 shrink-0 overflow-hidden rounded-[7px] bg-osmoverse-700 group-hover:bg-gradient-positive">
+            {profileStore.currentAvatar === "ammelia" ? (
+              <Image
+                alt="Wosmongton profile"
+                src="/images/profile-ammelia.png"
+                height={32}
+                width={32}
+              />
+            ) : (
+              <Image
+                alt="Wosmongton profile"
+                src="/images/profile-woz.png"
+                height={32}
+                width={32}
+              />
+            )}
+          </div>
 
-            <div className="flex w-full  flex-col truncate text-right leading-tight">
-              <span
-                className="body2 font-bold leading-4"
-                title={icnsQuery?.primaryName}
-              >
-                {Boolean(icnsQuery?.primaryName)
-                  ? formatICNSName(icnsQuery.primaryName)
-                  : getShortAddress(account.bech32Address)}
-              </span>
-              <span className="caption font-medium tracking-wider text-osmoverse-200">
-                {navBarStore.walletInfo.balance.toString()}
-              </span>
-            </div>
-          </button>
-        )}
-        <ProfileModal
-          isOpen={isProfileOpen}
-          onRequestClose={onCloseProfile}
-          icnsName={icnsQuery?.primaryName}
-        />
-      </div>
-    );
-  }
-);
+          <div className="flex w-full  flex-col truncate text-right leading-tight">
+            <span className="body2 font-bold leading-4" title={icnsName}>
+              {Boolean(icnsName)
+                ? formatICNSName(icnsName)
+                : getShortAddress(account.bech32Address)}
+            </span>
+            <span className="caption font-medium tracking-wider text-osmoverse-200">
+              {navBarStore.walletInfo.balance.toString()}
+            </span>
+          </div>
+        </button>
+      )}
+    </div>
+  );
+});
