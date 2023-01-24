@@ -29,6 +29,7 @@
     "@keplr-wallet/wc-client": "^0.10.24",
     "@metamask/onboarding": "^1.0.1",
     "@next/bundle-analyzer": "^12.1.6",
+    "@osmosis-labs/math": "^4.0.0",
     "@osmosis-labs/pools": "^4.0.0",
     "@osmosis-labs/stores": "^4.0.0",
     "@tippyjs/react": "^4.2.6",
@@ -37,10 +38,12 @@
     "@walletconnect/client": "^1.7.0",
     "@walletconnect/types": "^1.7.0",
     "axios": "^0.27.2",
+    "class-variance-authority": "^0.4.0",
     "classnames": "^2.3.1",
     "dayjs": "^1.10.7",
     "debounce": "^1.2.1",
     "eventemitter3": "^4.0.7",
+    "focus-trap-react": "^10.0.2",
     "fuse.js": "^6.5.3",
     "graphql": "^16.6.0",
     "graphql-request": "^5.1.0",
@@ -49,7 +52,7 @@
     "mobx": "^6.3.10",
     "mobx-react-lite": "^3.2.2",
     "mobx-utils": "^6.0.4",
-    "next": "12.0.7",
+    "next": "12.0.10",
     "qrcode.react": "^1.0.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
@@ -58,12 +61,12 @@
     "react-modal": "^3.14.4",
     "react-multi-lang": "^2.1.1",
     "react-toastify": "^7.0.4",
+    "react-use": "^17.4.0",
     "react-zoom-pan-pinch": "^2.1.3",
     "semver": "^7.3.7",
     "sha.js": "^2.4.11",
     "sharp": "^0.30.4",
-    "web3-utils": "^1.7.4",
-    "@osmosis-labs/math": "^4.0.0"
+    "web3-utils": "^1.7.4"
   },
   "devDependencies": {
     "@types/debounce": "^1.2.1",
@@ -78,8 +81,8 @@
     "eslint-config-next": "12.0.7",
     "eslint-config-prettier": "^8.3.0",
     "postcss": "^8.4.5",
+    "prettier-plugin-tailwindcss": "^0.2.0",
     "sass": "^1.49.9",
-    "tailwindcss": "^3.2.4",
-    "prettier-plugin-tailwindcss": "^0.2.0"
+    "tailwindcss": "^3.2.4"
   }
 }

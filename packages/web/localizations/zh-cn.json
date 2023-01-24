@@ -343,8 +343,7 @@
     "info": "统计数据",
     "signOut": "断开连接",
     "help": "获取 Support Lab 帮助",
-    "learnMoreFrontier": "了解更多<br/>关于 <br2/> <name>Osmosis Frontier</name>",
-    "buyTokens": "购买代币"
+    "learnMoreFrontier": "了解更多<br/>关于 <br2/> <name>Osmosis Frontier</name>"
   },
   "settings": {
     "title": "设置",
@@ -377,6 +376,13 @@
     "generic": "错误"
   },
   "connectWallet": "连接钱包",
+  "profile": {
+    "modalTitle": "轮廓",
+    "balance": "结余",
+    "wallet": "钱包",
+    "viewAllAssets": "查看所有资产"
+  },
+  "buyTokens": "购买代币",
   "keplr": {
     "install": "安装 Keplr",
     "wallet": "Keplr 钱包",

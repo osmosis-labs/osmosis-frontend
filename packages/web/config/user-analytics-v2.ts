@@ -17,7 +17,7 @@ export type EventProperties = {
   filteredBy: string;
   isFilterOn: boolean;
   sortedBy: string;
-  sortedOn: "table-head" | "dropdown";
+  sortedOn: "table-head" | "dropdown" | "table";
   sortDirection: string;
   isSuperfluidPool: boolean;
   isSuperfluidEnabled: boolean;
@@ -34,6 +34,7 @@ export type EventProperties = {
   tokenAmount: number;
   bridge: string;
   hasExternalUrl: boolean;
+  avatar: "ammelia" | "wosmongton";
 };
 
 export type UserProperties = {
@@ -142,8 +143,17 @@ export const EventName = {
     depositAssetCompleted: "Deposit asset: Deposit completed",
     withdrawAssetStarted: "Withdraw asset: Withdraw started",
     withdrawAssetCompleted: "Withdraw asset: Withdraw completed",
-    buyOsmoClicked: "Assets: Buy OSMO clicked",
     buyOsmoStarted: "Assets: Buy OSMO started",
     buyOsmoCompleted: "Assets: Buy OSMO completed",
+  },
+  // Events in profile modal
+  ProfileModal: {
+    selectAvatarClicked: "Profile Modal: Select Avatar clicked",
+    qrCodeClicked: "Profile Modal: QR code clicked",
+    logOutClicked: "Profile Modal: Log out clicked",
+    copyWalletAddressClicked: "Profile Modal: Copy wallet address clicked",
+    buyTokensClicked: "Profile Modal: Buy tokens clicked",
+    blockExplorerLinkOutClicked:
+      "Profile Modal: Block explorer link-out clicked",
   },
 };

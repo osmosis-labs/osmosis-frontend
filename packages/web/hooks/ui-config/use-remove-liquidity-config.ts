@@ -1,9 +1,9 @@
 import { useState, useCallback } from "react";
 import {
   ChainGetter,
-  QueriesStore,
   CosmosQueries,
   CosmwasmQueries,
+  IQueriesStore,
 } from "@keplr-wallet/stores";
 import {
   OsmosisQueries,
@@ -19,7 +19,7 @@ export function useRemoveLiquidityConfig(
   chainGetter: ChainGetter,
   osmosisChainId: string,
   poolId: string,
-  queriesStore: QueriesStore<[CosmosQueries, CosmwasmQueries, OsmosisQueries]>,
+  queriesStore: IQueriesStore<CosmosQueries & CosmwasmQueries & OsmosisQueries>,
   initialPercent = "50"
 ): {
   config: ObservableRemoveLiquidityConfig;

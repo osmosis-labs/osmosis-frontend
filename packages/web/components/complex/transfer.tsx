@@ -9,7 +9,7 @@ import { BridgeAnimation } from "../animation/bridge";
 import { SwitchWalletButton } from "../buttons/switch-wallet";
 import { GradientView } from "../assets/gradient-view";
 import { InputBox } from "../input";
-import { BorderButton } from "../buttons";
+import { Button } from "../buttons";
 import { CheckBox } from "../control";
 import { Disableable, InputProps, LoadingProps } from "../types";
 import { useTranslation } from "react-multi-lang";
@@ -179,15 +179,15 @@ export const Transfer: FunctionComponent<TransferProps> = ({
               editWithdrawAddrConfig &&
               !panelDisabled &&
               !isEditingWithdrawAddr && (
-                <BorderButton
-                  className="caption h-6 border border-wosmongton-300 py-0.5 px-1.5 text-wosmongton-100 hover:border-wosmongton-100/60 hover:text-wosmongton-100/60"
+                <Button
+                  mode="amount"
                   onClick={() => {
                     setIsEditingWithdrawAddr(true);
                     editWithdrawAddrConfig.setCustomAddress(to.address);
                   }}
                 >
                   {t("assets.ibcTransfer.buttonEdit")}
-                </BorderButton>
+                </Button>
               )}
             {isEditingWithdrawAddr && editWithdrawAddrConfig && (
               <InputBox

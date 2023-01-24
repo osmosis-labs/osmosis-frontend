@@ -117,9 +117,9 @@ const NavbarOsmoPrice = observer(() => {
       {account.walletStatus === WalletStatus.Loaded && (
         <SkeletonLoader isLoaded={osmoPrice.isReady}>
           <Button
-            mode="tertiary"
+            mode="unstyled"
             className={classNames(
-              "button group relative flex !h-11 items-center justify-center gap-2 overflow-hidden !rounded-full !border-osmoverse-700 !py-1 font-bold text-osmoverse-100 !transition-all !duration-300 !ease-in-out",
+              "button group relative flex h-11 items-center justify-center gap-2 overflow-hidden rounded-full border-2 !border-osmoverse-700 !py-1 font-bold text-osmoverse-100 transition-all duration-300 ease-in-out",
               "hover:border-none hover:bg-gradient-positive hover:text-osmoverse-1000"
             )}
             onClick={() => {
@@ -145,19 +145,14 @@ const NavbarOsmoPrice = observer(() => {
             }}
           >
             <CreditCardIcon
+              isAnimated
               classes={{
                 container: "z-10",
-                backCard: classNames(
-                  "translate-x-[6px] -translate-y-[1px] rotate-[17.37deg] transform stroke-[1.5] transition-transform duration-300 ease-in-out",
-                  "group-hover:translate-x-0 group-hover:-translate-y-0 group-hover:rotate-0 group-hover:stroke-[2]"
-                ),
-                frontCard:
-                  "fill-osmoverse-700 stroke-[1.5] group-hover:fill-[#71B5EB] group-hover:stroke-[2]",
+                backCard: "group-hover:stroke-[2]",
+                frontCard: "group-hover:fill-[#71B5EB] group-hover:stroke-[2]",
               }}
             />{" "}
-            <span className="z-10 mt-0.5 flex-shrink-0">
-              {t("menu.buyTokens")}
-            </span>{" "}
+            <span className="z-10 mt-0.5 flex-shrink-0">{t("buyTokens")}</span>{" "}
             <CoinsIcon
               className={classNames(
                 "invisible absolute top-0 -translate-y-full transform transition-transform ease-linear",

@@ -30,6 +30,7 @@ import { Table } from ".";
 import { EventName } from "../../config/user-analytics-v2";
 import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-multi-lang";
+import { Icon } from "../assets";
 
 interface Props {
   nativeBalances: CoinBalance[];
@@ -59,7 +60,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
     const { logEvent } = useAmplitudeAnalytics();
     const [favoritesList, onSetFavoritesList] = useLocalStorageState(
       "favoritesList",
-      ["OSMO"]
+      ["OSMO", "ATOM"]
     );
 
     const onDeposit = useCallback(
@@ -305,13 +306,14 @@ export const AssetsTable: FunctionComponent<Props> = observer(
           <div className="flex flex-col gap-5">
             <h6 className="px-3">{t("assets.table.title")}</h6>
             <SearchBox
-              className="h-11 !w-full"
+              className="!w-full"
               currentValue={query}
               onInput={(query) => {
                 setHideZeroBalances(false);
                 setQuery(query);
               }}
               placeholder={t("assets.table.search")}
+              size="small"
             />
             <div className="flex flex-wrap place-content-between items-center gap-3">
               <Switch
@@ -376,6 +378,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                     setQuery(query);
                   }}
                   placeholder={t("assets.table.search")}
+                  size="small"
                 />
                 <SortMenu
                   selectedOptionId={sortKey}
@@ -466,11 +469,11 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                     (assetData.chainId &&
                       assetData.chainId === chainStore.osmosis.chainId)
                   ) && (
-                    <Image
-                      alt="select asset"
-                      src="/icons/chevron-right-disabled.svg"
-                      width={30}
-                      height={30}
+                    <Icon
+                      id="chevron-right"
+                      className="text-osmoverse-500"
+                      width={13}
+                      height={13}
                     />
                   )}
                 </div>

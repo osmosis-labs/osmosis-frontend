@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { ButtonHTMLAttributes, FunctionComponent, useState } from "react";
+import { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
 import classNames from "classnames";
 import { WalletStatus } from "@keplr-wallet/stores";
@@ -8,13 +8,17 @@ import { useStore } from "../../stores";
 import {
   useAmplitudeAnalytics,
   useBooleanWithWindowEvent,
-  useWindowSize,
+  useDisclosure,
 } from "../../hooks";
-import { IUserSetting } from "../../stores/user-settings";
+import { UserSetting } from "../../stores/user-settings";
 import { useTranslation } from "react-multi-lang";
 import { MainLayoutMenu, CustomClasses } from "../types";
 import { MainMenu } from "../main-menu";
 import { EventName } from "../../config";
+import { ProfileModal } from "../../modals/profile";
+import IconButton from "../buttons/icon-button";
+import { Icon } from "../assets";
+import { formatICNSName, getShortAddress } from "../../utils/string";
 
 export const NavBar: FunctionComponent<
   {
@@ -37,7 +41,7 @@ export const NavBar: FunctionComponent<
     <>
       <div
         className={classNames(
-          "fixed z-50 flex h-navbar w-[calc(100vw_-_12.875rem)] place-content-between items-center bg-osmoverse-900 px-8 shadow-md lg:gap-5 md:h-navbar-mobile md:w-full md:place-content-start md:px-4",
+          "fixed z-[60] flex h-navbar w-[calc(100vw_-_12.875rem)] place-content-between items-center bg-osmoverse-900 px-8 shadow-md lg:gap-5 md:h-navbar-mobile md:w-full md:place-content-start md:px-4",
           className
         )}
       >
@@ -70,7 +74,14 @@ export const NavBar: FunctionComponent<
                     setMobileNavMenuOptionsOpen(false);
                     setSettingsDropdownOpen(true);
                   },
-                  icon: "/icons/setting-white.svg",
+                  icon: (
+                    <Icon
+                      id="setting"
+                      className="text-white-full"
+                      width={20}
+                      height={20}
+                    />
+                  ),
                 })}
               />
               <WalletInfo />
@@ -96,13 +107,14 @@ export const NavBar: FunctionComponent<
         </div>
         <div className="flex shrink-0 items-center gap-3 lg:gap-2 md:hidden">
           <div className="relative">
-            <NavBarButton
-              iconurl="/icons/setting.svg"
-              hovericonurl="/icons/setting-white.svg"
+            <IconButton
+              aria-label="Open settings dropdown"
+              icon={<Icon id="setting" width={24} height={24} />}
               onClick={() => {
                 // allow global event to close dropdown when clicking settings button
                 if (!settingsDropdownOpen) setSettingsDropdownOpen(true);
               }}
+              className="px-3"
             />
             {settingsDropdownOpen && (
               <SettingsDropdown userSettings={userSettings.userSettings} />
@@ -122,35 +134,8 @@ export const NavBar: FunctionComponent<
   );
 });
 
-const NavBarButton: FunctionComponent<
-  {
-    iconurl: string;
-    hovericonurl: string;
-  } & ButtonHTMLAttributes<HTMLButtonElement>
-> = (props) => {
-  const { iconurl, hovericonurl } = props;
-  const [hovered, setHovered] = useState(false);
-
-  return (
-    <button
-      {...props}
-      onMouseOver={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className="flex items-center rounded-xl bg-osmoverse-700 px-3 py-2 transition-colors hover:bg-osmoverse-600"
-    >
-      <Image
-        alt="settings"
-        src={hovered ? hovericonurl : iconurl}
-        height={24}
-        width={24}
-        priority={true}
-      />
-    </button>
-  );
-};
-
 const SettingsDropdown: FunctionComponent<{
-  userSettings: IUserSetting[];
+  userSettings: UserSetting[];
 }> = observer(({ userSettings }) => {
   const t = useTranslation();
   return (
@@ -184,75 +169,83 @@ const WalletInfo: FunctionComponent<CustomClasses> = observer(
       },
       accountStore,
       navBarStore,
+      profileStore,
+      queriesExternalStore,
     } = useStore();
+    const {
+      isOpen: isProfileOpen,
+      onOpen: onOpenProfile,
+      onClose: onCloseProfile,
+    } = useDisclosure();
     const t = useTranslation();
-    const { isMobile } = useWindowSize();
     const { logEvent } = useAmplitudeAnalytics();
 
     // wallet
     const account = accountStore.getAccount(chainId);
     const walletConnected = account.walletStatus === WalletStatus.Loaded;
-    const [hoverWalletInfo, setHoverWalletInfo] = useState(false);
 
-    // mobile: show disconnect on tap vs hover
-    const [mobileTapInfo, setMobileTapInfo] = useState(false);
+    const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(
+      account.bech32Address
+    );
 
     return (
-      <div className={classNames("w-40 shrink-0 lg:w-36 md:w-full", className)}>
+      <div className={className}>
         {!walletConnected ? (
           <Button
             className="!h-10 w-40 lg:w-36 md:w-full"
             onClick={() => {
               logEvent([EventName.Topnav.connectWalletClicked]);
               account.init();
-              setHoverWalletInfo(false);
             }}
           >
             <span className="button mx-auto">{t("connectWallet")}</span>
           </Button>
-        ) : hoverWalletInfo || mobileTapInfo ? (
-          <Button
-            className="!h-10 w-40 lg:w-36 md:w-full"
-            mode="secondary"
-            onMouseLeave={() => setHoverWalletInfo(false)}
-            onClick={() => {
-              logEvent([EventName.Topnav.signOutClicked]);
-              account.disconnect();
-              setHoverWalletInfo(false);
-            }}
-          >
-            <span className="button mx-auto">{t("menu.signOut")}</span>
-          </Button>
         ) : (
-          <div
-            className="flex place-content-between items-center gap-3 rounded-xl border border-osmoverse-700 px-2 py-1"
-            onMouseOver={() => {
-              if (!isMobile) setHoverWalletInfo(true);
-            }}
+          <button
             onClick={(e) => {
               e.stopPropagation();
-              if (isMobile) setMobileTapInfo(true);
+              onOpenProfile();
             }}
+            className="group flex place-content-between items-center gap-[13px] rounded-xl border border-osmoverse-700 px-1.5 py-1 hover:border-[1.3px] hover:border-wosmongton-300 hover:bg-osmoverse-800 md:w-full"
           >
-            <div className="h-7 w-7 shrink-0">
-              <Image
-                alt="wallet-icon"
-                src={navBarStore.walletInfo.logoUrl}
-                height={28}
-                width={28}
-              />
+            <div className="h-8 w-8 shrink-0 overflow-hidden rounded-[7px] bg-osmoverse-700 group-hover:bg-gradient-positive">
+              {profileStore.currentAvatar === "ammelia" ? (
+                <Image
+                  alt="Wosmongton profile"
+                  src="/images/profile-ammelia.png"
+                  height={32}
+                  width={32}
+                />
+              ) : (
+                <Image
+                  alt="Wosmongton profile"
+                  src="/images/profile-woz.png"
+                  height={32}
+                  width={32}
+                />
+              )}
             </div>
 
-            <div className="flex w-full flex-col truncate text-center leading-tight">
-              <span className="text-button font-button">
+            <div className="flex w-full  flex-col truncate text-right leading-tight">
+              <span
+                className="body2 font-bold leading-4"
+                title={icnsQuery?.primaryName}
+              >
+                {Boolean(icnsQuery?.primaryName)
+                  ? formatICNSName(icnsQuery.primaryName)
+                  : getShortAddress(account.bech32Address)}
+              </span>
+              <span className="caption font-medium tracking-wider text-osmoverse-200">
                 {navBarStore.walletInfo.balance.toString()}
               </span>
-              <span className="caption truncate">
-                {navBarStore.walletInfo.name}
-              </span>
             </div>
-          </div>
+          </button>
         )}
+        <ProfileModal
+          isOpen={isProfileOpen}
+          onRequestClose={onCloseProfile}
+          icnsName={icnsQuery?.primaryName}
+        />
       </div>
     );
   }

@@ -14,11 +14,8 @@ export function useHideDustUserSetting<TDustableItem>(
   const { userSettings } = useStore();
 
   const hideDust =
-    (
-      userSettings.getUserSettingById("hide-dust")?.state as
-        | HideDustState
-        | undefined
-    )?.hideDust ?? false;
+    userSettings.getUserSettingById<HideDustState>("hide-dust")?.state
+      ?.hideDust ?? false;
 
   return useMemo(
     () =>

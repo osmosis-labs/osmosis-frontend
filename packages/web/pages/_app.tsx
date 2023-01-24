@@ -120,6 +120,7 @@ function MyApp({ Component, pageProps }: AppProps) {
               typeof window !== "undefined" ? window.origin : ""
             }/osmosis-logo-wc.png`}
           />
+          <link rel="preload" as="image/svg+xml" href="/icons/sprite.svg" />
         </Head>
         <OgpMeta />
         <IbcNotifier />

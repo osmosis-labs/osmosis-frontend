@@ -37,13 +37,13 @@ import {
   AssetBreakdownChart,
   PriceBreakdownChart,
 } from "../../components/chart";
-import { PoolAssetsIcon } from "../../components/assets";
+import { Icon, PoolAssetsIcon } from "../../components/assets";
 import { BondCard } from "../../components/cards";
 import { Disableable } from "../../components/types";
 import { Button, ArrowButton } from "../../components/buttons";
 import { useTranslation } from "react-multi-lang";
 import PoolComposition from "../../components/chart/pool-composition";
-import useMeasure from "../../hooks/use-measure";
+import { useMeasure } from "react-use";
 
 const E = EventName.PoolDetail;
 
@@ -191,6 +191,7 @@ const Pool: FunctionComponent = observer(() => {
     (result: Promise<void>, config: ObservableRemoveLiquidityConfig) => {
       const removeLiqInfo = {
         ...baseEventInfo,
+        isSuperfluidEnabled,
         poolSharePercentage: config.percentage,
       };
 
@@ -504,14 +505,15 @@ const Pool: FunctionComponent = observer(() => {
               />
             </div>
           </div>
-          <div
-            className="mx-auto flex cursor-pointer select-none items-center gap-1"
+          <Button
+            mode="text"
+            className="subtitle2 mx-auto gap-1"
             onClick={() => {
               logEvent([E.showHidePoolDetails]);
               setShowPoolDetails(!showPoolDetails);
             }}
           >
-            <span className="subtitle2 text-wosmongton-200">
+            <span>
               {showPoolDetails
                 ? t("pool.collapseDetails")
                 : t("pool.showDetails")}
@@ -521,14 +523,9 @@ const Pool: FunctionComponent = observer(() => {
                 "rotate-180": showPoolDetails,
               })}
             >
-              <Image
-                src="/icons/chevron-down.svg"
-                alt="pool details"
-                height={14}
-                width={14}
-              />
+              <Icon id="chevron-down" width="14" height="8" />
             </div>
-          </div>
+          </Button>
         </div>
         {poolDetail?.userStats && (
           <div className="flex w-full gap-4 1.5lg:flex-col">
@@ -694,10 +691,8 @@ const Pool: FunctionComponent = observer(() => {
                       {t("removeLiquidity.title")}
                     </Button>
                     <Button
-                      className={classNames("w-fit shrink-0 xs:w-full ", {
-                        "!border-0 bg-gradient-positive text-osmoverse-900":
-                          levelCta === 1,
-                      })}
+                      mode={levelCta === 1 ? "special-1" : "primary"}
+                      className="w-fit shrink-0 xs:w-full"
                       onClick={() => {
                         logEvent([
                           E.addLiquidityClicked,

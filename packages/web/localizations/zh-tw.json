@@ -344,8 +344,7 @@
     "info": "統計數據",
     "signOut": "斷開連接",
     "help": "取得Support Lab的幫助",
-    "learnMoreFrontier": "了解更多<br/>關於<br2/> <name>Osmosis Frontier</name>",
-    "buyTokens": "購買代幣"
+    "learnMoreFrontier": "了解更多<br/>關於<br2/> <name>Osmosis Frontier</name>"
   },
   "settings": {
     "title": "設定",
@@ -378,6 +377,13 @@
     "generic": "錯誤"
   },
   "connectWallet": "連接錢包",
+  "buyTokens": "購買代幣",
+  "profile": {
+    "modalTitle": "輪廓",
+    "balance": "結餘",
+    "wallet": "錢包",
+    "viewAllAssets": "查看所有資產"
+  },
   "keplr": {
     "install": "安裝 Keplr",
     "wallet": "Keplr 錢包",

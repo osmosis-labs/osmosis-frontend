@@ -10,14 +10,14 @@ import moment from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { BondDuration } from "@osmosis-labs/stores";
-import { FallbackImg } from "../assets";
+import { FallbackImg, Icon } from "../assets";
 import { useTranslation } from "react-multi-lang";
 import { coinFormatter, priceFormatter } from "../../utils/formatter";
 import { UnlockIcon } from "../assets/unlock-icon";
 import { RightArrowIcon } from "../assets/right-arrow-icon";
 import { useAmplitudeAnalytics } from "../../hooks";
 import { EventName } from "../../config";
-import useMeasure from "../../hooks/use-measure";
+import { useMeasure } from "react-use";
 
 export const BondCard: FunctionComponent<
   BondDuration & {
@@ -255,11 +255,11 @@ const Drawer: FunctionComponent<{
               "rotate-180": drawerUp,
             })}
           >
-            <Image
-              alt="details"
-              src="/icons/chevron-up-osmoverse-400.svg"
-              height={30}
-              width={30}
+            <Icon
+              id="chevron-up"
+              className="mx-[7.5px] my-[7.5px] text-osmoverse-400"
+              height={14}
+              width={14}
             />
           </div>
         </button>

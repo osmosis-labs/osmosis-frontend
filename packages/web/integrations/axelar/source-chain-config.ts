@@ -199,4 +199,15 @@ export const SourceChainConfigs: {
       logoUrl: "/networks/ethereum.svg",
     },
   },
+  wavax: {
+    avalanche: {
+      id: IS_TESTNET
+        ? ("Avalanche Fuji Testnet" as const)
+        : ("Avalanche" as const),
+      erc20ContractAddress: IS_TESTNET
+        ? "0xd00ae08403B9bbb9124bB305C09058E32C39A48c"
+        : "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+      logoUrl: "/networks/avalanche.svg",
+    },
+  },
 };

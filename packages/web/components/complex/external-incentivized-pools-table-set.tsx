@@ -406,6 +406,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
               onInput={setQuery}
               placeholder={t("pools.externalIncentivized.search")}
               className="!w-64"
+              size="small"
             />
             <SortMenu
               options={tableCols}

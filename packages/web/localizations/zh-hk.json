@@ -378,6 +378,12 @@
     "generic": "錯誤"
   },
   "connectWallet": "連接錢包",
+  "profile": {
+    "modalTitle": "轮廓",
+    "balance": "结余",
+    "wallet": "钱包",
+    "viewAllAssets": "查看所有資產"
+  },
   "keplr": {
     "install": "安裝 Keplr",
     "wallet": "Keplr 錢包",

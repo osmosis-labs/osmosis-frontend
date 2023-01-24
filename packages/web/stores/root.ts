@@ -40,6 +40,7 @@ import {
   HideDustUserSetting,
   LanguageUserSetting,
 } from "./user-settings";
+import { ProfileStore } from "./profile";
 const semver = require("semver");
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
@@ -73,6 +74,8 @@ export class RootStore {
   public readonly navBarStore: NavBarStore;
 
   public readonly userSettings: UserSettings;
+
+  public readonly profileStore: ProfileStore;
 
   constructor(
     getKeplr: () => Promise<Keplr | undefined> = () =>
@@ -182,6 +185,7 @@ export class RootStore {
     this.queriesExternalStore = new QueriesExternalStore(
       makeIndexedKVStore("store_web_queries"),
       this.priceStore,
+      this.chainStore,
       this.chainStore.osmosis.chainId,
       this.queriesStore.get(
         this.chainStore.osmosis.chainId
@@ -288,5 +292,8 @@ export class RootStore {
           ?.symbol ?? "$"
       ),
     ]);
+
+    const profileStoreKvStore = makeLocalStorageKVStore("profile_store");
+    this.profileStore = new ProfileStore(profileStoreKvStore);
   }
 }
