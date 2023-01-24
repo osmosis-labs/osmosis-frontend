@@ -2561,6 +2561,34 @@ const chainInfos = (
       explorerUrlToTx:
         "https://testnet-explorer.marsprotocol.io/transactions/{txHash}",
     },
+    {
+      rpc: "http://164.90.154.41:26657",
+      rest: "http://164.90.154.41:1317",
+      chainId: "canto_7700-1",
+      chainName: "Canto",
+      bip44: {
+        coinType: 60,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("canto"),
+      currencies: [
+        {
+          coinDenom: "CANTO",
+          coinMinimalDenom: "acanto",
+          coinDecimals: 18,
+          coinImageUrl: "/tokens/canto.png",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 10000000000,
+            average: 25000000000,
+            high: 40000000000,
+          },
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
+      explorerUrlToTx:
+        "https://cosmos.explorer.canto.io/transactions/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
