@@ -554,6 +554,13 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
+    counterpartyChainId: "canto_7700-1",
+    sourceChannelId: "channel-550",
+    destChannelId: "channel-5",
+    coinMinimalDenom: "acanto",
+    isVerified: false,
+  },
+  {
     counterpartyChainId: "panacea-3",
     sourceChannelId: "channel-82",
     destChannelId: "channel-1",
