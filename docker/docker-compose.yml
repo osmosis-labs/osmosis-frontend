@@ -31,3 +31,13 @@ services:
     profiles:
       - testnet
       - all
+  frontend-frontier-testnet:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile.frontier
+    ports:
+      - '3003:3000'
+    profiles:
+      - frontier
+      - testnet
+      - all
