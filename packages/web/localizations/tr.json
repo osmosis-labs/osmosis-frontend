@@ -344,8 +344,7 @@
     "info": "Bilgi",
     "signOut": "Bağlantıyı Kes",
     "help": "Destek Ekibinden Yardım İste",
-    "learnMoreFrontier": "<name>Osmosis Frontier</name><br/>Hakkında<br2/>Daha Fazla Bilgi",
-    "buyTokens": "jeton satın al"
+    "learnMoreFrontier": "<name>Osmosis Frontier</name><br/>Hakkında<br2/>Daha Fazla Bilgi"
   },
   "settings": {
     "title": "Ayarlar",
@@ -378,6 +377,13 @@
     "generic": "Hata"
   },
   "connectWallet": "Cüzdanı bağla",
+  "buyTokens": "jeton satın al",
+  "profile": {
+    "modalTitle": "Profil",
+    "balance": "denklemek",
+    "wallet": "Cüzdan",
+    "viewAllAssets": "Tüm varlıkları görüntüle"
+  },
   "keplr": {
     "install": "Keplr Yükle",
     "wallet": "Keplr Cüzdanı",

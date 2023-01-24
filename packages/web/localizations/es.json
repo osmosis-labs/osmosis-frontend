@@ -344,8 +344,7 @@
     "info": "Estadísticas",
     "signOut": "Desconectar",
     "help": "Obtener ayuda para el laboratorio de soporte",
-    "learnMoreFrontier": "Obtenga más información <br/> sobre <br2/> <name> Osmosis Frontier </name>",
-    "buyTokens": "Comprar fichas"
+    "learnMoreFrontier": "Obtenga más información <br/> sobre <br2/> <name> Osmosis Frontier </name>"
   },
   "settings": {
     "title": "Ajustes",
@@ -378,6 +377,13 @@
     "generic": "Error"
   },
   "connectWallet": "Conectar billetera",
+  "buyTokens": "Comprar fichas",
+  "profile": {
+    "modalTitle": "Perfil",
+    "balance": "Balance",
+    "wallet": "Billetera",
+    "viewAllAssets": "Ver todos los activos"
+  },
   "keplr": {
     "install": "Instalar Keplr",
     "wallet": "Billetera Keplr",

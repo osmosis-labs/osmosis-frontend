@@ -4,7 +4,7 @@ import { useStore } from "../../stores";
 import { MenuDropdownIconItemProps } from "./types";
 import { useTranslation } from "react-multi-lang";
 import { IconDropdown } from "./icon-dropdown/icon-dropdown";
-import { LanguageUserSetting } from "../../stores/user-settings";
+import { LanguageState, LanguageUserSetting } from "../../stores/user-settings";
 
 export type LanguageSelectProps = {
   options: MenuDropdownIconItemProps[];
@@ -24,7 +24,7 @@ export const LanguageSelect: FunctionComponent<LanguageSelectProps> = observer(
 
     const onSelect = (option: MenuDropdownIconItemProps) => {
       userSettings
-        .getUserSettingById("language")
+        .getUserSettingById<LanguageState>("language")
         ?.setState({ language: option.value });
     };
 

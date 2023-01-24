@@ -188,6 +188,27 @@
   overflow: auto !important;
 }
 
+.transak_modal-overlay {
+  z-index: 9999 !important;
+}
+
+.transak_modal {
+  z-index: 9999 !important;
+}
+
+.ReactModal__Overlay {
+  opacity: 0;
+  transition: opacity 150ms ease-in;
+}
+
+.ReactModal__Overlay--after-open {
+  opacity: 1;
+}
+
+.ReactModal__Overlay--before-close {
+  opacity: 0;
+}
+
 /* Toasts override styles in `react-toastify/dist/ReactToastify.css` */
 .Toastify__toast-container {
   z-index: 99999 !important;

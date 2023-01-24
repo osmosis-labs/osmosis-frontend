@@ -46,6 +46,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
         "absolute flex w-full max-w-modal flex-col rounded-2xl bg-osmoverse-800 p-8 outline-none md:w-[98%] md:px-4",
         className
       )}
+      closeTimeoutMS={150}
     >
       <div className="flex place-content-between items-center">
         {onRequestBack && (

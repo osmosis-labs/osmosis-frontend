@@ -31,9 +31,8 @@ import TradeRoute from "./trade-route";
 import { useTranslation } from "react-multi-lang";
 import { tError } from "../localization";
 import { TokenSelectWithDrawer } from "../control/token-select-with-drawer";
-import useMeasure from "../../hooks/use-measure";
+import { useLatest, useMeasure } from "react-use";
 import { Icon } from "../assets";
-import useLatest from "../../hooks/use-latest";
 
 export const TradeClipboard: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!

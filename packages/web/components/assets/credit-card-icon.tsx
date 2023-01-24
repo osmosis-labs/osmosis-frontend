@@ -1,8 +1,33 @@
+import classNames from "classnames";
 import { FunctionComponent } from "react";
 
 export const CreditCardIcon: FunctionComponent<{
   classes?: Partial<Record<"container" | "backCard" | "frontCard", string>>;
-}> = ({ classes }) => {
+  /**
+   * Container must have 'group' class
+   */
+  isAnimated?: boolean;
+}> = ({ classes, isAnimated }) => {
+  const _classes: typeof classes = isAnimated
+    ? {
+        container: classNames("group", classes?.container),
+        backCard: classNames(
+          "translate-x-[6px] -translate-y-[1px] rotate-[17.37deg] transform stroke-[1.5] transition-transform duration-300 ease-in-out",
+          "group-hover:translate-x-0 group-hover:-translate-y-0 group-hover:rotate-0",
+          classes?.backCard
+        ),
+        frontCard: classNames(
+          "fill-osmoverse-700 stroke-[1.5]",
+          classes?.frontCard
+        ),
+      }
+    : {
+        ...classes,
+        backCard:
+          classes?.backCard ??
+          "translate-x-[6px] -translate-y-[1px] rotate-[17.37deg]",
+      };
+
   return (
     <svg
       width="24"
@@ -10,7 +35,7 @@ export const CreditCardIcon: FunctionComponent<{
       viewBox="0 0 24 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={classes?.container}
+      className={_classes?.container}
     >
       <g clipPath="url(#clip0_558_4852)">
         <path
@@ -18,14 +43,14 @@ export const CreditCardIcon: FunctionComponent<{
           stroke="currentcolor"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className={classes?.backCard}
+          className={_classes?.backCard}
         />
         <path
           d="M20.5 5H7C6.17157 5 5.5 5.67157 5.5 6.5V15.5C5.5 16.3284 6.17157 17 7 17H20.5C21.3284 17 22 16.3284 22 15.5V6.5C22 5.67157 21.3284 5 20.5 5Z"
           stroke="currentcolor"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className={classes?.frontCard}
+          className={_classes?.frontCard}
         />
         <path
           d="M6.5 9.5H21"
