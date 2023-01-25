@@ -22,7 +22,7 @@ const chainInfos = (
         OSMOSIS_REST_OVERWRITE ??
         (IS_TESTNET
           ? "https://lcd.testnet.osmosis.zone/"
-          : "https://lcd.osmosis.zone/"),
+          : "https://lcd-osmosis.keplr.app/"),
       chainId:
         OSMOSIS_CHAIN_ID_OVERWRITE ??
         (IS_TESTNET ? "osmo-test-4" : "osmosis-1"),
@@ -2786,6 +2786,14 @@ chainInfos.push({
       coinDecimals: 18,
       coinGeckoId: "avalanche-2",
       coinImageUrl: "/tokens/avax.svg",
+    },
+    {
+      coinDenom: "wFTM",
+      coinMinimalDenom: "wftm-wei",
+      coinDecimals: 18,
+      //coinGeckoId: "fantom",
+      coinGeckoId: "pool:wftm-wei",
+      coinImageUrl: "/tokens/ftm.png",
     },
   ],
   feeCurrencies: [
