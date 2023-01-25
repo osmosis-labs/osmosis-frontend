@@ -83,18 +83,17 @@ export const DrawerButton: FunctionComponent<{ className?: string }> = (
 /**
  * Container for the content of the drawer. It's necessary to lock focus in the content.
  */
-export const DrawerContent: FunctionComponent<{
-  className?: string;
-  focusTrap?: boolean;
-}> = ({ className, focusTrap = true, children }) => {
+export const DrawerContent: FunctionComponent<{ className?: string }> = (
+  props
+) => {
   const { isAnimationComplete, isOpen } = useDrawerProps();
 
   return (
     <FocusTrap
       focusTrapOptions={{ allowOutsideClick: true, escapeDeactivates: false }}
-      active={isAnimationComplete && isOpen && focusTrap}
+      active={isAnimationComplete && isOpen}
     >
-      <div className={className}>{children}</div>
+      <div className={props.className}>{props.children}</div>
     </FocusTrap>
   );
 };
@@ -141,7 +140,7 @@ export const DrawerPanel: FunctionComponent<
       <div
         {...props}
         className={classNames(
-          "absolute left-0 right-0 bottom-0 z-50 mt-16 flex h-full w-full flex-col overflow-hidden rounded-t-[24px] bg-osmoverse-800 pb-16",
+          "absolute left-0 right-0 bottom-0 z-50 mt-16 flex h-full w-full flex-col overflow-hidden rounded-[24px] bg-osmoverse-800 pb-16",
           props.className
         )}
       />
