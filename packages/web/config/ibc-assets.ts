@@ -64,7 +64,7 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-1946",
     destChannelId: "channel-135",
     coinMinimalDenom: "wbnb-wei",
-    sourceChainNameOverride: "Binance Smart Chain",
+    sourceChainNameOverride: "Binance Smart Chain Testnet",
     isVerified: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
@@ -139,6 +139,26 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-2",
     coinMinimalDenom: "umars",
     isVerified: true,
+  },
+  {
+    counterpartyChainId: "axelar-testnet-lisbon-3",
+    sourceChannelId: "channel-1946",
+    destChannelId: "channel-135",
+    coinMinimalDenom: "wftm-wei",
+    sourceChainNameOverride: "Fantom Testnet",
+    isVerified: true,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.wftm.fantom],
+      wrapAssetConfig: {
+        url: "https://www.spiritswap.finance/swap/FTM/WFTM",
+        fromDenom: "FTM",
+        toDenom: "WFTM",
+        platformName: "SpiritSwap",
+      },
+    },
   },
 ] : [
   {
@@ -426,6 +446,26 @@ export const IBCAssetInfos: (IBCAsset & {
       wallets: ["metamask" as const, "walletconnect" as const],
       method: "deposit-address" as const,
       sourceChains: [AxelarSourceChainConfigs.frax.ethereum],
+    },
+  },
+  {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "wftm-wei",
+    sourceChainNameOverride: "Fantom",
+    isVerified: false,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const],
+      method: "deposit-address" as const,
+      sourceChains: [AxelarSourceChainConfigs.wftm.fantom],
+      wrapAssetConfig: {
+        url: "https://www.spiritswap.finance/swap/FTM/WFTM",
+        fromDenom: "FTM",
+        toDenom: "WFTM",
+        platformName: "SpiritSwap",
+      },
     },
   },
   {
