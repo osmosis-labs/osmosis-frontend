@@ -9,11 +9,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { EventName } from "../../config";
-import {
-  IS_FRONTIER,
-  REGISTRY_ADDRESSES,
-  WRAPPER_ADDRESSES,
-} from "../../config";
+import { REGISTRY_ADDRESSES, WRAPPER_ADDRESSES } from "../../config";
 import {
   useBooleanWithWindowEvent,
   useOrderTokenInConfig,
@@ -28,6 +24,7 @@ import { TokenSelect } from "../control/token-select";
 import { InputBox } from "../input";
 import { InfoTooltip } from "../tooltip";
 import { useTranslation } from "react-multi-lang";
+import { Icon } from "../assets";
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
@@ -212,27 +209,27 @@ export const TradeClipboard: FunctionComponent<{
         containerClassName
       )}
     >
+      {/** Overlay */}
+      {isSettingOpen && (
+        <div className="absolute inset-0 z-40 bg-osmoverse-1000/40" />
+      )}
       <div className="relative flex w-full items-center justify-end">
         <h6 className="w-full text-center">
           {type === "Limit" ? "Limit Order" : "Stop Loss"}
         </h6>
         <button
-          className="absolute right-3 top-0"
+          className="absolute top-0 right-3 z-50"
           onClick={(e) => {
             e.stopPropagation();
             setIsSettingOpen(!isSettingOpen);
             closeTokenSelectDropdowns();
           }}
         >
-          <Image
+          <Icon
+            id="setting"
             width={isMobile ? 20 : 28}
             height={isMobile ? 20 : 28}
-            src={
-              IS_FRONTIER
-                ? "/icons/setting-white.svg"
-                : `/icons/setting${isSettingOpen ? "-selected" : ""}.svg`
-            }
-            alt="setting icon"
+            className={isSettingOpen ? "text-white" : "text-osmoverse-400"}
           />
         </button>
         {isSettingOpen && (
@@ -552,11 +549,15 @@ export const TradeClipboard: FunctionComponent<{
                   }
                 )}
               >
-                <Image
-                  width={isMobile ? 16 : 20}
-                  height={isMobile ? 16 : 20}
-                  src={"/icons/down-arrow.svg"}
-                  alt="switch"
+                <Icon
+                  id="chevron-down"
+                  height={isMobile ? 14 : 18}
+                  width={isMobile ? 14 : 18}
+                  className={classNames(
+                    "text-osmoverse-400 transition-all",
+                    showEstimateDetails ? "rotate-180" : "rotate-0",
+                    isEstimateDetailRelevant ? "opacity-100" : "opacity-0"
+                  )}
                 />
               </div>
               <div
