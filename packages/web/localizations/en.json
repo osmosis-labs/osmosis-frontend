@@ -267,7 +267,7 @@
         "insufficientFee": "Insufficient Fee",
         "insufficientBal": "Insufficient Balance"
       },
-      "wrapNativeLink": "Convert {fromDenom} to {toDenom} on {platformName}",
+      "wrapNativeLink": "Can deposit wrapped {fromDenom} ({toDenom}) from this UI. To deposit unwrapped {fromDenom}, please use {platformName}.",
       "waitTime": "{minutes} minutes"
     },
     "selectAssetSource": {

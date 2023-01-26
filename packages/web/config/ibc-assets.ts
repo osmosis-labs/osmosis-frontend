@@ -242,10 +242,10 @@ export const IBCAssetInfos: (IBCAsset & {
       method: "deposit-address" as const,
       sourceChains: [AxelarSourceChainConfigs.wbnb.binance],
       wrapAssetConfig: {
-        url: "https://pancakeswap.finance/swap?outputCurrency=0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+        url: "https://satellite.money/?asset_denom=bnb&source=binance&destination=osmosis",
         fromDenom: "BNB",
         toDenom: "WBNB",
-        platformName: "PancakeSwap",
+        platformName: "Axelar Satellite",
       },
     },
   },
