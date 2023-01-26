@@ -370,6 +370,7 @@
     "invalidSlippage": "Glissement invalide",
     "noSendCurrency": "Devise à envoyer non définie",
     "insufficientBal": "Solde insuffisant",
+    "insufficientLiquidity": "Liquidité insuffisante",
     "notInitialized": "Non initialisé",
     "calculatingShareOutAmount": "Problème de calcul du montant de sortie",
     "noAvailableShares": "Aucun actif {denom} disponible",

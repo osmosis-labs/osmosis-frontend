@@ -373,6 +373,7 @@
     "invalidSlippage": "Toleranta invalida",
     "noSendCurrency": "Moneda de trimis nu este selectata",
     "insufficientBal": "Balanta insuficienta",
+    "insufficientLiquidity": "Lichiditate insuficientă",
     "notInitialized": "Neinitializat",
     "calculatingShareOutAmount": "Nu s-a putut calcula suma rezultata",
     "noAvailableShares": "Actiuni {denom} nu sunt disponibile",
