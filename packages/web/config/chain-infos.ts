@@ -57,14 +57,14 @@ const chainInfos = (
         },
         ...(IS_TESTNET
           ? [
-            {
-              coinDenom: "IBCX",
-              coinMinimalDenom:
-                "factory/osmo13t90mkyvdnmn9wm8hfen6jk3hnlt8uqx8savlvjd5xghy5z6ye2qymy6cy/uibcx",
-              coinDecimals: 6,
-              coinImageUrl: "/tokens/ibcx.svg",
-            },
-          ]
+              {
+                coinDenom: "IBCX",
+                coinMinimalDenom:
+                  "factory/osmo13t90mkyvdnmn9wm8hfen6jk3hnlt8uqx8savlvjd5xghy5z6ye2qymy6cy/uibcx",
+                coinDecimals: 6,
+                coinImageUrl: "/tokens/ibcx.svg",
+              },
+            ]
           : []),
       ],
       features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
@@ -2580,9 +2580,9 @@ const chainInfos = (
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
-            low: 10000000000,
-            average: 25000000000,
-            high: 40000000000,
+            low: 125000000000,
+            average: 250000000000,
+            high: 375000000000,
           },
         },
       ],
@@ -2808,7 +2808,7 @@ chainInfos.push({
   gasPriceStep: IS_TESTNET ? {
     low: 0.007,
     average: 0.125,
-    high: 0.2,
+    high:0.2,
   } : {
     low: 0.00005,
     average: 0.00007,
