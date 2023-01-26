@@ -67,7 +67,7 @@ const chainInfos = (
             ]
           : []),
       ],
-      features: ["ibc-transfer", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
       explorerUrlToTx:
         OSMOSIS_EXPLORER_URL_OVERWRITE ??
         (IS_TESTNET

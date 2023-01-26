@@ -21,7 +21,7 @@ import useDraggableScroll from "../../hooks/use-draggable-scroll";
 import { Transition } from "@headlessui/react";
 import { useKeyActions } from "../../hooks/use-key-actions";
 import { useStateRef } from "../../hooks/use-state-ref";
-import useLatest from "../../hooks/use-latest";
+import { useLatest } from "react-use";
 import { useConst } from "../../hooks/use-const";
 
 function getJustDenom(coinDenom: string) {
