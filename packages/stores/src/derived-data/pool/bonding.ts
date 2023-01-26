@@ -210,6 +210,8 @@ export class ObservablePoolBonding {
           if (!gauge.gauge) return;
 
           for (const { remaining } of gauge.coins) {
+            if (gauge.remainingEpoch <= 0) continue;
+
             incentivesBreakdown.push({
               dailyPoolReward: new Dec(gauge.remainingEpoch).isZero()
                 ? new CoinPretty(remaining.currency, 0)

@@ -118,10 +118,12 @@ export class ObservableQueryGauge extends ObservableChainQuery<GaugeById> {
       return 0;
     }
 
-    return (
-      parseInt(this._raw.num_epochs_paid_over) -
-      parseInt(this._raw.filled_epochs)
-    );
+    const paidOver = parseInt(this._raw.num_epochs_paid_over);
+    const filled = parseInt(this._raw.filled_epochs);
+
+    if (isNaN(paidOver) || isNaN(filled)) return 0;
+
+    return paidOver - filled;
   }
 
   @computed
