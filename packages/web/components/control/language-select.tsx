@@ -27,9 +27,7 @@ export const LanguageSelect: FunctionComponent<LanguageSelectProps> = observer(
     );
 
     const onSelect = (option: MenuDropdownIconItemProps) => {
-      userSettings
-        .getUserSettingById<LanguageState>("language")
-        ?.setState({ language: option.value });
+      languageSetting.setState({ language: option.value });
     };
 
     return (
