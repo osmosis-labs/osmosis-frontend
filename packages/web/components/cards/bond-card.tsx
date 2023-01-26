@@ -44,9 +44,32 @@ export const BondCard: FunctionComponent<
   const [drawerUp, setDrawerUp] = useState(false);
   const t = useTranslation();
 
+  const showGoSuperfluid =
+    superfluid &&
+    userShares.toDec().gt(new Dec(0)) &&
+    !superfluid.delegated &&
+    !superfluid.undelegating;
+  const showUnbond = userShares.toDec().gt(new Dec(0));
+
+  // useful for calculating the height of the card
+  const hasThreeButtons = showUnbond && showGoSuperfluid && userUnlockingShares;
+
   return (
-    <div className="relative flex h-[380px] w-full min-w-[280px] flex-col gap-[115px] overflow-hidden rounded-2xl border-2 border-osmoverse-600 bg-osmoverse-800 p-7 md:p-[10px]">
-      <div className="flex h-[264px] flex-col place-content-between gap-2 md:h-[280px]">
+    <div
+      className={classNames(
+        "relative flex w-full min-w-[280px] flex-col gap-[115px] overflow-hidden rounded-2xl border-2 border-osmoverse-600 bg-osmoverse-800 p-7 md:p-[10px]",
+        {
+          "h-[380px]": !hasThreeButtons,
+          "h-[420px] md:h-[400px]": hasThreeButtons,
+        }
+      )}
+    >
+      <div
+        className={classNames("flex flex-col place-content-between gap-2", {
+          "h-[264px] md:h-[280px]": !hasThreeButtons,
+          "h-[304px] md:h-[280px]": hasThreeButtons,
+        })}
+      >
         <div className="flex place-content-between items-start gap-4">
           <div className="z-10 flex max-w-[60%] flex-col gap-5 overflow-visible">
             <span className="subtitle1 text-osmoverse-100">
@@ -102,26 +125,21 @@ export const BondCard: FunctionComponent<
             </span>
           </div>
         )}
-        {userShares.toDec().gt(new Dec(0)) && (
-          <UnbondButton onClick={onUnbond} />
+        {showUnbond && <UnbondButton onClick={onUnbond} />}
+        {showGoSuperfluid && (
+          <button
+            className="w-fit rounded-lg bg-superfluid p-[2px]"
+            onClick={onGoSuperfluid}
+          >
+            <div className="w-full rounded-[6px] bg-osmoverse-800 p-3 md:p-2">
+              <span className="text-superfluid-gradient">
+                {t("pool.superfluidEarnMore", {
+                  rate: superfluid.apr.maxDecimals(0).toString(),
+                })}
+              </span>
+            </div>
+          </button>
         )}
-        {superfluid &&
-          userShares.toDec().gt(new Dec(0)) &&
-          !superfluid.delegated &&
-          !superfluid.undelegating && (
-            <button
-              className="w-fit rounded-lg bg-superfluid p-[2px]"
-              onClick={onGoSuperfluid}
-            >
-              <div className="w-full rounded-[6px] bg-osmoverse-800 p-3 md:p-2">
-                <span className="text-superfluid-gradient">
-                  {t("pool.superfluidEarnMore", {
-                    rate: superfluid.apr.maxDecimals(0).toString(),
-                  })}
-                </span>
-              </div>
-            </button>
-          )}
       </div>
       <div
         className={classNames(
