@@ -32,7 +32,7 @@ export default async function activeGauges(
 }
 
 const DURATION_1_DAY = 86400000;
-const DURATION_UPCOMING_SOON = DURATION_1_DAY * 3;
+const DURATION_UPCOMING_SOON = DURATION_1_DAY * 7;
 const MAX_NEW_GAUGES_PER_DAY = 100;
 
 function checkForStaleness(gauge: Gauge, lastGaugeId: number) {
