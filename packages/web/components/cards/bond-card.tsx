@@ -73,9 +73,14 @@ export const BondCard: FunctionComponent<
         <div className="flex place-content-between items-start gap-4">
           <div className="z-10 flex max-w-[60%] flex-col gap-5 overflow-visible">
             <span className="subtitle1 text-osmoverse-100">
-              {t("pool.amountDaysUnbonding", {
-                numDays: duration.asDays().toString(),
-              })}
+              {t(
+                duration.asDays() > 1
+                  ? "pool.amountDaysUnbonding_plural"
+                  : "pool.amountDaysUnbonding",
+                {
+                  numDays: duration.asDays().toString(),
+                }
+              )}
             </span>
             <div className="flex grow flex-col text-osmoverse-100">
               <h4 className="text-osmoverse-100">
