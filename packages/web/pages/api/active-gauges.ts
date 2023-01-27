@@ -14,7 +14,7 @@ export default async function activeGauges(
   _req: NextApiRequest,
   res: NextApiResponse<ExternalIncentiveGaugesResponse>
 ) {
-  const endpoint = `${ChainInfos[0].rest}osmosis/incentives/v1beta1/active_gauges?pagination.limit=100000`;
+  const endpoint = `${ChainInfos[0].rest}osmosis/incentives/v1beta1/gauges?pagination.limit=100000`;
   const resp = await fetch(endpoint);
   const { data } = (await resp.json()) as ExternalIncentiveGaugesResponse;
 

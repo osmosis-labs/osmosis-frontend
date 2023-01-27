@@ -139,10 +139,31 @@ export const TradeClipboard: FunctionComponent<{
     );
 
     // token select dropdown
-    const [showFromTokenSelectDropdown, setFromTokenSelectDropdownLocal] =
+    const fetchedRemainingPoolsRef = useRef(false);
+    const fetchRemainingPoolsOnce = useCallback(() => {
+      if (!fetchedRemainingPoolsRef.current) {
+        fetchedRemainingPoolsRef.current = true;
+        queries.osmosis?.queryGammPools.fetchRemainingPools();
+      }
+    }, []);
+    const [showFromTokenSelectDropdown, _setFromTokenSelectDropdownLocal] =
       useState(false);
-    const [showToTokenSelectDropdown, setToTokenSelectDropdownLocal] =
+    const setFromTokenSelectDropdownLocal = useCallback(
+      (val: boolean) => {
+        fetchRemainingPoolsOnce();
+        _setFromTokenSelectDropdownLocal(val);
+      },
+      [fetchRemainingPoolsOnce]
+    );
+    const [showToTokenSelectDropdown, _setToTokenSelectDropdownLocal] =
       useState(false);
+    const setToTokenSelectDropdownLocal = useCallback(
+      (val: boolean) => {
+        fetchRemainingPoolsOnce();
+        _setToTokenSelectDropdownLocal(val);
+      },
+      [fetchRemainingPoolsOnce]
+    );
     const setOneTokenSelectOpen = (dropdown: "to" | "from") => {
       if (dropdown === "to") {
         setToTokenSelectDropdownLocal(true);

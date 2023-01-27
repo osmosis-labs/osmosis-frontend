@@ -211,7 +211,9 @@ export class ObservablePoolBonding {
 
           for (const { remaining } of gauge.coins) {
             incentivesBreakdown.push({
-              dailyPoolReward: remaining.quo(new Dec(gauge.remainingEpoch)),
+              dailyPoolReward: new Dec(gauge.remainingEpoch).isZero()
+                ? new CoinPretty(remaining.currency, 0)
+                : remaining.quo(new Dec(gauge.remainingEpoch)),
               apr: this.queries.queryIncentivizedPools.computeExternalIncentiveGaugeAPR(
                 this.poolId,
                 gauge.gauge.id,
