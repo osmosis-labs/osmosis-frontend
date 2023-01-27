@@ -2,7 +2,7 @@ import React, { Fragment, FunctionComponent, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { MenuDropdownIconItemProps } from "./types";
-import { LanguageState, LanguageUserSetting } from "../../stores/user-settings";
+import { LanguageUserSetting } from "../../stores/user-settings";
 import { Listbox } from "@headlessui/react";
 import { Icon } from "../assets";
 import { Button } from "../buttons";
