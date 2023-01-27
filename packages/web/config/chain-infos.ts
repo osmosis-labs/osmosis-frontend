@@ -2590,6 +2590,42 @@ const chainInfos = (
       explorerUrlToTx:
         "https://cosmos.explorer.canto.io/transactions/{txHash}",
     },
+    {
+      rpc: "https://rpc.quicksilver.zone:443",
+      rest: "http://lcd.quicksilver.zone:443",
+      chainId: "quicksilver-2",
+      chainName: "Quicksilver",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("quick"),
+      currencies: [
+        {
+          coinDenom: "QCK",
+          coinMinimalDenom: "uqck",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/qck.svg",
+          coinGeckoId: "pool:uqck",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.001,
+            average: 0.001,
+            high: 0.001,
+          },
+        },
+        {
+          coinDenom: "qSTARS",
+          coinMinimalDenom: "uqstars",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/qstars.svg",
+          coinGeckoId: "pool:uqstars",
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx:
+        "https://www.mintscan.io/quicksilver/txs/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
