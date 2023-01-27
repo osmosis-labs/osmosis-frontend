@@ -57,6 +57,7 @@ export const PoolAssetsIcon: FunctionComponent<Props> = ({
                 height={size === "md" ? 50 : 40}
               />
             )}
+            <span className="absolute h-full w-full" title={coinDenom} />
           </div>
         )
       )}
