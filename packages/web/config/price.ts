@@ -1108,7 +1108,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       [{ portId: "transfer", channelId: "channel-75" }],
       "ustars"
     ),
-    destCoinId: "pool:ustars",
+    destCoinId: "pool:uqstars",
   },
   {
     alternativeCoinId: "pool:wftm-wei",
