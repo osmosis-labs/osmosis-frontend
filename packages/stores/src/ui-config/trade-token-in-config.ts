@@ -437,8 +437,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     }
 
     if (this.amount) {
-      if (this._notEnoughLiquidity) return new NotEnoughLiquidityError();
       if (this._error instanceof NoRouteError) return this._error;
+      if (this._notEnoughLiquidity) return new NotEnoughLiquidityError();
 
       const dec = new Dec(this.amount);
       const balance = this.queriesStore
