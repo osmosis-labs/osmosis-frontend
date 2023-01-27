@@ -2591,8 +2591,8 @@ const chainInfos = (
         "https://cosmos.explorer.canto.io/transactions/{txHash}",
     },
     {
-      rpc: "https://rpc.quicksilver.zone:443",
-      rest: "http://lcd.quicksilver.zone:443",
+      rpc: "https://rpc-quicksilver.keplr.app",
+      rest: "https://lcd-quicksilver.keplr.app",
       chainId: "quicksilver-2",
       chainName: "Quicksilver",
       bip44: {
@@ -2609,9 +2609,9 @@ const chainInfos = (
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
-            low: 0.001,
-            average: 0.001,
-            high: 0.001,
+            "low": 0.0001,
+            "average": 0.0001,
+            "high": 0.00025
           },
         },
         {
