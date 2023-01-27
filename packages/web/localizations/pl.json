@@ -374,6 +374,8 @@
     "invalidSlippage": "Niepoprawna wartość odchylenia",
     "noSendCurrency": "Nie ustawiona waluta do wysłania",
     "insufficientBal": "Niewystarczająca ilość środków",
+    "insufficientLiquidity": "Niewystarczająca płynność",
+    "noRoute": "Brak trasy dla tej transakcji",
     "notInitialized": "Nie zinicjalizowane",
     "calculatingShareOutAmount": "Problem z obliczeniem wartości",
     "noAvailableShares": "Nie ma dostępnych {denom} aktyw",

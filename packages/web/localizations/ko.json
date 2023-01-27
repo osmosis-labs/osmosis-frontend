@@ -374,6 +374,8 @@
     "invalidSlippage": "잘못된 슬리피지",
     "noSendCurrency": "전송할 토큰이 설정되지 않았습니다",
     "insufficientBal": "잔액 불충분",
+    "insufficientLiquidity": "유동성 부족",
+    "noRoute": "이 거래에 대한 경로 없음",
     "notInitialized": "초기화 되지 않았습니다",
     "calculatingShareOutAmount": "수량을 계산하는데 오류가 발생했습니다",
     "noAvailableShares": "사용 가능한 {denom}이 없습니다",

@@ -5,6 +5,7 @@ import {
   NegativeAmountError,
   InsufficientAmountError,
 } from "@keplr-wallet/hooks";
+import { NotEnoughLiquidityError } from "@osmosis-labs/pools";
 import {
   HighSwapFeeError,
   NegativeSwapFeeError,
@@ -23,6 +24,7 @@ import {
   NotInitializedError,
   CalculatingShareOutAmountError,
   NoAvailableSharesError,
+  NoRouteError,
 } from "@osmosis-labs/stores";
 import { t } from "react-multi-lang";
 
@@ -72,6 +74,10 @@ export function tError<TError extends Error>(e?: TError): Parameters<typeof t> {
     return ["errors.calculatingShareOutAmount"];
   } else if (e instanceof NoAvailableSharesError) {
     return ["errors.noAvailableShares", { denom: e.message.split(" ")[2] }];
+  } else if (e instanceof NotEnoughLiquidityError) {
+    return ["errors.insufficientLiquidity"];
+  } else if (e instanceof NoRouteError) {
+    return ["errors.noRoute"];
   }
 
   return ["errors.generic"];

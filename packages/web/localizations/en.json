@@ -374,6 +374,8 @@
     "invalidSlippage": "Invalid slippage",
     "noSendCurrency": "Currency to send not set",
     "insufficientBal": "Insufficient balance",
+    "insufficientLiquidity": "Insufficient liquidity",
+    "noRoute": "No route for this trade",
     "notInitialized": "Not initialized",
     "calculatingShareOutAmount": "Problem calculating out amount",
     "noAvailableShares": "No available {denom} shares",

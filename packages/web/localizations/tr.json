@@ -374,6 +374,8 @@
     "invalidSlippage": "Geçersiz slipaj",
     "noSendCurrency": "Gönderilecek varlık seçilmedi",
     "insufficientBal": "Yetersiz bakiye",
+    "insufficientLiquidity": "yetersiz likidite",
+    "noRoute": "Bu ticaret için Rota yok",
     "notInitialized": "Başlatılmadı",
     "calculatingShareOutAmount": "Miktar hesaplamasında sorun",
     "noAvailableShares": "Kullanılabilir {denom} hissesi yok",

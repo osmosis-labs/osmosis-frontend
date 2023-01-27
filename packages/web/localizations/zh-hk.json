@@ -375,6 +375,8 @@
     "invalidSlippage": "非正確滑價",
     "noSendCurrency": "未設定要傳送嘅貨幣",
     "insufficientBal": "結餘唔夠喎",
+    "insufficientLiquidity": "流動性不足",
+    "noRoute": "此交易沒有路線",
     "notInitialized": "未初始化",
     "calculatingShareOutAmount": "計算幣額時出錯",
     "noAvailableShares": "冇可用嘅 {denom} 份額喎",
