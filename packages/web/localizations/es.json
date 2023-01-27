@@ -372,6 +372,7 @@
     "noSendCurrency": "Moneda para enviar no establecida",
     "insufficientBal": "Saldo insuficiente",
     "insufficientLiquidity": "Liquidez insuficiente",
+    "noRoute": "No hay ruta para este cambio",
     "notInitialized": "No inicializado",
     "calculatingShareOutAmount": "Problema calculando la cantidad de salida",
     "noAvailableShares": "No hay acciones disponibles {denom}",

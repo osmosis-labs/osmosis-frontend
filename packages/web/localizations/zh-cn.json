@@ -371,6 +371,7 @@
     "noSendCurrency": "未设置发送货币",
     "insufficientBal": "余额不足",
     "insufficientLiquidity": "流动性不足",
+    "noRoute": "此交易没有路线",
     "notInitialized": "未初始化",
     "calculatingShareOutAmount": "计算金额溢出",
     "noAvailableShares": "没有可用 {denom} 份额",

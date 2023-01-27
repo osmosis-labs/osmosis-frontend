@@ -371,6 +371,7 @@
     "noSendCurrency": "Devise à envoyer non définie",
     "insufficientBal": "Solde insuffisant",
     "insufficientLiquidity": "Liquidité insuffisante",
+    "noRoute": "Pas d'itinéraire pour ce commerce",
     "notInitialized": "Non initialisé",
     "calculatingShareOutAmount": "Problème de calcul du montant de sortie",
     "noAvailableShares": "Aucun actif {denom} disponible",
