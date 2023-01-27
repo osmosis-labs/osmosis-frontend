@@ -1,7 +1,7 @@
-import React, {
+import {
   cloneElement,
   ComponentProps,
-  FunctionComponent,
+  forwardRef,
   isValidElement,
   ReactNode,
 } from "react";
@@ -10,13 +10,21 @@ import { Button } from "./button";
 /**
  * Renders an icon within a button.
  */
-const IconButton: FunctionComponent<
+const IconButton = forwardRef<
+  HTMLButtonElement,
   {
     icon?: ReactNode;
     "aria-label": string;
   } & ComponentProps<typeof Button>
-> = (props) => {
-  const { icon, children, "aria-label": ariaLabel, ...rest } = props;
+>((props, ref) => {
+  const {
+    icon,
+    children,
+    mode = "icon-primary",
+    size = "sm-no-padding",
+    "aria-label": ariaLabel,
+    ...rest
+  } = props;
 
   const element = icon || children;
   const _children = isValidElement(element)
@@ -27,15 +35,10 @@ const IconButton: FunctionComponent<
     : null;
 
   return (
-    <Button
-      mode="icon-primary"
-      size="sm-no-padding"
-      aria-label={ariaLabel}
-      {...rest}
-    >
+    <Button ref={ref} mode={mode} size={size} aria-label={ariaLabel} {...rest}>
       {_children}
     </Button>
   );
-};
+});
 
 export default IconButton;

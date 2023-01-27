@@ -7,7 +7,7 @@ import {
   MenuDropdownIconItemProps,
 } from "../../components/control";
 
-export type LanguageState = { language: string };
+export type LanguageState = { language: string; isControlOpen: boolean };
 
 const SUPPORTED_LANGUAGES: MenuDropdownIconItemProps[] = [
   {
@@ -55,9 +55,9 @@ const SUPPORTED_LANGUAGES: MenuDropdownIconItemProps[] = [
 export class LanguageUserSetting implements UserSetting<LanguageState> {
   readonly id = "language";
   readonly defaultLanguage: MenuDropdownIconItemProps;
-  readonly controlComponent: FunctionComponent<LanguageState> = ({}) => {
-    return <LanguageSelect options={SUPPORTED_LANGUAGES} />;
-  };
+  readonly controlComponent: FunctionComponent<LanguageState> = () => (
+    <LanguageSelect options={SUPPORTED_LANGUAGES} />
+  );
 
   @observable
   protected _state: LanguageState;
@@ -67,6 +67,7 @@ export class LanguageUserSetting implements UserSetting<LanguageState> {
     this.defaultLanguage = SUPPORTED_LANGUAGES[indexDefaultLanguage];
     this._state = {
       language: this.defaultLanguage.value,
+      isControlOpen: false,
     };
   }
 
@@ -80,7 +81,7 @@ export class LanguageUserSetting implements UserSetting<LanguageState> {
   }
 
   @action
-  setState(state: LanguageState) {
-    this._state = state;
+  setState(state: Partial<LanguageState>) {
+    this._state = { ...this._state, ...state };
   }
 }

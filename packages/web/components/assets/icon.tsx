@@ -6,8 +6,13 @@ type IconId =
   | "chevron-left"
   | "chevron-right"
   | "setting"
+  | "hamburger"
   | "search"
-  | "up-down-arrow";
+  | "up-down-arrow"
+  | "close"
+  | "info"
+  | "globe"
+  | "dust-broom";
 
 /**
  * It takes an icon id and returns an svg element with the corresponding icon defined in /public/icons/sprite.svg.
