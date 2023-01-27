@@ -374,6 +374,7 @@
     "noSendCurrency": "Moneda de trimis nu este selectata",
     "insufficientBal": "Balanta insuficienta",
     "insufficientLiquidity": "Lichiditate insuficientă",
+    "noRoute": "Nicio rută pentru acest comerț",
     "notInitialized": "Neinitializat",
     "calculatingShareOutAmount": "Nu s-a putut calcula suma rezultata",
     "noAvailableShares": "Actiuni {denom} nu sunt disponibile",

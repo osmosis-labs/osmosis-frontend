@@ -23,7 +23,11 @@ import {
   Pool,
   RoutePathWithAmount,
 } from "@osmosis-labs/pools";
-import { NoSendCurrencyError, InsufficientBalanceError } from "./errors";
+import {
+  NoSendCurrencyError,
+  InsufficientBalanceError,
+  NoRouteError,
+} from "./errors";
 
 export class ObservableTradeTokenInConfig extends AmountConfig {
   @observable.ref
@@ -301,6 +305,11 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       isMultihopOsmoFeeDiscount: false,
     };
 
+    if (paths.length === 0 && this.amount !== "" && this.amount !== "0") {
+      this.setError(new NoRouteError("No route found"));
+      return zero;
+    }
+
     if (paths.length === 0 || this.amount === "" || this.amount === "0") {
       return zero;
     }
@@ -429,6 +438,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
     if (this.amount) {
       if (this._notEnoughLiquidity) return new NotEnoughLiquidityError();
+      if (this._error instanceof NoRouteError) return this._error;
 
       const dec = new Dec(this.amount);
       const balance = this.queriesStore
