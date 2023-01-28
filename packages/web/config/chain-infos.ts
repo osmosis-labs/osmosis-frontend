@@ -683,6 +683,17 @@ const chainInfos = (
           //coinGeckoId: "pool:hopers",
           coinImageUrl: "/tokens/hopers.png",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1mkw83sv6c7sjdvsaplrzc8yaes9l42p4mhy0ssuxjnyzl87c9eps7ce3m9",
+          coinDenom: "WYND",
+          coinMinimalDenom:
+            "cw20:juno1mkw83sv6c7sjdvsaplrzc8yaes9l42p4mhy0ssuxjnyzl87c9eps7ce3m9:WYND",
+          coinDecimals: 6,
+          coinGeckoId: "pool:wynd",
+          coinImageUrl: "/tokens/wynd.svg",
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: "https://www.mintscan.io/juno/txs/{txHash}",
