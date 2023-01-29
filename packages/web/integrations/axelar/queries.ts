@@ -21,7 +21,7 @@ export type TransferStep = {
 export type TransferStatus = Array<{
   id: string;
   /** Axelarscan: SEND ASSET */
-  source?: TransferStep & {
+  send?: TransferStep & {
     /** Decimal amount. Displayed by Axelarscan (doesn't sub fees). */
     amount: number;
     /** Decimal fee in `denom` denom. Displayed by Axelarscan. */
