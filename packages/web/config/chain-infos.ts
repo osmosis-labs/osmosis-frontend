@@ -2795,6 +2795,22 @@ chainInfos.push({
       coinGeckoId: "pool:wftm-wei",
       coinImageUrl: "/tokens/ftm.png",
     },
+    {
+      coinDenom: "Polygon USDC",
+      coinMinimalDenom: "polygon-uusdc",
+      coinDecimals: 6,
+      coinGeckoId: "usd-coin",
+      coinImageUrl: "/tokens/usdc.svg",
+      pegMechanism: "collateralized",
+    },
+    {
+      coinDenom: "Avalanche USDC",
+      coinMinimalDenom: "avalanche-uusdc",
+      coinDecimals: 6,
+      coinGeckoId: "usd-coin",
+      coinImageUrl: "/tokens/usdc.svg",
+      pegMechanism: "collateralized",
+    },
   ],
   feeCurrencies: [
     {
