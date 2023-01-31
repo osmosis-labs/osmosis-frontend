@@ -313,6 +313,11 @@
         "status": "状态",
         "deposit": "存入",
         "withdraw": "提币"
+      },
+      "failed": "失败的",
+      "failedWithReason": "失败的: {reason}",
+      "errors": {
+        "insufficientFee": "费用不足"
       }
     }
   },

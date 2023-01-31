@@ -314,6 +314,11 @@
         "status": "狀態",
         "deposit": "存入",
         "withdraw": "轉出"
+      },
+      "failed": "失敗的",
+      "failedWithReason": "失敗的: {reason}",
+      "errors": {
+        "insufficientFee": "費用不足"
       }
     }
   },

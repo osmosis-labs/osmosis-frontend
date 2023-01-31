@@ -314,6 +314,11 @@
         "status": "상태",
         "deposit": "입금",
         "withdraw": "출금"
+      },
+      "failed": "실패한",
+      "failedWithReason": "실패한: {reason}",
+      "errors": {
+        "insufficientFee": "부족한 수수료"
       }
     }
   },

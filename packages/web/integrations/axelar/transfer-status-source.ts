@@ -1,4 +1,8 @@
-import { ITxStatusReceiver, ITxStatusSource } from "@osmosis-labs/stores";
+import {
+  ITxStatusReceiver,
+  ITxStatusSource,
+  TxReason,
+} from "@osmosis-labs/stores";
 import { poll } from "../../utils/promise";
 import { getTransferStatus, TransferStatus } from "./queries";
 
@@ -55,7 +59,7 @@ export class AxelarTransferStatusSource implements ITxStatusSource {
   protected makeResultStatusFromTransferStatus(
     transferStatus: TransferStatus
   ):
-    | { id?: string; status: "success" | "failed"; reason?: string }
+    | { id?: string; status: "success" | "failed"; reason?: TxReason }
     | undefined {
     // could be { message: "Internal Server Error" } TODO: display server errors or connection issues to user
     if (
@@ -73,7 +77,7 @@ export class AxelarTransferStatusSource implements ITxStatusSource {
       return {
         id: idWithoutSourceChain,
         status: "failed",
-        reason: "Insufficient fee",
+        reason: "insufficientFee",
       };
     }
 
