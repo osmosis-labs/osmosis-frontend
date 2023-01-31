@@ -115,9 +115,9 @@ export const ProfileModal: FunctionComponent<
         onCloseAvatarSelect();
         onCloseQR();
       }}
-      className="relative overflow-hidden"
+      className="relative max-h-screen overflow-hidden"
     >
-      <div className="flex max-h-screen flex-col items-center overflow-auto">
+      <div className="flex flex-col items-center overflow-auto">
         <Drawer
           isOpen={isAvatarSelectOpen}
           onOpen={onOpenAvatarSelect}
