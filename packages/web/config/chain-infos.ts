@@ -2573,8 +2573,8 @@ const chainInfos = (
         "https://testnet-explorer.marsprotocol.io/transactions/{txHash}",
     },
     {
-      rpc: "https://canto-rpc.polkachu.com",
-      rest: "https://canto-api.polkachu.com",
+      rpc: "http://164.90.154.41:26657",
+      rest: "http://164.90.154.41:1317",
       chainId: "canto_7700-1",
       chainName: "Canto",
       bip44: {
@@ -2591,9 +2591,9 @@ const chainInfos = (
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
-            low: 125000000000,
-            average: 250000000000,
-            high: 375000000000,
+            low: 1000000000000,
+            average: 1500000000000,
+            high: 2000000000000,
           },
         },
       ],
