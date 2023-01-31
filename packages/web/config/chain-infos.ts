@@ -2796,7 +2796,7 @@ chainInfos.push({
       coinImageUrl: "/tokens/ftm.png",
     },
     {
-      coinDenom: "Polygon USDC",
+      coinDenom: "polygon.USDC",
       coinMinimalDenom: "polygon-uusdc",
       coinDecimals: 6,
       coinGeckoId: "usd-coin",
@@ -2804,7 +2804,7 @@ chainInfos.push({
       pegMechanism: "collateralized",
     },
     {
-      coinDenom: "Avalanche USDC",
+      coinDenom: "avalanche.USDC",
       coinMinimalDenom: "avalanche-uusdc",
       coinDecimals: 6,
       coinGeckoId: "usd-coin",
