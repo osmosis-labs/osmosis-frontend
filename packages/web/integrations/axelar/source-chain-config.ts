@@ -218,10 +218,10 @@ export const SourceChainConfigs: {
     },
   },
   polygonusdc: {
-    avalanche: {
+    polygon: {
       id: "Polygon" as const,
       erc20ContractAddress: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
-      logoUrl: "/networks/avalanche.svg",
+      logoUrl: "/networks/polygon.svg",
     },
   },
   avalancheusdc: {
