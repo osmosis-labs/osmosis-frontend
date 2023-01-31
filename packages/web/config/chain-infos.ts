@@ -2573,8 +2573,8 @@ const chainInfos = (
         "https://testnet-explorer.marsprotocol.io/transactions/{txHash}",
     },
     {
-      rpc: "https://rpc.canto.silentvalidator.com/",
-      rest: "https://api.canto.silentvalidator.com/",
+      rpc: "https://rpc.canto.nodestake.top",
+      rest: "https://api.canto.nodestake.top",
       chainId: "canto_7700-1",
       chainName: "Canto",
       bip44: {
