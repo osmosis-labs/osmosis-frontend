@@ -32,7 +32,6 @@ export const NavBar: FunctionComponent<
 > = observer(({ title, className, backElementClassNames, menus }) => {
   const {
     navBarStore,
-    queriesExternalStore,
     chainStore: {
       osmosis: { chainId },
     },
