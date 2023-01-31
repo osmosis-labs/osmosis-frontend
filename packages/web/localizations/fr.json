@@ -313,6 +313,11 @@
         "status": "Statut",
         "deposit": "Déposer",
         "withdraw": "Retirer"
+      },
+      "failed": "Échoué",
+      "failedWithReason": "Échoué: {reason}",
+      "errors": {
+        "insufficientFee": "Frais insuffisants"
       }
     }
   },

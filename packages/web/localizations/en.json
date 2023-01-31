@@ -314,6 +314,11 @@
         "status": "Status",
         "deposit": "Deposit",
         "withdraw": "Withdraw"
+      },
+      "failed": "Failed",
+      "failedWithReason": "Failed: {reason}",
+      "errors": {
+        "insufficientFee": "Insufficient Fee"
       }
     }
   },

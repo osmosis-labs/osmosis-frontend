@@ -314,6 +314,11 @@
         "status": "Status",
         "deposit": "Depozit",
         "withdraw": "Retragere"
+      },
+      "failed": "A eșuat",
+      "failedWithReason": "A eșuat: {reason}",
+      "errors": {
+        "insufficientFee": "Taxa insuficienta"
       }
     }
   },

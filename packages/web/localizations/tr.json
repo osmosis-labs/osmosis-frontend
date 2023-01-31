@@ -314,6 +314,11 @@
         "status": "Durum",
         "deposit": "Yatır",
         "withdraw": "Çek"
+      },
+      "failed": "Arızalı",
+      "failedWithReason": "Arızalı: {reason}",
+      "errors": {
+        "insufficientFee": "yetersiz ücret"
       }
     }
   },

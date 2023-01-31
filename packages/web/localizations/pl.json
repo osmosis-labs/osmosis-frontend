@@ -314,6 +314,11 @@
         "status": "Status",
         "deposit": "Wpłata",
         "withdraw": "Wypłata"
+      },
+      "failed": "Przegrany",
+      "failedWithReason": "Przegrany: {reason}",
+      "errors": {
+        "insufficientFee": "Niewystarczająca opłata"
       }
     }
   },

@@ -314,6 +314,11 @@
         "status": "Estado",
         "deposit": "Depositar",
         "withdraw": "Retirar"
+      },
+      "failed": "Fallida",
+      "failedWithReason": "Fallida: {reason}",
+      "errors": {
+        "insufficientFee": "Tarifa insuficiente"
       }
     }
   },
