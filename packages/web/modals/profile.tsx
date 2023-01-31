@@ -115,291 +115,304 @@ export const ProfileModal: FunctionComponent<
         onCloseAvatarSelect();
         onCloseQR();
       }}
-      className="relative flex flex-col items-center overflow-hidden"
+      className="relative overflow-hidden"
     >
-      <Drawer
-        isOpen={isAvatarSelectOpen}
-        onOpen={onOpenAvatarSelect}
-        onClose={onCloseAvatarSelect}
-      >
-        <DrawerButton className="transform transition-transform duration-300 ease-in-out hover:scale-105">
-          {profileStore.currentAvatar === "ammelia" ? (
-            <AmmeliaAvatar className="mt-10" aria-label="Select avatar" />
-          ) : (
-            <WosmongtonAvatar className="mt-10" aria-label="Select avatar" />
-          )}
-        </DrawerButton>
+      <div className="flex max-h-screen flex-col items-center overflow-auto">
+        <Drawer
+          isOpen={isAvatarSelectOpen}
+          onOpen={onOpenAvatarSelect}
+          onClose={onCloseAvatarSelect}
+        >
+          <DrawerButton className="transform transition-transform duration-300 ease-in-out hover:scale-105">
+            {profileStore.currentAvatar === "ammelia" ? (
+              <AmmeliaAvatar className="mt-10" aria-label="Select avatar" />
+            ) : (
+              <WosmongtonAvatar className="mt-10" aria-label="Select avatar" />
+            )}
+          </DrawerButton>
 
-        <DrawerContent>
-          <DrawerOverlay />
-          <DrawerPanel className="flex h-fit items-center justify-center pt-7 pb-7">
-            <h6 className="mb-8">Select an avatar</h6>
-            <div className="flex gap-8 xs:gap-3">
-              <div className="text-center">
-                <WosmongtonAvatar
-                  isSelectable
-                  isSelected={profileStore.currentAvatar === "wosmongton"}
-                  onSelect={() => {
-                    onCloseAvatarSelect();
-                    logEvent([
-                      EventName.ProfileModal.selectAvatarClicked,
-                      { avatar: "wosmongton" },
-                    ]);
-                    profileStore.setCurrentAvatar("wosmongton");
-                  }}
-                  className="outline-none"
-                />
-                <p className="subtitle1 mt-4 tracking-wide text-osmoverse-300">
-                  Wosmongton
-                </p>
-              </div>
+          <DrawerContent>
+            <DrawerOverlay />
+            <DrawerPanel className="flex h-fit items-center justify-center pt-7 pb-7">
+              <h6 className="mb-8">Select an avatar</h6>
+              <div className="flex gap-8 xs:gap-3">
+                <div className="text-center">
+                  <WosmongtonAvatar
+                    isSelectable
+                    isSelected={profileStore.currentAvatar === "wosmongton"}
+                    onSelect={() => {
+                      onCloseAvatarSelect();
+                      logEvent([
+                        EventName.ProfileModal.selectAvatarClicked,
+                        { avatar: "wosmongton" },
+                      ]);
+                      profileStore.setCurrentAvatar("wosmongton");
+                    }}
+                    className="outline-none"
+                  />
+                  <p className="subtitle1 mt-4 tracking-wide text-osmoverse-300">
+                    Wosmongton
+                  </p>
+                </div>
 
-              <div className="text-center">
-                <AmmeliaAvatar
-                  isSelectable
-                  isSelected={profileStore.currentAvatar === "ammelia"}
-                  onSelect={() => {
-                    onCloseAvatarSelect();
-                    logEvent([
-                      EventName.ProfileModal.selectAvatarClicked,
-                      { avatar: "ammelia" },
-                    ]);
-                    profileStore.setCurrentAvatar("ammelia");
-                  }}
-                  className="outline-none"
-                />
-                <p className="subtitle1 mt-4 tracking-wide text-osmoverse-300">
-                  Ammelia
-                </p>
+                <div className="text-center">
+                  <AmmeliaAvatar
+                    isSelectable
+                    isSelected={profileStore.currentAvatar === "ammelia"}
+                    onSelect={() => {
+                      onCloseAvatarSelect();
+                      logEvent([
+                        EventName.ProfileModal.selectAvatarClicked,
+                        { avatar: "ammelia" },
+                      ]);
+                      profileStore.setCurrentAvatar("ammelia");
+                    }}
+                    className="outline-none"
+                  />
+                  <p className="subtitle1 mt-4 tracking-wide text-osmoverse-300">
+                    Ammelia
+                  </p>
+                </div>
               </div>
+            </DrawerPanel>
+          </DrawerContent>
+        </Drawer>
+
+        <div className="mt-3 text-center">
+          <p className="subtitle1" title={props?.icnsName}>
+            {Boolean(props.icnsName)
+              ? formatICNSName(props.icnsName, width < 768 ? 32 : 48)
+              : getShortAddress(address)}
+          </p>
+        </div>
+
+        <div className="mt-7 flex w-full justify-between rounded-[20px] border border-osmoverse-700 bg-osmoverse-800 p-5 xs:flex-col">
+          <div className="flex flex-col gap-[30px]">
+            <div className="flex items-center gap-1.5">
+              <Image
+                src="/icons/profile-osmo.svg"
+                alt="Osmo icon"
+                width={24}
+                height={24}
+              />
+              <p className="subtitle1 tracking-wide text-osmoverse-300">
+                {t("profile.balance")}
+              </p>
             </div>
-          </DrawerPanel>
-        </DrawerContent>
-      </Drawer>
 
-      <div className="mt-3 text-center">
-        <p className="subtitle1" title={props?.icnsName}>
-          {Boolean(props.icnsName)
-            ? formatICNSName(props.icnsName, width < 768 ? 32 : 48)
-            : getShortAddress(address)}
-        </p>
-      </div>
+            <div>
+              <h6 className="mb-[4px] tracking-wide text-osmoverse-100">
+                {priceFormatter(
+                  priceStore.calculatePrice(
+                    navBarStore.walletInfo.balance,
+                    priceStore.defaultVsCurrency
+                  ) ??
+                    new PricePretty(
+                      priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
+                      new Dec(0)
+                    ),
+                  {
+                    minimumFractionDigits: 2,
+                    maximumSignificantDigits: undefined,
+                    notation: "standard",
+                  }
+                )}
+              </h6>
+              <p className="text-h5 font-h5">
+                {coinFormatter(navBarStore.walletInfo.balance, {
+                  minimumFractionDigits: 2,
+                  maximumSignificantDigits: undefined,
+                  notation: "standard",
+                })}
+              </p>
+            </div>
+          </div>
 
-      <div className="mt-7 flex w-full justify-between rounded-[20px] border border-osmoverse-700 bg-osmoverse-800 p-5 xs:flex-col">
-        <div className="flex flex-col gap-[30px]">
+          <div className="flex flex-col items-end justify-between gap-[30px] xs:mt-2 xs:items-start xs:gap-2">
+            <button
+              onClick={() => {
+                const fiatValue = priceStore.calculatePrice(
+                  navBarStore.walletInfo.balance,
+                  priceStore.defaultVsCurrency
+                );
+                const coinValue = navBarStore.walletInfo.balance;
+
+                logEvent([
+                  EventName.ProfileModal.buyTokensClicked,
+                  {
+                    tokenName: "OSMO",
+                    tokenAmount: Number(
+                      (fiatValue ?? coinValue)?.maxDecimals(4).toString()
+                    ),
+                  },
+                ]);
+                transferConfig?.buyOsmo();
+              }}
+              className="subtitle1 group flex h-[44px] items-center gap-[10px] rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-[6px] px-3.5 hover:border-transparent hover:bg-gradient-positive hover:bg-origin-border hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)] 1.5xs:self-start"
+            >
+              <CreditCardIcon
+                isAnimated
+                classes={{
+                  backCard: "group-hover:stroke-[2]",
+                  frontCard:
+                    "group-hover:fill-[#71B5EB] group-hover:stroke-[2]",
+                }}
+              />
+              <span>{t("buyTokens")}</span>
+            </button>
+
+            <Link href="/assets" passHref>
+              <ArrowButton isLink>{t("profile.viewAllAssets")}</ArrowButton>
+            </Link>
+          </div>
+        </div>
+
+        <div className="mt-5 flex w-full flex-col gap-[30px] rounded-[20px] border border-osmoverse-700 bg-osmoverse-800 p-5">
           <div className="flex items-center gap-1.5">
             <Image
-              src="/icons/profile-osmo.svg"
+              src="/icons/profile-wallet.svg"
               alt="Osmo icon"
               width={24}
               height={24}
             />
             <p className="subtitle1 tracking-wide text-osmoverse-300">
-              {t("profile.balance")}
+              {t("profile.wallet")}
             </p>
           </div>
 
-          <div>
-            <h6 className="mb-[4px] tracking-wide text-osmoverse-100">
-              {priceFormatter(
-                priceStore.calculatePrice(
-                  navBarStore.walletInfo.balance,
-                  priceStore.defaultVsCurrency
-                ) ??
-                  new PricePretty(
-                    priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
-                    new Dec(0)
-                  ),
-                {
-                  minimumFractionDigits: 2,
-                  maximumSignificantDigits: undefined,
-                  notation: "standard",
-                }
-              )}
-            </h6>
-            <p className="text-h5 font-h5">
-              {coinFormatter(navBarStore.walletInfo.balance, {
-                minimumFractionDigits: 2,
-                maximumSignificantDigits: undefined,
-                notation: "standard",
-              })}
-            </p>
-          </div>
-        </div>
+          <div className="flex justify-between 1.5xl:gap-4 1.5xs:flex-col">
+            <div className="flex gap-3">
+              <div className="h-12 w-12 shrink-0">
+                <Image
+                  alt="wallet-icon"
+                  src={navBarStore.walletInfo.logoUrl}
+                  height={48}
+                  width={48}
+                />
+              </div>
 
-        <div className="flex flex-col items-end justify-between gap-[30px] xs:mt-2 xs:items-start xs:gap-2">
-          <button
-            onClick={() => {
-              const fiatValue = priceStore.calculatePrice(
-                navBarStore.walletInfo.balance,
-                priceStore.defaultVsCurrency
-              );
-              const coinValue = navBarStore.walletInfo.balance;
-
-              logEvent([
-                EventName.ProfileModal.buyTokensClicked,
-                {
-                  tokenName: "OSMO",
-                  tokenAmount: Number(
-                    (fiatValue ?? coinValue)?.maxDecimals(4).toString()
-                  ),
-                },
-              ]);
-              transferConfig?.buyOsmo();
-            }}
-            className="subtitle1 group flex h-[44px] items-center gap-[10px] rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-[6px] px-3.5 hover:border-transparent hover:bg-gradient-positive hover:bg-origin-border hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)] 1.5xs:self-start"
-          >
-            <CreditCardIcon
-              isAnimated
-              classes={{
-                backCard: "group-hover:stroke-[2]",
-                frontCard: "group-hover:fill-[#71B5EB] group-hover:stroke-[2]",
-              }}
-            />
-            <span>{t("buyTokens")}</span>
-          </button>
-
-          <Link href="/assets" passHref>
-            <ArrowButton isLink>{t("profile.viewAllAssets")}</ArrowButton>
-          </Link>
-        </div>
-      </div>
-
-      <div className="mt-5 flex w-full flex-col gap-[30px] rounded-[20px] border border-osmoverse-700 bg-osmoverse-800 p-5">
-        <div className="flex items-center gap-1.5">
-          <Image
-            src="/icons/profile-wallet.svg"
-            alt="Osmo icon"
-            width={24}
-            height={24}
-          />
-          <p className="subtitle1 tracking-wide text-osmoverse-300">
-            {t("profile.wallet")}
-          </p>
-        </div>
-
-        <div className="flex justify-between 1.5xl:gap-4 1.5xs:flex-col">
-          <div className="flex gap-3">
-            <div className="h-12 w-12 shrink-0">
-              <Image
-                alt="wallet-icon"
-                src={navBarStore.walletInfo.logoUrl}
-                height={48}
-                width={48}
-              />
-            </div>
-
-            <div className="subtitle-1 tracking-wide">
-              <p>Cosmos</p>
-              <div className="flex items-center gap-2">
-                <p title={address} className="text-osmoverse-100">
-                  {getShortAddress(address)}
-                </p>
-                <button title="Copy" onClick={onCopyAddress} className="group">
-                  {hasCopied ? (
-                    <CheckMarkIcon
-                      classes={{
-                        container: "text-osmoverse-200",
-                      }}
-                    />
-                  ) : (
-                    <CopyIcon
-                      classes={{
-                        container: "w-[20px] h-[20px] text-osmoverse-200",
-                      }}
-                      isAnimated
-                    />
-                  )}
-                </button>
+              <div className="subtitle-1 tracking-wide">
+                <p>Cosmos</p>
+                <div className="flex items-center gap-2">
+                  <p title={address} className="text-osmoverse-100">
+                    {getShortAddress(address)}
+                  </p>
+                  <button
+                    title="Copy"
+                    onClick={onCopyAddress}
+                    className="group"
+                  >
+                    {hasCopied ? (
+                      <CheckMarkIcon
+                        classes={{
+                          container: "text-osmoverse-200",
+                        }}
+                      />
+                    ) : (
+                      <CopyIcon
+                        classes={{
+                          container: "w-[20px] h-[20px] text-osmoverse-200",
+                        }}
+                        isAnimated
+                      />
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-3">
-            <ActionButton
-              title="Mintscan"
-              isLink
-              href={`https://www.mintscan.io/osmosis/account/${address}`}
-              target="blank"
-              className="group"
-              rel="noopener noreferrer"
-              onClick={() => {
-                logEvent([EventName.ProfileModal.blockExplorerLinkOutClicked]);
-              }}
-            >
-              <ExternalLinkIcon isAnimated />
-            </ActionButton>
+            <div className="flex items-center gap-3">
+              <ActionButton
+                title="Mintscan"
+                isLink
+                href={`https://www.mintscan.io/osmosis/account/${address}`}
+                target="blank"
+                className="group"
+                rel="noopener noreferrer"
+                onClick={() => {
+                  logEvent([
+                    EventName.ProfileModal.blockExplorerLinkOutClicked,
+                  ]);
+                }}
+              >
+                <ExternalLinkIcon isAnimated />
+              </ActionButton>
 
-            <Drawer
-              isOpen={isQROpen}
-              onOpen={() => {
-                logEvent([EventName.ProfileModal.qrCodeClicked]);
-                onOpenQR();
-              }}
-              onClose={onCloseQR}
-            >
-              <DrawerButton>
-                <ActionButton title="QR Code" className="group">
-                  <QRIcon isAnimated />
-                </ActionButton>
-              </DrawerButton>
+              <Drawer
+                isOpen={isQROpen}
+                onOpen={() => {
+                  logEvent([EventName.ProfileModal.qrCodeClicked]);
+                  onOpenQR();
+                }}
+                onClose={onCloseQR}
+              >
+                <DrawerButton>
+                  <ActionButton title="QR Code" className="group">
+                    <QRIcon isAnimated />
+                  </ActionButton>
+                </DrawerButton>
 
-              <DrawerContent>
-                <DrawerOverlay />
-                <DrawerPanel className="flex h-fit items-center justify-center pt-7 pb-7">
-                  <h6 className="mb-8">Cosmos</h6>
-                  <div className="mb-7 flex items-center justify-center rounded-xl bg-white-high p-3.5">
-                    <QRCode value={address} size={260} />
-                  </div>
+                <DrawerContent>
+                  <DrawerOverlay />
+                  <DrawerPanel className="flex h-fit items-center justify-center pt-7 pb-7">
+                    <h6 className="mb-8">Cosmos</h6>
+                    <div className="mb-7 flex items-center justify-center rounded-xl bg-white-high p-3.5">
+                      <QRCode value={address} size={260} />
+                    </div>
 
-                  <div className="flex items-center gap-4 rounded-3xl bg-osmoverse-700 px-5 py-1">
-                    <p title={address} className="subtitle1 text-osmoverse-300">
-                      {getShortAddress(address, { prefixLength: 10 })}
-                    </p>
-                    <button
-                      className="flex h-9 w-9 items-center justify-center"
-                      onClick={onCopyAddress}
-                    >
-                      {hasCopied ? (
-                        <div className="h-6 w-6">
-                          <CheckMarkIcon
+                    <div className="flex items-center gap-4 rounded-3xl bg-osmoverse-700 px-5 py-1">
+                      <p
+                        title={address}
+                        className="subtitle1 text-osmoverse-300"
+                      >
+                        {getShortAddress(address, { prefixLength: 10 })}
+                      </p>
+                      <button
+                        className="flex h-9 w-9 items-center justify-center"
+                        onClick={onCopyAddress}
+                      >
+                        {hasCopied ? (
+                          <div className="h-6 w-6">
+                            <CheckMarkIcon
+                              classes={{
+                                container:
+                                  "w-[24px] h-[24px] text-osmoverse-200",
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <CopyIcon
+                            isAnimated
                             classes={{
-                              container: "w-[24px] h-[24px] text-osmoverse-200",
+                              container: "text-osmoverse-200",
                             }}
                           />
-                        </div>
-                      ) : (
-                        <CopyIcon
-                          isAnimated
-                          classes={{
-                            container: "text-osmoverse-200",
-                          }}
-                        />
-                      )}
-                    </button>
-                  </div>
-                </DrawerPanel>
-              </DrawerContent>
-            </Drawer>
+                        )}
+                      </button>
+                    </div>
+                  </DrawerPanel>
+                </DrawerContent>
+              </Drawer>
 
-            <ActionButton
-              title="Log Out"
-              onClick={() => {
-                logEvent([EventName.ProfileModal.logOutClicked]);
-                props.onRequestClose();
-                account.disconnect();
-              }}
-              className="group hover:text-rust-500"
-            >
-              <LogOutIcon isAnimated />
-            </ActionButton>
+              <ActionButton
+                title="Log Out"
+                onClick={() => {
+                  logEvent([EventName.ProfileModal.logOutClicked]);
+                  props.onRequestClose();
+                  account.disconnect();
+                }}
+                className="group hover:text-rust-500"
+              >
+                <LogOutIcon isAnimated />
+              </ActionButton>
+            </div>
           </div>
         </div>
-      </div>
 
-      {transferConfig?.fiatRampsModal && (
-        <FiatRampsModal {...transferConfig.fiatRampsModal} />
-      )}
+        {transferConfig?.fiatRampsModal && (
+          <FiatRampsModal {...transferConfig.fiatRampsModal} />
+        )}
+      </div>
     </ModalBase>
   );
 });
