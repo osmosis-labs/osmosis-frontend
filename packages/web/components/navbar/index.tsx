@@ -5,11 +5,15 @@ import classNames from "classnames";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { Button } from "../buttons";
 import { useStore } from "../../stores";
-import { useAmplitudeAnalytics, useDisclosure } from "../../hooks";
+import {
+  useAmplitudeAnalytics,
+  useDisclosure,
+  useLocalStorageState,
+} from "../../hooks";
 import { useTranslation } from "react-multi-lang";
 import { MainLayoutMenu, CustomClasses } from "../types";
 import { MainMenu } from "../main-menu";
-import { EventName } from "../../config";
+import { EventName, Announcement } from "../../config";
 import { ProfileModal } from "../../modals/profile";
 import IconButton from "../buttons/icon-button";
 import { Icon } from "../assets";
@@ -63,6 +67,17 @@ export const NavBar: FunctionComponent<
   const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(
     account.bech32Address
   );
+
+  // announcement banner
+  const [_showBanner, setShowBanner] = useLocalStorageState(
+    Announcement ? Announcement?.localStorageKey ?? "" : "",
+    true
+  );
+
+  const showBanner =
+    _showBanner &&
+    Announcement &&
+    (!Announcement.pageRoute || router.pathname === Announcement.pageRoute);
 
   return (
     <>
@@ -154,10 +169,17 @@ export const NavBar: FunctionComponent<
       {/* Back-layer element to occupy space for the caller */}
       <div
         className={classNames(
-          "h-navbar bg-osmoverse-900 md:h-navbar-mobile",
+          "bg-osmoverse-900",
+          showBanner ? "h-[124px]" : "h-navbar md:h-navbar-mobile",
           backElementClassNames
         )}
       />
+      {showBanner && (
+        <AnnouncementBanner
+          {...Announcement!}
+          closeBanner={() => setShowBanner(false)}
+        />
+      )}
       <ProfileModal
         isOpen={isProfileOpen}
         onRequestClose={onCloseProfile}
@@ -239,3 +261,62 @@ const WalletInfo: FunctionComponent<
     </div>
   );
 });
+
+const AnnouncementBanner: FunctionComponent<
+  typeof Announcement & { closeBanner: () => void }
+> = ({
+  enTextOrLocalizationPath,
+  link,
+  isWarning,
+  persistent,
+  closeBanner,
+}) => {
+  const t = useTranslation();
+
+  return (
+    <div
+      className={classNames(
+        "fixed top-[72px] z-[60] float-right my-auto ml-sidebar flex w-[calc(100vw_-_12.875rem)] items-center px-8 py-[14px]",
+        {
+          "bg-gradient-negative": isWarning,
+          "bg-osmoverse-700": !isWarning,
+        }
+      )}
+    >
+      <div className="flex w-full place-content-center items-center gap-3 text-center text-subtitle1">
+        {t(enTextOrLocalizationPath)}{" "}
+        {link && (
+          <div className="flex cursor-pointer items-center gap-2">
+            <a
+              className="underline"
+              href={link.url}
+              rel="noreferrer"
+              target="_blank"
+            >
+              {t(link?.enTextOrLocalizationKey ?? "Click here to learn more")}
+            </a>
+            <Image
+              alt="visit link"
+              src="/icons/arrow-right-small.svg"
+              height={24}
+              width={24}
+            />
+          </div>
+        )}
+      </div>
+      {!persistent && !isWarning && (
+        <button
+          className="flex cursor-pointer items-center"
+          onClick={closeBanner}
+        >
+          <Image
+            alt="close banner"
+            src="/icons/close-small.svg"
+            height={24}
+            width={24}
+          />
+        </button>
+      )}
+    </div>
+  );
+};
