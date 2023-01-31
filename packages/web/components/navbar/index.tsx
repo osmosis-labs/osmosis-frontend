@@ -276,7 +276,7 @@ const AnnouncementBanner: FunctionComponent<
   return (
     <div
       className={classNames(
-        "fixed top-[72px] z-[60] float-right my-auto ml-sidebar flex w-[calc(100vw_-_12.875rem)] items-center px-8 py-[14px]",
+        "fixed top-[72px] z-[51] float-right my-auto ml-sidebar flex w-[calc(100vw_-_12.875rem)] items-center px-8 py-[14px] md:ml-0 md:w-full",
         {
           "bg-gradient-negative": isWarning,
           "bg-osmoverse-700": !isWarning,
