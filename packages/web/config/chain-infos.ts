@@ -2599,7 +2599,7 @@ const chainInfos = (
       ],
       features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
       explorerUrlToTx:
-        "https://cosmos.explorer.canto.io/transactions/{txHash}",
+        "https://evm.explorer.canto.io/tx/{txHash}",
     },
     {
       rpc: "https://rpc-quicksilver.keplr.app",
