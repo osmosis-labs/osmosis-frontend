@@ -1,19 +1,18 @@
 import { flexRender, Table } from "@tanstack/react-table";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { IS_FRONTIER } from "../../config";
 import useOnScreen from "../../hooks/use-on-screen";
-import { useRouter } from "next/router";
+import { Pool } from "./all-pools-table-set";
 
-type Props<T> = {
+type Props = {
   paginate: () => void;
-  table: Table<T>;
+  table: Table<Pool>;
 };
 
-const PaginatedTable = <T extends object>({ paginate, table }: Props<T>) => {
-  // Pagination
+const PaginatedTable = ({ paginate, table }: Props) => {
   const ref = useRef<HTMLDivElement | null>(null);
-  const router = useRouter();
   const entry = useOnScreen(ref, {});
   const shouldLoad = !!entry?.isIntersecting;
 
@@ -79,12 +78,21 @@ const PaginatedTable = <T extends object>({ paginate, table }: Props<T>) => {
           <tr
             key={row.id}
             className="h-20 transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none  hover:cursor-pointer hover:bg-osmoverse-800"
-            //@ts-ignore
-            onClick={() => router.push(`/pool/${row.original[0].poolId}`)}
           >
             {row.getVisibleCells().map((cell) => (
               <td key={cell.id}>
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                {row.original[0].poolId ? (
+                  <Link href={`/pool/${row.original[0].poolId}`}>
+                    <a className="focus:outline-none">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </a>
+                  </Link>
+                ) : (
+                  flexRender(cell.column.columnDef.cell, cell.getContext())
+                )}
               </td>
             ))}
           </tr>

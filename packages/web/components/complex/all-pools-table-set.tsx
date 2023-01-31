@@ -49,7 +49,7 @@ type PoolWithMetrics = {
   feesPercentage: string;
 };
 
-type Pool = [
+export type Pool = [
   {
     poolId: string;
     poolAssets: { coinImageUrl: string | undefined; coinDenom: string }[];
@@ -534,6 +534,8 @@ export const AllPoolsTableSet: FunctionComponent<{
                     setFilter((prevFilter) =>
                       prevFilter === f ? undefined : (f as Filter)
                     );
+                    // const newFilter = f === filter ? undefined : f;
+                    // router.push({ query: { filter: newFilter } });
                   }}
                 >
                   {display}
