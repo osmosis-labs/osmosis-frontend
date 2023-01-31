@@ -5,11 +5,7 @@ import classNames from "classnames";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { Button } from "../buttons";
 import { useStore } from "../../stores";
-import {
-  useAddressICNSName,
-  useAmplitudeAnalytics,
-  useDisclosure,
-} from "../../hooks";
+import { useAmplitudeAnalytics, useDisclosure } from "../../hooks";
 import { useTranslation } from "react-multi-lang";
 import { MainLayoutMenu, CustomClasses } from "../types";
 import { MainMenu } from "../main-menu";
@@ -31,6 +27,7 @@ export const NavBar: FunctionComponent<
   } & CustomClasses
 > = observer(({ title, className, backElementClassNames, menus }) => {
   const {
+    queriesExternalStore,
     navBarStore,
     chainStore: {
       osmosis: { chainId },
@@ -63,7 +60,9 @@ export const NavBar: FunctionComponent<
   }, []);
 
   const account = accountStore.getAccount(chainId);
-  const icnsQuery = useAddressICNSName(account?.bech32Address);
+  const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(
+    account.bech32Address
+  );
 
   return (
     <>
