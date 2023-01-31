@@ -2573,8 +2573,8 @@ const chainInfos = (
         "https://testnet-explorer.marsprotocol.io/transactions/{txHash}",
     },
     {
-      rpc: "http://164.90.154.41:26657",
-      rest: "http://164.90.154.41:1317",
+      rpc: "https://164.90.154.41:26657",
+      rest: "https://164.90.154.41:1317",
       chainId: "canto_7700-1",
       chainName: "Canto",
       bip44: {
