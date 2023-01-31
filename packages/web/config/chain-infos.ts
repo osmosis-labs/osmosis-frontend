@@ -680,7 +680,7 @@ const chainInfos = (
           coinMinimalDenom:
             "cw20:juno1u45shlp0q4gcckvsj06ss4xuvsu0z24a0d0vr9ce6r24pht4e5xq7q995n:HOPERS",
           coinDecimals: 6,
-          //coinGeckoId: "pool:hopers",
+          coinGeckoId: "pool:hopers",
           coinImageUrl: "/tokens/hopers.png",
         },
       ],
@@ -2589,6 +2589,42 @@ const chainInfos = (
       features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
       explorerUrlToTx:
         "https://cosmos.explorer.canto.io/transactions/{txHash}",
+    },
+    {
+      rpc: "https://rpc-quicksilver.keplr.app",
+      rest: "https://lcd-quicksilver.keplr.app",
+      chainId: "quicksilver-2",
+      chainName: "Quicksilver",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("quick"),
+      currencies: [
+        {
+          coinDenom: "QCK",
+          coinMinimalDenom: "uqck",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/qck.svg",
+          coinGeckoId: "pool:uqck",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            "low": 0.0001,
+            "average": 0.0001,
+            "high": 0.00025
+          },
+        },
+        {
+          coinDenom: "qSTARS",
+          coinMinimalDenom: "uqstars",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/qstars.svg",
+          coinGeckoId: "pool:uqstars",
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx:
+        "https://www.mintscan.io/quicksilver/txs/{txHash}",
     },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
