@@ -10,16 +10,9 @@ import {
 import classNames from "classnames";
 import EventEmitter from "eventemitter3";
 import { observer } from "mobx-react-lite";
-import {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useRouter } from "next/router";
+import { FunctionComponent, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-multi-lang";
-import { POOLS_PER_PAGE } from ".";
 import { EventName } from "../../config";
 import { useAmplitudeAnalytics, useFilteredData } from "../../hooks";
 import { useStore } from "../../stores";
@@ -89,17 +82,11 @@ const Filters: Record<Filter, string> = {
 };
 
 export const AllPoolsTableSet: FunctionComponent<{
-  tableSet?: "incentivized-pools" | "all-pools";
   quickAddLiquidity: (poolId: string) => void;
   quickRemoveLiquidity: (poolId: string) => void;
   quickLockTokens: (poolId: string) => void;
 }> = observer(
-  ({
-    tableSet = "incentivized-pools",
-    quickAddLiquidity,
-    quickRemoveLiquidity,
-    quickLockTokens,
-  }) => {
+  ({ quickAddLiquidity, quickRemoveLiquidity, quickLockTokens }) => {
     const {
       chainStore,
       queriesExternalStore,
@@ -112,40 +99,9 @@ export const AllPoolsTableSet: FunctionComponent<{
 
     const { logEvent } = useAmplitudeAnalytics();
 
-    const [filter, setFilter] = useState<Filter>();
-    const [activeOptionId, setActiveOptionId] = useState(tableSet);
+    const router = useRouter();
+    const filter = router.query.filter;
     const fetchedRemainingPoolsRef = useRef(false);
-
-    const selectOption = (optionId: string) => {
-      if (optionId === "incentivized-pools" || optionId === "all-pools") {
-        setActiveOptionId(optionId);
-
-        if (optionId === "all-pools" && !fetchedRemainingPoolsRef.current) {
-          queriesOsmosis.queryGammPools.fetchRemainingPools();
-          fetchedRemainingPoolsRef.current = true;
-        }
-      }
-    };
-    const [isPoolTvlFiltered, _setIsPoolTvlFiltered] = useState(false);
-    const tvlFilterLabel = t("pools.allPools.displayLowLiquidity", {
-      value: new PricePretty(
-        priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!,
-        TVL_FILTER_THRESHOLD
-      ).toString(),
-    });
-    const setIsPoolTvlFiltered = useCallback(
-      (isFiltered: boolean) => {
-        logEvent([
-          EventName.Pools.allPoolsListFiltered,
-          {
-            filteredBy: tvlFilterLabel,
-            isFilterOn: isFiltered,
-          },
-        ]);
-        _setIsPoolTvlFiltered(isFiltered);
-      },
-      [logEvent, tvlFilterLabel]
-    );
 
     const { chainId } = chainStore.osmosis;
     const queryCosmos = queriesStore.get(chainId).cosmos;
@@ -304,19 +260,9 @@ export const AllPoolsTableSet: FunctionComponent<{
 
     const tvlFilteredPools = useMemo(() => {
       return [...allPoolsWithMetrics, ...externalIncentivizedPoolsWithMetrics]
-        .filter((p) =>
-          isPoolTvlFiltered
-            ? p.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
-            : true
-        )
+        .filter((p) => p.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD)))
         .filter((p) => (filter ? p.pool.type === filter : true));
-    }, [
-      allPoolsWithMetrics,
-      externalIncentivizedPoolsWithMetrics,
-      isPoolTvlFiltered,
-      filter,
-      queriesExternalStore.queryGammPoolFeeMetrics.response,
-    ]);
+    }, [allPoolsWithMetrics, externalIncentivizedPoolsWithMetrics, filter]);
 
     const [query, _setQuery, filteredPools] = useFilteredData(
       tvlFilteredPools,
@@ -394,40 +340,6 @@ export const AllPoolsTableSet: FunctionComponent<{
         quickRemoveLiquidity,
       ]
     );
-
-    // auto expand searchable pools set when user is actively searching
-    const didAutoSwitchActiveSet = useRef(false);
-    const didAutoSwitchTVLFilter = useRef(false);
-    useEffect(() => {
-      // first expand to all pools, then to low TVL pools
-      // remember if/what we switched for user
-      if (query !== "" && filteredPools.length < POOLS_PER_PAGE) {
-        if (activeOptionId === "all-pools") {
-          if (!isPoolTvlFiltered) didAutoSwitchTVLFilter.current = true;
-          setIsPoolTvlFiltered(true);
-        } else {
-          if (activeOptionId === "incentivized-pools")
-            didAutoSwitchActiveSet.current = true;
-          selectOption("all-pools");
-        }
-      }
-
-      // reset filter states when query cleared only if auto switched
-      if (query === "" && didAutoSwitchActiveSet.current) {
-        selectOption("incentivized-pools");
-        didAutoSwitchActiveSet.current = false;
-      }
-      if (query === "" && didAutoSwitchTVLFilter.current) {
-        setIsPoolTvlFiltered(false);
-        didAutoSwitchTVLFilter.current = false;
-      }
-    }, [
-      query,
-      filteredPools,
-      isPoolTvlFiltered,
-      activeOptionId,
-      setIsPoolTvlFiltered,
-    ]);
 
     const columnHelper = createColumnHelper<Pool>();
 
@@ -531,11 +443,11 @@ export const AllPoolsTableSet: FunctionComponent<{
                   )}
                   key={f}
                   onClick={() => {
-                    setFilter((prevFilter) =>
-                      prevFilter === f ? undefined : (f as Filter)
-                    );
-                    // const newFilter = f === filter ? undefined : f;
-                    // router.push({ query: { filter: newFilter } });
+                    if (f === filter) {
+                      router.push("/pools");
+                    } else {
+                      router.push({ query: { filter: f } });
+                    }
                   }}
                 >
                   {display}
