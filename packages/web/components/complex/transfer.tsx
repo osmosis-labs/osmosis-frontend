@@ -4,7 +4,7 @@ import { CoinPretty } from "@keplr-wallet/unit";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { WalletDisplay } from "../../integrations/wallets";
 import { truncateEthAddress } from "../../integrations/ethereum/metamask-utils";
-import { useWindowSize } from "../../hooks";
+import { useAddressICNSName, useWindowSize } from "../../hooks";
 import { BridgeAnimation } from "../animation/bridge";
 import { SwitchWalletButton } from "../buttons/switch-wallet";
 import { GradientView } from "../assets/gradient-view";
@@ -13,6 +13,7 @@ import { Button } from "../buttons";
 import { CheckBox } from "../control";
 import { Disableable, InputProps, LoadingProps } from "../types";
 import { useTranslation } from "react-multi-lang";
+import { formatICNSName } from "../../utils/string";
 
 export type TransferProps = {
   isWithdraw: boolean;
@@ -95,6 +96,14 @@ export const Transfer: FunctionComponent<TransferProps> = ({
       ? 14
       : 24;
 
+  const toAddressToDisplay =
+    editWithdrawAddrConfig && editWithdrawAddrConfig.customAddress !== ""
+      ? editWithdrawAddrConfig.customAddress
+      : to.address;
+  const toAddressIcnsName = formatICNSName(
+    useAddressICNSName(toAddressToDisplay)?.primaryName
+  );
+
   return (
     <div className="flex flex-col gap-11 overflow-x-auto">
       <BridgeAnimation
@@ -153,13 +162,8 @@ export const Transfer: FunctionComponent<TransferProps> = ({
               !panelDisabled &&
               (!to.address.startsWith("0x") || to.address.length === 0 ? (
                 isOsmosisAccountLoaded ? (
-                  Bech32Address.shortenAddress(
-                    editWithdrawAddrConfig &&
-                      editWithdrawAddrConfig.customAddress !== ""
-                      ? editWithdrawAddrConfig.customAddress
-                      : to.address,
-                    maxToChars
-                  )
+                  toAddressIcnsName ??
+                  Bech32Address.shortenAddress(toAddressToDisplay, maxToChars)
                 ) : (
                   <i>{t("connectWallet")}</i>
                 )

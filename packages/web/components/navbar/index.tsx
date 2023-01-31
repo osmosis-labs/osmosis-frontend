@@ -5,7 +5,11 @@ import classNames from "classnames";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { Button } from "../buttons";
 import { useStore } from "../../stores";
-import { useAmplitudeAnalytics, useDisclosure } from "../../hooks";
+import {
+  useAddressICNSName,
+  useAmplitudeAnalytics,
+  useDisclosure,
+} from "../../hooks";
 import { useTranslation } from "react-multi-lang";
 import { MainLayoutMenu, CustomClasses } from "../types";
 import { MainMenu } from "../main-menu";
@@ -60,9 +64,7 @@ export const NavBar: FunctionComponent<
   }, []);
 
   const account = accountStore.getAccount(chainId);
-  const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(
-    account.bech32Address
-  );
+  const icnsQuery = useAddressICNSName(account?.bech32Address);
 
   return (
     <>
@@ -148,7 +150,11 @@ export const NavBar: FunctionComponent<
             isOpen={isSettingsOpen}
             onRequestClose={onCloseSettings}
           />
-          <WalletInfo className="md:hidden" onOpenProfile={onOpenProfile} />
+          <WalletInfo
+            className="md:hidden"
+            icnsName={icnsQuery?.primaryName}
+            onOpenProfile={onOpenProfile}
+          />
         </div>
       </div>
       {/* Back-layer element to occupy space for the caller */}

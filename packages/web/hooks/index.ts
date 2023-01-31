@@ -9,3 +9,4 @@ export * from "./use-boolean-with-window-event";
 export * from "./use-ibc-transfer";
 export * from "./use-amplitude-analytics";
 export * from "./use-disclosure";
+export * from "./use-address-icns-name";
