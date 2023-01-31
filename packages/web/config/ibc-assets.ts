@@ -1399,6 +1399,12 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "aplanq",
   },
+  {
+    counterpartyChainId: "quicksilver-2",
+    sourceChannelId: "channel-522",
+    destChannelId: "channel-2",
+    coinMinimalDenom: "uqstars",
+  },
   { // WYND
     counterpartyChainId: "juno-1",
     sourceChannelId: "channel-169",

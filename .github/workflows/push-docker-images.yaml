@@ -45,6 +45,10 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Get current date
+        run:  |
+          echo "DATE=$(date +%s)" >> $GITHUB_ENV
       - 
         name: Build and push (main)
         uses: docker/build-push-action@v3
@@ -55,7 +59,7 @@ jobs:
           platforms: linux/amd64
           tags: |
             ${{ env.FRONTEND_DOCKER_REPOSITORY }}:${{ env.SHA }}
-            ${{ env.FRONTEND_DOCKER_REPOSITORY }}:${{ env.SHA }}-$(date +%s)
+            ${{ env.FRONTEND_DOCKER_REPOSITORY }}:${{ env.SHA }}-${{ env.DATE }}
             ${{ env.FRONTEND_DOCKER_REPOSITORY }}:latest
       -
         name: Build and push (frontier)
@@ -67,7 +71,7 @@ jobs:
           platforms: linux/amd64
           tags: |
             ${{ env.FRONTIER_DOCKER_REPOSITORY }}:${{ env.SHA }}
-            ${{ env.FRONTIER_DOCKER_REPOSITORY }}:${{ env.SHA }}-$(date +%s)
+            ${{ env.FRONTIER_DOCKER_REPOSITORY }}:${{ env.SHA }}-${{ env.DATE }}
             ${{ env.FRONTIER_DOCKER_REPOSITORY }}:latest
       -
         name: Build and push (testnet)
@@ -79,5 +83,5 @@ jobs:
           platforms: linux/amd64
           tags: |
             ${{ env.TESTNET_DOCKER_REPOSITORY }}:${{ env.SHA }}
-            ${{ env.TESTNET_DOCKER_REPOSITORY }}:${{ env.SHA }}-$(date +%s)
+            ${{ env.TESTNET_DOCKER_REPOSITORY }}:${{ env.SHA }}-${{ env.DATE }}
             ${{ env.TESTNET_DOCKER_REPOSITORY }}:latest
