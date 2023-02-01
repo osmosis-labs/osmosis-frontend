@@ -2573,8 +2573,8 @@ const chainInfos = (
         "https://testnet-explorer.marsprotocol.io/transactions/{txHash}",
     },
     {
-      rpc: "https://canto-rpc.polkachu.com",
-      rest: "https://canto-api.polkachu.com",
+      rpc: "https://rpc.canto.nodestake.top",
+      rest: "https://api.canto.nodestake.top",
       chainId: "canto_7700-1",
       chainName: "Canto",
       bip44: {
@@ -2591,15 +2591,15 @@ const chainInfos = (
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
-            low: 125000000000,
-            average: 250000000000,
-            high: 375000000000,
+            low: 1000000000000,
+            average: 1500000000000,
+            high: 2000000000000,
           },
         },
       ],
       features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
       explorerUrlToTx:
-        "https://cosmos.explorer.canto.io/transactions/{txHash}",
+        "https://cosmos-explorers.neobase.one/canto/tx/{txHash}",
     },
     {
       rpc: "https://rpc-quicksilver.keplr.app",
