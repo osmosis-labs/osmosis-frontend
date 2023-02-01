@@ -233,38 +233,6 @@ export const IBCAssetInfos: (IBCAsset & {
     counterpartyChainId: "axelar-dojo-1",
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
-    coinMinimalDenom: "polygon-uusdc",
-    sourceChainNameOverride: "Polygon",
-    isVerified: false,
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChains: [
-        AxelarSourceChainConfigs.polygonusdc.polygon,
-      ],
-    }
-  },
-  {
-    counterpartyChainId: "axelar-dojo-1",
-    sourceChannelId: "channel-208",
-    destChannelId: "channel-3",
-    coinMinimalDenom: "avalanche-uusdc",
-    sourceChainNameOverride: "Avalanche",
-    isVerified: false,
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChains: [
-        AxelarSourceChainConfigs.avalancheusdc.avalanche,
-      ],
-    }
-  },
-  {
-    counterpartyChainId: "axelar-dojo-1",
-    sourceChannelId: "channel-208",
-    destChannelId: "channel-3",
     coinMinimalDenom: "wbnb-wei",
     sourceChainNameOverride: "Binance Smart Chain",
     isVerified: true,
@@ -658,6 +626,38 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-3",
     coinMinimalDenom: "uaxl",
     isVerified: true,
+  },
+  {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "polygon-uusdc",
+    sourceChainNameOverride: "Polygon",
+    isVerified: false,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [
+        AxelarSourceChainConfigs.polygonusdc.polygon,
+      ],
+    }
+  },
+  {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "avalanche-uusdc",
+    sourceChainNameOverride: "Avalanche",
+    isVerified: false,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [
+        AxelarSourceChainConfigs.avalancheusdc.avalanche,
+      ],
+    }
   },
   {
     counterpartyChainId: "kaiyo-1",
