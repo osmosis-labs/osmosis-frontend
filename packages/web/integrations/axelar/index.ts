@@ -1,3 +1,4 @@
+export * from "./config";
 export * from "./queries";
 export * from "./source-chain-config";
 export * from "./transfer-status-source";
