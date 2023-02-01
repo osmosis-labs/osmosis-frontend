@@ -59,12 +59,12 @@ export const TransferAssetSelectModal: FunctionComponent<
 
   // set network-select to selected token's defualt
   useEffect(() => {
-    const { sourceChains, defaultSourceChainId } = tokens.find(
+    const { sourceChainTokens, defaultSourceChainId } = tokens.find(
       ({ token }) => token.currency.coinDenom === selectedTokenDenom
-    )?.originBridgeInfo || { sourceChains: [] };
+    )?.originBridgeInfo || { sourceChainTokens: [] };
     setSelectedSourceChainKey(
-      sourceChains.length > 0
-        ? defaultSourceChainId ?? sourceChains[0].id
+      sourceChainTokens.length > 0
+        ? defaultSourceChainId ?? sourceChainTokens[0].id
         : null
     );
   }, [tokens, selectedTokenDenom, setSelectedSourceChainKey]);
@@ -75,7 +75,7 @@ export const TransferAssetSelectModal: FunctionComponent<
   );
   const selectedNetwork = useMemo(() => {
     if (selectedToken?.originBridgeInfo) {
-      return selectedToken.originBridgeInfo.sourceChains.find(
+      return selectedToken.originBridgeInfo.sourceChainTokens.find(
         ({ id }) => id === selectedSourceChainKey
       );
     }
@@ -136,19 +136,19 @@ export const TransferAssetSelectModal: FunctionComponent<
               className={classNames("flex items-center gap-2", {
                 "cursor-pointer":
                   selectedToken?.originBridgeInfo &&
-                  selectedToken.originBridgeInfo.sourceChains.length > 1,
+                  selectedToken.originBridgeInfo.sourceChainTokens.length > 1,
               })}
               onClick={() => {
                 if (
                   selectedToken?.originBridgeInfo &&
-                  selectedToken.originBridgeInfo.sourceChains.length > 1
+                  selectedToken.originBridgeInfo.sourceChainTokens.length > 1
                 )
                   setSourceChainDropdownOpen(!isSourceChainDropdownOpen);
               }}
             >
               <Network {...selectedNetwork} />
               {selectedToken?.originBridgeInfo &&
-                selectedToken.originBridgeInfo.sourceChains.length > 1 && (
+                selectedToken.originBridgeInfo.sourceChainTokens.length > 1 && (
                   <div
                     className={classNames("flex items-center transition", {
                       "rotate-180": isSourceChainDropdownOpen,
@@ -168,7 +168,7 @@ export const TransferAssetSelectModal: FunctionComponent<
                 style={{ borderTopStyle: "dashed" }}
                 className="absolute top-[100%] -right-[1px] z-50 select-none rounded-b-2xl border border-osmoverse-700 bg-osmoverse-800"
               >
-                {selectedToken.originBridgeInfo.sourceChains
+                {selectedToken.originBridgeInfo.sourceChainTokens
                   .filter(({ id }) => id !== selectedNetwork.id)
                   .map((sourceChain, index, scArr) => (
                     <div

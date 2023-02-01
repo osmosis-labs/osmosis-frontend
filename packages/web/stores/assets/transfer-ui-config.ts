@@ -120,7 +120,7 @@ export class ObservableTransferUIConfig {
         const bridgedBalance = this.assetsStore.ibcBalances.find(
           (bal) =>
             typeof bal.originBridgeInfo !== "undefined" &&
-            bal.originBridgeInfo.sourceChains
+            bal.originBridgeInfo.sourceChainTokens
               .map((sc) => sc.id)
               .flat()
               .includes(sourceChainKey) &&
@@ -174,7 +174,7 @@ export class ObservableTransferUIConfig {
       const sourceChainKey: SourceChainKey =
         (await this.kvStore.get(makeAssetSrcNetworkPreferredKey(coinDenom))) ||
         balance.originBridgeInfo?.defaultSourceChainId ||
-        balance.originBridgeInfo.sourceChains[0].id;
+        balance.originBridgeInfo.sourceChainTokens[0].id;
 
       // bridge integration
       const applicableWallets = this._ethClientWallets.filter(({ key }) =>

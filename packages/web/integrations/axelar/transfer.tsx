@@ -57,7 +57,7 @@ const AxelarTransfer: FunctionComponent<
     selectedSourceChainKey,
     onRequestClose,
     onRequestSwitchWallet,
-    sourceChains,
+    sourceChainTokens,
     isTestNet = false,
     wrapAssetConfig,
     connectCosmosWalletButtonOverride,
@@ -100,7 +100,7 @@ const AxelarTransfer: FunctionComponent<
       getKeyByValue(AxelarChainIds_SourceChainMap, selectedSourceChainKey) ??
       selectedSourceChainKey;
 
-    const sourceChainConfig = sourceChains.find(
+    const sourceChainConfig = sourceChainTokens.find(
       ({ id }) => id === selectedSourceChainKey
     );
 
