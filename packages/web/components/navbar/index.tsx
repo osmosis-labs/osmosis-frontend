@@ -27,8 +27,8 @@ export const NavBar: FunctionComponent<
   } & CustomClasses
 > = observer(({ title, className, backElementClassNames, menus }) => {
   const {
-    navBarStore,
     queriesExternalStore,
+    navBarStore,
     chainStore: {
       osmosis: { chainId },
     },
@@ -148,7 +148,11 @@ export const NavBar: FunctionComponent<
             isOpen={isSettingsOpen}
             onRequestClose={onCloseSettings}
           />
-          <WalletInfo className="md:hidden" onOpenProfile={onOpenProfile} />
+          <WalletInfo
+            className="md:hidden"
+            icnsName={icnsQuery?.primaryName}
+            onOpenProfile={onOpenProfile}
+          />
         </div>
       </div>
       {/* Back-layer element to occupy space for the caller */}
