@@ -1,12 +1,12 @@
-import { TokenSourceChainConfig } from "./types";
+import { SourceChainConfig } from "./types";
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
 /** https://axelarscan.io/assets
  *  Ensure that users bridge sufficient amounts from EthMainnet=>NonEthEvm via Axelar before enabling.
  */
-export const TokenSourceChainConfigs: {
-  [asset: string]: { [chain: string]: TokenSourceChainConfig };
+export const SourceChainConfigs: {
+  [asset: string]: { [chain: string]: SourceChainConfig };
 } = {
   usdc: {
     ethereum: {
@@ -201,9 +201,7 @@ export const TokenSourceChainConfigs: {
   },
   wavax: {
     avalanche: {
-      id: IS_TESTNET
-        ? ("Avalanche Fuji Testnet" as const)
-        : ("Avalanche" as const),
+      id: IS_TESTNET ? ("Avalanche Fuji Testnet" as const) : ("Avalanche" as const),
       erc20ContractAddress: IS_TESTNET
         ? "0xd00ae08403B9bbb9124bB305C09058E32C39A48c"
         : "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
