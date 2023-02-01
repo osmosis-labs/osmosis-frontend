@@ -1,9 +1,9 @@
 import { flexRender, Row, Table } from "@tanstack/react-table";
 import Image from "next/image";
 import { useRef } from "react";
-import { useVirtual } from "react-virtual";
 import { IS_FRONTIER } from "../../config";
 import { Pool } from "./all-pools-table-set";
+import { useVirtualizer } from "@tanstack/react-virtual";
 
 type Props = {
   paginate: () => void;
@@ -14,12 +14,12 @@ const PaginatedTable = ({ table }: Props) => {
   const parentRef = useRef<HTMLDivElement | null>(null);
 
   const { rows } = table.getRowModel();
-  const rowVirtualizer = useVirtual({
-    parentRef,
-    size: rows.length,
+  const rowVirtualizer = useVirtualizer({
+    count: 10000,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 35,
     overscan: 5,
   });
-  const { virtualItems: virtualRows } = rowVirtualizer;
 
   return (
     <div
@@ -84,7 +84,7 @@ const PaginatedTable = ({ table }: Props) => {
           ))}
         </thead>
         <tbody>
-          {virtualRows.map((virtualRow) => {
+          {rowVirtualizer.getVirtualItems().map((virtualRow) => {
             const row = rows[virtualRow.index] as Row<Pool>;
             return (
               <tr key={row.id}>
