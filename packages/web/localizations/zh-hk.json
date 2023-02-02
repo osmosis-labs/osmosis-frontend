@@ -7,8 +7,8 @@
   },
   "app": {
     "banner": {
-      "title": "你睇緊所有 permissionless 資產",
-      "linkText": "你睇緊所有 permissionless 資產 <link>按此翻去主應用程式</link>."
+      "title": "你睇緊所有 permissionless 資產.",
+      "linkText": "按此翻去主應用程式"
     }
   },
   "swap": {
