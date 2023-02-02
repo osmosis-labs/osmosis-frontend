@@ -628,6 +628,38 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "polygon-uusdc",
+    sourceChainNameOverride: "Polygon",
+    isVerified: false,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [
+        AxelarSourceChainConfigs.polygonusdc.polygon,
+      ],
+    }
+  },
+  {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "avalanche-uusdc",
+    sourceChainNameOverride: "Avalanche",
+    isVerified: false,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [
+        AxelarSourceChainConfigs.avalancheusdc.avalanche,
+      ],
+    }
+  },
+  {
     counterpartyChainId: "kaiyo-1",
     sourceChannelId: "channel-259",
     destChannelId: "channel-3",
