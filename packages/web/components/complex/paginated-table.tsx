@@ -1,9 +1,12 @@
 import { flexRender, Row, Table } from "@tanstack/react-table";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import Image from "next/image";
+import Link from "next/link";
 import { useRef } from "react";
 import { IS_FRONTIER } from "../../config";
 import { Pool } from "./all-pools-table-set";
-import { useVirtualizer } from "@tanstack/react-virtual";
+
+const SIZE = 80;
 
 type Props = {
   paginate: () => void;
@@ -17,121 +20,22 @@ const PaginatedTable = ({ table }: Props) => {
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 80,
+    estimateSize: () => SIZE,
     overscan: 5,
   });
 
-  // return (
-  //   <div
-  //     ref={parentRef}
-  //     style={{
-  //       height: "400px",
-  //     }}
-  //     className="my-5 w-full overflow-auto"
-  //   >
-  //     <table className="w-full">
-  //       <thead>
-  //         {table.getHeaderGroups().map((headerGroup) => (
-  //           <tr key={headerGroup.id}>
-  //             {headerGroup.headers.map((header) => (
-  //               <th
-  //                 key={header.id}
-  //                 colSpan={header.colSpan}
-  //                 style={{ width: header.getSize() }}
-  //               >
-  //                 <div
-  //                   {...{
-  //                     className: header.column.getCanSort()
-  //                       ? "cursor-pointer select-none"
-  //                       : "",
-  //                     onClick: header.column.getToggleSortingHandler(),
-  //                   }}
-  //                 >
-  //                   {flexRender(
-  //                     header.column.columnDef.header,
-  //                     header.getContext()
-  //                   )}
-  //                   {{
-  //                     asc: (
-  //                       <Image
-  //                         alt="ascending"
-  //                         src={
-  //                           IS_FRONTIER
-  //                             ? "/icons/sort-up-white.svg"
-  //                             : "/icons/sort-up.svg"
-  //                         }
-  //                         height={16}
-  //                         width={16}
-  //                       />
-  //                     ),
-  //                     desc: (
-  //                       <Image
-  //                         alt="descending"
-  //                         src={
-  //                           IS_FRONTIER
-  //                             ? "/icons/sort-down-white.svg"
-  //                             : "/icons/sort-down.svg"
-  //                         }
-  //                         height={16}
-  //                         width={16}
-  //                       />
-  //                     ),
-  //                   }[header.column.getIsSorted() as string] ?? null}
-  //                 </div>
-  //               </th>
-  //             ))}
-  //           </tr>
-  //         ))}
-  //       </thead>
-  //       <tbody>
-  // {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-  //   const row = rows[virtualRow.index] as Row<Pool>;
-  //   return (
-  //     <tr key={row.id}>
-  //       {row.getVisibleCells().map((cell) => {
-  //         return (
-  //           <td key={cell.id}>
-  //             {flexRender(
-  //               cell.column.columnDef.cell,
-  //               cell.getContext()
-  //             )}
-  //           </td>
-  //         );
-  //       })}
-  //     </tr>
-  //   );
-  // })}
-  //       </tbody>
-  //     </table>
-  //   </div>
-  // );
   return (
     <>
-      <div
-        ref={parentRef}
-        style={{
-          height: `200px`,
-          width: "100%",
-          overflow: "auto",
-        }}
-      >
+      <div ref={parentRef} className="my-5 h-[400px] w-full overflow-auto">
         <div
-          style={{
-            height: `${rowVirtualizer.getTotalSize()}px`,
-            width: "100%",
-            position: "relative",
-          }}
+          className={`h-[${rowVirtualizer.getTotalSize()}px] relative w-full`}
         >
           <table className="w-full">
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      style={{ width: header.getSize() }}
-                    >
+                    <th key={header.id} colSpan={header.colSpan}>
                       <div
                         {...{
                           className: header.column.getCanSort()
@@ -179,49 +83,39 @@ const PaginatedTable = ({ table }: Props) => {
             <tbody>
               {rowVirtualizer.getVirtualItems().map((virtualRow) => {
                 const row = rows[virtualRow.index] as Row<Pool>;
-                if (!row) return <></>;
                 return (
-                  <tr
-                    key={row.id}
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      height: `${virtualRow.size}px`,
-                      transform: `translateY(${virtualRow.start}px)`,
-                    }}
+                  <Link
+                    href={`/pool/${row.original[0].poolId}`}
+                    key={virtualRow.index}
                   >
-                    {row.getVisibleCells().map((cell) => {
-                      return (
-                        <td key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </td>
-                      );
-                    })}
-                  </tr>
+                    <a className="focus:outline-none">
+                      <tr
+                        style={{
+                          position: "absolute",
+                          top: SIZE,
+                          left: 0,
+                          width: "100%",
+                          height: `${virtualRow.size}px`,
+                          transform: `translateY(${virtualRow.start}px)`,
+                        }}
+                      >
+                        {row.getVisibleCells().map((cell) => {
+                          return (
+                            <td key={cell.id}>
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    </a>
+                  </Link>
                 );
               })}
             </tbody>
           </table>
-          {/* {rowVirtualizer.getVirtualItems().map((virtualRow) => (
-            <div
-              key={virtualRow.index}
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: `${virtualRow.size}px`,
-                transform: `translateY(${virtualRow.start}px)`,
-              }}
-            >
-              Row {virtualRow.index}
-            </div>
-          ))} */}
         </div>
       </div>
     </>
