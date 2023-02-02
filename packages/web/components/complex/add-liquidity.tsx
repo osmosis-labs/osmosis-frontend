@@ -236,7 +236,7 @@ export const AddLiquidity: FunctionComponent<
                     <>
                       {
                         exponent !== Math.round(exponent) || exponent === 0
-                          ? factorAsNumber // Display as a number if it's not a power of 10 or if it's 0
+                          ? factorAsNumber // Display as a number if it's not a power of 10 or if the exponent is 0
                           : `10^${exponent}` // Otherwise, display as a power of 10 e.g. 10^3
                       }
                       {isNotLast ? ":" : ""}
