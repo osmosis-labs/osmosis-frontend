@@ -221,7 +221,7 @@ export const AddLiquidity: FunctionComponent<
               {t("addLiquidity.scalingFactorControllerWarning_second")}{" "}
               <Tooltip
                 content={t("addLiquidity.scalingFactorInformation")}
-                className="!inline !align-baseline text-wosmongton-300 underline"
+                className="!inline !align-baseline underline"
               >
                 <span>{t("addLiquidity.scalingFactor")}</span>
               </Tooltip>{" "}
@@ -244,7 +244,15 @@ export const AddLiquidity: FunctionComponent<
                   );
                 }
               )}
-              .
+              .{" "}
+              <a
+                href="https://docs.osmosis.zone/overview/terminology/#scaling-factor"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-wosmongton-300 underline"
+              >
+                {t("pool.learnMore")}
+              </a>
             </p>
           </div>
         )}

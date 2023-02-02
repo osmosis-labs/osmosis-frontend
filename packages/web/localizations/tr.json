@@ -355,8 +355,7 @@
     "vote": "Oy Kullan",
     "info": "Bilgi",
     "signOut": "Bağlantıyı Kes",
-    "help": "Destek Ekibinden Yardım İste",
-    "learnMoreFrontier": "<name>Osmosis Frontier</name><br/>Hakkında<br2/>Daha Fazla Bilgi"
+    "help": "Destek Ekibinden Yardım İste"
   },
   "settings": {
     "title": "Genel Ayarlar",

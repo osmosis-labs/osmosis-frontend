@@ -355,8 +355,7 @@
     "vote": "Voter",
     "info": "Info",
     "signOut": "Déconnecter",
-    "help": "Obtenir de l'aide",
-    "learnMoreFrontier": "En apprendre<br/>plus sur<br2/> <name>Osmosis Frontier</name>"
+    "help": "Obtenir de l'aide"
   },
   "settings": {
     "title": "Paramètres globaux",

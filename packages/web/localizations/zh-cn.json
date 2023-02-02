@@ -354,8 +354,7 @@
     "vote": "投票",
     "info": "统计数据",
     "signOut": "断开连接",
-    "help": "获取 Support Lab 帮助",
-    "learnMoreFrontier": "了解更多<br/>关于 <br2/> <name>Osmosis Frontier</name>"
+    "help": "获取 Support Lab 帮助"
   },
   "settings": {
     "title": "全局设置",

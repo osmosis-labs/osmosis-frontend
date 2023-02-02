@@ -355,8 +355,7 @@
     "vote": "투표",
     "info": "정보",
     "signOut": "연결해제",
-    "help": "연구실 고객센터",
-    "learnMoreFrontier": "<name>오스모시스 프론티어</name> 에 대해서 <br/> 더 자세히 <br2/> 알아보기"
+    "help": "연구실 고객센터"
   },
   "settings": {
     "title": "전역 설정",

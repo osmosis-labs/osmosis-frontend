@@ -355,8 +355,7 @@
     "vote": "Vote",
     "info": "Stats",
     "signOut": "Disconnect",
-    "help": "Get Support Lab Help",
-    "learnMoreFrontier": "Learn More<br/>About the <br2/> <name>Osmosis Frontier</name>"
+    "help": "Get Support Lab Help"
   },
   "settings": {
     "title": "Global settings",
