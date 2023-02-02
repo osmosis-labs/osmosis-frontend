@@ -2566,6 +2566,7 @@ const chainInfos = (
           coinDenom: "MARS",
           coinMinimalDenom: "umars",
           coinDecimals: 6,
+          coinGeckoId: "pool:mars",
           coinImageUrl: "/tokens/mars.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
