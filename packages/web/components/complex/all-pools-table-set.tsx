@@ -21,7 +21,7 @@ import { SearchBox } from "../input";
 import {
   MetricLoaderCell,
   PoolCompositionCell,
-  PoolQuickActionCell,
+  // PoolQuickActionCell,
 } from "../table/cells";
 import PaginatedTable from "./paginated-table";
 
