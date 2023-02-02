@@ -40,7 +40,7 @@ export const PoolAssetsIcon: FunctionComponent<Props> = ({
           >
             {index > 2 ? (
               <div className="body1 pl-4 text-white-mid">{`+${
-                assets.length - 1
+                assets.length - 3
               }`}</div>
             ) : coinImageUrl ? (
               <Image
