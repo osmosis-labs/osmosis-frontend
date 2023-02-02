@@ -1,6 +1,7 @@
 import { flexRender, Row, Table } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import Image from "next/image";
+import Link from "next/link";
 import { useRef } from "react";
 import { IS_FRONTIER } from "../../config";
 import { Pool } from "./all-pools-table-set";
@@ -33,7 +34,7 @@ const PaginatedTable = ({ table }: Props) => {
   return (
     <div className="my-5 h-[500px] overflow-auto" ref={tableContainerRef}>
       <table className="w-full">
-        <thead>
+        <thead className="sticky top-0 z-20 m-0">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
@@ -103,10 +104,17 @@ const PaginatedTable = ({ table }: Props) => {
                 {row.getVisibleCells().map((cell) => {
                   return (
                     <td key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      <Link
+                        href={`/pool/${row.original[0].poolId}`}
+                        key={virtualRow.index}
+                      >
+                        <a className="focus:outline-none">
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </a>
+                      </Link>
                     </td>
                   );
                 })}
