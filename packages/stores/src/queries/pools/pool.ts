@@ -156,6 +156,8 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   get stableSwapInfo() {
     if (this.pool instanceof StablePool) {
       return {
+        scalingFactorController: this.pool.raw.scaling_factor_controller,
+        scalingFactor: this.pool.raw.scaling_factors,
         assets: this.pool.poolAssets.map((asset) => ({
           ...asset,
           amountScaled: asset.amount.toDec().quo(new Dec(asset.scalingFactor)),

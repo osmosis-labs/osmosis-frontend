@@ -179,7 +179,13 @@
     "allAssets": "全部资产",
     "singleAsset": "单边资产",
     "available": "可用",
-    "autoswapCaption": "使用自动兑换为单边资产添加流动性."
+    "autoswapCaption": "使用自动兑换为单边资产添加流动性.",
+    "scalingFactor": "比例因子",
+    "scalingFactorInformation": "该因素允许曲线根据可预测的价格变化进行调整，例如流动性质押代币的增值。",
+    "scalingFactorControllerWarning_first": "启用了缩放因子控制器。这",
+    "scalingFactorControllerWarning_second": "可以调整",
+    "scalingFactorControllerWarning_third": "保持钉子。当前的缩放因素是",
+    "scalingFactorController": "控制器"
   },
   "lockToken": {
     "title": "绑定LP份额",

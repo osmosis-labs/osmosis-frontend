@@ -180,7 +180,13 @@
     "singleAsset": "Jeden token",
     "available": "Dostępne",
     "autoswapCaption": "Użyj autowymiany, żeby dodać płynność jednym tokenem.",
-    "stablecoinWarning": "Dodajesz płynność do {denom}, stablecoina {mechanism} zabezpieczeniem."
+    "stablecoinWarning": "Dodajesz płynność do {denom}, stablecoina {mechanism} zabezpieczeniem.",
+    "scalingFactor": "współczynnik skalowania",
+    "scalingFactorInformation": "Czynnik ten pozwala na dostosowanie krzywej do przewidywalnych zmian cen, takich jak wartość przypadająca na płynny token.",
+    "scalingFactorControllerWarning_first": "Kontroler współczynnika skalowania jest włączony.",
+    "scalingFactorControllerWarning_second": "może dostosować",
+    "scalingFactorControllerWarning_third": "Aby utrzymać kołek. Obecny współczynnik skalowania jest",
+    "scalingFactorController": "kontroler"
   },
   "lockToken": {
     "title": "Zwiąż Aktywa Płynności",

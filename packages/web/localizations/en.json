@@ -180,7 +180,13 @@
     "singleAsset": "Single asset",
     "available": "Available",
     "autoswapCaption": "Use autoswap to add liquidity with a single asset.",
-    "stablecoinWarning": "You are adding liquidity to {denom}, a {mechanism}-backed stablecoin."
+    "stablecoinWarning": "You are adding liquidity to {denom}, a {mechanism}-backed stablecoin.",
+    "scalingFactor": "scaling factor",
+    "scalingFactorInformation": "This factor allows the curve to adjust to predictable price changes, such as the value accruing to a liquid staking token.",
+    "scalingFactorControllerWarning_first": "The scaling factor controller is enabled. The",
+    "scalingFactorControllerWarning_second": "can adjust the",
+    "scalingFactorControllerWarning_third": "to maintain the peg. The current scaling factor is",
+    "scalingFactorController": "controller"
   },
   "lockToken": {
     "title": "Bond LP Shares",
