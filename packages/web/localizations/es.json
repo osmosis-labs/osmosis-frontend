@@ -180,7 +180,13 @@
     "singleAsset": "Un activo",
     "available": "Disponible",
     "autoswapCaption": "Use el intercambio automático para agregar liquidez con un solo activo.",
-    "stablecoinWarning": "Estás agregando liquidez a {denom}, una moneda estable respaldada por {mechanism}."
+    "stablecoinWarning": "Estás agregando liquidez a {denom}, una moneda estable respaldada por {mechanism}.",
+    "scalingFactor": "factor de escala",
+    "scalingFactorInformation": "Este factor permite que la curva se ajuste a los cambios de precios predecibles, como el valor que se acumula en un token de participación líquida.",
+    "scalingFactorControllerWarning_first": "El controlador de factor de escala está habilitado. Él",
+    "scalingFactorControllerWarning_second": "puede ajustar el",
+    "scalingFactorControllerWarning_third": "Para mantener la clavija. El factor de escala actual es",
+    "scalingFactorController": "controlador"
   },
   "lockToken": {
     "title": "Abone participaciones LP",

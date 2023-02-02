@@ -179,7 +179,14 @@
     "allAssets": "Tous les actifs",
     "singleAsset": "Actif unique",
     "available": "Disponible",
-    "autoswapCaption": "Utilisez l'échange automatique pour ajouter de la liquidité avec un seul actif."
+    "stablecoinWarning": "Vous ajoutez des liquidités à {denom}, un stablecoin soutenu par {mechanism}.",
+    "autoswapCaption": "Utilisez l'échange automatique pour ajouter de la liquidité avec un seul actif.",
+    "scalingFactor": "facteur d'échelle",
+    "scalingFactorInformation": "Ce facteur permet à la courbe de s'ajuster aux changements de prix prévisibles, tels que la valeur revenant à un jeton de jalonnement liquide.",
+    "scalingFactorControllerWarning_first": "Le contrôleur de facteur de mise à l'échelle est activé. Les",
+    "scalingFactorControllerWarning_second": "peut ajuster le",
+    "scalingFactorControllerWarning_third": "pour maintenir la cheville. Le facteur de mise à l'échelle actuel est",
+    "scalingFactorController": "manette"
   },
   "lockToken": {
     "title": "Bloquer les actifs RL",

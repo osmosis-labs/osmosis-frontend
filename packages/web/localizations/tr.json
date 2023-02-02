@@ -180,7 +180,13 @@
     "singleAsset": "Tek varlık",
     "available": "Kullanılabilir",
     "autoswapCaption": "Tek bir varlıkla likidite eklemek için otomatik takası kullanın.",
-    "stablecoinWarning": "{mechanism} destekli bir stabilcoin olan {denom}'a likidite ekliyorsunuz."
+    "stablecoinWarning": "{mechanism} destekli bir stabilcoin olan {denom}'a likidite ekliyorsunuz.",
+    "scalingFactor": "ölçekleme faktörü",
+    "scalingFactorInformation": "Bu faktör, eğrinin, likit staking belirtecine tahakkuk eden değer gibi öngörülebilir fiyat değişikliklerine uyum sağlamasına olanak tanır.",
+    "scalingFactorControllerWarning_first": "Ölçeklendirme faktörü denetleyicisi etkinleştirilir.",
+    "scalingFactorControllerWarning_second": "ayarlayabilir",
+    "scalingFactorControllerWarning_third": "Peg'i korumak için.Mevcut ölçeklendirme faktörü",
+    "scalingFactorController": "denetleyici"
   },
   "lockToken": {
     "title": "LP Hisselerini Bağla",
