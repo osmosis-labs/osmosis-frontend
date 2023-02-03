@@ -7,6 +7,7 @@ import { CoinPretty } from "@keplr-wallet/unit";
 import {
   IBCTransferHistory,
   IBCTransferHistoryStatus,
+  TxReason,
 } from "@osmosis-labs/stores";
 import { useStore } from "../../stores";
 import { Table, BaseCell } from ".";
@@ -20,7 +21,7 @@ type History = {
   createdAtMs: number;
   explorerUrl: string;
   amount: string;
-  reason?: string;
+  reason?: TxReason;
   status: IBCTransferHistoryStatus | "failed";
   isWithdraw: boolean;
 };
@@ -160,8 +161,12 @@ const TxHashDisplayCell: FunctionComponent<
   );
 };
 
+const reasonToTranslationKey: Record<TxReason, string> = {
+  insufficientFee: "assets.historyTable.errors.insufficientFee",
+};
+
 const StatusDisplayCell: FunctionComponent<
-  BaseCell & { status?: IBCTransferHistoryStatus | "failed"; reason?: string }
+  BaseCell & { status?: IBCTransferHistoryStatus | "failed"; reason?: TxReason }
 > = ({ status, reason }) => {
   const t = useTranslation();
   if (status == null) {
@@ -236,7 +241,13 @@ const StatusDisplayCell: FunctionComponent<
       return (
         <div className="flex items-center gap-2">
           <Image alt="failed" src="/icons/error-x.svg" width={24} height={24} />
-          <span className="md:hidden">Failed{reason && `: ${reason}`}</span>
+          <span className="md:hidden">
+            {reason
+              ? t("assets.historyTable.failedWithReason", {
+                  reason: t(reasonToTranslationKey[reason]),
+                })
+              : t("assets.historyTable.failed")}
+          </span>
         </div>
       );
     default:

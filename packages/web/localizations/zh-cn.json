@@ -146,7 +146,8 @@
     "bondLiquidityCaption": "将您的份额锁定更长时间以赚取更高的APRs.",
     "bondSuperfluidLiquidityCaption": "去超流质押获得最大收益.",
     "bondShares": "绑定份额",
-    "amountDaysUnbonding": "{numDays} 天解绑期",
+    "amountDaysUnbonding": "{numDays} 天解绑",
+    "amountDaysUnbonding_plural": "{numDays} 天解绑期",
     "available": "可用的",
     "unbond": "解绑",
     "bonded": "绑定",
@@ -178,7 +179,13 @@
     "allAssets": "全部资产",
     "singleAsset": "单边资产",
     "available": "可用",
-    "autoswapCaption": "使用自动兑换为单边资产添加流动性."
+    "autoswapCaption": "使用自动兑换为单边资产添加流动性.",
+    "scalingFactor": "比例因子",
+    "scalingFactorInformation": "该因素允许曲线根据可预测的价格变化进行调整，例如流动性质押代币的增值。",
+    "scalingFactorControllerWarning_first": "启用了缩放因子控制器。这",
+    "scalingFactorControllerWarning_second": "可以调整",
+    "scalingFactorControllerWarning_third": "保持钉子。当前的缩放因素是",
+    "scalingFactorController": "控制器"
   },
   "lockToken": {
     "title": "绑定LP份额",
@@ -312,6 +319,11 @@
         "status": "状态",
         "deposit": "存入",
         "withdraw": "提币"
+      },
+      "failed": "失败的",
+      "failedWithReason": "失败的: {reason}",
+      "errors": {
+        "insufficientFee": "费用不足"
       }
     }
   },
@@ -342,13 +354,14 @@
     "vote": "投票",
     "info": "统计数据",
     "signOut": "断开连接",
-    "help": "获取 Support Lab 帮助",
-    "learnMoreFrontier": "了解更多<br/>关于 <br2/> <name>Osmosis Frontier</name>"
+    "help": "获取 Support Lab 帮助"
   },
   "settings": {
-    "title": "设置",
+    "title": "全局设置",
     "titleLanguage": "语言",
-    "titleHideDust": "使用 < {fiatSymbol}0.01 隐藏矿池"
+    "titleHideDust": "使用 < {fiatSymbol}0.01 隐藏矿池",
+    "selectLanguage": "选择语言",
+    "filterDust": "滤尘"
   },
   "errors": {
     "emptyAmount": "数量为空",
@@ -370,6 +383,8 @@
     "invalidSlippage": "滑点不可用",
     "noSendCurrency": "未设置发送货币",
     "insufficientBal": "余额不足",
+    "insufficientLiquidity": "流动性不足",
+    "noRoute": "此交易没有路线",
     "notInitialized": "未初始化",
     "calculatingShareOutAmount": "计算金额溢出",
     "noAvailableShares": "没有可用 {denom} 份额",

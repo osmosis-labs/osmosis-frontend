@@ -146,7 +146,8 @@
     "bondLiquidityCaption": "Bloquez vos actifs pour des durées plus longues afin de bénéficier de taux d'intérêt plus élevés.",
     "bondSuperfluidLiquidityCaption": "Passez au superfluide pour un maximum de récompenses.",
     "bondShares": "Déléguer les actifs",
-    "amountDaysUnbonding": "{numDays} jours de blocage",
+    "amountDaysUnbonding": "Détachement de {numDays} jours",
+    "amountDaysUnbonding_plural": "{numDays} jours de blocage",
     "unbond": "Débloquer",
     "available": "Disponible",
     "bonded": "Bloqués",
@@ -178,7 +179,14 @@
     "allAssets": "Tous les actifs",
     "singleAsset": "Actif unique",
     "available": "Disponible",
-    "autoswapCaption": "Utilisez l'échange automatique pour ajouter de la liquidité avec un seul actif."
+    "stablecoinWarning": "Vous ajoutez des liquidités à {denom}, un stablecoin soutenu par {mechanism}.",
+    "autoswapCaption": "Utilisez l'échange automatique pour ajouter de la liquidité avec un seul actif.",
+    "scalingFactor": "facteur d'échelle",
+    "scalingFactorInformation": "Ce facteur permet à la courbe de s'ajuster aux changements de prix prévisibles, tels que la valeur revenant à un jeton de jalonnement liquide.",
+    "scalingFactorControllerWarning_first": "Le contrôleur de facteur de mise à l'échelle est activé. Les",
+    "scalingFactorControllerWarning_second": "peut ajuster le",
+    "scalingFactorControllerWarning_third": "pour maintenir la cheville. Le facteur de mise à l'échelle actuel est",
+    "scalingFactorController": "manette"
   },
   "lockToken": {
     "title": "Bloquer les actifs RL",
@@ -312,6 +320,11 @@
         "status": "Statut",
         "deposit": "Déposer",
         "withdraw": "Retirer"
+      },
+      "failed": "Échoué",
+      "failedWithReason": "Échoué: {reason}",
+      "errors": {
+        "insufficientFee": "Frais insuffisants"
       }
     }
   },
@@ -342,13 +355,14 @@
     "vote": "Voter",
     "info": "Info",
     "signOut": "Déconnecter",
-    "help": "Obtenir de l'aide",
-    "learnMoreFrontier": "En apprendre<br/>plus sur<br2/> <name>Osmosis Frontier</name>"
+    "help": "Obtenir de l'aide"
   },
   "settings": {
-    "title": "Paramètres",
+    "title": "Paramètres globaux",
     "titleLanguage": "Langue",
-    "titleHideDust": "Masquer les piscines avec < 0.01{fiatSymbol}"
+    "titleHideDust": "Masquer les piscines avec < 0.01{fiatSymbol}",
+    "selectLanguage": "Choisir la langue",
+    "filterDust": "Filtrer la poussière"
   },
   "errors": {
     "emptyAmount": "Le montant est vide",
@@ -370,6 +384,8 @@
     "invalidSlippage": "Glissement invalide",
     "noSendCurrency": "Devise à envoyer non définie",
     "insufficientBal": "Solde insuffisant",
+    "insufficientLiquidity": "Liquidité insuffisante",
+    "noRoute": "Pas d'itinéraire pour ce commerce",
     "notInitialized": "Non initialisé",
     "calculatingShareOutAmount": "Problème de calcul du montant de sortie",
     "noAvailableShares": "Aucun actif {denom} disponible",

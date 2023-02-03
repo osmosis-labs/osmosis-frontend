@@ -146,7 +146,8 @@
     "bondLiquidityCaption": "Daha yüksek APR kazanmak için hisselerinizi daha uzun süre kilitleyin.",
     "bondSuperfluidLiquidityCaption": "Maksimum kazanç için Superfluid seçin.",
     "bondShares": "Hisseleri bağla",
-    "amountDaysUnbonding": "{numDays} gün sonra çözülecek",
+    "amountDaysUnbonding": "{numDays} gün ayrılma",
+    "amountDaysUnbonding_plural": "{numDays} gün sonra çözülecek",
     "available": "Mevcut",
     "unbond": "Çöz",
     "bonded": "Bağlı",
@@ -179,7 +180,13 @@
     "singleAsset": "Tek varlık",
     "available": "Kullanılabilir",
     "autoswapCaption": "Tek bir varlıkla likidite eklemek için otomatik takası kullanın.",
-    "stablecoinWarning": "{mechanism} destekli bir stabilcoin olan {denom}'a likidite ekliyorsunuz."
+    "stablecoinWarning": "{mechanism} destekli bir stabilcoin olan {denom}'a likidite ekliyorsunuz.",
+    "scalingFactor": "ölçekleme faktörü",
+    "scalingFactorInformation": "Bu faktör, eğrinin, likit staking belirtecine tahakkuk eden değer gibi öngörülebilir fiyat değişikliklerine uyum sağlamasına olanak tanır.",
+    "scalingFactorControllerWarning_first": "Ölçeklendirme faktörü denetleyicisi etkinleştirilir.",
+    "scalingFactorControllerWarning_second": "ayarlayabilir",
+    "scalingFactorControllerWarning_third": "Peg'i korumak için.Mevcut ölçeklendirme faktörü",
+    "scalingFactorController": "denetleyici"
   },
   "lockToken": {
     "title": "LP Hisselerini Bağla",
@@ -313,6 +320,11 @@
         "status": "Durum",
         "deposit": "Yatır",
         "withdraw": "Çek"
+      },
+      "failed": "Arızalı",
+      "failedWithReason": "Arızalı: {reason}",
+      "errors": {
+        "insufficientFee": "yetersiz ücret"
       }
     }
   },
@@ -343,13 +355,14 @@
     "vote": "Oy Kullan",
     "info": "Bilgi",
     "signOut": "Bağlantıyı Kes",
-    "help": "Destek Ekibinden Yardım İste",
-    "learnMoreFrontier": "<name>Osmosis Frontier</name><br/>Hakkında<br2/>Daha Fazla Bilgi"
+    "help": "Destek Ekibinden Yardım İste"
   },
   "settings": {
-    "title": "Ayarlar",
+    "title": "Genel Ayarlar",
     "titleLanguage": "Dil",
-    "titleHideDust": "olan havuzları gizle < {fiatSymbol}0.01"
+    "titleHideDust": "olan havuzları gizle < {fiatSymbol}0.01",
+    "selectLanguage": "Dil Seçin",
+    "filterDust": "Toz Filtresi"
   },
   "errors": {
     "emptyAmount": "Miktar boş",
@@ -371,6 +384,8 @@
     "invalidSlippage": "Geçersiz slipaj",
     "noSendCurrency": "Gönderilecek varlık seçilmedi",
     "insufficientBal": "Yetersiz bakiye",
+    "insufficientLiquidity": "yetersiz likidite",
+    "noRoute": "Bu ticaret için Rota yok",
     "notInitialized": "Başlatılmadı",
     "calculatingShareOutAmount": "Miktar hesaplamasında sorun",
     "noAvailableShares": "Kullanılabilir {denom} hissesi yok",

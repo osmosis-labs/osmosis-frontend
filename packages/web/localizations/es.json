@@ -146,7 +146,8 @@
     "bondLiquidityCaption": "Bloquee sus participaciones por duraciones más largas para ganar un TPA más altos.",
     "bondSuperfluidLiquidityCaption": "Activar superfluidez para obtener las recompensas máximas.",
     "bondShares": "Participaciones abonadas",
-    "amountDaysUnbonding": "{numDays} días para desabonar",
+    "amountDaysUnbonding": "{numDays} día para desabonar",
+    "amountDaysUnbonding_plural": "{numDays} día para desabonar",
     "available": "Disponible",
     "unbond": "Desabonar",
     "bonded": "Abonado",
@@ -179,7 +180,13 @@
     "singleAsset": "Un activo",
     "available": "Disponible",
     "autoswapCaption": "Use el intercambio automático para agregar liquidez con un solo activo.",
-    "stablecoinWarning": "Estás agregando liquidez a {denom}, una moneda estable respaldada por {mechanism}."
+    "stablecoinWarning": "Estás agregando liquidez a {denom}, una moneda estable respaldada por {mechanism}.",
+    "scalingFactor": "factor de escala",
+    "scalingFactorInformation": "Este factor permite que la curva se ajuste a los cambios de precios predecibles, como el valor que se acumula en un token de participación líquida.",
+    "scalingFactorControllerWarning_first": "El controlador de factor de escala está habilitado. Él",
+    "scalingFactorControllerWarning_second": "puede ajustar el",
+    "scalingFactorControllerWarning_third": "Para mantener la clavija. El factor de escala actual es",
+    "scalingFactorController": "controlador"
   },
   "lockToken": {
     "title": "Abone participaciones LP",
@@ -313,6 +320,11 @@
         "status": "Estado",
         "deposit": "Depositar",
         "withdraw": "Retirar"
+      },
+      "failed": "Fallida",
+      "failedWithReason": "Fallida: {reason}",
+      "errors": {
+        "insufficientFee": "Tarifa insuficiente"
       }
     }
   },
@@ -343,13 +355,14 @@
     "vote": "Votar",
     "info": "Estadísticas",
     "signOut": "Desconectar",
-    "help": "Obtener ayuda para el laboratorio de soporte",
-    "learnMoreFrontier": "Obtenga más información <br/> sobre <br2/> <name> Osmosis Frontier </name>"
+    "help": "Obtener ayuda para el laboratorio de soporte"
   },
   "settings": {
-    "title": "Ajustes",
+    "title": "Configuración global",
     "titleLanguage": "Idioma",
-    "titleHideDust": "Ocultar piscinas con <{fiatSymbol} 0.01"
+    "titleHideDust": "Ocultar piscinas con <{fiatSymbol} 0.01",
+    "selectLanguage": "Seleccione el idioma",
+    "filterDust": "Filtro de polvo"
   },
   "errors": {
     "emptyAmount": "La cantidad es vacía",
@@ -371,6 +384,8 @@
     "invalidSlippage": "Deslizamiento no válido",
     "noSendCurrency": "Moneda para enviar no establecida",
     "insufficientBal": "Saldo insuficiente",
+    "insufficientLiquidity": "Liquidez insuficiente",
+    "noRoute": "No hay ruta para este cambio",
     "notInitialized": "No inicializado",
     "calculatingShareOutAmount": "Problema calculando la cantidad de salida",
     "noAvailableShares": "No hay acciones disponibles {denom}",

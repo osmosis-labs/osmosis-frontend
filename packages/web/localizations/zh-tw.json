@@ -146,7 +146,8 @@
     "bondLiquidityCaption": "鎖定你的流動性池份額更久以賺取年利率(APR)",
     "bondSuperfluidLiquidityCaption": "啟用超流體質押以賺取最多獎勵",
     "bondShares": "鎖定份額",
-    "amountDaysUnbonding": "解鎖中 ({numDays} 日)",
+    "amountDaysUnbonding": "{numDays} 天解綁",
+    "amountDaysUnbonding_plural": "解鎖中 ({numDays} 日)",
     "available": "可用",
     "unbond": "解鎖",
     "bonded": "已鎖定",
@@ -179,7 +180,13 @@
     "singleAsset": "單一資產",
     "available": "可用",
     "autoswapCaption": "使用自動兌換以使用單一資產加入流動性",
-    "stablecoinWarning": "你正在加入流動性到 {denom}, 一種使用 {mechanism} 掛鉤機制的穩定幣"
+    "stablecoinWarning": "你正在加入流動性到 {denom}, 一種使用 {mechanism} 掛鉤機制的穩定幣",
+    "scalingFactor": "比例因子",
+    "scalingFactorInformation": "該因素允許曲線根據可預測的價格變化進行調整，例如流動性質押代幣的增值。",
+    "scalingFactorControllerWarning_first": "啟用了縮放因子控制器。這",
+    "scalingFactorControllerWarning_second": "可以調整",
+    "scalingFactorControllerWarning_third": "保持釘子。當前的縮放因素是",
+    "scalingFactorController": "控制器"
   },
   "lockToken": {
     "title": "鎖定流動性池份額",
@@ -313,6 +320,11 @@
         "status": "狀態",
         "deposit": "存入",
         "withdraw": "轉出"
+      },
+      "failed": "失敗的",
+      "failedWithReason": "失敗的: {reason}",
+      "errors": {
+        "insufficientFee": "費用不足"
       }
     }
   },
@@ -343,13 +355,14 @@
     "vote": "投票",
     "info": "統計數據",
     "signOut": "斷開連接",
-    "help": "取得Support Lab的幫助",
-    "learnMoreFrontier": "了解更多<br/>關於<br2/> <name>Osmosis Frontier</name>"
+    "help": "取得Support Lab的幫助"
   },
   "settings": {
-    "title": "設定",
+    "title": "全局設置",
     "titleLanguage": "語言",
-    "titleHideDust": "隱藏 < {fiatSymbol}0.01 的礦池"
+    "titleHideDust": "隱藏 < {fiatSymbol}0.01 的礦池",
+    "selectLanguage": "選擇語言",
+    "filterDust": "濾塵"
   },
   "errors": {
     "emptyAmount": "未提供數量",
@@ -371,6 +384,8 @@
     "invalidSlippage": "非正確滑價",
     "noSendCurrency": "未設定要傳送的貨幣",
     "insufficientBal": "結餘不足",
+    "insufficientLiquidity": "流動性不足",
+    "noRoute": "此交易沒有路線",
     "notInitialized": "未初始化",
     "calculatingShareOutAmount": "計算幣額時出錯",
     "noAvailableShares": "沒有可用的 {denom} 份額",

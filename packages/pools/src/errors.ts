@@ -10,6 +10,6 @@ export class NotEnoughLiquidityError extends Error {
   constructor() {
     super("Not enough liquidity");
     // Set the prototype explicitly.
-    Object.setPrototypeOf(this, NoPoolsError.prototype);
+    Object.setPrototypeOf(this, NotEnoughLiquidityError.prototype);
   }
 }

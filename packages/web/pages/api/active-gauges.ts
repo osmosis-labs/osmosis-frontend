@@ -25,13 +25,14 @@ export default async function activeGauges(
         !gauge.is_perpetual &&
         gauge.distribute_to.denom.match(/gamm\/pool\/[0-9]+/m) && // only gamm share incentives
         !gauge.coins.some((coin) => coin.denom.match(/gamm\/pool\/[0-9]+/m)) && // no gamm share rewards
+        (gauge.filled_epochs != gauge.num_epochs_paid_over) && // no completed gauges
         checkForStaleness(gauge, parseInt(data[data.length - 1].id))
     ),
   });
 }
 
 const DURATION_1_DAY = 86400000;
-const DURATION_1_WEEK = DURATION_1_DAY * 7;
+const DURATION_UPCOMING_SOON = DURATION_1_DAY * 7;
 const MAX_NEW_GAUGES_PER_DAY = 100;
 
 function checkForStaleness(gauge: Gauge, lastGaugeId: number) {
@@ -42,7 +43,7 @@ function checkForStaleness(gauge: Gauge, lastGaugeId: number) {
   return (
     gauge.distributed_coins.length > 0 ||
     (parsedGaugeStartTime > NOW - DURATION_1_DAY &&
-      parsedGaugeStartTime < NOW + DURATION_1_WEEK) ||
+      parsedGaugeStartTime < NOW + DURATION_UPCOMING_SOON) ||
     (parsedGaugeStartTime < NOW &&
       parseInt(gauge.id) > lastGaugeId - MAX_NEW_GAUGES_PER_DAY)
   );

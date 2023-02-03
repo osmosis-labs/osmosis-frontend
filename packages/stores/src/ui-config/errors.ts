@@ -113,4 +113,12 @@ export class InsufficientBalanceError extends Error {
   }
 }
 
+export class NoRouteError extends Error {
+  constructor(m: string) {
+    super(m);
+    // Set the prototype explicitly.
+    Object.setPrototypeOf(this, NoRouteError.prototype);
+  }
+}
+
 export * from "./manage-liquidity/errors";
