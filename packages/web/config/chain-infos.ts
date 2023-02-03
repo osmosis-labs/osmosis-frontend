@@ -2565,10 +2565,14 @@ const chainInfos = (
           coinImageUrl: "/tokens/mars.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
-          gasPriceStep: {
+          gasPriceStep: IS_TESTNET ? {
             low: 0,
             average: 0,
             high: 0.025,
+          } : {
+            low: 0,
+            average: 0,
+            high: 0,
           },
         },
       ],
