@@ -10,7 +10,7 @@ import { SwitchWalletButton } from "../buttons/switch-wallet";
 import { GradientView } from "../assets/gradient-view";
 import { InputBox } from "../input";
 import { Button } from "../buttons";
-import { CheckBox } from "../control";
+import { CheckBox, Switch } from "../control";
 import { Disableable, InputProps, LoadingProps } from "../types";
 import { useTranslation } from "react-multi-lang";
 
@@ -35,8 +35,14 @@ export type TransferProps = {
   };
   warningMessage?: string;
   toggleIsMax: () => void;
-  transferFee?: CoinPretty;
   /** Required, can be hardcoded estimate. */
+  transferFee?: CoinPretty;
+  /** Toggle to allow user to specify use of wrapped token if a native equivalent token is being transferred. */
+  toggleUseWrapped?: {
+    useWrapped: boolean;
+    toggleUseWrapped: () => void;
+    wrappedTokenDenom: string;
+  };
   waitTime: string;
   disablePanel?: boolean;
 } & InputProps<string> &
@@ -56,6 +62,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
   warningMessage,
   toggleIsMax,
   transferFee,
+  toggleUseWrapped,
   waitTime,
   disablePanel = false,
 }) => {
@@ -128,7 +135,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
                 truncateEthAddress(from.address)
               )}
               {from.address.length > 0 &&
-                !from.address.startsWith("osmo") &&
+                !from.address.includes("osmo") &&
                 selectedWalletDisplay && (
                   <SwitchWalletButton
                     selectedWalletIconUrl={selectedWalletDisplay.iconUrl}
@@ -167,7 +174,7 @@ export const Transfer: FunctionComponent<TransferProps> = ({
                 truncateEthAddress(to.address)
               ))}
             {to.address.length > 0 &&
-            !to.address.startsWith("osmo") &&
+            !to.address.includes("osmo") &&
             selectedWalletDisplay ? (
               <SwitchWalletButton
                 selectedWalletIconUrl={selectedWalletDisplay.iconUrl}
@@ -271,6 +278,19 @@ export const Transfer: FunctionComponent<TransferProps> = ({
             <span>{t("assets.ibcTransfer.estimatedTime")}</span>
             <span>{waitTime}</span>
           </div>
+          {toggleUseWrapped && (
+            <div className="flex place-content-between items-center">
+              <span>
+                {isWithdraw ? "Withdraw" : "Deposit"}
+                {" as "}
+                {toggleUseWrapped.wrappedTokenDenom}
+              </span>
+              <Switch
+                isOn={toggleUseWrapped.useWrapped}
+                onToggle={toggleUseWrapped.toggleUseWrapped}
+              />
+            </div>
+          )}
         </div>
         {warningMessage && (
           <GradientView

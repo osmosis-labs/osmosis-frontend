@@ -43,13 +43,13 @@
   resolved "https://registry.yarnpkg.com/@axelar-network/axelar-cgp-solidity/-/axelar-cgp-solidity-4.3.1.tgz#49877b2599083fdd4bda92d3eb0ccdfcfeff3785"
   integrity sha512-efJsTvoGITUPr50PQc8fCwzT9JOJMnchW+WnXAivXaEm/mw2bcEAYX6dCcZn4j6tgFTAVZnYqrABItQwDaStag==
 
-"@axelar-network/axelarjs-sdk@^0.11.7":
-  version "0.11.8"
-  resolved "https://registry.yarnpkg.com/@axelar-network/axelarjs-sdk/-/axelarjs-sdk-0.11.8.tgz#870312ad5edcb81f0ffebe9fe143e14028b1ea53"
-  integrity sha512-KVORyvO0i8dH7I0BmmNumopDls/f0fgsCVKRUAvR+izcPGHOG/8u4RDkUOeBHaPWBRSJUHIXdeQSm7MIYvpwUw==
+"@axelar-network/axelarjs-sdk@^0.12.4":
+  version "0.12.4"
+  resolved "https://registry.yarnpkg.com/@axelar-network/axelarjs-sdk/-/axelarjs-sdk-0.12.4.tgz#2d8111d4ed3ba60e805a36a5337d127ad72325c7"
+  integrity sha512-1MFwyAzLu5VDfuXUk0IlM4tFhImL5uROxptBHpu7CJoFkbcM+PGquoUl61bf3+WmmewTv0DVeYvZ5dS2yrLVjA==
   dependencies:
     "@axelar-network/axelar-cgp-solidity" "^4.3.0"
-    "@axelar-network/axelarjs-types" "^0.24.0"
+    "@axelar-network/axelarjs-types" "^0.27.0"
     "@cosmjs/stargate" "^0.28.4"
     "@types/uuid" "^8.3.1"
     bech32 "^2.0.0"
@@ -61,10 +61,10 @@
     string-similarity-js "^2.1.4"
     uuid "^8.3.2"
 
-"@axelar-network/axelarjs-types@^0.24.0":
-  version "0.24.0"
-  resolved "https://registry.yarnpkg.com/@axelar-network/axelarjs-types/-/axelarjs-types-0.24.0.tgz#ab9cc52690206a36475a1e026aefc74d578ea229"
-  integrity sha512-L353tkWLnujTcaEc3hMK51aiqY7DzEPfBNU9mluvtZIN9WsAbW2F3Rpj3UceSDLG0F98233HDhpPxWiGjIpiFg==
+"@axelar-network/axelarjs-types@^0.27.0":
+  version "0.27.0"
+  resolved "https://registry.yarnpkg.com/@axelar-network/axelarjs-types/-/axelarjs-types-0.27.0.tgz#28f7e2c0e5ea30a30481daa1406960fc79219115"
+  integrity sha512-+ZsNgZc815FEBQnP8wxrtYjEqPMeibGFzKypkj1h0nwsvC051ABB/4xePX41E7G58e5RANhDTOxlvCSAx4MpyA==
   dependencies:
     long "^4.0.0"
     protobufjs "~6.11.2"

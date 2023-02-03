@@ -2598,8 +2598,7 @@ const chainInfos = (
         },
       ],
       features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
-      explorerUrlToTx:
-        "https://cosmos-explorers.neobase.one/canto/tx/{txHash}",
+      explorerUrlToTx: "https://cosmos-explorers.neobase.one/canto/tx/{txHash}",
     },
     {
       rpc: "https://rpc-quicksilver.keplr.app",
@@ -2620,9 +2619,9 @@ const chainInfos = (
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
-            "low": 0.0001,
-            "average": 0.0001,
-            "high": 0.00025
+            low: 0.0001,
+            average: 0.0001,
+            high: 0.00025,
           },
         },
         {
@@ -2634,8 +2633,7 @@ const chainInfos = (
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
-      explorerUrlToTx:
-        "https://www.mintscan.io/quicksilver/txs/{txHash}",
+      explorerUrlToTx: "https://www.mintscan.io/quicksilver/txs/{txHash}",
     },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
@@ -2705,7 +2703,7 @@ chainInfos.push({
       pegMechanism: "collateralized",
     },
     {
-      coinDenom: "wETH",
+      coinDenom: "ETH",
       coinMinimalDenom: "weth-wei",
       coinDecimals: 18,
       // coinGeckoId: "weth",
@@ -2852,15 +2850,17 @@ chainInfos.push({
       coinImageUrl: "/tokens/axl.svg",
     },
   ],
-  gasPriceStep: IS_TESTNET ? {
-    low: 0.007,
-    average: 0.125,
-    high:0.2,
-  } : {
-    low: 0.00005,
-    average: 0.00007,
-    high: 0.00009,
-  },
+  gasPriceStep: IS_TESTNET
+    ? {
+        low: 0.007,
+        average: 0.125,
+        high: 0.2,
+      }
+    : {
+        low: 0.00005,
+        average: 0.00007,
+        high: 0.00009,
+      },
   features: ["ibc-transfer", "ibc-go"],
   explorerUrlToTx: IS_TESTNET
     ? "https://testnet.axelarscan.io/tx/{txHash}"

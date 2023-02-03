@@ -72,4 +72,19 @@ export type SourceChainTokenConfig = {
   };
 
   logoUrl: string;
+
+  /** If this **EVM** token is auto-wrappable by Axelar, specify the native token.
+   *  The token on Osmosis is assumed to be the wrapped version of the native token, but labelled as the native token.
+   *  Assume we're transferring native token, since it's the gas token as well and generally takes precedence.
+   *
+   *  i.e. ETH for wETH, BNB for wBNB, etc.
+   *
+   *  Specified per Axelar bridged token & network due to each token having a single source chain ERC20 instance.
+   */
+  nativeWrapEquivalent?: {
+    /** Used as key for Axelar JS-SDK/APIs. */
+    tokenMinDenom: string;
+    /** Wrap denom (e.g. WETH), since it's assumed we're labeling Osmosis balance as native. */
+    wrapDenom: string;
+  };
 };
