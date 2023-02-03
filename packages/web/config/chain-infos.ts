@@ -2547,10 +2547,10 @@ const chainInfos = (
     {
       rpc: IS_TESTNET
         ? "https://testnet-rpc.marsprotocol.io/"
-        : "https://rpc.marsprotocol.io:443",
+        : "https://rpc.marsprotocol.io/",
       rest: IS_TESTNET
         ? "https://testnet-rest.marsprotocol.io/"
-        : "https://rest.marsprotocol.io:443",
+        : "https://rest.marsprotocol.io/",
       chainId: IS_TESTNET
         ? "ares-1"
         : "mars-1",
