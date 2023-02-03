@@ -2556,7 +2556,7 @@ const chainInfos = (
         : "mars-1",
       chainName: IS_TESTNET
         ? "Mars Hub Testnet"
-        : "Mars",
+        : "Mars Hub",
       bip44: {
         coinType: 118,
       },
