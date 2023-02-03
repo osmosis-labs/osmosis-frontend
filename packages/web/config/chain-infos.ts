@@ -2545,10 +2545,18 @@ const chainInfos = (
         "https://explorer.dys.dysonprotocol.com/dyson/tx/{txHash}",
     },
     {
-      rpc: "https://testnet-rpc.marsprotocol.io/",
-      rest: "https://testnet-rest.marsprotocol.io/",
-      chainId: "ares-1",
-      chainName: "Mars Hub Testnet",
+      rpc: IS_TESTNET
+        ? "https://testnet-rpc.marsprotocol.io/"
+        : "https://rpc.marsprotocol.io/",
+      rest: IS_TESTNET
+        ? "https://testnet-rest.marsprotocol.io/"
+        : "https://rest.marsprotocol.io/",
+      chainId: IS_TESTNET
+        ? "ares-1"
+        : "mars-1",
+      chainName: IS_TESTNET
+        ? "Mars Hub Testnet"
+        : "Mars Hub",
       bip44: {
         coinType: 118,
       },
@@ -2558,19 +2566,25 @@ const chainInfos = (
           coinDenom: "MARS",
           coinMinimalDenom: "umars",
           coinDecimals: 6,
+          coinGeckoId: "pool:mars",
           coinImageUrl: "/tokens/mars.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
-          gasPriceStep: {
+          gasPriceStep: IS_TESTNET ? {
             low: 0,
             average: 0,
             high: 0.025,
+          } : {
+            low: 0,
+            average: 0,
+            high: 0,
           },
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
-      explorerUrlToTx:
-        "https://testnet-explorer.marsprotocol.io/transactions/{txHash}",
+      explorerUrlToTx: IS_TESTNET
+        ? "https://testnet-explorer.marsprotocol.io/transactions/{txHash}"
+        : "https://explorer.marsprotocol.io/transactions/{txHash}",
     },
     {
       rpc: "https://rpc.canto.nodestake.top",
