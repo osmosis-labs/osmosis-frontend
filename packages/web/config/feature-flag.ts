@@ -52,7 +52,7 @@ export const Announcement:
         url: "https://app.osmosis.zone/",
       },
     }
-  : { localStorageKey: "Test", enTextOrLocalizationPath: "Test" };
+  : undefined;
 
 // Fiat ramps
 export const BUY_OSMO_TRANSAK = true;
