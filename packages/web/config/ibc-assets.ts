@@ -162,6 +162,13 @@ export const IBCAssetInfos: (IBCAsset & {
   },
 ] : [
   {
+    counterpartyChainId: "mars-1",
+    sourceChannelId: "channel-557",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "umars",
+    isVerified: true,
+  },
+  {
     counterpartyChainId: "axelar-dojo-1",
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
