@@ -1,4 +1,5 @@
 import { FunctionComponent, SVGAttributes } from "react";
+import spriteSVGURL from "../../public/icons/sprite.svg";
 
 type IconId =
   | "chevron-up"
@@ -26,7 +27,7 @@ export const Icon: FunctionComponent<
   const { id, ...rest } = props;
   return (
     <svg width="24" height="24" {...rest}>
-      <use href={`/icons/sprite.svg#${id}`} />
+      <use href={`${spriteSVGURL}#${id}`} />
     </svg>
   );
 };
