@@ -31,6 +31,9 @@ export class ObservableAssets {
 
       /** Alternative chain name to display as the source chain */
       sourceChainNameOverride?: string;
+      
+      /** Asset name to display as subtext */
+      assetName?: string;
     })[],
     protected readonly chainStore: ChainStore,
     protected readonly accountStore: {
@@ -88,6 +91,7 @@ export class ObservableAssets {
     depositUrlOverride?: string;
     withdrawUrlOverride?: string;
     sourceChainNameOverride?: string;
+    assetName?: string;
   })[] {
     return this.ibcAssets
       .filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified))
@@ -148,6 +152,7 @@ export class ObservableAssets {
           depositUrlOverride?: string;
           withdrawUrlOverride?: string;
           sourceChainNameOverride?: string;
+          assetName?: string;
         } = {
           chainInfo: chainInfo,
           balance,
@@ -166,6 +171,7 @@ export class ObservableAssets {
           depositUrlOverride: ibcAsset.depositUrlOverride,
           withdrawUrlOverride: ibcAsset.withdrawUrlOverride,
           sourceChainNameOverride: ibcAsset.sourceChainNameOverride,
+          assetName: ibcAsset.assetName,
           originBridgeInfo: ibcAsset.originBridgeInfo,
           fiatRamps: ibcAsset.fiatRamps,
         };
