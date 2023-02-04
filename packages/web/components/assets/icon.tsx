@@ -12,7 +12,9 @@ type IconId =
   | "close"
   | "info"
   | "globe"
-  | "dust-broom";
+  | "dust-broom"
+  | "arrow-right"
+  | "close-small";
 
 /**
  * It takes an icon id and returns an svg element with the corresponding icon defined in /public/icons/sprite.svg.

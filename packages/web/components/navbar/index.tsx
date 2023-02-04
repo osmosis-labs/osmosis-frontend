@@ -285,22 +285,17 @@ const AnnouncementBanner: FunctionComponent<
     >
       <div className="flex w-full place-content-center items-center gap-3 text-center text-subtitle1">
         {t(enTextOrLocalizationPath)}{" "}
-        {link && (
+        {Boolean(link) && (
           <div className="flex cursor-pointer items-center gap-2">
             <a
               className="underline"
-              href={link.url}
+              href={link?.url}
               rel="noreferrer"
               target="_blank"
             >
               {t(link?.enTextOrLocalizationKey ?? "Click here to learn more")}
             </a>
-            <Image
-              alt="visit link"
-              src="/icons/arrow-right-small.svg"
-              height={24}
-              width={24}
-            />
+            <Icon id="arrow-right" height={24} width={24} />
           </div>
         )}
       </div>
@@ -309,12 +304,7 @@ const AnnouncementBanner: FunctionComponent<
           className="flex cursor-pointer items-center"
           onClick={closeBanner}
         >
-          <Image
-            alt="close banner"
-            src="/icons/close-small.svg"
-            height={24}
-            width={24}
-          />
+          <Icon id="close-small" height={24} width={24} />
         </button>
       )}
     </div>
