@@ -17,6 +17,9 @@ export const IBCAssetInfos: (IBCAsset & {
 
   /** Alternative chain name to display as the source chain */
   sourceChainNameOverride?: string;
+  
+  /** Asset name to display as subtext */
+  assetName?: string;
 
   /** Related to showing assets on main (canonical) vs frontier (permissionless). Verified means that governance has
    *  voted on its incentivization or general approval (amongst other possibilities).
