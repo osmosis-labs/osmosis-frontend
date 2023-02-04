@@ -38,6 +38,7 @@ interface Props {
     depositUrlOverride?: string;
     withdrawUrlOverride?: string;
     sourceChainNameOverride?: string;
+    assetName?: string;
   })[];
   onWithdraw: (
     chainId: string,
@@ -130,6 +131,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
               depositUrlOverride,
               withdrawUrlOverride,
               sourceChainNameOverride,
+              assetName,
             } = ibcBalance;
             const value = fiatValue?.maxDecimals(2);
             const isCW20 = "ics20ContractAddress" in ibcBalance;
@@ -166,6 +168,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
               withdrawUrlOverride,
               onWithdraw,
               onDeposit,
+              assetName,
             };
           })
         ),
