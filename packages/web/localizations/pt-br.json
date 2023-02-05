@@ -48,13 +48,13 @@
     "available": "Disponível",
     "liquidity": "Liquidez",
     "myLiquidity": "Minha Liquidez",
-    "bonded": "Delegado",
+    "bonded": "Travado",
     "incentivized": "Incentivada",
     "all": "Todas as Piscinas",
     "allTab": "Todas",
     "superfluid": {
-      "title": "Piscinas Superflúidas",
-      "tab": "Superflúido",
+      "title": "Piscinas Superfluidas",
+      "tab": "Superfluido",
       "APR": "APR",
       "liquidity": "Liquidez",
       "fees7D": "Taxas (7D)"
@@ -122,7 +122,7 @@
   "pool": {
     "title": "Piscina #{id}",
     "swap": "Par de Negociação",
-    "superfluidEnabled": "Staking superflúido habilitado",
+    "superfluidEnabled": "Staking superfluido habilitado",
     "stableswapEnabled": "Stableswap habilitado",
     "24hrTradingVolume": "Volume de negociação em 24h",
     "liquidity": "Liquidez da Piscina",
@@ -193,8 +193,8 @@
     "titleInPool": "Travar participações na piscina #{poolId}",
     "selectPeriod": "Selecionar período para destravar",
     "availableToken": "Disponível",
-    "amountToBond": "Amount to bond",
-    "superfluidStake": "Superfluid staking",
+    "amountToBond": "Quantia para travar",
+    "superfluidStake": "Staking superfluido",
     "bondingRequirement": "{numDays} dia requerido para travamento",
     "buttonNext": "Próxima",
     "buttonBond": "Travar",
@@ -203,7 +203,7 @@
   "superfluidValidator": {
     "title": "Selecionar Validador Superfluido",
     "titleMobile": "Selecionar Validador",
-    "choose": "Escolha seu validador superfluidor",
+    "choose": "Escolha seu validador superfluido",
     "search": "Procurar pelo nome",
     "bondedAmount": "Quantia Travada",
     "estimation": "Delegação Superfluida Estimada",
@@ -310,7 +310,7 @@
     "historyTable": {
       "title": "Histórico de Transferências",
       "pending": "Pendente",
-      "success": "Successo",
+      "success": "Sucesso",
       "refunded": "Reembolsado",
       "pendingRefunded": "Falhou: Reembolso pendente",
       "colums": {
