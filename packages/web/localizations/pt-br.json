@@ -195,7 +195,7 @@
     "availableToken": "Disponível",
     "amountToBond": "Amount to bond",
     "superfluidStake": "Superfluid staking",
-    "bondingRequirement": "{numDays} day bonding requirement",
+    "bondingRequirement": "{numDays} dia requerido para travamento",
     "buttonNext": "Próxima",
     "buttonBond": "Travar",
     "buttonBondStake": "Travar & Fazer Stake"
