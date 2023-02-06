@@ -1038,11 +1038,10 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
-    counterpartyChainId: "impacthub-3",
+    counterpartyChainId: "ixo-4",
     sourceChannelId: "channel-38",
     destChannelId: "channel-4",
     coinMinimalDenom: "uixo",
-    isUnstable: true,
   },
   {
     counterpartyChainId: "bitcanna-1",
