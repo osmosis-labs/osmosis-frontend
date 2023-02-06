@@ -281,15 +281,15 @@ const AnnouncementBanner: FunctionComponent<
   return (
     <div
       className={classNames(
-        "fixed top-[72px] z-[51] float-right my-auto ml-sidebar flex w-[calc(100vw_-_12.875rem)] items-center px-8 py-[14px] md:ml-0 md:w-full",
+        "fixed top-[72px] z-[51] float-right my-auto ml-sidebar flex w-[calc(100vw_-_12.875rem)] items-center px-8 py-[14px] md:ml-0 md:w-full sm:gap-3 sm:px-2",
         {
           "bg-gradient-negative": isWarning,
-          "bg-osmoverse-700": !isWarning,
+          "bg-gradient-neutral": !isWarning,
         },
         bg
       )}
     >
-      <div className="flex w-full place-content-center items-center gap-3 text-center text-subtitle1">
+      <div className="md:text-lef1 flex w-full place-content-center items-center gap-3 text-center text-subtitle1 lg:flex-col lg:gap-1 sm:items-start sm:text-left">
         {t(enTextOrLocalizationPath)}{" "}
         {Boolean(link) && (
           <div className="flex cursor-pointer items-center gap-2">

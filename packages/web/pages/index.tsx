@@ -1,12 +1,13 @@
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
-import { ProgressiveSvgImage } from "../components/progressive-svg-image";
 import { TradeClipboard } from "../components/trade-clipboard";
 import { useStore } from "../stores";
 import { EventName, IS_FRONTIER } from "../config";
 import { Dec } from "@keplr-wallet/unit";
 import { useMemo, useRef } from "react";
 import { useAmplitudeAnalytics } from "../hooks";
+import Image from "next/image";
+import { ProgressiveSvgImage } from "../components/progressive-svg-image";
 
 const Home: NextPage = observer(function () {
   const { chainStore, queriesStore } = useStore();
@@ -144,6 +145,12 @@ const Home: NextPage = observer(function () {
   return (
     <main className="relative h-full bg-osmoverse-900">
       <div className="absolute h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">
+        <Image
+          src="/images/osmosis-home-bg-mars.png"
+          alt="Scientists landing on mars"
+          layout="fill"
+          className="object-cover lg:!hidden"
+        />
         <svg
           className="absolute h-full w-full lg:hidden"
           pointerEvents="none"
@@ -152,16 +159,16 @@ const Home: NextPage = observer(function () {
           preserveAspectRatio="xMidYMid slice"
         >
           <g>
-            {!IS_FRONTIER && (
-              <ProgressiveSvgImage
-                lowResXlinkHref="/images/osmosis-home-bg-mars.png"
-                xlinkHref="/images/osmosis-home-bg-mars.png"
-                x="0"
-                y="0"
-                width="100%"
-                height="100%"
-              />
-            )}
+            <ProgressiveSvgImage
+              lowResXlinkHref={
+                IS_FRONTIER ? "/images/osmosis-cowboy-woz-low.png" : ""
+              }
+              xlinkHref={IS_FRONTIER ? "/images/osmosis-cowboy-woz.png" : ""}
+              x={IS_FRONTIER ? "-100" : "61"}
+              y={IS_FRONTIER ? "100" : "682"}
+              width={IS_FRONTIER ? "800" : "448.8865"}
+              height={IS_FRONTIER ? "800" : "285.1699"}
+            />
           </g>
         </svg>
       </div>
