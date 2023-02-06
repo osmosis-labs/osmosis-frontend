@@ -21,7 +21,7 @@ import { SearchBox } from "../input";
 import {
   MetricLoaderCell,
   PoolCompositionCell,
-  // PoolQuickActionCell,
+  PoolQuickActionCell,
 } from "../table/cells";
 import PaginatedTable from "./paginated-table";
 
@@ -393,13 +393,13 @@ export const AllPoolsTableSet: FunctionComponent<{
         header: t("pools.allPools.sort.APRIncentivized"),
         id: "apr",
       }),
-      // columnHelper.accessor((row) => row[5], {
-      //   cell: (props) => {
-      //     return <PoolQuickActionCell {...props.row.original[5]} />;
-      //   },
-      //   header: "",
-      //   id: "actions",
-      // }),
+      columnHelper.accessor((row) => row[5], {
+        cell: (props) => {
+          return <PoolQuickActionCell {...props.row.original[5]} />;
+        },
+        header: "",
+        id: "actions",
+      }),
     ];
 
     const [sorting, setSorting] = useState<SortingState>([]);

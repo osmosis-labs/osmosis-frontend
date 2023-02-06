@@ -107,7 +107,7 @@ export const PoolQuickActionCell: FunctionComponent<
       }}
     >
       <div
-        className="hover:pointer-cursor absolute"
+        className="hover:pointer-cursor relative"
         onClick={(e) => {
           e.preventDefault();
         }}
