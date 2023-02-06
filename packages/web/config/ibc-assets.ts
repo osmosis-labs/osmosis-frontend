@@ -1452,6 +1452,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1mkw83sv6c7sjdvsaplrzc8yaes9l42p4mhy0ssuxjnyzl87c9eps7ce3m9",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    isVerified: true,
   },
 ].filter((ibcAsset) => {
   // validate IBC asset config
