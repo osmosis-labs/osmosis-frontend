@@ -30,6 +30,7 @@ import {
   setTranslations,
   useTranslation,
 } from "react-multi-lang";
+import spriteSVGURL from "../public/icons/sprite.svg";
 
 import en from "../localizations/en.json";
 import { Formatted } from "../components/localization";
@@ -120,7 +121,7 @@ function MyApp({ Component, pageProps }: AppProps) {
               typeof window !== "undefined" ? window.origin : ""
             }/osmosis-logo-wc.png`}
           />
-          <link rel="preload" as="image/svg+xml" href="/icons/sprite.svg" />
+          <link rel="preload" as="image/svg+xml" href={spriteSVGURL} />
         </Head>
         <OgpMeta />
         <IbcNotifier />
