@@ -7,8 +7,8 @@
   },
   "app": {
     "banner": {
-      "title": "Tüm izin gerektirmeyen varlıkları görüntülüyorsunuz",
-      "linkText": "Tüm izin gerektirmeyen varlıkları görüntülüyorsunuz. <link>Ana uygulamaya dönmek için burayı tıklayın</link>."
+      "title": "Tüm izin gerektirmeyen varlıkları görüntülüyorsunuz.",
+      "linkText": "Ana uygulamaya dönmek için burayı tıklayın"
     }
   },
   "swap": {

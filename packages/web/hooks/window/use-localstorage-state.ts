@@ -28,7 +28,7 @@ export function useLocalStorageState<T>(
 
   const setValue = (value: T) => {
     try {
-      if (typeof window !== "undefined") {
+      if (typeof window !== "undefined" && key) {
         window.localStorage.setItem(key, JSON.stringify(value));
       }
 

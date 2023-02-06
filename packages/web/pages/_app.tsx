@@ -7,7 +7,6 @@ import { enableStaticRendering } from "mobx-react-lite";
 import { ToastContainer, Bounce } from "react-toastify";
 import { StoreProvider } from "../stores";
 import { MainLayout } from "../components/layouts";
-import { TempBanner } from "../components/alert/temp-banner";
 import { OgpMeta } from "../components/ogp-meta";
 import { MainLayoutMenu } from "../components/types";
 import dayjs from "dayjs";
@@ -21,7 +20,6 @@ import {
   AmplitudeEvent,
   EventName,
   IS_FRONTIER,
-  IS_HALTED,
   PromotedLBPPoolIds,
 } from "../config";
 import { useAmplitudeAnalytics } from "../hooks/use-amplitude-analytics";
@@ -33,7 +31,6 @@ import {
 import spriteSVGURL from "../public/icons/sprite.svg";
 
 import en from "../localizations/en.json";
-import { Formatted } from "../components/localization";
 import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
 import dayjsLocaleKo from "../localizations/dayjs-locale-ko.js";
 
@@ -125,37 +122,6 @@ function MyApp({ Component, pageProps }: AppProps) {
         </Head>
         <OgpMeta />
         <IbcNotifier />
-        {IS_FRONTIER && !IS_HALTED && (
-          <TempBanner
-            localStorageKey="show_frontier_banner"
-            title={t("app.banner.title")}
-            message={
-              <>
-                <Formatted
-                  translationKey="app.banner.linkText"
-                  components={{
-                    "<text>": <></>,
-                    "<link>": (
-                      <a
-                        className="items-center underline"
-                        href="https://app.osmosis.zone/"
-                        target="_self"
-                      />
-                    ),
-                  }}
-                />
-              </>
-            }
-          />
-        )}
-        {IS_HALTED && (
-          <TempBanner
-            localStorageKey="show_halted_banner"
-            shouldPersist
-            title="Chain is halted"
-            message="Transactions are temporarily disabled"
-          />
-        )}
         <ToastContainer
           toastStyle={{
             backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",

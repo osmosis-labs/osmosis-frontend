@@ -7,8 +7,8 @@
   },
   "app": {
     "banner": {
-      "title": "Vous consultez tous les actifs sans permission",
-      "linkText": "Vous consultez tous les actifs sans permission.<link>Cliquez ici pour revenir au site principal</link>."
+      "title": "Vous consultez tous les actifs sans permission.",
+      "linkText": "Cliquez ici pour revenir au site principal"
     }
   },
   "swap": {

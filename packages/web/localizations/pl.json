@@ -7,8 +7,8 @@
   },
   "app": {
     "banner": {
-      "title": "Przeglądasz środki nie wymagające uprawnień",
-      "linkText": "Przeglądasz wszystkie środki nie wymagające uprawnień. <link>Kliknij tutaj, aby wrócić do głównej aplikacji</link>."
+      "title": "Przeglądasz środki nie wymagające uprawnień.",
+      "linkText": "Kliknij tutaj, aby wrócić do głównej aplikacji"
     }
   },
   "swap": {

@@ -8,7 +8,7 @@
   "app": {
     "banner": {
       "title": "Visualizati toate activele care nu necesita permisiuni.",
-      "linkText": "Visualizati toate activele care nu necesita permisiuni. <link>Click aici pentru a va intoarce la aplicatia principala.</link>."
+      "linkText": "Click aici pentru a va intoarce la aplicatia principala"
     }
   },
   "swap": {
