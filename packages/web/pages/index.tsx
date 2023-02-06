@@ -145,32 +145,43 @@ const Home: NextPage = observer(function () {
   return (
     <main className="relative h-full bg-osmoverse-900">
       <div className="absolute h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">
-        <Image
-          src="/images/osmosis-home-bg-mars.png"
-          alt="Scientists landing on mars"
-          layout="fill"
-          className="object-cover lg:!hidden"
-        />
-        <svg
-          className="absolute h-full w-full lg:hidden"
-          pointerEvents="none"
-          viewBox="0 0 1300 900"
-          height="900"
-          preserveAspectRatio="xMidYMid slice"
-        >
-          <g>
-            <ProgressiveSvgImage
-              lowResXlinkHref={
-                IS_FRONTIER ? "/images/osmosis-cowboy-woz-low.png" : ""
-              }
-              xlinkHref={IS_FRONTIER ? "/images/osmosis-cowboy-woz.png" : ""}
-              x={IS_FRONTIER ? "-100" : "61"}
-              y={IS_FRONTIER ? "100" : "682"}
-              width={IS_FRONTIER ? "800" : "448.8865"}
-              height={IS_FRONTIER ? "800" : "285.1699"}
-            />
-          </g>
-        </svg>
+        {!IS_FRONTIER && (
+          <Image
+            src="/images/osmosis-home-bg-mars.png"
+            alt="Scientists landing on mars"
+            layout="fill"
+            className="pointer-events-none object-cover lg:!hidden"
+            priority
+          />
+        )}
+        {IS_FRONTIER && (
+          <svg
+            className="absolute h-full w-full lg:hidden"
+            pointerEvents="none"
+            viewBox="0 0 1300 900"
+            height="900"
+            preserveAspectRatio="xMidYMid slice"
+          >
+            <g>
+              <ProgressiveSvgImage
+                lowResXlinkHref={
+                  IS_FRONTIER
+                    ? "/images/osmosis-cowboy-woz-low.png"
+                    : "/images/osmosis-home-fg-low.png"
+                }
+                xlinkHref={
+                  IS_FRONTIER
+                    ? "/images/osmosis-cowboy-woz.png"
+                    : "/images/osmosis-home-fg.png"
+                }
+                x={IS_FRONTIER ? "-100" : "61"}
+                y={IS_FRONTIER ? "100" : "682"}
+                width={IS_FRONTIER ? "800" : "448.8865"}
+                height={IS_FRONTIER ? "800" : "285.1699"}
+              />
+            </g>
+          </svg>
+        )}
       </div>
       <div className="flex h-full w-full items-center overflow-y-auto overflow-x-hidden">
         <TradeClipboard
