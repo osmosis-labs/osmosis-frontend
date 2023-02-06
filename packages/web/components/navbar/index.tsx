@@ -300,12 +300,14 @@ const AnnouncementBanner: FunctionComponent<
         )}
       </div>
       {!persistent && !isWarning && (
-        <button
-          className="flex cursor-pointer items-center"
+        <IconButton
+          className="flex w-fit cursor-pointer items-center py-0"
           onClick={closeBanner}
-        >
-          <Icon id="close-small" height={24} width={24} />
-        </button>
+          aria-label="Close"
+          icon={<Icon id="close-small" height={24} width={24} />}
+          size="unstyled"
+          mode="unstyled"
+        />
       )}
     </div>
   );
