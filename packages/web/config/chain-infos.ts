@@ -768,7 +768,7 @@ const chainInfos = (
         },
       ],
       features: ["ibc-transfer"],
-      explorerUrlToTx: "https://blockscan.ixo.world/transactions/{txHash}",
+      explorerUrlToTx: "https://blockscan.ixo.world/txs/{txHash}",
     },
     {
       rpc: "https://rpc.bitcanna.io",
