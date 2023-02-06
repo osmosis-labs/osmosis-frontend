@@ -74,6 +74,10 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     makeObservable(this);
   }
 
+  get stableSwapInfo() {
+    return this._queryPools.getPool(this._poolId)?.stableSwapInfo;
+  }
+
   get isSingleAmountIn(): boolean {
     return this._isSingleAmountIn;
   }

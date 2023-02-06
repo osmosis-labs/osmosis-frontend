@@ -7,14 +7,14 @@
   },
   "app": {
     "banner": {
-      "title": "You're viewing all permissionless assets",
-      "linkText": "You're viewing all permissionless assets. <link>Click here to return to the main app</link>."
+      "title": "You're viewing all permissionless assets.",
+      "linkText": "Click here to return to the main app"
     }
   },
   "swap": {
     "title": "Swap",
     "settings": {
-      "title": "Transaction Settings",
+      "title": "Transaction settings",
       "slippage": "Slippage tolerance",
       "slippageInfo": "Your transaction will revert if the price changes unfavorably by more than this percentage."
     },
@@ -146,7 +146,8 @@
     "bondLiquidityCaption": "Lock up your shares for longer durations to earn higher APRs.",
     "bondSuperfluidLiquidityCaption": "Go superfluid for maximum rewards.",
     "bondShares": "Bond Shares",
-    "amountDaysUnbonding": "{numDays} days unbonding",
+    "amountDaysUnbonding": "{numDays} day unbonding",
+    "amountDaysUnbonding_plural": "{numDays} days unbonding",
     "available": "Available",
     "unbond": "Unbond",
     "bonded": "Bonded",
@@ -179,7 +180,13 @@
     "singleAsset": "Single asset",
     "available": "Available",
     "autoswapCaption": "Use autoswap to add liquidity with a single asset.",
-    "stablecoinWarning": "You are adding liquidity to {denom}, a {mechanism}-backed stablecoin."
+    "stablecoinWarning": "You are adding liquidity to {denom}, a {mechanism}-backed stablecoin.",
+    "scalingFactor": "scaling factor",
+    "scalingFactorInformation": "This factor allows the curve to adjust to predictable price changes, such as the value accruing to a liquid staking token.",
+    "scalingFactorControllerWarning_first": "The scaling factor controller is enabled. The",
+    "scalingFactorControllerWarning_second": "can adjust the",
+    "scalingFactorControllerWarning_third": "to maintain the peg. The current scaling factor is",
+    "scalingFactorController": "controller"
   },
   "lockToken": {
     "title": "Bond LP Shares",
@@ -313,6 +320,11 @@
         "status": "Status",
         "deposit": "Deposit",
         "withdraw": "Withdraw"
+      },
+      "failed": "Failed",
+      "failedWithReason": "Failed: {reason}",
+      "errors": {
+        "insufficientFee": "Insufficient Fee"
       }
     }
   },
@@ -343,14 +355,14 @@
     "vote": "Vote",
     "info": "Stats",
     "signOut": "Disconnect",
-    "help": "Get Support Lab Help",
-    "learnMoreFrontier": "Learn More<br/>About the <br2/> <name>Osmosis Frontier</name>",
-    "buyTokens": "Buy tokens"
+    "help": "Get Support Lab Help"
   },
   "settings": {
-    "title": "Settings",
+    "title": "Global settings",
     "titleLanguage": "Language",
-    "titleHideDust": "Hide pools with < {fiatSymbol}0.01"
+    "titleHideDust": "Hide pools with < {fiatSymbol}0.01",
+    "selectLanguage": "Select language",
+    "filterDust": "Filter Dust"
   },
   "errors": {
     "emptyAmount": "Amount is empty",
@@ -372,12 +384,21 @@
     "invalidSlippage": "Invalid slippage",
     "noSendCurrency": "Currency to send not set",
     "insufficientBal": "Insufficient balance",
+    "insufficientLiquidity": "Insufficient liquidity",
+    "noRoute": "No route for this trade",
     "notInitialized": "Not initialized",
     "calculatingShareOutAmount": "Problem calculating out amount",
     "noAvailableShares": "No available {denom} shares",
     "generic": "Error"
   },
   "connectWallet": "Connect wallet",
+  "buyTokens": "Buy tokens",
+  "profile": {
+    "modalTitle": "Profile",
+    "balance": "Balance",
+    "wallet": "Wallet",
+    "viewAllAssets": "View all assets"
+  },
   "keplr": {
     "install": "Install Keplr",
     "wallet": "Keplr Wallet",
@@ -392,7 +413,7 @@
   "transactionBroadcasting": "Transaction Broadcasting",
   "swapFailed": "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.",
   "waitingForTransaction": "Waiting for transaction to be included in the block",
-  "viewExplorer": "view explorer",
+  "viewExplorer": "View explorer",
   "unknownError": "Unknown error",
   "requestRejected": "Request rejected",
   "stablecoinTypes": {

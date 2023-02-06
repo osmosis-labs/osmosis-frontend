@@ -45,6 +45,7 @@ export const InputBox: FunctionComponent<Props> = ({
   className,
   isAutosize,
   inputRef,
+  autoFocus,
 }) => {
   const [inputFocused, setInputFocused] = useState(false);
 
@@ -83,6 +84,7 @@ export const InputBox: FunctionComponent<Props> = ({
               setInputFocused(true);
               onFocus && onFocus(e);
             }}
+            autoFocus={autoFocus}
           />
         ) : (
           <input
@@ -110,6 +112,7 @@ export const InputBox: FunctionComponent<Props> = ({
             onInput={(e: any) => onInput(e.target.value)}
             onClick={(e: any) => e.target.select()}
             disabled={disabled}
+            autoFocus={autoFocus}
           />
         )}
         {trailingSymbol && <span>{trailingSymbol}</span>}

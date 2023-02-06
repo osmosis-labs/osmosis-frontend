@@ -199,4 +199,22 @@ export const SourceChainConfigs: {
       logoUrl: "/networks/ethereum.svg",
     },
   },
+  wavax: {
+    avalanche: {
+      id: IS_TESTNET ? ("Avalanche Fuji Testnet" as const) : ("Avalanche" as const),
+      erc20ContractAddress: IS_TESTNET
+        ? "0xd00ae08403B9bbb9124bB305C09058E32C39A48c"
+        : "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+      logoUrl: "/networks/avalanche.svg",
+    },
+  },
+  wftm: {
+    fantom: {
+      id: IS_TESTNET ? ("Fantom Testnet" as const) : ("Fantom" as const),
+      erc20ContractAddress: IS_TESTNET
+        ? "0x812666209b90344Ec8e528375298ab9045c2Bd08"
+        : "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+      logoUrl: "/networks/fantom.svg",
+    },
+  },
 };

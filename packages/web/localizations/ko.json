@@ -8,7 +8,7 @@
   "app": {
     "banner": {
       "title": "권한이 없는 모든 자산이 보여집니다.",
-      "linkText": "권한이 없는 모든 자산이 보여집니다. <link>클릭해서 메인 앱으로 돌아가기</link>."
+      "linkText": "클릭해서 메인 앱으로 돌아가기"
     }
   },
   "swap": {
@@ -146,7 +146,8 @@
     "bondLiquidityCaption": "더 긴 기간을 예치하면 더 많은 보상 APR이 주어집니다.",
     "bondSuperfluidLiquidityCaption": "Superfluid 를 통해 최대 보상을 받으세요.",
     "bondShares": "유동성 예치",
-    "amountDaysUnbonding": "예치 해제 {numDays}일",
+    "amountDaysUnbonding": "{numDays}일 연결 해제",
+    "amountDaysUnbonding_plural": "예치 해제 {numDays}일",
     "available": "사용 가능",
     "unbond": "예치 해재하기",
     "bonded": "예치된 자산",
@@ -179,7 +180,13 @@
     "singleAsset": "단일 자산",
     "available": "추가 가능 수량",
     "autoswapCaption": "오토스왑을 통해 단일 자산으로 유동성 추가합니다",
-    "stablecoinWarning": "You are adding liquidity to {denom}, a {mechanism}-backed stablecoin."
+    "stablecoinWarning": "{mechanism} 지원 스테이블 코인인 {denom}에 유동성을 추가하고 있습니다.",
+    "scalingFactor": "배율 인수",
+    "scalingFactorInformation": "이 요소를 사용하면 곡선이 유동성 스테이킹 토큰에 누적되는 가치와 같은 예측 가능한 가격 변화에 맞게 조정될 수 있습니다.",
+    "scalingFactorControllerWarning_first": "스케일링 계수 컨트롤러가 활성화되어 있습니다. 그만큼",
+    "scalingFactorControllerWarning_second": "조정할 수 있습니다",
+    "scalingFactorControllerWarning_third": "페그를 유지합니다. 현재 스케일링 계수는입니다",
+    "scalingFactorController": "제어 장치"
   },
   "lockToken": {
     "title": "유동성 예치",
@@ -313,6 +320,11 @@
         "status": "상태",
         "deposit": "입금",
         "withdraw": "출금"
+      },
+      "failed": "실패한",
+      "failedWithReason": "실패한: {reason}",
+      "errors": {
+        "insufficientFee": "부족한 수수료"
       }
     }
   },
@@ -343,14 +355,14 @@
     "vote": "투표",
     "info": "정보",
     "signOut": "연결해제",
-    "help": "연구실 고객센터",
-    "learnMoreFrontier": "<name>오스모시스 프론티어</name> 에 대해서 <br/> 더 자세히 <br2/> 알아보기",
-    "buyTokens": "토큰 구매"
+    "help": "연구실 고객센터"
   },
   "settings": {
-    "title": "설정",
+    "title": "전역 설정",
     "titleLanguage": "언어",
-    "titleHideDust": "< {fiatSymbol}0.01 미만인 풀 숨기기"
+    "titleHideDust": "< {fiatSymbol}0.01 미만인 풀 숨기기",
+    "selectLanguage": "언어 선택",
+    "filterDust": "필터 먼지"
   },
   "errors": {
     "emptyAmount": "수량이 비어있습니다",
@@ -372,12 +384,21 @@
     "invalidSlippage": "잘못된 슬리피지",
     "noSendCurrency": "전송할 토큰이 설정되지 않았습니다",
     "insufficientBal": "잔액 불충분",
+    "insufficientLiquidity": "유동성 부족",
+    "noRoute": "이 거래에 대한 경로 없음",
     "notInitialized": "초기화 되지 않았습니다",
     "calculatingShareOutAmount": "수량을 계산하는데 오류가 발생했습니다",
     "noAvailableShares": "사용 가능한 {denom}이 없습니다",
     "generic": "에러"
   },
   "connectWallet": "지갑 연결하기",
+  "buyTokens": "토큰 구매",
+  "profile": {
+    "modalTitle": "프로필",
+    "balance": "잔액",
+    "wallet": "지갑",
+    "viewAllAssets": "모든 자산 보기"
+  },
   "keplr": {
     "install": "Keplr 설치하기",
     "wallet": "Keplr 지갑",

@@ -4,7 +4,12 @@ import { FilteredPools } from "./types";
 
 export function makePoolRawFromFilteredPool(
   filteredPool: FilteredPools["pools"][0]
-): PoolRaw {
+): PoolRaw | undefined {
+  // deny pools contianing tokens with gamm denoms
+  if (filteredPool.pool_tokens.some((token) => token.denom.includes("gamm"))) {
+    return;
+  }
+
   const base = {
     "@type": `/${filteredPool.type}`,
     id: filteredPool.pool_id.toString(),
@@ -44,7 +49,7 @@ export function makePoolRawFromFilteredPool(
       scaling_factors: filteredPool.pool_tokens.map((token) =>
         token.weight_or_scaling.toString()
       ),
-      scaling_factor_controller: "", // TOOD: add scaling factor controller in imperator query
+      scaling_factor_controller: "", // TODO: add scaling factor controller in imperator query
     };
   }
 

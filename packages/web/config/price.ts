@@ -84,12 +84,12 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     alternativeCoinId: "pool:stk/uatom",
     poolId: "886",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
-        [{ portId: "transfer", channelId: "channel-4" }],
-        "stk/uatom"
+      [{ portId: "transfer", channelId: "channel-4" }],
+      "stk/uatom"
     ),
     spotPriceDestDenom: DenomHelper.ibcDenom(
-        [{ portId: "transfer", channelId: "channel-0" }],
-        "uatom"
+      [{ portId: "transfer", channelId: "channel-0" }],
+      "uatom"
     ),
     destCoinId: "pool:uatom",
   },
@@ -1060,6 +1060,49 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     spotPriceSourceDenom: DenomHelper.ibcDenom(
       [{ portId: "transfer", channelId: "channel-526" }],
       "dys"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:erc20/0x2Cbea61fdfDFA520Ee99700F104D5b75ADf50B0c",
+    poolId: "895",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-490" }],
+      "erc20/0x2Cbea61fdfDFA520Ee99700F104D5b75ADf50B0c"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-208" }],
+      "uusdc"
+    ),
+    destCoinId: "usd-coin",
+  },
+  {
+    alternativeCoinId: "pool:aplanq",
+    poolId: "898",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+        [{ portId: "transfer", channelId: "channel-492" }],
+        "aplanq"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:acanto",
+    poolId: "901",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+        [{ portId: "transfer", channelId: "channel-550" }],
+        "acanto"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:wftm-wei",
+    poolId: "900",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+        [{ portId: "transfer", channelId: "channel-208" }],
+        "wftm-wei"
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",

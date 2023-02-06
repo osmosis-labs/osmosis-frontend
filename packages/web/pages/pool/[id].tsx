@@ -43,7 +43,7 @@ import { Disableable } from "../../components/types";
 import { Button, ArrowButton } from "../../components/buttons";
 import { useTranslation } from "react-multi-lang";
 import PoolComposition from "../../components/chart/pool-composition";
-import useMeasure from "../../hooks/use-measure";
+import { useMeasure } from "react-use";
 
 const E = EventName.PoolDetail;
 
@@ -191,6 +191,7 @@ const Pool: FunctionComponent = observer(() => {
     (result: Promise<void>, config: ObservableRemoveLiquidityConfig) => {
       const removeLiqInfo = {
         ...baseEventInfo,
+        isSuperfluidEnabled,
         poolSharePercentage: config.percentage,
       };
 
@@ -675,7 +676,10 @@ const Pool: FunctionComponent = observer(() => {
                     <Button
                       className="w-fit shrink-0 xs:w-full"
                       mode="secondary"
-                      disabled={poolDetail?.userAvailableValue.toDec().isZero()}
+                      disabled={queryOsmosis.queryGammPoolShare
+                        .getAvailableGammShare(bech32Address, poolId)
+                        .toDec()
+                        .isZero()}
                       onClick={() => {
                         logEvent([
                           E.removeLiquidityClicked,

@@ -7,8 +7,8 @@
   },
   "app": {
     "banner": {
-      "title": "Przeglądasz środki nie wymagające uprawnień",
-      "linkText": "Przeglądasz wszystkie środki nie wymagające uprawnień. <link>Kliknij tutaj, aby wrócić do głównej aplikacji</link>."
+      "title": "Przeglądasz środki nie wymagające uprawnień.",
+      "linkText": "Kliknij tutaj, aby wrócić do głównej aplikacji"
     }
   },
   "swap": {
@@ -146,7 +146,8 @@
     "bondLiquidityCaption": "Zablokuj swoje aktywa na dłuższy okres, żeby zdobywać wyższy APR.",
     "bondSuperfluidLiquidityCaption": "Maksymalizuj zyski używając superpłynnośći.",
     "bondShares": "Zwiąż Aktywa",
-    "amountDaysUnbonding": "{numDays} dni rozwiązywania",
+    "amountDaysUnbonding": "{numDays} dzień rozłączenia",
+    "amountDaysUnbonding_plural": "{numDays} dni rozwiązywania",
     "available": "Do dyspozycji",
     "unbond": "Odwiąż",
     "bonded": "Związane",
@@ -179,7 +180,13 @@
     "singleAsset": "Jeden token",
     "available": "Dostępne",
     "autoswapCaption": "Użyj autowymiany, żeby dodać płynność jednym tokenem.",
-    "stablecoinWarning": "Dodajesz płynność do {denom}, stablecoina {mechanism} zabezpieczeniem."
+    "stablecoinWarning": "Dodajesz płynność do {denom}, stablecoina {mechanism} zabezpieczeniem.",
+    "scalingFactor": "współczynnik skalowania",
+    "scalingFactorInformation": "Czynnik ten pozwala na dostosowanie krzywej do przewidywalnych zmian cen, takich jak wartość przypadająca na płynny token.",
+    "scalingFactorControllerWarning_first": "Kontroler współczynnika skalowania jest włączony.",
+    "scalingFactorControllerWarning_second": "może dostosować",
+    "scalingFactorControllerWarning_third": "Aby utrzymać kołek. Obecny współczynnik skalowania jest",
+    "scalingFactorController": "kontroler"
   },
   "lockToken": {
     "title": "Zwiąż Aktywa Płynności",
@@ -313,6 +320,11 @@
         "status": "Status",
         "deposit": "Wpłata",
         "withdraw": "Wypłata"
+      },
+      "failed": "Przegrany",
+      "failedWithReason": "Przegrany: {reason}",
+      "errors": {
+        "insufficientFee": "Niewystarczająca opłata"
       }
     }
   },
@@ -343,14 +355,14 @@
     "vote": "Głosuj",
     "info": "Statystyki",
     "signOut": "Rozłącz",
-    "help": "Uzyskaj Pomoc od Support Lab",
-    "learnMoreFrontier": "Dowiedz się więcej o <br/> <name>Osmosis Frontier</name>",
-    "buyTokens": "Kup tokeny"
+    "help": "Uzyskaj Pomoc od Support Lab"
   },
   "settings": {
-    "title": "Ustawienia",
+    "title": "Ustawienia ogólne",
     "titleLanguage": "Język",
-    "titleHideDust": "Ukryj pule z < {fiatSymbol}0.01"
+    "titleHideDust": "Ukryj pule z < {fiatSymbol}0.01",
+    "selectLanguage": "Wybierz język",
+    "filterDust": "Filtruj kurz"
   },
   "errors": {
     "emptyAmount": "Ilość jest pusta",
@@ -372,12 +384,21 @@
     "invalidSlippage": "Niepoprawna wartość odchylenia",
     "noSendCurrency": "Nie ustawiona waluta do wysłania",
     "insufficientBal": "Niewystarczająca ilość środków",
+    "insufficientLiquidity": "Niewystarczająca płynność",
+    "noRoute": "Brak trasy dla tej transakcji",
     "notInitialized": "Nie zinicjalizowane",
     "calculatingShareOutAmount": "Problem z obliczeniem wartości",
     "noAvailableShares": "Nie ma dostępnych {denom} aktyw",
     "generic": "Błąd"
   },
   "connectWallet": "Połącz portfel",
+  "buyTokens": "Kup tokeny",
+  "profile": {
+    "modalTitle": "Profil",
+    "balance": "Balansować",
+    "wallet": "Portfel",
+    "viewAllAssets": "Ver todos os recursos"
+  },
   "keplr": {
     "install": "Zainstaluj Keplr",
     "wallet": "Keplr Portfel",

@@ -5,6 +5,8 @@ import {
   useState,
   useMemo,
   useCallback,
+  Fragment,
+  MouseEvent,
 } from "react";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { AppCurrency, Currency } from "@keplr-wallet/types";
@@ -15,7 +17,6 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { EventName } from "../../config";
 import {
-  useBooleanWithWindowEvent,
   useFakeFeeConfig,
   useSlippageConfig,
   useTokenSwapQueryParams,
@@ -31,9 +32,10 @@ import TradeRoute from "./trade-route";
 import { useTranslation } from "react-multi-lang";
 import { tError } from "../localization";
 import { TokenSelectWithDrawer } from "../control/token-select-with-drawer";
-import useMeasure from "../../hooks/use-measure";
+import { useLatest, useMeasure } from "react-use";
 import { Icon } from "../assets";
-import useLatest from "../../hooks/use-latest";
+import IconButton from "../buttons/icon-button";
+import { Popover } from "../popover";
 
 export const TradeClipboard: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!
@@ -64,7 +66,6 @@ export const TradeClipboard: FunctionComponent<{
     const account = accountStore.getAccount(chainId);
     const queries = queriesStore.get(chainId);
 
-    const [isSettingOpen, setIsSettingOpen] = useBooleanWithWindowEvent(false);
     const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
     const [
       estimateDetailsContentRef,
@@ -137,18 +138,32 @@ export const TradeClipboard: FunctionComponent<{
       [tradeTokenInConfig.expectedSwapResult.priceImpact]
     );
 
-    useEffect(() => {
-      if (isSettingOpen && slippageConfig.isManualSlippage) {
-        // Whenever the setting opened, give a focus to the input if the manual slippage setting mode is on.
-        manualSlippageInputRef.current?.focus();
-      }
-    }, [isSettingOpen]);
-
     // token select dropdown
-    const [showFromTokenSelectDropdown, setFromTokenSelectDropdownLocal] =
+    const fetchedRemainingPoolsRef = useRef(false);
+    const fetchRemainingPoolsOnce = useCallback(() => {
+      if (!fetchedRemainingPoolsRef.current) {
+        fetchedRemainingPoolsRef.current = true;
+        queries.osmosis?.queryGammPools.fetchRemainingPools();
+      }
+    }, []);
+    const [showFromTokenSelectDropdown, _setFromTokenSelectDropdownLocal] =
       useState(false);
-    const [showToTokenSelectDropdown, setToTokenSelectDropdownLocal] =
+    const setFromTokenSelectDropdownLocal = useCallback(
+      (val: boolean) => {
+        fetchRemainingPoolsOnce();
+        _setFromTokenSelectDropdownLocal(val);
+      },
+      [fetchRemainingPoolsOnce]
+    );
+    const [showToTokenSelectDropdown, _setToTokenSelectDropdownLocal] =
       useState(false);
+    const setToTokenSelectDropdownLocal = useCallback(
+      (val: boolean) => {
+        fetchRemainingPoolsOnce();
+        _setToTokenSelectDropdownLocal(val);
+      },
+      [fetchRemainingPoolsOnce]
+    );
     const setOneTokenSelectOpen = (dropdown: "to" | "from") => {
       if (dropdown === "to") {
         setToTokenSelectDropdownLocal(true);
@@ -448,128 +463,160 @@ export const TradeClipboard: FunctionComponent<{
           containerClassName
         )}
       >
-        {/** Overlay */}
-        {isSettingOpen && (
-          <div className="absolute inset-0 z-40 bg-osmoverse-1000/40" />
-        )}
+        <Popover>
+          {({ open, close }) => (
+            <>
+              <Popover.Overlay className="absolute inset-0 z-40 bg-osmoverse-1000/80" />
 
-        <div className="relative flex w-full items-center justify-end">
-          <h6 className="w-full text-center">{t("swap.title")}</h6>
-          <button
-            className="absolute top-0 right-3 z-50"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsSettingOpen(!isSettingOpen);
-              closeTokenSelectDropdowns();
-            }}
-          >
-            <Icon
-              id="setting"
-              width={isMobile ? 20 : 28}
-              height={isMobile ? 20 : 28}
-              className={isSettingOpen ? "text-white" : "text-osmoverse-400"}
-            />
-          </button>
-          {isSettingOpen && (
-            <div
-              className="absolute bottom-[-0.5rem] right-0 z-40 w-full max-w-[23.875rem] translate-y-full rounded-2xl bg-osmoverse-800 p-[1.875rem] shadow-md md:p-5"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h6>{t("swap.settings.title")}</h6>
-              <div className="mt-2.5 flex items-center">
-                <div className="subtitle1 mr-2 text-osmoverse-200">
-                  {t("swap.settings.slippage")}
-                </div>
-                <InfoTooltip content={t("swap.settings.slippageInfo")} />
-              </div>
-
-              <ul className="mt-3 flex w-full gap-x-3">
-                {slippageConfig.selectableSlippages.map((slippage) => {
-                  return (
-                    <li
-                      key={slippage.index}
-                      className={classNames(
-                        "flex h-8 w-full cursor-pointer items-center justify-center rounded-lg bg-osmoverse-700",
-                        {
-                          "border-2 border-wosmongton-200": slippage.selected,
+              <div className="relative flex w-full items-center justify-end">
+                <h6 className="w-full text-center">{t("swap.title")}</h6>
+                <Popover.Button as={Fragment}>
+                  <IconButton
+                    aria-label="Open swap settings"
+                    className="absolute top-0 right-3 z-40 w-fit py-0"
+                    size="unstyled"
+                    mode="unstyled"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      closeTokenSelectDropdowns();
+                    }}
+                    icon={
+                      <Icon
+                        id="setting"
+                        width={isMobile ? 20 : 28}
+                        height={isMobile ? 20 : 28}
+                        className={
+                          open
+                            ? "text-white"
+                            : "text-osmoverse-400 hover:text-white-full"
                         }
+                      />
+                    }
+                  />
+                </Popover.Button>
+
+                <Popover.Panel
+                  className="absolute bottom-[-0.5rem] right-0 z-40 w-full max-w-[23.875rem] translate-y-full rounded-2xl bg-osmoverse-800 p-[1.875rem] shadow-md md:p-5"
+                  onClick={(e: MouseEvent) => e.stopPropagation()}
+                >
+                  <div className="flex items-center justify-between">
+                    <h6>{t("swap.settings.title")}</h6>
+                    <IconButton
+                      aria-label="Close"
+                      mode="unstyled"
+                      size="unstyled"
+                      className="w-fit"
+                      icon={
+                        <Icon
+                          id="close"
+                          width={32}
+                          height={32}
+                          className="text-osmoverse-400"
+                        />
+                      }
+                      onClick={() => close()}
+                    />
+                  </div>
+                  <div className="mt-2.5 flex items-center">
+                    <div className="subtitle1 mr-2 text-osmoverse-200">
+                      {t("swap.settings.slippage")}
+                    </div>
+                    <InfoTooltip content={t("swap.settings.slippageInfo")} />
+                  </div>
+
+                  <ul className="mt-3 flex w-full gap-x-3">
+                    {slippageConfig.selectableSlippages.map((slippage) => {
+                      return (
+                        <li
+                          key={slippage.index}
+                          className={classNames(
+                            "flex h-8 w-full cursor-pointer items-center justify-center rounded-lg bg-osmoverse-700",
+                            {
+                              "border-2 border-wosmongton-200":
+                                slippage.selected,
+                            }
+                          )}
+                          onClick={(e) => {
+                            e.preventDefault();
+
+                            slippageConfig.select(slippage.index);
+
+                            logEvent([
+                              EventName.Swap.slippageToleranceSet,
+                              {
+                                percentage: slippageConfig.slippage.toString(),
+                              },
+                            ]);
+                          }}
+                        >
+                          <button>{slippage.slippage.toString()}</button>
+                        </li>
+                      );
+                    })}
+                    <li
+                      className={classNames(
+                        "flex h-8 w-full cursor-pointer items-center justify-center rounded-lg",
+                        slippageConfig.isManualSlippage
+                          ? "border-2 border-wosmongton-200 text-white-high"
+                          : "text-osmoverse-500",
+                        slippageConfig.isManualSlippage
+                          ? slippageConfig.manualSlippageError
+                            ? "bg-missionError"
+                            : "bg-osmoverse-900"
+                          : "bg-osmoverse-900"
                       )}
                       onClick={(e) => {
                         e.preventDefault();
 
-                        slippageConfig.select(slippage.index);
-
-                        logEvent([
-                          EventName.Swap.slippageToleranceSet,
-                          {
-                            percentage: slippageConfig.slippage.toString(),
-                          },
-                        ]);
+                        if (manualSlippageInputRef.current) {
+                          manualSlippageInputRef.current.focus();
+                        }
                       }}
                     >
-                      <button>{slippage.slippage.toString()}</button>
+                      <InputBox
+                        type="number"
+                        className="w-fit bg-transparent px-0"
+                        inputClassName={`bg-transparent text-center ${
+                          !slippageConfig.isManualSlippage
+                            ? "text-osmoverse-500"
+                            : "text-white-high"
+                        }`}
+                        style="no-border"
+                        currentValue={slippageConfig.manualSlippageStr}
+                        onInput={(value) => {
+                          slippageConfig.setManualSlippage(value);
+
+                          logEvent([
+                            EventName.Swap.slippageToleranceSet,
+                            {
+                              fromToken:
+                                tradeTokenInConfig.sendCurrency.coinDenom,
+                              toToken: tradeTokenInConfig.outCurrency.coinDenom,
+                              isOnHome: !isInModal,
+                              percentage: slippageConfig.slippage.toString(),
+                            },
+                          ]);
+                        }}
+                        onFocus={() => slippageConfig.setIsManualSlippage(true)}
+                        inputRef={manualSlippageInputRef}
+                        isAutosize
+                        autoFocus={slippageConfig.isManualSlippage}
+                      />
+                      <span
+                        className={classNames("shrink-0", {
+                          "text-osmoverse-500":
+                            !slippageConfig.isManualSlippage,
+                        })}
+                      >
+                        %
+                      </span>
                     </li>
-                  );
-                })}
-                <li
-                  className={classNames(
-                    "flex h-8 w-full cursor-pointer items-center justify-center rounded-lg",
-                    slippageConfig.isManualSlippage
-                      ? "border-2 border-wosmongton-200 text-white-high"
-                      : "text-osmoverse-500",
-                    slippageConfig.isManualSlippage
-                      ? slippageConfig.manualSlippageError
-                        ? "bg-missionError"
-                        : "bg-osmoverse-900"
-                      : "bg-osmoverse-900"
-                  )}
-                  onClick={(e) => {
-                    e.preventDefault();
-
-                    if (manualSlippageInputRef.current) {
-                      manualSlippageInputRef.current.focus();
-                    }
-                  }}
-                >
-                  <InputBox
-                    type="number"
-                    className="w-fit bg-transparent px-0"
-                    inputClassName={`bg-transparent text-center ${
-                      !slippageConfig.isManualSlippage
-                        ? "text-osmoverse-500"
-                        : "text-white-high"
-                    }`}
-                    style="no-border"
-                    currentValue={slippageConfig.manualSlippageStr}
-                    onInput={(value) => {
-                      slippageConfig.setManualSlippage(value);
-
-                      logEvent([
-                        EventName.Swap.slippageToleranceSet,
-                        {
-                          fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
-                          toToken: tradeTokenInConfig.outCurrency.coinDenom,
-                          isOnHome: !isInModal,
-                          percentage: slippageConfig.slippage.toString(),
-                        },
-                      ]);
-                    }}
-                    onFocus={() => slippageConfig.setIsManualSlippage(true)}
-                    inputRef={manualSlippageInputRef}
-                    isAutosize
-                  />
-                  <span
-                    className={classNames("shrink-0", {
-                      "text-osmoverse-500": !slippageConfig.isManualSlippage,
-                    })}
-                  >
-                    %
-                  </span>
-                </li>
-              </ul>
-            </div>
+                  </ul>
+                </Popover.Panel>
+              </div>
+            </>
           )}
-        </div>
+        </Popover>
 
         <div className="flex flex-col gap-3">
           <div
@@ -708,6 +755,8 @@ export const TradeClipboard: FunctionComponent<{
                   onChange={(e) => {
                     e.preventDefault();
                     if (
+                      !isNaN(Number(e.target.value)) &&
+                      Number(e.target.value) >= 0 &&
                       Number(e.target.value) <= Number.MAX_SAFE_INTEGER &&
                       e.target.value.length <= (isMobile ? 19 : 26)
                     ) {

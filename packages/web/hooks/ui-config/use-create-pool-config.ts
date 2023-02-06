@@ -8,7 +8,7 @@ import {
   ChainGetter,
   CosmosQueries,
   CosmwasmQueries,
-  QueriesStore,
+  IQueriesStore,
 } from "@keplr-wallet/stores";
 import { IFeeConfig } from "@keplr-wallet/hooks";
 
@@ -19,7 +19,7 @@ export function useCreatePoolConfig(
   chainGetter: ChainGetter,
   chainId: string,
   bech32Address: string,
-  queriesStore: QueriesStore<[CosmosQueries, CosmwasmQueries, OsmosisQueries]>,
+  queriesStore: IQueriesStore<CosmosQueries & CosmwasmQueries & OsmosisQueries>,
   feeConfig?: IFeeConfig,
   opts?: CreatePoolConfigOpts
 ) {

@@ -67,7 +67,7 @@ const chainInfos = (
             ]
           : []),
       ],
-      features: ["ibc-transfer", "ibc-go"],
+      features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
       explorerUrlToTx:
         OSMOSIS_EXPLORER_URL_OVERWRITE ??
         (IS_TESTNET
@@ -671,6 +671,17 @@ const chainInfos = (
           coinDecimals: 6,
           coinGeckoId: "posthuman",
           coinImageUrl: "/tokens/phmn.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1u45shlp0q4gcckvsj06ss4xuvsu0z24a0d0vr9ce6r24pht4e5xq7q995n",
+          coinDenom: "HOPERS",
+          coinMinimalDenom:
+            "cw20:juno1u45shlp0q4gcckvsj06ss4xuvsu0z24a0d0vr9ce6r24pht4e5xq7q995n:HOPERS",
+          coinDecimals: 6,
+          //coinGeckoId: "pool:hopers",
+          coinImageUrl: "/tokens/hopers.png",
         },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
@@ -1364,7 +1375,7 @@ const chainInfos = (
           coinImageUrl: "/tokens/gwbtc.png",
         },
         {
-          coinDenom: "WETH.grv",
+          coinDenom: "wETH.grv",
           coinMinimalDenom: "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
           coinDecimals: 18,
           // coinGeckoId: "weth",
@@ -2369,6 +2380,13 @@ const chainInfos = (
             high: 40000000000,
           },
         },
+        {
+          coinDenom: "arUSD",
+          coinMinimalDenom: "erc20/0x2Cbea61fdfDFA520Ee99700F104D5b75ADf50B0c",
+          coinDecimals: 18,
+          coinGeckoId: "pool:erc20/0x2Cbea61fdfDFA520Ee99700F104D5b75ADf50B0c",
+          coinImageUrl: "/tokens/arusd.png",
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
       explorerUrlToTx: "https://cosmosrun.info/acre-mainnet/tx/{txHash}",
@@ -2459,6 +2477,34 @@ const chainInfos = (
       explorerUrlToTx: "https://www.mintscan.io/onomy-protocol/txs/{txHash}",
     },
     {
+      rpc: "https://rpc.planq.network/",
+      rest: "https://rest.planq.network/",
+      chainId: "planq_7070-2",
+      chainName: "Planq",
+      bip44: {
+        coinType: 60,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("plq"),
+      currencies: [
+        {
+          coinDenom: "PLANQ",
+          coinMinimalDenom: "aplanq",
+          coinDecimals: 18,
+          coinGeckoId: "pool:aplanq",
+          coinImageUrl: "/tokens/planq.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 20000000000,
+            average: 25000000000,
+            high: 40000000000,
+          },
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
+      explorerUrlToTx: "https://ping.pub/planq/tx/{txHash}",
+    },
+    {
       rpc: "https://dys-tm.dysonprotocol.com:443",
       rest: "https://dys-api.dysonprotocol.com:443",
       chainId: "dyson-mainnet-01",
@@ -2484,7 +2530,65 @@ const chainInfos = (
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
-      explorerUrlToTx: "https://explorer.dys.dysonprotocol.com/dyson/tx/{txHash}",
+      explorerUrlToTx:
+        "https://explorer.dys.dysonprotocol.com/dyson/tx/{txHash}",
+    },
+    {
+      rpc: "https://testnet-rpc.marsprotocol.io/",
+      rest: "https://testnet-rest.marsprotocol.io/",
+      chainId: "ares-1",
+      chainName: "Mars Hub Testnet",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("mars"),
+      currencies: [
+        {
+          coinDenom: "MARS",
+          coinMinimalDenom: "umars",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/mars.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0,
+            average: 0,
+            high: 0.025,
+          },
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx:
+        "https://testnet-explorer.marsprotocol.io/transactions/{txHash}",
+    },
+    {
+      rpc: "https://canto-rpc.polkachu.com",
+      rest: "https://canto-api.polkachu.com",
+      chainId: "canto_7700-1",
+      chainName: "Canto",
+      bip44: {
+        coinType: 60,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("canto"),
+      currencies: [
+        {
+          coinDenom: "CANTO",
+          coinMinimalDenom: "acanto",
+          coinDecimals: 18,
+          coinImageUrl: "/tokens/canto.png",
+          coinGeckoId: "pool:acanto",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 125000000000,
+            average: 250000000000,
+            high: 375000000000,
+          },
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
+      explorerUrlToTx:
+        "https://cosmos.explorer.canto.io/transactions/{txHash}",
     },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
@@ -2554,12 +2658,12 @@ chainInfos.push({
       pegMechanism: "collateralized",
     },
     {
-      coinDenom: "WETH",
+      coinDenom: "wETH",
       coinMinimalDenom: "weth-wei",
       coinDecimals: 18,
       // coinGeckoId: "weth",
       coinGeckoId: "pool:weth-wei",
-      coinImageUrl: "/tokens/weth.svg",
+      coinImageUrl: "/tokens/eth.png",
     },
     {
       coinDenom: "WBTC",
@@ -2642,8 +2746,8 @@ chainInfos.push({
       coinImageUrl: "/tokens/xcn.svg",
     },
     {
-      coinDenom: "WGLMR",
-      coinMinimalDenom: "wglmr-wei",
+      coinDenom: "wGLMR",
+      coinMinimalDenom: IS_TESTNET ? "wdev-wei" : "wglmr-wei",
       coinDecimals: 18,
       coinGeckoId: "wrapped-moonbeam",
       coinImageUrl: "/tokens/glmr.svg",
@@ -2656,18 +2760,18 @@ chainInfos.push({
       coinImageUrl: "/tokens/dot.svg",
     },
     {
-      coinDenom: "WBNB",
+      coinDenom: "wBNB",
       coinMinimalDenom: "wbnb-wei",
       coinDecimals: 18,
       coinGeckoId: "wbnb",
-      coinImageUrl: "/tokens/wbnb.svg",
+      coinImageUrl: "/tokens/bnb.svg",
     },
     {
-      coinDenom: "WMATIC",
+      coinDenom: "wMATIC",
       coinMinimalDenom: "wmatic-wei",
       coinDecimals: 18,
       coinGeckoId: "wmatic",
-      coinImageUrl: "/tokens/wmatic.svg",
+      coinImageUrl: "/tokens/matic.png",
     },
     {
       coinDenom: "BUSD",
@@ -2675,6 +2779,21 @@ chainInfos.push({
       coinDecimals: 18,
       coinGeckoId: "binance-usd",
       coinImageUrl: "/tokens/busd.png",
+    },
+    {
+      coinDenom: "wAVAX",
+      coinMinimalDenom: "wavax-wei",
+      coinDecimals: 18,
+      coinGeckoId: "avalanche-2",
+      coinImageUrl: "/tokens/avax.svg",
+    },
+    {
+      coinDenom: "wFTM",
+      coinMinimalDenom: "wftm-wei",
+      coinDecimals: 18,
+      //coinGeckoId: "fantom",
+      coinGeckoId: "pool:wftm-wei",
+      coinImageUrl: "/tokens/ftm.png",
     },
   ],
   feeCurrencies: [
@@ -2686,7 +2805,11 @@ chainInfos.push({
       coinImageUrl: "/tokens/axl.svg",
     },
   ],
-  gasPriceStep: {
+  gasPriceStep: IS_TESTNET ? {
+    low: 0.007,
+    average: 0.125,
+    high:0.2,
+  } : {
     low: 0.00005,
     average: 0.00007,
     high: 0.00009,
