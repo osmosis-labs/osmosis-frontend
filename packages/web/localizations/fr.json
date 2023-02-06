@@ -11,6 +11,12 @@
       "linkText": "Cliquez ici pour revenir au site principal"
     }
   },
+  "mars": {
+    "banner": {
+      "title": "Nos scientifiques ont atterri sur Mars et ont localisé des liquidités!",
+      "linkText": "Explorez Mars Protocol"
+    }
+  },
   "swap": {
     "title": "Échanger",
     "settings": {

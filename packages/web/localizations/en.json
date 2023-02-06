@@ -11,6 +11,12 @@
       "linkText": "Click here to return to the main app"
     }
   },
+  "mars": {
+    "banner": {
+      "title": "Our Scientists have landed on Mars and located liquidity!",
+      "linkText": "Explore Mars Protocol"
+    }
+  },
   "swap": {
     "title": "Swap",
     "settings": {

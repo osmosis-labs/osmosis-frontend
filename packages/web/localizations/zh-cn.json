@@ -11,6 +11,12 @@
       "linkText": "点击此处返回主应用"
     }
   },
+  "mars": {
+    "banner": {
+      "title": "我们的科学家已经登陆火星并找到了流动性!",
+      "linkText": "探索 Mars Protocol"
+    }
+  },
   "swap": {
     "title": "兑换",
     "settings": {

@@ -11,6 +11,12 @@
       "linkText": "Click aici pentru a va intoarce la aplicatia principala"
     }
   },
+  "mars": {
+    "banner": {
+      "title": "Oamenii noștri de știință au aterizat pe Marte și au găsit lichiditate!",
+      "linkText": "Explorați Mars Protocol"
+    }
+  },
   "swap": {
     "title": "Schimb",
     "settings": {

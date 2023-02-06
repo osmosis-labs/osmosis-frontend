@@ -274,6 +274,7 @@ const AnnouncementBanner: FunctionComponent<
   isWarning,
   persistent,
   closeBanner,
+  bg,
 }) => {
   const t = useTranslation();
 
@@ -284,7 +285,8 @@ const AnnouncementBanner: FunctionComponent<
         {
           "bg-gradient-negative": isWarning,
           "bg-osmoverse-700": !isWarning,
-        }
+        },
+        bg
       )}
     >
       <div className="flex w-full place-content-center items-center gap-3 text-center text-subtitle1">
@@ -305,7 +307,7 @@ const AnnouncementBanner: FunctionComponent<
       </div>
       {!persistent && !isWarning && (
         <IconButton
-          className="flex w-fit cursor-pointer items-center py-0"
+          className="flex w-fit cursor-pointer items-center py-0 text-white-full"
           onClick={closeBanner}
           aria-label="Close"
           icon={<Icon id="close-small" height={24} width={24} />}

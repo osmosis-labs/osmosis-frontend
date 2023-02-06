@@ -11,6 +11,12 @@
       "linkText": "Kliknij tutaj, aby wrócić do głównej aplikacji"
     }
   },
+  "mars": {
+    "banner": {
+      "title": "Nasi Naukowcy wylądowali na Marsie i zlokalizowali płynność!",
+      "linkText": "Odkrywaj Mars Protocol"
+    }
+  },
   "swap": {
     "title": "Wymień",
     "settings": {

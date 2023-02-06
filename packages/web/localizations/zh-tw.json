@@ -11,6 +11,12 @@
       "linkText": "按此回到主應用程式"
     }
   },
+  "mars": {
+    "banner": {
+      "title": "我們的科學家已經登陸火星並找到了流動性!",
+      "linkText": "探索 Mars Protocol"
+    }
+  },
   "swap": {
     "title": "兌換",
     "settings": {

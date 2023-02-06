@@ -11,6 +11,12 @@
       "linkText": "클릭해서 메인 앱으로 돌아가기"
     }
   },
+  "mars": {
+    "banner": {
+      "title": "우리 과학자들이 화성에 착륙하여 유동성을 찾았습니다!",
+      "linkText": "Mars Protocol 탐험"
+    }
+  },
   "swap": {
     "title": "거래",
     "settings": {

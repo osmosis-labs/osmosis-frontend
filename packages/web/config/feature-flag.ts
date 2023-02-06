@@ -25,6 +25,8 @@ export const Announcement:
       isWarning?: boolean;
       /** Will always show on page reload. Use with caution. (Warnings persist) */
       persistent?: boolean;
+      /** Custom Background color. */
+      bg?: string;
     }
   | undefined = IS_HALTED
   ? {
@@ -52,7 +54,16 @@ export const Announcement:
         url: "https://app.osmosis.zone/",
       },
     }
-  : undefined;
+  : {
+      localStorageKey: "show_mars_banner",
+      enTextOrLocalizationPath: "mars.banner.title",
+      link: {
+        enTextOrLocalizationKey: "mars.banner.linkText",
+        url: "https://mars.osmosis.zone/",
+      },
+      pageRoute: "/",
+      bg: "bg-gradient-negative",
+    };
 
 // Fiat ramps
 export const BUY_OSMO_TRANSAK = true;

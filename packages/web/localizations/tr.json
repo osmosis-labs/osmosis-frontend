@@ -11,6 +11,12 @@
       "linkText": "Ana uygulamaya dönmek için burayı tıklayın"
     }
   },
+  "mars": {
+    "banner": {
+      "title": "Bilim Adamlarımız Mars'a indi ve likidite buldu!",
+      "linkText": "Mars Protocol'ı keşfedin"
+    }
+  },
   "swap": {
     "title": "Takas",
     "settings": {
