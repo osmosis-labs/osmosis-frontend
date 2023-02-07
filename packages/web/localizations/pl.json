@@ -8,7 +8,12 @@
   "app": {
     "banner": {
       "title": "Przeglądasz środki nie wymagające uprawnień.",
-      "linkText": "Kliknij tutaj, aby wrócić do głównej aplikacji"
+      "linkText": "Kliknij tutaj, aby wrócić do głównej aplikacji",
+      "externalLinkDisclaimer": "Klikając na link, potwierdzasz, że przeczytałeś i rozumiesz, że Osmosis nie gwarantuje jakości usług dla stron zewnętrznych, które mogą mieć inne warunki korzystania z usług.",
+      "externalLink": "Teraz opuszczasz aplikację Osmosis, aby pójść do",
+      "goToSite": "Przejdź do strony",
+      "backToOsmosis": "Powrót do Osmosis",
+      "externalLinkModalTitle": "Opuszczanie Osmosis"
     }
   },
   "mars": {

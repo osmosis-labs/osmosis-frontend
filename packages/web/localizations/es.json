@@ -8,7 +8,12 @@
   "app": {
     "banner": {
       "title": "Estás viendo todos los activos sin permiso.",
-      "linkText": "Haga clic aquí para volver a la aplicación principal"
+      "linkText": "Haga clic aquí para volver a la aplicación principal",
+      "externalLinkDisclaimer": "Al hacer clic en el enlace, reconoce que ha leído y comprende que Osmosis no garantiza la calidad del servicio para páginas externas que pueden tener un TdS diferente.",
+      "externalLink": "Estás abandonando la aplicación de Osmosis para ir a",
+      "goToSite": "Ir al sitio",
+      "backToOsmosis": "Regresar a Osmosis",
+      "externalLinkModalTitle": "Saliendo de Osmosis"
     }
   },
   "mars": {

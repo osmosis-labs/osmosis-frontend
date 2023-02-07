@@ -20,6 +20,7 @@ export const Announcement:
         /** Default: "Click here to learn more" in english-us */
         enTextOrLocalizationKey?: string;
         url: string;
+        isExternal?: boolean;
       };
       /** Use orange styling, persist on page reloads. */
       isWarning?: boolean;
@@ -59,10 +60,11 @@ export const Announcement:
       enTextOrLocalizationPath: "mars.banner.title",
       link: {
         enTextOrLocalizationKey: "mars.banner.linkText",
-        url: "https://mars.osmosis.zone/",
+        url: "https://mars.osmosis.zone/redbank",
+        isExternal: true,
       },
       pageRoute: "/",
-      bg: "bg-gradient-negative",
+      bg: "bg-gradient-negative lg:bg-gradient-neutral",
     };
 
 // Fiat ramps
