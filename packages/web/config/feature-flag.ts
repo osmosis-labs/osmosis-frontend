@@ -62,6 +62,7 @@ export const Announcement:
         url: "https://mars.osmosis.zone/",
       },
       pageRoute: "/",
+      bg: "bg-gradient-negative",
     };
 
 // Fiat ramps
