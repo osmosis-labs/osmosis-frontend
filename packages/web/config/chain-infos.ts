@@ -2208,6 +2208,13 @@ const chainInfos = (
           coinGeckoId: "secret",
           coinImageUrl: "/tokens/stscrt.svg",
         },
+        {
+          coinDenom: "stLUNA",
+          coinMinimalDenom: "stuluna",
+          coinDecimals: 6,
+          coinGeckoId: "",
+          coinImageUrl: "/tokens/stluna.svg",
+        },
       ],
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://explorer.stride.zone/stride/tx/{txHash}",
