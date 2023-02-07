@@ -2212,7 +2212,7 @@ const chainInfos = (
           coinDenom: "stLUNA",
           coinMinimalDenom: "stuluna",
           coinDecimals: 6,
-          coinGeckoId: "",
+          coinGeckoId: "pool:stuluna",
           coinImageUrl: "/tokens/stluna.svg",
         },
       ],
