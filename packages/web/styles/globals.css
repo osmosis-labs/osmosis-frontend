@@ -273,3 +273,8 @@
 .tippy-box[data-animation="fade"][data-state="hidden"] {
   opacity: 0;
 }
+
+.visx-tooltip {
+  z-index: 9000000;
+  box-shadow: none !important;
+}
