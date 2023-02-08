@@ -96,6 +96,7 @@ module.exports = {
       transparent: "transparent",
       black: "black",
       inherit: "inherit",
+      barFill: "#4f4aa2"
     },
     fontSize: {
       xxs: "0.5rem",
