@@ -8,7 +8,18 @@
   "app": {
     "banner": {
       "title": "권한이 없는 모든 자산이 보여집니다.",
-      "linkText": "클릭해서 메인 앱으로 돌아가기"
+      "linkText": "클릭해서 메인 앱으로 돌아가기",
+      "externalLinkDisclaimer": "링크를 클릭함으로써, 당신은 Osmosis가 다른 ToS를 가질 수 있는 외부 페이지에 대한 서비스 품질을 보장하지 않음을 읽었고 이해한 것을 인정하는 것입니다.",
+      "externalLink": "이제 Osmosis 앱을 떠나서는 가기",
+      "goToSite": "사이트로 가기",
+      "backToOsmosis": "Osmosis로 돌아가기",
+      "externalLinkModalTitle": "Osmosis 떠나기"
+    }
+  },
+  "mars": {
+    "banner": {
+      "title": "Osmosis에서 대출/대출이 시작되었습니다.",
+      "linkText": "Mars Protocol 탐험"
     }
   },
   "swap": {

@@ -8,7 +8,18 @@
   "app": {
     "banner": {
       "title": "你睇緊所有 permissionless 資產.",
-      "linkText": "按此翻去主應用程式"
+      "linkText": "按此翻去主應用程式",
+      "externalLinkDisclaimer": "點擊鏈接，您即表示您已閱讀並明白Osmosis對可能具有不同服務條款的外部頁面的服務質量沒有任何保",
+      "externalLink": "您現在正離開Osmosis應用程式去",
+      "goToSite": "前往網站",
+      "backToOsmosis": "返回Osmosis",
+      "externalLinkModalTitle": "離開Osmosis"
+    }
+  },
+  "mars": {
+    "banner": {
+      "title": "借入/借出 Osmosis 已經推出。",
+      "linkText": "探索 Mars Protocol"
     }
   },
   "swap": {

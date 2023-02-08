@@ -8,7 +8,18 @@
   "app": {
     "banner": {
       "title": "Visualizati toate activele care nu necesita permisiuni.",
-      "linkText": "Click aici pentru a va intoarce la aplicatia principala"
+      "linkText": "Click aici pentru a va intoarce la aplicatia principala",
+      "externalLinkDisclaimer": "Prin apăsarea acestui link, recunoști că ai citit și înțeles că Osmosis nu garantează calitatea serviciului pentru pagini externe care pot avea Termeni de Serviciu diferiți.",
+      "externalLink": "Acum părăsiți aplicația Osmosis pentru a merge la",
+      "goToSite": "Du-te la site",
+      "backToOsmosis": "Înapoi la Osmosis",
+      "externalLinkModalTitle": "Părăsirea Osmosis"
+    }
+  },
+  "mars": {
+    "banner": {
+      "title": "S-a lansat Imprumut/împrumut pe osmoză.",
+      "linkText": "Explorați Mars Protocol"
     }
   },
   "swap": {

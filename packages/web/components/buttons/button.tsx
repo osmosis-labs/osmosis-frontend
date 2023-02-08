@@ -3,7 +3,7 @@ import { CustomClasses } from "../types";
 import { IS_FRONTIER } from "../../config";
 import { cva, VariantProps } from "class-variance-authority";
 
-const button = cva(
+export const buttonCVA = cva(
   "flex w-full place-content-center items-center py-2 text-center transition-colors disabled:cursor-default",
   {
     variants: {
@@ -148,8 +148,8 @@ const button = cva(
 
 const modeToDefaultSize: Partial<
   Record<
-    NonNullable<VariantProps<typeof button>["mode"]>,
-    VariantProps<typeof button>["size"]
+    NonNullable<VariantProps<typeof buttonCVA>["mode"]>,
+    VariantProps<typeof buttonCVA>["size"]
   >
 > = {
   "framed-primary": "framed",
@@ -161,7 +161,7 @@ const modeToDefaultSize: Partial<
 
 export const Button = forwardRef<
   HTMLButtonElement,
-  VariantProps<typeof button> &
+  VariantProps<typeof buttonCVA> &
     CustomClasses &
     ButtonHTMLAttributes<HTMLButtonElement>
 >((props, ref) => {
@@ -171,7 +171,7 @@ export const Button = forwardRef<
     <button
       ref={ref}
       {...props}
-      className={button({
+      className={buttonCVA({
         className,
         mode,
         size: size ?? modeToDefaultSize[mode as keyof typeof modeToDefaultSize],
