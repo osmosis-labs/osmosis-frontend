@@ -146,13 +146,14 @@ const Home: NextPage = observer(function () {
     <main className="relative h-full bg-osmoverse-900">
       <div className="absolute h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">
         {!IS_FRONTIER && (
-          <Image
-            src="/images/osmosis-home-bg-mars.png"
-            alt="Scientists landing on mars"
-            layout="fill"
-            className="pointer-events-none object-cover lg:!hidden"
-            priority
-          />
+          <ProgressiveSvgImage
+                lowResXlinkHref="/images/osmosis-home-bg-mars.png"
+                xlinkHref="/images/osmosis-home-bg-mars.png"
+                x="0"
+                y="0"
+                width="100%"
+                height="100%"
+              />
         )}
         {IS_FRONTIER && (
           <svg
