@@ -162,6 +162,13 @@ export const IBCAssetInfos: (IBCAsset & {
   },
 ] : [
   {
+    counterpartyChainId: "mars-1",
+    sourceChannelId: "channel-557",
+    destChannelId: "channel-1",
+    coinMinimalDenom: "umars",
+    isVerified: true,
+  },
+  {
     counterpartyChainId: "axelar-dojo-1",
     sourceChannelId: "channel-208",
     destChannelId: "channel-3",
@@ -320,7 +327,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: IS_TESTNET ? "channel-135" : "channel-3",
     coinMinimalDenom: "wavax-wei",
     sourceChainNameOverride: IS_TESTNET ? "Avalanche Fuji Testnet" : "Avalanche",
-    isVerified: false,
+    isVerified: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const],
@@ -633,6 +640,38 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-9",
     coinMinimalDenom: "uakt",
     isVerified: true,
+  },
+  {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "polygon-uusdc",
+    sourceChainNameOverride: "Polygon",
+    isVerified: false,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [
+        AxelarSourceChainConfigs.polygonusdc.polygon,
+      ],
+    }
+  },
+  {
+    counterpartyChainId: "axelar-dojo-1",
+    sourceChannelId: "channel-208",
+    destChannelId: "channel-3",
+    coinMinimalDenom: "avalanche-uusdc",
+    sourceChainNameOverride: "Avalanche",
+    isVerified: false,
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChains: [
+        AxelarSourceChainConfigs.avalancheusdc.avalanche,
+      ],
+    }
   },
   {
     counterpartyChainId: "kaiyo-1",
@@ -999,11 +1038,10 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
   },
   {
-    counterpartyChainId: "impacthub-3",
+    counterpartyChainId: "ixo-4",
     sourceChannelId: "channel-38",
     destChannelId: "channel-4",
     coinMinimalDenom: "uixo",
-    isUnstable: true,
   },
   {
     counterpartyChainId: "bitcanna-1",
@@ -1237,39 +1275,6 @@ export const IBCAssetInfos: (IBCAsset & {
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
   },
   {
-    counterpartyChainId: "stride-1",
-    sourceChannelId: "channel-326",
-    destChannelId: "channel-5",
-    coinMinimalDenom: "ustrd",
-    isVerified: true,
-  },
-  {
-    counterpartyChainId: "stride-1",
-    sourceChannelId: "channel-326",
-    destChannelId: "channel-5",
-    coinMinimalDenom: "stuosmo",
-    isVerified: true,
-  },
-  {
-    counterpartyChainId: "stride-1",
-    sourceChannelId: "channel-326",
-    destChannelId: "channel-5",
-    coinMinimalDenom: "stuatom",
-    isVerified: true,
-  },
-  {
-    counterpartyChainId: "stride-1",
-    sourceChannelId: "channel-326",
-    destChannelId: "channel-5",
-    coinMinimalDenom: "stujuno",
-  },
-  {
-    counterpartyChainId: "stride-1",
-    sourceChannelId: "channel-326",
-    destChannelId: "channel-5",
-    coinMinimalDenom: "stustars",
-  },
-  {
     counterpartyChainId: "juno-1",
     sourceChannelId: "channel-169",
     destChannelId: "channel-47",
@@ -1427,10 +1432,34 @@ export const IBCAssetInfos: (IBCAsset & {
     withdrawUrlOverride: "https://app.arable.finance/#/ibc",
   },
   {
+    counterpartyChainId: "acre_9052-1",
+    sourceChannelId: "channel-490",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "erc20/0xAE6D3334989a22A65228732446731438672418F2",
+    depositUrlOverride: "https://app.arable.finance/#/ibc",
+    withdrawUrlOverride: "https://app.arable.finance/#/ibc",
+  },    
+  {
     counterpartyChainId: "planq_7070-2",
     sourceChannelId: "channel-492",
     destChannelId: "channel-1",
     coinMinimalDenom: "aplanq",
+  },
+  {
+    counterpartyChainId: "quicksilver-2",
+    sourceChannelId: "channel-522",
+    destChannelId: "channel-2",
+    coinMinimalDenom: "uqstars",
+  },
+  { // WYND
+    counterpartyChainId: "juno-1",
+    sourceChannelId: "channel-169",
+    destChannelId: "channel-47",
+    coinMinimalDenom:
+      "cw20:juno1mkw83sv6c7sjdvsaplrzc8yaes9l42p4mhy0ssuxjnyzl87c9eps7ce3m9",
+    ics20ContractAddress:
+      "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    isVerified: true,
   },
 ].filter((ibcAsset) => {
   // validate IBC asset config
