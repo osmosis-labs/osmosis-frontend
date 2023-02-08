@@ -7,13 +7,12 @@ import { useStore } from "../../stores";
 import { useWindowSize } from "../../hooks";
 // import { MenuToggle } from "../../components/control";
 // import { Token } from "../../components/assets";
-// import { InputBox } from "../../components/input";
+import { InputBox } from "../../components/input";
 // import { Info } from "../../components/alert";
 // import { PoolTokenSelect } from "../../components/control/pool-token-select";
 import { CustomClasses } from "../types";
 // import { Button } from "../buttons";
 import { useTranslation } from "react-multi-lang";
-import { bisector } from 'd3-array';
 
 
 import {
@@ -26,13 +25,14 @@ import {
   buildChartTheme,
   Annotation,
   AnnotationLineSubject,
-  AnnotationConnector, AnnotationCircleSubject, AxisScale,
+  AnnotationConnector, AnnotationCircleSubject,
 } from '@visx/xychart';
 
 import {ParentSize} from "@visx/responsive";
 import {curveNatural} from "@visx/curve";
 import {theme} from "../../tailwind.config";
 import {scaleLinear} from "@visx/scale";
+import {debounce} from "debounce";
 
 const data1 = makeData();
 
@@ -91,6 +91,9 @@ function getDepthFromRange(min: number, max: number) {
   return val;
 }
 
+const yRange = getRangeFromData(data1.map(accessors.yAccessor));
+const depthData = getDepthFromRange(yRange.min, yRange.max);
+
 export const AddConcLiquidity: FunctionComponent<
   {
     addLiquidityConfig: ObservableAddLiquidityConfig;
@@ -102,6 +105,10 @@ export const AddConcLiquidity: FunctionComponent<
     const { chainStore } = useStore();
     const { isMobile } = useWindowSize();
     const t = useTranslation();
+    const [inputMin, setInputMin] = useState(yRange.last * 0.85);
+    const [inputMax, setInputMax] = useState(yRange.last * 1.15);
+    const [min, setMin] = useState(yRange.last * 0.85);
+    const [max, setMax] = useState(yRange.last * 1.15);
 
     return (
       <div className={classNames("flex flex-col gap-8", className)}>
@@ -136,8 +143,38 @@ export const AddConcLiquidity: FunctionComponent<
               </div>
               <LineChart />
             </div>
-            <div className="flex flex-col flex-1 flex-shrink-1 w-0 bg-osmoverse-700 h-[20.1875rem]">
-              <BarChart />
+            <div className="flex flex-row flex-1 flex-shrink-1 w-0 bg-osmoverse-700 h-[20.1875rem]">
+              <BarChart
+                min={min}
+                max={max}
+                onMoveMax={debounce(setInputMax, 100)}
+                onMoveMin={debounce(setInputMin, 100)}
+                onSubmitMin={val => {
+                  setMin(val);
+                  setInputMin(val);
+                }}
+                onSubmitMax={val => {
+                  setMax(val);
+                  setInputMax(val);
+                }}
+              />
+              <div>
+                <InputBox
+                  type="number"
+                  currentValue={inputMin}
+                  onInput={val => {
+                    setMin(val);
+                    setInputMin(val);
+                  }}
+                />
+                <InputBox
+                  currentValue={inputMax}
+                  onInput={val => {
+                    setMax(val);
+                    setInputMax(val);
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -267,13 +304,15 @@ function LineChart() {
   );
 }
 
-const yRange = getRangeFromData(data1.map(accessors.yAccessor));
-const depthData = getDepthFromRange(yRange.min, yRange.max);
-
-function BarChart() {
+function BarChart(props: {
+  min: number;
+  max: number;
+  onMoveMax: (value: number) => void;
+  onSubmitMax: (value: number) => void;
+  onMoveMin: (value: number) => void;
+  onSubmitMin: (value: number) => void;
+}) {
   const xMax = Math.max(...depthData.map(d => d.depth)) * 1.2;
-  const [min, setMin] = useState(0);
-  const [max, setMax] = useState(0);
 
   return (
     <ParentSize className="flex-1 flex-shrink-1 overflow-hidden">
@@ -290,7 +329,7 @@ function BarChart() {
             captureEvents={false}
             margin={{ top: 64, right: 36, bottom: 36, left: 0 }}
             height={height}
-            width={width / 2}
+            width={width}
             xScale={{
               type: 'linear',
               domain: [
@@ -370,20 +409,20 @@ function BarChart() {
               />
             </Annotation>
             <DragContainer
-              defaultValue={max || yRange.last * 1.15}
+              defaultValue={props.max || yRange.last * 1.15}
               length={xMax}
               scale={yScale}
               stroke={theme.colors.wosmongton['500']}
-              onMove={console.log.bind(console)}
-              onSubmit={setMax}
+              onMove={props.onMoveMax}
+              onSubmit={props.onSubmitMax}
             />
             <DragContainer
-              defaultValue={min || yRange.last * .85}
+              defaultValue={props.min || yRange.last * .85}
               length={xMax}
               scale={yScale}
               stroke={theme.colors.bullish["500"]}
-              onMove={console.log.bind(console)}
-              onSubmit={setMin}
+              onMove={props.onMoveMin}
+              onSubmit={props.onSubmitMin}
             />
             <style>{`
               .visx-bar {
