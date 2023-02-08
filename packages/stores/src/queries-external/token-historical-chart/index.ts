@@ -5,6 +5,7 @@ import { ObservableQueryExternalBase } from "../base";
 import { TokenHistoricalPrice } from "./types";
 import { IPriceStore } from "src/price";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { IMPERATOR_HISTORICAL_DATA_BASEURL } from "..";
 
 const AvailableRangeValues = [
   5, 15, 30, 60, 120, 240, 720, 1440, 10080, 43800,
@@ -60,7 +61,7 @@ export class ObservableQueryTokensHistoricalChart extends HasMapStore<Observable
   constructor(
     kvStore: KVStore,
     protected readonly priceStore: IPriceStore,
-    tokenHistoricalBaseUrl = "https://api-osmosis.imperator.co"
+    tokenHistoricalBaseUrl = IMPERATOR_HISTORICAL_DATA_BASEURL
   ) {
     super((symbolAndTf: string) => {
       const [symbol, tf] = symbolAndTf.split(",");

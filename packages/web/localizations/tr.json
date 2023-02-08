@@ -7,8 +7,19 @@
   },
   "app": {
     "banner": {
-      "title": "Tüm izin gerektirmeyen varlıkları görüntülüyorsunuz",
-      "linkText": "Tüm izin gerektirmeyen varlıkları görüntülüyorsunuz. <link>Ana uygulamaya dönmek için burayı tıklayın</link>."
+      "title": "Tüm izin gerektirmeyen varlıkları görüntülüyorsunuz.",
+      "linkText": "Ana uygulamaya dönmek için burayı tıklayın",
+      "externalLinkDisclaimer": "Bağlantıyı tıklatarak, Osmosis'in dış sayfalar için hizmet kalitesi garantisi vermediğini okuduğunu ve anladığını kabul edersin.",
+      "externalLink": "Şimdi Osmosis uygulamasından ayrılıyorsun ve gitmek için",
+      "goToSite": "Site'ye Git",
+      "backToOsmosis": "Osmosis'e Geri Dön",
+      "externalLinkModalTitle": "Osmosis'den Ayrılma"
+    }
+  },
+  "mars": {
+    "banner": {
+      "title": "Osmosis'te Ödünç Alma/Ödünç Verme başladı.",
+      "linkText": "Mars Protocol'ı keşfedin"
     }
   },
   "swap": {
