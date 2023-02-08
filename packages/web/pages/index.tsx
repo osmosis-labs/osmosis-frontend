@@ -147,13 +147,13 @@ const Home: NextPage = observer(function () {
       <div className="absolute h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">
         {!IS_FRONTIER && (
           <ProgressiveSvgImage
-                lowResXlinkHref="/images/osmosis-home-bg-mars.png"
-                xlinkHref="/images/osmosis-home-bg-mars.png"
-                x="0"
-                y="0"
-                width="100%"
-                height="100%"
-              />
+            lowResXlinkHref="/images/osmosis-home-bg-mars.png?v=2"
+            xlinkHref="/images/osmosis-home-bg-mars.png?v=2"
+            x="0"
+            y="0"
+            width="100%"
+            height="100%"
+          />
         )}
         {IS_FRONTIER && (
           <svg
