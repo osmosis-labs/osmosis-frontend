@@ -6,7 +6,7 @@ import {
   CosmwasmQueries,
   IQueriesStore,
 } from "@keplr-wallet/stores";
-import { IS_FRONTIER } from "../../config";
+import { IS_FRONTIER, IS_TESTNET } from "../../config";
 import { ChainStore } from "../chain";
 import { OsmosisQueries, IPriceStore } from "@osmosis-labs/stores";
 import { makeIBCMinimalDenom } from "./utils";
@@ -109,6 +109,8 @@ export class ObservableAssets {
         });
 
         if (!originCurrency) {
+          if (IS_TESTNET && IS_FRONTIER) return {} as any;
+
           throw new Error(
             `Unknown currency ${ibcAsset.coinMinimalDenom} for ${ibcAsset.counterpartyChainId}`
           );
@@ -178,7 +180,8 @@ export class ObservableAssets {
         } else {
           return ibcBalance;
         }
-      });
+      })
+      .filter((ibcAsset) => typeof ibcAsset.balance !== "undefined");
   }
 
   @computed

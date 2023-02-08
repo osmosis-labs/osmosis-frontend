@@ -15,3 +15,5 @@ export * from "./price";
 export * from "./user-analytics-v2";
 
 export * from "./env";
+
+export * from "./autonomy";

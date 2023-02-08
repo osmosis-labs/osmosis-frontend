@@ -1,12 +1,15 @@
 import { useRouter } from "next/router";
 import { useEffect, useRef } from "react";
 import { AppCurrency } from "@keplr-wallet/types";
-import { ObservableTradeTokenInConfig } from "@osmosis-labs/stores";
+import {
+  ObservableTradeTokenInConfig,
+  ObservableOrderTokenInConfig,
+} from "@osmosis-labs/stores";
 import { useStore } from "../../stores";
 
 /** If not in modal (pool), bidirectionally sets/gets window query params to/from `from=DENOM&to=DENOM` and sets in trade config object. */
 export function useTokenSwapQueryParams(
-  tradeConfig: ObservableTradeTokenInConfig,
+  tradeConfig: ObservableTradeTokenInConfig | ObservableOrderTokenInConfig,
   currencies: AppCurrency[],
   isInModal = false
 ) {

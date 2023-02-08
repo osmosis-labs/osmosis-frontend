@@ -1,13 +1,16 @@
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { TradeClipboard } from "../components/trade-clipboard";
+import { TradeClipboard as AutonomyTradeClipboard } from "../components/autonomy/trade";
+import OrderHistory from "../components/autonomy/order-history";
 import { useStore } from "../stores";
-import { EventName, IS_FRONTIER } from "../config";
+import { EventName, IS_FRONTIER, IS_TESTNET } from "../config";
 import { Dec } from "@keplr-wallet/unit";
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useAmplitudeAnalytics } from "../hooks";
 import Image from "next/image";
 import { ProgressiveSvgImage } from "../components/progressive-svg-image";
+import classNames from "classnames";
 
 const Home: NextPage = observer(function () {
   const { chainStore, queriesStore } = useStore();
@@ -15,6 +18,10 @@ const Home: NextPage = observer(function () {
 
   const queries = queriesStore.get(chainId);
   const queryPools = queries.osmosis!.queryGammPools;
+
+  const [tradeType, setTradeType] = useState<"Swap" | "Limit" | "StopLoss">(
+    "Swap"
+  );
 
   // If pool has already passed once, it will be passed immediately without recalculation.
   const poolsPassed = useRef<Map<string, boolean>>(new Map());
@@ -31,11 +38,6 @@ const Home: NextPage = observer(function () {
           const passed = poolsPassed.current.get(pool.id);
           if (passed) {
             return true;
-          }
-
-          // https://github.com/osmosis-labs/osmosis-frontend/issues/843
-          if (pool.id === "800") {
-            return false;
           }
 
           // There is currently no good way to pick a pool that is worthwhile.
@@ -183,11 +185,57 @@ const Home: NextPage = observer(function () {
           </svg>
         )}
       </div>
-      <div className="flex h-full w-full items-center overflow-y-auto overflow-x-hidden">
-        <TradeClipboard
-          containerClassName="w-[27rem] md:mt-mobile-header ml-auto mr-[15%] lg:mx-auto"
-          pools={pools}
-        />
+
+      <div
+        className={classNames(
+          "flex h-full w-full flex-col",
+          tradeType === "Swap"
+            ? "justify-center overflow-y-auto overflow-x-hidden"
+            : "overflow-y-auto overflow-x-hidden"
+        )}
+      >
+        {IS_FRONTIER && IS_TESTNET && (
+          <div className="z-100 ml-auto mr-[15%] mb-3 w-[27rem] lg:mx-auto">
+            <div className="relative flex flex-row gap-8 rounded-[18px] bg-osmoverse-800 px-5 py-4 md:px-3">
+              <div
+                className="mr-3 flex-auto cursor-pointer px-4 py-2 text-center font-bold"
+                onClick={() => setTradeType("Swap")}
+              >
+                Swap
+              </div>
+              <div
+                className="mr-3 flex-auto cursor-pointer px-4 py-2 text-center font-bold"
+                onClick={() => setTradeType("Limit")}
+              >
+                Limit Order
+              </div>
+              <div
+                className="flex-auto cursor-pointer px-4 py-2 text-center font-bold"
+                onClick={() => setTradeType("StopLoss")}
+              >
+                Stop Loss
+              </div>
+            </div>
+          </div>
+        )}
+        {tradeType === "Swap" ? (
+          <TradeClipboard
+            containerClassName="w-[27rem] md:mt-mobile-header ml-auto mr-[15%] lg:mx-auto"
+            pools={pools}
+          />
+        ) : (
+          <>
+            <AutonomyTradeClipboard
+              pools={pools}
+              type={tradeType}
+              containerClassName="w-[27rem] ml-auto mr-[15%] lg:mx-auto"
+            />
+            <OrderHistory
+              orderType={tradeType}
+              containerClassName="w-[27rem] ml-auto mr-[15%] lg:mx-auto"
+            />
+          </>
+        )}
       </div>
     </main>
   );
