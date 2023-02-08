@@ -3,7 +3,8 @@ import { observer } from "mobx-react-lite";
 import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
 import { useStore } from "../stores";
 import { useConnectWalletModalRedirect, useAddLiquidityConfig } from "../hooks";
-import { AddLiquidity } from "../components/complex/add-liquidity";
+// import { AddLiquidity } from "../components/complex/add-liquidity";
+import { AddConcLiquidity } from "../components/complex/add-conc-liquidity";
 import { ModalBase, ModalBaseProps } from "./base";
 import { useTranslation } from "react-multi-lang";
 import { tError } from "../components/localization";
@@ -50,12 +51,14 @@ export const AddLiquidityModal: FunctionComponent<
 
   return (
     <ModalBase
-      title={t("addLiquidity.title")}
+      // title={t("addLiquidity.title")}
       {...props}
       isOpen={props.isOpen && showModalBase}
+      hideCloseButton
+      className="!max-w-[57.8125rem]"
     >
-      <AddLiquidity
-        className="pt-4"
+      <AddConcLiquidity
+        // className="pt-4"
         addLiquidityConfig={config}
         actionButton={accountActionButton}
         getFiatValue={(coin) => priceStore.calculatePrice(coin)}
