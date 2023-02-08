@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactNode } from "react";
+import {FunctionComponent, ReactNode, useState} from "react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { PricePretty, CoinPretty } from "@keplr-wallet/unit";
@@ -13,6 +13,8 @@ import { useWindowSize } from "../../hooks";
 import { CustomClasses } from "../types";
 // import { Button } from "../buttons";
 import { useTranslation } from "react-multi-lang";
+import { bisector } from 'd3-array';
+
 
 import {
   AnimatedAxis, // any of these can be non-animated equivalents
@@ -22,16 +24,25 @@ import {
   XYChart,
   Tooltip,
   buildChartTheme,
-} from '@visx/xychart/lib/index.js';
+  Annotation,
+  AnnotationLineSubject,
+  AnnotationConnector, AnnotationCircleSubject, AxisScale,
+} from '@visx/xychart';
 
 import {ParentSize} from "@visx/responsive";
+import {curveNatural} from "@visx/curve";
 import {theme} from "../../tailwind.config";
+import {scaleLinear} from "@visx/scale";
 
 const data1 = makeData();
 
 const accessors = {
-  xAccessor: (d: any) => d.time,
-  yAccessor: (d: any) => d.price,
+  xAccessor: (d: any) => {
+    return d?.time;
+  },
+  yAccessor: (d: any) => {
+    return d?.price;
+  },
 };
 
 function makeData(lastPrice = 1) {
@@ -40,20 +51,21 @@ function makeData(lastPrice = 1) {
   return Array(168)
     .fill(null)
     .map((_, i) => {
-      const diffPer = !i ? 0 : (Math.random() - .5) / (.5 / .01);
+      const diffPer = !i ? 0 : (Math.random() - .5) / (.5 / .05);
       const newLp = lp + lp * diffPer;
       lp = newLp;
       return {
         time: date - i * 3600000,
         price: newLp,
       };
-    });
+    })
+    .reverse();
 }
 
 function getRangeFromData(data: number[]) {
   const max = Math.max(...data);
   const min = Math.min(...data);
-  const last = data[0];
+  const last = data[data.length - 1];
   const diff = Math.max(
     Math.max(Math.abs(last - max), Math.abs(last - min)),
     last * 0.25,
@@ -62,6 +74,7 @@ function getRangeFromData(data: number[]) {
   return {
     min: Math.max(0, last - diff),
     max: last + diff,
+    last,
   };
 }
 
@@ -145,10 +158,13 @@ function LineChart() {
   const yRange = getRangeFromData(data1.map(accessors.yAccessor));
 
   return (
-    <ParentSize className="flex-1 flex-shrink-1 overflow-hidden">
+    <ParentSize
+      className="flex-1 flex-shrink-1 overflow-hidden"
+    >
       {({height, width}) => {
         return (
           <XYChart
+            key="line-chart"
             margin={{ top: 0, right: 0, bottom: 36, left: 50 }}
             height={height}
             width={width}
@@ -158,17 +174,12 @@ function LineChart() {
             }}
             yScale={{
               type: 'linear',
-              // domain: [
-              //   Math.max(...data1.map(accessors.yAccessor)),
-              //   Math.min(...data1.map(accessors.yAccessor)),
-              // ],
-              // range: [0, height],
               domain: [yRange.min, yRange.max],
               zero: false,
             }}
             theme={buildChartTheme({
-              backgroundColor: "#f05454",
-              colors: ["#e8e8e8"],
+              backgroundColor: "transparent",
+              colors: ["white"],
               gridColor: theme.colors.osmoverse['600'],
               gridColorDark: theme.colors.osmoverse['300'],
               svgLabelSmall: {
@@ -181,7 +192,7 @@ function LineChart() {
                 fontSize: 12,
                 fontWeight: 500,
               },
-              tickLength: 4,
+              tickLength: 1,
               xAxisLineStyles: {
                 strokeWidth: 0,
               },
@@ -208,21 +219,46 @@ function LineChart() {
               numTicks={5}
             />
             <AnimatedLineSeries
-              dataKey="Line 1"
+              dataKey="price"
               data={data1}
+              curve={curveNatural}
               {...accessors}
               stroke={theme.colors.wosmongton['200']}
             />
             <Tooltip
-              showVerticalCrosshair
+              // showVerticalCrosshair
+              // showHorizontalCrosshair
               snapTooltipToDatumX
-              renderTooltip={({ tooltipData, colorScale }) => (
-                <>
-                  <div style={{ color: colorScale('price') }}>{'price'}</div>
-                  <br />
-                  <div>hello</div>
-                </>
-              )}
+              snapTooltipToDatumY
+              detectBounds
+              showDatumGlyph
+              glyphStyle={{
+                strokeWidth: 0,
+                fill: theme.colors.wosmongton['200'],
+              }}
+              horizontalCrosshairStyle={{
+                strokeWidth: 1,
+                stroke: '#ffffff',
+              }}
+              verticalCrosshairStyle={{
+                strokeWidth: 1,
+                stroke: '#ffffff',
+              }}
+              renderTooltip={({ tooltipData, colorScale }) => {
+                return (
+                  <div className={`bg-osmoverse-800 p-2 text-xs leading-4`}>
+                    <div className="text-white-full">
+                      {tooltipData.nearestDatum.datum.price.toFixed(4)}
+                    </div>
+                    <div className="text-osmoverse-300">
+                      {`High: ${Math.max(...data1.map(accessors.yAccessor)).toFixed(4)}`}
+                    </div>
+                    <div className="text-osmoverse-300">
+                      {`Low: ${Math.min(...data1.map(accessors.yAccessor)).toFixed(4)}`}
+                    </div>
+                  </div>
+                )
+              }}
             />
           </XYChart>
         );
@@ -231,43 +267,59 @@ function LineChart() {
   );
 }
 
+const yRange = getRangeFromData(data1.map(accessors.yAccessor));
+const depthData = getDepthFromRange(yRange.min, yRange.max);
+
 function BarChart() {
-  const yRange = getRangeFromData(data1.map(accessors.yAccessor));
-  const depthData = getDepthFromRange(yRange.min, yRange.max);
+  const xMax = Math.max(...depthData.map(d => d.depth)) * 1.2;
+  const [min, setMin] = useState(0);
+  const [max, setMax] = useState(0);
 
   return (
     <ParentSize className="flex-1 flex-shrink-1 overflow-hidden">
       {({height, width}) => {
+        const yScale = scaleLinear({
+          range: [64, height - 36],
+          domain: [yRange.max, yRange.min],
+          zero: false,
+        });
+
         return (
           <XYChart
+            key="bar-chart"
+            captureEvents={false}
             margin={{ top: 64, right: 36, bottom: 36, left: 0 }}
             height={height}
             width={width / 2}
             xScale={{
               type: 'linear',
-              paddingInner: 0.5,
+              domain: [
+                0,
+                xMax,
+              ],
             }}
             yScale={{
-              type: 'band',
-              domain: depthData.map(d => d.tick),
+              type: 'linear',
+              // range: [64, height - 36],
+              domain: [yRange.min, yRange.max],
               zero: false,
             }}
             theme={buildChartTheme({
-              backgroundColor: "#f05454",
-              colors: ["#e8e8e8"],
+              backgroundColor: "transparent",
+              colors: ["white"],
               gridColor: theme.colors.osmoverse['600'],
               gridColorDark: theme.colors.osmoverse['300'],
               svgLabelSmall: {
-                strokeWidth: 0,
                 fill: theme.colors.osmoverse['300'],
                 fontSize: 12,
                 fontWeight: 500,
               },
               svgLabelBig: {
-                strokeWidth: 0,
-                fill: 'transparent',
+                fill: theme.colors.osmoverse['300'],
+                fontSize: 12,
+                fontWeight: 500,
               },
-              tickLength: 4,
+              tickLength: 1,
               xAxisLineStyles: {
                 strokeWidth: 0,
               },
@@ -278,6 +330,7 @@ function BarChart() {
                 strokeWidth: 0,
               },
             })}
+            horizontal={true}
           >
             {/* Uncomment when testing alignment */}
             {/*<AnimatedAxis*/}
@@ -291,27 +344,51 @@ function BarChart() {
               numTicks={5}
             />
             <AnimatedBarSeries
-              dataKey="Bar 1"
+              dataKey="depth"
               data={depthData}
-              xAccessor={(d: any) => d.depth}
-              yAccessor={(d: any) => d.tick}
+              xAccessor={(d: any) => d?.depth}
+              yAccessor={(d: any) => d?.tick}
               colorAccessor={() => theme.colors.barFill}
             />
-            <Tooltip
-              showVerticalCrosshair
-              snapTooltipToDatumX
-              renderTooltip={({ tooltipData, colorScale }) => (
-                <>
-                  <div style={{ color: colorScale('price') }}>{'price'}</div>
-                  <br />
-                  <div>hello</div>
-                </>
-              )}
+            <Annotation
+              dataKey="depth"
+              xAccessor={(d: any) => d.depth}
+              yAccessor={(d: any) => d.tick}
+              datum={{tick: yRange.last, depth: xMax}}
+            >
+              <AnnotationConnector />
+              <AnnotationCircleSubject
+                stroke={theme.colors.wosmongton["200"]}
+                // @ts-ignore
+                strokeWidth={4}
+                radius={2}
+              />
+              <AnnotationLineSubject
+                orientation="horizontal"
+                stroke={theme.colors.wosmongton["200"]}
+                strokeWidth={3}
+              />
+            </Annotation>
+            <DragContainer
+              defaultValue={max || yRange.last * 1.15}
+              length={xMax}
+              scale={yScale}
+              stroke={theme.colors.wosmongton['500']}
+              onMove={console.log.bind(console)}
+              onSubmit={setMax}
+            />
+            <DragContainer
+              defaultValue={min || yRange.last * .85}
+              length={xMax}
+              scale={yScale}
+              stroke={theme.colors.bullish["500"]}
+              onMove={console.log.bind(console)}
+              onSubmit={setMin}
             />
             <style>{`
               .visx-bar {
                 stroke: ${theme.colors.barFill};
-                stroke-width: 1px;
+                stroke-width: 3px;
               }
             `}</style>
           </XYChart>
@@ -319,4 +396,45 @@ function BarChart() {
       }}
     </ParentSize>
   );
+}
+
+function DragContainer(props: {
+  defaultValue?: number,
+  length?: number,
+  scale: any,
+  onMove?: (value: number) => void;
+  onSubmit?: (value: number) => void;
+  stroke: string,
+}) {
+  return (
+    <Annotation
+      dataKey="depth"
+      xAccessor={(d: any) => d?.depth}
+      yAccessor={(d: any) => d?.tick}
+      // datum={{tick: yRange.last * .85, depth: xMax}}
+      datum={{tick: props.defaultValue, depth: props.length}}
+      canEditSubject
+      canEditLabel={false}
+      onDragMove={({ event, ...nextPos}) => {
+        if (props.onMove) props.onMove(props.scale.invert(nextPos.y));
+      }}
+      onDragEnd={({ event, ...nextPos}) => {
+        if (props.onSubmit) props.onSubmit(props.scale.invert(nextPos.y));
+      }}
+      editable
+    >
+      <AnnotationConnector />
+      <AnnotationCircleSubject
+        stroke={props.stroke}
+        // @ts-ignore
+        strokeWidth={8}
+        radius={2}
+      />
+      <AnnotationLineSubject
+        orientation="horizontal"
+        stroke={props.stroke}
+        strokeWidth={3}
+      />
+    </Annotation>
+  )
 }
