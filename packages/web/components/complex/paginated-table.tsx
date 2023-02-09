@@ -39,11 +39,7 @@ const PaginatedTable = ({ table }: Props) => {
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <th
-                    key={header.id}
-                    colSpan={header.colSpan}
-                    style={{ width: header.getSize() }}
-                  >
+                  <th key={header.id} colSpan={header.colSpan}>
                     {header.isPlaceholder ? null : (
                       <div
                         {...{

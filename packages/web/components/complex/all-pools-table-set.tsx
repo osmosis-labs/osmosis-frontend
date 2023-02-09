@@ -72,12 +72,9 @@ export type Pool = [
   }
 ];
 
-type Filter = "superfluid" | "stable" | "concentrated" | "weighted";
-
-const Filters: Record<Filter, string> = {
+const Filters: Record<"superfluid" | "stable" | "weighted", string> = {
   superfluid: "Superfluid",
   stable: "Stableswap",
-  concentrated: "Concentrated Liquidity",
   weighted: "Weighted",
 };
 
@@ -410,9 +407,9 @@ export const AllPoolsTableSet: FunctionComponent<{
       state: {
         sorting,
       },
-      onSortingChange: setSorting,
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: getSortedRowModel(),
+      onSortingChange: setSorting,
     });
 
     return (
