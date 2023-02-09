@@ -1534,8 +1534,8 @@ const chainInfos = (
         "https://explorer.injective.network/transaction/{txHash}",
     },
     {
-      rpc: "https://rpc-cerberus.ecostake.com",
-      rest: "https://rest-cerberus.ecostake.com",
+      rpc: "https://cerberus-rpc.kleomedes.network",
+      rest: "https://cerberus-api.kleomedes.network",
       chainId: "cerberus-chain-1",
       chainName: "Cerberus",
       bip44: {
