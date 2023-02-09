@@ -6,6 +6,8 @@ export interface PoolGetter extends ObservableQuery {
   getPool(id: string): ObservableQueryPool | undefined;
   poolExists(id: string): boolean | undefined;
   getAllPools(): ObservableQueryPool[];
+  paginate(): void;
+  fetchRemainingPools(): void;
 }
 
 export type Pools = {

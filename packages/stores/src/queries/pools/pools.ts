@@ -11,6 +11,7 @@ import { ObservableQueryPool } from "./pool";
 import { Pools, PoolGetter } from "./types";
 import { GET_POOLS_PAGINATION_LIMIT } from ".";
 
+/** Fetches all pools directly from node in order of pool creation. */
 export class ObservableQueryPools
   extends ObservableChainQuery<Pools>
   implements PoolGetter
@@ -98,4 +99,13 @@ export class ObservableQueryPools
       return this.getPool(raw.id)!;
     });
   });
+
+  /** TODO: implement pagination when we hit the limit of pools, for now, the url will be set to the max number of pools in the autorun above */
+  paginate() {
+    /** do nothing */
+  }
+
+  fetchRemainingPools() {
+    /** do nothing since all pools get fetched. */
+  }
 }

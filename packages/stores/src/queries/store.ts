@@ -1,8 +1,13 @@
+import { autorun, makeObservable, observable } from "mobx";
 import { ChainGetter, QueriesSetBase } from "@keplr-wallet/stores";
 import { KVStore } from "@keplr-wallet/common";
 import { DeepReadonly } from "utility-types";
 import { ObservableQueryFilteredPools } from "../queries-external/filtered-pools/filtered-pools";
-import { ObservableQueryNumPools } from "./pools";
+import {
+  ObservableQueryPools,
+  ObservableQueryNumPools,
+  PoolGetter,
+} from "./pools";
 import { ObservableQueryGammPoolShare } from "./pool-share";
 import {
   ObservableQueryIncentivizedPools,
@@ -31,6 +36,7 @@ import {
   ObservableQuerySuperfluidOsmoEquivalent,
   ObservableQuerySuperfluidParams,
 } from "./superfluid-pools";
+import { FallbackStore } from "./fallback-query-store";
 
 export interface OsmosisQueries {
   osmosis?: OsmosisQueriesImpl;
@@ -68,7 +74,8 @@ export const OsmosisQueries = {
 
 /** Root queries store for all Osmosis queries. */
 export class OsmosisQueriesImpl {
-  public readonly queryGammPools: DeepReadonly<ObservableQueryFilteredPools>;
+  @observable.ref
+  public queryGammPools: PoolGetter;
   public readonly queryGammNumPools: DeepReadonly<ObservableQueryNumPools>;
   public readonly queryGammPoolShare: DeepReadonly<ObservableQueryGammPoolShare>;
 
@@ -129,12 +136,27 @@ export class OsmosisQueriesImpl {
       chainId,
       chainGetter
     );
-    this.queryGammPools = new ObservableQueryFilteredPools(
-      kvStore,
-      chainId,
-      chainGetter,
-      this.queryGammNumPools
-    );
+
+    /** Contains a reference to the currently responsive pool store. */
+    const poolsQueryFallbacks = new FallbackStore([
+      new ObservableQueryFilteredPools(
+        kvStore,
+        chainId,
+        chainGetter,
+        this.queryGammNumPools
+      ),
+      new ObservableQueryPools(
+        kvStore,
+        chainId,
+        chainGetter,
+        this.queryGammNumPools
+      ),
+    ]);
+    this.queryGammPools = poolsQueryFallbacks.responsiveStore;
+    // update the pools query store any time the fallback store changes
+    autorun(() => {
+      this.queryGammPools = poolsQueryFallbacks.responsiveStore;
+    });
 
     this.queryGammPoolShare = new ObservableQueryGammPoolShare(
       this.queryGammPools,
@@ -224,5 +246,7 @@ export class OsmosisQueriesImpl {
         this.querySuperfluidAssetMultiplier,
         this.queryGammPools
       );
+
+    makeObservable(this);
   }
 }
