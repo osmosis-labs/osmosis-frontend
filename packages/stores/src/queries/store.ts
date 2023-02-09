@@ -1,4 +1,4 @@
-import { autorun, makeObservable, observable } from "mobx";
+import { autorun } from "mobx";
 import { ChainGetter, QueriesSetBase } from "@keplr-wallet/stores";
 import { KVStore } from "@keplr-wallet/common";
 import { DeepReadonly } from "utility-types";
@@ -74,8 +74,7 @@ export const OsmosisQueries = {
 
 /** Root queries store for all Osmosis queries. */
 export class OsmosisQueriesImpl {
-  @observable.ref
-  public queryGammPools: PoolGetter;
+  protected _queryGammPools: DeepReadonly<PoolGetter>;
   public readonly queryGammNumPools: DeepReadonly<ObservableQueryNumPools>;
   public readonly queryGammPoolShare: DeepReadonly<ObservableQueryGammPoolShare>;
 
@@ -103,6 +102,10 @@ export class OsmosisQueriesImpl {
   public readonly querySuperfluidParams: DeepReadonly<ObservableQuerySuperfluidParams>;
   public readonly querySuperfluidAssetMultiplier: DeepReadonly<ObservableQuerySuperfluidAssetMultiplier>;
   public readonly querySuperfluidOsmoEquivalent: DeepReadonly<ObservableQuerySuperfluidOsmoEquivalent>;
+
+  get queryGammPools(): PoolGetter {
+    return this._queryGammPools;
+  }
 
   constructor(
     queries: QueriesSetBase,
@@ -152,14 +155,14 @@ export class OsmosisQueriesImpl {
         this.queryGammNumPools
       ),
     ]);
-    this.queryGammPools = poolsQueryFallbacks.responsiveStore;
-    // update the pools query store any time the fallback store changes
+    this._queryGammPools = poolsQueryFallbacks.responsiveStore;
+    // hot swap the pools query store any time the fallback store changes
     autorun(() => {
-      this.queryGammPools = poolsQueryFallbacks.responsiveStore;
+      this._queryGammPools = poolsQueryFallbacks.responsiveStore;
     });
 
     this.queryGammPoolShare = new ObservableQueryGammPoolShare(
-      this.queryGammPools,
+      this._queryGammPools,
       queries.queryBalances,
       this.queryAccountLocked,
       this.queryLockedCoins,
@@ -197,7 +200,7 @@ export class OsmosisQueriesImpl {
       chainGetter,
       this.queryLockableDurations,
       this.queryDistrInfo,
-      this.queryGammPools,
+      this._queryGammPools,
       this.queryMintParams,
       this.queryEpochProvisions,
       this.queryEpochs,
@@ -244,9 +247,7 @@ export class OsmosisQueriesImpl {
         chainGetter,
         this.querySuperfluidParams,
         this.querySuperfluidAssetMultiplier,
-        this.queryGammPools
+        this._queryGammPools
       );
-
-    makeObservable(this);
   }
 }

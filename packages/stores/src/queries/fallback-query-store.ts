@@ -7,6 +7,10 @@ export class FallbackStore<TStore extends ObservableQuery> {
   protected _responsiveStore: TStore;
 
   constructor(readonly orderedStores: TStore[]) {
+    if (orderedStores.length === 0) {
+      throw new Error("Must provide at least one store.");
+    }
+
     this._responsiveStore = orderedStores[0];
 
     // Runs any time error changes in current store.
