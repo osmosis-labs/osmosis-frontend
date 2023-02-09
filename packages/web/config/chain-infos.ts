@@ -1534,8 +1534,8 @@ const chainInfos = (
         "https://explorer.injective.network/transaction/{txHash}",
     },
     {
-      rpc: "https://cerberus-rpc.polkachu.com",
-      rest: "https://cerberus-api.polkachu.com",
+      rpc: "https://rpc-cerberus.ecostake.com",
+      rest: "https://rest-cerberus.ecostake.com",
       chainId: "cerberus-chain-1",
       chainName: "Cerberus",
       bip44: {
