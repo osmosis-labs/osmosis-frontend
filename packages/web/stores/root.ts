@@ -111,7 +111,7 @@ export class RootStore {
       this.chainStore,
       CosmosQueries.use(),
       CosmwasmQueries.use(),
-      OsmosisQueries.use(this.chainStore.osmosis.chainId)
+      OsmosisQueries.use(this.chainStore.osmosis.chainId, IS_TESTNET)
     );
 
     this.accountStore = new AccountStore(

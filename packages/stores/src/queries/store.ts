@@ -44,7 +44,8 @@ export interface OsmosisQueries {
 
 export const OsmosisQueries = {
   use(
-    osmosisChainId: string
+    osmosisChainId: string,
+    isTestnet = false
   ): (
     queriesSetBase: QueriesSetBase,
     kvStore: KVStore,
@@ -64,7 +65,8 @@ export const OsmosisQueries = {
                 queriesSetBase,
                 kvStore,
                 chainId,
-                chainGetter
+                chainGetter,
+                isTestnet
               )
             : undefined,
       };
@@ -111,7 +113,8 @@ export class OsmosisQueriesImpl {
     queries: QueriesSetBase,
     kvStore: KVStore,
     chainId: string,
-    chainGetter: ChainGetter
+    chainGetter: ChainGetter,
+    isTestnet = false
   ) {
     this.queryLockedCoins = new ObservableQueryAccountLockedCoins(
       kvStore,
@@ -141,20 +144,31 @@ export class OsmosisQueriesImpl {
     );
 
     /** Contains a reference to the currently responsive pool store. */
-    const poolsQueryFallbacks = new FallbackStore([
-      new ObservableQueryFilteredPools(
-        kvStore,
-        chainId,
-        chainGetter,
-        this.queryGammNumPools
-      ),
-      new ObservableQueryPools(
-        kvStore,
-        chainId,
-        chainGetter,
-        this.queryGammNumPools
-      ),
-    ]);
+    const poolsQueryFallbacks = new FallbackStore(
+      isTestnet
+        ? [
+            new ObservableQueryPools(
+              kvStore,
+              chainId,
+              chainGetter,
+              this.queryGammNumPools
+            ),
+          ]
+        : [
+            new ObservableQueryFilteredPools(
+              kvStore,
+              chainId,
+              chainGetter,
+              this.queryGammNumPools
+            ),
+            new ObservableQueryPools(
+              kvStore,
+              chainId,
+              chainGetter,
+              this.queryGammNumPools
+            ),
+          ]
+    );
     this._queryGammPools = poolsQueryFallbacks.responsiveStore;
     // hot swap the pools query store any time the fallback store changes
     autorun(() => {
