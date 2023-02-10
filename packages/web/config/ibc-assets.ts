@@ -1469,8 +1469,8 @@ export const IBCAssetInfos: (IBCAsset & {
   },
   { // ASTRO
     counterpartyChainId: "phoenix-1",
-    sourceChannelId: "channel-251",
-    destChannelId: "channel-1",
+    sourceChannelId: "channel-559",
+    destChannelId: "channel-85",
     coinMinimalDenom:
       "cw20:terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26",
     ics20ContractAddress:
