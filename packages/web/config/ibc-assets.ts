@@ -1467,6 +1467,17 @@ export const IBCAssetInfos: (IBCAsset & {
     depositUrlOverride: "https://app.arable.finance/#/ibc",
     withdrawUrlOverride: "https://app.arable.finance/#/ibc",
   },
+  { // ASTRO
+    counterpartyChainId: "phoenix-1",
+    sourceChannelId: "channel-251",
+    destChannelId: "channel-1",
+    coinMinimalDenom:
+      "cw20:terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26",
+    ics20ContractAddress:
+      "terra1d90p5lacfxnqgjxjupu234lxnxyeu8fdeef4d0e0nqy3p30r7gss4myn9x",
+    //depositUrlOverride: "https://bridge.terra.money",
+    //withdrawUrlOverride: "https://bridge.terra.money",
+  },
 ].filter((ibcAsset) => {
   // validate IBC asset config
   if (
