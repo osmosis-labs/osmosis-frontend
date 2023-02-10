@@ -1,7 +1,8 @@
-import { observable, makeObservable, action, computed } from "mobx";
-import { computedFn } from "mobx-utils";
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import { action, computed, makeObservable, observable } from "mobx";
+import { computedFn } from "mobx-utils";
+
 import { IPriceStore } from "../../price";
 import { ObservableQueryGammPoolShare, PoolGetter } from "../../queries";
 import { ManageLiquidityConfigBase } from "./base";

@@ -1,15 +1,16 @@
-import { computed, makeObservable } from "mobx";
-import { FiatCurrency } from "@keplr-wallet/types";
 import {
   CosmosQueries,
-  Staking,
   HasMapStore,
-  IQueriesStore,
   IAccountStore,
+  IQueriesStore,
+  Staking,
 } from "@keplr-wallet/stores";
-import { Dec, RatePretty, CoinPretty } from "@keplr-wallet/unit";
-import { OsmosisQueries } from "../../queries/store";
+import { FiatCurrency } from "@keplr-wallet/types";
+import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
+import { computed, makeObservable } from "mobx";
+
 import { IPriceStore } from "../../price";
+import { OsmosisQueries } from "../../queries/store";
 import { ObservablePoolDetails } from "./details";
 
 /** Convenience store getting common superfluid data for a pool via superfluid stores. */

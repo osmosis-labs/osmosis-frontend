@@ -1,15 +1,16 @@
-import { computed, makeObservable } from "mobx";
-import { Duration } from "dayjs/plugin/duration";
-import dayjs from "dayjs";
-import { FiatCurrency } from "@keplr-wallet/types";
-import { PricePretty, Dec, RatePretty, CoinPretty } from "@keplr-wallet/unit";
 import {
-  IQueriesStore,
-  IAccountStore,
   HasMapStore,
+  IAccountStore,
+  IQueriesStore,
 } from "@keplr-wallet/stores";
-import { OsmosisQueries } from "../../queries/store";
+import { FiatCurrency } from "@keplr-wallet/types";
+import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import dayjs from "dayjs";
+import { Duration } from "dayjs/plugin/duration";
+import { computed, makeObservable } from "mobx";
+
 import { IPriceStore } from "../../price";
+import { OsmosisQueries } from "../../queries/store";
 import { ExternalGauge } from "./types";
 
 /** Convenience store for getting common details of a pool via many other lower-level query stores. */

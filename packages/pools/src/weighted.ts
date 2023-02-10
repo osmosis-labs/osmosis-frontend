@@ -1,6 +1,7 @@
-import { Pool } from "./interface";
 import { Dec, Int } from "@keplr-wallet/unit";
 import { WeightedPoolMath } from "@osmosis-labs/math";
+
+import { Pool } from "./interface";
 
 /** Raw query response representation of pool. */
 export interface WeightedPoolRaw {

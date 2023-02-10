@@ -4,15 +4,16 @@ import {
   ObservableChainQuery,
   ObservableChainQueryMap,
 } from "@keplr-wallet/stores";
+import { Currency } from "@keplr-wallet/types";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import dayjs from "dayjs";
+import { makeObservable } from "mobx";
+import { computedFn } from "mobx-utils";
+
 import {
   SuperfluidUndelegation,
   SuperfluidUndelegationsResponse,
 } from "./types";
-import { makeObservable } from "mobx";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { Currency } from "@keplr-wallet/types";
-import { computedFn } from "mobx-utils";
-import dayjs from "dayjs";
 
 export class ObservableQuerySuperfluidUndelegationsInner extends ObservableChainQuery<SuperfluidUndelegationsResponse> {
   constructor(

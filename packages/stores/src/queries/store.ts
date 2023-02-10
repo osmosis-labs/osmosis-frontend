@@ -1,35 +1,36 @@
-import { ChainGetter, QueriesSetBase } from "@keplr-wallet/stores";
 import { KVStore } from "@keplr-wallet/common";
+import { ChainGetter, QueriesSetBase } from "@keplr-wallet/stores";
 import { DeepReadonly } from "utility-types";
+
 import { ObservableQueryFilteredPools } from "../queries-external/filtered-pools/filtered-pools";
-import { ObservableQueryNumPools } from "./pools";
-import { ObservableQueryGammPoolShare } from "./pool-share";
-import {
-  ObservableQueryIncentivizedPools,
-  ObservableQueryLockableDurations,
-  ObservableQueryPoolsGaugeIds,
-} from "./pool-incentives";
 import { ObservableQueryEpochs } from "./epochs";
+import { ObservableQueryGauges } from "./incentives";
 import {
+  ObservableQueryAccountLocked,
   ObservableQueryAccountLockedCoins,
   ObservableQueryAccountUnlockingCoins,
-  ObservableQueryAccountLocked,
   ObservableSyntheticLockupsByLockId,
 } from "./lockup";
 import {
   ObservableQueryEpochProvisions,
   ObservableQueryMintParmas,
 } from "./mint";
-import { ObservableQueryDistrInfo } from "./pool-incentives/distr-info";
-import { ObservableQueryGauges } from "./incentives";
 import { ObservableQueryPoolCreationFee } from "./pool-creation-fee";
 import {
-  ObservableQuerySuperfluidDelegations,
-  ObservableQuerySuperfluidPools,
-  ObservableQuerySuperfluidUndelegations,
+  ObservableQueryIncentivizedPools,
+  ObservableQueryLockableDurations,
+  ObservableQueryPoolsGaugeIds,
+} from "./pool-incentives";
+import { ObservableQueryDistrInfo } from "./pool-incentives/distr-info";
+import { ObservableQueryGammPoolShare } from "./pool-share";
+import { ObservableQueryNumPools } from "./pools";
+import {
   ObservableQuerySuperfluidAssetMultiplier,
+  ObservableQuerySuperfluidDelegations,
   ObservableQuerySuperfluidOsmoEquivalent,
   ObservableQuerySuperfluidParams,
+  ObservableQuerySuperfluidPools,
+  ObservableQuerySuperfluidUndelegations,
 } from "./superfluid-pools";
 
 export interface OsmosisQueries {

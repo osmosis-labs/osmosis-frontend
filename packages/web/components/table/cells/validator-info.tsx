@@ -1,4 +1,5 @@
 import { FunctionComponent } from "react";
+
 import { ValidatorInfo } from "./types";
 
 export const ValidatorInfoCell: FunctionComponent<ValidatorInfo> = ({

@@ -1,39 +1,40 @@
-import type { NextPage } from "next";
-import { observer } from "mobx-react-lite";
-import {
-  FunctionComponent,
-  useState,
-  useEffect,
-  ComponentProps,
-  useCallback,
-} from "react";
 import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
-import { useStore } from "../../stores";
-import { AssetsTable } from "../../components/table/assets-table";
-import { DepoolingTable } from "../../components/table/depooling-table";
+import { observer } from "mobx-react-lite";
+import type { NextPage } from "next";
+import {
+  ComponentProps,
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
+import { useTranslation } from "react-multi-lang";
+
 import { ShowMoreButton } from "../../components/buttons/show-more";
 import { PoolCard } from "../../components/cards/";
-import { Metric } from "../../components/types";
 import { MetricLoader } from "../../components/loaders";
-import { useTranslation } from "react-multi-lang";
+import { AssetsTable } from "../../components/table/assets-table";
+import { DepoolingTable } from "../../components/table/depooling-table";
+import { Metric } from "../../components/types";
+import { EventName } from "../../config";
 import {
-  IbcTransferModal,
+  useAmplitudeAnalytics,
+  useHideDustUserSetting,
+  useNavBar,
+  useTransferConfig,
+  useWindowSize,
+} from "../../hooks";
+import {
   BridgeTransferModal,
-  TransferAssetSelectModal,
   FiatRampsModal,
-  SelectAssetSourceModal,
+  IbcTransferModal,
   PreTransferModal,
+  SelectAssetSourceModal,
+  TransferAssetSelectModal,
   WalletConnectQRModal,
 } from "../../modals";
-import {
-  useWindowSize,
-  useAmplitudeAnalytics,
-  useNavBar,
-  useHideDustUserSetting,
-  useTransferConfig,
-} from "../../hooks";
-import { EventName } from "../../config";
+import { useStore } from "../../stores";
 
 const INIT_POOL_CARD_COUNT = 6;
 

@@ -1,7 +1,8 @@
-import { computed, makeObservable } from "mobx";
 import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter, ObservableChainQuery } from "@keplr-wallet/stores";
+import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
+
 import { SuperfluidAllAssets } from "./types";
 
 export class ObservableQuerySuperfluidPools extends ObservableChainQuery<SuperfluidAllAssets> {

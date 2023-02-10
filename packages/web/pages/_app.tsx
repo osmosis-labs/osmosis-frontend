@@ -1,38 +1,39 @@
 import "../styles/globals.css";
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
-import Head from "next/head";
-import type { AppProps } from "next/app";
-import { useMemo } from "react";
+
+import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration";
+import relativeTime from "dayjs/plugin/relativeTime";
+import updateLocale from "dayjs/plugin/updateLocale";
+import utc from "dayjs/plugin/utc";
 import { enableStaticRendering } from "mobx-react-lite";
-import { ToastContainer, Bounce } from "react-toastify";
-import { StoreProvider } from "../stores";
+import type { AppProps } from "next/app";
+import Head from "next/head";
+import { useMemo } from "react";
+import {
+  setDefaultLanguage,
+  setTranslations,
+  useTranslation,
+} from "react-multi-lang";
+import { Bounce, ToastContainer } from "react-toastify";
+
 import { MainLayout } from "../components/layouts";
 import { OgpMeta } from "../components/ogp-meta";
 import { MainLayoutMenu } from "../components/types";
-import dayjs from "dayjs";
-import duration from "dayjs/plugin/duration";
-import updateLocale from "dayjs/plugin/updateLocale";
-import relativeTime from "dayjs/plugin/relativeTime";
-import utc from "dayjs/plugin/utc";
-import { GetKeplrProvider } from "../hooks";
-import { IbcNotifier } from "../stores/ibc-notifier";
 import {
   AmplitudeEvent,
   EventName,
   IS_FRONTIER,
   PromotedLBPPoolIds,
 } from "../config";
+import { GetKeplrProvider } from "../hooks";
 import { useAmplitudeAnalytics } from "../hooks/use-amplitude-analytics";
-import {
-  setDefaultLanguage,
-  setTranslations,
-  useTranslation,
-} from "react-multi-lang";
-import spriteSVGURL from "../public/icons/sprite.svg";
-
-import en from "../localizations/en.json";
 import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
 import dayjsLocaleKo from "../localizations/dayjs-locale-ko.js";
+import en from "../localizations/en.json";
+import spriteSVGURL from "../public/icons/sprite.svg";
+import { StoreProvider } from "../stores";
+import { IbcNotifier } from "../stores/ibc-notifier";
 
 dayjs.extend(relativeTime);
 dayjs.extend(duration);

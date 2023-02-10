@@ -1,6 +1,6 @@
-import { FunctionComponent } from "react";
-import classNames from "classnames";
 import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
+import classNames from "classnames";
+import { FunctionComponent } from "react";
 
 const ColorCycle = [
   "bg-osmoverse-300",

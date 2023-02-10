@@ -1,27 +1,28 @@
-import Image from "next/image";
-import { Fragment, FunctionComponent, useEffect, useRef } from "react";
-import { observer } from "mobx-react-lite";
-import classNames from "classnames";
 import { WalletStatus } from "@keplr-wallet/stores";
-import { Button, buttonCVA } from "../buttons";
-import { useStore } from "../../stores";
+import classNames from "classnames";
+import { observer } from "mobx-react-lite";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { Fragment, FunctionComponent, useEffect, useRef } from "react";
+import { useTranslation } from "react-multi-lang";
+
+import { Announcement, EventName, IS_FRONTIER } from "../../config";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
   useLocalStorageState,
 } from "../../hooks";
-import { useTranslation } from "react-multi-lang";
-import { MainLayoutMenu, CustomClasses } from "../types";
-import { MainMenu } from "../main-menu";
-import { EventName, Announcement, IS_FRONTIER } from "../../config";
-import { ProfileModal } from "../../modals/profile";
-import IconButton from "../buttons/icon-button";
-import { Icon } from "../assets";
-import { formatICNSName, getShortAddress } from "../../utils/string";
-import { Popover } from "../popover";
 import { ModalBase, ModalBaseProps, SettingsModal } from "../../modals";
+import { ProfileModal } from "../../modals/profile";
+import { useStore } from "../../stores";
 import { noop } from "../../utils/function";
-import { useRouter } from "next/router";
+import { formatICNSName, getShortAddress } from "../../utils/string";
+import { Icon } from "../assets";
+import { Button, buttonCVA } from "../buttons";
+import IconButton from "../buttons/icon-button";
+import { MainMenu } from "../main-menu";
+import { Popover } from "../popover";
+import { CustomClasses, MainLayoutMenu } from "../types";
 
 export const NavBar: FunctionComponent<
   {

@@ -1,6 +1,7 @@
+import classNames from "classnames";
 import Image from "next/image";
 import { FunctionComponent } from "react";
-import classNames from "classnames";
+
 import { PoolAssetInfo } from "./types";
 
 interface Props {

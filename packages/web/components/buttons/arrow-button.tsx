@@ -1,11 +1,11 @@
+import classNames from "classnames";
 import Image from "next/image";
 import {
-  ButtonHTMLAttributes,
   AnchorHTMLAttributes,
+  ButtonHTMLAttributes,
   ElementType,
   forwardRef,
 } from "react";
-import classNames from "classnames";
 
 export const ArrowButton = forwardRef<
   HTMLButtonElement | HTMLAnchorElement,

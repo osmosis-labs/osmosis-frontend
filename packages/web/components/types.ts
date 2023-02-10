@@ -1,4 +1,5 @@
 import { MouseEventHandler, ReactElement, ReactNode } from "react";
+
 import { AmplitudeEvent } from "../config";
 
 export type MainLayoutMenu = {

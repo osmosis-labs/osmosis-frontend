@@ -1,13 +1,14 @@
-import React, { Fragment, FunctionComponent, useEffect } from "react";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
-import { MenuDropdownIconItemProps } from "./types";
-import { LanguageUserSetting } from "../../stores/user-settings";
 import { Listbox } from "@headlessui/react";
+import classNames from "classnames";
+import { observer } from "mobx-react-lite";
+import React, { Fragment, FunctionComponent, useEffect } from "react";
+import { useTranslation } from "react-multi-lang";
+
+import { useStore } from "../../stores";
+import { LanguageUserSetting } from "../../stores/user-settings";
 import { Icon } from "../assets";
 import { Button } from "../buttons";
-import classNames from "classnames";
-import { useTranslation } from "react-multi-lang";
+import { MenuDropdownIconItemProps } from "./types";
 
 export type LanguageSelectProps = {
   options: { value: string; display: string }[];

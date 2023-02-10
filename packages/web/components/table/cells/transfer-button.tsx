@@ -1,10 +1,11 @@
-import Image from "next/image";
 import classNames from "classnames";
+import Image from "next/image";
 import { FunctionComponent } from "react";
-import { AssetCell as Cell } from "./types";
 import { useTranslation } from "react-multi-lang";
-import { Button } from "../../buttons";
+
 import { Icon } from "../../assets";
+import { Button } from "../../buttons";
+import { AssetCell as Cell } from "./types";
 
 export const TransferButtonCell: FunctionComponent<
   {

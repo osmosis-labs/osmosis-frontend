@@ -1,18 +1,19 @@
+import { Currency } from "@keplr-wallet/types";
 import {
+  Coin,
+  CoinPretty,
   Dec,
   DecUtils,
   Int,
   IntPretty,
-  Coin,
-  CoinPretty,
 } from "@keplr-wallet/unit";
-import { Currency } from "@keplr-wallet/types";
+
 import {
-  isOsmoRoutedMultihop,
   getOsmoRoutedMultihopTotalSwapFee,
+  isOsmoRoutedMultihop,
 } from "./multihop";
-import { WeightedPoolMath } from "./weighted";
 import { StableSwapMath } from "./stable";
+import { WeightedPoolMath } from "./weighted";
 
 export function estimateJoinSwapExternAmountIn(
   poolAsset: { amount: Int; weight: Int },

@@ -1,6 +1,6 @@
 {
   "extends": ["next/core-web-vitals", "prettier"],
-  "plugins": ["unicorn", "import"],
+  "plugins": ["unicorn", "simple-import-sort", "import"],
   "rules": {
     "unicorn/filename-case": [
       "error",
@@ -16,6 +16,8 @@
     ],
     "@next/next/no-img-element": "off",
     "react-hooks/exhaustive-deps": "off",
-    "react/display-name": "off"
+    "react/display-name": "off",
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error"
   }
 }

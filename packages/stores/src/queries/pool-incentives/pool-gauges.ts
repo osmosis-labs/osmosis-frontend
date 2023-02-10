@@ -1,12 +1,13 @@
-import { computed, makeObservable } from "mobx";
+import { KVStore } from "@keplr-wallet/common";
 import {
   ChainGetter,
-  ObservableChainQuery,
   HasMapStore,
+  ObservableChainQuery,
 } from "@keplr-wallet/stores";
-import { KVStore } from "@keplr-wallet/common";
-import { Duration } from "dayjs/plugin/duration";
 import dayjs from "dayjs";
+import { Duration } from "dayjs/plugin/duration";
+import { computed, makeObservable } from "mobx";
+
 import { GaugeIdsWithDuration } from "./types";
 
 /** Queries matching gauge ids and durations in seconds for a given pool. */

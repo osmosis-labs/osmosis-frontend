@@ -1,4 +1,5 @@
 import { Dec } from "@keplr-wallet/unit";
+
 import { pow } from "../utils";
 
 export const WeightedPoolMath = {

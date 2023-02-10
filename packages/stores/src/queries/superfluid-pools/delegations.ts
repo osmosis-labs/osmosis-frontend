@@ -4,15 +4,16 @@ import {
   ObservableChainQuery,
   ObservableChainQueryMap,
 } from "@keplr-wallet/stores";
-import {
-  SuperfluidDelegationsResponse,
-  SuperfluidDelegationRecordsResponse,
-  SuperfluidDelegation,
-} from "./types";
-import { makeObservable } from "mobx";
-import { CoinPretty, Int } from "@keplr-wallet/unit";
 import { Currency } from "@keplr-wallet/types";
+import { CoinPretty, Int } from "@keplr-wallet/unit";
+import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
+
+import {
+  SuperfluidDelegation,
+  SuperfluidDelegationRecordsResponse,
+  SuperfluidDelegationsResponse,
+} from "./types";
 
 export class ObservableQuerySuperfluidDelegationsInner extends ObservableChainQuery<SuperfluidDelegationsResponse> {
   constructor(

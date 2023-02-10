@@ -7,6 +7,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
+
 import { useStore } from "../../stores";
 import { ChainStore } from "../../stores/chain";
 import { DenomImage } from "../assets";

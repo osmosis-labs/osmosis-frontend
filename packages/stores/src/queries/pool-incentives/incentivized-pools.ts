@@ -6,16 +6,17 @@ import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
+
+import { IPriceStore } from "../../price";
 import { ObservableQueryEpochs } from "../epochs";
+import { ObservableQueryGauges } from "../incentives";
 import {
   ObservableQueryEpochProvisions,
   ObservableQueryMintParmas,
 } from "../mint";
 import { PoolGetter } from "../pools";
-import { IPriceStore } from "../../price";
 import { ObservableQueryDistrInfo } from "./distr-info";
 import { ObservableQueryLockableDurations } from "./lockable-durations";
-import { ObservableQueryGauges } from "../incentives";
 import { IncentivizedPools } from "./types";
 
 export class ObservableQueryIncentivizedPools extends ObservableChainQuery<IncentivizedPools> {

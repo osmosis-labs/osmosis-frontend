@@ -1,25 +1,27 @@
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { ObservableQueryPool } from "@osmosis-labs/stores";
+import EventEmitter from "eventemitter3";
 import { observer } from "mobx-react-lite";
 import {
   FunctionComponent,
-  useState,
-  useMemo,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
+  useState,
 } from "react";
-import EventEmitter from "eventemitter3";
-import { ObservableQueryPool } from "@osmosis-labs/stores";
+import { useTranslation } from "react-multi-lang";
+
 import { EventName } from "../../config";
 import {
+  useAmplitudeAnalytics,
   useFilteredData,
   usePaginatedData,
   useSortedData,
   useWindowSize,
-  useAmplitudeAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
-import { Switch, MenuToggle, PageList, SortMenu, MenuOption } from "../control";
+import { MenuOption, MenuToggle, PageList, SortMenu, Switch } from "../control";
 import { SearchBox } from "../input";
 import { ColumnDef, RowDef, Table } from "../table";
 import {
@@ -28,9 +30,8 @@ import {
   PoolQuickActionCell,
 } from "../table/cells";
 import { Breakpoint } from "../types";
-import { CompactPoolTableDisplay } from "./compact-pool-table-display";
 import { POOLS_PER_PAGE } from ".";
-import { useTranslation } from "react-multi-lang";
+import { CompactPoolTableDisplay } from "./compact-pool-table-display";
 
 type PoolCell = PoolCompositionCell & MetricLoaderCell & PoolQuickActionCell;
 

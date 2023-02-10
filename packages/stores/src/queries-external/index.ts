@@ -1,8 +1,8 @@
 export * from "./active-gauges";
 export * from "./filtered-pools";
+export * from "./ibc";
 export * from "./pool-fees";
 export * from "./pool-rewards";
-export * from "./ibc";
 export * from "./store";
 
 export const IMPERATOR_HISTORICAL_DATA_BASEURL =
