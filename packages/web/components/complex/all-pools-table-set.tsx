@@ -152,6 +152,7 @@ export const AllPoolsTableSet: FunctionComponent<{
         // note: mobx only causes rerenders for values referenced *during* render. I.e. *not* within useEffect/useCallback/useMemo hooks (see: https://mobx.js.org/react-integration.html)
         // `useMemo` is needed in this file to avoid "debounce" with the hundreds of re-renders by mobx as the 200+ API requests come in and populate 1000+ observables (otherwise the UI is unresponsive for 30+ seconds)
         // also, the higher level `useMemo`s (i.e. this one) gain the most performance as other React renders are prevented down the line as data is calculated (remember, renders are initiated by both mobx and react)
+        allPools,
         queriesOsmosis.queryGammPools.isFetching,
         queriesExternalStore.queryGammPoolFeeMetrics.response,
         queriesOsmosis.queryAccountLocked.get(account.bech32Address).response,
@@ -259,7 +260,12 @@ export const AllPoolsTableSet: FunctionComponent<{
       return [...allPoolsWithMetrics, ...externalIncentivizedPoolsWithMetrics]
         .filter((p) => p.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD)))
         .filter((p) => (filter ? p.pool.type === filter : true));
-    }, [allPoolsWithMetrics, externalIncentivizedPoolsWithMetrics, filter]);
+    }, [
+      allPoolsWithMetrics,
+      externalIncentivizedPoolsWithMetrics,
+      filter,
+      queriesExternalStore.queryGammPoolFeeMetrics.response,
+    ]);
 
     const [query, _setQuery, filteredPools] = useFilteredData(
       tvlFilteredPools,
@@ -327,15 +333,7 @@ export const AllPoolsTableSet: FunctionComponent<{
           ];
           return pool;
         }),
-      [
-        cellGroupEventEmitter,
-        filteredPools,
-        queriesExternalStore.queryGammPoolFeeMetrics.response,
-        queriesOsmosis.queryIncentivizedPools.isAprFetching,
-        quickAddLiquidity,
-        quickLockTokens,
-        quickRemoveLiquidity,
-      ]
+      [filteredPools, queriesOsmosis.queryIncentivizedPools.isAprFetching]
     );
 
     const columnHelper = createColumnHelper<Pool>();
@@ -399,7 +397,12 @@ export const AllPoolsTableSet: FunctionComponent<{
       }),
     ];
 
-    const [sorting, setSorting] = useState<SortingState>([]);
+    const [sorting, setSorting] = useState<SortingState>([
+      {
+        id: "liquidity",
+        desc: true,
+      },
+    ]);
 
     const table = useReactTable({
       data: tableData,
@@ -451,12 +454,13 @@ export const AllPoolsTableSet: FunctionComponent<{
                 </div>
               ))}
             </div>
-            <div className="flex items-center justify-between gap-3 lg:w-full lg:place-content-between">
+            <div className="flex flex-wrap items-center gap-3 lg:w-full lg:place-content-between">
               <SearchBox
                 currentValue={query}
                 onInput={setQuery}
                 placeholder={t("pools.allPools.search")}
                 className="!w-64"
+                size="small"
               />
               <SortMenu
                 options={table
