@@ -170,6 +170,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "umars",
     isVerified: true,
+    name: "Mars",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -184,6 +185,7 @@ export const IBCAssetInfos: (IBCAsset & {
       method: "deposit-address" as const,
       sourceChains: [AxelarSourceChainConfigs.wbtc.ethereum],
     },
+    name: "Wrapped Bitcoin",
   },
   {
     counterpartyChainId: IS_TESTNET
@@ -200,6 +202,7 @@ export const IBCAssetInfos: (IBCAsset & {
       method: "deposit-address" as const,
       sourceChains: [AxelarSourceChainConfigs.weth.ethereum],
     },
+    name: "Wrapped Ether",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -214,6 +217,7 @@ export const IBCAssetInfos: (IBCAsset & {
       method: "deposit-address" as const,
       sourceChains: [AxelarSourceChainConfigs.usdt.ethereum],
     },
+    name: "Tether USD",
   },
   {
     counterpartyChainId: IS_TESTNET
@@ -238,6 +242,7 @@ export const IBCAssetInfos: (IBCAsset & {
       ],
     },
     fiatRamps: [{ rampKey: "kado" as const, assetKey: "USDC" }],
+    name: "USD Coin",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -258,6 +263,7 @@ export const IBCAssetInfos: (IBCAsset & {
         platformName: "PancakeSwap",
       },
     },
+    name: "Wrapped BNB",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -272,6 +278,7 @@ export const IBCAssetInfos: (IBCAsset & {
       method: "deposit-address" as const,
       sourceChains: [AxelarSourceChainConfigs.busd.ethereum],
     },
+    name: "Binance USD",
   },
   {
     counterpartyChainId: IS_TESTNET
@@ -294,6 +301,7 @@ export const IBCAssetInfos: (IBCAsset & {
         platformName: "SwapMatic",
       },
     },
+    name: "Wrapped Matic",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -308,6 +316,7 @@ export const IBCAssetInfos: (IBCAsset & {
       method: "deposit-address" as const,
       sourceChains: [AxelarSourceChainConfigs.dot.moonbeam],
     },
+    name: "Wrapped Polkadot",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -321,6 +330,7 @@ export const IBCAssetInfos: (IBCAsset & {
       method: "deposit-address" as const,
       sourceChains: [AxelarSourceChainConfigs.shib.ethereum],
     },
+    name: "Shiba Inu",
   },
   {
     counterpartyChainId: IS_TESTNET
@@ -343,6 +353,7 @@ export const IBCAssetInfos: (IBCAsset & {
         platformName: "SushiSwap",
       },
     },
+    name: "Wrapped AVAX",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -357,6 +368,7 @@ export const IBCAssetInfos: (IBCAsset & {
       method: "deposit-address" as const,
       sourceChains: [AxelarSourceChainConfigs.dai.ethereum],
     },
+    name: "Dai Stablecoin",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -370,6 +382,7 @@ export const IBCAssetInfos: (IBCAsset & {
       method: "deposit-address" as const,
       sourceChains: [AxelarSourceChainConfigs.uni.ethereum],
     },
+    name: "Uniswap",
   },
   {
     counterpartyChainId: "cosmoshub-4",
@@ -377,6 +390,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-141",
     coinMinimalDenom: "uatom",
     isVerified: true,
+    name: "Cosmos Hub Atom",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -391,6 +405,7 @@ export const IBCAssetInfos: (IBCAsset & {
       method: "deposit-address" as const,
       sourceChains: [AxelarSourceChainConfigs.link.ethereum],
     },
+    name: "Chainlink",
   },
   {
     counterpartyChainId: "crypto-org-chain-mainnet-1",
@@ -398,6 +413,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-10",
     coinMinimalDenom: "basecro",
     isVerified: true,
+    name: "Cronos",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -411,6 +427,7 @@ export const IBCAssetInfos: (IBCAsset & {
       method: "deposit-address" as const,
       sourceChains: [AxelarSourceChainConfigs.ape.ethereum],
     },
+    name: "ApeCoin",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -424,6 +441,7 @@ export const IBCAssetInfos: (IBCAsset & {
       method: "deposit-address" as const,
       sourceChains: [AxelarSourceChainConfigs.aave.ethereum],
     },
+    name: "Aave",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -437,6 +455,7 @@ export const IBCAssetInfos: (IBCAsset & {
       method: "deposit-address" as const,
       sourceChains: [AxelarSourceChainConfigs.axs.ethereum],
     },
+    name: "Axie Infinity Shard",
   },
   {
     counterpartyChainId: "columbus-5",
@@ -444,6 +463,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "uluna",
     isVerified: true,
+    name: "Luna Classic",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -457,6 +477,7 @@ export const IBCAssetInfos: (IBCAsset & {
       method: "deposit-address" as const,
       sourceChains: [AxelarSourceChainConfigs.frax.ethereum],
     },
+    name: "Frax",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -477,6 +498,7 @@ export const IBCAssetInfos: (IBCAsset & {
         platformName: "SpiritSwap",
       },
     },
+    name: "Wrapped FTM",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -491,6 +513,7 @@ export const IBCAssetInfos: (IBCAsset & {
       method: "deposit-address" as const,
       sourceChains: [AxelarSourceChainConfigs.mkr.ethereum],
     },
+    name: "Maker",
   },
   {
     counterpartyChainId: "phoenix-1",
@@ -500,6 +523,7 @@ export const IBCAssetInfos: (IBCAsset & {
     isVerified: true,
     depositUrlOverride: "https://bridge.terra.money",
     withdrawUrlOverride: "https://bridge.terra.money",
+    name: "Luna",
   },
   {
     counterpartyChainId: "kava_2222-10",
@@ -507,6 +531,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "ukava",
     isVerified: true,
+    name: "Kava",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -520,6 +545,7 @@ export const IBCAssetInfos: (IBCAsset & {
       method: "deposit-address" as const,
       sourceChains: [AxelarSourceChainConfigs.xcn.ethereum],
     },
+    name: "Chain",
   },
   {
     counterpartyChainId: "fetchhub-4",
@@ -527,6 +553,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-10",
     coinMinimalDenom: "afet",
     isVerified: true,
+    name: "fetch-ai",
   },
   {
     counterpartyChainId: "laozi-mainnet",
@@ -534,12 +561,14 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-83",
     coinMinimalDenom: "uband",
     isVerified: true,
+    name: "Band Protocol",
   },
   {
     counterpartyChainId: "columbus-5",
     sourceChannelId: "channel-72",
     destChannelId: "channel-1",
     coinMinimalDenom: "uusd",
+    name: "TerraClassicUSD",
   },
   {
     counterpartyChainId: IS_TESTNET
@@ -555,6 +584,7 @@ export const IBCAssetInfos: (IBCAsset & {
       method: "deposit-address" as const,
       sourceChains: [AxelarSourceChainConfigs.wglmr.moonbeam],
     },
+    name: "Wrapped Moonbeam",
   },
   {
     counterpartyChainId: "injective-1",
@@ -566,6 +596,7 @@ export const IBCAssetInfos: (IBCAsset & {
     withdrawUrlOverride:
       "https://hub.injective.network/bridge/?destination=injective&origin=osmosis&token=inj",
     isVerified: true,
+    name: "Injective",
   },
   {
     counterpartyChainId: "evmos_9001-2",
@@ -575,6 +606,7 @@ export const IBCAssetInfos: (IBCAsset & {
     depositUrlOverride: "https://app.evmos.org/transfer",
     withdrawUrlOverride: "https://app.evmos.org/transfer",
     isVerified: true,
+    name: "Evmos",
   },
   {
     counterpartyChainId: "secret-4",
@@ -582,6 +614,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "uscrt",
     isVerified: true,
+    name: "Secret Network",
   },
   {
     counterpartyChainId: "canto_7700-1",
@@ -589,6 +622,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-5",
     coinMinimalDenom: "acanto",
     isVerified: false,
+    name: "Canto",
   },
   {
     counterpartyChainId: "agoric-3",
@@ -596,12 +630,14 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "ubld",
     isVerified: true,
+    name: "Agoric",
   },
   {
     counterpartyChainId: "kava_2222-10",
     sourceChannelId: "channel-143",
     destChannelId: "channel-1",
     coinMinimalDenom: "usdx",
+    name: "USDX",
   },
   {
     counterpartyChainId: "juno-1",
@@ -609,6 +645,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-0",
     coinMinimalDenom: "ujuno",
     isVerified: true,
+    name: "Juno",
   },
   {
     counterpartyChainId: "panacea-3",
@@ -616,6 +653,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "umed",
     isVerified: true,
+    name: "MediBloc",
   },
   {
     counterpartyChainId: "core-1",
@@ -623,6 +661,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-6",
     coinMinimalDenom: "uxprt",
     isVerified: true,
+    name: "Persistence",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -630,12 +669,14 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-3",
     coinMinimalDenom: "uaxl",
     isVerified: true,
+    name: "Axelar",
   },
   {
     counterpartyChainId: "shentu-2.2",
     sourceChannelId: "channel-146",
     destChannelId: "channel-8",
     coinMinimalDenom: "uctk",
+    name: "Shentu",
   },
   {
     counterpartyChainId: "akashnet-2",
@@ -643,6 +684,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-9",
     coinMinimalDenom: "uakt",
     isVerified: true,
+    name: "Akash Network",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -658,7 +700,8 @@ export const IBCAssetInfos: (IBCAsset & {
       sourceChains: [
         AxelarSourceChainConfigs.polygonusdc.polygon,
       ],
-    }
+    },
+    name: "USDC on Polygon",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -674,7 +717,8 @@ export const IBCAssetInfos: (IBCAsset & {
       sourceChains: [
         AxelarSourceChainConfigs.avalancheusdc.avalanche,
       ],
-    }
+    },
+    name: "USDC on Avalanche",
   },
   {
     counterpartyChainId: "kaiyo-1",
@@ -686,6 +730,7 @@ export const IBCAssetInfos: (IBCAsset & {
     // withdrawUrlOverride:
     //   "https://blue.kujira.app/ibc?destination=kaiyo-1&source=osmosis-1&denom=ukuji",
     isVerified: true,
+    name: "Kuji",
   },
   {
     counterpartyChainId: "stargaze-1",
@@ -693,6 +738,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-0",
     coinMinimalDenom: "ustars",
     isVerified: true,
+    name: "Stargaze",
   },
   {
     counterpartyChainId: "regen-1",
@@ -700,6 +746,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "uregen",
     isVerified: true,
+    name: "Regen Network",
   },
   {
     counterpartyChainId: "core-1",
@@ -710,6 +757,7 @@ export const IBCAssetInfos: (IBCAsset & {
     ibcTransferPathDenom:
       "transfer/channel-38/gravity0xfB5c6815cA3AC72Ce9F5006869AE67f18bF77006",
     isVerified: true,
+    name: "pSTAKE Finance",
   },
   {
     counterpartyChainId: "irishub-1",
@@ -717,12 +765,14 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-3",
     coinMinimalDenom: "uiris",
     isVerified: true,
+    name: "IRISnet",
   },
   {
     counterpartyChainId: "kava_2222-10",
     sourceChannelId: "channel-143",
     destChannelId: "channel-1",
     coinMinimalDenom: "hard",
+    name: "Hard",
   },
   {
     counterpartyChainId: "stride-1",
@@ -730,6 +780,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-5",
     coinMinimalDenom: "ustrd",
     isVerified: true,
+    name: "Stride",
   },
   {
     counterpartyChainId: "stride-1",
@@ -737,6 +788,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-5",
     coinMinimalDenom: "stuosmo",
     isVerified: true,
+    name: "stOSMO",
   },
   {
     counterpartyChainId: "stride-1",
@@ -744,18 +796,21 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-5",
     coinMinimalDenom: "stuatom",
     isVerified: true,
+    name: "stATOM",
   },
   {
     counterpartyChainId: "stride-1",
     sourceChannelId: "channel-326",
     destChannelId: "channel-5",
     coinMinimalDenom: "stujuno",
+    name: "stJUNO",
   },
   {
     counterpartyChainId: "stride-1",
     sourceChannelId: "channel-326",
     destChannelId: "channel-5",
     coinMinimalDenom: "stustars",
+    name: "stSTARS",
   },
   {
     counterpartyChainId: "kichain-2",
@@ -763,6 +818,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-0",
     coinMinimalDenom: "uxki",
     isVerified: true,
+    name: "Ki",
   },
   {
     counterpartyChainId: "umee-1",
@@ -770,24 +826,28 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-0",
     coinMinimalDenom: "uumee",
     isVerified: true,
+    name: "Umee",
   },
   {
     counterpartyChainId: "Oraichain",
     sourceChannelId: "channel-216",
     destChannelId: "channel-13",
     coinMinimalDenom: "orai",
+    name: "Oraichain",
   },
   {
     counterpartyChainId: "crescent-1",
     sourceChannelId: "channel-297",
     destChannelId: "channel-9",
     coinMinimalDenom: "ucre",
+    name: "Crescent",
   },
   {
     counterpartyChainId: "cudos-1",
     sourceChannelId: "channel-298",
     destChannelId: "channel-1",
     coinMinimalDenom: "acudos",
+    name: "Cudos",
   },
   {
     counterpartyChainId: "carbon-1",
@@ -795,6 +855,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-0",
     coinMinimalDenom: "swth",
     isVerified: true,
+    name: "Carbon",
   },
   {
     counterpartyChainId: "axelar-dojo-1",
@@ -808,6 +869,7 @@ export const IBCAssetInfos: (IBCAsset & {
       method: "deposit-address" as const,
       sourceChains: [AxelarSourceChainConfigs.rai.ethereum],
     },
+    name: "Rai Reflex Index",
   },
   {
     counterpartyChainId: "comdex-1",
@@ -815,6 +877,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "ucmdx",
     isVerified: true,
+    name: "Comdex",
   },
   {
     counterpartyChainId: "cheqd-mainnet-1",
@@ -822,12 +885,14 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-0",
     coinMinimalDenom: "ncheq",
     isVerified: true,
+    name: "cheqd",
   },
   {
     counterpartyChainId: "kava_2222-10",
     sourceChannelId: "channel-143",
     destChannelId: "channel-1",
     coinMinimalDenom: "swp",
+    name: "Swap",
   },
   {
     // SHD
@@ -837,12 +902,14 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "cw20:secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d",
     depositUrlOverride: "https://wrap.scrt.network",
     ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
+    name: "Shade",
   },
   {
     counterpartyChainId: "bostrom",
     sourceChannelId: "channel-95",
     destChannelId: "channel-2",
     coinMinimalDenom: "boot",
+    name: "Bostrom",
   },
   {
     counterpartyChainId: "emoney-3",
@@ -850,12 +917,14 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-0",
     coinMinimalDenom: "ungm",
     isVerified: true,
+    name: "e-Money",
   },
   {
     counterpartyChainId: "teritori-1",
     sourceChannelId: "channel-362",
     destChannelId: "channel-0",
     coinMinimalDenom: "utori",
+    name: "Teritori",
   },
   {
     counterpartyChainId: "sentinelhub-2",
@@ -863,6 +932,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-0",
     coinMinimalDenom: "udvpn",
     isVerified: true,
+    name: "Sentinel",
   },
   {
     counterpartyChainId: "gravity-bridge-3",
@@ -870,6 +940,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-10",
     coinMinimalDenom: "ugraviton",
     isVerified: true,
+    name: "Graviton",
   },
   {
     counterpartyChainId: "gravity-bridge-3",
@@ -878,6 +949,7 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
     depositUrlOverride: "https://bridge.blockscape.network/",
     withdrawUrlOverride: "https://bridge.blockscape.network/",
+    name: "Wrapped Bitcoin",
   },
   {
     counterpartyChainId: "gravity-bridge-3",
@@ -886,6 +958,7 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
     depositUrlOverride: "https://bridge.blockscape.network/",
     withdrawUrlOverride: "https://bridge.blockscape.network/",
+    name: "Wrapped Ethereum",
   },
   {
     counterpartyChainId: "gravity-bridge-3",
@@ -894,6 +967,7 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
     depositUrlOverride: "https://bridge.blockscape.network/",
     withdrawUrlOverride: "https://bridge.blockscape.network/",
+    name: "USD Coin",
   },
   {
     counterpartyChainId: "gravity-bridge-3",
@@ -902,6 +976,7 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "gravity0x6B175474E89094C44Da98b954EedeAC495271d0F",
     depositUrlOverride: "https://bridge.blockscape.network/",
     withdrawUrlOverride: "https://bridge.blockscape.network/",
+    name: "Dai Stablecoin",
   },
   {
     counterpartyChainId: "gravity-bridge-3",
@@ -910,6 +985,7 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
     depositUrlOverride: "https://bridge.blockscape.network/",
     withdrawUrlOverride: "https://bridge.blockscape.network/",
+    name: "Tether USD",
   },
   {
     counterpartyChainId: "mantle-1",
@@ -917,6 +993,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-0",
     coinMinimalDenom: "umntl",
     isVerified: true,
+    name: "AssetMantle",
   },
   {
     counterpartyChainId: "emoney-3",
@@ -924,6 +1001,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-0",
     coinMinimalDenom: "eeur",
     isVerified: true,
+    name: "e-Money EUR",
   },
   {
     // SIENNA
@@ -933,12 +1011,14 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "cw20:secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4",
     depositUrlOverride: "https://wrap.scrt.network",
     ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
+    name: "SIENNA",
   },
   {
     counterpartyChainId: "lambda_92000-1",
     sourceChannelId: "channel-378",
     destChannelId: "channel-2",
     coinMinimalDenom: "ulamb",
+    name: "Lambda",
   },
   {
     counterpartyChainId: "likecoin-mainnet-2",
@@ -946,6 +1026,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-3",
     coinMinimalDenom: "nanolike",
     isVerified: true,
+    name: "LikeCoin",
   },
   {
     counterpartyChainId: "agoric-3",
@@ -953,6 +1034,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "uist",
     isVerified: true,
+    name: "Inter Stable Token",
   },
   {
     counterpartyChainId: "desmos-mainnet",
@@ -960,6 +1042,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-2",
     coinMinimalDenom: "udsm",
     isVerified: true,
+    name: "Desmos",
   },
   {
     counterpartyChainId: "mainnet-3",
@@ -967,6 +1050,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "udec",
     isVerified: true,
+    name: "Decentr",
   },
   {
     counterpartyChainId: "sifchain-1",
@@ -974,6 +1058,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-17",
     coinMinimalDenom: "rowan",
     isUnstable: true,
+    name: "Sifchain Rowan",
   },
   {
     counterpartyChainId: "kaiyo-1",
@@ -985,12 +1070,14 @@ export const IBCAssetInfos: (IBCAsset & {
       "https://blue.kujira.app/ibc?destination=osmosis-1&source=kaiyo-1&denom=factory%2Fkujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7%2Fuusk",
     withdrawUrlOverride:
       "https://blue.kujira.app/ibc?destination=kaiyo-1&source=osmosis-1&denom=ibc%2F44492EAB24B72E3FB59B9FA619A22337FB74F95D8808FE6BC78CC0E6C18DC2EC",
+    name: "USK",
   },
   {
     counterpartyChainId: "acre_9052-1",
     sourceChannelId: "channel-490",
     destChannelId: "channel-0",
     coinMinimalDenom: "aacre",
+    name: "Acre",
   },
   {
     counterpartyChainId: "bitsong-2b",
@@ -998,6 +1085,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-0",
     coinMinimalDenom: "ubtsg",
     isVerified: true,
+    name: "BitSong",
   },
   {
     counterpartyChainId: "iov-mainnet-ibc",
@@ -1005,12 +1093,14 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-2",
     coinMinimalDenom: "uiov",
     isVerified: true,
+    name: "Starname",
   },
   {
     counterpartyChainId: "odin-mainnet-freya",
     sourceChannelId: "channel-258",
     destChannelId: "channel-3",
     coinMinimalDenom: "mGeo",
+    name: "GEO",
   },
   {
     counterpartyChainId: "vidulum-1",
@@ -1018,6 +1108,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-0",
     coinMinimalDenom: "uvdl",
     isVerified: true,
+    name: "Vidulum",
   },
   {
     counterpartyChainId: "microtick-1",
@@ -1025,12 +1116,14 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-16",
     coinMinimalDenom: "utick",
     isUnstable: true,
+    name: "Microtick",
   },
   {
     counterpartyChainId: "titan-1",
     sourceChannelId: "channel-221",
     destChannelId: "channel-1",
     coinMinimalDenom: "uatolo",
+    name: "Rizon Chain",
   },
 //-------No CoinGecko Market Capitalization-------
   {
@@ -1039,6 +1132,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-7",
     coinMinimalDenom: "uhuahua",
     isVerified: true,
+    name: "Chihuahua",
   },
   {
     counterpartyChainId: "impacthub-3",
@@ -1046,6 +1140,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-4",
     coinMinimalDenom: "uixo",
     isUnstable: true,
+    name: "Ixo",
   },
   {
     counterpartyChainId: "bitcanna-1",
@@ -1053,6 +1148,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "ubcna",
     isVerified: true,
+    name: "BitCanna",
   },
   {
     counterpartyChainId: "lum-network-1",
@@ -1060,6 +1156,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-3",
     coinMinimalDenom: "ulum",
     isVerified: true,
+    name: "Lum",
   },
   {
     counterpartyChainId: "dig-1",
@@ -1068,6 +1165,7 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "udig",
     isVerified: true,
     isUnstable: true,
+    name: "Dig Chain",
   },
   {
     counterpartyChainId: "sommelier-3",
@@ -1075,12 +1173,14 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-0",
     coinMinimalDenom: "usomm",
     isVerified: true,
+    name: "Somm",
   },
   {
     counterpartyChainId: "darchub",
     sourceChannelId: "channel-171",
     destChannelId: "channel-0",
     coinMinimalDenom: "udarc",
+    name: "DARC",
   },
   {
     counterpartyChainId: "juno-1",
@@ -1090,6 +1190,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    name: "Marble",
   },
   {
     counterpartyChainId: "cerberus-chain-1",
@@ -1097,6 +1198,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-1",
     coinMinimalDenom: "ucrbrus",
     isUnstable: true,
+    name: "Cerberus",
   },
   {
     counterpartyChainId: "juno-1",
@@ -1106,12 +1208,14 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    name: "Neta",
   },
   {
     counterpartyChainId: "columbus-5",
     sourceChannelId: "channel-72",
     destChannelId: "channel-1",
     coinMinimalDenom: "ukrw",
+    name: "TerraClassicKRW",
   },
   {
     counterpartyChainId: "juno-1",
@@ -1121,6 +1225,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    name: "Hope Galaxy",
   },
   {
     counterpartyChainId: "juno-1",
@@ -1130,6 +1235,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    name: "Racoon",
   },
   {
     counterpartyChainId: "juno-1",
@@ -1139,18 +1245,21 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    name: "Block",
   },
   {
     counterpartyChainId: "pio-mainnet-1",
     sourceChannelId: "channel-222",
     destChannelId: "channel-7",
     coinMinimalDenom: "nhash",
+    name: "Hash",
   },
   {
     counterpartyChainId: "galaxy-1",
     sourceChannelId: "channel-236",
     destChannelId: "channel-0",
     coinMinimalDenom: "uglx",
+    name: "Galaxy",
   },
   {
     counterpartyChainId: "juno-1",
@@ -1160,6 +1269,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    name: "DHK",
   },
   {
     counterpartyChainId: "juno-1",
@@ -1169,12 +1279,14 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    name: "JunoSwap",
   },
   {
     counterpartyChainId: "meme-1",
     sourceChannelId: "channel-238",
     destChannelId: "channel-1",
     coinMinimalDenom: "umeme",
+    name: "MEME",
   },
   {
     counterpartyChainId: "juno-1",
@@ -1184,6 +1296,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    name: "Another.Software Validator Token",
   },
   {
     counterpartyChainId: "juno-1",
@@ -1193,12 +1306,14 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    name: "JoeDAO",
   },
   {
     counterpartyChainId: "genesis_29-2",
     sourceChannelId: "channel-253",
     destChannelId: "channel-1",
     coinMinimalDenom: "el1",
+    name: "GenesisL1",
   },
   {
     counterpartyChainId: "tgrade-mainnet-1",
@@ -1206,6 +1321,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: "channel-0",
     coinMinimalDenom: "utgd",
     isVerified: true,
+    name: "Tgrade",
   },
   {
     counterpartyChainId: "echelon_3000-3",
@@ -1214,18 +1330,21 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "aechelon",
     depositUrlOverride: "https://app.ech.network/ibc",
     withdrawUrlOverride: "https://app.ech.network/ibc",
+    name: "Echelon",
   },
   {
     counterpartyChainId: "odin-mainnet-freya",
     sourceChannelId: "channel-258",
     destChannelId: "channel-3",
     coinMinimalDenom: "loki",
+    name: "ODIN",
   },
   {
     counterpartyChainId: "odin-mainnet-freya",
     sourceChannelId: "channel-258",
     destChannelId: "channel-3",
     coinMinimalDenom: "mO9W",
+    name: "O9W",
   },
   {
     counterpartyChainId: "kichain-2",
@@ -1235,6 +1354,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:ki1dt3lk455ed360pna38fkhqn0p8y44qndsr77qu73ghyaz2zv4whq83mwdy",
     ics20ContractAddress:
       "ki1hzz0s0ucrhdp6tue2lxk3c03nj6f60qy463we7lgx0wudd72ctmsd9kgha",
+    name: "LVN",
   },
   {
     counterpartyChainId: "juno-1",
@@ -1244,6 +1364,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1j0a9ymgngasfn3l5me8qpd53l5zlm9wurfdk7r65s5mg6tkxal3qpgf5se",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    name: "Gelotto",
   },
   {
     counterpartyChainId: "juno-1",
@@ -1253,12 +1374,14 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1gz8cf86zr4vw9cjcyyv432vgdaecvr9n254d3uwwkx9rermekddsxzageh",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    name: "GKey",
   },
   {
     counterpartyChainId: "LumenX",
     sourceChannelId: "channel-286",
     destChannelId: "channel-3",
     coinMinimalDenom: "ulumen",
+    name: "LUMEN",
   },
   {
     counterpartyChainId: "juno-1",
@@ -1268,6 +1391,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1dd0k0um5rqncfueza62w9sentdfh3ec4nw4aq4lk5hkjl63vljqscth9gv",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    name: "StakeEasy seJUNO",
   },
   {
     counterpartyChainId: "juno-1",
@@ -1277,6 +1401,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1wwnhkagvcd3tjz6f8vsdsw5plqnw8qy2aj3rrhqr2axvktzv9q2qz8jxn3",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    name: "StakeEasy bJUNO",
   },
   {
     counterpartyChainId: "juno-1",
@@ -1286,6 +1411,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno159q8t5g02744lxq8lfmcn6f78qqulq9wn3y9w7lxjgkz4e0a6kvsfvapse",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    name: "Solarbank DAO",
   },
   {
     counterpartyChainId: "juno-1",
@@ -1295,12 +1421,14 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno19rqljkh95gh40s7qdx40ksx3zq5tm4qsmsrdz9smw668x9zdr3lqtg33mf",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    name: "StakeEasy SEASY",
   },
   {
     counterpartyChainId: "reb_1111-1",
     sourceChannelId: "channel-355",
     destChannelId: "channel-0",
     coinMinimalDenom: "arebus",
+    name: "Rebus",
   },
   {
     counterpartyChainId: "juno-1",
@@ -1310,18 +1438,21 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1p8x807f6h222ur0vssqy3qk6mcpa40gw2pchquz5atl935t7kvyq894ne3",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    name: "MuseDAO",
   },
   {
     counterpartyChainId: "FUND-MainNet-2",
     sourceChannelId: "channel-382",
     destChannelId: "channel-0",
     coinMinimalDenom: "nund",
+    name: "Unification Network",
   },
   {
     counterpartyChainId: "jackal-1",
     sourceChannelId: "channel-412",
     destChannelId: "channel-0",
     coinMinimalDenom: "ujkl",
+    name: "Jackal",
   },
   {
     // ALTER
@@ -1331,6 +1462,7 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "cw20:secret12rcvz0umvk875kd6a803txhtlu7y0pnd73kcej",
     depositUrlOverride: "https://wrap.scrt.network",
     ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
+    name: "Alter",
   },
   {
     // BUTT
@@ -1340,6 +1472,7 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "cw20:secret1yxcexylwyxlq58umhgsjgstgcg2a0ytfy4d9lt",
     depositUrlOverride: "https://wrap.scrt.network",
     ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
+    name: "Button",
   },
   {
     // stkd-SCRT
@@ -1349,12 +1482,14 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "cw20:secret1k6u0cy4feepm6pehnz804zmwakuwdapm69tuc4",
     depositUrlOverride: "https://wrap.scrt.network",
     ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
+    name: "SCRT Staking Derivatives",
   },
   {
     counterpartyChainId: "beezee-1",
     sourceChannelId: "channel-340",
     destChannelId: "channel-0",
     coinMinimalDenom: "ubze",
+    name: "BeeZee",
   },
   {
     counterpartyChainId: "juno-1",
@@ -1364,24 +1499,28 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1cltgm8v842gu54srmejewghnd6uqa26lzkpa635wzra9m9xuudkqa2gtcz",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    name: "Fanfury",
   },
   {
     counterpartyChainId: "comdex-1",
     sourceChannelId: "channel-87",
     destChannelId: "channel-1",
     coinMinimalDenom: "ucmst",
+    name: "CMST",
   },
   {
     counterpartyChainId: "imversed_5555555-1",
     sourceChannelId: "channel-517",
     destChannelId: "channel-1",
     coinMinimalDenom: "aimv",
+    name: "IMV",
   },
   {
     counterpartyChainId: "medasdigital-1",
     sourceChannelId: "channel-519",
     destChannelId: "channel-0",
     coinMinimalDenom: "umedas",
+    name: "Medas Digital",
   },
   {
     counterpartyChainId: "juno-1",
@@ -1391,6 +1530,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1rws84uz7969aaa7pej303udhlkt3j9ca0l3egpcae98jwak9quzq8szn2l",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    name: "POSTHUMAN",
   },
   {
     counterpartyChainId: "secret-4",
@@ -1399,24 +1539,28 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "cw20:secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852",
     depositUrlOverride: "https://wrap.scrt.network",
     ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
+    name: "Amber",
   },
   {
     counterpartyChainId: "onomy-mainnet-1",
     sourceChannelId: "channel-525",
     destChannelId: "channel-0",
     coinMinimalDenom: "anom",
+    name: "Nom",
   },
   {
     counterpartyChainId: "core-1",
     sourceChannelId: "channel-4",
     destChannelId: "channel-6",
     coinMinimalDenom: "stk/uatom",
+    name: "PSTAKE staked ATOM",
   },
   {
     counterpartyChainId: "dyson-mainnet-01",
     sourceChannelId: "channel-526",
     destChannelId: "channel-2",
     coinMinimalDenom: "dys",
+    name: "Dys",
   },
   {
     counterpartyChainId: "juno-1",
@@ -1426,6 +1570,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1u45shlp0q4gcckvsj06ss4xuvsu0z24a0d0vr9ce6r24pht4e5xq7q995n",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    name: "HOPERS",
   },
   {
     counterpartyChainId: "acre_9052-1",
@@ -1434,18 +1579,21 @@ export const IBCAssetInfos: (IBCAsset & {
     coinMinimalDenom: "erc20/0x2Cbea61fdfDFA520Ee99700F104D5b75ADf50B0c",
     depositUrlOverride: "https://app.arable.finance/#/ibc",
     withdrawUrlOverride: "https://app.arable.finance/#/ibc",
+    name: "Arable USD",
   },
   {
     counterpartyChainId: "planq_7070-2",
     sourceChannelId: "channel-492",
     destChannelId: "channel-1",
     coinMinimalDenom: "aplanq",
+    name: "Planq",
   },
   {
     counterpartyChainId: "quicksilver-2",
     sourceChannelId: "channel-522",
     destChannelId: "channel-2",
     coinMinimalDenom: "uqstars",
+    name: "Quicksilver Staked STARS",
   },
   { // WYND
     counterpartyChainId: "juno-1",
@@ -1455,6 +1603,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1mkw83sv6c7sjdvsaplrzc8yaes9l42p4mhy0ssuxjnyzl87c9eps7ce3m9",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    name: "Wynd"
   },
 ].filter((ibcAsset) => {
   // validate IBC asset config
