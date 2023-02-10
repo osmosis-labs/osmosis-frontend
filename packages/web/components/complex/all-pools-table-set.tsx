@@ -146,6 +146,31 @@ export const AllPoolsTableSet: FunctionComponent<{
                     ?.chainName ?? ""
               )
               .join(" "),
+            apr: queriesOsmosis.queryIncentivizedPools
+              .computeMostApr(pool.id, priceStore)
+              .add(
+                // swap fees
+                queriesExternalStore.queryGammPoolFeeMetrics.get7dPoolFeeApr(
+                  pool,
+                  priceStore
+                )
+              )
+              .add(
+                // superfluid apr
+                queriesOsmosis.querySuperfluidPools.isSuperfluidPool(pool.id)
+                  ? new RatePretty(
+                      queriesStore
+                        .get(chainId)
+                        .cosmos.queryInflation.inflation.mul(
+                          queriesOsmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
+                            pool.id
+                          )
+                        )
+                        .moveDecimalPointLeft(2)
+                    )
+                  : new Dec(0)
+              )
+              .maxDecimals(0),
           };
         }),
       [
