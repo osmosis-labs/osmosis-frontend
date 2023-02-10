@@ -749,7 +749,7 @@ const chainInfos = (
     {
       rpc: "https://rpc-impacthub.keplr.app",
       rest: "https://lcd-impacthub.keplr.app",
-      chainId: "impacthub-3",
+      chainId: "ixo-4",
       chainName: "IXO",
       bip44: {
         coinType: 118,
@@ -768,7 +768,7 @@ const chainInfos = (
         },
       ],
       features: ["ibc-transfer"],
-      explorerUrlToTx: "https://blockscan.ixo.world/transactions/{txHash}",
+      explorerUrlToTx: "https://blockscan.ixo.world/txs/{txHash}",
     },
     {
       rpc: "https://rpc.bitcanna.io",
@@ -2398,6 +2398,13 @@ const chainInfos = (
           coinGeckoId: "pool:erc20/0x2Cbea61fdfDFA520Ee99700F104D5b75ADf50B0c",
           coinImageUrl: "/tokens/arusd.png",
         },
+        {
+          coinDenom: "CNTO",
+          coinMinimalDenom: "erc20/0xAE6D3334989a22A65228732446731438672418F2",
+          coinDecimals: 18,
+          coinGeckoId: "pool:erc20/0xAE6D3334989a22A65228732446731438672418F2",
+          coinImageUrl: "/tokens/cnto.png",
+        },        
       ],
       features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
       explorerUrlToTx: "https://cosmosrun.info/acre-mainnet/tx/{txHash}",

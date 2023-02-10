@@ -340,7 +340,7 @@ export const IBCAssetInfos: (IBCAsset & {
     destChannelId: IS_TESTNET ? "channel-135" : "channel-3",
     coinMinimalDenom: "wavax-wei",
     sourceChainNameOverride: IS_TESTNET ? "Avalanche Fuji Testnet" : "Avalanche",
-    isVerified: false,
+    isVerified: true,
     originBridgeInfo: {
       bridge: "axelar" as const,
       wallets: ["metamask" as const],
@@ -1135,11 +1135,10 @@ export const IBCAssetInfos: (IBCAsset & {
     name: "Chihuahua",
   },
   {
-    counterpartyChainId: "impacthub-3",
+    counterpartyChainId: "ixo-4",
     sourceChannelId: "channel-38",
     destChannelId: "channel-4",
     coinMinimalDenom: "uixo",
-    isUnstable: true,
     name: "Ixo",
   },
   {
@@ -1582,6 +1581,14 @@ export const IBCAssetInfos: (IBCAsset & {
     name: "Arable USD",
   },
   {
+    counterpartyChainId: "acre_9052-1",
+    sourceChannelId: "channel-490",
+    destChannelId: "channel-0",
+    coinMinimalDenom: "erc20/0xAE6D3334989a22A65228732446731438672418F2",
+    depositUrlOverride: "https://app.arable.finance/#/ibc",
+    withdrawUrlOverride: "https://app.arable.finance/#/ibc",
+  },    
+  {
     counterpartyChainId: "planq_7070-2",
     sourceChannelId: "channel-492",
     destChannelId: "channel-1",
@@ -1603,6 +1610,7 @@ export const IBCAssetInfos: (IBCAsset & {
       "cw20:juno1mkw83sv6c7sjdvsaplrzc8yaes9l42p4mhy0ssuxjnyzl87c9eps7ce3m9",
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+    isVerified: true,
     name: "Wynd"
   },
 ].filter((ibcAsset) => {

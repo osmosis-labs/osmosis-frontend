@@ -4,6 +4,7 @@ import { HasMapStore } from "@keplr-wallet/stores";
 import { ObservableQueryExternalBase } from "../base";
 import { TokenData } from "./types";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
+import { IMPERATOR_HISTORICAL_DATA_BASEURL } from "..";
 
 /** Queries Imperator token history data chart. */
 export class ObservableQueryTokenData extends ObservableQueryExternalBase<
@@ -40,7 +41,7 @@ export class ObservableQueryTokenData extends ObservableQueryExternalBase<
 export class ObservableQueryTokensData extends HasMapStore<ObservableQueryTokenData> {
   constructor(
     kvStore: KVStore,
-    tokenDataBaseUrl = "https://api-osmosis.imperator.co"
+    tokenDataBaseUrl = IMPERATOR_HISTORICAL_DATA_BASEURL
   ) {
     super((symbol: string) => {
       return new ObservableQueryTokenData(kvStore, tokenDataBaseUrl, symbol);

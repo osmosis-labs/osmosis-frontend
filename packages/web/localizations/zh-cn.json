@@ -7,8 +7,19 @@
   },
   "app": {
     "banner": {
-      "title": "您正在查看所有无许可资产",
-      "linkText": "您正在查看所有无许可资产，<link>点击此处返回主应用</link>."
+      "title": "您正在查看所有无许可资产.",
+      "linkText": "点击此处返回主应用",
+      "externalLinkDisclaimer": "通过点击链接，您承认您已阅读并理解，Osmosis对可能具有不同ToS的外部页面的服务质量没有任何保证。",
+      "externalLink": "您现在正在离开Osmosis应用程序去",
+      "goToSite": "前往网站",
+      "backToOsmosis": "返回Osmosis",
+      "externalLinkModalTitle": "离开Osmosis"
+    }
+  },
+  "mars": {
+    "banner": {
+      "title": "借入/借出 Osmosis 已经推出。",
+      "linkText": "探索 Mars Protocol"
     }
   },
   "swap": {

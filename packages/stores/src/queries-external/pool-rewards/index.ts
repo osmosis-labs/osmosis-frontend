@@ -6,6 +6,7 @@ import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { IPriceStore } from "../../price";
 import { ObservableQueryExternalBase } from "../base";
 import { PoolsRewards, PoolRewards } from "./types";
+import { IMPERATOR_TX_REWARD_BASEURL } from "..";
 
 /** Queries Imperator pool fee history data. */
 export class ObservableQueryAccountPoolRewards extends ObservableQueryExternalBase<PoolsRewards> {
@@ -58,7 +59,7 @@ export class ObservableQueryAccountsPoolRewards extends HasMapStore<ObservableQu
   constructor(
     kvStore: KVStore,
     priceStore: IPriceStore,
-    poolRewardsBaseUrl = "https://api-osmosis-chain.imperator.co"
+    poolRewardsBaseUrl = IMPERATOR_TX_REWARD_BASEURL
   ) {
     super(
       (bech32Address) =>

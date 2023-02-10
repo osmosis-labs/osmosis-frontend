@@ -7,8 +7,19 @@
   },
   "app": {
     "banner": {
-      "title": "You're viewing all permissionless assets",
-      "linkText": "You're viewing all permissionless assets. <link>Click here to return to the main app</link>."
+      "title": "You're viewing all permissionless assets.",
+      "linkText": "Click here to return to the main app",
+      "externalLinkDisclaimer": "By clicking the link, you acknowledge that you have read and understand that Osmosis makes no guarantees of quality of service for external pages which may have a different ToS.",
+      "externalLink": "You are now leaving the Osmosis app to go to",
+      "goToSite": "Go to Site",
+      "backToOsmosis": "Back to Osmosis",
+      "externalLinkModalTitle": "Leaving Osmosis"
+    }
+  },
+  "mars": {
+    "banner": {
+      "title": "Borrow/Lend on Osmosis has landed.",
+      "linkText": "Explore Mars Protocol"
     }
   },
   "swap": {
