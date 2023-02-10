@@ -21,7 +21,7 @@ const PaginatedTable = ({ table }: Props) => {
     count: rows.length,
     getScrollElement: () => tableContainerRef.current,
     estimateSize: () => SIZE,
-    overscan: 5,
+    overscan: 10,
   });
   const virtualRows = rowVirtualizer.getVirtualItems();
   const totalSize = rowVirtualizer.getTotalSize();
@@ -32,7 +32,7 @@ const PaginatedTable = ({ table }: Props) => {
       : 0;
 
   return (
-    <div className="my-5 h-[500px] overflow-auto" ref={tableContainerRef}>
+    <div className="my-5 h-[600px] overflow-auto" ref={tableContainerRef}>
       <table className="w-full">
         <thead className="sticky top-0 z-[60] m-0">
           {table.getHeaderGroups().map((headerGroup) => (

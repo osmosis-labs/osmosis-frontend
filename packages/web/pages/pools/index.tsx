@@ -3,7 +3,6 @@ import { ObservablePoolDetail } from "@osmosis-labs/stores";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
-import Image from "next/image";
 import { ComponentProps, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 import { ShowMoreButton } from "../../components/buttons/show-more";
@@ -261,7 +260,10 @@ const Pools: NextPage = observer(function () {
         <SuperfluidValidatorModal {...superfluidDelegateModalProps} />
       )}
       <section className="pt-8 pb-10 md:pt-4 md:pb-5">
-        <PoolsOverview className="mx-auto" />
+        <PoolsOverview
+          className="mx-auto"
+          setIsCreatingPool={() => setIsCreatingPool(true)}
+        />
       </section>
       <section>
         <div className="mx-auto pb-[3.75rem]">
@@ -387,27 +389,6 @@ const Pools: NextPage = observer(function () {
       <section>
         <div className="mx-auto py-[3.75rem]">
           <AllPoolsTableSet {...quickActionProps} />
-        </div>
-      </section>
-      <section className="pb-4">
-        <div className="flex w-full items-center rounded-full bg-osmoverse-800 px-5 py-4">
-          <span className="subtitle1 flex items-center gap-1 md:text-subtitle2 md:font-subtitle2">
-            {t("pools.createPool.interestedCreate")}{" "}
-            <u
-              className="flex cursor-pointer items-center text-wosmongton-300"
-              onClick={() => setIsCreatingPool(true)}
-            >
-              {t("pools.createPool.startProcess")}
-              <div className="flex shrink-0 items-center">
-                <Image
-                  alt="right arrow"
-                  src="/icons/arrow-right-wosmongton-300.svg"
-                  height={24}
-                  width={24}
-                />
-              </div>
-            </u>
-          </span>
         </div>
       </section>
     </main>
