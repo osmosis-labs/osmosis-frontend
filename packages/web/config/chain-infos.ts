@@ -1761,7 +1761,7 @@ const chainInfos = (
           coinImageUrl: "/tokens/astro.png",
         },
       ],
-      features: ["ibc-transfer", "cosmwasm"],
+      features: ["ibc-transfer", "cosmwasm", "wasmd_0.24+"],
       explorerUrlToTx: "https://finder.terra.money/phoenix-1/tx/{txHash}",
     },
     {
