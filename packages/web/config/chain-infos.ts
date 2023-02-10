@@ -2215,6 +2215,13 @@ const chainInfos = (
           coinGeckoId: "pool:stuluna",
           coinImageUrl: "/tokens/stluna.svg",
         },
+        {
+          coinDenom: "stEVMOS",
+          coinMinimalDenom: "staevmos",
+          coinDecimals: 18,
+          coinGeckoId: "pool:staevmos",
+          coinImageUrl: "/tokens/stevmos.svg",
+        },
       ],
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://explorer.stride.zone/stride/tx/{txHash}",
