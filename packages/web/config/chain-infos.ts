@@ -1749,8 +1749,19 @@ const chainInfos = (
             high: 0.25,
           },
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26",
+          coinDenom: "ASTRO",
+          coinMinimalDenom: "cw20:terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26:ASTRO",
+          coinDecimals: 6,
+          coinGeckoId: "astroport-fi",
+          //coinGeckoId: "pool:astro",
+          coinImageUrl: "/tokens/astro.png",
+        },
       ],
-      features: ["ibc-transfer"],
+      features: ["ibc-transfer", "cosmwasm"],
       explorerUrlToTx: "https://finder.terra.money/phoenix-1/tx/{txHash}",
     },
     {
