@@ -107,12 +107,16 @@ export const PoolsOverview: FunctionComponent<
         />
       </div>
       <div className="absolute right-7 bottom-7">
-        <Button className=" rounded-[24px]" onClick={setIsCreatingPool}>
+        <Button
+          className="rounded-[24px] text-white-full"
+          onClick={setIsCreatingPool}
+          mode="icon-primary"
+        >
           <div className="flex items-center gap-3">
             {t("pools.createPool.title")}
             <Image
               alt="right arrow"
-              src="/icons/arrow-right-wosmongton-300.svg"
+              src="/icons/arrow-right-wosmongton-100.svg"
               height={24}
               width={24}
             />
