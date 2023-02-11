@@ -1,21 +1,22 @@
-import { FunctionComponent, useState, useEffect } from "react";
-import classNames from "classnames";
-import { CoinPretty } from "@keplr-wallet/unit";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { WalletDisplay } from "../../integrations/wallets";
-import { truncateEthAddress } from "../../integrations/ethereum/metamask-utils";
-import { useWindowSize } from "../../hooks";
-import { BridgeAnimation } from "../animation/bridge";
-import { SwitchWalletButton } from "../buttons/switch-wallet";
-import { GradientView } from "../assets/gradient-view";
-import { InputBox } from "../input";
-import { Button } from "../buttons";
-import { CheckBox } from "../control";
-import { Disableable, InputProps, LoadingProps } from "../types";
-import { useTranslation } from "react-multi-lang";
-import { formatICNSName } from "../../utils/string";
+import { CoinPretty } from "@keplr-wallet/unit";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import { FunctionComponent, useEffect, useState } from "react";
+import { useTranslation } from "react-multi-lang";
+
+import { useWindowSize } from "../../hooks";
+import { truncateEthAddress } from "../../integrations/ethereum/metamask-utils";
+import { WalletDisplay } from "../../integrations/wallets";
 import { useStore } from "../../stores";
+import { formatICNSName } from "../../utils/string";
+import { BridgeAnimation } from "../animation/bridge";
+import { GradientView } from "../assets/gradient-view";
+import { Button } from "../buttons";
+import { SwitchWalletButton } from "../buttons/switch-wallet";
+import { CheckBox } from "../control";
+import { InputBox } from "../input";
+import { Disableable, InputProps, LoadingProps } from "../types";
 
 export type TransferProps = {
   isWithdraw: boolean;

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { FunctionComponent } from "react";
+
 import { Disableable } from "../types";
 import { ButtonProps } from "./types";
 

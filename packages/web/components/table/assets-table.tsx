@@ -1,36 +1,37 @@
+import { Dec } from "@keplr-wallet/unit";
+import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
-import { Dec } from "@keplr-wallet/unit";
+import { useTranslation } from "react-multi-lang";
+
 import { initialAssetsSort } from "../../config";
+import { EventName } from "../../config/user-analytics-v2";
 import {
-  IBCBalance,
-  IBCCW20ContractBalance,
-  CoinBalance,
-} from "../../stores/assets";
-import { useStore } from "../../stores";
-import { useSortedData, useFilteredData } from "../../hooks/data";
-import {
+  useAmplitudeAnalytics,
   useLocalStorageState,
   useWindowSize,
-  useAmplitudeAnalytics,
 } from "../../hooks";
-import { ShowMoreButton } from "../buttons/show-more";
-import { SearchBox } from "../input";
-import { SortMenu, Switch } from "../control";
-import { SortDirection } from "../types";
+import { useFilteredData, useSortedData } from "../../hooks/data";
+import { useStore } from "../../stores";
 import {
+  CoinBalance,
+  IBCBalance,
+  IBCCW20ContractBalance,
+} from "../../stores/assets";
+import { Icon } from "../assets";
+import { ShowMoreButton } from "../buttons/show-more";
+import { SortMenu, Switch } from "../control";
+import { SearchBox } from "../input";
+import { SortDirection } from "../types";
+import { Table } from ".";
+import {
+  AssetCell as TableCell,
   AssetNameCell,
   BalanceCell,
   TransferButtonCell,
-  AssetCell as TableCell,
 } from "./cells";
 import { TransferHistoryTable } from "./transfer-history";
 import { ColumnDef } from "./types";
-import { Table } from ".";
-import { EventName } from "../../config/user-analytics-v2";
-import { observer } from "mobx-react-lite";
-import { useTranslation } from "react-multi-lang";
-import { Icon } from "../assets";
 
 interface Props {
   nativeBalances: CoinBalance[];

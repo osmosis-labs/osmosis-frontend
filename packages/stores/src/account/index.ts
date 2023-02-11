@@ -1,23 +1,24 @@
-import Long from "long";
-import { DeepPartial } from "utility-types";
-import deepmerge from "deepmerge";
+import { StdFee } from "@cosmjs/launchpad";
 import {
-  ChainGetter,
-  IQueriesStore,
   AccountSetBaseSuper,
+  ChainGetter,
   CosmosAccount,
   CosmosQueries,
+  IQueriesStore,
 } from "@keplr-wallet/stores";
-import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
+import { BondStatus } from "@keplr-wallet/stores/build/query/cosmos/staking/types";
 import { Currency, KeplrSignOptions } from "@keplr-wallet/types";
+import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import * as WeightedPoolEstimates from "@osmosis-labs/math";
 import { Pool } from "@osmosis-labs/pools";
+import deepmerge from "deepmerge";
+import Long from "long";
+import { DeepPartial } from "utility-types";
+
 import { OsmosisQueries } from "../queries";
-import { osmosis } from "./msg/proto";
 import * as Msgs from "./msg/make-msg";
-import { OsmosisMsgOpts, defaultMsgOpts } from "./types";
-import { StdFee } from "@cosmjs/launchpad";
-import { BondStatus } from "@keplr-wallet/stores/build/query/cosmos/staking/types";
+import { osmosis } from "./msg/proto";
+import { defaultMsgOpts, OsmosisMsgOpts } from "./types";
 
 export interface OsmosisAccount {
   osmosis: OsmosisAccountImpl;

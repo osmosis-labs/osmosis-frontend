@@ -1,6 +1,7 @@
-import { FunctionComponent } from "react";
-import classNames from "classnames";
 import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
+import classNames from "classnames";
+import { FunctionComponent } from "react";
+
 import { truncateString } from "../../utils/string";
 
 const ColorCycle = [

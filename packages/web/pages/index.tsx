@@ -1,13 +1,15 @@
+import { Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
-import { TradeClipboard } from "../components/trade-clipboard";
-import { useStore } from "../stores";
-import { EventName, IS_FRONTIER } from "../config";
-import { Dec } from "@keplr-wallet/unit";
-import { useMemo, useRef } from "react";
-import { useAmplitudeAnalytics } from "../hooks";
 import Image from "next/image";
-import { ProgressiveSvgImage } from "../components/progressive-svg-image";
+import { useMemo, useRef } from "react";
+
+import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
+import { TradeClipboard } from "~/components/trade-clipboard";
+
+import { EventName, IS_FRONTIER } from "../config";
+import { useAmplitudeAnalytics } from "../hooks";
+import { useStore } from "../stores";
 
 const Home: NextPage = observer(function () {
   const { chainStore, queriesStore } = useStore();

@@ -1,7 +1,8 @@
+import classNames from "classnames";
 import Image from "next/image";
 import { FunctionComponent } from "react";
-import classNames from "classnames";
-import { Disableable, CustomClasses } from "../types";
+
+import { CustomClasses, Disableable } from "../types";
 
 interface Props extends Disableable, CustomClasses {
   /**

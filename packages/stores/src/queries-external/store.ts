@@ -1,19 +1,20 @@
 import { KVStore } from "@keplr-wallet/common";
+import { ChainGetter } from "@keplr-wallet/stores";
 import { DeepReadonly } from "utility-types";
+
 import { IPriceStore } from "../price";
 import { ObservableQueryGauges } from "../queries/incentives";
-import { ObservableQueryActiveGauges } from "./active-gauges";
-import { ObservableQueryPoolFeesMetrics } from "./pool-fees";
-import { ObservableQueryAccountsPoolRewards } from "./pool-rewards";
-import { ObservableQueryIbcChainsStatus } from "./ibc";
 import {
   IMPERATOR_HISTORICAL_DATA_BASEURL,
   IMPERATOR_TX_REWARD_BASEURL,
 } from ".";
-import { ObservableQueryTokensHistoricalChart } from "./token-historical-chart";
-import { ObservableQueryTokensData } from "./token-data";
-import { ChainGetter } from "@keplr-wallet/stores";
+import { ObservableQueryActiveGauges } from "./active-gauges";
+import { ObservableQueryIbcChainsStatus } from "./ibc";
 import { ObservableQueryICNSNames } from "./icns";
+import { ObservableQueryPoolFeesMetrics } from "./pool-fees";
+import { ObservableQueryAccountsPoolRewards } from "./pool-rewards";
+import { ObservableQueryTokensData } from "./token-data";
+import { ObservableQueryTokensHistoricalChart } from "./token-historical-chart";
 
 /** Root store for queries external to any chain. */
 export class QueriesExternalStore {

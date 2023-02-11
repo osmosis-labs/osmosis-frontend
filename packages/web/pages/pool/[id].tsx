@@ -1,49 +1,50 @@
+import { Staking } from "@keplr-wallet/stores";
+import { CoinPretty, Dec, IntPretty, RatePretty } from "@keplr-wallet/unit";
+import {
+  ObservableAddLiquidityConfig,
+  ObservableRemoveLiquidityConfig,
+} from "@osmosis-labs/stores";
+import classNames from "classnames";
+import { Duration } from "dayjs/plugin/duration";
+import { observer } from "mobx-react-lite";
 import Head from "next/head";
 import Image from "next/image";
-import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import {
   FunctionComponent,
   useCallback,
   useEffect,
-  useState,
   useMemo,
+  useState,
 } from "react";
-import classNames from "classnames";
-import { CoinPretty, Dec, IntPretty, RatePretty } from "@keplr-wallet/unit";
-import { Staking } from "@keplr-wallet/stores";
-import {
-  ObservableAddLiquidityConfig,
-  ObservableRemoveLiquidityConfig,
-} from "@osmosis-labs/stores";
-import { Duration } from "dayjs/plugin/duration";
-import { EventName } from "../../config";
-import {
-  useLockTokenConfig,
-  useSuperfluidPool,
-  useWindowSize,
-  useAmplitudeAnalytics,
-  useNavBar,
-} from "../../hooks";
-import {
-  AddLiquidityModal,
-  RemoveLiquidityModal,
-  LockTokensModal,
-  SuperfluidValidatorModal,
-  TradeTokens,
-} from "../../modals";
-import { useStore } from "../../stores";
+import { useTranslation } from "react-multi-lang";
+import { useMeasure } from "react-use";
+
+import { Icon, PoolAssetsIcon } from "../../components/assets";
+import { ArrowButton, Button } from "../../components/buttons";
+import { BondCard } from "../../components/cards";
 import {
   AssetBreakdownChart,
   PriceBreakdownChart,
 } from "../../components/chart";
-import { Icon, PoolAssetsIcon } from "../../components/assets";
-import { BondCard } from "../../components/cards";
-import { Disableable } from "../../components/types";
-import { Button, ArrowButton } from "../../components/buttons";
-import { useTranslation } from "react-multi-lang";
 import PoolComposition from "../../components/chart/pool-composition";
-import { useMeasure } from "react-use";
+import { Disableable } from "../../components/types";
+import { EventName } from "../../config";
+import {
+  useAmplitudeAnalytics,
+  useLockTokenConfig,
+  useNavBar,
+  useSuperfluidPool,
+  useWindowSize,
+} from "../../hooks";
+import {
+  AddLiquidityModal,
+  LockTokensModal,
+  RemoveLiquidityModal,
+  SuperfluidValidatorModal,
+  TradeTokens,
+} from "../../modals";
+import { useStore } from "../../stores";
 
 const E = EventName.PoolDetail;
 

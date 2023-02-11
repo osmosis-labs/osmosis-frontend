@@ -1,10 +1,11 @@
 import { ChainGetter } from "@keplr-wallet/stores";
-import { ObservableQuerySuperfluidParams } from "../superfluid-pools/params";
-import { ObservableQuerySuperfluidAssetMultiplier } from "../superfluid-pools/asset-multiplier";
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { AppCurrency } from "@keplr-wallet/types";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { computedFn } from "mobx-utils";
+
 import { PoolGetter } from "../pools";
+import { ObservableQuerySuperfluidAssetMultiplier } from "../superfluid-pools/asset-multiplier";
+import { ObservableQuerySuperfluidParams } from "../superfluid-pools/params";
 
 export class ObservableQuerySuperfluidOsmoEquivalent {
   constructor(

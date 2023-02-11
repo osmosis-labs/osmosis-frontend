@@ -1,8 +1,9 @@
-import { DOMAttributes, forwardRef, useState } from "react";
-import classNames from "classnames";
-import { InputProps, Disableable, CustomClasses } from "../types";
-import { Icon } from "../assets";
 import { cva, VariantProps } from "class-variance-authority";
+import classNames from "classnames";
+import { DOMAttributes, forwardRef, useState } from "react";
+
+import { Icon } from "../assets";
+import { CustomClasses, Disableable, InputProps } from "../types";
 
 const searchBoxClasses = cva(
   "flex flex-nowrap items-center justify-between gap-2 rounded-xl border border-osmoverse-500 transition-colors [&_input]:placeholder:text-osmoverse-500 [&_input]:placeholder:font-medium",

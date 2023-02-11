@@ -10,6 +10,7 @@ import {
 } from "@keplr-wallet/unit";
 import { Duration } from "dayjs/plugin/duration";
 import { computedFn } from "mobx-utils";
+
 import {
   ObservableQueryAccountLocked,
   ObservableQueryAccountLockedCoins,

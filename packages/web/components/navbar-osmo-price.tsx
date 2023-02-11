@@ -4,6 +4,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useTranslation } from "react-multi-lang";
+
 import { EventName } from "../config";
 import { useAmplitudeAnalytics, useTransferConfig } from "../hooks";
 import { FiatRampsModal } from "../modals";
