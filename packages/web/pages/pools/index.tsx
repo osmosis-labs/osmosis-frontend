@@ -387,9 +387,7 @@ const Pools: NextPage = observer(function () {
         </div>
       </section>
       <section>
-        <div className="mx-auto py-[3.75rem]">
-          <AllPoolsTableSet {...quickActionProps} />
-        </div>
+        <AllPoolsTableSet {...quickActionProps} />
       </section>
     </main>
   );

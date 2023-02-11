@@ -32,9 +32,12 @@ const PaginatedTable = ({ table }: Props) => {
       : 0;
 
   return (
-    <div className="my-5 h-[600px] overflow-auto" ref={tableContainerRef}>
+    <div
+      className="my-5 h-[calc(100vh-72px)] overflow-auto"
+      ref={tableContainerRef}
+    >
       <table className="w-full">
-        <thead className="sticky top-0 z-[60] m-0">
+        <thead className="sticky top-0 z-[51] m-0">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
