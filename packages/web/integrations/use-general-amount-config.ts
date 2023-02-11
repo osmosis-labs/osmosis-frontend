@@ -55,7 +55,9 @@ export function useGeneralAmountConfig({
         setAmount("0");
         setIsMax(false);
       } else {
-        setAmount(balance?.hideDenom(true).trim(true).toString() ?? "0");
+        setAmount(
+          balance?.hideDenom(true).locale(false).trim(true).toString() ?? "0"
+        );
       }
     },
   };
