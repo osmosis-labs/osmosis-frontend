@@ -35,6 +35,7 @@ export type EventProperties = {
   bridge: string;
   hasExternalUrl: boolean;
   avatar: "ammelia" | "wosmongton";
+  language: string;
 };
 
 export type UserProperties = {
@@ -73,7 +74,6 @@ export const EventName = {
     stakeClicked: "Sidebar: Stake clicked",
     voteClicked: "Sidebar: Vote clicked",
     infoClicked: "Sidebar: Info clicked",
-    supportClicked: "Sidebar: Support clicked",
     buyOsmoClicked: "Sidebar: Buy OSMO clicked",
     buyOsmoStarted: "Sidebar: Buy OSMO started",
     buyOsmoCompleted: "Sidebar: Buy OSMO completed",
@@ -155,5 +155,10 @@ export const EventName = {
     buyTokensClicked: "Profile Modal: Buy tokens clicked",
     blockExplorerLinkOutClicked:
       "Profile Modal: Block explorer link-out clicked",
+  },
+  Settings: {
+    hideDustToggle: "Settings: pools < $0.01 toggle",
+    languageSelect: "Settings: language select",
+    settingsClicked: "Settings: settings clicked",
   },
 };

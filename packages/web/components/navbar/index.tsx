@@ -6,17 +6,18 @@ import { useRouter } from "next/router";
 import { Fragment, FunctionComponent, useEffect, useRef } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { Announcement, EventName, IS_FRONTIER } from "../../config";
+import { Announcement, EventName, IS_FRONTIER } from "~/config";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
   useLocalStorageState,
-} from "../../hooks";
-import { ModalBase, ModalBaseProps, SettingsModal } from "../../modals";
-import { ProfileModal } from "../../modals/profile";
-import { useStore } from "../../stores";
-import { noop } from "../../utils/function";
-import { formatICNSName, getShortAddress } from "../../utils/string";
+} from "~/hooks";
+import { ModalBase, ModalBaseProps, SettingsModal } from "~/modals";
+import { ProfileModal } from "~/modals/profile";
+import { useStore } from "~/stores";
+import { noop } from "~/utils/function";
+import { formatICNSName, getShortAddress } from "~/utils/string";
+
 import { Icon } from "../assets";
 import { Button, buttonCVA } from "../buttons";
 import IconButton from "../buttons/icon-button";
@@ -31,6 +32,8 @@ export const NavBar: FunctionComponent<
     menus: MainLayoutMenu[];
   } & CustomClasses
 > = observer(({ title, className, backElementClassNames, menus }) => {
+  const { logEvent } = useAmplitudeAnalytics();
+
   const {
     queriesExternalStore,
     navBarStore,
@@ -158,7 +161,10 @@ export const NavBar: FunctionComponent<
             aria-label="Open settings dropdown"
             icon={<Icon id="setting" width={24} height={24} />}
             className="px-3 outline-none"
-            onClick={onOpenSettings}
+            onClick={() => {
+              logEvent([EventName.Settings.settingsClicked]);
+              onOpenSettings();
+            }}
           />
           <SettingsModal
             isOpen={isSettingsOpen}
