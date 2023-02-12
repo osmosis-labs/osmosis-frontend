@@ -1094,13 +1094,6 @@ export const IBCAssetInfos: (IBCAsset & {
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
   },
   {
-    counterpartyChainId: "cerberus-chain-1",
-    sourceChannelId: "channel-212",
-    destChannelId: "channel-1",
-    coinMinimalDenom: "ucrbrus",
-    isUnstable: true,
-  },
-  {
     counterpartyChainId: "juno-1",
     sourceChannelId: "channel-169",
     destChannelId: "channel-47",

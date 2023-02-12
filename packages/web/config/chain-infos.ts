@@ -1534,30 +1534,6 @@ const chainInfos = (
         "https://explorer.injective.network/transaction/{txHash}",
     },
     {
-      rpc: "https://rpc.cerberus.zone:26657",
-      rest: "https://api.cerberus.zone:1317",
-      chainId: "cerberus-chain-1",
-      chainName: "Cerberus",
-      bip44: {
-        coinType: 118,
-      },
-      bech32Config: Bech32Address.defaultBech32Config("cerberus"),
-      currencies: [
-        {
-          coinDenom: "CRBRUS",
-          coinMinimalDenom: "ucrbrus",
-          coinDecimals: 6,
-          // coinGeckoId: "cerberus-2",
-          coinGeckoId: "pool:ucrbrus",
-          coinImageUrl: "/tokens/crbrus.png",
-          isStakeCurrency: true,
-          isFeeCurrency: true,
-        },
-      ],
-      features: ["ibc-transfer", "ibc-go"],
-      explorerUrlToTx: "https://skynetexplorers.com/Cerberus/tx/{txHash}",
-    },
-    {
       rpc: "https://rpc-fetchhub.fetch.ai:443",
       rest: "https://rest-fetchhub.fetch.ai",
       chainId: "fetchhub-4",
