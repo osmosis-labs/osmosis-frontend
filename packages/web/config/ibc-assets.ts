@@ -1419,6 +1419,7 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-4",
     destChannelId: "channel-6",
     coinMinimalDenom: "stk/uatom",
+    isVerified: true,
   },
   {
     counterpartyChainId: "dyson-mainnet-01",
