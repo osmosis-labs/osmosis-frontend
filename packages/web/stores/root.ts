@@ -1,46 +1,56 @@
+import { assets, chain } from "@chain-registry/osmosis";
+import { WalletManager } from "@cosmos-kit/core";
+import { wallets } from "@cosmos-kit/keplr";
 import {
   AccountStore,
   ChainInfoInner,
-  CosmosQueries,
   CosmosAccount,
-  CosmwasmQueries,
+  CosmosQueries,
   CosmwasmAccount,
+  CosmwasmQueries,
   IBCCurrencyRegsitrar,
   QueriesStore,
 } from "@keplr-wallet/stores";
-import { ChainInfos, IBCAssetInfos, IS_FRONTIER } from "../config";
-import EventEmitter from "eventemitter3";
-import { ChainStore, ChainInfoWithExplorer } from "./chain";
+import { AppCurrency, Keplr } from "@keplr-wallet/types";
+import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 import {
   DerivedDataStore,
-  OsmosisQueries,
-  LPCurrencyRegistrar,
-  QueriesExternalStore,
   IBCTransferHistoryStore,
+  LPCurrencyRegistrar,
   NonIbcBridgeHistoryStore,
   OsmosisAccount,
+  OsmosisQueries,
   PoolFallbackPriceStore,
+  QueriesExternalStore,
 } from "@osmosis-labs/stores";
-import { AppCurrency, Keplr } from "@keplr-wallet/types";
-import { suggestChainFromWindow } from "../hooks/use-keplr/utils";
+import EventEmitter from "eventemitter3";
+
 import {
-  toastOnBroadcastFailed,
   toastOnBroadcast,
+  toastOnBroadcastFailed,
   toastOnFulfill,
-} from "../components/alert";
-import { AxelarTransferStatusSource } from "../integrations/axelar";
-import { ObservableAssets } from "./assets";
-import { makeIndexedKVStore, makeLocalStorageKVStore } from "./kv-store";
-import { PoolPriceRoutes } from "../config";
-import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
-import { OsmoPixelsQueries } from "./pixels";
-import { NavBarStore } from "./nav-bar";
+} from "~/components/alert";
 import {
-  UserSettings,
+  ChainInfos,
+  IBCAssetInfos,
+  IS_FRONTIER,
+  PoolPriceRoutes,
+} from "~/config";
+import { suggestChainFromWindow } from "~/hooks/use-keplr/utils";
+import { AxelarTransferStatusSource } from "~/integrations/axelar";
+
+import { ObservableAssets } from "./assets";
+import { ChainInfoWithExplorer, ChainStore } from "./chain";
+import { makeIndexedKVStore, makeLocalStorageKVStore } from "./kv-store";
+import { NavBarStore } from "./nav-bar";
+import { OsmoPixelsQueries } from "./pixels";
+import { ProfileStore } from "./profile";
+import {
   HideDustUserSetting,
   LanguageUserSetting,
+  UserSettings,
 } from "./user-settings";
-import { ProfileStore } from "./profile";
+
 const semver = require("semver");
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
@@ -77,6 +87,8 @@ export class RootStore {
 
   public readonly profileStore: ProfileStore;
 
+  public readonly walletManager: WalletManager;
+
   constructor(
     getKeplr: () => Promise<Keplr | undefined> = () =>
       Promise.resolve(undefined)
@@ -105,6 +117,8 @@ export class RootStore {
         },
       };
     })();
+
+    this.walletManager = new WalletManager([chain], [assets], wallets, "icns");
 
     this.queriesStore = new QueriesStore(
       makeIndexedKVStore("store_web_queries_v12"),
