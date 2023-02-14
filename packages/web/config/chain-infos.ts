@@ -204,7 +204,8 @@ const chainInfos = (
           coinMinimalDenom:
             "cw20:secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d:SHD",
           coinDecimals: 8,
-          coinGeckoId: "shade-protocol",
+          //coinGeckoId: "shade-protocol",
+          coinGeckoId: "pool:shd",
           coinImageUrl: "/tokens/shd.svg",
         },
         {
@@ -1769,8 +1770,8 @@ const chainInfos = (
           coinDenom: "ATOLO",
           coinMinimalDenom: "uatolo",
           coinDecimals: 6,
-          // coinGeckoId: "rizon",
-          coinGeckoId: "pool:uatolo",
+          coinGeckoId: "rizon",
+          //coinGeckoId: "pool:uatolo",
           coinImageUrl: "/tokens/atolo.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
