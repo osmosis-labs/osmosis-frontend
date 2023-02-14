@@ -2843,7 +2843,7 @@ chainInfos.push({
       coinMinimalDenom: "dot-planck",
       coinDecimals: 10,
       //coinGeckoId: "polkadot",
-      coinGeckoId: "pool:dotplanck",
+      coinGeckoId: "pool:dotplanck.axl",
       coinImageUrl: "/tokens/dot.svg",
     },
     {
@@ -2851,7 +2851,7 @@ chainInfos.push({
       coinMinimalDenom: "wbnb-wei",
       coinDecimals: 18,
       //coinGeckoId: "wbnb",
-      coinGeckoId: "pool:wbnbwei",
+      coinGeckoId: "pool:wbnbwei.axl",
       coinImageUrl: "/tokens/bnb.svg",
     },
     {
@@ -2859,7 +2859,7 @@ chainInfos.push({
       coinMinimalDenom: "wmatic-wei",
       coinDecimals: 18,
       //coinGeckoId: "wmatic",
-      coinGeckoId: "pool:wmaticwei",
+      coinGeckoId: "pool:wmaticwei.axl",
       coinImageUrl: "/tokens/matic.png",
     },
     {
@@ -2867,7 +2867,7 @@ chainInfos.push({
       coinMinimalDenom: "busd-wei",
       coinDecimals: 18,
       //coinGeckoId: "binance-usd",
-      coinGeckoId: "pool:busdwei",
+      coinGeckoId: "pool:busdwei.axl",
       coinImageUrl: "/tokens/busd.png",
     },
     {
@@ -2875,7 +2875,7 @@ chainInfos.push({
       coinMinimalDenom: "wavax-wei",
       coinDecimals: 18,
       //coinGeckoId: "avalanche-2",
-      coinGeckoId: "pool:wavaxwei",
+      coinGeckoId: "pool:wavaxwei.axl",
       coinImageUrl: "/tokens/avax.svg",
     },
     {
