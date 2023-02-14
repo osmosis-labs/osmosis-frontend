@@ -77,7 +77,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
     m.push({
       label: t("Discord"),
-      link: "https://discord.com/invite/2X6fwV54tT",
+      link: "https://discord.gg/XBdKqyTa",
       icon: "/icons/discord.svg",
     });
 
