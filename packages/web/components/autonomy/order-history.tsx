@@ -6,7 +6,11 @@ import Image from "next/image";
 import classNames from "classnames";
 import { request, gql } from "graphql-request";
 
-import { REGISTRY_ADDRESSES, SUBQUERY_ENDPOINTS } from "../../config";
+import {
+  REGISTRY_ADDRESSES,
+  SUBQUERY_BACKUP_ENDPOINTS,
+  SUBQUERY_ENDPOINTS,
+} from "../../config";
 import { useWindowSize } from "../../hooks";
 import { useStore } from "../../stores";
 import { TabBox } from "../control";
@@ -121,7 +125,7 @@ const OrderRow = ({ order }: { order: Order }) => {
           {order.status === "created" && (
             <Button
               mode="primary-warning"
-              className="ml-6"
+              className="ml-4"
               disabled={account.txTypeInProgress !== ""}
               onClick={handleCancelOrder}
             >
@@ -176,34 +180,49 @@ export default function OrderHistory({
         const keplr = await account.getKeplr();
         if (!keplr) return;
 
-        const {
-          requests: { nodes },
-        } = await request(
-          SUBQUERY_ENDPOINTS[chainId],
-          gql`
-            query {
-              requests(
-                filter: {
-                  registerId: {
-                    like: "${account.bech32Address.toString()}"
-                  }
-                }
-              ) {
-                nodes {
-                  id
-                  registerId
-                  target
-                  msg
-                  assets
-                  status
-                  createdAt
-                  txHash
-                  executedOrCancelledAt
-                }
+        const query = gql`
+        query {
+          requests(
+            filter: {
+              registerId: {
+                like: "${account.bech32Address.toString()}"
               }
             }
-          `
-        );
+          ) {
+            nodes {
+              id
+              registerId
+              target
+              msg
+              assets
+              status
+              createdAt
+              txHash
+              executedOrCancelledAt
+            }
+          }
+        }
+      `;
+        let nodes = [];
+        try {
+          const { requests } = await request(
+            SUBQUERY_ENDPOINTS[chainId],
+            query
+          );
+          nodes = requests.nodes;
+        } catch (e) {
+          try {
+            const { requests } = await request(
+              SUBQUERY_BACKUP_ENDPOINTS[chainId],
+              query
+            );
+            nodes = requests.nodes;
+          } catch (e) {
+            console.log(e);
+          }
+        }
+
+        console.log("here");
 
         const allOrders: Order[] = [];
         (nodes as Request[]).map((request) => {

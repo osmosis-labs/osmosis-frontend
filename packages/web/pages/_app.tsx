@@ -75,6 +75,20 @@ function MyApp({ Component, pageProps }: AppProps) {
       // },
     ];
 
+    m.push({
+      label: t("Discord"),
+      link: "https://discord.com/invite/2X6fwV54tT",
+      icon: "/icons/discord.svg",
+    });
+
+    // m.push(
+    //   {
+    //     label: t("menu.stake"),
+    //     link: "https://wallet.keplr.app/chains/osmosis",
+    //     icon: "/icons/ticket-white.svg",
+    //     amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
+    //   },
+
     // m.push(
     //   {
     //     label: t("menu.stake"),
