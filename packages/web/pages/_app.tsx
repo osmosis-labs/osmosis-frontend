@@ -18,13 +18,13 @@ import utc from "dayjs/plugin/utc";
 import { GetKeplrProvider } from "../hooks";
 import { IbcNotifier } from "../stores/ibc-notifier";
 import {
-  AmplitudeEvent,
-  EventName,
+  // AmplitudeEvent,
+  // EventName,
   IS_FRONTIER,
   IS_HALTED,
-  PromotedLBPPoolIds,
+  // PromotedLBPPoolIds,
 } from "../config";
-import { useAmplitudeAnalytics } from "../hooks/use-amplitude-analytics";
+// import { useAmplitudeAnalytics } from "../hooks/use-amplitude-analytics";
 import {
   setDefaultLanguage,
   setTranslations,
