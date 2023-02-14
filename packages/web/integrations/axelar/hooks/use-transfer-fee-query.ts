@@ -10,9 +10,9 @@ import { AppCurrency } from "@keplr-wallet/types";
 export function useTransferFeeQuery(
   sourceChain: string,
   destChain: string,
-  tokenMinDenom: string,
+  axelarTokenMinDenom: string,
   amountMinDenom: string,
-  currency: AppCurrency,
+  memoedCurrency: AppCurrency,
   environment = Environment.MAINNET,
   inputDebounceMs = 2000
 ): { transferFee?: CoinPretty; isLoading: boolean } {
@@ -27,12 +27,12 @@ export function useTransferFeeQuery(
       }
 
       const amount = Number(
-        new CoinPretty(currency, amountMinDenom).toCoin().amount
+        new CoinPretty(memoedCurrency, amountMinDenom).toCoin().amount
       );
       if (!isNaN(amount)) {
         setIsLoading(true);
         api
-          .getTransferFee(sourceChain, destChain, tokenMinDenom, amount)
+          .getTransferFee(sourceChain, destChain, axelarTokenMinDenom, amount)
           .then((resp) => {
             if (resp.fee && resp.fee.amount !== transferFee) {
               setTransferFee(resp.fee.amount);
@@ -46,7 +46,7 @@ export function useTransferFeeQuery(
         throw new Error("Requested fee amount is not a number.");
       }
     },
-    [api, sourceChain, destChain, tokenMinDenom, currency]
+    [api, sourceChain, destChain, axelarTokenMinDenom, memoedCurrency]
   );
 
   const debouncedTransferFeeQuery = useCallback(
@@ -58,9 +58,16 @@ export function useTransferFeeQuery(
     debouncedTransferFeeQuery(amountMinDenom);
   }, [debouncedTransferFeeQuery, amountMinDenom]);
 
+  const transferFeeRet = useMemo(
+    () =>
+      transferFee !== null
+        ? new CoinPretty(memoedCurrency, transferFee)
+        : undefined,
+    [memoedCurrency, transferFee]
+  );
+
   return {
-    transferFee:
-      transferFee !== null ? new CoinPretty(currency, transferFee) : undefined,
+    transferFee: transferFeeRet,
     isLoading,
   };
 }

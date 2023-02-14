@@ -1,4 +1,10 @@
-import { FunctionComponent, useState, useEffect, useCallback } from "react";
+import {
+  FunctionComponent,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import { observer } from "mobx-react-lite";
 import classNames from "classnames";
 import { Environment } from "@axelar-network/axelarjs-sdk";
@@ -16,7 +22,7 @@ import { Transfer } from "../../components/complex/transfer";
 import { Button } from "../../components/buttons";
 import { displayToast, ToastType } from "../../components/alert";
 import { BridgeIntegrationProps } from "../../modals";
-import { queryErc20Balance } from "../ethereum/queries";
+import { queryErc20Balance, queryAccountBalance } from "../ethereum/queries";
 import { useTxEventToasts } from "../use-client-tx-event-toasts";
 import {
   ChainNames,
@@ -78,7 +84,6 @@ const AxelarTransfer: FunctionComponent<
       queriesExternalStore.queryICNSNames.getQueryContract(
         bech32Address
       ).primaryName;
-    const originCurrency = balanceOnOsmosis.balance.currency.originCurrency!;
 
     useTxEventToasts(ethWalletClient);
 
@@ -120,6 +125,23 @@ const AxelarTransfer: FunctionComponent<
         : "",
       false // assume we're transferring native token, since it's the gas token as well and generally takes precedence
     );
+    /** Can be native or wrapped version of token. */
+    const useNativeToken =
+      sourceChainConfig?.nativeWrapEquivalent && !useWrappedToken;
+    const originCurrency = useMemo(
+      () =>
+        useWrappedToken && sourceChainConfig?.nativeWrapEquivalent
+          ? {
+              ...balanceOnOsmosis.balance.currency.originCurrency!,
+              coinDenom: sourceChainConfig.nativeWrapEquivalent.wrapDenom,
+            }
+          : balanceOnOsmosis.balance.currency.originCurrency!,
+      [
+        useWrappedToken,
+        balanceOnOsmosis.balance.currency.originCurrency,
+        sourceChainConfig?.nativeWrapEquivalent?.wrapDenom,
+      ]
+    );
 
     const axelarChainId =
       chainStore.getChainFromCurrency(originCurrency.coinDenom)?.chainId ||
@@ -142,10 +164,34 @@ const AxelarTransfer: FunctionComponent<
         );
       }
     }, [
+      isWithdraw,
       erc20ContractAddress,
       ethWalletClient.send,
       ethWalletClient.accountAddress,
       originCurrency,
+    ]);
+    // get native EVM balance
+    const [nativeBalance, setNativeBalance] = useState<CoinPretty | null>(null);
+    useEffect(() => {
+      if (
+        !nativeBalance &&
+        sourceChainConfig?.nativeWrapEquivalent &&
+        !useWrappedToken &&
+        ethWalletClient.accountAddress &&
+        !isWithdraw
+      ) {
+        queryAccountBalance(
+          ethWalletClient.send,
+          ethWalletClient.accountAddress
+        ).then((amount) =>
+          setNativeBalance(new CoinPretty(originCurrency, amount))
+        );
+      }
+    }, [
+      isWithdraw,
+      ethWalletClient.accountAddress,
+      originCurrency,
+      useWrappedToken,
     ]);
 
     // DEPOSITING: custom amount validation, since `useAmountConfig` needs to query counterparty Cosmos SDK chain balances (not evm balances)
@@ -153,7 +199,11 @@ const AxelarTransfer: FunctionComponent<
       amount: depositAmount,
       setAmount: setDepositAmount,
       toggleIsMax: toggleIsDepositAmtMax,
-    } = useGeneralAmountConfig({ balance: erc20Balance ?? undefined });
+    } = useGeneralAmountConfig({
+      balance: useNativeToken
+        ? nativeBalance ?? undefined
+        : erc20Balance ?? undefined,
+    });
 
     // WITHDRAWING: is an IBC transfer Osmosis->Axelar
     const feeConfig = useFakeFeeConfig(
@@ -198,9 +248,6 @@ const AxelarTransfer: FunctionComponent<
     const accountAddress = isWithdraw
       ? ethWalletClient.accountAddress
       : bech32Address;
-    /** Can be native or wrapped version of token. */
-    const useNativeToken =
-      sourceChainConfig?.nativeWrapEquivalent && !useWrappedToken;
     const axelarTokenMinDenom = useNativeToken
       ? sourceChainConfig.nativeWrapEquivalent!.tokenMinDenom
       : originCurrency.coinMinimalDenom;
@@ -217,6 +264,8 @@ const AxelarTransfer: FunctionComponent<
 
     const availableBalance = isWithdraw
       ? balanceOnOsmosis.balance
+      : useNativeToken
+      ? nativeBalance ?? undefined
       : erc20ContractAddress
       ? erc20Balance ?? undefined
       : undefined;
@@ -519,7 +568,10 @@ const AxelarTransfer: FunctionComponent<
             Boolean(sourceChainConfig?.nativeWrapEquivalent)
               ? {
                   useWrapped: useWrappedToken,
-                  toggleUseWrapped: () => setUseWrappedToken(!useWrappedToken),
+                  toggleUseWrapped: () => {
+                    setDepositAmount("");
+                    setUseWrappedToken(!useWrappedToken);
+                  },
                   wrappedTokenDenom:
                     sourceChainConfig?.nativeWrapEquivalent?.wrapDenom ?? "",
                 }
