@@ -268,7 +268,9 @@
         "insufficientBal": "Yetersiz Bakiye"
       },
       "wrapNativeLink": "{platformName} üzerinde {fromDenom} dan {fromDenom} a çevir.",
-      "waitTime": "{minutes} dakika"
+      "waitTime": "{minutes} dakika",
+      "withdrawAs": "{denom} olarak geri çekil",
+      "depositAs": "{denom} olarak yatırın"
     },
     "selectAssetSource": {
       "titleWithdraw": "Adrese çek",

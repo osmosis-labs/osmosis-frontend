@@ -268,7 +268,9 @@
         "insufficientBal": "Niewystarczająca Ilość Środków"
       },
       "wrapNativeLink": "Konwertuj {fromDenom} na {toDenom} na {platformName}",
-      "waitTime": "{minutes} minut"
+      "waitTime": "{minutes} minut",
+      "withdrawAs": "Wycofaj się jako {denom}",
+      "depositAs": "Wpłać jako {denom}"
     },
     "selectAssetSource": {
       "titleWithdraw": "Wypłać do",

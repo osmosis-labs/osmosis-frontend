@@ -267,7 +267,9 @@
         "insufficientBal": "余额不足"
       },
       "wrapNativeLink": "在 {platformName} 上将 {fromDenom} 转换为 {toDenom}",
-      "waitTime": "{minutes} 分钟"
+      "waitTime": "{minutes} 分钟",
+      "withdrawAs": "提取为 {denom}",
+      "depositAs": "存入 {denom}"
     },
     "selectAssetSource": {
       "titleWithdraw": "提币至",

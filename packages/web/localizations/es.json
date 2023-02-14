@@ -268,7 +268,9 @@
         "insufficientBal": "Saldo insuficiente"
       },
       "wrapNativeLink": "Convertir {fromDenom} a {toDenom} en {platformName}",
-      "waitTime": "{minutes} minutos"
+      "waitTime": "{minutes} minutos",
+      "withdrawAs": "Retirar como {denom}",
+      "depositAs": "Depositar como {denom}"
     },
     "selectAssetSource": {
       "titleWithdraw": "Retirar a",

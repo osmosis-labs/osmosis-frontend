@@ -268,7 +268,9 @@
         "insufficientBal": "結餘唔夠喎"
       },
       "wrapNativeLink": "在 {platformName} 上轉換 {fromDenom} 到 {toDenom}",
-      "waitTime": "{minutes} 分鐘"
+      "waitTime": "{minutes} 分鐘",
+      "withdrawAs": "提取為 {denom}",
+      "depositAs": "存入 {denom}"
     },
     "selectAssetSource": {
       "titleWithdraw": "轉出到",

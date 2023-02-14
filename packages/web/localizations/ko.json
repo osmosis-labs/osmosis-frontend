@@ -268,7 +268,9 @@
         "insufficientBal": "잔액이 부족합니다"
       },
       "wrapNativeLink": "{platformName}에서 {fromDenom}를 {toDenom}로 변환",
-      "waitTime": "{minutes}분"
+      "waitTime": "{minutes}분",
+      "withdrawAs": "{denom}로 출금",
+      "depositAs": "{denom}로 입금"
     },
     "selectAssetSource": {
       "titleWithdraw": "으로 출금",

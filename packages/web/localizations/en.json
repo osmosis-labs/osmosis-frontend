@@ -268,7 +268,9 @@
         "insufficientBal": "Insufficient Balance"
       },
       "wrapNativeLink": "Convert {fromDenom} to {toDenom} on {platformName}",
-      "waitTime": "{minutes} minutes"
+      "waitTime": "{minutes} minutes",
+      "withdrawAs": "Withdraw as {denom}",
+      "depositAs": "Deposit as {denom}"
     },
     "selectAssetSource": {
       "titleWithdraw": "Withdraw to",

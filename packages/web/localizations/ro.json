@@ -268,7 +268,9 @@
         "insufficientBal": "Balanta Insuficienta"
       },
       "wrapNativeLink": "Converteste {fromDenom} in {toDenom} pe {platformName}",
-      "waitTime": "{minutes} minute"
+      "waitTime": "{minutes} minute",
+      "withdrawAs": "Retrageți ca {denom}",
+      "depositAs": "Depuneți ca {denom}"
     },
     "selectAssetSource": {
       "titleWithdraw": "Retrage catre",

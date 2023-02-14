@@ -281,9 +281,12 @@ export const Transfer: FunctionComponent<TransferProps> = ({
           {toggleUseWrapped && (
             <div className="flex place-content-between items-center">
               <span>
-                {isWithdraw ? "Withdraw" : "Deposit"}
-                {" as "}
-                {toggleUseWrapped.wrappedTokenDenom}
+                {t(
+                  isWithdraw
+                    ? "assets.transfer.withdrawAs"
+                    : "assets.transfer.depositAs",
+                  { denom: toggleUseWrapped.wrappedTokenDenom }
+                )}
               </span>
               <Switch
                 isOn={toggleUseWrapped.useWrapped}
