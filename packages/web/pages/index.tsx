@@ -5,7 +5,7 @@ import { TradeClipboard } from "../components/trade-clipboard";
 import { TradeClipboard as AutonomyTradeClipboard } from "../components/autonomy/trade";
 import OrderHistory from "../components/autonomy/order-history";
 import { useStore } from "../stores";
-import { IS_FRONTIER, ENABLE_AUTONOMY, EventName } from "../config";
+import { IS_FRONTIER, EventName } from "../config";
 import { Dec } from "@keplr-wallet/unit";
 import { useMemo, useRef, useState } from "react";
 import classNames from "classnames";
@@ -144,10 +144,10 @@ const Home: NextPage = observer(function () {
   });
 
   return (
-    <main className="relative bg-osmoverse-900 h-full">
-      <div className="absolute w-full h-full bg-home-bg-pattern bg-repeat-x bg-cover">
+    <main className="relative h-full bg-osmoverse-900">
+      <div className="absolute h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">
         <svg
-          className="absolute w-full h-full lg:hidden"
+          className="absolute h-full w-full lg:hidden"
           pointerEvents="none"
           viewBox="0 0 1300 900"
           height="900"
@@ -185,29 +185,29 @@ const Home: NextPage = observer(function () {
       </div>
       <div
         className={classNames(
-          "w-full h-full flex flex-col",
+          "flex h-full w-full flex-col",
           tradeType === "Swap"
-            ? "justify-center overflow-x-hidden overflow-y-auto"
+            ? "justify-center overflow-y-auto overflow-x-hidden"
             : "overflow-y-auto overflow-x-hidden"
         )}
       >
-        {ENABLE_AUTONOMY && (
-          <div className="w-[27rem] ml-auto mr-[15%] lg:mx-auto mb-3 z-100">
-            <div className="relative rounded-[18px] flex flex-row gap-8 bg-osmoverse-800 px-5 md:px-3 py-4">
+        {true && (
+          <div className="z-100 ml-auto mr-[15%] mb-3 w-[27rem] lg:mx-auto">
+            <div className="relative flex flex-row gap-8 rounded-[18px] bg-osmoverse-800 px-5 py-4 md:px-3">
               <div
-                className="flex-auto text-center font-bold px-4 py-2 cursor-pointer mr-3"
+                className="mr-3 flex-auto cursor-pointer px-4 py-2 text-center font-bold"
                 onClick={() => setTradeType("Swap")}
               >
                 Swap
               </div>
               <div
-                className="flex-auto text-center font-bold px-4 py-2 cursor-pointer mr-3"
+                className="mr-3 flex-auto cursor-pointer px-4 py-2 text-center font-bold"
                 onClick={() => setTradeType("Limit")}
               >
                 Limit Order
               </div>
               <div
-                className="flex-auto text-center font-bold px-4 py-2 cursor-pointer"
+                className="flex-auto cursor-pointer px-4 py-2 text-center font-bold"
                 onClick={() => setTradeType("StopLoss")}
               >
                 Stop Loss

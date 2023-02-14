@@ -83,13 +83,13 @@ const OrderRow = ({ order }: { order: Order }) => {
   return (
     <div
       key={order.id}
-      className="w-full p-px rounded-2xl text-left bg-osmoverse-900 hover:bg-none mb-4"
+      className="mb-4 w-full rounded-2xl bg-osmoverse-900 p-px text-left hover:bg-none"
     >
-      <div className="flex flex-col place-content-between w-full h-full p-4 bg-card rounded-2xlinset cursor-pointer">
+      <div className="bg-card flex h-full w-full cursor-pointer flex-col place-content-between rounded-2xlinset p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <div className="flex items-center">
-              <div className="w-8 h-8 md:h-5 md:w-5 rounded-full overflow-hidden">
+              <div className="h-8 w-8 overflow-hidden rounded-full md:h-5 md:w-5">
                 {inputCurrency.coinImageUrl && (
                   <Image
                     src={inputCurrency.coinImageUrl}
@@ -102,9 +102,9 @@ const OrderRow = ({ order }: { order: Order }) => {
               </div>
               <h6 className="ml-1">{inputCurrency.coinDenom}</h6>
             </div>
-            <div className="mx-3">{"->"}</div>
+            <div className="mx-3 whitespace-nowrap">{"->"}</div>
             <div className="flex items-center">
-              <div className="w-8 h-8 md:h-5 md:w-5 rounded-full overflow-hidden">
+              <div className="h-8 w-8 overflow-hidden rounded-full md:h-5 md:w-5">
                 {outputCurrency.coinImageUrl && (
                   <Image
                     src={outputCurrency.coinImageUrl}
@@ -120,8 +120,8 @@ const OrderRow = ({ order }: { order: Order }) => {
           </div>
           {order.status === "created" && (
             <Button
-              color="error"
-              className="button px-3 py-1 md:px-1 rounded-lg"
+              mode="primary-warning"
+              className="ml-6"
               disabled={account.txTypeInProgress !== ""}
               onClick={handleCancelOrder}
             >
@@ -129,7 +129,7 @@ const OrderRow = ({ order }: { order: Order }) => {
             </Button>
           )}
         </div>
-        <p className="font-bold mt-2">
+        <p className="mt-2 font-bold">
           Sell {inputCoin.trim(true).toString()} for{" "}
           {outputCoin.trim(true).toString()}
         </p>
@@ -237,7 +237,7 @@ export default function OrderHistory({
   return (
     <div
       className={classNames(
-        "relative rounded-2xl bg-card border-2 md:border-0 bg-osmoverse-800 px-4 md:p-0 my-4 w-[27rem] md:mt-mobile-header ml-auto mr-[15%] lg:mx-auto",
+        "bg-card relative my-4 ml-auto mr-[15%] w-[27rem] rounded-2xl border-2 bg-osmoverse-800 px-4 lg:mx-auto md:mt-mobile-header md:border-0 md:p-0",
         containerClassName
       )}
     >

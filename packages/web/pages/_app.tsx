@@ -59,56 +59,47 @@ function MyApp({ Component, pageProps }: AppProps) {
         iconSelected: "/icons/trade-white.svg",
         selectionTest: /\/$/,
       },
-      {
-        label: t("menu.pools"),
-        link: "/pools",
-        icon: "/icons/pool-white.svg",
-        iconSelected: "/icons/pool-white.svg",
-        selectionTest: /\/pools/,
-      },
-      {
-        label: t("menu.assets"),
-        link: "/assets",
-        icon: "/icons/asset-white.svg",
-        iconSelected: "/icons/asset-white.svg",
-        selectionTest: /\/assets/,
-      },
+      // {
+      //   label: t("menu.pools"),
+      //   link: "/pools",
+      //   icon: "/icons/pool-white.svg",
+      //   iconSelected: "/icons/pool-white.svg",
+      //   selectionTest: /\/pools/,
+      // },
+      // {
+      //   label: t("menu.assets"),
+      //   link: "/assets",
+      //   icon: "/icons/asset-white.svg",
+      //   iconSelected: "/icons/asset-white.svg",
+      //   selectionTest: /\/assets/,
+      // },
     ];
 
-    if (PromotedLBPPoolIds.length > 0) {
-      m.push({
-        label: "Bootstrap",
-        link: "/bootstrap",
-        icon: "/icons/pool-white.svg",
-        selectionTest: /\/bootstrap/,
-      });
-    }
-
-    m.push(
-      {
-        label: t("menu.stake"),
-        link: "https://wallet.keplr.app/chains/osmosis",
-        icon: "/icons/ticket-white.svg",
-        amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
-      },
-      {
-        label: t("menu.vote"),
-        link: "https://wallet.keplr.app/chains/osmosis?tab=governance",
-        icon: "/icons/vote-white.svg",
-        amplitudeEvent: [EventName.Sidebar.voteClicked] as AmplitudeEvent,
-      },
-      {
-        label: t("menu.info"),
-        link: "https://info.osmosis.zone",
-        icon: "/icons/chart-white.svg",
-        amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
-      }
-    );
+    // m.push(
+    //   {
+    //     label: t("menu.stake"),
+    //     link: "https://wallet.keplr.app/chains/osmosis",
+    //     icon: "/icons/ticket-white.svg",
+    //     amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
+    //   },
+    //   {
+    //     label: t("menu.vote"),
+    //     link: "https://wallet.keplr.app/chains/osmosis?tab=governance",
+    //     icon: "/icons/vote-white.svg",
+    //     amplitudeEvent: [EventName.Sidebar.voteClicked] as AmplitudeEvent,
+    //   },
+    //   {
+    //     label: t("menu.info"),
+    //     link: "https://info.osmosis.zone",
+    //     icon: "/icons/chart-white.svg",
+    //     amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
+    //   }
+    // );
 
     return m;
   }, [t]);
 
-  useAmplitudeAnalytics({ init: true });
+  // useAmplitudeAnalytics({ init: true });
   return (
     <GetKeplrProvider>
       <StoreProvider>
