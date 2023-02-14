@@ -154,7 +154,6 @@ const NavbarOsmoPrice = observer(() => {
           </Button>
         </SkeletonLoader>
       )}
-
       <FiatOnrampSelectionModal
         isOpen={isFiatOnrampSelectionOpen}
         onRequestClose={onCloseFiatOnrampSelection}
@@ -163,21 +162,19 @@ const NavbarOsmoPrice = observer(() => {
           const tokenName = "OSMO";
 
           const cryptoBalance = nativeBalances.find(
-            (coin) =>
-              coin.balance.denom.toLowerCase() === tokenName.toLowerCase()
-          );
+                (coin) =>
+                  coin.balance.denom.toLowerCase() === tokenName.toLowerCase()
+              );
 
-          logEvent([
-            EventName.Sidebar.buyOsmoClicked,
-            {
-              tokenName,
-              tokenAmount: Number(
-                (cryptoBalance?.fiatValue ?? cryptoBalance?.balance)
-                  ?.maxDecimals(4)
-                  .toString()
-              ),
-            },
-          ]);
+              logEvent([
+                EventName.Sidebar.buyOsmoClicked,
+                {
+                  tokenName,
+                  tokenAmount: Number(
+                    cryptoBalance?.balance?.toDec().toString(4)
+                  ),
+                },
+              ]);
         }}
       />
     </div>

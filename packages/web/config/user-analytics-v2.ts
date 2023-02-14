@@ -22,6 +22,7 @@ export type EventProperties = {
   isSuperfluidPool: boolean;
   isSuperfluidEnabled: boolean;
   isSingleAsset: boolean;
+  isStableswapPool: boolean;
   providingLiquidity: {
     [denom: string]: number;
   };

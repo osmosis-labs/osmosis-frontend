@@ -13,6 +13,7 @@ import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 import {
   ChainInfoWithExplorer,
   ChainStore,
+  DerivedDataStore,
   IBCTransferHistoryStore,
   LPCurrencyRegistrar,
   NonIbcBridgeHistoryStore,
@@ -33,7 +34,6 @@ import { PoolPriceRoutes } from "../config";
 import { suggestChainFromWindow } from "../hooks/use-keplr/utils";
 import { AxelarTransferStatusSource } from "../integrations/axelar";
 import { ObservableAssets } from "./assets";
-import { DerivedDataStore } from "./derived-data";
 import { makeIndexedKVStore, makeLocalStorageKVStore } from "./kv-store";
 import { NavBarStore } from "./nav-bar";
 import { OsmoPixelsQueries } from "./pixels";

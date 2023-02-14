@@ -408,19 +408,13 @@ export const ProfileModal: FunctionComponent<
         onRequestClose={onCloseFiatOnrampSelection}
         onSelectRamp={(ramp) => {
           if (ramp !== "transak") return;
-          const fiatValue = priceStore.calculatePrice(
-            navBarStore.walletInfo.balance,
-            priceStore.defaultVsCurrency
-          );
           const coinValue = navBarStore.walletInfo.balance;
 
           logEvent([
             EventName.ProfileModal.buyTokensClicked,
             {
               tokenName: "OSMO",
-              tokenAmount: Number(
-                (fiatValue ?? coinValue)?.maxDecimals(4).toString()
-              ),
+              tokenAmount: Number(coinValue?.toDec().toString(4)),
             },
           ]);
         }}

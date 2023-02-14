@@ -168,7 +168,7 @@ const Pool: FunctionComponent = observer(() => {
       poolName,
       poolWeight,
       isSuperfluidPool: superfluidPoolDetail?.isSuperfluid ?? false,
-      isStableswapPool: pool?.type === "stable",
+      isStableswapPool: Boolean(pool?.type === "stable"),
     }),
     [
       pool?.type,
@@ -200,10 +200,29 @@ const Pool: FunctionComponent = observer(() => {
               ),
       };
 
-      logEvent([E.addLiquidityStarted, poolInfo]);
+      logEvent([
+        E.addLiquidityStarted,
+        {
+          ...poolInfo,
+          providingLiquidity: undefined,
+          isSuperfluidPool: undefined,
+          isSingleAsset: undefined,
+          isStableswapPool: undefined,
+        },
+      ]);
 
       result
-        .then(() => logEvent([E.addLiquidityCompleted, poolInfo]))
+        .then(() =>
+          logEvent([
+            E.addLiquidityCompleted,
+            {
+              ...poolInfo,
+              providingLiquidity: undefined,
+              isSuperfluidPool: undefined,
+              isSingleAsset: undefined,
+            },
+          ])
+        )
         .finally(() => setShowAddLiquidityModal(false));
     },
     [baseEventInfo, isSuperfluidEnabled, logEvent]
@@ -593,7 +612,14 @@ const Pool: FunctionComponent = observer(() => {
                     <ArrowButton
                       className="text-left"
                       onClick={() => {
-                        logEvent([E.earnMoreByBondingClicked, baseEventInfo]);
+                        logEvent([
+                          E.earnMoreByBondingClicked,
+                          {
+                            ...baseEventInfo,
+                            isStableswapPool: undefined,
+                            isSuperfluidEnabled,
+                          },
+                        ]);
                         setShowLockLPTokenModal(true);
                       }}
                     >
@@ -688,7 +714,11 @@ const Pool: FunctionComponent = observer(() => {
                       onClick={() => {
                         logEvent([
                           E.removeLiquidityClicked,
-                          { ...baseEventInfo, isSuperfluidEnabled },
+                          {
+                            ...baseEventInfo,
+                            isSuperfluidEnabled,
+                            isSuperfluidPool: undefined,
+                          },
                         ]);
                         setShowRemoveLiquidityModal(true);
                       }}
@@ -701,7 +731,11 @@ const Pool: FunctionComponent = observer(() => {
                       onClick={() => {
                         logEvent([
                           E.addLiquidityClicked,
-                          { ...baseEventInfo, isSuperfluidEnabled },
+                          {
+                            ...baseEventInfo,
+                            isSuperfluidEnabled,
+                            isSuperfluidPool: undefined,
+                          },
                         ]);
                         setShowAddLiquidityModal(true);
                       }}
@@ -810,6 +844,7 @@ const Pool: FunctionComponent = observer(() => {
                           ...baseEventInfo,
                           unbondingPeriod: bondDuration.duration.asDays(),
                           isSuperfluidEnabled,
+                          isStableswapPool: undefined,
                         },
                       ]);
                       setShowSuperfluidValidatorsModal(true);
