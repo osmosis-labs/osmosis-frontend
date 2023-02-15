@@ -1,7 +1,7 @@
 import { Listbox } from "@headlessui/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import React, { Fragment, FunctionComponent, useEffect } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { useStore } from "../../stores";
