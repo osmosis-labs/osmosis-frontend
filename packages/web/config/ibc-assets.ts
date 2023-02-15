@@ -755,6 +755,18 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "stustars",
       },
       {
+        counterpartyChainId: "stride-1",
+        sourceChannelId: "channel-326",
+        destChannelId: "channel-5",
+        coinMinimalDenom: "stuluna",
+      },
+      {
+        counterpartyChainId: "stride-1",
+        sourceChannelId: "channel-326",
+        destChannelId: "channel-5",
+        coinMinimalDenom: "staevmos",
+      },
+      {
         counterpartyChainId: "kichain-2",
         sourceChannelId: "channel-77",
         destChannelId: "channel-0",
@@ -1042,6 +1054,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-38",
         destChannelId: "channel-4",
         coinMinimalDenom: "uixo",
+        isVerified: true,
       },
       {
         counterpartyChainId: "bitcanna-1",
@@ -1407,6 +1420,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-4",
         destChannelId: "channel-6",
         coinMinimalDenom: "stk/uatom",
+        isVerified: true,
       },
       {
         counterpartyChainId: "dyson-mainnet-01",
@@ -1432,14 +1446,6 @@ export const IBCAssetInfos: (IBCAsset & {
         withdrawUrlOverride: "https://app.arable.finance/#/ibc",
       },
       {
-        counterpartyChainId: "acre_9052-1",
-        sourceChannelId: "channel-490",
-        destChannelId: "channel-0",
-        coinMinimalDenom: "erc20/0xAE6D3334989a22A65228732446731438672418F2",
-        depositUrlOverride: "https://app.arable.finance/#/ibc",
-        withdrawUrlOverride: "https://app.arable.finance/#/ibc",
-      },
-      {
         counterpartyChainId: "planq_7070-2",
         sourceChannelId: "channel-492",
         destChannelId: "channel-1",
@@ -1461,6 +1467,14 @@ export const IBCAssetInfos: (IBCAsset & {
         ics20ContractAddress:
           "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
         isVerified: true,
+      },
+      {
+        counterpartyChainId: "acre_9052-1",
+        sourceChannelId: "channel-490",
+        destChannelId: "channel-0",
+        coinMinimalDenom: "erc20/0xAE6D3334989a22A65228732446731438672418F2",
+        depositUrlOverride: "https://app.arable.finance/#/ibc",
+        withdrawUrlOverride: "https://app.arable.finance/#/ibc",
       },
     ].filter((ibcAsset) => {
       // validate IBC asset config

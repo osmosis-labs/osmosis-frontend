@@ -149,7 +149,7 @@ const Home: NextPage = observer(function () {
       <div className="absolute h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">
         {!IS_FRONTIER && (
           <Image
-            src="/images/osmosis-home-bg-mars.png"
+            src="/images/osmosis-home-bg-mars.png?v=2"
             alt="Scientists landing on mars"
             layout="fill"
             className="pointer-events-none object-cover lg:!hidden"
