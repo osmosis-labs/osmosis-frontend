@@ -1,6 +1,6 @@
 import { FunctionComponent } from "react";
 import classNames from "classnames";
-import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, IntPretty, Int } from "@keplr-wallet/unit";
 import { truncateString } from "../../utils/string";
 
 const ColorCycle = [
@@ -56,7 +56,9 @@ export const AssetBreakdownChart: FunctionComponent<{
               </span>
             </div>
             <h6 className="md:subtitle2 text-osmoverse-100">
-              {amount.maxDecimals(0).hideDenom(true).toString()}
+              {amount.toDec().round().gt(new Int(0))
+                ? amount.maxDecimals(0).hideDenom(true).toString()
+                : amount.hideDenom(true).toString()}
             </h6>
           </div>
           <div
