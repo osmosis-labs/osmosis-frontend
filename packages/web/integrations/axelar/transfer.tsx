@@ -415,7 +415,6 @@ const AxelarTransfer: FunctionComponent<
           DecUtils.getTenExponentNInPrecisionRange(originCurrency.coinDecimals)
         )
       )
-        .moveDecimalPointRight(originCurrency.coinDecimals)
         .toDec()
         .lt(transferFee.toDec());
     const isInsufficientBal =
