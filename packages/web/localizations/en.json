@@ -7,14 +7,25 @@
   },
   "app": {
     "banner": {
-      "title": "You're viewing all permissionless assets",
-      "linkText": "You're viewing all permissionless assets. <link>Click here to return to the main app</link>."
+      "title": "You're viewing all permissionless assets.",
+      "linkText": "Click here to return to the main app",
+      "externalLinkDisclaimer": "By clicking the link, you acknowledge that you have read and understand that Osmosis makes no guarantees of quality of service for external pages which may have a different ToS.",
+      "externalLink": "You are now leaving the Osmosis app to go to",
+      "goToSite": "Go to Site",
+      "backToOsmosis": "Back to Osmosis",
+      "externalLinkModalTitle": "Leaving Osmosis"
+    }
+  },
+  "mars": {
+    "banner": {
+      "title": "Borrow/Lend on Osmosis has landed.",
+      "linkText": "Explore Mars Protocol"
     }
   },
   "swap": {
     "title": "Swap",
     "settings": {
-      "title": "Transaction Settings",
+      "title": "Transaction settings",
       "slippage": "Slippage tolerance",
       "slippageInfo": "Your transaction will revert if the price changes unfavorably by more than this percentage."
     },
@@ -146,7 +157,8 @@
     "bondLiquidityCaption": "Lock up your shares for longer durations to earn higher APRs.",
     "bondSuperfluidLiquidityCaption": "Go superfluid for maximum rewards.",
     "bondShares": "Bond Shares",
-    "amountDaysUnbonding": "{numDays} days unbonding",
+    "amountDaysUnbonding": "{numDays} day unbonding",
+    "amountDaysUnbonding_plural": "{numDays} days unbonding",
     "available": "Available",
     "unbond": "Unbond",
     "bonded": "Bonded",
@@ -179,7 +191,13 @@
     "singleAsset": "Single asset",
     "available": "Available",
     "autoswapCaption": "Use autoswap to add liquidity with a single asset.",
-    "stablecoinWarning": "You are adding liquidity to {denom}, a {mechanism}-backed stablecoin."
+    "stablecoinWarning": "You are adding liquidity to {denom}, a {mechanism}-backed stablecoin.",
+    "scalingFactor": "scaling factor",
+    "scalingFactorInformation": "This factor allows the curve to adjust to predictable price changes, such as the value accruing to a liquid staking token.",
+    "scalingFactorControllerWarning_first": "The scaling factor controller is enabled. The",
+    "scalingFactorControllerWarning_second": "can adjust the",
+    "scalingFactorControllerWarning_third": "to maintain the peg. The current scaling factor is",
+    "scalingFactorController": "controller"
   },
   "lockToken": {
     "title": "Bond LP Shares",
@@ -315,6 +333,11 @@
         "status": "Status",
         "deposit": "Deposit",
         "withdraw": "Withdraw"
+      },
+      "failed": "Failed",
+      "failedWithReason": "Failed: {reason}",
+      "errors": {
+        "insufficientFee": "Insufficient Fee"
       }
     }
   },
@@ -345,13 +368,14 @@
     "vote": "Vote",
     "info": "Stats",
     "signOut": "Disconnect",
-    "help": "Get Support Lab Help",
-    "learnMoreFrontier": "Learn More<br/>About the <br2/> <name>Osmosis Frontier</name>"
+    "help": "Get Support Lab Help"
   },
   "settings": {
-    "title": "Settings",
+    "title": "Global settings",
     "titleLanguage": "Language",
-    "titleHideDust": "Hide pools with < {fiatSymbol}0.01"
+    "titleHideDust": "Hide pools with < {fiatSymbol}0.01",
+    "selectLanguage": "Select language",
+    "filterDust": "Filter Dust"
   },
   "errors": {
     "emptyAmount": "Amount is empty",
@@ -373,6 +397,8 @@
     "invalidSlippage": "Invalid slippage",
     "noSendCurrency": "Currency to send not set",
     "insufficientBal": "Insufficient balance",
+    "insufficientLiquidity": "Insufficient liquidity",
+    "noRoute": "No route for this trade",
     "notInitialized": "Not initialized",
     "calculatingShareOutAmount": "Problem calculating out amount",
     "noAvailableShares": "No available {denom} shares",

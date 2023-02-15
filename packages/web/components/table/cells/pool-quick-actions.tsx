@@ -1,3 +1,4 @@
+import EventEmitter from "eventemitter3";
 import Image from "next/image";
 import React, {
   FunctionComponent,
@@ -5,12 +6,12 @@ import React, {
   useEffect,
   useMemo,
 } from "react";
-import EventEmitter from "eventemitter3";
+import { useTranslation } from "react-multi-lang";
+
 import { useBooleanWithWindowEvent } from "../../../hooks";
 import { MenuDropdown, MenuOption } from "../../control";
 import { BaseCell } from "..";
 import { PoolCompositionCell } from "./pool-composition";
-import { useTranslation } from "react-multi-lang";
 
 export interface PoolQuickActionCell
   extends BaseCell,

@@ -1,18 +1,20 @@
-import { FunctionComponent, ReactNode } from "react";
+import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
+import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { PricePretty, CoinPretty } from "@keplr-wallet/unit";
-import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
-import { useStore } from "../../stores";
-import { useWindowSize } from "../../hooks";
-import { MenuToggle } from "../../components/control";
-import { Token } from "../../components/assets";
-import { InputBox } from "../../components/input";
-import { Info } from "../../components/alert";
-import { PoolTokenSelect } from "../../components/control/pool-token-select";
-import { CustomClasses } from "../types";
-import { Button } from "../buttons";
+import { FunctionComponent, ReactNode } from "react";
 import { useTranslation } from "react-multi-lang";
+
+import { Info } from "../../components/alert";
+import { Token } from "../../components/assets";
+import { MenuToggle } from "../../components/control";
+import { PoolTokenSelect } from "../../components/control/pool-token-select";
+import { InputBox } from "../../components/input";
+import { useWindowSize } from "../../hooks";
+import { useStore } from "../../stores";
+import { Button } from "../buttons";
+import { Tooltip } from "../tooltip";
+import { CustomClasses } from "../types";
 
 export const AddLiquidity: FunctionComponent<
   {
@@ -203,6 +205,58 @@ export const AddLiquidity: FunctionComponent<
             );
           })}
         </div>
+        {Boolean(
+          addLiquidityConfig.stableSwapInfo?.scalingFactorController
+        ) && (
+          <div>
+            <p className="caption w-full px-4 text-osmoverse-300">
+              {t("addLiquidity.scalingFactorControllerWarning_first")}{" "}
+              <a
+                href={`https://www.mintscan.io/osmosis/account/${addLiquidityConfig.stableSwapInfo?.scalingFactorController}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-wosmongton-300 underline"
+              >
+                {t("addLiquidity.scalingFactorController")}
+              </a>{" "}
+              {t("addLiquidity.scalingFactorControllerWarning_second")}{" "}
+              <Tooltip
+                content={t("addLiquidity.scalingFactorInformation")}
+                className="!inline !align-baseline underline"
+              >
+                <span>{t("addLiquidity.scalingFactor")}</span>
+              </Tooltip>{" "}
+              {t("addLiquidity.scalingFactorControllerWarning_third")}{" "}
+              {addLiquidityConfig.stableSwapInfo?.scalingFactor?.map(
+                (factor, index, array) => {
+                  const isNotLast = index !== array.length - 1;
+                  const factorAsNumber = Number(factor);
+                  const exponent = Math.log10(factorAsNumber);
+
+                  return (
+                    <>
+                      {
+                        exponent !== Math.round(exponent) || exponent === 0
+                          ? factorAsNumber // Display as a number if it's not a power of 10 or if the exponent is 0
+                          : `10^${exponent}` // Otherwise, display as a power of 10 e.g. 10^3
+                      }
+                      {isNotLast ? ":" : ""}
+                    </>
+                  );
+                }
+              )}
+              .{" "}
+              <a
+                href="https://docs.osmosis.zone/overview/terminology/#scaling-factor"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-wosmongton-300 underline"
+              >
+                {t("pool.learnMore")}
+              </a>
+            </p>
+          </div>
+        )}
         {addLiquidityConfig.singleAmountInPriceImpact && (
           <div className="caption flex place-content-between p-4 text-osmoverse-300">
             <span>Price impact</span>

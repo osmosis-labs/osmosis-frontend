@@ -1,5 +1,3 @@
-import Image from "next/image";
-import type { NextPage } from "next";
 import {
   CoinPretty,
   Dec,
@@ -7,44 +5,47 @@ import {
   PricePretty,
   RatePretty,
 } from "@keplr-wallet/unit";
-import { observer } from "mobx-react-lite";
-import { useState, ComponentProps, useMemo, useCallback } from "react";
-import { Duration } from "dayjs/plugin/duration";
 import {
   ObservablePoolDetail,
   ObservableQueryPool,
 } from "@osmosis-labs/stores";
+import { Duration } from "dayjs/plugin/duration";
+import { observer } from "mobx-react-lite";
+import type { NextPage } from "next";
+import Image from "next/image";
+import { ComponentProps, useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-multi-lang";
+
+import { ShowMoreButton } from "../../components/buttons/show-more";
 import { PoolCard } from "../../components/cards";
+import { POOLS_PER_PAGE } from "../../components/complex";
 import { AllPoolsTableSet } from "../../components/complex/all-pools-table-set";
+import { CompactPoolTableDisplay } from "../../components/complex/compact-pool-table-display";
 import { ExternalIncentivizedPoolsTableSet } from "../../components/complex/external-incentivized-pools-table-set";
-import {
-  CreatePoolModal,
-  AddLiquidityModal,
-  RemoveLiquidityModal,
-  SuperfluidValidatorModal,
-  LockTokensModal,
-} from "../../modals";
-import { PoolsOverview } from "../../components/overview/pools";
-import { MetricLoader } from "../../components/loaders";
 import { TabBox } from "../../components/control";
-import { useStore } from "../../stores";
-import { DataSorter } from "../../hooks/data/data-sorter";
+import { MetricLoader } from "../../components/loaders";
+import { PoolsOverview } from "../../components/overview/pools";
+import { EventName } from "../../config";
 import {
-  useWindowSize,
+  useAmplitudeAnalytics,
+  useCreatePoolConfig,
   useFilteredData,
+  useHideDustUserSetting,
+  useLockTokenConfig,
   usePaginatedData,
   useSortedData,
-  useCreatePoolConfig,
-  useAmplitudeAnalytics,
-  useLockTokenConfig,
   useSuperfluidPool,
-  useHideDustUserSetting,
+  useWindowSize,
 } from "../../hooks";
-import { CompactPoolTableDisplay } from "../../components/complex/compact-pool-table-display";
-import { ShowMoreButton } from "../../components/buttons/show-more";
-import { EventName } from "../../config";
-import { POOLS_PER_PAGE } from "../../components/complex";
-import { useTranslation } from "react-multi-lang";
+import { DataSorter } from "../../hooks/data/data-sorter";
+import {
+  AddLiquidityModal,
+  CreatePoolModal,
+  LockTokensModal,
+  RemoveLiquidityModal,
+  SuperfluidValidatorModal,
+} from "../../modals";
+import { useStore } from "../../stores";
 import { priceFormatter } from "../../utils/formatter";
 
 const TVL_FILTER_THRESHOLD = 1000;

@@ -1,16 +1,18 @@
+import classNames from "classnames";
+import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import Head from "next/head";
 import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
-import classNames from "classnames";
+
 import { IS_FRONTIER } from "../config";
 import { useAmplitudeAnalytics } from "../hooks";
 import { MainLayoutMenu } from "./types";
 
 export const MainMenu: FunctionComponent<{
+  onClickItem?: () => void;
   menus: MainLayoutMenu[];
-}> = ({ menus }) => {
+}> = ({ menus, onClickItem }) => {
   const router = useRouter();
   const { logEvent } = useAmplitudeAnalytics();
 
@@ -35,6 +37,7 @@ export const MainMenu: FunctionComponent<{
                 }
               )}
               onClick={(e) => {
+                onClickItem?.();
                 if (typeof link === "string" && !link.startsWith("http")) {
                   router.push(link);
                 } else if (typeof link === "function") {

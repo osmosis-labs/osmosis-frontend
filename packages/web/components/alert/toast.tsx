@@ -2,6 +2,7 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 import { toast, ToastOptions } from "react-toastify";
+
 import { Alert, ToastType } from "./types";
 
 export function displayToast(

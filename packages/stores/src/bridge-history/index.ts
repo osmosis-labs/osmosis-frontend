@@ -1,15 +1,16 @@
+import { KVStore } from "@keplr-wallet/common";
+import { CosmosQueries, IQueriesStore } from "@keplr-wallet/stores";
 import {
-  observable,
   action,
-  runInAction,
   autorun,
-  toJS,
   makeObservable,
+  observable,
+  runInAction,
+  toJS,
 } from "mobx";
 import { computedFn } from "mobx-utils";
-import { KVStore } from "@keplr-wallet/common";
-import { IQueriesStore, CosmosQueries } from "@keplr-wallet/stores";
-import { TxStatus } from "./types";
+
+import { TxReason, TxStatus } from "./types";
 import { ITxStatusReceiver, ITxStatusSource } from "./types";
 
 /** Persistable data enough to identify a tx. */
@@ -19,7 +20,7 @@ type TxSnapshot = {
   prefixedKey: string;
   amount: string;
   status: TxStatus;
-  reason?: string;
+  reason?: TxReason;
   isWithdraw: boolean;
   accountAddress: string;
 };
@@ -71,7 +72,7 @@ export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
       sourceName?: string;
       status: TxStatus;
       amount: string;
-      reason?: string;
+      reason?: TxReason;
       explorerUrl: string;
       isWithdraw: boolean;
     }[] = [];
@@ -135,7 +136,7 @@ export class NonIbcBridgeHistoryStore implements ITxStatusReceiver {
   receiveNewTxStatus(
     prefixedKey: string,
     status: TxStatus,
-    reason: string | undefined
+    reason: TxReason | undefined
   ) {
     const snapshot = this.snapshots.find(
       (snapshot) => snapshot.prefixedKey === prefixedKey

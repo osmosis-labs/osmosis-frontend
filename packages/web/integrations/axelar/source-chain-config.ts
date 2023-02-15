@@ -223,4 +223,18 @@ export const SourceChainTokenConfigs: {
       logoUrl: "/networks/fantom.svg",
     },
   },
+  polygonusdc: {
+    polygon: {
+      id: "Polygon" as const,
+      erc20ContractAddress: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+      logoUrl: "/networks/polygon.svg",
+    },
+  },
+  avalancheusdc: {
+    avalanche: {
+      id: "Avalanche" as const,
+      erc20ContractAddress: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+      logoUrl: "/networks/avalanche.svg",
+    },
+  },
 };

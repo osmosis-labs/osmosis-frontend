@@ -1,4 +1,5 @@
 export * from "./checkbox";
+export * from "./language-select";
 export * from "./menu-dropdown";
 export * from "./menu-toggle";
 export * from "./page-list";
@@ -9,7 +10,4 @@ export * from "./switch";
 export * from "./tab-box";
 export * from "./toggle";
 export * from "./token-select";
-export * from "./language-select";
-export * from "./icon-dropdown";
-export * from "./icon-dropdown/icon-dropdown";
 export * from "./types";

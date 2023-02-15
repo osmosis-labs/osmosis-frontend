@@ -69,5 +69,153 @@
         fill="currentColor"
       />
     </symbol>
+    <symbol viewBox="0 0 18 18" id="info">
+      <g clip-path="url(#clip0_1567_8455)">
+        <path
+          d="M9 1.5C4.85787 1.5 1.5 4.85786 1.5 9C1.5 13.1421 4.85787 16.5 9 16.5C13.1421 16.5 16.5 13.1421 16.5 9C16.5 4.85787 13.1421 1.5 9 1.5Z"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M9 12L9 9"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M9 6L8.99167 6"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_1567_8455">
+          <rect
+            width="18"
+            height="18"
+            fill="white"
+            transform="translate(18 18) rotate(-180)"
+          />
+        </clipPath>
+      </defs>
+    </symbol>
+    <symbol viewBox="0 0 30 30" id="hamburger">
+      <path
+        d="M3.75 15H26.25"
+        stroke="currentColor"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M3.75 7.5H26.25"
+        stroke="currentColor"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M3.75 22.5H26.25"
+        stroke="currentColor"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </symbol>
+    <symbol viewBox="0 0 25 24" id="close">
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M15.4759 17.5102L12.6266 14.6609L9.77286 17.5146C9.09654 18.1909 8.00868 18.1918 7.33342 17.5165C6.65815 16.8412 6.64253 15.7369 7.31884 15.0606L10.1726 12.2069L7.33974 9.37406C6.66448 8.69879 6.64886 7.59446 7.32517 6.91815C8.01798 6.22534 9.12231 6.24096 9.79757 6.91623L12.6304 9.74905L15.4841 6.89533C16.1604 6.21901 17.2648 6.23464 17.94 6.9099C18.6153 7.58517 18.6144 8.67302 17.9381 9.34934L15.0844 12.2031L17.9337 15.0523C18.609 15.7276 18.6246 16.8319 17.9318 17.5248C17.2555 18.2011 16.1511 18.1854 15.4759 17.5102Z"
+        fill="currentColor"
+      />
+    </symbol>
+    <symbol viewBox="0 0 24 24" fill="none" id="globe">
+      <path
+        d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M2 12H22"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M12 2C14.5013 4.73835 15.9228 8.29203 16 12C15.9228 15.708 14.5013 19.2616 12 22C9.49872 19.2616 8.07725 15.708 8 12C8.07725 8.29203 9.49872 4.73835 12 2V2Z"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </symbol>
+    <symbol viewBox="0 0 24 24" fill="none" id="dust-broom">
+      <path
+        d="M22.5 2C22.5 2 18.6479 8.29002 16.5 12M16.5 12C18.4162 12.7984 19.5 14.5 19.5 16C19.5 17.5 19.1 20.1 17.5 20.5M16.5 12C16.2585 11.8994 16.7739 12.0384 16.5 12ZM16.5 12C14.8369 11.7666 12.5 12.0657 12.5 15.5C12.5 18 10 20 9 20M16.5 12C16.7596 12.2371 17 12.5 16.5 15C16 17.5 16 20 13 20.5"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+      />
+      <circle cx="3" cy="21" r="1" fill="currentColor" />
+      <circle cx="7" cy="21" r="1" fill="currentColor" />
+      <circle cx="1.5" cy="14.5" r="0.5" fill="currentColor" />
+      <circle cx="3.5" cy="11.5" r="0.5" fill="currentColor" />
+      <circle cx="4" cy="18" r="1" fill="currentColor" />
+    </symbol>
+
+    <symbol
+      width="25"
+      height="24"
+      viewBox="0 0 25 24"
+      fill="none"
+      id="arrow-right"
+    >
+      <path
+        d="M3 12H21.5"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M14.5 5L21.5 12L14.5 19"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </symbol>
+
+    <symbol
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      id="close-small"
+    >
+      <path
+        d="M18 6L6 18"
+        stroke="currentColor"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M6 6L18 18"
+        stroke="currentColor"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </symbol>
   </defs>
 </svg>

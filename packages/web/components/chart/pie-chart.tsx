@@ -1,6 +1,6 @@
-import dynamic from "next/dynamic";
 import type { Options } from "highcharts";
-import React, { FunctionComponent, useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+import React, { FunctionComponent, useEffect, useState } from "react";
 
 const HighchartsReact = dynamic(() => import("highcharts-react-official"), {
   ssr: false,

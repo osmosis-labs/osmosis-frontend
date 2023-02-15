@@ -4,9 +4,10 @@ import {
   ObservableChainQuery,
   ObservableChainQueryMap,
 } from "@keplr-wallet/stores";
-import { SuperfluidAssetMultiplier } from "./types";
-import { computed, makeObservable } from "mobx";
 import { Dec } from "@keplr-wallet/unit";
+import { computed, makeObservable } from "mobx";
+
+import { SuperfluidAssetMultiplier } from "./types";
 
 export class ObservableQuerySuperfluidAssetMultiplierInner extends ObservableChainQuery<SuperfluidAssetMultiplier> {
   constructor(

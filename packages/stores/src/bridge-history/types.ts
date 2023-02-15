@@ -26,3 +26,4 @@ export interface ITxStatusReceiver {
 }
 
 export type TxStatus = "success" | "pending" | "failed";
+export type TxReason = "insufficientFee";

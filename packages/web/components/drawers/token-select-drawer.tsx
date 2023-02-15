@@ -1,7 +1,10 @@
-import Image from "next/image";
+import { Transition } from "@headlessui/react";
 import { AppCurrency, IBCCurrency } from "@keplr-wallet/types";
 import { CoinPretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
+import debounce from "debounce";
+import { observer } from "mobx-react-lite";
+import Image from "next/image";
 import {
   Fragment,
   FunctionComponent,
@@ -10,19 +13,19 @@ import {
   useState,
 } from "react";
 import { useTranslation } from "react-multi-lang";
-import { SearchBox } from "../input";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
-import { useFilteredData, useWindowSize } from "../../hooks";
-import debounce from "debounce";
-import { useWindowKeyActions } from "../../hooks/window/use-window-key-actions";
+import { useLatest } from "react-use";
+
 import { RecommendedSwapDenoms } from "../../config";
+import { useFilteredData, useWindowSize } from "../../hooks";
+import { useConst } from "../../hooks/use-const";
 import useDraggableScroll from "../../hooks/use-draggable-scroll";
-import { Transition } from "@headlessui/react";
 import { useKeyActions } from "../../hooks/use-key-actions";
 import { useStateRef } from "../../hooks/use-state-ref";
-import { useLatest } from "react-use";
-import { useConst } from "../../hooks/use-const";
+import { useWindowKeyActions } from "../../hooks/window/use-window-key-actions";
+import { useStore } from "../../stores";
+import { Icon } from "../assets";
+import IconButton from "../buttons/icon-button";
+import { SearchBox } from "../input";
 
 function getJustDenom(coinDenom: string) {
   return coinDenom.split(" ").slice(0, 1).join(" ") ?? "";
@@ -192,7 +195,7 @@ export const TokenSelectDrawer: FunctionComponent<{
         >
           <div
             onClick={() => onClose?.()}
-            className="absolute inset-0 z-40 bg-osmoverse-1000/40"
+            className="absolute inset-0 z-40 bg-osmoverse-1000/80"
           />
         </Transition>
 
@@ -209,15 +212,17 @@ export const TokenSelectDrawer: FunctionComponent<{
           afterLeave={() => setIsRequestingClose(false)}
         >
           <div className="absolute inset-0 z-50 mt-16 flex h-full w-full flex-col overflow-hidden rounded-[24px] bg-osmoverse-800 pb-16">
-            <div className="relative flex justify-center pt-8 pb-4">
-              <button className="absolute left-4" onClick={() => onClose()}>
-                <Image
-                  src="/icons/left.svg"
-                  alt="Close"
-                  width={24}
-                  height={24}
-                />
-              </button>
+            <div
+              onClick={() => onClose()}
+              className="relative flex items-center justify-center pt-8 pb-4"
+            >
+              <IconButton
+                className="absolute left-4 w-fit py-0 text-osmoverse-400"
+                mode="unstyled"
+                size="unstyled"
+                aria-label="Close"
+                icon={<Icon id="chevron-left" width={16} height={16} />}
+              />
 
               <h1 className="text-h6 font-h6">
                 {t("components.selectToken.title")}

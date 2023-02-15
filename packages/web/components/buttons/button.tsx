@@ -1,9 +1,10 @@
-import { ButtonHTMLAttributes, FunctionComponent } from "react";
-import { CustomClasses } from "../types";
-import { IS_FRONTIER } from "../../config";
 import { cva, VariantProps } from "class-variance-authority";
+import { ButtonHTMLAttributes, forwardRef } from "react";
 
-const button = cva(
+import { IS_FRONTIER } from "../../config";
+import { CustomClasses } from "../types";
+
+export const buttonCVA = cva(
   "flex w-full place-content-center items-center py-2 text-center transition-colors disabled:cursor-default",
   {
     variants: {
@@ -148,8 +149,8 @@ const button = cva(
 
 const modeToDefaultSize: Partial<
   Record<
-    NonNullable<VariantProps<typeof button>["mode"]>,
-    VariantProps<typeof button>["size"]
+    NonNullable<VariantProps<typeof buttonCVA>["mode"]>,
+    VariantProps<typeof buttonCVA>["size"]
   >
 > = {
   "framed-primary": "framed",
@@ -159,17 +160,19 @@ const modeToDefaultSize: Partial<
   unstyled: "unstyled",
 };
 
-export const Button: FunctionComponent<
-  VariantProps<typeof button> &
+export const Button = forwardRef<
+  HTMLButtonElement,
+  VariantProps<typeof buttonCVA> &
     CustomClasses &
     ButtonHTMLAttributes<HTMLButtonElement>
-> = (props) => {
+>((props, ref) => {
   const { mode, size, className, children } = props;
 
   return (
     <button
+      ref={ref}
       {...props}
-      className={button({
+      className={buttonCVA({
         className,
         mode,
         size: size ?? modeToDefaultSize[mode as keyof typeof modeToDefaultSize],
@@ -179,4 +182,4 @@ export const Button: FunctionComponent<
       {children}
     </button>
   );
-};
+});

@@ -1,15 +1,16 @@
+import { KVStore } from "@keplr-wallet/common";
 import {
-  ObservableChainQueryMap,
   ChainGetter,
   ObservableChainQuery,
+  ObservableChainQueryMap,
   QueryResponse,
 } from "@keplr-wallet/stores";
-import { KVStore } from "@keplr-wallet/common";
-import { action, computed, makeObservable, observable } from "mobx";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { Duration } from "dayjs/plugin/duration";
-import { Gauge, GaugeById } from "./types";
 import dayjs from "dayjs";
+import { Duration } from "dayjs/plugin/duration";
+import { action, computed, makeObservable, observable } from "mobx";
+
+import { Gauge, GaugeById } from "./types";
 
 /** Individual gauge that can be fetched individually, as well as initialized with data statically (and later refreshed). */
 export class ObservableQueryGauge extends ObservableChainQuery<GaugeById> {

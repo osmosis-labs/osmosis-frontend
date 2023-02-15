@@ -1,5 +1,4 @@
-import { action, computed, makeObservable, observable } from "mobx";
-import { computedFn } from "mobx-utils";
+import { StdFee } from "@cosmjs/launchpad";
 import {
   DefaultGasPriceStep,
   FeeType,
@@ -7,9 +6,10 @@ import {
   TxChainSetter,
 } from "@keplr-wallet/hooks";
 import { ChainGetter, CoinPrimitive } from "@keplr-wallet/stores";
-import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
 import { Currency } from "@keplr-wallet/types";
-import { StdFee } from "@cosmjs/launchpad";
+import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
+import { action, computed, makeObservable, observable } from "mobx";
+import { computedFn } from "mobx-utils";
 
 /**
  * Currencies that can be used for fees.

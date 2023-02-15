@@ -1,4 +1,5 @@
 import { Buffer } from "buffer";
+
 import { TxEventMap, WsReadyState } from "./types";
 
 type Listeners = {

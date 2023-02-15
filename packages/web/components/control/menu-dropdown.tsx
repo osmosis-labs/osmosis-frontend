@@ -1,7 +1,8 @@
-import { FunctionComponent } from "react";
 import classNames from "classnames";
-import { MenuSelectProps } from "./types";
+import { FunctionComponent } from "react";
+
 import { CustomClasses } from "../types";
+import { MenuSelectProps } from "./types";
 
 interface Props extends MenuSelectProps, CustomClasses {
   isOpen: boolean;

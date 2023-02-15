@@ -1,5 +1,6 @@
 import { ObservableQuery } from "@keplr-wallet/stores";
-import { WeightedPoolRaw, StablePoolRaw } from "@osmosis-labs/pools";
+import { StablePoolRaw, WeightedPoolRaw } from "@osmosis-labs/pools";
+
 import { ObservableQueryPool } from "./pool";
 
 export interface PoolGetter extends ObservableQuery {

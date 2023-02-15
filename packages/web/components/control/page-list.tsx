@@ -1,9 +1,10 @@
-import Image from "next/image";
-import React, { FunctionComponent, useState, useRef, useEffect } from "react";
 import classNames from "classnames";
-import { NumberSelectProps } from "./types";
-import { CustomClasses } from "../types";
+import Image from "next/image";
+import React, { FunctionComponent, useEffect, useRef, useState } from "react";
+
 import { Icon } from "../assets";
+import { CustomClasses } from "../types";
+import { NumberSelectProps } from "./types";
 
 interface Props extends Omit<NumberSelectProps, "placeholder">, CustomClasses {
   /** Allow user to edit page number directly. Off by default. */

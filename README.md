@@ -83,3 +83,13 @@ Deploy:
 ```bash
 yarn build:testnet && yarn start:testnet
 ```
+
+## Releases
+
+Release tags are for the published [npm packages](https://www.npmjs.com/org/osmosis-labs), which are every package except for the web package. Updates to the app are released incrementally way via deployments from master branch.
+
+## Localization 🌎🗺
+
+Have a change you want to make with our translations? We have a frontend for updating localizations in our app easily, all you need is a GitHub account. Coming soon: creating new language profiles from this frontend.
+
+https://inlang.com/editor/github.com/osmosis-labs/osmosis-frontend

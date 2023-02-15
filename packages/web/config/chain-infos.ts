@@ -1,14 +1,15 @@
-import { ChainInfoWithExplorer } from "../stores/chain";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { createKeplrChainInfos, SimplifiedChainInfo } from "./utils";
+
+import { ChainInfoWithExplorer } from "../stores/chain";
 import {
   IS_TESTNET,
-  OSMOSIS_RPC_OVERWRITE,
-  OSMOSIS_REST_OVERWRITE,
   OSMOSIS_CHAIN_ID_OVERWRITE,
   OSMOSIS_CHAIN_NAME_OVERWRITE,
   OSMOSIS_EXPLORER_URL_OVERWRITE,
+  OSMOSIS_REST_OVERWRITE,
+  OSMOSIS_RPC_OVERWRITE,
 } from "./env";
+import { createKeplrChainInfos, SimplifiedChainInfo } from "./utils";
 
 const chainInfos = (
   [
@@ -749,7 +750,7 @@ const chainInfos = (
     {
       rpc: "https://rpc-impacthub.keplr.app",
       rest: "https://lcd-impacthub.keplr.app",
-      chainId: "impacthub-3",
+      chainId: "ixo-4",
       chainName: "IXO",
       bip44: {
         coinType: 118,
@@ -768,7 +769,7 @@ const chainInfos = (
         },
       ],
       features: ["ibc-transfer"],
-      explorerUrlToTx: "https://blockscan.ixo.world/transactions/{txHash}",
+      explorerUrlToTx: "https://blockscan.ixo.world/txs/{txHash}",
     },
     {
       rpc: "https://rpc.bitcanna.io",
@@ -2398,6 +2399,13 @@ const chainInfos = (
           coinGeckoId: "pool:erc20/0x2Cbea61fdfDFA520Ee99700F104D5b75ADf50B0c",
           coinImageUrl: "/tokens/arusd.png",
         },
+        {
+          coinDenom: "CNTO",
+          coinMinimalDenom: "erc20/0xAE6D3334989a22A65228732446731438672418F2",
+          coinDecimals: 18,
+          coinGeckoId: "pool:erc20/0xAE6D3334989a22A65228732446731438672418F2",
+          coinImageUrl: "/tokens/cnto.png",
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
       explorerUrlToTx: "https://cosmosrun.info/acre-mainnet/tx/{txHash}",
@@ -2545,10 +2553,14 @@ const chainInfos = (
         "https://explorer.dys.dysonprotocol.com/dyson/tx/{txHash}",
     },
     {
-      rpc: "https://testnet-rpc.marsprotocol.io/",
-      rest: "https://testnet-rest.marsprotocol.io/",
-      chainId: "ares-1",
-      chainName: "Mars Hub Testnet",
+      rpc: IS_TESTNET
+        ? "https://testnet-rpc.marsprotocol.io/"
+        : "https://rpc.marsprotocol.io/",
+      rest: IS_TESTNET
+        ? "https://testnet-rest.marsprotocol.io/"
+        : "https://rest.marsprotocol.io/",
+      chainId: IS_TESTNET ? "ares-1" : "mars-1",
+      chainName: IS_TESTNET ? "Mars Hub Testnet" : "Mars Hub",
       bip44: {
         coinType: 118,
       },
@@ -2558,19 +2570,27 @@ const chainInfos = (
           coinDenom: "MARS",
           coinMinimalDenom: "umars",
           coinDecimals: 6,
+          coinGeckoId: "pool:mars",
           coinImageUrl: "/tokens/mars.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
-          gasPriceStep: {
-            low: 0,
-            average: 0,
-            high: 0.025,
-          },
+          gasPriceStep: IS_TESTNET
+            ? {
+                low: 0,
+                average: 0,
+                high: 0.025,
+              }
+            : {
+                low: 0,
+                average: 0,
+                high: 0,
+              },
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
-      explorerUrlToTx:
-        "https://testnet-explorer.marsprotocol.io/transactions/{txHash}",
+      explorerUrlToTx: IS_TESTNET
+        ? "https://testnet-explorer.marsprotocol.io/transactions/{txHash}"
+        : "https://explorer.marsprotocol.io/transactions/{txHash}",
     },
     {
       rpc: "https://rpc.canto.nodestake.top",
@@ -2839,6 +2859,22 @@ chainInfos.push({
       //coinGeckoId: "fantom",
       coinGeckoId: "pool:wftm-wei",
       coinImageUrl: "/tokens/ftm.png",
+    },
+    {
+      coinDenom: "polygon.USDC",
+      coinMinimalDenom: "polygon-uusdc",
+      coinDecimals: 6,
+      coinGeckoId: "usd-coin",
+      coinImageUrl: "/tokens/usdc.svg",
+      pegMechanism: "collateralized",
+    },
+    {
+      coinDenom: "avalanche.USDC",
+      coinMinimalDenom: "avalanche-uusdc",
+      coinDecimals: 6,
+      coinGeckoId: "usd-coin",
+      coinImageUrl: "/tokens/usdc.svg",
+      pegMechanism: "collateralized",
     },
   ],
   feeCurrencies: [

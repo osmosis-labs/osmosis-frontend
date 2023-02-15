@@ -1,10 +1,11 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 import {
-  isOsmoRoutedMultihop,
   getOsmoRoutedMultihopTotalSwapFee,
+  isOsmoRoutedMultihop,
 } from "@osmosis-labs/math";
-import { Pool } from "./interface";
+
 import { NoPoolsError, NotEnoughLiquidityError } from "./errors";
+import { Pool } from "./interface";
 
 export interface RoutePath {
   pools: Pool[];

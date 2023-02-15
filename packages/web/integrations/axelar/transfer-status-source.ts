@@ -1,4 +1,9 @@
-import { ITxStatusReceiver, ITxStatusSource } from "@osmosis-labs/stores";
+import {
+  ITxStatusReceiver,
+  ITxStatusSource,
+  TxReason,
+} from "@osmosis-labs/stores";
+
 import { poll } from "../../utils/promise";
 import { getTransferStatus, TransferStatus } from "./queries";
 
@@ -55,7 +60,7 @@ export class AxelarTransferStatusSource implements ITxStatusSource {
   protected makeResultStatusFromTransferStatus(
     transferStatus: TransferStatus
   ):
-    | { id?: string; status: "success" | "failed"; reason?: string }
+    | { id?: string; status: "success" | "failed"; reason?: TxReason }
     | undefined {
     // could be { message: "Internal Server Error" } TODO: display server errors or connection issues to user
     if (
@@ -66,31 +71,32 @@ export class AxelarTransferStatusSource implements ITxStatusSource {
     }
 
     const [data] = transferStatus;
+    const idWithoutSourceChain = data?.id.split("_")[0].toLowerCase();
 
     // insufficient fee
-    if (data.source && data.source.insufficient_fee) {
+    if (data.send && data.send.insufficient_fee) {
       return {
-        id: data.source.id.toLowerCase(),
+        id: idWithoutSourceChain,
         status: "failed",
-        reason: "Insufficient fee",
+        reason: "insufficientFee",
       };
     }
 
     if (data.status === "executed") {
-      return { id: data.source?.id.toLowerCase(), status: "success" };
+      return { id: idWithoutSourceChain, status: "success" };
     }
 
     if (
       // any of all complete stages does not return success
-      data.source &&
+      data.send &&
       data.link &&
       data.confirm_deposit &&
       data.ibc_send && // transfer is complete
-      (data.source.status !== "success" ||
+      (data.send.status !== "success" ||
         data.confirm_deposit.status !== "success" ||
         data.ibc_send.status !== "success")
     ) {
-      return { id: data.source?.id.toLowerCase(), status: "failed" };
+      return { id: idWithoutSourceChain, status: "failed" };
     }
   }
 }

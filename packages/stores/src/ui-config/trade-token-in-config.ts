@@ -1,4 +1,3 @@
-import { action, computed, makeObservable, observable, override } from "mobx";
 import { AmountConfig, IFeeConfig } from "@keplr-wallet/hooks";
 import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
 import { AppCurrency } from "@keplr-wallet/types";
@@ -11,11 +10,25 @@ import {
   RatePretty,
 } from "@keplr-wallet/unit";
 import {
+  NotEnoughLiquidityError,
   OptimizedRoutes,
   Pool,
   RoutePathWithAmount,
 } from "@osmosis-labs/pools";
-import { NoSendCurrencyError, InsufficientBalanceError } from "./errors";
+import {
+  action,
+  computed,
+  makeObservable,
+  observable,
+  override,
+  runInAction,
+} from "mobx";
+
+import {
+  InsufficientBalanceError,
+  NoRouteError,
+  NoSendCurrencyError,
+} from "./errors";
 
 export class ObservableTradeTokenInConfig extends AmountConfig {
   @observable.ref
@@ -29,6 +42,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   protected _outCurrencyMinDenom: string | undefined = undefined;
   @observable
   protected _error: Error | undefined = undefined;
+  @observable
+  protected _notEnoughLiquidity: boolean = false;
 
   constructor(
     chainGetter: ChainGetter,
@@ -222,6 +237,9 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
   @computed
   get optimizedRoutePaths(): RoutePathWithAmount[] {
+    runInAction(() => {
+      this._notEnoughLiquidity = false;
+    });
     this.setError(undefined);
     const amount = this.getAmountPrimitive();
     if (
@@ -242,6 +260,11 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         5
       );
     } catch (e: any) {
+      if (e instanceof NotEnoughLiquidityError) {
+        runInAction(() => {
+          this._notEnoughLiquidity = true;
+        });
+      }
       this.setError(e);
       return [];
     }
@@ -282,6 +305,11 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       priceImpact: new RatePretty(0).ready(false),
       isMultihopOsmoFeeDiscount: false,
     };
+
+    if (paths.length === 0 && this.amount !== "" && this.amount !== "0") {
+      this.setError(new NoRouteError("No route found"));
+      return zero;
+    }
 
     if (paths.length === 0 || this.amount === "" || this.amount === "0") {
       return zero;
@@ -410,6 +438,9 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     }
 
     if (this.amount) {
+      if (this._error instanceof NoRouteError) return this._error;
+      if (this._notEnoughLiquidity) return new NotEnoughLiquidityError();
+
       const dec = new Dec(this.amount);
       const balance = this.queriesStore
         .get(this.chainId)

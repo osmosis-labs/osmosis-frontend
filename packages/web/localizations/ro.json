@@ -8,7 +8,18 @@
   "app": {
     "banner": {
       "title": "Visualizati toate activele care nu necesita permisiuni.",
-      "linkText": "Visualizati toate activele care nu necesita permisiuni. <link>Click aici pentru a va intoarce la aplicatia principala.</link>."
+      "linkText": "Click aici pentru a va intoarce la aplicatia principala",
+      "externalLinkDisclaimer": "Prin apăsarea acestui link, recunoști că ai citit și înțeles că Osmosis nu garantează calitatea serviciului pentru pagini externe care pot avea Termeni de Serviciu diferiți.",
+      "externalLink": "Acum părăsiți aplicația Osmosis pentru a merge la",
+      "goToSite": "Du-te la site",
+      "backToOsmosis": "Înapoi la Osmosis",
+      "externalLinkModalTitle": "Părăsirea Osmosis"
+    }
+  },
+  "mars": {
+    "banner": {
+      "title": "S-a lansat Imprumut/împrumut pe osmoză.",
+      "linkText": "Explorați Mars Protocol"
     }
   },
   "swap": {
@@ -146,7 +157,8 @@
     "bondLiquidityCaption": "Blocheaza-ti actiunile pentru o durata cat mai lunga pentru a castiga mai mult anual.",
     "bondSuperfluidLiquidityCaption": "Foloseste Superfluid pentru recompense maxime.",
     "bondShares": "Blocheaza Actiuni",
-    "amountDaysUnbonding": "{numDays} zile blocate",
+    "amountDaysUnbonding": "{numDays} zile de dezlegare",
+    "amountDaysUnbonding_plural": "{numDays} zile blocate",
     "unbonded": "Deblocate",
     "unbond": "Deblocate",
     "bonded": "Blocate",
@@ -179,7 +191,13 @@
     "singleAsset": "Un singur activ",
     "available": "Disponibil",
     "autoswapCaption": "Utilizeaza schimbul automat pentru a adauga lichiditate cu un singur activ.",
-    "stablecoinWarning": "Adaugi lichiditate pentru moneda fixa {denom}, un mecanism {mechanism}-backed."
+    "stablecoinWarning": "Adaugi lichiditate pentru moneda fixa {denom}, un mecanism {mechanism}-backed.",
+    "scalingFactor": "factorul de scalare",
+    "scalingFactorInformation": "Acest factor permite curbei să se ajusteze la modificările predictibile ale prețului, cum ar fi valoarea acumulată pentru un jeton de miză lichid.",
+    "scalingFactorControllerWarning_first": "Controlerul factorului de scalare este activat.",
+    "scalingFactorControllerWarning_second": "poate regla",
+    "scalingFactorControllerWarning_third": "pentru a menține coaba. Factorul de scalare curent este",
+    "scalingFactorController": "controlor"
   },
   "lockToken": {
     "title": "Blocheaza Actiuni LP",
@@ -315,6 +333,11 @@
         "status": "Status",
         "deposit": "Depozit",
         "withdraw": "Retragere"
+      },
+      "failed": "A eșuat",
+      "failedWithReason": "A eșuat: {reason}",
+      "errors": {
+        "insufficientFee": "Taxa insuficienta"
       }
     }
   },
@@ -346,13 +369,13 @@
     "info": "Statistici",
     "signOut": "Deconectare",
     "help": "Support Lab Help",
-    "learnMoreFrontier": "Invata mai multe<br/>Despre <br2/> <name>Osmosis Frontier</name>",
     "buyTokens": "Cumpara"
   },
   "settings": {
-    "title": "Setari",
+    "title": "Setări globale",
     "titleLanguage": "Limba",
-    "titleShowDust": "Arata pool-uri/active < {fiatSymbol}0.01",
+    "selectLanguage": "Selecteaza limba",
+    "filterDust": "Filtru de praf",
     "titleHideDust": "Ascundeți pool-urile cu < {fiatSymbol}0,01"
   },
   "errors": {
@@ -375,6 +398,8 @@
     "invalidSlippage": "Toleranta invalida",
     "noSendCurrency": "Moneda de trimis nu este selectata",
     "insufficientBal": "Balanta insuficienta",
+    "insufficientLiquidity": "Lichiditate insuficientă",
+    "noRoute": "Nicio rută pentru acest comerț",
     "notInitialized": "Neinitializat",
     "calculatingShareOutAmount": "Nu s-a putut calcula suma rezultata",
     "noAvailableShares": "Actiuni {denom} nu sunt disponibile",

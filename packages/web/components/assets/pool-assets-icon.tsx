@@ -1,6 +1,7 @@
+import classNames from "classnames";
 import Image from "next/image";
 import { FunctionComponent } from "react";
-import classNames from "classnames";
+
 import { PoolAssetInfo } from "./types";
 
 interface Props {
@@ -40,7 +41,7 @@ export const PoolAssetsIcon: FunctionComponent<Props> = ({
           >
             {index > 2 ? (
               <div className="body1 pl-4 text-white-mid">{`+${
-                assets.length - 1
+                assets.length - 3
               }`}</div>
             ) : coinImageUrl ? (
               <Image

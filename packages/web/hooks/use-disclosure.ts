@@ -21,11 +21,7 @@ export function useDisclosure(props: UseDisclosureProps = {}) {
   }, []);
 
   const onToggle = useCallback(() => {
-    if (isOpen) {
-      onClose();
-    } else {
-      onOpen();
-    }
+    setIsOpen((prevIsOpen) => !prevIsOpen);
   }, [isOpen, onOpen, onClose]);
 
   return {

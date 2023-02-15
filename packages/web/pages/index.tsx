@@ -1,12 +1,15 @@
+import { Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
-import { ProgressiveSvgImage } from "../components/progressive-svg-image";
-import { TradeClipboard } from "../components/trade-clipboard";
-import { useStore } from "../stores";
-import { EventName, IS_FRONTIER } from "../config";
-import { Dec } from "@keplr-wallet/unit";
+import Image from "next/image";
 import { useMemo, useRef } from "react";
+
+import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
+import { TradeClipboard } from "~/components/trade-clipboard";
+
+import { EventName, IS_FRONTIER } from "../config";
 import { useAmplitudeAnalytics } from "../hooks";
+import { useStore } from "../stores";
 
 const Home: NextPage = observer(function () {
   const { chainStore, queriesStore } = useStore();
@@ -144,42 +147,43 @@ const Home: NextPage = observer(function () {
   return (
     <main className="relative h-full bg-osmoverse-900">
       <div className="absolute h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">
-        <svg
-          className="absolute h-full w-full lg:hidden"
-          pointerEvents="none"
-          viewBox="0 0 1300 900"
-          height="900"
-          preserveAspectRatio="xMidYMid slice"
-        >
-          <g>
-            {!IS_FRONTIER && (
+        {!IS_FRONTIER && (
+          <Image
+            src="/images/osmosis-home-bg-mars.png"
+            alt="Scientists landing on mars"
+            layout="fill"
+            className="pointer-events-none object-cover lg:!hidden"
+            priority
+          />
+        )}
+        {IS_FRONTIER && (
+          <svg
+            className="absolute h-full w-full lg:hidden"
+            pointerEvents="none"
+            viewBox="0 0 1300 900"
+            height="900"
+            preserveAspectRatio="xMidYMid slice"
+          >
+            <g>
               <ProgressiveSvgImage
-                lowResXlinkHref="/images/osmosis-home-bg-low.png"
-                xlinkHref="/images/osmosis-home-bg.png"
-                x="56"
-                y="220"
-                width="578.7462"
-                height="725.6817"
+                lowResXlinkHref={
+                  IS_FRONTIER
+                    ? "/images/osmosis-cowboy-woz-low.png"
+                    : "/images/osmosis-home-fg-low.png"
+                }
+                xlinkHref={
+                  IS_FRONTIER
+                    ? "/images/osmosis-cowboy-woz.png"
+                    : "/images/osmosis-home-fg.png"
+                }
+                x={IS_FRONTIER ? "-100" : "61"}
+                y={IS_FRONTIER ? "100" : "682"}
+                width={IS_FRONTIER ? "800" : "448.8865"}
+                height={IS_FRONTIER ? "800" : "285.1699"}
               />
-            )}
-            <ProgressiveSvgImage
-              lowResXlinkHref={
-                IS_FRONTIER
-                  ? "/images/osmosis-cowboy-woz-low.png"
-                  : "/images/osmosis-home-fg-low.png"
-              }
-              xlinkHref={
-                IS_FRONTIER
-                  ? "/images/osmosis-cowboy-woz.png"
-                  : "/images/osmosis-home-fg.png"
-              }
-              x={IS_FRONTIER ? "-100" : "61"}
-              y={IS_FRONTIER ? "100" : "682"}
-              width={IS_FRONTIER ? "800" : "448.8865"}
-              height={IS_FRONTIER ? "800" : "285.1699"}
-            />
-          </g>
-        </svg>
+            </g>
+          </svg>
+        )}
       </div>
       <div className="flex h-full w-full items-center overflow-y-auto overflow-x-hidden">
         <TradeClipboard

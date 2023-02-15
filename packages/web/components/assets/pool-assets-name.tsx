@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import { FunctionComponent } from "react";
+
 import { truncateString } from "../../utils/string";
 
 export const PoolAssetsName: FunctionComponent<{
