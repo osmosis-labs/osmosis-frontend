@@ -120,7 +120,6 @@
   }
 
   tbody > tr > td:last-child {
-    /* @apply py-2 pl-3 pr-10 lg:pr-4; */
     @apply py-2 pl-3 pr-0 lg:pr-4;
   }
 

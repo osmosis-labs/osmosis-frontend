@@ -284,7 +284,17 @@ export const AllPoolsTableSet: FunctionComponent<{
     const tvlFilteredPools = useMemo(() => {
       return [...allPoolsWithMetrics, ...externalIncentivizedPoolsWithMetrics]
         .filter((p) => p.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD)))
-        .filter((p) => (filter ? p.pool.type === filter : true));
+        .filter((p) => {
+          if (filter === "superfluid") {
+            return queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
+              p.pool.id
+            );
+          }
+          if (filter) {
+            return p.pool.type === filter;
+          }
+          return true;
+        });
     }, [
       allPoolsWithMetrics,
       externalIncentivizedPoolsWithMetrics,
