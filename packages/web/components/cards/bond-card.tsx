@@ -15,7 +15,7 @@ import { useMeasure } from "react-use";
 
 import { EventName } from "../../config";
 import { useAmplitudeAnalytics } from "../../hooks";
-import { coinFormatter, priceFormatter } from "../../utils/formatter";
+import { formatPretty } from "../../utils/formatter";
 import { FallbackImg, Icon } from "../assets";
 import { RightArrowIcon } from "../assets/right-arrow-icon";
 import { UnlockIcon } from "../assets/unlock-icon";
@@ -208,6 +208,8 @@ const Drawer: FunctionComponent<{
   }, [incentivesBreakdown]);
   const t = useTranslation();
 
+  aggregateApr = new RatePretty("23000");
+
   return (
     <div
       className={classNames(
@@ -232,10 +234,11 @@ const Drawer: FunctionComponent<{
           <div className="flex items-center gap-2 md:gap-1.5">
             <h5
               className={classNames(
+                "max-w-1/3 text-ellipsis",
                 superfluid ? "text-superfluid-gradient" : "text-bullish-400"
               )}
             >
-              {aggregateApr.maxDecimals(0).toString()} {t("pool.APR")}
+              {formatPretty(aggregateApr.maxDecimals(0))} {t("pool.APR")}
             </h5>
             <div
               className={classNames(
@@ -400,7 +403,7 @@ const IncentiveBreakdownRow: FunctionComponent<
       <div className="flex flex-col text-right">
         <span className="text-osmoverse-100">
           {t("pool.dailyEarnAmount", {
-            amount: coinFormatter(dailyPoolReward),
+            amount: formatPretty(dailyPoolReward),
           })}
         </span>
         {numDaysRemaining && (
@@ -431,7 +434,7 @@ const SwapFeeBreakdownRow: FunctionComponent<{
       <div className="flex flex-col text-right">
         <span className="text-osmoverse-100">
           {t("pool.dailyEarnAmount", {
-            amount: priceFormatter(swapFeeDailyReward),
+            amount: formatPretty(swapFeeDailyReward),
           })}
         </span>
         <span className="caption text-osmoverse-400">

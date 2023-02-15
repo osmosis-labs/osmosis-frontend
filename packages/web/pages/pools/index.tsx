@@ -46,7 +46,7 @@ import {
   SuperfluidValidatorModal,
 } from "../../modals";
 import { useStore } from "../../stores";
-import { priceFormatter } from "../../utils/formatter";
+import { formatPretty } from "../../utils/formatter";
 
 const TVL_FILTER_THRESHOLD = 1000;
 
@@ -397,7 +397,7 @@ const Pools: NextPage = observer(function () {
                       <MetricLoader isLoading={poolLiquidity.toDec().isZero()}>
                         <h6>
                           {isMobile
-                            ? priceFormatter(myLiquidity)
+                            ? formatPretty(myLiquidity)
                             : myLiquidity.maxDecimals(2).toString()}
                         </h6>
                       </MetricLoader>
@@ -409,7 +409,7 @@ const Pools: NextPage = observer(function () {
                       myBonded.toString()
                     ) : (
                       <MetricLoader isLoading={poolLiquidity.toDec().isZero()}>
-                        <h6>{priceFormatter(myBonded)}</h6>
+                        <h6>{formatPretty(myBonded)}</h6>
                       </MetricLoader>
                     ),
                   },
@@ -644,7 +644,7 @@ const Pools: NextPage = observer(function () {
                               <MetricLoader
                                 isLoading={poolLiquidity.toDec().isZero()}
                               >
-                                <h6>{priceFormatter(poolLiquidity)}</h6>
+                                <h6>{formatPretty(poolLiquidity)}</h6>
                               </MetricLoader>
                             ),
                           },
