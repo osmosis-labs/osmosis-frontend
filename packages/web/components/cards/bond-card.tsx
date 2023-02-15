@@ -208,8 +208,6 @@ const Drawer: FunctionComponent<{
   }, [incentivesBreakdown]);
   const t = useTranslation();
 
-  aggregateApr = new RatePretty("23000");
-
   return (
     <div
       className={classNames(
@@ -231,10 +229,10 @@ const Drawer: FunctionComponent<{
           <span className="subtitle1 text-osmoverse-200">
             {t("pool.incentives")}
           </span>
-          <div className="flex items-center gap-2 md:gap-1.5">
+          <div className="flex items-center gap-1.5">
             <h5
               className={classNames(
-                "max-w-1/3 text-ellipsis",
+                "whitespace-nowrap",
                 superfluid ? "text-superfluid-gradient" : "text-bullish-400"
               )}
             >
