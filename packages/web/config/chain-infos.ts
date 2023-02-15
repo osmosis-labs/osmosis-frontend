@@ -2523,7 +2523,7 @@ const chainInfos = (
       bech32Config: Bech32Address.defaultBech32Config("plq"),
       currencies: [
         {
-          coinDenom: "PLANQ",
+          coinDenom: "PLQ",
           coinMinimalDenom: "aplanq",
           coinDecimals: 18,
           coinGeckoId: "pool:aplanq",
