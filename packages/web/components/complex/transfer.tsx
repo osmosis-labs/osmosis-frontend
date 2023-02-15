@@ -302,23 +302,23 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
               <span>{t("assets.ibcTransfer.estimatedTime")}</span>
               <span>{waitTime}</span>
             </div>
+            {toggleUseWrapped && (
+              <div className="flex place-content-between items-center">
+                <span>
+                  {t(
+                    isWithdraw
+                      ? "assets.transfer.withdrawAs"
+                      : "assets.transfer.depositAs",
+                    { denom: toggleUseWrapped.wrappedTokenDenom }
+                  )}
+                </span>
+                <Switch
+                  isOn={toggleUseWrapped.useWrapped}
+                  onToggle={toggleUseWrapped.toggleUseWrapped}
+                />
+              </div>
+            )}
           </div>
-          {toggleUseWrapped && (
-            <div className="flex place-content-between items-center">
-              <span>
-                {t(
-                  isWithdraw
-                    ? "assets.transfer.withdrawAs"
-                    : "assets.transfer.depositAs",
-                  { denom: toggleUseWrapped.wrappedTokenDenom }
-                )}
-              </span>
-              <Switch
-                isOn={toggleUseWrapped.useWrapped}
-                onToggle={toggleUseWrapped.toggleUseWrapped}
-              />
-            </div>
-          )}
           {warningMessage && (
             <GradientView
               className="text-center"
