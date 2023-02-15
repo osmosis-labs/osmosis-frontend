@@ -1,8 +1,9 @@
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import React, { FunctionComponent } from "react";
-import { ModalBase, ModalBaseProps } from "./base";
 import { useTranslation } from "react-multi-lang";
+
+import { ModalBase, ModalBaseProps } from "./base";
 
 export const KeplrConnectionSelectModal: FunctionComponent<
   ModalBaseProps & {

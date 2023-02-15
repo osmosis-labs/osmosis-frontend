@@ -1,6 +1,8 @@
 import { observer } from "mobx-react-lite";
 
 import { Button } from "~/components/buttons";
+import { useDisclosure } from "~/hooks";
+import { WalletSelectModal } from "~/modals";
 import { useStore } from "~/stores";
 
 function useChain(chainName: "osmosis") {
@@ -12,11 +14,18 @@ function useChain(chainName: "osmosis") {
 }
 
 const CosmosKitTest = observer(() => {
-  const { connect, current } = useChain("osmosis");
+  const { wallets, current } = useChain("osmosis");
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <div>
-      <Button onClick={() => connect()}>Connect</Button>
+      <Button onClick={() => onOpen()}>Connect</Button>
+      <WalletSelectModal
+        isOpen={isOpen}
+        onRequestClose={onClose}
+        wallets={wallets}
+      />
     </div>
   );
 });
