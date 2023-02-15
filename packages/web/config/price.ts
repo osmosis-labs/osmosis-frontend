@@ -862,6 +862,32 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     destCoinId: "pool:uosmo",
   },
   {
+    alternativeCoinId: "pool:stuluna",
+    poolId: "913",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-326" }],
+      "stuluna"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-251" }],
+      "uluna"
+    ),
+    destCoinId: "pool:uluna",
+  },
+  {
+    alternativeCoinId: "pool:staevmos",
+    poolId: "922",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-326" }],
+      "staevmos"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-204" }],
+      "aevmos"
+    ),
+    destCoinId: "pool:aevmos",
+  },
+  {
     alternativeCoinId: "pool:rowan",
     poolId: "629",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
