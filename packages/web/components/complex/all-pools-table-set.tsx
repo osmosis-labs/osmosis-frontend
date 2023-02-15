@@ -447,7 +447,10 @@ export const AllPoolsTableSet: FunctionComponent<{
       },
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: getSortedRowModel(),
-      onSortingChange: setSorting,
+      onSortingChange: (s) => {
+        queriesOsmosis.queryGammPools.fetchRemainingPools();
+        setSorting(s);
+      },
     });
 
     return (
