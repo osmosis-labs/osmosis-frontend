@@ -697,6 +697,17 @@ const chainInfos = (
           coinGeckoId: "pool:wynd",
           coinImageUrl: "/tokens/wynd.svg",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1qmlchtmjpvu0cr7u0tad2pq8838h6farrrjzp39eqa9xswg7teussrswlq",
+          coinDenom: "NRIDE",
+          coinMinimalDenom:
+            "cw20:juno1qmlchtmjpvu0cr7u0tad2pq8838h6farrrjzp39eqa9xswg7teussrswlq:NRIDE",
+          coinDecimals: 6,
+          coinGeckoId: "pool:nride",
+          coinImageUrl: "/tokens/nride.svg",
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: "https://www.mintscan.io/juno/txs/{txHash}",
