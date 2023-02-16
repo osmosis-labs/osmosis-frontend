@@ -541,16 +541,6 @@ const AxelarTransfer: FunctionComponent<
       new CoinPretty(originCurrency, inputAmount)
         .toDec()
         .lt(transferFee.toDec());
-
-    console.log({
-      isInsufficientFee,
-      coin:
-        inputAmountRaw !== ""
-          ? new CoinPretty(originCurrency, inputAmount).toString()
-          : undefined,
-      fee: transferFee?.toString(),
-    });
-
     const isInsufficientBal =
       inputAmountRaw !== "" &&
       availableBalance &&
