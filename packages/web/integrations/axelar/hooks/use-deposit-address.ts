@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
 import { AxelarAssetTransfer, Environment } from "@axelar-network/axelarjs-sdk";
+import { useCallback, useEffect, useState } from "react";
 
 export function useDepositAddress(
   sourceChain: string,
@@ -7,11 +7,11 @@ export function useDepositAddress(
   address: string | undefined,
   coinMinimalDenom: string,
   generateOnMount = true,
-  environment = Environment.MAINNET
+  environment = Environment.MAINNET,
+  shouldGenerate = true
 ): {
   depositAddress?: string;
   isLoading: boolean;
-  generateAddress: () => Promise<void>;
 } {
   const [depositAddress, setDepositAddress] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -57,16 +57,20 @@ export function useDepositAddress(
     [generateAddress, setDepositAddress]
   );
   useEffect(() => {
-    if (address && generateOnMount && address != lastAddress) {
+    if (
+      address &&
+      generateOnMount &&
+      address != lastAddress &&
+      shouldGenerate
+    ) {
       setLastAddress(address);
       setDepositAddress(null);
       doGen().catch((e) => console.error(e));
     }
-  }, [address, generateOnMount, doGen]);
+  }, [address, generateOnMount, shouldGenerate, doGen]);
 
   return {
     depositAddress: depositAddress || undefined,
     isLoading,
-    generateAddress: doGen,
   };
 }

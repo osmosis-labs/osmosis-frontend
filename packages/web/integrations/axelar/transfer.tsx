@@ -322,7 +322,8 @@ const AxelarTransfer: FunctionComponent<
         isWithdraw || correctChainSelected ? accountAddress : undefined,
         axelarTokenMinDenom,
         undefined,
-        isTestNet ? Environment.TESTNET : Environment.MAINNET
+        isTestNet ? Environment.TESTNET : Environment.MAINNET,
+        isWithdraw ? balanceOnOsmosis.balance.toDec().gt(new Dec(0)) : true
       );
 
     // notify user they are withdrawing into a different account then they last deposited to

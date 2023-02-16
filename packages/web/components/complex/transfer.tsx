@@ -262,9 +262,7 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
               <div
                 className={classNames(
                   "caption text-xs text-white-high transition-opacity",
-                  availableBalance && availableBalance.isReady
-                    ? "opacity-100"
-                    : "opacity-0"
+                  availableBalance ? "opacity-100" : "opacity-0"
                 )}
               >
                 {isMobile
