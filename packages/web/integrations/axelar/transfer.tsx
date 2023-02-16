@@ -121,10 +121,7 @@ const AxelarTransfer: FunctionComponent<
       ({ id }) => id === selectedSourceChainKey
     );
     const erc20ContractAddress = sourceChainConfig?.erc20ContractAddress;
-    const [useWrappedToken] = useLocalStorageState(
-      sourceChainConfig?.nativeWrapEquivalent
-        ? `auto-wrap-${sourceChainConfig.nativeWrapEquivalent.wrapDenom}`
-        : "",
+    const [useWrappedToken] = useState(
       initialUseWrapped // assume we're transferring native token, since it's the gas token as well and generally takes precedence
     );
     /** Can be native or wrapped version of token. */
@@ -572,6 +569,7 @@ const AxelarTransfer: FunctionComponent<
             (!isWithdraw && !!isEthTxPending) || userDisconnectedEthWallet
           }
         />
+        {}
         <div className="mt-6 flex w-full items-center justify-center md:mt-4">
           {connectCosmosWalletButtonOverride ?? (
             <Button
