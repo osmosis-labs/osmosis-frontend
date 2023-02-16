@@ -1,4 +1,5 @@
 import { isAddress, toHex } from "web3-utils";
+
 import { Erc20Abi } from "../queries";
 import { SendFn } from "../types";
 
