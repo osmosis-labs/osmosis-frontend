@@ -14,7 +14,7 @@ import { BridgeAnimation } from "../animation/bridge";
 import { GradientView } from "../assets/gradient-view";
 import { Button } from "../buttons";
 import { SwitchWalletButton } from "../buttons/switch-wallet";
-import { CheckBox, Switch } from "../control";
+import { CheckBox } from "../control";
 import { InputBox } from "../input";
 import { Disableable, InputProps, LoadingProps } from "../types";
 
@@ -41,12 +41,6 @@ export type TransferProps = {
   toggleIsMax: () => void;
   /** Required, can be hardcoded estimate. */
   transferFee?: CoinPretty;
-  /** Toggle to allow user to specify use of wrapped token if a native equivalent token is being transferred. */
-  toggleUseWrapped?: {
-    useWrapped: boolean;
-    toggleUseWrapped: () => void;
-    wrappedTokenDenom: string;
-  };
   waitTime: string;
   disablePanel?: boolean;
 } & InputProps<string> &
@@ -67,7 +61,6 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
     warningMessage,
     toggleIsMax,
     transferFee,
-    toggleUseWrapped,
     waitTime,
     disablePanel = false,
   }) => {
@@ -300,22 +293,6 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
               <span>{t("assets.ibcTransfer.estimatedTime")}</span>
               <span>{waitTime}</span>
             </div>
-            {toggleUseWrapped && (
-              <div className="flex place-content-between items-center">
-                <span>
-                  {t(
-                    isWithdraw
-                      ? "assets.transfer.withdrawAs"
-                      : "assets.transfer.depositAs",
-                    { denom: toggleUseWrapped.wrappedTokenDenom }
-                  )}
-                </span>
-                <Switch
-                  isOn={toggleUseWrapped.useWrapped}
-                  onToggle={toggleUseWrapped.toggleUseWrapped}
-                />
-              </div>
-            )}
           </div>
           {warningMessage && (
             <GradientView

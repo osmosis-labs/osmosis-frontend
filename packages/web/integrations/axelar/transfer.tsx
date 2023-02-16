@@ -54,6 +54,7 @@ const AxelarTransfer: FunctionComponent<
     onRequestClose: () => void;
     onRequestSwitchWallet: () => void;
     isTestNet?: boolean;
+    useWrappedToken?: boolean;
   } & BridgeIntegrationProps &
     AxelarBridgeConfig
 > = observer(
@@ -66,6 +67,7 @@ const AxelarTransfer: FunctionComponent<
     onRequestSwitchWallet,
     sourceChainTokens,
     isTestNet = false,
+    useWrappedToken: intialUseWrapped = false,
     wrapAssetConfig,
     connectCosmosWalletButtonOverride,
   }) => {
@@ -124,21 +126,21 @@ const AxelarTransfer: FunctionComponent<
       sourceChainConfig?.nativeWrapEquivalent
         ? `auto-wrap-${sourceChainConfig.nativeWrapEquivalent.wrapDenom}`
         : "",
-      false // assume we're transferring native token, since it's the gas token as well and generally takes precedence
+      intialUseWrapped // assume we're transferring native token, since it's the gas token as well and generally takes precedence
     );
     /** Can be native or wrapped version of token. */
     const useNativeToken =
       sourceChainConfig?.nativeWrapEquivalent && !useWrappedToken;
     const originCurrency = useMemo(
       () =>
-        useWrappedToken && sourceChainConfig?.nativeWrapEquivalent
+        !useNativeToken
           ? {
               ...balanceOnOsmosis.balance.currency.originCurrency!,
-              coinDenom: sourceChainConfig.nativeWrapEquivalent.wrapDenom,
+              coinDenom: sourceChainConfig!.nativeWrapEquivalent!.wrapDenom,
             }
           : balanceOnOsmosis.balance.currency.originCurrency!,
       [
-        useWrappedToken,
+        useNativeToken,
         balanceOnOsmosis.balance.currency.originCurrency,
         sourceChainConfig?.nativeWrapEquivalent?.wrapDenom,
       ]
@@ -565,19 +567,6 @@ const AxelarTransfer: FunctionComponent<
             }
           }}
           transferFee={transferFee}
-          toggleUseWrapped={
-            Boolean(sourceChainConfig?.nativeWrapEquivalent)
-              ? {
-                  useWrapped: useWrappedToken,
-                  toggleUseWrapped: () => {
-                    setDepositAmount("");
-                    setUseWrappedToken(!useWrappedToken);
-                  },
-                  wrappedTokenDenom:
-                    sourceChainConfig?.nativeWrapEquivalent?.wrapDenom ?? "",
-                }
-              : undefined
-          }
           waitTime={waitBySourceChain(selectedSourceChainKey)}
           disabled={!userCanInteract}
           disablePanel={
