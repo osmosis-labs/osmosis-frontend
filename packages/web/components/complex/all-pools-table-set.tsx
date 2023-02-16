@@ -106,7 +106,6 @@ export const AllPoolsTableSet: FunctionComponent<{
     const account = accountStore.getAccount(chainId);
     const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;
     const queryActiveGauges = queriesExternalStore.queryActiveGauges;
-    const queryOsmosis = queriesStore.get(chainId).osmosis!;
 
     const allPools = queriesOsmosis.queryGammPools.getAllPools();
 
@@ -188,10 +187,11 @@ export const AllPoolsTableSet: FunctionComponent<{
         account.bech32Address,
       ]
     );
+    console.log("🚀 ~ allPoolsWithMetrics", allPoolsWithMetrics.length);
 
     // TODO: Make sure external pools are not included in all pools
     const pools = queryActiveGauges.poolIdsForActiveGauges.map((poolId) =>
-      queryOsmosis.queryGammPools.getPool(poolId)
+      queriesOsmosis.queryGammPools.getPool(poolId)
     );
 
     const externalIncentivizedPools = useMemo(
@@ -269,19 +269,26 @@ export const AllPoolsTableSet: FunctionComponent<{
       [
         chainId,
         externalIncentivizedPools,
-        queryOsmosis.queryIncentivizedPools.response,
-        queryOsmosis.querySuperfluidPools.response,
+        queriesOsmosis.queryIncentivizedPools.response,
+        queriesOsmosis.querySuperfluidPools.response,
         queryCosmos.queryInflation.isFetching,
         queriesExternalStore.queryGammPoolFeeMetrics.response,
-        queryOsmosis.queryGammPools.response,
+        queriesOsmosis.queryGammPools.response,
         queryActiveGauges.response,
         priceStore,
         account,
         chainStore,
       ]
     );
+    console.log(
+      "🚀 ~ externalIncentivizedPoolsWithMetrics",
+      externalIncentivizedPoolsWithMetrics.length
+    );
 
     const tvlFilteredPools = useMemo(() => {
+      // console.log(
+      //   [...allPoolsWithMetrics, ...externalIncentivizedPoolsWithMetrics].length
+      // );
       return [...allPoolsWithMetrics, ...externalIncentivizedPoolsWithMetrics]
         .filter((p) => p.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD)))
         .filter((p) => {
@@ -482,9 +489,13 @@ export const AllPoolsTableSet: FunctionComponent<{
                   key={f}
                   onClick={() => {
                     if (f === filter) {
-                      router.push("/pools");
+                      router.push("/pools", undefined, {
+                        scroll: false,
+                      });
                     } else {
-                      router.push({ query: { filter: f } });
+                      router.push({ query: { filter: f } }, undefined, {
+                        scroll: false,
+                      });
                     }
                   }}
                 >
