@@ -2825,7 +2825,7 @@ chainInfos.push({
       coinImageUrl: "/tokens/xcn.svg",
     },
     {
-      coinDenom: "wGLMR",
+      coinDenom: "GLMR",
       coinMinimalDenom: IS_TESTNET ? "wdev-wei" : "wglmr-wei",
       coinDecimals: 18,
       coinGeckoId: "wrapped-moonbeam",
@@ -2839,14 +2839,14 @@ chainInfos.push({
       coinImageUrl: "/tokens/dot.svg",
     },
     {
-      coinDenom: "wBNB",
+      coinDenom: "BNB",
       coinMinimalDenom: "wbnb-wei",
       coinDecimals: 18,
       coinGeckoId: "wbnb",
       coinImageUrl: "/tokens/bnb.svg",
     },
     {
-      coinDenom: "wMATIC",
+      coinDenom: "MATIC",
       coinMinimalDenom: "wmatic-wei",
       coinDecimals: 18,
       coinGeckoId: "wmatic",
@@ -2860,14 +2860,14 @@ chainInfos.push({
       coinImageUrl: "/tokens/busd.png",
     },
     {
-      coinDenom: "wAVAX",
+      coinDenom: "AVAX",
       coinMinimalDenom: "wavax-wei",
       coinDecimals: 18,
       coinGeckoId: "avalanche-2",
       coinImageUrl: "/tokens/avax.svg",
     },
     {
-      coinDenom: "wFTM",
+      coinDenom: "FTM",
       coinMinimalDenom: "wftm-wei",
       coinDecimals: 18,
       //coinGeckoId: "fantom",

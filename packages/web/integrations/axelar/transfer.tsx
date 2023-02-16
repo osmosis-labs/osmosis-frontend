@@ -292,7 +292,7 @@ const AxelarTransfer: FunctionComponent<
       useTransferFeeQuery(
         sourceChain,
         destChain,
-        axelarTokenMinDenom,
+        originCurrency.coinMinimalDenom, // native autowrap: currently transfer query only works with wrapped denoms, even though it's a native transfer. fee should be the same
         inputAmountRaw === "" ? "1" : inputAmountRaw,
         originCurrency,
         isTestNet ? Environment.TESTNET : Environment.MAINNET

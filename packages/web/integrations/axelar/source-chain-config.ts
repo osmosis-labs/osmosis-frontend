@@ -64,7 +64,7 @@ export const SourceChainTokenConfigs: {
         : "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       logoUrl: "/networks/ethereum.svg",
       nativeWrapEquivalent: {
-        wrapDenom: "WETH",
+        wrapDenom: "wETH",
         tokenMinDenom: "eth",
       },
     },
@@ -76,6 +76,10 @@ export const SourceChainTokenConfigs: {
         ? "0x1436aE0dF0A8663F18c0Ec51d7e2E46591730715"
         : "0xAcc15dC74880C9944775448304B263D191c6077F",
       logoUrl: "/networks/moonbeam.svg",
+      nativeWrapEquivalent: {
+        wrapDenom: "wGLMR",
+        tokenMinDenom: "glmr",
+      },
     },
   },
   wbtc: {
@@ -185,6 +189,10 @@ export const SourceChainTokenConfigs: {
         ? "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd"
         : "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
       logoUrl: "/networks/binance.svg",
+      nativeWrapEquivalent: {
+        wrapDenom: "wBNB",
+        tokenMinDenom: "bnb",
+      },
     },
   },
   wmatic: {
@@ -194,6 +202,10 @@ export const SourceChainTokenConfigs: {
         ? "0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889"
         : "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
       logoUrl: "/networks/polygon.svg",
+      nativeWrapEquivalent: {
+        wrapDenom: "wMATIC",
+        tokenMinDenom: "matic",
+      },
     },
   },
   busd: {
@@ -212,6 +224,10 @@ export const SourceChainTokenConfigs: {
         ? "0xd00ae08403B9bbb9124bB305C09058E32C39A48c"
         : "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
       logoUrl: "/networks/avalanche.svg",
+      nativeWrapEquivalent: {
+        wrapDenom: "wAVAX",
+        tokenMinDenom: "avax",
+      },
     },
   },
   wftm: {
@@ -221,6 +237,10 @@ export const SourceChainTokenConfigs: {
         ? "0x812666209b90344Ec8e528375298ab9045c2Bd08"
         : "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
       logoUrl: "/networks/fantom.svg",
+      nativeWrapEquivalent: {
+        wrapDenom: "wFTM",
+        tokenMinDenom: "ftm",
+      },
     },
   },
   polygonusdc: {
