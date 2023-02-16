@@ -67,8 +67,7 @@ const AxelarTransfer: FunctionComponent<
     onRequestSwitchWallet,
     sourceChainTokens,
     isTestNet = false,
-    useWrappedToken: intialUseWrapped = false,
-    wrapAssetConfig,
+    useWrappedToken: initialUseWrapped = false,
     connectCosmosWalletButtonOverride,
   }) => {
     const {
@@ -122,25 +121,25 @@ const AxelarTransfer: FunctionComponent<
       ({ id }) => id === selectedSourceChainKey
     );
     const erc20ContractAddress = sourceChainConfig?.erc20ContractAddress;
-    const [useWrappedToken, setUseWrappedToken] = useLocalStorageState(
+    const [useWrappedToken] = useLocalStorageState(
       sourceChainConfig?.nativeWrapEquivalent
         ? `auto-wrap-${sourceChainConfig.nativeWrapEquivalent.wrapDenom}`
         : "",
-      intialUseWrapped // assume we're transferring native token, since it's the gas token as well and generally takes precedence
+      initialUseWrapped // assume we're transferring native token, since it's the gas token as well and generally takes precedence
     );
     /** Can be native or wrapped version of token. */
     const useNativeToken =
       sourceChainConfig?.nativeWrapEquivalent && !useWrappedToken;
     const originCurrency = useMemo(
       () =>
-        !useNativeToken
+        useWrappedToken && sourceChainConfig?.nativeWrapEquivalent
           ? {
               ...balanceOnOsmosis.balance.currency.originCurrency!,
-              coinDenom: sourceChainConfig!.nativeWrapEquivalent!.wrapDenom,
+              coinDenom: sourceChainConfig.nativeWrapEquivalent.wrapDenom,
             }
           : balanceOnOsmosis.balance.currency.originCurrency!,
       [
-        useNativeToken,
+        useWrappedToken,
         balanceOnOsmosis.balance.currency.originCurrency,
         sourceChainConfig?.nativeWrapEquivalent?.wrapDenom,
       ]
@@ -573,13 +572,6 @@ const AxelarTransfer: FunctionComponent<
             (!isWithdraw && !!isEthTxPending) || userDisconnectedEthWallet
           }
         />
-        {wrapAssetConfig && (
-          <div className="mx-auto text-wosmongton-300">
-            <a rel="noreferrer" target="_blank" href={wrapAssetConfig.url}>
-              {t("assets.transfer.wrapNativeLink", wrapAssetConfig)}
-            </a>
-          </div>
-        )}
         <div className="mt-6 flex w-full items-center justify-center md:mt-4">
           {connectCosmosWalletButtonOverride ?? (
             <Button

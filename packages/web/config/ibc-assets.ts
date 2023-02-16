@@ -72,12 +72,6 @@ export const IBCAssetInfos: (IBCAsset & {
           wallets: ["metamask" as const],
           method: "deposit-address" as const,
           sourceChainTokens: [AxelarSourceChainConfigs.wbnb.binance],
-          wrapAssetConfig: {
-            url: "https://pancakeswap.finance/swap?outputCurrency=0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
-            fromDenom: "BNB",
-            toDenom: "WBNB",
-            platformName: "PancakeSwap",
-          },
         },
       },
       {
@@ -92,12 +86,6 @@ export const IBCAssetInfos: (IBCAsset & {
           wallets: ["metamask" as const],
           method: "deposit-address" as const,
           sourceChainTokens: [AxelarSourceChainConfigs.wmatic.polygon],
-          wrapAssetConfig: {
-            url: "https://v2.swapmatic.io/?#/matic/swap?outputCurrency=0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270&inputCurrency=MATIC",
-            fromDenom: "MATIC",
-            toDenom: "WMATIC",
-            platformName: "SwapMatic",
-          },
         },
       },
       {
@@ -112,12 +100,6 @@ export const IBCAssetInfos: (IBCAsset & {
           wallets: ["metamask" as const],
           method: "deposit-address" as const,
           sourceChainTokens: [AxelarSourceChainConfigs.wavax.avalanche],
-          wrapAssetConfig: {
-            url: "https://app.sushi.com/swap?inputCurrency=AVAX&outputCurrency=0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7&chainId=43114",
-            fromDenom: "AVAX",
-            toDenom: "WAVAX",
-            platformName: "SushiSwap",
-          },
         },
       },
       {
@@ -153,12 +135,6 @@ export const IBCAssetInfos: (IBCAsset & {
           wallets: ["metamask" as const],
           method: "deposit-address" as const,
           sourceChainTokens: [AxelarSourceChainConfigs.wftm.fantom],
-          wrapAssetConfig: {
-            url: "https://www.spiritswap.finance/swap/FTM/WFTM",
-            fromDenom: "FTM",
-            toDenom: "WFTM",
-            platformName: "SpiritSwap",
-          },
         },
       },
     ]
@@ -250,12 +226,6 @@ export const IBCAssetInfos: (IBCAsset & {
           wallets: ["metamask" as const],
           method: "deposit-address" as const,
           sourceChainTokens: [AxelarSourceChainConfigs.wbnb.binance],
-          wrapAssetConfig: {
-            url: "https://pancakeswap.finance/swap?outputCurrency=0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
-            fromDenom: "BNB",
-            toDenom: "WBNB",
-            platformName: "PancakeSwap",
-          },
         },
       },
       {
@@ -286,12 +256,6 @@ export const IBCAssetInfos: (IBCAsset & {
           wallets: ["metamask" as const],
           method: "deposit-address" as const,
           sourceChainTokens: [AxelarSourceChainConfigs.wmatic.polygon],
-          wrapAssetConfig: {
-            url: "https://v2.swapmatic.io/?#/matic/swap?outputCurrency=0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270&inputCurrency=MATIC",
-            fromDenom: "MATIC",
-            toDenom: "WMATIC",
-            platformName: "SwapMatic",
-          },
         },
       },
       {
@@ -337,12 +301,6 @@ export const IBCAssetInfos: (IBCAsset & {
           wallets: ["metamask" as const],
           method: "deposit-address" as const,
           sourceChainTokens: [AxelarSourceChainConfigs.wavax.avalanche],
-          wrapAssetConfig: {
-            url: "https://app.sushi.com/swap?inputCurrency=AVAX&outputCurrency=0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7&chainId=43114",
-            fromDenom: "AVAX",
-            toDenom: "WAVAX",
-            platformName: "SushiSwap",
-          },
         },
       },
       {
@@ -471,12 +429,6 @@ export const IBCAssetInfos: (IBCAsset & {
           wallets: ["metamask" as const],
           method: "deposit-address" as const,
           sourceChainTokens: [AxelarSourceChainConfigs.wftm.fantom],
-          wrapAssetConfig: {
-            url: "https://www.spiritswap.finance/swap/FTM/WFTM",
-            fromDenom: "FTM",
-            toDenom: "WFTM",
-            platformName: "SpiritSwap",
-          },
         },
       },
       {
