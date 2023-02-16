@@ -285,10 +285,9 @@
         "insufficientFee": "Taxa Insuficienta",
         "insufficientBal": "Balanta Insuficienta"
       },
-      "wrapNativeLink": "Converteste {fromDenom} in {toDenom} pe {platformName}",
-      "waitTime": "{minutes} minute",
-      "withdrawAs": "Retrageți ca {denom}",
-      "depositAs": "Depuneți ca {denom}"
+      "useWrappedDeposit": "Depuneți {wrapDenom} pe satellite.money",
+      "useWrappedWithdraw": "Retrageți {wrapDenom} din satellite.money",
+      "waitTime": "{minutes} minute"
     },
     "selectAssetSource": {
       "titleWithdraw": "Retrage catre",

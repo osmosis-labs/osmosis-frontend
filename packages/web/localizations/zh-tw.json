@@ -285,10 +285,9 @@
         "insufficientFee": "交易費不足",
         "insufficientBal": "結餘不足"
       },
-      "wrapNativeLink": "在 {platformName} 上轉換 {fromDenom} 到 {toDenom}",
-      "waitTime": "{minutes} 分鐘",
-      "withdrawAs": "選取為{denom}",
-      "depositAs": "存入{denom}"
+      "useWrappedDeposit": "將{wrapDenom}存入satellite.money",
+      "useWrappedWithdraw": "從衛星中選取{wrapDenom} sattelite.money",
+      "waitTime": "{minutes} 分鐘"
     },
     "selectAssetSource": {
       "titleWithdraw": "轉出到",

@@ -285,10 +285,9 @@
         "insufficientFee": "Niewystarczająca Prowizja",
         "insufficientBal": "Niewystarczająca Ilość Środków"
       },
-      "wrapNativeLink": "Konwertuj {fromDenom} na {toDenom} na {platformName}",
-      "waitTime": "{minutes} minut",
-      "withdrawAs": "Wycofaj się jako {denom}",
-      "depositAs": "Wpłać jako {denom}"
+      "useWrappedDeposit": "Wpłać {wrapDenom} na satellite.money",
+      "useWrappedWithdraw": "Wypłać {wrapDenom} z satellite.money",
+      "waitTime": "{minutes} minut"
     },
     "selectAssetSource": {
       "titleWithdraw": "Wypłać do",

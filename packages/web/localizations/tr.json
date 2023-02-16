@@ -285,10 +285,9 @@
         "insufficientFee": "Yetersiz Ücret",
         "insufficientBal": "Yetersiz Bakiye"
       },
-      "wrapNativeLink": "{platformName} üzerinde {fromDenom} dan {fromDenom} a çevir.",
-      "waitTime": "{minutes} dakika",
-      "withdrawAs": "{denom} olarak geri çekil",
-      "depositAs": "{denom} olarak yatırın"
+      "useWrappedDeposit": "satellite.money'e {wrapDenom} yatırın",
+      "useWrappedWithdraw": "{wrapDenom}'e satellite.money'den çekin",
+      "waitTime": "{minutes} dakika"
     },
     "selectAssetSource": {
       "titleWithdraw": "Adrese çek",

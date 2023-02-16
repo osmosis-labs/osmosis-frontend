@@ -611,7 +611,24 @@ const AxelarTransfer: FunctionComponent<
             (!isWithdraw && !!isEthTxPending) || userDisconnectedEthWallet
           }
         />
-        {}
+        {sourceChainConfig?.nativeWrapEquivalent && userCanInteract && (
+          <div className="mx-auto text-wosmongton-300">
+            <a
+              rel="noreferrer"
+              target="_blank"
+              href={`https://satellite.money/?destination_address=&asset_denom=${
+                originCurrency.coinMinimalDenom
+              }&source=${sourceChain.toLowerCase()}&destination=${destChain.toLowerCase()}`}
+            >
+              {t(
+                isWithdraw
+                  ? "assets.transfer.useWrappedWithdraw"
+                  : "assets.transfer.useWrappedDeposit",
+                { wrapDenom: sourceChainConfig.nativeWrapEquivalent.wrapDenom }
+              )}
+            </a>
+          </div>
+        )}
         <div className="mt-6 flex w-full items-center justify-center md:mt-4">
           {connectCosmosWalletButtonOverride ?? (
             <Button

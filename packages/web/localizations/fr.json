@@ -285,10 +285,9 @@
         "insufficientFee": "Frais insuffisants",
         "insufficientBal": "Solde insuffisant"
       },
-      "wrapNativeLink": "Convertir {fromDenom} en {toDenom} sur {platformName}",
-      "waitTime": "{minutes} minutes",
-      "withdrawAs": "Se retirer en tant que {denom}",
-      "depositAs": "Dépôt en tant que {denom}"
+      "useWrappedDeposit": "Déposez {wrapDenom} sur satellite.money",
+      "useWrappedWithdraw": "Retirer {wrapDenom} de satellite.money",
+      "waitTime": "{minutes} minutes"
     },
     "selectAssetSource": {
       "titleWithdraw": "Retirer à",

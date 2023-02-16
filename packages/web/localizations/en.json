@@ -285,7 +285,8 @@
         "insufficientFee": "Insufficient Fee",
         "insufficientBal": "Insufficient Balance"
       },
-      "wrapNativeLink": "Convert {fromDenom} to {toDenom} on {platformName}",
+      "useWrappedDeposit": "Deposit {wrapDenom} on satellite.money",
+      "useWrappedWithdraw": "Withdraw {wrapDenom} from satellite.money",
       "waitTime": "{minutes} minutes",
       "withdrawAs": "Withdraw as {denom}",
       "depositAs": "Deposit as {denom}"
