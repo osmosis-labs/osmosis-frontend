@@ -1,9 +1,11 @@
 import { assets, chain } from "@chain-registry/osmosis";
-import { WalletManager } from "@cosmos-kit/core";
-import { wallets } from "@cosmos-kit/keplr";
+import { Logger, WalletManager } from "@cosmos-kit/core";
+import { wallets as keplrWallets } from "@cosmos-kit/keplr";
+import { wallets as leapWallets } from "@cosmos-kit/leap";
 import { action, makeObservable, observable } from "mobx";
 
 const chains = ["osmosis"] as const;
+const logger = new Logger(console, "WARN");
 
 export class AccountStore {
   @observable
@@ -12,14 +14,12 @@ export class AccountStore {
   private _walletManager: WalletManager = new WalletManager(
     [chain],
     [assets],
-    wallets,
+    [...keplrWallets, ...leapWallets],
+    logger,
     "icns"
   );
 
   constructor() {
-    this.walletManager.setActions({
-      state: () => this.refresh(),
-    });
     this.walletManager.walletRepos.forEach((repo) => {
       repo.wallets.forEach((wallet) => {
         wallet.setActions({
@@ -29,6 +29,8 @@ export class AccountStore {
     });
 
     makeObservable(this);
+
+    this.walletManager.onMounted();
   }
 
   @action
@@ -43,6 +45,14 @@ export class AccountStore {
   }
 
   getWalletRepo(chain: typeof chains[number]) {
-    return this.walletManager.getWalletRepo(chain);
+    const walletRepo = this.walletManager.getWalletRepo(chain);
+    walletRepo.activate();
+    return walletRepo;
+  }
+
+  getAddress(chain: typeof chains[number]) {
+    const walletRepo = this.getWalletRepo(chain);
+    const wallet = walletRepo.current;
+    return wallet?.address;
   }
 }

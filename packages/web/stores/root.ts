@@ -1,6 +1,3 @@
-import { assets, chain } from "@chain-registry/osmosis";
-import { WalletManager } from "@cosmos-kit/core";
-import { wallets } from "@cosmos-kit/keplr";
 import {
   AccountStore,
   ChainInfoInner,
@@ -24,7 +21,6 @@ import {
   QueriesExternalStore,
 } from "@osmosis-labs/stores";
 import EventEmitter from "eventemitter3";
-import { action, computed, makeObservable, observable } from "mobx";
 
 import {
   toastOnBroadcast,
@@ -90,8 +86,6 @@ export class RootStore {
 
   public readonly profileStore: ProfileStore;
 
-  public readonly walletManager: WalletManager;
-
   constructor(
     getKeplr: () => Promise<Keplr | undefined> = () =>
       Promise.resolve(undefined)
@@ -120,53 +114,6 @@ export class RootStore {
         },
       };
     })();
-
-    this.walletManager = makeObservable(
-      new WalletManager([chain], [assets], wallets, "icns"),
-      {
-        actions: observable,
-        addChains: action,
-        chainRecords: observable,
-        data: computed,
-        defaultNameService: observable,
-        env: computed,
-        walletRepos: observable,
-        getChainLogo: action,
-        getChainRecord: action,
-        getNameService: action,
-        getWalletRepo: action,
-        init: action,
-        isConnectingWC: computed,
-        isDone: computed,
-        isInit: computed,
-        isError: computed,
-        isMobile: computed,
-        isPending: computed,
-        isWalletConnected: computed,
-        isWalletConnecting: computed,
-        isWalletDisconnected: computed,
-        isWalletError: computed,
-        isWalletNotExist: computed,
-        isWalletOnceConnect: computed,
-        isWalletRejected: computed,
-        message: computed,
-        mutable: computed,
-        onMounted: action,
-        onUnmounted: action,
-        options: observable,
-        reset: action,
-        sessionOptions: observable,
-        setActions: action,
-        setData: action,
-        setEnv: action,
-        setMessage: action,
-        setState: action,
-        state: computed,
-        synchronizeMutexWalletConnection: action,
-        walletReposInUse: computed,
-        walletStatus: computed,
-      }
-    );
 
     this.newAccountStore = new NewAccountStore();
 

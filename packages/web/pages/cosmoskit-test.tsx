@@ -14,7 +14,12 @@ const CosmosKitTest = observer(() => {
   return (
     <div>
       {walletRepo.current ? (
-        <p>Connected! Address: {walletRepo.current?.address}</p>
+        <div>
+          <p>Connected! Address: {newAccountStore.getAddress("osmosis")}</p>
+          <Button className="max-w-xs" onClick={() => walletRepo.disconnect()}>
+            Disconnect
+          </Button>
+        </div>
       ) : (
         <Button onClick={() => onOpen()}>Connect</Button>
       )}
