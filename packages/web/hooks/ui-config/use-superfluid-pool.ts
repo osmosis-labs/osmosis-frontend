@@ -1,6 +1,7 @@
-import { useCallback } from "react";
-import { useStore } from "../../stores";
 import { AmountConfig } from "@keplr-wallet/hooks";
+import { useCallback } from "react";
+
+import { useStore } from "../../stores";
 
 /** Superfluid pool actions. */
 export function useSuperfluidPool(): {

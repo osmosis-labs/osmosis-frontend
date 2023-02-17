@@ -24,6 +24,7 @@ import {
   QueriesExternalStore,
 } from "@osmosis-labs/stores";
 import EventEmitter from "eventemitter3";
+import { action, computed, makeObservable, observable } from "mobx";
 
 import {
   toastOnBroadcast,
@@ -39,6 +40,7 @@ import {
 import { suggestChainFromWindow } from "~/hooks/use-keplr/utils";
 import { AxelarTransferStatusSource } from "~/integrations/axelar";
 
+import { AccountStore as NewAccountStore } from "./account";
 import { ObservableAssets } from "./assets";
 import { ChainInfoWithExplorer, ChainStore } from "./chain";
 import { makeIndexedKVStore, makeLocalStorageKVStore } from "./kv-store";
@@ -64,6 +66,7 @@ export class RootStore {
   public readonly accountStore: AccountStore<
     [CosmosAccount, CosmwasmAccount, OsmosisAccount]
   >;
+  public readonly newAccountStore: NewAccountStore;
 
   public readonly priceStore: PoolFallbackPriceStore;
 
@@ -118,7 +121,54 @@ export class RootStore {
       };
     })();
 
-    this.walletManager = new WalletManager([chain], [assets], wallets, "icns");
+    this.walletManager = makeObservable(
+      new WalletManager([chain], [assets], wallets, "icns"),
+      {
+        actions: observable,
+        addChains: action,
+        chainRecords: observable,
+        data: computed,
+        defaultNameService: observable,
+        env: computed,
+        walletRepos: observable,
+        getChainLogo: action,
+        getChainRecord: action,
+        getNameService: action,
+        getWalletRepo: action,
+        init: action,
+        isConnectingWC: computed,
+        isDone: computed,
+        isInit: computed,
+        isError: computed,
+        isMobile: computed,
+        isPending: computed,
+        isWalletConnected: computed,
+        isWalletConnecting: computed,
+        isWalletDisconnected: computed,
+        isWalletError: computed,
+        isWalletNotExist: computed,
+        isWalletOnceConnect: computed,
+        isWalletRejected: computed,
+        message: computed,
+        mutable: computed,
+        onMounted: action,
+        onUnmounted: action,
+        options: observable,
+        reset: action,
+        sessionOptions: observable,
+        setActions: action,
+        setData: action,
+        setEnv: action,
+        setMessage: action,
+        setState: action,
+        state: computed,
+        synchronizeMutexWalletConnection: action,
+        walletReposInUse: computed,
+        walletStatus: computed,
+      }
+    );
+
+    this.newAccountStore = new NewAccountStore();
 
     this.queriesStore = new QueriesStore(
       makeIndexedKVStore("store_web_queries_v12"),

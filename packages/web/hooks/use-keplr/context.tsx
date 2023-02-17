@@ -1,3 +1,12 @@
+import { BroadcastMode, StdTx } from "@cosmjs/launchpad";
+import { getKeplrFromWindow } from "@keplr-wallet/stores";
+import { Keplr } from "@keplr-wallet/types";
+import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
+import { isMobile } from "@walletconnect/browser-utils";
+import WalletConnect from "@walletconnect/client";
+import Axios from "axios";
+import { Buffer } from "buffer";
+import EventEmitter from "eventemitter3";
 import React, {
   createContext,
   FunctionComponent,
@@ -6,17 +15,9 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Keplr } from "@keplr-wallet/types";
-import { getKeplrFromWindow } from "@keplr-wallet/stores";
-import { KeplrConnectionSelectModal, WalletConnectQRModal } from "../../modals";
-import EventEmitter from "eventemitter3";
-import { BroadcastMode, StdTx } from "@cosmjs/launchpad";
-import Axios from "axios";
+
 import { ChainInfos } from "../../config";
-import { Buffer } from "buffer";
-import WalletConnect from "@walletconnect/client";
-import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
-import { isMobile } from "@walletconnect/browser-utils";
+import { KeplrConnectionSelectModal, WalletConnectQRModal } from "../../modals";
 import { useAmplitudeAnalytics } from "../use-amplitude-analytics";
 
 export async function sendTxWC(

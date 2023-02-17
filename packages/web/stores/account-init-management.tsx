@@ -1,10 +1,11 @@
-import React, { FunctionComponent, useEffect, useRef, useState } from "react";
-import { observer } from "mobx-react-lite";
-import { useStore } from "./index";
 import { getKeplrFromWindow, WalletStatus } from "@keplr-wallet/stores";
-import { useKeplr } from "../hooks";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
+import { observer } from "mobx-react-lite";
+import React, { FunctionComponent, useEffect, useRef, useState } from "react";
+
+import { useKeplr } from "../hooks";
 import { useAmplitudeAnalytics } from "../hooks/use-amplitude-analytics";
+import { useStore } from "./index";
 
 /** Manages the initialization of the Osmosis account. */
 export const AccountInitManagement: FunctionComponent = observer(
