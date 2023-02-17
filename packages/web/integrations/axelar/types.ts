@@ -77,7 +77,7 @@ export type SourceChainTokenConfig = {
    *  The token on Osmosis is assumed to be the wrapped version of the native token, but labelled as the native token.
    *  Assume we're transferring native token, since it's the gas token as well and generally takes precedence.
    *
-   *  i.e. ETH for wETH, BNB for wBNB, etc.
+   *  i.e. ETH for WETH, BNB for WBNB, etc.
    *
    *  Specified per Axelar bridged token & network due to each token having a single source chain ERC20 instance.
    */

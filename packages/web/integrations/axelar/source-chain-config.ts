@@ -190,7 +190,7 @@ export const SourceChainTokenConfigs: {
         : "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
       logoUrl: "/networks/binance.svg",
       nativeWrapEquivalent: {
-        wrapDenom: "wBNB",
+        wrapDenom: "WBNB",
         tokenMinDenom: "bnb",
       },
     },
