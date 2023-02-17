@@ -1,7 +1,28 @@
-import { PricePretty, IntPretty, CoinPretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  IntPretty,
+  PricePretty,
+  RatePretty,
+} from "@keplr-wallet/unit";
+
+/** Formats a pretty object as compact by default. i.e. $7.53M or $265K, or 2K%. Validate handled by pretty object. */
+export function formatPretty(
+  prettyValue: PricePretty | CoinPretty | RatePretty,
+  opts?: Partial<Intl.NumberFormatOptions>
+) {
+  if (prettyValue instanceof PricePretty) {
+    return priceFormatter(prettyValue, opts);
+  } else if (prettyValue instanceof CoinPretty) {
+    return coinFormatter(prettyValue, opts);
+  } else if (prettyValue instanceof RatePretty) {
+    return rateFormatter(prettyValue, opts);
+  } else {
+    throw new Error("Unknown pretty value");
+  }
+}
 
 /** Formats a price as compact by default. i.e. $7.53M or $265K. Validate handled by `PricePretty`. */
-export function priceFormatter(
+function priceFormatter(
   price: PricePretty,
   opts?: Partial<Intl.NumberFormatOptions>
 ): string {
@@ -15,12 +36,12 @@ export function priceFormatter(
   };
   const formatter = new Intl.NumberFormat(price.fiatCurrency.locale, options);
   return formatter.format(
-    Number(new IntPretty(price).maxDecimals(2).toString().split(",").join(""))
+    Number(new IntPretty(price).maxDecimals(2).locale(false).toString())
   );
 }
 
 /** Formats a coin as compact by default. i.e. $7.53 ATOM or $265 OSMO. Validate handled by `CoinPretty`. */
-export function coinFormatter(
+function coinFormatter(
   coin: CoinPretty,
   opts?: Partial<Intl.NumberFormatOptions>
 ): string {
@@ -33,6 +54,26 @@ export function coinFormatter(
   };
   const formatter = new Intl.NumberFormat("en-US", options);
   return `${formatter.format(
-    Number(new IntPretty(coin).maxDecimals(2).toString().split(",").join(""))
+    Number(new IntPretty(coin).maxDecimals(2).locale(false).toString())
   )} ${coin.currency.coinDenom.toUpperCase()}`;
+}
+
+/** Formats a coin as compact by default. i.e. $7.53 ATOM or $265 OSMO. Validate handled by `CoinPretty`. */
+function rateFormatter(
+  rate: RatePretty,
+  opts?: Partial<Intl.NumberFormatOptions>
+): string {
+  const options: Intl.NumberFormatOptions = {
+    maximumSignificantDigits: 3,
+    notation: "compact",
+    compactDisplay: "short",
+    style: "decimal",
+    ...opts,
+  };
+  const formatter = new Intl.NumberFormat("en-US", options);
+  return `${formatter.format(
+    Number(
+      new RatePretty(rate).maxDecimals(2).locale(false).symbol("").toString()
+    )
+  )}${rate.options.symbol}`;
 }

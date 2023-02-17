@@ -1,3 +1,10 @@
+import { Dec, PricePretty } from "@keplr-wallet/unit";
+import classNames from "classnames";
+import { observer } from "mobx-react-lite";
+import dynamic from "next/dynamic";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import {
   AnchorHTMLAttributes,
   ButtonHTMLAttributes,
@@ -9,30 +16,18 @@ import {
   useEffect,
   useState,
 } from "react";
-import dynamic from "next/dynamic";
-import { observer } from "mobx-react-lite";
-import { ModalBase, ModalBaseProps } from "./base";
 import { useTranslation } from "react-multi-lang";
-import Image from "next/image";
-import { CreditCardIcon } from "../components/assets/credit-card-icon";
-import { useStore } from "../stores";
-import { FiatRampsModal } from "./fiat-ramps";
-import {
-  useAmplitudeAnalytics,
-  useDisclosure,
-  useTransferConfig,
-  useWindowSize,
-} from "../hooks";
-import { EventName } from "../config";
 import { useCopyToClipboard, useTimeoutFn } from "react-use";
+
 import {
+  CheckMarkIcon,
   CopyIcon,
+  ExternalLinkIcon,
   LogOutIcon,
   QRIcon,
-  ExternalLinkIcon,
-  CheckMarkIcon,
 } from "../components/assets";
-import classNames from "classnames";
+import { CreditCardIcon } from "../components/assets/credit-card-icon";
+import { ArrowButton } from "../components/buttons";
 import {
   Drawer,
   DrawerButton,
@@ -40,12 +35,18 @@ import {
   DrawerOverlay,
   DrawerPanel,
 } from "../components/drawers";
-import { ArrowButton } from "../components/buttons";
-import Link from "next/link";
-import { useRouter } from "next/router";
+import { EventName } from "../config";
+import {
+  useAmplitudeAnalytics,
+  useDisclosure,
+  useTransferConfig,
+  useWindowSize,
+} from "../hooks";
+import { useStore } from "../stores";
+import { formatPretty } from "../utils/formatter";
 import { formatICNSName, getShortAddress } from "../utils/string";
-import { coinFormatter, priceFormatter } from "../utils/formatter";
-import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { ModalBase, ModalBaseProps } from "./base";
+import { FiatRampsModal } from "./fiat-ramps";
 
 const QRCode = dynamic(() => import("qrcode.react"));
 
@@ -202,7 +203,7 @@ export const ProfileModal: FunctionComponent<
 
             <div>
               <h6 className="mb-[4px] tracking-wide text-osmoverse-100">
-                {priceFormatter(
+                {formatPretty(
                   priceStore.calculatePrice(
                     navBarStore.walletInfo.balance,
                     priceStore.defaultVsCurrency
@@ -219,7 +220,7 @@ export const ProfileModal: FunctionComponent<
                 )}
               </h6>
               <p className="text-h5 font-h5">
-                {coinFormatter(navBarStore.walletInfo.balance, {
+                {formatPretty(navBarStore.walletInfo.balance, {
                   minimumFractionDigits: 2,
                   maximumSignificantDigits: undefined,
                   notation: "standard",
