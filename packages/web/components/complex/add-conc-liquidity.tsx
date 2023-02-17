@@ -1,17 +1,12 @@
-import {FunctionComponent, ReactNode, useState} from "react";
+import {FunctionComponent, ReactNode, useMemo, useState} from "react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { PricePretty, CoinPretty } from "@keplr-wallet/unit";
 import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
 import { useStore } from "../../stores";
-import { useWindowSize } from "../../hooks";
-// import { MenuToggle } from "../../components/control";
-// import { Token } from "../../components/assets";
-import { InputBox } from "../../components/input";
-// import { Info } from "../../components/alert";
-// import { PoolTokenSelect } from "../../components/control/pool-token-select";
+import {useWindowSize} from "../../hooks";
+import { InputBox } from "../input";
 import { CustomClasses } from "../types";
-// import { Button } from "../buttons";
 import { useTranslation } from "react-multi-lang";
 
 
@@ -33,6 +28,16 @@ import {curveNatural} from "@visx/curve";
 import {theme} from "../../tailwind.config";
 import {scaleLinear} from "@visx/scale";
 import {debounce} from "debounce";
+import {PoolAssetsIcon} from "../assets";
+import Image from "next/image";
+import {useRouter} from "next/router";
+import {Button} from "../buttons";
+
+enum AddConcLiquidityModalView {
+  Overview,
+  AddConcLiq,
+  AddFullRange,
+}
 
 const data1 = makeData();
 
@@ -101,17 +106,213 @@ export const AddConcLiquidity: FunctionComponent<
     getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
   } & CustomClasses
 > = observer(
-  ({ className, addLiquidityConfig, actionButton, getFiatValue }) => {
+  ({
+     className,
+     addLiquidityConfig,
+     actionButton,
+     getFiatValue,
+  }) => {
+    const [view, setView] = useState<AddConcLiquidityModalView>(AddConcLiquidityModalView.Overview);
+
+    return (
+      <div className={classNames("flex flex-col gap-8", className)}>
+        {(() => {
+          switch (view) {
+            case AddConcLiquidityModalView.Overview:
+              return (
+                <Overview
+                  setView={setView}
+                />
+              )
+            case AddConcLiquidityModalView.AddConcLiq:
+              return (
+                <AddConcLiqView
+                  addLiquidityConfig={addLiquidityConfig}
+                  actionButton={actionButton}
+                />
+              );
+            case AddConcLiquidityModalView.AddFullRange:
+              return null;
+          }
+        })()}
+      </div>
+    );
+  }
+);
+
+const Overview: FunctionComponent<
+  {
+    setView: (view: AddConcLiquidityModalView) => void;
+  } & CustomClasses
+> = ({ setView }) => {
+  const {
+    priceStore,
+    queriesExternalStore,
+    derivedDataStore,
+  } = useStore();
+  const router = useRouter();
+  const { id: poolId } = router.query as { id: string };
+  const t = useTranslation();
+  const [selected, selectView] = useState<AddConcLiquidityModalView>(AddConcLiquidityModalView.AddFullRange);
+
+  // initialize pool data stores once root pool store is loaded
+  const { poolDetail, superfluidPoolDetail } =
+    typeof poolId === "string"
+      ? derivedDataStore.getForPool(poolId as string)
+      : {
+        poolDetail: undefined,
+        superfluidPoolDetail: undefined,
+      };
+  const pool = poolDetail?.pool;
+  const queryGammPoolFeeMetrics = queriesExternalStore.queryGammPoolFeeMetrics;
+
+  // user analytics
+  const { poolName } = useMemo(
+    () => ({
+      poolName: pool?.poolAssets
+        .map((poolAsset) => poolAsset.amount.denom)
+        .join(" / "),
+      poolWeight: pool?.weightedPoolInfo?.assets
+        .map((poolAsset) => poolAsset.weightFraction.toString())
+        .join(" / "),
+    }),
+    [pool?.poolAssets]
+  );
+
+  return (
+    <>
+      <div className="flex flex-row align-center relative">
+        <div className="h-full flex items-center absolute left-0 text-sm">
+        </div>
+        <div className="flex-1 text-center text-lg">
+          Add liquidity
+        </div>
+        <div className="h-full flex items-center absolute right-0 text-xs font-subtitle2 text-osmoverse-200">
+        </div>
+      </div>
+      <div className="flex flex-row bg-osmoverse-900/[.3] px-8 py-4 rounded-[28px]">
+        <div className="flex flex-1 flex-col gap-2">
+          <div className="flex flex-row flex-nowrap items-center gap-2">
+            {pool && (
+              <PoolAssetsIcon
+                assets={pool.poolAssets.map((asset: {amount: CoinPretty}) => ({
+                  coinDenom: asset.amount.denom,
+                  coinImageUrl: asset.amount.currency.coinImageUrl,
+                }))}
+                size="sm"
+              />
+            )}
+            <h5 className="max-w-xs truncate">{poolName}</h5>
+          </div>
+          {superfluidPoolDetail?.isSuperfluid && (
+            <span className="body2 text-superfluid-gradient">
+              {t("pool.superfluidEnabled")}
+            </span>
+          )}
+          {pool?.type === "stable" && (
+            <div className="body2 text-gradient-positive flex items-center gap-1.5">
+              <Image
+                alt=""
+                src="/icons/stableswap-pool.svg"
+                height={24}
+                width={24}
+              />
+              <span>{t("pool.stableswapEnabled")}</span>
+            </div>
+          )}
+        </div>
+        <div className="flex items-center gap-10">
+          <div className="space-y-2">
+              <span className="body2 gap-2 text-osmoverse-400">
+                {t("pool.24hrTradingVolume")}
+              </span>
+            <h5 className="text-osmoverse-100">
+              {queryGammPoolFeeMetrics
+                .getPoolFeesMetrics(poolId, priceStore)
+                .volume24h.toString()}
+            </h5>
+          </div>
+          <div className="space-y-2">
+              <span className="body2 gap-2 text-osmoverse-400">
+                {t("pool.liquidity")}
+              </span>
+            <h5 className="text-osmoverse-100">
+              {poolDetail?.totalValueLocked.toString()}
+            </h5>
+          </div>
+          <div className="space-y-2">
+              <span className="body2 gap-2 text-osmoverse-400">
+                {t("pool.swapFee")}
+              </span>
+            <h5 className="text-osmoverse-100">
+              {pool?.swapFee.toString()}
+            </h5>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col mt-[2.75rem]">
+        <div className="flex flex-row justify-center gap-8">
+          <div
+            className={classNames("flex flex-col w-[14.0625rem] items-center gap-4 py-6 border-osmoverse-700 border-2 rounded-[20px] hover:bg-osmoverse-700 hover:border-osmoverse-100 cursor-pointer", {
+              "bg-osmoverse-700 border-osmoverse-100": selected === AddConcLiquidityModalView.AddFullRange,
+            })}
+            onClick={() => selectView(AddConcLiquidityModalView.AddFullRange)}
+          >
+            <h6>Full range</h6>
+            <div className="subtitle1 text-osmoverse-200">Full range</div>
+          </div>
+          <div
+            className={classNames("flex flex-col w-[14.0625rem] items-center gap-4 py-6 border-osmoverse-700 border-2 rounded-[20px] hover:bg-osmoverse-700 hover:border-osmoverse-100 cursor-pointer", {
+              "bg-osmoverse-700 border-osmoverse-100": selected === AddConcLiquidityModalView.AddConcLiq,
+            })}
+            onClick={() => selectView(AddConcLiquidityModalView.AddConcLiq)}
+          >
+            <h6>Concentrated</h6>
+            <div className="subtitle1 text-osmoverse-200">Customized ranges</div>
+          </div>
+        </div>
+        <div className="flex w-full items-center justify-center py-10">
+          <span className="text-subtitle1 w-[22rem] text-osmoverse-100">
+            This strategy LPs in a +/-10% range of the 30 day TWAP (time weighted average price).
+          </span>
+        </div>
+      </div>
+      <div className="flex w-full items-center justify-center">
+        <Button
+          className="w-[25rem]"
+          onClick={() => setView(selected)}
+        >
+          Next
+        </Button>
+      </div>
+    </>
+  )
+};
+
+const AddConcLiqView: FunctionComponent<
+  {
+    addLiquidityConfig: ObservableAddLiquidityConfig;
+    actionButton: ReactNode;
+    getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
+  } & CustomClasses
+> = observer(
+  ({
+    className,
+    addLiquidityConfig,
+    actionButton,
+    getFiatValue,
+  }) => {
     const { chainStore } = useStore();
     const { isMobile } = useWindowSize();
     const t = useTranslation();
+
     const [inputMin, setInputMin] = useState(yRange.last * 0.85);
     const [inputMax, setInputMax] = useState(yRange.last * 1.15);
     const [min, setMin] = useState(yRange.last * 0.85);
     const [max, setMax] = useState(yRange.last * 1.15);
 
     return (
-      <div className={classNames("flex flex-col gap-8", className)}>
+      <>
         <div className="flex flex-row align-center relative">
           <div className="h-full flex items-center absolute left-0 text-sm">
             {"<- Back"}
@@ -161,17 +362,17 @@ export const AddConcLiquidity: FunctionComponent<
               <div>
                 <InputBox
                   type="number"
-                  currentValue={inputMin}
+                  currentValue={'' + inputMin}
                   onInput={val => {
-                    setMin(val);
-                    setInputMin(val);
+                    setMin(Number(val));
+                    setInputMin(Number(val));
                   }}
                 />
                 <InputBox
-                  currentValue={inputMax}
+                  currentValue={'' + inputMax}
                   onInput={val => {
-                    setMax(val);
-                    setInputMax(val);
+                    setMax(Number(val));
+                    setInputMax(Number(val));
                   }}
                 />
               </div>
@@ -184,9 +385,8 @@ export const AddConcLiquidity: FunctionComponent<
         <div>
 
         </div>
-
         {actionButton}
-      </div>
+      </>
     );
   }
 );
