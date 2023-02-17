@@ -33,8 +33,6 @@ import PaginatedTable from "./paginated-table";
 
 const TVL_FILTER_THRESHOLD = 1000;
 
-let renderCount = 0;
-
 type PoolWithMetrics = {
   pool: ObservableQueryPool;
   liquidity: PricePretty;
@@ -101,8 +99,6 @@ export const AllPoolsTableSet: FunctionComponent<{
       derivedDataStore,
     } = useStore();
     const t = useTranslation();
-
-    console.log(renderCount++);
 
     const { logEvent } = useAmplitudeAnalytics();
 
