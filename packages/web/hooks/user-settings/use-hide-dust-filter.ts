@@ -24,6 +24,6 @@ export function useHideDustUserSetting<TDustableItem>(
           ? getValueOfItem(item)?.toDec().gte(new Dec(0.01)) ?? true
           : true
       ),
-    [items, hideDust]
+    [items, hideDust, getValueOfItem]
   );
 }

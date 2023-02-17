@@ -11,7 +11,13 @@ import classNames from "classnames";
 import EventEmitter from "eventemitter3";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
-import { FunctionComponent, useMemo, useRef, useState } from "react";
+import {
+  FunctionComponent,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-multi-lang";
 import { EventName } from "../../config";
 import { useAmplitudeAnalytics, useFilteredData } from "../../hooks";
@@ -26,6 +32,8 @@ import {
 import PaginatedTable from "./paginated-table";
 
 const TVL_FILTER_THRESHOLD = 1000;
+
+let renderCount = 0;
 
 type PoolWithMetrics = {
   pool: ObservableQueryPool;
@@ -93,6 +101,8 @@ export const AllPoolsTableSet: FunctionComponent<{
       derivedDataStore,
     } = useStore();
     const t = useTranslation();
+
+    console.log(renderCount++);
 
     const { logEvent } = useAmplitudeAnalytics();
 
@@ -187,7 +197,6 @@ export const AllPoolsTableSet: FunctionComponent<{
         account.bech32Address,
       ]
     );
-    console.log("🚀 ~ allPoolsWithMetrics", allPoolsWithMetrics.length);
 
     // TODO: Make sure external pools are not included in all pools
     const pools = queryActiveGauges.poolIdsForActiveGauges.map((poolId) =>
@@ -280,15 +289,8 @@ export const AllPoolsTableSet: FunctionComponent<{
         chainStore,
       ]
     );
-    console.log(
-      "🚀 ~ externalIncentivizedPoolsWithMetrics",
-      externalIncentivizedPoolsWithMetrics.length
-    );
 
     const tvlFilteredPools = useMemo(() => {
-      // console.log(
-      //   [...allPoolsWithMetrics, ...externalIncentivizedPoolsWithMetrics].length
-      // );
       return [...allPoolsWithMetrics, ...externalIncentivizedPoolsWithMetrics]
         .filter((p) => p.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD)))
         .filter((p) => {
@@ -311,20 +313,26 @@ export const AllPoolsTableSet: FunctionComponent<{
 
     const [query, _setQuery, filteredPools] = useFilteredData(
       tvlFilteredPools,
-      [
-        "pool.id",
-        "poolName",
-        "networkNames",
-        "pool.poolAssets.amount.currency.originCurrency.pegMechanism",
-      ]
+      useMemo(
+        () => [
+          "pool.id",
+          "poolName",
+          "networkNames",
+          "pool.poolAssets.amount.currency.originCurrency.pegMechanism",
+        ],
+        []
+      )
     );
-    const setQuery = (search: string) => {
-      if (search !== "" && !fetchedRemainingPoolsRef.current) {
-        queriesOsmosis.queryGammPools.fetchRemainingPools();
-        fetchedRemainingPoolsRef.current = true;
-      }
-      _setQuery(search);
-    };
+    const setQuery = useCallback(
+      (search: string) => {
+        if (search !== "" && !fetchedRemainingPoolsRef.current) {
+          queriesOsmosis.queryGammPools.fetchRemainingPools();
+          fetchedRemainingPoolsRef.current = true;
+        }
+        _setQuery(search);
+      },
+      [_setQuery]
+    );
 
     const [cellGroupEventEmitter] = useState(() => new EventEmitter());
     const tableData: Pool[] = useMemo(
@@ -465,16 +473,6 @@ export const AllPoolsTableSet: FunctionComponent<{
         <div className="mt-5 flex flex-col gap-3">
           <div className="flex place-content-between items-center">
             <h5>{t("pools.allPools.title")}</h5>
-            {/* <Switch
-              isOn={isPoolTvlFiltered}
-              onToggle={setIsPoolTvlFiltered}
-              className="mr-2"
-              labelPosition="left"
-            >
-              <span className="subtitle1 text-osmoverse-200">
-                {tvlFilterLabel}
-              </span>
-            </Switch> */}
           </div>
           <div className="flex flex-wrap place-content-between items-center gap-4">
             <div className="flex gap-3">
@@ -512,20 +510,25 @@ export const AllPoolsTableSet: FunctionComponent<{
                 size="small"
               />
               <SortMenu
-                options={table
-                  .getHeaderGroups()[0]
-                  .headers.map(({ id, column }) => {
-                    return {
-                      id,
-                      display: column.columnDef.header as string,
-                    };
-                  })}
+                options={useMemo(
+                  () =>
+                    table.getHeaderGroups()[0].headers.map(({ id, column }) => {
+                      return {
+                        id,
+                        display: column.columnDef.header as string,
+                      };
+                    }),
+                  [table]
+                )}
                 selectedOptionId={sorting[0]?.id}
-                onSelect={(id: string) => {
-                  table.reset();
-                  table.getColumn(id).toggleSorting(false);
-                }}
-                onToggleSortDirection={() => {
+                onSelect={useCallback(
+                  (id: string) => {
+                    table.reset();
+                    table.getColumn(id).toggleSorting(false);
+                  },
+                  [table]
+                )}
+                onToggleSortDirection={useCallback(() => {
                   logEvent([
                     EventName.Pools.allPoolsListSorted,
                     {
@@ -540,7 +543,7 @@ export const AllPoolsTableSet: FunctionComponent<{
                     const [first] = prev;
                     return [{ ...first, desc: !first.desc }];
                   });
-                }}
+                }, [logEvent, sorting])}
               />
             </div>
           </div>
