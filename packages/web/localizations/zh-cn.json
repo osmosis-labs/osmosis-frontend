@@ -16,12 +16,6 @@
       "externalLinkModalTitle": "离开Osmosis"
     }
   },
-  "mars": {
-    "banner": {
-      "title": "借贷在 Osmosis 上登陆了。",
-      "linkText": "探索 Mars Protocol"
-    }
-  },
   "swap": {
     "title": "兑换",
     "settings": {

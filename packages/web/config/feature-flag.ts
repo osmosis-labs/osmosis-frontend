@@ -56,16 +56,18 @@ export const Announcement:
       },
     }
   : {
-      localStorageKey: "show_mars_banner",
-      enTextOrLocalizationPath: "mars.banner.title",
+      localStorageKey: "feedback_wQ1KR7",
+      enTextOrLocalizationPath: "Help us shape the future of Osmosis.",
       link: {
-        enTextOrLocalizationKey: "mars.banner.linkText",
-        url: "https://mars.osmosis.zone/redbank",
+        enTextOrLocalizationKey: "Give us feedback",
+        url: "https://tally.so/r/wQ1KR7",
         isExternal: true,
       },
       pageRoute: "/",
-      bg: "bg-gradient-negative lg:bg-gradient-neutral",
     };
+
+// Past localstorage keys:
+// * "feedback_wQ1KR7": "Help us shape the future of Osmosis." Give us feedback -> https://tally.so/r/wQ1KR7
 
 // Fiat ramps
 export const BUY_OSMO_TRANSAK = true;
