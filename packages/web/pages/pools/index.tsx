@@ -255,10 +255,7 @@ const Pools: NextPage = observer(function () {
           })}
           poolId={addLiquidityModalPoolId}
           isOpen={true}
-          onRequestClose={useCallback(
-            () => setAddLiquidityModalPoolId(null),
-            []
-          )}
+          onRequestClose={() => setAddLiquidityModalPoolId(null)}
         />
       )}
       {removeLiquidityModalPoolId && (
@@ -268,10 +265,7 @@ const Pools: NextPage = observer(function () {
           })}
           poolId={removeLiquidityModalPoolId}
           isOpen={true}
-          onRequestClose={useCallback(
-            () => setRemoveLiquidityModalPoolId(null),
-            []
-          )}
+          onRequestClose={() => setRemoveLiquidityModalPoolId(null)}
         />
       )}
       {lockLpTokenModalPoolId && (
@@ -281,10 +275,7 @@ const Pools: NextPage = observer(function () {
           poolId={lockLpTokenModalPoolId}
           amountConfig={lockLpTokenConfig}
           onLockToken={onLockToken}
-          onRequestClose={useCallback(
-            () => setLockLpTokenModalPoolId(null),
-            []
-          )}
+          onRequestClose={() => setLockLpTokenModalPoolId(null)}
         />
       )}
       {superfluidDelegateModalProps && (
