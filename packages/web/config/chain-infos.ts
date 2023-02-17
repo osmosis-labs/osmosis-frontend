@@ -2687,6 +2687,35 @@ const chainInfos = (
       explorerUrlToTx:
         "https://www.mintscan.io/quicksilver/txs/{txHash}",
     },
+    {
+      rpc: "https://rpc.8ball.info",
+      rest: "https://rest.8ball.info",
+      chainId: "eightball-1",
+      chainName: "8ball",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("8ball"),
+      currencies: [
+        {
+          coinDenom: "EBL",
+          coinMinimalDenom: "uebl",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/8ball.svg",
+          coinGeckoId: "pool:uebl",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            "low": 0.0001,
+            "average": 0.025,
+            "high": 0.04
+          },
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx:
+        "https://www.mintscan.io/eightball/txs/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
