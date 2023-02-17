@@ -20,6 +20,7 @@ export const Announcement:
         /** Default: "Click here to learn more" in english-us */
         enTextOrLocalizationKey?: string;
         url: string;
+        /** External to Osmosis. Show disclaimer before linking out of app. */
         isExternal?: boolean;
       };
       /** Use orange styling, persist on page reloads. */
@@ -61,7 +62,6 @@ export const Announcement:
       link: {
         enTextOrLocalizationKey: "Give us feedback",
         url: "https://tally.so/r/wQ1KR7",
-        isExternal: true,
       },
       pageRoute: "/",
     };
