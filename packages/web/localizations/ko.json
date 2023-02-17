@@ -285,8 +285,8 @@
         "insufficientFee": "수수료가 부족합니다",
         "insufficientBal": "잔액이 부족합니다"
       },
-      "useWrappedDeposit": "satellite.money에 {wrapDenom} 입금",
-      "useWrappedWithdraw": "satellite.money에서 {wrapDenom} 인출",
+      "useWrappedDeposit": "Satellite에 {wrapDenom} 입금",
+      "useWrappedWithdraw": "Satellite에서 {wrapDenom} 인출",
       "waitTime": "{minutes}분"
     },
     "selectAssetSource": {

@@ -285,8 +285,8 @@
         "insufficientFee": "Frais insuffisants",
         "insufficientBal": "Solde insuffisant"
       },
-      "useWrappedDeposit": "Déposez {wrapDenom} sur satellite.money",
-      "useWrappedWithdraw": "Retirer {wrapDenom} de satellite.money",
+      "useWrappedDeposit": "Déposez {wrapDenom} avec Satellite",
+      "useWrappedWithdraw": "Retirer {wrapDenom} avec Satellite",
       "waitTime": "{minutes} minutes"
     },
     "selectAssetSource": {

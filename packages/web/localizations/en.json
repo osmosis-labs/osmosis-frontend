@@ -285,8 +285,8 @@
         "insufficientFee": "Insufficient Fee",
         "insufficientBal": "Insufficient Balance"
       },
-      "useWrappedDeposit": "Deposit {wrapDenom} on satellite.money",
-      "useWrappedWithdraw": "Withdraw {wrapDenom} from satellite.money",
+      "useWrappedDeposit": "Deposit {wrapDenom} with Satellite",
+      "useWrappedWithdraw": "Withdraw {wrapDenom} with Satellite",
       "waitTime": "{minutes} minutes",
       "withdrawAs": "Withdraw as {denom}",
       "depositAs": "Deposit as {denom}"

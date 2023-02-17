@@ -285,8 +285,8 @@
         "insufficientFee": "Taxa Insuficienta",
         "insufficientBal": "Balanta Insuficienta"
       },
-      "useWrappedDeposit": "Depuneți {wrapDenom} pe satellite.money",
-      "useWrappedWithdraw": "Retrageți {wrapDenom} din satellite.money",
+      "useWrappedDeposit": "Depuneți {wrapDenom} pe Satellite",
+      "useWrappedWithdraw": "Retrageți {wrapDenom} din Satellite",
       "waitTime": "{minutes} minute"
     },
     "selectAssetSource": {

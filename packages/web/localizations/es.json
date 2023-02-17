@@ -285,8 +285,8 @@
         "insufficientFee": "Cuota insuficiente",
         "insufficientBal": "Saldo insuficiente"
       },
-      "useWrappedDeposit": "Deposite {wrapDenom} en satellite.money",
-      "useWrappedWithdraw": "Retirar {wrapDenom} de satellite.money",
+      "useWrappedDeposit": "Deposite {wrapDenom} con Satellite",
+      "useWrappedWithdraw": "Retirar {wrapDenom} con Satellite",
       "waitTime": "{minutes} minutos"
     },
     "selectAssetSource": {

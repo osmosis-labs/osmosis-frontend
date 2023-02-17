@@ -285,8 +285,8 @@
         "insufficientFee": "Yetersiz Ücret",
         "insufficientBal": "Yetersiz Bakiye"
       },
-      "useWrappedDeposit": "satellite.money'e {wrapDenom} yatırın",
-      "useWrappedWithdraw": "{wrapDenom}'e satellite.money'den çekin",
+      "useWrappedDeposit": "Satellite'e {wrapDenom} yatırın",
+      "useWrappedWithdraw": "{wrapDenom}'e Satellite'den çekin",
       "waitTime": "{minutes} dakika"
     },
     "selectAssetSource": {

@@ -285,8 +285,8 @@
         "insufficientFee": "Niewystarczająca Prowizja",
         "insufficientBal": "Niewystarczająca Ilość Środków"
       },
-      "useWrappedDeposit": "Wpłać {wrapDenom} na satellite.money",
-      "useWrappedWithdraw": "Wypłać {wrapDenom} z satellite.money",
+      "useWrappedDeposit": "Wpłać {wrapDenom} na Satellite",
+      "useWrappedWithdraw": "Wypłać {wrapDenom} z Satellite",
       "waitTime": "{minutes} minut"
     },
     "selectAssetSource": {

@@ -284,8 +284,8 @@
         "insufficientFee": "费用不足",
         "insufficientBal": "余额不足"
       },
-      "useWrappedDeposit": "在 satellite.money 上存入 {wrapDenom}",
-      "useWrappedWithdraw": "从 satellite.money 中提取 {wrapDenom}",
+      "useWrappedDeposit": "在 Satellite 上存入 {wrapDenom}",
+      "useWrappedWithdraw": "从 Satellite 中提取 {wrapDenom}",
       "waitTime": "{minutes} 分钟"
     },
     "selectAssetSource": {
