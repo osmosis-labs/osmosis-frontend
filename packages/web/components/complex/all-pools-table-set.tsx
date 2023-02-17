@@ -329,6 +329,7 @@ export const AllPoolsTableSet: FunctionComponent<{
           queriesOsmosis.queryGammPools.fetchRemainingPools();
           fetchedRemainingPoolsRef.current = true;
         }
+        setSorting([]);
         _setQuery(search);
       },
       [_setQuery, queriesOsmosis.queryGammPools]
@@ -383,7 +384,15 @@ export const AllPoolsTableSet: FunctionComponent<{
           ];
           return pool;
         }),
-      [filteredPools, queriesOsmosis.queryIncentivizedPools.isAprFetching]
+      [
+        cellGroupEventEmitter,
+        filteredPools,
+        queriesExternalStore.queryGammPoolFeeMetrics.response,
+        queriesOsmosis.queryIncentivizedPools.isAprFetching,
+        quickAddLiquidity,
+        quickLockTokens,
+        quickRemoveLiquidity,
+      ]
     );
 
     const columnHelper = createColumnHelper<Pool>();
@@ -447,12 +456,13 @@ export const AllPoolsTableSet: FunctionComponent<{
       }),
     ];
 
-    const [sorting, setSorting] = useState<SortingState>([
-      {
-        id: "liquidity",
-        desc: true,
-      },
-    ]);
+    // const [sorting, setSorting] = useState<SortingState>([
+    //   {
+    //     id: "liquidity",
+    //     desc: true,
+    //   },
+    // ]);
+    const [sorting, setSorting] = useState<SortingState>([]);
 
     const table = useReactTable({
       data: tableData,
