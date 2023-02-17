@@ -58,7 +58,6 @@ export const AddLiquidityModal: FunctionComponent<
       className="!max-w-[57.8125rem]"
     >
       <AddConcLiquidity
-        // className="pt-4"
         addLiquidityConfig={config}
         actionButton={accountActionButton}
         getFiatValue={(coin) => priceStore.calculatePrice(coin)}
