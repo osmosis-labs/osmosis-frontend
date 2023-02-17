@@ -199,8 +199,12 @@ export const AllPoolsTableSet: FunctionComponent<{
     );
 
     // TODO: Make sure external pools are not included in all pools
-    const pools = queryActiveGauges.poolIdsForActiveGauges.map((poolId) =>
-      queriesOsmosis.queryGammPools.getPool(poolId)
+    const pools = useMemo(
+      () =>
+        queryActiveGauges.poolIdsForActiveGauges.map((poolId) =>
+          queriesOsmosis.queryGammPools.getPool(poolId)
+        ),
+      [queryActiveGauges.poolIdsForActiveGauges, queriesOsmosis.queryGammPools]
     );
 
     const externalIncentivizedPools = useMemo(
@@ -331,7 +335,7 @@ export const AllPoolsTableSet: FunctionComponent<{
         }
         _setQuery(search);
       },
-      [_setQuery]
+      [_setQuery, queriesOsmosis.queryGammPools]
     );
 
     const [cellGroupEventEmitter] = useState(() => new EventEmitter());
@@ -549,7 +553,10 @@ export const AllPoolsTableSet: FunctionComponent<{
           </div>
         </div>
         <PaginatedTable
-          paginate={() => queriesOsmosis.queryGammPools.paginate()}
+          paginate={useCallback(
+            () => queriesOsmosis.queryGammPools.paginate(),
+            [queriesOsmosis.queryGammPools]
+          )}
           table={table}
         />
       </>
