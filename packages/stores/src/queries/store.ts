@@ -1,35 +1,42 @@
-import { ChainGetter, QueriesSetBase } from "@keplr-wallet/stores";
 import { KVStore } from "@keplr-wallet/common";
+import { ChainGetter, QueriesSetBase } from "@keplr-wallet/stores";
+import { autorun } from "mobx";
 import { DeepReadonly } from "utility-types";
+
 import { ObservableQueryFilteredPools } from "../queries-external/filtered-pools/filtered-pools";
-import { ObservableQueryNumPools } from "./pools";
-import { ObservableQueryGammPoolShare } from "./pool-share";
-import {
-  ObservableQueryIncentivizedPools,
-  ObservableQueryLockableDurations,
-  ObservableQueryPoolsGaugeIds,
-} from "./pool-incentives";
 import { ObservableQueryEpochs } from "./epochs";
+import { FallbackStore } from "./fallback-query-store";
+import { ObservableQueryGauges } from "./incentives";
 import {
+  ObservableQueryAccountLocked,
   ObservableQueryAccountLockedCoins,
   ObservableQueryAccountUnlockingCoins,
-  ObservableQueryAccountLocked,
   ObservableSyntheticLockupsByLockId,
 } from "./lockup";
 import {
   ObservableQueryEpochProvisions,
   ObservableQueryMintParmas,
 } from "./mint";
-import { ObservableQueryDistrInfo } from "./pool-incentives/distr-info";
-import { ObservableQueryGauges } from "./incentives";
 import { ObservableQueryPoolCreationFee } from "./pool-creation-fee";
 import {
-  ObservableQuerySuperfluidDelegations,
-  ObservableQuerySuperfluidPools,
-  ObservableQuerySuperfluidUndelegations,
+  ObservableQueryIncentivizedPools,
+  ObservableQueryLockableDurations,
+  ObservableQueryPoolsGaugeIds,
+} from "./pool-incentives";
+import { ObservableQueryDistrInfo } from "./pool-incentives/distr-info";
+import { ObservableQueryGammPoolShare } from "./pool-share";
+import {
+  ObservableQueryNumPools,
+  ObservableQueryPools,
+  PoolGetter,
+} from "./pools";
+import {
   ObservableQuerySuperfluidAssetMultiplier,
+  ObservableQuerySuperfluidDelegations,
   ObservableQuerySuperfluidOsmoEquivalent,
   ObservableQuerySuperfluidParams,
+  ObservableQuerySuperfluidPools,
+  ObservableQuerySuperfluidUndelegations,
 } from "./superfluid-pools";
 
 export interface OsmosisQueries {
@@ -38,7 +45,8 @@ export interface OsmosisQueries {
 
 export const OsmosisQueries = {
   use(
-    osmosisChainId: string
+    osmosisChainId: string,
+    isTestnet = false
   ): (
     queriesSetBase: QueriesSetBase,
     kvStore: KVStore,
@@ -58,7 +66,8 @@ export const OsmosisQueries = {
                 queriesSetBase,
                 kvStore,
                 chainId,
-                chainGetter
+                chainGetter,
+                isTestnet
               )
             : undefined,
       };
@@ -68,7 +77,7 @@ export const OsmosisQueries = {
 
 /** Root queries store for all Osmosis queries. */
 export class OsmosisQueriesImpl {
-  public readonly queryGammPools: DeepReadonly<ObservableQueryFilteredPools>;
+  protected _queryGammPools: DeepReadonly<PoolGetter>;
   public readonly queryGammNumPools: DeepReadonly<ObservableQueryNumPools>;
   public readonly queryGammPoolShare: DeepReadonly<ObservableQueryGammPoolShare>;
 
@@ -97,11 +106,16 @@ export class OsmosisQueriesImpl {
   public readonly querySuperfluidAssetMultiplier: DeepReadonly<ObservableQuerySuperfluidAssetMultiplier>;
   public readonly querySuperfluidOsmoEquivalent: DeepReadonly<ObservableQuerySuperfluidOsmoEquivalent>;
 
+  get queryGammPools(): PoolGetter {
+    return this._queryGammPools;
+  }
+
   constructor(
     queries: QueriesSetBase,
     kvStore: KVStore,
     chainId: string,
-    chainGetter: ChainGetter
+    chainGetter: ChainGetter,
+    isTestnet = false
   ) {
     this.queryLockedCoins = new ObservableQueryAccountLockedCoins(
       kvStore,
@@ -129,15 +143,41 @@ export class OsmosisQueriesImpl {
       chainId,
       chainGetter
     );
-    this.queryGammPools = new ObservableQueryFilteredPools(
-      kvStore,
-      chainId,
-      chainGetter,
-      this.queryGammNumPools
+
+    /** Contains a reference to the currently responsive pool store. */
+    const poolsQueryFallbacks = new FallbackStore(
+      isTestnet
+        ? [
+            new ObservableQueryPools(
+              kvStore,
+              chainId,
+              chainGetter,
+              this.queryGammNumPools
+            ),
+          ]
+        : [
+            new ObservableQueryFilteredPools(
+              kvStore,
+              chainId,
+              chainGetter,
+              this.queryGammNumPools
+            ),
+            new ObservableQueryPools(
+              kvStore,
+              chainId,
+              chainGetter,
+              this.queryGammNumPools
+            ),
+          ]
     );
+    this._queryGammPools = poolsQueryFallbacks.responsiveStore;
+    // hot swap the pools query store any time the fallback store changes
+    autorun(() => {
+      this._queryGammPools = poolsQueryFallbacks.responsiveStore;
+    });
 
     this.queryGammPoolShare = new ObservableQueryGammPoolShare(
-      this.queryGammPools,
+      this._queryGammPools,
       queries.queryBalances,
       this.queryAccountLocked,
       this.queryLockedCoins,
@@ -175,7 +215,7 @@ export class OsmosisQueriesImpl {
       chainGetter,
       this.queryLockableDurations,
       this.queryDistrInfo,
-      this.queryGammPools,
+      this._queryGammPools,
       this.queryMintParams,
       this.queryEpochProvisions,
       this.queryEpochs,
@@ -222,7 +262,7 @@ export class OsmosisQueriesImpl {
         chainGetter,
         this.querySuperfluidParams,
         this.querySuperfluidAssetMultiplier,
-        this.queryGammPools
+        this._queryGammPools
       );
   }
 }

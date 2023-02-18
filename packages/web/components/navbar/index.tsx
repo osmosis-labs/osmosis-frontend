@@ -1,27 +1,28 @@
-import Image from "next/image";
-import { Fragment, FunctionComponent, useEffect, useRef } from "react";
-import { observer } from "mobx-react-lite";
-import classNames from "classnames";
 import { WalletStatus } from "@keplr-wallet/stores";
-import { Button } from "../buttons";
-import { useStore } from "../../stores";
+import classNames from "classnames";
+import { observer } from "mobx-react-lite";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { Fragment, FunctionComponent, useEffect, useRef } from "react";
+import { useTranslation } from "react-multi-lang";
+
+import { Announcement, EventName, IS_FRONTIER } from "../../config";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
   useLocalStorageState,
 } from "../../hooks";
-import { useTranslation } from "react-multi-lang";
-import { MainLayoutMenu, CustomClasses } from "../types";
-import { MainMenu } from "../main-menu";
-import { EventName, Announcement } from "../../config";
+import { ModalBase, ModalBaseProps, SettingsModal } from "../../modals";
 import { ProfileModal } from "../../modals/profile";
-import IconButton from "../buttons/icon-button";
-import { Icon } from "../assets";
-import { formatICNSName, getShortAddress } from "../../utils/string";
-import { Popover } from "../popover";
-import { SettingsModal } from "../../modals";
+import { useStore } from "../../stores";
 import { noop } from "../../utils/function";
-import { useRouter } from "next/router";
+import { formatICNSName, getShortAddress } from "../../utils/string";
+import { Icon } from "../assets";
+import { Button, buttonCVA } from "../buttons";
+import IconButton from "../buttons/icon-button";
+import { MainMenu } from "../main-menu";
+import { Popover } from "../popover";
+import { CustomClasses, MainLayoutMenu } from "../types";
 
 export const NavBar: FunctionComponent<
   {
@@ -274,38 +275,55 @@ const AnnouncementBanner: FunctionComponent<
   isWarning,
   persistent,
   closeBanner,
+  bg,
 }) => {
   const t = useTranslation();
+  const {
+    isOpen: isLeavingOsmosisOpen,
+    onClose: onCloseLeavingOsmosis,
+    onOpen: onOpenLeavingOsmosis,
+  } = useDisclosure();
+
+  const linkText = t(
+    link?.enTextOrLocalizationKey ?? "Click here to learn more"
+  );
 
   return (
     <div
       className={classNames(
-        "fixed top-[72px] z-[51] float-right my-auto ml-sidebar flex w-[calc(100vw_-_12.875rem)] items-center px-8 py-[14px] md:ml-0 md:w-full",
+        "fixed top-[72px] z-[51] float-right my-auto ml-sidebar flex w-[calc(100vw_-_12.875rem)] items-center px-8 py-[14px] md:ml-0 md:w-full sm:gap-3 sm:px-2",
         {
           "bg-gradient-negative": isWarning,
-          "bg-osmoverse-700": !isWarning,
-        }
+          "bg-gradient-neutral": !isWarning,
+        },
+        bg
       )}
     >
-      <div className="flex w-full place-content-center items-center gap-3 text-center text-subtitle1">
+      <div className="md:text-lef1 flex w-full place-content-center items-center gap-3 text-center text-subtitle1 lg:flex-col lg:gap-1 sm:items-start sm:text-left">
         {t(enTextOrLocalizationPath)}{" "}
         {Boolean(link) && (
           <div className="flex cursor-pointer items-center gap-2">
-            <a
-              className="underline"
-              href={link?.url}
-              rel="noreferrer"
-              target="_blank"
-            >
-              {t(link?.enTextOrLocalizationKey ?? "Click here to learn more")}
-            </a>
+            {link?.isExternal ? (
+              <button className="underline" onClick={onOpenLeavingOsmosis}>
+                {linkText}
+              </button>
+            ) : (
+              <a
+                className="underline"
+                href={link?.url}
+                rel="noreferrer"
+                target="_blank"
+              >
+                {linkText}
+              </a>
+            )}
             <Icon id="arrow-right" height={24} width={24} />
           </div>
         )}
       </div>
       {!persistent && !isWarning && (
         <IconButton
-          className="flex w-fit cursor-pointer items-center py-0"
+          className="flex w-fit cursor-pointer items-center py-0 text-white-full"
           onClick={closeBanner}
           aria-label="Close"
           icon={<Icon id="close-small" height={24} width={24} />}
@@ -313,6 +331,58 @@ const AnnouncementBanner: FunctionComponent<
           mode="unstyled"
         />
       )}
+      {link?.isExternal && (
+        <ExternalLinkModal
+          url={link.url}
+          onRequestClose={onCloseLeavingOsmosis}
+          isOpen={isLeavingOsmosisOpen}
+        />
+      )}
     </div>
+  );
+};
+
+const ExternalLinkModal: FunctionComponent<
+  { url: string } & Pick<ModalBaseProps, "isOpen" | "onRequestClose">
+> = ({ url, ...modalBaseProps }) => {
+  const t = useTranslation();
+  return (
+    <ModalBase
+      title={t("app.banner.externalLinkModalTitle")}
+      className="!max-w-[400px]"
+      {...modalBaseProps}
+    >
+      <div className="flex flex-col items-center pt-9">
+        <p className="body2 rounded-2xl bg-osmoverse-900 p-5">
+          {t("app.banner.externalLink")}{" "}
+          <span className="text-wosmongton-300">{url}</span>
+        </p>
+        <p className="body2 border-gradient-neutral mt-2 rounded-[10px] border border-wosmongton-400 px-3 py-2 text-wosmongton-100">
+          {t("app.banner.externalLinkDisclaimer")}
+        </p>
+
+        <div className="mt-4 flex w-full gap-3">
+          <Button
+            mode="secondary"
+            className="whitespace-nowrap !px-3.5"
+            onClick={modalBaseProps.onRequestClose}
+          >
+            {t("app.banner.backToOsmosis")}
+          </Button>
+          <a
+            className={buttonCVA({
+              mode: "primary",
+              frontier: IS_FRONTIER,
+            })}
+            href={url}
+            target="_blank"
+            rel="noreferrer noopener"
+            onClick={modalBaseProps.onRequestClose}
+          >
+            {t("app.banner.goToSite")}
+          </a>
+        </div>
+      </div>
+    </ModalBase>
   );
 };

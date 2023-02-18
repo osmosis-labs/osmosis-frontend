@@ -8,7 +8,18 @@
   "app": {
     "banner": {
       "title": "Vous consultez tous les actifs sans permission.",
-      "linkText": "Cliquez ici pour revenir au site principal"
+      "linkText": "Cliquez ici pour revenir au site principal",
+      "externalLinkDisclaimer": "En cliquant sur le lien, vous reconnaissez avoir lu et compris qu'Osmosis ne donne aucune garantie de qualité de service pour les pages externes qui peuvent avoir des CGU différentes.",
+      "externalLink": "Vous quittez maintenant l'application Osmosis pour aller à",
+      "goToSite": "Aller au site",
+      "backToOsmosis": "Retour à Osmosis",
+      "externalLinkModalTitle": "Quitter Osmosis"
+    }
+  },
+  "mars": {
+    "banner": {
+      "title": "Emprunter / prêter sur Osmosis est arrivé.",
+      "linkText": "Explorez Mars Protocol"
     }
   },
   "swap": {

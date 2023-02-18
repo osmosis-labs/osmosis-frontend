@@ -5,6 +5,7 @@ import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { ComponentProps, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
+
 import { ShowMoreButton } from "../../components/buttons/show-more";
 import { PoolCard } from "../../components/cards";
 import { AllPoolsTableSet } from "../../components/complex/all-pools-table-set";
@@ -27,7 +28,7 @@ import {
   SuperfluidValidatorModal,
 } from "../../modals";
 import { useStore } from "../../stores";
-import { priceFormatter } from "../../utils/formatter";
+import { formatPretty } from "../../utils/formatter";
 
 const Pools: NextPage = observer(function () {
   const { chainStore, accountStore, queriesStore, derivedDataStore } =
@@ -331,7 +332,7 @@ const Pools: NextPage = observer(function () {
                       <MetricLoader isLoading={poolLiquidity.toDec().isZero()}>
                         <h6>
                           {isMobile
-                            ? priceFormatter(myLiquidity)
+                            ? formatPretty(myLiquidity)
                             : myLiquidity.maxDecimals(2).toString()}
                         </h6>
                       </MetricLoader>
@@ -343,7 +344,7 @@ const Pools: NextPage = observer(function () {
                       myBonded.toString()
                     ) : (
                       <MetricLoader isLoading={poolLiquidity.toDec().isZero()}>
-                        <h6>{priceFormatter(myBonded)}</h6>
+                        <h6>{formatPretty(myBonded)}</h6>
                       </MetricLoader>
                     ),
                   },

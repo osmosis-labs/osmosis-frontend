@@ -1,46 +1,47 @@
 import {
   AccountStore,
   ChainInfoInner,
-  CosmosQueries,
   CosmosAccount,
-  CosmwasmQueries,
+  CosmosQueries,
   CosmwasmAccount,
+  CosmwasmQueries,
   IBCCurrencyRegsitrar,
   QueriesStore,
 } from "@keplr-wallet/stores";
-import { ChainInfos, IBCAssetInfos, IS_FRONTIER } from "../config";
-import EventEmitter from "eventemitter3";
-import { ChainStore, ChainInfoWithExplorer } from "./chain";
+import { AppCurrency, Keplr } from "@keplr-wallet/types";
+import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 import {
   DerivedDataStore,
-  OsmosisQueries,
-  LPCurrencyRegistrar,
-  QueriesExternalStore,
   IBCTransferHistoryStore,
+  LPCurrencyRegistrar,
   NonIbcBridgeHistoryStore,
   OsmosisAccount,
+  OsmosisQueries,
   PoolFallbackPriceStore,
+  QueriesExternalStore,
 } from "@osmosis-labs/stores";
-import { AppCurrency, Keplr } from "@keplr-wallet/types";
-import { suggestChainFromWindow } from "../hooks/use-keplr/utils";
+import EventEmitter from "eventemitter3";
+
 import {
-  toastOnBroadcastFailed,
   toastOnBroadcast,
+  toastOnBroadcastFailed,
   toastOnFulfill,
 } from "../components/alert";
+import { ChainInfos, IBCAssetInfos, IS_FRONTIER } from "../config";
+import { PoolPriceRoutes } from "../config";
+import { suggestChainFromWindow } from "../hooks/use-keplr/utils";
 import { AxelarTransferStatusSource } from "../integrations/axelar";
 import { ObservableAssets } from "./assets";
+import { ChainInfoWithExplorer, ChainStore } from "./chain";
 import { makeIndexedKVStore, makeLocalStorageKVStore } from "./kv-store";
-import { PoolPriceRoutes } from "../config";
-import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
-import { OsmoPixelsQueries } from "./pixels";
 import { NavBarStore } from "./nav-bar";
+import { OsmoPixelsQueries } from "./pixels";
+import { ProfileStore } from "./profile";
 import {
-  UserSettings,
   HideDustUserSetting,
   LanguageUserSetting,
+  UserSettings,
 } from "./user-settings";
-import { ProfileStore } from "./profile";
 const semver = require("semver");
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
@@ -111,7 +112,7 @@ export class RootStore {
       this.chainStore,
       CosmosQueries.use(),
       CosmwasmQueries.use(),
-      OsmosisQueries.use(this.chainStore.osmosis.chainId)
+      OsmosisQueries.use(this.chainStore.osmosis.chainId, IS_TESTNET)
     );
 
     this.accountStore = new AccountStore(

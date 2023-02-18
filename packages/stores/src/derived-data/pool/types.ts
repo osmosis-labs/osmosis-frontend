@@ -1,5 +1,5 @@
-import { Duration } from "dayjs/plugin/duration";
 import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { Duration } from "dayjs/plugin/duration";
 
 /** Non OSMO gauge. */
 export type ExternalGauge = {

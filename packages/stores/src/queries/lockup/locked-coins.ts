@@ -1,13 +1,14 @@
+import { KVStore } from "@keplr-wallet/common";
 import {
   ChainGetter,
-  QueryResponse,
   ObservableChainQuery,
   ObservableChainQueryMap,
+  QueryResponse,
 } from "@keplr-wallet/stores";
-import { KVStore } from "@keplr-wallet/common";
-import { AccountLockedCoins } from "./types";
-import { computed, makeObservable } from "mobx";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { computed, makeObservable } from "mobx";
+
+import { AccountLockedCoins } from "./types";
 
 export class ObservableQueryAccountLockedCoinsInner extends ObservableChainQuery<AccountLockedCoins> {
   constructor(

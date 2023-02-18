@@ -1,19 +1,20 @@
+import classNames from "classnames";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, {
-  PropsWithoutRef,
-  useState,
-  useCallback,
   FunctionComponent,
+  PropsWithoutRef,
+  useCallback,
+  useState,
 } from "react";
-import classNames from "classnames";
+
+import { IS_FRONTIER } from "../../config";
+import { useWindowSize } from "../../hooks";
+import { replaceAt } from "../../utils/array";
 import { InfoTooltip } from "../tooltip";
 import { CustomClasses } from "../types";
 import { BaseCell, ColumnDef, RowDef } from "./types";
-import { useWindowSize } from "../../hooks";
-import { IS_FRONTIER } from "../../config";
-import { replaceAt } from "../../utils/array";
 
 export interface Props<TCell extends BaseCell> extends CustomClasses {
   /** Functionality common to all columns. */

@@ -1,8 +1,9 @@
-import { computed, makeObservable } from "mobx";
-import { HasMapStore } from "@keplr-wallet/stores";
-import { ObservableQueryExternalBase } from "../base";
 import { KVStore } from "@keplr-wallet/common";
+import { HasMapStore } from "@keplr-wallet/stores";
+import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
+
+import { ObservableQueryExternalBase } from "../base";
 import { IbcStatus } from "./types";
 
 /** Queries for ibc chain data*/

@@ -8,7 +8,18 @@
   "app": {
     "banner": {
       "title": "Tüm izin gerektirmeyen varlıkları görüntülüyorsunuz.",
-      "linkText": "Ana uygulamaya dönmek için burayı tıklayın"
+      "linkText": "Ana uygulamaya dönmek için burayı tıklayın",
+      "externalLinkDisclaimer": "Bağlantıyı tıklatarak, Osmosis'in dış sayfalar için hizmet kalitesi garantisi vermediğini okuduğunu ve anladığını kabul edersin.",
+      "externalLink": "Şimdi Osmosis uygulamasından ayrılıyorsun ve gitmek için",
+      "goToSite": "Site'ye Git",
+      "backToOsmosis": "Osmosis'e Geri Dön",
+      "externalLinkModalTitle": "Osmosis'den Ayrılma"
+    }
+  },
+  "mars": {
+    "banner": {
+      "title": "Osmosis'ta borç / ödünç alma ayağa kalktı.",
+      "linkText": "Mars Protocol'ı keşfedin"
     }
   },
   "swap": {

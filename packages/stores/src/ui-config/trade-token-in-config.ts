@@ -1,11 +1,3 @@
-import {
-  action,
-  computed,
-  makeObservable,
-  observable,
-  override,
-  runInAction,
-} from "mobx";
 import { AmountConfig, IFeeConfig } from "@keplr-wallet/hooks";
 import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
 import { AppCurrency } from "@keplr-wallet/types";
@@ -24,9 +16,18 @@ import {
   RoutePathWithAmount,
 } from "@osmosis-labs/pools";
 import {
-  NoSendCurrencyError,
+  action,
+  computed,
+  makeObservable,
+  observable,
+  override,
+  runInAction,
+} from "mobx";
+
+import {
   InsufficientBalanceError,
   NoRouteError,
+  NoSendCurrencyError,
 } from "./errors";
 
 export class ObservableTradeTokenInConfig extends AmountConfig {

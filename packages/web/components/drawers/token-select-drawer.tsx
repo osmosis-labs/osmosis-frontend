@@ -1,7 +1,10 @@
-import Image from "next/image";
+import { Transition } from "@headlessui/react";
 import { AppCurrency, IBCCurrency } from "@keplr-wallet/types";
 import { CoinPretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
+import debounce from "debounce";
+import { observer } from "mobx-react-lite";
+import Image from "next/image";
 import {
   Fragment,
   FunctionComponent,
@@ -10,21 +13,19 @@ import {
   useState,
 } from "react";
 import { useTranslation } from "react-multi-lang";
-import { SearchBox } from "../input";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
-import { useFilteredData, useWindowSize } from "../../hooks";
-import debounce from "debounce";
-import { useWindowKeyActions } from "../../hooks/window/use-window-key-actions";
+import { useLatest } from "react-use";
+
 import { RecommendedSwapDenoms } from "../../config";
+import { useFilteredData, useWindowSize } from "../../hooks";
+import { useConst } from "../../hooks/use-const";
 import useDraggableScroll from "../../hooks/use-draggable-scroll";
-import { Transition } from "@headlessui/react";
 import { useKeyActions } from "../../hooks/use-key-actions";
 import { useStateRef } from "../../hooks/use-state-ref";
-import { useLatest } from "react-use";
-import { useConst } from "../../hooks/use-const";
-import IconButton from "../buttons/icon-button";
+import { useWindowKeyActions } from "../../hooks/window/use-window-key-actions";
+import { useStore } from "../../stores";
 import { Icon } from "../assets";
+import IconButton from "../buttons/icon-button";
+import { SearchBox } from "../input";
 
 function getJustDenom(coinDenom: string) {
   return coinDenom.split(" ").slice(0, 1).join(" ") ?? "";

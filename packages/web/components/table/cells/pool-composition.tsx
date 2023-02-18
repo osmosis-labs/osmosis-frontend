@@ -1,9 +1,10 @@
-import Image from "next/image";
 import classNames from "classnames";
+import Image from "next/image";
 import React, { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
-import { BaseCell } from "..";
+
 import { PoolAssetsIcon, PoolAssetsName } from "../../assets";
+import { BaseCell } from "..";
 
 export interface PoolCompositionCell extends BaseCell {
   poolId: string;

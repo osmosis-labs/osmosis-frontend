@@ -1,2 +1,2 @@
-export * from "./params";
 export * from "./epoch-provisions";
+export * from "./params";

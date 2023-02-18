@@ -1,13 +1,14 @@
-import { NextPage } from "next";
-import { useRouter } from "next/router";
-import Image from "next/image";
-import React, { FunctionComponent } from "react";
-import { observer } from "mobx-react-lite";
-import dayjs from "dayjs";
-import { PricePretty, CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
-import { useStore } from "../../stores";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
+import dayjs from "dayjs";
+import { observer } from "mobx-react-lite";
+import { NextPage } from "next";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import React, { FunctionComponent } from "react";
+
 import { PromotedLBPPoolIds } from "../../config";
+import { useStore } from "../../stores";
 
 const BootstrapPage: NextPage = observer(() => {
   return (

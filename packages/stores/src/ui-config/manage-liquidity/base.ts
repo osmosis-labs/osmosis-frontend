@@ -1,7 +1,8 @@
-import { observable, makeObservable, action } from "mobx";
 import { TxChainSetter } from "@keplr-wallet/hooks";
 import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
 import { CoinPretty } from "@keplr-wallet/unit";
+import { action, makeObservable, observable } from "mobx";
+
 import { ObservableQueryGammPoolShare } from "../../queries";
 
 export class ManageLiquidityConfigBase extends TxChainSetter {

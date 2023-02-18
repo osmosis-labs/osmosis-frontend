@@ -1,7 +1,7 @@
-import { ChainGetter, ObservableChainQuery } from "@keplr-wallet/stores";
 import { KVStore } from "@keplr-wallet/common";
-import { computed, makeObservable } from "mobx";
+import { ChainGetter, ObservableChainQuery } from "@keplr-wallet/stores";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { computed, makeObservable } from "mobx";
 
 export type Params = {
   param: {

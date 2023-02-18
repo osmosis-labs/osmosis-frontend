@@ -1,7 +1,8 @@
 import { AmountConfig } from "@keplr-wallet/hooks";
 import { Buffer } from "buffer";
+
 import { IBCTransferHistory, UncommitedHistory } from "../../ibc-history";
-import { IbcTransferSender, IbcTransferCounterparty } from "./types";
+import { IbcTransferCounterparty, IbcTransferSender } from "./types";
 
 /** Use to perform a standard IBC transfer from `sender` to `counterparty`. Supports CW20 transfers (deposits). */
 export async function basicIbcTransfer(

@@ -1,10 +1,11 @@
+import { KVStore } from "@keplr-wallet/common";
 import {
   ChainGetter,
   ObservableChainQuery,
   ObservableChainQueryMap,
 } from "@keplr-wallet/stores";
+
 import { SyntheticLockupsByLockId } from "./types";
-import { KVStore } from "@keplr-wallet/common";
 
 export class ObservableSyntheticLockupsByLockIdInner extends ObservableChainQuery<SyntheticLockupsByLockId> {
   constructor(

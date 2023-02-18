@@ -1,5 +1,5 @@
-import React, { FunctionComponent } from "react";
 import classNames from "classnames";
+import React, { FunctionComponent } from "react";
 
 export const StatLabelValue: FunctionComponent<{
   containerClassName?: string;

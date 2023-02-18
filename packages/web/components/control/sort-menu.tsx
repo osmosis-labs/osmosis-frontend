@@ -1,12 +1,13 @@
-import React, { FunctionComponent } from "react";
 import classNames from "classnames";
-import { MenuDropdown } from ".";
-import { Disableable, CustomClasses } from "../types";
-import { MenuSelectProps } from "./types";
+import React, { FunctionComponent } from "react";
+import { useTranslation } from "react-multi-lang";
+
 import { useBooleanWithWindowEvent, useWindowSize } from "../../hooks";
 import { MenuOptionsModal } from "../../modals";
-import { useTranslation } from "react-multi-lang";
 import { Icon } from "../assets";
+import { CustomClasses, Disableable } from "../types";
+import { MenuDropdown } from ".";
+import { MenuSelectProps } from "./types";
 
 interface Props extends MenuSelectProps, Disableable, CustomClasses {
   onToggleSortDirection?: () => void;

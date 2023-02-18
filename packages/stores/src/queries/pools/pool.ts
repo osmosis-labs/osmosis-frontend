@@ -1,31 +1,32 @@
+import { KVStore } from "@keplr-wallet/common";
 import {
   ChainGetter,
   ObservableChainQuery,
   QueryResponse,
 } from "@keplr-wallet/stores";
-import { KVStore } from "@keplr-wallet/common";
-import { Currency, AppCurrency } from "@keplr-wallet/types";
+import { AppCurrency, Currency } from "@keplr-wallet/types";
 import {
   CoinPretty,
-  PricePretty,
   Dec,
   DecUtils,
   Int,
   IntPretty,
+  PricePretty,
   RatePretty,
 } from "@keplr-wallet/unit";
 import {
   Pool,
-  WeightedPool,
-  WeightedPoolRaw,
   StablePool,
   StablePoolRaw,
+  WeightedPool,
+  WeightedPoolRaw,
 } from "@osmosis-labs/pools";
+import dayjs from "dayjs";
+import { Duration } from "dayjs/plugin/duration";
 import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { IPriceStore } from "src/price";
-import { Duration } from "dayjs/plugin/duration";
-import dayjs from "dayjs";
+
 import { Head } from "./types";
 
 export type PoolRaw = WeightedPoolRaw | StablePoolRaw;

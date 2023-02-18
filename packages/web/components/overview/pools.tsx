@@ -1,14 +1,15 @@
-import Image from "next/image";
-import { FunctionComponent, useState, useEffect } from "react";
-import { observer } from "mobx-react-lite";
+import { CoinPretty, DecUtils } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import dayjs from "dayjs";
-import { CoinPretty, DecUtils } from "@keplr-wallet/unit";
-import { useStore } from "../../stores";
-import { useWindowSize } from "../../hooks";
-import { CustomClasses, Breakpoint } from "../types";
+import { observer } from "mobx-react-lite";
+import Image from "next/image";
+import { FunctionComponent, useEffect, useState } from "react";
 import { useTranslation } from "react-multi-lang";
+
+import { useWindowSize } from "../../hooks";
+import { useStore } from "../../stores";
 import { Button } from "../buttons";
+import { Breakpoint, CustomClasses } from "../types";
 
 const REWARD_EPOCH_IDENTIFIER = "day";
 

@@ -1,16 +1,17 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Hash } from "@keplr-wallet/crypto";
+import { Dec, IntPretty } from "@keplr-wallet/unit";
+import { Buffer } from "buffer";
+import { observer } from "mobx-react-lite";
 import { NextPage } from "next";
+import { useRouter } from "next/router";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ReactZoomPanPinchRef,
   TransformComponent,
   TransformWrapper,
 } from "react-zoom-pan-pinch";
-import { observer } from "mobx-react-lite";
+
 import { useStore } from "../../stores";
-import { Dec, IntPretty } from "@keplr-wallet/unit";
-import { Hash } from "@keplr-wallet/crypto";
-import { Buffer } from "buffer";
-import { useRouter } from "next/router";
 
 export const GAME_CONFIG = {
   PIXEL_SIZE: 30,

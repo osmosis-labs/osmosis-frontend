@@ -1,11 +1,13 @@
-import { makeObservable } from "mobx";
-import { computedFn } from "mobx-utils";
 import { KVStore } from "@keplr-wallet/common";
 import { HasMapStore } from "@keplr-wallet/stores";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { makeObservable } from "mobx";
+import { computedFn } from "mobx-utils";
+
 import { IPriceStore } from "../../price";
+import { IMPERATOR_TX_REWARD_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
-import { PoolsRewards, PoolRewards } from "./types";
+import { PoolRewards, PoolsRewards } from "./types";
 
 /** Queries Imperator pool fee history data. */
 export class ObservableQueryAccountPoolRewards extends ObservableQueryExternalBase<PoolsRewards> {
@@ -58,7 +60,7 @@ export class ObservableQueryAccountsPoolRewards extends HasMapStore<ObservableQu
   constructor(
     kvStore: KVStore,
     priceStore: IPriceStore,
-    poolRewardsBaseUrl = "https://api-osmosis-chain.imperator.co"
+    poolRewardsBaseUrl = IMPERATOR_TX_REWARD_BASEURL
   ) {
     super(
       (bech32Address) =>

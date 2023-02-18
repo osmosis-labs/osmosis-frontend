@@ -1,41 +1,42 @@
-import { FunctionComponent, useState, useEffect, useCallback } from "react";
-import { observer } from "mobx-react-lite";
-import classNames from "classnames";
 import { Environment } from "@axelar-network/axelarjs-sdk";
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { WalletStatus } from "@keplr-wallet/stores";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { basicIbcTransfer } from "@osmosis-labs/stores";
+import classNames from "classnames";
+import { observer } from "mobx-react-lite";
+import { FunctionComponent, useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-multi-lang";
+
+import { displayToast, ToastType } from "../../components/alert";
+import { Button } from "../../components/buttons";
+import { Transfer } from "../../components/complex/transfer";
+import { EventName } from "../../config/user-analytics-v2";
 import {
-  useFakeFeeConfig,
   useAmountConfig,
+  useFakeFeeConfig,
   useLocalStorageState,
 } from "../../hooks";
-import { IBCBalance } from "../../stores/assets";
-import { useStore } from "../../stores";
-import { Transfer } from "../../components/complex/transfer";
-import { Button } from "../../components/buttons";
-import { displayToast, ToastType } from "../../components/alert";
+import { useAmplitudeAnalytics } from "../../hooks/use-amplitude-analytics";
 import { BridgeIntegrationProps } from "../../modals";
-import { queryErc20Balance } from "../ethereum/queries";
-import { useTxEventToasts } from "../use-client-tx-event-toasts";
+import { useStore } from "../../stores";
+import { IBCBalance } from "../../stores/assets";
+import { getKeyByValue } from "../../utils/object";
+import { EthClientChainIds_SourceChainMap, SourceChain } from "../bridge-info";
 import {
   ChainNames,
   EthWallet,
   transfer as erc20Transfer,
   useTxReceiptState,
 } from "../ethereum";
+import { queryErc20Balance } from "../ethereum/queries";
+import { useTxEventToasts } from "../use-client-tx-event-toasts";
 import { useGeneralAmountConfig } from "../use-general-amount-config";
-import { useDepositAddress, useTransferFeeQuery } from "./hooks";
 import {
   AxelarBridgeConfig,
   AxelarChainIds_SourceChainMap,
   waitBySourceChain,
 } from ".";
-import { SourceChain, EthClientChainIds_SourceChainMap } from "../bridge-info";
-import { useAmplitudeAnalytics } from "../../hooks/use-amplitude-analytics";
-import { EventName } from "../../config/user-analytics-v2";
-import { useTranslation } from "react-multi-lang";
-import { getKeyByValue } from "../../utils/object";
+import { useDepositAddress, useTransferFeeQuery } from "./hooks";
 
 /** Axelar-specific bridge transfer integration UI. */
 const AxelarTransfer: FunctionComponent<
@@ -415,7 +416,6 @@ const AxelarTransfer: FunctionComponent<
           DecUtils.getTenExponentNInPrecisionRange(originCurrency.coinDecimals)
         )
       )
-        .moveDecimalPointRight(originCurrency.coinDecimals)
         .toDec()
         .lt(transferFee.toDec());
     const isInsufficientBal =

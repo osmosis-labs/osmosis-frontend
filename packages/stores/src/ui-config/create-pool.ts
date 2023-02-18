@@ -1,36 +1,37 @@
+import { Bech32Address } from "@keplr-wallet/cosmos";
 import {
-  observable,
-  computed,
-  makeObservable,
-  action,
-  runInAction,
-} from "mobx";
-import {
-  TxChainSetter,
   IFeeConfig,
   InvalidNumberAmountError,
+  TxChainSetter,
 } from "@keplr-wallet/hooks";
+import { AmountConfig } from "@keplr-wallet/hooks";
 import {
-  ObservableQueryBalances,
   ChainGetter,
   IQueriesStore,
+  ObservableQueryBalances,
 } from "@keplr-wallet/stores";
-import { AmountConfig } from "@keplr-wallet/hooks";
 import { AppCurrency } from "@keplr-wallet/types";
-import { Bech32Address } from "@keplr-wallet/cosmos";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
+import {
+  action,
+  computed,
+  makeObservable,
+  observable,
+  runInAction,
+} from "mobx";
+
 import type { ObservableQueryPool } from "../queries";
 import {
   DepositNoBalanceError,
   HighSwapFeeError,
-  InvalidSwapFeeError,
   InvalidScalingFactorControllerAddress,
+  InvalidSwapFeeError,
   MaxAssetsCountError,
   MinAssetsCountError,
   NegativePercentageError,
-  ScalingFactorTooLowError,
   NegativeSwapFeeError,
   PercentageSumError,
+  ScalingFactorTooLowError,
 } from "./errors";
 
 export interface CreatePoolConfigOpts {

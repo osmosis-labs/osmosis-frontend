@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { FunctionComponent } from "react";
+
 import { IS_FRONTIER } from "../config";
 
 /**
