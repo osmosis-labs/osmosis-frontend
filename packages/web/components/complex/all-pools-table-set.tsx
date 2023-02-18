@@ -456,13 +456,12 @@ export const AllPoolsTableSet: FunctionComponent<{
       }),
     ];
 
-    // const [sorting, setSorting] = useState<SortingState>([
-    //   {
-    //     id: "liquidity",
-    //     desc: true,
-    //   },
-    // ]);
-    const [sorting, setSorting] = useState<SortingState>([]);
+    const [sorting, setSorting] = useState<SortingState>([
+      {
+        id: "liquidity",
+        desc: true,
+      },
+    ]);
 
     const table = useReactTable({
       data: tableData,
@@ -477,6 +476,8 @@ export const AllPoolsTableSet: FunctionComponent<{
         setSorting(s);
       },
     });
+
+    const containerRef = useRef<HTMLDivElement | null>(null);
 
     return (
       <>
@@ -558,13 +559,16 @@ export const AllPoolsTableSet: FunctionComponent<{
             </div>
           </div>
         </div>
-        <PaginatedTable
-          paginate={useCallback(
-            () => queriesOsmosis.queryGammPools.paginate(),
-            [queriesOsmosis.queryGammPools]
-          )}
-          table={table}
-        />
+        <div className="my-5 h-full overflow-auto" ref={containerRef}>
+          <PaginatedTable
+            containerRef={containerRef}
+            paginate={useCallback(
+              () => queriesOsmosis.queryGammPools.paginate(),
+              [queriesOsmosis.queryGammPools]
+            )}
+            table={table}
+          />
+        </div>
       </>
     );
   }
