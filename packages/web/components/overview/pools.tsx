@@ -108,7 +108,7 @@ export const PoolsOverview: FunctionComponent<
       </div>
       <div className="absolute right-7 bottom-7">
         <Button
-          className="rounded-[24px] text-white-full"
+          className="rounded-[24px] text-white-full shadow-[0_6px_8px_0_rgba(9,5,36,0.2);]"
           onClick={setIsCreatingPool}
           mode="icon-primary"
         >
