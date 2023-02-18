@@ -85,7 +85,7 @@ const Filters: Record<"superfluid" | "stable" | "weighted", string> = {
   weighted: "Weighted",
 };
 
-export const AllPoolsTableSet: FunctionComponent<{
+export const AllPoolsTable: FunctionComponent<{
   quickAddLiquidity: (poolId: string) => void;
   quickRemoveLiquidity: (poolId: string) => void;
   quickLockTokens: (poolId: string) => void;

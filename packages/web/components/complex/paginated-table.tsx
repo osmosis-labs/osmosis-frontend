@@ -5,7 +5,7 @@ import Link from "next/link";
 import { MutableRefObject, useEffect } from "react";
 
 import { IS_FRONTIER } from "../../config";
-import { Pool } from "./all-pools-table-set";
+import { Pool } from "./all-pools-table";
 
 const SIZE = 80;
 

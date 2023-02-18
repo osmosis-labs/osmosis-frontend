@@ -8,7 +8,7 @@ import { useTranslation } from "react-multi-lang";
 
 import { ShowMoreButton } from "../../components/buttons/show-more";
 import { PoolCard } from "../../components/cards";
-import { AllPoolsTableSet } from "../../components/complex/all-pools-table-set";
+import { AllPoolsTable } from "../../components/complex/all-pools-table";
 import { MetricLoader } from "../../components/loaders";
 import { PoolsOverview } from "../../components/overview/pools";
 import { EventName } from "../../config";
@@ -410,7 +410,7 @@ const Pools: NextPage = observer(function () {
         </div>
       </section>
       <section>
-        <AllPoolsTableSet {...quickActionProps} />
+        <AllPoolsTable {...quickActionProps} />
       </section>
     </main>
   );
