@@ -1486,8 +1486,8 @@ export const IBCAssetInfos: (IBCAsset & {
   },
   {
     counterpartyChainId: "eightball-1",
-    sourceChannelId: "channel-##",
-    destChannelId: "channel-##",
+    sourceChannelId: "channel-16",
+    destChannelId: "channel-641",
     coinMinimalDenom: "uebl",
   },
 ].filter((ibcAsset) => {
