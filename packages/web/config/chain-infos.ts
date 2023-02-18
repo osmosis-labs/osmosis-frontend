@@ -2714,7 +2714,7 @@ const chainInfos = (
       ],
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx:
-        "https://www.mintscan.io/eightball/txs/{txHash}",
+        "https://explorer.8ball.info/8ball/tx/{txHash}",
     },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
