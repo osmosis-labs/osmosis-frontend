@@ -478,6 +478,10 @@ export const AllPoolsTableSet: FunctionComponent<{
     });
 
     const containerRef = useRef<HTMLDivElement | null>(null);
+    const handleFetchRemaining = useCallback(
+      () => queriesOsmosis.queryGammPools.fetchRemainingPools(),
+      [queriesOsmosis.queryGammPools]
+    );
 
     return (
       <>
@@ -562,10 +566,7 @@ export const AllPoolsTableSet: FunctionComponent<{
         <div className="my-5 h-full overflow-auto" ref={containerRef}>
           <PaginatedTable
             containerRef={containerRef}
-            paginate={useCallback(
-              () => queriesOsmosis.queryGammPools.paginate(),
-              [queriesOsmosis.queryGammPools]
-            )}
+            paginate={handleFetchRemaining}
             table={table}
           />
         </div>

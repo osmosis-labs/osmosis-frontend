@@ -2,7 +2,7 @@ import { flexRender, Row, Table } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import Image from "next/image";
 import Link from "next/link";
-import { MutableRefObject } from "react";
+import { MutableRefObject, useEffect } from "react";
 import { IS_FRONTIER } from "../../config";
 import { Pool } from "./all-pools-table-set";
 
@@ -14,7 +14,7 @@ type Props = {
   table: Table<Pool>;
 };
 
-const PaginatedTable = ({ containerRef, table }: Props) => {
+const PaginatedTable = ({ containerRef, paginate, table }: Props) => {
   const { rows } = table.getRowModel();
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
@@ -29,6 +29,18 @@ const PaginatedTable = ({ containerRef, table }: Props) => {
     virtualRows.length > 0
       ? totalSize - (virtualRows?.[virtualRows.length - 1]?.end || 0)
       : 0;
+
+  useEffect(() => {
+    const [lastItem] = [...rowVirtualizer.getVirtualItems()].reverse();
+
+    if (!lastItem) {
+      return;
+    }
+
+    if (lastItem.index >= rows.length - 1) {
+      paginate();
+    }
+  }, [paginate, rowVirtualizer, rows.length]);
 
   return (
     <table className="w-full">
