@@ -1,7 +1,10 @@
 import { assets, chain } from "@chain-registry/osmosis";
 import { Logger, WalletManager } from "@cosmos-kit/core";
+import { wallets as cosmosStationWallets } from "@cosmos-kit/cosmostation";
 import { wallets as keplrWallets } from "@cosmos-kit/keplr";
 import { wallets as leapWallets } from "@cosmos-kit/leap";
+import { wallets as trustWallets } from "@cosmos-kit/trust";
+import { wallets as xdefiWallets } from "@cosmos-kit/xdefi-extension";
 import { action, makeObservable, observable } from "mobx";
 
 const chains = ["osmosis"] as const;
@@ -14,7 +17,13 @@ export class AccountStore {
   private _walletManager: WalletManager = new WalletManager(
     [chain],
     [assets],
-    [...keplrWallets, ...leapWallets],
+    [
+      ...keplrWallets,
+      ...leapWallets,
+      ...cosmosStationWallets,
+      ...trustWallets,
+      ...xdefiWallets,
+    ],
     logger,
     "icns"
   );

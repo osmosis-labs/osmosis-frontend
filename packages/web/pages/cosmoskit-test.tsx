@@ -11,6 +11,8 @@ const CosmosKitTest = observer(() => {
   const walletRepo = newAccountStore.getWalletRepo("osmosis");
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  console.log(walletRepo?.current?.walletStatus);
+
   return (
     <div>
       {walletRepo.current ? (
