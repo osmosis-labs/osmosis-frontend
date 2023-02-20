@@ -22,4 +22,3 @@ export const WRAPPER_ADDRESSES: { [chainId: string]: string } = {
     'osmo1ec5xfelcwymfc76m6lhy2mjlxdchmutu0tzxxd4vtmaazwzr405sruqm3e',
 };
 export const ENABLE_AUTONOMY = true;
-// process.env.NEXT_PUBLIC_ENABLE_AUTONOMY === "enabled";
