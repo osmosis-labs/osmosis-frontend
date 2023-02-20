@@ -114,9 +114,27 @@ export const TradeClipboard: FunctionComponent<{
     tradeTokenInConfig.setFeeConfig(feeConfig);
 
     // show details
-    const [showEstimateDetails, setShowEstimateDetails] = useState(false);
+    const [showEstimateDetails, _setShowEstimateDetails] = useState(false);
     const isEstimateDetailRelevant = !(
       tradeTokenInConfig.amount === "" || tradeTokenInConfig.amount === "0"
+    );
+    const setShowEstimateDetails = useCallback(
+      (value: boolean) => {
+        // refresh current route's pools
+        if (value === true) {
+          tradeTokenInConfig.optimizedRoutePaths.forEach((route) => {
+            route.pools.forEach((pool) => {
+              console.log("refresh pool", pool.id);
+              queries.osmosis?.queryGammPools
+                .getPool(pool.id)
+                ?.waitFreshResponse();
+            });
+          });
+        }
+
+        _setShowEstimateDetails(value);
+      },
+      [tradeTokenInConfig, queries.osmosis?.queryGammPools]
     );
     useEffect(() => {
       // auto collapse on input clear
@@ -146,7 +164,7 @@ export const TradeClipboard: FunctionComponent<{
         fetchedRemainingPoolsRef.current = true;
         queries.osmosis?.queryGammPools.fetchRemainingPools();
       }
-    }, []);
+    }, [queries.osmosis?.queryGammPools]);
     const [showFromTokenSelectDropdown, _setFromTokenSelectDropdownLocal] =
       useState(false);
     const setFromTokenSelectDropdownLocal = useCallback(
