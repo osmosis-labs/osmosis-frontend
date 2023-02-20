@@ -569,8 +569,8 @@ export const IBCAssetInfos: (IBCAsset & {
     sourceChannelId: "channel-204",
     destChannelId: "channel-0",
     coinMinimalDenom: "aevmos",
-    depositUrlOverride: "https://app.evmos.org/transfer",
-    withdrawUrlOverride: "https://app.evmos.org/transfer",
+    depositUrlOverride: "https://app.evmos.org/assets",
+    withdrawUrlOverride: "https://app.evmos.org/assets",
     isVerified: true,
   },
   {
