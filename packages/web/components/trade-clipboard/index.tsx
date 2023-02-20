@@ -209,7 +209,7 @@ export const TradeClipboard: FunctionComponent<{
       () =>
         tradeTokenInConfig.beforeSpotPriceWithoutSwapFeeOutOverIn
           .trim(true)
-          .maxDecimals(tradeTokenInConfig.outCurrency.coinDecimals),
+          .maxDecimals(8),
       [
         tradeTokenInConfig.beforeSpotPriceWithoutSwapFeeOutOverIn,
         tradeTokenInConfig.outCurrency,
@@ -672,7 +672,7 @@ export const TradeClipboard: FunctionComponent<{
                     .getBalanceFromCurrency(tradeTokenInConfig.sendCurrency)
                     .trim(true)
                     .hideDenom(true)
-                    .maxDecimals(tradeTokenInConfig.sendCurrency.coinDecimals)
+                    .maxDecimals(8)
                     .toString()}{" "}
                   {tradeTokenInConfig.sendCurrency.coinDenom.toLowerCase() ===
                   "unknown"
