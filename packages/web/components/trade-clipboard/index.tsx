@@ -314,7 +314,7 @@ export const TradeClipboard: FunctionComponent<{
         return account.init();
       }
       if (tradeTokenInConfig.optimizedRoutePaths.length > 0) {
-        const routes: {
+        const routePools: {
           poolId: string;
           tokenOutCurrency: Currency;
         }[] = [];
@@ -343,7 +343,7 @@ export const TradeClipboard: FunctionComponent<{
             return;
           }
 
-          routes.push({
+          routePools.push({
             poolId: pool.id,
             tokenOutCurrency,
           });
@@ -381,14 +381,14 @@ export const TradeClipboard: FunctionComponent<{
               tokenAmount: Number(tokenIn.amount),
               toToken: tradeTokenInConfig.outCurrency.coinDenom,
               isOnHome: !isInModal,
-              isMultiHop: routes.length !== 1,
+              isMultiHop: routePools.length !== 1,
             },
           ]);
-          if (routes.length === 1) {
+          if (routePools.length === 1) {
             await account.osmosis.sendSwapExactAmountInMsg(
-              routes[0].poolId,
+              routePools[0].poolId,
               tokenIn,
-              routes[0].tokenOutCurrency,
+              routePools[0].tokenOutCurrency,
               maxSlippage,
               "",
               {
@@ -418,7 +418,7 @@ export const TradeClipboard: FunctionComponent<{
             );
           } else {
             await account.osmosis.sendMultihopSwapExactAmountInMsg(
-              routes,
+              routePools,
               tokenIn,
               maxSlippage,
               "",
