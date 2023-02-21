@@ -7,7 +7,6 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import classNames from "classnames";
 import EventEmitter from "eventemitter3";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
@@ -20,10 +19,9 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { EventName } from "../../config";
-import { useAmplitudeAnalytics, useFilteredData } from "../../hooks";
+import { useFilteredData, useWindowSize } from "../../hooks";
 import { useStore } from "../../stores";
-import { SortMenu } from "../control";
+import { SelectMenu } from "../control/select-menu";
 import { SearchBox } from "../input";
 import {
   MetricLoaderCell,
@@ -79,10 +77,15 @@ export type Pool = [
   }
 ];
 
-const Filters: Record<"superfluid" | "stable" | "weighted", string> = {
+const PoolFilters: Record<"superfluid" | "stable" | "weighted", string> = {
   superfluid: "Superfluid",
   stable: "Stableswap",
   weighted: "Weighted",
+};
+
+const IncentiveFilters: Record<"internal" | "external", string> = {
+  internal: "Internal incentives",
+  external: "External incentives",
 };
 
 export const AllPoolsTable: FunctionComponent<{
@@ -101,11 +104,11 @@ export const AllPoolsTable: FunctionComponent<{
     } = useStore();
     const t = useTranslation();
 
-    const { logEvent } = useAmplitudeAnalytics();
-
     const router = useRouter();
-    const filter = router.query.filter;
+    const poolFilter = router.query.pool as string;
+    const incentiveFilter = router.query.incentive as string;
     const fetchedRemainingPoolsRef = useRef(false);
+    const { isMobile } = useWindowSize();
 
     const { chainId } = chainStore.osmosis;
     const queryCosmos = queriesStore.get(chainId).cosmos;
@@ -294,21 +297,38 @@ export const AllPoolsTable: FunctionComponent<{
       return [...allPoolsWithMetrics, ...externalIncentivizedPoolsWithMetrics]
         .filter((p) => p.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD)))
         .filter((p) => {
-          if (filter === "superfluid") {
+          if (poolFilter === "superfluid") {
             return queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
               p.pool.id
             );
           }
-          if (filter) {
-            return p.pool.type === filter;
+          if (poolFilter) {
+            return p.pool.type === poolFilter;
+          }
+          return true;
+        })
+        .filter((p) => {
+          if (incentiveFilter === "internal") {
+            return queriesOsmosis.queryIncentivizedPools.isIncentivized(
+              p.pool.id
+            );
+          }
+          if (incentiveFilter === "external") {
+            const gauges = queryActiveGauges.getExternalGaugesForPool(
+              p.pool.id
+            );
+            return gauges && gauges.length > 0;
           }
           return true;
         });
     }, [
       allPoolsWithMetrics,
       externalIncentivizedPoolsWithMetrics,
-      filter,
-      queriesExternalStore.queryGammPoolFeeMetrics.response,
+      incentiveFilter,
+      poolFilter,
+      queriesOsmosis.queryIncentivizedPools,
+      queriesOsmosis.querySuperfluidPools,
+      queryActiveGauges,
     ]);
 
     const [query, _setQuery, filteredPools] = useFilteredData(
@@ -488,77 +508,93 @@ export const AllPoolsTable: FunctionComponent<{
         <div className="mt-5 flex flex-col gap-3">
           <div className="flex place-content-between items-center">
             <h5>{t("pools.allPools.title")}</h5>
-          </div>
-          <div className="flex flex-wrap place-content-between items-center gap-4">
-            <div className="flex gap-3">
-              {Object.entries(Filters).map(([f, display]) => (
-                <div
-                  className={classNames(
-                    "cursor-pointer self-start  rounded-xl bg-osmoverse-700 px-2 py-2",
-                    {
-                      "bg-osmoverse-600": filter ? f === filter : false,
-                    }
-                  )}
-                  key={f}
-                  onClick={() => {
-                    if (f === filter) {
-                      router.push("/pools", undefined, {
-                        scroll: false,
-                      });
-                    } else {
-                      router.push({ query: { filter: f } }, undefined, {
-                        scroll: false,
-                      });
-                    }
-                  }}
-                >
-                  {display}
-                </div>
-              ))}
-            </div>
             <div className="flex flex-wrap items-center gap-3 lg:w-full lg:place-content-between">
+              <SelectMenu
+                text={
+                  isMobile
+                    ? t("components.pool.mobileTitle")
+                    : t("components.pool.title")
+                }
+                options={useMemo(
+                  () =>
+                    Object.entries(PoolFilters).map(([id, display]) => ({
+                      id,
+                      display,
+                    })),
+                  []
+                )}
+                selectedOptionId={poolFilter}
+                onSelect={useCallback(
+                  (id: string) => {
+                    if (id === poolFilter) {
+                      router.replace(
+                        { query: { ...router.query, pool: undefined } },
+                        undefined,
+                        {
+                          scroll: false,
+                        }
+                      );
+                    } else {
+                      router.push(
+                        { query: { ...router.query, pool: id } },
+                        undefined,
+                        {
+                          scroll: false,
+                        }
+                      );
+                    }
+                  },
+
+                  [poolFilter, router]
+                )}
+              />
+              <SelectMenu
+                text={
+                  isMobile
+                    ? t("components.incentive.mobileTitle")
+                    : t("components.incentive.title")
+                }
+                options={useMemo(
+                  () =>
+                    Object.entries(IncentiveFilters).map(([id, display]) => ({
+                      id,
+                      display,
+                    })),
+                  []
+                )}
+                selectedOptionId={incentiveFilter}
+                onSelect={useCallback(
+                  (id: string) => {
+                    if (id === incentiveFilter) {
+                      router.replace(
+                        {
+                          query: { ...router.query, incentive: undefined },
+                        },
+                        undefined,
+                        {
+                          scroll: false,
+                        }
+                      );
+                    } else {
+                      router.push(
+                        { query: { ...router.query, incentive: id } },
+                        undefined,
+                        {
+                          scroll: false,
+                        }
+                      );
+                    }
+                  },
+
+                  [incentiveFilter, router]
+                )}
+              />
               <SearchBox
                 currentValue={query}
                 onInput={setQuery}
                 placeholder={t("pools.allPools.search")}
                 className="!w-64"
                 size="small"
-              />
-              <SortMenu
-                options={useMemo(
-                  () =>
-                    table.getHeaderGroups()[0].headers.map(({ id, column }) => {
-                      return {
-                        id,
-                        display: column.columnDef.header as string,
-                      };
-                    }),
-                  [table]
-                )}
-                selectedOptionId={sorting[0]?.id}
-                onSelect={useCallback(
-                  (id: string) => {
-                    table.reset();
-                    table.getColumn(id).toggleSorting(false);
-                  },
-                  [table]
-                )}
-                onToggleSortDirection={useCallback(() => {
-                  logEvent([
-                    EventName.Pools.allPoolsListSorted,
-                    {
-                      sortedBy: sorting[0]?.id,
-                      sortDirection: sorting[0].desc
-                        ? "ascending"
-                        : "descending",
-                      sortedOn: "dropdown",
-                    },
-                  ]);
-                  setSorting((prev) => {
-                    const [first] = prev;
-                    return [{ ...first, desc: !first.desc }];
-                  });
-                }, [logEvent, sorting])}
               />
             </div>
           </div>

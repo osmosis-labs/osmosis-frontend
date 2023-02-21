@@ -71,7 +71,7 @@
       "fees7D": "Fees (7D)"
     },
     "allPools": {
-      "title": "All Pools",
+      "title": "Discover Pools",
       "myLiquidity": "my liquidity",
       "TVL": "TVL",
       "APR": "APR",
@@ -356,6 +356,14 @@
     "searchTokens": "Search",
     "selectToken": {
       "title": "Select a token"
+    },
+    "pool": {
+      "title": "Pool types",
+      "mobileTitle": "Pool"
+    },
+    "incentive": {
+      "title": "Incentive types",
+      "mobileTitle": "Incentive"
     }
   },
   "menu": {
