@@ -1,25 +1,24 @@
 export const SUBQUERY_ENDPOINTS: { [chainId: string]: string } = {
   'osmosis-1': '',
   'osmo-test-4':
-    'https://testnet.osmosis.subquery.autonomynetwork.alishahverdi.com/',
+    'https://api.subquery.network/sq/Autonomy-Network/osmosis4-testnet',
 };
 
 export const SUBQUERY_BACKUP_ENDPOINTS: { [chainId: string]: string } = {
   'osmosis-1': '',
   'osmo-test-4':
-    'https://api.subquery.network/sq/Autonomy-Network/osmosis-testnet',
+    'https://testnet.osmosis.subquery.autonomynetwork.alishahverdi.com/',
 };
 
 export const REGISTRY_ADDRESSES: { [chainId: string]: string } = {
   'osmosis-1': '',
   'osmo-test-4':
-    'osmo1zynr26u48vdjrcuxkgswfhcx4zh5lw58qshzycykf33p7fp5y32qkydwrp',
+    'osmo1ayhrtxhusep8cztzwk4p4fl6tg9wy9xsgyvrh0z6gjcr6hp39exspngfy9',
 };
 
 export const WRAPPER_ADDRESSES: { [chainId: string]: string } = {
   'osmosis-1': '',
   'osmo-test-4':
-    'osmo1dwpdh2clk7c8csf9ql2xj36336xsryyg4j7622jhaert9htp48gsh8u9ve',
+    'osmo1ec5xfelcwymfc76m6lhy2mjlxdchmutu0tzxxd4vtmaazwzr405sruqm3e',
 };
 export const ENABLE_AUTONOMY = true;
-// process.env.NEXT_PUBLIC_ENABLE_AUTONOMY === "enabled";
