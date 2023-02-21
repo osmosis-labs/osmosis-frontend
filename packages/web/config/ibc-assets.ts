@@ -1484,6 +1484,12 @@ export const IBCAssetInfos: (IBCAsset & {
     ics20ContractAddress:
       "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
   },
+  {
+    counterpartyChainId: "eightball-1",
+    sourceChannelId: "channel-641",
+    destChannelId: "channel-16",
+    coinMinimalDenom: "uebl",
+  },
 ].filter((ibcAsset) => {
   // validate IBC asset config
   if (
