@@ -115,7 +115,7 @@ const PaginatedTable = ({ containerRef, paginate, table }: Props) => {
               key={row.id}
               className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
             >
-              {row.getVisibleCells().map((cell, i) => {
+              {row.getVisibleCells().map((cell) => {
                 return (
                   <td key={cell.id}>
                     <Link
