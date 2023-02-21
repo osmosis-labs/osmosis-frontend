@@ -2,7 +2,9 @@ import { flexRender, Row, Table } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import Image from "next/image";
 import Link from "next/link";
-import { MutableRefObject, useEffect } from "react";
+import { MutableRefObject, useEffect, useRef } from "react";
+
+import { useOnScreen } from "~/hooks/use-on-screen";
 
 import { IS_FRONTIER } from "../../config";
 import { Pool } from "./all-pools-table";
@@ -31,17 +33,19 @@ const PaginatedTable = ({ containerRef, paginate, table }: Props) => {
       ? totalSize - (virtualRows?.[virtualRows.length - 1]?.end || 0)
       : 0;
 
+  const loaderRef: any = useRef<HTMLDivElement>();
+  const entry = useOnScreen(loaderRef, {});
+  const shouldLoad = !!entry?.isIntersecting;
+
   useEffect(() => {
-    const [lastItem] = [...rowVirtualizer.getVirtualItems()].reverse();
-
-    if (!lastItem) {
-      return;
-    }
-
-    if (lastItem.index >= rows.length - 1) {
+    if (
+      virtualRows.length &&
+      table.getRowModel().rows.length - virtualRows.length < 10 &&
+      shouldLoad
+    ) {
       paginate();
     }
-  }, [paginate, rowVirtualizer, rows.length]);
+  }, [paginate, shouldLoad, table, virtualRows.length]);
 
   return (
     <table className="w-full">
@@ -111,7 +115,7 @@ const PaginatedTable = ({ containerRef, paginate, table }: Props) => {
               key={row.id}
               className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
             >
-              {row.getVisibleCells().map((cell) => {
+              {row.getVisibleCells().map((cell, i) => {
                 return (
                   <td key={cell.id}>
                     <Link
@@ -131,6 +135,7 @@ const PaginatedTable = ({ containerRef, paginate, table }: Props) => {
             </tr>
           );
         })}
+        <div ref={loaderRef}>Should load</div>
         {paddingBottom > 0 && (
           <tr>
             <td style={{ height: `${paddingBottom}px` }} />
