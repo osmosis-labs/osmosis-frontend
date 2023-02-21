@@ -11,11 +11,9 @@ const CosmosKitTest = observer(() => {
   const walletRepo = newAccountStore.getWalletRepo("osmosis");
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  console.log(walletRepo?.current?.walletStatus);
-
   return (
     <div>
-      {walletRepo.current ? (
+      {walletRepo.current?.address ? (
         <div>
           <p>Connected! Address: {newAccountStore.getAddress("osmosis")}</p>
           <Button className="max-w-xs" onClick={() => walletRepo.disconnect()}>
@@ -28,7 +26,7 @@ const CosmosKitTest = observer(() => {
       <WalletSelectModal
         isOpen={isOpen}
         onRequestClose={onClose}
-        wallets={walletRepo.wallets}
+        walletRepo={walletRepo}
       />
     </div>
   );

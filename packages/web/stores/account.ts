@@ -30,9 +30,14 @@ export class AccountStore {
 
   constructor() {
     this.walletManager.walletRepos.forEach((repo) => {
+      repo.setActions({
+        viewWalletRepo: () => this.refresh(),
+      });
       repo.wallets.forEach((wallet) => {
         wallet.setActions({
+          data: () => this.refresh(),
           state: () => this.refresh(),
+          message: () => this.refresh(),
         });
       });
     });
