@@ -30,15 +30,15 @@ import { getKeyByValue } from "../../utils/object";
 import { EthClientChainIds_SourceChainMap, SourceChain } from "../bridge-info";
 import {
   ChainNames,
-  estimateSendGas,
   EthWallet,
   send,
   transfer as erc20Transfer,
+  useErc20Balance,
+  useNativeBalance,
   useTxReceiptState,
 } from "../ethereum";
-import { queryAccountBalance, queryErc20Balance } from "../ethereum/queries";
+import { useAmountConfig as useEvmAmountConfig } from "../ethereum/hooks/use-amount-config";
 import { useTxEventToasts } from "../use-client-tx-event-toasts";
-import { useGeneralAmountConfig } from "../use-general-amount-config";
 import {
   AxelarBridgeConfig,
   AxelarChainIds_SourceChainMap,
@@ -69,7 +69,6 @@ const AxelarTransfer: FunctionComponent<
     onRequestSwitchWallet,
     sourceChainTokens,
     isTestNet = false,
-    useWrappedToken: initialUseWrapped = false,
     connectCosmosWalletButtonOverride,
   }) => {
     const {
@@ -123,8 +122,9 @@ const AxelarTransfer: FunctionComponent<
       ({ id }) => id === selectedSourceChainKey
     );
     const erc20ContractAddress = sourceChainConfig?.erc20ContractAddress;
-    const [useWrappedToken] = useState(
-      initialUseWrapped // assume we're transferring native token, since it's the gas token as well and generally takes precedence
+    const [useWrappedToken, setUseWrappedToken] = useLocalStorageState(
+      `bridge-${sourceChainConfig?.nativeWrapEquivalent}-use-wrapped-token`,
+      false // assume we're transferring native token, since it's the gas token as well and generally takes precedence
     );
     /** Can be native or wrapped version of token. */
     const useNativeToken =
@@ -148,91 +148,27 @@ const AxelarTransfer: FunctionComponent<
       chainStore.getChainFromCurrency(originCurrency.coinDenom)?.chainId ||
       "axelar-dojo-1";
 
-    // get balance from EVM contract
-    const [erc20Balance, setErc20Balance] = useState<CoinPretty | null>(null);
-    useEffect(() => {
-      if (
-        erc20ContractAddress &&
-        ethWalletClient.accountAddress &&
-        !isWithdraw
-      ) {
-        queryErc20Balance(
-          ethWalletClient.send,
-          erc20ContractAddress,
-          ethWalletClient.accountAddress
-        ).then((amount) =>
-          setErc20Balance(new CoinPretty(originCurrency, amount))
-        );
-      }
-    }, [
-      isWithdraw,
-      erc20ContractAddress,
-      ethWalletClient.send,
-      ethWalletClient.accountAddress,
-      ethWalletClient.chainId,
-      originCurrency,
-    ]);
-    // get native EVM balance
-    const [nativeBalance, setNativeBalance] = useState<CoinPretty | null>(null);
-    useEffect(() => {
-      if (
-        !nativeBalance &&
-        sourceChainConfig?.nativeWrapEquivalent &&
-        !useWrappedToken &&
-        ethWalletClient.accountAddress &&
-        !isWithdraw
-      ) {
-        queryAccountBalance(
-          ethWalletClient.send,
-          ethWalletClient.accountAddress
-        ).then((amount) =>
-          setNativeBalance(new CoinPretty(originCurrency, amount))
-        );
-      }
-    }, [
-      isWithdraw,
-      ethWalletClient.accountAddress,
-      ethWalletClient.chainId,
-      originCurrency,
-      useWrappedToken,
-    ]);
-    // cost of native send for gas
-    const [nativeSendGasCost, setNativeSendGasCost] =
-      useState<CoinPretty | null>();
-    useEffect(() => {
-      if (!isWithdraw && useNativeToken) {
-        estimateSendGas(
-          ethWalletClient.send,
-          "1",
-          ethWalletClient.accountAddress!,
-          ethWalletClient.accountAddress!
-        ).then((gasCost) => {
-          // add a buffer to make sure user can confirm send if sending full balance
-          const gasCostWithBuffer = new Dec(gasCost).mul(new Dec(2.2));
-          // TODO: use gas price from ethWalletClient
-
-          setNativeSendGasCost(
-            new CoinPretty(originCurrency, gasCostWithBuffer)
-          );
-        });
-      }
-    }, [
-      isWithdraw,
-      useNativeToken,
-      ethWalletClient.accountAddress,
-      originCurrency,
-    ]);
+    const erc20Balance = useErc20Balance(
+      ethWalletClient,
+      !isWithdraw ? originCurrency : undefined,
+      erc20ContractAddress
+    );
+    const nativeBalance = useNativeBalance(
+      ethWalletClient,
+      !isWithdraw ? originCurrency : undefined
+    );
 
     // DEPOSITING: custom amount validation, since `useAmountConfig` needs to query counterparty Cosmos SDK chain balances (not evm balances)
     const {
       amount: depositAmount,
+      gasCost,
       setAmount: setDepositAmount,
       toggleIsMax: toggleIsDepositAmtMax,
-    } = useGeneralAmountConfig({
+    } = useEvmAmountConfig({
+      sendFn: ethWalletClient.send,
       balance: useNativeToken
         ? nativeBalance ?? undefined
         : erc20Balance ?? undefined,
-      gasCost: useNativeToken ? nativeSendGasCost ?? undefined : undefined,
     });
 
     // WITHDRAWING: is an IBC transfer Osmosis->Axelar
@@ -493,8 +429,8 @@ const AxelarTransfer: FunctionComponent<
             );
           }
         }
+        setTransferInitiated(true);
       }
-      setTransferInitiated(true);
     }, [
       axelarChainId,
       chainId,
@@ -604,7 +540,20 @@ const AxelarTransfer: FunctionComponent<
               toggleIsDepositAmtMax();
             }
           }}
+          toggleUseWrappedConfig={
+            sourceChainConfig?.nativeWrapEquivalent &&
+            balanceOnOsmosis.balance.currency.originCurrency
+              ? {
+                  isUsingWrapped: useWrappedToken,
+                  setIsUsingWrapped: setUseWrappedToken,
+                  nativeDenom:
+                    balanceOnOsmosis.balance.currency.originCurrency.coinDenom,
+                  wrapDenom: sourceChainConfig.nativeWrapEquivalent.wrapDenom,
+                }
+              : undefined
+          }
           transferFee={transferFee}
+          gasCost={gasCost}
           waitTime={waitBySourceChain(selectedSourceChainKey)}
           disabled={!userCanInteract}
           disablePanel={

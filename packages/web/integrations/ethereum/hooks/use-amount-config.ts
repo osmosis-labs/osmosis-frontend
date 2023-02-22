@@ -1,26 +1,48 @@
 import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
-/** Amount config for any token, with the option to set to max balance and for `amount` to not exceed the coin's decimal count.
- *  Not required to be a cosmos-queryable token.
+import { erc20TransferParams, sendParams } from "../tx";
+import { SendFn } from "../types";
+import { useTxGasEstimate } from "./use-tx-gas-estimate";
+
+/** Amount config for EVM native or ERC20 token, with the option to set to max balance and for `amount` to not exceed the coin's decimal count.
+ * Includes gas.
  */
-export function useGeneralAmountConfig({
+export function useAmountConfig({
+  sendFn,
   balance,
   currency,
-  gasCost,
+  gasCurrency,
 }: {
+  sendFn: SendFn;
   balance?: CoinPretty;
   currency?: Currency;
-  gasCost?: CoinPretty;
+  gasCurrency?: Currency;
 }): {
   amount: string;
+  gasCost?: CoinPretty;
   isMax: boolean;
   setAmount: (amount: string) => void;
   toggleIsMax: () => void;
 } {
   const [amount, setRawAmount] = useState("");
   const [isMax, setIsMax] = useState(false);
+
+  const evmTxParams: unknown[] | undefined = useMemo(() => {
+    if (!currency || !gasCurrency) return;
+
+    // is ERC20 amount
+    if (currency.coinMinimalDenom !== gasCurrency.coinMinimalDenom) {
+      return erc20TransferParams("0x0", "0x0", "1", "0x0");
+    }
+
+    // is native amount
+    if (currency.coinMinimalDenom === gasCurrency.coinMinimalDenom) {
+      return sendParams("0x0", "0x0", "1");
+    }
+  }, [currency, gasCurrency]);
+  const gasCost = useTxGasEstimate(sendFn, evmTxParams, gasCurrency);
 
   const setAmount = useCallback((amount: string) => {
     // lead value with 0
@@ -72,6 +94,7 @@ export function useGeneralAmountConfig({
 
   return {
     amount: amountLessGasRaw,
+    gasCost: gasCost ?? undefined,
     isMax,
     setAmount,
     toggleIsMax,

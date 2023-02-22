@@ -14,7 +14,7 @@ import { BridgeAnimation } from "../animation/bridge";
 import { GradientView } from "../assets/gradient-view";
 import { Button } from "../buttons";
 import { SwitchWalletButton } from "../buttons/switch-wallet";
-import { CheckBox } from "../control";
+import { CheckBox, MenuToggle } from "../control";
 import { InputBox } from "../input";
 import { Disableable, InputProps, LoadingProps } from "../types";
 
@@ -39,8 +39,15 @@ export type TransferProps = {
   };
   warningMessage?: string;
   toggleIsMax: () => void;
+  toggleUseWrappedConfig?: {
+    isUsingWrapped: boolean;
+    setIsUsingWrapped: (isUsingWrapped: boolean) => void;
+    nativeDenom: string;
+    wrapDenom: string;
+  };
   /** Required, can be hardcoded estimate. */
   transferFee?: CoinPretty;
+  gasCost?: CoinPretty;
   waitTime: string;
   disablePanel?: boolean;
 } & InputProps<string> &
@@ -60,7 +67,9 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
     editWithdrawAddrConfig,
     warningMessage,
     toggleIsMax,
+    toggleUseWrappedConfig,
     transferFee,
+    gasCost,
     waitTime,
     disablePanel = false,
   }) => {
@@ -117,8 +126,40 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
 
     return (
       <div className="flex flex-col gap-11 overflow-x-auto">
+        {toggleUseWrappedConfig && (
+          <div className="mx-auto w-fit pt-[10px]">
+            <MenuToggle
+              options={[
+                {
+                  id: toggleUseWrappedConfig.nativeDenom,
+                  display: toggleUseWrappedConfig.nativeDenom,
+                },
+                {
+                  id: toggleUseWrappedConfig.wrapDenom,
+                  display: toggleUseWrappedConfig.wrapDenom,
+                },
+              ]}
+              onSelect={(id) => {
+                toggleUseWrappedConfig.setIsUsingWrapped(
+                  id === toggleUseWrappedConfig.wrapDenom
+                );
+              }}
+              selectedOptionId={
+                toggleUseWrappedConfig.isUsingWrapped
+                  ? toggleUseWrappedConfig.wrapDenom
+                  : toggleUseWrappedConfig.nativeDenom
+              }
+            />
+          </div>
+        )}
         <BridgeAnimation
-          className={`mx-auto ${bridge ? "mt-4 -mb-2 md:-mb-6" : "mt-6 -mb-4"}`}
+          className={`mx-auto ${
+            toggleUseWrappedConfig
+              ? "mt-0"
+              : bridge
+              ? "mt-4 -mb-2 md:-mb-6"
+              : "mt-6 -mb-4"
+          }`}
           transferPath={[from, bridge, to]}
         />
         <div
@@ -286,7 +327,10 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
             {transferFee && (
               <div className="flex place-content-between items-center">
                 <span>{t("assets.transfer.transferFee")}</span>
-                <span>{transferFee!.trim(true).toString()}</span>
+                <span>
+                  {transferFee!.trim(true).toString()}
+                  {gasCost && ` + ${gasCost.trim(true).toString()}`}
+                </span>
               </div>
             )}
             <div className="flex place-content-between items-center">

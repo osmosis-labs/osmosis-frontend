@@ -25,19 +25,25 @@ export async function transfer(
   ) {
     return sendFn({
       method: "eth_sendTransaction",
-      params: [
-        {
-          from: fromAddress,
-          to: erc20Address,
-          data: Erc20Abi.encodeFunctionData("transfer", [
-            toAddress,
-            toHex(amount),
-          ]),
-        },
-        "latest",
-      ],
+      params: erc20TransferParams(fromAddress, toAddress, amount, erc20Address),
     });
   }
 
   return Promise.reject("Invalid address");
+}
+
+export function erc20TransferParams(
+  fromAddress: string,
+  toAddress: string,
+  amount: string,
+  erc20Address: string
+): unknown[] {
+  return [
+    {
+      from: fromAddress,
+      to: erc20Address,
+      data: Erc20Abi.encodeFunctionData("transfer", [toAddress, toHex(amount)]),
+    },
+    "latest",
+  ];
 }
