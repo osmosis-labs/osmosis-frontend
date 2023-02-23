@@ -16,27 +16,31 @@ export async function send(
   fromAddress: string,
   toAddress: string
 ): Promise<unknown> {
-  if (isAddress(fromAddress) && isAddress(toAddress)) {
+  const params = sendParams(fromAddress, toAddress, amount);
+
+  if (params) {
     return sendFn({
       method: "eth_sendTransaction",
-      params: sendParams(fromAddress, toAddress, amount),
+      params,
     });
   }
 
-  return Promise.reject("Invalid address");
+  throw new Error("Invalid params");
 }
 
 export function sendParams(
   fromAddress: string,
   toAddress: string,
   amount: string
-): unknown[] {
-  return [
-    {
-      from: fromAddress,
-      to: toAddress,
-      value: toHex(amount),
-    },
-    "latest",
-  ];
+): unknown[] | undefined {
+  if (isAddress(fromAddress) && isAddress(toAddress)) {
+    return [
+      {
+        from: fromAddress,
+        to: toAddress,
+        value: toHex(amount),
+      },
+      "latest",
+    ];
+  }
 }

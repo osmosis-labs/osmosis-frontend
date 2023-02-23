@@ -287,9 +287,7 @@
       },
       "useWrappedDeposit": "Deposit {wrapDenom} with Satellite",
       "useWrappedWithdraw": "Withdraw {wrapDenom} with Satellite",
-      "waitTime": "{minutes} minutes",
-      "withdrawAs": "Withdraw as {denom}",
-      "depositAs": "Deposit as {denom}"
+      "waitTime": "{minutes} minutes"
     },
     "selectAssetSource": {
       "titleWithdraw": "Withdraw to",

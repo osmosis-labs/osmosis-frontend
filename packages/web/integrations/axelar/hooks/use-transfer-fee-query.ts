@@ -1,8 +1,8 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
-import { Environment, AxelarQueryAPI } from "@axelar-network/axelarjs-sdk";
-import debounce from "debounce";
-import { CoinPretty } from "@keplr-wallet/unit";
+import { AxelarQueryAPI, Environment } from "@axelar-network/axelarjs-sdk";
 import { AppCurrency } from "@keplr-wallet/types";
+import { CoinPretty } from "@keplr-wallet/unit";
+import debounce from "debounce";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 /** Fetches a new Transfer fee quote when either chain, the amount, or the currency changes.
  *  `amountMinDenom` is from user input, assumes `=== ""` for no input, and therefore no query.

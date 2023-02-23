@@ -1,6 +1,6 @@
 import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { estimateTxGas } from "../tx/estimate-gas";
 import { SendFn } from "../types";
@@ -15,21 +15,29 @@ export function useTxGasEstimate(
   sendFn: SendFn,
   memoedParams?: unknown[],
   memoedCurrency?: Currency,
-  costMultiplier = 2.2
+  costMultiplier = 5
 ): CoinPretty | null {
   const [cost, setCost] = useState<CoinPretty | null>(null);
 
-  useEffect(() => {
-    if (memoedParams && memoedCurrency) {
-      let multiplier = costMultiplier ? new Dec(costMultiplier) : new Dec(0);
+  const gasCostCache = useRef<Map<string, string>>(new Map());
 
+  useEffect(() => {
+    const cacheKey = `${JSON.stringify(memoedParams)}${JSON.stringify(
+      memoedCurrency
+    )}`;
+    if (memoedParams && memoedCurrency) {
+      const cachedAmount = gasCostCache.current?.get(cacheKey);
+      if (cachedAmount) {
+        setCost(new CoinPretty(memoedCurrency, cachedAmount));
+        return;
+      }
       estimateTxGas(sendFn, memoedParams).then((estimate) => {
-        setCost(
-          new CoinPretty(
-            memoedCurrency,
-            new Dec(estimate).mul(multiplier)
-          ).hideDenom(true)
-        );
+        const adjustedAmount = new Dec(estimate)
+          .mul(new Dec(costMultiplier))
+          .truncate();
+        const cost = new CoinPretty(memoedCurrency, adjustedAmount);
+        setCost(cost);
+        gasCostCache.current?.set(cacheKey, adjustedAmount.toString());
       });
     }
   }, [sendFn, memoedParams, memoedCurrency]);

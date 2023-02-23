@@ -22,7 +22,7 @@ export function useErc20Balance(
         setErc20Balance(new CoinPretty(memoedOriginCurrency, amount))
       );
     }
-  }, [address, erc20Balance, memoedOriginCurrency]);
+  }, [address, erc20ContractAddress, memoedOriginCurrency]);
 
   return erc20Balance;
 }
