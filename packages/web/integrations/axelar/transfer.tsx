@@ -147,11 +147,11 @@ const AxelarTransfer: FunctionComponent<
     );
     const originCurrency = useMemo(
       () =>
-        useWrappedToken && wrapCurrency
+        !useNativeToken && wrapCurrency
           ? wrapCurrency
           : balanceOnOsmosis.balance.currency.originCurrency!,
       [
-        useWrappedToken,
+        useNativeToken,
         balanceOnOsmosis.balance.currency.originCurrency,
         wrapCurrency,
       ]
