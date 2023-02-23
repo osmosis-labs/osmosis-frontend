@@ -35,8 +35,7 @@ export function useTxGasEstimate(
         const adjustedAmount = new Dec(estimate)
           .mul(new Dec(costMultiplier))
           .truncate();
-        const cost = new CoinPretty(memoedCurrency, adjustedAmount);
-        setCost(cost);
+        setCost(new CoinPretty(memoedCurrency, adjustedAmount));
         gasCostCache.current?.set(cacheKey, adjustedAmount.toString());
       });
     }

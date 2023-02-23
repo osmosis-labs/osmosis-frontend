@@ -82,16 +82,9 @@ export function useAmountConfig({
   const amountLessGasRaw = useMemo(() => {
     if (!gasCost || amount === "") return amount;
     const amountDec = new Dec(amount);
+    if (gasCost.toDec().gt(amountDec)) return "0";
     if (isMax && amountDec.gt(gasCost.toDec())) {
-      return new CoinPretty(
-        balCurrency ?? balance!.currency,
-        amount.replace(".", "")
-      )
-        .sub(gasCost)
-        .hideDenom(true)
-        .locale(false)
-        .trim(true)
-        .toString();
+      return amountDec.sub(gasCost.toDec()).toString();
     }
 
     return amount;
