@@ -43,7 +43,7 @@ import {
   useWindowSize,
 } from "../hooks";
 import { useStore } from "../stores";
-import { coinFormatter, priceFormatter } from "../utils/formatter";
+import { formatPretty } from "../utils/formatter";
 import { formatICNSName, getShortAddress } from "../utils/string";
 import { ModalBase, ModalBaseProps } from "./base";
 import { FiatRampsModal } from "./fiat-ramps";
@@ -203,7 +203,7 @@ export const ProfileModal: FunctionComponent<
 
             <div>
               <h6 className="mb-[4px] tracking-wide text-osmoverse-100">
-                {priceFormatter(
+                {formatPretty(
                   priceStore.calculatePrice(
                     navBarStore.walletInfo.balance,
                     priceStore.defaultVsCurrency
@@ -220,7 +220,7 @@ export const ProfileModal: FunctionComponent<
                 )}
               </h6>
               <p className="text-h5 font-h5">
-                {coinFormatter(navBarStore.walletInfo.balance, {
+                {formatPretty(navBarStore.walletInfo.balance, {
                   minimumFractionDigits: 2,
                   maximumSignificantDigits: undefined,
                   notation: "standard",
