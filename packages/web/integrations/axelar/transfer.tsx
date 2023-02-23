@@ -163,9 +163,7 @@ const AxelarTransfer: FunctionComponent<
 
     const erc20Balance = useErc20Balance(
       ethWalletClient,
-      !isWithdraw
-        ? balanceOnOsmosis.balance.currency.originCurrency
-        : undefined,
+      !isWithdraw ? originCurrency : undefined,
       erc20ContractAddress
     );
     const nativeBalance = useNativeBalance(
@@ -261,6 +259,8 @@ const AxelarTransfer: FunctionComponent<
       : erc20ContractAddress
       ? erc20Balance ?? undefined
       : undefined;
+
+    console.log(erc20Balance);
 
     // track status of Axelar transfer
     const { isEthTxPending } = useTxReceiptState(ethWalletClient);
