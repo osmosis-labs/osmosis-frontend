@@ -260,8 +260,6 @@ const AxelarTransfer: FunctionComponent<
       ? erc20Balance ?? undefined
       : undefined;
 
-    console.log(erc20Balance);
-
     // track status of Axelar transfer
     const { isEthTxPending } = useTxReceiptState(ethWalletClient);
     const trackTransferStatus = useCallback(

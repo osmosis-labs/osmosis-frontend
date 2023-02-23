@@ -65,7 +65,7 @@ export const BridgeAnimation: FunctionComponent<
               : "left-[122px] md:left-[10px]"
           )}
         >
-          {t("assets.transfer.from")} {truncateString(from.networkName, 18)}
+          {t("assets.transfer.from")} {truncateString(from.networkName, 22)}
         </span>
       </div>
       <div className="absolute right-[10%] h-full w-1/3 text-center md:-right-[1%]">
@@ -80,7 +80,7 @@ export const BridgeAnimation: FunctionComponent<
             "left-[405px] md:left-[210px]"
           )}
         >
-          {t("assets.transfer.to")} {truncateString(to.networkName, 18)}
+          {t("assets.transfer.to")} {truncateString(to.networkName, 22)}
         </span>
       </div>
       <div className="absolute left-[105px] top-[20px] md:left-[30px]">

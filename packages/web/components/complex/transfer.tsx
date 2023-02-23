@@ -121,7 +121,7 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
     );
 
     return (
-      <div className="flex flex-col gap-11 overflow-x-auto">
+      <div className="flex flex-col gap-11 overflow-x-auto md:gap-4">
         {toggleUseWrappedConfig && (
           <div className="mx-auto w-fit pt-[10px]">
             <MenuToggle
