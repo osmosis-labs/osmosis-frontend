@@ -56,15 +56,7 @@ export const Announcement:
         url: "https://app.osmosis.zone/",
       },
     }
-  : {
-      localStorageKey: "feedback_wQ1KR7",
-      enTextOrLocalizationPath: "Help us shape the future of Osmosis.",
-      link: {
-        enTextOrLocalizationKey: "Give us feedback",
-        url: "https://tally.so/r/wQ1KR7",
-      },
-      pageRoute: "/",
-    };
+  : undefined;
 
 // Past localstorage keys:
 // * "feedback_wQ1KR7": "Help us shape the future of Osmosis." Give us feedback -> https://tally.so/r/wQ1KR7
