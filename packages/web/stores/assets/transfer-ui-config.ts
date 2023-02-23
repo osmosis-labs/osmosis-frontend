@@ -1,26 +1,27 @@
+import { KVStore } from "@keplr-wallet/common";
+import { IBCCurrency } from "@keplr-wallet/types";
 import {
+  action,
+  computed,
   makeObservable,
   observable,
-  action,
   runInAction,
-  computed,
 } from "mobx";
 import { ComponentProps } from "react";
-import { IBCCurrency } from "@keplr-wallet/types";
-import { KVStore } from "@keplr-wallet/common";
+
+import { FiatRampKey, SourceChainKey, Wallet } from "../../integrations";
 import {
-  IbcTransferModal,
-  BridgeTransferModal,
-  SelectAssetSourceModal,
-  TransferAssetSelectModal,
-  FiatRampsModal,
-} from "../../modals";
-import {
+  EthWallet,
   ObservableMetamask,
   ObservableWalletConnect,
-  EthWallet,
 } from "../../integrations/ethereum";
-import { Wallet, SourceChainKey, FiatRampKey } from "../../integrations";
+import {
+  BridgeTransferModal,
+  FiatRampsModal,
+  IbcTransferModal,
+  SelectAssetSourceModal,
+  TransferAssetSelectModal,
+} from "../../modals";
 import { makeLocalStorageKVStore } from "../../stores/kv-store";
 import { IBCBalance, ObservableAssets } from ".";
 
@@ -187,7 +188,9 @@ export class ObservableTransferUIConfig {
       if (
         alreadyConnectedWallet &&
         alreadyConnectedWallet.chainId &&
-        (!balance.fiatRamps || balance.fiatRamps.length === 0)
+        (direction === "withdraw" ||
+          !balance.fiatRamps ||
+          balance.fiatRamps.length === 0)
       ) {
         this.launchBridgeTransferModal(
           direction,
