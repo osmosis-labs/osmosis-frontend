@@ -403,13 +403,13 @@
     "generic": "错误"
   },
   "connectWallet": "连接钱包",
+  "buyTokens": "购买代币",
   "profile": {
     "modalTitle": "轮廓",
     "balance": "结余",
     "wallet": "钱包",
     "viewAllAssets": "查看所有资产"
   },
-  "buyTokens": "购买代币",
   "keplr": {
     "install": "安装 Keplr",
     "wallet": "Keplr 钱包",

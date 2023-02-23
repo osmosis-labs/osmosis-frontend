@@ -367,8 +367,7 @@
     "vote": "投票",
     "info": "統計數據",
     "signOut": "斷開連接",
-    "help": "取得Support Lab嘅幫助",
-    "buyTokens": "購買代幣"
+    "help": "取得Support Lab嘅幫助"
   },
   "settings": {
     "title": "全局設置",
@@ -405,6 +404,7 @@
     "generic": "錯誤"
   },
   "connectWallet": "連接錢包",
+  "buyTokens": "購買代幣",
   "profile": {
     "modalTitle": "轮廓",
     "balance": "结余",

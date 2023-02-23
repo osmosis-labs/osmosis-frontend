@@ -185,7 +185,7 @@ const AxelarTransfer: FunctionComponent<
       address: ethWalletClient.accountAddress,
       gasCurrency: useNativeToken
         ? balanceOnOsmosis.balance.currency.originCurrency
-        : undefined,
+        : undefined, // user will inspect gas costs in their wallet
     });
 
     // WITHDRAWING: is an IBC transfer Osmosis->Axelar
@@ -237,16 +237,12 @@ const AxelarTransfer: FunctionComponent<
     const accountAddress = isWithdraw
       ? ethWalletClient.accountAddress
       : bech32Address;
-    const axelarTokenMinDenom =
-      useNativeToken && sourceChainConfig?.nativeWrapEquivalent?.tokenMinDenom
-        ? sourceChainConfig.nativeWrapEquivalent.tokenMinDenom
-        : originCurrency.coinMinimalDenom;
 
     const { transferFee, isLoading: isLoadingTransferFee } =
       useTransferFeeQuery(
         sourceChain,
         destChain,
-        balanceOnOsmosis.balance.currency.originCurrency!.coinMinimalDenom, // native autowrap: currently transfer query only works with wrapped denoms, even though it's a native transfer. fee should be the same
+        balanceOnOsmosis.balance.currency.originCurrency!.coinMinimalDenom, // Canh Trinh: native autowrap: currently transfer query only works with wrapped denoms, even though it's a native transfer. fee should be the equivalent
         inputAmountRaw === "" ? "1" : inputAmountRaw,
         originCurrency,
         isTestNet ? Environment.TESTNET : Environment.MAINNET
@@ -305,8 +301,9 @@ const AxelarTransfer: FunctionComponent<
         sourceChain,
         destChain,
         isWithdraw || correctChainSelected ? accountAddress : undefined,
-        axelarTokenMinDenom,
-        undefined,
+        useNativeToken && sourceChainConfig?.nativeWrapEquivalent
+          ? sourceChainConfig.nativeWrapEquivalent.tokenMinDenom
+          : balanceOnOsmosis.balance.currency.originCurrency!.coinMinimalDenom,
         isTestNet ? Environment.TESTNET : Environment.MAINNET,
         isWithdraw ? balanceOnOsmosis.balance.toDec().gt(new Dec(0)) : true
       );
@@ -314,7 +311,9 @@ const AxelarTransfer: FunctionComponent<
     // notify user they are withdrawing into a different account then they last deposited to
     const [lastDepositAccountAddress, setLastDepositAccountAddress] =
       useLocalStorageState<string | null>(
-        `axelar-last-deposit-addr-${originCurrency.coinMinimalDenom}`,
+        isWithdraw
+          ? ""
+          : `axelar-last-deposit-addr-${originCurrency.coinMinimalDenom}`,
         null
       );
     const warnOfDifferentDepositAddress =
@@ -611,6 +610,8 @@ const AxelarTransfer: FunctionComponent<
             >
               {buttonErrorMessage
                 ? buttonErrorMessage
+                : isDepositAddressLoading
+                ? `${t("assets.transfer.loading")}...`
                 : isWithdraw
                 ? t("assets.transfer.titleWithdraw", {
                     coinDenom: originCurrency.coinDenom,
