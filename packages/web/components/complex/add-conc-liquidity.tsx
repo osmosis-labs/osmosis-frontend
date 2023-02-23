@@ -1,4 +1,4 @@
-import {FunctionComponent, ReactNode, useMemo, useState} from "react";
+import {FunctionComponent, ReactNode, useCallback, useMemo, useState} from "react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { PricePretty, CoinPretty } from "@keplr-wallet/unit";
@@ -114,7 +114,7 @@ export const AddConcLiquidity: FunctionComponent<
      className,
      addLiquidityConfig,
      actionButton,
-     // getFiatValue,
+     getFiatValue,
   }) => {
     const router = useRouter();
     const { id: poolId } = router.query as { id: string };
@@ -161,6 +161,7 @@ export const AddConcLiquidity: FunctionComponent<
             case AddConcLiquidityModalView.AddConcLiq:
               return (
                 <AddConcLiqView
+                  getFiatValue={getFiatValue}
                   pool={pool}
                   addLiquidityConfig={addLiquidityConfig}
                   actionButton={actionButton}
@@ -314,9 +315,9 @@ const AddConcLiqView: FunctionComponent<
 > = observer(
   ({
     // className,
-    // addLiquidityConfig,
+    addLiquidityConfig,
     actionButton,
-    // getFiatValue,
+    getFiatValue,
     setView,
     pool,
   }) => {
@@ -327,15 +328,26 @@ const AddConcLiqView: FunctionComponent<
     //   priceStore,
     // } = useStore();
 
+    const [baseDeposit, setBaseDeposit] = useState(0);
+    const [quoteDeposit, setQuoteDeposit] = useState(0);
     const [inputMin, setInputMin] = useState(yRange.last * 0.85);
     const [inputMax, setInputMax] = useState(yRange.last * 1.15);
     const [min, setMin] = useState(yRange.last * 0.85);
     const [max, setMax] = useState(yRange.last * 1.15);
-
-    // const {coinGeckoId: baseAssetId} = pool?.poolAssets[0].amount.currency || {};
     const baseDenom = pool?.poolAssets[0].amount.denom;
-    // const {coinGeckoId: quoteAssetId} = pool?.poolAssets[1].amount.currency || {};
     const quoteDenom = pool?.poolAssets[1].amount.denom;
+
+    const updateMin = useCallback((val, shouldUpdateRange = false) => {
+      const out = Math.min(Math.max(Number(val), 0), inputMax);
+      if (shouldUpdateRange) setMin(out);
+      setInputMin(out);
+    }, [inputMin]);
+
+    const updateMax = useCallback((val, shouldUpdateRange = false) => {
+      const out = Math.max(Number(val), inputMin);
+      if (shouldUpdateRange) setMax(out);
+      setInputMax(out);
+    }, [inputMin]);
 
     return (
       <>
@@ -385,48 +397,37 @@ const AddConcLiqView: FunctionComponent<
                   </div>
                 </div>
               </div>
-              <LineChart />
+              <LineChart
+                min={min}
+                max={max}
+              />
             </div>
             <div className="flex flex-row flex-1 flex-shrink-1 w-0 bg-osmoverse-700 h-[20.1875rem]">
               <BarChart
                 min={min}
                 max={max}
-                onMoveMax={debounce(setInputMax, 100)}
-                onMoveMin={debounce(setInputMin, 100)}
-                onSubmitMin={val => {
-                  const value = Number(val.toFixed(4));
-                  setMin(value);
-                  setInputMin(value);
-                }}
-                onSubmitMax={val => {
-                  const value = Number(val.toFixed(4));
-                  setMax(value);
-                  setInputMax(value);
-                }}
+                onMoveMax={debounce(val => updateMax(val), 100)}
+                onMoveMin={debounce(val => updateMin(val), 100)}
+                onSubmitMin={val => updateMin(val, true)}
+                onSubmitMax={val => updateMax(val, true)}
               />
               <div className="flex flex-col justify-center items-center pr-8 gap-4">
                 <PriceInputBox
                   currentValue={inputMax}
                   label="high"
-                  onChange={val => {
-                    setMax(Number(val));
-                    setInputMax(Number(val));
-                  }}
+                  onChange={val => updateMax(val, true)}
                 />
                 <PriceInputBox
                   currentValue={inputMin}
                   label="low"
-                  onChange={val => {
-                    setMin(Number(val));
-                    setInputMin(Number(val));
-                  }}
+                  onChange={val => updateMin(val, true)}
                 />
               </div>
             </div>
           </div>
         </div>
         <div className="flex flex-row">
-          <div className="flex flex-col max-w-[15rem] px-4">
+          <div className="flex flex-col max-w-[15.8125rem] px-4">
             <div className="text-subtitle1">Select volatility range</div>
             <div className="text-body2 text-osmoverse-200">
               Tight ranges earn more fees per dollar, but earn no fees when price is out of range.
@@ -437,11 +438,23 @@ const AddConcLiqView: FunctionComponent<
               src="/images/profile-ammelia.png"
               upper={15}
               lower={-10}
+              onClick={() => {
+                setMax(yRange.last * 1.15);
+                setInputMax(yRange.last * 1.15);
+                setMin(yRange.last * .9);
+                setInputMin(yRange.last * .9);
+              }}
             />
             <PresetVolatilityCard
               src="/images/profile-woz.png"
               upper={50}
               lower={-20}
+              onClick={() => {
+                setMax(yRange.last * 1.5);
+                setInputMax(yRange.last * 1.5)
+                setMin(yRange.last * .8);
+                setInputMin(yRange.last * .8);
+              }}
             />
             <PresetVolatilityCard
               src="/images/profile-dogemosis.png"
@@ -449,21 +462,32 @@ const AddConcLiqView: FunctionComponent<
               height={80}
               upper={100}
               lower={-50}
+              onClick={() => {
+                setMax(yRange.last * 2);
+                setInputMax(yRange.last * 2)
+                setMin(yRange.last * .5);
+                setInputMin(yRange.last * .5);
+              }}
             />
           </div>
         </div>
         <div className="flex flex-col">
           <div className="px-2 py-1 text-sm">Amount to deposit</div>
-          <div>
+          <div className="flex flex-row justify-center bg-osmoverse-700 rounded-[20px] p-[1.25rem]">
             <DepositAmountGroup
+              getFiatValue={getFiatValue}
               coin={pool?.poolAssets[0].amount}
-              onInput={() => null}
-              currentValue={0}
+              onInput={setBaseDeposit}
+              currentValue={baseDeposit}
             />
+            <div className="m-4">
+              <Image className="m-4" src="/icons/link-2.svg" width={35} height={35} />
+            </div>
             <DepositAmountGroup
+              getFiatValue={getFiatValue}
               coin={pool?.poolAssets[1].amount}
-              onInput={() => null}
-              currentValue={0}
+              onInput={setQuoteDeposit}
+              currentValue={quoteDeposit}
             />
           </div>
         </div>
@@ -473,39 +497,53 @@ const AddConcLiqView: FunctionComponent<
   }
 );
 
-function DepositAmountGroup(props: {
+const DepositAmountGroup: FunctionComponent<{
+  getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
   coin?: CoinPretty;
   onInput: (amount: number) => void;
   currentValue: number;
-}) {
-  const {coin, onInput, currentValue} = props;
+}> = observer(({coin, onInput, currentValue, getFiatValue}) => {
+  const {
+    priceStore,
+  } = useStore();
+
+  const fiatPer = coin?.currency.coinGeckoId
+    ? priceStore.getPrice(coin.currency.coinGeckoId, undefined)
+    : 0;
 
   return (
-    <div className="flex flex-row">
-      <div className="flex flex-row">
+    <div className="flex flex-row flex-shrink-0 flex-0 items-center">
+      <div className="flex flex-row items-center">
         { coin?.currency.coinImageUrl && (
           <Image
             src={coin?.currency.coinImageUrl}
-            height={44}
-            width={44}
+            height={58}
+            width={58}
           />
         )}
-        <div className="flex flex-col">
-          <div>{coin?.denom.toUpperCase()}</div>
+        <div className="flex flex-col ml-[1.25rem] mr-[.75rem]">
+          <h5>{coin?.denom.toUpperCase()}</h5>
+          <div className="text-osmoverse-200">50%</div>
         </div>
         <div>
-          <div>
+          <div className="flex flex-col items-end justify-center w-[158px] h-16 bg-osmoverse-800 rounded-[12px]">
             <InputBox
+              className="bg-transparent border-0 text-h5"
+              inputClassName="!leading-4"
               type="number"
               currentValue={'' + currentValue}
               onInput={(value) => onInput(Number(value))}
+              rightEntry
             />
+            <div className="text-osmoverse-400 text-caption pr-3">
+              { fiatPer && `~$${(fiatPer * currentValue).toFixed(2)}`}
+            </div>
           </div>
         </div>
       </div>
     </div>
   )
-}
+});
 
 function PresetVolatilityCard(props: {
   src: string;
@@ -514,6 +552,7 @@ function PresetVolatilityCard(props: {
   upper: number;
   lower: number;
   selected?: boolean;
+  onClick: () => void;
 }) {
   return (
     <div
@@ -525,6 +564,7 @@ function PresetVolatilityCard(props: {
           "border-osmoverse-200 shadow-volatility-preset": props.selected,
         },
       )}
+      onClick={props.onClick}
     >
       <div className="flex flex-row items-end justify-end w-full">
         <div className="flex flex-row items-end justify-end flex-shrink-1 flex-0">
@@ -577,7 +617,32 @@ function PriceInputBox(props: { label: string; currentValue: number; onChange: (
   )
 }
 
-function LineChart() {
+function calculateRange(min: number, max: number, inputMin: number, inputMax: number, last: number) {
+  let outMin = min;
+  let outMax = max;
+
+  const delta = Math.max(
+    last - inputMin,
+    inputMax - last,
+    last - min,
+    max - last,
+  ) * 1.5;
+
+  if (inputMin < min * 1.2 || inputMax > max * .8) {
+    outMin = last - delta;
+    outMax = last + delta;
+  }
+
+  return [
+    Math.max(0, Math.min(outMin, outMax)),
+    Math.max(outMax, outMin)
+  ]
+}
+
+function LineChart(props: {
+  min: number;
+  max: number;
+}) {
   const yRange = getRangeFromData(data1.map(accessors.yAccessor));
 
   return (
@@ -597,7 +662,11 @@ function LineChart() {
             }}
             yScale={{
               type: 'linear',
-              domain: [yRange.min, yRange.max],
+              domain: calculateRange(yRange.min, yRange.max, props.min, props.max, yRange.last),
+              // domain: [
+              //   Math.min(props.min, yRange.min),
+              //   Math.max(props.max, yRange.max)
+              // ],
               zero: false,
             }}
             theme={buildChartTheme({
@@ -699,13 +768,14 @@ function BarChart(props: {
   onSubmitMin: (value: number) => void;
 }) {
   const xMax = Math.max(...depthData.map(d => d.depth)) * 1.2;
+  const domain = calculateRange(yRange.min, yRange.max, props.min, props.max, yRange.last);
 
   return (
     <ParentSize className="flex-1 flex-shrink-1 overflow-hidden">
       {({height, width}) => {
         const yScale = scaleLinear({
           range: [52, height - 36],
-          domain: [yRange.max, yRange.min],
+          domain: domain.slice().reverse(),
           zero: false,
         });
 
@@ -725,8 +795,8 @@ function BarChart(props: {
             }}
             yScale={{
               type: 'linear',
-              // range: [64, height - 36],
-              domain: [yRange.min, yRange.max],
+              // range: [52, height - 36],
+              domain: domain,
               zero: false,
             }}
             theme={buildChartTheme({
@@ -795,7 +865,7 @@ function BarChart(props: {
               />
             </Annotation>
             <DragContainer
-              defaultValue={props.max || yRange.last * 1.15}
+              defaultValue={props.max}
               length={xMax}
               scale={yScale}
               stroke={theme.colors.wosmongton['500']}
@@ -803,7 +873,7 @@ function BarChart(props: {
               onSubmit={props.onSubmitMax}
             />
             <DragContainer
-              defaultValue={props.min || yRange.last * .85}
+              defaultValue={props.min}
               length={xMax}
               scale={yScale}
               stroke={theme.colors.bullish["500"]}
@@ -841,10 +911,16 @@ function DragContainer(props: {
       canEditSubject
       canEditLabel={false}
       onDragMove={({ event, ...nextPos}) => {
-        if (props.onMove) props.onMove(props.scale.invert(nextPos.y));
+        if (props.onMove) {
+          const val = props.scale.invert(nextPos.y);
+          props.onMove(+Math.max(0, val).toFixed(4));
+        }
       }}
       onDragEnd={({ event, ...nextPos}) => {
-        if (props.onSubmit) props.onSubmit(props.scale.invert(nextPos.y));
+        if (props.onSubmit) {
+          const val = props.scale.invert(nextPos.y);
+          props.onSubmit(+Math.max(0, val).toFixed(4));
+        }
       }}
       editable
     >
