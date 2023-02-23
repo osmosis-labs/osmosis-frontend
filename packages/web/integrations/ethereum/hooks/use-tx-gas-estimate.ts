@@ -15,17 +15,17 @@ export function useTxGasEstimate(
   sendFn: SendFn,
   memoedParams?: unknown[],
   memoedCurrency?: Currency,
-  costMultiplier = 5
+  costMultiplier = 4
 ): CoinPretty | null {
   const [cost, setCost] = useState<CoinPretty | null>(null);
 
   const gasCostCache = useRef<Map<string, string>>(new Map());
 
   useEffect(() => {
-    const cacheKey = `${JSON.stringify(memoedParams)}${JSON.stringify(
-      memoedCurrency
-    )}`;
     if (memoedParams && memoedCurrency) {
+      const cacheKey = `${JSON.stringify(memoedParams)}${JSON.stringify(
+        memoedCurrency
+      )}`;
       const cachedAmount = gasCostCache.current?.get(cacheKey);
       if (cachedAmount) {
         setCost(new CoinPretty(memoedCurrency, cachedAmount));
@@ -38,6 +38,8 @@ export function useTxGasEstimate(
         setCost(new CoinPretty(memoedCurrency, adjustedAmount));
         gasCostCache.current?.set(cacheKey, adjustedAmount.toString());
       });
+    } else if (cost && !memoedCurrency) {
+      setCost(null);
     }
   }, [sendFn, memoedParams, memoedCurrency]);
 

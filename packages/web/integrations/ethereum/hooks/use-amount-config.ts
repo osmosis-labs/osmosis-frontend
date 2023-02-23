@@ -74,13 +74,14 @@ export function useAmountConfig({
         }
       }
 
+      setIsMax(false);
       setRawAmount(amount);
     },
     [balCurrency]
   );
 
   const amountLessGasRaw = useMemo(() => {
-    if (!gasCost || amount === "") return amount;
+    if (!gasCurrency || !gasCost || amount === "") return amount;
     const amountDec = new Dec(amount);
     if (gasCost.toDec().gt(amountDec)) return "0";
     if (isMax && amountDec.gt(gasCost.toDec())) {

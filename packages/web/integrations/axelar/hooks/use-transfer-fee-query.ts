@@ -6,12 +6,19 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 /** Fetches a new Transfer fee quote when either chain, the amount, or the currency changes.
  *  `amountMinDenom` is from user input, assumes `=== ""` for no input, and therefore no query.
+ *  @sourceChain: The chain the user is sending from.
+ *  @destChain: The chain the user is sending to.
+ *  @axelarTokenMinDenom: The min denom of the token being trasferred, accepted by Axelar APIs.
+ *  @amount: The amount of the token being transferred, in min denom (integer).
+ *  @memoedCurrency: The memoied ref of currency of the token being transferred, used to create a CoinPretty for transfer fee.
+ *  @environment: The Axelar environment to query.
+ *  @inputDebounceMs: The amount of time to wait after the user stops typing before querying.
  */
 export function useTransferFeeQuery(
   sourceChain: string,
   destChain: string,
   axelarTokenMinDenom: string,
-  amountMinDenom: string,
+  amount: string,
   memoedCurrency: AppCurrency,
   environment = Environment.MAINNET,
   inputDebounceMs = 2000
@@ -55,8 +62,8 @@ export function useTransferFeeQuery(
   );
 
   useEffect(() => {
-    debouncedTransferFeeQuery(amountMinDenom);
-  }, [debouncedTransferFeeQuery, amountMinDenom]);
+    debouncedTransferFeeQuery(amount);
+  }, [debouncedTransferFeeQuery, amount]);
 
   const transferFeeRet = useMemo(
     () =>
