@@ -250,6 +250,7 @@ module.exports = {
       boxShadow: {
         separator: "0px -1px 0px 0px rgba(255, 255, 255, 0.12)",
         md: "0px 6px 8px rgba(9, 5, 36, 0.2)",
+        "volatility-preset": "0px 0px 12px 2px #8C8AF9",
       },
       borderRadius: {
         none: "0",

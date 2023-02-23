@@ -14,7 +14,6 @@ import { InputBox } from "../input";
 import { CustomClasses } from "../types";
 import { useTranslation } from "react-multi-lang";
 
-
 import {
   AnimatedAxis, // any of these can be non-animated equivalents
   AnimatedGrid,
@@ -37,7 +36,6 @@ import {PoolAssetsIcon} from "../assets";
 import Image from "next/image";
 import {useRouter} from "next/router";
 import {Button} from "../buttons";
-import {coin} from "@cosmjs/launchpad";
 
 enum AddConcLiquidityModalView {
   Overview,
@@ -116,7 +114,7 @@ export const AddConcLiquidity: FunctionComponent<
      className,
      addLiquidityConfig,
      actionButton,
-     getFiatValue,
+     // getFiatValue,
   }) => {
     const router = useRouter();
     const { id: poolId } = router.query as { id: string };
@@ -315,28 +313,28 @@ const AddConcLiqView: FunctionComponent<
   } & CustomClasses
 > = observer(
   ({
-    className,
-    addLiquidityConfig,
+    // className,
+    // addLiquidityConfig,
     actionButton,
-    getFiatValue,
+    // getFiatValue,
     setView,
     pool,
   }) => {
-    const { chainStore } = useStore();
-    const { isMobile } = useWindowSize();
+    // const { chainStore } = useStore();
+    // const { isMobile } = useWindowSize();
     const t = useTranslation();
-    const {
-      priceStore,
-    } = useStore();
+    // const {
+    //   priceStore,
+    // } = useStore();
 
     const [inputMin, setInputMin] = useState(yRange.last * 0.85);
     const [inputMax, setInputMax] = useState(yRange.last * 1.15);
     const [min, setMin] = useState(yRange.last * 0.85);
     const [max, setMax] = useState(yRange.last * 1.15);
 
-    const {coinGeckoId: baseAssetId} = pool?.poolAssets[0].amount.currency || {};
+    // const {coinGeckoId: baseAssetId} = pool?.poolAssets[0].amount.currency || {};
     const baseDenom = pool?.poolAssets[0].amount.denom;
-    const {coinGeckoId: quoteAssetId} = pool?.poolAssets[1].amount.currency || {};
+    // const {coinGeckoId: quoteAssetId} = pool?.poolAssets[1].amount.currency || {};
     const quoteDenom = pool?.poolAssets[1].amount.denom;
 
     return (
@@ -435,40 +433,38 @@ const AddConcLiqView: FunctionComponent<
             </div>
           </div>
           <div className="flex-1 flex flex-row justify-end gap-4">
-            <PresetVolatilityCard src="/images/profile-ammelia.png" />
-            <PresetVolatilityCard src="/images/profile-woz.png" />
+            <PresetVolatilityCard
+              src="/images/profile-ammelia.png"
+              upper={15}
+              lower={-10}
+            />
+            <PresetVolatilityCard
+              src="/images/profile-woz.png"
+              upper={50}
+              lower={-20}
+            />
             <PresetVolatilityCard
               src="/images/profile-dogemosis.png"
-              width={70}
-              height={70}
+              width={80}
+              height={80}
+              upper={100}
+              lower={-50}
             />
           </div>
         </div>
         <div className="flex flex-col">
           <div className="px-2 py-1 text-sm">Amount to deposit</div>
           <div>
-            <div className="flex flex-row">
-              <div className="flex flex-row">
-                { pool?.poolAssets[0].amount.currency.coinImageUrl && (
-                  <Image
-                    src={pool.poolAssets[0].amount.currency.coinImageUrl}
-                    height={44}
-                    width={44}
-                  />
-                )}
-                <div className="flex flex-col">
-                  <div>{baseDenom?.toUpperCase()}</div>
-                </div>
-                <div>
-                  <div>
-                    <InputBox
-                      currentValue={'0'}
-                      onInput={() => null}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
+            <DepositAmountGroup
+              coin={pool?.poolAssets[0].amount}
+              onInput={() => null}
+              currentValue={0}
+            />
+            <DepositAmountGroup
+              coin={pool?.poolAssets[1].amount}
+              onInput={() => null}
+              currentValue={0}
+            />
           </div>
         </div>
         {actionButton}
@@ -477,25 +473,32 @@ const AddConcLiqView: FunctionComponent<
   }
 );
 
-function DepositAmountGroup() {
+function DepositAmountGroup(props: {
+  coin?: CoinPretty;
+  onInput: (amount: number) => void;
+  currentValue: number;
+}) {
+  const {coin, onInput, currentValue} = props;
+
   return (
     <div className="flex flex-row">
       <div className="flex flex-row">
-        { pool?.poolAssets[0].amount.currency.coinImageUrl && (
+        { coin?.currency.coinImageUrl && (
           <Image
-            src={pool.poolAssets[0].amount.currency.coinImageUrl}
+            src={coin?.currency.coinImageUrl}
             height={44}
             width={44}
           />
         )}
         <div className="flex flex-col">
-          <div>{baseDenom?.toUpperCase()}</div>
+          <div>{coin?.denom.toUpperCase()}</div>
         </div>
         <div>
           <div>
             <InputBox
-              currentValue={'0'}
-              onInput={() => null}
+              type="number"
+              currentValue={'' + currentValue}
+              onInput={(value) => onInput(Number(value))}
             />
           </div>
         </div>
@@ -508,16 +511,52 @@ function PresetVolatilityCard(props: {
   src: string;
   width?: number;
   height?: number;
+  upper: number;
+  lower: number;
+  selected?: boolean;
 }) {
   return (
-    <div className="flex flex-row w-[10rem] h-[5.625rem] bg-osmoverse-700 rounded-[1.125rem] overflow-hidden">
-      <div className="flex flex-col justify-end">
-        <Image
-          className="self-end flex-0 flex-shrink-0 ml-2"
-          src={props.src}
-          width={props.width || 87}
-          height={props.height || 87}
-        />
+    <div
+      className={classNames(
+        "flex flex-row w-[10.625rem] h-[5.625rem] cursor-pointer",
+        "bg-osmoverse-700 rounded-[1.125rem] overflow-hidden border-[1px]",
+        "border-transparent hover:border-osmoverse-200 hover:shadow-volatility-preset",
+        {
+          "border-osmoverse-200 shadow-volatility-preset": props.selected,
+        },
+      )}
+    >
+      <div className="flex flex-row items-end justify-end w-full">
+        <div className="flex flex-row items-end justify-end flex-shrink-1 flex-0">
+          <Image
+            className="flex-0 ml-2"
+            src={props.src}
+            width={props.width || 87}
+            height={props.height || 87}
+          />
+        </div>
+        <div className="flex flex-col flex-1 h-full justify-center">
+          <div className="flex flex-row items-center">
+            <Image
+              src="/icons/green-up-tick.svg"
+              width={16}
+              height={16}
+            />
+            <div className="flex-1 text-osmoverse-200 text-subtitle1 text-right pr-4">
+              +{props.upper}%
+            </div>
+          </div>
+          <div className="flex flex-row items-center">
+            <Image
+              src="/icons/red-down-tick.svg"
+              width={16}
+              height={16}
+            />
+            <div className="flex-1 text-osmoverse-200 text-subtitle1 text-right pr-4">
+              {props.lower}%
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
