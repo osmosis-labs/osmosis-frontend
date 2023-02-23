@@ -1,4 +1,4 @@
-import {FunctionComponent, ReactNode, useCallback, useMemo, useState} from "react";
+import {FunctionComponent, ReactNode, useCallback, useEffect, useMemo, useState} from "react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { PricePretty, CoinPretty } from "@keplr-wallet/unit";
@@ -72,6 +72,13 @@ function makeData(lastPrice = 1) {
 }
 
 function getRangeFromData(data: number[]) {
+  if (!data.length) {
+    return {
+      min: 0,
+      max: 0,
+      last: 0,
+    }
+  }
   const max = Math.max(...data);
   const min = Math.min(...data);
   const last = data[data.length - 1];
@@ -100,8 +107,8 @@ function getDepthFromRange(min: number, max: number) {
   return val;
 }
 
-const yRange = getRangeFromData(data1.map(accessors.yAccessor));
-const depthData = getDepthFromRange(yRange.min, yRange.max);
+// const yRange = getRangeFromData(data1.map(accessors.yAccessor));
+// const depthData = getDepthFromRange(yRange.min, yRange.max);
 
 export const AddConcLiquidity: FunctionComponent<
   {
@@ -315,7 +322,7 @@ const AddConcLiqView: FunctionComponent<
 > = observer(
   ({
     // className,
-    addLiquidityConfig,
+    // addLiquidityConfig,
     actionButton,
     getFiatValue,
     setView,
@@ -327,15 +334,18 @@ const AddConcLiqView: FunctionComponent<
     // const {
     //   priceStore,
     // } = useStore();
-
+    const [data, setData] = useState<{price: number; time: number}[]>([]);
     const [baseDeposit, setBaseDeposit] = useState(0);
     const [quoteDeposit, setQuoteDeposit] = useState(0);
+
+    const yRange = getRangeFromData(data.map(accessors.yAccessor));
     const [inputMin, setInputMin] = useState(yRange.last * 0.85);
     const [inputMax, setInputMax] = useState(yRange.last * 1.15);
     const [min, setMin] = useState(yRange.last * 0.85);
     const [max, setMax] = useState(yRange.last * 1.15);
     const baseDenom = pool?.poolAssets[0].amount.denom;
     const quoteDenom = pool?.poolAssets[1].amount.denom;
+    const [range, setRange] = useState<'7d'|'1mo'|'1y'>('7d')
 
     const updateMin = useCallback((val, shouldUpdateRange = false) => {
       const out = Math.min(Math.max(Number(val), 0), inputMax);
@@ -348,6 +358,20 @@ const AddConcLiqView: FunctionComponent<
       if (shouldUpdateRange) setMax(out);
       setInputMax(out);
     }, [inputMin]);
+
+
+    useEffect(() => {
+      (async () => {
+        const resp = await fetch(`https://api-osmosis.imperator.co/pairs/v1/historical/674/chart?asset_in=DAI&asset_out=OSMO&range=${range}&asset_type=symbol`);
+        const json = await resp.json();
+        console.log(json);
+        const data = json.map(({ time, close }) => ({
+          time: time * 1000,
+          price: close,
+        }));
+        setData(data);
+      })();
+    }, [range, baseDenom, quoteDenom]);
 
     return (
       <>
@@ -372,7 +396,7 @@ const AddConcLiqView: FunctionComponent<
               <div className="flex flex-row">
                 <div className="flex-1 flex flex-row pt-4 pl-4">
                   <h4 className="row-span-2 pr-1 font-caption">
-                    {data1[data1.length - 1].price.toFixed(2)}
+                    {!!data.length && data[data.length - 1].price.toFixed(2)}
                   </h4>
                   <div className="flex flex-col justify-center font-caption">
                     <div className="text-caption text-osmoverse-300">current price</div>
@@ -382,16 +406,19 @@ const AddConcLiqView: FunctionComponent<
                 <div className="flex-1 flex flex-row justify-end pt-2 pr-2 gap-1">
                   <div
                     className="flex flex-row items-center justify-center bg-osmoverse-800 text-xs h-6 w-14 rounded-md hover:bg-osmoverse-900 cursor-pointer"
+                    onClick={() => setRange('7d')}
                   >
                     7 day
                   </div>
                   <div
                     className="flex flex-row items-center justify-center bg-osmoverse-800 text-xs h-6 w-14 rounded-md hover:bg-osmoverse-900 cursor-pointer"
+                    onClick={() => setRange('1mo')}
                   >
                     30 day
                   </div>
                   <div
                     className="flex flex-row items-center justify-center bg-osmoverse-800 text-xs h-6 w-14 rounded-md hover:bg-osmoverse-900 cursor-pointer"
+                    onClick={() => setRange('1y')}
                   >
                     1 year
                   </div>
@@ -400,6 +427,7 @@ const AddConcLiqView: FunctionComponent<
               <LineChart
                 min={min}
                 max={max}
+                data={data}
               />
             </div>
             <div className="flex flex-row flex-1 flex-shrink-1 w-0 bg-osmoverse-700 h-[20.1875rem]">
@@ -410,6 +438,7 @@ const AddConcLiqView: FunctionComponent<
                 onMoveMin={debounce(val => updateMin(val), 100)}
                 onSubmitMin={val => updateMin(val, true)}
                 onSubmitMax={val => updateMax(val, true)}
+                data={data}
               />
               <div className="flex flex-col justify-center items-center pr-8 gap-4">
                 <PriceInputBox
@@ -642,8 +671,9 @@ function calculateRange(min: number, max: number, inputMin: number, inputMax: nu
 function LineChart(props: {
   min: number;
   max: number;
+  data: {price: number; time: number}[];
 }) {
-  const yRange = getRangeFromData(data1.map(accessors.yAccessor));
+  const yRange = getRangeFromData(props.data.map(accessors.yAccessor));
 
   return (
     <ParentSize
@@ -712,7 +742,7 @@ function LineChart(props: {
             />
             <AnimatedLineSeries
               dataKey="price"
-              data={data1}
+              data={props.data}
               curve={curveNatural}
               {...accessors}
               stroke={theme.colors.wosmongton['200']}
@@ -743,10 +773,10 @@ function LineChart(props: {
                       {tooltipData.nearestDatum.datum.price.toFixed(4)}
                     </div>
                     <div className="text-osmoverse-300">
-                      {`High: ${Math.max(...data1.map(accessors.yAccessor)).toFixed(4)}`}
+                      {`High: ${Math.max(...props.data.map(accessors.yAccessor)).toFixed(4)}`}
                     </div>
                     <div className="text-osmoverse-300">
-                      {`Low: ${Math.min(...data1.map(accessors.yAccessor)).toFixed(4)}`}
+                      {`Low: ${Math.min(...props.data.map(accessors.yAccessor)).toFixed(4)}`}
                     </div>
                   </div>
                 )
@@ -766,8 +796,12 @@ function BarChart(props: {
   onSubmitMax: (value: number) => void;
   onMoveMin: (value: number) => void;
   onSubmitMin: (value: number) => void;
+  data: {price: number; time: number}[]
 }) {
+  const yRange = getRangeFromData(props.data.map(accessors.yAccessor));
+  const depthData = getDepthFromRange(yRange.min, yRange.max);
   const xMax = Math.max(...depthData.map(d => d.depth)) * 1.2;
+
   const domain = calculateRange(yRange.min, yRange.max, props.min, props.max, yRange.last);
 
   return (
