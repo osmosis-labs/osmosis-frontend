@@ -1,15 +1,26 @@
-import { State, WalletRepo, WalletStatus } from "@cosmos-kit/core";
+import {
+  ChainWalletBase,
+  ExpiredError,
+  State,
+  WalletRepo,
+  WalletStatus,
+} from "@cosmos-kit/core";
+import dynamic from "next/dynamic";
 import React, {
   ComponentPropsWithoutRef,
   FunctionComponent,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Button } from "~/components/buttons";
+import SkeletonLoader from "~/components/skeleton-loader";
 
 import { ModalBase, ModalBaseProps } from "./base";
+
+const QRCode = dynamic(() => import("qrcode.react"));
 
 type ModalView =
   | "list"
@@ -28,18 +39,6 @@ function getModalView(qrState: State, walletStatus?: WalletStatus): ModalView {
       } else {
         return "qrCode";
       }
-    // switch (qrState) {
-    //   case QRCodeState.Pending:
-    //     return "loadingQRCode";
-    //   case QRCodeState.Done:
-    //     return "qrCode";
-    //   case QRCodeState.Error:
-    //     return qrMsg === ExpiredError.message
-    //       ? "expiredQRCode"
-    //       : "ErrorQRCode";
-    //   default:
-    //     return "connecting";
-    // }
     case WalletStatus.Connected:
       return "connected";
     case WalletStatus.Error:
@@ -48,14 +47,6 @@ function getModalView(qrState: State, walletStatus?: WalletStatus): ModalView {
       } else {
         return "qrCode";
       }
-    // switch (qrState) {
-    //   case QRCodeState.Error:
-    //     return qrMsg === ExpiredError.message
-    //       ? "expiredQRCode"
-    //       : "ErrorQRCode";
-    //   default:
-    //     return "error";
-    // }
     case WalletStatus.Rejected:
       return "rejected";
     case WalletStatus.NotExist:
@@ -72,7 +63,7 @@ export const WalletSelectModal: FunctionComponent<
   const { isOpen, onRequestClose, walletRepo } = props;
   const t = useTranslation();
   const [qrState, setQRState] = useState<State>(State.Init);
-  const [qrMsg, setQRMsg] = useState<string | undefined>("");
+  const [qrMessage, setQRMsg] = useState<string | undefined>(""); // necessary for qrState to update
   const [modalView, setModalView] = useState<ModalView>("list");
 
   const current = walletRepo?.current;
@@ -82,9 +73,9 @@ export const WalletSelectModal: FunctionComponent<
     if (isOpen) {
       setModalView(getModalView(qrState, walletStatus));
     }
-  }, [qrState, walletStatus, isOpen]);
+  }, [qrState, walletStatus, isOpen, qrMessage]);
 
-  current?.client?.setActions?.({
+  (current?.client as any)?.setActions?.({
     qrUrl: {
       state: setQRState,
       message: setQRMsg,
@@ -119,14 +110,14 @@ export const WalletSelectModal: FunctionComponent<
   );
 };
 
-const ModalContent: React.FC<
+const ModalContent: FunctionComponent<
   Pick<
     ComponentPropsWithoutRef<typeof WalletSelectModal>,
     "walletRepo" | "onRequestClose"
   > & { modalView: ModalView }
 > = ({ walletRepo, onRequestClose, modalView }) => {
-  const current = walletRepo?.current;
-  const walletInfo = current?.walletInfo;
+  const currentWallet = walletRepo?.current;
+  const walletInfo = currentWallet?.walletInfo;
 
   if (modalView === "connected") {
     onRequestClose();
@@ -142,7 +133,7 @@ const ModalContent: React.FC<
         <div className="flex flex-col gap-2">
           <h1 className="text-center text-h6 font-h6">Something Went Wrong</h1>
           <p className="body2 text-center text-wosmongton-100">
-            {current?.message}
+            {currentWallet?.message}
           </p>
         </div>
         <Button onClick={() => walletRepo?.disconnect()}>Change Wallet</Button>
@@ -151,7 +142,7 @@ const ModalContent: React.FC<
   }
 
   if (modalView === "doesNotExist") {
-    const downloadInfo = current?.downloadInfo;
+    const downloadInfo = currentWallet?.downloadInfo;
     return (
       <div className="flex flex-col items-center justify-center gap-12 pt-6">
         <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:rounded-full after:border-2 after:border-error">
@@ -171,7 +162,7 @@ const ModalContent: React.FC<
         {Boolean(downloadInfo) && (
           <Button
             onClick={() => {
-              window.open(current?.downloadInfo?.link, "_blank");
+              window.open(currentWallet?.downloadInfo?.link, "_blank");
             }}
           >
             Install {walletInfo?.prettyName}
@@ -191,10 +182,11 @@ const ModalContent: React.FC<
         <div className="flex flex-col gap-2">
           <h1 className="text-center text-h6 font-h6">Request Rejected</h1>
           <p className="body2 text-center text-wosmongton-100">
-            {current?.rejectMessageTarget ?? "Connection permission denied."}
+            {currentWallet?.rejectMessageTarget ??
+              "Connection permission denied."}
           </p>
         </div>
-        <Button onClick={() => current?.connect(void 0, void 0, false)}>
+        <Button onClick={() => currentWallet?.connect(void 0, void 0, false)}>
           Reconnect
         </Button>
       </div>
@@ -202,16 +194,14 @@ const ModalContent: React.FC<
   }
 
   if (modalView === "connecting") {
-    const {
-      walletInfo: { prettyName, logo, mode },
-      message,
-    } = current!;
+    const walletInfo = currentWallet?.walletInfo;
+    const message = currentWallet?.message;
 
     let title: string = "Connecting Wallet";
     let desc: string =
-      mode === "wallet-connect"
-        ? `Approve ${prettyName} connection request on your mobile.`
-        : `Open the ${prettyName} browser extension to connect your wallet.`;
+      walletInfo?.mode === "wallet-connect"
+        ? `Approve ${walletInfo?.prettyName} connection request on your mobile.`
+        : `Open the ${walletInfo?.prettyName} browser extension to connect your wallet.`;
 
     if (message === "InitClient") {
       title = "Initializing Wallet Client";
@@ -221,7 +211,7 @@ const ModalContent: React.FC<
     return (
       <div className="flex flex-col items-center justify-center gap-12 pt-3">
         <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:animate-spin-slow after:rounded-full after:border-2 after:border-t-transparent after:border-b-transparent after:border-l-wosmongton-300 after:border-r-wosmongton-300">
-          <img className="h-full w-full" src={logo} alt="" />
+          <img className="h-full w-full" src={walletInfo?.logo} alt="" />
         </div>
 
         <div className="flex flex-col gap-2">
@@ -232,18 +222,104 @@ const ModalContent: React.FC<
     );
   }
 
+  if (modalView === "qrCode") {
+    return <QRCodeView wallet={currentWallet!} />;
+  }
+
   return (
     <div className="flex flex-col gap-2">
       {walletRepo.wallets?.map((wallet) => (
         <button
           className="flex items-center justify-center gap-3 rounded-xl border-2 border-osmoverse-500 py-2 hover:bg-wosmongton-400"
           key={wallet.walletName}
-          onClick={() => wallet.connect()}
+          onClick={() => wallet.connect(undefined, undefined, true)}
         >
           <img className="h-6 w-6" src={wallet.walletInfo.logo} alt="" />
           {wallet.walletInfo.prettyName}
         </button>
       ))}
+    </div>
+  );
+};
+
+type QRCodeStatus = "pending" | "done" | "error" | "expired" | undefined;
+const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
+  wallet,
+}) => {
+  const walletInfo = wallet?.walletInfo;
+  const qrUrl = wallet?.qrUrl;
+
+  const [description, errorTitle, errorDesc, status] = useMemo(() => {
+    const isExpired = qrUrl?.message === ExpiredError.message;
+
+    const errorDesc = isExpired ? "Click to refresh." : qrUrl?.message;
+    const errorTitle = isExpired ? "QRCode Expired" : "QRCode Error";
+    const description =
+      qrUrl?.state === "Error"
+        ? undefined
+        : `Open ${walletInfo?.prettyName} App to Scan`;
+
+    const statusDict: Record<State, QRCodeStatus> = {
+      [State.Pending]: "pending" as const,
+      [State.Done]: "done" as const,
+      [State.Error]: isExpired ? ("expired" as const) : ("error" as const),
+      [State.Init]: undefined,
+    };
+
+    return [
+      description,
+      errorTitle,
+      errorDesc,
+      statusDict[qrUrl?.state ?? State.Init],
+    ];
+  }, [qrUrl?.state, qrUrl?.message]);
+
+  return (
+    <div className="flex flex-col items-center justify-center gap-4 pt-6">
+      {(status === "error" || status === "expired") && (
+        <>
+          <div className="relative mb-7 flex items-center justify-center rounded-xl bg-white-high p-3.5">
+            <div className="absolute inset-0 rounded-xl bg-white-high/80" />
+            <QRCode value="https//" size={260} />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Button
+                className="w-fit"
+                onClick={() => wallet?.connect(undefined, undefined, false)}
+              >
+                Refresh
+              </Button>
+            </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <h1 className="text-center text-h6 font-h6">{errorTitle}</h1>
+            <p className="body2 text-center text-wosmongton-100">{errorDesc}</p>
+          </div>
+        </>
+      )}
+      {status === "pending" && (
+        <div className="mb-7">
+          <SkeletonLoader>
+            <div className="flex items-center justify-center rounded-xl p-3.5">
+              <div className="h-[260px] w-[260px]" />
+            </div>
+          </SkeletonLoader>
+        </div>
+      )}
+      {status === "done" && (
+        <>
+          {Boolean(qrUrl?.data) && (
+            <div className="mb-7 flex items-center justify-center rounded-xl bg-white-high p-3.5">
+              <QRCode value={qrUrl?.data!} size={260} />
+            </div>
+          )}
+          <div className="flex flex-col gap-2">
+            <h1 className="text-center text-h6 font-h6">Scan QR Code</h1>
+            <p className="body2 text-center text-wosmongton-100">
+              {description}
+            </p>
+          </div>
+        </>
+      )}
     </div>
   );
 };

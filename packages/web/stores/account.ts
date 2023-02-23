@@ -25,10 +25,22 @@ export class AccountStore {
       ...xdefiWallets,
     ],
     logger,
-    "icns"
+    "icns",
+    {
+      signClient: {
+        projectId: "a8510432ebb71e6948cfd6cde54b70f7", // TODO: replace with our own
+        relayUrl: "wss://relay.walletconnect.org",
+      },
+    }
   );
 
   constructor() {
+    this.walletManager.setActions({
+      viewWalletRepo: () => this.refresh(),
+      data: () => this.refresh(),
+      state: () => this.refresh(),
+      message: () => this.refresh(),
+    });
     this.walletManager.walletRepos.forEach((repo) => {
       repo.setActions({
         viewWalletRepo: () => this.refresh(),
