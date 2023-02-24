@@ -18,10 +18,7 @@ export function useTxEventToasts(
               : status === "confirmed"
               ? "transactionSuccessful"
               : "transactionFailed",
-          caption:
-            status === "pending"
-              ? "waitingForTransaction"
-              : undefined,
+          caption: status === "pending" ? "waitingForTransaction" : undefined,
           learnMoreUrl:
             (status === "confirmed" || status === "failed") && txHash
               ? client?.makeExplorerUrl?.(txHash)
