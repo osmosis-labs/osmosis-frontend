@@ -5,7 +5,9 @@ import {
   WalletRepo,
   WalletStatus,
 } from "@cosmos-kit/core";
+import classNames from "classnames";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import React, {
   ComponentPropsWithoutRef,
   FunctionComponent,
@@ -15,6 +17,7 @@ import React, {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import SkeletonLoader from "~/components/skeleton-loader";
 
@@ -116,6 +119,8 @@ const ModalContent: FunctionComponent<
     "walletRepo" | "onRequestClose"
   > & { modalView: ModalView }
 > = ({ walletRepo, onRequestClose, modalView }) => {
+  const t = useTranslation();
+
   const currentWallet = walletRepo?.current;
   const walletInfo = currentWallet?.walletInfo;
 
@@ -226,18 +231,60 @@ const ModalContent: FunctionComponent<
     return <QRCodeView wallet={currentWallet!} />;
   }
 
+  const wallets = [...(walletRepo?.wallets ?? [])].sort((a, b) => {
+    if (a.walletInfo.mode === b.walletInfo.mode) {
+      return 0;
+    } else if (a.walletInfo.mode !== "wallet-connect") {
+      return -1;
+    } else {
+      // Move wallet-connect to the end
+      return 1;
+    }
+  });
+
   return (
     <div className="flex flex-col gap-2">
-      {walletRepo.wallets?.map((wallet) => (
-        <button
-          className="flex items-center justify-center gap-3 rounded-xl border-2 border-osmoverse-500 py-2 hover:bg-wosmongton-400"
-          key={wallet.walletName}
-          onClick={() => wallet.connect(undefined, undefined, true)}
-        >
-          <img className="h-6 w-6" src={wallet.walletInfo.logo} alt="" />
-          {wallet.walletInfo.prettyName}
-        </button>
-      ))}
+      <div className="grid grid-cols-2 gap-x-3 gap-y-2">
+        {wallets?.map((wallet, index) => {
+          const isHighlighted = index < 2;
+          return (
+            <button
+              className={classNames(
+                "flex items-center gap-3 rounded-xl bg-osmoverse-900 px-3 text-h6 font-h6 transition-colors hover:bg-osmoverse-700",
+                {
+                  "col-span-1 flex-col py-5 text-h6 font-h6": isHighlighted,
+                  "col-span-2 py-3 text-body2 font-normal": !isHighlighted,
+                }
+              )}
+              key={wallet.walletName}
+              onClick={() => wallet.connect(undefined, undefined, true)}
+            >
+              <img
+                className={isHighlighted ? "h-20 w-20" : "h-8 w-8"}
+                src={wallet.walletInfo.logo}
+                alt=""
+              />
+              {wallet.walletInfo.prettyName}
+              {wallet.walletInfo.mode === "wallet-connect" && (
+                <div className="flex-1">
+                  <Icon id="walletconnect" className="ml-auto" />
+                </div>
+              )}
+            </button>
+          );
+        })}
+      </div>
+      <div className="mt-5 rounded-2xl bg-osmoverse-700 p-5">
+        <p className="caption text-white-mid">
+          {t("connectDisclaimer")}{" "}
+          <Link href="/disclaimer" passHref>
+            <a className="underline" target="_blank" rel="noopener noreferrer">
+              {t("protocolDisclaimer")}
+            </a>
+          </Link>
+          .
+        </p>
+      </div>
     </div>
   );
 };

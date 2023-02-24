@@ -16,7 +16,8 @@ type IconId =
   | "globe"
   | "dust-broom"
   | "arrow-right"
-  | "close-small";
+  | "close-small"
+  | "walletconnect";
 
 /**
  * It takes an icon id and returns an svg element with the corresponding icon defined in /public/icons/sprite.svg.
