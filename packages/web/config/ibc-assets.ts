@@ -44,7 +44,7 @@ export const IBCAssetInfos: (IBCAsset & {
             AxelarSourceChainConfigs.usdc.fantom,
           ],
         },
-        fiatRamps: [{ rampKey: "kado" as const, assetKey: "USDC" }],
+        fiatRamps: [{ rampKey: "layerswapcoinbase" as const, assetKey: "USDC" }],
       },
       {
         counterpartyChainId: "axelar-testnet-lisbon-3",
@@ -236,7 +236,7 @@ export const IBCAssetInfos: (IBCAsset & {
             AxelarSourceChainConfigs.usdc.fantom,
           ],
         },
-        fiatRamps: [{ rampKey: "kado" as const, assetKey: "USDC" }],
+        fiatRamps: [{ rampKey: "layerswapcoinbase" as const, assetKey: "USDC" }],
       },
       {
         counterpartyChainId: "axelar-dojo-1",
