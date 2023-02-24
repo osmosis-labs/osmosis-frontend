@@ -403,6 +403,26 @@
     "generic": "Erreur"
   },
   "connectWallet": "Connecter le portefeuille",
+  "walletSelect": {
+    "somethingWentWrong": "Quelque chose s'est mal passé",
+    "changeWallet": "Changer de Portefeuille",
+    "isNotInstalled": "{walletName} n'est pas installé",
+    "maybeInstalled": "Si {walletName} est installé sur votre appareil, veuillez rafraîchir cette page ou suivre les instructions du navigateur.",
+    "downloadLinkNotProvided": "Lien de téléchargement non fourni. Essayez de le rechercher ou consultez l'équipe de développement.",
+    "installWallet": "Installer {walletName}",
+    "requestRejected": "Requête Rejetée",
+    "connectionDenied": "Autorisation de connexion refusée.",
+    "reconnect": "Reconnecter",
+    "connectingWallet": "Connexion du Portefeuille",
+    "approveWalletConnect": "Approuver la demande de connexion {walletName} sur votre mobile.",
+    "openExtension": "Ouvrez l'extension de navigateur {walletName} pour connecter votre portefeuille.",
+    "initializingWallet": "Initialisation du Client de Portefeuille",
+    "clickToRefresh": "Cliquez pour rafraîchir.",
+    "qrCodeExpired": "Code QR expiré",
+    "qrCodeError": "Erreur du Code QR",
+    "openAppToScan": "Ouvrez l'application {walletName} pour scanner",
+    "refresh": "Rafraîchir"
+  },
   "buyTokens": "Acheter jetons",
   "profile": {
     "modalTitle": "Le profil",

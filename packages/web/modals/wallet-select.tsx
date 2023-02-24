@@ -99,7 +99,7 @@ export const WalletSelectModal: FunctionComponent<
       onRequestBack={
         modalView !== "list" ? () => setModalView("list") : undefined
       }
-      className="max-w-[30.625rem]"
+      className="max-h-screen max-w-[30.625rem] overflow-auto"
       title={t("connectWallet")}
     >
       <div className="pt-8">
@@ -136,12 +136,16 @@ const ModalContent: FunctionComponent<
         </div>
 
         <div className="flex flex-col gap-2">
-          <h1 className="text-center text-h6 font-h6">Something Went Wrong</h1>
+          <h1 className="text-center text-h6 font-h6">
+            {t("walletSelect.somethingWentWrong")}
+          </h1>
           <p className="body2 text-center text-wosmongton-100">
             {currentWallet?.message}
           </p>
         </div>
-        <Button onClick={() => walletRepo?.disconnect()}>Change Wallet</Button>
+        <Button onClick={() => walletRepo?.disconnect()}>
+          {t("walletSelect.changeWallet")}
+        </Button>
       </div>
     );
   }
@@ -156,12 +160,16 @@ const ModalContent: FunctionComponent<
 
         <div className="flex flex-col gap-2">
           <h1 className="text-center text-h6 font-h6">
-            {walletInfo?.prettyName} is not Installed
+            {t("walletSelect.isNotInstalled", {
+              walletName: walletInfo?.prettyName ?? "",
+            })}
           </h1>
           <p className="body2 text-center text-wosmongton-100">
             {Boolean(downloadInfo)
-              ? `If ${walletInfo?.prettyName.toLowerCase()} is installed on your device, please refresh this page or follow the browser instructions.`
-              : "Download link not provided. Try searching it or consulting the developer team."}
+              ? t("walletSelect.maybeInstalled", {
+                  walletName: walletInfo?.prettyName?.toLowerCase() ?? "",
+                })
+              : t("walletSelect.downloadLinkNotProvided")}
           </p>
         </div>
         {Boolean(downloadInfo) && (
@@ -170,7 +178,9 @@ const ModalContent: FunctionComponent<
               window.open(currentWallet?.downloadInfo?.link, "_blank");
             }}
           >
-            Install {walletInfo?.prettyName}
+            {t("walletSelect.installWallet", {
+              walletName: walletInfo?.prettyName ?? "",
+            })}
           </Button>
         )}
       </div>
@@ -185,14 +195,16 @@ const ModalContent: FunctionComponent<
         </div>
 
         <div className="flex flex-col gap-2">
-          <h1 className="text-center text-h6 font-h6">Request Rejected</h1>
+          <h1 className="text-center text-h6 font-h6">
+            {t("walletSelect.requestRejected")}
+          </h1>
           <p className="body2 text-center text-wosmongton-100">
             {currentWallet?.rejectMessageTarget ??
-              "Connection permission denied."}
+              t("walletSelect.connectionDenied")}
           </p>
         </div>
         <Button onClick={() => currentWallet?.connect(void 0, void 0, false)}>
-          Reconnect
+          {t("walletSelect.reconnect")}
         </Button>
       </div>
     );
@@ -202,14 +214,18 @@ const ModalContent: FunctionComponent<
     const walletInfo = currentWallet?.walletInfo;
     const message = currentWallet?.message;
 
-    let title: string = "Connecting Wallet";
+    let title: string = t("walletSelect.connectingWallet");
     let desc: string =
       walletInfo?.mode === "wallet-connect"
-        ? `Approve ${walletInfo?.prettyName} connection request on your mobile.`
-        : `Open the ${walletInfo?.prettyName} browser extension to connect your wallet.`;
+        ? t("walletSelect.approveWalletConnect", {
+            walletName: walletInfo?.prettyName ?? "",
+          })
+        : t("walletSelect.openExtension", {
+            walletName: walletInfo?.prettyName ?? "",
+          });
 
     if (message === "InitClient") {
-      title = "Initializing Wallet Client";
+      title = t("walletSelect.initializingWallet");
       desc = "";
     }
 
@@ -266,7 +282,7 @@ const ModalContent: FunctionComponent<
               />
               {wallet.walletInfo.prettyName}
               {wallet.walletInfo.mode === "wallet-connect" && (
-                <div className="flex-1">
+                <div className="flex-1" title="WalletConnect">
                   <Icon id="walletconnect" className="ml-auto" />
                 </div>
               )}
@@ -293,18 +309,26 @@ type QRCodeStatus = "pending" | "done" | "error" | "expired" | undefined;
 const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
   wallet,
 }) => {
+  const t = useTranslation();
+
   const walletInfo = wallet?.walletInfo;
   const qrUrl = wallet?.qrUrl;
 
   const [description, errorTitle, errorDesc, status] = useMemo(() => {
     const isExpired = qrUrl?.message === ExpiredError.message;
 
-    const errorDesc = isExpired ? "Click to refresh." : qrUrl?.message;
-    const errorTitle = isExpired ? "QRCode Expired" : "QRCode Error";
+    const errorDesc = isExpired
+      ? t("walletSelect.clickToRefresh")
+      : qrUrl?.message;
+    const errorTitle = isExpired
+      ? t("walletSelect.qrCodeExpired")
+      : t("walletSelect.qrCodeError");
     const description =
       qrUrl?.state === "Error"
         ? undefined
-        : `Open ${walletInfo?.prettyName} App to Scan`;
+        : t("walletSelect.openAppToScan", {
+            walletName: walletInfo?.prettyName ?? "",
+          });
 
     const statusDict: Record<State, QRCodeStatus> = {
       [State.Pending]: "pending" as const,
@@ -333,7 +357,7 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
                 className="w-fit"
                 onClick={() => wallet?.connect(undefined, undefined, false)}
               >
-                Refresh
+                {t("walletSelect.refresh")}
               </Button>
             </div>
           </div>

@@ -392,6 +392,26 @@
     "generic": "Erro"
   },
   "connectWallet": "Conectar carteira",
+  "walletSelect": {
+    "somethingWentWrong": "Algo deu errado",
+    "changeWallet": "Trocar carteira",
+    "isNotInstalled": "{walletName} não está instalado",
+    "maybeInstalled": "Se {walletName} estiver instalado em seu dispositivo, atualize esta página ou siga as instruções do navegador.",
+    "downloadLinkNotProvided": "Link de download não fornecido. Tente pesquisar ou consultar a equipe de desenvolvimento.",
+    "installWallet": "Instalar {walletName}",
+    "requestRejected": "Solicitação rejeitada",
+    "connectionDenied": "Permissão de conexão negada.",
+    "reconnect": "Reconectar",
+    "connectingWallet": "Conectando carteira",
+    "approveWalletConnect": "Aprovar solicitação de conexão {walletName} em seu dispositivo móvel.",
+    "openExtension": "Abra a extensão do navegador {walletName} para conectar sua carteira.",
+    "initializingWallet": "Inicializando cliente de carteira",
+    "clickToRefresh": "Clique para atualizar.",
+    "qrCodeExpired": "Código QR expirado",
+    "qrCodeError": "Erro de código QR",
+    "openAppToScan": "Abra o aplicativo {walletName} para digitalizar",
+    "refresh": "Atualizar"
+  },
   "buyTokens": "Comprar tokens",
   "profile": {
     "modalTitle": "Perfil",
