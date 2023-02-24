@@ -216,6 +216,11 @@ export class ObservableTransferUIConfig {
     this.launchFiatRampsModal("transak", "OSMO");
   }
 
+  @action
+  launchKado() {
+    this.launchFiatRampsModal("kado", "USDC");
+  }
+
   // SECTION - methods for launching a particular modal
 
   @action

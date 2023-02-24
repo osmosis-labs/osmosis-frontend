@@ -397,6 +397,8 @@
     "generic": "Error"
   },
   "connectWallet": "Connect wallet",
+  "chooseOnramp": "Choose fiat onramp",
+  "supports": "Supports",
   "buyTokens": "Buy tokens",
   "profile": {
     "modalTitle": "Profile",
