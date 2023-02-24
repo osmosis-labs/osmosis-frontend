@@ -125,6 +125,18 @@ const Home: NextPage = observer(function () {
                 break;
               }
             }
+
+            // only pools with at least 35,000 EVMOS
+            if (
+              "originChainId" in asset.amount.currency &&
+              asset.amount.currency.coinMinimalDenom ===
+                "ibc/6AE98883D4D5D5FF9E50D7130F1305DA2FFA0C652D1DD9C123657C6B4EB2DF8A"
+            ) {
+              if (asset.amount.toDec().gt(new Dec(35_000))) {
+                hasEnoughAssets = true;
+                break;
+              }
+            }
           }
 
           if (hasEnoughAssets) {

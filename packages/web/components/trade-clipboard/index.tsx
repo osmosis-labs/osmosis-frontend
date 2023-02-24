@@ -970,7 +970,7 @@ export const TradeClipboard: FunctionComponent<{
                     : ""
                 } ≈ ${
                   spotPrice.toDec().lt(new Dec(1))
-                    ? spotPrice.toString()
+                    ? spotPrice.maxDecimals(12).toString()
                     : spotPrice.maxDecimals(6).toString()
                 } ${
                   tradeTokenInConfig.outCurrency.coinDenom !== "UNKNOWN"
