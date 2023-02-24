@@ -5,8 +5,8 @@ import { ModalBaseProps } from "../../modals";
 
 /** Assumed wallet connected */
 export const Layerswap: FunctionComponent<
-  { assetKey: string } & Pick<ModalBaseProps, "isOpen" | "onRequestClose">
-> = ({ assetKey }) => {
+  {} & Pick<ModalBaseProps, "isOpen" | "onRequestClose">
+> = ({}) => {
   const { chainStore, accountStore } = useStore();
 
   const account = accountStore.getAccount(chainStore.osmosis.chainId);
@@ -15,7 +15,7 @@ export const Layerswap: FunctionComponent<
 
   return (
     <iframe
-      src={`https://www.layerswap.io/?destNetwork=osmosis_mainnet&sourceExchangeName=Coinbase&destAddress=${account.bech32Address}&addressSource=osmosiszone`}
+      src={`https://www.layerswap.io/?destNetwork=osmosis_mainnet&sourceExchangeName=Coinbase&destAddress=${account.bech32Address}&addressSource=osmosiszone&lockNetwork=true`}
       width="420"
       height="700"
     />

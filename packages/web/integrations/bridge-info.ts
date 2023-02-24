@@ -68,5 +68,5 @@ export const FiatRampDisplayInfos: {
   layerswapcoinbase: {
     iconUrl: "/logos/coinbase.svg",
     displayName: "Coinbase",
-  }
+  },
 };

@@ -44,7 +44,13 @@ export const IBCAssetInfos: (IBCAsset & {
             AxelarSourceChainConfigs.usdc.fantom,
           ],
         },
+<<<<<<< HEAD
         fiatRamps: [{ rampKey: "layerswapcoinbase" as const, assetKey: "USDC" }],
+=======
+        fiatRamps: [
+          { rampKey: "layerswapcoinbase" as const, assetKey: "USDC" },
+        ],
+>>>>>>> fix
       },
       {
         counterpartyChainId: "axelar-testnet-lisbon-3",
