@@ -227,12 +227,12 @@ const Home: NextPage = observer(function () {
               type={tradeType}
               containerClassName="w-[27rem] ml-auto mr-[15%] lg:mx-auto"
             />
-            <OrderHistory
-              orderType={tradeType}
-              containerClassName="w-[27rem] ml-auto mr-[15%] lg:mx-auto"
-            />
           </>
         )}
+        <OrderHistory
+          orderType={tradeType}
+          containerClassName="w-[27rem] ml-auto mr-[15%] lg:mx-auto"
+        />
       </div>
     </main>
   );

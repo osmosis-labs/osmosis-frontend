@@ -161,7 +161,7 @@ export default function OrderHistory({
   orderType,
   containerClassName,
 }: {
-  orderType: "Limit" | "StopLoss";
+  orderType: "Limit" | "StopLoss" | "Swap";
   containerClassName?: string;
 }) {
   const { chainStore, accountStore } = useStore();
@@ -252,6 +252,10 @@ export default function OrderHistory({
     const interval = setInterval(fetchHistory, 4000);
     return () => clearInterval(interval);
   }, [rpc, account, chainId]);
+
+  if (orderType === "Swap") {
+    return <></>;
+  }
 
   return (
     <div
