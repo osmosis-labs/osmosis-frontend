@@ -15,7 +15,7 @@ export const Layerswap: FunctionComponent<
 
   return (
     <iframe
-      src={`https://www.layerswap.io/?destNetwork=osmosis_mainnet&sourceExchangeName=Coinbase&destAddress=${account.bech32Address}&addressSource=osmosiszone&lockNetwork=true`}
+      src={`https://www.layerswap.io/?destNetwork=osmosis_mainnet&sourceExchangeName=Coinbase&destAddress=${account.bech32Address}&addressSource=osmosiszone&lockNetwork=true&products=CEX_TO_NETWORK`}
       width="420"
       height="700"
     />
