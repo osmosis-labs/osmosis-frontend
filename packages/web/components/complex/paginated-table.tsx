@@ -135,7 +135,7 @@ const PaginatedTable = ({ containerRef, paginate, table }: Props) => {
             </tr>
           );
         })}
-        <div ref={loaderRef}>Should load</div>
+        <div ref={loaderRef} />
         {paddingBottom > 0 && (
           <tr>
             <td style={{ height: `${paddingBottom}px` }} />

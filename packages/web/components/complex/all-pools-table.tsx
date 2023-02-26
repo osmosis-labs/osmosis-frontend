@@ -100,7 +100,6 @@ export const AllPoolsTable: FunctionComponent<{
       priceStore,
       queriesStore,
       accountStore,
-      derivedDataStore,
     } = useStore();
     const t = useTranslation();
 
@@ -111,7 +110,6 @@ export const AllPoolsTable: FunctionComponent<{
     const { isMobile } = useWindowSize();
 
     const { chainId } = chainStore.osmosis;
-    const queryCosmos = queriesStore.get(chainId).cosmos;
     const queriesOsmosis = queriesStore.get(chainId).osmosis!;
     const account = accountStore.getAccount(chainId);
     const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;
@@ -198,105 +196,17 @@ export const AllPoolsTable: FunctionComponent<{
       ]
     );
 
-    const pools = useMemo(
+    const tvlFilteredPools = useMemo(
       () =>
-        queryActiveGauges.poolIdsForActiveGauges.map((poolId) =>
-          queriesOsmosis.queryGammPools.getPool(poolId)
+        allPoolsWithMetrics.filter((p) =>
+          p.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
         ),
-      [queryActiveGauges.poolIdsForActiveGauges, queriesOsmosis.queryGammPools]
+      [allPoolsWithMetrics]
     );
 
-    const externalIncentivizedPools = useMemo(
+    const poolFilteredPools = useMemo(
       () =>
-        pools.filter(
-          (
-            pool: ObservableQueryPool | undefined
-          ): pool is ObservableQueryPool => {
-            if (!pool) {
-              return false;
-            }
-
-            const gauges = queryActiveGauges.getExternalGaugesForPool(pool.id);
-
-            if (!gauges || gauges.length === 0) {
-              return false;
-            }
-
-            let maxRemainingEpoch = 0;
-            for (const gauge of gauges) {
-              if (maxRemainingEpoch < gauge.remainingEpoch) {
-                maxRemainingEpoch = gauge.remainingEpoch;
-              }
-            }
-
-            return maxRemainingEpoch > 0;
-          }
-        ),
-      [pools, queryActiveGauges.response]
-    );
-
-    const externalIncentivizedPoolsWithMetrics = useMemo(
-      () =>
-        externalIncentivizedPools.map((pool) => {
-          const gauges = queryActiveGauges.getExternalGaugesForPool(pool.id);
-
-          let maxRemainingEpoch = 0;
-          for (const gauge of gauges ?? []) {
-            if (gauge.remainingEpoch > maxRemainingEpoch) {
-              maxRemainingEpoch = gauge.remainingEpoch;
-            }
-          }
-
-          const {
-            poolDetail,
-            superfluidPoolDetail: _,
-            poolBonding,
-          } = derivedDataStore.getForPool(pool.id);
-
-          return {
-            pool,
-            ...queriesExternalStore.queryGammPoolFeeMetrics.getPoolFeesMetrics(
-              pool.id,
-              priceStore
-            ),
-            liquidity: pool.computeTotalValueLocked(priceStore),
-            epochsRemaining: maxRemainingEpoch,
-            myLiquidity: poolDetail.userAvailableValue,
-            myAvailableLiquidity: poolDetail.userAvailableValue,
-            apr:
-              poolBonding.highestBondDuration?.aggregateApr.maxDecimals(0) ??
-              new RatePretty(0),
-            poolName: pool.poolAssets
-              .map((asset) => asset.amount.currency.coinDenom)
-              .join("/"),
-            networkNames: pool.poolAssets
-              .map(
-                (asset) =>
-                  chainStore.getChainFromCurrency(asset.amount.denom)
-                    ?.chainName ?? ""
-              )
-              .join(" "),
-          };
-        }),
-      [
-        chainId,
-        externalIncentivizedPools,
-        queriesOsmosis.queryIncentivizedPools.response,
-        queriesOsmosis.querySuperfluidPools.response,
-        queryCosmos.queryInflation.isFetching,
-        queriesExternalStore.queryGammPoolFeeMetrics.response,
-        queriesOsmosis.queryGammPools.response,
-        queryActiveGauges.response,
-        priceStore,
-        account,
-        chainStore,
-      ]
-    );
-
-    const tvlFilteredPools = useMemo(() => {
-      return [...allPoolsWithMetrics, ...externalIncentivizedPoolsWithMetrics]
-        .filter((p) => p.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD)))
-        .filter((p) => {
+        tvlFilteredPools.filter((p) => {
           if (poolFilter === "superfluid") {
             return queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
               p.pool.id
@@ -306,8 +216,13 @@ export const AllPoolsTable: FunctionComponent<{
             return p.pool.type === poolFilter;
           }
           return true;
-        })
-        .filter((p) => {
+        }),
+      [poolFilter, queriesOsmosis.querySuperfluidPools, tvlFilteredPools]
+    );
+
+    const incentiveFilteredPools = useMemo(
+      () =>
+        poolFilteredPools.filter((p) => {
           if (incentiveFilter === "internal") {
             return queriesOsmosis.queryIncentivizedPools.isIncentivized(
               p.pool.id
@@ -320,19 +235,17 @@ export const AllPoolsTable: FunctionComponent<{
             return gauges && gauges.length > 0;
           }
           return true;
-        });
-    }, [
-      allPoolsWithMetrics,
-      externalIncentivizedPoolsWithMetrics,
-      incentiveFilter,
-      poolFilter,
-      queriesOsmosis.queryIncentivizedPools,
-      queriesOsmosis.querySuperfluidPools,
-      queryActiveGauges,
-    ]);
+        }),
+      [
+        incentiveFilter,
+        poolFilteredPools,
+        queriesOsmosis.queryIncentivizedPools,
+        queryActiveGauges,
+      ]
+    );
 
     const [query, _setQuery, filteredPools] = useFilteredData(
-      tvlFilteredPools,
+      incentiveFilteredPools,
       useMemo(
         () => [
           "pool.id",

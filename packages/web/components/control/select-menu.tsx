@@ -57,8 +57,8 @@ export const SelectMenu: FunctionComponent<Props> = ({
             }
           }}
         >
-          <span className="body2 m-auto mr-2 block select-none overflow-hidden text-center leading-loose text-osmoverse-200">
-            {text}
+          <span className="body2 m-auto mr-2 block select-none overflow-hidden text-center capitalize leading-loose text-osmoverse-200">
+            {selectedOptionId ? selectedOptionId : text}
           </span>
           <Icon
             className="flex shrink-0 items-center text-osmoverse-200"
