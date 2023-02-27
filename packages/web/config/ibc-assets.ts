@@ -573,8 +573,8 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-204",
         destChannelId: "channel-0",
         coinMinimalDenom: "aevmos",
-        depositUrlOverride: "https://app.evmos.org/transfer",
-        withdrawUrlOverride: "https://app.evmos.org/transfer",
+        depositUrlOverride: "https://app.evmos.org/assets",
+        withdrawUrlOverride: "https://app.evmos.org/assets",
         isVerified: true,
       },
       {
@@ -1475,6 +1475,22 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "erc20/0xAE6D3334989a22A65228732446731438672418F2",
         depositUrlOverride: "https://app.arable.finance/#/ibc",
         withdrawUrlOverride: "https://app.arable.finance/#/ibc",
+      },
+      {
+        // NRIDE
+        counterpartyChainId: "juno-1",
+        sourceChannelId: "channel-169",
+        destChannelId: "channel-47",
+        coinMinimalDenom:
+          "cw20:juno1qmlchtmjpvu0cr7u0tad2pq8838h6farrrjzp39eqa9xswg7teussrswlq",
+        ics20ContractAddress:
+          "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+      },
+      {
+        counterpartyChainId: "eightball-1",
+        sourceChannelId: "channel-641",
+        destChannelId: "channel-16",
+        coinMinimalDenom: "uebl",
       },
     ].filter((ibcAsset) => {
       // validate IBC asset config

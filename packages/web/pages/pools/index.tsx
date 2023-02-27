@@ -16,16 +16,16 @@ import Image from "next/image";
 import { ComponentProps, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { ShowMoreButton } from "../../components/buttons/show-more";
-import { PoolCard } from "../../components/cards";
-import { POOLS_PER_PAGE } from "../../components/complex";
-import { AllPoolsTableSet } from "../../components/complex/all-pools-table-set";
-import { CompactPoolTableDisplay } from "../../components/complex/compact-pool-table-display";
-import { ExternalIncentivizedPoolsTableSet } from "../../components/complex/external-incentivized-pools-table-set";
-import { TabBox } from "../../components/control";
-import { MetricLoader } from "../../components/loaders";
-import { PoolsOverview } from "../../components/overview/pools";
-import { EventName } from "../../config";
+import { ShowMoreButton } from "~/components/buttons/show-more";
+import { PoolCard } from "~/components/cards";
+import { POOLS_PER_PAGE } from "~/components/complex";
+import { AllPoolsTableSet } from "~/components/complex/all-pools-table-set";
+import { CompactPoolTableDisplay } from "~/components/complex/compact-pool-table-display";
+import { ExternalIncentivizedPoolsTableSet } from "~/components/complex/external-incentivized-pools-table-set";
+import { TabBox } from "~/components/control";
+import { MetricLoader } from "~/components/loaders";
+import { PoolsOverview } from "~/components/overview/pools";
+import { EventName, UserAction } from "~/config";
 import {
   useAmplitudeAnalytics,
   useCreatePoolConfig,
@@ -36,17 +36,17 @@ import {
   useSortedData,
   useSuperfluidPool,
   useWindowSize,
-} from "../../hooks";
-import { DataSorter } from "../../hooks/data/data-sorter";
+} from "~/hooks";
+import { DataSorter } from "~/hooks/data/data-sorter";
 import {
   AddLiquidityModal,
   CreatePoolModal,
   LockTokensModal,
   RemoveLiquidityModal,
   SuperfluidValidatorModal,
-} from "../../modals";
-import { useStore } from "../../stores";
-import { formatPretty } from "../../utils/formatter";
+} from "~/modals";
+import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
 
 const TVL_FILTER_THRESHOLD = 1000;
 
@@ -703,27 +703,29 @@ const Pools: NextPage = observer(function () {
           </section>
         </>
       )}
-      <section className="pb-4">
-        <div className="flex w-full items-center rounded-full bg-osmoverse-800 px-5 py-4">
-          <span className="subtitle1 flex items-center gap-1 md:text-subtitle2 md:font-subtitle2">
-            {t("pools.createPool.interestedCreate")}{" "}
-            <u
-              className="flex cursor-pointer items-center text-wosmongton-300"
-              onClick={() => setIsCreatingPool(true)}
-            >
-              {t("pools.createPool.startProcess")}
-              <div className="flex shrink-0 items-center">
-                <Image
-                  alt="right arrow"
-                  src="/icons/arrow-right-wosmongton-300.svg"
-                  height={24}
-                  width={24}
-                />
-              </div>
-            </u>
-          </span>
-        </div>
-      </section>
+      {UserAction.CreateNewPool && (
+        <section className="pb-4">
+          <div className="flex w-full items-center rounded-full bg-osmoverse-800 px-5 py-4">
+            <span className="subtitle1 flex items-center gap-1 md:text-subtitle2 md:font-subtitle2">
+              {t("pools.createPool.interestedCreate")}{" "}
+              <u
+                className="flex cursor-pointer items-center text-wosmongton-300"
+                onClick={() => setIsCreatingPool(true)}
+              >
+                {t("pools.createPool.startProcess")}
+                <div className="flex shrink-0 items-center">
+                  <Image
+                    alt="right arrow"
+                    src="/icons/arrow-right-wosmongton-300.svg"
+                    height={24}
+                    width={24}
+                  />
+                </div>
+              </u>
+            </span>
+          </div>
+        </section>
+      )}
     </main>
   );
 });

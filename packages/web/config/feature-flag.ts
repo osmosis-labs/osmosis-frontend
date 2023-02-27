@@ -20,6 +20,7 @@ export const Announcement:
         /** Default: "Click here to learn more" in english-us */
         enTextOrLocalizationKey?: string;
         url: string;
+        /** External to Osmosis. Show disclaimer before linking out of app. */
         isExternal?: boolean;
       };
       /** Use orange styling, persist on page reloads. */
@@ -55,17 +56,10 @@ export const Announcement:
         url: "https://app.osmosis.zone/",
       },
     }
-  : {
-      localStorageKey: "show_mars_banner",
-      enTextOrLocalizationPath: "mars.banner.title",
-      link: {
-        enTextOrLocalizationKey: "mars.banner.linkText",
-        url: "https://mars.osmosis.zone/redbank",
-        isExternal: true,
-      },
-      pageRoute: "/",
-      bg: "bg-gradient-negative lg:bg-gradient-neutral",
-    };
+  : undefined;
+
+// Past localstorage keys:
+// * "feedback_wQ1KR7": "Help us shape the future of Osmosis." Give us feedback -> https://tally.so/r/wQ1KR7
 
 // Fiat ramps
 export const BUY_OSMO_TRANSAK = true;

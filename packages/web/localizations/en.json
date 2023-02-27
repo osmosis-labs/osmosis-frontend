@@ -16,12 +16,6 @@
       "externalLinkModalTitle": "Leaving Osmosis"
     }
   },
-  "mars": {
-    "banner": {
-      "title": "Borrow/Lend on Osmosis has landed.",
-      "linkText": "Explore Mars Protocol"
-    }
-  },
   "swap": {
     "title": "Swap",
     "settings": {

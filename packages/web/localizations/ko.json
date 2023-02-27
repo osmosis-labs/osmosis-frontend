@@ -16,12 +16,6 @@
       "externalLinkModalTitle": "Osmosis 떠나기"
     }
   },
-  "mars": {
-    "banner": {
-      "title": "Osmosis에서 대출 / 대여가 착륙했습니다.",
-      "linkText": "Mars Protocol 탐험"
-    }
-  },
   "swap": {
     "title": "거래",
     "settings": {
