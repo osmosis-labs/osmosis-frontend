@@ -342,6 +342,7 @@ export const AllPoolsTable: FunctionComponent<{
           cell: (props) => props.row.original[1].value.toString(),
           header: t("pools.allPools.sort.liquidity"),
           id: "liquidity",
+          sortDescFirst: true,
         }
       ),
       columnHelper.accessor(
@@ -355,6 +356,7 @@ export const AllPoolsTable: FunctionComponent<{
           ),
           header: t("pools.allPools.sort.volume24h"),
           id: "volume24h",
+          sortDescFirst: true,
         }
       ),
       columnHelper.accessor(
@@ -368,6 +370,7 @@ export const AllPoolsTable: FunctionComponent<{
           ),
           header: t("pools.allPools.sort.fees"),
           id: "fees",
+          sortDescFirst: true,
         }
       ),
       columnHelper.accessor((row) => row[4].value?.toDec().toString(), {
@@ -379,6 +382,7 @@ export const AllPoolsTable: FunctionComponent<{
         ),
         header: t("pools.allPools.sort.APRIncentivized"),
         id: "apr",
+        sortDescFirst: true,
       }),
       columnHelper.accessor((row) => row[5], {
         cell: (props) => {
