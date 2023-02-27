@@ -71,7 +71,7 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
     });
 
     const coinDenomMap: Map<
-      // key: coin denom
+      // key: <coin denom>/<duration seconds>
       string,
       {
         amount: CoinPretty;
@@ -85,29 +85,30 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
       const curDuration = dayjs.duration({ seconds });
 
       for (const { denom, amount } of lock.coins) {
+        const key = `${denom}/${seconds}`;
         const currency = this.chainGetter
           .getChain(this.chainId)
           .findCurrency(denom);
 
         if (currency) {
-          if (!coinDenomMap.has(denom)) {
-            coinDenomMap.set(denom, {
+          if (!coinDenomMap.has(key)) {
+            coinDenomMap.set(key, {
               amount: new CoinPretty(currency, new Dec(0)),
               lockIds: [],
               duration: curDuration,
             });
           }
 
-          const curDenomValue = coinDenomMap.get(denom);
+          const curDenomValue = coinDenomMap.get(key);
 
-          // list for current duration
+          // aggregate any locks with the same denom and duration
           if (curDenomValue) {
             curDenomValue.amount = curDenomValue.amount.add(
               new CoinPretty(currency, new Dec(amount))
             );
             curDenomValue.lockIds.push(lock.ID);
 
-            coinDenomMap.set(denom, curDenomValue);
+            coinDenomMap.set(key, curDenomValue);
           }
         }
       }
