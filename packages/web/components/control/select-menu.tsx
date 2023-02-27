@@ -10,11 +10,13 @@ import { MenuDropdown } from ".";
 import { MenuSelectProps } from "./types";
 
 interface Props extends MenuSelectProps, Disableable, CustomClasses {
-  text: string;
+  label: string;
+  selectedOptionLabel?: string;
 }
 
 export const SelectMenu: FunctionComponent<Props> = ({
-  text,
+  label,
+  selectedOptionLabel,
   options,
   selectedOptionId,
   onSelect,
@@ -58,7 +60,7 @@ export const SelectMenu: FunctionComponent<Props> = ({
           }}
         >
           <span className="body2 m-auto mr-2 block select-none overflow-hidden text-center capitalize leading-loose text-osmoverse-200">
-            {selectedOptionId ? selectedOptionId : text}
+            {selectedOptionLabel ? selectedOptionLabel : label}
           </span>
           <Icon
             className="flex shrink-0 items-center text-osmoverse-200"

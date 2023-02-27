@@ -77,16 +77,17 @@ export type Pool = [
   }
 ];
 
-const PoolFilters: Record<"superfluid" | "stable" | "weighted", string> = {
-  superfluid: "Superfluid",
+const PoolFilters: Record<"stable" | "weighted", string> = {
   stable: "Stableswap",
   weighted: "Weighted",
 };
 
-const IncentiveFilters: Record<"internal" | "external", string> = {
-  internal: "Internal incentives",
-  external: "External incentives",
-};
+const IncentiveFilters: Record<"internal" | "external" | "superfluid", string> =
+  {
+    internal: "Internal incentives",
+    external: "External incentives",
+    superfluid: "Superfluid",
+  };
 
 export const AllPoolsTable: FunctionComponent<{
   quickAddLiquidity: (poolId: string) => void;
@@ -104,8 +105,14 @@ export const AllPoolsTable: FunctionComponent<{
     const t = useTranslation();
 
     const router = useRouter();
-    const poolFilter = router.query.pool as string;
-    const incentiveFilter = router.query.incentive as string;
+    const poolFilter = router.query.pool as keyof Record<
+      "stable" | "weighted",
+      string
+    >;
+    const incentiveFilter = router.query.incentive as keyof Record<
+      "internal" | "external" | "superfluid",
+      string
+    >;
     const fetchedRemainingPoolsRef = useRef(false);
     const { isMobile } = useWindowSize();
 
@@ -207,22 +214,22 @@ export const AllPoolsTable: FunctionComponent<{
     const poolFilteredPools = useMemo(
       () =>
         tvlFilteredPools.filter((p) => {
-          if (poolFilter === "superfluid") {
-            return queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
-              p.pool.id
-            );
-          }
           if (poolFilter) {
             return p.pool.type === poolFilter;
           }
           return true;
         }),
-      [poolFilter, queriesOsmosis.querySuperfluidPools, tvlFilteredPools]
+      [poolFilter, tvlFilteredPools]
     );
 
     const incentiveFilteredPools = useMemo(
       () =>
         poolFilteredPools.filter((p) => {
+          if (incentiveFilter === "superfluid") {
+            return queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
+              p.pool.id
+            );
+          }
           if (incentiveFilter === "internal") {
             return queriesOsmosis.queryIncentivizedPools.isIncentivized(
               p.pool.id
@@ -240,6 +247,7 @@ export const AllPoolsTable: FunctionComponent<{
         incentiveFilter,
         poolFilteredPools,
         queriesOsmosis.queryIncentivizedPools,
+        queriesOsmosis.querySuperfluidPools,
         queryActiveGauges,
       ]
     );
@@ -426,11 +434,12 @@ export const AllPoolsTable: FunctionComponent<{
           <h5>{t("pools.allPools.title")}</h5>
           <div className="flex flex-wrap items-center gap-3 lg:w-full lg:place-content-between">
             <SelectMenu
-              text={
+              label={
                 isMobile
                   ? t("components.pool.mobileTitle")
                   : t("components.pool.title")
               }
+              selectedOptionLabel={PoolFilters[poolFilter]}
               options={useMemo(
                 () =>
                   Object.entries(PoolFilters).map(([id, display]) => ({
@@ -464,7 +473,7 @@ export const AllPoolsTable: FunctionComponent<{
               )}
             />
             <SelectMenu
-              text={
+              label={
                 isMobile
                   ? t("components.incentive.mobileTitle")
                   : t("components.incentive.title")
@@ -477,6 +486,7 @@ export const AllPoolsTable: FunctionComponent<{
                   })),
                 []
               )}
+              selectedOptionLabel={IncentiveFilters[incentiveFilter]}
               selectedOptionId={incentiveFilter}
               onSelect={useCallback(
                 (id: string) => {
