@@ -7,9 +7,8 @@ import { useTranslation } from "react-multi-lang";
 import { useWindowSize } from "../../../hooks";
 import { truncateString } from "../../../utils/string";
 import { CustomClasses } from "../../types";
-import { Animation as AnimationProps } from "../types";
 
-const Lottie = dynamic(() => import("react-lottie"), { ssr: false });
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 /** Illustrates a bespoke or IBC bridge transfer for user info. */
 export const BridgeAnimation: FunctionComponent<
@@ -18,8 +17,7 @@ export const BridgeAnimation: FunctionComponent<
       { address: string; networkName: string; iconUrl?: string },
       { address: string; networkName: string; iconUrl?: string }
     ];
-  } & AnimationProps &
-    CustomClasses
+  } & CustomClasses
 > = (props) => {
   const {
     transferPath: [from, to],
@@ -86,14 +84,10 @@ export const BridgeAnimation: FunctionComponent<
       <div className="absolute left-[105px] top-[20px] md:left-[30px]">
         <div className="transition-opacity duration-300">
           <Lottie
-            options={{
-              loop: true,
-              animationData: animData,
-            }}
-            height={isMobile ? 80 : 85}
-            width={isMobile ? 255 : 400}
-            {...props}
-            isPaused={props.isPaused}
+            style={{ height: isMobile ? 80 : 85, width: isMobile ? 255 : 400 }}
+            animationData={animData}
+            autoplay
+            loop
           />
         </div>
       </div>
