@@ -1,29 +1,22 @@
 import { isAddress, toHex } from "web3-utils";
 
-import { Erc20Abi } from "../queries";
 import { SendFn } from "../types";
 
 /**
- * ERC20 Transfer
+ * EVM Send
  * @param sendFn Function to carry out RPC call.
  * @param amount Bignumber amount. Will be converted to hex.
- * @param erc20Address Hex contract address.
+ * @param fromAddress User source address.
  * @param toAddress User destination address.
  * @returns Result of send function.
  */
-export async function transfer(
+export async function send(
   sendFn: SendFn,
   amount: string,
-  erc20Address: string,
   fromAddress: string,
   toAddress: string
 ): Promise<unknown> {
-  const params = erc20TransferParams(
-    fromAddress,
-    toAddress,
-    amount,
-    erc20Address
-  );
+  const params = sendParams(fromAddress, toAddress, amount);
 
   if (params) {
     return sendFn({
@@ -35,25 +28,17 @@ export async function transfer(
   throw new Error("Invalid params");
 }
 
-export function erc20TransferParams(
+export function sendParams(
   fromAddress: string,
   toAddress: string,
-  amount: string,
-  erc20Address: string
+  amount: string
 ): unknown[] | undefined {
-  if (
-    isAddress(fromAddress) &&
-    isAddress(toAddress) &&
-    isAddress(erc20Address)
-  ) {
+  if (isAddress(fromAddress) && isAddress(toAddress)) {
     return [
       {
         from: fromAddress,
-        to: erc20Address,
-        data: Erc20Abi.encodeFunctionData("transfer", [
-          toAddress,
-          toHex(amount),
-        ]),
+        to: toAddress,
+        value: toHex(amount),
       },
       "latest",
     ];

@@ -279,7 +279,8 @@
         "insufficientFee": "Cuota insuficiente",
         "insufficientBal": "Saldo insuficiente"
       },
-      "wrapNativeLink": "Convertir {fromDenom} a {toDenom} en {platformName}",
+      "useWrappedDeposit": "Deposite {wrapDenom} con Satellite",
+      "useWrappedWithdraw": "Retirar {wrapDenom} con Satellite",
       "waitTime": "{minutes} minutos"
     },
     "selectAssetSource": {

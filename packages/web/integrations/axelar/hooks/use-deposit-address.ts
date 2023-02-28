@@ -1,29 +1,43 @@
-import { useState, useEffect, useCallback } from "react";
 import { AxelarAssetTransfer, Environment } from "@axelar-network/axelarjs-sdk";
+import { useCallback, useEffect, useRef, useState } from "react";
 
+/** Generate deposit addresses reactively. Will hold onto the last generated address for each sourceChain/destChain/address/coinMinimalDenom combination until unmount.
+ * @param sourceChain Source chain.
+ * @param destChain Destination chain.
+ * @param address User's destination address to generate deposit address for (on counterparty).
+ * @param coinMinimalDenom Axelar-accepted coin minimal denom to generate deposit address for.
+ * @param environment Axelar environment to use.
+ * @param shouldGenerate Whether to generate a deposit address on this render.
+ */
 export function useDepositAddress(
   sourceChain: string,
   destChain: string,
   address: string | undefined,
   coinMinimalDenom: string,
-  generateOnMount = true,
-  environment = Environment.MAINNET
+  environment = Environment.MAINNET,
+  shouldGenerate = true
 ): {
   depositAddress?: string;
   isLoading: boolean;
-  generateAddress: () => Promise<void>;
 } {
   const [depositAddress, setDepositAddress] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [lastAddress, setLastAddress] = useState<string | null>(null);
+
+  /** Key: sourceChain/destChain/address/coinMinimalDenom */
+  const depositAddressCache = useRef(new Map<string, string>());
 
   const generateAddress = useCallback(async () => {
-    if (address) {
+    const cacheKey = `${sourceChain}/${destChain}/${address}/${coinMinimalDenom}`;
+    const cachedDepositAddress = depositAddressCache.current.get(cacheKey);
+    if (cachedDepositAddress) {
+      setDepositAddress(cachedDepositAddress);
+    } else if (address) {
       setIsLoading(true);
       new AxelarAssetTransfer({ environment })
         .getDepositAddress(sourceChain, destChain, address, coinMinimalDenom)
         .then((generatedAddress) => {
           setDepositAddress(generatedAddress);
+          depositAddressCache.current.set(cacheKey, generatedAddress);
         })
         .catch((e: any) => {
           console.error("useDepositAddress > getDepositAddress:", e.message);
@@ -57,16 +71,21 @@ export function useDepositAddress(
     [generateAddress, setDepositAddress]
   );
   useEffect(() => {
-    if (address && generateOnMount && address != lastAddress) {
-      setLastAddress(address);
+    if (address && shouldGenerate) {
       setDepositAddress(null);
       doGen().catch((e) => console.error(e));
     }
-  }, [address, generateOnMount, doGen]);
+  }, [
+    address,
+    coinMinimalDenom,
+    sourceChain,
+    destChain,
+    shouldGenerate,
+    doGen,
+  ]);
 
   return {
     depositAddress: depositAddress || undefined,
     isLoading,
-    generateAddress: doGen,
   };
 }

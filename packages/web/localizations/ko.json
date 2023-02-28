@@ -279,7 +279,8 @@
         "insufficientFee": "수수료가 부족합니다",
         "insufficientBal": "잔액이 부족합니다"
       },
-      "wrapNativeLink": "{platformName}에서 {fromDenom}를 {toDenom}로 변환",
+      "useWrappedDeposit": "Satellite에 {wrapDenom} 입금",
+      "useWrappedWithdraw": "Satellite에서 {wrapDenom} 인출",
       "waitTime": "{minutes}분"
     },
     "selectAssetSource": {

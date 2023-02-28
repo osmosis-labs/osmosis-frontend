@@ -51,46 +51,51 @@ export class ObservableMetamask implements EthWallet {
   constructor(protected readonly kvStore?: KVStore) {
     makeObservable(this);
 
-    withEthInWindow((eth) => {
-      const handleAccountChanged = ([account]: (string | undefined)[]) => {
-        // switching to a few certain networks in metamask causes an undefined address to come in.
-        // this causes the proxy to appear disconnected.
-        // this can't be differentiated from the disconnect event, and the user must reconnect.
-
-        this.accountAddress = account;
-
-        if (!account) {
-          runInAction(() => {
-            this._chainId = undefined;
-          });
-        }
-      };
-
-      eth.on("accountsChanged", handleAccountChanged);
-      eth.on("chainChanged", (chainId: string) => {
-        runInAction(() => {
-          this._chainId = chainId;
-
+    if (
+      typeof document !== "undefined" &&
+      /complete|interactive|loaded/.test(document.readyState)
+    ) {
+      withEthInWindow((eth) => {
+        const handleAccountChanged = ([account]: (string | undefined)[]) => {
           // switching to a few certain networks in metamask causes an undefined address to come in.
           // this causes the proxy to appear disconnected.
           // this can't be differentiated from the disconnect event, and the user must reconnect.
-          if (this.accountAddress === undefined) {
-            // received chainChanged from metamask, so we know the user connected prior
-            this.enable();
-          }
-        });
-      });
-      eth.on("disconnect", () => handleAccountChanged([undefined]));
 
-      // set from cache
-      kvStore
-        ?.get<string | null>(CONNECTED_ACCOUNT_KEY)
-        .then((existingAccount) => {
-          if (existingAccount) {
-            this.enable();
+          this.accountAddress = account;
+
+          if (!account) {
+            runInAction(() => {
+              this._chainId = undefined;
+            });
           }
+        };
+
+        eth.on("accountsChanged", handleAccountChanged);
+        eth.on("chainChanged", (chainId: string) => {
+          runInAction(() => {
+            this._chainId = chainId;
+
+            // switching to a few certain networks in metamask causes an undefined address to come in.
+            // this causes the proxy to appear disconnected.
+            // this can't be differentiated from the disconnect event, and the user must reconnect.
+            if (this.accountAddress === undefined) {
+              // received chainChanged from metamask, so we know the user connected prior
+              this.enable();
+            }
+          });
         });
-    });
+        eth.on("disconnect", () => handleAccountChanged([undefined]));
+
+        // set from cache
+        kvStore
+          ?.get<string | null>(CONNECTED_ACCOUNT_KEY)
+          .then((existingAccount) => {
+            if (existingAccount) {
+              this.enable();
+            }
+          });
+      });
+    }
   }
 
   get accountAddress(): string | undefined {
@@ -155,7 +160,7 @@ export class ObservableMetamask implements EthWallet {
             });
           })
           .catch(reject);
-      }, Promise.reject("MetaMask: failed to connect: no ethereum in window"));
+      });
     });
   }
 
