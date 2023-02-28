@@ -14,7 +14,7 @@ export const SelectType: FunctionComponent<{
   types: PoolType[];
   selectType: (type: PoolType) => void;
 }> = ({ types, selectType }) => {
-  const { chainStore, accountStore } = useStore();
+  const { chainStore, oldAccountStore: accountStore } = useStore();
   const t = useTranslation();
 
   const account = accountStore.getAccount(chainStore.osmosis.chainId);

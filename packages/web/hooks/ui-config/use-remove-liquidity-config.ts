@@ -1,4 +1,3 @@
-import { useState, useCallback } from "react";
 import {
   ChainGetter,
   CosmosQueries,
@@ -6,9 +5,11 @@ import {
   IQueriesStore,
 } from "@keplr-wallet/stores";
 import {
-  OsmosisQueries,
   ObservableRemoveLiquidityConfig,
+  OsmosisQueries,
 } from "@osmosis-labs/stores";
+import { useCallback, useState } from "react";
+
 import { useStore } from "../../stores";
 
 /** Maintains a single instance of `ObservableRemoveLiquidityConfig` for React view lifecycle.
@@ -25,7 +26,7 @@ export function useRemoveLiquidityConfig(
   config: ObservableRemoveLiquidityConfig;
   removeLiquidity: () => Promise<void>;
 } {
-  const { accountStore } = useStore();
+  const { oldAccountStore: accountStore } = useStore();
 
   const account = accountStore.getAccount(osmosisChainId);
   const { bech32Address } = account;

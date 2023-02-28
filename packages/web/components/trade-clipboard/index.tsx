@@ -49,7 +49,7 @@ export const TradeClipboard: FunctionComponent<{
   ({ containerClassName, pools, isInModal, onRequestModalClose }) => {
     const {
       chainStore,
-      accountStore,
+      oldAccountStore: accountStore,
       queriesStore,
       assetsStore: { nativeBalances, ibcBalances },
       priceStore,

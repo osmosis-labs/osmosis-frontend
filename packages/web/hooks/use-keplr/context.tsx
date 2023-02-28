@@ -76,6 +76,9 @@ export const GetKeplrContext = createContext<{
   ): void;
 } | null>(null);
 
+/**
+ * @deprecated
+ */
 export const GetKeplrProvider: FunctionComponent = ({ children }) => {
   const [isExtensionSelectionModalOpen, setIsExtensionSelectionModalOpen] =
     useState(false);

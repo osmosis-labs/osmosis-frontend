@@ -63,8 +63,12 @@ const AxelarTransfer: FunctionComponent<
     wrapAssetConfig,
     connectCosmosWalletButtonOverride,
   }) => {
-    const { chainStore, accountStore, queriesStore, nonIbcBridgeHistoryStore } =
-      useStore();
+    const {
+      chainStore,
+      oldAccountStore: accountStore,
+      queriesStore,
+      nonIbcBridgeHistoryStore,
+    } = useStore();
     const t = useTranslation();
 
     const { chainId } = chainStore.osmosis;

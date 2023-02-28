@@ -33,7 +33,7 @@ export const TransferHistoryTable: FunctionComponent<CustomClasses> = observer(
       chainStore,
       nonIbcBridgeHistoryStore,
       ibcTransferHistoryStore,
-      accountStore,
+      oldAccountStore: accountStore,
     } = useStore();
     const t = useTranslation();
     const { chainId } = chainStore.osmosis;

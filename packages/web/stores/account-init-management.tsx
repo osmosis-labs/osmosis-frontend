@@ -10,7 +10,7 @@ import { useStore } from "./index";
 /** Manages the initialization of the Osmosis account. */
 export const AccountInitManagement: FunctionComponent = observer(
   ({ children }) => {
-    const { chainStore, accountStore } = useStore();
+    const { chainStore, oldAccountStore: accountStore } = useStore();
     const { setUserProperty } = useAmplitudeAnalytics();
 
     const keplr = useKeplr();

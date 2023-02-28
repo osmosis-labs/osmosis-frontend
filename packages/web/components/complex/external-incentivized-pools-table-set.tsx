@@ -37,7 +37,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
       queriesExternalStore,
       priceStore,
       queriesStore,
-      accountStore,
+      oldAccountStore: accountStore,
       derivedDataStore,
     } = useStore();
     const { isMobile } = useWindowSize();

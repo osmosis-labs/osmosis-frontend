@@ -1,17 +1,18 @@
-import { FunctionComponent, useState, useMemo } from "react";
-import { observer } from "mobx-react-lite";
 import { Staking } from "@keplr-wallet/stores";
 import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
-import { ModalBase, ModalBaseProps } from "./base";
-import { useStore } from "../stores";
-import { SearchBox } from "../components/input";
+import { observer } from "mobx-react-lite";
+import { FunctionComponent, useMemo, useState } from "react";
+import { useTranslation } from "react-multi-lang";
+
 import { Button } from "../components/buttons";
+import { SearchBox } from "../components/input";
 import { Table } from "../components/table";
 import { ValidatorInfoCell } from "../components/table/cells/";
 import { InfoTooltip } from "../components/tooltip";
 import { useFilteredData, useSortedData } from "../hooks/data";
 import { useWindowSize } from "../hooks/window";
-import { useTranslation } from "react-multi-lang";
+import { useStore } from "../stores";
+import { ModalBase, ModalBaseProps } from "./base";
 
 interface Props extends ModalBaseProps {
   availableBondAmount: CoinPretty;
@@ -22,7 +23,11 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
   (props) => {
     const { availableBondAmount, onSelectValidator } = props;
     const t = useTranslation();
-    const { chainStore, queriesStore, accountStore } = useStore();
+    const {
+      chainStore,
+      queriesStore,
+      oldAccountStore: accountStore,
+    } = useStore();
     const { isMobile } = useWindowSize();
 
     const { chainId } = chainStore.osmosis;

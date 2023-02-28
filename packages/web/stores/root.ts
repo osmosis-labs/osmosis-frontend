@@ -11,6 +11,7 @@ import {
 import { AppCurrency, Keplr } from "@keplr-wallet/types";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 import {
+  AccountStore as NewAccountStore,
   DerivedDataStore,
   IBCTransferHistoryStore,
   LPCurrencyRegistrar,
@@ -36,7 +37,6 @@ import {
 import { suggestChainFromWindow } from "~/hooks/use-keplr/utils";
 import { AxelarTransferStatusSource } from "~/integrations/axelar";
 
-import { AccountStore as NewAccountStore } from "./account";
 import { ObservableAssets } from "./assets";
 import { ChainInfoWithExplorer, ChainStore } from "./chain";
 import { makeIndexedKVStore, makeLocalStorageKVStore } from "./kv-store";
@@ -59,10 +59,10 @@ export class RootStore {
     [CosmosQueries, CosmwasmQueries, OsmosisQueries]
   >;
 
-  public readonly accountStore: AccountStore<
+  public readonly oldAccountStore: AccountStore<
     [CosmosAccount, CosmwasmAccount, OsmosisAccount]
   >;
-  public readonly newAccountStore: NewAccountStore;
+  public readonly accountStore: NewAccountStore;
 
   public readonly priceStore: PoolFallbackPriceStore;
 
@@ -115,7 +115,7 @@ export class RootStore {
       };
     })();
 
-    this.newAccountStore = new NewAccountStore();
+    this.accountStore = new NewAccountStore();
 
     this.queriesStore = new QueriesStore(
       makeIndexedKVStore("store_web_queries_v12"),
@@ -125,7 +125,7 @@ export class RootStore {
       OsmosisQueries.use(this.chainStore.osmosis.chainId, IS_TESTNET)
     );
 
-    this.accountStore = new AccountStore(
+    this.oldAccountStore = new AccountStore(
       eventListener,
       this.chainStore,
       () => {
@@ -248,7 +248,17 @@ export class RootStore {
       makeLocalStorageKVStore("store_ibc_currency_registrar"),
       3 * 24 * 3600 * 1000, // 3 days
       this.chainStore,
-      this.accountStore,
+      {
+        getAccount: (chainId: string) => {
+          return {
+            bech32Address:
+              this.accountStore.getWallet(chainId as any)?.address ?? "",
+          };
+        },
+        hasAccount: (chainId: string) => {
+          return this.accountStore.hasWallet(chainId);
+        },
+      },
       this.queriesStore,
       this.queriesStore,
       (

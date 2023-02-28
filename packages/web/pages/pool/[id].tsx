@@ -53,7 +53,7 @@ const Pool: FunctionComponent = observer(() => {
   const {
     chainStore,
     queriesStore,
-    accountStore,
+    oldAccountStore: accountStore,
     priceStore,
     queriesExternalStore,
     derivedDataStore,

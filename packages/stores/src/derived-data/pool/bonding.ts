@@ -1,14 +1,10 @@
-import {
-  ChainGetter,
-  HasMapStore,
-  IAccountStore,
-  IQueriesStore,
-} from "@keplr-wallet/stores";
+import { ChainGetter, HasMapStore, IQueriesStore } from "@keplr-wallet/stores";
 import { CoinPretty, Dec, IntPretty, RatePretty } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
+import { AccountStore } from "src";
 
 import { IPriceStore } from "../../price";
 import { OsmosisQueries } from "../../queries";
@@ -34,7 +30,7 @@ export class ObservablePoolBonding {
       queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
-    protected readonly accountStore: IAccountStore,
+    protected readonly accountStore: AccountStore,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>
   ) {
     makeObservable(this);
@@ -42,7 +38,10 @@ export class ObservablePoolBonding {
 
   @computed
   protected get bech32Address() {
-    return this.accountStore.getAccount(this.osmosisChainId).bech32Address;
+    return (
+      this.accountStore.getWallet(this.osmosisChainId as "osmosis")?.address ??
+      ""
+    );
   }
 
   @computed
@@ -313,7 +312,7 @@ export class ObservablePoolsBonding extends HasMapStore<ObservablePoolBonding> {
       queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
-    protected readonly accountStore: IAccountStore,
+    protected readonly accountStore: AccountStore,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>
   ) {
     super(

@@ -1,15 +1,16 @@
-import { FunctionComponent, useEffect, useState } from "react";
-import { observer } from "mobx-react-lite";
-import classNames from "classnames";
 import { AmountConfig } from "@keplr-wallet/hooks";
+import classNames from "classnames";
 import { Duration } from "dayjs/plugin/duration";
-import { useStore } from "../stores";
-import { InputBox } from "../components/input";
-import { CheckBox } from "../components/control";
-import { tError } from "../components/localization";
-import { ModalBase, ModalBaseProps } from "./base";
-import { useConnectWalletModalRedirect, useCurrentLanguage } from "../hooks";
+import { observer } from "mobx-react-lite";
+import { FunctionComponent, useEffect, useState } from "react";
 import { useTranslation } from "react-multi-lang";
+
+import { CheckBox } from "../components/control";
+import { InputBox } from "../components/input";
+import { tError } from "../components/localization";
+import { useConnectWalletModalRedirect, useCurrentLanguage } from "../hooks";
+import { useStore } from "../stores";
+import { ModalBase, ModalBaseProps } from "./base";
 
 export const LockTokensModal: FunctionComponent<
   {
@@ -23,8 +24,12 @@ export const LockTokensModal: FunctionComponent<
   const t = useTranslation();
   const locale = useCurrentLanguage();
 
-  const { chainStore, accountStore, queriesStore, derivedDataStore } =
-    useStore();
+  const {
+    chainStore,
+    oldAccountStore: accountStore,
+    queriesStore,
+    derivedDataStore,
+  } = useStore();
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;

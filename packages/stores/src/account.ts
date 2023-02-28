@@ -7,7 +7,6 @@ import { wallets as trustWallets } from "@cosmos-kit/trust";
 import { wallets as xdefiWallets } from "@cosmos-kit/xdefi-extension";
 import { action, makeObservable, observable } from "mobx";
 
-const chains = ["osmosis"] as const;
 const logger = new Logger(console, "WARN");
 
 export class AccountStore {
@@ -70,15 +69,40 @@ export class AccountStore {
     return this._walletManager;
   }
 
-  getWalletRepo(chain: typeof chains[number]) {
-    const walletRepo = this.walletManager.getWalletRepo(chain);
+  /**
+   * Get wallet repository for a given chain name or chain id.
+   *
+   * @param chainName - Chain name or chain id
+   * @returns Wallet repository
+   */
+  getWalletRepo(chainName: string) {
+    const walletRepo = this.walletManager.walletRepos.find(
+      (repo) =>
+        repo.chainName === chainName ||
+        repo.chainRecord.chain.chain_id === chainName
+    );
+
+    if (!walletRepo) {
+      throw new Error(`Chain ${chainName} is not provided.`);
+    }
+
     walletRepo.activate();
     return walletRepo;
   }
 
-  getAddress(chain: typeof chains[number]) {
-    const walletRepo = this.getWalletRepo(chain);
+  /**
+   * Get the current wallet for the given chain name
+   * @param chainName - Chain name
+   * @returns Wallet
+   */
+  getWallet(chainName: string) {
+    const walletRepo = this.getWalletRepo(chainName);
     const wallet = walletRepo.current;
-    return wallet?.address;
+    return wallet;
+  }
+
+  hasWallet(chainId: string): boolean {
+    const wallet = this.getWallet(chainId as any);
+    return Boolean(wallet);
   }
 }

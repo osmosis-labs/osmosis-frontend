@@ -14,7 +14,11 @@ import { Table } from ".";
 export const DepoolingTable: FunctionComponent<
   { poolId?: string; tableClassName?: string } & CustomClasses
 > = observer(({ poolId, tableClassName, className }) => {
-  const { chainStore, accountStore, queriesStore } = useStore();
+  const {
+    chainStore,
+    oldAccountStore: accountStore,
+    queriesStore,
+  } = useStore();
   const t = useTranslation();
   const { chainId } = chainStore.osmosis;
   const { isMobile } = useWindowSize();

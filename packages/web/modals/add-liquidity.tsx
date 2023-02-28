@@ -1,12 +1,13 @@
-import { FunctionComponent } from "react";
-import { observer } from "mobx-react-lite";
 import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
-import { useStore } from "../stores";
-import { useConnectWalletModalRedirect, useAddLiquidityConfig } from "../hooks";
-import { AddLiquidity } from "../components/complex/add-liquidity";
-import { ModalBase, ModalBaseProps } from "./base";
+import { observer } from "mobx-react-lite";
+import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
+
+import { AddLiquidity } from "../components/complex/add-liquidity";
 import { tError } from "../components/localization";
+import { useAddLiquidityConfig, useConnectWalletModalRedirect } from "../hooks";
+import { useStore } from "../stores";
+import { ModalBase, ModalBaseProps } from "./base";
 
 export const AddLiquidityModal: FunctionComponent<
   {
@@ -18,7 +19,12 @@ export const AddLiquidityModal: FunctionComponent<
   } & ModalBaseProps
 > = observer((props) => {
   const { poolId } = props;
-  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const {
+    chainStore,
+    oldAccountStore: accountStore,
+    queriesStore,
+    priceStore,
+  } = useStore();
   const t = useTranslation();
 
   const { chainId } = chainStore.osmosis;

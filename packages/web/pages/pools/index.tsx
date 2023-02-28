@@ -55,7 +55,7 @@ const LESS_SUPERFLUID_POOLS_COUNT = 6;
 const Pools: NextPage = observer(function () {
   const {
     chainStore,
-    accountStore,
+    oldAccountStore: accountStore,
     priceStore,
     queriesStore,
     queriesExternalStore,

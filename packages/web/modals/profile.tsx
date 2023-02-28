@@ -79,7 +79,7 @@ export const ProfileModal: FunctionComponent<
   } = useDisclosure();
 
   const transferConfig = useTransferConfig();
-  const account = accountStore.getAccount(chainId);
+  const wallet = accountStore.getWallet(chainId as "osmosis");
 
   const [hasCopied, setHasCopied] = useState(false);
   const [_state, copyToClipboard] = useCopyToClipboard();
@@ -88,8 +88,10 @@ export const ProfileModal: FunctionComponent<
     2000
   );
 
+  const address = wallet?.address ?? "";
+
   const onCopyAddress = () => {
-    copyToClipboard(account.bech32Address);
+    copyToClipboard(address);
     logEvent([EventName.ProfileModal.copyWalletAddressClicked]);
     setHasCopied(true);
     reset();
@@ -100,8 +102,6 @@ export const ProfileModal: FunctionComponent<
     router.events.on("routeChangeComplete", onCloseModal);
     return () => router.events.off("routeChangeComplete", onCloseModal);
   }, []);
-
-  const address = account.bech32Address;
 
   return (
     <ModalBase
@@ -400,7 +400,7 @@ export const ProfileModal: FunctionComponent<
                 onClick={() => {
                   logEvent([EventName.ProfileModal.logOutClicked]);
                   props.onRequestClose();
-                  account.disconnect();
+                  wallet?.disconnect();
                 }}
                 className="group hover:text-rust-500"
               >

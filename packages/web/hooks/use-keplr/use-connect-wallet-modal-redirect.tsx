@@ -1,10 +1,11 @@
-import Image from "next/image";
-import { useState, useEffect, ComponentProps } from "react";
 import { WalletStatus } from "@keplr-wallet/stores";
-import { useStore } from "../../stores";
-import { Button } from "../../components/buttons";
-import { useKeplr } from "./hook";
+import Image from "next/image";
+import { ComponentProps, useEffect, useState } from "react";
 import { t } from "react-multi-lang";
+
+import { Button } from "../../components/buttons";
+import { useStore } from "../../stores";
+import { useKeplr } from "./hook";
 
 /** FOR USE IN MODALS
  *
@@ -25,7 +26,7 @@ export function useConnectWalletModalRedirect(
   connectWalletMessage = t("connectWallet")
 ) {
   const keplr = useKeplr();
-  const { accountStore, chainStore } = useStore();
+  const { oldAccountStore: accountStore, chainStore } = useStore();
   const { chainId } = chainStore.osmosis;
   const osmosisAccount = accountStore.getAccount(chainId);
 

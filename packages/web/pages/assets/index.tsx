@@ -289,7 +289,12 @@ const Metric: FunctionComponent<Metric> = ({ label, value }) => (
 );
 
 const PoolAssets: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const {
+    chainStore,
+    oldAccountStore: accountStore,
+    queriesStore,
+    priceStore,
+  } = useStore();
   const { setUserProperty } = useAmplitudeAnalytics();
   const t = useTranslation();
 

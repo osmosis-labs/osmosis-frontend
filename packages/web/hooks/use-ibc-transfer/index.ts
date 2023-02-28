@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { AmountConfig } from "@keplr-wallet/hooks";
 import {
   AccountSetBase,
   CosmosAccount,
@@ -8,15 +8,16 @@ import {
 } from "@keplr-wallet/stores";
 import {
   basicIbcTransfer,
-  OsmosisAccount,
   IBCTransferHistory,
+  OsmosisAccount,
   UncommitedHistory,
 } from "@osmosis-labs/stores";
-import { AmountConfig } from "@keplr-wallet/hooks";
+import { useEffect } from "react";
+
 import { useStore } from "../../stores";
+import { useAmountConfig, useFakeFeeConfig } from "..";
+import { CustomCounterpartyConfig, IbcTransfer } from ".";
 import { useCustomBech32Address } from "./use-custom-bech32address";
-import { IbcTransfer, CustomCounterpartyConfig } from ".";
-import { useFakeFeeConfig, useAmountConfig } from "..";
 
 /**
  * Convenience hook for handling IBC transfer state. Supports user setting custom & validated bech32 counterparty address when withdrawing.
@@ -53,7 +54,11 @@ export function useIbcTransfer({
   ) => void,
   CustomCounterpartyConfig | undefined
 ] {
-  const { chainStore, accountStore, queriesStore } = useStore();
+  const {
+    chainStore,
+    oldAccountStore: accountStore,
+    queriesStore,
+  } = useStore();
   const { chainId } = chainStore.osmosis;
 
   const account = accountStore.getAccount(chainId);

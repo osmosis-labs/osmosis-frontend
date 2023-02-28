@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
 import { WalletStatus } from "@keplr-wallet/stores";
+import { useEffect, useState } from "react";
+
 import { useStore } from "../../stores";
 import { TransakCreatedOrder, TransakSuccessfulOrder } from "./types";
 
@@ -21,7 +22,7 @@ export function useTransakModal(
 ): {
   setModal: (show: boolean) => void;
 } {
-  const { chainStore, accountStore } = useStore();
+  const { chainStore, oldAccountStore: accountStore } = useStore();
 
   const account = accountStore.getAccount(chainStore.osmosis.chainId);
 

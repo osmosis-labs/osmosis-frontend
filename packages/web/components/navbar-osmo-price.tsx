@@ -30,7 +30,7 @@ function getChartData(prices: PricePretty[] = []) {
 
 const NavbarOsmoPrice = observer(() => {
   const {
-    accountStore,
+    oldAccountStore: accountStore,
     priceStore,
     chainStore,
     queriesExternalStore,

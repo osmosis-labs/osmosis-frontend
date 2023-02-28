@@ -69,7 +69,7 @@ export const AllPoolsTableSet: FunctionComponent<{
       queriesExternalStore,
       priceStore,
       queriesStore,
-      accountStore,
+      oldAccountStore: accountStore,
     } = useStore();
     const { isMobile } = useWindowSize();
     const t = useTranslation();

@@ -1,9 +1,9 @@
 import {
   ChainGetter,
   CosmosQueries,
-  IAccountStore,
   IQueriesStore,
 } from "@keplr-wallet/stores";
+import { AccountStore } from "src/account";
 import { DeepReadonly } from "utility-types";
 
 import { IPriceStore } from "../price";
@@ -33,7 +33,7 @@ export class DerivedDataStore {
       queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
-    protected readonly accountStore: IAccountStore,
+    protected readonly accountStore: AccountStore,
     protected readonly priceStore: IPriceStore,
     protected readonly chainGetter: ChainGetter
   ) {

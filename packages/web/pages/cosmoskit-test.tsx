@@ -6,7 +6,7 @@ import { WalletSelectModal } from "~/modals";
 import { useStore } from "~/stores";
 
 const CosmosKitTest = observer(() => {
-  const { newAccountStore } = useStore();
+  const { accountStore: newAccountStore } = useStore();
 
   const walletRepo = newAccountStore.getWalletRepo("osmosis");
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -15,7 +15,9 @@ const CosmosKitTest = observer(() => {
     <div>
       {walletRepo.current?.address ? (
         <div>
-          <p>Connected! Address: {newAccountStore.getAddress("osmosis")}</p>
+          <p>
+            Connected! Address: {newAccountStore.getWallet("osmosis")?.address}
+          </p>
           <Button className="max-w-xs" onClick={() => walletRepo.disconnect()}>
             Disconnect
           </Button>

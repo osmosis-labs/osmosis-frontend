@@ -17,6 +17,8 @@ import {
 } from "react-multi-lang";
 import { Bounce, ToastContainer } from "react-toastify";
 
+import { WalletSelectProvider } from "~/hooks/wallet-select";
+
 import { MainLayout } from "../components/layouts";
 import { OgpMeta } from "../components/ogp-meta";
 import { MainLayoutMenu } from "../components/types";
@@ -111,27 +113,29 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <GetKeplrProvider>
       <StoreProvider>
-        <Head>
-          {/* metamask Osmosis app icon */}
-          <link
-            rel="shortcut icon"
-            href={`${
-              typeof window !== "undefined" ? window.origin : ""
-            }/osmosis-logo-wc.png`}
+        <WalletSelectProvider>
+          <Head>
+            {/* metamask Osmosis app icon */}
+            <link
+              rel="shortcut icon"
+              href={`${
+                typeof window !== "undefined" ? window.origin : ""
+              }/osmosis-logo-wc.png`}
+            />
+            <link rel="preload" as="image/svg+xml" href={spriteSVGURL} />
+          </Head>
+          <OgpMeta />
+          <IbcNotifier />
+          <ToastContainer
+            toastStyle={{
+              backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
+            }}
+            transition={Bounce}
           />
-          <link rel="preload" as="image/svg+xml" href={spriteSVGURL} />
-        </Head>
-        <OgpMeta />
-        <IbcNotifier />
-        <ToastContainer
-          toastStyle={{
-            backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
-          }}
-          transition={Bounce}
-        />
-        <MainLayout menus={menus}>
-          <Component {...pageProps} />
-        </MainLayout>
+          <MainLayout menus={menus}>
+            <Component {...pageProps} />
+          </MainLayout>
+        </WalletSelectProvider>
       </StoreProvider>
     </GetKeplrProvider>
   );

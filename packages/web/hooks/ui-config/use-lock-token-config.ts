@@ -1,8 +1,9 @@
-import { useCallback, useEffect } from "react";
-import dayjs from "dayjs";
-import { Duration } from "dayjs/plugin/duration";
 import { AmountConfig } from "@keplr-wallet/hooks";
 import { AppCurrency } from "@keplr-wallet/types";
+import dayjs from "dayjs";
+import { Duration } from "dayjs/plugin/duration";
+import { useCallback, useEffect } from "react";
+
 import { useStore } from "../../stores";
 import { useAmountConfig } from "./use-amount-config";
 
@@ -15,7 +16,11 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
     duration: Duration
   ) => Promise<"synthetic" | "normal">;
 } {
-  const { chainStore, queriesStore, accountStore } = useStore();
+  const {
+    chainStore,
+    queriesStore,
+    oldAccountStore: accountStore,
+  } = useStore();
 
   const { chainId } = chainStore.osmosis;
 
