@@ -15,7 +15,7 @@ export function useTxGasEstimate(
   sendFn: SendFn,
   memoedParams?: unknown[],
   memoedCurrency?: Currency,
-  costMultiplier = 4
+  costMultiplier = 5
 ): CoinPretty | null {
   const [cost, setCost] = useState<CoinPretty | null>(null);
 
