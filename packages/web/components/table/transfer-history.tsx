@@ -1,7 +1,3 @@
-import Image from "next/image";
-import classNames from "classnames";
-import { FunctionComponent } from "react";
-import { observer } from "mobx-react-lite";
 import { ChainIdHelper } from "@keplr-wallet/cosmos";
 import { CoinPretty } from "@keplr-wallet/unit";
 import {
@@ -9,12 +5,17 @@ import {
   IBCTransferHistoryStatus,
   TxReason,
 } from "@osmosis-labs/stores";
-import { useStore } from "../../stores";
-import { Table, BaseCell } from ".";
-import { Breakpoint, CustomClasses } from "../types";
-import { useWindowSize } from "../../hooks";
+import classNames from "classnames";
+import { observer } from "mobx-react-lite";
+import Image from "next/image";
+import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
+
+import { useWindowSize } from "../../hooks";
+import { useStore } from "../../stores";
 import { truncateString } from "../../utils/string";
+import { Breakpoint, CustomClasses } from "../types";
+import { BaseCell, Table } from ".";
 
 type History = {
   txHash: string;

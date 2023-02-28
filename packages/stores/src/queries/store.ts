@@ -1,42 +1,43 @@
-import { autorun } from "mobx";
-import { ChainGetter, QueriesSetBase } from "@keplr-wallet/stores";
 import { KVStore } from "@keplr-wallet/common";
+import { ChainGetter, QueriesSetBase } from "@keplr-wallet/stores";
+import { autorun } from "mobx";
 import { DeepReadonly } from "utility-types";
+
 import { ObservableQueryFilteredPools } from "../queries-external/filtered-pools/filtered-pools";
-import {
-  ObservableQueryPools,
-  ObservableQueryNumPools,
-  PoolGetter,
-} from "./pools";
-import { ObservableQueryGammPoolShare } from "./pool-share";
-import {
-  ObservableQueryIncentivizedPools,
-  ObservableQueryLockableDurations,
-  ObservableQueryPoolsGaugeIds,
-} from "./pool-incentives";
 import { ObservableQueryEpochs } from "./epochs";
+import { FallbackStore } from "./fallback-query-store";
+import { ObservableQueryGauges } from "./incentives";
 import {
+  ObservableQueryAccountLocked,
   ObservableQueryAccountLockedCoins,
   ObservableQueryAccountUnlockingCoins,
-  ObservableQueryAccountLocked,
   ObservableSyntheticLockupsByLockId,
 } from "./lockup";
 import {
   ObservableQueryEpochProvisions,
   ObservableQueryMintParmas,
 } from "./mint";
-import { ObservableQueryDistrInfo } from "./pool-incentives/distr-info";
-import { ObservableQueryGauges } from "./incentives";
 import { ObservableQueryPoolCreationFee } from "./pool-creation-fee";
 import {
-  ObservableQuerySuperfluidDelegations,
-  ObservableQuerySuperfluidPools,
-  ObservableQuerySuperfluidUndelegations,
+  ObservableQueryIncentivizedPools,
+  ObservableQueryLockableDurations,
+  ObservableQueryPoolsGaugeIds,
+} from "./pool-incentives";
+import { ObservableQueryDistrInfo } from "./pool-incentives/distr-info";
+import { ObservableQueryGammPoolShare } from "./pool-share";
+import {
+  ObservableQueryNumPools,
+  ObservableQueryPools,
+  PoolGetter,
+} from "./pools";
+import {
   ObservableQuerySuperfluidAssetMultiplier,
+  ObservableQuerySuperfluidDelegations,
   ObservableQuerySuperfluidOsmoEquivalent,
   ObservableQuerySuperfluidParams,
+  ObservableQuerySuperfluidPools,
+  ObservableQuerySuperfluidUndelegations,
 } from "./superfluid-pools";
-import { FallbackStore } from "./fallback-query-store";
 
 export interface OsmosisQueries {
   osmosis?: OsmosisQueriesImpl;

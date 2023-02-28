@@ -1,15 +1,17 @@
 import { RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
-import { observer } from "mobx-react-lite";
-import { FunctionComponent, useMemo, useCallback, useState } from "react";
 import EventEmitter from "eventemitter3";
+import { observer } from "mobx-react-lite";
+import { FunctionComponent, useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-multi-lang";
+
 import { EventName } from "../../config";
 import {
+  useAmplitudeAnalytics,
   useFilteredData,
   usePaginatedData,
   useSortedData,
   useWindowSize,
-  useAmplitudeAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
 import { PageList, SortMenu } from "../control";
@@ -21,9 +23,8 @@ import {
   PoolQuickActionCell,
 } from "../table/cells";
 import { Breakpoint } from "../types";
-import { CompactPoolTableDisplay } from "./compact-pool-table-display";
 import { POOLS_PER_PAGE } from ".";
-import { useTranslation } from "react-multi-lang";
+import { CompactPoolTableDisplay } from "./compact-pool-table-display";
 
 export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
   quickAddLiquidity: (poolId: string) => void;

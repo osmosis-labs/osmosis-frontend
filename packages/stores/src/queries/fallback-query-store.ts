@@ -1,5 +1,5 @@
-import { observable, autorun, makeObservable, runInAction } from "mobx";
 import { ObservableQuery } from "@keplr-wallet/stores";
+import { autorun, makeObservable, observable, runInAction } from "mobx";
 
 /** Wraps an ordered list of similar query stores and falls back to the first store that returns a valid response. */
 export class FallbackStore<TStore extends ObservableQuery> {

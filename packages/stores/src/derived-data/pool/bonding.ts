@@ -1,24 +1,25 @@
-import { makeObservable, computed } from "mobx";
-import { computedFn } from "mobx-utils";
-import { Duration } from "dayjs/plugin/duration";
-import dayjs from "dayjs";
-import { CoinPretty, RatePretty, Dec, IntPretty } from "@keplr-wallet/unit";
 import {
-  HasMapStore,
-  IQueriesStore,
-  IAccountStore,
   ChainGetter,
+  HasMapStore,
+  IAccountStore,
+  IQueriesStore,
 } from "@keplr-wallet/stores";
+import { CoinPretty, Dec, IntPretty, RatePretty } from "@keplr-wallet/unit";
+import dayjs from "dayjs";
+import { Duration } from "dayjs/plugin/duration";
+import { computed, makeObservable } from "mobx";
+import { computedFn } from "mobx-utils";
+
+import { IPriceStore } from "../../price";
 import { OsmosisQueries } from "../../queries";
 import { ObservableQueryGauge } from "../../queries/incentives";
 import {
-  ObservableQueryPoolFeesMetrics,
   ObservableQueryActiveGauges,
+  ObservableQueryPoolFeesMetrics,
 } from "../../queries-external";
-import { IPriceStore } from "../../price";
-import { BondDuration } from "./types";
 import { ObservablePoolDetails } from "./details";
 import { ObservableSuperfluidPoolDetails } from "./superfluid";
+import { BondDuration } from "./types";
 
 /** Provides info for the current account's bonding status in a pool. */
 export class ObservablePoolBonding {

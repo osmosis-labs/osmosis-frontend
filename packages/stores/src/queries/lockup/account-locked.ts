@@ -1,17 +1,18 @@
+import { KVStore } from "@keplr-wallet/common";
 import {
   ChainGetter,
   ObservableChainQuery,
   ObservableChainQueryMap,
   QueryResponse,
 } from "@keplr-wallet/stores";
-import { KVStore } from "@keplr-wallet/common";
-import { AccountLockedLongerDuration } from "./types";
-import { computed, makeObservable } from "mobx";
-import { computedFn } from "mobx-utils";
+import { AppCurrency } from "@keplr-wallet/types";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { AppCurrency } from "@keplr-wallet/types";
+import { computed, makeObservable } from "mobx";
+import { computedFn } from "mobx-utils";
+
+import { AccountLockedLongerDuration } from "./types";
 
 export class ObservableQueryAccountLockedInner extends ObservableChainQuery<AccountLockedLongerDuration> {
   constructor(

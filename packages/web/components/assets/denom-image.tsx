@@ -1,7 +1,6 @@
-import { FunctionComponent } from "react";
-import Image from "next/image";
-
 import { AppCurrency, Currency } from "@keplr-wallet/types";
+import Image from "next/image";
+import { FunctionComponent } from "react";
 
 export const DenomImage: FunctionComponent<{
   denom: AppCurrency | Currency;

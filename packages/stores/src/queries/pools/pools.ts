@@ -6,10 +6,11 @@ import {
 } from "@keplr-wallet/stores";
 import { autorun, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
+
+import { GET_POOLS_PAGINATION_LIMIT } from ".";
 import { ObservableQueryNumPools } from "./num-pools";
 import { ObservableQueryPool } from "./pool";
-import { Pools, PoolGetter } from "./types";
-import { GET_POOLS_PAGINATION_LIMIT } from ".";
+import { PoolGetter, Pools } from "./types";
 
 /** Fetches all pools directly from node in order of pool creation. */
 export class ObservableQueryPools

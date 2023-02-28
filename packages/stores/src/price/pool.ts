@@ -1,11 +1,12 @@
-import { makeObservable, observable, computed } from "mobx";
-import { CoinGeckoPriceStore, ChainGetter } from "@keplr-wallet/stores";
+import { KVStore } from "@keplr-wallet/common";
+import { ChainGetter, CoinGeckoPriceStore } from "@keplr-wallet/stores";
 import { FiatCurrency } from "@keplr-wallet/types";
 import { Dec } from "@keplr-wallet/unit";
-import { KVStore } from "@keplr-wallet/common";
+import { computed, makeObservable, observable } from "mobx";
+import { computedFn } from "mobx-utils";
+
 import { PoolGetter } from "../queries";
 import { IntermediateRoute, IPriceStore } from "./types";
-import { computedFn } from "mobx-utils";
 
 /**
  * PoolFallbackPriceStore permits the some currencies that are not listed on CoinGecko

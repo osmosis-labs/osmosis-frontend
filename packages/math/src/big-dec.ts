@@ -1,5 +1,5 @@
+import { CoinUtils, Dec, Int } from "@keplr-wallet/unit";
 import bigInteger from "big-integer";
-import { Int, Dec, CoinUtils } from "@keplr-wallet/unit";
 
 export class BigDec {
   public static readonly precision = 36;

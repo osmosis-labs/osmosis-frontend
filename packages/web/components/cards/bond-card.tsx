@@ -1,23 +1,24 @@
-import Image from "next/image";
-import {
-  FunctionComponent,
-  useState,
-  useMemo,
-  ButtonHTMLAttributes,
-} from "react";
+import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { BondDuration } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import moment from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
-import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { BondDuration } from "@osmosis-labs/stores";
-import { FallbackImg, Icon } from "../assets";
+import Image from "next/image";
+import {
+  ButtonHTMLAttributes,
+  FunctionComponent,
+  useMemo,
+  useState,
+} from "react";
 import { useTranslation } from "react-multi-lang";
-import { coinFormatter, priceFormatter } from "../../utils/formatter";
-import { UnlockIcon } from "../assets/unlock-icon";
-import { RightArrowIcon } from "../assets/right-arrow-icon";
-import { useAmplitudeAnalytics } from "../../hooks";
-import { EventName } from "../../config";
 import { useMeasure } from "react-use";
+
+import { EventName } from "../../config";
+import { useAmplitudeAnalytics } from "../../hooks";
+import { formatPretty } from "../../utils/formatter";
+import { FallbackImg, Icon } from "../assets";
+import { RightArrowIcon } from "../assets/right-arrow-icon";
+import { UnlockIcon } from "../assets/unlock-icon";
 
 export const BondCard: FunctionComponent<
   BondDuration & {
@@ -228,13 +229,14 @@ const Drawer: FunctionComponent<{
           <span className="subtitle1 text-osmoverse-200">
             {t("pool.incentives")}
           </span>
-          <div className="flex items-center gap-2 md:gap-1.5">
+          <div className="flex items-center gap-1.5">
             <h5
               className={classNames(
+                "whitespace-nowrap",
                 superfluid ? "text-superfluid-gradient" : "text-bullish-400"
               )}
             >
-              {aggregateApr.maxDecimals(0).toString()} {t("pool.APR")}
+              {formatPretty(aggregateApr.maxDecimals(0))} {t("pool.APR")}
             </h5>
             <div
               className={classNames(
@@ -399,7 +401,7 @@ const IncentiveBreakdownRow: FunctionComponent<
       <div className="flex flex-col text-right">
         <span className="text-osmoverse-100">
           {t("pool.dailyEarnAmount", {
-            amount: coinFormatter(dailyPoolReward),
+            amount: formatPretty(dailyPoolReward),
           })}
         </span>
         {numDaysRemaining && (
@@ -430,7 +432,7 @@ const SwapFeeBreakdownRow: FunctionComponent<{
       <div className="flex flex-col text-right">
         <span className="text-osmoverse-100">
           {t("pool.dailyEarnAmount", {
-            amount: priceFormatter(swapFeeDailyReward),
+            amount: formatPretty(swapFeeDailyReward),
           })}
         </span>
         <span className="caption text-osmoverse-400">

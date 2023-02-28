@@ -1,14 +1,15 @@
-import { ChainInfoWithExplorer } from "../stores/chain";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { createKeplrChainInfos, SimplifiedChainInfo } from "./utils";
+
+import { ChainInfoWithExplorer } from "../stores/chain";
 import {
   IS_TESTNET,
-  OSMOSIS_RPC_OVERWRITE,
-  OSMOSIS_REST_OVERWRITE,
   OSMOSIS_CHAIN_ID_OVERWRITE,
   OSMOSIS_CHAIN_NAME_OVERWRITE,
   OSMOSIS_EXPLORER_URL_OVERWRITE,
+  OSMOSIS_REST_OVERWRITE,
+  OSMOSIS_RPC_OVERWRITE,
 } from "./env";
+import { createKeplrChainInfos, SimplifiedChainInfo } from "./utils";
 
 const chainInfos = (
   [

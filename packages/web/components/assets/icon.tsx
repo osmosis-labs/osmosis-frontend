@@ -1,4 +1,5 @@
 import { FunctionComponent, SVGAttributes } from "react";
+
 import spriteSVGURL from "../../public/icons/sprite.svg";
 
 type IconId =

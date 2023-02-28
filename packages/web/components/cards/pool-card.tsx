@@ -1,12 +1,13 @@
-import Link from "next/link";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import Link from "next/link";
 import { FunctionComponent } from "react";
+import { useTranslation } from "react-multi-lang";
+
 import { PoolAssetsIcon, PoolAssetsName } from "../assets";
 import { PoolAssetInfo } from "../assets/types";
 import { Metric } from "../types";
 import { CustomClasses } from "../types";
-import { useTranslation } from "react-multi-lang";
 
 // <Link /> notes: turn off prefetch to avoid loading tons of pools and lagging the client, many pools will be in viewport. They will still be fetched on hover.
 // See : https://nextjs.org/docs/api-reference/next/link

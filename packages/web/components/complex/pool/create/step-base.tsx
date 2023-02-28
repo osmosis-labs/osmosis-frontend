@@ -1,12 +1,13 @@
-import { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
-import { StepProps } from "./types";
+import { FunctionComponent } from "react";
+import { useTranslation } from "react-multi-lang";
+
+import { useWindowSize } from "../../../../hooks";
 import { Info } from "../../../alert";
 import { Button } from "../../../buttons";
-import { POOL_CREATION_FEE } from ".";
-import { useWindowSize } from "../../../../hooks";
 import { tError } from "../../../localization";
-import { useTranslation } from "react-multi-lang";
+import { POOL_CREATION_FEE } from ".";
+import { StepProps } from "./types";
 
 export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
   observer(

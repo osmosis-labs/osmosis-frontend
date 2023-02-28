@@ -1,20 +1,21 @@
-import { DeepReadonly } from "utility-types";
 import {
+  ChainGetter,
+  CosmosQueries,
   IAccountStore,
   IQueriesStore,
-  CosmosQueries,
-  ChainGetter,
 } from "@keplr-wallet/stores";
-import { OsmosisQueries } from "../queries";
+import { DeepReadonly } from "utility-types";
+
 import { IPriceStore } from "../price";
+import { OsmosisQueries } from "../queries";
 import {
-  ObservableQueryPoolFeesMetrics,
   ObservableQueryActiveGauges,
+  ObservableQueryPoolFeesMetrics,
 } from "../queries-external";
 import {
   ObservablePoolDetails,
-  ObservableSuperfluidPoolDetails,
   ObservablePoolsBonding,
+  ObservableSuperfluidPoolDetails,
 } from "./pool";
 
 /** Contains stores that compute on the lower level . */

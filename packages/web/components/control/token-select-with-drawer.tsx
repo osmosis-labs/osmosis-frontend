@@ -1,15 +1,16 @@
-import Image from "next/image";
-import { FunctionComponent, useState } from "react";
-import { observer } from "mobx-react-lite";
 import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty } from "@keplr-wallet/unit";
-import { useStore } from "../../stores";
-import { useAmplitudeAnalytics, useWindowSize } from "../../hooks";
 import classNames from "classnames";
-import { TokenSelectDrawer } from "../drawers/token-select-drawer";
+import { observer } from "mobx-react-lite";
+import Image from "next/image";
 import { useRouter } from "next/router";
+import { FunctionComponent, useState } from "react";
+
 import { EventName } from "../../config";
+import { useAmplitudeAnalytics, useWindowSize } from "../../hooks";
+import { useStore } from "../../stores";
 import { Icon } from "../assets";
+import { TokenSelectDrawer } from "../drawers/token-select-drawer";
 
 /** Will display balances if provided `CoinPretty` objects. Assumes denoms are unique. */
 export const TokenSelectWithDrawer: FunctionComponent<{

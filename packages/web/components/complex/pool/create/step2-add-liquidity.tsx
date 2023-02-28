@@ -1,11 +1,12 @@
+import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent } from "react";
-import { observer } from "mobx-react-lite";
+import { useTranslation } from "react-multi-lang";
+
+import { useWindowSize } from "../../../../hooks";
 import { InputBox } from "../../../input";
 import { StepBase } from "./step-base";
 import { StepProps } from "./types";
-import { useWindowSize } from "../../../../hooks";
-import { useTranslation } from "react-multi-lang";
 
 export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
   (props) => {

@@ -1,4 +1,4 @@
-import { FunctionComponent, useRef, useCallback, useEffect } from "react";
+import { FunctionComponent, useCallback, useEffect, useRef } from "react";
 
 function invertCoordinates(n: number, height: number) {
   return Math.abs(n - height);

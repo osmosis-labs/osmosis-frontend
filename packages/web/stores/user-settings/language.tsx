@@ -1,11 +1,12 @@
-import { action, makeObservable, observable, computed } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 import { FunctionComponent } from "react";
-import { UserSetting } from ".";
 import React from "react";
+
 import {
   LanguageSelect,
   MenuDropdownIconItemProps,
 } from "../../components/control";
+import { UserSetting } from ".";
 
 export type LanguageState = { language: string; isControlOpen: boolean };
 

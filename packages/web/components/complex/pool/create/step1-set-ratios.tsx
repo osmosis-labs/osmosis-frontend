@@ -1,14 +1,15 @@
+import classNames from "classnames";
+import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent } from "react";
-import { observer } from "mobx-react-lite";
-import classNames from "classnames";
-import { TokenSelect } from "../../../control";
-import { InputBox } from "../../../input";
-import { StepProps } from "./types";
-import { StepBase } from "./step-base";
+import { useTranslation } from "react-multi-lang";
+
 import { useWindowSize } from "../../../../hooks";
 import { Button } from "../../../buttons";
-import { useTranslation } from "react-multi-lang";
+import { TokenSelect } from "../../../control";
+import { InputBox } from "../../../input";
+import { StepBase } from "./step-base";
+import { StepProps } from "./types";
 
 export const Step1SetRatios: FunctionComponent<StepProps> = observer(
   (props) => {
