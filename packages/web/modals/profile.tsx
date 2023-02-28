@@ -284,7 +284,7 @@ export const ProfileModal: FunctionComponent<
           <div className="flex justify-between 1.5xl:gap-4 1.5xs:flex-col">
             <div className="flex gap-3">
               <div className="h-12 w-12 shrink-0">
-                <Image
+                <img
                   alt="wallet-icon"
                   src={navBarStore.walletInfo.logoUrl}
                   height={48}
@@ -399,8 +399,8 @@ export const ProfileModal: FunctionComponent<
                 title="Log Out"
                 onClick={() => {
                   logEvent([EventName.ProfileModal.logOutClicked]);
-                  props.onRequestClose();
                   wallet?.disconnect();
+                  props.onRequestClose();
                 }}
                 className="group hover:text-rust-500"
               >

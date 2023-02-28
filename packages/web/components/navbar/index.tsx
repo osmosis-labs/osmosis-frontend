@@ -21,6 +21,7 @@ import { formatICNSName, getShortAddress } from "../../utils/string";
 import { Icon } from "../assets";
 import { Button, buttonCVA } from "../buttons";
 import IconButton from "../buttons/icon-button";
+import ClientOnly from "../client-only";
 import { MainMenu } from "../main-menu";
 import { Popover } from "../popover";
 import { CustomClasses, MainLayoutMenu } from "../types";
@@ -130,7 +131,9 @@ export const NavBar: FunctionComponent<
                         ),
                       })}
                     />
-                    <WalletInfo onOpenProfile={onOpenProfile} />
+                    <ClientOnly>
+                      <WalletInfo onOpenProfile={onOpenProfile} />
+                    </ClientOnly>
                   </Popover.Panel>
                 </>
               );
@@ -165,11 +168,13 @@ export const NavBar: FunctionComponent<
             isOpen={isSettingsOpen}
             onRequestClose={onCloseSettings}
           />
-          <WalletInfo
-            className="md:hidden"
-            icnsName={icnsQuery?.primaryName}
-            onOpenProfile={onOpenProfile}
-          />
+          <ClientOnly>
+            <WalletInfo
+              className="md:hidden"
+              icnsName={icnsQuery?.primaryName}
+              onOpenProfile={onOpenProfile}
+            />
+          </ClientOnly>
         </div>
       </div>
       {/* Back-layer element to occupy space for the caller */}

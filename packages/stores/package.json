@@ -64,7 +64,7 @@
     "mobx-utils": "^6.0.4",
     "protobufjs": "^6.11.2",
     "utility-types": "^3.10.0",
-    "@cosmos-kit/core": "^1.0.11"
+    "@cosmos-kit/core": "^1.1.3"
   },
   "peerDependencies": {
     "@cosmos-kit/cosmostation": "^0.14.28",

@@ -7,7 +7,7 @@ import { wallets as trustWallets } from "@cosmos-kit/trust";
 import { wallets as xdefiWallets } from "@cosmos-kit/xdefi-extension";
 import { action, makeObservable, observable } from "mobx";
 
-const logger = new Logger(console, "WARN");
+const logger = new Logger("WARN");
 
 export class AccountStore {
   @observable
@@ -55,7 +55,9 @@ export class AccountStore {
 
     makeObservable(this);
 
-    this.walletManager.onMounted();
+    if (typeof window !== "undefined") {
+      this.walletManager.onMounted();
+    }
   }
 
   @action
@@ -93,7 +95,7 @@ export class AccountStore {
   /**
    * Get the current wallet for the given chain name
    * @param chainName - Chain name
-   * @returns Wallet
+   * @returns ChainWalletBase
    */
   getWallet(chainName: string) {
     const walletRepo = this.getWalletRepo(chainName);
