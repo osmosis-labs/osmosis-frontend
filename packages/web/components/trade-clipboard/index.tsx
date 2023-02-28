@@ -121,7 +121,7 @@ export const TradeClipboard: FunctionComponent<{
     const setShowEstimateDetails = useCallback(
       (value: boolean) => {
         // refresh current route's pools
-        if (value === true) {
+        if (value) {
           tradeTokenInConfig.optimizedRoutePaths.forEach((route) => {
             route.pools.forEach((pool) => {
               console.log("refresh pool", pool.id);
