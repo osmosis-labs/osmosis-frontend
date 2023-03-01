@@ -1,14 +1,15 @@
-import Image from "next/image";
-import { observer } from "mobx-react-lite";
-import { FunctionComponent } from "react";
-import { CoinPretty } from "@keplr-wallet/unit";
 import { AppCurrency, IBCCurrency } from "@keplr-wallet/types";
-import { InputProps } from "../components/types";
-import { SearchBox } from "../components/input";
+import { CoinPretty } from "@keplr-wallet/unit";
+import classNames from "classnames";
+import { observer } from "mobx-react-lite";
+import Image from "next/image";
+import { FunctionComponent } from "react";
 import { t } from "react-multi-lang";
+
+import { SearchBox } from "../components/input";
+import { InputProps } from "../components/types";
 import { useStore } from "../stores";
 import { ModalBase, ModalBaseProps } from "./base";
-import classNames from "classnames";
 
 /** Intended for mobile use only - full screen alternative to token select dropdown.
  *
@@ -61,7 +62,7 @@ export const TokenSelectModal: FunctionComponent<
 
           const tokenAmount =
             t.token instanceof CoinPretty
-              ? t.token.hideDenom(true).trim(true).toString()
+              ? t.token.hideDenom(true).maxDecimals(8).trim(true).toString()
               : undefined;
           const tokenPrice =
             t.token instanceof CoinPretty
