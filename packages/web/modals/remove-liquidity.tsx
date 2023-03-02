@@ -22,15 +22,11 @@ export const RemoveLiquidityModal: FunctionComponent<
   } & ModalBaseProps
 > = observer((props) => {
   const { poolId } = props;
-  const {
-    chainStore,
-    oldAccountStore: accountStore,
-    queriesStore,
-  } = useStore();
+  const { chainStore, oldAccountStore, queriesStore } = useStore();
   const t = useTranslation();
 
   const { chainId } = chainStore.osmosis;
-  const account = accountStore.getAccount(chainId);
+  const account = oldAccountStore.getAccount(chainId);
   const isSendingMsg = account.txTypeInProgress !== "";
 
   const { config, removeLiquidity } = useRemoveLiquidityConfig(

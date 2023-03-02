@@ -1,11 +1,11 @@
-import { WalletStatus } from "@keplr-wallet/stores";
+import { WalletStatus } from "@cosmos-kit/core";
 import Image from "next/image";
 import { ComponentProps, useEffect, useState } from "react";
 import { t } from "react-multi-lang";
 
 import { Button } from "../../components/buttons";
 import { useStore } from "../../stores";
-import { useKeplr } from "./hook";
+import { useWalletSelect } from "../wallet-select";
 
 /** FOR USE IN MODALS
  *
@@ -22,50 +22,40 @@ import { useKeplr } from "./hook";
  */
 export function useConnectWalletModalRedirect(
   actionButtonProps: ComponentProps<typeof Button>,
-  onRequestClose: () => void,
+  _onRequestClose: () => void,
   connectWalletMessage = t("connectWallet")
 ) {
-  const keplr = useKeplr();
-  const { oldAccountStore: accountStore, chainStore } = useStore();
+  const { accountStore, chainStore } = useStore();
   const { chainId } = chainStore.osmosis;
-  const osmosisAccount = accountStore.getAccount(chainId);
+  const osmosisAccount = accountStore.getWalletRepo(chainId);
+
+  const { onOpenWalletSelect } = useWalletSelect();
 
   const [walletInitiallyConnected] = useState(
-    () => osmosisAccount.walletStatus === WalletStatus.Loaded
+    () => osmosisAccount.walletStatus === WalletStatus.Connected
   );
   const [showSelf, setShowSelf] = useState(true);
 
   useEffect(() => {
     if (
       !walletInitiallyConnected &&
-      osmosisAccount.walletStatus === WalletStatus.Loaded
+      osmosisAccount.walletStatus === WalletStatus.Connected
     ) {
       setShowSelf(true);
     }
-  }, [osmosisAccount.walletStatus]);
-
-  // prevent ibc-transfer dialog from randomly appearing if they connect wallet later
-  useEffect(() => {
-    if (!showSelf) {
-      // getKeplr resolves to an exception when connection-selection modal is closed
-      keplr.getKeplr().catch(() => {
-        onRequestClose();
-        setShowSelf(true); // reset state to allow modal to be opened later
-      });
-    }
-  }, [showSelf]);
+  }, [osmosisAccount.walletStatus, walletInitiallyConnected]);
 
   return {
     showModalBase: showSelf,
     accountActionButton:
-      osmosisAccount.walletStatus === WalletStatus.Loaded ? (
+      osmosisAccount.walletStatus === WalletStatus.Connected ? (
         <Button {...actionButtonProps}>{actionButtonProps.children}</Button>
       ) : (
         <Button
           {...actionButtonProps}
           disabled={false}
           onClick={() => {
-            osmosisAccount.init(); // show select connect modal
+            onOpenWalletSelect(chainId); // show select connect modal
             setShowSelf(false);
           }}
         >
@@ -80,6 +70,6 @@ export function useConnectWalletModalRedirect(
           </h6>
         </Button>
       ),
-    walletConnected: osmosisAccount.walletStatus === WalletStatus.Loaded,
+    walletConnected: osmosisAccount.walletStatus === WalletStatus.Connected,
   };
 }

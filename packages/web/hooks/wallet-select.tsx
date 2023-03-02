@@ -6,7 +6,7 @@ import { useStore } from "~/stores";
 import { createContext } from "~/utils/react-context";
 
 const [WalletSelectInnerProvider, useWalletSelect] = createContext<{
-  onOpenWalletSelect: () => void;
+  onOpenWalletSelect: (chainName: string) => void;
 }>({
   strict: true,
   name: "WalletSelectContext",
@@ -17,12 +17,13 @@ export { useWalletSelect };
 export const WalletSelectProvider: FunctionComponent = observer(
   ({ children }) => {
     const { accountStore } = useStore();
+    const [chainName, setChainName] = useState<string | null>(null);
 
     const [isWalletSelectOpen, setIsWalletSelectOpen] = useState(false);
-    const walletRepo = accountStore.getWalletRepo("osmosis");
 
-    const onOpenWalletSelect = useCallback(() => {
+    const onOpenWalletSelect = useCallback((chainName: string) => {
       setIsWalletSelectOpen(true);
+      setChainName(chainName);
     }, []);
 
     const context = useMemo(
@@ -32,11 +33,16 @@ export const WalletSelectProvider: FunctionComponent = observer(
 
     return (
       <WalletSelectInnerProvider value={context}>
-        <WalletSelectModal
-          walletRepo={walletRepo}
-          isOpen={isWalletSelectOpen}
-          onRequestClose={() => setIsWalletSelectOpen(false)}
-        />
+        {Boolean(chainName) && (
+          <WalletSelectModal
+            walletRepo={accountStore.getWalletRepo(chainName!)}
+            isOpen={isWalletSelectOpen}
+            onRequestClose={() => {
+              setIsWalletSelectOpen(false);
+              setChainName(null);
+            }}
+          />
+        )}
         {children}
       </WalletSelectInnerProvider>
     );

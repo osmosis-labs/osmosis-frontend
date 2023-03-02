@@ -11,14 +11,10 @@ export function useSuperfluidPool(): {
     lockLPTokensConfig?: AmountConfig
   ) => Promise<"delegated" | "locked-and-delegated">;
 } {
-  const {
-    chainStore,
-    oldAccountStore: accountStore,
-    derivedDataStore,
-  } = useStore();
+  const { chainStore, oldAccountStore, derivedDataStore } = useStore();
   const { chainId } = chainStore.osmosis;
 
-  const account = accountStore.getAccount(chainId);
+  const account = oldAccountStore.getAccount(chainId);
 
   const superfluidDelegateToValidator = useCallback(
     (poolId, validatorAddress, lockLPTokensConfig) => {

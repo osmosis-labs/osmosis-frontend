@@ -37,7 +37,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
       queriesExternalStore,
       priceStore,
       queriesStore,
-      oldAccountStore: accountStore,
+      accountStore,
       derivedDataStore,
     } = useStore();
     const { isMobile } = useWindowSize();
@@ -48,7 +48,7 @@ export const ExternalIncentivizedPoolsTableSet: FunctionComponent<{
     const queryCosmos = queriesStore.get(chainId).cosmos;
     const queryOsmosis = queriesStore.get(chainId).osmosis!;
     const queryActiveGauges = queriesExternalStore.queryActiveGauges;
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
 
     const pools = queryActiveGauges.poolIdsForActiveGauges.map((poolId) =>
       queryOsmosis.queryGammPools.getPool(poolId)

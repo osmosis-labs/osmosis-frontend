@@ -69,7 +69,7 @@ export const AllPoolsTableSet: FunctionComponent<{
       queriesExternalStore,
       priceStore,
       queriesStore,
-      oldAccountStore: accountStore,
+      accountStore,
     } = useStore();
     const { isMobile } = useWindowSize();
     const t = useTranslation();
@@ -114,7 +114,7 @@ export const AllPoolsTableSet: FunctionComponent<{
 
     const { chainId } = chainStore.osmosis;
     const queriesOsmosis = queriesStore.get(chainId).osmosis!;
-    const account = accountStore.getAccount(chainId);
+    const wallet = accountStore.getWallet(chainId);
     const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;
 
     const allPools = queriesOsmosis.queryGammPools.getAllPools();
@@ -125,7 +125,7 @@ export const AllPoolsTableSet: FunctionComponent<{
           const poolTvl = pool.computeTotalValueLocked(priceStore);
           const myLiquidity = poolTvl.mul(
             queriesOsmosis.queryGammPoolShare.getAllGammShareRatio(
-              account.bech32Address,
+              wallet?.address ?? "",
               pool.id
             )
           );
@@ -142,7 +142,7 @@ export const AllPoolsTableSet: FunctionComponent<{
               ? new PricePretty(fiat, 0)
               : poolTvl.mul(
                   queriesOsmosis.queryGammPoolShare
-                    .getAvailableGammShare(account.bech32Address, pool.id)
+                    .getAvailableGammShare(wallet?.address ?? "", pool.id)
                     .quo(pool.totalShare)
                 ),
             poolName: pool.poolAssets
@@ -164,12 +164,12 @@ export const AllPoolsTableSet: FunctionComponent<{
         allPools,
         queriesOsmosis.queryGammPools.isFetching,
         queriesExternalStore.queryGammPoolFeeMetrics.response,
-        queriesOsmosis.queryAccountLocked.get(account.bech32Address).response,
-        queriesOsmosis.queryLockedCoins.get(account.bech32Address).response,
-        queriesOsmosis.queryUnlockingCoins.get(account.bech32Address).response,
+        queriesOsmosis.queryAccountLocked.get(wallet?.address ?? "").response,
+        queriesOsmosis.queryLockedCoins.get(wallet?.address ?? "").response,
+        queriesOsmosis.queryUnlockingCoins.get(wallet?.address ?? "").response,
         priceStore.response,
         queriesExternalStore.queryGammPoolFeeMetrics.response,
-        account.bech32Address,
+        wallet?.address ?? "",
       ]
     );
 

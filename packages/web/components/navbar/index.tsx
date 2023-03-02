@@ -39,7 +39,7 @@ export const NavBar: FunctionComponent<
     chainStore: {
       osmosis: { chainId },
     },
-    oldAccountStore: accountStore,
+    accountStore,
   } = useStore();
 
   const {
@@ -66,9 +66,9 @@ export const NavBar: FunctionComponent<
     return () => router.events.off("routeChangeComplete", handler);
   }, []);
 
-  const account = accountStore.getAccount(chainId);
+  const account = accountStore.getWallet(chainId);
   const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(
-    account.bech32Address
+    account?.address ?? ""
   );
 
   // announcement banner
@@ -227,8 +227,7 @@ const WalletInfo: FunctionComponent<
           className="!h-10 w-40 lg:w-36 md:w-full"
           onClick={() => {
             logEvent([EventName.Topnav.connectWalletClicked]);
-            // account.init()
-            onOpenWalletSelect();
+            onOpenWalletSelect(chainId);
           }}
         >
           <span className="button mx-auto">{t("connectWallet")}</span>

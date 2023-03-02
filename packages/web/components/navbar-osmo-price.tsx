@@ -1,4 +1,4 @@
-import { WalletStatus } from "@keplr-wallet/stores";
+import { WalletStatus } from "@cosmos-kit/core";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -30,7 +30,7 @@ function getChartData(prices: PricePretty[] = []) {
 
 const NavbarOsmoPrice = observer(() => {
   const {
-    oldAccountStore: accountStore,
+    accountStore,
     priceStore,
     chainStore,
     queriesExternalStore,
@@ -43,7 +43,7 @@ const NavbarOsmoPrice = observer(() => {
   const { nativeBalances } = assetsStore;
 
   const { chainId } = chainStore.osmosis;
-  const account = accountStore.getAccount(chainId);
+  const wallet = accountStore.getWallet(chainId);
 
   const osmoCurrency = chainStore.osmosis.stakeCurrency;
   const osmoPrice = priceStore.calculatePrice(
@@ -115,7 +115,7 @@ const NavbarOsmoPrice = observer(() => {
         </SkeletonLoader>
       </div>
 
-      {account.walletStatus === WalletStatus.Loaded && (
+      {wallet?.walletStatus === WalletStatus.Connected && (
         <SkeletonLoader isLoaded={osmoPrice.isReady}>
           <Button
             mode="unstyled"

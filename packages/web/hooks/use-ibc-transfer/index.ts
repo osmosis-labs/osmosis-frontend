@@ -1,10 +1,10 @@
+import { WalletStatus } from "@cosmos-kit/core";
 import { AmountConfig } from "@keplr-wallet/hooks";
 import {
   AccountSetBase,
   CosmosAccount,
   CosmwasmAccount,
   getKeplrFromWindow,
-  WalletStatus,
 } from "@keplr-wallet/stores";
 import {
   basicIbcTransfer,
@@ -16,6 +16,7 @@ import { useEffect } from "react";
 
 import { useStore } from "../../stores";
 import { useAmountConfig, useFakeFeeConfig } from "..";
+import { useWalletSelect } from "../wallet-select";
 import { CustomCounterpartyConfig, IbcTransfer } from ".";
 import { useCustomBech32Address } from "./use-custom-bech32address";
 
@@ -54,28 +55,32 @@ export function useIbcTransfer({
   ) => void,
   CustomCounterpartyConfig | undefined
 ] {
-  const {
-    chainStore,
-    oldAccountStore: accountStore,
-    queriesStore,
-  } = useStore();
+  const { chainStore, oldAccountStore, queriesStore, accountStore } =
+    useStore();
   const { chainId } = chainStore.osmosis;
 
-  const account = accountStore.getAccount(chainId);
-  const counterpartyAccount = accountStore.getAccount(counterpartyChainId);
+  const { onOpenWalletSelect } = useWalletSelect();
+
+  const oldAccount = oldAccountStore.getAccount(chainId);
+  const oldCounterpartyAccount =
+    oldAccountStore.getAccount(counterpartyChainId);
+  const account = accountStore.getWallet(chainId);
+  const counterpartyAccount = accountStore.getWallet(counterpartyChainId);
 
   const feeConfig = useFakeFeeConfig(
     chainStore,
     isWithdraw ? chainId : counterpartyChainId,
     isWithdraw
-      ? account.cosmos.msgOpts.ibcTransfer.gas
-      : counterpartyAccount.cosmos.msgOpts.ibcTransfer.gas
+      ? oldAccount.cosmos.msgOpts.ibcTransfer.gas
+      : oldCounterpartyAccount.cosmos.msgOpts.ibcTransfer.gas
   );
   const amountConfig = useAmountConfig(
     chainStore,
     queriesStore,
     isWithdraw ? chainId : counterpartyChainId,
-    isWithdraw ? account.bech32Address : counterpartyAccount.bech32Address,
+    isWithdraw
+      ? oldAccount.bech32Address
+      : oldCounterpartyAccount.bech32Address,
     feeConfig,
     isWithdraw ? currency : currency.originCurrency!
   );
@@ -98,17 +103,22 @@ export function useIbcTransfer({
   // open keplr dialog to request connecting to counterparty chain
   useEffect(() => {
     if (
-      account.bech32Address &&
-      (counterpartyAccount.walletStatus === WalletStatus.NotInit ||
-        counterpartyAccount.walletStatus === WalletStatus.Rejected)
+      account?.address &&
+      (counterpartyAccount?.walletStatus === WalletStatus.Disconnected ||
+        counterpartyAccount?.walletStatus === WalletStatus.Rejected)
     ) {
-      counterpartyAccount.init();
+      onOpenWalletSelect(counterpartyChainId);
     }
-  }, [account.bech32Address, counterpartyAccount]);
+  }, [
+    account?.address,
+    oldCounterpartyAccount,
+    counterpartyChainId,
+    onOpenWalletSelect,
+  ]);
 
   useEffect(() => {
     if (
-      account.walletStatus === WalletStatus.Loaded && // TODO: handle mobile web (it is always connected)
+      account?.walletStatus === WalletStatus.Connected && // TODO: handle mobile web (it is always connected)
       currency.originCurrency
     ) {
       if ("contractAddress" in currency.originCurrency) {
@@ -138,7 +148,7 @@ export function useIbcTransfer({
           });
       }
     }
-  }, [account.walletStatus, currency.originCurrency, currency.originChainId]);
+  }, [account?.walletStatus, currency.originCurrency, currency.originChainId]);
 
   const transfer: (
     onFulfill?: (
@@ -151,7 +161,7 @@ export function useIbcTransfer({
       if (isWithdraw) {
         await basicIbcTransfer(
           {
-            account,
+            account: oldAccount,
             chainId,
             channelId: sourceChannelId,
           },
@@ -159,7 +169,7 @@ export function useIbcTransfer({
             account:
               customBech32Address !== ""
                 ? customBech32Address
-                : counterpartyAccount,
+                : oldCounterpartyAccount,
             chainId: counterpartyChainId,
             channelId: destChannelId,
           },
@@ -171,7 +181,7 @@ export function useIbcTransfer({
       } else {
         await basicIbcTransfer(
           {
-            account: counterpartyAccount,
+            account: oldCounterpartyAccount,
             chainId: counterpartyChainId,
             channelId: destChannelId,
             contractTransfer:
@@ -180,13 +190,13 @@ export function useIbcTransfer({
               "contractAddress" in currency.originCurrency
                 ? {
                     contractAddress: currency.originCurrency["contractAddress"],
-                    cosmwasmAccount: counterpartyAccount,
+                    cosmwasmAccount: oldCounterpartyAccount,
                     ics20ContractAddress: ics20ContractAddress,
                   }
                 : undefined,
           },
           {
-            account,
+            account: oldAccount,
             chainId,
             channelId: sourceChannelId,
           },
@@ -202,11 +212,12 @@ export function useIbcTransfer({
   };
 
   return [
-    account,
-    counterpartyAccount,
+    oldAccount,
+    oldCounterpartyAccount,
     amountConfig,
-    (isWithdraw && account.txTypeInProgress === "ibcTransfer") ||
-      (!isWithdraw && counterpartyAccount.txTypeInProgress === "ibcTransfer"),
+    (isWithdraw && oldAccount.txTypeInProgress === "ibcTransfer") ||
+      (!isWithdraw &&
+        oldCounterpartyAccount.txTypeInProgress === "ibcTransfer"),
     transfer,
     customCounterpartyConfig,
   ];

@@ -53,7 +53,7 @@ const Pool: FunctionComponent = observer(() => {
   const {
     chainStore,
     queriesStore,
-    oldAccountStore: accountStore,
+    accountStore,
     priceStore,
     queriesExternalStore,
     derivedDataStore,
@@ -73,10 +73,11 @@ const Pool: FunctionComponent = observer(() => {
 
   const queryCosmos = queriesStore.get(chainId).cosmos;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
-  const { bech32Address } = accountStore.getAccount(chainStore.osmosis.chainId);
+  const address =
+    accountStore.getWallet(chainStore.osmosis.chainId)?.address ?? "";
   const queryGammPoolFeeMetrics = queriesExternalStore.queryGammPoolFeeMetrics;
   const queryAccountPoolRewards =
-    queriesExternalStore.queryAccountsPoolRewards.get(bech32Address);
+    queriesExternalStore.queryAccountsPoolRewards.get(address);
 
   // eject to pools page if pool does not exist
   const poolExists =
@@ -665,7 +666,7 @@ const Pool: FunctionComponent = observer(() => {
                     <h6 className="subtitle1 text-osmoverse-300">
                       {t("pool.sharesAmount", {
                         shares: queryOsmosis.queryGammPoolShare
-                          .getAvailableGammShare(bech32Address, poolId)
+                          .getAvailableGammShare(address, poolId)
                           .trim(true)
                           .hideDenom(true)
                           .maxDecimals(4)
@@ -678,7 +679,7 @@ const Pool: FunctionComponent = observer(() => {
                       className="w-fit shrink-0 xs:w-full"
                       mode="secondary"
                       disabled={queryOsmosis.queryGammPoolShare
-                        .getAvailableGammShare(bech32Address, poolId)
+                        .getAvailableGammShare(address, poolId)
                         .toDec()
                         .isZero()}
                       onClick={() => {
@@ -714,7 +715,7 @@ const Pool: FunctionComponent = observer(() => {
                 <h6 className="subtitle1 text-osmoverse-300">
                   {t("pool.sharesAmount", {
                     shares: queryOsmosis.queryGammPoolShare
-                      .getAvailableGammShare(bech32Address, poolId)
+                      .getAvailableGammShare(address, poolId)
                       .trim(true)
                       .hideDenom(true)
                       .maxDecimals(4)

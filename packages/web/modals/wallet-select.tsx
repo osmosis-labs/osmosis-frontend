@@ -7,6 +7,7 @@ import {
 } from "@cosmos-kit/core";
 import classNames from "classnames";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import Link from "next/link";
 import React, {
   ComponentPropsWithoutRef,
@@ -66,7 +67,6 @@ export const WalletSelectModal: FunctionComponent<
   const { isOpen, onRequestClose, walletRepo } = props;
   const t = useTranslation();
   const [qrState, setQRState] = useState<State>(State.Init);
-  const [qrMessage, setQRMsg] = useState<string | undefined>(""); // necessary for qrState to update
   const [modalView, setModalView] = useState<ModalView>("list");
 
   const current = walletRepo?.current;
@@ -76,12 +76,11 @@ export const WalletSelectModal: FunctionComponent<
     if (isOpen) {
       setModalView(getModalView(qrState, walletStatus));
     }
-  }, [qrState, walletStatus, isOpen, qrMessage]);
+  }, [qrState, walletStatus, isOpen]);
 
   (current?.client as any)?.setActions?.({
     qrUrl: {
       state: setQRState,
-      message: setQRMsg,
     },
   });
 
@@ -132,7 +131,12 @@ const ModalContent: FunctionComponent<
     return (
       <div className="flex flex-col items-center justify-center gap-12 pt-6">
         <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:rounded-full after:border-2 after:border-error">
-          <img className="h-full w-full" src={walletInfo?.logo} alt="" />
+          <Image
+            width={64}
+            height={64}
+            src={walletInfo?.logo ?? "/"}
+            alt="Wallet logo"
+          />
         </div>
 
         <div className="flex flex-col gap-2">
@@ -155,7 +159,12 @@ const ModalContent: FunctionComponent<
     return (
       <div className="flex flex-col items-center justify-center gap-12 pt-6">
         <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:rounded-full after:border-2 after:border-error">
-          <img className="h-full w-full" src={walletInfo?.logo} alt="" />
+          <Image
+            width={64}
+            height={64}
+            src={walletInfo?.logo ?? "/"}
+            alt="Wallet logo"
+          />
         </div>
 
         <div className="flex flex-col gap-2">
@@ -191,7 +200,12 @@ const ModalContent: FunctionComponent<
     return (
       <div className="flex flex-col items-center justify-center gap-12 pt-6">
         <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:rounded-full after:border-2 after:border-error">
-          <img className="h-full w-full" src={walletInfo?.logo} alt="" />
+          <Image
+            width={64}
+            height={64}
+            src={walletInfo?.logo ?? "/"}
+            alt="Wallet logo"
+          />
         </div>
 
         <div className="flex flex-col gap-2">
@@ -232,7 +246,12 @@ const ModalContent: FunctionComponent<
     return (
       <div className="flex flex-col items-center justify-center gap-12 pt-3">
         <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:animate-spin-slow after:rounded-full after:border-2 after:border-t-transparent after:border-b-transparent after:border-l-wosmongton-300 after:border-r-wosmongton-300">
-          <img className="h-full w-full" src={walletInfo?.logo} alt="" />
+          <Image
+            width={64}
+            height={64}
+            src={walletInfo?.logo ?? "/"}
+            alt="Wallet logo"
+          />
         </div>
 
         <div className="flex flex-col gap-2">
@@ -343,7 +362,7 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
       errorDesc,
       statusDict[qrUrl?.state ?? State.Init],
     ];
-  }, [qrUrl?.state, qrUrl?.message]);
+  }, [qrUrl?.message, qrUrl?.state, t, walletInfo?.prettyName]);
 
   return (
     <div className="flex flex-col items-center justify-center gap-4 pt-6">

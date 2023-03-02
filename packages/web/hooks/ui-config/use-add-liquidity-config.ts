@@ -24,10 +24,11 @@ export function useAddLiquidityConfig(
   config: ObservableAddLiquidityConfig;
   addLiquidity: () => Promise<void>;
 } {
-  const { oldAccountStore: accountStore } = useStore();
+  const { accountStore, oldAccountStore } = useStore();
 
-  const account = accountStore.getAccount(osmosisChainId);
-  const { bech32Address } = account;
+  const oldAccount = oldAccountStore.getAccount(osmosisChainId);
+  const account = accountStore.getWallet(osmosisChainId);
+  const address = account?.address ?? "";
 
   const queryOsmosis = queriesStore.get(osmosisChainId).osmosis!;
   const [config] = useState(
@@ -36,7 +37,7 @@ export function useAddLiquidityConfig(
         chainGetter,
         osmosisChainId,
         poolId,
-        bech32Address,
+        address,
         queriesStore,
         queryOsmosis.queryGammPoolShare,
         queryOsmosis.queryGammPools,
@@ -44,7 +45,7 @@ export function useAddLiquidityConfig(
       )
   );
   config.setChain(osmosisChainId);
-  config.setSender(bech32Address);
+  config.setSender(address);
   config.setPoolId(poolId);
   config.setQueryPoolShare(queryOsmosis.queryGammPoolShare);
 
@@ -52,7 +53,7 @@ export function useAddLiquidityConfig(
     return new Promise<void>(async (resolve, reject) => {
       try {
         if (config.isSingleAmountIn && config.singleAmountInConfig) {
-          await account.osmosis.sendJoinSwapExternAmountInMsg(
+          await oldAccount.osmosis.sendJoinSwapExternAmountInMsg(
             config.poolId,
             {
               currency: config.singleAmountInConfig.sendCurrency,
@@ -63,7 +64,7 @@ export function useAddLiquidityConfig(
             resolve
           );
         } else if (config.shareOutAmount) {
-          await account.osmosis.sendJoinPoolMsg(
+          await oldAccount.osmosis.sendJoinPoolMsg(
             config.poolId,
             config.shareOutAmount.toDec().toString(),
             undefined,
@@ -77,7 +78,7 @@ export function useAddLiquidityConfig(
       }
     });
   }, [
-    account.osmosis,
+    oldAccount.osmosis,
     config.isSingleAmountIn,
     config.singleAmountInConfig,
     config.sender,

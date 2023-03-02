@@ -26,10 +26,11 @@ export function useRemoveLiquidityConfig(
   config: ObservableRemoveLiquidityConfig;
   removeLiquidity: () => Promise<void>;
 } {
-  const { oldAccountStore: accountStore } = useStore();
+  const { accountStore, oldAccountStore } = useStore();
 
-  const account = accountStore.getAccount(osmosisChainId);
-  const { bech32Address } = account;
+  const oldAccount = oldAccountStore.getAccount(osmosisChainId);
+  const account = accountStore.getWallet(osmosisChainId);
+  const address = account?.address ?? "";
 
   const queryOsmosis = queriesStore.get(osmosisChainId).osmosis!;
   const [config] = useState(() => {
@@ -37,7 +38,7 @@ export function useRemoveLiquidityConfig(
       chainGetter,
       osmosisChainId,
       poolId,
-      bech32Address,
+      address,
       queriesStore,
       queryOsmosis.queryGammPoolShare,
       queryOsmosis.queryGammPools,
@@ -47,14 +48,14 @@ export function useRemoveLiquidityConfig(
     return c;
   });
   config.setChain(osmosisChainId);
-  config.setSender(bech32Address);
+  config.setSender(address);
   config.setPoolId(poolId);
   config.setQueryPoolShare(queryOsmosis.queryGammPoolShare);
 
   const removeLiquidity = useCallback(() => {
     return new Promise<void>(async (resolve, reject) => {
       try {
-        await account.osmosis.sendExitPoolMsg(
+        await oldAccount.osmosis.sendExitPoolMsg(
           config.poolId,
           config.poolShareWithPercentage.toDec().toString(),
           undefined,

@@ -63,7 +63,7 @@ export class NavBarStore {
 
     return {
       name: wallet?.walletName ?? "",
-      logoUrl: wallet?.walletInfo.logo ?? "", // TODO: add to future wallet abstraction to use leap wallet
+      logoUrl: wallet?.walletInfo.logo ?? "/", // TODO: Get from wallet registry
       balance,
     };
   }

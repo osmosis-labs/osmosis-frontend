@@ -1,4 +1,4 @@
-import { WalletStatus } from "@keplr-wallet/stores";
+import { WalletStatus } from "@cosmos-kit/core";
 import { AppCurrency, Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { Pool } from "@osmosis-labs/pools";
@@ -17,6 +17,8 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 import { useLatest, useMeasure } from "react-use";
+
+import { useWalletSelect } from "~/hooks/wallet-select";
 
 import { EventName } from "../../config";
 import {
@@ -49,7 +51,7 @@ export const TradeClipboard: FunctionComponent<{
   ({ containerClassName, pools, isInModal, onRequestModalClose }) => {
     const {
       chainStore,
-      oldAccountStore: accountStore,
+      accountStore,
       queriesStore,
       assetsStore: { nativeBalances, ibcBalances },
       priceStore,
@@ -58,13 +60,15 @@ export const TradeClipboard: FunctionComponent<{
     const { chainId } = chainStore.osmosis;
     const { isMobile } = useWindowSize();
     const { logEvent } = useAmplitudeAnalytics();
+    const { onOpenWalletSelect } = useWalletSelect();
 
     const tradeableCurrencies = chainStore.getChain(
       chainStore.osmosis.chainId
     ).currencies;
     const tradeableCurrenciesRef = useLatest(tradeableCurrencies);
 
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
+    const address = account?.address ?? "";
     const queries = queriesStore.get(chainId);
 
     const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
@@ -77,7 +81,7 @@ export const TradeClipboard: FunctionComponent<{
     const tradeTokenInConfig = useTradeTokenInConfig(
       chainStore,
       chainId,
-      account.bech32Address,
+      address,
       queriesStore,
       pools
     );
@@ -85,9 +89,8 @@ export const TradeClipboard: FunctionComponent<{
     // Therefore, users can send tx at 0 fee even though they have no OSMO,
     // Users who have OSMO pay a fee by default so that tx is processed faster.
     let preferZeroFee = true;
-    const queryOsmo = queries.queryBalances.getQueryBech32Address(
-      account.bech32Address
-    ).stakable;
+    const queryOsmo =
+      queries.queryBalances.getQueryBech32Address(address).stakable;
     if (
       // If user has an OSMO 0.001 or higher, he pay the fee by default.
       queryOsmo.balance.toDec().gt(DecUtils.getTenExponentN(-3))
@@ -310,8 +313,8 @@ export const TradeClipboard: FunctionComponent<{
 
     // user action
     const swap = async () => {
-      if (account.walletStatus !== WalletStatus.Loaded) {
-        return account.init();
+      if (account?.walletStatus !== WalletStatus.Connected) {
+        return onOpenWalletSelect(chainStore.osmosis.chainId);
       }
       if (tradeTokenInConfig.optimizedRoutePaths.length > 0) {
         const routes: {
@@ -385,67 +388,68 @@ export const TradeClipboard: FunctionComponent<{
             },
           ]);
           if (routes.length === 1) {
-            await account.osmosis.sendSwapExactAmountInMsg(
-              routes[0].poolId,
-              tokenIn,
-              routes[0].tokenOutCurrency,
-              maxSlippage,
-              "",
-              {
-                amount: [
-                  {
-                    denom: chainStore.osmosis.stakeCurrency.coinMinimalDenom,
-                    amount: "0",
-                  },
-                ],
-              },
-              {
-                preferNoSetFee: preferZeroFee,
-              },
-              () => {
-                logEvent([
-                  EventName.Swap.swapCompleted,
-                  {
-                    fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
-                    tokenAmount: Number(tokenIn.amount),
-                    toToken: tradeTokenInConfig.outCurrency.coinDenom,
-                    isOnHome: !isInModal,
-
-                    isMultiHop: false,
-                  },
-                ]);
-              }
-            );
+            // TODO: re-add transaction
+            // await account.osmosis.sendSwapExactAmountInMsg(
+            //   routes[0].poolId,
+            //   tokenIn,
+            //   routes[0].tokenOutCurrency,
+            //   maxSlippage,
+            //   "",
+            //   {
+            //     amount: [
+            //       {
+            //         denom: chainStore.osmosis.stakeCurrency.coinMinimalDenom,
+            //         amount: "0",
+            //       },
+            //     ],
+            //   },
+            //   {
+            //     preferNoSetFee: preferZeroFee,
+            //   },
+            //   () => {
+            //     logEvent([
+            //       EventName.Swap.swapCompleted,
+            //       {
+            //         fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+            //         tokenAmount: Number(tokenIn.amount),
+            //         toToken: tradeTokenInConfig.outCurrency.coinDenom,
+            //         isOnHome: !isInModal,
+            //         isMultiHop: false,
+            //       },
+            //     ]);
+            //   }
+            // );
           } else {
-            await account.osmosis.sendMultihopSwapExactAmountInMsg(
-              routes,
-              tokenIn,
-              maxSlippage,
-              "",
-              {
-                amount: [
-                  {
-                    denom: chainStore.osmosis.stakeCurrency.coinMinimalDenom,
-                    amount: "0",
-                  },
-                ],
-              },
-              {
-                preferNoSetFee: preferZeroFee,
-              },
-              () => {
-                logEvent([
-                  EventName.Swap.swapCompleted,
-                  {
-                    fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
-                    tokenAmount: Number(tokenIn.amount),
-                    toToken: tradeTokenInConfig.outCurrency.coinDenom,
-                    isOnHome: !isInModal,
-                    isMultiHop: true,
-                  },
-                ]);
-              }
-            );
+            // TODO: re-add transaction
+            // await account.osmosis.sendMultihopSwapExactAmountInMsg(
+            //   routes,
+            //   tokenIn,
+            //   maxSlippage,
+            //   "",
+            //   {
+            //     amount: [
+            //       {
+            //         denom: chainStore.osmosis.stakeCurrency.coinMinimalDenom,
+            //         amount: "0",
+            //       },
+            //     ],
+            //   },
+            //   {
+            //     preferNoSetFee: preferZeroFee,
+            //   },
+            //   () => {
+            //     logEvent([
+            //       EventName.Swap.swapCompleted,
+            //       {
+            //         fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+            //         tokenAmount: Number(tokenIn.amount),
+            //         toToken: tradeTokenInConfig.outCurrency.coinDenom,
+            //         isOnHome: !isInModal,
+            //         isMultiHop: true,
+            //       },
+            //     ]);
+            //   }
+            // );
           }
           tradeTokenInConfig.setAmount("");
           tradeTokenInConfig.setFraction(undefined);
@@ -650,7 +654,7 @@ export const TradeClipboard: FunctionComponent<{
                 </span>
                 <span className="caption ml-1.5 text-sm text-wosmongton-300 md:text-xs">
                   {queries.queryBalances
-                    .getQueryBech32Address(account.bech32Address)
+                    .getQueryBech32Address(address)
                     .getBalanceFromCurrency(tradeTokenInConfig.sendCurrency)
                     .trim(true)
                     .hideDenom(true)
@@ -1102,19 +1106,19 @@ export const TradeClipboard: FunctionComponent<{
         <Button
           mode={
             showPriceImpactWarning &&
-            account.walletStatus === WalletStatus.Loaded
+            account?.walletStatus === WalletStatus.Connected
               ? "primary-warning"
               : "primary"
           }
           disabled={
-            account.walletStatus === WalletStatus.Loaded &&
+            account?.walletStatus === WalletStatus.Connected &&
             (tradeTokenInConfig.error !== undefined ||
-              tradeTokenInConfig.optimizedRoutePaths.length === 0 ||
-              account.txTypeInProgress !== "")
+              tradeTokenInConfig.optimizedRoutePaths.length === 0)
+            // || account.txTypeInProgress !== "") TODO: uncomment this when we have a way to check if there is a tx in progress
           }
           onClick={swap}
         >
-          {account.walletStatus === WalletStatus.Loaded ? (
+          {account?.walletStatus === WalletStatus.Connected ? (
             tradeTokenInConfig.error ? (
               t(...tError(tradeTokenInConfig.error))
             ) : showPriceImpactWarning ? (

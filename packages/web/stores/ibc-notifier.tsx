@@ -12,12 +12,8 @@ import { useStore } from ".";
  * XXX: `IBCHistoryNotifier` doesn't render anything.
  */
 export const IbcNotifier: FunctionComponent = observer(() => {
-  const {
-    chainStore,
-    queriesStore,
-    ibcTransferHistoryStore,
-    oldAccountStore: accountStore,
-  } = useStore();
+  const { chainStore, queriesStore, ibcTransferHistoryStore, accountStore } =
+    useStore();
   const { chainId } = chainStore.osmosis;
   const [historyHandlerAdded, setHistoryHandlerAdded] = useState(false);
 
@@ -78,10 +74,10 @@ export const IbcNotifier: FunctionComponent = observer(() => {
             );
           }
 
-          const account = accountStore.getAccount(chainId);
+          const account = accountStore.getWallet(chainId);
           if (
-            history.sender === account.bech32Address ||
-            history.recipient === account.bech32Address
+            history.sender === account?.address ||
+            history.recipient === account?.address
           ) {
             if (history.status === "complete") {
               queriesStore

@@ -14,19 +14,15 @@ import { Table } from ".";
 export const DepoolingTable: FunctionComponent<
   { poolId?: string; tableClassName?: string } & CustomClasses
 > = observer(({ poolId, tableClassName, className }) => {
-  const {
-    chainStore,
-    oldAccountStore: accountStore,
-    queriesStore,
-  } = useStore();
+  const { chainStore, accountStore, queriesStore } = useStore();
   const t = useTranslation();
   const { chainId } = chainStore.osmosis;
   const { isMobile } = useWindowSize();
 
   const queriesOsmosis = queriesStore.get(chainId).osmosis!;
-  const account = accountStore.getAccount(chainId);
+  const account = accountStore.getWallet(chainId);
   const accountLockedResponse = queriesOsmosis.queryAccountLocked.get(
-    account.bech32Address
+    account?.address ?? ""
   ).response;
 
   const showDepoolingTable =
@@ -47,7 +43,7 @@ export const DepoolingTable: FunctionComponent<
   }
 
   const unlockingTokensExceptLPShares = queriesOsmosis.queryAccountLocked
-    .get(account.bech32Address)
+    .get(account?.address ?? "")
     .unlockingCoins.filter(
       (unlocking) =>
         !unlocking.amount.currency.coinMinimalDenom.startsWith("gamm/pool/")

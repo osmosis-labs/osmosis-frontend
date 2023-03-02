@@ -2,7 +2,12 @@
 const config = {
   reactStrictMode: true,
   images: {
-    domains: ["app.osmosis.zone"],
+    domains: [
+      "app.osmosis.zone",
+      "raw.githubusercontent.com",
+      "user-images.githubusercontent.com",
+      "trustwallet.com",
+    ],
   },
   webpack(config) {
     /**
@@ -14,7 +19,7 @@ const config = {
     });
 
     /**
-     * Avoid using next-image-loader for sprite.svg as it cannot be compiled as successfully given
+     * Avoid using next-image-loader for sprite.svg as it cannot be compiled successfully given
      * it uses a different svg syntax.
      */
     const fileLoaderRule = config.module.rules.find(

@@ -1,4 +1,4 @@
-import { WalletStatus } from "@keplr-wallet/stores";
+import { WalletStatus } from "@cosmos-kit/core";
 import { FunctionComponent } from "react";
 
 import { ModalBaseProps } from "../../modals";
@@ -8,11 +8,11 @@ import { useStore } from "../../stores";
 export const Kado: FunctionComponent<
   { assetKey: string } & Pick<ModalBaseProps, "isOpen" | "onRequestClose">
 > = ({ assetKey }) => {
-  const { chainStore, oldAccountStore: accountStore } = useStore();
+  const { chainStore, accountStore } = useStore();
 
-  const account = accountStore.getAccount(chainStore.osmosis.chainId);
+  const account = accountStore.getWallet(chainStore.osmosis.chainId);
 
-  if (!(account.walletStatus === WalletStatus.Loaded)) return null;
+  if (!(account?.walletStatus === WalletStatus.Connected)) return null;
 
   return (
     <iframe
