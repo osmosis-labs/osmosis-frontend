@@ -82,10 +82,9 @@ const Pools: NextPage = observer(function () {
             superfluidPool.id,
             priceStore
           ),
-        apr: queryOsmosis.queryIncentivizedPools.computeMostApr(
-          superfluidPool.id,
-          priceStore
-        ),
+        apr:
+          derivedDataStore.poolsBonding.get(superfluidPool.id)
+            .highestBondDuration?.aggregateApr ?? new RatePretty(0),
         poolLiquidity: superfluidPool.computeTotalValueLocked(priceStore),
         assets: superfluidPool.poolAssets.map((asset) => {
           const weightedAsset = superfluidPool.weightedPoolInfo?.assets.find(
