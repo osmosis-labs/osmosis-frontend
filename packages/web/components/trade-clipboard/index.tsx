@@ -374,7 +374,7 @@ export const TradeClipboard: FunctionComponent<{
           currency: tokenInCurrency,
           amount: tradeTokenInConfig.amount,
         };
-        const maxSlippage = slippageConfig.slippage.symbol("").toString();
+        // const maxSlippage = slippageConfig.slippage.symbol("").toString();
 
         try {
           logEvent([

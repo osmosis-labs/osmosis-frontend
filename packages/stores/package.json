@@ -67,11 +67,12 @@
     "@cosmos-kit/core": "^1.1.3"
   },
   "peerDependencies": {
-    "@cosmos-kit/cosmostation": "^0.14.28",
-    "@cosmos-kit/keplr": "^0.32.28",
-    "@cosmos-kit/leap": "^0.13.28",
-    "@cosmos-kit/trust": "^0.13.28",
-    "@cosmos-kit/xdefi-extension": "^0.14.5",
-    "@chain-registry/osmosis": "^1.7.0"
+    "@cosmos-kit/core": "^1.1.3",
+    "@cosmos-kit/cosmostation": "^0.15.3",
+    "@cosmos-kit/keplr": "^0.33.3",
+    "@cosmos-kit/leap": "^0.14.3",
+    "@cosmos-kit/trust": "^0.14.3",
+    "@cosmos-kit/xdefi-extension": "^0.15.3",
+    "chain-registry": "^1.8.0"
   }
 }

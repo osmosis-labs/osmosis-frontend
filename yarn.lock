@@ -417,14 +417,6 @@
     "@keplr-wallet/crypto" "0.11.16"
     semver "^7.3.8"
 
-"@chain-registry/osmosis@^1.9.0":
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/@chain-registry/osmosis/-/osmosis-1.9.0.tgz#a3d3912720c153a77623b04fc0a5cdea7cf77b13"
-  integrity sha512-bJZ/ZCZqG0DIiF3gNXRX0ebfUXNPHnUXOlr/E8v3wYWne8B+nSsxwwlv1D/DrxDf7iizAZpIG1esrBkm5Q9cfg==
-  dependencies:
-    "@babel/runtime" "^7.19.4"
-    "@chain-registry/types" "^0.14.0"
-
 "@chain-registry/types@0.13.0":
   version "0.13.0"
   resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.13.0.tgz#ab910f229579b33c152de468c3eead562f7aee4c"
@@ -5133,6 +5125,14 @@ chai@^4.3.7:
     loupe "^2.3.1"
     pathval "^1.1.1"
     type-detect "^4.0.5"
+
+chain-registry@^1.8.0:
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/chain-registry/-/chain-registry-1.8.0.tgz#b90c56a38015c2c505f5bda767fbc7eca707217f"
+  integrity sha512-hccdsXT6jWl2lUM5tVb4uWYZGIUxvCpQElNyqhkYDLTxwptfjTggTSP09B9KUXvStYYAzkhE+EOMG+LiQS/Qkg==
+  dependencies:
+    "@babel/runtime" "^7.19.4"
+    "@chain-registry/types" "^0.14.0"
 
 chalk@^2.0.0:
   version "2.4.2"
