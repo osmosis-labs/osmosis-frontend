@@ -19,8 +19,12 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { MenuOptionsModal } from "~/modals";
+
 import { useFilteredData, useWindowSize } from "../../hooks";
 import { useStore } from "../../stores";
+import { Icon } from "../assets";
+import { AssetCard } from "../cards";
 import { SelectMenu } from "../control/select-menu";
 import { SearchBox } from "../input";
 import {
@@ -421,115 +425,267 @@ export const AllPoolsTable: FunctionComponent<{
         setSorting(s);
       },
     });
+    const { rows } = table.getSortedRowModel();
 
     const containerRef = useRef<HTMLDivElement>(null);
     const handleFetchRemaining = useCallback(
       () => queriesOsmosis.queryGammPools.fetchRemainingPools(),
       [queriesOsmosis.queryGammPools]
     );
+    const [mobileSortMenuIsOpen, setMobileSortMenuIsOpen] = useState(false);
 
     return (
-      <div className="mt-5 flex flex-col gap-3" ref={containerRef}>
-        <div className="flex place-content-between items-center">
-          <h5>{t("pools.allPools.title")}</h5>
-          <div className="flex flex-wrap items-center gap-3 lg:w-full lg:place-content-between">
-            <SelectMenu
-              label={
-                isMobile
-                  ? t("components.pool.mobileTitle")
-                  : t("components.pool.title")
-              }
-              selectedOptionLabel={PoolFilters[poolFilter]}
-              options={useMemo(
-                () =>
-                  Object.entries(PoolFilters).map(([id, display]) => ({
-                    id,
-                    display,
-                  })),
-                []
-              )}
-              selectedOptionId={poolFilter}
-              onSelect={useCallback(
-                (id: string) => {
-                  if (id === poolFilter) {
-                    router.replace(
-                      { query: { ...router.query, pool: undefined } },
-                      undefined,
-                      {
-                        scroll: false,
-                      }
-                    );
-                  } else {
-                    router.push(
-                      { query: { ...router.query, pool: id } },
-                      undefined,
-                      {
-                        scroll: false,
-                      }
-                    );
-                  }
-                },
-                [poolFilter, router]
-              )}
-            />
-            <SelectMenu
-              label={
-                isMobile
-                  ? t("components.incentive.mobileTitle")
-                  : t("components.incentive.title")
-              }
-              options={useMemo(
-                () =>
-                  Object.entries(IncentiveFilters).map(([id, display]) => ({
-                    id,
-                    display,
-                  })),
-                []
-              )}
-              selectedOptionLabel={IncentiveFilters[incentiveFilter]}
-              selectedOptionId={incentiveFilter}
-              onSelect={useCallback(
-                (id: string) => {
-                  if (id === incentiveFilter) {
-                    router.replace(
-                      {
-                        query: { ...router.query, incentive: undefined },
+      <>
+        <div className="mt-5 flex flex-col gap-3" ref={containerRef}>
+          {isMobile ? (
+            <>
+              <div className="flex gap-3">
+                <SearchBox
+                  currentValue={query}
+                  onInput={setQuery}
+                  placeholder={t("pools.allPools.search")}
+                  className="!w-full"
+                  size="small"
+                />
+                <button
+                  className="flex w-12 items-center rounded-xl border border-osmoverse-500 text-osmoverse-200"
+                  onClick={() => setMobileSortMenuIsOpen(true)}
+                >
+                  <Icon id="tune" className="flex-1" />
+                </button>
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="flex-1">
+                  <SelectMenu
+                    label={
+                      isMobile
+                        ? t("components.pool.mobileTitle")
+                        : t("components.pool.title")
+                    }
+                    selectedOptionLabel={PoolFilters[poolFilter]}
+                    options={useMemo(
+                      () =>
+                        Object.entries(PoolFilters).map(([id, display]) => ({
+                          id,
+                          display,
+                        })),
+                      []
+                    )}
+                    selectedOptionId={poolFilter}
+                    onSelect={useCallback(
+                      (id: string) => {
+                        if (id === poolFilter) {
+                          router.replace(
+                            { query: { ...router.query, pool: undefined } },
+                            undefined,
+                            {
+                              scroll: false,
+                            }
+                          );
+                        } else {
+                          router.push(
+                            { query: { ...router.query, pool: id } },
+                            undefined,
+                            {
+                              scroll: false,
+                            }
+                          );
+                        }
                       },
-                      undefined,
-                      {
-                        scroll: false,
-                      }
-                    );
-                  } else {
-                    router.push(
-                      { query: { ...router.query, incentive: id } },
-                      undefined,
-                      {
-                        scroll: false,
-                      }
-                    );
+                      [poolFilter, router]
+                    )}
+                  />
+                </div>
+                <div className="flex-1">
+                  <SelectMenu
+                    label={
+                      isMobile
+                        ? t("components.incentive.mobileTitle")
+                        : t("components.incentive.title")
+                    }
+                    options={useMemo(
+                      () =>
+                        Object.entries(IncentiveFilters).map(
+                          ([id, display]) => ({
+                            id,
+                            display,
+                          })
+                        ),
+                      []
+                    )}
+                    selectedOptionLabel={IncentiveFilters[incentiveFilter]}
+                    selectedOptionId={incentiveFilter}
+                    onSelect={useCallback(
+                      (id: string) => {
+                        if (id === incentiveFilter) {
+                          router.replace(
+                            {
+                              query: { ...router.query, incentive: undefined },
+                            },
+                            undefined,
+                            {
+                              scroll: false,
+                            }
+                          );
+                        } else {
+                          router.push(
+                            { query: { ...router.query, incentive: id } },
+                            undefined,
+                            {
+                              scroll: false,
+                            }
+                          );
+                        }
+                      },
+                      [incentiveFilter, router]
+                    )}
+                  />
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="flex place-content-between items-center">
+              <h5>{t("pools.allPools.title")}</h5>
+              <div className="flex flex-wrap items-center gap-3 lg:w-full lg:place-content-between">
+                <SelectMenu
+                  label={
+                    isMobile
+                      ? t("components.pool.mobileTitle")
+                      : t("components.pool.title")
                   }
-                },
-                [incentiveFilter, router]
-              )}
-            />
-            <SearchBox
-              currentValue={query}
-              onInput={setQuery}
-              placeholder={t("pools.allPools.search")}
-              className="!w-64"
-              size="small"
-            />
-          </div>
+                  selectedOptionLabel={PoolFilters[poolFilter]}
+                  options={useMemo(
+                    () =>
+                      Object.entries(PoolFilters).map(([id, display]) => ({
+                        id,
+                        display,
+                      })),
+                    []
+                  )}
+                  selectedOptionId={poolFilter}
+                  onSelect={useCallback(
+                    (id: string) => {
+                      if (id === poolFilter) {
+                        router.replace(
+                          { query: { ...router.query, pool: undefined } },
+                          undefined,
+                          {
+                            scroll: false,
+                          }
+                        );
+                      } else {
+                        router.push(
+                          { query: { ...router.query, pool: id } },
+                          undefined,
+                          {
+                            scroll: false,
+                          }
+                        );
+                      }
+                    },
+                    [poolFilter, router]
+                  )}
+                />
+                <SelectMenu
+                  label={
+                    isMobile
+                      ? t("components.incentive.mobileTitle")
+                      : t("components.incentive.title")
+                  }
+                  options={useMemo(
+                    () =>
+                      Object.entries(IncentiveFilters).map(([id, display]) => ({
+                        id,
+                        display,
+                      })),
+                    []
+                  )}
+                  selectedOptionLabel={IncentiveFilters[incentiveFilter]}
+                  selectedOptionId={incentiveFilter}
+                  onSelect={useCallback(
+                    (id: string) => {
+                      if (id === incentiveFilter) {
+                        router.replace(
+                          {
+                            query: { ...router.query, incentive: undefined },
+                          },
+                          undefined,
+                          {
+                            scroll: false,
+                          }
+                        );
+                      } else {
+                        router.push(
+                          { query: { ...router.query, incentive: id } },
+                          undefined,
+                          {
+                            scroll: false,
+                          }
+                        );
+                      }
+                    },
+                    [incentiveFilter, router]
+                  )}
+                />
+                <SearchBox
+                  currentValue={query}
+                  onInput={setQuery}
+                  placeholder={t("pools.allPools.search")}
+                  className="!w-64"
+                  size="small"
+                />
+              </div>
+            </div>
+          )}
+          {isMobile ? (
+            rows.map((row) => {
+              return (
+                <AssetCard
+                  key={row.original[0].poolId}
+                  coinDenom={row.original[0].poolAssets
+                    .map((asset) => asset.coinDenom)
+                    .join("/")}
+                  metrics={[
+                    {
+                      label: "TVL",
+                      value: row.original[1].value.toString(),
+                    },
+                    {
+                      label: "APR",
+                      value: row.original[4].value!.toString(),
+                    },
+                  ]}
+                  coinImageUrl={row.original[0].poolAssets}
+                />
+              );
+            })
+          ) : (
+            <div className="my-5 h-full overflow-auto">
+              <PaginatedTable
+                containerRef={containerRef}
+                paginate={handleFetchRemaining}
+                table={table}
+              />
+            </div>
+          )}
         </div>
-        <div className="my-5 h-full overflow-auto">
-          <PaginatedTable
-            containerRef={containerRef}
-            paginate={handleFetchRemaining}
-            table={table}
-          />
-        </div>
-      </div>
+        <MenuOptionsModal
+          title={t("components.sort.mobileMenu")}
+          options={table.getHeaderGroups()[0].headers.map(({ id, column }) => {
+            return {
+              id,
+              display: column.columnDef.header as string,
+            };
+          })}
+          selectedOptionId={sorting[0].id}
+          onSelectMenuOption={(id: string) => {
+            table.getColumn(id).toggleSorting();
+            setMobileSortMenuIsOpen(false);
+          }}
+          isOpen={mobileSortMenuIsOpen}
+          onRequestClose={() => setMobileSortMenuIsOpen(false)}
+        />
+      </>
     );
   }
 );
