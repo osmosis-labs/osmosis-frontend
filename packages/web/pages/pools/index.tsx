@@ -55,7 +55,8 @@ const LESS_SUPERFLUID_POOLS_COUNT = 6;
 const Pools: NextPage = observer(function () {
   const {
     chainStore,
-    oldAccountStore: accountStore,
+    oldAccountStore,
+    accountStore,
     priceStore,
     queriesStore,
     queriesExternalStore,
@@ -69,7 +70,8 @@ const Pools: NextPage = observer(function () {
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
-  const account = accountStore.getAccount(chainId);
+  const oldAccount = oldAccountStore.getAccount(chainId);
+  const account = accountStore.getWallet(chainId);
 
   const superfluidPoolIds = queryOsmosis.querySuperfluidPools.superfluidPoolIds;
   const superfluidPools = new DataSorter(
@@ -117,7 +119,7 @@ const Pools: NextPage = observer(function () {
   const createPoolConfig = useCreatePoolConfig(
     chainStore,
     chainId,
-    account.bech32Address,
+    account?.address ?? "",
     queriesStore
   );
 
@@ -210,7 +212,7 @@ const Pools: NextPage = observer(function () {
   const onCreatePool = useCallback(async () => {
     try {
       if (createPoolConfig.poolType === "weighted") {
-        await account.osmosis.sendCreateBalancerPoolMsg(
+        await oldAccount.osmosis.sendCreateBalancerPoolMsg(
           createPoolConfig.swapFee,
           createPoolConfig.assets.map((asset) => {
             if (!asset.percentage)
@@ -239,7 +241,7 @@ const Pools: NextPage = observer(function () {
           createPoolConfig.scalingFactorControllerAddress
             ? createPoolConfig.scalingFactorControllerAddress
             : undefined;
-        await account.osmosis.sendCreateStableswapPoolMsg(
+        await oldAccount.osmosis.sendCreateStableswapPoolMsg(
           createPoolConfig.swapFee,
           createPoolConfig.assets.map((asset) => {
             if (!asset.scalingFactor)
@@ -266,11 +268,11 @@ const Pools: NextPage = observer(function () {
       setIsCreatingPool(false);
       console.error(e);
     }
-  }, [createPoolConfig, account]);
+  }, [createPoolConfig, oldAccount]);
 
   // my pools
   const myPoolIds = queryOsmosis.queryGammPoolShare.getOwnPools(
-    account.bech32Address
+    account?.address ?? ""
   );
   const poolCountShowMoreThreshold = isMobile ? 3 : 6;
   const myPools = useMemo(
@@ -293,7 +295,7 @@ const Pools: NextPage = observer(function () {
     if (!_queryPool) return;
     return pool.totalValueLocked.mul(
       queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
-        account.bech32Address,
+        account?.address ?? "",
         _queryPool.id
       )
     );
@@ -314,7 +316,7 @@ const Pools: NextPage = observer(function () {
         onRequestClose={() => setIsCreatingPool(false)}
         title={t("pools.createPool.title")}
         createPoolConfig={createPoolConfig}
-        isSendingMsg={account.txTypeInProgress !== ""}
+        isSendingMsg={oldAccount.txTypeInProgress !== ""}
         onCreatePool={onCreatePool}
       />
       {addLiquidityModalPoolId && (

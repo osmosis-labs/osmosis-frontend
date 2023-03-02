@@ -30,6 +30,11 @@ export class AccountStore {
         projectId: "a8510432ebb71e6948cfd6cde54b70f7", // TODO: replace with our own
         relayUrl: "wss://relay.walletconnect.org",
       },
+    },
+    undefined,
+    undefined,
+    {
+      duration: Infinity,
     }
   );
 
