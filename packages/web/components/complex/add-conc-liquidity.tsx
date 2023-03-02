@@ -9,7 +9,6 @@ import {
   ObservableSuperfluidPoolDetail
 } from "@osmosis-labs/stores";
 import { useStore } from "../../stores";
-import {useWindowSize} from "../../hooks";
 import { InputBox } from "../input";
 import { CustomClasses } from "../types";
 import { useTranslation } from "react-multi-lang";
@@ -29,21 +28,19 @@ import {
 
 import {ParentSize} from "@visx/responsive";
 import {curveNatural} from "@visx/curve";
-import {theme} from "../../tailwind.config";
 import {scaleLinear} from "@visx/scale";
 import {debounce} from "debounce";
 import {PoolAssetsIcon} from "../assets";
 import Image from "next/image";
 import {useRouter} from "next/router";
 import {Button} from "../buttons";
+import {theme} from "../../tailwind.config";
 
 enum AddConcLiquidityModalView {
   Overview,
   AddConcLiq,
   AddFullRange,
 }
-
-const data1 = makeData();
 
 const accessors = {
   xAccessor: (d: any) => {
@@ -53,23 +50,6 @@ const accessors = {
     return d?.price;
   },
 };
-
-function makeData(lastPrice = 1) {
-  let lp = lastPrice;
-  let date = Date.now();
-  return Array(168)
-    .fill(null)
-    .map((_, i) => {
-      const diffPer = !i ? 0 : (Math.random() - .5) / (.5 / .05);
-      const newLp = lp + lp * diffPer;
-      lp = newLp;
-      return {
-        time: date - i * 3600000,
-        price: newLp,
-      };
-    })
-    .reverse();
-}
 
 function getRangeFromData(data: number[]) {
   if (!data.length) {
@@ -106,9 +86,6 @@ function getDepthFromRange(min: number, max: number) {
   }
   return val;
 }
-
-// const yRange = getRangeFromData(data1.map(accessors.yAccessor));
-// const depthData = getDepthFromRange(yRange.min, yRange.max);
 
 export const AddConcLiquidity: FunctionComponent<
   {
@@ -272,31 +249,22 @@ const Overview: FunctionComponent<
           </div>
         </div>
       </div>
-      <div className="flex flex-col mt-[2.75rem]">
+      <div className="flex flex-col">
         <div className="flex flex-row justify-center gap-8">
-          <div
-            className={classNames("flex flex-col w-[14.0625rem] items-center gap-4 py-6 border-osmoverse-700 border-2 rounded-[20px] hover:bg-osmoverse-700 hover:border-osmoverse-100 cursor-pointer", {
-              "bg-osmoverse-700 border-osmoverse-100": selected === AddConcLiquidityModalView.AddFullRange,
-            })}
+          <StrategySelector
+            title="Full range"
+            description="If you don’t plan on rebalancing your positions frequently, this is the best way to add liquidity."
+            selected={selected === AddConcLiquidityModalView.AddFullRange}
             onClick={() => selectView(AddConcLiquidityModalView.AddFullRange)}
-          >
-            <h6>Full range</h6>
-            <div className="subtitle1 text-osmoverse-200">Full range</div>
-          </div>
-          <div
-            className={classNames("flex flex-col w-[14.0625rem] items-center gap-4 py-6 border-osmoverse-700 border-2 rounded-[20px] hover:bg-osmoverse-700 hover:border-osmoverse-100 cursor-pointer", {
-              "bg-osmoverse-700 border-osmoverse-100": selected === AddConcLiquidityModalView.AddConcLiq,
-            })}
+            imgSrc="/images/fullrange_mock_range.png"
+          />
+          <StrategySelector
+            title="Concentrated"
+            description="If you don’t plan on rebalancing your positions frequently, this is the best way to add liquidity."
+            selected={selected === AddConcLiquidityModalView.AddConcLiq}
             onClick={() => selectView(AddConcLiquidityModalView.AddConcLiq)}
-          >
-            <h6>Concentrated</h6>
-            <div className="subtitle1 text-osmoverse-200">Customized ranges</div>
-          </div>
-        </div>
-        <div className="flex w-full items-center justify-center py-10">
-          <span className="text-subtitle1 w-[22rem] text-osmoverse-100">
-            This strategy LPs in a +/-10% range of the 30 day TWAP (time weighted average price).
-          </span>
+            imgSrc="/images/conliq_mock_range.png"
+          />
         </div>
       </div>
       <div className="flex w-full items-center justify-center">
@@ -310,6 +278,32 @@ const Overview: FunctionComponent<
     </>
   )
 });
+
+function StrategySelector(props: {
+  title: string;
+  description: string;
+  selected: boolean;
+  onClick: () => void;
+  imgSrc: string;
+}) {
+  const {selected, onClick, title, description, imgSrc} = props;
+  return (
+    <div
+      className={classNames("flex flex-col items-center justify-center gap-4 py-6 px-8 border-osmoverse-700 border-2 rounded-[20px] hover:bg-osmoverse-700 hover:border-osmoverse-100 cursor-pointer", {
+        "bg-osmoverse-700 border-osmoverse-100": selected,
+      })}
+      onClick={onClick}
+    >
+      <div className="font-h6 text-h6 mb-16">{title}</div>
+      <Image src={imgSrc} width={325} height={101} />
+      <div
+        className="font-body2 text-body2 text-osmoverse-200 text-center"
+      >
+        {description}
+      </div>
+    </div>
+  )
+}
 
 const AddConcLiqView: FunctionComponent<
   {
@@ -339,39 +333,59 @@ const AddConcLiqView: FunctionComponent<
     const [quoteDeposit, setQuoteDeposit] = useState(0);
 
     const yRange = getRangeFromData(data.map(accessors.yAccessor));
-    const [inputMin, setInputMin] = useState(yRange.last * 0.85);
-    const [inputMax, setInputMax] = useState(yRange.last * 1.15);
-    const [min, setMin] = useState(yRange.last * 0.85);
-    const [max, setMax] = useState(yRange.last * 1.15);
+    const [inputMin, setInputMin] = useState('0');
+    const [inputMax, setInputMax] = useState('0');
+    const [min, setMin] = useState(0);
+    const [max, setMax] = useState(0);
     const baseDenom = pool?.poolAssets[0].amount.denom;
     const quoteDenom = pool?.poolAssets[1].amount.denom;
     const [range, setRange] = useState<'7d'|'1mo'|'1y'>('7d')
+    const router = useRouter();
+    const { id: poolId } = router.query as { id: string };
 
-    const updateMin = useCallback((val, shouldUpdateRange = false) => {
-      const out = Math.min(Math.max(Number(val), 0), inputMax);
+    const updateMin = useCallback((val: string|number, shouldUpdateRange = false) => {
+      const out = Math.min(Math.max(Number(val), 0), Number(inputMax));
       if (shouldUpdateRange) setMin(out);
-      setInputMin(out);
+      if (Number(val) !== out) {
+        setInputMin('' + out);
+      } else {
+        setInputMin('' + val);
+      }
     }, [inputMin]);
 
-    const updateMax = useCallback((val, shouldUpdateRange = false) => {
-      const out = Math.max(Number(val), inputMin);
+    const updateMax = useCallback((val: string|number, shouldUpdateRange = false) => {
+      const out = Math.max(Number(val), Number(inputMin));
       if (shouldUpdateRange) setMax(out);
-      setInputMax(out);
+      if (Number(val) !== out) {
+        setInputMax('' + out);
+      } else {
+        setInputMax('' + val);
+      }
     }, [inputMin]);
+
+    const updateData = useCallback((data: {price: number; time: number}[]) => {
+      const last = data[data.length - 1];
+      setData(data);
+      setInputMin('' + (last.price * .9));
+      setMin(last.price * .9);
+      setInputMax('' + (last.price * 1.15));
+      setMax(last.price * 1.15);
+    }, []);
 
 
     useEffect(() => {
       (async () => {
-        const resp = await fetch(`https://api-osmosis.imperator.co/pairs/v1/historical/674/chart?asset_in=DAI&asset_out=OSMO&range=${range}&asset_type=symbol`);
+        const resp = await fetch(
+          `https://api-osmosis.imperator.co/pairs/v1/historical/${poolId}/chart?asset_in=${baseDenom}&asset_out=${quoteDenom}&range=${range}&asset_type=symbol`
+        );
         const json = await resp.json();
-        console.log(json);
-        const data = json.map(({ time, close }) => ({
+        const data = json.map(({ time, close }: {time: number; close: number}) => ({
           time: time * 1000,
           price: close,
         }));
-        setData(data);
+        updateData(data);
       })();
-    }, [range, baseDenom, quoteDenom]);
+    }, [range, baseDenom, quoteDenom, updateData, poolId]);
 
     return (
       <>
@@ -464,38 +478,36 @@ const AddConcLiqView: FunctionComponent<
           </div>
           <div className="flex-1 flex flex-row justify-end gap-4">
             <PresetVolatilityCard
-              src="/images/profile-ammelia.png"
+              src="/images/small-vial.svg"
               upper={15}
               lower={-10}
               onClick={() => {
                 setMax(yRange.last * 1.15);
-                setInputMax(yRange.last * 1.15);
+                setInputMax('' + yRange.last * 1.15);
                 setMin(yRange.last * .9);
-                setInputMin(yRange.last * .9);
+                setInputMin('' + yRange.last * .9);
               }}
             />
             <PresetVolatilityCard
-              src="/images/profile-woz.png"
-              upper={50}
-              lower={-20}
+              src="/images/medium-vial.svg"
+              upper={25}
+              lower={-25}
               onClick={() => {
-                setMax(yRange.last * 1.5);
-                setInputMax(yRange.last * 1.5)
-                setMin(yRange.last * .8);
-                setInputMin(yRange.last * .8);
+                setMax(yRange.last * 1.25);
+                setInputMax('' + yRange.last * 1.25)
+                setMin(yRange.last * .75);
+                setInputMin('' + yRange.last * .75);
               }}
             />
             <PresetVolatilityCard
-              src="/images/profile-dogemosis.png"
-              width={80}
-              height={80}
-              upper={100}
+              src="/images/large-vial.svg"
+              upper={50}
               lower={-50}
               onClick={() => {
-                setMax(yRange.last * 2);
-                setInputMax(yRange.last * 2)
+                setMax(yRange.last * 1.5);
+                setInputMax('' + yRange.last * 1.5)
                 setMin(yRange.last * .5);
-                setInputMin(yRange.last * .5);
+                setInputMin('' + yRange.last * .5);
               }}
             />
           </div>
@@ -509,7 +521,7 @@ const AddConcLiqView: FunctionComponent<
               onInput={setBaseDeposit}
               currentValue={baseDeposit}
             />
-            <div className="m-4">
+            <div className="mx-8 my-4">
               <Image className="m-4" src="/icons/link-2.svg" width={35} height={35} />
             </div>
             <DepositAmountGroup
@@ -531,7 +543,13 @@ const DepositAmountGroup: FunctionComponent<{
   coin?: CoinPretty;
   onInput: (amount: number) => void;
   currentValue: number;
-}> = observer(({coin, onInput, currentValue, getFiatValue}) => {
+}> = observer(({
+    coin,
+    onInput,
+    currentValue,
+    // getFiatValue,
+  }) => {
+
   const {
     priceStore,
   } = useStore();
@@ -550,8 +568,8 @@ const DepositAmountGroup: FunctionComponent<{
             width={58}
           />
         )}
-        <div className="flex flex-col ml-[1.25rem] mr-[.75rem]">
-          <h5>{coin?.denom.toUpperCase()}</h5>
+        <div className="flex flex-col ml-[.75rem] mr-[2.75rem]">
+          <h6>{coin?.denom.toUpperCase()}</h6>
           <div className="text-osmoverse-200">50%</div>
         </div>
         <div>
@@ -587,8 +605,8 @@ function PresetVolatilityCard(props: {
     <div
       className={classNames(
         "flex flex-row w-[10.625rem] h-[5.625rem] cursor-pointer",
-        "bg-osmoverse-700 rounded-[1.125rem] overflow-hidden border-[1px]",
-        "border-transparent hover:border-osmoverse-200 hover:shadow-volatility-preset",
+        "bg-osmoverse-700 rounded-[1.125rem] overflow-hidden border-[1.5px]",
+        "border-transparent hover:border-wosmongton-200",
         {
           "border-osmoverse-200 shadow-volatility-preset": props.selected,
         },
@@ -596,12 +614,12 @@ function PresetVolatilityCard(props: {
       onClick={props.onClick}
     >
       <div className="flex flex-row items-end justify-end w-full">
-        <div className="flex flex-row items-end justify-end flex-shrink-1 flex-0">
+        <div className="flex flex-row items-end justify-center items-center flex-shrink-1 flex-1 h-full">
           <Image
             className="flex-0 ml-2"
             src={props.src}
-            width={props.width || 87}
-            height={props.height || 87}
+            width={props.width || 64}
+            height={props.height || 64}
           />
         </div>
         <div className="flex flex-col flex-1 h-full justify-center">
@@ -631,16 +649,16 @@ function PresetVolatilityCard(props: {
   )
 }
 
-function PriceInputBox(props: { label: string; currentValue: number; onChange: (val: string) => void}) {
+function PriceInputBox(props: { label: string; currentValue: string; onChange: (val: string) => void}) {
   return (
     <div className="flex flex-col items-end bg-osmoverse-800 rounded-xl max-w-[9.75rem] px-2">
-      <span className="text-osmoverse-400 px-2 pt-2">{props.label}</span>
+      <span className="text-osmoverse-400 px-2 pt-2 text-caption">{props.label}</span>
       <InputBox
-        className="bg-transparent border-0 text-h6 leading-tight"
+        className="bg-transparent border-0 text-subtitle1 leading-tight"
         type="number"
         rightEntry
-        currentValue={'' + props.currentValue}
-        onInput={val => props.onChange(Number(val).toFixed(4))}
+        currentValue={props.currentValue}
+        onInput={val => props.onChange(val)}
       />
     </div>
   )
@@ -693,10 +711,6 @@ function LineChart(props: {
             yScale={{
               type: 'linear',
               domain: calculateRange(yRange.min, yRange.max, props.min, props.max, yRange.last),
-              // domain: [
-              //   Math.min(props.min, yRange.min),
-              //   Math.max(props.max, yRange.max)
-              // ],
               zero: false,
             }}
             theme={buildChartTheme({
@@ -766,11 +780,11 @@ function LineChart(props: {
                 strokeWidth: 1,
                 stroke: '#ffffff',
               }}
-              renderTooltip={({ tooltipData, colorScale }) => {
+              renderTooltip={({ tooltipData }: any) => {
                 return (
                   <div className={`bg-osmoverse-800 p-2 text-xs leading-4`}>
                     <div className="text-white-full">
-                      {tooltipData.nearestDatum.datum.price.toFixed(4)}
+                      {tooltipData?.nearestDatum?.datum?.price.toFixed(4)}
                     </div>
                     <div className="text-osmoverse-300">
                       {`High: ${Math.max(...props.data.map(accessors.yAccessor)).toFixed(4)}`}
@@ -793,8 +807,8 @@ function BarChart(props: {
   min: number;
   max: number;
   onMoveMax: (value: number) => void;
-  onSubmitMax: (value: number) => void;
   onMoveMin: (value: number) => void;
+  onSubmitMax: (value: number) => void;
   onSubmitMin: (value: number) => void;
   data: {price: number; time: number}[]
 }) {
@@ -829,7 +843,6 @@ function BarChart(props: {
             }}
             yScale={{
               type: 'linear',
-              // range: [52, height - 36],
               domain: domain,
               zero: false,
             }}
@@ -940,20 +953,19 @@ function DragContainer(props: {
       dataKey="depth"
       xAccessor={(d: any) => d?.depth}
       yAccessor={(d: any) => d?.tick}
-      // datum={{tick: yRange.last * .85, depth: xMax}}
       datum={{tick: props.defaultValue, depth: props.length}}
       canEditSubject
       canEditLabel={false}
       onDragMove={({ event, ...nextPos}) => {
         if (props.onMove) {
           const val = props.scale.invert(nextPos.y);
-          props.onMove(+Math.max(0, val).toFixed(4));
+          props.onMove(+Math.max(0, val));
         }
       }}
       onDragEnd={({ event, ...nextPos}) => {
         if (props.onSubmit) {
           const val = props.scale.invert(nextPos.y);
-          props.onSubmit(+Math.max(0, val).toFixed(4));
+          props.onSubmit(+Math.max(0, val));
         }
       }}
       editable
