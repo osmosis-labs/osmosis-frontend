@@ -1,5 +1,5 @@
 import { flexRender, Row, Table } from "@tanstack/react-table";
-import { useVirtualizer } from "@tanstack/react-virtual";
+import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import Image from "next/image";
 import Link from "next/link";
 import { MutableRefObject, useEffect, useRef } from "react";
@@ -17,15 +17,15 @@ type Props = {
   table: Table<Pool>;
 };
 
-const PaginatedTable = ({ containerRef, paginate, table }: Props) => {
+const PaginatedTable = ({ paginate, table }: Props) => {
   const { rows } = table.getRowModel();
-  const rowVirtualizer = useVirtualizer({
+  const rowVirtualizer = useWindowVirtualizer({
     count: rows.length,
-    getScrollElement: () => containerRef.current,
     estimateSize: () => SIZE,
     overscan: 10,
   });
   const virtualRows = rowVirtualizer.getVirtualItems();
+  console.log("🚀 ~ PaginatedTable ~ virtualRows:", virtualRows.length);
   const totalSize = rowVirtualizer.getTotalSize();
   const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
   const paddingBottom =
@@ -38,11 +38,7 @@ const PaginatedTable = ({ containerRef, paginate, table }: Props) => {
   const shouldLoad = !!entry?.isIntersecting;
 
   useEffect(() => {
-    if (
-      virtualRows.length &&
-      table.getRowModel().rows.length - virtualRows.length < 10 &&
-      shouldLoad
-    ) {
+    if (shouldLoad) {
       paginate();
     }
   }, [paginate, shouldLoad, table, virtualRows.length]);

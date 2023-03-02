@@ -342,68 +342,71 @@ export const AllPoolsTable: FunctionComponent<{
 
     const columnHelper = createColumnHelper<Pool>();
 
-    const columns = [
-      columnHelper.accessor((row) => row[0].poolId, {
-        cell: (props) => <PoolCompositionCell {...props.row.original[0]} />,
-        header: t("pools.allPools.sort.poolName"),
-        id: "id",
-      }),
-      columnHelper.accessor(
-        (row) => row[1].value.toDec().truncate().toString(),
-        {
-          cell: (props) => props.row.original[1].value.toString(),
-          header: t("pools.allPools.sort.liquidity"),
-          id: "liquidity",
-          sortDescFirst: true,
-        }
-      ),
-      columnHelper.accessor(
-        (row) => row[2].value.toDec().truncate().toString(),
-        {
-          cell: (props) => (
-            <MetricLoaderCell
-              value={props.row.original[2].value.toString()}
-              isLoading={props.row.original[2].isLoading}
-            />
-          ),
-          header: t("pools.allPools.sort.volume24h"),
-          id: "volume24h",
-          sortDescFirst: true,
-        }
-      ),
-      columnHelper.accessor(
-        (row) => row[3].value.toDec().truncate().toString(),
-        {
-          cell: (props) => (
-            <MetricLoaderCell
-              value={props.row.original[3].value.toString()}
-              isLoading={props.row.original[3].isLoading}
-            />
-          ),
-          header: t("pools.allPools.sort.fees"),
-          id: "fees",
-          sortDescFirst: true,
-        }
-      ),
-      columnHelper.accessor((row) => row[4].value?.toDec().toString(), {
-        cell: (props) => (
-          <MetricLoaderCell
-            value={props.row.original[4].value?.toString()}
-            isLoading={props.row.original[4].isLoading}
-          />
+    const columns = useMemo(
+      () => [
+        columnHelper.accessor((row) => row[0].poolId, {
+          cell: (props) => <PoolCompositionCell {...props.row.original[0]} />,
+          header: t("pools.allPools.sort.poolName"),
+          id: "id",
+        }),
+        columnHelper.accessor(
+          (row) => row[1].value.toDec().truncate().toString(),
+          {
+            cell: (props) => props.row.original[1].value.toString(),
+            header: t("pools.allPools.sort.liquidity"),
+            id: "liquidity",
+            sortDescFirst: true,
+          }
         ),
-        header: t("pools.allPools.sort.APRIncentivized"),
-        id: "apr",
-        sortDescFirst: true,
-      }),
-      columnHelper.accessor((row) => row[5], {
-        cell: (props) => {
-          return <PoolQuickActionCell {...props.row.original[5]} />;
-        },
-        header: "",
-        id: "actions",
-      }),
-    ];
+        columnHelper.accessor(
+          (row) => row[2].value.toDec().truncate().toString(),
+          {
+            cell: (props) => (
+              <MetricLoaderCell
+                value={props.row.original[2].value.toString()}
+                isLoading={props.row.original[2].isLoading}
+              />
+            ),
+            header: t("pools.allPools.sort.volume24h"),
+            id: "volume24h",
+            sortDescFirst: true,
+          }
+        ),
+        columnHelper.accessor(
+          (row) => row[3].value.toDec().truncate().toString(),
+          {
+            cell: (props) => (
+              <MetricLoaderCell
+                value={props.row.original[3].value.toString()}
+                isLoading={props.row.original[3].isLoading}
+              />
+            ),
+            header: t("pools.allPools.sort.fees"),
+            id: "fees",
+            sortDescFirst: true,
+          }
+        ),
+        columnHelper.accessor((row) => row[4].value?.toDec().toString(), {
+          cell: (props) => (
+            <MetricLoaderCell
+              value={props.row.original[4].value?.toString()}
+              isLoading={props.row.original[4].isLoading}
+            />
+          ),
+          header: t("pools.allPools.sort.APRIncentivized"),
+          id: "apr",
+          sortDescFirst: true,
+        }),
+        columnHelper.accessor((row) => row[5], {
+          cell: (props) => {
+            return <PoolQuickActionCell {...props.row.original[5]} />;
+          },
+          header: "",
+          id: "actions",
+        }),
+      ],
+      [columnHelper, t]
+    );
 
     const [sorting, setSorting] = useState<SortingState>([
       {
@@ -444,11 +447,11 @@ export const AllPoolsTable: FunctionComponent<{
                   currentValue={query}
                   onInput={setQuery}
                   placeholder={t("pools.allPools.search")}
-                  className="!w-full"
+                  className="!w-full rounded-full"
                   size="small"
                 />
                 <button
-                  className="flex w-12 items-center rounded-xl border border-osmoverse-500 text-osmoverse-200"
+                  className="flex w-12 items-center rounded-full border border-osmoverse-500 text-osmoverse-200"
                   onClick={() => setMobileSortMenuIsOpen(true)}
                 >
                   <Icon id="tune" className="flex-1" />
