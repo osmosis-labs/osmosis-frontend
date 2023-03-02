@@ -333,6 +333,7 @@ const AddConcLiqView: FunctionComponent<
     const [quoteDeposit, setQuoteDeposit] = useState(0);
 
     const yRange = getRangeFromData(data.map(accessors.yAccessor));
+
     const [inputMin, setInputMin] = useState('0');
     const [inputMax, setInputMax] = useState('0');
     const [min, setMin] = useState(0);
@@ -342,6 +343,7 @@ const AddConcLiqView: FunctionComponent<
     const [range, setRange] = useState<'7d'|'1mo'|'1y'>('7d')
     const router = useRouter();
     const { id: poolId } = router.query as { id: string };
+    const [zoom, setZoom] = useState(1);
 
     const updateMin = useCallback((val: string|number, shouldUpdateRange = false) => {
       const out = Math.min(Math.max(Number(val), 0), Number(inputMax));
@@ -418,42 +420,63 @@ const AddConcLiqView: FunctionComponent<
                   </div>
                 </div>
                 <div className="flex-1 flex flex-row justify-end pt-2 pr-2 gap-1">
-                  <div
-                    className="flex flex-row items-center justify-center bg-osmoverse-800 text-xs h-6 w-14 rounded-md hover:bg-osmoverse-900 cursor-pointer"
+                  <RangeSelector
+                    label="7 day"
                     onClick={() => setRange('7d')}
-                  >
-                    7 day
-                  </div>
-                  <div
-                    className="flex flex-row items-center justify-center bg-osmoverse-800 text-xs h-6 w-14 rounded-md hover:bg-osmoverse-900 cursor-pointer"
+                    selected={range === '7d'}
+                  />
+                  <RangeSelector
+                    label="30 days"
                     onClick={() => setRange('1mo')}
-                  >
-                    30 day
-                  </div>
-                  <div
-                    className="flex flex-row items-center justify-center bg-osmoverse-800 text-xs h-6 w-14 rounded-md hover:bg-osmoverse-900 cursor-pointer"
+                    selected={range === '1mo'}
+                  />
+                  <RangeSelector
+                    label="1 year"
                     onClick={() => setRange('1y')}
-                  >
-                    1 year
-                  </div>
+                    selected={range === '1y'}
+                  />
                 </div>
               </div>
               <LineChart
                 min={min}
                 max={max}
                 data={data}
+                zoom={zoom}
               />
             </div>
             <div className="flex flex-row flex-1 flex-shrink-1 w-0 bg-osmoverse-700 h-[20.1875rem]">
-              <BarChart
-                min={min}
-                max={max}
-                onMoveMax={debounce(val => updateMax(val), 100)}
-                onMoveMin={debounce(val => updateMin(val), 100)}
-                onSubmitMin={val => updateMin(val, true)}
-                onSubmitMax={val => updateMax(val, true)}
-                data={data}
-              />
+              <div className="flex flex-1 flex-col">
+                <div className="flex flex-row justify-end mt-6 h-6 gap-1 mr-6">
+                  <SelectorWrapper
+                    selected={false}
+                    onClick={() => setZoom(1)}
+                  >
+                    <Image src="/icons/refresh-ccw.svg" width={16} height={16} />
+                  </SelectorWrapper>
+                  <SelectorWrapper
+                    selected={false}
+                    onClick={() => setZoom(Math.max(1, zoom - .2))}
+                  >
+                    <Image src="/icons/zoom-in.svg" width={16} height={16} />
+                  </SelectorWrapper>
+                  <SelectorWrapper
+                    selected={false}
+                    onClick={() => setZoom(zoom + .2)}
+                  >
+                    <Image src="/icons/zoom-out.svg" width={16} height={16} />
+                  </SelectorWrapper>
+                </div>
+                <BarChart
+                  min={min}
+                  max={max}
+                  onMoveMax={debounce(val => updateMax(val), 100)}
+                  onMoveMin={debounce(val => updateMin(val), 100)}
+                  onSubmitMin={val => updateMin(val, true)}
+                  onSubmitMax={val => updateMax(val, true)}
+                  data={data}
+                  zoom={zoom}
+                />
+              </div>
               <div className="flex flex-col justify-center items-center pr-8 gap-4">
                 <PriceInputBox
                   currentValue={inputMax}
@@ -481,6 +504,7 @@ const AddConcLiqView: FunctionComponent<
               src="/images/small-vial.svg"
               upper={15}
               lower={-10}
+              selected={max === yRange.last * 1.15 && min === yRange.last * .9}
               onClick={() => {
                 setMax(yRange.last * 1.15);
                 setInputMax('' + yRange.last * 1.15);
@@ -492,6 +516,7 @@ const AddConcLiqView: FunctionComponent<
               src="/images/medium-vial.svg"
               upper={25}
               lower={-25}
+              selected={max === yRange.last * 1.25 && min === yRange.last * .75}
               onClick={() => {
                 setMax(yRange.last * 1.25);
                 setInputMax('' + yRange.last * 1.25)
@@ -503,6 +528,7 @@ const AddConcLiqView: FunctionComponent<
               src="/images/large-vial.svg"
               upper={50}
               lower={-50}
+              selected={max === yRange.last * 1.5 && min === yRange.last * .5}
               onClick={() => {
                 setMax(yRange.last * 1.5);
                 setInputMax('' + yRange.last * 1.5)
@@ -538,6 +564,41 @@ const AddConcLiqView: FunctionComponent<
   }
 );
 
+function SelectorWrapper(props: {
+  children: ReactNode;
+  selected: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <div
+      className={classNames(
+        "flex flex-row items-center justify-center bg-osmoverse-800 text-xs h-6 px-2 rounded-lg hover:bg-osmoverse-900 cursor-pointer",
+        {
+          '!bg-osmoverse-900': props.selected,
+        }
+      )}
+      onClick={props.onClick}
+    >
+      {props.children}
+    </div>
+  )
+}
+
+function RangeSelector(props: {
+  label: string;
+  onClick: () => void;
+  selected: boolean;
+}) {
+  return (
+    <SelectorWrapper
+      selected={props.selected}
+      onClick={props.onClick}
+    >
+      {props.label}
+    </SelectorWrapper>
+  );
+}
+
 const DepositAmountGroup: FunctionComponent<{
   getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
   coin?: CoinPretty;
@@ -552,11 +613,18 @@ const DepositAmountGroup: FunctionComponent<{
 
   const {
     priceStore,
+    assetsStore
   } = useStore();
+
+  const { nativeBalances, ibcBalances } = assetsStore;
 
   const fiatPer = coin?.currency.coinGeckoId
     ? priceStore.getPrice(coin.currency.coinGeckoId, undefined)
     : 0;
+
+  const [walletBalance] = nativeBalances
+    .concat(ibcBalances)
+    .filter(balance => balance.balance.denom === coin?.denom);
 
   return (
     <div className="flex flex-row flex-shrink-0 flex-0 items-center">
@@ -573,6 +641,9 @@ const DepositAmountGroup: FunctionComponent<{
           <div className="text-osmoverse-200">50%</div>
         </div>
         <div>
+          <div className="text-caption text-wosmongton-300 text-right">
+            {walletBalance?.balance.toString()}
+          </div>
           <div className="flex flex-col items-end justify-center w-[158px] h-16 bg-osmoverse-800 rounded-[12px]">
             <InputBox
               className="bg-transparent border-0 text-h5"
@@ -608,7 +679,7 @@ function PresetVolatilityCard(props: {
         "bg-osmoverse-700 rounded-[1.125rem] overflow-hidden border-[1.5px]",
         "border-transparent hover:border-wosmongton-200",
         {
-          "border-osmoverse-200 shadow-volatility-preset": props.selected,
+          "border-osmoverse-200": props.selected,
         },
       )}
       onClick={props.onClick}
@@ -689,9 +760,20 @@ function calculateRange(min: number, max: number, inputMin: number, inputMax: nu
 function LineChart(props: {
   min: number;
   max: number;
+  zoom: number;
   data: {price: number; time: number}[];
 }) {
   const yRange = getRangeFromData(props.data.map(accessors.yAccessor));
+
+  if (props.zoom > 1) {
+    yRange.min = yRange.min / props.zoom;
+    yRange.max = yRange.max * props.zoom;
+  } else if (props.zoom < 1) {
+    yRange.min = yRange.min * props.zoom;
+    yRange.max = yRange.max * props.zoom;
+  }
+
+  const domain = calculateRange(yRange.min, yRange.max, props.min, props.max, yRange.last);
 
   return (
     <ParentSize
@@ -710,7 +792,7 @@ function LineChart(props: {
             }}
             yScale={{
               type: 'linear',
-              domain: calculateRange(yRange.min, yRange.max, props.min, props.max, yRange.last),
+              domain: domain,
               zero: false,
             }}
             theme={buildChartTheme({
@@ -806,6 +888,7 @@ function LineChart(props: {
 function BarChart(props: {
   min: number;
   max: number;
+  zoom: number;
   onMoveMax: (value: number) => void;
   onMoveMin: (value: number) => void;
   onSubmitMax: (value: number) => void;
@@ -816,13 +899,27 @@ function BarChart(props: {
   const depthData = getDepthFromRange(yRange.min, yRange.max);
   const xMax = Math.max(...depthData.map(d => d.depth)) * 1.2;
 
-  const domain = calculateRange(yRange.min, yRange.max, props.min, props.max, yRange.last);
+  if (props.zoom > 1) {
+    yRange.min = yRange.min / props.zoom;
+    yRange.max = yRange.max * props.zoom;
+  } else if (props.zoom < 1) {
+    yRange.min = yRange.min * props.zoom;
+    yRange.max = yRange.max * props.zoom;
+  }
+
+  const domain = calculateRange(
+    yRange.min,
+    yRange.max,
+    props.min,
+    props.max,
+    yRange.last,
+  );
 
   return (
     <ParentSize className="flex-1 flex-shrink-1 overflow-hidden">
       {({height, width}) => {
         const yScale = scaleLinear({
-          range: [52, height - 36],
+          range: [58 - 48, height - 36],
           domain: domain.slice().reverse(),
           zero: false,
         });
@@ -831,7 +928,7 @@ function BarChart(props: {
           <XYChart
             key="bar-chart"
             captureEvents={false}
-            margin={{ top: 52, right: 36, bottom: 36, left: 0 }}
+            margin={{ top: 58 - 48, right: 36, bottom: 36, left: 0 }}
             height={height}
             width={width}
             xScale={{
