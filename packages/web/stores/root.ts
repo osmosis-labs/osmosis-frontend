@@ -1,5 +1,5 @@
 import {
-  AccountStore,
+  AccountStore as OldAccountStore,
   ChainInfoInner,
   CosmosAccount,
   CosmosQueries,
@@ -11,7 +11,7 @@ import {
 import { AppCurrency, Keplr } from "@keplr-wallet/types";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 import {
-  AccountStore as NewAccountStore,
+  AccountStore,
   DerivedDataStore,
   IBCTransferHistoryStore,
   LPCurrencyRegistrar,
@@ -59,10 +59,10 @@ export class RootStore {
     [CosmosQueries, CosmwasmQueries, OsmosisQueries]
   >;
 
-  public readonly oldAccountStore: AccountStore<
+  public readonly oldAccountStore: OldAccountStore<
     [CosmosAccount, CosmwasmAccount, OsmosisAccount]
   >;
-  public readonly accountStore: NewAccountStore;
+  public readonly accountStore: AccountStore;
 
   public readonly priceStore: PoolFallbackPriceStore;
 
@@ -115,7 +115,7 @@ export class RootStore {
       };
     })();
 
-    this.accountStore = new NewAccountStore();
+    this.accountStore = new AccountStore();
 
     this.queriesStore = new QueriesStore(
       makeIndexedKVStore("store_web_queries_v12"),
@@ -125,7 +125,7 @@ export class RootStore {
       OsmosisQueries.use(this.chainStore.osmosis.chainId, IS_TESTNET)
     );
 
-    this.oldAccountStore = new AccountStore(
+    this.oldAccountStore = new OldAccountStore(
       eventListener,
       this.chainStore,
       () => {

@@ -41,10 +41,7 @@ export class ObservableSuperfluidPoolDetail {
 
   @computed
   protected get bech32Address() {
-    return (
-      this.accountStore.getWallet(this.osmosisChainId as "osmosis")?.address ??
-      ""
-    );
+    return this.accountStore.getWallet(this.osmosisChainId)?.address ?? "";
   }
 
   @computed

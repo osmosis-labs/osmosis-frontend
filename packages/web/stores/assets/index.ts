@@ -54,8 +54,8 @@ export class ObservableAssets {
   }
 
   @computed
-  get wallet() {
-    return this.accountStore.getWallet(this.osmosisChainId as "osmosis");
+  get address() {
+    return this.accountStore.getWallet(this.osmosisChainId)?.address;
   }
 
   @computed
@@ -73,7 +73,7 @@ export class ObservableAssets {
       )
       .map((currency) => {
         const bal = this.queries.queryBalances
-          .getQueryBech32Address(this.wallet?.address ?? "")
+          .getQueryBech32Address(this.address ?? "")
           .getBalanceFromCurrency(currency);
 
         return {
@@ -127,7 +127,7 @@ export class ObservableAssets {
         }
 
         const balance = this.queries.queryBalances
-          .getQueryBech32Address(this.wallet?.address ?? "")
+          .getQueryBech32Address(this.address ?? "")
           .getBalanceFromCurrency({
             coinDecimals: originCurrency.coinDecimals,
             coinGeckoId: originCurrency.coinGeckoId,
@@ -185,14 +185,14 @@ export class ObservableAssets {
   @computed
   get availableBalance(): CoinPretty[] {
     return this.queries.queryBalances
-      .getQueryBech32Address(this.wallet?.address ?? "")
+      .getQueryBech32Address(this.address ?? "")
       .balances.map((queryBalance) => queryBalance.balance);
   }
 
   @computed
   get lockedCoins(): CoinPretty[] {
     return (
-      this.queries.osmosis?.queryLockedCoins.get(this.wallet?.address ?? "")
+      this.queries.osmosis?.queryLockedCoins.get(this.address ?? "")
         .lockedCoins ?? []
     );
   }
@@ -200,15 +200,13 @@ export class ObservableAssets {
   @computed
   get stakedBalance(): CoinPretty {
     return this.queries.cosmos.queryDelegations.getQueryBech32Address(
-      this.wallet?.address ?? ""
+      this.address ?? ""
     ).total;
   }
 
   @computed
   get unstakingBalance(): CoinPretty {
-    const { chainId } = this.chainStore.getChain(this.osmosisChainId);
-    const bech32Address =
-      this.accountStore.getWallet(chainId as "osmosis")?.address ?? "";
+    const bech32Address = this?.address ?? "";
     return this.queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
       bech32Address
     ).total;

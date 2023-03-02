@@ -51,7 +51,7 @@ export class NavBarStore {
     logoUrl: string;
     balance: CoinPretty;
   } {
-    const wallet = this.accountStore.getWallet(this.chainId as "osmosis");
+    const wallet = this.accountStore.getWallet(this.chainId);
 
     const balance = this.queriesStore
       .get(this.chainId)

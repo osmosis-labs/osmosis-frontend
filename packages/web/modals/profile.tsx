@@ -79,7 +79,7 @@ export const ProfileModal: FunctionComponent<
   } = useDisclosure();
 
   const transferConfig = useTransferConfig();
-  const wallet = accountStore.getWallet(chainId as "osmosis");
+  const wallet = accountStore.getWallet(chainId);
 
   const [hasCopied, setHasCopied] = useState(false);
   const [_state, copyToClipboard] = useCopyToClipboard();
