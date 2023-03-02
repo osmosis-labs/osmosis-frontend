@@ -55,7 +55,7 @@ function calcOutGivenIn(
     amountRemaining: tokenInAmountSpecified,
     amountCalculated: new Dec(0),
     sqrtPrice: curSqrtPrice,
-    tick: swapStrategy.initTickValue(curTick) ?? curTick,
+    tick: swapStrategy.initTickValue(curTick),
     liquidity: poolLiquidity,
     feeGrowthGlobal: new Dec(0),
   };

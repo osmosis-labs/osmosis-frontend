@@ -98,6 +98,14 @@ export function approxSqrt(dec: Dec, maxIters = 300): Dec {
 
 /** Approximate root using Newton's method.
  *
+ * This function approximates the square root of a given decimal.
+ * It uses Newton's method to approximate the square root.
+ * It does this by iterating through the formula:
+ * x_{n+1} = x_n - (x_n^2 - a) / (2 * x_n)
+ * where x_0 is the initial approximation, a is the number whose
+ * square root we want to find, and x_n is the current approximation.
+ * The number of iterations is controlled by maxIters.
+ *
  * TODO: move to decimal object see: https://github.com/chainapsis/keplr-wallet/pull/674
  */
 export function approxRoot(dec: Dec, root: number, maxIters = 300): Dec {
