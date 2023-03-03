@@ -191,7 +191,11 @@ export const AllPoolsTable: FunctionComponent<{
               .maxDecimals(0),
           };
         }),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       [
+        // note: mobx only causes rerenders for values referenced *during* render. I.e. *not* within useEffect/useCallback/useMemo hooks (see: https://mobx.js.org/react-integration.html)
+        // `useMemo` is needed in this file to avoid "debounce" with the hundreds of re-renders by mobx as the 200+ API requests come in and populate 1000+ observables (otherwise the UI is unresponsive for 30+ seconds)
+        // also, the higher level `useMemo`s (i.e. this one) gain the most performance as other React renders are prevented down the line as data is calculated (remember, renders are initiated by both mobx and react)
         allPools,
         priceStore,
         queriesOsmosis.queryGammPoolShare,
@@ -204,6 +208,8 @@ export const AllPoolsTable: FunctionComponent<{
         queriesStore,
         chainId,
         chainStore,
+        queriesExternalStore.queryGammPoolFeeMetrics.response,
+        priceStore.response,
       ]
     );
 
@@ -301,11 +307,13 @@ export const AllPoolsTable: FunctionComponent<{
             { value: poolWithMetrics.liquidity },
             {
               value: poolWithMetrics.volume24h,
-              isLoading: !queriesExternalStore.queryGammPoolFeeMetrics.response,
+              isLoading:
+                queriesExternalStore.queryGammPoolFeeMetrics.isFetching,
             },
             {
               value: poolWithMetrics.feesSpent7d,
-              isLoading: !queriesExternalStore.queryGammPoolFeeMetrics.response,
+              isLoading:
+                queriesExternalStore.queryGammPoolFeeMetrics.isFetching,
             },
             {
               value: poolWithMetrics.apr,
@@ -332,7 +340,7 @@ export const AllPoolsTable: FunctionComponent<{
       [
         cellGroupEventEmitter,
         filteredPools,
-        queriesExternalStore.queryGammPoolFeeMetrics.response,
+        queriesExternalStore.queryGammPoolFeeMetrics.isFetching,
         queriesOsmosis.queryIncentivizedPools.isAprFetching,
         quickAddLiquidity,
         quickLockTokens,
@@ -446,7 +454,6 @@ export const AllPoolsTable: FunctionComponent<{
                   onInput={setQuery}
                   placeholder={t("pools.allPools.search")}
                   className="!w-full rounded-full"
-                  size="medium"
                   rightIcon={() => (
                     <button
                       className="flex h-8 w-8 items-center justify-center rounded-full border border-osmoverse-500 text-osmoverse-200"

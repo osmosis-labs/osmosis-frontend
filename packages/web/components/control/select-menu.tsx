@@ -33,7 +33,8 @@ export const SelectMenu: FunctionComponent<Props> = ({
         "relative flex h-10 shrink-0 cursor-pointer items-center justify-center px-6 text-sm transition-colors",
         dropdownOpen
           ? "rounded-t-xl border-x border-t border-osmoverse-600"
-          : "rounded-xl border border-osmoverse-500 hover:border-2 hover:border-osmoverse-200 hover:px-[23px]"
+          : "rounded-xl border border-osmoverse-500 hover:border-2 hover:border-osmoverse-200 hover:px-[23px]",
+        selectedOptionId ? "text-rust-200" : "text-osmoverse-200"
       )}
       onClick={() => {
         if (!disabled) {
@@ -59,7 +60,7 @@ export const SelectMenu: FunctionComponent<Props> = ({
             }
           }}
         >
-          <span className="body2 m-auto mr-2 block select-none overflow-hidden text-ellipsis whitespace-nowrap text-center capitalize leading-loose text-osmoverse-200 ">
+          <span className="body2 m-auto mr-2 block select-none overflow-hidden text-ellipsis whitespace-nowrap text-center capitalize leading-loose">
             {selectedOptionLabel ? selectedOptionLabel : label}
           </span>
           <Icon

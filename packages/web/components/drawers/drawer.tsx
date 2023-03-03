@@ -32,7 +32,7 @@ export const Drawer: FunctionComponent<{
   onClose?: () => void;
   onOpen?: () => void;
   children: React.ReactNode | ((props: DrawerContext) => React.ReactNode);
-}> = (props) => {
+}> = ({ onClose, onOpen, ...props }) => {
   const [isOpen, setIsOpen] = useControllableState({
     defaultValue: false,
     value: props.isOpen,
@@ -50,14 +50,14 @@ export const Drawer: FunctionComponent<{
       setIsAnimationComplete,
       onOpen: () => {
         setIsOpen(true);
-        props.onOpen?.();
+        onOpen?.();
       },
       onClose: () => {
         setIsOpen(false);
-        props.onClose?.();
+        onClose?.();
       },
     }),
-    [isOpen, isAnimationComplete, setIsOpen, props]
+    [isOpen, isAnimationComplete, setIsOpen, onOpen, onClose]
   );
 
   return (
