@@ -16,12 +16,6 @@
       "externalLinkModalTitle": "離開Osmosis"
     }
   },
-  "mars": {
-    "banner": {
-      "title": "借貸在 Osmosis 上登錄了。",
-      "linkText": "探索 Mars Protocol"
-    }
-  },
   "swap": {
     "title": "兌換",
     "settings": {
@@ -285,7 +279,8 @@
         "insufficientFee": "交易費唔夠喎",
         "insufficientBal": "結餘唔夠喎"
       },
-      "wrapNativeLink": "在 {platformName} 上轉換 {fromDenom} 到 {toDenom}",
+      "useWrappedDeposit": "在 Satellite 上存入 {wrapDenom}",
+      "useWrappedWithdraw": "從 Satellite 中提取 {wrapDenom}",
       "waitTime": "{minutes} 分鐘"
     },
     "selectAssetSource": {
@@ -366,8 +361,7 @@
     "vote": "投票",
     "info": "統計數據",
     "signOut": "斷開連接",
-    "help": "取得Support Lab嘅幫助",
-    "buyTokens": "購買代幣"
+    "help": "取得Support Lab嘅幫助"
   },
   "settings": {
     "title": "全局設置",
@@ -424,6 +418,7 @@
     "openAppToScan": "打開 {walletName} 應用程序掃描",
     "refresh": "刷新"
   },
+  "buyTokens": "購買代幣",
   "profile": {
     "modalTitle": "轮廓",
     "balance": "结余",

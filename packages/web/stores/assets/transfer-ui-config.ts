@@ -121,7 +121,7 @@ export class ObservableTransferUIConfig {
         const bridgedBalance = this.assetsStore.ibcBalances.find(
           (bal) =>
             typeof bal.originBridgeInfo !== "undefined" &&
-            bal.originBridgeInfo.sourceChains
+            bal.originBridgeInfo.sourceChainTokens
               .map((sc) => sc.id)
               .flat()
               .includes(sourceChainKey) &&
@@ -175,7 +175,7 @@ export class ObservableTransferUIConfig {
       const sourceChainKey: SourceChainKey =
         (await this.kvStore.get(makeAssetSrcNetworkPreferredKey(coinDenom))) ||
         balance.originBridgeInfo?.defaultSourceChainId ||
-        balance.originBridgeInfo.sourceChains[0].id;
+        balance.originBridgeInfo.sourceChainTokens[0].id;
 
       // bridge integration
       const applicableWallets = this._ethClientWallets.filter(({ key }) =>
@@ -188,7 +188,9 @@ export class ObservableTransferUIConfig {
       if (
         alreadyConnectedWallet &&
         alreadyConnectedWallet.chainId &&
-        (!balance.fiatRamps || balance.fiatRamps.length === 0)
+        (direction === "withdraw" ||
+          !balance.fiatRamps ||
+          balance.fiatRamps.length === 0)
       ) {
         this.launchBridgeTransferModal(
           direction,
@@ -338,9 +340,10 @@ export class ObservableTransferUIConfig {
       isWithdraw: direction === "withdraw",
       onRequestClose: () => this.closeAllModals(),
       wallets,
-      fiatRamps: this._isMobile
-        ? []
-        : balanceOnOsmosis.fiatRamps?.map(({ rampKey }) => rampKey),
+      fiatRamps:
+        this._isMobile || direction === "withdraw" // ramps: only show when depositing
+          ? []
+          : balanceOnOsmosis.fiatRamps?.map(({ rampKey }) => rampKey),
       onSelectSource: (key) => {
         const selectedWallet = wallets.find((wallet) => wallet.key === key);
         const selectedFiatRamp = balanceOnOsmosis.fiatRamps?.find(

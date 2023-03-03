@@ -1,8 +1,10 @@
 import { FunctionComponent, useEffect } from "react";
-import { ModalBase, ModalBaseProps } from "./base";
+
 import { FiatRampKey } from "../integrations";
-import { useTransakModal } from "../integrations/transak";
 import { Kado } from "../integrations/kado";
+import { Layerswap } from "../integrations/layerswap";
+import { useTransakModal } from "../integrations/transak";
+import { ModalBase, ModalBaseProps } from "./base";
 
 export const FiatRampsModal: FunctionComponent<
   {
@@ -39,6 +41,8 @@ export const FiatRampsModal: FunctionComponent<
         switch (fiatRampKey) {
           case "kado":
             return <Kado {...props} />;
+          case "layerswapcoinbase":
+            return <Layerswap {...props} />;
           default:
             return null;
         }

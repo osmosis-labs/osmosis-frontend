@@ -55,7 +55,7 @@ const Pool: FunctionComponent = observer(() => {
     queriesStore,
     accountStore,
     priceStore,
-    queriesExternalStore,
+    queriesExternalStore: { queryGammPoolFeeMetrics, queryAccountsPoolRewards },
     derivedDataStore,
   } = useStore();
   const t = useTranslation();
@@ -75,9 +75,7 @@ const Pool: FunctionComponent = observer(() => {
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const address =
     accountStore.getWallet(chainStore.osmosis.chainId)?.address ?? "";
-  const queryGammPoolFeeMetrics = queriesExternalStore.queryGammPoolFeeMetrics;
-  const queryAccountPoolRewards =
-    queriesExternalStore.queryAccountsPoolRewards.get(address);
+  const queryAccountPoolRewards = queryAccountsPoolRewards.get(address);
 
   // eject to pools page if pool does not exist
   const poolExists =

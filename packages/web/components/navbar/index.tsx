@@ -306,7 +306,7 @@ const AnnouncementBanner: FunctionComponent<
         bg
       )}
     >
-      <div className="md:text-lef1 flex w-full place-content-center items-center gap-3 text-center text-subtitle1 lg:flex-col lg:gap-1 sm:items-start sm:text-left">
+      <div className="flex w-full place-content-center items-center gap-3 text-center text-subtitle1 lg:flex-col lg:gap-1 md:text-left sm:items-start">
         {t(enTextOrLocalizationPath)}{" "}
         {Boolean(link) && (
           <div className="flex cursor-pointer items-center gap-2">

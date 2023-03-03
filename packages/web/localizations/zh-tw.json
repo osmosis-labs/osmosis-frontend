@@ -16,12 +16,6 @@
       "externalLinkModalTitle": "離開Osmosis"
     }
   },
-  "mars": {
-    "banner": {
-      "title": "借貸在 Osmosis 上登錄了。",
-      "linkText": "探索 Mars Protocol"
-    }
-  },
   "swap": {
     "title": "兌換",
     "settings": {
@@ -285,7 +279,8 @@
         "insufficientFee": "交易費不足",
         "insufficientBal": "結餘不足"
       },
-      "wrapNativeLink": "在 {platformName} 上轉換 {fromDenom} 到 {toDenom}",
+      "useWrappedDeposit": "將{wrapDenom}存入Satellite",
+      "useWrappedWithdraw": "從衛星中選取{wrapDenom} Satellite",
       "waitTime": "{minutes} 分鐘"
     },
     "selectAssetSource": {

@@ -1,10 +1,16 @@
 import { Environment } from "@axelar-network/axelarjs-sdk";
-import { WalletStatus } from "@keplr-wallet/stores";
+import { WalletStatus } from "@cosmos-kit/core";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { basicIbcTransfer } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useCallback, useEffect, useState } from "react";
+import {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { displayToast, ToastType } from "../../components/alert";
@@ -25,12 +31,14 @@ import { EthClientChainIds_SourceChainMap, SourceChain } from "../bridge-info";
 import {
   ChainNames,
   EthWallet,
+  send,
   transfer as erc20Transfer,
+  useErc20Balance,
+  useNativeBalance,
   useTxReceiptState,
 } from "../ethereum";
-import { queryErc20Balance } from "../ethereum/queries";
+import { useAmountConfig as useEvmAmountConfig } from "../ethereum/hooks/use-amount-config";
 import { useTxEventToasts } from "../use-client-tx-event-toasts";
-import { useGeneralAmountConfig } from "../use-general-amount-config";
 import {
   AxelarBridgeConfig,
   AxelarChainIds_SourceChainMap,
@@ -48,6 +56,7 @@ const AxelarTransfer: FunctionComponent<
     onRequestClose: () => void;
     onRequestSwitchWallet: () => void;
     isTestNet?: boolean;
+    useWrappedToken?: boolean;
   } & BridgeIntegrationProps &
     AxelarBridgeConfig
 > = observer(
@@ -58,23 +67,26 @@ const AxelarTransfer: FunctionComponent<
     selectedSourceChainKey,
     onRequestClose,
     onRequestSwitchWallet,
-    sourceChains,
+    sourceChainTokens,
     isTestNet = false,
-    wrapAssetConfig,
     connectCosmosWalletButtonOverride,
   }) => {
     const {
       chainStore,
-      oldAccountStore: accountStore,
+      oldAccountStore,
+      accountStore,
       queriesStore,
+      queriesExternalStore,
       nonIbcBridgeHistoryStore,
     } = useStore();
     const t = useTranslation();
 
     const { chainId } = chainStore.osmosis;
-    const osmosisAccount = accountStore.getAccount(chainId);
-    const { bech32Address } = osmosisAccount;
-    const originCurrency = balanceOnOsmosis.balance.currency.originCurrency!;
+    const oldOsmosisAccount = oldAccountStore.getAccount(chainId);
+    const osmosisAccount = accountStore.getWallet(chainId);
+    const address = osmosisAccount?.address ?? "";
+    const osmoIcnsName =
+      queriesExternalStore.queryICNSNames.getQueryContract(address).primaryName;
 
     useTxEventToasts(ethWalletClient);
 
@@ -105,64 +117,106 @@ const AxelarTransfer: FunctionComponent<
       getKeyByValue(AxelarChainIds_SourceChainMap, selectedSourceChainKey) ??
       selectedSourceChainKey;
 
-    const sourceChainConfig = sourceChains.find(
+    // source chain info
+    const sourceChainConfig = sourceChainTokens.find(
       ({ id }) => id === selectedSourceChainKey
     );
-
     const erc20ContractAddress = sourceChainConfig?.erc20ContractAddress;
+    const [useWrappedToken, setUseWrappedToken] = useLocalStorageState(
+      sourceChainConfig?.erc20ContractAddress &&
+        sourceChainConfig?.nativeWrapEquivalent
+        ? `bridge-${sourceChainConfig.erc20ContractAddress}-use-wrapped-token`
+        : "",
+      false // assume we're transferring native token, since it's the gas token as well and generally takes precedence
+    );
+    /** Can be native or wrapped version of token. */
+    const useNativeToken =
+      (sourceChainConfig?.nativeWrapEquivalent && !useWrappedToken) || false;
+
+    const wrapCurrency = useMemo(
+      () =>
+        sourceChainConfig?.nativeWrapEquivalent
+          ? {
+              ...balanceOnOsmosis.balance.currency.originCurrency!,
+              coinDenom: sourceChainConfig.nativeWrapEquivalent.wrapDenom,
+              coinMinimalDenom:
+                sourceChainConfig.nativeWrapEquivalent.tokenMinDenom,
+            }
+          : undefined,
+      [sourceChainConfig, balanceOnOsmosis]
+    );
+    const originCurrency = useMemo(
+      () =>
+        !useNativeToken && wrapCurrency
+          ? wrapCurrency
+          : balanceOnOsmosis.balance.currency.originCurrency!,
+      [
+        useNativeToken,
+        balanceOnOsmosis.balance.currency.originCurrency,
+        wrapCurrency,
+      ]
+    );
 
     const axelarChainId =
       chainStore.getChainFromCurrency(originCurrency.coinDenom)?.chainId ||
       "axelar-dojo-1";
 
-    // get balance from EVM contract
-    const [erc20Balance, setErc20Balance] = useState<CoinPretty | null>(null);
-    useEffect(() => {
-      if (
-        erc20ContractAddress &&
-        ethWalletClient.accountAddress &&
-        !isWithdraw
-      ) {
-        queryErc20Balance(
-          ethWalletClient.send,
-          erc20ContractAddress,
-          ethWalletClient.accountAddress
-        ).then((amount) =>
-          setErc20Balance(new CoinPretty(originCurrency, amount))
-        );
-      }
-    }, [
-      erc20ContractAddress,
-      ethWalletClient.send,
-      ethWalletClient.accountAddress,
-      originCurrency,
-    ]);
+    const erc20Balance = useErc20Balance(
+      ethWalletClient,
+      !isWithdraw ? originCurrency : undefined,
+      erc20ContractAddress
+    );
+    const nativeBalance = useNativeBalance(
+      ethWalletClient,
+      !isWithdraw ? originCurrency : undefined
+    );
 
     // DEPOSITING: custom amount validation, since `useAmountConfig` needs to query counterparty Cosmos SDK chain balances (not evm balances)
     const {
       amount: depositAmount,
+      gasCost,
       setAmount: setDepositAmount,
       toggleIsMax: toggleIsDepositAmtMax,
-    } = useGeneralAmountConfig({ balance: erc20Balance ?? undefined });
+    } = useEvmAmountConfig({
+      sendFn: ethWalletClient.send,
+      balance: useNativeToken
+        ? nativeBalance ?? undefined
+        : erc20Balance ?? undefined,
+      address: ethWalletClient.accountAddress,
+      gasCurrency: useNativeToken
+        ? balanceOnOsmosis.balance.currency.originCurrency
+        : undefined, // user will inspect gas costs in their wallet
+    });
 
     // WITHDRAWING: is an IBC transfer Osmosis->Axelar
     const feeConfig = useFakeFeeConfig(
       chainStore,
       chainId,
-      osmosisAccount.cosmos.msgOpts.ibcTransfer.gas
+      oldOsmosisAccount.cosmos.msgOpts.ibcTransfer.gas
     );
     const withdrawAmountConfig = useAmountConfig(
       chainStore,
       queriesStore,
       chainId,
-      bech32Address,
+      address,
       feeConfig,
       balanceOnOsmosis.balance.currency
     );
 
+    /** Amount, with decimals. e.g. 1.2 USDC */
+    const inputAmountRaw = isWithdraw
+      ? withdrawAmountConfig.amount
+      : depositAmount;
+    const inputAmount = new Dec(
+      inputAmountRaw === "" ? "0" : inputAmountRaw
+    ).mul(
+      // CoinPretty only accepts whole amounts
+      DecUtils.getTenExponentNInPrecisionRange(originCurrency.coinDecimals)
+    );
+
     // chain path info whether withdrawing or depositing
     const osmosisPath = {
-      address: bech32Address,
+      address: osmoIcnsName === "" ? address : osmoIcnsName,
       networkName: chainStore.osmosis.chainName,
       iconUrl: "/tokens/osmo.svg",
     };
@@ -180,23 +234,24 @@ const AxelarTransfer: FunctionComponent<
     const destChain = isWithdraw
       ? selectedSourceChainAxelarKey
       : osmosisAxelarChainId;
-    const address = isWithdraw ? ethWalletClient.accountAddress : bech32Address;
-
-    /** Amount, with decimals. e.g. 1.2 USDC */
-    const amount = isWithdraw ? withdrawAmountConfig.amount : depositAmount;
+    const accountAddress = isWithdraw
+      ? ethWalletClient.accountAddress
+      : address;
 
     const { transferFee, isLoading: isLoadingTransferFee } =
       useTransferFeeQuery(
         sourceChain,
         destChain,
-        originCurrency.coinMinimalDenom,
-        amount,
+        balanceOnOsmosis.balance.currency.originCurrency!.coinMinimalDenom, // Canh Trinh: native autowrap: currently transfer query only works with wrapped denoms, even though it's a native transfer. fee should be the equivalent
+        inputAmountRaw === "" ? "1" : inputAmountRaw,
         originCurrency,
         isTestNet ? Environment.TESTNET : Environment.MAINNET
       );
 
     const availableBalance = isWithdraw
       ? balanceOnOsmosis.balance
+      : useNativeToken
+      ? nativeBalance ?? undefined
       : erc20ContractAddress
       ? erc20Balance ?? undefined
       : undefined;
@@ -205,26 +260,22 @@ const AxelarTransfer: FunctionComponent<
     const { isEthTxPending } = useTxReceiptState(ethWalletClient);
     const trackTransferStatus = useCallback(
       (txHash: string) => {
-        if (amount !== "") {
+        if (inputAmountRaw !== "") {
           nonIbcBridgeHistoryStore.pushTxNow(
             `axelar${txHash}`,
-            new CoinPretty(
-              originCurrency,
-              new Dec(amount).mul(
-                // CoinPretty only accepts whole amounts
-                DecUtils.getTenExponentNInPrecisionRange(
-                  originCurrency.coinDecimals
-                )
-              )
-            )
-              .trim(true)
-              .toString(),
+            new CoinPretty(originCurrency, inputAmount).trim(true).toString(),
             isWithdraw,
-            osmosisAccount.bech32Address // use osmosis account for account keys (vs any EVM account)
+            osmosisAccount?.address ?? "" // use osmosis account for account keys (vs any EVM account)
           );
         }
       },
-      [nonIbcBridgeHistoryStore, originCurrency, amount, isWithdraw]
+      [
+        nonIbcBridgeHistoryStore,
+        originCurrency,
+        inputAmountRaw,
+        inputAmount,
+        isWithdraw,
+      ]
     );
 
     // detect user disconnecting wallet
@@ -249,16 +300,20 @@ const AxelarTransfer: FunctionComponent<
       useDepositAddress(
         sourceChain,
         destChain,
-        isWithdraw || correctChainSelected ? address : undefined,
-        originCurrency.coinMinimalDenom,
-        undefined,
-        isTestNet ? Environment.TESTNET : Environment.MAINNET
+        isWithdraw || correctChainSelected ? accountAddress : undefined,
+        useNativeToken && sourceChainConfig?.nativeWrapEquivalent
+          ? sourceChainConfig.nativeWrapEquivalent.tokenMinDenom
+          : balanceOnOsmosis.balance.currency.originCurrency!.coinMinimalDenom,
+        isTestNet ? Environment.TESTNET : Environment.MAINNET,
+        isWithdraw ? balanceOnOsmosis.balance.toDec().gt(new Dec(0)) : true
       );
 
     // notify user they are withdrawing into a different account then they last deposited to
     const [lastDepositAccountAddress, setLastDepositAccountAddress] =
       useLocalStorageState<string | null>(
-        `axelar-last-deposit-addr-${originCurrency.coinMinimalDenom}`,
+        isWithdraw
+          ? ""
+          : `axelar-last-deposit-addr-${originCurrency.coinMinimalDenom}`,
         null
       );
     const warnOfDifferentDepositAddress =
@@ -279,7 +334,7 @@ const AxelarTransfer: FunctionComponent<
             : EventName.Assets.depositAssetStarted,
           {
             tokenName: originCurrency.coinDenom,
-            tokenAmount: Number(amount),
+            tokenAmount: Number(inputAmountRaw),
             bridge: "axelar",
           },
         ]);
@@ -288,7 +343,7 @@ const AxelarTransfer: FunctionComponent<
           try {
             await basicIbcTransfer(
               {
-                account: osmosisAccount,
+                account: oldOsmosisAccount,
                 chainId,
                 channelId: balanceOnOsmosis.sourceChannelId,
               },
@@ -305,7 +360,7 @@ const AxelarTransfer: FunctionComponent<
                   EventName.Assets.withdrawAssetCompleted,
                   {
                     tokenName: originCurrency.coinDenom,
-                    tokenAmount: Number(amount),
+                    tokenAmount: Number(inputAmountRaw),
                     bridge: "axelar",
                   },
                 ]);
@@ -318,20 +373,48 @@ const AxelarTransfer: FunctionComponent<
         } else {
           // isDeposit
 
-          if (erc20ContractAddress) {
+          if (useNativeToken) {
+            // TODO: send native if not wanting to transfer wrapped
+            try {
+              await send(
+                ethWalletClient.send,
+                new CoinPretty(originCurrency, inputAmount).toCoin().amount,
+                ethWalletClient.accountAddress!,
+                depositAddress
+              ).then((txHash) => {
+                trackTransferStatus(txHash as string);
+                setLastDepositAccountAddress(ethWalletClient.accountAddress!);
+                logEvent([
+                  EventName.Assets.depositAssetCompleted,
+                  {
+                    tokenName: originCurrency.coinDenom,
+                    tokenAmount: Number(inputAmountRaw),
+                    bridge: "axelar",
+                  },
+                ]);
+              });
+            } catch (e) {
+              const msg = ethWalletClient.displayError?.(e);
+              if (typeof msg === "string") {
+                displayToast(
+                  {
+                    message: "transactionFailed",
+                    caption: msg,
+                  },
+                  ToastType.ERROR
+                );
+              } else if (msg) {
+                displayToast(msg, ToastType.ERROR);
+              } else {
+                console.error(e);
+              }
+            }
+          } else if (erc20ContractAddress) {
             // erc20 transfer to deposit address on EVM
             try {
               await erc20Transfer(
                 ethWalletClient.send,
-                new CoinPretty(
-                  originCurrency,
-                  new Dec(amount).mul(
-                    // CoinPretty only accepts whole amounts
-                    DecUtils.getTenExponentNInPrecisionRange(
-                      originCurrency.coinDecimals
-                    )
-                  )
-                ).toCoin().amount,
+                new CoinPretty(originCurrency, inputAmount).toCoin().amount,
                 erc20ContractAddress,
                 ethWalletClient.accountAddress!,
                 depositAddress
@@ -342,7 +425,7 @@ const AxelarTransfer: FunctionComponent<
                   EventName.Assets.depositAssetCompleted,
                   {
                     tokenName: originCurrency.coinDenom,
-                    tokenAmount: Number(amount),
+                    tokenAmount: Number(inputAmountRaw),
                     bridge: "axelar",
                   },
                 ]);
@@ -369,8 +452,8 @@ const AxelarTransfer: FunctionComponent<
             );
           }
         }
+        setTransferInitiated(true);
       }
-      setTransferInitiated(true);
     }, [
       axelarChainId,
       chainId,
@@ -381,14 +464,15 @@ const AxelarTransfer: FunctionComponent<
       erc20ContractAddress,
       ethWalletClient,
       isWithdraw,
+      useNativeToken,
       originCurrency,
-      osmosisAccount,
+      oldOsmosisAccount,
       trackTransferStatus,
       withdrawAmountConfig,
     ]);
     // close modal when initial eth transaction is committed
     const isSendTxPending = isWithdraw
-      ? osmosisAccount.txTypeInProgress !== ""
+      ? oldOsmosisAccount.txTypeInProgress !== ""
       : isEthTxPending || ethWalletClient.isSending === "eth_sendTransaction";
     useEffect(() => {
       if (transferInitiated && !isSendTxPending) {
@@ -396,7 +480,7 @@ const AxelarTransfer: FunctionComponent<
       }
     }, [
       transferInitiated,
-      osmosisAccount.txTypeInProgress,
+      oldOsmosisAccount.txTypeInProgress,
       ethWalletClient.isSending,
       isEthTxPending,
       onRequestClose,
@@ -409,29 +493,17 @@ const AxelarTransfer: FunctionComponent<
         correctChainSelected &&
         !isDepositAddressLoading &&
         !isEthTxPending) ||
-      (isWithdraw && osmosisAccount.txTypeInProgress === "");
+      (isWithdraw && oldOsmosisAccount.txTypeInProgress === "");
     const isInsufficientFee =
-      amount !== "" &&
+      inputAmountRaw !== "" &&
       transferFee !== undefined &&
-      new CoinPretty(
-        originCurrency,
-        new Dec(amount).mul(
-          // CoinPretty only accepts whole amounts
-          DecUtils.getTenExponentNInPrecisionRange(originCurrency.coinDecimals)
-        )
-      )
+      new CoinPretty(originCurrency, inputAmount)
         .toDec()
         .lt(transferFee.toDec());
     const isInsufficientBal =
-      amount !== "" &&
+      inputAmountRaw !== "" &&
       availableBalance &&
-      new CoinPretty(
-        originCurrency,
-        new Dec(amount).mul(
-          // CoinPretty only accepts whole amounts
-          DecUtils.getTenExponentNInPrecisionRange(originCurrency.coinDecimals)
-        )
-      )
+      new CoinPretty(originCurrency, inputAmount)
         .toDec()
         .gt(availableBalance.toDec());
     const buttonErrorMessage = userDisconnectedEthWallet
@@ -454,21 +526,16 @@ const AxelarTransfer: FunctionComponent<
           isWithdraw={isWithdraw}
           transferPath={[
             isWithdraw ? osmosisPath : counterpartyPath,
-            {
-              bridgeName: "Axelar",
-              bridgeIconUrl: "/icons/axelar.svg",
-              isLoading: isDepositAddressLoading,
-            },
             isWithdraw ? counterpartyPath : osmosisPath,
           ]}
           selectedWalletDisplay={
             isWithdraw ? undefined : ethWalletClient.displayInfo
           }
           isOsmosisAccountLoaded={
-            osmosisAccount.walletStatus === WalletStatus.Loaded
+            osmosisAccount?.walletStatus === WalletStatus.Connected
           }
           onRequestSwitchWallet={onRequestSwitchWallet}
-          currentValue={amount}
+          currentValue={inputAmountRaw}
           onInput={(value) =>
             isWithdraw
               ? withdrawAmountConfig.setAmount(value)
@@ -491,20 +558,32 @@ const AxelarTransfer: FunctionComponent<
               toggleIsDepositAmtMax();
             }
           }}
+          toggleUseWrappedConfig={
+            sourceChainConfig?.nativeWrapEquivalent &&
+            balanceOnOsmosis.balance.currency.originCurrency
+              ? {
+                  isUsingWrapped: useWrappedToken,
+                  setIsUsingWrapped: (isUsingWrapped) => {
+                    if (isWithdraw) {
+                      withdrawAmountConfig.setAmount("");
+                    } else {
+                      setDepositAmount("");
+                    }
+                    setUseWrappedToken(isUsingWrapped);
+                  },
+                  nativeDenom:
+                    balanceOnOsmosis.balance.currency.originCurrency.coinDenom,
+                  wrapDenom: sourceChainConfig.nativeWrapEquivalent.wrapDenom,
+                }
+              : undefined
+          }
           transferFee={transferFee}
+          gasCost={gasCost?.maxDecimals(8)}
           waitTime={waitBySourceChain(selectedSourceChainKey)}
-          disabled={!userCanInteract}
-          disablePanel={
+          disabled={
             (!isWithdraw && !!isEthTxPending) || userDisconnectedEthWallet
           }
         />
-        {wrapAssetConfig && (
-          <div className="mx-auto text-wosmongton-300">
-            <a rel="noreferrer" target="_blank" href={wrapAssetConfig.url}>
-              {t("assets.transfer.wrapNativeLink", wrapAssetConfig)}
-            </a>
-          </div>
-        )}
         <div className="mt-6 flex w-full items-center justify-center md:mt-4">
           {connectCosmosWalletButtonOverride ?? (
             <Button
@@ -514,8 +593,10 @@ const AxelarTransfer: FunctionComponent<
               )}
               disabled={
                 !userCanInteract ||
-                (!isWithdraw && !userDisconnectedEthWallet && amount === "") ||
-                (isWithdraw && amount === "") ||
+                (!isWithdraw &&
+                  !userDisconnectedEthWallet &&
+                  inputAmountRaw === "") ||
+                (isWithdraw && inputAmountRaw === "") ||
                 isInsufficientFee ||
                 isInsufficientBal ||
                 isSendTxPending ||
@@ -529,6 +610,8 @@ const AxelarTransfer: FunctionComponent<
             >
               {buttonErrorMessage
                 ? buttonErrorMessage
+                : isDepositAddressLoading
+                ? `${t("assets.transfer.loading")}...`
                 : isWithdraw
                 ? t("assets.transfer.titleWithdraw", {
                     coinDenom: originCurrency.coinDenom,

@@ -16,12 +16,6 @@
       "externalLinkModalTitle": "离开Osmosis"
     }
   },
-  "mars": {
-    "banner": {
-      "title": "借贷在 Osmosis 上登陆了。",
-      "linkText": "探索 Mars Protocol"
-    }
-  },
   "swap": {
     "title": "兑换",
     "settings": {
@@ -284,7 +278,8 @@
         "insufficientFee": "费用不足",
         "insufficientBal": "余额不足"
       },
-      "wrapNativeLink": "在 {platformName} 上将 {fromDenom} 转换为 {toDenom}",
+      "useWrappedDeposit": "在 Satellite 上存入 {wrapDenom}",
+      "useWrappedWithdraw": "从 Satellite 中提取 {wrapDenom}",
       "waitTime": "{minutes} 分钟"
     },
     "selectAssetSource": {
@@ -422,13 +417,13 @@
     "openAppToScan": "打开 {walletName} 应用程序进行扫描",
     "refresh": "刷新"
   },
+  "buyTokens": "购买代币",
   "profile": {
     "modalTitle": "轮廓",
     "balance": "结余",
     "wallet": "钱包",
     "viewAllAssets": "查看所有资产"
   },
-  "buyTokens": "购买代币",
   "keplr": {
     "install": "安装 Keplr",
     "wallet": "Keplr 钱包",

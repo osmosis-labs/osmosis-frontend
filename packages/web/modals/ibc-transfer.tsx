@@ -138,7 +138,6 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                     networkName: chainStore.getChain(osmosisChainId).chainName,
                     iconUrl: "/tokens/osmo.svg",
                   },
-                  undefined,
                   {
                     address: counterpartyAccount?.address ?? "",
                     networkName:
@@ -153,7 +152,6 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                       chainStore.getChain(counterpartyChainId).chainName,
                     iconUrl: currency.coinImageUrl,
                   },
-                  undefined,
                   {
                     address: account?.address ?? "",
                     networkName: chainStore.getChain(osmosisChainId).chainName,
@@ -186,7 +184,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                 }
               : undefined
           }
-          disablePanel={!walletConnected}
+          disabled={!walletConnected}
           toggleIsMax={() => amountConfig.toggleIsMax()}
           currentValue={amountConfig.amount}
           onInput={(value) => amountConfig.setAmount(value)}

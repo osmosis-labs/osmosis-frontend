@@ -11,6 +11,7 @@ export * from "./pre-transfer";
 export * from "./remove-liquidity";
 export * from "./select-asset-source";
 export * from "./settings";
+export * from "./settings";
 export * from "./superfluid-validator";
 export * from "./token-select";
 export * from "./trade-tokens";

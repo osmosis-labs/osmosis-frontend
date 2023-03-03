@@ -53,7 +53,7 @@ export const EthClientChainIds_SourceChainMap: {
 
 // Fiat on/off ramps
 
-export type FiatRampKey = "kado" | "transak";
+export type FiatRampKey = "kado" | "transak" | "layerswapcoinbase";
 export const FiatRampDisplayInfos: {
   [key: string]: { iconUrl: string; displayName: string };
 } = {
@@ -64,5 +64,9 @@ export const FiatRampDisplayInfos: {
   transak: {
     iconUrl: "/logos/transak.svg",
     displayName: "Transak",
+  },
+  layerswapcoinbase: {
+    iconUrl: "/logos/coinbase.svg",
+    displayName: "Coinbase",
   },
 };

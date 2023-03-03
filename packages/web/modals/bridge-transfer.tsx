@@ -58,14 +58,24 @@ export const BridgeTransferModal: FunctionComponent<
   }
   const { bridge } = balance.originBridgeInfo;
 
+  const sourceChainConfig = balance.originBridgeInfo.sourceChainTokens.find(
+    ({ id }) => id === sourceChainKey
+  );
+
   return (
     <ModalBase
       {...props}
       title={
         isWithdraw
-          ? t("assets.transfer.titleWithdraw", {
-              coinDenom: balance.balance.currency.coinDenom,
-            })
+          ? bridge === "axelar" &&
+            Boolean(sourceChainConfig?.nativeWrapEquivalent)
+            ? t("assets.transferAssetSelect.withdraw")
+            : t("assets.transfer.titleWithdraw", {
+                coinDenom: balance.balance.currency.coinDenom,
+              })
+          : bridge === "axelar" &&
+            Boolean(sourceChainConfig?.nativeWrapEquivalent)
+          ? t("assets.transferAssetSelect.deposit")
           : t("assets.transfer.titleDeposit", {
               coinDenom: balance.balance.currency.coinDenom,
             })
