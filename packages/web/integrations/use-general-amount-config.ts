@@ -1,6 +1,6 @@
-import { useState, useCallback } from "react";
-import { CoinPretty } from "@keplr-wallet/unit";
 import { Currency } from "@keplr-wallet/types";
+import { CoinPretty } from "@keplr-wallet/unit";
+import { useCallback, useState } from "react";
 
 /** Amount config for any token, with the option to set to max balance and for `amount` to not exceed the coin's decimal count.
  *  Not required to be a cosmos-queryable token.

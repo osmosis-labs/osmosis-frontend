@@ -1,14 +1,15 @@
-import Image from "next/image";
-import { FunctionComponent, ReactNode } from "react";
-import classNames from "classnames";
-import { observer } from "mobx-react-lite";
-import { useTranslation } from "react-multi-lang";
 import { Dec } from "@keplr-wallet/unit";
 import { ObservableRemoveLiquidityConfig } from "@osmosis-labs/stores";
+import classNames from "classnames";
+import { observer } from "mobx-react-lite";
+import Image from "next/image";
+import { FunctionComponent, ReactNode } from "react";
+import { useTranslation } from "react-multi-lang";
+
 import { Slider } from "../../components/control";
+import { useStore } from "../../stores";
 import { Button } from "../buttons";
 import { CustomClasses } from "../types";
-import { useStore } from "../../stores";
 
 export const RemoveLiquidity: FunctionComponent<
   {

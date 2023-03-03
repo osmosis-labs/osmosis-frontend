@@ -1,9 +1,10 @@
-import { FunctionComponent, useState, useRef, useEffect } from "react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import { FunctionComponent, useEffect, useRef, useState } from "react";
+
+import { normalize } from "../../utils/math";
 import { CustomClasses, Disableable } from "../types";
 import { NumberSelectProps } from "./types";
-import { normalize } from "../../utils/math";
 
 interface Props
   extends Omit<NumberSelectProps, "placeholder">,

@@ -1,9 +1,10 @@
-import { FunctionComponent } from "react";
 import { RatePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
+import { FunctionComponent } from "react";
+
+import { generateRandom } from "../../utils/random";
 import { CustomClasses } from "../types";
 import { ringFillColors } from ".";
-import { generateRandom } from "../../utils/random";
 
 // depends on packages/web/styles/circle.scss
 

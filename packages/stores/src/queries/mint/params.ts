@@ -1,8 +1,9 @@
-import { ChainGetter, ObservableChainQuery } from "@keplr-wallet/stores";
-import { MintParmas } from "./types";
 import { KVStore } from "@keplr-wallet/common";
-import { computed, makeObservable } from "mobx";
+import { ChainGetter, ObservableChainQuery } from "@keplr-wallet/stores";
 import { Dec } from "@keplr-wallet/unit";
+import { computed, makeObservable } from "mobx";
+
+import { MintParmas } from "./types";
 
 export class ObservableQueryMintParmas extends ObservableChainQuery<MintParmas> {
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {

@@ -1,11 +1,12 @@
-import { makeObservable } from "mobx";
-import { computedFn } from "mobx-utils";
 import { KVStore } from "@keplr-wallet/common";
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { makeObservable } from "mobx";
+import { computedFn } from "mobx-utils";
+
 import { IPriceStore } from "../../price";
 import { ObservableQueryPool } from "../../queries/pools";
 import { ObservableQueryExternalBase } from "../base";
-import { PoolFeesMetrics, PoolFees } from "./types";
+import { PoolFees, PoolFeesMetrics } from "./types";
 
 /** Queries Imperator pool fee history data. */
 export class ObservableQueryPoolFeesMetrics extends ObservableQueryExternalBase<PoolFees> {

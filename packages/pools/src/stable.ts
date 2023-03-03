@@ -1,6 +1,7 @@
-import { Pool } from "./interface";
 import { Coin, Dec, Int } from "@keplr-wallet/unit";
-import { StableSwapToken, StableSwapMath } from "@osmosis-labs/math";
+import { StableSwapMath, StableSwapToken } from "@osmosis-labs/math";
+
+import { Pool } from "./interface";
 
 /** Raw query response representation of pool. */
 export interface StablePoolRaw {

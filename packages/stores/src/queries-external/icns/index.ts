@@ -2,6 +2,7 @@ import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter, ObservableChainQueryMap } from "@keplr-wallet/stores";
 import { ObservableCosmwasmContractChainQuery } from "@keplr-wallet/stores/build/query/cosmwasm/contract-query";
 import { computed } from "mobx";
+
 import { ICNSNames } from "./types";
 
 export const ICNSInfo = {

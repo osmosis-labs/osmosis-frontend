@@ -1,6 +1,7 @@
-import Image from "next/image";
 import classNames from "classnames";
+import Image from "next/image";
 import { FunctionComponent } from "react";
+
 import { ButtonProps } from "../buttons/types";
 import { CustomClasses, Disableable } from "../types";
 

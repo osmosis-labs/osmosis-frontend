@@ -1,10 +1,11 @@
-import { computed } from "mobx";
-import { computedFn } from "mobx-utils";
 import { KVStore } from "@keplr-wallet/common";
 import { QueryResponse } from "@keplr-wallet/stores";
+import { computed } from "mobx";
+import { computedFn } from "mobx-utils";
+
+import { ObservableQueryGauges } from "../../queries/incentives";
 import { ObservableQueryExternalBase } from "../base";
 import { ActiveGauges } from "./types";
-import { ObservableQueryGauges } from "../../queries/incentives";
 
 /** Queries web server API for active external gauges, and stores returned gauges in ObservableQueryGauge map store.
  *  Replaces manual prior config.

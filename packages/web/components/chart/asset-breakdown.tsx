@@ -1,8 +1,9 @@
-import { FunctionComponent } from "react";
+import { CoinPretty, Dec, Int, IntPretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
-import { CoinPretty, Dec, IntPretty, Int } from "@keplr-wallet/unit";
-import { truncateString } from "../../utils/string";
+import { FunctionComponent } from "react";
+
 import { useWindowSize } from "../../hooks";
+import { truncateString } from "../../utils/string";
 
 const ColorCycle = [
   "bg-ion-500",

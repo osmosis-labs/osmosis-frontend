@@ -1,12 +1,14 @@
+import { Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
-import { TradeClipboard } from "../components/trade-clipboard";
-import { useStore } from "../stores";
-import { EventName, IS_FRONTIER } from "../config";
-import { Dec } from "@keplr-wallet/unit";
 import { useMemo, useRef } from "react";
+
+import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
+import { TradeClipboard } from "~/components/trade-clipboard";
+import { useStore } from "~/stores";
+
+import { EventName, IS_FRONTIER } from "../config";
 import { useAmplitudeAnalytics } from "../hooks";
-import { ProgressiveSvgImage } from "../components/progressive-svg-image";
 
 const Home: NextPage = observer(function () {
   const { chainStore, queriesStore } = useStore();
@@ -95,6 +97,18 @@ const Home: NextPage = observer(function () {
               "originChainId" in asset.amount.currency &&
               asset.amount.currency.coinMinimalDenom ===
                 "ibc/0CD3A0285E1341859B5E86B6AB7682F023D03E97607CCC1DC95706411D866DF7"
+            ) {
+              if (asset.amount.toDec().gt(new Dec(10_000))) {
+                hasEnoughAssets = true;
+                break;
+              }
+            }
+
+            // only pools with at least 10,000 USDT
+            if (
+              "originChainId" in asset.amount.currency &&
+              asset.amount.currency.coinMinimalDenom ===
+                "ibc/8242AD24008032E457D2E12D46588FD39FB54FB29680C6C7663D296B383C37C4"
             ) {
               if (asset.amount.toDec().gt(new Dec(10_000))) {
                 hasEnoughAssets = true;

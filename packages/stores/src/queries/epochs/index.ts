@@ -1,9 +1,10 @@
 import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter, ObservableChainQuery } from "@keplr-wallet/stores";
-import { Epochs } from "./types";
-import { computed, observable } from "mobx";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
+import { computed, observable } from "mobx";
+
+import { Epochs } from "./types";
 
 export class ObservableQueryEpochsInner {
   constructor(

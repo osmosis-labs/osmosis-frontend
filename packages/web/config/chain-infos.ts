@@ -1,14 +1,15 @@
-import { ChainInfoWithExplorer } from "../stores/chain";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { createKeplrChainInfos, SimplifiedChainInfo } from "./utils";
+
+import { ChainInfoWithExplorer } from "../stores/chain";
 import {
   IS_TESTNET,
-  OSMOSIS_RPC_OVERWRITE,
-  OSMOSIS_REST_OVERWRITE,
   OSMOSIS_CHAIN_ID_OVERWRITE,
   OSMOSIS_CHAIN_NAME_OVERWRITE,
   OSMOSIS_EXPLORER_URL_OVERWRITE,
+  OSMOSIS_REST_OVERWRITE,
+  OSMOSIS_RPC_OVERWRITE,
 } from "./env";
+import { createKeplrChainInfos, SimplifiedChainInfo } from "./utils";
 
 const chainInfos = (
   [
@@ -2433,7 +2434,7 @@ const chainInfos = (
           coinDecimals: 18,
           coinGeckoId: "pool:erc20/0xAE6D3334989a22A65228732446731438672418F2",
           coinImageUrl: "/tokens/cnto.png",
-        },        
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
       explorerUrlToTx: "https://cosmosrun.info/acre-mainnet/tx/{txHash}",
@@ -2587,12 +2588,8 @@ const chainInfos = (
       rest: IS_TESTNET
         ? "https://testnet-rest.marsprotocol.io/"
         : "https://rest.marsprotocol.io/",
-      chainId: IS_TESTNET
-        ? "ares-1"
-        : "mars-1",
-      chainName: IS_TESTNET
-        ? "Mars Hub Testnet"
-        : "Mars Hub",
+      chainId: IS_TESTNET ? "ares-1" : "mars-1",
+      chainName: IS_TESTNET ? "Mars Hub Testnet" : "Mars Hub",
       bip44: {
         coinType: 118,
       },
@@ -2606,15 +2603,17 @@ const chainInfos = (
           coinImageUrl: "/tokens/mars.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
-          gasPriceStep: IS_TESTNET ? {
-            low: 0,
-            average: 0,
-            high: 0.025,
-          } : {
-            low: 0,
-            average: 0,
-            high: 0,
-          },
+          gasPriceStep: IS_TESTNET
+            ? {
+                low: 0,
+                average: 0,
+                high: 0.025,
+              }
+            : {
+                low: 0,
+                average: 0,
+                high: 0,
+              },
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
@@ -2648,8 +2647,7 @@ const chainInfos = (
         },
       ],
       features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
-      explorerUrlToTx:
-        "https://cosmos-explorers.neobase.one/canto/tx/{txHash}",
+      explorerUrlToTx: "https://cosmos-explorers.neobase.one/canto/tx/{txHash}",
     },
     {
       rpc: "https://rpc-quicksilver.keplr.app",
@@ -2670,9 +2668,9 @@ const chainInfos = (
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
-            "low": 0.0001,
-            "average": 0.0001,
-            "high": 0.00025
+            low: 0.0001,
+            average: 0.0001,
+            high: 0.00025,
           },
         },
         {
@@ -2684,8 +2682,7 @@ const chainInfos = (
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
-      explorerUrlToTx:
-        "https://www.mintscan.io/quicksilver/txs/{txHash}",
+      explorerUrlToTx: "https://www.mintscan.io/quicksilver/txs/{txHash}",
     },
     {
       rpc: "https://rpc.8ball.info",
@@ -2706,15 +2703,14 @@ const chainInfos = (
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
-            "low": 0.0001,
-            "average": 0.025,
-            "high": 0.04
+            low: 0.0001,
+            average: 0.025,
+            high: 0.04,
           },
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
-      explorerUrlToTx:
-        "https://explorer.8ball.info/8ball/tx/{txHash}",
+      explorerUrlToTx: "https://explorer.8ball.info/8ball/tx/{txHash}",
     },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
@@ -2952,15 +2948,17 @@ chainInfos.push({
       coinImageUrl: "/tokens/axl.svg",
     },
   ],
-  gasPriceStep: IS_TESTNET ? {
-    low: 0.007,
-    average: 0.125,
-    high:0.2,
-  } : {
-    low: 0.00005,
-    average: 0.00007,
-    high: 0.00009,
-  },
+  gasPriceStep: IS_TESTNET
+    ? {
+        low: 0.007,
+        average: 0.125,
+        high: 0.2,
+      }
+    : {
+        low: 0.00005,
+        average: 0.00007,
+        high: 0.00009,
+      },
   features: ["ibc-transfer", "ibc-go"],
   explorerUrlToTx: IS_TESTNET
     ? "https://testnet.axelarscan.io/tx/{txHash}"

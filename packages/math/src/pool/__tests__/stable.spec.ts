@@ -1,13 +1,14 @@
+import { Coin, Dec, DecUtils, Int } from "@keplr-wallet/unit";
+
+import { BigDec } from "../../big-dec";
 import {
-  StableSwapToken,
-  StableSwapMath,
+  calcWSumSquares,
+  cfmmConstantMultiNoV,
   compareDec_checkMultErrorTolerance,
   solveCfmm,
-  cfmmConstantMultiNoV,
-  calcWSumSquares,
+  StableSwapMath,
+  StableSwapToken,
 } from "../stable";
-import { Coin, Dec, Int, DecUtils } from "@keplr-wallet/unit";
-import { BigDec } from "../../big-dec";
 
 describe("Test stableswap math", () => {
   describe("calcOutGivenIn", () => {

@@ -36,26 +36,6 @@ export const Announcement:
         "Chain is halted, transactions are temporarily disabled",
       isWarning: true,
     }
-  : typeof window !== "undefined" &&
-    window.origin.includes("stage.osmosis.zone")
-  ? {
-      localStorageKey: "stage",
-      enTextOrLocalizationPath: "You're on the stage testing environment.",
-      link: {
-        url: "https://docs.osmosis.zone",
-        enTextOrLocalizationKey: "pool.learnMore",
-      },
-    }
-  : typeof window !== "undefined" &&
-    window.origin.includes("frontier.osmosis.zone")
-  ? {
-      localStorageKey: "show_frontier_banner",
-      enTextOrLocalizationPath: "app.banner.title",
-      link: {
-        enTextOrLocalizationKey: "app.banner.linkText",
-        url: "https://app.osmosis.zone/",
-      },
-    }
   : undefined;
 
 // Past localstorage keys:

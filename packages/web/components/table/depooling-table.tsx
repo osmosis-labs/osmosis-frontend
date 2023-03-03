@@ -1,14 +1,15 @@
-import { FunctionComponent } from "react";
 import classNames from "classnames";
 import moment from "dayjs";
 import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
-import { useWindowSize } from "../../hooks";
-import { Info } from "../alert";
-import { Table } from ".";
-import { UnPoolWhitelistedPoolIds } from "../../config";
-import { CustomClasses } from "../types";
+import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
+
+import { UnPoolWhitelistedPoolIds } from "../../config";
+import { useWindowSize } from "../../hooks";
+import { useStore } from "../../stores";
+import { Info } from "../alert";
+import { CustomClasses } from "../types";
+import { Table } from ".";
 
 export const DepoolingTable: FunctionComponent<
   { poolId?: string; tableClassName?: string } & CustomClasses

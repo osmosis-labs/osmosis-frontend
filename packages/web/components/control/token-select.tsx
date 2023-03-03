@@ -1,16 +1,17 @@
-import Image from "next/image";
-import { FunctionComponent, useEffect, useRef } from "react";
-import { observer } from "mobx-react-lite";
 import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty } from "@keplr-wallet/unit";
-import { useStore } from "../../stores";
-import { TokenSelectModal } from "../../modals";
+import classNames from "classnames";
+import { observer } from "mobx-react-lite";
+import Image from "next/image";
+import { FunctionComponent, useEffect, useRef } from "react";
+
 import {
   useBooleanWithWindowEvent,
   useFilteredData,
   useWindowSize,
 } from "../../hooks";
-import classNames from "classnames";
+import { TokenSelectModal } from "../../modals";
+import { useStore } from "../../stores";
 import { Icon } from "../assets";
 
 /** Will display balances if provided `CoinPretty` objects. Assumes denoms are unique. */

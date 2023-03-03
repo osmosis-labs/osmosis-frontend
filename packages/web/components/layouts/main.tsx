@@ -1,13 +1,14 @@
+import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { FunctionComponent } from "react";
-import { observer } from "mobx-react-lite";
-import { useWindowSize, useCurrentLanguage } from "../../hooks";
+
 import { IS_FRONTIER } from "../../config";
+import { useCurrentLanguage, useWindowSize } from "../../hooks";
 import { MainMenu } from "../main-menu";
 import { NavBar } from "../navbar";
-import { MainLayoutMenu } from "../types";
 import NavbarOsmoPrice from "../navbar-osmo-price";
+import { MainLayoutMenu } from "../types";
 
 export const MainLayout: FunctionComponent<{
   menus: MainLayoutMenu[];

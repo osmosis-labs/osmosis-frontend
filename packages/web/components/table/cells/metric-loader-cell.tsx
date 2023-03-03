@@ -1,7 +1,8 @@
 import React, { FunctionComponent } from "react";
-import { BaseCell } from "..";
+
 import { MetricLoader } from "../../loaders";
 import { LoadingProps } from "../../types";
+import { BaseCell } from "..";
 
 export interface MetricLoaderCell extends BaseCell, Required<LoadingProps> {}
 

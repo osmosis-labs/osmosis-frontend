@@ -1,8 +1,9 @@
-import { FunctionComponent } from "react";
 import classNames from "classnames";
+import { FunctionComponent } from "react";
+
+import { IS_FRONTIER } from "../../config";
 import { CustomClasses } from "../types";
 import { MenuOption } from "./types";
-import { IS_FRONTIER } from "../../config";
 
 interface Props extends CustomClasses {
   options: MenuOption[];

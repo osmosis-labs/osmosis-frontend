@@ -1,5 +1,6 @@
 import { Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
 import { action, computed, makeObservable, observable } from "mobx";
+
 import { InvalidSlippageError, NegativeSlippageError } from "./errors";
 
 export class ObservableSlippageConfig {

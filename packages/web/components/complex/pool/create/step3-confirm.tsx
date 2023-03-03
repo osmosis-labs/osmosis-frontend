@@ -1,19 +1,20 @@
-import { FunctionComponent, useMemo } from "react";
-import { observer } from "mobx-react-lite";
+import { IBCCurrency } from "@keplr-wallet/types";
 import { Dec } from "@keplr-wallet/unit";
-import { InputBox } from "../../../input";
+import { observer } from "mobx-react-lite";
+import { FunctionComponent, useMemo } from "react";
+import { useTranslation } from "react-multi-lang";
+
+import { useWindowSize } from "../../../../hooks";
 import {
-  PieChart,
   generateSeries,
   HIGHCHART_LEGEND_GRADIENTS,
+  PieChart,
 } from "../../../chart";
-import { StepProps } from "./types";
-import { StepBase } from "./step-base";
-import { IBCCurrency } from "@keplr-wallet/types";
 import { CheckBox } from "../../../control";
+import { InputBox } from "../../../input";
 import { POOL_CREATION_FEE } from ".";
-import { useWindowSize } from "../../../../hooks";
-import { useTranslation } from "react-multi-lang";
+import { StepBase } from "./step-base";
+import { StepProps } from "./types";
 
 export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
   const { createPoolConfig: config } = props;

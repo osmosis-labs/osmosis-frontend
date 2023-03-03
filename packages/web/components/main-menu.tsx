@@ -1,9 +1,10 @@
+import classNames from "classnames";
+import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import Head from "next/head";
 import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
-import classNames from "classnames";
+
 import { IS_FRONTIER } from "../config";
 import { useAmplitudeAnalytics } from "../hooks";
 import { MainLayoutMenu } from "./types";

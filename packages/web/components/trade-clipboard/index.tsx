@@ -1,13 +1,3 @@
-import {
-  FunctionComponent,
-  useEffect,
-  useRef,
-  useState,
-  useMemo,
-  useCallback,
-  Fragment,
-  MouseEvent,
-} from "react";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { AppCurrency, Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
@@ -15,27 +5,38 @@ import { Pool } from "@osmosis-labs/pools";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
+import {
+  Fragment,
+  FunctionComponent,
+  MouseEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { useTranslation } from "react-multi-lang";
+import { useLatest, useMeasure } from "react-use";
+
 import { EventName } from "../../config";
 import {
+  useAmplitudeAnalytics,
   useFakeFeeConfig,
   useSlippageConfig,
   useTokenSwapQueryParams,
   useTradeTokenInConfig,
   useWindowSize,
-  useAmplitudeAnalytics,
 } from "../../hooks";
 import { useStore } from "../../stores";
+import { Icon } from "../assets";
 import { Button } from "../buttons";
+import IconButton from "../buttons/icon-button";
+import { TokenSelectWithDrawer } from "../control/token-select-with-drawer";
 import { InputBox } from "../input";
+import { tError } from "../localization";
+import { Popover } from "../popover";
 import { InfoTooltip } from "../tooltip";
 import TradeRoute from "./trade-route";
-import { useTranslation } from "react-multi-lang";
-import { tError } from "../localization";
-import { TokenSelectWithDrawer } from "../control/token-select-with-drawer";
-import { useLatest, useMeasure } from "react-use";
-import { Icon } from "../assets";
-import IconButton from "../buttons/icon-button";
-import { Popover } from "../popover";
 
 export const TradeClipboard: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!

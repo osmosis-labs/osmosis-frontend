@@ -1,11 +1,12 @@
-import Image from "next/image";
-import { FunctionComponent, useState } from "react";
-import classNames from "classnames";
-import { useTranslation } from "react-multi-lang";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
-import { Button } from "../../../buttons";
+import classNames from "classnames";
+import Image from "next/image";
+import { FunctionComponent, useState } from "react";
+import { useTranslation } from "react-multi-lang";
+
 import { useStore } from "../../../../stores";
+import { Button } from "../../../buttons";
 
 export type PoolType = ObservableQueryPool["type"];
 

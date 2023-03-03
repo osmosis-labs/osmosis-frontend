@@ -1,5 +1,6 @@
-import { FunctionComponent } from "react";
 import classNames from "classnames";
+import { FunctionComponent } from "react";
+
 import { CustomClasses, MobileProps } from "../types";
 import { Alert } from "./types";
 

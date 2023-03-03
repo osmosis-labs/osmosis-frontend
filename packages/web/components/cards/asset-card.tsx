@@ -1,9 +1,10 @@
+import classNames from "classnames";
 import Image from "next/image";
 import { FunctionComponent } from "react";
-import classNames from "classnames";
-import { CustomClasses, Metric } from "../types";
-import { PoolAssetInfo } from "../assets";
+
 import { truncateString } from "../../utils/string";
+import { PoolAssetInfo } from "../assets";
+import { CustomClasses, Metric } from "../types";
 
 /** For displaying a token and it's balance, or a pool overview. */
 export const AssetCard: FunctionComponent<
