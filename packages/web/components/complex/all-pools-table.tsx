@@ -24,6 +24,7 @@ import { MenuOptionsModal } from "~/modals";
 import { useFilteredData, useWindowSize } from "../../hooks";
 import { useStore } from "../../stores";
 import { Icon } from "../assets";
+import { AssetCard } from "../cards";
 import { SelectMenu } from "../control/select-menu";
 import { SearchBox } from "../input";
 import {
@@ -643,6 +644,28 @@ export const AllPoolsTable: FunctionComponent<{
             <PaginatedTable
               containerRef={containerRef}
               paginate={handleFetchRemaining}
+              mobileSize={170}
+              renderMobileItem={(row) => {
+                return (
+                  <AssetCard
+                    coinDenom={row.original[0].poolAssets
+                      .map((asset) => asset.coinDenom)
+                      .join("/")}
+                    metrics={[
+                      {
+                        label: "TVL",
+                        value: row.original[1].value.toString(),
+                      },
+                      {
+                        label: "APR",
+                        value: row.original[4].value!.toString(),
+                      },
+                    ]}
+                    coinImageUrl={row.original[0].poolAssets}
+                  />
+                );
+              }}
+              size={80}
               table={table}
             />
           </div>

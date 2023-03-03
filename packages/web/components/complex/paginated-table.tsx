@@ -8,22 +8,30 @@ import { useOnScreen } from "~/hooks/use-on-screen";
 
 import { IS_FRONTIER } from "../../config";
 import { useWindowSize } from "../../hooks";
-import { AssetCard } from "../cards";
 import { Pool } from "./all-pools-table";
 
 type Props = {
   containerRef: MutableRefObject<HTMLDivElement | null>;
+  mobileSize?: number;
   paginate: () => void;
+  renderMobileItem?: (row: Row<Pool>) => React.ReactNode;
+  size: number;
   table: Table<Pool>;
 };
 
-const PaginatedTable = ({ paginate, table }: Props) => {
+const PaginatedTable = ({
+  mobileSize,
+  paginate,
+  renderMobileItem,
+  size,
+  table,
+}: Props) => {
   const { isMobile } = useWindowSize();
 
   const { rows } = table.getRowModel();
   const rowVirtualizer = useWindowVirtualizer({
     count: rows.length,
-    estimateSize: () => (isMobile ? 170 : 80),
+    estimateSize: () => (isMobile ? mobileSize || 0 : size),
     overscan: 10,
   });
   const virtualRows = rowVirtualizer.getVirtualItems();
@@ -67,22 +75,7 @@ const PaginatedTable = ({ paginate, table }: Props) => {
                 transform: `translateY(${virtualRow.start}px)`,
               }}
             >
-              <AssetCard
-                coinDenom={row.original[0].poolAssets
-                  .map((asset) => asset.coinDenom)
-                  .join("/")}
-                metrics={[
-                  {
-                    label: "TVL",
-                    value: row.original[1].value.toString(),
-                  },
-                  {
-                    label: "APR",
-                    value: row.original[4].value!.toString(),
-                  },
-                ]}
-                coinImageUrl={row.original[0].poolAssets}
-              />
+              {renderMobileItem?.(row)}
             </div>
           );
         })}
