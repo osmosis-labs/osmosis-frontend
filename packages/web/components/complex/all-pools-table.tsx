@@ -571,7 +571,11 @@ export const AllPoolsTable: FunctionComponent<{
                     (id: string) => {
                       if (id === poolFilter) {
                         router.replace(
-                          { query: { ...router.query, pool: undefined } },
+                          {
+                            query: router.query.incentive
+                              ? { incentive: router.query.incentive }
+                              : null,
+                          },
                           undefined,
                           {
                             scroll: false,
@@ -611,7 +615,9 @@ export const AllPoolsTable: FunctionComponent<{
                       if (id === incentiveFilter) {
                         router.replace(
                           {
-                            query: { ...router.query, incentive: undefined },
+                            query: router.query.pool
+                              ? { pool: router.query.pool }
+                              : null,
                           },
                           undefined,
                           {
@@ -636,6 +642,7 @@ export const AllPoolsTable: FunctionComponent<{
                   onInput={setQuery}
                   placeholder={t("pools.allPools.search")}
                   className="!w-64"
+                  size="small"
                 />
               </div>
             </div>
