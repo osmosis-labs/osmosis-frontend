@@ -92,7 +92,6 @@ const IncentiveFilters: Record<"internal" | "external" | "superfluid", string> =
     external: "External incentives",
     superfluid: "Superfluid",
   };
-var renderCount = 0;
 
 export const AllPoolsTable: FunctionComponent<{
   quickAddLiquidity: (poolId: string) => void;
@@ -107,8 +106,6 @@ export const AllPoolsTable: FunctionComponent<{
       queriesStore,
       accountStore,
     } = useStore();
-    renderCount++;
-    console.log(renderCount);
     const t = useTranslation();
 
     const router = useRouter();
