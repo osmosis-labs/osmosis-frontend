@@ -7,9 +7,9 @@ import { MutableRefObject, useEffect, useRef } from "react";
 import { useOnScreen } from "~/hooks/use-on-screen";
 
 import { IS_FRONTIER } from "../../config";
+import { useWindowSize } from "../../hooks";
+import { AssetCard } from "../cards";
 import { Pool } from "./all-pools-table";
-
-const SIZE = 80;
 
 type Props = {
   containerRef: MutableRefObject<HTMLDivElement | null>;
@@ -18,14 +18,15 @@ type Props = {
 };
 
 const PaginatedTable = ({ paginate, table }: Props) => {
+  const { isMobile } = useWindowSize();
+
   const { rows } = table.getRowModel();
   const rowVirtualizer = useWindowVirtualizer({
     count: rows.length,
-    estimateSize: () => SIZE,
+    estimateSize: () => (isMobile ? 170 : 80),
     overscan: 10,
   });
   const virtualRows = rowVirtualizer.getVirtualItems();
-  console.log("🚀 ~ PaginatedTable ~ virtualRows:", virtualRows.length);
   const totalSize = rowVirtualizer.getTotalSize();
   const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
   const paddingBottom =
@@ -42,6 +43,52 @@ const PaginatedTable = ({ paginate, table }: Props) => {
       paginate();
     }
   }, [paginate, shouldLoad, table, virtualRows.length]);
+
+  if (isMobile) {
+    return (
+      <div
+        style={{
+          height: `${rowVirtualizer.getTotalSize()}px`,
+          width: "100%",
+          position: "relative",
+        }}
+      >
+        {virtualRows.map((virtualRow) => {
+          const row = rows[virtualRow.index] as Row<Pool>;
+          return (
+            <div
+              key={row.original[0].poolId}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: `${virtualRow.size}px`,
+                transform: `translateY(${virtualRow.start}px)`,
+              }}
+            >
+              <AssetCard
+                coinDenom={row.original[0].poolAssets
+                  .map((asset) => asset.coinDenom)
+                  .join("/")}
+                metrics={[
+                  {
+                    label: "TVL",
+                    value: row.original[1].value.toString(),
+                  },
+                  {
+                    label: "APR",
+                    value: row.original[4].value!.toString(),
+                  },
+                ]}
+                coinImageUrl={row.original[0].poolAssets}
+              />
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
 
   return (
     <table className="w-full">

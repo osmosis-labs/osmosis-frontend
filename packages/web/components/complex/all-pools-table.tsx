@@ -24,7 +24,6 @@ import { MenuOptionsModal } from "~/modals";
 import { useFilteredData, useWindowSize } from "../../hooks";
 import { useStore } from "../../stores";
 import { Icon } from "../assets";
-import { AssetCard } from "../cards";
 import { SelectMenu } from "../control/select-menu";
 import { SearchBox } from "../input";
 import {
@@ -428,7 +427,6 @@ export const AllPoolsTable: FunctionComponent<{
         setSorting(s);
       },
     });
-    const { rows } = table.getSortedRowModel();
 
     const containerRef = useRef<HTMLDivElement>(null);
     const handleFetchRemaining = useCallback(
@@ -448,14 +446,16 @@ export const AllPoolsTable: FunctionComponent<{
                   onInput={setQuery}
                   placeholder={t("pools.allPools.search")}
                   className="!w-full rounded-full"
-                  size="small"
+                  size="medium"
+                  rightIcon={() => (
+                    <button
+                      className="flex h-8 w-8 items-center justify-center rounded-full border border-osmoverse-500 text-osmoverse-200"
+                      onClick={() => setMobileSortMenuIsOpen(true)}
+                    >
+                      <Icon id="tune" className="" />
+                    </button>
+                  )}
                 />
-                <button
-                  className="flex w-12 items-center rounded-full border border-osmoverse-500 text-osmoverse-200"
-                  onClick={() => setMobileSortMenuIsOpen(true)}
-                >
-                  <Icon id="tune" className="flex-1" />
-                </button>
               </div>
               <div className="flex flex-wrap items-center gap-3">
                 <div className="flex-1">
@@ -635,42 +635,17 @@ export const AllPoolsTable: FunctionComponent<{
                   onInput={setQuery}
                   placeholder={t("pools.allPools.search")}
                   className="!w-64"
-                  size="small"
                 />
               </div>
             </div>
           )}
-          {isMobile ? (
-            rows.map((row) => {
-              return (
-                <AssetCard
-                  key={row.original[0].poolId}
-                  coinDenom={row.original[0].poolAssets
-                    .map((asset) => asset.coinDenom)
-                    .join("/")}
-                  metrics={[
-                    {
-                      label: "TVL",
-                      value: row.original[1].value.toString(),
-                    },
-                    {
-                      label: "APR",
-                      value: row.original[4].value!.toString(),
-                    },
-                  ]}
-                  coinImageUrl={row.original[0].poolAssets}
-                />
-              );
-            })
-          ) : (
-            <div className="my-5 h-full overflow-auto">
-              <PaginatedTable
-                containerRef={containerRef}
-                paginate={handleFetchRemaining}
-                table={table}
-              />
-            </div>
-          )}
+          <div className="h-auto overflow-auto">
+            <PaginatedTable
+              containerRef={containerRef}
+              paginate={handleFetchRemaining}
+              table={table}
+            />
+          </div>
         </div>
         <MenuOptionsModal
           title={t("components.sort.mobileMenu")}
@@ -680,7 +655,7 @@ export const AllPoolsTable: FunctionComponent<{
               display: column.columnDef.header as string,
             };
           })}
-          selectedOptionId={sorting[0].id}
+          selectedOptionId={sorting[0]?.id}
           onSelectMenuOption={(id: string) => {
             table.getColumn(id).toggleSorting();
             setMobileSortMenuIsOpen(false);
