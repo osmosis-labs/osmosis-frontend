@@ -59,9 +59,9 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
           className: "md:mt-4 mt-6 hover:opacity-75",
           mode: isChainBlockedOrCongested ? "primary-warning" : "primary",
           disabled:
-            !account.isReadyToSendTx ||
-            !counterpartyAccount.isReadyToSendTx ||
-            account.txTypeInProgress !== "" ||
+            // !account.isReadyToSendTx || TODO: uncomment this when we can check if the account is ready to send tx
+            // !counterpartyAccount.isReadyToSendTx ||
+            // account.txTypeInProgress !== "" ||
             amountConfig.error != undefined ||
             inTransit ||
             !isCustomWithdrawValid,
@@ -134,13 +134,13 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
             isWithdraw
               ? [
                   {
-                    address: account.bech32Address,
+                    address: account?.address ?? "",
                     networkName: chainStore.getChain(osmosisChainId).chainName,
                     iconUrl: "/tokens/osmo.svg",
                   },
                   undefined,
                   {
-                    address: counterpartyAccount.bech32Address,
+                    address: counterpartyAccount?.address ?? "",
                     networkName:
                       chainStore.getChain(counterpartyChainId).chainName,
                     iconUrl: currency.coinImageUrl,
@@ -148,14 +148,14 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                 ]
               : [
                   {
-                    address: counterpartyAccount.bech32Address,
+                    address: counterpartyAccount?.address ?? "",
                     networkName:
                       chainStore.getChain(counterpartyChainId).chainName,
                     iconUrl: currency.coinImageUrl,
                   },
                   undefined,
                   {
-                    address: account.bech32Address,
+                    address: account?.address ?? "",
                     networkName: chainStore.getChain(osmosisChainId).chainName,
                     iconUrl: "/tokens/osmo.svg",
                   },
@@ -166,12 +166,12 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
             isWithdraw
               ? queriesStore
                   .get(osmosisChainId)
-                  .queryBalances.getQueryBech32Address(account.bech32Address)
+                  .queryBalances.getQueryBech32Address(account?.address ?? "")
                   .getBalanceFromCurrency(currency)
               : queriesStore
                   .get(counterpartyChainId)
                   .queryBalances.getQueryBech32Address(
-                    counterpartyAccount.bech32Address
+                    counterpartyAccount?.address ?? ""
                   )
                   .getBalanceFromCurrency(currency.originCurrency!)
           }

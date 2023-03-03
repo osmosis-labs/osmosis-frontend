@@ -27,28 +27,28 @@ export function useConnectWalletModalRedirect(
 ) {
   const { accountStore, chainStore } = useStore();
   const { chainId } = chainStore.osmosis;
-  const osmosisAccount = accountStore.getWalletRepo(chainId);
+  const osmosisAccount = accountStore.getWallet(chainId);
 
   const { onOpenWalletSelect } = useWalletSelect();
 
   const [walletInitiallyConnected] = useState(
-    () => osmosisAccount.walletStatus === WalletStatus.Connected
+    () => osmosisAccount?.walletStatus === WalletStatus.Connected
   );
   const [showSelf, setShowSelf] = useState(true);
 
   useEffect(() => {
     if (
       !walletInitiallyConnected &&
-      osmosisAccount.walletStatus === WalletStatus.Connected
+      osmosisAccount?.walletStatus === WalletStatus.Connected
     ) {
       setShowSelf(true);
     }
-  }, [osmosisAccount.walletStatus, walletInitiallyConnected]);
+  }, [osmosisAccount?.walletStatus, walletInitiallyConnected]);
 
   return {
     showModalBase: showSelf,
     accountActionButton:
-      osmosisAccount.walletStatus === WalletStatus.Connected ? (
+      osmosisAccount?.walletStatus === WalletStatus.Connected ? (
         <Button {...actionButtonProps}>{actionButtonProps.children}</Button>
       ) : (
         <Button
@@ -70,6 +70,6 @@ export function useConnectWalletModalRedirect(
           </h6>
         </Button>
       ),
-    walletConnected: osmosisAccount.walletStatus === WalletStatus.Connected,
+    walletConnected: osmosisAccount?.walletStatus === WalletStatus.Connected,
   };
 }

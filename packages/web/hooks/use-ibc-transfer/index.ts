@@ -1,15 +1,9 @@
-import { WalletStatus } from "@cosmos-kit/core";
+import { ChainWalletBase, WalletStatus } from "@cosmos-kit/core";
 import { AmountConfig } from "@keplr-wallet/hooks";
-import {
-  AccountSetBase,
-  CosmosAccount,
-  CosmwasmAccount,
-  getKeplrFromWindow,
-} from "@keplr-wallet/stores";
+import { getKeplrFromWindow } from "@keplr-wallet/stores";
 import {
   basicIbcTransfer,
   IBCTransferHistory,
-  OsmosisAccount,
   UncommitedHistory,
 } from "@osmosis-labs/stores";
 import { useEffect } from "react";
@@ -39,8 +33,8 @@ export function useIbcTransfer({
   isWithdraw,
   ics20ContractAddress,
 }: IbcTransfer): [
-  AccountSetBase & CosmosAccount & CosmwasmAccount & OsmosisAccount,
-  AccountSetBase & CosmosAccount & CosmwasmAccount & OsmosisAccount,
+  ChainWalletBase | undefined,
+  ChainWalletBase | undefined,
   AmountConfig,
   boolean,
   (
@@ -67,6 +61,9 @@ export function useIbcTransfer({
   const account = accountStore.getWallet(chainId);
   const counterpartyAccount = accountStore.getWallet(counterpartyChainId);
 
+  const osmosisAddress = account?.address ?? "";
+  const counterpartyAddress = counterpartyAccount?.address ?? "";
+
   const feeConfig = useFakeFeeConfig(
     chainStore,
     isWithdraw ? chainId : counterpartyChainId,
@@ -78,9 +75,7 @@ export function useIbcTransfer({
     chainStore,
     queriesStore,
     isWithdraw ? chainId : counterpartyChainId,
-    isWithdraw
-      ? oldAccount.bech32Address
-      : oldCounterpartyAccount.bech32Address,
+    isWithdraw ? osmosisAddress : counterpartyAddress,
     feeConfig,
     isWithdraw ? currency : currency.originCurrency!
   );
@@ -212,8 +207,8 @@ export function useIbcTransfer({
   };
 
   return [
-    oldAccount,
-    oldCounterpartyAccount,
+    account,
+    counterpartyAccount,
     amountConfig,
     (isWithdraw && oldAccount.txTypeInProgress === "ibcTransfer") ||
       (!isWithdraw &&

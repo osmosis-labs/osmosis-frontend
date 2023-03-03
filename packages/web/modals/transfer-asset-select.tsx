@@ -1,19 +1,20 @@
-import Image from "next/image";
-import { FunctionComponent, useState, useMemo, useEffect } from "react";
+import { CoinPretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { CoinPretty } from "@keplr-wallet/unit";
+import Image from "next/image";
+import { FunctionComponent, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-multi-lang";
+
+import { Icon } from "../components/assets";
 import { TokenSelect } from "../components/control";
 import { CustomClasses } from "../components/types";
+import { useConnectWalletModalRedirect } from "../hooks";
+import type { SourceChain } from "../integrations";
 import type {
   OriginBridgeInfo,
   SourceChainKey,
 } from "../integrations/bridge-info";
-import type { SourceChain } from "../integrations";
-import { useConnectWalletModalRedirect } from "../hooks";
 import { ModalBase, ModalBaseProps } from "./base";
-import { useTranslation } from "react-multi-lang";
-import { Icon } from "../components/assets";
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
