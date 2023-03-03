@@ -202,7 +202,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
         ]);
         _setSortKey(term);
       },
-      [sortDirection]
+      [_setSortKey, logEvent, sortDirection]
     );
 
     // Table column def to determine how the first 2 column headers handle user click.
@@ -256,7 +256,14 @@ export const AssetsTable: FunctionComponent<Props> = observer(
               },
         };
       },
-      [sortKey, sortDirection]
+      [
+        sortDirection,
+        sortKey,
+        logEvent,
+        toggleSortDirection,
+        setSortKey,
+        setSortDirection,
+      ]
     );
 
     // User toggles for showing 10+ pools and assets with > 0 fiat value

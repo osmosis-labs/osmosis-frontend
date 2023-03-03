@@ -57,7 +57,7 @@ export const Drawer: FunctionComponent<{
         props.onClose?.();
       },
     }),
-    [isOpen, isAnimationComplete, setIsOpen]
+    [isOpen, isAnimationComplete, setIsOpen, props]
   );
 
   return (

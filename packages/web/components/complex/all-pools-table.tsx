@@ -92,6 +92,7 @@ const IncentiveFilters: Record<"internal" | "external" | "superfluid", string> =
     external: "External incentives",
     superfluid: "Superfluid",
   };
+var renderCount = 0;
 
 export const AllPoolsTable: FunctionComponent<{
   quickAddLiquidity: (poolId: string) => void;
@@ -106,6 +107,8 @@ export const AllPoolsTable: FunctionComponent<{
       queriesStore,
       accountStore,
     } = useStore();
+    renderCount++;
+    console.log(renderCount);
     const t = useTranslation();
 
     const router = useRouter();
@@ -192,18 +195,18 @@ export const AllPoolsTable: FunctionComponent<{
           };
         }),
       [
-        // note: mobx only causes rerenders for values referenced *during* render. I.e. *not* within useEffect/useCallback/useMemo hooks (see: https://mobx.js.org/react-integration.html)
-        // `useMemo` is needed in this file to avoid "debounce" with the hundreds of re-renders by mobx as the 200+ API requests come in and populate 1000+ observables (otherwise the UI is unresponsive for 30+ seconds)
-        // also, the higher level `useMemo`s (i.e. this one) gain the most performance as other React renders are prevented down the line as data is calculated (remember, renders are initiated by both mobx and react)
         allPools,
-        queriesOsmosis.queryGammPools.isFetching,
-        queriesExternalStore.queryGammPoolFeeMetrics.response,
-        queriesOsmosis.queryAccountLocked.get(account.bech32Address).response,
-        queriesOsmosis.queryLockedCoins.get(account.bech32Address).response,
-        queriesOsmosis.queryUnlockingCoins.get(account.bech32Address).response,
-        priceStore.response,
-        queriesExternalStore.queryGammPoolFeeMetrics.response,
+        priceStore,
+        queriesOsmosis.queryGammPoolShare,
+        queriesOsmosis.queryIncentivizedPools,
+        queriesOsmosis.querySuperfluidPools,
+        queriesOsmosis.querySuperfluidOsmoEquivalent,
         account.bech32Address,
+        queriesExternalStore.queryGammPoolFeeMetrics,
+        fiat,
+        queriesStore,
+        chainId,
+        chainStore,
       ]
     );
 

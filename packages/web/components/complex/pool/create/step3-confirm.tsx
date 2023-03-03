@@ -36,7 +36,7 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
         amount: asset.amountConfig.amount,
       }))
     );
-  }, [config.assets]);
+  }, [config.assets, config.poolType]);
 
   return (
     <StepBase step={3} {...props}>

@@ -58,7 +58,7 @@ export const PoolsOverview: FunctionComponent<
     updateTimeRemaining();
 
     return () => clearInterval(intervalId);
-  }, [queryOsmosis.queryEpochs.response]);
+  }, [queryOsmosis.queryEpochs, queryOsmosis.queryEpochs.response]);
 
   return (
     <div

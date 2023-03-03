@@ -80,7 +80,7 @@ export const PoolQuickActionCell: FunctionComponent<
           break;
       }
     },
-    [poolId, onAddLiquidity, onRemoveLiquidity, onLockTokens, setDropdownOpen]
+    [onAddLiquidity, onRemoveLiquidity, onLockTokens, setDropdownOpen]
   );
 
   useEffect(() => {
@@ -96,7 +96,7 @@ export const PoolQuickActionCell: FunctionComponent<
         cellGroupEventEmitter.removeListener("select-pool-id", onPoolSelected);
       };
     }
-  }, [poolId]);
+  }, [cellGroupEventEmitter, poolId, setDropdownOpen]);
 
   return (
     <div

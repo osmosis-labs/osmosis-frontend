@@ -100,7 +100,7 @@ const Assets: NextPage = observer(() => {
         nativeBalances[0].balance.maxDecimals(6).hideDenom(true).toString()
       )
     );
-  }, [nativeBalances[0].balance.maxDecimals(6).hideDenom(true).toString()]);
+  }, [nativeBalances, setUserProperty]);
 
   // set nav bar ctas
   useNavBar({
@@ -130,7 +130,7 @@ const Assets: NextPage = observer(() => {
           : transferConfig?.transferAsset("deposit", chainId, coinDenom);
       }
     },
-    [isMobile, launchPreTransferModal, transferConfig?.transferAsset]
+    [isMobile, launchPreTransferModal, transferConfig]
   );
   const onTableWithdraw = useCallback(
     (chainId, coinDenom, externalWithdrawUrl) => {
@@ -138,7 +138,7 @@ const Assets: NextPage = observer(() => {
         transferConfig?.transferAsset("withdraw", chainId, coinDenom);
       }
     },
-    [transferConfig?.transferAsset]
+    [transferConfig]
   );
 
   return (
@@ -251,10 +251,11 @@ const AssetsOverview: FunctionComponent = observer(() => {
       Number(stakedAssetsValue.trim(true).toDec().toString(2))
     );
   }, [
-    totalAssetsValue.toString(),
-    availableAssetsValue.toString(),
-    bondedAssetsValue.toString(),
-    stakedAssetsValue.toString(),
+    availableAssetsValue,
+    bondedAssetsValue,
+    setUserProperty,
+    stakedAssetsValue,
+    totalAssetsValue,
   ]);
 
   return (
@@ -304,7 +305,7 @@ const PoolAssets: FunctionComponent = observer(() => {
 
   useEffect(() => {
     setUserProperty("myPoolsCount", ownedPoolIds.length);
-  }, [ownedPoolIds.length]);
+  }, [ownedPoolIds.length, setUserProperty]);
 
   const dustedPoolIds = useHideDustUserSetting(ownedPoolIds, (poolId) =>
     queryOsmosis.queryGammPools

@@ -135,8 +135,9 @@ const Pools: NextPage = observer(function () {
     },
     [
       selectedPoolShareCurrency,
-      lockLpTokenModalPoolId,
       lockLpTokenConfig,
+      lockLpTokenModalPoolId,
+      superfluidDelegateToValidator,
       lockToken,
     ]
   );
@@ -219,7 +220,8 @@ const Pools: NextPage = observer(function () {
       isMobile,
       showMoreMyPools,
       myPoolIds,
-      queryOsmosis.queryGammPools.isFetching,
+      poolCountShowMoreThreshold,
+      derivedDataStore.poolDetails,
     ]
   );
   const dustFilteredPools = useHideDustUserSetting(
