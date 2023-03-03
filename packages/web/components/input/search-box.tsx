@@ -67,7 +67,7 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
           searchBoxClasses({ size }),
           {
             "opacity-50": disabled,
-            "border-2 border-osmoverse-200 px-[19px]": isFocused,
+            "border border-osmoverse-200": isFocused,
           },
           className
         )}
