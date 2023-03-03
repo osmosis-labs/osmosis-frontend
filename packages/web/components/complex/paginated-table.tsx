@@ -2,7 +2,7 @@ import { flexRender, Row, Table } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import Image from "next/image";
 import Link from "next/link";
-import { MutableRefObject, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 import { useOnScreen } from "~/hooks/use-on-screen";
 
@@ -11,7 +11,6 @@ import { useWindowSize } from "../../hooks";
 import { Pool } from "./all-pools-table";
 
 type Props = {
-  containerRef: MutableRefObject<HTMLDivElement | null>;
   mobileSize?: number;
   paginate: () => void;
   renderMobileItem?: (row: Row<Pool>) => React.ReactNode;

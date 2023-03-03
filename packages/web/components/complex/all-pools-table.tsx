@@ -429,7 +429,6 @@ export const AllPoolsTable: FunctionComponent<{
       },
     });
 
-    const containerRef = useRef<HTMLDivElement>(null);
     const handleFetchRemaining = useCallback(
       () => queriesOsmosis.queryGammPools.fetchRemainingPools(),
       [queriesOsmosis.queryGammPools]
@@ -438,7 +437,7 @@ export const AllPoolsTable: FunctionComponent<{
 
     return (
       <>
-        <div className="mt-5 flex flex-col gap-3" ref={containerRef}>
+        <div className="mt-5 flex flex-col gap-3">
           {isMobile ? (
             <>
               <div className="flex gap-3">
@@ -659,7 +658,6 @@ export const AllPoolsTable: FunctionComponent<{
           )}
           <div className="h-auto overflow-auto">
             <PaginatedTable
-              containerRef={containerRef}
               paginate={handleFetchRemaining}
               mobileSize={170}
               renderMobileItem={(row) => {
