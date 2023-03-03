@@ -58,8 +58,11 @@ export function useIbcTransfer({
   const oldAccount = oldAccountStore.getAccount(chainId);
   const oldCounterpartyAccount =
     oldAccountStore.getAccount(counterpartyChainId);
+
   const account = accountStore.getWallet(chainId);
   const counterpartyAccount = accountStore.getWallet(counterpartyChainId);
+  const counterpartyWalletRepo =
+    accountStore.getWalletRepo(counterpartyChainId);
 
   const osmosisAddress = account?.address ?? "";
   const counterpartyAddress = counterpartyAccount?.address ?? "";
@@ -95,12 +98,14 @@ export function useIbcTransfer({
         }
       : undefined;
 
-  // open keplr dialog to request connecting to counterparty chain
+  // open dialog to request connecting to counterparty chain
   useEffect(() => {
+    console.log("before", counterpartyAccount?.walletStatus);
     if (
-      account?.address &&
-      (counterpartyAccount?.walletStatus === WalletStatus.Disconnected ||
-        counterpartyAccount?.walletStatus === WalletStatus.Rejected)
+      (account?.address &&
+        (counterpartyAccount?.walletStatus === WalletStatus.Disconnected ||
+          counterpartyAccount?.walletStatus === WalletStatus.Rejected)) ||
+      !counterpartyAccount
     ) {
       onOpenWalletSelect(counterpartyChainId);
     }
