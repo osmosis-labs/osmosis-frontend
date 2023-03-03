@@ -63,7 +63,7 @@ export const PoolsOverview: FunctionComponent<
   return (
     <div
       className={classNames(
-        "relative flex h-48 items-center gap-32 rounded-[32px] bg-osmoverse-800 px-20 lg:gap-8 lg:px-10 md:h-fit md:flex-col md:items-start md:gap-3 md:px-4 md:py-5",
+        "relative flex flex-wrap items-center gap-32 rounded-[32px] bg-osmoverse-800 px-20 py-8 lg:gap-8 lg:px-10 md:h-fit md:flex-col md:items-start md:gap-3 md:px-4 md:py-5",
         className
       )}
     >
@@ -75,7 +75,7 @@ export const PoolsOverview: FunctionComponent<
           {osmoPrice?.toString()}
         </h2>
       </div>
-      <div className="z-40 flex flex-col gap-5 rounded-2xl bg-osmoverse-800/80 pr-2 shadow-2xl md:gap-2">
+      <div className="z-40 flex flex-col gap-5 rounded-2xl bg-osmoverse-800/80 pr-2 md:gap-2">
         <h6 className="md:text-subtitle1 md:font-subtitle1">
           {t("pools.rewardDistribution")}
         </h6>
@@ -107,7 +107,7 @@ export const PoolsOverview: FunctionComponent<
           }
         />
       </div>
-      <div className="absolute right-7 bottom-7">
+      <div className="absolute right-7 bottom-7 md:relative md:bottom-0 md:right-0">
         <Button
           className="rounded-[24px] text-white-full shadow-[0_6px_8px_0_rgba(9,5,36,0.2);]"
           onClick={setIsCreatingPool}
