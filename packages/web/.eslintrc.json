@@ -15,6 +15,7 @@
       }
     ],
     "@next/next/no-img-element": "off",
+    "react-hooks/exhaustive-deps": "off",
     "react/display-name": "off",
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",

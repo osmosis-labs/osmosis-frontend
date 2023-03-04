@@ -16,12 +16,6 @@
       "externalLinkModalTitle": "Opuszczanie Osmosis"
     }
   },
-  "mars": {
-    "banner": {
-      "title": "Pożyczanie / pożyczanie na Osmosis wylądowało.",
-      "linkText": "Odkrywaj Mars Protocol"
-    }
-  },
   "swap": {
     "title": "Wymień",
     "settings": {
@@ -285,7 +279,8 @@
         "insufficientFee": "Niewystarczająca Prowizja",
         "insufficientBal": "Niewystarczająca Ilość Środków"
       },
-      "wrapNativeLink": "Konwertuj {fromDenom} na {toDenom} na {platformName}",
+      "useWrappedDeposit": "Wpłać {wrapDenom} na Satellite",
+      "useWrappedWithdraw": "Wypłać {wrapDenom} z Satellite",
       "waitTime": "{minutes} minut"
     },
     "selectAssetSource": {

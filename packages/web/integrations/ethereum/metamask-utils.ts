@@ -1,7 +1,8 @@
 import { numberToHex } from "web3-utils";
+
 import { getKeyByValue } from "../../utils/object";
 import type { EthereumProvider } from "../../window";
-import { SendFn, ChainNames } from "./types";
+import { ChainNames, SendFn } from "./types";
 
 export function switchToChain(
   request: SendFn,
@@ -80,6 +81,8 @@ export function withEthInWindow<T>(
   if (
     typeof window !== "undefined" &&
     typeof window.ethereum !== "undefined" &&
+    typeof document !== "undefined" &&
+    /complete|interactive|loaded/.test(document.readyState) &&
     window.ethereum.isMetaMask
   ) {
     return doTask(window.ethereum);

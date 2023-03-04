@@ -1,7 +1,8 @@
-import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, Int, IntPretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 
+import { useWindowSize } from "../../hooks";
 import { truncateString } from "../../utils/string";
 
 const ColorCycle = [
@@ -19,6 +20,8 @@ export const AssetBreakdownChart: FunctionComponent<{
   totalWeight: IntPretty;
   colorCycle?: typeof ColorCycle;
 }> = ({ assets, totalWeight, colorCycle = ColorCycle }) => {
+  const { isMobile } = useWindowSize();
+
   const assetPercentages = assets.map(({ weight }) =>
     weight.quo(totalWeight).mul(new Dec(100))
   );
@@ -52,12 +55,14 @@ export const AssetBreakdownChart: FunctionComponent<{
                 className="subtitle1 md:body2 text-osmoverse-400"
                 title={amount.currency.coinDenom}
               >
-                {truncateString(amount.currency.coinDenom, 6)}:{" "}
+                {truncateString(amount.currency.coinDenom, isMobile ? 6 : 12)}:{" "}
                 {assetPercentages[index].toString()}%
               </span>
             </div>
             <h6 className="md:subtitle2 text-osmoverse-100">
-              {amount.maxDecimals(0).hideDenom(true).toString()}
+              {amount.toDec().round().gt(new Int(0))
+                ? amount.maxDecimals(0).hideDenom(true).toString()
+                : amount.hideDenom(true).toString()}
             </h6>
           </div>
           <div

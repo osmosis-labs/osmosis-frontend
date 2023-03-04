@@ -299,7 +299,11 @@ export const TokenSelectDrawer: FunctionComponent<{
 
                 const tokenAmount =
                   t.token instanceof CoinPretty
-                    ? t.token.hideDenom(true).trim(true).toString()
+                    ? t.token
+                        .hideDenom(true)
+                        .maxDecimals(8)
+                        .trim(true)
+                        .toString()
                     : undefined;
                 const tokenPrice =
                   t.token instanceof CoinPretty

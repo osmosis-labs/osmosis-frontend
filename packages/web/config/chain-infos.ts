@@ -174,7 +174,8 @@ const chainInfos = (
           coinMinimalDenom:
             "cw20:secret12rcvz0umvk875kd6a803txhtlu7y0pnd73kcej:ALTER",
           coinDecimals: 6,
-          coinGeckoId: "alter",
+          //coinGeckoId: "alter",
+          coinGeckoId: "pool:alter",
           coinImageUrl: "/tokens/alter.svg",
         },
         {
@@ -204,7 +205,8 @@ const chainInfos = (
           coinMinimalDenom:
             "cw20:secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d:SHD",
           coinDecimals: 8,
-          coinGeckoId: "shade-protocol",
+          //coinGeckoId: "shade-protocol",
+          coinGeckoId: "pool:shd",
           coinImageUrl: "/tokens/shd.svg",
         },
         {
@@ -670,7 +672,8 @@ const chainInfos = (
           coinMinimalDenom:
             "cw20:juno1rws84uz7969aaa7pej303udhlkt3j9ca0l3egpcae98jwak9quzq8szn2l:PHMN",
           coinDecimals: 6,
-          coinGeckoId: "posthuman",
+          //coinGeckoId: "posthuman",
+          coinGeckoId: "pool:phmn",
           coinImageUrl: "/tokens/phmn.png",
         },
         {
@@ -694,6 +697,17 @@ const chainInfos = (
           coinDecimals: 6,
           coinGeckoId: "pool:wynd",
           coinImageUrl: "/tokens/wynd.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1qmlchtmjpvu0cr7u0tad2pq8838h6farrrjzp39eqa9xswg7teussrswlq",
+          coinDenom: "NRIDE",
+          coinMinimalDenom:
+            "cw20:juno1qmlchtmjpvu0cr7u0tad2pq8838h6farrrjzp39eqa9xswg7teussrswlq:NRIDE",
+          coinDecimals: 6,
+          coinGeckoId: "pool:nride",
+          coinImageUrl: "/tokens/nride.svg",
         },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
@@ -1768,8 +1782,8 @@ const chainInfos = (
           coinDenom: "ATOLO",
           coinMinimalDenom: "uatolo",
           coinDecimals: 6,
-          // coinGeckoId: "rizon",
-          coinGeckoId: "pool:uatolo",
+          coinGeckoId: "rizon",
+          //coinGeckoId: "pool:uatolo",
           coinImageUrl: "/tokens/atolo.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
@@ -2074,7 +2088,8 @@ const chainInfos = (
           coinDenom: "ORAI",
           coinMinimalDenom: "orai",
           coinDecimals: 6,
-          coinGeckoId: "oraichain-token",
+          //coinGeckoId: "oraichain-token",
+          coinGeckoId: "pool:orai",
           coinImageUrl: "/tokens/orai.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
@@ -2520,7 +2535,7 @@ const chainInfos = (
       bech32Config: Bech32Address.defaultBech32Config("plq"),
       currencies: [
         {
-          coinDenom: "PLANQ",
+          coinDenom: "PLQ",
           coinMinimalDenom: "aplanq",
           coinDecimals: 18,
           coinGeckoId: "pool:aplanq",
@@ -2669,6 +2684,34 @@ const chainInfos = (
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/quicksilver/txs/{txHash}",
     },
+    {
+      rpc: "https://rpc.8ball.info",
+      rest: "https://rest.8ball.info",
+      chainId: "eightball-1",
+      chainName: "8ball",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("8ball"),
+      currencies: [
+        {
+          coinDenom: "EBL",
+          coinMinimalDenom: "uebl",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/8ball.svg",
+          coinGeckoId: "pool:uebl",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.0001,
+            average: 0.025,
+            high: 0.04,
+          },
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx: "https://explorer.8ball.info/8ball/tx/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
@@ -2737,7 +2780,7 @@ chainInfos.push({
       pegMechanism: "collateralized",
     },
     {
-      coinDenom: "wETH",
+      coinDenom: "ETH",
       coinMinimalDenom: "weth-wei",
       coinDecimals: 18,
       // coinGeckoId: "weth",
@@ -2825,7 +2868,7 @@ chainInfos.push({
       coinImageUrl: "/tokens/xcn.svg",
     },
     {
-      coinDenom: "wGLMR",
+      coinDenom: "GLMR",
       coinMinimalDenom: IS_TESTNET ? "wdev-wei" : "wglmr-wei",
       coinDecimals: 18,
       coinGeckoId: "wrapped-moonbeam",
@@ -2835,39 +2878,44 @@ chainInfos.push({
       coinDenom: "DOT",
       coinMinimalDenom: "dot-planck",
       coinDecimals: 10,
-      coinGeckoId: "polkadot",
+      //coinGeckoId: "polkadot",
+      coinGeckoId: "pool:dotplanck.axl",
       coinImageUrl: "/tokens/dot.svg",
     },
     {
-      coinDenom: "wBNB",
+      coinDenom: "BNB",
       coinMinimalDenom: "wbnb-wei",
       coinDecimals: 18,
-      coinGeckoId: "wbnb",
+      //coinGeckoId: "wbnb",
+      coinGeckoId: "pool:wbnbwei.axl",
       coinImageUrl: "/tokens/bnb.svg",
     },
     {
-      coinDenom: "wMATIC",
+      coinDenom: "MATIC",
       coinMinimalDenom: "wmatic-wei",
       coinDecimals: 18,
-      coinGeckoId: "wmatic",
+      //coinGeckoId: "wmatic",
+      coinGeckoId: "pool:wmaticwei.axl",
       coinImageUrl: "/tokens/matic.png",
     },
     {
       coinDenom: "BUSD",
       coinMinimalDenom: "busd-wei",
       coinDecimals: 18,
-      coinGeckoId: "binance-usd",
+      //coinGeckoId: "binance-usd",
+      coinGeckoId: "pool:busdwei.axl",
       coinImageUrl: "/tokens/busd.png",
     },
     {
-      coinDenom: "wAVAX",
+      coinDenom: "AVAX",
       coinMinimalDenom: "wavax-wei",
       coinDecimals: 18,
-      coinGeckoId: "avalanche-2",
+      //coinGeckoId: "avalanche-2",
+      coinGeckoId: "pool:wavaxwei.axl",
       coinImageUrl: "/tokens/avax.svg",
     },
     {
-      coinDenom: "wFTM",
+      coinDenom: "FTM",
       coinMinimalDenom: "wftm-wei",
       coinDecimals: 18,
       //coinGeckoId: "fantom",

@@ -1,14 +1,15 @@
-import dynamic from "next/dynamic";
 import { observer } from "mobx-react-lite";
+import dynamic from "next/dynamic";
 import { FunctionComponent } from "react";
+import { useTranslation } from "react-multi-lang";
+
+import { IS_TESTNET } from "../config";
+import { useConnectWalletModalRedirect } from "../hooks";
 import type { SourceChainKey } from "../integrations/bridge-info";
 import type { EthWallet } from "../integrations/ethereum";
 import type { Wallet } from "../integrations/wallets";
 import { IBCBalance } from "../stores/assets";
-import { IS_TESTNET } from "../config";
-import { useConnectWalletModalRedirect } from "../hooks";
-import { ModalBaseProps, ModalBase } from "./base";
-import { useTranslation } from "react-multi-lang";
+import { ModalBase, ModalBaseProps } from "./base";
 
 const AxelarTransfer = dynamic(
   () => import("../integrations/axelar/transfer"),
@@ -57,14 +58,24 @@ export const BridgeTransferModal: FunctionComponent<
   }
   const { bridge } = balance.originBridgeInfo;
 
+  const sourceChainConfig = balance.originBridgeInfo.sourceChainTokens.find(
+    ({ id }) => id === sourceChainKey
+  );
+
   return (
     <ModalBase
       {...props}
       title={
         isWithdraw
-          ? t("assets.transfer.titleWithdraw", {
-              coinDenom: balance.balance.currency.coinDenom,
-            })
+          ? bridge === "axelar" &&
+            Boolean(sourceChainConfig?.nativeWrapEquivalent)
+            ? t("assets.transferAssetSelect.withdraw")
+            : t("assets.transfer.titleWithdraw", {
+                coinDenom: balance.balance.currency.coinDenom,
+              })
+          : bridge === "axelar" &&
+            Boolean(sourceChainConfig?.nativeWrapEquivalent)
+          ? t("assets.transferAssetSelect.deposit")
           : t("assets.transfer.titleDeposit", {
               coinDenom: balance.balance.currency.coinDenom,
             })
