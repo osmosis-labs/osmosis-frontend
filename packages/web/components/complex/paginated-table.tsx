@@ -4,10 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 
-import { useOnScreen } from "~/hooks/use-on-screen";
-
 import { IS_FRONTIER } from "../../config";
 import { useWindowSize } from "../../hooks";
+import { useOnScreen } from "../../hooks/use-on-screen";
 import { Pool } from "./all-pools-table";
 
 type Props = {
@@ -47,6 +46,7 @@ const PaginatedTable = ({
 
   useEffect(() => {
     if (shouldLoad) {
+      console.log("fetching more");
       paginate();
     }
   }, [paginate, shouldLoad, table, virtualRows.length]);
@@ -143,12 +143,13 @@ const PaginatedTable = ({
             <td style={{ height: `${paddingTop}px` }} />
           </tr>
         )}
-        {virtualRows.map((virtualRow) => {
+        {virtualRows.map((virtualRow, i) => {
           const row = rows[virtualRow.index] as Row<Pool>;
           return (
             <tr
               key={row.id}
               className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
+              ref={i === virtualRows.length - 1 ? loaderRef : null}
             >
               {row.getVisibleCells().map((cell) => {
                 return (
@@ -170,7 +171,6 @@ const PaginatedTable = ({
             </tr>
           );
         })}
-        <div ref={loaderRef} />
         {paddingBottom > 0 && (
           <tr>
             <td style={{ height: `${paddingBottom}px` }} />

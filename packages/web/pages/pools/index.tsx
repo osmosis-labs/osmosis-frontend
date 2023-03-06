@@ -3,7 +3,6 @@ import { ObservablePoolDetail } from "@osmosis-labs/stores";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
-import Image from "next/image";
 import { ComponentProps, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
@@ -11,7 +10,7 @@ import { ShowMoreButton } from "~/components/buttons/show-more";
 import { PoolCard } from "~/components/cards";
 import { MetricLoader } from "~/components/loaders";
 import { PoolsOverview } from "~/components/overview/pools";
-import { EventName, UserAction } from "~/config";
+import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
   useCreatePoolConfig,
@@ -423,29 +422,6 @@ const Pools: NextPage = observer(function () {
       <section>
         <AllPoolsTable {...quickActionProps} />
       </section>
-      {UserAction.CreateNewPool && (
-        <section className="pb-4">
-          <div className="flex w-full items-center rounded-full bg-osmoverse-800 px-5 py-4">
-            <span className="subtitle1 flex items-center gap-1 md:text-subtitle2 md:font-subtitle2">
-              {t("pools.createPool.interestedCreate")}{" "}
-              <u
-                className="flex cursor-pointer items-center text-wosmongton-300"
-                onClick={() => setIsCreatingPool(true)}
-              >
-                {t("pools.createPool.startProcess")}
-                <div className="flex shrink-0 items-center">
-                  <Image
-                    alt="right arrow"
-                    src="/icons/arrow-right-wosmongton-300.svg"
-                    height={24}
-                    width={24}
-                  />
-                </div>
-              </u>
-            </span>
-          </div>
-        </section>
-      )}
     </main>
   );
 });
