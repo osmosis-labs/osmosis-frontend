@@ -2681,6 +2681,13 @@ const chainInfos = (
           coinImageUrl: "/tokens/qstars.svg",
           coinGeckoId: "pool:uqstars",
         },
+        {
+          coinDenom: "qATOM",
+          coinMinimalDenom: "uqatom",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/qatom.svg",
+          coinGeckoId: "pool:uqatom",
+        },
       ],
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/quicksilver/txs/{txHash}",
