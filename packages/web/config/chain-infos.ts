@@ -58,14 +58,14 @@ const chainInfos = (
         },
         ...(IS_TESTNET
           ? [
-              {
-                coinDenom: "IBCX",
-                coinMinimalDenom:
-                  "factory/osmo13t90mkyvdnmn9wm8hfen6jk3hnlt8uqx8savlvjd5xghy5z6ye2qymy6cy/uibcx",
-                coinDecimals: 6,
-                coinImageUrl: "/tokens/ibcx.svg",
-              },
-            ]
+            {
+              coinDenom: "IBCX",
+              coinMinimalDenom:
+                "factory/osmo13t90mkyvdnmn9wm8hfen6jk3hnlt8uqx8savlvjd5xghy5z6ye2qymy6cy/uibcx",
+              coinDecimals: 6,
+              coinImageUrl: "/tokens/ibcx.svg",
+            },
+          ]
           : []),
       ],
       features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
@@ -927,6 +927,13 @@ const chainInfos = (
           coinDecimals: 6,
           coinImageUrl:
             "/tokens/ftD4B6290EDEE1EC7B97AB5A1DC6C177EFD08ADCC3.png",
+        },
+        {
+          coinDenom: "LDON",
+          coinMinimalDenom: "ft347B1612A2B7659913679CF6CD45B8B130C50A00",
+          coinDecimals: 6,
+          coinImageUrl:
+            "/tokens/ft347B1612A2B7659913679CF6CD45B8B130C50A00.png",
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
@@ -2606,15 +2613,15 @@ const chainInfos = (
           isFeeCurrency: true,
           gasPriceStep: IS_TESTNET
             ? {
-                low: 0,
-                average: 0,
-                high: 0.025,
-              }
+              low: 0,
+              average: 0,
+              high: 0.025,
+            }
             : {
-                low: 0,
-                average: 0,
-                high: 0,
-              },
+              low: 0,
+              average: 0,
+              high: 0,
+            },
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
@@ -2951,15 +2958,15 @@ chainInfos.push({
   ],
   gasPriceStep: IS_TESTNET
     ? {
-        low: 0.007,
-        average: 0.125,
-        high: 0.2,
-      }
+      low: 0.007,
+      average: 0.125,
+      high: 0.2,
+    }
     : {
-        low: 0.00005,
-        average: 0.00007,
-        high: 0.00009,
-      },
+      low: 0.00005,
+      average: 0.00007,
+      high: 0.00009,
+    },
   features: ["ibc-transfer", "ibc-go"],
   explorerUrlToTx: IS_TESTNET
     ? "https://testnet.axelarscan.io/tx/{txHash}"
