@@ -12,6 +12,8 @@ import { WalletSelectModal } from "~/modals";
 import { useStore } from "~/stores";
 import { createContext } from "~/utils/react-context";
 
+import { useAmplitudeAnalytics } from "./use-amplitude-analytics";
+
 const [WalletSelectInnerProvider, useWalletSelect] = createContext<{
   onOpenWalletSelect: (chainName: string) => void;
 }>({
@@ -23,10 +25,17 @@ export { useWalletSelect };
 
 export const WalletSelectProvider: FunctionComponent = observer(
   ({ children }) => {
-    const { accountStore } = useStore();
-    const [chainName, setChainName] = useState<string | null>(null);
+    const {
+      accountStore,
+      chainStore: {
+        osmosis: { chainId },
+      },
+    } = useStore();
 
+    const [chainName, setChainName] = useState<string | null>(null);
     const [isWalletSelectOpen, setIsWalletSelectOpen] = useState(false);
+
+    const { setUserProperty } = useAmplitudeAnalytics();
 
     useEffect(() => {
       // Try to reconnect to wallet if user has changed account for current wallet
@@ -52,6 +61,21 @@ export const WalletSelectProvider: FunctionComponent = observer(
       };
     }, []);
 
+    const setUserAmplitudeProperties = useCallback(() => {
+      const wallet = accountStore.getWallet(chainId);
+      setUserProperty("isWalletConnected", true);
+      setUserProperty("connectedWallet", wallet?.walletInfo?.mode ?? "unknown");
+    }, [setUserProperty, accountStore, chainId]);
+
+    useEffect(() => {
+      accountStore.walletManager.onMounted().then(() => {
+        setUserAmplitudeProperties();
+      });
+      return () => {
+        accountStore.walletManager.onUnmounted();
+      };
+    }, []);
+
     const onOpenWalletSelect = useCallback((chainName: string) => {
       setIsWalletSelectOpen(true);
       setChainName(chainName);
@@ -67,6 +91,9 @@ export const WalletSelectProvider: FunctionComponent = observer(
         {Boolean(chainName) && (
           <WalletSelectModal
             walletRepo={accountStore.getWalletRepo(chainName!)}
+            onConnect={() => {
+              setUserAmplitudeProperties();
+            }}
             isOpen={isWalletSelectOpen}
             onRequestClose={() => {
               setIsWalletSelectOpen(false);

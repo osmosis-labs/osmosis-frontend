@@ -62,7 +62,7 @@ function getModalView(qrState: State, walletStatus?: WalletStatus): ModalView {
 }
 
 export const WalletSelectModal: FunctionComponent<
-  ModalBaseProps & { walletRepo: WalletRepo }
+  ModalBaseProps & { walletRepo: WalletRepo; onConnect?: () => void }
 > = (props) => {
   const { isOpen, onRequestClose, walletRepo } = props;
   const t = useTranslation();
@@ -115,13 +115,20 @@ export const WalletSelectModal: FunctionComponent<
 const ModalContent: FunctionComponent<
   Pick<
     ComponentPropsWithoutRef<typeof WalletSelectModal>,
-    "walletRepo" | "onRequestClose"
+    "walletRepo" | "onRequestClose" | "onConnect"
   > & { modalView: ModalView }
-> = ({ walletRepo, onRequestClose, modalView }) => {
+> = ({ walletRepo, onRequestClose, modalView, onConnect: onConnectProp }) => {
   const t = useTranslation();
 
   const currentWallet = walletRepo?.current;
   const walletInfo = currentWallet?.walletInfo;
+
+  const onConnect = (sync: boolean, wallet?: ChainWalletBase) => {
+    if (!wallet) return;
+    wallet.connect(undefined, undefined, sync).then(() => {
+      onConnectProp?.();
+    });
+  };
 
   if (modalView === "connected") {
     onRequestClose();
@@ -217,7 +224,7 @@ const ModalContent: FunctionComponent<
               t("walletSelect.connectionDenied")}
           </p>
         </div>
-        <Button onClick={() => currentWallet?.connect(void 0, void 0, false)}>
+        <Button onClick={() => onConnect(false, currentWallet)}>
           {t("walletSelect.reconnect")}
         </Button>
       </div>
@@ -292,7 +299,7 @@ const ModalContent: FunctionComponent<
                 }
               )}
               key={wallet.walletName}
-              onClick={() => wallet.connect(undefined, undefined, true)}
+              onClick={() => onConnect(true, wallet)}
             >
               <img
                 className={isHighlighted ? "h-20 w-20" : "h-8 w-8"}

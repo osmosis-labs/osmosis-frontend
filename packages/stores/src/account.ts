@@ -59,10 +59,6 @@ export class AccountStore {
     });
 
     makeObservable(this);
-
-    if (typeof window !== "undefined") {
-      this.walletManager.onMounted();
-    }
   }
 
   @action
