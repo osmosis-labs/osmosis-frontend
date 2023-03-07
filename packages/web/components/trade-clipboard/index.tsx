@@ -259,7 +259,7 @@ export const TradeClipboard: FunctionComponent<{
               )
             )
           : undefined,
-      [tradeTokenInConfig.amount, tradeTokenInConfig.sendCurrency]
+      [priceStore, tradeTokenInConfig.amount, tradeTokenInConfig.sendCurrency]
     );
     const outAmountValue = useMemo(
       () =>
@@ -268,7 +268,7 @@ export const TradeClipboard: FunctionComponent<{
             tradeTokenInConfig.expectedSwapResult.amount
           )) ||
         undefined,
-      [tradeTokenInConfig.expectedSwapResult.amount]
+      [priceStore, tradeTokenInConfig.expectedSwapResult.amount]
     );
 
     const swapResultAmount = useMemo(

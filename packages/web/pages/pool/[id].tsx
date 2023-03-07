@@ -85,7 +85,7 @@ const Pool: FunctionComponent = observer(() => {
     if (poolExists === false) {
       router.push("/pools");
     }
-  }, [poolExists]);
+  }, [poolExists, router]);
 
   // initialize pool data stores once root pool store is loaded
   const { poolDetail, superfluidPoolDetail, poolBonding } =
@@ -109,7 +109,7 @@ const Pool: FunctionComponent = observer(() => {
         .map((poolAsset) => poolAsset.weightFraction.toString())
         .join(" / "),
     }),
-    [pool?.poolAssets]
+    [pool?.poolAssets, pool?.weightedPoolInfo?.assets]
   );
   const { logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [
@@ -145,6 +145,22 @@ const Pool: FunctionComponent = observer(() => {
   // swap modal
   const [showTradeTokenModal, setShowTradeTokenModal] = useState(false);
 
+  const highestAPRBondableDuration = bondDurations[bondDurations?.length - 1];
+
+  const highestAPRDailyPeriodicRate =
+    highestAPRBondableDuration?.aggregateApr
+      .sub(highestAPRBondableDuration?.swapFeeApr)
+      .quo(new Dec(365)) // get daily periodic rate
+      .toDec() ?? new Dec(0);
+
+  /**
+   * In mainnet, highestAPRBondableDuration should be superfluid as the highest gauge index.
+   */
+  const isSuperfluidEnabled =
+    highestAPRBondableDuration?.userShares?.toDec().gt(new Dec(0)) &&
+    (Boolean(highestAPRBondableDuration?.superfluid?.delegated) ||
+      Boolean(highestAPRBondableDuration?.superfluid?.undelegating));
+
   // handle user actions
   const baseEventInfo = useMemo(
     () => ({
@@ -154,7 +170,13 @@ const Pool: FunctionComponent = observer(() => {
       isSuperfluidPool: superfluidPoolDetail?.isSuperfluid ?? false,
       isStableswapPool: pool?.type === "stable",
     }),
-    [poolId, poolName, poolWeight, superfluidPoolDetail?.isSuperfluid]
+    [
+      pool?.type,
+      poolId,
+      poolName,
+      poolWeight,
+      superfluidPoolDetail?.isSuperfluid,
+    ]
   );
   const onAddLiquidity = useCallback(
     (result: Promise<void>, config: ObservableAddLiquidityConfig) => {
@@ -184,7 +206,7 @@ const Pool: FunctionComponent = observer(() => {
         .then(() => logEvent([E.addLiquidityCompleted, poolInfo]))
         .finally(() => setShowAddLiquidityModal(false));
     },
-    [baseEventInfo, logEvent]
+    [baseEventInfo, isSuperfluidEnabled, logEvent]
   );
   const onRemoveLiquidity = useCallback(
     (result: Promise<void>, config: ObservableRemoveLiquidityConfig) => {
@@ -200,7 +222,7 @@ const Pool: FunctionComponent = observer(() => {
         .then(() => logEvent([E.removeLiquidityCompleted, removeLiqInfo]))
         .finally(() => setShowRemoveLiquidityModal(false));
     },
-    [baseEventInfo, logEvent]
+    [baseEventInfo, isSuperfluidEnabled, logEvent]
   );
   const onLockToken = useCallback(
     (duration: Duration, electSuperfluid?: boolean) => {
@@ -277,13 +299,13 @@ const Pool: FunctionComponent = observer(() => {
         .finally(() => setShowSuperfluidValidatorsModal(false));
     },
     [
-      poolId,
-      lockLPTokensConfig,
       baseEventInfo,
-      queryCosmos.queryValidators.getQueryStatus(Staking.BondStatus.Bonded)
-        .response,
+      poolId,
+      queryCosmos.queryValidators,
+      isSuperfluidEnabled,
       logEvent,
       superfluidDelegateToValidator,
+      lockLPTokensConfig,
     ]
   );
 
@@ -304,27 +326,11 @@ const Pool: FunctionComponent = observer(() => {
   const levelCta = poolBonding?.calculateBondLevel(bondDurations);
   const level2Disabled = !bondDurations.some((duration) => duration.bondable);
 
-  const highestAPRBondableDuration = bondDurations[bondDurations?.length - 1];
-
-  const highestAPRDailyPeriodicRate =
-    highestAPRBondableDuration?.aggregateApr
-      .sub(highestAPRBondableDuration?.swapFeeApr)
-      .quo(new Dec(365)) // get daily periodic rate
-      .toDec() ?? new Dec(0);
-
   const additionalRewardsByBonding = queryAccountPoolRewards
     .getUsdRewardsForPool(poolId)
     ?.day.mul(highestAPRDailyPeriodicRate)
     .maxDecimals(3)
     .inequalitySymbol(false);
-
-  /**
-   * In mainnet, highestAPRBondableDuration should be superfluid as the highest gauge index.
-   */
-  const isSuperfluidEnabled =
-    highestAPRBondableDuration?.userShares?.toDec().gt(new Dec(0)) &&
-    (Boolean(highestAPRBondableDuration?.superfluid?.delegated) ||
-      Boolean(highestAPRBondableDuration?.superfluid?.undelegating));
 
   return (
     <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">

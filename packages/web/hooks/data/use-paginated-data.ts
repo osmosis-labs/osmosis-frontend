@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 /**
  * Generic hook to allow a user to paginate through an array of data.
@@ -26,11 +26,16 @@ export function usePaginatedData<TData>(
     }
   }, [maxPages, page]);
 
+  const slicedData = useMemo(
+    () => data.slice(curPageStart, curPageStart + pageSize),
+    [data, curPageStart, pageSize]
+  );
+
   return [
     Math.min(page + 1, maxPages),
     (page: number) => setPage(page - 1),
     Math.min(1, maxPages),
     maxPages,
-    data.slice(curPageStart, curPageStart + pageSize),
+    slicedData,
   ];
 }

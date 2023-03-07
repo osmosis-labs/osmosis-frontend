@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+
 import { DataProcessor } from "./types";
 
 /**
@@ -16,10 +17,10 @@ export function useUserProcessedData<TData>(
   initialState: string = ""
 ): [string, (terms: string) => void, TData[]] {
   const [userInput, setUserInput] = useState(initialState);
+  const processedData = useMemo(
+    () => (userInput === "" ? data : processor.process(userInput)),
+    [userInput, data, processor]
+  );
 
-  return [
-    userInput,
-    setUserInput,
-    userInput === "" ? data : processor.process(userInput),
-  ];
+  return [userInput, setUserInput, processedData];
 }
