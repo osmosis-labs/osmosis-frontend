@@ -115,8 +115,6 @@ export class RootStore {
       };
     })();
 
-    this.accountStore = new AccountStore();
-
     this.queriesStore = new QueriesStore(
       makeIndexedKVStore("store_web_queries_v12"),
       this.chainStore,
@@ -124,6 +122,8 @@ export class RootStore {
       CosmwasmQueries.use(),
       OsmosisQueries.use(this.chainStore.osmosis.chainId, IS_TESTNET)
     );
+
+    this.accountStore = new AccountStore(this.queriesStore);
 
     this.oldAccountStore = new OldAccountStore(
       eventListener,
