@@ -61,8 +61,6 @@ export function useIbcTransfer({
 
   const account = accountStore.getWallet(chainId);
   const counterpartyAccount = accountStore.getWallet(counterpartyChainId);
-  const counterpartyWalletRepo =
-    accountStore.getWalletRepo(counterpartyChainId);
 
   const osmosisAddress = account?.address ?? "";
   const counterpartyAddress = counterpartyAccount?.address ?? "";
