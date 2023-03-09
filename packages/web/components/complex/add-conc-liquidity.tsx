@@ -1,4 +1,11 @@
-import {FunctionComponent, ReactNode, useCallback, useEffect, useMemo, useState} from "react";
+import {
+  FunctionComponent,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { PricePretty, CoinPretty } from "@keplr-wallet/unit";
@@ -6,7 +13,7 @@ import {
   ObservableAddLiquidityConfig,
   ObservablePoolDetail,
   ObservableQueryPool,
-  ObservableSuperfluidPoolDetail
+  ObservableSuperfluidPoolDetail,
 } from "@osmosis-labs/stores";
 import { useStore } from "../../stores";
 import { InputBox } from "../input";
@@ -23,18 +30,19 @@ import {
   buildChartTheme,
   Annotation,
   AnnotationLineSubject,
-  AnnotationConnector, AnnotationCircleSubject,
-} from '@visx/xychart';
+  AnnotationConnector,
+  AnnotationCircleSubject,
+} from "@visx/xychart";
 
-import {ParentSize} from "@visx/responsive";
-import {curveNatural} from "@visx/curve";
-import {scaleLinear} from "@visx/scale";
-import {debounce} from "debounce";
-import {PoolAssetsIcon} from "../assets";
+import { ParentSize } from "@visx/responsive";
+import { curveNatural } from "@visx/curve";
+import { scaleLinear } from "@visx/scale";
+import { debounce } from "debounce";
+import { PoolAssetsIcon } from "../assets";
 import Image from "next/image";
-import {useRouter} from "next/router";
-import {Button} from "../buttons";
-import {theme} from "../../tailwind.config";
+import { useRouter } from "next/router";
+import { Button } from "../buttons";
+import { theme } from "../../tailwind.config";
 
 enum AddConcLiquidityModalView {
   Overview,
@@ -57,14 +65,14 @@ function getRangeFromData(data: number[]) {
       min: 0,
       max: 0,
       last: 0,
-    }
+    };
   }
   const max = Math.max(...data);
   const min = Math.min(...data);
   const last = data[data.length - 1];
   const diff = Math.max(
     Math.max(Math.abs(last - max), Math.abs(last - min)),
-    last * 0.25,
+    last * 0.25
   );
 
   return {
@@ -94,15 +102,12 @@ export const AddConcLiquidity: FunctionComponent<
     getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
   } & CustomClasses
 > = observer(
-  ({
-     className,
-     addLiquidityConfig,
-     actionButton,
-     getFiatValue,
-  }) => {
+  ({ className, addLiquidityConfig, actionButton, getFiatValue }) => {
     const router = useRouter();
     const { id: poolId } = router.query as { id: string };
-    const [view, setView] = useState<AddConcLiquidityModalView>(AddConcLiquidityModalView.Overview);
+    const [view, setView] = useState<AddConcLiquidityModalView>(
+      AddConcLiquidityModalView.Overview
+    );
     const { derivedDataStore } = useStore();
 
     // initialize pool data stores once root pool store is loaded
@@ -110,9 +115,9 @@ export const AddConcLiquidity: FunctionComponent<
       typeof poolId === "string"
         ? derivedDataStore.getForPool(poolId as string)
         : {
-          poolDetail: undefined,
-          superfluidPoolDetail: undefined,
-        };
+            poolDetail: undefined,
+            superfluidPoolDetail: undefined,
+          };
     const pool = poolDetail?.pool;
 
     // user analytics
@@ -141,7 +146,7 @@ export const AddConcLiquidity: FunctionComponent<
                   superfluidPoolDetail={superfluidPoolDetail}
                   setView={setView}
                 />
-              )
+              );
             case AddConcLiquidityModalView.AddConcLiq:
               return (
                 <AddConcLiqView
@@ -169,115 +174,114 @@ const Overview: FunctionComponent<
     superfluidPoolDetail?: ObservableSuperfluidPoolDetail;
     setView: (view: AddConcLiquidityModalView) => void;
   } & CustomClasses
-> = observer(({ setView, pool, poolName, superfluidPoolDetail, poolDetail }) => {
-  const {
-    priceStore,
-    queriesExternalStore,
-  } = useStore();
-  const router = useRouter();
-  const { id: poolId } = router.query as { id: string };
-  const t = useTranslation();
-  const [selected, selectView] = useState<AddConcLiquidityModalView>(AddConcLiquidityModalView.AddFullRange);
-  const queryGammPoolFeeMetrics = queriesExternalStore.queryGammPoolFeeMetrics;
+> = observer(
+  ({ setView, pool, poolName, superfluidPoolDetail, poolDetail }) => {
+    const { priceStore, queriesExternalStore } = useStore();
+    const router = useRouter();
+    const { id: poolId } = router.query as { id: string };
+    const t = useTranslation();
+    const [selected, selectView] = useState<AddConcLiquidityModalView>(
+      AddConcLiquidityModalView.AddFullRange
+    );
+    const queryGammPoolFeeMetrics =
+      queriesExternalStore.queryGammPoolFeeMetrics;
 
-  return (
-    <>
-      <div className="flex flex-row align-center relative">
-        <div className="h-full flex items-center absolute left-0 text-sm" />
-        <div className="flex-1 text-center text-lg">
-          {t('addLiquidity.title')}
-        </div>
-        <div className="h-full flex items-center absolute right-0 text-xs font-subtitle2 text-osmoverse-200" />
-      </div>
-      <div className="flex flex-row bg-osmoverse-900/[.3] px-8 py-4 rounded-[28px]">
-        <div className="flex flex-1 flex-col gap-2">
-          <div className="flex flex-row flex-nowrap items-center gap-2">
-            {pool && (
-              <PoolAssetsIcon
-                assets={pool.poolAssets.map((asset: {amount: CoinPretty}) => ({
-                  coinDenom: asset.amount.denom,
-                  coinImageUrl: asset.amount.currency.coinImageUrl,
-                }))}
-                size="sm"
-              />
-            )}
-            <h5 className="max-w-xs truncate">{poolName}</h5>
+    return (
+      <>
+        <div className="align-center relative flex flex-row">
+          <div className="absolute left-0 flex h-full items-center text-sm" />
+          <div className="flex-1 text-center text-lg">
+            {t("addLiquidity.title")}
           </div>
-          {superfluidPoolDetail?.isSuperfluid && (
-            <span className="body2 text-superfluid-gradient">
-              {t("pool.superfluidEnabled")}
-            </span>
-          )}
-          {pool?.type === "stable" && (
-            <div className="body2 text-gradient-positive flex items-center gap-1.5">
-              <Image
-                alt=""
-                src="/icons/stableswap-pool.svg"
-                height={24}
-                width={24}
-              />
-              <span>{t("pool.stableswapEnabled")}</span>
-            </div>
-          )}
+          <div className="absolute right-0 flex h-full items-center text-xs font-subtitle2 text-osmoverse-200" />
         </div>
-        <div className="flex items-center gap-10">
-          <div className="space-y-2">
+        <div className="flex flex-row rounded-[28px] bg-osmoverse-900/[.3] px-8 py-4">
+          <div className="flex flex-1 flex-col gap-2">
+            <div className="flex flex-row flex-nowrap items-center gap-2">
+              {pool && (
+                <PoolAssetsIcon
+                  assets={pool.poolAssets.map(
+                    (asset: { amount: CoinPretty }) => ({
+                      coinDenom: asset.amount.denom,
+                      coinImageUrl: asset.amount.currency.coinImageUrl,
+                    })
+                  )}
+                  size="sm"
+                />
+              )}
+              <h5 className="max-w-xs truncate">{poolName}</h5>
+            </div>
+            {superfluidPoolDetail?.isSuperfluid && (
+              <span className="body2 text-superfluid-gradient">
+                {t("pool.superfluidEnabled")}
+              </span>
+            )}
+            {pool?.type === "stable" && (
+              <div className="body2 text-gradient-positive flex items-center gap-1.5">
+                <Image
+                  alt=""
+                  src="/icons/stableswap-pool.svg"
+                  height={24}
+                  width={24}
+                />
+                <span>{t("pool.stableswapEnabled")}</span>
+              </div>
+            )}
+          </div>
+          <div className="flex items-center gap-10">
+            <div className="space-y-2">
               <span className="body2 gap-2 text-osmoverse-400">
                 {t("pool.24hrTradingVolume")}
               </span>
-            <h5 className="text-osmoverse-100">
-              {queryGammPoolFeeMetrics
-                .getPoolFeesMetrics(poolId, priceStore)
-                .volume24h.toString()}
-            </h5>
-          </div>
-          <div className="space-y-2">
+              <h5 className="text-osmoverse-100">
+                {queryGammPoolFeeMetrics
+                  .getPoolFeesMetrics(poolId, priceStore)
+                  .volume24h.toString()}
+              </h5>
+            </div>
+            <div className="space-y-2">
               <span className="body2 gap-2 text-osmoverse-400">
                 {t("pool.liquidity")}
               </span>
-            <h5 className="text-osmoverse-100">
-              {poolDetail?.totalValueLocked.toString()}
-            </h5>
-          </div>
-          <div className="space-y-2">
+              <h5 className="text-osmoverse-100">
+                {poolDetail?.totalValueLocked.toString()}
+              </h5>
+            </div>
+            <div className="space-y-2">
               <span className="body2 gap-2 text-osmoverse-400">
                 {t("pool.swapFee")}
               </span>
-            <h5 className="text-osmoverse-100">
-              {pool?.swapFee.toString()}
-            </h5>
+              <h5 className="text-osmoverse-100">{pool?.swapFee.toString()}</h5>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="flex flex-col">
-        <div className="flex flex-row justify-center gap-8">
-          <StrategySelector
-            title="Full range"
-            description="If you don’t plan on rebalancing your positions frequently, this is the best way to add liquidity."
-            selected={selected === AddConcLiquidityModalView.AddFullRange}
-            onClick={() => selectView(AddConcLiquidityModalView.AddFullRange)}
-            imgSrc="/images/fullrange_mock_range.png"
-          />
-          <StrategySelector
-            title="Concentrated"
-            description="If you don’t plan on rebalancing your positions frequently, this is the best way to add liquidity."
-            selected={selected === AddConcLiquidityModalView.AddConcLiq}
-            onClick={() => selectView(AddConcLiquidityModalView.AddConcLiq)}
-            imgSrc="/images/conliq_mock_range.png"
-          />
+        <div className="flex flex-col">
+          <div className="flex flex-row justify-center gap-8">
+            <StrategySelector
+              title="Full range"
+              description="If you don’t plan on rebalancing your positions frequently, this is the best way to add liquidity."
+              selected={selected === AddConcLiquidityModalView.AddFullRange}
+              onClick={() => selectView(AddConcLiquidityModalView.AddFullRange)}
+              imgSrc="/images/fullrange_mock_range.png"
+            />
+            <StrategySelector
+              title="Concentrated"
+              description="If you don’t plan on rebalancing your positions frequently, this is the best way to add liquidity."
+              selected={selected === AddConcLiquidityModalView.AddConcLiq}
+              onClick={() => selectView(AddConcLiquidityModalView.AddConcLiq)}
+              imgSrc="/images/conliq_mock_range.png"
+            />
+          </div>
         </div>
-      </div>
-      <div className="flex w-full items-center justify-center">
-        <Button
-          className="w-[25rem]"
-          onClick={() => setView(selected)}
-        >
-          Next
-        </Button>
-      </div>
-    </>
-  )
-});
+        <div className="flex w-full items-center justify-center">
+          <Button className="w-[25rem]" onClick={() => setView(selected)}>
+            Next
+          </Button>
+        </div>
+      </>
+    );
+  }
+);
 
 function StrategySelector(props: {
   title: string;
@@ -286,23 +290,24 @@ function StrategySelector(props: {
   onClick: () => void;
   imgSrc: string;
 }) {
-  const {selected, onClick, title, description, imgSrc} = props;
+  const { selected, onClick, title, description, imgSrc } = props;
   return (
     <div
-      className={classNames("flex flex-col items-center justify-center gap-4 py-6 px-8 border-osmoverse-700 border-2 rounded-[20px] hover:bg-osmoverse-700 hover:border-osmoverse-100 cursor-pointer", {
-        "bg-osmoverse-700 border-osmoverse-100": selected,
-      })}
+      className={classNames(
+        "flex cursor-pointer flex-col items-center justify-center gap-4 rounded-[20px] border-2 border-osmoverse-700 py-6 px-8 hover:border-osmoverse-100 hover:bg-osmoverse-700",
+        {
+          "border-osmoverse-100 bg-osmoverse-700": selected,
+        }
+      )}
       onClick={onClick}
     >
-      <div className="font-h6 text-h6 mb-16">{title}</div>
-      <Image src={imgSrc} width={325} height={101} />
-      <div
-        className="font-body2 text-body2 text-osmoverse-200 text-center"
-      >
+      <div className="mb-16 text-h6 font-h6">{title}</div>
+      <Image alt="" src={imgSrc} width={325} height={101} />
+      <div className="text-center text-body2 font-body2 text-osmoverse-200">
         {description}
       </div>
     </div>
-  )
+  );
 }
 
 const AddConcLiqView: FunctionComponent<
@@ -328,52 +333,60 @@ const AddConcLiqView: FunctionComponent<
     // const {
     //   priceStore,
     // } = useStore();
-    const [data, setData] = useState<{price: number; time: number}[]>([]);
+    const [data, setData] = useState<{ price: number; time: number }[]>([]);
     const [baseDeposit, setBaseDeposit] = useState(0);
     const [quoteDeposit, setQuoteDeposit] = useState(0);
 
     const yRange = getRangeFromData(data.map(accessors.yAccessor));
 
-    const [inputMin, setInputMin] = useState('0');
-    const [inputMax, setInputMax] = useState('0');
+    const [inputMin, setInputMin] = useState("0");
+    const [inputMax, setInputMax] = useState("0");
     const [min, setMin] = useState(0);
     const [max, setMax] = useState(0);
     const baseDenom = pool?.poolAssets[0].amount.denom;
     const quoteDenom = pool?.poolAssets[1].amount.denom;
-    const [range, setRange] = useState<'7d'|'1mo'|'1y'>('7d')
+    const [range, setRange] = useState<"7d" | "1mo" | "1y">("7d");
     const router = useRouter();
     const { id: poolId } = router.query as { id: string };
     const [zoom, setZoom] = useState(1);
 
-    const updateMin = useCallback((val: string|number, shouldUpdateRange = false) => {
-      const out = Math.min(Math.max(Number(val), 0), Number(inputMax));
-      if (shouldUpdateRange) setMin(out);
-      if (Number(val) !== out) {
-        setInputMin('' + out);
-      } else {
-        setInputMin('' + val);
-      }
-    }, [inputMin]);
+    const updateMin = useCallback(
+      (val: string | number, shouldUpdateRange = false) => {
+        const out = Math.min(Math.max(Number(val), 0), Number(inputMax));
+        if (shouldUpdateRange) setMin(out);
+        if (Number(val) !== out) {
+          setInputMin("" + out);
+        } else {
+          setInputMin("" + val);
+        }
+      },
+      [inputMin]
+    );
 
-    const updateMax = useCallback((val: string|number, shouldUpdateRange = false) => {
-      const out = Math.max(Number(val), Number(inputMin));
-      if (shouldUpdateRange) setMax(out);
-      if (Number(val) !== out) {
-        setInputMax('' + out);
-      } else {
-        setInputMax('' + val);
-      }
-    }, [inputMin]);
+    const updateMax = useCallback(
+      (val: string | number, shouldUpdateRange = false) => {
+        const out = Math.max(Number(val), Number(inputMin));
+        if (shouldUpdateRange) setMax(out);
+        if (Number(val) !== out) {
+          setInputMax("" + out);
+        } else {
+          setInputMax("" + val);
+        }
+      },
+      [inputMin]
+    );
 
-    const updateData = useCallback((data: {price: number; time: number}[]) => {
-      const last = data[data.length - 1];
-      setData(data);
-      setInputMin('' + (last.price * .9));
-      setMin(last.price * .9);
-      setInputMax('' + (last.price * 1.15));
-      setMax(last.price * 1.15);
-    }, []);
-
+    const updateData = useCallback(
+      (data: { price: number; time: number }[]) => {
+        const last = data[data.length - 1];
+        setData(data);
+        setInputMin("" + last.price * 0.9);
+        setMin(last.price * 0.9);
+        setInputMax("" + last.price * 1.15);
+        setMax(last.price * 1.15);
+      },
+      []
+    );
 
     useEffect(() => {
       (async () => {
@@ -381,166 +394,180 @@ const AddConcLiqView: FunctionComponent<
           `https://api-osmosis.imperator.co/pairs/v1/historical/${poolId}/chart?asset_in=${baseDenom}&asset_out=${quoteDenom}&range=${range}&asset_type=symbol`
         );
         const json = await resp.json();
-        const data = json.map(({ time, close }: {time: number; close: number}) => ({
-          time: time * 1000,
-          price: close,
-        }));
+        const data = json.map(
+          ({ time, close }: { time: number; close: number }) => ({
+            time: time * 1000,
+            price: close,
+          })
+        );
         updateData(data);
       })();
     }, [range, baseDenom, quoteDenom, updateData, poolId]);
 
     return (
       <>
-        <div className="flex flex-row align-center relative">
+        <div className="align-center relative flex flex-row">
           <div
-            className="h-full flex items-center absolute left-0 text-sm cursor-pointer"
+            className="absolute left-0 flex h-full cursor-pointer items-center text-sm"
             onClick={() => setView(AddConcLiquidityModalView.Overview)}
           >
             {"<- Back"}
           </div>
           <div className="flex-1 text-center text-lg">
-            {t('addLiquidity.title')}
+            {t("addLiquidity.title")}
           </div>
-          <div className="h-full flex items-center absolute right-0 text-xs font-subtitle2 text-osmoverse-200">
+          <div className="absolute right-0 flex h-full items-center text-xs font-subtitle2 text-osmoverse-200">
             {`Prices shown in ${baseDenom} per ${quoteDenom}`}
           </div>
         </div>
         <div className="flex flex-col">
           <div className="px-2 py-1 text-sm">Price Range</div>
           <div className="flex flex-row">
-            <div className="flex flex-col flex-1 flex-shrink-1 w-0 bg-osmoverse-700 h-[20.1875rem]">
+            <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col bg-osmoverse-700">
               <div className="flex flex-row">
-                <div className="flex-1 flex flex-row pt-4 pl-4">
+                <div className="flex flex-1 flex-row pt-4 pl-4">
                   <h4 className="row-span-2 pr-1 font-caption">
                     {!!data.length && data[data.length - 1].price.toFixed(2)}
                   </h4>
                   <div className="flex flex-col justify-center font-caption">
-                    <div className="text-caption text-osmoverse-300">current price</div>
+                    <div className="text-caption text-osmoverse-300">
+                      current price
+                    </div>
                     <div className="text-caption text-osmoverse-300">{`${baseDenom} per ${quoteDenom}`}</div>
                   </div>
                 </div>
-                <div className="flex-1 flex flex-row justify-end pt-2 pr-2 gap-1">
+                <div className="flex flex-1 flex-row justify-end gap-1 pt-2 pr-2">
                   <RangeSelector
                     label="7 day"
-                    onClick={() => setRange('7d')}
-                    selected={range === '7d'}
+                    onClick={() => setRange("7d")}
+                    selected={range === "7d"}
                   />
                   <RangeSelector
                     label="30 days"
-                    onClick={() => setRange('1mo')}
-                    selected={range === '1mo'}
+                    onClick={() => setRange("1mo")}
+                    selected={range === "1mo"}
                   />
                   <RangeSelector
                     label="1 year"
-                    onClick={() => setRange('1y')}
-                    selected={range === '1y'}
+                    onClick={() => setRange("1y")}
+                    selected={range === "1y"}
                   />
                 </div>
               </div>
-              <LineChart
-                min={min}
-                max={max}
-                data={data}
-                zoom={zoom}
-              />
+              <LineChart min={min} max={max} data={data} zoom={zoom} />
             </div>
-            <div className="flex flex-row flex-1 flex-shrink-1 w-0 bg-osmoverse-700 h-[20.1875rem]">
+            <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-row bg-osmoverse-700">
               <div className="flex flex-1 flex-col">
-                <div className="flex flex-row justify-end mt-6 h-6 gap-1 mr-6">
-                  <SelectorWrapper
-                    selected={false}
-                    onClick={() => setZoom(1)}
-                  >
-                    <Image src="/icons/refresh-ccw.svg" width={16} height={16} />
+                <div className="mt-6 mr-6 flex h-6 flex-row justify-end gap-1">
+                  <SelectorWrapper selected={false} onClick={() => setZoom(1)}>
+                    <Image
+                      alt="refresh"
+                      src="/icons/refresh-ccw.svg"
+                      width={16}
+                      height={16}
+                    />
                   </SelectorWrapper>
                   <SelectorWrapper
                     selected={false}
-                    onClick={() => setZoom(Math.max(1, zoom - .2))}
+                    onClick={() => setZoom(Math.max(1, zoom - 0.2))}
                   >
-                    <Image src="/icons/zoom-in.svg" width={16} height={16} />
+                    <Image
+                      alt="zoom in"
+                      src="/icons/zoom-in.svg"
+                      width={16}
+                      height={16}
+                    />
                   </SelectorWrapper>
                   <SelectorWrapper
                     selected={false}
-                    onClick={() => setZoom(zoom + .2)}
+                    onClick={() => setZoom(zoom + 0.2)}
                   >
-                    <Image src="/icons/zoom-out.svg" width={16} height={16} />
+                    <Image
+                      alt="zoom out"
+                      src="/icons/zoom-out.svg"
+                      width={16}
+                      height={16}
+                    />
                   </SelectorWrapper>
                 </div>
                 <BarChart
                   min={min}
                   max={max}
-                  onMoveMax={debounce(val => updateMax(val), 100)}
-                  onMoveMin={debounce(val => updateMin(val), 100)}
-                  onSubmitMin={val => updateMin(val, true)}
-                  onSubmitMax={val => updateMax(val, true)}
+                  onMoveMax={debounce((val) => updateMax(val), 100)}
+                  onMoveMin={debounce((val) => updateMin(val), 100)}
+                  onSubmitMin={(val) => updateMin(val, true)}
+                  onSubmitMax={(val) => updateMax(val, true)}
                   data={data}
                   zoom={zoom}
                 />
               </div>
-              <div className="flex flex-col justify-center items-center pr-8 gap-4">
+              <div className="flex flex-col items-center justify-center gap-4 pr-8">
                 <PriceInputBox
                   currentValue={inputMax}
                   label="high"
-                  onChange={val => updateMax(val, true)}
+                  onChange={(val) => updateMax(val, true)}
                 />
                 <PriceInputBox
                   currentValue={inputMin}
                   label="low"
-                  onChange={val => updateMin(val, true)}
+                  onChange={(val) => updateMin(val, true)}
                 />
               </div>
             </div>
           </div>
         </div>
         <div className="flex flex-row">
-          <div className="flex flex-col max-w-[15.8125rem] px-4">
+          <div className="flex max-w-[15.8125rem] flex-col px-4">
             <div className="text-subtitle1">Select volatility range</div>
             <div className="text-body2 text-osmoverse-200">
-              Tight ranges earn more fees per dollar, but earn no fees when price is out of range.
+              Tight ranges earn more fees per dollar, but earn no fees when
+              price is out of range.
             </div>
           </div>
-          <div className="flex-1 flex flex-row justify-end gap-4">
+          <div className="flex flex-1 flex-row justify-end gap-4">
             <PresetVolatilityCard
               src="/images/small-vial.svg"
               upper={15}
               lower={-10}
-              selected={max === yRange.last * 1.15 && min === yRange.last * .9}
+              selected={max === yRange.last * 1.15 && min === yRange.last * 0.9}
               onClick={() => {
                 setMax(yRange.last * 1.15);
-                setInputMax('' + yRange.last * 1.15);
-                setMin(yRange.last * .9);
-                setInputMin('' + yRange.last * .9);
+                setInputMax("" + yRange.last * 1.15);
+                setMin(yRange.last * 0.9);
+                setInputMin("" + yRange.last * 0.9);
               }}
             />
             <PresetVolatilityCard
               src="/images/medium-vial.svg"
               upper={25}
               lower={-25}
-              selected={max === yRange.last * 1.25 && min === yRange.last * .75}
+              selected={
+                max === yRange.last * 1.25 && min === yRange.last * 0.75
+              }
               onClick={() => {
                 setMax(yRange.last * 1.25);
-                setInputMax('' + yRange.last * 1.25)
-                setMin(yRange.last * .75);
-                setInputMin('' + yRange.last * .75);
+                setInputMax("" + yRange.last * 1.25);
+                setMin(yRange.last * 0.75);
+                setInputMin("" + yRange.last * 0.75);
               }}
             />
             <PresetVolatilityCard
               src="/images/large-vial.svg"
               upper={50}
               lower={-50}
-              selected={max === yRange.last * 1.5 && min === yRange.last * .5}
+              selected={max === yRange.last * 1.5 && min === yRange.last * 0.5}
               onClick={() => {
                 setMax(yRange.last * 1.5);
-                setInputMax('' + yRange.last * 1.5)
-                setMin(yRange.last * .5);
-                setInputMin('' + yRange.last * .5);
+                setInputMax("" + yRange.last * 1.5);
+                setMin(yRange.last * 0.5);
+                setInputMin("" + yRange.last * 0.5);
               }}
             />
           </div>
         </div>
         <div className="flex flex-col">
           <div className="px-2 py-1 text-sm">Amount to deposit</div>
-          <div className="flex flex-row justify-center bg-osmoverse-700 rounded-[20px] p-[1.25rem]">
+          <div className="flex flex-row justify-center rounded-[20px] bg-osmoverse-700 p-[1.25rem]">
             <DepositAmountGroup
               getFiatValue={getFiatValue}
               coin={pool?.poolAssets[0].amount}
@@ -548,7 +575,13 @@ const AddConcLiqView: FunctionComponent<
               currentValue={baseDeposit}
             />
             <div className="mx-8 my-4">
-              <Image className="m-4" src="/icons/link-2.svg" width={35} height={35} />
+              <Image
+                alt=""
+                className="m-4"
+                src="/icons/link-2.svg"
+                width={35}
+                height={35}
+              />
             </div>
             <DepositAmountGroup
               getFiatValue={getFiatValue}
@@ -572,16 +605,16 @@ function SelectorWrapper(props: {
   return (
     <div
       className={classNames(
-        "flex flex-row items-center justify-center bg-osmoverse-800 text-xs h-6 px-2 rounded-lg hover:bg-osmoverse-900 cursor-pointer",
+        "flex h-6 cursor-pointer flex-row items-center justify-center rounded-lg bg-osmoverse-800 px-2 text-xs hover:bg-osmoverse-900",
         {
-          '!bg-osmoverse-900': props.selected,
+          "!bg-osmoverse-900": props.selected,
         }
       )}
       onClick={props.onClick}
     >
       {props.children}
     </div>
-  )
+  );
 }
 
 function RangeSelector(props: {
@@ -590,10 +623,7 @@ function RangeSelector(props: {
   selected: boolean;
 }) {
   return (
-    <SelectorWrapper
-      selected={props.selected}
-      onClick={props.onClick}
-    >
+    <SelectorWrapper selected={props.selected} onClick={props.onClick}>
       {props.label}
     </SelectorWrapper>
   );
@@ -604,64 +634,63 @@ const DepositAmountGroup: FunctionComponent<{
   coin?: CoinPretty;
   onInput: (amount: number) => void;
   currentValue: number;
-}> = observer(({
+}> = observer(
+  ({
     coin,
     onInput,
     currentValue,
     // getFiatValue,
   }) => {
+    const { priceStore, assetsStore } = useStore();
 
-  const {
-    priceStore,
-    assetsStore
-  } = useStore();
+    const { nativeBalances, ibcBalances } = assetsStore;
 
-  const { nativeBalances, ibcBalances } = assetsStore;
+    const fiatPer = coin?.currency.coinGeckoId
+      ? priceStore.getPrice(coin.currency.coinGeckoId, undefined)
+      : 0;
 
-  const fiatPer = coin?.currency.coinGeckoId
-    ? priceStore.getPrice(coin.currency.coinGeckoId, undefined)
-    : 0;
+    const [walletBalance] = nativeBalances
+      .concat(ibcBalances)
+      .filter((balance) => balance.balance.denom === coin?.denom);
 
-  const [walletBalance] = nativeBalances
-    .concat(ibcBalances)
-    .filter(balance => balance.balance.denom === coin?.denom);
-
-  return (
-    <div className="flex flex-row flex-shrink-0 flex-0 items-center">
-      <div className="flex flex-row items-center">
-        { coin?.currency.coinImageUrl && (
-          <Image
-            src={coin?.currency.coinImageUrl}
-            height={58}
-            width={58}
-          />
-        )}
-        <div className="flex flex-col ml-[.75rem] mr-[2.75rem]">
-          <h6>{coin?.denom.toUpperCase()}</h6>
-          <div className="text-osmoverse-200">50%</div>
-        </div>
-        <div>
-          <div className="text-caption text-wosmongton-300 text-right">
-            {walletBalance?.balance.toString()}
-          </div>
-          <div className="flex flex-col items-end justify-center w-[158px] h-16 bg-osmoverse-800 rounded-[12px]">
-            <InputBox
-              className="bg-transparent border-0 text-h5"
-              inputClassName="!leading-4"
-              type="number"
-              currentValue={'' + currentValue}
-              onInput={(value) => onInput(Number(value))}
-              rightEntry
+    return (
+      <div className="flex-0 flex flex-shrink-0 flex-row items-center">
+        <div className="flex flex-row items-center">
+          {coin?.currency.coinImageUrl && (
+            <Image
+              alt=""
+              src={coin?.currency.coinImageUrl}
+              height={58}
+              width={58}
             />
-            <div className="text-osmoverse-400 text-caption pr-3">
-              { fiatPer && `~$${(fiatPer * currentValue).toFixed(2)}`}
+          )}
+          <div className="ml-[.75rem] mr-[2.75rem] flex flex-col">
+            <h6>{coin?.denom.toUpperCase()}</h6>
+            <div className="text-osmoverse-200">50%</div>
+          </div>
+          <div>
+            <div className="text-right text-caption text-wosmongton-300">
+              {walletBalance?.balance.toString()}
+            </div>
+            <div className="flex h-16 w-[158px] flex-col items-end justify-center rounded-[12px] bg-osmoverse-800">
+              <InputBox
+                className="border-0 bg-transparent text-h5"
+                inputClassName="!leading-4"
+                type="number"
+                currentValue={"" + currentValue}
+                onInput={(value) => onInput(Number(value))}
+                rightEntry
+              />
+              <div className="pr-3 text-caption text-osmoverse-400">
+                {fiatPer && `~$${(fiatPer * currentValue).toFixed(2)}`}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  )
-});
+    );
+  }
+);
 
 function PresetVolatilityCard(props: {
   src: string;
@@ -675,93 +704,101 @@ function PresetVolatilityCard(props: {
   return (
     <div
       className={classNames(
-        "flex flex-row w-[10.625rem] h-[5.625rem] cursor-pointer",
-        "bg-osmoverse-700 rounded-[1.125rem] overflow-hidden border-[1.5px]",
+        "flex h-[5.625rem] w-[10.625rem] cursor-pointer flex-row",
+        "overflow-hidden rounded-[1.125rem] border-[1.5px] bg-osmoverse-700",
         "border-transparent hover:border-wosmongton-200",
         {
           "border-osmoverse-200": props.selected,
-        },
+        }
       )}
       onClick={props.onClick}
     >
-      <div className="flex flex-row items-end justify-end w-full">
-        <div className="flex flex-row items-end justify-center items-center flex-shrink-1 flex-1 h-full">
+      <div className="flex w-full flex-row items-end justify-end">
+        <div className="flex-shrink-1 flex h-full flex-1 flex-row items-end items-center justify-center">
           <Image
+            alt=""
             className="flex-0 ml-2"
             src={props.src}
             width={props.width || 64}
             height={props.height || 64}
           />
         </div>
-        <div className="flex flex-col flex-1 h-full justify-center">
+        <div className="flex h-full flex-1 flex-col justify-center">
           <div className="flex flex-row items-center">
             <Image
+              alt=""
               src="/icons/green-up-tick.svg"
               width={16}
               height={16}
             />
-            <div className="flex-1 text-osmoverse-200 text-subtitle1 text-right pr-4">
+            <div className="flex-1 pr-4 text-right text-subtitle1 text-osmoverse-200">
               +{props.upper}%
             </div>
           </div>
           <div className="flex flex-row items-center">
             <Image
+              alt=""
               src="/icons/red-down-tick.svg"
               width={16}
               height={16}
             />
-            <div className="flex-1 text-osmoverse-200 text-subtitle1 text-right pr-4">
+            <div className="flex-1 pr-4 text-right text-subtitle1 text-osmoverse-200">
               {props.lower}%
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-function PriceInputBox(props: { label: string; currentValue: string; onChange: (val: string) => void}) {
+function PriceInputBox(props: {
+  label: string;
+  currentValue: string;
+  onChange: (val: string) => void;
+}) {
   return (
-    <div className="flex flex-col items-end bg-osmoverse-800 rounded-xl max-w-[9.75rem] px-2">
-      <span className="text-osmoverse-400 px-2 pt-2 text-caption">{props.label}</span>
+    <div className="flex max-w-[9.75rem] flex-col items-end rounded-xl bg-osmoverse-800 px-2">
+      <span className="px-2 pt-2 text-caption text-osmoverse-400">
+        {props.label}
+      </span>
       <InputBox
-        className="bg-transparent border-0 text-subtitle1 leading-tight"
+        className="border-0 bg-transparent text-subtitle1 leading-tight"
         type="number"
         rightEntry
         currentValue={props.currentValue}
-        onInput={val => props.onChange(val)}
+        onInput={(val) => props.onChange(val)}
       />
     </div>
-  )
+  );
 }
 
-function calculateRange(min: number, max: number, inputMin: number, inputMax: number, last: number) {
+function calculateRange(
+  min: number,
+  max: number,
+  inputMin: number,
+  inputMax: number,
+  last: number
+) {
   let outMin = min;
   let outMax = max;
 
-  const delta = Math.max(
-    last - inputMin,
-    inputMax - last,
-    last - min,
-    max - last,
-  ) * 1.5;
+  const delta =
+    Math.max(last - inputMin, inputMax - last, last - min, max - last) * 1.5;
 
-  if (inputMin < min * 1.2 || inputMax > max * .8) {
+  if (inputMin < min * 1.2 || inputMax > max * 0.8) {
     outMin = last - delta;
     outMax = last + delta;
   }
 
-  return [
-    Math.max(0, Math.min(outMin, outMax)),
-    Math.max(outMax, outMin)
-  ]
+  return [Math.max(0, Math.min(outMin, outMax)), Math.max(outMax, outMin)];
 }
 
 function LineChart(props: {
   min: number;
   max: number;
   zoom: number;
-  data: {price: number; time: number}[];
+  data: { price: number; time: number }[];
 }) {
   const yRange = getRangeFromData(props.data.map(accessors.yAccessor));
 
@@ -773,13 +810,17 @@ function LineChart(props: {
     yRange.max = yRange.max * props.zoom;
   }
 
-  const domain = calculateRange(yRange.min, yRange.max, props.min, props.max, yRange.last);
+  const domain = calculateRange(
+    yRange.min,
+    yRange.max,
+    props.min,
+    props.max,
+    yRange.last
+  );
 
   return (
-    <ParentSize
-      className="flex-1 flex-shrink-1 overflow-hidden"
-    >
-      {({height, width}) => {
+    <ParentSize className="flex-shrink-1 flex-1 overflow-hidden">
+      {({ height, width }) => {
         return (
           <XYChart
             key="line-chart"
@@ -787,26 +828,26 @@ function LineChart(props: {
             height={height}
             width={width}
             xScale={{
-              type: 'utc',
+              type: "utc",
               paddingInner: 0.5,
             }}
             yScale={{
-              type: 'linear',
+              type: "linear",
               domain: domain,
               zero: false,
             }}
             theme={buildChartTheme({
               backgroundColor: "transparent",
               colors: ["white"],
-              gridColor: theme.colors.osmoverse['600'],
-              gridColorDark: theme.colors.osmoverse['300'],
+              gridColor: theme.colors.osmoverse["600"],
+              gridColorDark: theme.colors.osmoverse["300"],
               svgLabelSmall: {
-                fill: theme.colors.osmoverse['300'],
+                fill: theme.colors.osmoverse["300"],
                 fontSize: 12,
                 fontWeight: 500,
               },
               svgLabelBig: {
-                fill: theme.colors.osmoverse['300'],
+                fill: theme.colors.osmoverse["300"],
                 fontSize: 12,
                 fontWeight: 500,
               },
@@ -822,15 +863,8 @@ function LineChart(props: {
               },
             })}
           >
-            <AnimatedAxis
-              orientation="bottom"
-              numTicks={4}
-            />
-            <AnimatedAxis
-              orientation="left"
-              numTicks={5}
-              strokeWidth={0}
-            />
+            <AnimatedAxis orientation="bottom" numTicks={4} />
+            <AnimatedAxis orientation="left" numTicks={5} strokeWidth={0} />
             <AnimatedGrid
               columns={false}
               // rows={false}
@@ -841,7 +875,7 @@ function LineChart(props: {
               data={props.data}
               curve={curveNatural}
               {...accessors}
-              stroke={theme.colors.wosmongton['200']}
+              stroke={theme.colors.wosmongton["200"]}
             />
             <Tooltip
               // showVerticalCrosshair
@@ -852,15 +886,15 @@ function LineChart(props: {
               showDatumGlyph
               glyphStyle={{
                 strokeWidth: 0,
-                fill: theme.colors.wosmongton['200'],
+                fill: theme.colors.wosmongton["200"],
               }}
               horizontalCrosshairStyle={{
                 strokeWidth: 1,
-                stroke: '#ffffff',
+                stroke: "#ffffff",
               }}
               verticalCrosshairStyle={{
                 strokeWidth: 1,
-                stroke: '#ffffff',
+                stroke: "#ffffff",
               }}
               renderTooltip={({ tooltipData }: any) => {
                 return (
@@ -869,13 +903,17 @@ function LineChart(props: {
                       {tooltipData?.nearestDatum?.datum?.price.toFixed(4)}
                     </div>
                     <div className="text-osmoverse-300">
-                      {`High: ${Math.max(...props.data.map(accessors.yAccessor)).toFixed(4)}`}
+                      {`High: ${Math.max(
+                        ...props.data.map(accessors.yAccessor)
+                      ).toFixed(4)}`}
                     </div>
                     <div className="text-osmoverse-300">
-                      {`Low: ${Math.min(...props.data.map(accessors.yAccessor)).toFixed(4)}`}
+                      {`Low: ${Math.min(
+                        ...props.data.map(accessors.yAccessor)
+                      ).toFixed(4)}`}
                     </div>
                   </div>
-                )
+                );
               }}
             />
           </XYChart>
@@ -893,11 +931,11 @@ function BarChart(props: {
   onMoveMin: (value: number) => void;
   onSubmitMax: (value: number) => void;
   onSubmitMin: (value: number) => void;
-  data: {price: number; time: number}[]
+  data: { price: number; time: number }[];
 }) {
   const yRange = getRangeFromData(props.data.map(accessors.yAccessor));
   const depthData = getDepthFromRange(yRange.min, yRange.max);
-  const xMax = Math.max(...depthData.map(d => d.depth)) * 1.2;
+  const xMax = Math.max(...depthData.map((d) => d.depth)) * 1.2;
 
   if (props.zoom > 1) {
     yRange.min = yRange.min / props.zoom;
@@ -912,12 +950,12 @@ function BarChart(props: {
     yRange.max,
     props.min,
     props.max,
-    yRange.last,
+    yRange.last
   );
 
   return (
-    <ParentSize className="flex-1 flex-shrink-1 overflow-hidden">
-      {({height, width}) => {
+    <ParentSize className="flex-shrink-1 flex-1 overflow-hidden">
+      {({ height, width }) => {
         const yScale = scaleLinear({
           range: [58 - 48, height - 36],
           domain: domain.slice().reverse(),
@@ -932,29 +970,26 @@ function BarChart(props: {
             height={height}
             width={width}
             xScale={{
-              type: 'linear',
-              domain: [
-                0,
-                xMax,
-              ],
+              type: "linear",
+              domain: [0, xMax],
             }}
             yScale={{
-              type: 'linear',
+              type: "linear",
               domain: domain,
               zero: false,
             }}
             theme={buildChartTheme({
               backgroundColor: "transparent",
               colors: ["white"],
-              gridColor: theme.colors.osmoverse['600'],
-              gridColorDark: theme.colors.osmoverse['300'],
+              gridColor: theme.colors.osmoverse["600"],
+              gridColorDark: theme.colors.osmoverse["300"],
               svgLabelSmall: {
-                fill: theme.colors.osmoverse['300'],
+                fill: theme.colors.osmoverse["300"],
                 fontSize: 12,
                 fontWeight: 500,
               },
               svgLabelBig: {
-                fill: theme.colors.osmoverse['300'],
+                fill: theme.colors.osmoverse["300"],
                 fontSize: 12,
                 fontWeight: 500,
               },
@@ -977,11 +1012,7 @@ function BarChart(props: {
             {/*  numTicks={5}*/}
             {/*  strokeWidth={0}*/}
             {/*/>*/}
-            <AnimatedGrid
-              columns={false}
-              rows={false}
-              numTicks={5}
-            />
+            <AnimatedGrid columns={false} rows={false} numTicks={5} />
             <AnimatedBarSeries
               dataKey="depth"
               data={depthData}
@@ -993,7 +1024,7 @@ function BarChart(props: {
               dataKey="depth"
               xAccessor={(d: any) => d.depth}
               yAccessor={(d: any) => d.tick}
-              datum={{tick: yRange.last, depth: xMax}}
+              datum={{ tick: yRange.last, depth: xMax }}
             >
               <AnnotationConnector />
               <AnnotationCircleSubject
@@ -1012,7 +1043,7 @@ function BarChart(props: {
               defaultValue={props.max}
               length={xMax}
               scale={yScale}
-              stroke={theme.colors.wosmongton['500']}
+              stroke={theme.colors.wosmongton["500"]}
               onMove={props.onMoveMax}
               onSubmit={props.onSubmitMax}
             />
@@ -1038,28 +1069,28 @@ function BarChart(props: {
 }
 
 function DragContainer(props: {
-  defaultValue?: number,
-  length?: number,
-  scale: any,
+  defaultValue?: number;
+  length?: number;
+  scale: any;
   onMove?: (value: number) => void;
   onSubmit?: (value: number) => void;
-  stroke: string,
+  stroke: string;
 }) {
   return (
     <Annotation
       dataKey="depth"
       xAccessor={(d: any) => d?.depth}
       yAccessor={(d: any) => d?.tick}
-      datum={{tick: props.defaultValue, depth: props.length}}
+      datum={{ tick: props.defaultValue, depth: props.length }}
       canEditSubject
       canEditLabel={false}
-      onDragMove={({ event, ...nextPos}) => {
+      onDragMove={({ event, ...nextPos }) => {
         if (props.onMove) {
           const val = props.scale.invert(nextPos.y);
           props.onMove(+Math.max(0, val));
         }
       }}
-      onDragEnd={({ event, ...nextPos}) => {
+      onDragEnd={({ event, ...nextPos }) => {
         if (props.onSubmit) {
           const val = props.scale.invert(nextPos.y);
           props.onSubmit(+Math.max(0, val));
@@ -1080,5 +1111,5 @@ function DragContainer(props: {
         strokeWidth={3}
       />
     </Annotation>
-  )
+  );
 }
