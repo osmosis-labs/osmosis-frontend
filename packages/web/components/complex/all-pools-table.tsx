@@ -4,6 +4,7 @@ import {
   createColumnHelper,
   getCoreRowModel,
   getSortedRowModel,
+  Row,
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
@@ -443,6 +444,75 @@ export const AllPoolsTable: FunctionComponent<{
     );
     const [mobileSortMenuIsOpen, setMobileSortMenuIsOpen] = useState(false);
 
+    const mobileTableRow = useCallback((row: Row<Pool>) => {
+      return (
+        <AssetCard
+          coinDenom={row.original[0].poolAssets
+            .map((asset) => asset.coinDenom)
+            .join("/")}
+          metrics={[
+            {
+              label: "TVL",
+              value: row.original[1].value.toString(),
+            },
+            {
+              label: "APR",
+              value: row.original[4].value!.toString(),
+            },
+          ]}
+          coinImageUrl={row.original[0].poolAssets}
+        />
+      );
+    }, []);
+    const onSelectFilter = useCallback(
+      (id: string) => {
+        if (id === poolFilter) {
+          router.replace(
+            {
+              query: router.query.incentive
+                ? { incentive: router.query.incentive }
+                : null,
+            },
+            undefined,
+            {
+              scroll: false,
+            }
+          );
+        } else {
+          router.push({ query: { ...router.query, pool: id } }, undefined, {
+            scroll: false,
+          });
+        }
+        handleFetchRemaining();
+      },
+      [handleFetchRemaining, poolFilter, router]
+    );
+    const onSelectIncentiveFilter = useCallback(
+      (id: string) => {
+        if (id === incentiveFilter) {
+          router.replace(
+            {
+              query: router.query.pool ? { pool: router.query.pool } : null,
+            },
+            undefined,
+            {
+              scroll: false,
+            }
+          );
+        } else {
+          router.push(
+            { query: { ...router.query, incentive: id } },
+            undefined,
+            {
+              scroll: false,
+            }
+          );
+        }
+        handleFetchRemaining();
+      },
+      [handleFetchRemaining, incentiveFilter, router]
+    );
+
     return (
       <>
         <div className="mt-5 flex flex-col gap-3">
@@ -473,42 +543,14 @@ export const AllPoolsTable: FunctionComponent<{
                         : t("components.pool.title")
                     }
                     selectedOptionLabel={PoolFilters[poolFilter]}
-                    options={useMemo(
-                      () =>
-                        Object.entries(PoolFilters).map(([id, display]) => ({
-                          id,
-                          display,
-                        })),
-                      []
+                    options={Object.entries(PoolFilters).map(
+                      ([id, display]) => ({
+                        id,
+                        display,
+                      })
                     )}
                     selectedOptionId={poolFilter}
-                    onSelect={useCallback(
-                      (id: string) => {
-                        if (id === poolFilter) {
-                          router.replace(
-                            {
-                              query: router.query.incentive
-                                ? { incentive: router.query.incentive }
-                                : null,
-                            },
-                            undefined,
-                            {
-                              scroll: false,
-                            }
-                          );
-                        } else {
-                          router.push(
-                            { query: { ...router.query, pool: id } },
-                            undefined,
-                            {
-                              scroll: false,
-                            }
-                          );
-                        }
-                        handleFetchRemaining();
-                      },
-                      [handleFetchRemaining, poolFilter, router]
-                    )}
+                    onSelect={onSelectFilter}
                   />
                 </div>
                 <div className="flex-1">
@@ -518,45 +560,15 @@ export const AllPoolsTable: FunctionComponent<{
                         ? t("components.incentive.mobileTitle")
                         : t("components.incentive.title")
                     }
-                    options={useMemo(
-                      () =>
-                        Object.entries(IncentiveFilters).map(
-                          ([id, display]) => ({
-                            id,
-                            display,
-                          })
-                        ),
-                      []
+                    options={Object.entries(IncentiveFilters).map(
+                      ([id, display]) => ({
+                        id,
+                        display,
+                      })
                     )}
                     selectedOptionLabel={IncentiveFilters[incentiveFilter]}
                     selectedOptionId={incentiveFilter}
-                    onSelect={useCallback(
-                      (id: string) => {
-                        if (id === incentiveFilter) {
-                          router.replace(
-                            {
-                              query: router.query.pool
-                                ? { pool: router.query.pool }
-                                : null,
-                            },
-                            undefined,
-                            {
-                              scroll: false,
-                            }
-                          );
-                        } else {
-                          router.push(
-                            { query: { ...router.query, incentive: id } },
-                            undefined,
-                            {
-                              scroll: false,
-                            }
-                          );
-                        }
-                        handleFetchRemaining();
-                      },
-                      [handleFetchRemaining, incentiveFilter, router]
-                    )}
+                    onSelect={onSelectIncentiveFilter}
                   />
                 </div>
               </div>
@@ -572,42 +584,12 @@ export const AllPoolsTable: FunctionComponent<{
                       : t("components.pool.title")
                   }
                   selectedOptionLabel={PoolFilters[poolFilter]}
-                  options={useMemo(
-                    () =>
-                      Object.entries(PoolFilters).map(([id, display]) => ({
-                        id,
-                        display,
-                      })),
-                    []
-                  )}
+                  options={Object.entries(PoolFilters).map(([id, display]) => ({
+                    id,
+                    display,
+                  }))}
                   selectedOptionId={poolFilter}
-                  onSelect={useCallback(
-                    (id: string) => {
-                      if (id === poolFilter) {
-                        router.replace(
-                          {
-                            query: router.query.incentive
-                              ? { incentive: router.query.incentive }
-                              : null,
-                          },
-                          undefined,
-                          {
-                            scroll: false,
-                          }
-                        );
-                      } else {
-                        router.push(
-                          { query: { ...router.query, pool: id } },
-                          undefined,
-                          {
-                            scroll: false,
-                          }
-                        );
-                      }
-                      handleFetchRemaining();
-                    },
-                    [handleFetchRemaining, poolFilter, router]
-                  )}
+                  onSelect={onSelectFilter}
                 />
                 <SelectMenu
                   label={
@@ -615,43 +597,15 @@ export const AllPoolsTable: FunctionComponent<{
                       ? t("components.incentive.mobileTitle")
                       : t("components.incentive.title")
                   }
-                  options={useMemo(
-                    () =>
-                      Object.entries(IncentiveFilters).map(([id, display]) => ({
-                        id,
-                        display,
-                      })),
-                    []
+                  options={Object.entries(IncentiveFilters).map(
+                    ([id, display]) => ({
+                      id,
+                      display,
+                    })
                   )}
                   selectedOptionLabel={IncentiveFilters[incentiveFilter]}
                   selectedOptionId={incentiveFilter}
-                  onSelect={useCallback(
-                    (id: string) => {
-                      if (id === incentiveFilter) {
-                        router.replace(
-                          {
-                            query: router.query.pool
-                              ? { pool: router.query.pool }
-                              : null,
-                          },
-                          undefined,
-                          {
-                            scroll: false,
-                          }
-                        );
-                      } else {
-                        router.push(
-                          { query: { ...router.query, incentive: id } },
-                          undefined,
-                          {
-                            scroll: false,
-                          }
-                        );
-                      }
-                      handleFetchRemaining();
-                    },
-                    [handleFetchRemaining, incentiveFilter, router]
-                  )}
+                  onSelect={onSelectIncentiveFilter}
                 />
                 <SearchBox
                   currentValue={query}
@@ -667,26 +621,7 @@ export const AllPoolsTable: FunctionComponent<{
             <PaginatedTable
               paginate={handleFetchRemaining}
               mobileSize={170}
-              renderMobileItem={(row) => {
-                return (
-                  <AssetCard
-                    coinDenom={row.original[0].poolAssets
-                      .map((asset) => asset.coinDenom)
-                      .join("/")}
-                    metrics={[
-                      {
-                        label: "TVL",
-                        value: row.original[1].value.toString(),
-                      },
-                      {
-                        label: "APR",
-                        value: row.original[4].value!.toString(),
-                      },
-                    ]}
-                    coinImageUrl={row.original[0].poolAssets}
-                  />
-                );
-              }}
+              renderMobileItem={mobileTableRow}
               size={80}
               table={table}
             />
