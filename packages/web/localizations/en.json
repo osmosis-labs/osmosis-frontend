@@ -17,6 +17,25 @@
     "title": "Add Liquidity",
     "titleInPool": "Add liquidity to pool #{poolId}"
   },
+  "addConcentratedLiquidity": {
+    "step1Title": "Step 1: Pick a strategy",
+    "step2Title": "Step 2: Add Liquidity",
+    "managed": "Managed",
+    "managedDescription": "Enlist one of our providers to manage your position. Coming soon",
+    "manual": "Manual",
+    "manualDescription": "Create a position which you will regular manage for maximum efficiency and rewards.",
+    "back": "Back",
+    "priceShownIn": "Prices shown in {base} per {quote}",
+    "priceRange": "Price Range",
+    "currentPrice": "current price",
+    "basePerQuote": "{base} per {quote}",
+    "selectVolatilityRange": "Select volatility range",
+    "volatilityDescription": "Tight ranges earn more fees per dollar, but earn no fees when price is out of range.",
+    "superchargedLearnMore": "Learn about supercharged liquidity",
+    "fullRange": "Full range",
+    "amountToDeposit": "Amount to deposit",
+    "addLiquidity": "Add Liquidity"
+  },
   "app": {
     "banner": {
       "backToOsmosis": "Back to Osmosis",
