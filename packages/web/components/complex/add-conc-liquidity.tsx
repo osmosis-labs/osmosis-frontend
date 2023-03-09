@@ -7,16 +7,10 @@ import {
 } from "@osmosis-labs/stores";
 import { curveNatural } from "@visx/curve";
 import { ParentSize } from "@visx/responsive";
-import { scaleLinear } from "@visx/scale";
 import {
   AnimatedAxis, // any of these can be non-animated equivalents
-  AnimatedBarSeries,
   AnimatedGrid,
   AnimatedLineSeries,
-  Annotation,
-  AnnotationCircleSubject,
-  AnnotationConnector,
-  AnnotationLineSubject,
   buildChartTheme,
   Tooltip,
   XYChart,
@@ -35,6 +29,8 @@ import {
   useState,
 } from "react";
 import { useTranslation } from "react-multi-lang";
+
+import ConcentratedLiquidityDepthChart from "~/components/chart/concentrated-liquidity-depth";
 
 import { useStore } from "../../stores";
 import { theme } from "../../tailwind.config";
@@ -326,18 +322,11 @@ const AddConcLiqView: FunctionComponent<
     setView,
     pool,
   }) => {
-    // const { chainStore } = useStore();
-    // const { isMobile } = useWindowSize();
     const t = useTranslation();
-    // const {
-    //   priceStore,
-    // } = useStore();
     const [data, setData] = useState<{ price: number; time: number }[]>([]);
     const [baseDeposit, setBaseDeposit] = useState(0);
     const [quoteDeposit, setQuoteDeposit] = useState(0);
-
     const yRange = getRangeFromData(data.map(accessors.yAccessor));
-
     const [inputMin, setInputMin] = useState("0");
     const [inputMax, setInputMax] = useState("0");
     const [min, setMin] = useState(0);
@@ -348,6 +337,8 @@ const AddConcLiqView: FunctionComponent<
     const router = useRouter();
     const { id: poolId } = router.query as { id: string };
     const [zoom, setZoom] = useState(1);
+    const depthData = getDepthFromRange(yRange.min, yRange.max);
+    const xMax = Math.max(...depthData.map((d) => d.depth)) * 1.2;
 
     const updateMin = useCallback(
       (val: string | number, shouldUpdateRange = false) => {
@@ -489,15 +480,25 @@ const AddConcLiqView: FunctionComponent<
                     />
                   </SelectorWrapper>
                 </div>
-                <BarChart
+                <ConcentratedLiquidityDepthChart
                   min={min}
                   max={max}
-                  onMoveMax={debounce((val) => updateMax(val), 100)}
-                  onMoveMin={debounce((val) => updateMin(val), 100)}
+                  yRange={calculateRange(
+                    zoom > 1 ? yRange.min / zoom : yRange.min * zoom,
+                    yRange.max * zoom,
+                    min,
+                    max,
+                    yRange.last
+                  )}
+                  xRange={[0, xMax]}
+                  data={depthData}
+                  annotationDatum={{ tick: yRange.last, depth: xMax }}
+                  onMoveMax={debounce((val: number) => updateMax(val), 100)}
+                  onMoveMin={debounce((val: number) => updateMin(val), 100)}
                   onSubmitMin={(val) => updateMin(val, true)}
                   onSubmitMax={(val) => updateMax(val, true)}
-                  data={data}
-                  zoom={zoom}
+                  offset={{ top: 58 - 48, right: 36, bottom: 36, left: 0 }}
+                  horizontal
                 />
               </div>
               <div className="flex flex-col items-center justify-center gap-4 pr-8">
@@ -778,7 +779,7 @@ function calculateRange(
   inputMin: number,
   inputMax: number,
   last: number
-) {
+): [number, number] {
   let outMin = min;
   let outMax = max;
 
@@ -919,196 +920,5 @@ function LineChart(props: {
         );
       }}
     </ParentSize>
-  );
-}
-
-function BarChart(props: {
-  min: number;
-  max: number;
-  zoom: number;
-  onMoveMax: (value: number) => void;
-  onMoveMin: (value: number) => void;
-  onSubmitMax: (value: number) => void;
-  onSubmitMin: (value: number) => void;
-  data: { price: number; time: number }[];
-}) {
-  const yRange = getRangeFromData(props.data.map(accessors.yAccessor));
-  const depthData = getDepthFromRange(yRange.min, yRange.max);
-  const xMax = Math.max(...depthData.map((d) => d.depth)) * 1.2;
-
-  if (props.zoom > 1) {
-    yRange.min = yRange.min / props.zoom;
-    yRange.max = yRange.max * props.zoom;
-  } else if (props.zoom < 1) {
-    yRange.min = yRange.min * props.zoom;
-    yRange.max = yRange.max * props.zoom;
-  }
-
-  const domain = calculateRange(
-    yRange.min,
-    yRange.max,
-    props.min,
-    props.max,
-    yRange.last
-  );
-
-  return (
-    <ParentSize className="flex-shrink-1 flex-1 overflow-hidden">
-      {({ height, width }) => {
-        const yScale = scaleLinear({
-          range: [58 - 48, height - 36],
-          domain: domain.slice().reverse(),
-          zero: false,
-        });
-
-        return (
-          <XYChart
-            key="bar-chart"
-            captureEvents={false}
-            margin={{ top: 58 - 48, right: 36, bottom: 36, left: 0 }}
-            height={height}
-            width={width}
-            xScale={{
-              type: "linear",
-              domain: [0, xMax],
-            }}
-            yScale={{
-              type: "linear",
-              domain: domain,
-              zero: false,
-            }}
-            theme={buildChartTheme({
-              backgroundColor: "transparent",
-              colors: ["white"],
-              gridColor: theme.colors.osmoverse["600"],
-              gridColorDark: theme.colors.osmoverse["300"],
-              svgLabelSmall: {
-                fill: theme.colors.osmoverse["300"],
-                fontSize: 12,
-                fontWeight: 500,
-              },
-              svgLabelBig: {
-                fill: theme.colors.osmoverse["300"],
-                fontSize: 12,
-                fontWeight: 500,
-              },
-              tickLength: 1,
-              xAxisLineStyles: {
-                strokeWidth: 0,
-              },
-              xTickLineStyles: {
-                strokeWidth: 0,
-              },
-              yAxisLineStyles: {
-                strokeWidth: 0,
-              },
-            })}
-            horizontal={true}
-          >
-            {/* Uncomment when testing alignment */}
-            {/*<AnimatedAxis*/}
-            {/*  orientation="right"*/}
-            {/*  numTicks={5}*/}
-            {/*  strokeWidth={0}*/}
-            {/*/>*/}
-            <AnimatedGrid columns={false} rows={false} numTicks={5} />
-            <AnimatedBarSeries
-              dataKey="depth"
-              data={depthData}
-              xAccessor={(d: any) => d?.depth}
-              yAccessor={(d: any) => d?.tick}
-              colorAccessor={() => theme.colors.barFill}
-            />
-            <Annotation
-              dataKey="depth"
-              xAccessor={(d: any) => d.depth}
-              yAccessor={(d: any) => d.tick}
-              datum={{ tick: yRange.last, depth: xMax }}
-            >
-              <AnnotationConnector />
-              <AnnotationCircleSubject
-                stroke={theme.colors.wosmongton["200"]}
-                // @ts-ignore
-                strokeWidth={4}
-                radius={2}
-              />
-              <AnnotationLineSubject
-                orientation="horizontal"
-                stroke={theme.colors.wosmongton["200"]}
-                strokeWidth={3}
-              />
-            </Annotation>
-            <DragContainer
-              defaultValue={props.max}
-              length={xMax}
-              scale={yScale}
-              stroke={theme.colors.wosmongton["500"]}
-              onMove={props.onMoveMax}
-              onSubmit={props.onSubmitMax}
-            />
-            <DragContainer
-              defaultValue={props.min}
-              length={xMax}
-              scale={yScale}
-              stroke={theme.colors.bullish["500"]}
-              onMove={props.onMoveMin}
-              onSubmit={props.onSubmitMin}
-            />
-            <style>{`
-              .visx-bar {
-                stroke: ${theme.colors.barFill};
-                stroke-width: 3px;
-              }
-            `}</style>
-          </XYChart>
-        );
-      }}
-    </ParentSize>
-  );
-}
-
-function DragContainer(props: {
-  defaultValue?: number;
-  length?: number;
-  scale: any;
-  onMove?: (value: number) => void;
-  onSubmit?: (value: number) => void;
-  stroke: string;
-}) {
-  return (
-    <Annotation
-      dataKey="depth"
-      xAccessor={(d: any) => d?.depth}
-      yAccessor={(d: any) => d?.tick}
-      datum={{ tick: props.defaultValue, depth: props.length }}
-      canEditSubject
-      canEditLabel={false}
-      onDragMove={({ event, ...nextPos }) => {
-        if (props.onMove) {
-          const val = props.scale.invert(nextPos.y);
-          props.onMove(+Math.max(0, val));
-        }
-      }}
-      onDragEnd={({ event, ...nextPos }) => {
-        if (props.onSubmit) {
-          const val = props.scale.invert(nextPos.y);
-          props.onSubmit(+Math.max(0, val));
-        }
-      }}
-      editable
-    >
-      <AnnotationConnector />
-      <AnnotationCircleSubject
-        stroke={props.stroke}
-        // @ts-ignore
-        strokeWidth={8}
-        radius={2}
-      />
-      <AnnotationLineSubject
-        orientation="horizontal"
-        stroke={props.stroke}
-        strokeWidth={3}
-      />
-    </Annotation>
   );
 }
