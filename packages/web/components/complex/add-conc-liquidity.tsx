@@ -322,6 +322,7 @@ const AddConcLiqView: FunctionComponent<
     setView,
     pool,
   }) => {
+    const { queriesExternalStore } = useStore();
     const t = useTranslation();
     const [data, setData] = useState<{ price: number; time: number }[]>([]);
     const [baseDeposit, setBaseDeposit] = useState(0);
@@ -378,21 +379,25 @@ const AddConcLiqView: FunctionComponent<
       []
     );
 
+    const query = queriesExternalStore.queryTokenPairHistoricalChart.get(
+      poolId,
+      range,
+      baseDenom,
+      quoteDenom
+    );
+
     useEffect(() => {
       (async () => {
-        const resp = await fetch(
-          `https://api-osmosis.imperator.co/pairs/v1/historical/${poolId}/chart?asset_in=${baseDenom}&asset_out=${quoteDenom}&range=${range}&asset_type=symbol`
-        );
-        const json = await resp.json();
-        const data = json.map(
-          ({ time, close }: { time: number; close: number }) => ({
-            time: time * 1000,
-            price: close,
-          })
-        );
-        updateData(data);
+        if (!query.isFetching && query.getChartPrices) {
+          updateData(
+            query.getChartPrices.map(({ price, time }) => ({
+              time,
+              price: parseFloat(price.toString()),
+            }))
+          );
+        }
       })();
-    }, [range, baseDenom, quoteDenom, updateData, poolId]);
+    }, [updateData, query.getChartPrices, query.isFetching]);
 
     return (
       <>
