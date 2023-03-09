@@ -1,27 +1,47 @@
 import { StdFee } from "@cosmjs/launchpad";
-import { Logger, WalletManager, WalletStatus } from "@cosmos-kit/core";
+import {
+  ChainWalletBase,
+  Logger,
+  WalletManager,
+  WalletStatus,
+} from "@cosmos-kit/core";
 import { wallets as cosmosStationWallets } from "@cosmos-kit/cosmostation";
 import { wallets as keplrWallets } from "@cosmos-kit/keplr";
 import { wallets as leapWallets } from "@cosmos-kit/leap";
 import { wallets as trustWallets } from "@cosmos-kit/trust";
 import { wallets as xdefiWallets } from "@cosmos-kit/xdefi-extension";
 import {
+  ChainedFunctionifyTuple,
+  ChainGetter,
   CosmosQueries,
   CosmwasmQueries,
+  Functionify,
   ProtoMsgsOrWithAminoMsgs,
   QueriesStore,
 } from "@keplr-wallet/stores";
 import { KeplrSignOptions } from "@keplr-wallet/types";
 import { assets, chains } from "chain-registry";
 import { action, makeObservable, observable } from "mobx";
-import { isFunction } from "mobx/dist/internal";
+import { UnionToIntersection } from "utility-types";
 
 import { OsmosisQueries } from "./queries";
 import { TxTracer } from "./tx";
 
 const logger = new Logger("WARN");
 
-export class AccountStore {
+export class AccountStore<Injects extends Record<string, any>[] = []> {
+  protected accountSetCreators: ChainedFunctionifyTuple<
+    AccountStore<Injects>,
+    [ChainGetter, string],
+    Injects
+  >;
+
+  @observable
+  injectedAccounts = new Map<
+    string,
+    Record<keyof Injects[number], Injects[number]>
+  >();
+
   @observable
   private _refreshRequests = 0;
 
@@ -57,13 +77,19 @@ export class AccountStore {
     public readonly queriesStore: QueriesStore<
       [CosmosQueries, CosmwasmQueries, OsmosisQueries]
     >,
+    protected readonly chainGetter: ChainGetter,
     protected readonly txOpts: {
       preTxEvents?: {
-        onBroadcastFailed?: (chainId: string, e?: Error) => void;
-        onBroadcasted?: (chainId: string, txHash: Uint8Array) => void;
-        onFulfill?: (chainId: string, tx: any) => void;
+        onBroadcastFailed?: (string: string, e?: Error) => void;
+        onBroadcasted?: (string: string, txHash: Uint8Array) => void;
+        onFulfill?: (string: string, tx: any) => void;
       };
-    } = {}
+    } = {},
+    ...accountSetCreators: ChainedFunctionifyTuple<
+      AccountStore<Injects>,
+      [ChainGetter, string],
+      Injects
+    >
   ) {
     this.walletManager.setActions({
       viewWalletRepo: () => this.refresh(),
@@ -84,7 +110,32 @@ export class AccountStore {
       });
     });
 
+    this.accountSetCreators = accountSetCreators;
+
     makeObservable(this);
+
+    // runInAction(() => {
+    //   const chainIdsAndNames = this.walletManager.chainRecords.map(
+    //     ({ chain }) => [chain.chain_name, chain.chain_id]
+    //   );
+
+    //   chainIdsAndNames.forEach(([name, chainId]) => {
+    //     this.accountSetCreators.forEach((fn: Functionify<any, any>) => {
+    //       const r = fn(this, this.chainGetter, chainId);
+
+    //       for (const key of Object.keys(r)) {
+    //         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //         // @ts-ignore
+    //         if (walletWithAccountSet[key]) {
+    //           continue;
+    //         }
+
+    //         this.injectedAccounts.set(name, r[key]);
+    //         this.injectedAccounts.set(chainId, r[key]);
+    //       }
+    //     });
+    //   });
+    // });
   }
 
   @action
@@ -106,18 +157,18 @@ export class AccountStore {
   /**
    * Get wallet repository for a given chain name or chain id.
    *
-   * @param chainName - Chain name or chain id
+   * @param chainNameOrId - Chain name or chain id
    * @returns Wallet repository
    */
-  getWalletRepo(chainName: string) {
+  getWalletRepo(chainNameOrId: string) {
     const walletRepo = this.walletManager.walletRepos.find(
       (repo) =>
-        repo.chainName === chainName ||
-        repo.chainRecord.chain.chain_id === chainName
+        repo.chainName === chainNameOrId ||
+        repo.chainRecord.chain.chain_id === chainNameOrId
     );
 
     if (!walletRepo) {
-      throw new Error(`Chain ${chainName} is not provided.`);
+      throw new Error(`Chain ${chainNameOrId} is not provided.`);
     }
 
     walletRepo.activate();
@@ -125,30 +176,76 @@ export class AccountStore {
   }
 
   /**
-   * Get the current wallet for the given chain name
-   * @param chainName - Chain name
+   * Get the current wallet for the given chain id
+   * @param chainNameOrId - Chain Id
    * @returns ChainWalletBase
    */
-  getWallet(chainName: string) {
-    const walletRepo = this.getWalletRepo(chainName);
+  getWallet(chainNameOrId: string) {
+    const walletRepo = this.getWalletRepo(chainNameOrId);
     const wallet = walletRepo.current;
+
+    if (wallet) {
+      const walletWithAccountSet = wallet as ChainWalletBase &
+        UnionToIntersection<Injects[number]>;
+
+      const injectedAccountsForChain = this.getInjectedAccounts(chainNameOrId);
+
+      /**
+       * Merge the accounts into the wallet.
+       */
+      for (const key of Object.keys(injectedAccountsForChain)) {
+        if (walletWithAccountSet[key]) {
+          continue;
+        }
+
+        walletWithAccountSet[key] = injectedAccountsForChain[key];
+      }
+
+      return walletWithAccountSet;
+    }
+
     return wallet;
   }
 
-  hasWallet(chainId: string): boolean {
-    const wallet = this.getWallet(chainId as any);
+  getInjectedAccounts(chainNameOrId: string) {
+    const previousInjectedAccounts = this.injectedAccounts.get(chainNameOrId);
+    if (previousInjectedAccounts) {
+      return previousInjectedAccounts;
+    }
+
+    const newInjectedAccounts: Record<string, any> = {};
+
+    for (let i = 0; i < this.accountSetCreators.length; i++) {
+      const fn = this.accountSetCreators[i] as Functionify<any, any>;
+      const r = fn(this, this.chainGetter, chainNameOrId);
+
+      for (const key of Object.keys(r)) {
+        if (newInjectedAccounts[key]) {
+          continue;
+        }
+
+        newInjectedAccounts[key] = r[key];
+      }
+    }
+
+    this.injectedAccounts.set(chainNameOrId, newInjectedAccounts);
+    return newInjectedAccounts;
+  }
+
+  hasWallet(string: string): boolean {
+    const wallet = this.getWallet(string);
     return Boolean(wallet);
   }
 
   async sign(
-    chainId: string,
+    string: string,
     type: string | "unknown",
     msgs:
       | ProtoMsgsOrWithAminoMsgs
       | (() => Promise<ProtoMsgsOrWithAminoMsgs> | ProtoMsgsOrWithAminoMsgs),
     memo = "",
     fee: StdFee,
-    signOptions?: KeplrSignOptions,
+    _signOptions?: KeplrSignOptions,
     onTxEvents?:
       | ((tx: any) => void)
       | {
@@ -161,15 +258,15 @@ export class AccountStore {
 
     this.setTxTypeInProgress(type);
 
-    const wallet = this.getWallet(chainId);
+    const wallet = this.getWallet(string);
 
     if (!wallet) {
-      throw new Error(`Wallet for chain ${chainId} is not provided.`);
+      throw new Error(`Wallet for chain ${string} is not provided.`);
     }
 
     try {
       if (wallet.walletStatus !== WalletStatus.Connected) {
-        throw new Error(`Wallet for chain ${chainId} is not connected.`);
+        throw new Error(`Wallet for chain ${string} is not connected.`);
       }
 
       if (typeof msgs === "function") {
@@ -201,7 +298,7 @@ export class AccountStore {
       this.setTxTypeInProgress("");
 
       if (this.txOpts.preTxEvents?.onBroadcastFailed) {
-        this.txOpts.preTxEvents.onBroadcastFailed(chainId, error);
+        this.txOpts.preTxEvents.onBroadcastFailed(string, error);
       }
 
       if (
@@ -219,7 +316,7 @@ export class AccountStore {
     let onFulfill: ((tx: any) => void) | undefined;
 
     if (onTxEvents) {
-      if (isFunction(onTxEvents)) {
+      if (typeof onTxEvents === "function") {
         onFulfill = onTxEvents;
       } else {
         onBroadcasted = onTxEvents?.onBroadcasted;
@@ -228,7 +325,7 @@ export class AccountStore {
     }
 
     if (this.txOpts.preTxEvents?.onBroadcasted) {
-      this.txOpts.preTxEvents.onBroadcasted(chainId, txHash);
+      this.txOpts.preTxEvents.onBroadcasted(string, txHash);
     }
 
     if (onBroadcasted) {
@@ -248,7 +345,7 @@ export class AccountStore {
       for (const feeAmount of fee.amount) {
         if (!wallet.address) continue;
 
-        const queries = this.queriesStore.get(chainId);
+        const queries = this.queriesStore.get(string);
         const bal = queries.queryBalances
           .getQueryBech32Address(wallet.address)
           .balances.find(
@@ -266,7 +363,7 @@ export class AccountStore {
       }
 
       if (this.txOpts.preTxEvents?.onFulfill) {
-        this.txOpts.preTxEvents.onFulfill(chainId, tx);
+        this.txOpts.preTxEvents.onFulfill(string, tx);
       }
 
       if (onFulfill) {

@@ -1,8 +1,6 @@
 import { StdFee } from "@cosmjs/launchpad";
 import {
-  AccountSetBaseSuper,
   ChainGetter,
-  CosmosAccount,
   CosmosQueries,
   IQueriesStore,
 } from "@keplr-wallet/stores";
@@ -13,6 +11,7 @@ import * as WeightedPoolEstimates from "@osmosis-labs/math";
 import { Pool } from "@osmosis-labs/pools";
 import deepmerge from "deepmerge";
 import Long from "long";
+import { AccountStore } from "src/account";
 import { DeepPartial } from "utility-types";
 
 import { OsmosisQueries } from "../queries";
@@ -31,7 +30,7 @@ export const OsmosisAccount = {
     ) => DeepPartial<OsmosisMsgOpts> | undefined;
     queriesStore: IQueriesStore<CosmosQueries & OsmosisQueries>;
   }): (
-    base: AccountSetBaseSuper & CosmosAccount,
+    base: AccountStore,
     chainGetter: ChainGetter,
     chainId: string
   ) => OsmosisAccount {
@@ -58,7 +57,7 @@ export const OsmosisAccount = {
 
 export class OsmosisAccountImpl {
   constructor(
-    protected readonly base: AccountSetBaseSuper & CosmosAccount,
+    protected readonly base: AccountStore<any>,
     protected readonly chainGetter: ChainGetter,
     protected readonly chainId: string,
     protected readonly queriesStore: IQueriesStore<
@@ -66,6 +65,10 @@ export class OsmosisAccountImpl {
     >,
     protected readonly _msgOpts: OsmosisMsgOpts
   ) {}
+
+  get address() {
+    return this.base.getWallet(this.chainId)?.address ?? "";
+  }
 
   /**
    * Create balancer/weighted pool.
@@ -123,14 +126,15 @@ export class OsmosisAccountImpl {
     const msg = {
       type: this._msgOpts.createBalancerPool.type,
       value: {
-        sender: this.base.bech32Address,
+        sender: this.address,
         pool_params: poolParams,
         pool_assets: poolAssets,
         future_pool_governor: "24h",
       },
     };
 
-    await this.base.cosmos.sendMsgs(
+    await this.base.sign(
+      this.chainId,
       "createBalancerPool",
       {
         aminoMsgs: [msg],
@@ -169,7 +173,7 @@ export class OsmosisAccountImpl {
           const queries = this.queriesStore.get(this.chainId);
           this.queries.queryGammPools.waitFreshResponse();
           queries.queryBalances
-            .getQueryBech32Address(this.base.bech32Address)
+            .getQueryBech32Address(this.address)
             .balances.forEach((bal) => {
               if (
                 assets.find(
@@ -261,7 +265,7 @@ export class OsmosisAccountImpl {
     const msg = {
       type: this._msgOpts.createStableswapPool.type,
       value: {
-        sender: this.base.bech32Address,
+        sender: this.address,
         pool_params: poolParams,
         initial_pool_liquidity: initialPoolLiquidity,
         scaling_factors: sortedScalingFactors.map((sf) => sf.toString()),
@@ -270,7 +274,8 @@ export class OsmosisAccountImpl {
       },
     };
 
-    await this.base.cosmos.sendMsgs(
+    await this.base.sign(
+      this.chainId,
       "createStableswapPool",
       {
         aminoMsgs: [msg],
@@ -311,7 +316,7 @@ export class OsmosisAccountImpl {
           const queries = this.queriesStore.get(this.chainId);
           this.queries.queryGammPools.waitFreshResponse();
           queries.queryBalances
-            .getQueryBech32Address(this.base.bech32Address)
+            .getQueryBech32Address(this.address)
             .balances.forEach((bal) => {
               if (
                 assets.find(
@@ -350,7 +355,8 @@ export class OsmosisAccountImpl {
     const queries = this.queries;
     const mkp = this.makeCoinPretty;
 
-    await this.base.cosmos.sendMsgs(
+    await this.base.sign(
+      this.chainId,
       "joinPool",
       async () => {
         const queryPool = queries.queryGammPools.getPool(poolId);
@@ -401,7 +407,7 @@ export class OsmosisAccountImpl {
         const msg = {
           type: this._msgOpts.joinPool.type,
           value: {
-            sender: this.base.bech32Address,
+            sender: this.address,
             pool_id: poolId,
             share_out_amount: new Dec(shareOutAmount)
               .mul(
@@ -441,7 +447,7 @@ export class OsmosisAccountImpl {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
-            .getQueryBech32Address(this.base.bech32Address)
+            .getQueryBech32Address(this.address)
             .balances.forEach((bal) => {
               // TODO: Explicitly refresh the share expected to be minted and provided to the pool.
               bal.waitFreshResponse();
@@ -474,7 +480,8 @@ export class OsmosisAccountImpl {
   ) {
     const queries = this.queries;
 
-    await this.base.cosmos.sendMsgs(
+    await this.base.sign(
+      this.chainId,
       "joinPool",
       async () => {
         const queryPool = queries.queryGammPools.getPool(poolId);
@@ -538,7 +545,7 @@ export class OsmosisAccountImpl {
         const msg = {
           type: this._msgOpts.joinSwapExternAmountIn.type,
           value: {
-            sender: this.base.bech32Address,
+            sender: this.address,
             pool_id: poolId,
             token_in: {
               denom: coin.denom,
@@ -573,7 +580,7 @@ export class OsmosisAccountImpl {
         if (tx.code == null || tx.code === 0) {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
-            .getQueryBech32Address(this.base.bech32Address)
+            .getQueryBech32Address(this.address)
             .balances.forEach((bal) => {
               bal.waitFreshResponse();
             });
@@ -609,7 +616,8 @@ export class OsmosisAccountImpl {
   ) {
     const queries = this.queries;
 
-    await this.base.cosmos.sendMsgs(
+    await this.base.sign(
+      this.chainId,
       "swapExactAmountIn",
       async () => {
         // refresh data and get pools
@@ -637,7 +645,7 @@ export class OsmosisAccountImpl {
         // make message with estimated min out amounts
         const msg = Msgs.Amino.makeMultihopSwapExactAmountInMsg(
           this._msgOpts.swapExactAmountIn,
-          this.base.bech32Address,
+          this.address,
           tokenIn,
           pools.map((pool, i) => {
             const queryPool = queries.queryGammPools.getPool(pool.id);
@@ -740,7 +748,7 @@ export class OsmosisAccountImpl {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
-            .getQueryBech32Address(this.base.bech32Address)
+            .getQueryBech32Address(this.address)
             .balances.forEach((bal) => {
               if (
                 bal.currency.coinMinimalDenom ===
@@ -786,7 +794,8 @@ export class OsmosisAccountImpl {
   ) {
     const queries = this.queries;
 
-    await this.base.cosmos.sendMsgs(
+    await this.base.sign(
+      this.chainId,
       "swapExactAmountIn",
       async () => {
         // get pool info and refetch
@@ -839,7 +848,7 @@ export class OsmosisAccountImpl {
             poolAssets,
           },
           this._msgOpts.swapExactAmountIn,
-          this.base.bech32Address,
+          this.address,
           tokenIn,
           tokenOutCurrency,
           maxSlippage
@@ -878,7 +887,7 @@ export class OsmosisAccountImpl {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
-            .getQueryBech32Address(this.base.bech32Address)
+            .getQueryBech32Address(this.address)
             .balances.forEach((bal) => {
               if (
                 bal.currency.coinMinimalDenom ===
@@ -918,7 +927,8 @@ export class OsmosisAccountImpl {
   ) {
     const queries = this.queries;
 
-    await this.base.cosmos.sendMsgs(
+    await this.base.sign(
+      this.chainId,
       "swapExactAmountOut",
       async () => {
         const queryPool = queries.queryGammPools.getPool(poolId);
@@ -971,7 +981,7 @@ export class OsmosisAccountImpl {
             poolAssets,
           },
           this._msgOpts.swapExactAmountOut,
-          this.base.bech32Address,
+          this.address,
           tokenInCurrency,
           tokenOut,
           maxSlippage
@@ -1010,7 +1020,7 @@ export class OsmosisAccountImpl {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
-            .getQueryBech32Address(this.base.bech32Address)
+            .getQueryBech32Address(this.address)
             .balances.forEach((bal) => {
               if (
                 bal.currency.coinMinimalDenom ===
@@ -1048,7 +1058,8 @@ export class OsmosisAccountImpl {
     const queries = this.queries;
     const mkp = this.makeCoinPretty;
 
-    await this.base.cosmos.sendMsgs(
+    await this.base.sign(
+      this.chainId,
       "exitPool",
       async () => {
         const queryPool = queries.queryGammPools.getPool(poolId);
@@ -1096,7 +1107,7 @@ export class OsmosisAccountImpl {
         const msg = {
           type: this._msgOpts.exitPool.type,
           value: {
-            sender: this.base.bech32Address,
+            sender: this.address,
             pool_id: pool.id,
             share_in_amount: new Dec(shareInAmount)
               .mul(
@@ -1134,9 +1145,7 @@ export class OsmosisAccountImpl {
       (tx) => {
         if (tx.code == null || tx.code === 0) {
           const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.base.bech32Address)
-            .fetch();
+          queries.queryBalances.getQueryBech32Address(this.address).fetch();
 
           this.queries.queryGammPools.getPool(poolId)?.waitFreshResponse();
         }
@@ -1178,14 +1187,15 @@ export class OsmosisAccountImpl {
     const msg = {
       type: this._msgOpts.lockTokens.type,
       value: {
-        owner: this.base.bech32Address,
+        owner: this.address,
         // Duration should be encodec as nana sec.
         duration: (duration * 1_000_000_000).toString(),
         coins: primitiveTokens,
       },
     };
 
-    await this.base.cosmos.sendMsgs(
+    await this.base.sign(
+      this.chainId,
       "lockTokens",
       {
         aminoMsgs: [msg],
@@ -1215,17 +1225,11 @@ export class OsmosisAccountImpl {
         if (tx.code == null || tx.code === 0) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.base.bech32Address)
-            .fetch();
+          queries.queryBalances.getQueryBech32Address(this.address).fetch();
 
           // Refresh the locked coins
-          this.queries.queryLockedCoins
-            .get(this.base.bech32Address)
-            .waitFreshResponse();
-          this.queries.queryAccountLocked
-            .get(this.base.bech32Address)
-            .waitFreshResponse();
+          this.queries.queryLockedCoins.get(this.address).waitFreshResponse();
+          this.queries.queryAccountLocked.get(this.address).waitFreshResponse();
         }
 
         onFulfill?.(tx);
@@ -1249,7 +1253,7 @@ export class OsmosisAccountImpl {
       return {
         type: this._msgOpts.superfluidDelegate.type,
         value: {
-          sender: this.base.bech32Address,
+          sender: this.address,
           lock_id: lockId,
           val_addr: validatorAddress,
         },
@@ -1267,7 +1271,8 @@ export class OsmosisAccountImpl {
       };
     });
 
-    await this.base.cosmos.sendMsgs(
+    await this.base.sign(
+      this.chainId,
       "superfluidDelegate",
       {
         aminoMsgs,
@@ -1283,12 +1288,10 @@ export class OsmosisAccountImpl {
         if (tx.code == null || tx.code === 0) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.base.bech32Address)
-            .fetch();
+          queries.queryBalances.getQueryBech32Address(this.address).fetch();
 
           queries.osmosis?.queryAccountLocked
-            .get(this.base.bech32Address)
+            .get(this.address)
             .waitFreshResponse();
 
           queries.cosmos.queryValidators
@@ -1296,7 +1299,7 @@ export class OsmosisAccountImpl {
             .waitFreshResponse();
 
           queries.osmosis?.querySuperfluidDelegations
-            .getQuerySuperfluidDelegations(this.base.bech32Address)
+            .getQuerySuperfluidDelegations(this.address)
             .waitFreshResponse();
         }
 
@@ -1336,13 +1339,14 @@ export class OsmosisAccountImpl {
     const msg = {
       type: this._msgOpts.lockAndSuperfluidDelegate.type,
       value: {
-        sender: this.base.bech32Address,
+        sender: this.address,
         coins: primitiveTokens,
         val_addr: validatorAddress,
       },
     };
 
-    await this.base.cosmos.sendMsgs(
+    await this.base.sign(
+      this.chainId,
       "lockAndSuperfluidDelegate",
       {
         aminoMsgs: [msg],
@@ -1367,20 +1371,18 @@ export class OsmosisAccountImpl {
         if (tx.code == null || tx.code === 0) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.base.bech32Address)
-            .fetch();
+          queries.queryBalances.getQueryBech32Address(this.address).fetch();
 
           // Refresh the locked coins
           queries.osmosis?.queryLockedCoins
-            .get(this.base.bech32Address)
+            .get(this.address)
             .waitFreshResponse();
           queries.osmosis?.queryAccountLocked
-            .get(this.base.bech32Address)
+            .get(this.address)
             .waitFreshResponse();
 
           queries.osmosis?.querySuperfluidDelegations
-            .getQuerySuperfluidDelegations(this.base.bech32Address)
+            .getQuerySuperfluidDelegations(this.address)
             .waitFreshResponse();
         }
 
@@ -1404,7 +1406,7 @@ export class OsmosisAccountImpl {
       return {
         type: this._msgOpts.beginUnlocking.type,
         value: {
-          owner: this.base.bech32Address,
+          owner: this.address,
           ID: lockId,
           coins: [],
         },
@@ -1421,7 +1423,8 @@ export class OsmosisAccountImpl {
       };
     });
 
-    await this.base.cosmos.sendMsgs(
+    await this.base.sign(
+      this.chainId,
       "beginUnlocking",
       {
         aminoMsgs: msgs,
@@ -1437,20 +1440,14 @@ export class OsmosisAccountImpl {
         if (tx.code == null || tx.code === 0) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.base.bech32Address)
-            .fetch();
+          queries.queryBalances.getQueryBech32Address(this.address).fetch();
 
           // Refresh the locked coins
-          this.queries.queryLockedCoins
-            .get(this.base.bech32Address)
-            .waitFreshResponse();
+          this.queries.queryLockedCoins.get(this.address).waitFreshResponse();
           this.queries.queryUnlockingCoins
-            .get(this.base.bech32Address)
+            .get(this.address)
             .waitFreshResponse();
-          this.queries.queryAccountLocked
-            .get(this.base.bech32Address)
-            .waitFreshResponse();
+          this.queries.queryAccountLocked.get(this.address).waitFreshResponse();
         }
 
         onFulfill?.(tx);
@@ -1479,7 +1476,7 @@ export class OsmosisAccountImpl {
         msgs.push({
           type: this._msgOpts.beginUnlocking.type,
           value: {
-            owner: this.base.bech32Address,
+            owner: this.address,
             // XXX: 얘는 어째서인지 소문자가 아님 ㅋ;
             ID: lock.lockId,
             coins: [],
@@ -1490,14 +1487,14 @@ export class OsmosisAccountImpl {
           {
             type: this._msgOpts.superfluidUndelegate.type,
             value: {
-              sender: this.base.bech32Address,
+              sender: this.address,
               lock_id: lock.lockId,
             },
           },
           {
             type: this._msgOpts.superfluidUnbondLock.type,
             value: {
-              sender: this.base.bech32Address,
+              sender: this.address,
               lock_id: lock.lockId,
             },
           }
@@ -1548,7 +1545,8 @@ export class OsmosisAccountImpl {
       }
     });
 
-    await this.base.cosmos.sendMsgs(
+    await this.base.sign(
+      this.chainId,
       "beginUnlocking",
       {
         aminoMsgs: msgs,
@@ -1568,26 +1566,24 @@ export class OsmosisAccountImpl {
         if (tx.code == null || tx.code === 0) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.base.bech32Address)
-            .fetch();
+          queries.queryBalances.getQueryBech32Address(this.address).fetch();
 
           // Refresh the locked coins
           queries.osmosis?.queryLockedCoins
-            .get(this.base.bech32Address)
+            .get(this.address)
             .waitFreshResponse();
           queries.osmosis?.queryUnlockingCoins
-            .get(this.base.bech32Address)
+            .get(this.address)
             .waitFreshResponse();
           queries.osmosis?.queryAccountLocked
-            .get(this.base.bech32Address)
+            .get(this.address)
             .waitFreshResponse();
 
           queries.osmosis?.querySuperfluidDelegations
-            .getQuerySuperfluidDelegations(this.base.bech32Address)
+            .getQuerySuperfluidDelegations(this.address)
             .waitFreshResponse();
           queries.osmosis?.querySuperfluidUndelegations
-            .getQuerySuperfluidDelegations(this.base.bech32Address)
+            .getQuerySuperfluidDelegations(this.address)
             .waitFreshResponse();
         }
 
@@ -1604,7 +1600,7 @@ export class OsmosisAccountImpl {
     const msg = {
       type: this._msgOpts.unPoolWhitelistedPool.type,
       value: {
-        sender: this.base.bech32Address,
+        sender: this.address,
         pool_id: poolId,
       },
     };
@@ -1617,7 +1613,8 @@ export class OsmosisAccountImpl {
       }).finish(),
     };
 
-    await this.base.cosmos.sendMsgs(
+    await this.base.sign(
+      this.chainId,
       "unPoolWhitelistedPool",
       {
         aminoMsgs: [msg],
@@ -1636,20 +1633,20 @@ export class OsmosisAccountImpl {
 
           // Refresh the unlocking coins
           queries.osmosis?.queryLockedCoins
-            .get(this.base.bech32Address)
+            .get(this.address)
             .waitFreshResponse();
           queries.osmosis?.queryUnlockingCoins
-            .get(this.base.bech32Address)
+            .get(this.address)
             .waitFreshResponse();
           queries.osmosis?.queryAccountLocked
-            .get(this.base.bech32Address)
+            .get(this.address)
             .waitFreshResponse();
 
           queries.osmosis?.querySuperfluidDelegations
-            .getQuerySuperfluidDelegations(this.base.bech32Address)
+            .getQuerySuperfluidDelegations(this.address)
             .waitFreshResponse();
           queries.osmosis?.querySuperfluidUndelegations
-            .getQuerySuperfluidDelegations(this.base.bech32Address)
+            .getQuerySuperfluidDelegations(this.address)
             .waitFreshResponse();
         }
 

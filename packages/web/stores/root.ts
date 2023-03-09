@@ -62,7 +62,7 @@ export class RootStore {
   public readonly oldAccountStore: OldAccountStore<
     [CosmosAccount, CosmwasmAccount, OsmosisAccount]
   >;
-  public readonly accountStore: AccountStore;
+  public readonly accountStore: AccountStore<[OsmosisAccount]>;
 
   public readonly priceStore: PoolFallbackPriceStore;
 
@@ -123,7 +123,12 @@ export class RootStore {
       OsmosisQueries.use(this.chainStore.osmosis.chainId, IS_TESTNET)
     );
 
-    this.accountStore = new AccountStore(this.queriesStore);
+    this.accountStore = new AccountStore(
+      this.queriesStore,
+      this.chainStore,
+      undefined,
+      OsmosisAccount.use({ queriesStore: this.queriesStore })
+    );
 
     this.oldAccountStore = new OldAccountStore(
       eventListener,
