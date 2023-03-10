@@ -30,7 +30,7 @@ const PaginatedTable = ({
   const rowVirtualizer = useWindowVirtualizer({
     count: rows.length,
     estimateSize: () => (isMobile ? mobileSize || 0 : size),
-    overscan: 10,
+    overscan: 40,
   });
   const virtualRows = rowVirtualizer.getVirtualItems();
   const totalSize = rowVirtualizer.getTotalSize();
