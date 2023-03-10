@@ -1,0 +1,427 @@
+{
+  "404": {
+    "title": "Not found"
+  },
+  "500": {
+    "title": "Ошибка сервера"
+  },
+  "app": {
+    "banner": {
+      "title": "Вы просматриваете все Инклюзивные активы.",
+      "linkText": "Нажмите здесь, чтобы вернуться в главное приложение",
+      "externalLinkDisclaimer": "Переходя по ссылке, вы подтверждаете,что Вы прочитали и осознаёте, что Osmosis не дает никаких гарантий качества обслуживания для внешних страниц, которые могут иметь другие Условия Пользования.",
+      "externalLink": "You are now leaving the Osmosis app to go to",
+      "goToSite": "Go to Site",
+      "backToOsmosis": "Вернуться в Osmosis",
+      "externalLinkModalTitle": "Покидаем Osmosis"
+    }
+  },
+  "swap": {
+    "title": "Обмен",
+    "settings": {
+      "title": "Натсройка Транзакций",
+      "slippage": "Допуск на Проскальзывание",
+      "slippageInfo": "Ваша транзакция будет отменена, если цена изменится в худшую сторону более чем на этот процент."
+    },
+    "available": "Доступно",
+    "MAX": "ВСЁ",
+    "HALF": "ПОЛОВИНА",
+    "button": "Обменть",
+    "buttonError": "Всё равно Обменять",
+    "priceImpact": "Влияние Цены",
+    "fee": "Комиссия на Обмен ({fee})",
+    "expectedOutput": "Ожидаемый результат",
+    "minimumSlippage": "Минимум, полученный после проскальзывания: ({slippage})",
+    "error": {
+      "findCurrency": "Не удалось найти валюту: {currency}"
+    },
+    "autoRouter": "Маршрут",
+    "routerTooltipFee": "Комиссия",
+    "autoRouterToggle": {
+      "show": "Показать",
+      "hide": "Скрыть"
+    },
+    "pool": "Пул #{id}"
+  },
+  "pools": {
+    "title": "Активные Пулы",
+    "poolId": "Пул #{id}",
+    "priceOsmo": "цена OSMO",
+    "rewardDistribution": "Распределение вознаграждения через",
+    "myPools": "Мои Пулы",
+    "APR": "APR",
+    "available": "Доступно",
+    "liquidity": "Ликвидность",
+    "myLiquidity": "Моя Ликвидность",
+    "bonded": "Привязано",
+    "incentivized": "Стимулированно",
+    "all": "Все Пулы",
+    "allTab": "ВСЕ",
+    "superfluid": {
+      "title": "Суперфлюидные Пулы",
+      "tab": "Суперфлюидные",
+      "APR": "APR",
+      "liquidity": "Ликвидность",
+      "fees7D": "Fees (7D)"
+    },
+    "allPools": {
+      "title": "Все Пулы",
+      "myLiquidity": "Моя Ликвидность",
+      "TVL": "TVL",
+      "APR": "APR",
+      "APRIncentivized": "7д Объём",
+      "search": "Поиск Пулов",
+      "displayLowLiquidity": "Показать Пулы < {value}",
+      "sort": {
+        "poolName": "Имя/Номер Пула",
+        "liquidity": "Ликвидность",
+        "volume24h": "Объём (24Ч)",
+        "fees": "Комиссия (7Д)",
+        "APRIncentivized": "APR",
+        "APR": "Моя Ликвидности",
+        "poolId": "Pool ID"
+      }
+    },
+    "externalIncentivized": {
+      "title": "Внешне стимулированные Пулы",
+      "TVL": "TVL",
+      "APR": "APR",
+      "search": "Поиск",
+      "sort": {
+        "poolName": "Номер/Имя Пула",
+        "liquidity": "Ликвидность",
+        "APR": "APR",
+        "epochs": "Эпох Осталось",
+        "myLiquidity": "Моя Ликвидность"
+      }
+    },
+    "createPool": {
+      "title": "Создать Новый Пул",
+      "button": "Создать Новый Пул",
+      "weightedPool": "Взвешанные Пулы",
+      "stablePool": "Стэйбл Пулы",
+      "step": {
+        "one": {
+          "weighted": "Шаг {step} из {nbStep} - Установите соотношение монет",
+          "stable": "Шаг {step} из {nbStep} - Установите коэффициенты масштабирования"
+        },
+        "two": "Шаг {step} из {nbStep} - Введите сумму для пополнения",
+        "three": "Шаг {step} из {nbStep} - Подтвердите соотношение монет в пуле и количество токенов"
+      },
+      "infoMessage": "Комиссия за создание Пула",
+      "infoCaption": "Переведено в пул сообщества Osmosis",
+      "buttonCreate": "Создать Пул",
+      "buttonNext": "Далее",
+      "buttonBack": "Назад",
+      "buttonAddToken": "Добавить токен",
+      "available": "Доступно",
+      "amount": "Сумма",
+      "token": "Токен",
+      "swapFee": "Установить комиссию за обмен",
+      "scalingFactorController": "Установить регулятор коэффициента масштабирования (необязательно)",
+      "undersandCost": "Я понимаю, что создание нового пула будет стоить {POOL_CREATION_FEE}.",
+      "interestedCreate": "Заинтересованы в создании нового пула?",
+      "startProcess": "Нажмите здесь, чтобы начать процесс"
+    }
+  },
+  "pool": {
+    "title": "Пул #{id}",
+    "swap": "Торговая Пара",
+    "superfluidEnabled": "Суперфлюидный Стэйкинг активирован",
+    "stableswapEnabled": "Stableswap активирован",
+    "24hrTradingVolume": "Объём торгов за 24Ч",
+    "liquidity": "Ликвидность Пула",
+    "swapFee": "Комиссия за Обмен",
+    "yourStats": "Баланс Вашего Пула",
+    "sharesAmount": "{shares} Долей",
+    "currentDailyEarn": "Ваш доход",
+    "earnMore": "Получить на {amount} больше, используя Привязку",
+    "day": "день",
+    "dailyEarnAmount": "{amount} / день",
+    "putAssetsToWork": "Вложить Ваши активы в работу.",
+    "putAssetsToWorkCaption": "Добавить Ваши активы в этот пул, чтобы разблокировать APR. Чем дольше преиод разморозки, тем выше доход.",
+    "learnMore": "Узнать Больше",
+    "level": "Уровень {level}",
+    "earnSwapFees": "Получать комиссии с обменов",
+    "earnSwapFeesCaption": "Convert your tokens into shares and earn on every swap.",
+    "APR": "APR",
+    "bondLiquidity": "Bond liquidity",
+    "bondLiquidityUnavailable": "Bond liquidity (unavailable)",
+    "checkBackForBondingRewards": "Check back for bonding rewards",
+    "bondLiquidityCaption": "Lock up your shares for longer durations to earn higher APRs.",
+    "bondSuperfluidLiquidityCaption": "Go superfluid for maximum rewards.",
+    "bondShares": "Bond Shares",
+    "amountDaysUnbonding": "{numDays} day unbonding",
+    "amountDaysUnbonding_plural": "{numDays} days unbonding",
+    "available": "Available",
+    "unbond": "Unbond",
+    "bonded": "Bonded",
+    "showDetails": "Show pool composition",
+    "collapseDetails": "Hide pool composition",
+    "sharesAvailableIn": "available in",
+    "unbonding": "unbonding",
+    "superfluidEarnMore": "Earn {rate} more. Go superfluid",
+    "incentives": "Incentives",
+    "details": "Details",
+    "rewardDistribution": "Rewards distributed to all liquidity providers",
+    "superfluidStaking": "Superfluid Staking",
+    "delegated": "delegated",
+    "undelegating": "undelegating",
+    "commission": "commission",
+    "numDaysRemaining": "{numDays} days remaining",
+    "from": "from",
+    "swapFees": "swap fees",
+    "7davg": "(7d avg)"
+  },
+  "removeLiquidity": {
+    "title": "Remove Liquidity",
+    "titleInPool": "Remove liquidity from pool #{poolId}",
+    "sharesAmount": "{shares} shares"
+  },
+  "addLiquidity": {
+    "title": "Add Liquidity",
+    "titleInPool": "Add liquidity to pool #{poolId}",
+    "allAssets": "All assets",
+    "singleAsset": "Single asset",
+    "available": "Available",
+    "autoswapCaption": "Use autoswap to add liquidity with a single asset.",
+    "stablecoinWarning": "You are adding liquidity to {denom}, a {mechanism}-backed stablecoin.",
+    "scalingFactor": "scaling factor",
+    "scalingFactorInformation": "This factor allows the curve to adjust to predictable price changes, such as the value accruing to a liquid staking token.",
+    "scalingFactorControllerWarning_first": "The scaling factor controller is enabled. The",
+    "scalingFactorControllerWarning_second": "can adjust the",
+    "scalingFactorControllerWarning_third": "to maintain the peg. The current scaling factor is",
+    "scalingFactorController": "controller"
+  },
+  "lockToken": {
+    "title": "Bond LP Shares",
+    "titleInPool": "Lock shares in pool #{poolId}",
+    "selectPeriod": "Select unbonding period",
+    "availableToken": "Available",
+    "amountToBond": "Amount to bond",
+    "superfluidStake": "Superfluid staking",
+    "bondingRequirement": "{numDays} day bonding requirement",
+    "buttonNext": "Next",
+    "buttonBond": "Bond",
+    "buttonBondStake": "Bond & Stake"
+  },
+  "superfluidValidator": {
+    "title": "Select Superfluid Validator",
+    "titleMobile": "Select Validator",
+    "choose": "Choose your superfluid validator",
+    "search": "Search by name",
+    "bondedAmount": "Bonded Amount",
+    "estimation": "Estimated Superfluid Delegation",
+    "estimationMobile": "Est. Delegation",
+    "estimationInfo": "The value of this delegation fluctuates and is estimated based on the amount of OSMO in the pool.",
+    "buttonBond": "Bond & Stake",
+    "columns": {
+      "validator": "Validator",
+      "commission": "Commission"
+    }
+  },
+  "assets": {
+    "totalAssets": "Total assets",
+    "unbondedAssets": "Unbonded",
+    "bondedAssets": "Bonded",
+    "stakedAssets": "Staked OSMO",
+    "myPools": "My Pools",
+    "transferAssetSelect": {
+      "deposit": "Deposit",
+      "withdraw": "Withdraw",
+      "network": "Network",
+      "buttonNext": "Next"
+    },
+    "poolCards": {
+      "APR": "APR",
+      "FeeAPY": "Fee APY",
+      "liquidity": "My Liquidity",
+      "bonded": "Bonded",
+      "myLiquidity": "My Liquidity"
+    },
+    "ibcTransfer": {
+      "titleWithdraw": "Withdraw {coinDenom}",
+      "titleDeposit": "Deposit {coinDenom}",
+      "channelCongested": "Channel congested",
+      "channelCongestedWithdraw": "Withdraw (Channel congested)",
+      "channelCongestedDeposit": "Deposit (Channel congested)",
+      "channelBlocked": "Channel blocked",
+      "selectAmount": "Select Amount",
+      "estimatedTime": "Estimated Time",
+      "waitTime": "20 seconds",
+      "copied": "Copied!",
+      "IBCTransfer": "IBC Transfer",
+      "from": "from",
+      "to": "to",
+      "warningLossFunds": "Warning: Withdrawing to central exchange address will result in loss of funds.",
+      "buttonEnter": "Enter",
+      "checkboxVerify": "I verify I am not sending to an exchange address.",
+      "buttonEdit": "Edit",
+      "amoutWithdraw": "Amount To Withdraw",
+      "amoutDeposit": "Amount To Deposit",
+      "availableBalance": "Available balance:",
+      "MAX": "MAX"
+    },
+    "transfer": {
+      "titleWithdraw": "Withdraw {coinDenom}",
+      "titleDeposit": "Deposit {coinDenom}",
+      "warnDepositAddressDifferent": "Warning: the selected account in {address} differs from the account you last deposited with.",
+      "from": "From",
+      "to": "To",
+      "via": "via",
+      "loading": "Loading",
+      "availableOn": "Available on {network}",
+      "availableMobile": "Available",
+      "transferFee": "Transfer Fee",
+      "errors": {
+        "reconnectWallet": "Reconnect {walletName}",
+        "wrongNetworkInWallet": "Wrong network in {walletName}",
+        "insufficientFee": "Insufficient Fee",
+        "insufficientBal": "Insufficient Balance"
+      },
+      "wrapNativeLink": "Convert {fromDenom} to {toDenom} on {platformName}",
+      "waitTime": "{minutes} minutes"
+    },
+    "selectAssetSource": {
+      "titleWithdraw": "Withdraw to",
+      "titleDeposit": "Deposit from",
+      "next": "Next",
+      "installWallet": "Install {walletName}"
+    },
+    "table": {
+      "depositButton": "Deposit",
+      "withdrawButton": "Withdraw",
+      "search": "Search",
+      "title": "All Assets",
+      "hideZero": "Hide zero balances",
+      "preTransfer": {
+        "deposit": "Deposit",
+        "withdraw": "Withdraw",
+        "currentBal": "Current Balance"
+      },
+      "columns": {
+        "assetChain": "Asset / Chain",
+        "balance": "Balance",
+        "transfer": "Transfer",
+        "deposit": "Deposit",
+        "withdraw": "Withdraw"
+      },
+      "sort": {
+        "symbol": "Symbol",
+        "network": "Network",
+        "balance": "Balance"
+      }
+    },
+    "historyTable": {
+      "title": "Transfer History",
+      "pending": "Pending",
+      "success": "Success",
+      "refunded": "Refunded",
+      "pendingRefunded": "Failed: Pending refund",
+      "colums": {
+        "transactionHash": "Transaction Hash",
+        "type": "Type",
+        "amount": "Amount",
+        "status": "Status",
+        "deposit": "Deposit",
+        "withdraw": "Withdraw"
+      },
+      "failed": "Failed",
+      "failedWithReason": "Failed: {reason}",
+      "errors": {
+        "insufficientFee": "Insufficient Fee"
+      }
+    }
+  },
+  "components": {
+    "show": {
+      "more": "View more",
+      "less": "View less"
+    },
+    "table": {
+      "poolId": "Pool #{id}"
+    },
+    "sort": {
+      "SORT": "Sort by",
+      "SORTMobile": "Sort",
+      "mobileMenu": "Sort by"
+    },
+    "MAX": "MAX",
+    "searchTokens": "Search",
+    "selectToken": {
+      "title": "Select a token"
+    }
+  },
+  "menu": {
+    "swap": "Swap",
+    "pools": "Pools",
+    "assets": "Assets",
+    "stake": "Stake",
+    "vote": "Vote",
+    "info": "Stats",
+    "signOut": "Disconnect",
+    "help": "Get Support Lab Help"
+  },
+  "settings": {
+    "title": "Global settings",
+    "titleLanguage": "Language",
+    "titleHideDust": "Hide pools with < {fiatSymbol}0.01",
+    "selectLanguage": "Select language",
+    "filterDust": "Filter Dust"
+  },
+  "errors": {
+    "emptyAmount": "Amount is empty",
+    "invalidNumberAmount": "Invalid form of number",
+    "zeroAmount": "Amount is zero",
+    "negativeAmount": "Amount is negative",
+    "insufficientAmount": "Insufficient amount",
+    "negativeSwapFee": "Swap fee is negative",
+    "highSwapFee": "Swap fee too high",
+    "invalidSwapFee": "Swap fee is invalid",
+    "invalidScalingFactorControllerAddress": "Invalid scaling factor controller address",
+    "minAssetsCount": "Minimum of {num} assets required",
+    "maxAssetsCount": "Maximum of {num} assets allowed",
+    "negativePercentage": "Percentage must be positive",
+    "scalingFactorTooLow": "Scaling factor too low",
+    "percentageSum": "Sum of percentages is not 100",
+    "depositNoBalance": "You have no assets to deposit",
+    "negativeSlippage": "Slippage cannot be negative",
+    "invalidSlippage": "Invalid slippage",
+    "noSendCurrency": "Currency to send not set",
+    "insufficientBal": "Insufficient balance",
+    "insufficientLiquidity": "Insufficient liquidity",
+    "noRoute": "No route for this trade",
+    "notInitialized": "Not initialized",
+    "calculatingShareOutAmount": "Problem calculating out amount",
+    "noAvailableShares": "No available {denom} shares",
+    "generic": "Ошибка"
+  },
+  "connectWallet": "Подключить Кошелёк",
+  "buyTokens": "Купить токены",
+  "profile": {
+    "modalTitle": "Профиль",
+    "balance": "Баланс",
+    "wallet": "Кошелёк",
+    "viewAllAssets": "Посмотреть все активы"
+  },
+  "keplr": {
+    "install": "Установить Keplr",
+    "wallet": "Keplr Wallet",
+    "extension": "Keplr Browser Extension",
+    "walletConnect": "WalletConnect",
+    "mobile": "Keplr Mobile"
+  },
+  "connectDisclaimer": "Подключая кошелёк, вы подтверждаете, что прочитали все условия и понимаете Osmosis",
+  "protocolDisclaimer": "Protocol Disclaimer",
+  "transactionFailed": "Транзакция не прошла!",
+  "transactionSuccessful": "Транзакция прошла успешно!",
+  "transactionBroadcasting": "Транзакция в пути",
+  "swapFailed": "Обмен не удался. Возможно не хватает Ликвидности. Попробуйте настроить допустимое значение проскальзывания.",
+  "waitingForTransaction": "Ждём пока транзакция включится в блок",
+  "viewExplorer": "Открыть Обозреватель",
+  "unknownError": "Неизвестная Ошибка",
+  "requestRejected": "Запрос Отклонён",
+  "stablecoinTypes": {
+    "collateralized": "collateralized"
+  }
+}
