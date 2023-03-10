@@ -157,6 +157,14 @@ export class ObservablePoolDetail {
   }
 
   @computed
+  get userAvailableShares(): CoinPretty {
+    return this.queries.queryGammPoolShare.getAvailableGammShare(
+      this.bech32Address,
+      this.poolId
+    );
+  }
+
+  @computed
   get userPoolAssets() {
     const queryPool = this.pool;
     if (!queryPool) return [];
