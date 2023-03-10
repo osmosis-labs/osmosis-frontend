@@ -74,13 +74,19 @@ export class ObservablePoolBonding {
    */
   readonly calculateBondLevel = computedFn(
     (bondDurations: BondDuration[]): 1 | 2 | undefined => {
+      const userAvailableShares =
+        this.queries.queryGammPoolShare.getAvailableGammShare(
+          this.bech32Address,
+          this.poolId
+        );
+
       if (
-        this.poolDetail.userAvailableValue.toDec().gt(new Dec(0)) &&
+        userAvailableShares.toDec().gt(new Dec(0)) &&
         bondDurations.some((duration) => duration.bondable)
       )
         return 2;
 
-      if (this.poolDetail?.userAvailableValue.toDec().isZero()) return 1;
+      if (userAvailableShares.toDec().isZero()) return 1;
     }
   );
 
