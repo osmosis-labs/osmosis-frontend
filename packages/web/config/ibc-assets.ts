@@ -465,7 +465,7 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-3",
         coinMinimalDenom: "wftm-wei",
         sourceChainNameOverride: "Fantom",
-        isVerified: false,
+        isVerified: true,
         originBridgeInfo: {
           bridge: "axelar" as const,
           wallets: ["metamask" as const],
