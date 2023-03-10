@@ -178,7 +178,7 @@ export class RootStore {
         wsObject: WebSocket as any,
       }),
       CosmwasmAccount.use({ queriesStore: this.queriesStore }),
-      OsmosisAccount.use({ queriesStore: this.queriesStore })
+      OsmosisAccount.use({ queriesStore: this.queriesStore }) as any
     );
   }
 }

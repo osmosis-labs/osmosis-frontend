@@ -392,7 +392,7 @@ export const TradeClipboard: FunctionComponent<{
           currency: tokenInCurrency,
           amount: tradeTokenInConfig.amount,
         };
-        // const maxSlippage = slippageConfig.slippage.symbol("").toString();
+        const maxSlippage = slippageConfig.slippage.symbol("").toString();
 
         try {
           logEvent([
@@ -406,66 +406,66 @@ export const TradeClipboard: FunctionComponent<{
             },
           ]);
           if (routePools.length === 1) {
-            // await account.osmosis.sendSwapExactAmountInMsg(
-            //   routePools[0].poolId,
-            //   tokenIn,
-            //   routePools[0].tokenOutCurrency,
-            //   maxSlippage,
-            //   "",
-            //   {
-            //     amount: [
-            //       {
-            //         denom: chainStore.osmosis.stakeCurrency.coinMinimalDenom,
-            //         amount: "0",
-            //       },
-            //     ],
-            //   },
-            //   {
-            //     preferNoSetFee: preferZeroFee,
-            //   },
-            //   () => {
-            //     logEvent([
-            //       EventName.Swap.swapCompleted,
-            //       {
-            //         fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
-            //         tokenAmount: Number(tokenIn.amount),
-            //         toToken: tradeTokenInConfig.outCurrency.coinDenom,
-            //         isOnHome: !isInModal,
-            //         isMultiHop: false,
-            //       },
-            //     ]);
-            //   }
-            // );
+            await account.osmosis.sendSwapExactAmountInMsg(
+              routePools[0].poolId,
+              tokenIn,
+              routePools[0].tokenOutCurrency,
+              maxSlippage,
+              "",
+              {
+                amount: [
+                  {
+                    denom: chainStore.osmosis.stakeCurrency.coinMinimalDenom,
+                    amount: "0",
+                  },
+                ],
+              },
+              {
+                preferNoSetFee: preferZeroFee,
+              },
+              () => {
+                logEvent([
+                  EventName.Swap.swapCompleted,
+                  {
+                    fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+                    tokenAmount: Number(tokenIn.amount),
+                    toToken: tradeTokenInConfig.outCurrency.coinDenom,
+                    isOnHome: !isInModal,
+                    isMultiHop: false,
+                  },
+                ]);
+              }
+            );
           } else {
-            // await account.osmosis.sendMultihopSwapExactAmountInMsg(
-            //   routePools,
-            //   tokenIn,
-            //   maxSlippage,
-            //   "",
-            //   {
-            //     amount: [
-            //       {
-            //         denom: chainStore.osmosis.stakeCurrency.coinMinimalDenom,
-            //         amount: "0",
-            //       },
-            //     ],
-            //   },
-            //   {
-            //     preferNoSetFee: preferZeroFee,
-            //   },
-            //   () => {
-            //     logEvent([
-            //       EventName.Swap.swapCompleted,
-            //       {
-            //         fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
-            //         tokenAmount: Number(tokenIn.amount),
-            //         toToken: tradeTokenInConfig.outCurrency.coinDenom,
-            //         isOnHome: !isInModal,
-            //         isMultiHop: true,
-            //       },
-            //     ]);
-            //   }
-            // );
+            await account.osmosis.sendMultihopSwapExactAmountInMsg(
+              routePools,
+              tokenIn,
+              maxSlippage,
+              "",
+              {
+                amount: [
+                  {
+                    denom: chainStore.osmosis.stakeCurrency.coinMinimalDenom,
+                    amount: "0",
+                  },
+                ],
+              },
+              {
+                preferNoSetFee: preferZeroFee,
+              },
+              () => {
+                logEvent([
+                  EventName.Swap.swapCompleted,
+                  {
+                    fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+                    tokenAmount: Number(tokenIn.amount),
+                    toToken: tradeTokenInConfig.outCurrency.coinDenom,
+                    isOnHome: !isInModal,
+                    isMultiHop: true,
+                  },
+                ]);
+              }
+            );
           }
           tradeTokenInConfig.setAmount("");
           tradeTokenInConfig.setFraction(undefined);

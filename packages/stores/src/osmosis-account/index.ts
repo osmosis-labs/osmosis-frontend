@@ -66,7 +66,7 @@ export class OsmosisAccountImpl {
     protected readonly _msgOpts: OsmosisMsgOpts
   ) {}
 
-  get address() {
+  private get address() {
     return this.base.getWallet(this.chainId)?.address ?? "";
   }
 

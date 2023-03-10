@@ -37,10 +37,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   >;
 
   @observable
-  injectedAccounts = new Map<
-    string,
-    Record<keyof Injects[number], Injects[number]>
-  >();
+  injectedAccounts = new Map<string, UnionToIntersection<Injects[number]>>();
 
   @observable
   private _refreshRequests = 0;
@@ -113,29 +110,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     this.accountSetCreators = accountSetCreators;
 
     makeObservable(this);
-
-    // runInAction(() => {
-    //   const chainIdsAndNames = this.walletManager.chainRecords.map(
-    //     ({ chain }) => [chain.chain_name, chain.chain_id]
-    //   );
-
-    //   chainIdsAndNames.forEach(([name, chainId]) => {
-    //     this.accountSetCreators.forEach((fn: Functionify<any, any>) => {
-    //       const r = fn(this, this.chainGetter, chainId);
-
-    //       for (const key of Object.keys(r)) {
-    //         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //         // @ts-ignore
-    //         if (walletWithAccountSet[key]) {
-    //           continue;
-    //         }
-
-    //         this.injectedAccounts.set(name, r[key]);
-    //         this.injectedAccounts.set(chainId, r[key]);
-    //       }
-    //     });
-    //   });
-    // });
   }
 
   @action
@@ -193,11 +167,17 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       /**
        * Merge the accounts into the wallet.
        */
-      for (const key of Object.keys(injectedAccountsForChain)) {
-        if (walletWithAccountSet[key]) {
+      for (const key of Object.keys(injectedAccountsForChain as object)) {
+        if (
+          walletWithAccountSet[
+            key as keyof UnionToIntersection<Injects[number]>
+          ]
+        ) {
           continue;
         }
 
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         walletWithAccountSet[key] = injectedAccountsForChain[key];
       }
 
@@ -207,24 +187,32 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     return wallet;
   }
 
-  getInjectedAccounts(chainNameOrId: string) {
+  getInjectedAccounts(
+    chainNameOrId: string
+  ): UnionToIntersection<Injects[number]> {
     const previousInjectedAccounts = this.injectedAccounts.get(chainNameOrId);
     if (previousInjectedAccounts) {
       return previousInjectedAccounts;
     }
 
-    const newInjectedAccounts: Record<string, any> = {};
+    const newInjectedAccounts = {} as UnionToIntersection<Injects[number]>;
 
     for (let i = 0; i < this.accountSetCreators.length; i++) {
-      const fn = this.accountSetCreators[i] as Functionify<any, any>;
+      const fn = this.accountSetCreators[i] as Functionify<
+        any,
+        Injects[number]
+      >;
       const r = fn(this, this.chainGetter, chainNameOrId);
 
       for (const key of Object.keys(r)) {
-        if (newInjectedAccounts[key]) {
+        if (
+          newInjectedAccounts[key as keyof UnionToIntersection<Injects[number]>]
+        ) {
           continue;
         }
 
-        newInjectedAccounts[key] = r[key];
+        newInjectedAccounts[key as keyof UnionToIntersection<Injects[number]>] =
+          r[key];
       }
     }
 
