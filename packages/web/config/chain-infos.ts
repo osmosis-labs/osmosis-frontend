@@ -628,6 +628,7 @@ const chainInfos = (
           coinMinimalDenom:
             "cw20:juno159q8t5g02744lxq8lfmcn6f78qqulq9wn3y9w7lxjgkz4e0a6kvsfvapse:SOLAR",
           coinDecimals: 6,
+          coinGeckoId: "pool:solar",
           coinImageUrl: "/tokens/solar.png",
         },
         {
@@ -926,6 +927,13 @@ const chainInfos = (
           coinDecimals: 6,
           coinImageUrl:
             "/tokens/ftD4B6290EDEE1EC7B97AB5A1DC6C177EFD08ADCC3.png",
+        },
+        {
+          coinDenom: "LDON",
+          coinMinimalDenom: "ft347B1612A2B7659913679CF6CD45B8B130C50A00",
+          coinDecimals: 6,
+          coinImageUrl:
+            "/tokens/ft347B1612A2B7659913679CF6CD45B8B130C50A00.png",
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
