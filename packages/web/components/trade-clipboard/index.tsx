@@ -124,7 +124,6 @@ export const TradeClipboard: FunctionComponent<{
         if (value) {
           tradeTokenInConfig.optimizedRoutePaths.forEach((route) => {
             route.pools.forEach((pool) => {
-              console.log("refresh pool", pool.id);
               queries.osmosis?.queryGammPools
                 .getPool(pool.id)
                 ?.waitFreshResponse();

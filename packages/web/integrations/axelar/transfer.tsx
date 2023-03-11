@@ -139,8 +139,6 @@ const AxelarTransfer: FunctionComponent<
           ? {
               ...balanceOnOsmosis.balance.currency.originCurrency!,
               coinDenom: sourceChainConfig.nativeWrapEquivalent.wrapDenom,
-              coinMinimalDenom:
-                sourceChainConfig.nativeWrapEquivalent.tokenMinDenom,
             }
           : undefined,
       [sourceChainConfig, balanceOnOsmosis]
@@ -242,7 +240,7 @@ const AxelarTransfer: FunctionComponent<
       useTransferFeeQuery(
         sourceChain,
         destChain,
-        balanceOnOsmosis.balance.currency.originCurrency!.coinMinimalDenom, // Canh Trinh: native autowrap: currently transfer query only works with wrapped denoms, even though it's a native transfer. fee should be the equivalent
+        originCurrency.coinMinimalDenom, // Canh Trinh: native autowrap: currently transfer query only works with wrapped denoms, even though it's a native transfer. fee should be the equivalent
         inputAmountRaw === "" ? "1" : inputAmountRaw,
         originCurrency,
         isTestNet ? Environment.TESTNET : Environment.MAINNET
@@ -302,9 +300,8 @@ const AxelarTransfer: FunctionComponent<
         sourceChain,
         destChain,
         isWithdraw || correctChainSelected ? accountAddress : undefined,
-        useNativeToken && sourceChainConfig?.nativeWrapEquivalent
-          ? sourceChainConfig.nativeWrapEquivalent.tokenMinDenom
-          : balanceOnOsmosis.balance.currency.originCurrency!.coinMinimalDenom,
+        originCurrency.coinMinimalDenom,
+        useNativeToken,
         isTestNet ? Environment.TESTNET : Environment.MAINNET,
         isWithdraw ? balanceOnOsmosis.balance.toDec().gt(new Dec(0)) : true
       );
@@ -460,7 +457,6 @@ const AxelarTransfer: FunctionComponent<
       balanceOnOsmosis.sourceChannelId,
       balanceOnOsmosis.destChannelId,
       depositAddress,
-      depositAmount,
       erc20ContractAddress,
       ethWalletClient,
       isWithdraw,
@@ -472,6 +468,7 @@ const AxelarTransfer: FunctionComponent<
       inputAmount,
       inputAmountRaw,
       logEvent,
+      setLastDepositAccountAddress,
     ]);
     // close modal when initial eth transaction is committed
     const isSendTxPending = isWithdraw
@@ -483,6 +480,7 @@ const AxelarTransfer: FunctionComponent<
       }
     }, [
       transferInitiated,
+      isSendTxPending,
       osmosisAccount.txTypeInProgress,
       ethWalletClient.isSending,
       isEthTxPending,

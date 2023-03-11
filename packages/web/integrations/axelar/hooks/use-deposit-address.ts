@@ -4,16 +4,18 @@ import { useCallback, useEffect, useRef, useState } from "react";
 /** Generate deposit addresses reactively. Will hold onto the last generated address for each sourceChain/destChain/address/coinMinimalDenom combination until unmount.
  * @param sourceChain Source chain.
  * @param destChain Destination chain.
- * @param address User's destination address to generate deposit address for (on counterparty).
+ * @param destinationAddress User's destination address to generate deposit address for (on counterparty).
  * @param coinMinimalDenom Axelar-accepted coin minimal denom to generate deposit address for.
+ * @param autoWrapOrUnwrap Whether to automatically wrap or unwrap the coin into native coin.
  * @param environment Axelar environment to use.
  * @param shouldGenerate Whether to generate a deposit address on this render.
  */
 export function useDepositAddress(
   sourceChain: string,
   destChain: string,
-  address: string | undefined,
+  destinationAddress: string | undefined,
   coinMinimalDenom: string,
+  autoWrapOrUnwrap = false,
   environment = Environment.MAINNET,
   shouldGenerate = true
 ): {
@@ -27,14 +29,23 @@ export function useDepositAddress(
   const depositAddressCache = useRef(new Map<string, string>());
 
   const generateAddress = useCallback(async () => {
-    const cacheKey = `${sourceChain}/${destChain}/${address}/${coinMinimalDenom}`;
+    const cacheKey = `${sourceChain}/${destChain}/${destinationAddress}/${coinMinimalDenom}/${autoWrapOrUnwrap}`;
     const cachedDepositAddress = depositAddressCache.current.get(cacheKey);
     if (cachedDepositAddress) {
       setDepositAddress(cachedDepositAddress);
-    } else if (address) {
+    } else if (destinationAddress) {
       setIsLoading(true);
       new AxelarAssetTransfer({ environment })
-        .getDepositAddress(sourceChain, destChain, address, coinMinimalDenom)
+        .getDepositAddress({
+          fromChain: sourceChain,
+          toChain: destChain,
+          destinationAddress: destinationAddress,
+          asset: coinMinimalDenom,
+          options: {
+            refundAddress: destinationAddress,
+            shouldUnwrapIntoNative: autoWrapOrUnwrap,
+          },
+        })
         .then((generatedAddress) => {
           setDepositAddress(generatedAddress);
           depositAddressCache.current.set(cacheKey, generatedAddress);
@@ -47,10 +58,11 @@ export function useDepositAddress(
     return null;
   }, [
     environment,
-    address,
+    destinationAddress,
     sourceChain,
     destChain,
     coinMinimalDenom,
+    autoWrapOrUnwrap,
     setIsLoading,
   ]);
 
@@ -71,12 +83,12 @@ export function useDepositAddress(
     [generateAddress, setDepositAddress]
   );
   useEffect(() => {
-    if (address && shouldGenerate) {
+    if (destinationAddress && shouldGenerate) {
       setDepositAddress(null);
       doGen().catch((e) => console.error(e));
     }
   }, [
-    address,
+    destinationAddress,
     coinMinimalDenom,
     sourceChain,
     destChain,

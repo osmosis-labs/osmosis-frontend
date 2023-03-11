@@ -46,7 +46,6 @@ const PaginatedTable = ({
 
   useEffect(() => {
     if (shouldLoad) {
-      console.log("fetching more");
       paginate();
     }
   }, [paginate, shouldLoad, table, virtualRows.length]);
