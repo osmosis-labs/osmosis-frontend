@@ -31,7 +31,7 @@ export class PoolFallbackPriceStore
     intermidiateRoutes: IntermediateRoute[]
   ) {
     super(kvStore, supportedVsCurrencies, defaultVsCurrency, {
-      baseURL: "https://prices.osmosis.zone/api/v3",
+      baseURL: "https://api.coingecko.com/api/v3",
     });
 
     this._intermidiateRoutes = intermidiateRoutes;
