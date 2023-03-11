@@ -42,7 +42,6 @@ export function useDepositAddress(
           destinationAddress: destinationAddress,
           asset: coinMinimalDenom,
           options: {
-            refundAddress: destinationAddress,
             shouldUnwrapIntoNative: autoWrapOrUnwrap,
           },
         })

@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^1.2.3",
-    "@axelar-network/axelarjs-sdk": "^0.12.4",
+    "@axelar-network/axelarjs-sdk": "0.12.5-alpha.5",
     "@cosmjs/launchpad": "^0.26.5",
     "@ethersproject/abi": "^5.7.0",
     "@headlessui/react": "^1.7.8",
