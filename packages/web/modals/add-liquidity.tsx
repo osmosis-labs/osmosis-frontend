@@ -19,12 +19,12 @@ export const AddLiquidityModal: FunctionComponent<
   } & ModalBaseProps
 > = observer((props) => {
   const { poolId } = props;
-  const { chainStore, oldAccountStore, queriesStore, priceStore } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
   const t = useTranslation();
 
   const { chainId } = chainStore.osmosis;
-  const account = oldAccountStore.getAccount(chainId);
-  const isSendingMsg = account.txTypeInProgress !== "";
+  const account = accountStore.getWallet(chainId);
+  const isSendingMsg = account?.txTypeInProgress !== "";
 
   const { config, addLiquidity } = useAddLiquidityConfig(
     chainStore,

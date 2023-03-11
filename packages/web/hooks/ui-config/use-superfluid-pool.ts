@@ -11,10 +11,10 @@ export function useSuperfluidPool(): {
     lockLPTokensConfig?: AmountConfig
   ) => Promise<"delegated" | "locked-and-delegated">;
 } {
-  const { chainStore, oldAccountStore, derivedDataStore } = useStore();
+  const { chainStore, derivedDataStore, accountStore } = useStore();
   const { chainId } = chainStore.osmosis;
 
-  const account = oldAccountStore.getAccount(chainId);
+  const account = accountStore.getWallet(chainId);
 
   const superfluidDelegateToValidator = useCallback(
     (poolId, validatorAddress, lockLPTokensConfig) => {
@@ -26,7 +26,7 @@ export function useSuperfluidPool(): {
             if (superfluidPoolDetail.superfluid.upgradeableLpLockIds) {
               // is delegating existing locked shares
               try {
-                await account.osmosis.sendSuperfluidDelegateMsg(
+                await account?.osmosis.sendSuperfluidDelegateMsg(
                   superfluidPoolDetail.superfluid.upgradeableLpLockIds.lockIds,
                   validatorAddress,
                   undefined,
@@ -41,7 +41,7 @@ export function useSuperfluidPool(): {
               lockLPTokensConfig
             ) {
               try {
-                await account.osmosis.sendLockAndSuperfluidDelegateMsg(
+                await account?.osmosis.sendLockAndSuperfluidDelegateMsg(
                   [
                     {
                       currency: lockLPTokensConfig.sendCurrency,

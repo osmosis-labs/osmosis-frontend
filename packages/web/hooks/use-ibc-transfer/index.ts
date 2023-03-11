@@ -1,9 +1,11 @@
-import { ChainWalletBase, WalletStatus } from "@cosmos-kit/core";
+import { WalletStatus } from "@cosmos-kit/core";
 import { AmountConfig } from "@keplr-wallet/hooks";
 import { getKeplrFromWindow } from "@keplr-wallet/stores";
 import {
+  AccountStore,
   basicIbcTransfer,
   IBCTransferHistory,
+  OsmosisAccount,
   UncommitedHistory,
 } from "@osmosis-labs/stores";
 import { useEffect } from "react";
@@ -33,8 +35,8 @@ export function useIbcTransfer({
   isWithdraw,
   ics20ContractAddress,
 }: IbcTransfer): [
-  ChainWalletBase | undefined,
-  ChainWalletBase | undefined,
+  ReturnType<AccountStore<[OsmosisAccount]>["getWallet"]> | undefined,
+  ReturnType<AccountStore<[OsmosisAccount]>["getWallet"]> | undefined,
   AmountConfig,
   boolean,
   (

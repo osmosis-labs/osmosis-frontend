@@ -24,9 +24,8 @@ export function useAddLiquidityConfig(
   config: ObservableAddLiquidityConfig;
   addLiquidity: () => Promise<void>;
 } {
-  const { accountStore, oldAccountStore } = useStore();
+  const { accountStore } = useStore();
 
-  const oldAccount = oldAccountStore.getAccount(osmosisChainId);
   const account = accountStore.getWallet(osmosisChainId);
   const address = account?.address ?? "";
 
@@ -53,7 +52,7 @@ export function useAddLiquidityConfig(
     return new Promise<void>(async (resolve, reject) => {
       try {
         if (config.isSingleAmountIn && config.singleAmountInConfig) {
-          await oldAccount.osmosis.sendJoinSwapExternAmountInMsg(
+          await account?.osmosis.sendJoinSwapExternAmountInMsg(
             config.poolId,
             {
               currency: config.singleAmountInConfig.sendCurrency,
@@ -64,7 +63,7 @@ export function useAddLiquidityConfig(
             resolve
           );
         } else if (config.shareOutAmount) {
-          await oldAccount.osmosis.sendJoinPoolMsg(
+          await account?.osmosis.sendJoinPoolMsg(
             config.poolId,
             config.shareOutAmount.toDec().toString(),
             undefined,
@@ -78,7 +77,7 @@ export function useAddLiquidityConfig(
       }
     });
   }, [
-    oldAccount.osmosis,
+    account?.osmosis,
     config.isSingleAmountIn,
     config.singleAmountInConfig,
     config.sender,

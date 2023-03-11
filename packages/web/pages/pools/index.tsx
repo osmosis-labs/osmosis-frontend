@@ -55,7 +55,6 @@ const LESS_SUPERFLUID_POOLS_COUNT = 6;
 const Pools: NextPage = observer(function () {
   const {
     chainStore,
-    oldAccountStore,
     accountStore,
     priceStore,
     queriesStore,
@@ -70,7 +69,6 @@ const Pools: NextPage = observer(function () {
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
-  const oldAccount = oldAccountStore.getAccount(chainId);
   const account = accountStore.getWallet(chainId);
 
   const superfluidPoolIds = queryOsmosis.querySuperfluidPools.superfluidPoolIds;
@@ -212,7 +210,7 @@ const Pools: NextPage = observer(function () {
   const onCreatePool = useCallback(async () => {
     try {
       if (createPoolConfig.poolType === "weighted") {
-        await oldAccount.osmosis.sendCreateBalancerPoolMsg(
+        await account?.osmosis.sendCreateBalancerPoolMsg(
           createPoolConfig.swapFee,
           createPoolConfig.assets.map((asset) => {
             if (!asset.percentage)
@@ -241,7 +239,7 @@ const Pools: NextPage = observer(function () {
           createPoolConfig.scalingFactorControllerAddress
             ? createPoolConfig.scalingFactorControllerAddress
             : undefined;
-        await oldAccount.osmosis.sendCreateStableswapPoolMsg(
+        await account?.osmosis.sendCreateStableswapPoolMsg(
           createPoolConfig.swapFee,
           createPoolConfig.assets.map((asset) => {
             if (!asset.scalingFactor)
@@ -268,7 +266,7 @@ const Pools: NextPage = observer(function () {
       setIsCreatingPool(false);
       console.error(e);
     }
-  }, [createPoolConfig, oldAccount]);
+  }, [createPoolConfig, account]);
 
   // my pools
   const myPoolIds = queryOsmosis.queryGammPoolShare.getOwnPools(
@@ -316,7 +314,7 @@ const Pools: NextPage = observer(function () {
         onRequestClose={() => setIsCreatingPool(false)}
         title={t("pools.createPool.title")}
         createPoolConfig={createPoolConfig}
-        isSendingMsg={oldAccount.txTypeInProgress !== ""}
+        isSendingMsg={account?.txTypeInProgress !== ""}
         onCreatePool={onCreatePool}
       />
       {addLiquidityModalPoolId && (

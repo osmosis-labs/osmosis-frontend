@@ -1,4 +1,4 @@
-import { WalletStatus } from "@keplr-wallet/stores";
+import { WalletStatus } from "@cosmos-kit/core";
 import { useEffect, useState } from "react";
 
 import { useStore } from "../../stores";
@@ -22,15 +22,15 @@ export function useTransakModal(
 ): {
   setModal: (show: boolean) => void;
 } {
-  const { chainStore, oldAccountStore: accountStore } = useStore();
+  const { chainStore, accountStore } = useStore();
 
-  const account = accountStore.getAccount(chainStore.osmosis.chainId);
+  const account = accountStore.getWallet(chainStore.osmosis.chainId);
 
   const [transak, setTransak] = useState<any | null>(null);
   const [shouldShow, setShouldShow] = useState(false);
 
   useEffect(() => {
-    if (account.walletStatus === WalletStatus.Loaded) {
+    if (account?.walletStatus === WalletStatus.Connected) {
       import("@transak/transak-sdk" as any).then(({ default: transakSdk }) => {
         const defaultCryptoCurrency = "OSMO";
 
@@ -43,7 +43,7 @@ export function useTransakModal(
           widgetWidth: "500px",
           // Examples of some of the customization parameters you can pass
           defaultCryptoCurrency, // Example 'ETH'
-          walletAddress: account.bech32Address, // Your customer's wallet address
+          walletAddress: account.address, // Your customer's wallet address
           themeColor: "6A67EA", // App theme color // wosmongton-700
           email: "", // Your customer's email address
           redirectURL: "",
@@ -86,7 +86,7 @@ export function useTransakModal(
     } else {
       setTransak(null);
     }
-  }, [account.walletStatus]);
+  }, [account?.walletStatus]);
 
   useEffect(() => {
     if ((showOnMount || shouldShow) && transak) {

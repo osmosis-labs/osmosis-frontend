@@ -24,17 +24,11 @@ export const LockTokensModal: FunctionComponent<
   const t = useTranslation();
   const locale = useCurrentLanguage();
 
-  const {
-    chainStore,
-    accountStore,
-    oldAccountStore,
-    queriesStore,
-    derivedDataStore,
-  } = useStore();
+  const { chainStore, accountStore, queriesStore, derivedDataStore } =
+    useStore();
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
-  const oldAccount = oldAccountStore.getAccount(chainId);
   const account = accountStore.getWallet(chainId);
   const address = account?.address ?? "";
 
@@ -47,7 +41,7 @@ export const LockTokensModal: FunctionComponent<
     address,
     poolId
   );
-  const isSendingMsg = oldAccount.txTypeInProgress !== "";
+  const isSendingMsg = account?.txTypeInProgress !== "";
   /** If they have a superfluid validator already, they will automatically SFS stake if they select the highest gauge. (Cant be undone)
    *  TODO: perhaps we should display this in the view somehow
    */

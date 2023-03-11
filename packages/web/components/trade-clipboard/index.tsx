@@ -1130,8 +1130,8 @@ export const TradeClipboard: FunctionComponent<{
           disabled={
             account?.walletStatus === WalletStatus.Connected &&
             (tradeTokenInConfig.error !== undefined ||
-              tradeTokenInConfig.optimizedRoutePaths.length === 0)
-            // || account.txTypeInProgress !== "") TODO: uncomment this when we have a way to check if there is a tx in progress
+              tradeTokenInConfig.optimizedRoutePaths.length === 0 ||
+              account.txTypeInProgress !== "")
           }
           onClick={swap}
         >

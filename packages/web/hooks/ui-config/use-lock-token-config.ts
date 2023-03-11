@@ -16,12 +16,10 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
     duration: Duration
   ) => Promise<"synthetic" | "normal">;
 } {
-  const { chainStore, queriesStore, accountStore, oldAccountStore } =
-    useStore();
+  const { chainStore, queriesStore, accountStore } = useStore();
 
   const { chainId } = chainStore.osmosis;
 
-  const oldAccount = oldAccountStore.getAccount(chainId);
   const account = accountStore.getWallet(chainId);
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const address = account?.address ?? "";
@@ -42,7 +40,7 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
           if (!config.sendCurrency.coinMinimalDenom.startsWith("gamm")) {
             throw new Error("Tried to lock non-gamm token");
           }
-          await oldAccount.osmosis.sendLockTokensMsg(
+          await account?.osmosis.sendLockTokensMsg(
             lockDuration.asSeconds(),
             [
               {
@@ -94,14 +92,14 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
             isSuperfluidDuration ||
             locks.some((lock) => lock.isSyntheticLock)
           ) {
-            await oldAccount.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
+            await account?.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
               locks,
               undefined,
               () => resolve("synthetic")
             );
           } else {
             const blockGasLimitLockIds = lockIds.slice(0, 10);
-            await oldAccount.osmosis.sendBeginUnlockingMsg(
+            await account?.osmosis.sendBeginUnlockingMsg(
               blockGasLimitLockIds,
               undefined,
               () => resolve("normal")

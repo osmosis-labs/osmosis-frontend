@@ -21,7 +21,13 @@ import {
 } from "@keplr-wallet/stores";
 import { KeplrSignOptions } from "@keplr-wallet/types";
 import { assets, chains } from "chain-registry";
-import { action, makeObservable, observable } from "mobx";
+import {
+  action,
+  computed,
+  makeObservable,
+  observable,
+  runInAction,
+} from "mobx";
 import { UnionToIntersection } from "utility-types";
 
 import { OsmosisQueries } from "./queries";
@@ -36,14 +42,15 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     Injects
   >;
 
-  @observable
-  injectedAccounts = new Map<string, UnionToIntersection<Injects[number]>>();
+  injectedAccounts = observable.map<
+    string,
+    UnionToIntersection<Injects[number]>
+  >();
 
   @observable
   private _refreshRequests = 0;
 
-  @observable
-  txTypeInProgress = "";
+  txTypeInProgressByChain = observable.map<string, string>();
 
   private _walletManager: WalletManager = new WalletManager(
     chains,
@@ -63,7 +70,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         relayUrl: "wss://relay.walletconnect.org",
       },
     },
-    undefined,
+    {
+      // signingStargate: () => ({ aminoTypes }),
+    },
     undefined,
     {
       duration: Infinity,
@@ -117,11 +126,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     this._refreshRequests++;
   }
 
-  @action
-  private setTxTypeInProgress(type: string) {
-    this.txTypeInProgress = type;
-  }
-
   get walletManager() {
     // trigger a refresh as we don't have access to the internal methods of the wallet manager.
     this._refreshRequests;
@@ -157,10 +161,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   getWallet(chainNameOrId: string) {
     const walletRepo = this.getWalletRepo(chainNameOrId);
     const wallet = walletRepo.current;
+    const txInProgress = this.txTypeInProgressByChain.get(chainNameOrId);
 
     if (wallet) {
       const walletWithAccountSet = wallet as ChainWalletBase &
-        UnionToIntersection<Injects[number]>;
+        UnionToIntersection<Injects[number]> & { txTypeInProgress: string };
 
       const injectedAccountsForChain = this.getInjectedAccounts(chainNameOrId);
 
@@ -181,6 +186,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         walletWithAccountSet[key] = injectedAccountsForChain[key];
       }
 
+      walletWithAccountSet.txTypeInProgress = txInProgress ?? "";
+
       return walletWithAccountSet;
     }
 
@@ -199,7 +206,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     for (let i = 0; i < this.accountSetCreators.length; i++) {
       const fn = this.accountSetCreators[i] as Functionify<
-        any,
+        [AccountStore<Injects>, ChainGetter, string],
         Injects[number]
       >;
       const r = fn(this, this.chainGetter, chainNameOrId);
@@ -220,13 +227,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     return newInjectedAccounts;
   }
 
+  @computed
   hasWallet(string: string): boolean {
     const wallet = this.getWallet(string);
     return Boolean(wallet);
   }
 
   async sign(
-    string: string,
+    chainNameOrId: string,
     type: string | "unknown",
     msgs:
       | ProtoMsgsOrWithAminoMsgs
@@ -244,17 +252,19 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   ) {
     let txHash: Uint8Array;
 
-    this.setTxTypeInProgress(type);
+    runInAction(() => {
+      this.txTypeInProgressByChain.set(chainNameOrId, type);
+    });
 
-    const wallet = this.getWallet(string);
+    const wallet = this.getWallet(chainNameOrId);
 
     if (!wallet) {
-      throw new Error(`Wallet for chain ${string} is not provided.`);
+      throw new Error(`Wallet for chain ${chainNameOrId} is not provided.`);
     }
 
     try {
       if (wallet.walletStatus !== WalletStatus.Connected) {
-        throw new Error(`Wallet for chain ${string} is not connected.`);
+        throw new Error(`Wallet for chain ${chainNameOrId} is not connected.`);
       }
 
       if (typeof msgs === "function") {
@@ -278,15 +288,20 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         throw new Error("The length of aminoMsgs and protoMsgs are different");
       }
 
+      console.log(aminoMsgs);
+
       const result = await wallet.signAndBroadcast(aminoMsgs, fee, memo);
 
       txHash = new TextEncoder().encode(result.transactionHash);
     } catch (e) {
+      console.log(e);
       const error = e as Error;
-      this.setTxTypeInProgress("");
+      runInAction(() => {
+        this.txTypeInProgressByChain.set(chainNameOrId, "");
+      });
 
       if (this.txOpts.preTxEvents?.onBroadcastFailed) {
-        this.txOpts.preTxEvents.onBroadcastFailed(string, error);
+        this.txOpts.preTxEvents.onBroadcastFailed(chainNameOrId, error);
       }
 
       if (
@@ -313,7 +328,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     }
 
     if (this.txOpts.preTxEvents?.onBroadcasted) {
-      this.txOpts.preTxEvents.onBroadcasted(string, txHash);
+      this.txOpts.preTxEvents.onBroadcasted(chainNameOrId, txHash);
     }
 
     if (onBroadcasted) {
@@ -327,13 +342,15 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     txTracer.traceTx(txHash).then((tx) => {
       txTracer.close();
 
-      this.setTxTypeInProgress("");
+      runInAction(() => {
+        this.txTypeInProgressByChain.set(chainNameOrId, "");
+      });
 
       // After sending tx, the balances is probably changed due to the fee.
       for (const feeAmount of fee.amount) {
         if (!wallet.address) continue;
 
-        const queries = this.queriesStore.get(string);
+        const queries = this.queriesStore.get(chainNameOrId);
         const bal = queries.queryBalances
           .getQueryBech32Address(wallet.address)
           .balances.find(
@@ -351,7 +368,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
 
       if (this.txOpts.preTxEvents?.onFulfill) {
-        this.txOpts.preTxEvents.onFulfill(string, tx);
+        this.txOpts.preTxEvents.onFulfill(chainNameOrId, tx);
       }
 
       if (onFulfill) {

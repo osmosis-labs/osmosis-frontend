@@ -26,9 +26,8 @@ export function useRemoveLiquidityConfig(
   config: ObservableRemoveLiquidityConfig;
   removeLiquidity: () => Promise<void>;
 } {
-  const { accountStore, oldAccountStore } = useStore();
+  const { accountStore } = useStore();
 
-  const oldAccount = oldAccountStore.getAccount(osmosisChainId);
   const account = accountStore.getWallet(osmosisChainId);
   const address = account?.address ?? "";
 
@@ -55,7 +54,7 @@ export function useRemoveLiquidityConfig(
   const removeLiquidity = useCallback(() => {
     return new Promise<void>(async (resolve, reject) => {
       try {
-        await oldAccount.osmosis.sendExitPoolMsg(
+        await account?.osmosis.sendExitPoolMsg(
           config.poolId,
           config.poolShareWithPercentage.toDec().toString(),
           undefined,
