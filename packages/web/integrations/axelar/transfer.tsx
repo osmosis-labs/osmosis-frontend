@@ -275,6 +275,7 @@ const AxelarTransfer: FunctionComponent<
         inputAmountRaw,
         inputAmount,
         isWithdraw,
+        osmosisAccount.bech32Address,
       ]
     );
 
@@ -374,7 +375,6 @@ const AxelarTransfer: FunctionComponent<
           // isDeposit
 
           if (useNativeToken) {
-            // TODO: send native if not wanting to transfer wrapped
             try {
               await send(
                 ethWalletClient.send,
@@ -469,6 +469,9 @@ const AxelarTransfer: FunctionComponent<
       osmosisAccount,
       trackTransferStatus,
       withdrawAmountConfig,
+      inputAmount,
+      inputAmountRaw,
+      logEvent,
     ]);
     // close modal when initial eth transaction is committed
     const isSendTxPending = isWithdraw

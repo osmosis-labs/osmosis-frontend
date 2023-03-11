@@ -7,7 +7,7 @@ import { IS_TESTNET } from "../config";
 import { useConnectWalletModalRedirect } from "../hooks";
 import type { SourceChainKey } from "../integrations/bridge-info";
 import type { EthWallet } from "../integrations/ethereum";
-import type { Wallet } from "../integrations/wallets";
+import type { ObservableWallet } from "../integrations/wallets";
 import { IBCBalance } from "../stores/assets";
 import { ModalBase, ModalBaseProps } from "./base";
 
@@ -27,7 +27,7 @@ export const BridgeTransferModal: FunctionComponent<
     balance: IBCBalance;
     /** Selected network key. */
     sourceChainKey: SourceChainKey;
-    walletClient: Wallet;
+    walletClient: ObservableWallet;
     onRequestSwitchWallet: () => void;
   }
 > = observer((props) => {

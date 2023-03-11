@@ -143,6 +143,8 @@ export class ObservableMetamask implements EthWallet {
 
     if (ethChainId) {
       this._preferredChainId = ethChainId;
+    } else {
+      console.warn("Invalid chain name:", chainName, "is not in ChainNames");
     }
   }
 
