@@ -1503,6 +1503,12 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-16",
         coinMinimalDenom: "uebl",
       },
+      {
+        counterpartyChainId: "quicksilver-2",
+        sourceChannelId: "channel-522",
+        destChannelId: "channel-2",
+        coinMinimalDenom: "uqatom",
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (
