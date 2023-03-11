@@ -760,6 +760,8 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-0",
         coinMinimalDenom: "swth",
         isVerified: true,
+        depositUrlOverride: "https://app.dem.exchange/account/balance/withdraw/swth",
+        withdrawUrlOverride: "https://app.dem.exchange/account/balance/deposit/swth",
       },
       {
         counterpartyChainId: "axelar-dojo-1",
