@@ -69,7 +69,6 @@ export function useAmountConfig({
         if (parts.length === 2) {
           const numDecimals = parts[1].length;
           if (numDecimals > (balCurrency?.coinDecimals ?? 18)) {
-            console.log("decss");
             return;
           }
         }
