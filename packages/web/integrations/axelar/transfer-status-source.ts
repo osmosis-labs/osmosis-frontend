@@ -70,33 +70,37 @@ export class AxelarTransferStatusSource implements ITxStatusSource {
       return;
     }
 
-    const [data] = transferStatus;
-    const idWithoutSourceChain = data?.id.split("_")[0].toLowerCase();
+    try {
+      const [data] = transferStatus;
+      const idWithoutSourceChain = data?.id.split("_")[0].toLowerCase();
 
-    // insufficient fee
-    if (data.send && data.send.insufficient_fee) {
-      return {
-        id: idWithoutSourceChain,
-        status: "failed",
-        reason: "insufficientFee",
-      };
-    }
+      // insufficient fee
+      if (data.send && data.send.insufficient_fee) {
+        return {
+          id: idWithoutSourceChain,
+          status: "failed",
+          reason: "insufficientFee",
+        };
+      }
 
-    if (data.status === "executed") {
-      return { id: idWithoutSourceChain, status: "success" };
-    }
+      if (data.status === "executed") {
+        return { id: idWithoutSourceChain, status: "success" };
+      }
 
-    if (
-      // any of all complete stages does not return success
-      data.send &&
-      data.link &&
-      data.confirm_deposit &&
-      data.ibc_send && // transfer is complete
-      (data.send.status !== "success" ||
-        data.confirm_deposit.status !== "success" ||
-        data.ibc_send.status !== "success")
-    ) {
-      return { id: idWithoutSourceChain, status: "failed" };
+      if (
+        // any of all complete stages does not return success
+        data.send &&
+        data.link &&
+        data.confirm_deposit &&
+        data.ibc_send && // transfer is complete
+        (data.send.status !== "success" ||
+          data.confirm_deposit.status !== "success" ||
+          data.ibc_send.status !== "success")
+      ) {
+        return { id: idWithoutSourceChain, status: "failed" };
+      }
+    } catch {
+      return undefined;
     }
   }
 }
