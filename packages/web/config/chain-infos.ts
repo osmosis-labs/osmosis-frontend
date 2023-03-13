@@ -1065,7 +1065,7 @@ const chainInfos = (
           coinMinimalDenom: "uharbor",
           coinDecimals: 6,
           coinGeckoId: "pool:uharbor",
-          coinImageUrl: "/tokens/harbor.png",
+          coinImageUrl: "/tokens/harbor.svg",
         },
       ],
       features: ["ibc-transfer"],
