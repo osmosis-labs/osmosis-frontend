@@ -1060,6 +1060,13 @@ const chainInfos = (
           coinImageUrl: "/tokens/cmst.png",
           pegMechanism: "collateralized",
         },
+        {
+          coinDenom: "HARBOR",
+          coinMinimalDenom: "uharbor",
+          coinDecimals: 6,
+          coinGeckoId: "pool:uharbor",
+          coinImageUrl: "/tokens/harbor.png",
+        },
       ],
       features: ["ibc-transfer"],
       explorerUrlToTx: "https://www.mintscan.io/comdex/txs/{txHash}",
