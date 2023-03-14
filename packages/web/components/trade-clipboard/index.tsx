@@ -138,7 +138,7 @@ export const TradeClipboard: FunctionComponent<{
     useEffect(() => {
       // auto collapse on input clear
       if (!isEstimateDetailRelevant) setShowEstimateDetails(false);
-    }, [isEstimateDetailRelevant]);
+    }, [isEstimateDetailRelevant, setShowEstimateDetails]);
 
     // auto focus from amount on token switch
     const fromAmountInput = useRef<HTMLInputElement | null>(null);
@@ -209,10 +209,7 @@ export const TradeClipboard: FunctionComponent<{
         tradeTokenInConfig.beforeSpotPriceWithoutSwapFeeOutOverIn
           .trim(true)
           .maxDecimals(8),
-      [
-        tradeTokenInConfig.beforeSpotPriceWithoutSwapFeeOutOverIn,
-        tradeTokenInConfig.outCurrency,
-      ]
+      [tradeTokenInConfig.beforeSpotPriceWithoutSwapFeeOutOverIn]
     );
 
     const [isHoveringSwitchButton, setHoveringSwitchButton] = useState(false);
