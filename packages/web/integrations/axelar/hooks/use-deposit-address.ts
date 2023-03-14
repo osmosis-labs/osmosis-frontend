@@ -25,9 +25,9 @@ export function useDepositAddress(
   const [depositAddress, setDepositAddress] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  /** Key: sourceChain/destChain/address/coinMinimalDenom */
+  /** Key: sourceChain/destChain/address/coinMinimalDenom/autoUnwrap */
   const depositAddressCache = useRef(new Map<string, string>());
-  /** Remembers most recent generating addresses. */
+  /** Remembers most recent generating address. */
   const latestGenCacheKey = useRef("");
 
   const generateAddress = useCallback(async () => {
