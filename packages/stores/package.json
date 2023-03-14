@@ -64,14 +64,16 @@
     "mobx-utils": "^6.0.4",
     "protobufjs": "^6.11.2",
     "utility-types": "^3.10.0",
-    "@cosmos-kit/core": "^1.1.4"
+    "@cosmos-kit/core": "1.1.4",
+    "@cosmjs/proto-signing": "0.29.0",
+    "@cosmjs/stargate": "0.29.0"
   },
   "peerDependencies": {
-    "@cosmos-kit/cosmostation": "^0.15.4",
-    "@cosmos-kit/keplr": "^0.33.4",
-    "@cosmos-kit/leap": "^0.14.4",
-    "@cosmos-kit/trust": "^0.14.4",
-    "@cosmos-kit/xdefi-extension": "^0.15.4",
+    "@cosmos-kit/cosmostation": "0.15.4",
+    "@cosmos-kit/keplr": "0.33.4",
+    "@cosmos-kit/leap": "0.14.4",
+    "@cosmos-kit/trust": "0.14.4",
+    "@cosmos-kit/xdefi-extension": "0.15.4",
     "chain-registry": "^1.9.0"
   }
 }
