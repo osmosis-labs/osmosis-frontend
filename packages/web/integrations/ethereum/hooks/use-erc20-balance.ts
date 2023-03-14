@@ -22,7 +22,13 @@ export function useErc20Balance(
         setErc20Balance(new CoinPretty(memoedOriginCurrency, amount))
       );
     }
-  }, [address, erc20ContractAddress, memoedOriginCurrency]);
+  }, [
+    ethWallet.chainId,
+    address,
+    erc20ContractAddress,
+    memoedOriginCurrency,
+    sendFn,
+  ]);
 
   return erc20Balance;
 }

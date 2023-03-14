@@ -21,7 +21,7 @@ export function useNativeBalance(
         setNativeBalance(new CoinPretty(memoedNativeCurrency, amount))
       );
     }
-  }, [address, memoedNativeCurrency]);
+  }, [ethWallet.chainId, address, memoedNativeCurrency, sendFn]);
 
   return nativeBalance;
 }

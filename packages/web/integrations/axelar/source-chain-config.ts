@@ -65,6 +65,7 @@ export const SourceChainTokenConfigs: {
       logoUrl: "/networks/ethereum.svg",
       nativeWrapEquivalent: {
         wrapDenom: "WETH",
+        tokenMinDenom: "eth",
       },
     },
   },
@@ -77,6 +78,7 @@ export const SourceChainTokenConfigs: {
       logoUrl: "/networks/moonbeam.svg",
       nativeWrapEquivalent: {
         wrapDenom: "WGLMR",
+        tokenMinDenom: "glmr",
       },
     },
   },
@@ -189,6 +191,7 @@ export const SourceChainTokenConfigs: {
       logoUrl: "/networks/binance.svg",
       nativeWrapEquivalent: {
         wrapDenom: "WBNB",
+        tokenMinDenom: "bnb",
       },
     },
   },
@@ -201,6 +204,7 @@ export const SourceChainTokenConfigs: {
       logoUrl: "/networks/polygon.svg",
       nativeWrapEquivalent: {
         wrapDenom: "WMATIC",
+        tokenMinDenom: "matic",
       },
     },
   },
@@ -222,6 +226,7 @@ export const SourceChainTokenConfigs: {
       logoUrl: "/networks/avalanche.svg",
       nativeWrapEquivalent: {
         wrapDenom: "WAVAX",
+        tokenMinDenom: "avax",
       },
     },
   },
@@ -234,6 +239,7 @@ export const SourceChainTokenConfigs: {
       logoUrl: "/networks/fantom.svg",
       nativeWrapEquivalent: {
         wrapDenom: "WFTM",
+        tokenMinDenom: "ftm",
       },
     },
   },

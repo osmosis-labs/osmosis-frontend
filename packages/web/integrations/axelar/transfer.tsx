@@ -300,8 +300,10 @@ const AxelarTransfer: FunctionComponent<
         sourceChain,
         destChain,
         isWithdraw || correctChainSelected ? accountAddress : undefined,
-        originCurrency.coinMinimalDenom,
-        useNativeToken,
+        !isWithdraw && useNativeToken
+          ? sourceChainConfig!.nativeWrapEquivalent!.tokenMinDenom
+          : originCurrency.coinMinimalDenom, // evm -> osmosis uses the native denom if native (autowrap) selected
+        isWithdraw ? useNativeToken : undefined,
         isTestNet ? Environment.TESTNET : Environment.MAINNET,
         isWithdraw ? balanceOnOsmosis.balance.toDec().gt(new Dec(0)) : true
       );
@@ -373,23 +375,22 @@ const AxelarTransfer: FunctionComponent<
 
           if (useNativeToken) {
             try {
-              await send(
+              const txHash = await send(
                 ethWalletClient.send,
                 new CoinPretty(originCurrency, inputAmount).toCoin().amount,
                 ethWalletClient.accountAddress!,
                 depositAddress
-              ).then((txHash) => {
-                trackTransferStatus(txHash as string);
-                setLastDepositAccountAddress(ethWalletClient.accountAddress!);
-                logEvent([
-                  EventName.Assets.depositAssetCompleted,
-                  {
-                    tokenName: originCurrency.coinDenom,
-                    tokenAmount: Number(inputAmountRaw),
-                    bridge: "axelar",
-                  },
-                ]);
-              });
+              );
+              trackTransferStatus(txHash as string);
+              setLastDepositAccountAddress(ethWalletClient.accountAddress!);
+              logEvent([
+                EventName.Assets.depositAssetCompleted,
+                {
+                  tokenName: originCurrency.coinDenom,
+                  tokenAmount: Number(inputAmountRaw),
+                  bridge: "axelar",
+                },
+              ]);
             } catch (e) {
               const msg = ethWalletClient.displayError?.(e);
               if (typeof msg === "string") {
@@ -409,24 +410,23 @@ const AxelarTransfer: FunctionComponent<
           } else if (erc20ContractAddress) {
             // erc20 transfer to deposit address on EVM
             try {
-              await erc20Transfer(
+              const txHash = await erc20Transfer(
                 ethWalletClient.send,
                 new CoinPretty(originCurrency, inputAmount).toCoin().amount,
                 erc20ContractAddress,
                 ethWalletClient.accountAddress!,
                 depositAddress
-              ).then((txHash) => {
-                trackTransferStatus(txHash as string);
-                setLastDepositAccountAddress(ethWalletClient.accountAddress!);
-                logEvent([
-                  EventName.Assets.depositAssetCompleted,
-                  {
-                    tokenName: originCurrency.coinDenom,
-                    tokenAmount: Number(inputAmountRaw),
-                    bridge: "axelar",
-                  },
-                ]);
-              });
+              );
+              trackTransferStatus(txHash as string);
+              setLastDepositAccountAddress(ethWalletClient.accountAddress!);
+              logEvent([
+                EventName.Assets.depositAssetCompleted,
+                {
+                  tokenName: originCurrency.coinDenom,
+                  tokenAmount: Number(inputAmountRaw),
+                  bridge: "axelar",
+                },
+              ]);
             } catch (e: any) {
               const msg = ethWalletClient.displayError?.(e);
               if (typeof msg === "string") {
@@ -449,6 +449,11 @@ const AxelarTransfer: FunctionComponent<
             );
           }
         }
+        if (isWithdraw) {
+          withdrawAmountConfig.setAmount("");
+        } else {
+          setDepositAmount("");
+        }
         setTransferInitiated(true);
       }
     }, [
@@ -469,6 +474,7 @@ const AxelarTransfer: FunctionComponent<
       inputAmountRaw,
       logEvent,
       setLastDepositAccountAddress,
+      setDepositAmount,
     ]);
     // close modal when initial eth transaction is committed
     const isSendTxPending = isWithdraw
