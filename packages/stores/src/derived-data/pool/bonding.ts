@@ -40,7 +40,6 @@ export class ObservablePoolBonding {
     makeObservable(this);
   }
 
-  @computed
   protected get bech32Address() {
     return this.accountStore.getAccount(this.osmosisChainId).bech32Address;
   }
@@ -52,17 +51,14 @@ export class ObservablePoolBonding {
     return osmosisQueries;
   }
 
-  @computed
   protected get queryPool() {
     return this.queries.queryGammPools.getPool(this.poolId);
   }
 
-  @computed
   protected get poolDetail() {
     return this.poolDetails.get(this.poolId);
   }
 
-  @computed
   protected get superfluidPoolDetail() {
     return this.superfluidPoolDetails.get(this.poolId);
   }
@@ -266,12 +262,7 @@ export class ObservablePoolBonding {
           (sum, { apr }) => sum.add(apr),
           new RatePretty(0)
         );
-        const swapFeeApr =
-          this.externalQueries.queryGammPoolFeeMetrics.get7dPoolFeeApr(
-            _queryPool,
-            this.priceStore
-          );
-        aggregateApr = aggregateApr.add(swapFeeApr);
+        aggregateApr = aggregateApr.add(this.poolDetail.swapFeeApr);
         if (superfluid) aggregateApr = aggregateApr.add(superfluid.apr);
 
         return {
@@ -283,7 +274,7 @@ export class ObservablePoolBonding {
           userLockedShareValue,
           userUnlockingShares,
           aggregateApr,
-          swapFeeApr,
+          swapFeeApr: this.poolDetail.swapFeeApr,
           swapFeeDailyReward: this.externalQueries.queryGammPoolFeeMetrics
             .getPoolFeesMetrics(this.poolId, this.priceStore)
             .feesSpent7d.quo(new Dec(7)),

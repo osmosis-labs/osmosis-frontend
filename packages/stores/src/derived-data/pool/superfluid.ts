@@ -39,17 +39,14 @@ export class ObservableSuperfluidPoolDetail {
     makeObservable(this);
   }
 
-  @computed
   protected get bech32Address() {
     return this.accountStore.getAccount(this.osmosisChainId).bech32Address;
   }
 
-  @computed
   protected get queryPoolDetails() {
     return this.poolDetails.get(this.poolId);
   }
 
-  @computed
   protected get cosmosQueries() {
     return this.queriesStore.get(this.osmosisChainId).cosmos;
   }
@@ -61,7 +58,6 @@ export class ObservableSuperfluidPoolDetail {
     return osmosisQueries;
   }
 
-  @computed
   get isSuperfluid() {
     return this.osmosisQueries.querySuperfluidPools.isSuperfluidPool(
       this.poolId

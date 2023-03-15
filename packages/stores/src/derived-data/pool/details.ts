@@ -11,6 +11,7 @@ import { computed, makeObservable } from "mobx";
 
 import { IPriceStore } from "../../price";
 import { OsmosisQueries } from "../../queries/store";
+import { ObservableQueryPoolFeesMetrics } from "../../queries-external";
 import { ExternalGauge } from "./types";
 
 /** Convenience store for getting common details of a pool via many other lower-level query stores. */
@@ -21,6 +22,9 @@ export class ObservablePoolDetail {
     protected readonly poolId: string,
     protected readonly osmosisChainId: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
+    protected readonly externalQueries: {
+      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+    },
     protected readonly accountStore: IAccountStore,
     protected readonly priceStore: IPriceStore
   ) {
@@ -36,12 +40,10 @@ export class ObservablePoolDetail {
     makeObservable(this);
   }
 
-  @computed
   get pool() {
     return this.queries.queryGammPools.getPool(this.poolId);
   }
 
-  @computed
   protected get bech32Address() {
     return this.accountStore.getAccount(this.osmosisChainId).bech32Address;
   }
@@ -53,12 +55,10 @@ export class ObservablePoolDetail {
     return osmosisQueries;
   }
 
-  @computed
   get poolShareCurrency() {
     return this.queries.queryGammPoolShare.getShareCurrency(this.poolId);
   }
 
-  @computed
   get isIncentivized() {
     return this.queries.queryIncentivizedPools.isIncentivized(this.poolId);
   }
@@ -71,7 +71,6 @@ export class ObservablePoolDetail {
     );
   }
 
-  @computed
   get lockableDurations(): Duration[] {
     return this.queries.queryLockableDurations.lockableDurations;
   }
@@ -79,6 +78,17 @@ export class ObservablePoolDetail {
   @computed
   get longestDuration(): Duration {
     return this.lockableDurations[this.lockableDurations.length - 1];
+  }
+
+  @computed
+  get swapFeeApr(): RatePretty {
+    const queryPool = this.queries.queryGammPools.getPool(this.poolId);
+    if (!queryPool) return new RatePretty(0);
+
+    return this.externalQueries.queryGammPoolFeeMetrics.get7dPoolFeeApr(
+      queryPool,
+      this.priceStore
+    );
   }
 
   @computed
@@ -362,6 +372,9 @@ export class ObservablePoolDetails extends HasMapStore<ObservablePoolDetail> {
   constructor(
     protected readonly osmosisChainId: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
+    protected readonly externalQueries: {
+      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+    },
     protected readonly accountStore: IAccountStore,
     protected readonly priceStore: IPriceStore
   ) {
@@ -371,6 +384,7 @@ export class ObservablePoolDetails extends HasMapStore<ObservablePoolDetail> {
           poolId,
           this.osmosisChainId,
           this.queriesStore,
+          this.externalQueries,
           this.accountStore,
           this.priceStore
         )

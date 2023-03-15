@@ -63,7 +63,6 @@ export type Pool = [
   },
   {
     value: PricePretty;
-    isLoading?: boolean;
   },
   {
     value: PricePretty;
@@ -71,7 +70,6 @@ export type Pool = [
   },
   {
     value: PricePretty | RatePretty | undefined;
-    isLoading?: boolean;
   },
   {
     poolId: string;
@@ -103,6 +101,7 @@ export const AllPoolsTable: FunctionComponent<{
     const {
       chainStore,
       queriesExternalStore,
+      derivedDataStore,
       priceStore,
       queriesStore,
       accountStore,
@@ -124,37 +123,26 @@ export const AllPoolsTable: FunctionComponent<{
     const { chainId } = chainStore.osmosis;
     const queriesOsmosis = queriesStore.get(chainId).osmosis!;
     const account = accountStore.getAccount(chainId);
-    const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;
     const queryActiveGauges = queriesExternalStore.queryActiveGauges;
 
     const allPools = queriesOsmosis.queryGammPools.getAllPools();
 
+    const qaLockedResp = queriesOsmosis.queryAccountLocked.get(
+      account.bech32Address
+    ).response;
     const allPoolsWithMetrics: PoolWithMetrics[] = useMemo(
       () =>
         allPools.map((pool) => {
-          const poolTvl = pool.computeTotalValueLocked(priceStore);
-          const myLiquidity = poolTvl.mul(
-            queriesOsmosis.queryGammPoolShare.getAllGammShareRatio(
-              account.bech32Address,
-              pool.id
-            )
-          );
-
+          const poolDetail = derivedDataStore.poolDetails.get(pool.id);
           return {
             pool,
             ...queriesExternalStore.queryGammPoolFeeMetrics.getPoolFeesMetrics(
               pool.id,
               priceStore
             ),
-            liquidity: pool.computeTotalValueLocked(priceStore),
-            myLiquidity,
-            myAvailableLiquidity: myLiquidity.toDec().isZero()
-              ? new PricePretty(fiat, 0)
-              : poolTvl.mul(
-                  queriesOsmosis.queryGammPoolShare
-                    .getAvailableGammShare(account.bech32Address, pool.id)
-                    .quo(pool.totalShare)
-                ),
+            liquidity: poolDetail.totalValueLocked,
+            myLiquidity: poolDetail.userShareValue,
+            myAvailableLiquidity: poolDetail.userAvailableValue,
             poolName: pool.poolAssets
               .map((asset) => asset.amount.currency.coinDenom)
               .join("/"),
@@ -165,51 +153,31 @@ export const AllPoolsTable: FunctionComponent<{
                     ?.chainName ?? ""
               )
               .join(" "),
-            apr: queriesOsmosis.queryIncentivizedPools
-              .computeMostApr(pool.id, priceStore)
-              .add(
-                // swap fees
-                queriesExternalStore.queryGammPoolFeeMetrics.get7dPoolFeeApr(
-                  pool,
-                  priceStore
-                )
-              )
-              .add(
-                // superfluid apr
-                queriesOsmosis.querySuperfluidPools.isSuperfluidPool(pool.id)
-                  ? new RatePretty(
-                      queriesStore
-                        .get(chainId)
-                        .cosmos.queryInflation.inflation.mul(
-                          queriesOsmosis.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
-                            pool.id
-                          )
-                        )
-                        .moveDecimalPointLeft(2)
-                    )
-                  : new Dec(0)
-              )
-              .maxDecimals(0),
+            apr:
+              derivedDataStore.poolsBonding
+                .get(pool.id)
+                ?.highestBondDuration?.aggregateApr.maxDecimals(0) ??
+              poolDetail.swapFeeApr,
           };
         }),
       // eslint-disable-next-line react-hooks/exhaustive-deps
       [
         // note: mobx only causes rerenders for values referenced *during* render. I.e. *not* within useEffect/useCallback/useMemo hooks (see: https://mobx.js.org/react-integration.html)
         // `useMemo` is needed in this file to avoid "debounce" with the hundreds of re-renders by mobx as the 200+ API requests come in and populate 1000+ observables (otherwise the UI is unresponsive for 30+ seconds)
-        // also, the higher level `useMemo`s (i.e. this one) gain the most performance as other React renders are prevented down the line as data is calculated (remember, renders are initiated by both mobx and react)
+        // we only want to map through the list on renders where data changes
+        // also, the higher level `useMemo`s (i.e. this one) gain the most performance as other renders are prevented down the line as data is calculated (remember, renders are initiated by both mobx and react)
         allPools,
-        priceStore,
-        queriesOsmosis.queryGammPoolShare,
-        queriesOsmosis.queryIncentivizedPools,
-        queriesOsmosis.querySuperfluidPools,
-        queriesOsmosis.querySuperfluidOsmoEquivalent,
+        queriesOsmosis.queryIncentivizedPools.response,
+        queriesOsmosis.querySuperfluidPools.response,
+        queriesOsmosis.querySuperfluidPools.response,
+        queriesOsmosis.querySuperfluidParams.response,
+        queriesOsmosis.queryLockableDurations.response,
+        queriesOsmosis.queryIncentivizedPools.response,
+        queriesOsmosis.queryLockableDurations.response,
         account.bech32Address,
-        queriesExternalStore.queryGammPoolFeeMetrics,
-        fiat,
-        queriesStore,
-        chainId,
-        chainStore,
         queriesExternalStore.queryGammPoolFeeMetrics.response,
+        queriesExternalStore.queryActiveGauges.response,
+        qaLockedResp,
         priceStore.response,
       ]
     );
@@ -287,7 +255,7 @@ export const AllPoolsTable: FunctionComponent<{
       [_setQuery, queriesOsmosis.queryGammPools]
     );
 
-    const [cellGroupEventEmitter] = useState(() => new EventEmitter());
+    const cellGroupEventEmitter = useRef(new EventEmitter()).current;
     const tableData: Pool[] = useMemo(
       () =>
         filteredPools.map((poolWithMetrics) => {
@@ -308,17 +276,12 @@ export const AllPoolsTable: FunctionComponent<{
             { value: poolWithMetrics.liquidity },
             {
               value: poolWithMetrics.volume24h,
-              isLoading:
-                queriesExternalStore.queryGammPoolFeeMetrics.isFetching,
             },
             {
               value: poolWithMetrics.feesSpent7d,
-              isLoading:
-                queriesExternalStore.queryGammPoolFeeMetrics.isFetching,
             },
             {
               value: poolWithMetrics.apr,
-              isLoading: queriesOsmosis.queryIncentivizedPools.isAprFetching,
             },
             {
               poolId,
@@ -341,8 +304,6 @@ export const AllPoolsTable: FunctionComponent<{
       [
         cellGroupEventEmitter,
         filteredPools,
-        queriesExternalStore.queryGammPoolFeeMetrics.isFetching,
-        queriesOsmosis.queryIncentivizedPools.isAprFetching,
         quickAddLiquidity,
         quickLockTokens,
         quickRemoveLiquidity,
@@ -373,7 +334,6 @@ export const AllPoolsTable: FunctionComponent<{
             cell: (props) => (
               <MetricLoaderCell
                 value={props.row.original[2].value.toString()}
-                isLoading={props.row.original[2].isLoading}
               />
             ),
             header: t("pools.allPools.sort.volume24h"),
@@ -387,7 +347,6 @@ export const AllPoolsTable: FunctionComponent<{
             cell: (props) => (
               <MetricLoaderCell
                 value={props.row.original[3].value.toString()}
-                isLoading={props.row.original[3].isLoading}
               />
             ),
             header: t("pools.allPools.sort.fees"),
@@ -397,10 +356,7 @@ export const AllPoolsTable: FunctionComponent<{
         ),
         columnHelper.accessor((row) => row[4].value?.toDec().toString(), {
           cell: (props) => (
-            <MetricLoaderCell
-              value={props.row.original[4].value?.toString()}
-              isLoading={props.row.original[4].isLoading}
-            />
+            <MetricLoaderCell value={props.row.original[4].value?.toString()} />
           ),
           header: t("pools.allPools.sort.APRIncentivized"),
           id: "apr",
