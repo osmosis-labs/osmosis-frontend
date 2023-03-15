@@ -42,7 +42,7 @@ import { useTxEventToasts } from "../use-client-tx-event-toasts";
 import {
   AxelarBridgeConfig,
   AxelarChainIds_SourceChainMap,
-  waitBySourceChain,
+  waitByTransferFromSourceChain,
 } from ".";
 import { useDepositAddress, useTransferFeeQuery } from "./hooks";
 
@@ -586,7 +586,9 @@ const AxelarTransfer: FunctionComponent<
           }
           transferFee={transferFee}
           gasCost={gasCost?.maxDecimals(8)}
-          waitTime={waitBySourceChain(selectedSourceChainKey)}
+          waitTime={waitByTransferFromSourceChain(
+            isWithdraw ? "Osmosis" : selectedSourceChainKey
+          )}
           disabled={
             (!isWithdraw && !!isEthTxPending) || userDisconnectedEthWallet
           }
