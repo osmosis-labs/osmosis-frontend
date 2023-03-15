@@ -1390,6 +1390,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-87",
         destChannelId: "channel-1",
         coinMinimalDenom: "ucmst",
+        isVerified: true,
       },
       {
         counterpartyChainId: "imversed_5555555-1",
@@ -1510,6 +1511,18 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "uqatom",
       },
       {
+        counterpartyChainId: "comdex-1",
+        sourceChannelId: "channel-87",
+        destChannelId: "channel-1",
+        coinMinimalDenom: "uharbor",
+      },
+      {
+        counterpartyChainId: "quicksilver-2",
+        sourceChannelId: "channel-522",
+        destChannelId: "channel-2",
+        coinMinimalDenom: "uqregen",
+      },
+      {
         //JunoFox
         counterpartyChainId: "juno-1",
         sourceChannelId: "channel-169",
@@ -1518,7 +1531,7 @@ export const IBCAssetInfos: (IBCAsset & {
           "cw20:juno1u8cr3hcjvfkzxcaacv9q75uw9hwjmn8pucc93pmy6yvkzz79kh3qncca8x",
         ics20ContractAddress:
           "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
-      },
+      }
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (

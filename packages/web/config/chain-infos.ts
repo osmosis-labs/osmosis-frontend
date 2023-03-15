@@ -1071,6 +1071,13 @@ const chainInfos = (
           coinImageUrl: "/tokens/cmst.png",
           pegMechanism: "collateralized",
         },
+        {
+          coinDenom: "HARBOR",
+          coinMinimalDenom: "uharbor",
+          coinDecimals: 6,
+          coinGeckoId: "pool:uharbor",
+          coinImageUrl: "/tokens/harbor.svg",
+        },
       ],
       features: ["ibc-transfer"],
       explorerUrlToTx: "https://www.mintscan.io/comdex/txs/{txHash}",
@@ -2706,6 +2713,13 @@ const chainInfos = (
           coinImageUrl: "/tokens/qatom.svg",
           coinGeckoId: "pool:uqatom",
         },
+        {
+          coinDenom: "qREGEN",
+          coinMinimalDenom: "uqregen",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/qregen.svg",
+          coinGeckoId: "pool:uqregen",
+        }
       ],
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/quicksilver/txs/{txHash}",
