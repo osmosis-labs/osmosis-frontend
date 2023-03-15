@@ -1390,6 +1390,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-87",
         destChannelId: "channel-1",
         coinMinimalDenom: "ucmst",
+        isVerified: true,
       },
       {
         counterpartyChainId: "imversed_5555555-1",
