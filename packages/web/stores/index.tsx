@@ -5,7 +5,6 @@ import React, {
   useState,
 } from "react";
 
-import { useKeplr } from "../hooks";
 import { useVisibilityState } from "../hooks/use-visibility-state";
 import { RootStore } from "./root";
 
@@ -19,9 +18,7 @@ const refreshIntervalOnVisible = 30 * 1000;
 const refreshIntervalOnHidden = 5 * 60 * 1000;
 
 export const StoreProvider: FunctionComponent = ({ children }) => {
-  const keplr = useKeplr();
-
-  const [rootStore] = useState(() => new RootStore(keplr.getKeplr));
+  const [rootStore] = useState(() => new RootStore());
 
   const visibilityState = useVisibilityState();
   const [refreshInterval, setRefreshInterval] = useState(

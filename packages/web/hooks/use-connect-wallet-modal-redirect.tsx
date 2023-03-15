@@ -3,9 +3,9 @@ import Image from "next/image";
 import { ComponentProps, useEffect, useState } from "react";
 import { t } from "react-multi-lang";
 
-import { Button } from "../../components/buttons";
-import { useStore } from "../../stores";
-import { useWalletSelect } from "../wallet-select";
+import { Button } from "../components/buttons";
+import { useStore } from "../stores";
+import { useWalletSelect } from "./wallet-select";
 
 /** FOR USE IN MODALS
  *

@@ -1,4 +1,5 @@
-import { StdFee } from "@cosmjs/launchpad";
+import { EncodeObject, GeneratedType, Registry } from "@cosmjs/proto-signing";
+import { AminoTypes, StdFee } from "@cosmjs/stargate";
 import {
   ChainWalletBase,
   Logger,
@@ -16,18 +17,19 @@ import {
   CosmosQueries,
   CosmwasmQueries,
   Functionify,
-  ProtoMsgsOrWithAminoMsgs,
   QueriesStore,
 } from "@keplr-wallet/stores";
 import { KeplrSignOptions } from "@keplr-wallet/types";
 import { assets, chains } from "chain-registry";
+import { action, makeObservable, observable, runInAction } from "mobx";
 import {
-  action,
-  computed,
-  makeObservable,
-  observable,
-  runInAction,
-} from "mobx";
+  cosmosAminoConverters,
+  cosmosProtoRegistry,
+  ibcAminoConverters,
+  ibcProtoRegistry,
+  osmosisAminoConverters,
+  osmosisProtoRegistry,
+} from "osmojs";
 import { UnionToIntersection } from "utility-types";
 
 import { OsmosisQueries } from "./queries";
@@ -35,6 +37,20 @@ import { TxTracer } from "./tx";
 
 const logger = new Logger("WARN");
 
+const protoRegistry: ReadonlyArray<[string, GeneratedType]> = [
+  ...cosmosProtoRegistry,
+  ...ibcProtoRegistry,
+  ...osmosisProtoRegistry,
+];
+
+const aminoConverters = {
+  ...cosmosAminoConverters,
+  ...ibcAminoConverters,
+  ...osmosisAminoConverters,
+};
+
+const registry = new Registry(protoRegistry);
+const aminoTypes = new AminoTypes(aminoConverters);
 export class AccountStore<Injects extends Record<string, any>[] = []> {
   protected accountSetCreators: ChainedFunctionifyTuple<
     AccountStore<Injects>,
@@ -71,7 +87,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       },
     },
     {
-      // signingStargate: () => ({ aminoTypes }),
+      signingStargate: () => ({
+        registry: registry as any,
+        aminoTypes,
+      }),
     },
     undefined,
     {
@@ -227,7 +246,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     return newInjectedAccounts;
   }
 
-  @computed
   hasWallet(string: string): boolean {
     const wallet = this.getWallet(string);
     return Boolean(wallet);
@@ -236,9 +254,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   async sign(
     chainNameOrId: string,
     type: string | "unknown",
-    msgs:
-      | ProtoMsgsOrWithAminoMsgs
-      | (() => Promise<ProtoMsgsOrWithAminoMsgs> | ProtoMsgsOrWithAminoMsgs),
+    msgs: EncodeObject[] | (() => Promise<EncodeObject[]> | EncodeObject[]),
     memo = "",
     fee: StdFee,
     _signOptions?: KeplrSignOptions,
@@ -271,26 +287,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         msgs = await msgs();
       }
 
-      // TODO: verify if map is needed.
-      const aminoMsgs = msgs.aminoMsgs.map((msg) => ({
-        typeUrl: msg.type,
-        value: msg.value,
-      }));
-
-      // TODO: verify if proto msg are still required
-      const protoMsgs: any[] = msgs.protoMsgs;
-
-      if (aminoMsgs.length === 0 || protoMsgs.length === 0) {
+      if (msgs.length === 0) {
         throw new Error("There is no msg to send");
       }
 
-      if (aminoMsgs.length !== protoMsgs.length) {
-        throw new Error("The length of aminoMsgs and protoMsgs are different");
-      }
+      console.log(msgs);
 
-      console.log(aminoMsgs);
-
-      const result = await wallet.signAndBroadcast(aminoMsgs, fee, memo);
+      const result = await wallet.signAndBroadcast(msgs, fee, memo);
 
       txHash = new TextEncoder().encode(result.transactionHash);
     } catch (e) {

@@ -1,4 +1,4 @@
-import { StdFee } from "@cosmjs/launchpad";
+import { StdFee } from "@cosmjs/stargate";
 import {
   DefaultGasPriceStep,
   FeeType,

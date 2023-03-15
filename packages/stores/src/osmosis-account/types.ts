@@ -1,11 +1,8 @@
-import { MsgOpt } from "@keplr-wallet/stores";
+import { osmosis } from "osmojs";
 
-import { osmosis } from "./msg/proto";
-
-interface AccountMsgOpt extends MsgOpt {
-  protoTypeUrl: string;
-  protoClass: any;
+interface AccountMsgOpt {
   shareCoinDecimals?: number;
+  gas: number;
 }
 
 export const createMsgOpts = <Dict extends Record<string, AccountMsgOpt>>(
@@ -14,102 +11,80 @@ export const createMsgOpts = <Dict extends Record<string, AccountMsgOpt>>(
 
 export const osmosisMsgOpts = createMsgOpts({
   createBalancerPool: {
-    type: "osmosis/gamm/create-balancer-pool",
     gas: 350000,
-    protoClass: osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool,
-    protoTypeUrl:
-      "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool" as const,
+    messageComposer:
+      osmosis.gamm.poolmodels.balancer.v1beta1.MessageComposer.withTypeUrl
+        .createBalancerPool,
   },
   createStableswapPool: {
-    type: "osmosis/gamm/create-stableswap-pool",
     gas: 350000,
-    protoClass:
-      osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool,
-    protoTypeUrl:
-      "/osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool" as const,
+    messageComposer:
+      osmosis.gamm.poolmodels.stableswap.v1beta1.MessageComposer.withTypeUrl
+        .createStableswapPool,
   },
   joinPool: {
-    type: "osmosis/gamm/join-pool",
     gas: 240000,
     shareCoinDecimals: 18,
-    protoClass: osmosis.gamm.v1beta1.MsgJoinPool,
-    protoTypeUrl: "/osmosis.gamm.v1beta1.MsgJoinPool" as const,
+    messageComposer: osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.joinPool,
   },
   joinSwapExternAmountIn: {
-    type: "osmosis/gamm/join-swap-extern-amount-in",
     gas: 140000,
     shareCoinDecimals: 18,
-    protoClass: osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn,
-    protoTypeUrl: "/osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn" as const,
+    messageComposer:
+      osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.joinSwapExternAmountIn,
   },
   exitPool: {
-    type: "osmosis/gamm/exit-pool",
     gas: 280000,
     shareCoinDecimals: 18,
-    protoClass: osmosis.gamm.v1beta1.MsgExitPool,
-    protoTypeUrl: "/osmosis.gamm.v1beta1.MsgExitPool" as const,
+    messageComposer: osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.exitPool,
   },
   swapExactAmountIn: {
-    type: "osmosis/gamm/swap-exact-amount-in",
     gas: 250000,
-    protoClass: osmosis.gamm.v1beta1.MsgSwapExactAmountIn,
-    protoTypeUrl: "/osmosis.gamm.v1beta1.MsgSwapExactAmountIn" as const,
+    messageComposer:
+      osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.swapExactAmountIn,
   },
   swapExactAmountOut: {
-    type: "osmosis/gamm/swap-exact-amount-out",
     gas: 250000,
-    protoClass: osmosis.gamm.v1beta1.MsgSwapExactAmountOut,
-    protoTypeUrl: "/osmosis.gamm.v1beta1.MsgSwapExactAmountOut" as const,
+    messageComposer:
+      osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.swapExactAmountOut,
   },
   lockTokens: {
-    type: "osmosis/lockup/lock-tokens",
     gas: 450000,
-    protoClass: osmosis.lockup.MsgLockTokens,
-    protoTypeUrl: "/osmosis.lockup.MsgLockTokens" as const,
+    messageComposer: osmosis.lockup.MessageComposer.withTypeUrl.lockTokens,
   },
   superfluidDelegate: {
-    type: "osmosis/superfluid-delegate",
     gas: 500000,
-    protoClass: osmosis.superfluid.MsgSuperfluidDelegate,
-    protoTypeUrl: "/osmosis.superfluid.MsgSuperfluidDelegate" as const,
+    messageComposer:
+      osmosis.superfluid.MessageComposer.withTypeUrl.superfluidDelegate,
   },
   lockAndSuperfluidDelegate: {
-    type: "osmosis/lock-and-superfluid-delegate",
     gas: 500000,
-    protoClass: osmosis.superfluid.MsgLockAndSuperfluidDelegate,
-    protoTypeUrl: "/osmosis.superfluid.MsgLockAndSuperfluidDelegate" as const,
+    messageComposer:
+      osmosis.superfluid.MessageComposer.withTypeUrl.lockAndSuperfluidDelegate,
   },
   beginUnlocking: {
-    type: "osmosis/lockup/begin-unlock-period-lock",
     // Gas per msg
     gas: 140000,
-    protoClass: osmosis.lockup.MsgBeginUnlocking,
-    protoTypeUrl: "/osmosis.lockup.MsgBeginUnlocking" as const,
+    messageComposer: osmosis.lockup.MessageComposer.withTypeUrl.beginUnlocking,
   },
   superfluidUndelegate: {
-    type: "osmosis/superfluid-undelegate",
     gas: 300000,
-    protoClass: osmosis.superfluid.MsgSuperfluidUndelegate,
-    protoTypeUrl: "/osmosis.superfluid.MsgSuperfluidUndelegate" as const,
+    messageComposer:
+      osmosis.superfluid.MessageComposer.withTypeUrl.superfluidUndelegate,
   },
   superfluidUnbondLock: {
-    type: "osmosis/superfluid-unbond-lock",
     // Gas per msg
     gas: 300000,
-    protoClass: osmosis.superfluid.MsgSuperfluidUnbondLock,
-    protoTypeUrl: "/osmosis.superfluid.MsgSuperfluidUnbondLock" as const,
+    messageComposer:
+      osmosis.superfluid.MessageComposer.withTypeUrl.superfluidUnbondLock,
   },
   unlockPeriodLock: {
-    type: "osmosis/lockup/unlock-period-lock",
     // Gas per msg
     gas: 140000,
-    protoClass: undefined,
-    protoTypeUrl: "",
   },
   unPoolWhitelistedPool: {
-    type: "osmosis/unpool-whitelisted-pool",
     gas: 3000000,
-    protoClass: osmosis.superfluid.MsgUnPoolWhitelistedPool,
-    protoTypeUrl: "/osmosis.superfluid.MsgUnPoolWhitelistedPool" as const,
+    messageComposer:
+      osmosis.superfluid.MessageComposer.withTypeUrl.unPoolWhitelistedPool,
   },
 });

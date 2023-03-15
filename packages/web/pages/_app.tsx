@@ -28,7 +28,6 @@ import {
   IS_FRONTIER,
   PromotedLBPPoolIds,
 } from "../config";
-import { GetKeplrProvider } from "../hooks";
 import { useAmplitudeAnalytics } from "../hooks/use-amplitude-analytics";
 import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
 import dayjsLocaleKo from "../localizations/dayjs-locale-ko.js";
@@ -111,33 +110,31 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   useAmplitudeAnalytics({ init: true });
   return (
-    <GetKeplrProvider>
-      <StoreProvider>
-        <WalletSelectProvider>
-          <Head>
-            {/* metamask Osmosis app icon */}
-            <link
-              rel="shortcut icon"
-              href={`${
-                typeof window !== "undefined" ? window.origin : ""
-              }/osmosis-logo-wc.png`}
-            />
-            <link rel="preload" as="image/svg+xml" href={spriteSVGURL} />
-          </Head>
-          <OgpMeta />
-          <IbcNotifier />
-          <ToastContainer
-            toastStyle={{
-              backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
-            }}
-            transition={Bounce}
+    <StoreProvider>
+      <WalletSelectProvider>
+        <Head>
+          {/* metamask Osmosis app icon */}
+          <link
+            rel="shortcut icon"
+            href={`${
+              typeof window !== "undefined" ? window.origin : ""
+            }/osmosis-logo-wc.png`}
           />
-          <MainLayout menus={menus}>
-            <Component {...pageProps} />
-          </MainLayout>
-        </WalletSelectProvider>
-      </StoreProvider>
-    </GetKeplrProvider>
+          <link rel="preload" as="image/svg+xml" href={spriteSVGURL} />
+        </Head>
+        <OgpMeta />
+        <IbcNotifier />
+        <ToastContainer
+          toastStyle={{
+            backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
+          }}
+          transition={Bounce}
+        />
+        <MainLayout menus={menus}>
+          <Component {...pageProps} />
+        </MainLayout>
+      </WalletSelectProvider>
+    </StoreProvider>
   );
 }
 

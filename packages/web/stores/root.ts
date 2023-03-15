@@ -9,7 +9,6 @@ import {
   QueriesStore,
 } from "@keplr-wallet/stores";
 import { AppCurrency, Keplr } from "@keplr-wallet/types";
-import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 import {
   AccountStore,
   DerivedDataStore,
@@ -34,7 +33,6 @@ import {
   IS_FRONTIER,
   PoolPriceRoutes,
 } from "~/config";
-import { suggestChainFromWindow } from "~/hooks/use-keplr/utils";
 import { AxelarTransferStatusSource } from "~/integrations/axelar";
 
 import { ObservableAssets } from "./assets";
@@ -49,7 +47,6 @@ import {
   UserSettings,
 } from "./user-settings";
 
-const semver = require("semver");
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
 export class RootStore {
@@ -126,7 +123,17 @@ export class RootStore {
     this.accountStore = new AccountStore(
       this.queriesStore,
       this.chainStore,
-      undefined,
+      {
+        preTxEvents: {
+          onBroadcastFailed: toastOnBroadcastFailed((chainId) =>
+            this.chainStore.getChain(chainId)
+          ),
+          onBroadcasted: toastOnBroadcast(),
+          onFulfill: toastOnFulfill((chainId) =>
+            this.chainStore.getChain(chainId)
+          ),
+        },
+      },
       OsmosisAccount.use({ queriesStore: this.queriesStore })
     );
 
@@ -136,25 +143,6 @@ export class RootStore {
       () => {
         return {
           suggestChain: true,
-          suggestChainFn: async (keplr, chainInfo) => {
-            if (
-              keplr.mode === "mobile-web" &&
-              // In keplr mobile below 0.10.9, there is no receiver for the suggest chain.
-              // Therefore, it cannot be processed because it takes infinite pending.
-              // As of 0.10.10, experimental support was added.
-              !semver.satisfies(keplr.version, ">=0.10.10")
-            ) {
-              // Can't suggest the chain on mobile web.
-              return;
-            }
-
-            if (keplr instanceof KeplrWalletConnectV1) {
-              // Still, can't suggest the chain using wallet connect.
-              return;
-            }
-
-            await suggestChainFromWindow(keplr, chainInfo.raw);
-          },
           autoInit: false,
           getKeplr,
         };

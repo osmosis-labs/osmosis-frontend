@@ -3,7 +3,7 @@ import Axios from "axios";
 import { autorun } from "mobx";
 import { exec } from "child_process";
 import { Buffer } from "buffer";
-import { StdTx } from "@cosmjs/launchpad";
+import { StdTx } from "@cosmjs/amino";
 import WebSocket from "ws";
 import {
   AccountSetBase,
