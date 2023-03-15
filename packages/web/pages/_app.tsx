@@ -17,6 +17,8 @@ import {
 } from "react-multi-lang";
 import { Bounce, ToastContainer } from "react-toastify";
 
+import { Icon } from "~/components/assets";
+
 import { MainLayout } from "../components/layouts";
 import { OgpMeta } from "../components/ogp-meta";
 import { MainLayoutMenu } from "../components/types";
@@ -101,6 +103,12 @@ function MyApp({ Component, pageProps }: AppProps) {
         link: "https://info.osmosis.zone",
         icon: "/icons/chart-white.svg",
         amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
+      },
+      {
+        label: t("menu.help"),
+        link: "https://support.osmosis.zone/",
+        icon: <Icon id="help-circle" className="h-5 w-5" />,
+        amplitudeEvent: [EventName.Sidebar.supportClicked] as AmplitudeEvent,
       }
     );
 
