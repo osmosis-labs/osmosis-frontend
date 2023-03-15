@@ -72,7 +72,10 @@ export class AxelarTransferStatusSource implements ITxStatusSource {
 
     try {
       const [data] = transferStatus;
-      const idWithoutSourceChain = data?.id.split("_")[0].toLowerCase();
+      const idWithoutSourceChain =
+        data.type && data.type === "wrap" && data.wrap
+          ? data.wrap.tx_hash
+          : data?.id.split("_")[0].toLowerCase();
 
       // insufficient fee
       if (data.send && data.send.insufficient_fee) {
