@@ -493,11 +493,7 @@ export const AllPoolsTable: FunctionComponent<{
               <div className="flex flex-wrap items-center gap-3">
                 <div className="flex-1">
                   <SelectMenu
-                    label={
-                      isMobile
-                        ? t("components.pool.mobileTitle")
-                        : t("components.pool.title")
-                    }
+                    label={t("components.pool.mobileTitle")}
                     selectedOptionLabel={PoolFilters[poolFilter]}
                     options={Object.entries(PoolFilters).map(
                       ([id, display]) => ({
@@ -511,11 +507,7 @@ export const AllPoolsTable: FunctionComponent<{
                 </div>
                 <div className="flex-1">
                   <SelectMenu
-                    label={
-                      isMobile
-                        ? t("components.incentive.mobileTitle")
-                        : t("components.incentive.title")
-                    }
+                    label={t("components.incentive.mobileTitle")}
                     options={Object.entries(IncentiveFilters).map(
                       ([id, display]) => ({
                         id,

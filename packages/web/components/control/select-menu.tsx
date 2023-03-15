@@ -73,7 +73,7 @@ export const SelectMenu: FunctionComponent<Props> = ({
       </div>
       {isMobile ? (
         <MenuOptionsModal
-          title={t("components.sort.mobileMenu")}
+          title={label}
           selectedOptionId={selectedOptionId}
           options={options}
           isOpen={dropdownOpen}
