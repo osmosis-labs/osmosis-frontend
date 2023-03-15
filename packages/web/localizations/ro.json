@@ -5,425 +5,432 @@
   "500": {
     "title": "Eroare server"
   },
-  "app": {
-    "banner": {
-      "title": "Visualizati toate activele care nu necesita permisiuni.",
-      "linkText": "Click aici pentru a va intoarce la aplicatia principala",
-      "externalLinkDisclaimer": "Prin apăsarea acestui link, recunoști că ai citit și înțeles că Osmosis nu garantează calitatea serviciului pentru pagini externe care pot avea Termeni de Serviciu diferiți.",
-      "externalLink": "Acum părăsiți aplicația Osmosis pentru a merge la",
-      "goToSite": "Du-te la site",
-      "backToOsmosis": "Înapoi la Osmosis",
-      "externalLinkModalTitle": "Părăsirea Osmosis"
-    }
-  },
-  "swap": {
-    "title": "Schimb",
-    "settings": {
-      "title": "Setari tranzactie",
-      "slippage": "Toleranta modificare pret",
-      "slippageInfo": "Tranzactia se va anula daca pretul se schimba nefavorabil mai mult decat acest procent."
-    },
-    "available": "Disponibil",
-    "MAX": "MAXIM",
-    "HALF": "JUMATATE",
-    "button": "Schimba",
-    "buttonError": "Schibma oricum",
-    "priceImpact": "Impact pret",
-    "fee": "Taxa schimb ({fee})",
-    "expectedOutput": "Rezultat asteptat",
-    "minimumSlippage": "Minimum rezultat cu toleranta ({slippage})",
-    "error": {
-      "findCurrency": "Moneda {currency} nu a fost gasita"
-    },
-    "autoRouter": "Traseu",
-    "routerTooltipFee": "Taxa",
-    "autoRouterToggle": {
-      "show": "Arata",
-      "hide": "Ascunde"
-    },
-    "pool": "Pool #{id}"
-  },
-  "pools": {
-    "title": "Pool-uri active",
-    "poolId": "Pool #{id}",
-    "priceOsmo": "Pret OSMO",
-    "rewardDistribution": "Recompensele se distribuie in",
-    "myPools": "Pool-urile mele",
-    "APR": "APR",
-    "available": "Disponibil",
-    "liquidity": "Lichiditate pool",
-    "myLiquidity": "Lichiditatea mea",
-    "bonded": "Blocate",
-    "incentivized": "Stimulat",
-    "all": "Toate Pool-urile",
-    "allTab": "Toate",
-    "superfluid": {
-      "title": "Pool-uri Superfluid",
-      "tab": "Superfluid",
-      "APR": "APR",
-      "liquidity": "Lichiditate pool",
-      "fees7D": "Taxe (7zile)"
-    },
-    "allPools": {
-      "title": "Toate pool-urile",
-      "myLiquidity": "lichiditatea mea",
-      "TVL": "TVL",
-      "APR": "APR",
-      "APRIncentivized": "7z Vol.",
-      "search": "Cauta pool-uri",
-      "displayLowLiquidity": "Arata pool-uri < {value}",
-      "sort": {
-        "poolName": "Nume Pool",
-        "liquidity": "Lichiditate",
-        "volume24h": "Volum (24H)",
-        "fees": "Taxe (7z)",
-        "APRIncentivized": "APR",
-        "APR": "Lichiditatile mele",
-        "poolId": "ID Pool"
-      }
-    },
-    "externalIncentivized": {
-      "title": "Stimulente externe",
-      "TVL": "TVL",
-      "APR": "APR",
-      "search": "Cauta dupa simbol",
-      "sort": {
-        "poolName": "Nume Pool",
-        "liquidity": "Lichiditate",
-        "APR": "APR",
-        "epochs": "Epoci ramase",
-        "myLiquidity": "Lichiditatile mele"
-      }
-    },
-    "createPool": {
-      "title": "Creeaza Pool Nou",
-      "button": "Creeaza Pool Nou",
-      "weightedPool": "pool ponderat",
-      "stablePool": "pool fix",
-      "step": {
-        "one": {
-          "weighted": "Pas {step} / {nbStep} - Seteaza ratia token-ului",
-          "stable": "Pas {step} / {nbStep} - Seteaza factorii de scalare"
-        },
-        "two": "Pas {step} / {nbStep} - Introdu suma de adaugat",
-        "three": "Step {step} / {nbStep} - Confirma raportul pool-ului si suma token-ului"
-      },
-      "infoMessage": "Taxa creeare pool",
-      "infoCaption": "Transferat catre pool-ul comunitatii Osmosis",
-      "buttonCreate": "Creeaza Pool",
-      "buttonNext": "Urmatorul",
-      "buttonBack": "Anteriorul",
-      "buttonAddToken": "Adauga token nou",
-      "available": "Disponibil",
-      "amount": "Suma",
-      "token": "Token",
-      "swapFee": "Seteaza taxa de schimb",
-      "scalingFactorController": "Seteaza factorul de scalare(optional)",
-      "undersandCost": "Inteleg ca adaugarea unui nou pool costa {POOL_CREATION_FEE}.",
-      "interestedCreate": "Interesat sa creezi un nou pool?",
-      "startProcess": "Apasa aici pentru a incepe procesul"
-    }
-  },
-  "pool": {
-    "title": "Pool #{id}",
-    "swap": "Schimba Tokeni",
-    "superfluidEnabled": "Staking Superfluid activat",
-    "stableswapEnabled": "Stableswap activat",
-    "24hrTradingVolume": "Volum tranzactionare 24h",
-    "liquidity": "Lichiditatea",
-    "myLiquidity": "Lichiditatea mea",
-    "swapFee": "Taxa de schimb",
-    "yourStats": "Statisticile tale",
-    "sharesAmount": "{shares} actiuni",
-    "currentDailyEarn": "Acum castigi",
-    "earnMore": "Castiga mai mult prin blocare",
-    "dailyEarnAmount": "{amount} / zi",
-    "putAssetsToWork": "Pune-ti activele la munca.",
-    "putAssetsToWorkCaption": "Adauga-ti activele in acest pool pentru a debloca recompense captivante. Cu cat le blochezi mai mult timp, cu atat castigi mai mult.",
-    "learnMore": "Citeste mai multe",
-    "level": "Nivel {level}",
-    "earnSwapFees": "Castiga taxe de tranzactionare",
-    "earnSwapFeesCaption": "Converteste-ti activele in actiuni pentru a castiga din fiecare schimb.",
-    "APR": "APR",
-    "bondLiquidity": "Blocheaza Lichiditate",
-    "bondLiquidityUnavailable": "Blocheaza liquidity (indisponibil)",
-    "checkBackForBondingRewards": "Revino mai tarziu pentru recompense pentru blocare",
-    "bondLiquidityCaption": "Blocheaza-ti actiunile pentru o durata cat mai lunga pentru a castiga mai mult anual.",
-    "bondSuperfluidLiquidityCaption": "Foloseste Superfluid pentru recompense maxime.",
-    "bondShares": "Blocheaza Actiuni",
-    "amountDaysUnbonding": "{numDays} zile de dezlegare",
-    "amountDaysUnbonding_plural": "{numDays} zile blocate",
-    "unbonded": "Deblocate",
-    "unbond": "Deblocate",
-    "bonded": "Blocate",
-    "showDetails": "Arata detalii",
-    "collapseDetails": "Ascunde detalii",
-    "sharesAvailableIn": "Disponibil in",
-    "unbonding": "deblocare",
-    "superfluidEarnMore": "Castiga {rate} mai mult. Devino superfluid",
-    "incentives": "Recompense",
-    "details": "Detalii",
-    "rewardDistribution": "Recompense distribuite celor ce pun la dispozitie lichiditate",
-    "superfluidStaking": "Staking Superfluid",
-    "delegated": "Delegate",
-    "undelegating": "anulare delegare",
-    "commission": "comision",
-    "numDaysRemaining": "{numDays} zile ramase",
-    "from": "de la",
-    "swapFees": "taxe schimb",
-    "7davg": "(medie 7z)"
-  },
-  "removeLiquidity": {
-    "title": "Elimina Lichiditate",
-    "titleInPool": "Elimina lichiditate din pool-ul #{poolId}",
-    "sharesAmount": "{shares} actiuni"
-  },
   "addLiquidity": {
-    "title": "Adauga Lichiditate",
-    "titleInPool": "Adauga lichiditate in pool-ul #{poolId}",
     "allAssets": "Toate activele",
-    "singleAsset": "Un singur activ",
-    "available": "Disponibil",
     "autoswapCaption": "Utilizeaza schimbul automat pentru a adauga lichiditate cu un singur activ.",
-    "stablecoinWarning": "Adaugi lichiditate pentru moneda fixa {denom}, un mecanism {mechanism}-backed.",
+    "available": "Disponibil",
     "scalingFactor": "factorul de scalare",
-    "scalingFactorInformation": "Acest factor permite curbei să se ajusteze la modificările predictibile ale prețului, cum ar fi valoarea acumulată pentru un jeton de miză lichid.",
+    "scalingFactorController": "controlor",
     "scalingFactorControllerWarning_first": "Controlerul factorului de scalare este activat.",
     "scalingFactorControllerWarning_second": "poate regla",
     "scalingFactorControllerWarning_third": "pentru a menține coaba. Factorul de scalare curent este",
-    "scalingFactorController": "controlor"
+    "scalingFactorInformation": "Acest factor permite curbei să se ajusteze la modificările predictibile ale prețului, cum ar fi valoarea acumulată pentru un jeton de miză lichid.",
+    "singleAsset": "Un singur activ",
+    "stablecoinWarning": "Adaugi lichiditate pentru moneda fixa {denom}, un mecanism {mechanism}-backed.",
+    "title": "Adauga Lichiditate",
+    "titleInPool": "Adauga lichiditate in pool-ul #{poolId}"
   },
-  "lockToken": {
-    "title": "Blocheaza Actiuni LP",
-    "titleInPool": "Blocheaza actiuni in pool-ul #{poolId}",
-    "selectPeriod": "Selecteaza perioada de blocare",
-    "availableToken": "Disponibil",
-    "amountToBond": "Suma blocata",
-    "superfluidStake": "Staking Superfluid",
-    "bondingRequirement": "{numDays} zile cerinta blocare",
-    "buttonNext": "Urmatorul",
-    "buttonBond": "Blocheaza",
-    "buttonBondStake": "Blocheaza & Stake-uieste"
-  },
-  "superfluidValidator": {
-    "title": "Alege validator Superfluid",
-    "titleMobile": "Alege Validator",
-    "choose": "Alege-ti un validator Superfluid",
-    "search": "Cauta dupa nume",
-    "bondedAmount": "Suma Blocata",
-    "estimation": "Delegarea Superfluid Estimata",
-    "estimationMobile": "Delegarea Est.",
-    "estimationInfo": "Valoarea acestei delegari fluctueaza si este estimata pe baza valorii OSMO in pool.",
-    "buttonBond": "Blocheaza & Stake-uieste",
-    "columns": {
-      "validator": "Validator",
-      "commission": "Comision"
+  "app": {
+    "banner": {
+      "backToOsmosis": "Înapoi la Osmosis",
+      "externalLink": "Acum părăsiți aplicația Osmosis pentru a merge la",
+      "externalLinkDisclaimer": "Prin apăsarea acestui link, recunoști că ai citit și înțeles că Osmosis nu garantează calitatea serviciului pentru pagini externe care pot avea Termeni de Serviciu diferiți.",
+      "externalLinkModalTitle": "Părăsirea Osmosis",
+      "goToSite": "Du-te la site",
+      "linkText": "Click aici pentru a va intoarce la aplicatia principala",
+      "title": "Visualizati toate activele care nu necesita permisiuni."
     }
   },
   "assets": {
-    "totalAssets": "Total",
-    "unbondedAssets": "Deblocate",
     "bondedAssets": "Blocate",
-    "stakedAssets": "Staked OSMO",
-    "myPools": "Pool-urile Mele",
-    "transferAssetSelect": {
-      "deposit": "Depozit",
-      "withdraw": "Retragere",
-      "network": "Retea",
-      "buttonNext": "Urmatorul"
-    },
-    "poolCards": {
-      "APR": "APR",
-      "FeeAPY": "APY din taxe",
-      "liquidity": "Lichiditate pool",
-      "bonded": "Blocate",
-      "myLiquidity": "Lichiditatea mea"
-    },
-    "ibcTransfer": {
-      "titleWithdraw": "Retrage {coinDenom}",
-      "titleDeposit": "Depoziteaza {coinDenom}",
-      "channelCongested": "Canal congestionat",
-      "channelCongestedWithdraw": "Retrage (Channel congested)",
-      "channelCongestedDeposit": "Depoziteaza (Channel congested)",
-      "channelBlocked": "Canal blocat",
-      "selectAmount": "Selecteaza suma",
-      "estimatedTime": "Timp estimat",
-      "waitTime": "20 secunde",
-      "copied": "Copiat!",
-      "IBCTransfer": "Transfer IBC",
-      "from": "de la",
-      "to": "catre",
-      "warningLossFunds": "Atentie: Retragerea intr-un exchange centralizat duce la pierderea fondurilor.",
-      "buttonEnter": "Intra",
-      "checkboxVerify": "Am verificat. Nu trimit catre o adresa a unui exchange.",
-      "buttonEdit": "Modifica",
-      "amoutWithdraw": "Suma de Retras",
-      "amoutDeposit": "Suma de Depozitat",
-      "availableBalance": "Balanta disponibila:",
-      "MAX": "MAX"
-    },
-    "transfer": {
-      "titleWithdraw": "Retrage {coinDenom}",
-      "titleDeposit": "Depoziteaza {coinDenom}",
-      "warnDepositAddressDifferent": "Atentie: Adresa selectata {address} difera de adresa de unde ai depozitat ultima oara.",
-      "from": "De la",
-      "to": "Catre",
-      "via": "via",
-      "loading": "Se incarca",
-      "availableOn": "Disponibil pe {network}",
-      "availableMobile": "Disponibil",
-      "transferFee": "Taxa transfer",
-      "errors": {
-        "reconnectWallet": "Reconecteaza {walletName}",
-        "wrongNetworkInWallet": "Retea gresita in {walletName}",
-        "insufficientFee": "Taxa Insuficienta",
-        "insufficientBal": "Balanta Insuficienta"
-      },
-      "useWrappedDeposit": "Depuneți {wrapDenom} pe Satellite",
-      "useWrappedWithdraw": "Retrageți {wrapDenom} din Satellite",
-      "waitTime": "{minutes} minute"
-    },
-    "selectAssetSource": {
-      "titleWithdraw": "Retrage catre",
-      "titleDeposit": "Depoziteaza de la",
-      "next": "Urmatorul",
-      "installWallet": "Instaleaza {walletName}"
-    },
-    "table": {
-      "depositButton": "Depoziteaza",
-      "withdrawButton": "Retrage",
-      "search": "Filtreaza dupa simbol",
-      "title": "Active",
-      "hideZero": "Ascunde balantele zero",
-      "preTransfer": {
-        "deposit": "Depoziteaza",
-        "withdraw": "Retrage",
-        "currentBal": "Balanta Curenta"
-      },
-      "columns": {
-        "assetChain": "Active / Retea",
-        "balance": "Balanta",
-        "transfer": "Transfer",
-        "deposit": "Depozit",
-        "withdraw": "Retragere"
-      },
-      "sort": {
-        "symbol": "Simbol",
-        "network": "Retea",
-        "balance": "Balanta"
-      }
-    },
     "historyTable": {
-      "title": "Istoric Transferuri",
-      "pending": "In Asteptare",
-      "success": "Succes",
-      "refunded": "Rambursat",
-      "pendingRefunded": "Esuat: Ramburs in asteptare",
       "colums": {
+        "amount": "Suma",
+        "deposit": "Depozit",
+        "status": "Status",
         "transactionHash": "Hash Tranzactie",
         "type": "Tip",
-        "amount": "Suma",
-        "status": "Status",
-        "deposit": "Depozit",
         "withdraw": "Retragere"
+      },
+      "errors": {
+        "insufficientFee": "Taxa insuficienta"
       },
       "failed": "A eșuat",
       "failedWithReason": "A eșuat: {reason}",
-      "errors": {
-        "insufficientFee": "Taxa insuficienta"
-      }
-    }
-  },
-  "components": {
-    "show": {
-      "more": "Vezi mai mult",
-      "less": "Vezi mai putin"
+      "pending": "In Asteptare",
+      "pendingRefunded": "Esuat: Ramburs in asteptare",
+      "refunded": "Rambursat",
+      "success": "Succes",
+      "title": "Istoric Transferuri"
     },
+    "ibcTransfer": {
+      "amoutDeposit": "Suma de Depozitat",
+      "amoutWithdraw": "Suma de Retras",
+      "availableBalance": "Balanta disponibila:",
+      "buttonEdit": "Modifica",
+      "buttonEnter": "Intra",
+      "channelBlocked": "Canal blocat",
+      "channelCongested": "Canal congestionat",
+      "channelCongestedDeposit": "Depoziteaza (Channel congested)",
+      "channelCongestedWithdraw": "Retrage (Channel congested)",
+      "checkboxVerify": "Am verificat. Nu trimit catre o adresa a unui exchange.",
+      "copied": "Copiat!",
+      "estimatedTime": "Timp estimat",
+      "from": "de la",
+      "IBCTransfer": "Transfer IBC",
+      "MAX": "MAX",
+      "selectAmount": "Selecteaza suma",
+      "titleDeposit": "Depoziteaza {coinDenom}",
+      "titleWithdraw": "Retrage {coinDenom}",
+      "to": "catre",
+      "waitTime": "20 secunde",
+      "warningLossFunds": "Atentie: Retragerea intr-un exchange centralizat duce la pierderea fondurilor."
+    },
+    "myPools": "Pool-urile Mele",
+    "poolCards": {
+      "APR": "APR",
+      "bonded": "Blocate",
+      "FeeAPY": "APY din taxe",
+      "liquidity": "Lichiditate pool",
+      "myLiquidity": "Lichiditatea mea"
+    },
+    "selectAssetSource": {
+      "installWallet": "Instaleaza {walletName}",
+      "next": "Urmatorul",
+      "titleDeposit": "Depoziteaza de la",
+      "titleWithdraw": "Retrage catre"
+    },
+    "stakedAssets": "Staked OSMO",
     "table": {
-      "poolId": "Pool-ul #{id}"
+      "columns": {
+        "assetChain": "Active / Retea",
+        "balance": "Balanta",
+        "deposit": "Depozit",
+        "transfer": "Transfer",
+        "withdraw": "Retragere"
+      },
+      "depositButton": "Depoziteaza",
+      "hideZero": "Ascunde balantele zero",
+      "preTransfer": {
+        "currentBal": "Balanta Curenta",
+        "deposit": "Depoziteaza",
+        "withdraw": "Retrage"
+      },
+      "search": "Filtreaza dupa simbol",
+      "sort": {
+        "balance": "Balanta",
+        "network": "Retea",
+        "symbol": "Simbol"
+      },
+      "title": "Active",
+      "withdrawButton": "Retrage"
     },
-    "sort": {
-      "SORT": "Sorteaza dupa",
-      "SORTMobile": "Sorteaza",
-      "mobileMenu": "Sorteaza dupa"
+    "totalAssets": "Total",
+    "transfer": {
+      "availableMobile": "Disponibil",
+      "availableOn": "Disponibil pe {network}",
+      "errors": {
+        "insufficientBal": "Balanta Insuficienta",
+        "insufficientFee": "Taxa Insuficienta",
+        "reconnectWallet": "Reconecteaza {walletName}",
+        "wrongNetworkInWallet": "Retea gresita in {walletName}"
+      },
+      "from": "De la",
+      "loading": "Se incarca",
+      "titleDeposit": "Depoziteaza {coinDenom}",
+      "titleWithdraw": "Retrage {coinDenom}",
+      "to": "Catre",
+      "transferFee": "Taxa transfer",
+      "useWrappedDeposit": "Depuneți {wrapDenom} pe Satellite",
+      "useWrappedWithdraw": "Retrageți {wrapDenom} din Satellite",
+      "via": "via",
+      "waitTime": "{minutes} minute",
+      "warnDepositAddressDifferent": "Atentie: Adresa selectata {address} difera de adresa de unde ai depozitat ultima oara."
+    },
+    "transferAssetSelect": {
+      "buttonNext": "Urmatorul",
+      "deposit": "Depozit",
+      "network": "Retea",
+      "withdraw": "Retragere"
+    },
+    "unbondedAssets": "Deblocate"
+  },
+  "buyTokens": "Cumpărați jetoane",
+  "components": {
+    "incentive": {
+      "mobileTitle": "Stimulent",
+      "title": "Tipuri de stimulente"
     },
     "MAX": "MAX",
+    "pool": {
+      "mobileTitle": "Piscină",
+      "title": "Tipuri de piscine"
+    },
     "searchTokens": "Cauta tokeni",
     "selectToken": {
       "title": "Selectați un simbol"
+    },
+    "show": {
+      "less": "Vezi mai putin",
+      "more": "Vezi mai mult"
+    },
+    "sort": {
+      "mobileMenu": "Sorteaza dupa",
+      "SORT": "Sorteaza dupa",
+      "SORTMobile": "Sorteaza"
+    },
+    "table": {
+      "poolId": "Pool-ul #{id}"
     }
   },
-  "menu": {
-    "swap": "Schimba",
-    "pools": "Pool-uri",
-    "assets": "Active",
-    "stake": "Actiuni",
-    "vote": "Vot",
-    "info": "Statistici",
-    "signOut": "Deconectare",
-    "help": "Support Lab Help",
-    "buyTokens": "Cumpara"
-  },
-  "settings": {
-    "title": "Setări globale",
-    "titleLanguage": "Limba",
-    "selectLanguage": "Selecteaza limba",
-    "filterDust": "Filtru de praf",
-    "titleHideDust": "Ascundeți pool-urile cu < {fiatSymbol}0,01"
-  },
+  "connectDisclaimer": "Conectand un portofel declari ca ai inteles cum functioneaza Osmosis.",
+  "connectWallet": "Conecteaza Portofel",
   "errors": {
-    "emptyAmount": "Suma lipseste",
-    "invalidNumberAmount": "Numar invalid",
-    "zeroAmount": "Suma este 0",
-    "negativeAmount": "Suma este negativa",
-    "insufficientAmount": "Suma insuficienta",
-    "negativeSwapFee": "Taxa de schimb e negativa",
-    "highSwapFee": "Taxa de schimb este prea mare",
-    "invalidSwapFee": "Taxa de schimb este invalida",
-    "invalidScalingFactorControllerAddress": "Factor de scalare invalid",
-    "minAssetsCount": "Minimum {num} active necesare",
-    "maxAssetsCount": "Maximum {num} active permise",
-    "negativePercentage": "Procentul trebuie sa fie pozitiv",
-    "scalingFactorTooLow": "Factorul de scalare este prea mic",
-    "percentageSum": "Suma procentelor nu este 100",
+    "calculatingShareOutAmount": "Nu s-a putut calcula suma rezultata",
     "depositNoBalance": "Nu ai active de depozitat",
-    "negativeSlippage": "Toleranta nu poate fi negativa",
-    "invalidSlippage": "Toleranta invalida",
-    "noSendCurrency": "Moneda de trimis nu este selectata",
+    "emptyAmount": "Suma lipseste",
+    "generic": "Eroare",
+    "highSwapFee": "Taxa de schimb este prea mare",
+    "insufficientAmount": "Suma insuficienta",
     "insufficientBal": "Balanta insuficienta",
     "insufficientLiquidity": "Lichiditate insuficientă",
-    "noRoute": "Nicio rută pentru acest comerț",
-    "notInitialized": "Neinitializat",
-    "calculatingShareOutAmount": "Nu s-a putut calcula suma rezultata",
+    "invalidNumberAmount": "Numar invalid",
+    "invalidScalingFactorControllerAddress": "Factor de scalare invalid",
+    "invalidSlippage": "Toleranta invalida",
+    "invalidSwapFee": "Taxa de schimb este invalida",
+    "maxAssetsCount": "Maximum {num} active permise",
+    "minAssetsCount": "Minimum {num} active necesare",
+    "negativeAmount": "Suma este negativa",
+    "negativePercentage": "Procentul trebuie sa fie pozitiv",
+    "negativeSlippage": "Toleranta nu poate fi negativa",
+    "negativeSwapFee": "Taxa de schimb e negativa",
     "noAvailableShares": "Actiuni {denom} nu sunt disponibile",
-    "generic": "Eroare"
-  },
-  "connectWallet": "Conecteaza Portofel",
-  "buyTokens": "Cumpărați jetoane",
-  "profile": {
-    "modalTitle": "Profil",
-    "balance": "Balanta",
-    "wallet": "Portofel",
-    "viewAllAssets": "Vedeți toate activele"
+    "noRoute": "Nicio rută pentru acest comerț",
+    "noSendCurrency": "Moneda de trimis nu este selectata",
+    "notInitialized": "Neinitializat",
+    "percentageSum": "Suma procentelor nu este 100",
+    "scalingFactorTooLow": "Factorul de scalare este prea mic",
+    "zeroAmount": "Suma este 0"
   },
   "keplr": {
-    "install": "Instaleaza Keplr",
-    "wallet": "Portofel Keplr",
     "extension": "Extensia de browser Keplr",
-    "walletConnect": "WalletConnect",
-    "mobile": "Keplr Mobile"
+    "install": "Instaleaza Keplr",
+    "mobile": "Keplr Mobile",
+    "wallet": "Portofel Keplr",
+    "walletConnect": "WalletConnect"
   },
-  "connectDisclaimer": "Conectand un portofel declari ca ai inteles cum functioneaza Osmosis.",
+  "lockToken": {
+    "amountToBond": "Suma blocata",
+    "availableToken": "Disponibil",
+    "bondingRequirement": "{numDays} zile cerinta blocare",
+    "buttonBond": "Blocheaza",
+    "buttonBondStake": "Blocheaza & Stake-uieste",
+    "buttonNext": "Urmatorul",
+    "selectPeriod": "Selecteaza perioada de blocare",
+    "superfluidStake": "Staking Superfluid",
+    "title": "Blocheaza Actiuni LP",
+    "titleInPool": "Blocheaza actiuni in pool-ul #{poolId}"
+  },
+  "menu": {
+    "assets": "Active",
+    "help": "A sustine",
+    "info": "Statistici",
+    "pools": "Pool-uri",
+    "signOut": "Deconectare",
+    "stake": "Actiuni",
+    "swap": "Schimba",
+    "vote": "Vot"
+  },
+  "pool": {
+    "24hrTradingVolume": "Volum tranzactionare 24h",
+    "7davg": "(medie 7z)",
+    "amountDaysUnbonding": "{numDays} zile de dezlegare",
+    "amountDaysUnbonding_plural": "{numDays} zile blocate",
+    "APR": "APR",
+    "available": "Disponibil",
+    "bonded": "Blocate",
+    "bondLiquidity": "Blocheaza Lichiditate",
+    "bondLiquidityCaption": "Blocheaza-ti actiunile pentru o durata cat mai lunga pentru a castiga mai mult anual.",
+    "bondLiquidityUnavailable": "Blocheaza liquidity (indisponibil)",
+    "bondShares": "Blocheaza Actiuni",
+    "bondSuperfluidLiquidityCaption": "Foloseste Superfluid pentru recompense maxime.",
+    "checkBackForBondingRewards": "Revino mai tarziu pentru recompense pentru blocare",
+    "collapseDetails": "Ascunde detalii",
+    "commission": "comision",
+    "currentDailyEarn": "Acum castigi",
+    "dailyEarnAmount": "{amount} / zi",
+    "delegated": "Delegate",
+    "details": "Detalii",
+    "earnMore": "Castiga mai mult prin blocare",
+    "earnSwapFees": "Castiga taxe de tranzactionare",
+    "earnSwapFeesCaption": "Converteste-ti activele in actiuni pentru a castiga din fiecare schimb.",
+    "from": "de la",
+    "incentives": "Recompense",
+    "learnMore": "Citeste mai multe",
+    "level": "Nivel {level}",
+    "liquidity": "Lichiditatea",
+    "myLiquidity": "Lichiditatea mea",
+    "numDaysRemaining": "{numDays} zile ramase",
+    "putAssetsToWork": "Pune-ti activele la munca.",
+    "putAssetsToWorkCaption": "Adauga-ti activele in acest pool pentru a debloca recompense captivante. Cu cat le blochezi mai mult timp, cu atat castigi mai mult.",
+    "rewardDistribution": "Recompense distribuite celor ce pun la dispozitie lichiditate",
+    "sharesAmount": "{shares} actiuni",
+    "sharesAvailableIn": "Disponibil in",
+    "showDetails": "Arata detalii",
+    "stableswapEnabled": "Stableswap activat",
+    "superfluidEarnMore": "Castiga {rate} mai mult. Devino superfluid",
+    "superfluidEnabled": "Staking Superfluid activat",
+    "superfluidStaking": "Staking Superfluid",
+    "swap": "Schimba Tokeni",
+    "swapFee": "Taxa de schimb",
+    "swapFees": "taxe schimb",
+    "title": "Pool #{id}",
+    "unbond": "Deblocate",
+    "unbonding": "deblocare",
+    "undelegating": "anulare delegare",
+    "yourStats": "Statisticile tale"
+  },
+  "pools": {
+    "all": "Toate Pool-urile",
+    "allPools": {
+      "APR": "APR",
+      "APRIncentivized": "7z Vol.",
+      "displayLowLiquidity": "Arata pool-uri < {value}",
+      "myLiquidity": "lichiditatea mea",
+      "search": "Cauta pool-uri",
+      "sort": {
+        "APR": "Lichiditatile mele",
+        "APRIncentivized": "APR",
+        "fees": "Taxe (7z)",
+        "liquidity": "Lichiditate",
+        "poolId": "ID Pool",
+        "poolName": "Nume Pool",
+        "volume24h": "Volum (24H)"
+      },
+      "title": "Toate pool-urile",
+      "TVL": "TVL"
+    },
+    "allTab": "Toate",
+    "APR": "APR",
+    "available": "Disponibil",
+    "bonded": "Blocate",
+    "createPool": {
+      "amount": "Suma",
+      "available": "Disponibil",
+      "button": "Creeaza Pool Nou",
+      "buttonAddToken": "Adauga token nou",
+      "buttonBack": "Anteriorul",
+      "buttonCreate": "Creeaza Pool",
+      "buttonNext": "Urmatorul",
+      "infoCaption": "Transferat catre pool-ul comunitatii Osmosis",
+      "infoMessage": "Taxa creeare pool",
+      "interestedCreate": "Interesat sa creezi un nou pool?",
+      "scalingFactorController": "Seteaza factorul de scalare(optional)",
+      "stablePool": "pool fix",
+      "startProcess": "Apasa aici pentru a incepe procesul",
+      "step": {
+        "one": {
+          "stable": "Pas {step} / {nbStep} - Seteaza factorii de scalare",
+          "weighted": "Pas {step} / {nbStep} - Seteaza ratia token-ului"
+        },
+        "three": "Step {step} / {nbStep} - Confirma raportul pool-ului si suma token-ului",
+        "two": "Pas {step} / {nbStep} - Introdu suma de adaugat"
+      },
+      "swapFee": "Seteaza taxa de schimb",
+      "title": "Creeaza Pool Nou",
+      "token": "Token",
+      "undersandCost": "Inteleg ca adaugarea unui nou pool costa {POOL_CREATION_FEE}.",
+      "weightedPool": "pool ponderat"
+    },
+    "externalIncentivized": {
+      "APR": "APR",
+      "search": "Cauta dupa simbol",
+      "sort": {
+        "APR": "APR",
+        "epochs": "Epoci ramase",
+        "liquidity": "Lichiditate",
+        "myLiquidity": "Lichiditatile mele",
+        "poolName": "Nume Pool"
+      },
+      "title": "Stimulente externe",
+      "TVL": "TVL"
+    },
+    "incentivized": "Stimulat",
+    "liquidity": "Lichiditate pool",
+    "myLiquidity": "Lichiditatea mea",
+    "myPools": "Pool-urile mele",
+    "poolId": "Pool #{id}",
+    "priceOsmo": "Pret OSMO",
+    "rewardDistribution": "Recompensele se distribuie in",
+    "superfluid": {
+      "APR": "APR",
+      "fees7D": "Taxe (7zile)",
+      "liquidity": "Lichiditate pool",
+      "tab": "Superfluid",
+      "title": "Pool-uri Superfluid"
+    },
+    "title": "Pool-uri active"
+  },
+  "profile": {
+    "balance": "Balanta",
+    "modalTitle": "Profil",
+    "viewAllAssets": "Vedeți toate activele",
+    "wallet": "Portofel"
+  },
   "protocolDisclaimer": "Protocol Disclaimer",
-  "transactionFailed": "Tranzactie Esuata",
-  "transactionSuccessful": "Tranzactie Finalizata",
-  "transactionBroadcasting": "Transmitere tranzactie",
-  "swapFailed": "Schimbul a esuata. Lichiditatea poate fi insuficienta.Incearca ajustarea tolerantei.",
-  "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
-  "viewExplorer": "vezi explorer",
-  "unknownError": "Eroare necunoscuta",
+  "removeLiquidity": {
+    "sharesAmount": "{shares} actiuni",
+    "title": "Elimina Lichiditate",
+    "titleInPool": "Elimina lichiditate din pool-ul #{poolId}"
+  },
   "requestRejected": "Cerere respinsa",
+  "settings": {
+    "filterDust": "Filtru de praf",
+    "selectLanguage": "Selecteaza limba",
+    "title": "Setări globale",
+    "titleHideDust": "Ascundeți pool-urile cu < {fiatSymbol}0,01",
+    "titleLanguage": "Limba"
+  },
   "stablecoinTypes": {
     "collateralized": "colateralizat"
-  }
+  },
+  "superfluidValidator": {
+    "bondedAmount": "Suma Blocata",
+    "buttonBond": "Blocheaza & Stake-uieste",
+    "choose": "Alege-ti un validator Superfluid",
+    "columns": {
+      "commission": "Comision",
+      "validator": "Validator"
+    },
+    "estimation": "Delegarea Superfluid Estimata",
+    "estimationInfo": "Valoarea acestei delegari fluctueaza si este estimata pe baza valorii OSMO in pool.",
+    "estimationMobile": "Delegarea Est.",
+    "search": "Cauta dupa nume",
+    "title": "Alege validator Superfluid",
+    "titleMobile": "Alege Validator"
+  },
+  "swap": {
+    "autoRouter": "Traseu",
+    "autoRouterToggle": {
+      "hide": "Ascunde",
+      "show": "Arata"
+    },
+    "available": "Disponibil",
+    "button": "Schimba",
+    "buttonError": "Schibma oricum",
+    "error": {
+      "findCurrency": "Moneda {currency} nu a fost gasita"
+    },
+    "expectedOutput": "Rezultat asteptat",
+    "fee": "Taxa schimb ({fee})",
+    "HALF": "JUMATATE",
+    "MAX": "MAXIM",
+    "minimumSlippage": "Minimum rezultat cu toleranta ({slippage})",
+    "pool": "Pool #{id}",
+    "priceImpact": "Impact pret",
+    "routerTooltipFee": "Taxa",
+    "settings": {
+      "slippage": "Toleranta modificare pret",
+      "slippageInfo": "Tranzactia se va anula daca pretul se schimba nefavorabil mai mult decat acest procent.",
+      "title": "Setari tranzactie"
+    },
+    "title": "Schimb"
+  },
+  "swapFailed": "Schimbul a esuata. Lichiditatea poate fi insuficienta.Incearca ajustarea tolerantei.",
+  "transactionBroadcasting": "Transmitere tranzactie",
+  "transactionFailed": "Tranzactie Esuata",
+  "transactionSuccessful": "Tranzactie Finalizata",
+  "unknownError": "Eroare necunoscuta",
+  "viewExplorer": "vezi explorer",
+  "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc."
 }

@@ -5,424 +5,432 @@
   "500": {
     "title": "伺服器錯誤"
   },
-  "app": {
-    "banner": {
-      "title": "你睇緊所有 permissionless 資產.",
-      "linkText": "按此翻去主應用程式",
-      "externalLinkDisclaimer": "點擊鏈接，您即表示您已閱讀並明白Osmosis對可能具有不同服務條款的外部頁面的服務質量沒有任何保",
-      "externalLink": "您現在正離開Osmosis應用程式去",
-      "goToSite": "前往網站",
-      "backToOsmosis": "返回Osmosis",
-      "externalLinkModalTitle": "離開Osmosis"
-    }
-  },
-  "swap": {
-    "title": "兌換",
-    "settings": {
-      "title": "兌換設定",
-      "slippage": "允許嘅滑價",
-      "slippageInfo": "你嘅交易在價格嘅不利變動超過此百份比時會被取消"
-    },
-    "available": "可用",
-    "MAX": "全部",
-    "HALF": "一半",
-    "button": "交易",
-    "buttonError": "照樣交易",
-    "priceImpact": "價格影響",
-    "fee": "交易費 ({fee})",
-    "expectedOutput": "預期產出",
-    "minimumSlippage": "({slippage}) 包括滑價({slippage})後最少能獲得",
-    "error": {
-      "findCurrency": "搵唔到貨幣 {currency}"
-    },
-    "autoRouter": "路線",
-    "routerTooltipFee": "費",
-    "autoRouterToggle": {
-      "show": "顯示",
-      "hide": "隱藏"
-    },
-    "pool": "流動性池 #{id}"
-  },
-  "pools": {
-    "title": "活躍流動性池",
-    "poolId": "流動性池 #{id}",
-    "priceOsmo": "OSMO 價格",
-    "rewardDistribution": "距下次獎勵分發仲有",
-    "myPools": "我嘅流動性池",
-    "APR": "年利率(APR)",
-    "available": "可用",
-    "liquidity": "流動性",
-    "myLiquidity": "我嘅流動性",
-    "bonded": "已鎖住",
-    "incentivized": "有激勵嘅",
-    "all": "全部流動性池",
-    "allTab": "全部",
-    "superfluid": {
-      "title": "超流體流動性池",
-      "tab": "超流體",
-      "APR": "年利率(APR)",
-      "liquidity": "流動性",
-      "fees7D": "交易費(7日)"
-    },
-    "allPools": {
-      "title": "全部流動性池",
-      "myLiquidity": "我嘅流動性",
-      "TVL": "總鎖定資產價值(TVL)",
-      "APR": "年利率(APR)",
-      "APRIncentivized": "7日交易量",
-      "search": "搜尋流動性池",
-      "displayLowLiquidity": "顯示少於 {value} 嘅流動性池",
-      "sort": {
-        "poolName": "池名稱/編號",
-        "liquidity": "流動性",
-        "volume24h": "交易量 (1日)",
-        "fees": "交易費 (7日)",
-        "APRIncentivized": "年利率(APR)",
-        "APR": "我嘅流動性",
-        "poolId": "流動性池 ID"
-      }
-    },
-    "externalIncentivized": {
-      "title": "外部激勵礦池",
-      "TVL": "總鎖定資產價值(TVL)",
-      "APR": "年利率(APR)",
-      "search": "以符號搜尋",
-      "sort": {
-        "poolName": "池名稱/編號",
-        "liquidity": "流動性",
-        "APR": "年利率(APR)",
-        "epochs": "剩餘日數",
-        "myLiquidity": "我嘅流動性"
-      }
-    },
-    "createPool": {
-      "title": "建立新流動性池",
-      "button": "建立新流動性池",
-      "weightedPool": "加權流動性池",
-      "stablePool": "穩定池",
-      "step": {
-        "one": {
-          "weighted": "步驟 {step} / {nbStep} - 設定代幣比例",
-          "stable": "步驟 {step} / {nbStep} - 設定調整係數"
-        },
-        "two": "步驟 {step} / {nbStep} - 輸入要加入嘅幣額",
-        "three": "步驟 {step} / {nbStep} - 確認代幣比例及幣額"
-      },
-      "infoMessage": "流動性池建立費",
-      "infoCaption": "已被傳送到 Osmosis 社群資金池",
-      "buttonCreate": "建立新池",
-      "buttonNext": "下一步",
-      "buttonBack": "上一步",
-      "buttonAddToken": "加入新代幣",
-      "available": "可用",
-      "amount": "幣額",
-      "token": "代幣",
-      "swapFee": "設定兌換費",
-      "scalingFactorController": "比例因子控制器（可選)",
-      "undersandCost": "我明白建立一個新流動性池會需要費用 {POOL_CREATION_FEE}",
-      "interestedCreate": "想建立新流動性池嗎？",
-      "startProcess": "按此開始流程"
-    }
-  },
-  "pool": {
-    "title": "流動性池 #{id}",
-    "swap": "兌換代幣",
-    "superfluidEnabled": "超流體質押已啟用",
-    "stableswapEnabled": "啟用穩定交換",
-    "24hrTradingVolume": "24小時交易量",
-    "liquidity": "流動性",
-    "swapFee": "兌換費",
-    "yourStats": "您嘅資金池餘額",
-    "sharesAmount": "{shares} 份額",
-    "currentDailyEarn": "你現在正賺取",
-    "earnMore": "通過鎖定賺取 {amount}",
-    "day": "日",
-    "dailyEarnAmount": "{amount} / 日",
-    "putAssetsToWork": "讓你嘅資產為你工作",
-    "putAssetsToWorkCaption": "將你嘅資產加入到此流動性池以解鎖誘人嘅獎勵，選擇嘅解鎖時間愈長，賺得愈多",
-    "learnMore": "了解更多",
-    "level": "等級 {level}",
-    "earnSwapFees": "賺取兌換費",
-    "earnSwapFeesCaption": "轉換你嘅代幣成流動性池份額並賺取每次兌換嘅兌換費",
-    "APR": "APR",
-    "bondLiquidity": "鎖定流動性",
-    "bondLiquidityUnavailable": "鎖定流動性 (唔用得)",
-    "checkBackForBondingRewards": "稍後回來確認鎖定獎勵",
-    "bondLiquidityCaption": "鎖定你嘅流動性池份額更久以賺取年利率(APR)",
-    "bondSuperfluidLiquidityCaption": "啟用超流體質押以賺取最多獎勵",
-    "bondShares": "鎖定份額",
-    "amountDaysUnbonding": "{numDays} 天解綁",
-    "amountDaysUnbonding_plural": "解鎖中 ({numDays} 日)",
-    "available": "可用",
-    "unbond": "解鎖",
-    "bonded": "已鎖定",
-    "showDetails": "顯示詳情",
-    "collapseDetails": "收起詳情",
-    "sharesAvailableIn": "距份額解鎖還有",
-    "unbonding": "解鎖中",
-    "superfluidEarnMore": "要賺取額外 {rate}，啟用超流體質押",
-    "incentives": "獎勵",
-    "details": "詳情",
-    "rewardDistribution": "獎勵會被分發俾所有流動性提供者",
-    "superfluidStaking": "超流體質押",
-    "delegated": "已質押",
-    "undelegating": "解除質押中",
-    "commission": "佣金",
-    "numDaysRemaining": "剩低{numDays}日",
-    "from": "來自",
-    "swapFees": "兌換費",
-    "7davg": "(7日平均)"
-  },
-  "removeLiquidity": {
-    "title": "移除流動性",
-    "titleInPool": "從流動性池 #{poolId} 移除流動性",
-    "sharesAmount": "{shares} 份額"
-  },
   "addLiquidity": {
-    "title": "加入流動性",
-    "titleInPool": "加入流動性到流動性池 #{poolId}",
     "allAssets": "所有資產",
-    "singleAsset": "單一資產",
-    "available": "可用",
     "autoswapCaption": "使用自動兌換以使用單一資產加入流動性",
-    "stablecoinWarning": "你正在加入流動性到 {denom}, 一種使用 {mechanism} 掛鉤機制嘅穩定幣",
+    "available": "可用",
     "scalingFactor": "比例因子",
-    "scalingFactorInformation": "該因素允許曲線根據可預測的價格變化進行調整，例如流動性質押代幣的增值。",
+    "scalingFactorController": "控制器",
     "scalingFactorControllerWarning_first": "啟用了縮放因子控制器。這",
     "scalingFactorControllerWarning_second": "可以調整",
     "scalingFactorControllerWarning_third": "保持釘子。當前的縮放因素是",
-    "scalingFactorController": "控制器"
+    "scalingFactorInformation": "該因素允許曲線根據可預測的價格變化進行調整，例如流動性質押代幣的增值。",
+    "singleAsset": "單一資產",
+    "stablecoinWarning": "你正在加入流動性到 {denom}, 一種使用 {mechanism} 掛鉤機制嘅穩定幣",
+    "title": "加入流動性",
+    "titleInPool": "加入流動性到流動性池 #{poolId}"
   },
-  "lockToken": {
-    "title": "鎖定流動性池份額",
-    "titleInPool": "鎖定流動性池 #{poolId} 嘅份額",
-    "selectPeriod": "選擇解鎖時間長度",
-    "availableToken": "可用",
-    "amountToBond": "要鎖定嘅數量",
-    "superfluidStake": "超流體質押",
-    "bondingRequirement": "{numDays} 日鎖定要求",
-    "buttonNext": "下一步",
-    "buttonBond": "鎖定",
-    "buttonBondStake": "鎖定及質押"
-  },
-  "superfluidValidator": {
-    "title": "選擇超流體質押驗證人",
-    "titleMobile": "選擇驗證人",
-    "choose": "選擇你嘅超流體質押驗證人",
-    "search": "以名稱搜尋",
-    "bondedAmount": "鎖定數量",
-    "estimation": "估計超流體質押量",
-    "estimationMobile": "估計超流體質押量",
-    "estimationInfo": "此質押價值會浮動，此估計是基於在此流動性池中嘅OSMO數量",
-    "buttonBond": "鎖定及質押",
-    "columns": {
-      "validator": "驗證人",
-      "commission": "佣金"
+  "app": {
+    "banner": {
+      "backToOsmosis": "返回Osmosis",
+      "externalLink": "您現在正離開Osmosis應用程式去",
+      "externalLinkDisclaimer": "點擊鏈接，您即表示您已閱讀並明白Osmosis對可能具有不同服務條款的外部頁面的服務質量沒有任何保",
+      "externalLinkModalTitle": "離開Osmosis",
+      "goToSite": "前往網站",
+      "linkText": "按此翻去主應用程式",
+      "title": "你睇緊所有 permissionless 資產."
     }
   },
   "assets": {
-    "totalAssets": "總資產",
-    "unbondedAssets": "未鎖定",
     "bondedAssets": "已鎖定",
-    "stakedAssets": "已質押嘅OSMO",
-    "myPools": "我嘅流動性池",
-    "transferAssetSelect": {
-      "deposit": "存入",
-      "withdraw": "轉出",
-      "network": "網絡",
-      "buttonNext": "下一步"
-    },
-    "poolCards": {
-      "APR": "年利率(APR)",
-      "FeeAPY": "交易費 APY",
-      "liquidity": "我嘅流動性",
-      "bonded": "已鎖定",
-      "myLiquidity": "我嘅流動性"
-    },
-    "ibcTransfer": {
-      "titleWithdraw": "轉出 {coinDenom}",
-      "titleDeposit": "存入 {coinDenom}",
-      "channelCongested": "通道擁擠緊",
-      "channelCongestedWithdraw": "轉出 (通道擁擠緊)",
-      "channelCongestedDeposit": "存入 (通道擁擠緊)",
-      "channelBlocked": "通道已被堵塞",
-      "selectAmount": "選擇數量",
-      "estimatedTime": "預計所需時間",
-      "waitTime": "20 秒",
-      "copied": "已複製",
-      "IBCTransfer": "跨鏈傳送",
-      "from": "從",
-      "to": "到",
-      "warningLossFunds": "警告：轉出到中心化交易所地址會令你失去資產",
-      "buttonEnter": "輸入",
-      "checkboxVerify": "我確認我並非傳送到任何中心化交易所地址",
-      "buttonEdit": "編輯",
-      "amoutWithdraw": "要轉出嘅數量",
-      "amoutDeposit": "要存入嘅數量",
-      "availableBalance": "可用結餘：",
-      "MAX": "全部"
-    },
-    "transfer": {
-      "titleWithdraw": "轉出 {coinDenom}",
-      "titleDeposit": "存入 {coinDenom}",
-      "warnDepositAddressDifferent": "警告：在 {address} 嘅已選帳戶與你上次存入嘅帳戶不同",
-      "from": "從",
-      "to": "到",
-      "via": "經過",
-      "loading": "載入中",
-      "availableOn": "{network}上可用",
-      "availableMobile": "可用",
-      "transferFee": "交易費",
-      "errors": {
-        "reconnectWallet": "重新連接 {walletName}",
-        "wrongNetworkInWallet": "非正確網絡? Wrong network in {walletName}",
-        "insufficientFee": "交易費唔夠喎",
-        "insufficientBal": "結餘唔夠喎"
-      },
-      "useWrappedDeposit": "在 Satellite 上存入 {wrapDenom}",
-      "useWrappedWithdraw": "從 Satellite 中提取 {wrapDenom}",
-      "waitTime": "{minutes} 分鐘"
-    },
-    "selectAssetSource": {
-      "titleWithdraw": "轉出到",
-      "titleDeposit": "存入自",
-      "next": "下一步",
-      "installWallet": "安裝 {walletName}"
-    },
-    "table": {
-      "depositButton": "存入",
-      "withdrawButton": "轉出",
-      "search": "搜索",
-      "title": "所有資產",
-      "hideZero": "隱藏結餘為零嘅項目",
-      "preTransfer": {
-        "deposit": "存入",
-        "withdraw": "轉出",
-        "currentBal": "目前結餘"
-      },
-      "columns": {
-        "assetChain": "資產 / 鏈",
-        "balance": "結餘",
-        "transfer": "轉移",
-        "deposit": "存入",
-        "withdraw": "轉出"
-      },
-      "sort": {
-        "symbol": "符號",
-        "network": "網絡",
-        "balance": "結餘"
-      }
-    },
     "historyTable": {
-      "title": "轉移歷史",
-      "pending": "待處理中",
-      "success": "成功",
-      "refunded": "已退款",
-      "pendingRefunded": "失敗，待退款",
       "colums": {
+        "amount": "數額",
+        "deposit": "存入",
+        "status": "狀態",
         "transactionHash": "交易編號",
         "type": "種類",
-        "amount": "數額",
-        "status": "狀態",
-        "deposit": "存入",
         "withdraw": "轉出"
+      },
+      "errors": {
+        "insufficientFee": "費用不足"
       },
       "failed": "失敗的",
       "failedWithReason": "失敗的: {reason}",
-      "errors": {
-        "insufficientFee": "費用不足"
-      }
-    }
-  },
-  "components": {
-    "show": {
-      "more": "查看更多",
-      "less": "查看較少"
+      "pending": "待處理中",
+      "pendingRefunded": "失敗，待退款",
+      "refunded": "已退款",
+      "success": "成功",
+      "title": "轉移歷史"
     },
+    "ibcTransfer": {
+      "amoutDeposit": "要存入嘅數量",
+      "amoutWithdraw": "要轉出嘅數量",
+      "availableBalance": "可用結餘：",
+      "buttonEdit": "編輯",
+      "buttonEnter": "輸入",
+      "channelBlocked": "通道已被堵塞",
+      "channelCongested": "通道擁擠緊",
+      "channelCongestedDeposit": "存入 (通道擁擠緊)",
+      "channelCongestedWithdraw": "轉出 (通道擁擠緊)",
+      "checkboxVerify": "我確認我並非傳送到任何中心化交易所地址",
+      "copied": "已複製",
+      "estimatedTime": "預計所需時間",
+      "from": "從",
+      "IBCTransfer": "跨鏈傳送",
+      "MAX": "全部",
+      "selectAmount": "選擇數量",
+      "titleDeposit": "存入 {coinDenom}",
+      "titleWithdraw": "轉出 {coinDenom}",
+      "to": "到",
+      "waitTime": "20 秒",
+      "warningLossFunds": "警告：轉出到中心化交易所地址會令你失去資產"
+    },
+    "myPools": "我嘅流動性池",
+    "poolCards": {
+      "APR": "年利率(APR)",
+      "bonded": "已鎖定",
+      "FeeAPY": "交易費 APY",
+      "liquidity": "我嘅流動性",
+      "myLiquidity": "我嘅流動性"
+    },
+    "selectAssetSource": {
+      "installWallet": "安裝 {walletName}",
+      "next": "下一步",
+      "titleDeposit": "存入自",
+      "titleWithdraw": "轉出到"
+    },
+    "stakedAssets": "已質押嘅OSMO",
     "table": {
-      "poolId": "流動性池 #{id}"
+      "columns": {
+        "assetChain": "資產 / 鏈",
+        "balance": "結餘",
+        "deposit": "存入",
+        "transfer": "轉移",
+        "withdraw": "轉出"
+      },
+      "depositButton": "存入",
+      "hideZero": "隱藏結餘為零嘅項目",
+      "preTransfer": {
+        "currentBal": "目前結餘",
+        "deposit": "存入",
+        "withdraw": "轉出"
+      },
+      "search": "搜索",
+      "sort": {
+        "balance": "結餘",
+        "network": "網絡",
+        "symbol": "符號"
+      },
+      "title": "所有資產",
+      "withdrawButton": "轉出"
     },
-    "sort": {
-      "SORT": "排序",
-      "SORTMobile": "排序",
-      "mobileMenu": "排序"
+    "totalAssets": "總資產",
+    "transfer": {
+      "availableMobile": "可用",
+      "availableOn": "{network}上可用",
+      "errors": {
+        "insufficientBal": "結餘唔夠喎",
+        "insufficientFee": "交易費唔夠喎",
+        "reconnectWallet": "重新連接 {walletName}",
+        "wrongNetworkInWallet": "非正確網絡? Wrong network in {walletName}"
+      },
+      "from": "從",
+      "loading": "載入中",
+      "titleDeposit": "存入 {coinDenom}",
+      "titleWithdraw": "轉出 {coinDenom}",
+      "to": "到",
+      "transferFee": "交易費",
+      "useWrappedDeposit": "在 Satellite 上存入 {wrapDenom}",
+      "useWrappedWithdraw": "從 Satellite 中提取 {wrapDenom}",
+      "via": "經過",
+      "waitTime": "{minutes} 分鐘",
+      "warnDepositAddressDifferent": "警告：在 {address} 嘅已選帳戶與你上次存入嘅帳戶不同"
+    },
+    "transferAssetSelect": {
+      "buttonNext": "下一步",
+      "deposit": "存入",
+      "network": "網絡",
+      "withdraw": "轉出"
+    },
+    "unbondedAssets": "未鎖定"
+  },
+  "buyTokens": "購買代幣",
+  "components": {
+    "incentive": {
+      "mobileTitle": "奖励",
+      "title": "奖励类型"
     },
     "MAX": "全部",
+    "pool": {
+      "mobileTitle": "游泳池",
+      "title": "游泳池类型"
+    },
     "searchTokens": "搜尋代幣",
     "selectToken": {
       "title": "選擇權杖"
+    },
+    "show": {
+      "less": "查看較少",
+      "more": "查看更多"
+    },
+    "sort": {
+      "mobileMenu": "排序",
+      "SORT": "排序",
+      "SORTMobile": "排序"
+    },
+    "table": {
+      "poolId": "流動性池 #{id}"
     }
   },
-  "menu": {
-    "swap": "兌換",
-    "pools": "流動性池",
-    "assets": "資產",
-    "stake": "質押",
-    "vote": "投票",
-    "info": "統計數據",
-    "signOut": "斷開連接",
-    "help": "取得Support Lab嘅幫助"
-  },
-  "settings": {
-    "title": "全局設置",
-    "titleLanguage": "語言",
-    "titleHideDust": "隱藏 < {fiatSymbol}0.01 嘅礦池",
-    "selectLanguage": "選擇語言",
-    "filterDust": "濾塵"
-  },
+  "connectDisclaimer": "連接錢包即表示您已經閱讀和理解 Osmosis 嘅",
+  "connectWallet": "連接錢包",
   "errors": {
-    "emptyAmount": "未提供數量",
-    "invalidNumberAmount": "非正確數字",
-    "zeroAmount": "未提供幣額",
-    "negativeAmount": "幣額係負數喎",
-    "insufficientAmount": "幣額唔夠喎",
-    "negativeSwapFee": "兌換費係負數喎",
-    "highSwapFee": "兌換費太高啦",
-    "invalidSwapFee": "非正確兌換費",
-    "invalidScalingFactorControllerAddress": "比例因子控制器地址無效",
-    "minAssetsCount": "最少需要 {num} 種資產",
-    "maxAssetsCount": "最少可有 {num} 種資產",
-    "negativePercentage": "百份比值必須為正數",
-    "scalingFactorTooLow": "縮放因數過低",
-    "percentageSum": "所有百份比值總和非100",
+    "calculatingShareOutAmount": "計算幣額時出錯",
     "depositNoBalance": "你冇資產存入喎",
-    "negativeSlippage": "滑價不能係負數喎",
-    "invalidSlippage": "非正確滑價",
-    "noSendCurrency": "未設定要傳送嘅貨幣",
+    "emptyAmount": "未提供數量",
+    "generic": "錯誤",
+    "highSwapFee": "兌換費太高啦",
+    "insufficientAmount": "幣額唔夠喎",
     "insufficientBal": "結餘唔夠喎",
     "insufficientLiquidity": "流動性不足",
-    "noRoute": "此交易沒有路線",
-    "notInitialized": "未初始化",
-    "calculatingShareOutAmount": "計算幣額時出錯",
+    "invalidNumberAmount": "非正確數字",
+    "invalidScalingFactorControllerAddress": "比例因子控制器地址無效",
+    "invalidSlippage": "非正確滑價",
+    "invalidSwapFee": "非正確兌換費",
+    "maxAssetsCount": "最少可有 {num} 種資產",
+    "minAssetsCount": "最少需要 {num} 種資產",
+    "negativeAmount": "幣額係負數喎",
+    "negativePercentage": "百份比值必須為正數",
+    "negativeSlippage": "滑價不能係負數喎",
+    "negativeSwapFee": "兌換費係負數喎",
     "noAvailableShares": "冇可用嘅 {denom} 份額喎",
-    "generic": "錯誤"
-  },
-  "connectWallet": "連接錢包",
-  "buyTokens": "購買代幣",
-  "profile": {
-    "modalTitle": "轮廓",
-    "balance": "结余",
-    "wallet": "钱包",
-    "viewAllAssets": "查看所有資產"
+    "noRoute": "此交易沒有路線",
+    "noSendCurrency": "未設定要傳送嘅貨幣",
+    "notInitialized": "未初始化",
+    "percentageSum": "所有百份比值總和非100",
+    "scalingFactorTooLow": "縮放因數過低",
+    "zeroAmount": "未提供幣額"
   },
   "keplr": {
-    "install": "安裝 Keplr",
-    "wallet": "Keplr 錢包",
     "extension": "Keplr 瀏覽器插件",
-    "walletConnect": "WalletConnect",
-    "mobile": "Keplr 手機版"
+    "install": "安裝 Keplr",
+    "mobile": "Keplr 手機版",
+    "wallet": "Keplr 錢包",
+    "walletConnect": "WalletConnect"
   },
-  "connectDisclaimer": "連接錢包即表示您已經閱讀和理解 Osmosis 嘅",
+  "lockToken": {
+    "amountToBond": "要鎖定嘅數量",
+    "availableToken": "可用",
+    "bondingRequirement": "{numDays} 日鎖定要求",
+    "buttonBond": "鎖定",
+    "buttonBondStake": "鎖定及質押",
+    "buttonNext": "下一步",
+    "selectPeriod": "選擇解鎖時間長度",
+    "superfluidStake": "超流體質押",
+    "title": "鎖定流動性池份額",
+    "titleInPool": "鎖定流動性池 #{poolId} 嘅份額"
+  },
+  "menu": {
+    "assets": "資產",
+    "help": "支持",
+    "info": "統計數據",
+    "pools": "流動性池",
+    "signOut": "斷開連接",
+    "stake": "質押",
+    "swap": "兌換",
+    "vote": "投票"
+  },
+  "pool": {
+    "24hrTradingVolume": "24小時交易量",
+    "7davg": "(7日平均)",
+    "amountDaysUnbonding": "{numDays} 天解綁",
+    "amountDaysUnbonding_plural": "解鎖中 ({numDays} 日)",
+    "APR": "APR",
+    "available": "可用",
+    "bonded": "已鎖定",
+    "bondLiquidity": "鎖定流動性",
+    "bondLiquidityCaption": "鎖定你嘅流動性池份額更久以賺取年利率(APR)",
+    "bondLiquidityUnavailable": "鎖定流動性 (唔用得)",
+    "bondShares": "鎖定份額",
+    "bondSuperfluidLiquidityCaption": "啟用超流體質押以賺取最多獎勵",
+    "checkBackForBondingRewards": "稍後回來確認鎖定獎勵",
+    "collapseDetails": "收起詳情",
+    "commission": "佣金",
+    "currentDailyEarn": "你現在正賺取",
+    "dailyEarnAmount": "{amount} / 日",
+    "day": "日",
+    "delegated": "已質押",
+    "details": "詳情",
+    "earnMore": "通過鎖定賺取 {amount}",
+    "earnSwapFees": "賺取兌換費",
+    "earnSwapFeesCaption": "轉換你嘅代幣成流動性池份額並賺取每次兌換嘅兌換費",
+    "from": "來自",
+    "incentives": "獎勵",
+    "learnMore": "了解更多",
+    "level": "等級 {level}",
+    "liquidity": "流動性",
+    "numDaysRemaining": "剩低{numDays}日",
+    "putAssetsToWork": "讓你嘅資產為你工作",
+    "putAssetsToWorkCaption": "將你嘅資產加入到此流動性池以解鎖誘人嘅獎勵，選擇嘅解鎖時間愈長，賺得愈多",
+    "rewardDistribution": "獎勵會被分發俾所有流動性提供者",
+    "sharesAmount": "{shares} 份額",
+    "sharesAvailableIn": "距份額解鎖還有",
+    "showDetails": "顯示詳情",
+    "stableswapEnabled": "啟用穩定交換",
+    "superfluidEarnMore": "要賺取額外 {rate}，啟用超流體質押",
+    "superfluidEnabled": "超流體質押已啟用",
+    "superfluidStaking": "超流體質押",
+    "swap": "兌換代幣",
+    "swapFee": "兌換費",
+    "swapFees": "兌換費",
+    "title": "流動性池 #{id}",
+    "unbond": "解鎖",
+    "unbonding": "解鎖中",
+    "undelegating": "解除質押中",
+    "yourStats": "您嘅資金池餘額"
+  },
+  "pools": {
+    "all": "全部流動性池",
+    "allPools": {
+      "APR": "年利率(APR)",
+      "APRIncentivized": "7日交易量",
+      "displayLowLiquidity": "顯示少於 {value} 嘅流動性池",
+      "myLiquidity": "我嘅流動性",
+      "search": "搜尋流動性池",
+      "sort": {
+        "APR": "我嘅流動性",
+        "APRIncentivized": "年利率(APR)",
+        "fees": "交易費 (7日)",
+        "liquidity": "流動性",
+        "poolId": "流動性池 ID",
+        "poolName": "池名稱/編號",
+        "volume24h": "交易量 (1日)"
+      },
+      "title": "全部流動性池",
+      "TVL": "總鎖定資產價值(TVL)"
+    },
+    "allTab": "全部",
+    "APR": "年利率(APR)",
+    "available": "可用",
+    "bonded": "已鎖住",
+    "createPool": {
+      "amount": "幣額",
+      "available": "可用",
+      "button": "建立新流動性池",
+      "buttonAddToken": "加入新代幣",
+      "buttonBack": "上一步",
+      "buttonCreate": "建立新池",
+      "buttonNext": "下一步",
+      "infoCaption": "已被傳送到 Osmosis 社群資金池",
+      "infoMessage": "流動性池建立費",
+      "interestedCreate": "想建立新流動性池嗎？",
+      "scalingFactorController": "比例因子控制器（可選)",
+      "stablePool": "穩定池",
+      "startProcess": "按此開始流程",
+      "step": {
+        "one": {
+          "stable": "步驟 {step} / {nbStep} - 設定調整係數",
+          "weighted": "步驟 {step} / {nbStep} - 設定代幣比例"
+        },
+        "three": "步驟 {step} / {nbStep} - 確認代幣比例及幣額",
+        "two": "步驟 {step} / {nbStep} - 輸入要加入嘅幣額"
+      },
+      "swapFee": "設定兌換費",
+      "title": "建立新流動性池",
+      "token": "代幣",
+      "undersandCost": "我明白建立一個新流動性池會需要費用 {POOL_CREATION_FEE}",
+      "weightedPool": "加權流動性池"
+    },
+    "externalIncentivized": {
+      "APR": "年利率(APR)",
+      "search": "以符號搜尋",
+      "sort": {
+        "APR": "年利率(APR)",
+        "epochs": "剩餘日數",
+        "liquidity": "流動性",
+        "myLiquidity": "我嘅流動性",
+        "poolName": "池名稱/編號"
+      },
+      "title": "外部激勵礦池",
+      "TVL": "總鎖定資產價值(TVL)"
+    },
+    "incentivized": "有激勵嘅",
+    "liquidity": "流動性",
+    "myLiquidity": "我嘅流動性",
+    "myPools": "我嘅流動性池",
+    "poolId": "流動性池 #{id}",
+    "priceOsmo": "OSMO 價格",
+    "rewardDistribution": "距下次獎勵分發仲有",
+    "superfluid": {
+      "APR": "年利率(APR)",
+      "fees7D": "交易費(7日)",
+      "liquidity": "流動性",
+      "tab": "超流體",
+      "title": "超流體流動性池"
+    },
+    "title": "活躍流動性池"
+  },
+  "profile": {
+    "balance": "结余",
+    "modalTitle": "轮廓",
+    "viewAllAssets": "查看所有資產",
+    "wallet": "钱包"
+  },
   "protocolDisclaimer": "協定免責聲明",
-  "transactionFailed": "交易失敗",
-  "transactionSuccessful": "交易成功",
-  "transactionBroadcasting": "交易正在被廣播",
-  "swapFailed": "兌換失敗，流動性可能唔夠喎，嘗試下調整允許嘅滑價啦",
-  "waitingForTransaction": "正等待交易被加入到區塊中",
-  "viewExplorer": "使用區塊瀏覽器查看",
-  "unknownError": "未知錯誤",
+  "removeLiquidity": {
+    "sharesAmount": "{shares} 份額",
+    "title": "移除流動性",
+    "titleInPool": "從流動性池 #{poolId} 移除流動性"
+  },
   "requestRejected": "請求已被拒絕",
+  "settings": {
+    "filterDust": "濾塵",
+    "selectLanguage": "選擇語言",
+    "title": "全局設置",
+    "titleHideDust": "隱藏 < {fiatSymbol}0.01 嘅礦池",
+    "titleLanguage": "語言"
+  },
   "stablecoinTypes": {
     "collateralized": "抵押"
-  }
+  },
+  "superfluidValidator": {
+    "bondedAmount": "鎖定數量",
+    "buttonBond": "鎖定及質押",
+    "choose": "選擇你嘅超流體質押驗證人",
+    "columns": {
+      "commission": "佣金",
+      "validator": "驗證人"
+    },
+    "estimation": "估計超流體質押量",
+    "estimationInfo": "此質押價值會浮動，此估計是基於在此流動性池中嘅OSMO數量",
+    "estimationMobile": "估計超流體質押量",
+    "search": "以名稱搜尋",
+    "title": "選擇超流體質押驗證人",
+    "titleMobile": "選擇驗證人"
+  },
+  "swap": {
+    "autoRouter": "路線",
+    "autoRouterToggle": {
+      "hide": "隱藏",
+      "show": "顯示"
+    },
+    "available": "可用",
+    "button": "交易",
+    "buttonError": "照樣交易",
+    "error": {
+      "findCurrency": "搵唔到貨幣 {currency}"
+    },
+    "expectedOutput": "預期產出",
+    "fee": "交易費 ({fee})",
+    "HALF": "一半",
+    "MAX": "全部",
+    "minimumSlippage": "({slippage}) 包括滑價({slippage})後最少能獲得",
+    "pool": "流動性池 #{id}",
+    "priceImpact": "價格影響",
+    "routerTooltipFee": "費",
+    "settings": {
+      "slippage": "允許嘅滑價",
+      "slippageInfo": "你嘅交易在價格嘅不利變動超過此百份比時會被取消",
+      "title": "兌換設定"
+    },
+    "title": "兌換"
+  },
+  "swapFailed": "兌換失敗，流動性可能唔夠喎，嘗試下調整允許嘅滑價啦",
+  "transactionBroadcasting": "交易正在被廣播",
+  "transactionFailed": "交易失敗",
+  "transactionSuccessful": "交易成功",
+  "unknownError": "未知錯誤",
+  "viewExplorer": "使用區塊瀏覽器查看",
+  "waitingForTransaction": "正等待交易被加入到區塊中"
 }
