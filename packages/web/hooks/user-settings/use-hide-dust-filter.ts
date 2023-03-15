@@ -1,5 +1,6 @@
-import { useMemo } from "react";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { useMemo } from "react";
+
 import { useStore } from "../../stores";
 import { HideDustState } from "../../stores/user-settings";
 
@@ -24,6 +25,6 @@ export function useHideDustUserSetting<TDustableItem>(
           ? getValueOfItem(item)?.toDec().gte(new Dec(0.01)) ?? true
           : true
       ),
-    [items, hideDust]
+    [items, hideDust, getValueOfItem]
   );
 }

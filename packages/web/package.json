@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^1.2.3",
-    "@axelar-network/axelarjs-sdk": "^0.12.4",
+    "@axelar-network/axelarjs-sdk": "0.12.5-alpha.5",
     "@cosmjs/cosmwasm-stargate": "0.29.0",
     "@cosmos-kit/core": "1.1.4",
     "@cosmos-kit/cosmostation": "0.15.4",
@@ -37,6 +37,8 @@
     "@osmosis-labs/math": "^4.0.0",
     "@osmosis-labs/pools": "^4.0.0",
     "@osmosis-labs/stores": "^4.0.0",
+    "@tanstack/react-table": "^8.7.4",
+    "@tanstack/react-virtual": "^3.0.0-beta.41",
     "@tippyjs/react": "^4.2.6",
     "@transak/transak-sdk": "^1.2.2",
     "@walletconnect/browser-utils": "^1.7.0",

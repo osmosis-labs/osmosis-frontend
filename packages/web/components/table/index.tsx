@@ -58,7 +58,7 @@ export const Table = <TCell extends BaseCell>({
           rowIndex
         )
       ),
-    []
+    [data]
   );
 
   return (

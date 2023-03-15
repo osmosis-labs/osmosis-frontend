@@ -760,6 +760,10 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-0",
         coinMinimalDenom: "swth",
         isVerified: true,
+        depositUrlOverride:
+          "https://app.dem.exchange/account/balance/withdraw/swth",
+        withdrawUrlOverride:
+          "https://app.dem.exchange/account/balance/deposit/swth",
       },
       {
         counterpartyChainId: "axelar-dojo-1",
@@ -808,6 +812,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-95",
         destChannelId: "channel-2",
         coinMinimalDenom: "boot",
+        isUnstable: true,
       },
       {
         counterpartyChainId: "emoney-3",
@@ -841,40 +846,50 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-144",
         destChannelId: "channel-10",
         coinMinimalDenom: "gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-        depositUrlOverride: "https://bridge.blockscape.network/",
-        withdrawUrlOverride: "https://bridge.blockscape.network/",
+        depositUrlOverride:
+          "https://bridge.blockscape.network/?from=gravitybridge&to=osmosis",
+        withdrawUrlOverride:
+          "https://bridge.blockscape.network/?from=osmosis&to=gravitybridge",
       },
       {
         counterpartyChainId: "gravity-bridge-3",
         sourceChannelId: "channel-144",
         destChannelId: "channel-10",
         coinMinimalDenom: "gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-        depositUrlOverride: "https://bridge.blockscape.network/",
-        withdrawUrlOverride: "https://bridge.blockscape.network/",
+        depositUrlOverride:
+          "https://bridge.blockscape.network/?from=gravitybridge&to=osmosis",
+        withdrawUrlOverride:
+          "https://bridge.blockscape.network/?from=osmosis&to=gravitybridge",
       },
       {
         counterpartyChainId: "gravity-bridge-3",
         sourceChannelId: "channel-144",
         destChannelId: "channel-10",
         coinMinimalDenom: "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-        depositUrlOverride: "https://bridge.blockscape.network/",
-        withdrawUrlOverride: "https://bridge.blockscape.network/",
+        depositUrlOverride:
+          "https://bridge.blockscape.network/?from=gravitybridge&to=osmosis",
+        withdrawUrlOverride:
+          "https://bridge.blockscape.network/?from=osmosis&to=gravitybridge",
       },
       {
         counterpartyChainId: "gravity-bridge-3",
         sourceChannelId: "channel-144",
         destChannelId: "channel-10",
         coinMinimalDenom: "gravity0x6B175474E89094C44Da98b954EedeAC495271d0F",
-        depositUrlOverride: "https://bridge.blockscape.network/",
-        withdrawUrlOverride: "https://bridge.blockscape.network/",
+        depositUrlOverride:
+          "https://bridge.blockscape.network/?from=gravitybridge&to=osmosis",
+        withdrawUrlOverride:
+          "https://bridge.blockscape.network/?from=osmosis&to=gravitybridge",
       },
       {
         counterpartyChainId: "gravity-bridge-3",
         sourceChannelId: "channel-144",
         destChannelId: "channel-10",
         coinMinimalDenom: "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
-        depositUrlOverride: "https://bridge.blockscape.network/",
-        withdrawUrlOverride: "https://bridge.blockscape.network/",
+        depositUrlOverride:
+          "https://bridge.blockscape.network/?from=gravitybridge&to=osmosis",
+        withdrawUrlOverride:
+          "https://bridge.blockscape.network/?from=osmosis&to=gravitybridge",
       },
       {
         counterpartyChainId: "mantle-1",

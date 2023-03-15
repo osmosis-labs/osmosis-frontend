@@ -77,7 +77,7 @@ const ListBoxContent: FunctionComponent<
 > = observer(({ open, options, languageSetting }) => {
   useEffect(() => {
     languageSetting.setState({ isControlOpen: open });
-  }, [open]);
+  }, [languageSetting, open]);
 
   return (
     <Listbox.Options className="absolute inset-0 z-50 bg-osmoverse-800 outline-none">

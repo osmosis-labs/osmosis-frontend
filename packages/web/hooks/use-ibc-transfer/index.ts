@@ -114,6 +114,7 @@ export function useIbcTransfer({
     oldCounterpartyAccount,
     counterpartyChainId,
     onOpenWalletSelect,
+    counterpartyAccount,
   ]);
 
   useEffect(() => {

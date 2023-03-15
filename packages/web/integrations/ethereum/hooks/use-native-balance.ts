@@ -1,5 +1,5 @@
 import { Currency } from "@keplr-wallet/types";
-import { CoinPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Int } from "@keplr-wallet/unit";
 import { useEffect, useState } from "react";
 
 import { queryAccountBalance } from "../queries";
@@ -8,20 +8,19 @@ import { EthWallet } from "../types";
 /** Use native EVM balance. */
 export function useNativeBalance(
   ethWallet: EthWallet,
-  memoedNativeCurrency?: Currency
+  originCurrency?: Currency
 ) {
-  const [nativeBalance, setNativeBalance] = useState<CoinPretty | null>(null);
+  const [nativeBalance, setNativeBalance] = useState<Int | null>(null);
 
   const address = ethWallet.accountAddress;
   const sendFn = ethWallet.send;
 
   useEffect(() => {
-    if (address && memoedNativeCurrency) {
-      queryAccountBalance(sendFn, address).then((amount) =>
-        setNativeBalance(new CoinPretty(memoedNativeCurrency, amount))
-      );
+    if (address) {
+      queryAccountBalance(sendFn, address).then(setNativeBalance);
     }
-  }, [address, memoedNativeCurrency]);
+  }, [ethWallet.chainId, address, sendFn]);
 
-  return nativeBalance;
+  if (!originCurrency || !nativeBalance) return;
+  return new CoinPretty(originCurrency, nativeBalance);
 }

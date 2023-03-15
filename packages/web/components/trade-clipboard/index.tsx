@@ -127,7 +127,6 @@ export const TradeClipboard: FunctionComponent<{
         if (value) {
           tradeTokenInConfig.optimizedRoutePaths.forEach((route) => {
             route.pools.forEach((pool) => {
-              console.log("refresh pool", pool.id);
               queries.osmosis?.queryGammPools
                 .getPool(pool.id)
                 ?.waitFreshResponse();
@@ -142,7 +141,7 @@ export const TradeClipboard: FunctionComponent<{
     useEffect(() => {
       // auto collapse on input clear
       if (!isEstimateDetailRelevant) setShowEstimateDetails(false);
-    }, [isEstimateDetailRelevant]);
+    }, [isEstimateDetailRelevant, setShowEstimateDetails]);
 
     // auto focus from amount on token switch
     const fromAmountInput = useRef<HTMLInputElement | null>(null);
@@ -213,10 +212,7 @@ export const TradeClipboard: FunctionComponent<{
         tradeTokenInConfig.beforeSpotPriceWithoutSwapFeeOutOverIn
           .trim(true)
           .maxDecimals(8),
-      [
-        tradeTokenInConfig.beforeSpotPriceWithoutSwapFeeOutOverIn,
-        tradeTokenInConfig.outCurrency,
-      ]
+      [tradeTokenInConfig.beforeSpotPriceWithoutSwapFeeOutOverIn]
     );
 
     const [isHoveringSwitchButton, setHoveringSwitchButton] = useState(false);
@@ -262,7 +258,7 @@ export const TradeClipboard: FunctionComponent<{
               )
             )
           : undefined,
-      [tradeTokenInConfig.amount, tradeTokenInConfig.sendCurrency]
+      [priceStore, tradeTokenInConfig.amount, tradeTokenInConfig.sendCurrency]
     );
     const outAmountValue = useMemo(
       () =>
@@ -271,7 +267,7 @@ export const TradeClipboard: FunctionComponent<{
             tradeTokenInConfig.expectedSwapResult.amount
           )) ||
         undefined,
-      [tradeTokenInConfig.expectedSwapResult.amount]
+      [priceStore, tradeTokenInConfig.expectedSwapResult.amount]
     );
 
     const swapResultAmount = useMemo(
