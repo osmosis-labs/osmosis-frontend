@@ -157,7 +157,7 @@ export const AllPoolsTable: FunctionComponent<{
               derivedDataStore.poolsBonding
                 .get(pool.id)
                 ?.highestBondDuration?.aggregateApr.maxDecimals(0) ??
-              poolDetail.swapFeeApr,
+              poolDetail.swapFeeApr.maxDecimals(0),
           };
         }),
       // eslint-disable-next-line react-hooks/exhaustive-deps
