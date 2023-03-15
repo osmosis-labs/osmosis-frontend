@@ -81,8 +81,7 @@
       "APR": "APR",
       "bonded": "Bağlı",
       "FeeAPY": "APY ücreti",
-      "liquidity": "Likiditem",
-      "myLiquidity": "Likiditem"
+      "liquidity": "Likiditem"
     },
     "selectAssetSource": {
       "installWallet": "{walletName} yükle",

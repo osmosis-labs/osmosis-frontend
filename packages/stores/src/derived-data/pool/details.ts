@@ -348,7 +348,6 @@ export class ObservablePoolDetail {
         totalShareValue: PricePretty;
         bondedValue: PricePretty;
         unbondedValue: PricePretty;
-        currentDailyEarnings?: PricePretty;
       }
     | undefined {
     const totalShares = this.queries.queryGammPoolShare.getAllGammShare(

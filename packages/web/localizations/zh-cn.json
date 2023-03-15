@@ -80,8 +80,7 @@
       "APR": "APR",
       "bonded": "已绑定",
       "FeeAPY": "费用 APY",
-      "liquidity": "我的流动性",
-      "myLiquidity": "我的流动性"
+      "liquidity": "我的流动性"
     },
     "selectAssetSource": {
       "installWallet": "安装 {walletName}",

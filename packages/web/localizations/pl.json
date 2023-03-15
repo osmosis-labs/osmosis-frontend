@@ -81,8 +81,7 @@
       "APR": "APR",
       "bonded": "Związane",
       "FeeAPY": "APY z Prowizji",
-      "liquidity": "Moja płynność",
-      "myLiquidity": "Moja Płynność"
+      "liquidity": "Moja płynność"
     },
     "selectAssetSource": {
       "installWallet": "Zainstaluj {walletName}",

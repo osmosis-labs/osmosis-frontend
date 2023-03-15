@@ -81,8 +81,7 @@
       "APR": "APR",
       "bonded": "Travado",
       "FeeAPY": "Taxa de APY",
-      "liquidity": "Minha Liquidez",
-      "myLiquidity": "Minha Liquidez"
+      "liquidity": "Minha Liquidez"
     },
     "selectAssetSource": {
       "installWallet": "Instalar {walletName}",

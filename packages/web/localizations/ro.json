@@ -81,8 +81,7 @@
       "APR": "APR",
       "bonded": "Blocate",
       "FeeAPY": "APY din taxe",
-      "liquidity": "Lichiditate pool",
-      "myLiquidity": "Lichiditatea mea"
+      "liquidity": "Lichiditate pool"
     },
     "selectAssetSource": {
       "installWallet": "Instaleaza {walletName}",

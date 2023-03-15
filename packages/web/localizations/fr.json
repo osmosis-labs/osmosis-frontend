@@ -81,8 +81,7 @@
       "APR": "TAP",
       "bonded": "Liés",
       "FeeAPY": "Frais PAR",
-      "liquidity": "Ma liquidité",
-      "myLiquidity": "Ma liquidité"
+      "liquidity": "Ma liquidité"
     },
     "selectAssetSource": {
       "installWallet": "Installer {walletName}",

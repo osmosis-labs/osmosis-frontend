@@ -81,8 +81,7 @@
       "APR": "TPA",
       "bonded": "Abonado",
       "FeeAPY": "Tarifa TAI",
-      "liquidity": "Mi Liquidez",
-      "myLiquidity": "Mi liquidez"
+      "liquidity": "Mi Liquidez"
     },
     "selectAssetSource": {
       "installWallet": "Instalar {walletName}",

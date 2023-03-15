@@ -81,8 +81,7 @@
       "APR": "APR",
       "bonded": "Bonded",
       "FeeAPY": "Fee APY",
-      "liquidity": "My Liquidity",
-      "myLiquidity": "My Liquidity"
+      "liquidity": "My Liquidity"
     },
     "selectAssetSource": {
       "installWallet": "Install {walletName}",

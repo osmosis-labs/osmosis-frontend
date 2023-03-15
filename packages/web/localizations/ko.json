@@ -81,8 +81,7 @@
       "APR": "APR",
       "bonded": "예치된 자산",
       "FeeAPY": "수수료 APY",
-      "liquidity": "내 유동성",
-      "myLiquidity": "내 유동성"
+      "liquidity": "내 유동성"
     },
     "selectAssetSource": {
       "installWallet": "{walletName} 설치",

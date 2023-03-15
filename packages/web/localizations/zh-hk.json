@@ -81,8 +81,7 @@
       "APR": "年利率(APR)",
       "bonded": "已鎖定",
       "FeeAPY": "交易費 APY",
-      "liquidity": "我嘅流動性",
-      "myLiquidity": "我嘅流動性"
+      "liquidity": "我嘅流動性"
     },
     "selectAssetSource": {
       "installWallet": "安裝 {walletName}",
