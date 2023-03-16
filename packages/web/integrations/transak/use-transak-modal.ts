@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
 import { WalletStatus } from "@keplr-wallet/stores";
+import { useEffect, useState } from "react";
+
 import { useStore } from "../../stores";
 import { TransakCreatedOrder, TransakSuccessfulOrder } from "./types";
 

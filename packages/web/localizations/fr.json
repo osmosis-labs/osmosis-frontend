@@ -146,6 +146,11 @@
   },
   "buyTokens": "Acheter jetons",
   "components": {
+    "fiatOnrampSelection": {
+      "chooseOnramp": "Choisir une rampe de paiement en Fiat",
+      "kadoSubtitle": "Prend en charge USDC",
+      "transakSubtitle": "Prend en charge OSMO"
+    },
     "incentive": {
       "mobileTitle": "Incitation",
       "title": "Types d'incitations"

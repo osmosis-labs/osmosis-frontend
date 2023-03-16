@@ -146,6 +146,11 @@
   },
   "buyTokens": "jeton satın al",
   "components": {
+    "fiatOnrampSelection": {
+      "chooseOnramp": "Fiat Onramp Seçin",
+      "kadoSubtitle": "USDC'yi destekler",
+      "transakSubtitle": "OSMO'yu destekler"
+    },
     "incentive": {
       "mobileTitle": "Teşvik",
       "title": "Teşvik türleri"

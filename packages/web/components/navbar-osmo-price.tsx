@@ -5,9 +5,10 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useTranslation } from "react-multi-lang";
 
+import { FiatOnrampSelectionModal } from "~/modals";
+
 import { EventName } from "../config";
-import { useAmplitudeAnalytics, useTransferConfig } from "../hooks";
-import { FiatRampsModal } from "../modals";
+import { useAmplitudeAnalytics, useDisclosure } from "../hooks";
 import { useStore } from "../stores";
 import { CoinsIcon } from "./assets/coins-icon";
 import { CreditCardIcon } from "./assets/credit-card-icon";
@@ -36,9 +37,14 @@ const NavbarOsmoPrice = observer(() => {
     queriesExternalStore,
     assetsStore,
   } = useStore();
-  const transferConfig = useTransferConfig();
   const t = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
+
+  const {
+    isOpen: isFiatOnrampSelectionOpen,
+    onOpen: onOpenFiatOnrampSelection,
+    onClose: onCloseFiatOnrampSelection,
+  } = useDisclosure();
 
   const { nativeBalances } = assetsStore;
 
@@ -123,27 +129,7 @@ const NavbarOsmoPrice = observer(() => {
               "button group relative flex h-11 items-center justify-center gap-2 overflow-hidden rounded-full border-2 !border-osmoverse-700 !py-1 font-bold text-osmoverse-100 transition-all duration-300 ease-in-out",
               "hover:border-none hover:bg-gradient-positive hover:text-osmoverse-1000"
             )}
-            onClick={() => {
-              transferConfig.buyOsmo();
-              const tokenName = "OSMO";
-
-              const cryptoBalance = nativeBalances.find(
-                (coin) =>
-                  coin.balance.denom.toLowerCase() === tokenName.toLowerCase()
-              );
-
-              logEvent([
-                EventName.Sidebar.buyOsmoClicked,
-                {
-                  tokenName,
-                  tokenAmount: Number(
-                    (cryptoBalance?.fiatValue ?? cryptoBalance?.balance)
-                      ?.maxDecimals(4)
-                      .toString()
-                  ),
-                },
-              ]);
-            }}
+            onClick={() => onOpenFiatOnrampSelection()}
           >
             <CreditCardIcon
               isAnimated
@@ -164,35 +150,31 @@ const NavbarOsmoPrice = observer(() => {
         </SkeletonLoader>
       )}
 
-      {transferConfig?.fiatRampsModal && (
-        <FiatRampsModal
-          transakModalProps={{
-            onCreateOrder: (data) => {
-              logEvent([
-                EventName.Sidebar.buyOsmoStarted,
-                {
-                  tokenName: data.status.cryptoCurrency,
-                  tokenAmount: Number(
-                    data.status?.fiatAmountInUsd ?? data.status.cryptoAmount
-                  ),
-                },
-              ]);
+      <FiatOnrampSelectionModal
+        isOpen={isFiatOnrampSelectionOpen}
+        onRequestClose={onCloseFiatOnrampSelection}
+        onSelectRamp={(ramp) => {
+          if (ramp !== "transak") return;
+          const tokenName = "OSMO";
+
+          const cryptoBalance = nativeBalances.find(
+            (coin) =>
+              coin.balance.denom.toLowerCase() === tokenName.toLowerCase()
+          );
+
+          logEvent([
+            EventName.Sidebar.buyOsmoClicked,
+            {
+              tokenName,
+              tokenAmount: Number(
+                (cryptoBalance?.fiatValue ?? cryptoBalance?.balance)
+                  ?.maxDecimals(4)
+                  .toString()
+              ),
             },
-            onSuccessfulOrder: (data) => {
-              logEvent([
-                EventName.Sidebar.buyOsmoCompleted,
-                {
-                  tokenName: data.status.cryptoCurrency,
-                  tokenAmount: Number(
-                    data.status?.fiatAmountInUsd ?? data.status.cryptoAmount
-                  ),
-                },
-              ]);
-            },
-          }}
-          {...transferConfig.fiatRampsModal}
-        />
-      )}
+          ]);
+        }}
+      />
     </div>
   );
 });
