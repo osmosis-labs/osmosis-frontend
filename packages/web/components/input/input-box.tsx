@@ -34,6 +34,7 @@ export const InputBox: FunctionComponent<Props> = ({
   currentValue,
   onInput,
   onFocus,
+  onBlur,
   placeholder,
   style = "enabled",
   type,
@@ -81,6 +82,7 @@ export const InputBox: FunctionComponent<Props> = ({
             minWidth={0}
             value={currentValue}
             onInput={(e: any) => onInput(e.target.value)}
+            onBlur={onBlur}
             onFocus={(e: any) => {
               setInputFocused(true);
               onFocus && onFocus(e);
@@ -105,7 +107,10 @@ export const InputBox: FunctionComponent<Props> = ({
             placeholder={placeholder ?? ""}
             autoComplete="off"
             type={type}
-            onBlur={() => setInputFocused(false)}
+            onBlur={(e: any) => {
+              setInputFocused(false);
+              onBlur && onBlur(e);
+            }}
             onFocus={(e: any) => {
               setInputFocused(true);
               onFocus && onFocus(e);

@@ -31,6 +31,7 @@ import {
 import { useTranslation } from "react-multi-lang";
 
 import ConcentratedLiquidityDepthChart from "~/components/chart/concentrated-liquidity-depth";
+import { findNearestTick, getPriceAtTick } from "~/utils/math";
 
 import { useStore } from "../../stores";
 import { theme } from "../../tailwind.config";
@@ -77,17 +78,43 @@ function getRangeFromData(data: number[]) {
   };
 }
 
-function getDepthFromRange(min: number, max: number) {
-  const priceTick = (max - min) / 16;
-  const val = [];
-  for (let i = 0; i < 16; i++) {
-    const depth = Math.floor(Math.random() * 1000);
-    val.push({
-      tick: min + priceTick * i,
-      depth,
+async function getDepthFromRange(min: number, max: number) {
+  const minTick = findNearestTick(min);
+  const maxTick = findNearestTick(max);
+  const batchUnit = Math.floor((maxTick - minTick) / 20);
+  console.log(minTick, maxTick, batchUnit);
+
+  const data = await fetch(
+    `http://localhost:1317/osmosis/concentratedliquidity/v1beta1/tick_liquidity_in_batches?pool_id=1&lower_tick=${minTick}&upper_tick=${maxTick}&batch_unit=${batchUnit}`
+  )
+    .then((resp) => resp.json())
+    .then((json) => {
+      console.log(json);
+      return json.liquidity_depths.map(
+        ({ liquidity_net, tick_index }: any) => ({
+          net: +liquidity_net,
+          price: getPriceAtTick(tick_index),
+        })
+      );
+    })
+    .then((data) => {
+      const depths: { tick: number; depth: number }[] = [];
+      let liq = 0;
+
+      data.forEach(({ net, price }: any) => {
+        liq = liq + net;
+        console.log(liq, net, price);
+        depths.push({
+          tick: price,
+          depth: liq,
+        });
+      });
+
+      return depths;
     });
-  }
-  return val;
+
+  console.log(data);
+  return data;
 }
 
 export const AddConcLiquidity: FunctionComponent<
@@ -338,15 +365,33 @@ const AddConcLiqView: FunctionComponent<
     const router = useRouter();
     const { id: poolId } = router.query as { id: string };
     const [zoom, setZoom] = useState(1);
-    const depthData = getDepthFromRange(yRange.min, yRange.max);
+    const [depthData, setDepthData] = useState<
+      { tick: number; depth: number }[]
+    >([]);
+
+    const absMin = zoom > 1 ? yRange.min / zoom : yRange.min * zoom;
+    const absMax = yRange.max * zoom;
+
     const xMax = Math.max(...depthData.map((d) => d.depth)) * 1.2;
+
+    useEffect(() => {
+      (async () => {
+        const data = await getDepthFromRange(
+          zoom > 1 ? yRange.min / zoom : yRange.min * zoom,
+          yRange.max * zoom
+        );
+
+        setDepthData(data);
+      })();
+    }, [absMin, absMax]);
 
     const updateMin = useCallback(
       (val: string | number, shouldUpdateRange = false) => {
         const out = Math.min(Math.max(Number(val), 0), Number(inputMax));
-        if (shouldUpdateRange) setMin(out);
-        if (Number(val) !== out) {
-          setInputMin("" + out);
+        const price = getPriceAtTick(findNearestTick(out));
+        if (shouldUpdateRange) setMin(price);
+        if (Number(val) !== price) {
+          setInputMin("" + price);
         } else {
           setInputMin("" + val);
         }
@@ -357,9 +402,10 @@ const AddConcLiqView: FunctionComponent<
     const updateMax = useCallback(
       (val: string | number, shouldUpdateRange = false) => {
         const out = Math.max(Number(val), Number(inputMin));
-        if (shouldUpdateRange) setMax(out);
-        if (Number(val) !== out) {
-          setInputMax("" + out);
+        const price = getPriceAtTick(findNearestTick(out));
+        if (shouldUpdateRange) setMax(price);
+        if (Number(val) !== price) {
+          setInputMax("" + price);
         } else {
           setInputMax("" + val);
         }
@@ -510,12 +556,14 @@ const AddConcLiqView: FunctionComponent<
                 <PriceInputBox
                   currentValue={inputMax}
                   label="high"
-                  onChange={(val) => updateMax(val, true)}
+                  onChange={(val) => setInputMax(val)}
+                  onBlur={(e) => updateMax(+e.target.value, true)}
                 />
                 <PriceInputBox
                   currentValue={inputMin}
                   label="low"
-                  onChange={(val) => updateMin(val, true)}
+                  onChange={(val) => setInputMin(val)}
+                  onBlur={(e) => updateMin(+e.target.value, true)}
                 />
               </div>
             </div>
@@ -761,6 +809,7 @@ function PriceInputBox(props: {
   label: string;
   currentValue: string;
   onChange: (val: string) => void;
+  onBlur: (e: any) => void;
 }) {
   return (
     <div className="flex max-w-[9.75rem] flex-col items-end rounded-xl bg-osmoverse-800 px-2">
@@ -773,6 +822,7 @@ function PriceInputBox(props: {
         rightEntry
         currentValue={props.currentValue}
         onInput={(val) => props.onChange(val)}
+        onBlur={props.onBlur}
       />
     </div>
   );
