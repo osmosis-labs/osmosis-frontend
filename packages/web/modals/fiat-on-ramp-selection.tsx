@@ -2,33 +2,31 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { Icon, SpriteIconId } from "~/components/assets";
+import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTransferConfig } from "~/hooks";
-import { FiatRampKey } from "~/integrations";
+import { FiatRampDisplayInfos, FiatRampKey } from "~/integrations";
 
 import { ModalBase, ModalBaseProps } from "./base";
 import { FiatRampsModal } from "./fiat-ramps";
 
 const Options = (
   t: ReturnType<typeof useTranslation>
-): Array<{
-  ramp: FiatRampKey;
-  initialAsset: "OSMO" | "USDC";
-  logoId: SpriteIconId;
-  subtitle: string;
-}> => [
+): Array<
+  typeof FiatRampDisplayInfos[keyof typeof FiatRampDisplayInfos] & {
+    initialAsset: "OSMO" | "USDC";
+    subtitle: string;
+  }
+> => [
   {
-    ramp: "kado",
+    ...FiatRampDisplayInfos.kado,
     initialAsset: "USDC",
-    logoId: "kado-logo",
     subtitle: t("components.fiatOnrampSelection.kadoSubtitle"),
   },
   {
-    ramp: "transak",
+    ...FiatRampDisplayInfos.transak,
     initialAsset: "OSMO",
-    logoId: "transak-logo",
     subtitle: t("components.fiatOnrampSelection.transakSubtitle"),
   },
 ];
@@ -52,25 +50,27 @@ export const FiatOnrampSelectionModal: FunctionComponent<
         {...modalProps}
       >
         <div className="flex flex-col gap-5">
-          {Options(t).map(({ ramp, initialAsset, logoId, subtitle }) => (
-            <Button
-              key={ramp}
-              mode="unstyled"
-              size="unstyled"
-              className="flex items-center justify-start gap-[10px] rounded-2xl bg-osmoverse-900 py-5 px-5 transition-colors hover:bg-osmoverse-700"
-              onClick={() => {
-                onSelectRamp?.(ramp);
-                transferConfig.launchFiatRampsModal(ramp, initialAsset);
-                modalProps.onRequestClose();
-              }}
-            >
-              <Icon id={logoId} className="h-16 w-16" />
-              <div className="ml-5 flex flex-col text-left">
-                <h6>{ramp}</h6>
-                <p className="body2 mt-1 text-osmoverse-400">{subtitle}</p>
-              </div>
-            </Button>
-          ))}
+          {Options(t).map(
+            ({ rampKey, displayName, initialAsset, logoId, subtitle }) => (
+              <Button
+                key={rampKey}
+                mode="unstyled"
+                size="unstyled"
+                className="flex items-center justify-start gap-[10px] rounded-2xl bg-osmoverse-900 py-5 px-5 transition-colors hover:bg-osmoverse-700"
+                onClick={() => {
+                  onSelectRamp?.(rampKey);
+                  transferConfig.launchFiatRampsModal(rampKey, initialAsset);
+                  modalProps.onRequestClose();
+                }}
+              >
+                <Icon id={logoId!} className="h-16 w-16" />
+                <div className="ml-5 flex flex-col text-left">
+                  <h6>{displayName}</h6>
+                  <p className="body2 mt-1 text-osmoverse-400">{subtitle}</p>
+                </div>
+              </Button>
+            )
+          )}
         </div>
       </ModalBase>
       {transferConfig?.fiatRampsModal && (
