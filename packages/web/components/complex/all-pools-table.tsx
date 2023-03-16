@@ -122,13 +122,13 @@ export const AllPoolsTable: FunctionComponent<{
 
     const { chainId } = chainStore.osmosis;
     const queriesOsmosis = queriesStore.get(chainId).osmosis!;
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
     const queryActiveGauges = queriesExternalStore.queryActiveGauges;
 
     const allPools = queriesOsmosis.queryGammPools.getAllPools();
 
     const qaLockedResp = queriesOsmosis.queryAccountLocked.get(
-      account.bech32Address
+      account?.address ?? ""
     ).response;
     const allPoolsWithMetrics: PoolWithMetrics[] = useMemo(
       () =>
@@ -174,7 +174,7 @@ export const AllPoolsTable: FunctionComponent<{
         queriesOsmosis.queryLockableDurations.response,
         queriesOsmosis.queryIncentivizedPools.response,
         queriesOsmosis.queryLockableDurations.response,
-        account.bech32Address,
+        account?.address,
         queriesExternalStore.queryGammPoolFeeMetrics.response,
         queriesExternalStore.queryActiveGauges.response,
         qaLockedResp,

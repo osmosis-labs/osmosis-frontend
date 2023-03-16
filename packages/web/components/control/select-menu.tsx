@@ -1,6 +1,5 @@
 import classNames from "classnames";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { useBooleanWithWindowEvent, useWindowSize } from "../../hooks";
 import { MenuOptionsModal } from "../../modals";
@@ -25,7 +24,6 @@ export const SelectMenu: FunctionComponent<Props> = ({
 }) => {
   const [dropdownOpen, setDropdownOpen] = useBooleanWithWindowEvent(false);
   const { isMobile } = useWindowSize();
-  const t = useTranslation();
 
   return (
     <div
