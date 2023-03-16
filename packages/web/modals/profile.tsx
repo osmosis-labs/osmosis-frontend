@@ -98,6 +98,7 @@ export const ProfileModal: FunctionComponent<
     const onCloseModal = () => props.onRequestClose?.();
     router.events.on("routeChangeComplete", onCloseModal);
     return () => router.events.off("routeChangeComplete", onCloseModal);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const address = account.bech32Address;
@@ -236,7 +237,10 @@ export const ProfileModal: FunctionComponent<
 
             <div className="flex flex-col items-end justify-between gap-[30px] xs:mt-2 xs:items-start xs:gap-2">
               <button
-                onClick={() => onOpenFiatOnrampSelection()}
+                onClick={() => {
+                  props.onRequestClose();
+                  onOpenFiatOnrampSelection();
+                }}
                 className="subtitle1 group flex h-[44px] items-center gap-[10px] rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-[6px] px-3.5 hover:border-transparent hover:bg-gradient-positive hover:bg-origin-border hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)] 1.5xs:self-start"
               >
                 <CreditCardIcon
