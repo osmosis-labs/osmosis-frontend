@@ -1986,7 +1986,7 @@ const chainInfos = (
           coinDecimals: 18,
           // coinGeckoId: "echelon",
           coinGeckoId: "pool:aechelon",
-          coinImageUrl: "/tokens/echelon.svg",
+          coinImageUrl: "/tokens/ech.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
