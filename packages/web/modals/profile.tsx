@@ -36,12 +36,7 @@ import {
   DrawerPanel,
 } from "../components/drawers";
 import { EventName } from "../config";
-import {
-  useAmplitudeAnalytics,
-  useDisclosure,
-  useTransferConfig,
-  useWindowSize,
-} from "../hooks";
+import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "../hooks";
 import { useStore } from "../stores";
 import { formatPretty } from "../utils/formatter";
 import { formatICNSName, getShortAddress } from "../utils/string";
@@ -83,7 +78,6 @@ export const ProfileModal: FunctionComponent<
     onClose: onCloseFiatOnrampSelection,
   } = useDisclosure();
 
-  const transferConfig = useTransferConfig();
   const account = accountStore.getAccount(chainId);
 
   const [hasCopied, setHasCopied] = useState(false);
