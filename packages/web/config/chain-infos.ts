@@ -1458,7 +1458,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "tether",
           coinGeckoId: "pool:uusdt.grv",
-          coinImageUrl: "/tokens/gusdt.svg",
+          coinImageUrl: "/tokens/gusdt.png",
           pegMechanism: "collateralized",
         },
       ],
