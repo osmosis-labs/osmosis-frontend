@@ -383,7 +383,7 @@ const chainInfos = (
           coinDecimals: 8,
           // coinGeckoId: "crypto-com-chain",
           coinGeckoId: "pool:basecro",
-          coinImageUrl: "/tokens/cro.png",
+          coinImageUrl: "/tokens/cro.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
         },
