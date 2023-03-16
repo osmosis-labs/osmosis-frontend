@@ -146,10 +146,17 @@ export class RootStore {
       },
       CosmosAccount.use({
         queriesStore: this.queriesStore,
-        msgOptsCreator: (chainId) =>
-          chainId.startsWith("evmos_")
-            ? { ibcTransfer: { gas: 250000 } }
-            : { ibcTransfer: { gas: 210000 } },
+        msgOptsCreator: (chainId) => {
+          if (chainId.startsWith("osmosis")) {
+            return { ibcTransfer: { gas: 300000 } };
+          }
+
+          if (chainId.startsWith("evmos_")) {
+            return { ibcTransfer: { gas: 250000 } };
+          } else {
+            return { ibcTransfer: { gas: 210000 } };
+          }
+        },
         preTxEvents: {
           onBroadcastFailed: toastOnBroadcastFailed((chainId) =>
             this.chainStore.getChain(chainId)
