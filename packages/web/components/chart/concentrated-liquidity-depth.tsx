@@ -1,12 +1,12 @@
 import { ParentSize } from "@visx/responsive";
 import { scaleLinear } from "@visx/scale";
 import {
-  AnimatedBarSeries,
   AnimatedGrid,
   Annotation,
   AnnotationCircleSubject,
   AnnotationConnector,
   AnnotationLineSubject,
+  BarSeries,
   buildChartTheme,
   XYChart,
 } from "@visx/xychart";
@@ -118,7 +118,7 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
             {/*  strokeWidth={0}*/}
             {/*/>*/}
             <AnimatedGrid columns={false} rows={false} numTicks={5} />
-            <AnimatedBarSeries
+            <BarSeries
               dataKey="depth"
               data={data}
               xAccessor={(d: DepthData) => d?.depth}

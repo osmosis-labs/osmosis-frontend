@@ -81,10 +81,10 @@ function getRangeFromData(data: number[]) {
 async function getDepthFromRange(min: number, max: number) {
   const minTick = findNearestTick(min);
   const maxTick = findNearestTick(max);
-  const batchUnit = Math.floor((maxTick - minTick) / 20);
+  const batchUnit = Math.max(1, Math.floor((maxTick - minTick) / 20));
   console.log(minTick, maxTick, batchUnit);
 
-  const data = await fetch(
+  const returnData = await fetch(
     `http://localhost:1317/osmosis/concentratedliquidity/v1beta1/tick_liquidity_in_batches?pool_id=1&lower_tick=${minTick}&upper_tick=${maxTick}&batch_unit=${batchUnit}`
   )
     .then((resp) => resp.json())
@@ -103,7 +103,6 @@ async function getDepthFromRange(min: number, max: number) {
 
       data.forEach(({ net, price }: any) => {
         liq = liq + net;
-        console.log(liq, net, price);
         depths.push({
           tick: price,
           depth: liq,
@@ -111,10 +110,37 @@ async function getDepthFromRange(min: number, max: number) {
       });
 
       return depths;
+    })
+    .then((data) => {
+      const depths: { tick: number; depth: number }[] = [];
+
+      for (let i = min; i <= max; i += (max - min) / 20) {
+        depths.push({
+          tick: i,
+          depth: getLiqFrom(i, data),
+        });
+      }
+
+      return depths;
     });
 
-  console.log(data);
-  return data;
+  return returnData;
+
+  function getLiqFrom(
+    target: number,
+    list: { depth: number; tick: number }[]
+  ): number {
+    const price = target;
+    let val = 0;
+    console.log(price);
+    for (let i = 0; i < list.length; i++) {
+      if (list[i].tick <= price) {
+        val = list[i].depth;
+      }
+    }
+    console.log(val);
+    return val;
+  }
 }
 
 export const AddConcLiquidity: FunctionComponent<
