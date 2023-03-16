@@ -1,9 +1,10 @@
 import { FunctionComponent, useEffect } from "react";
-import { ModalBase, ModalBaseProps } from "./base";
+
 import { FiatRampKey } from "../integrations";
-import { useTransakModal } from "../integrations/transak";
 import { Kado } from "../integrations/kado";
 import { Layerswap } from "../integrations/layerswap";
+import { useTransakModal } from "../integrations/transak";
+import { ModalBase, ModalBaseProps } from "./base";
 
 export const FiatRampsModal: FunctionComponent<
   {
@@ -27,7 +28,7 @@ export const FiatRampsModal: FunctionComponent<
         setModal(false);
       }
     }
-  }, [fiatRampKey, isOpen]);
+  }, [fiatRampKey, isOpen, setModal]);
 
   return (
     <ModalBase

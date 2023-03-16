@@ -146,7 +146,20 @@
   },
   "buyTokens": "토큰 구매",
   "components": {
+    "fiatOnrampSelection": {
+      "chooseOnramp": "피아트 온램프 선택",
+      "kadoSubtitle": "USDC를 지원합니다",
+      "transakSubtitle": "OSMO를 지원합니다"
+    },
+    "incentive": {
+      "mobileTitle": "인센티브",
+      "title": "인센티브 유형"
+    },
     "MAX": "MAX",
+    "pool": {
+      "mobileTitle": "풀",
+      "title": "풀 유형"
+    },
     "searchTokens": "검색",
     "selectToken": {
       "title": "토큰 선택"

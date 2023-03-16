@@ -146,6 +146,11 @@
   },
   "buyTokens": "Cumpărați jetoane",
   "components": {
+    "fiatOnrampSelection": {
+      "chooseOnramp": "Alegeți rampa fiat",
+      "kadoSubtitle": "Acceptă USDC",
+      "transakSubtitle": "Acceptă OSMO"
+    },
     "incentive": {
       "mobileTitle": "Stimulent",
       "title": "Tipuri de stimulente"

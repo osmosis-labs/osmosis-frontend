@@ -146,6 +146,11 @@
   },
   "buyTokens": "購買代幣",
   "components": {
+    "fiatOnrampSelection": {
+      "chooseOnramp": "選擇法幣入口",
+      "kadoSubtitle": "支援USDC",
+      "transakSubtitle": "支援OSMO"
+    },
     "incentive": {
       "mobileTitle": "奖励",
       "title": "奖励类型"

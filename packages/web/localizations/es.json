@@ -146,6 +146,11 @@
   },
   "buyTokens": "Comprar fichas",
   "components": {
+    "fiatOnrampSelection": {
+      "chooseOnramp": "Seleccionar acceso de Fiat",
+      "kadoSubtitle": "Soporta USDC",
+      "transakSubtitle": "Soporta OSMO"
+    },
     "incentive": {
       "mobileTitle": "Incentivo",
       "title": "Tipos de incentivos"
