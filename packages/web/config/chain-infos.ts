@@ -766,6 +766,17 @@ const chainInfos = (
           coinGeckoId: "pool:nride",
           coinImageUrl: "/tokens/nride.svg",
         },
+         {
+          type: "cw20",
+          contractAddress:
+            "juno1u8cr3hcjvfkzxcaacv9q75uw9hwjmn8pucc93pmy6yvkzz79kh3qncca8x",
+          coinDenom: "FOX",
+          coinMinimalDenom:
+            "cw20:juno1u8cr3hcjvfkzxcaacv9q75uw9hwjmn8pucc93pmy6yvkzz79kh3qncca8x:FOX",
+          coinDecimals: 6,
+          coinGeckoId: "pool:fox",
+          coinImageUrl: "/tokens/fox.svg",
+         },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: "https://www.mintscan.io/juno/txs/{txHash}",
@@ -1145,6 +1156,13 @@ const chainInfos = (
           coinGeckoId: "pool:ucmst",
           coinImageUrl: "/tokens/cmst.png",
           pegMechanism: "collateralized",
+        },
+        {
+          coinDenom: "HARBOR",
+          coinMinimalDenom: "uharbor",
+          coinDecimals: 6,
+          coinGeckoId: "pool:uharbor",
+          coinImageUrl: "/tokens/harbor.svg",
         },
       ],
       features: ["ibc-transfer"],
@@ -2832,6 +2850,20 @@ const chainInfos = (
           coinImageUrl: "/tokens/qstars.svg",
           coinGeckoId: "pool:uqstars",
         },
+        {
+          coinDenom: "qATOM",
+          coinMinimalDenom: "uqatom",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/qatom.svg",
+          coinGeckoId: "pool:uqatom",
+        },
+        {
+          coinDenom: "qREGEN",
+          coinMinimalDenom: "uqregen",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/qregen.svg",
+          coinGeckoId: "pool:uqregen",
+        }
       ],
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/quicksilver/txs/{txHash}",
