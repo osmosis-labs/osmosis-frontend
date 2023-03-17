@@ -1,5 +1,6 @@
-import { useMemo } from "react";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { useMemo } from "react";
+
 import { useStore } from "../../stores";
 import { HideDustState } from "../../stores/user-settings";
 

@@ -175,7 +175,11 @@ export class ObservableQueryFilteredPools
   fetchRemainingPools() {
     this.queryNumPools.waitResponse().then(() => {
       if (this._queryParams.limit !== this.queryNumPools.numPools) {
-        this._queryParams.limit = this.queryNumPools.numPools;
+        // Fetch 20 more pools at a time until all pools are fetched
+        this._queryParams.limit = Math.min(
+          this._queryParams.limit + 20,
+          this.queryNumPools.numPools
+        );
         this._queryParams.min_liquidity = 0;
         this.updateUrlAndFetch();
       }
