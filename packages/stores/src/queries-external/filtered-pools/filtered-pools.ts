@@ -28,7 +28,10 @@ export class ObservableQueryFilteredPools
   implements PoolGetter
 {
   @observable
-  protected _pools: Map<string, ObservableQueryPool> = new Map();
+  protected _pools = new Map<string, ObservableQueryPool>();
+
+  @observable
+  protected _nonExistentPoolsSet = new Set<string>();
 
   protected _fetchingPoolIds: Set<string> = new Set();
   protected _queryParams: Filters & Pagination;
@@ -127,6 +130,11 @@ export class ObservableQueryFilteredPools
           this.chainGetter
         )
           .then((pool) => runInAction(() => this._pools.set(id, pool)))
+          .catch((e: any) => {
+            if (e === "not-found") {
+              runInAction(() => this._nonExistentPoolsSet.add(id));
+            }
+          })
           .finally(() => this._fetchingPoolIds.delete(id));
       }
 
@@ -137,6 +145,8 @@ export class ObservableQueryFilteredPools
   readonly poolExists: (id: string) => boolean | undefined = computedFn(
     (id: string) => {
       if (this._pools.has(id)) return true;
+      else this.fetchRemainingPools();
+      if (this._nonExistentPoolsSet.has(id)) return false; // getPool was also used
 
       const r = this.response;
       if (r && !this.isFetching) {
@@ -172,14 +182,13 @@ export class ObservableQueryFilteredPools
     });
   }
 
-  fetchRemainingPools() {
-    this.queryNumPools.waitResponse().then(() => {
-      if (this._queryParams.limit !== this.queryNumPools.numPools) {
-        this._queryParams.limit = this.queryNumPools.numPools;
-        this._queryParams.min_liquidity = 0;
-        this.updateUrlAndFetch();
-      }
-    });
+  async fetchRemainingPools() {
+    await this.queryNumPools.waitResponse();
+    if (this._queryParams.limit !== this.queryNumPools.numPools) {
+      this._queryParams.limit = this.queryNumPools.numPools;
+      this._queryParams.min_liquidity = 0;
+      return this.updateUrlAndFetch();
+    }
   }
 
   protected updateUrlAndFetch() {
