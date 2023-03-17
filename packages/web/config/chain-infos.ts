@@ -2825,7 +2825,7 @@ chainInfos.push({
       coinDecimals: 18,
       // coinGeckoId: "weth",
       coinGeckoId: "pool:weth-wei",
-      coinImageUrl: "/tokens/eth.png",
+      coinImageUrl: "/tokens/eth-white.svg",
     },
     {
       coinDenom: "WBTC",
@@ -2936,7 +2936,7 @@ chainInfos.push({
       coinDecimals: 18,
       //coinGeckoId: "wmatic",
       coinGeckoId: "pool:wmaticwei.axl",
-      coinImageUrl: "/tokens/matic.png",
+      coinImageUrl: "/tokens/matic-purple.svg",
     },
     {
       coinDenom: "BUSD",
@@ -2944,7 +2944,7 @@ chainInfos.push({
       coinDecimals: 18,
       //coinGeckoId: "binance-usd",
       coinGeckoId: "pool:busdwei.axl",
-      coinImageUrl: "/tokens/busd.png",
+      coinImageUrl: "/tokens/busd.svg",
     },
     {
       coinDenom: "wAVAX",
@@ -2960,7 +2960,7 @@ chainInfos.push({
       coinDecimals: 18,
       //coinGeckoId: "fantom",
       coinGeckoId: "pool:wftm-wei",
-      coinImageUrl: "/tokens/ftm.png",
+      coinImageUrl: "/tokens/ftm.svg",
     },
     {
       coinDenom: "polygon.USDC",
