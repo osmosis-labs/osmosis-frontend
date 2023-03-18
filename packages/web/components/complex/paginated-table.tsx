@@ -2,10 +2,11 @@ import { flexRender, Row, Table } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useRef } from "react";
+import { useIntersection } from "react-use";
 
 import { IS_FRONTIER } from "../../config";
 import { useWindowSize } from "../../hooks";
-import Intersection from "../intersection";
 import { Pool } from "./all-pools-table";
 
 type Props = {
@@ -29,6 +30,13 @@ const PaginatedTable = ({
 
   const { rows } = table.getRowModel();
 
+  const intersectionRef = useRef(null);
+  const intersection = useIntersection(intersectionRef, {
+    root: null,
+    rootMargin: "0px",
+    threshold: 0,
+  });
+
   const rowVirtualizer = useWindowVirtualizer({
     count: rows.length,
     estimateSize: () => (isMobile ? mobileSize || 0 : size),
@@ -36,6 +44,19 @@ const PaginatedTable = ({
     overscan: 5,
   });
   const virtualRows = rowVirtualizer.getVirtualItems();
+
+  const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
+  const paddingBottom =
+    virtualRows.length > 0
+      ? rowVirtualizer.getTotalSize() -
+        (virtualRows?.[virtualRows.length - 1]?.end || 0)
+      : 0;
+
+  useEffect(() => {
+    if (intersection && intersection.intersectionRatio < 1) {
+      paginate();
+    }
+  }, [intersection, paginate]);
 
   if (isMobile) {
     return (
@@ -123,28 +144,19 @@ const PaginatedTable = ({
           </tr>
         ))}
       </thead>
-      <tbody
-        style={{
-          height: `${rowVirtualizer.getTotalSize() - topOffset}px`,
-          width: "100%",
-          position: "relative",
-        }}
-      >
+      <tbody>
+        {paddingTop > 0 && (
+          <tr>
+            <td style={{ height: `${paddingTop - topOffset}px` }} />
+          </tr>
+        )}
         {virtualRows.map((virtualRow, i) => {
           const row = rows[virtualRow.index] as Row<Pool>;
-
           return (
             <tr
               key={row.id}
               className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: `${virtualRow.size}px`,
-                transform: `translateY(${virtualRow.start - topOffset}px)`,
-              }}
+              ref={i === virtualRows.length - 1 ? intersectionRef : null}
             >
               {row.getVisibleCells().map((cell) => {
                 return (
@@ -163,12 +175,14 @@ const PaginatedTable = ({
                   </td>
                 );
               })}
-              {i === virtualRows.length - 1 && (
-                <Intersection onVisible={() => paginate()} />
-              )}
             </tr>
           );
         })}
+        {paddingBottom > 0 && (
+          <tr>
+            <td style={{ height: `${paddingBottom - topOffset}px` }} />
+          </tr>
+        )}
       </tbody>
     </table>
   );

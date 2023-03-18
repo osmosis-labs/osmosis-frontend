@@ -254,8 +254,8 @@ const Pools: NextPage = observer(function () {
           setIsCreatingPool={useCallback(() => setIsCreatingPool(true), [])}
         />
       </section>
-      <section className="h-[3000px] w-full" ref={myPoolsRef}>
-        {/* <MyPoolsSection /> */}
+      <section ref={myPoolsRef}>
+        <MyPoolsSection />
       </section>
 
       <section>
@@ -324,148 +324,124 @@ const MyPoolsSection = observer(() => {
     )
   );
 
+  if (dustFilteredPools.length === 0) return null;
+
   return (
-    <>
-      {dustFilteredPools.length > 0 ? (
-        <div className="mx-auto pb-[3.75rem]">
-          <h5 className="md:px-3">{t("pools.myPools")}</h5>
-          <div className="flex flex-col gap-4">
-            <div className="grid-cards mt-5 grid md:gap-3">
-              {[
-                ...dustFilteredPools,
-                ...dustFilteredPools,
-                ...dustFilteredPools,
-                ...dustFilteredPools,
-                ...dustFilteredPools,
-                ...dustFilteredPools,
-                ...dustFilteredPools,
-                ...dustFilteredPools,
-                ...dustFilteredPools,
-                ...dustFilteredPools,
-                ...dustFilteredPools,
-                ...dustFilteredPools,
-                ...dustFilteredPools,
-                ...dustFilteredPools,
-                ...dustFilteredPools,
-                ...dustFilteredPools,
-                ...dustFilteredPools,
-              ].map((myPool) => {
-                const _queryPool = myPool.pool;
+    <div className="mx-auto pb-[3.75rem]">
+      <h5 className="md:px-3">{t("pools.myPools")}</h5>
+      <div className="flex flex-col gap-4">
+        <div className="grid-cards mt-5 grid md:gap-3">
+          {dustFilteredPools.map((myPool) => {
+            const _queryPool = myPool.pool;
 
-                if (!_queryPool) return null;
+            if (!_queryPool) return null;
 
-                const poolBonding = derivedDataStore.poolsBonding.get(
-                  _queryPool.id
-                );
-                const apr =
-                  poolBonding.highestBondDuration?.aggregateApr ??
-                  new RatePretty(0);
+            const poolBonding = derivedDataStore.poolsBonding.get(
+              _queryPool.id
+            );
+            const apr =
+              poolBonding.highestBondDuration?.aggregateApr ??
+              new RatePretty(0);
 
-                const poolLiquidity = myPool.totalValueLocked;
-                const myBonded = myPool.userBondedValue;
-                const myLiquidity = myPool.userAvailableValue;
+            const poolLiquidity = myPool.totalValueLocked;
+            const myBonded = myPool.userBondedValue;
+            const myLiquidity = myPool.userAvailableValue;
 
-                let myPoolMetrics = [
-                  {
-                    label: t("pools.APR"),
-                    value: isMobile ? (
-                      apr.maxDecimals(2).toString()
-                    ) : (
-                      <MetricLoader
-                        isLoading={
-                          queryOsmosis.queryIncentivizedPools.isAprFetching
-                        }
-                      >
-                        <h6>{apr.maxDecimals(2).toString()}</h6>
-                      </MetricLoader>
-                    ),
-                  },
-                  {
-                    label: isMobile
-                      ? t("pools.available")
-                      : t("pools.myLiquidity"),
-                    value: (
-                      <MetricLoader isLoading={poolLiquidity.toDec().isZero()}>
-                        <h6>
-                          {isMobile
-                            ? formatPretty(myLiquidity)
-                            : myLiquidity.maxDecimals(2).toString()}
-                        </h6>
-                      </MetricLoader>
-                    ),
-                  },
-                  {
-                    label: t("pools.bonded"),
-                    value: isMobile ? (
-                      myBonded.toString()
-                    ) : (
-                      <MetricLoader isLoading={poolLiquidity.toDec().isZero()}>
-                        <h6>{formatPretty(myBonded)}</h6>
-                      </MetricLoader>
-                    ),
-                  },
-                ];
-
-                // rearrange metrics for mobile pool card
-                if (isMobile) {
-                  myPoolMetrics = [
-                    myPoolMetrics[2], // Bonded
-                    myPoolMetrics[1], // Available
-                    myPoolMetrics[0], // APR
-                  ];
-                }
-
-                return (
-                  <PoolCard
-                    key={_queryPool.id}
-                    poolId={_queryPool.id}
-                    poolAssets={_queryPool.poolAssets.map((poolAsset) => ({
-                      coinImageUrl: poolAsset.amount.currency.coinImageUrl,
-                      coinDenom: poolAsset.amount.currency.coinDenom,
-                    }))}
-                    poolMetrics={myPoolMetrics}
-                    isSuperfluid={queryOsmosis.querySuperfluidPools.isSuperfluidPool(
-                      _queryPool.id
-                    )}
-                    mobileShowFirstLabel
-                    onClick={() =>
-                      logEvent([
-                        EventName.Pools.myPoolsCardClicked,
-                        {
-                          poolId: _queryPool.id,
-                          poolName: _queryPool.poolAssets
-                            .map(
-                              (poolAsset) => poolAsset.amount.currency.coinDenom
-                            )
-                            .join(" / "),
-                          poolWeight: _queryPool.weightedPoolInfo?.assets
-                            .map((poolAsset) =>
-                              poolAsset.weightFraction?.toString()
-                            )
-                            .join(" / "),
-                          isSuperfluidPool:
-                            queryOsmosis.querySuperfluidPools.isSuperfluidPool(
-                              _queryPool.id
-                            ),
-                        },
-                      ])
+            let myPoolMetrics = [
+              {
+                label: t("pools.APR"),
+                value: isMobile ? (
+                  apr.maxDecimals(2).toString()
+                ) : (
+                  <MetricLoader
+                    isLoading={
+                      queryOsmosis.queryIncentivizedPools.isAprFetching
                     }
-                  />
-                );
-              })}
-            </div>
-            {isMobile && myPoolIds.length > poolCountShowMoreThreshold && (
-              <div className="mx-auto">
-                <ShowMoreButton
-                  isOn={showMoreMyPools}
-                  onToggle={() => setShowMoreMyPools(!showMoreMyPools)}
-                />
-              </div>
-            )}
-          </div>
+                  >
+                    <h6>{apr.maxDecimals(2).toString()}</h6>
+                  </MetricLoader>
+                ),
+              },
+              {
+                label: isMobile ? t("pools.available") : t("pools.myLiquidity"),
+                value: (
+                  <MetricLoader isLoading={poolLiquidity.toDec().isZero()}>
+                    <h6>
+                      {isMobile
+                        ? formatPretty(myLiquidity)
+                        : myLiquidity.maxDecimals(2).toString()}
+                    </h6>
+                  </MetricLoader>
+                ),
+              },
+              {
+                label: t("pools.bonded"),
+                value: isMobile ? (
+                  myBonded.toString()
+                ) : (
+                  <MetricLoader isLoading={poolLiquidity.toDec().isZero()}>
+                    <h6>{formatPretty(myBonded)}</h6>
+                  </MetricLoader>
+                ),
+              },
+            ];
+
+            // rearrange metrics for mobile pool card
+            if (isMobile) {
+              myPoolMetrics = [
+                myPoolMetrics[2], // Bonded
+                myPoolMetrics[1], // Available
+                myPoolMetrics[0], // APR
+              ];
+            }
+
+            return (
+              <PoolCard
+                key={_queryPool.id}
+                poolId={_queryPool.id}
+                poolAssets={_queryPool.poolAssets.map((poolAsset) => ({
+                  coinImageUrl: poolAsset.amount.currency.coinImageUrl,
+                  coinDenom: poolAsset.amount.currency.coinDenom,
+                }))}
+                poolMetrics={myPoolMetrics}
+                isSuperfluid={queryOsmosis.querySuperfluidPools.isSuperfluidPool(
+                  _queryPool.id
+                )}
+                mobileShowFirstLabel
+                onClick={() =>
+                  logEvent([
+                    EventName.Pools.myPoolsCardClicked,
+                    {
+                      poolId: _queryPool.id,
+                      poolName: _queryPool.poolAssets
+                        .map((poolAsset) => poolAsset.amount.currency.coinDenom)
+                        .join(" / "),
+                      poolWeight: _queryPool.weightedPoolInfo?.assets
+                        .map((poolAsset) =>
+                          poolAsset.weightFraction?.toString()
+                        )
+                        .join(" / "),
+                      isSuperfluidPool:
+                        queryOsmosis.querySuperfluidPools.isSuperfluidPool(
+                          _queryPool.id
+                        ),
+                    },
+                  ])
+                }
+              />
+            );
+          })}
         </div>
-      ) : null}
-    </>
+        {isMobile && myPoolIds.length > poolCountShowMoreThreshold && (
+          <div className="mx-auto">
+            <ShowMoreButton
+              isOn={showMoreMyPools}
+              onToggle={() => setShowMoreMyPools(!showMoreMyPools)}
+            />
+          </div>
+        )}
+      </div>
+    </div>
   );
 });
 
