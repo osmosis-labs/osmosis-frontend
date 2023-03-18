@@ -93,11 +93,12 @@ const IncentiveFilters: Record<"internal" | "external" | "superfluid", string> =
   };
 
 export const AllPoolsTable: FunctionComponent<{
+  topOffset: number;
   quickAddLiquidity: (poolId: string) => void;
   quickRemoveLiquidity: (poolId: string) => void;
   quickLockTokens: (poolId: string) => void;
 }> = observer(
-  ({ quickAddLiquidity, quickRemoveLiquidity, quickLockTokens }) => {
+  ({ quickAddLiquidity, quickRemoveLiquidity, quickLockTokens, topOffset }) => {
     const {
       chainStore,
       queriesExternalStore,
@@ -398,6 +399,7 @@ export const AllPoolsTable: FunctionComponent<{
       () => queriesOsmosis.queryGammPools.fetchRemainingPools(),
       [queriesOsmosis.queryGammPools]
     );
+
     const [mobileSortMenuIsOpen, setMobileSortMenuIsOpen] = useState(false);
 
     const mobileTableRow = useCallback((row: Row<Pool>) => {
@@ -570,8 +572,9 @@ export const AllPoolsTable: FunctionComponent<{
               paginate={handleFetchRemaining}
               mobileSize={170}
               renderMobileItem={mobileTableRow}
-              size={80}
+              size={69}
               table={table}
+              topOffset={topOffset}
             />
           </div>
         </div>
@@ -585,7 +588,7 @@ export const AllPoolsTable: FunctionComponent<{
           })}
           selectedOptionId={sorting[0]?.id}
           onSelectMenuOption={(id: string) => {
-            table.getColumn(id).toggleSorting();
+            table.getColumn(id)?.toggleSorting();
             setMobileSortMenuIsOpen(false);
           }}
           isOpen={mobileSortMenuIsOpen}
