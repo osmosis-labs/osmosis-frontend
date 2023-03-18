@@ -70,19 +70,23 @@ const PaginatedTable = ({
         {virtualRows.map((virtualRow) => {
           const row = rows[virtualRow.index] as Row<Pool>;
           return (
-            <div
+            <Link
               key={row.original[0].poolId}
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: `${virtualRow.size}px`,
-                transform: `translateY(${virtualRow.start - topOffset}px)`,
-              }}
+              href={`/pool/${row.original[0].poolId}`}
             >
-              {renderMobileItem?.(row)}
-            </div>
+              <a
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: `${virtualRow.size}px`,
+                  transform: `translateY(${virtualRow.start - topOffset}px)`,
+                }}
+              >
+                {renderMobileItem?.(row)}
+              </a>
+            </Link>
           );
         })}
       </div>
