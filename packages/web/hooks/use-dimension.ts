@@ -4,17 +4,17 @@ import { useIsomorphicLayoutEffect } from "react-use";
 import { noop } from "~/utils/function";
 import { isBrowser } from "~/utils/ssr";
 
-export type UseMeasureRect = Pick<
+export type UseDimensionRect = Pick<
   DOMRectReadOnly,
   "x" | "y" | "top" | "left" | "right" | "bottom" | "height" | "width"
 >;
-export type UseMeasureRef<E extends Element = Element> = (element: E) => void;
-export type UseMeasureResult<E extends Element = Element> = [
-  UseMeasureRef<E>,
-  UseMeasureRect
+export type UseDimensionRef<E extends Element = Element> = (element: E) => void;
+export type UseDimensionResult<E extends Element = Element> = [
+  UseDimensionRef<E>,
+  UseDimensionRect
 ];
 
-const defaultState: UseMeasureRect = {
+const defaultState: UseDimensionRect = {
   x: 0,
   y: 0,
   width: 0,
@@ -25,7 +25,7 @@ const defaultState: UseMeasureRect = {
   right: 0,
 };
 
-function getDimensionObject(node: HTMLElement): UseMeasureRect {
+function getDimensionObject(node: HTMLElement): UseDimensionRect {
   const rect = node.getBoundingClientRect();
 
   return {
@@ -40,9 +40,11 @@ function getDimensionObject(node: HTMLElement): UseMeasureRect {
   };
 }
 
-function useDimensionImpl<E extends Element = Element>(): UseMeasureResult<E> {
+function useDimensionImpl<
+  E extends Element = Element
+>(): UseDimensionResult<E> {
   const [element, ref] = useState<E | null>(null);
-  const [rect, setRect] = useState<UseMeasureRect>(defaultState);
+  const [rect, setRect] = useState<UseDimensionRect>(defaultState);
 
   useIsomorphicLayoutEffect(() => {
     if (!element) return;
