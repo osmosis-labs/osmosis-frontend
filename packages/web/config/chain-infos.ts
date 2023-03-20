@@ -2910,7 +2910,7 @@ const chainInfos = (
           coinDenom: "ARKH",
           coinMinimalDenom: "uarkh",
           coinDecimals: 6,
-          coinImageUrl: "/tokens/arkh.svg",
+          coinImageUrl: "/tokens/arkh.png",
           coinGeckoId: "pool:uarkh",
           isStakeCurrency: true,
           isFeeCurrency: true,
