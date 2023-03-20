@@ -215,15 +215,16 @@ export const AllPoolsTable: FunctionComponent<{
     const setSorting = useCallback(
       (s) => {
         if (typeof s === "function") {
-          const sort = s()[0];
-          logEvent([
-            EventName.Pools.allPoolsListSorted,
-            {
-              sortedBy: sort.id,
-              sortedOn: isMobile ? "dropdown" : "table",
-              sortDirection: sort.desc ? "descending" : "ascending",
-            },
-          ]);
+          const sort = s()?.[0];
+          if (sort)
+            logEvent([
+              EventName.Pools.allPoolsListSorted,
+              {
+                sortedBy: sort.id,
+                sortedOn: isMobile ? "dropdown" : "table",
+                sortDirection: sort.desc ? "descending" : "ascending",
+              },
+            ]);
         }
         _setSorting(s);
       },
