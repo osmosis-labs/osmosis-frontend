@@ -218,11 +218,6 @@ export class ObservableTransferUIConfig {
     }
   }
 
-  @action
-  buyOsmo() {
-    this.launchFiatRampsModal("transak", "OSMO");
-  }
-
   // SECTION - methods for launching a particular modal
 
   @action
@@ -427,7 +422,7 @@ export class ObservableTransferUIConfig {
   }
 
   @action
-  protected launchFiatRampsModal(fiatRampKey: FiatRampKey, assetKey: string) {
+  launchFiatRampsModal(fiatRampKey: FiatRampKey, assetKey: string) {
     this._fiatRampsModal = {
       isOpen: true,
       onRequestClose: () => this.closeAllModals(),

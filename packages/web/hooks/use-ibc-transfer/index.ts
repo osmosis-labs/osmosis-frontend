@@ -8,7 +8,7 @@ import {
   OsmosisAccount,
   UncommitedHistory,
 } from "@osmosis-labs/stores";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 
 import { useStore } from "../../stores";
 import { useAmountConfig, useFakeFeeConfig } from "..";
@@ -157,60 +157,76 @@ export function useIbcTransfer({
     ) => void,
     onBroadcasted?: (event: Omit<UncommitedHistory, "createdAt">) => void,
     onFailure?: (txHash: string, code: number) => void
-  ) => void = async (onFulfill, onBroadcasted, onFailure) => {
-    try {
-      if (isWithdraw) {
-        await basicIbcTransfer(
-          {
-            account: oldAccount,
-            chainId,
-            channelId: sourceChannelId,
-          },
-          {
-            account:
-              customBech32Address !== ""
-                ? customBech32Address
-                : oldCounterpartyAccount,
-            chainId: counterpartyChainId,
-            channelId: destChannelId,
-          },
-          amountConfig,
-          onBroadcasted,
-          onFulfill,
-          onFailure
-        );
-      } else {
-        await basicIbcTransfer(
-          {
-            account: oldCounterpartyAccount,
-            chainId: counterpartyChainId,
-            channelId: destChannelId,
-            contractTransfer:
-              ics20ContractAddress &&
-              currency.originCurrency &&
-              "contractAddress" in currency.originCurrency
-                ? {
-                    contractAddress: currency.originCurrency["contractAddress"],
-                    cosmwasmAccount: oldCounterpartyAccount,
-                    ics20ContractAddress: ics20ContractAddress,
-                  }
-                : undefined,
-          },
-          {
-            account: oldAccount,
-            chainId,
-            channelId: sourceChannelId,
-          },
-          amountConfig,
-          onBroadcasted,
-          onFulfill,
-          onFailure
-        );
+  ) => void = useCallback(
+    async (onFulfill, onBroadcasted, onFailure) => {
+      try {
+        if (isWithdraw) {
+          await basicIbcTransfer(
+            {
+              account,
+              chainId,
+              channelId: sourceChannelId,
+            },
+            {
+              account:
+                customBech32Address !== ""
+                  ? customBech32Address
+                  : counterpartyAccount,
+              chainId: counterpartyChainId,
+              channelId: destChannelId,
+            },
+            amountConfig,
+            onBroadcasted,
+            onFulfill,
+            onFailure
+          );
+        } else {
+          await basicIbcTransfer(
+            {
+              account: counterpartyAccount,
+              chainId: counterpartyChainId,
+              channelId: destChannelId,
+              contractTransfer:
+                ics20ContractAddress &&
+                currency.originCurrency &&
+                "contractAddress" in currency.originCurrency
+                  ? {
+                      contractAddress:
+                        currency.originCurrency["contractAddress"],
+                      cosmwasmAccount: counterpartyAccount,
+                      ics20ContractAddress: ics20ContractAddress,
+                    }
+                  : undefined,
+            },
+            {
+              account,
+              chainId,
+              channelId: sourceChannelId,
+            },
+            amountConfig,
+            onBroadcasted,
+            onFulfill,
+            onFailure
+          );
+        }
+      } catch (e) {
+        console.error(e);
       }
-    } catch (e) {
-      console.error(e);
-    }
-  };
+    },
+    [
+      isWithdraw,
+      account,
+      amountConfig,
+      chainId,
+      counterpartyAccount,
+      currency.originCurrency,
+      counterpartyChainId,
+      customBech32Address,
+      destChannelId,
+      ics20ContractAddress,
+      sourceChannelId,
+    ]
+  );
 
   return [
     account,

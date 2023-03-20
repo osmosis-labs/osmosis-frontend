@@ -3,7 +3,7 @@ import { ChainIdHelper } from "@keplr-wallet/cosmos";
 import { ChainGetter } from "@keplr-wallet/stores";
 import { Buffer } from "buffer";
 import dayjs from "dayjs";
-import { computed, flow, makeObservable, observable, toJS } from "mobx";
+import { action, computed, flow, makeObservable, observable, toJS } from "mobx";
 import { keepAlive } from "mobx-utils";
 import { computedFn } from "mobx-utils";
 
@@ -186,7 +186,7 @@ export class IBCTransferHistoryStore {
     };
   }
 
-  async traceHistroyStatus(
+  protected async traceHistoryStatus(
     history: Pick<
       IBCTransferHistory,
       | "sourceChainId"
@@ -326,6 +326,15 @@ export class IBCTransferHistoryStore {
     this.tryUpdateHistoryStatus(history.txHash);
   }
 
+  @action
+  removeUncommittedHistory(txHash: string) {
+    this._uncommitedHistories = this._uncommitedHistories.filter(
+      (uncommited) => uncommited.txHash !== txHash
+    );
+
+    this.save();
+  }
+
   @flow
   protected *pushPendingHistoryWithCreatedAt(
     history: Omit<IBCTransferHistory, "status">
@@ -449,7 +458,7 @@ export class IBCTransferHistoryStore {
 
     // eslint-disable-next-line
     const history = this.historyMapByTxHash.get(txHash)!;
-    const status = yield* toGenerator(this.traceHistroyStatus(history));
+    const status = yield* toGenerator(this.traceHistoryStatus(history));
     if (history.status !== status) {
       history.status = status;
 

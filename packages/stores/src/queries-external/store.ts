@@ -4,6 +4,7 @@ import { DeepReadonly } from "utility-types";
 
 import { IPriceStore } from "../price";
 import { ObservableQueryGauges } from "../queries/incentives";
+import { ObservableQueryIncentivizedPools } from "../queries/pool-incentives";
 import {
   IMPERATOR_HISTORICAL_DATA_BASEURL,
   IMPERATOR_TX_REWARD_BASEURL,
@@ -32,6 +33,7 @@ export class QueriesExternalStore {
     chainGetter: ChainGetter,
     chainId: string,
     observableQueryGuage: ObservableQueryGauges,
+    incentivizedPools: ObservableQueryIncentivizedPools,
     webApiBaseUrl: string,
     feeMetricsBaseURL = IMPERATOR_HISTORICAL_DATA_BASEURL,
     poolRewardsBaseUrl = IMPERATOR_TX_REWARD_BASEURL
@@ -62,7 +64,8 @@ export class QueriesExternalStore {
     this.queryActiveGauges = new ObservableQueryActiveGauges(
       kvStore,
       webApiBaseUrl,
-      observableQueryGuage
+      observableQueryGuage,
+      incentivizedPools
     );
     this.queryICNSNames = new ObservableQueryICNSNames(
       kvStore,

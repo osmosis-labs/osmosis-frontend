@@ -63,7 +63,7 @@ export const PoolsOverview: FunctionComponent<
   return (
     <div
       className={classNames(
-        "relative flex flex-wrap items-center gap-32 rounded-[32px] bg-osmoverse-800 px-20 py-8 lg:gap-8 lg:px-10 md:h-fit md:flex-col md:items-start md:gap-3 md:px-4 md:py-5",
+        "relative flex flex-wrap items-center gap-32 rounded-[32px] bg-osmoverse-800 px-20 py-8 1.5lg:gap-6 lg:px-10 md:h-fit md:flex-col md:items-start md:gap-3 md:px-4 md:py-5",
         className
       )}
     >
@@ -107,9 +107,9 @@ export const PoolsOverview: FunctionComponent<
           }
         />
       </div>
-      <div className="absolute right-7 bottom-7 md:relative md:bottom-0 md:right-0">
+      <div className="absolute right-7 bottom-7 1.5lg:relative 1.5lg:bottom-0 1.5lg:right-0">
         <Button
-          className="rounded-[24px] text-white-full shadow-[0_6px_8px_0_rgba(9,5,36,0.2);]"
+          className="rounded-[24px] text-white-full shadow-[0_6px_8px_0_rgba(9,5,36,0.2);] 1.5lg:h-12"
           onClick={setIsCreatingPool}
           mode="icon-primary"
         >

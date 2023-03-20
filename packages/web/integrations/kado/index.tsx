@@ -1,4 +1,4 @@
-import { WalletStatus } from "@cosmos-kit/core";
+import { WalletStatus } from "@keplr-wallet/stores";
 import { FunctionComponent } from "react";
 
 import { ModalBaseProps } from "../../modals";

@@ -7,9 +7,9 @@ import { displayToast, ToastType } from "../components/alert";
 import { useStore } from ".";
 
 /**
- * IBCHistoryNotifier hook tracks the changes of the IBC Transfer history on the IBCTransferHistoryStore.
+ * IbcNotifier hook tracks the changes of the IBC Transfer history on the IBCTransferHistoryStore.
  * And, if the changes are detected, this will notify the success or failure to the users, and update the balances.
- * XXX: `IBCHistoryNotifier` doesn't render anything.
+ * XXX: `IbcNotifier` doesn't render anything.
  */
 export const IbcNotifier: FunctionComponent = observer(() => {
   const { chainStore, queriesStore, ibcTransferHistoryStore, accountStore } =

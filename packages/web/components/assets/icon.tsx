@@ -2,7 +2,7 @@ import { FunctionComponent, SVGAttributes } from "react";
 
 import spriteSVGURL from "../../public/icons/sprite.svg";
 
-type IconId =
+export type SpriteIconId =
   | "chevron-up"
   | "chevron-down"
   | "chevron-left"
@@ -18,14 +18,17 @@ type IconId =
   | "arrow-right"
   | "close-small"
   | "walletconnect"
-  | "tune";
+  | "tune"
+  | "help-circle"
+  | "kado-logo"
+  | "transak-logo";
 
 /**
  * It takes an icon id and returns an svg element with the corresponding icon defined in /public/icons/sprite.svg.
  */
 export const Icon: FunctionComponent<
   SVGAttributes<HTMLOrSVGElement> & {
-    id: IconId;
+    id: SpriteIconId;
     className?: string;
   }
 > = (props) => {

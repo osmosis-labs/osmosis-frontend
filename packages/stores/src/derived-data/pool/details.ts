@@ -8,7 +8,10 @@ import { AccountStore } from "src/account";
 
 import { IPriceStore } from "../../price";
 import { OsmosisQueries } from "../../queries/store";
-import { ObservableQueryPoolFeesMetrics } from "../../queries-external";
+import {
+  ObservableQueryActiveGauges,
+  ObservableQueryPoolFeesMetrics,
+} from "../../queries-external";
 import { ExternalGauge } from "./types";
 
 /** Convenience store for getting common details of a pool via many other lower-level query stores. */
@@ -21,6 +24,7 @@ export class ObservablePoolDetail {
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly externalQueries: {
       queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly accountStore: AccountStore,
     protected readonly priceStore: IPriceStore
@@ -100,7 +104,9 @@ export class ObservablePoolDetail {
 
         if (!gaugeId) return;
 
-        const gauge = this.queries.queryGauge.get(gaugeId);
+        const gauge = this.externalQueries.queryActiveGauges.get(gaugeId);
+
+        if (!gauge) return;
 
         const apr = this.queries.queryIncentivizedPools.computeApr(
           this.poolId,
@@ -310,7 +316,9 @@ export class ObservablePoolDetail {
     return (
       queryPoolGuageIds.gaugeIdsWithDuration
         ?.map(({ gaugeId }) => {
-          const gauge = this.queries.queryGauge.get(gaugeId);
+          const gauge = this.externalQueries.queryActiveGauges.get(gaugeId);
+          if (!gauge) return;
+
           const isInternalGauge =
             this.queries.queryIncentivizedPools.getIncentivizedGaugeId(
               this.poolId,
@@ -345,7 +353,6 @@ export class ObservablePoolDetail {
         totalShareValue: PricePretty;
         bondedValue: PricePretty;
         unbondedValue: PricePretty;
-        currentDailyEarnings?: PricePretty;
       }
     | undefined {
     const totalShares = this.queries.queryGammPoolShare.getAllGammShare(
@@ -371,6 +378,7 @@ export class ObservablePoolDetails extends HasMapStore<ObservablePoolDetail> {
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly externalQueries: {
       queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly accountStore: AccountStore,
     protected readonly priceStore: IPriceStore

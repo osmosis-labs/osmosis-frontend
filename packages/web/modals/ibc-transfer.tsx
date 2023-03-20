@@ -80,10 +80,6 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
             transfer(
               (txFullfillEvent) => {
                 // success
-                ibcTransferHistoryStore.pushPendingHistory(txFullfillEvent);
-                props.onRequestClose();
-              },
-              (txBroadcastEvent) => {
                 logEvent([
                   isWithdraw
                     ? EventName.Assets.withdrawAssetCompleted
@@ -94,7 +90,14 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                     bridge: "IBC",
                   },
                 ]);
+                ibcTransferHistoryStore.pushPendingHistory(txFullfillEvent);
+                props.onRequestClose();
+              },
+              (txBroadcastEvent) => {
                 ibcTransferHistoryStore.pushUncommitedHistory(txBroadcastEvent);
+              },
+              (txHash) => {
+                ibcTransferHistoryStore.removeUncommittedHistory(txHash);
               }
             );
           },

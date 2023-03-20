@@ -11,6 +11,8 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { formatPretty } from "~/utils/formatter";
+
 import { ShowMoreButton } from "../../components/buttons/show-more";
 import { PoolCard } from "../../components/cards/";
 import { MetricLoader } from "../../components/loaders";
@@ -407,8 +409,9 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                   label: t("assets.poolCards.FeeAPY"),
                   value:
                     poolBonding.highestBondDuration?.swapFeeApr
-                      .maxDecimals(2)
-                      .toString() ?? new RatePretty(0).toString(),
+                      .maxDecimals(0)
+                      .toString() ??
+                    poolDetail.swapFeeApr.maxDecimals(0).toString(),
                 },
             {
               label: t("assets.poolCards.liquidity"),
@@ -420,10 +423,8 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                   value: poolDetail.userBondedValue.toString(),
                 }
               : {
-                  label: t("assets.poolCards.myLiquidity"),
-                  value: poolDetail.userAvailableValue
-                    .add(poolDetail.userBondedValue)
-                    .toString(),
+                  label: t("pools.externalIncentivized.TVL"),
+                  value: formatPretty(poolDetail.totalValueLocked),
                 },
           ],
         ] as [ObservableQueryPool, PricePretty, Metric[]];

@@ -28,7 +28,7 @@ export const FiatRampsModal: FunctionComponent<
         setModal(false);
       }
     }
-  }, [fiatRampKey, isOpen]);
+  }, [fiatRampKey, isOpen, setModal]);
 
   return (
     <ModalBase

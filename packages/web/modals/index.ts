@@ -2,6 +2,7 @@ export * from "./add-liquidity";
 export * from "./base";
 export * from "./bridge-transfer";
 export * from "./create-pool";
+export * from "./fiat-on-ramp-selection";
 export * from "./fiat-ramps";
 export * from "./ibc-transfer";
 export * from "./keplr-connection-selection";
