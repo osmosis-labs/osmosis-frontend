@@ -14,7 +14,7 @@ function useCache<T>() {
 }
 
 /**
- * Generate deposit addresses reactively. Will hold onto the last generated address for each sourceChain/destChain/address/coinMinimalDenom combination until unmount.
+ * Generate deposit addresses reactively, saving each promise in an observable and caching the results.
  * @param sourceChain Source chain.
  * @param destChain Destination chain.
  * @param destinationAddress User's destination address to generate deposit address for (on counterparty).
