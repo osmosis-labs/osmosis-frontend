@@ -123,65 +123,38 @@ export const AllPoolsTable: FunctionComponent<{
 
     const { chainId } = chainStore.osmosis;
     const queriesOsmosis = queriesStore.get(chainId).osmosis!;
-    const account = accountStore.getAccount(chainId);
     const queryActiveGauges = queriesExternalStore.queryActiveGauges;
 
     const allPools = queriesOsmosis.queryGammPools.getAllPools();
 
-    const qaLockedResp = queriesOsmosis.queryAccountLocked.get(
-      account.bech32Address
-    ).response;
-    const allPoolsWithMetrics: PoolWithMetrics[] = useMemo(
-      () =>
-        allPools.map((pool) => {
-          const poolDetail = derivedDataStore.poolDetails.get(pool.id);
-          return {
-            pool,
-            ...queriesExternalStore.queryGammPoolFeeMetrics.getPoolFeesMetrics(
-              pool.id,
-              priceStore
-            ),
-            liquidity: poolDetail.totalValueLocked,
-            myLiquidity: poolDetail.userShareValue,
-            myAvailableLiquidity: poolDetail.userAvailableValue,
-            poolName: pool.poolAssets
-              .map((asset) => asset.amount.currency.coinDenom)
-              .join("/"),
-            networkNames: pool.poolAssets
-              .map(
-                (asset) =>
-                  chainStore.getChainFromCurrency(asset.amount.denom)
-                    ?.chainName ?? ""
-              )
-              .join(" "),
-            apr:
-              derivedDataStore.poolsBonding
-                .get(pool.id)
-                ?.highestBondDuration?.aggregateApr.maxDecimals(0) ??
-              poolDetail.swapFeeApr.maxDecimals(0),
-          };
-        }),
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [
-        // note: mobx only causes rerenders for values referenced *during* render. I.e. *not* within useEffect/useCallback/useMemo hooks (see: https://mobx.js.org/react-integration.html)
-        // `useMemo` is needed in this file to avoid "debounce" with the hundreds of re-renders by mobx as the 200+ API requests come in and populate 1000+ observables (otherwise the UI is unresponsive for 30+ seconds)
-        // we only want to map through the list on renders where data changes
-        // also, the higher level `useMemo`s (i.e. this one) gain the most performance as other renders are prevented down the line as data is calculated (remember, renders are initiated by both mobx and react)
-        allPools,
-        queriesOsmosis.queryIncentivizedPools.response,
-        queriesOsmosis.querySuperfluidPools.response,
-        queriesOsmosis.querySuperfluidPools.response,
-        queriesOsmosis.querySuperfluidParams.response,
-        queriesOsmosis.queryLockableDurations.response,
-        queriesOsmosis.queryIncentivizedPools.response,
-        queriesOsmosis.queryLockableDurations.response,
-        account.bech32Address,
-        queriesExternalStore.queryGammPoolFeeMetrics.response,
-        queriesExternalStore.queryActiveGauges.response,
-        qaLockedResp,
-        priceStore.response,
-      ]
-    );
+    const allPoolsWithMetrics: PoolWithMetrics[] = allPools.map((pool) => {
+      const poolDetail = derivedDataStore.poolDetails.get(pool.id);
+      return {
+        pool,
+        ...queriesExternalStore.queryGammPoolFeeMetrics.getPoolFeesMetrics(
+          pool.id,
+          priceStore
+        ),
+        liquidity: poolDetail.totalValueLocked,
+        myLiquidity: poolDetail.userShareValue,
+        myAvailableLiquidity: poolDetail.userAvailableValue,
+        poolName: pool.poolAssets
+          .map((asset) => asset.amount.currency.coinDenom)
+          .join("/"),
+        networkNames: pool.poolAssets
+          .map(
+            (asset) =>
+              chainStore.getChainFromCurrency(asset.amount.denom)?.chainName ??
+              ""
+          )
+          .join(" "),
+        apr:
+          derivedDataStore.poolsBonding
+            .get(pool.id)
+            ?.highestBondDuration?.aggregateApr.maxDecimals(0) ??
+          poolDetail.swapFeeApr.maxDecimals(0),
+      };
+    });
 
     const tvlFilteredPools = useMemo(
       () =>
