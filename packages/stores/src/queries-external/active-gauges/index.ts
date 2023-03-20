@@ -37,8 +37,6 @@ export class ObservableQueryActiveGauges extends ObservableQueryExternalBase<Act
 
   protected setResponse(response: Readonly<QueryResponse<ActiveGauges>>) {
     super.setResponse(response);
-
-    console.log("set active gauges response");
     // set gauges in the gauge map store
     response.data.data.forEach((gauge) => this.queryGauge.setWithGauge(gauge));
   }
