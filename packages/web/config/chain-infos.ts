@@ -54,7 +54,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "ion",
           coinGeckoId: "pool:uion",
-          coinImageUrl: "/tokens/ion.png",
+          coinImageUrl: "/tokens/ion.svg",
         },
         ...(IS_TESTNET
           ? [
@@ -120,7 +120,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "terra-luna",
           coinGeckoId: "pool:ulunc",
-          coinImageUrl: "/tokens/lunc.png",
+          coinImageUrl: "/tokens/lunc.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
@@ -135,7 +135,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "terrausd",
           coinGeckoId: "pool:uustc",
-          coinImageUrl: "/tokens/ustc.png",
+          coinImageUrl: "/tokens/ust.svg",
           isFeeCurrency: true,
           gasPriceStep: {
             low: 0.75,
@@ -149,7 +149,7 @@ const chainInfos = (
           coinMinimalDenom: "ukrw",
           coinDecimals: 6,
           coinGeckoId: "terra-krw",
-          coinImageUrl: "/tokens/krtc.png",
+          coinImageUrl: "/tokens/krt.svg",
           pegMechanism: "algorithmic",
         },
       ],
@@ -179,8 +179,8 @@ const chainInfos = (
           gasPriceStep: {
             low: 0.0125,
             average: 0.1,
-            high: 0.25
-          }
+            high: 0.25,
+          },
         },
         {
           type: "cw20",
@@ -285,7 +285,7 @@ const chainInfos = (
           coinDenom: "REGEN",
           coinMinimalDenom: "uregen",
           coinDecimals: 6,
-          coinImageUrl: "/tokens/regen.png",
+          coinImageUrl: "/tokens/regen.svg",
           // coinGeckoId: "regen",
           coinGeckoId: "pool:uregen",
           isStakeCurrency: true,
@@ -343,7 +343,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "persistence",
           coinGeckoId: "pool:uxprt",
-          coinImageUrl: "/tokens/xprt.png",
+          coinImageUrl: "/tokens/xprt.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
@@ -359,7 +359,7 @@ const chainInfos = (
           coinDecimals: 18,
           // coinGeckoId: "pstake-finance",
           coinGeckoId: "pool:pstake",
-          coinImageUrl: "/tokens/pstake.png",
+          coinImageUrl: "/tokens/pstake.svg",
         },
         {
           coinDenom: "stkATOM",
@@ -418,7 +418,7 @@ const chainInfos = (
           coinDecimals: 8,
           // coinGeckoId: "crypto-com-chain",
           coinGeckoId: "pool:basecro",
-          coinImageUrl: "/tokens/cro.png",
+          coinImageUrl: "/tokens/cro.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
@@ -447,7 +447,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "starname",
           coinGeckoId: "pool:uiov",
-          coinImageUrl: "/tokens/iov.png",
+          coinImageUrl: "/tokens/iov.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
@@ -664,7 +664,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "stakeeasy-juno-derivative",
           coinGeckoId: "pool:sejuno",
-          coinImageUrl: "/tokens/sejuno.png",
+          coinImageUrl: "/tokens/sejuno.svg",
         },
         {
           type: "cw20",
@@ -674,7 +674,7 @@ const chainInfos = (
           coinMinimalDenom:
             "cw20:juno1wwnhkagvcd3tjz6f8vsdsw5plqnw8qy2aj3rrhqr2axvktzv9q2qz8jxn3:bJUNO",
           coinDecimals: 6,
-          coinImageUrl: "/tokens/bjuno.png",
+          coinImageUrl: "/tokens/bjuno.svg",
         },
         {
           type: "cw20",
@@ -685,7 +685,7 @@ const chainInfos = (
             "cw20:juno159q8t5g02744lxq8lfmcn6f78qqulq9wn3y9w7lxjgkz4e0a6kvsfvapse:SOLAR",
           coinDecimals: 6,
           coinGeckoId: "pool:solar",
-          coinImageUrl: "/tokens/solar.png",
+          coinImageUrl: "/tokens/solar.svg",
         },
         {
           type: "cw20",
@@ -731,7 +731,7 @@ const chainInfos = (
           coinDecimals: 6,
           //coinGeckoId: "posthuman",
           coinGeckoId: "pool:phmn",
-          coinImageUrl: "/tokens/phmn.png",
+          coinImageUrl: "/tokens/phmn.svg",
         },
         {
           type: "cw20",
@@ -766,7 +766,7 @@ const chainInfos = (
           coinGeckoId: "pool:nride",
           coinImageUrl: "/tokens/nride.svg",
         },
-         {
+        {
           type: "cw20",
           contractAddress:
             "juno1u8cr3hcjvfkzxcaacv9q75uw9hwjmn8pucc93pmy6yvkzz79kh3qncca8x",
@@ -776,7 +776,7 @@ const chainInfos = (
           coinDecimals: 6,
           coinGeckoId: "pool:fox",
           coinImageUrl: "/tokens/fox.svg",
-         },
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: "https://www.mintscan.io/juno/txs/{txHash}",
@@ -850,7 +850,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "ixo",
           coinGeckoId: "pool:uixo",
-          coinImageUrl: "/tokens/ixo.png",
+          coinImageUrl: "/tokens/ixo.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
@@ -1082,7 +1082,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "medibloc",
           coinGeckoId: "pool:umed",
-          coinImageUrl: "/tokens/med.png",
+          coinImageUrl: "/tokens/med.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
@@ -1140,7 +1140,7 @@ const chainInfos = (
           coinDecimals: 6,
           //coinGeckoId: "comdex",
           coinGeckoId: "pool:ucmdx",
-          coinImageUrl: "/tokens/cmdx.png",
+          coinImageUrl: "/tokens/cmdx.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
@@ -1154,7 +1154,7 @@ const chainInfos = (
           coinMinimalDenom: "ucmst",
           coinDecimals: 6,
           coinGeckoId: "pool:ucmst",
-          coinImageUrl: "/tokens/cmst.png",
+          coinImageUrl: "/tokens/cmst.svg",
           pegMechanism: "collateralized",
         },
         {
@@ -1237,7 +1237,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "chihuahua-token",
           coinGeckoId: "pool:uhuahua",
-          coinImageUrl: "/tokens/huahua.png",
+          coinImageUrl: "/tokens/huahua.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
@@ -1377,7 +1377,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "sommelier",
           coinGeckoId: "pool:usomm",
-          coinImageUrl: "/tokens/somm.png",
+          coinImageUrl: "/tokens/somm.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
         },
@@ -1522,7 +1522,7 @@ const chainInfos = (
           coinDecimals: 18,
           // coinGeckoId: "pstake-finance",
           coinGeckoId: "pool:pstake",
-          coinImageUrl: "/tokens/pstake.png",
+          coinImageUrl: "/tokens/pstake.svg",
         },
         {
           coinDenom: "WBTC.grv",
@@ -1648,7 +1648,7 @@ const chainInfos = (
           coinDecimals: 8,
           // coinGeckoId: "switcheo",
           coinGeckoId: "pool:swth",
-          coinImageUrl: "/tokens/swth.png",
+          coinImageUrl: "/tokens/swth.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
@@ -1732,7 +1732,7 @@ const chainInfos = (
           coinDecimals: 18,
           // coinGeckoId: "fetch-ai",
           coinGeckoId: "pool:afet",
-          coinImageUrl: "/tokens/fet.png",
+          coinImageUrl: "/tokens/fet.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
@@ -2043,7 +2043,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "kujira",
           coinGeckoId: "pool:ukuji",
-          coinImageUrl: "/tokens/kuji.png",
+          coinImageUrl: "/tokens/kuji.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
@@ -2058,7 +2058,7 @@ const chainInfos = (
             "factory/kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7/uusk",
           coinDecimals: 6,
           coinGeckoId: "usk",
-          coinImageUrl: "/tokens/usk.png",
+          coinImageUrl: "/tokens/usk.svg",
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
@@ -2109,7 +2109,7 @@ const chainInfos = (
           coinDecimals: 18,
           // coinGeckoId: "echelon",
           coinGeckoId: "pool:aechelon",
-          coinImageUrl: "/tokens/ech.png",
+          coinImageUrl: "/tokens/ech.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
@@ -2297,7 +2297,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "agoric",
           coinGeckoId: "pool:ubld",
-          coinImageUrl: "/tokens/bld.png",
+          coinImageUrl: "/tokens/bld.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
@@ -2311,7 +2311,7 @@ const chainInfos = (
           coinMinimalDenom: "uist",
           coinDecimals: 6,
           coinGeckoId: "pool:uist",
-          coinImageUrl: "/tokens/ist.png",
+          coinImageUrl: "/tokens/ist.svg",
           isFeeCurrency: true,
           gasPriceStep: {
             low: 0.0034,
@@ -2418,7 +2418,7 @@ const chainInfos = (
           coinDecimals: 18,
           // coinGeckoId: "rebus",
           coinGeckoId: "pool:arebus",
-          coinImageUrl: "/tokens/rebus.png",
+          coinImageUrl: "/tokens/rebus.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
         },
@@ -2442,7 +2442,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "teritori",
           coinGeckoId: "pool:utori",
-          coinImageUrl: "/tokens/utori.png",
+          coinImageUrl: "/tokens/utori.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
@@ -2863,7 +2863,7 @@ const chainInfos = (
           coinDecimals: 6,
           coinImageUrl: "/tokens/qregen.svg",
           coinGeckoId: "pool:uqregen",
-        }
+        },
       ],
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/quicksilver/txs/{txHash}",
@@ -3080,7 +3080,7 @@ chainInfos.push({
       coinDecimals: 18,
       //coinGeckoId: "wmatic",
       coinGeckoId: "pool:wmaticwei.axl",
-      coinImageUrl: "/tokens/matic.png",
+      coinImageUrl: "/tokens/matic-purple.svg",
     },
     {
       coinDenom: "BUSD",
@@ -3088,7 +3088,7 @@ chainInfos.push({
       coinDecimals: 18,
       //coinGeckoId: "binance-usd",
       coinGeckoId: "pool:busdwei.axl",
-      coinImageUrl: "/tokens/busd.png",
+      coinImageUrl: "/tokens/busd.svg",
     },
     {
       coinDenom: "AVAX",
@@ -3104,7 +3104,7 @@ chainInfos.push({
       coinDecimals: 18,
       //coinGeckoId: "fantom",
       coinGeckoId: "pool:wftm-wei",
-      coinImageUrl: "/tokens/ftm.png",
+      coinImageUrl: "/tokens/ftm.svg",
     },
     {
       coinDenom: "polygon.USDC",
