@@ -2896,6 +2896,34 @@ const chainInfos = (
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://explorer.8ball.info/8ball/tx/{txHash}",
     },
+    {
+      rpc: "https://arkh-rpc.kynraze.com",
+      rest: "https://arkh-api.kynraze.com",
+      chainId: "arkh",
+      chainName: "Arkhadian",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("arkh"),
+      currencies: [
+        {
+          coinDenom: "ARKH",
+          coinMinimalDenom: "uarkh",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/arkh.svg",
+          coinGeckoId: "pool:uarkh",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.01,
+            average: 0.025,
+            high: 0.03,
+          },
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx: "https://explorer.kynraze.com/arkhadian/tx/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
