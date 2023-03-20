@@ -1377,7 +1377,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "sommelier",
           coinGeckoId: "pool:usomm",
-          coinImageUrl: "/tokens/somm.svg",
+          coinImageUrl: "/tokens/somm.png",
           isStakeCurrency: true,
           isFeeCurrency: true,
         },
