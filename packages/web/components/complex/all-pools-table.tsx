@@ -105,7 +105,6 @@ export const AllPoolsTable: FunctionComponent<{
       derivedDataStore,
       priceStore,
       queriesStore,
-      accountStore,
     } = useStore();
     const t = useTranslation();
 
