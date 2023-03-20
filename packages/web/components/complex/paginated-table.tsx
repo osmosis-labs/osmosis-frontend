@@ -2,6 +2,7 @@ import { flexRender, Row, Table } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect, useRef } from "react";
 import { useIntersection } from "react-use";
 
@@ -29,6 +30,7 @@ const PaginatedTable = ({
   const { isMobile } = useWindowSize();
 
   const { rows } = table.getRowModel();
+  const router = useRouter();
 
   const intersectionRef = useRef(null);
   const intersection = useIntersection(intersectionRef, {
@@ -161,10 +163,11 @@ const PaginatedTable = ({
               key={row.id}
               className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
               ref={i === virtualRows.length - 1 ? intersectionRef : null}
+              onClick={() => router.push(`/pool/${row.original[0].poolId}`)}
             >
               {row.getVisibleCells().map((cell) => {
                 return (
-                  <td key={cell.id}>
+                  <td key={cell.id} onClick={(e) => e.stopPropagation()}>
                     <Link
                       href={`/pool/${row.original[0].poolId}`}
                       key={virtualRow.index}
