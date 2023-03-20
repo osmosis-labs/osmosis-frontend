@@ -1491,11 +1491,17 @@ export const IBCAssetInfos: (IBCAsset & {
           "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
       },
       {
+        counterpartyChainId: "quicksilver-2",
+        sourceChannelId: "channel-522",
+        destChannelId: "channel-2",
+        coinMinimalDenom: "uqck",
+      },
+      {
         counterpartyChainId: "arkh",
         sourceChannelId: "channel-648",
         destChannelId: "channel-12",
         coinMinimalDenom: "uarkh",
-      }
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (

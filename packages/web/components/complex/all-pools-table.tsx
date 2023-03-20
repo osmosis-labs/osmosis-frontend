@@ -20,9 +20,10 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics, useFilteredData, useWindowSize } from "~/hooks";
 import { MenuOptionsModal } from "~/modals";
 
-import { useFilteredData, useWindowSize } from "../../hooks";
 import { useStore } from "../../stores";
 import { Icon } from "../assets";
 import { AssetCard } from "../cards";
@@ -107,6 +108,7 @@ export const AllPoolsTable: FunctionComponent<{
       queriesStore,
     } = useStore();
     const t = useTranslation();
+    const { logEvent } = useAmplitudeAnalytics();
 
     const router = useRouter();
     const poolFilter = router.query.pool as keyof Record<
@@ -204,6 +206,31 @@ export const AllPoolsTable: FunctionComponent<{
       ]
     );
 
+    const [sorting, _setSorting] = useState<SortingState>([
+      {
+        id: "liquidity",
+        desc: true,
+      },
+    ]);
+    const setSorting = useCallback(
+      (s) => {
+        if (typeof s === "function") {
+          const sort = s()?.[0];
+          if (sort)
+            logEvent([
+              EventName.Pools.allPoolsListSorted,
+              {
+                sortedBy: sort.id,
+                sortedOn: isMobile ? "dropdown" : "table",
+                sortDirection: sort.desc ? "descending" : "ascending",
+              },
+            ]);
+        }
+        _setSorting(s);
+      },
+      [logEvent, isMobile]
+    );
+
     const [query, _setQuery, filteredPools] = useFilteredData(
       incentiveFilteredPools,
       useMemo(
@@ -225,7 +252,7 @@ export const AllPoolsTable: FunctionComponent<{
         setSorting([]);
         _setQuery(search);
       },
-      [_setQuery, queriesOsmosis.queryGammPools]
+      [_setQuery, queriesOsmosis.queryGammPools, setSorting]
     );
 
     const cellGroupEventEmitter = useRef(new EventEmitter()).current;
@@ -345,13 +372,6 @@ export const AllPoolsTable: FunctionComponent<{
       ],
       [columnHelper, t]
     );
-
-    const [sorting, setSorting] = useState<SortingState>([
-      {
-        id: "liquidity",
-        desc: true,
-      },
-    ]);
 
     const table = useReactTable({
       data: tableData,
@@ -535,6 +555,18 @@ export const AllPoolsTable: FunctionComponent<{
                   placeholder={t("pools.allPools.search")}
                   className="!w-64"
                   size="small"
+                  onFocusChange={(isFocused) => {
+                    // user typed then removed focus
+                    if (query !== "" && !isFocused) {
+                      logEvent([
+                        EventName.Pools.allPoolsListFiltered,
+                        {
+                          isFilterOn: true,
+                          filteredBy: query,
+                        },
+                      ]);
+                    }
+                  }}
                 />
               </div>
             </div>
