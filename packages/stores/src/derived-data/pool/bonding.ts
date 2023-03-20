@@ -97,7 +97,7 @@ export class ObservablePoolBonding {
     const externalGauges =
       this.externalQueries.queryActiveGauges.getExternalGaugesForPool(
         this.poolId
-      ) ?? [];
+      );
 
     /** Set of all available durations. */
     const durationsMsSet = new Set<number>();

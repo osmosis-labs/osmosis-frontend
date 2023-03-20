@@ -198,6 +198,9 @@ export class RootStore {
       this.queriesStore.get(
         this.chainStore.osmosis.chainId
       ).osmosis!.queryGauge,
+      this.queriesStore.get(
+        this.chainStore.osmosis.chainId
+      ).osmosis!.queryIncentivizedPools,
       typeof window !== "undefined"
         ? window.origin
         : IS_FRONTIER
