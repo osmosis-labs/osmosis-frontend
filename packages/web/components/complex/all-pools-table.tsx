@@ -248,26 +248,10 @@ export const AllPoolsTable: FunctionComponent<{
           queriesOsmosis.queryGammPools.fetchRemainingPools();
           fetchedRemainingPoolsRef.current = true;
         }
-        if (query === "" && search !== "") {
-          console.log([
-            EventName.Pools.allPoolsListFiltered,
-            {
-              isFilterOn: true,
-              filteredBy: search,
-            },
-          ]);
-          logEvent([
-            EventName.Pools.allPoolsListFiltered,
-            {
-              isFilterOn: true,
-              filteredBy: search,
-            },
-          ]);
-        }
         setSorting([]);
         _setQuery(search);
       },
-      [_setQuery, queriesOsmosis.queryGammPools, query, logEvent, setSorting]
+      [_setQuery, queriesOsmosis.queryGammPools, setSorting]
     );
 
     const cellGroupEventEmitter = useRef(new EventEmitter()).current;
@@ -570,6 +554,18 @@ export const AllPoolsTable: FunctionComponent<{
                   placeholder={t("pools.allPools.search")}
                   className="!w-64"
                   size="small"
+                  onFocusChange={(isFocused) => {
+                    // user typed then removed focus
+                    if (query !== "" && !isFocused) {
+                      logEvent([
+                        EventName.Pools.allPoolsListFiltered,
+                        {
+                          isFilterOn: true,
+                          filteredBy: query,
+                        },
+                      ]);
+                    }
+                  }}
                 />
               </div>
             </div>
