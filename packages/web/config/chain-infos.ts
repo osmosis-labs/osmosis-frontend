@@ -1111,7 +1111,7 @@ const chainInfos = (
           coinDecimals: 0,
           // coinGeckoId: "bostrom",
           coinGeckoId: "pool:boot",
-          coinImageUrl: "/tokens/boot.png",
+          coinImageUrl: "/tokens/boot.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
