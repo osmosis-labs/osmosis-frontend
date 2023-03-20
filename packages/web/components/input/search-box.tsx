@@ -39,6 +39,7 @@ type SearchBoxProps = Omit<InputProps<string>, "currentValue"> &
     type?: string;
     currentValue?: string;
     onKeyDown?: DOMAttributes<HTMLInputElement>["onKeyDown"];
+    onFocusChange?: (isFocused: boolean) => void;
     rightIcon?: () => React.ReactNode;
   };
 
@@ -54,6 +55,7 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
       autoFocus,
       className,
       onKeyDown,
+      onFocusChange,
       size,
       rightIcon,
     },
@@ -86,9 +88,13 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
             autoComplete="off"
             onFocus={(e: any) => {
               setIsFocused(true);
+              onFocusChange?.(true);
               onFocus?.(e);
             }}
-            onBlur={() => setIsFocused(false)}
+            onBlur={() => {
+              setIsFocused(false);
+              onFocusChange?.(false);
+            }}
             onInput={(e: any) => onInput(e.target.value)}
             onClick={(e: any) => e.target.select()}
             disabled={disabled}

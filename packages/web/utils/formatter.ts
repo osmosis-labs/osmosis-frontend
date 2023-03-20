@@ -34,10 +34,12 @@ function priceFormatter(
     currency: price.fiatCurrency.currency,
     ...opts,
   };
-  const formatter = new Intl.NumberFormat(price.fiatCurrency.locale, options);
-  return formatter.format(
-    Number(new IntPretty(price).maxDecimals(2).locale(false).toString())
+  let num = Number(
+    new IntPretty(price).maxDecimals(2).locale(false).toString()
   );
+  num = isNaN(num) ? 0 : num;
+  const formatter = new Intl.NumberFormat(price.fiatCurrency.locale, options);
+  return formatter.format(num);
 }
 
 /** Formats a coin as compact by default. i.e. $7.53 ATOM or $265 OSMO. Validate handled by `CoinPretty`. */
@@ -52,10 +54,10 @@ function coinFormatter(
     style: "decimal",
     ...opts,
   };
+  let num = Number(new IntPretty(coin).maxDecimals(2).locale(false).toString());
+  num = isNaN(num) ? 0 : num;
   const formatter = new Intl.NumberFormat("en-US", options);
-  return `${formatter.format(
-    Number(new IntPretty(coin).maxDecimals(2).locale(false).toString())
-  )} ${coin.currency.coinDenom.toUpperCase()}`;
+  return `${formatter.format(num)} ${coin.currency.coinDenom.toUpperCase()}`;
 }
 
 /** Formats a coin as compact by default. i.e. $7.53 ATOM or $265 OSMO. Validate handled by `CoinPretty`. */
@@ -70,10 +72,10 @@ function rateFormatter(
     style: "decimal",
     ...opts,
   };
+  let num = Number(
+    new RatePretty(rate).maxDecimals(2).locale(false).symbol("").toString()
+  );
+  num = isNaN(num) ? 0 : num;
   const formatter = new Intl.NumberFormat("en-US", options);
-  return `${formatter.format(
-    Number(
-      new RatePretty(rate).maxDecimals(2).locale(false).symbol("").toString()
-    )
-  )}${rate.options.symbol}`;
+  return `${formatter.format(num)}${rate.options.symbol}`;
 }
