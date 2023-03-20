@@ -1,4 +1,5 @@
 import { isAddress, toHex } from "web3-utils";
+
 import { Erc20Abi } from "../queries";
 import { SendFn } from "../types";
 
@@ -17,26 +18,44 @@ export async function transfer(
   fromAddress: string,
   toAddress: string
 ): Promise<unknown> {
-  if (
-    isAddress(fromAddress) &&
-    isAddress(erc20Address) &&
-    isAddress(toAddress)
-  ) {
+  const params = erc20TransferParams(
+    fromAddress,
+    toAddress,
+    amount,
+    erc20Address
+  );
+
+  if (params) {
     return sendFn({
       method: "eth_sendTransaction",
-      params: [
-        {
-          from: fromAddress,
-          to: erc20Address,
-          data: Erc20Abi.encodeFunctionData("transfer", [
-            toAddress,
-            toHex(amount),
-          ]),
-        },
-        "latest",
-      ],
+      params,
     });
   }
 
-  return Promise.reject("Invalid address");
+  throw new Error("Invalid params");
+}
+
+export function erc20TransferParams(
+  fromAddress: string,
+  toAddress: string,
+  amount: string,
+  erc20Address: string
+): unknown[] | undefined {
+  if (
+    isAddress(fromAddress) &&
+    isAddress(toAddress) &&
+    isAddress(erc20Address)
+  ) {
+    return [
+      {
+        from: fromAddress,
+        to: erc20Address,
+        data: Erc20Abi.encodeFunctionData("transfer", [
+          toAddress,
+          toHex(amount),
+        ]),
+      },
+      "latest",
+    ];
+  }
 }

@@ -1,26 +1,31 @@
+import { KVStore } from "@keplr-wallet/common";
+import { IBCCurrency } from "@keplr-wallet/types";
 import {
+  action,
+  computed,
   makeObservable,
   observable,
-  action,
   runInAction,
-  computed,
 } from "mobx";
 import { ComponentProps } from "react";
-import { IBCCurrency } from "@keplr-wallet/types";
-import { KVStore } from "@keplr-wallet/common";
+
 import {
-  IbcTransferModal,
-  BridgeTransferModal,
-  SelectAssetSourceModal,
-  TransferAssetSelectModal,
-  FiatRampsModal,
-} from "../../modals";
+  FiatRampKey,
+  ObservableWallet,
+  SourceChainKey,
+} from "../../integrations";
 import {
+  EthWallet,
   ObservableMetamask,
   ObservableWalletConnect,
-  EthWallet,
 } from "../../integrations/ethereum";
-import { Wallet, SourceChainKey, FiatRampKey } from "../../integrations";
+import {
+  BridgeTransferModal,
+  FiatRampsModal,
+  IbcTransferModal,
+  SelectAssetSourceModal,
+  TransferAssetSelectModal,
+} from "../../modals";
 import { makeLocalStorageKVStore } from "../../stores/kv-store";
 import { IBCBalance, ObservableAssets } from ".";
 
@@ -120,7 +125,7 @@ export class ObservableTransferUIConfig {
         const bridgedBalance = this.assetsStore.ibcBalances.find(
           (bal) =>
             typeof bal.originBridgeInfo !== "undefined" &&
-            bal.originBridgeInfo.sourceChains
+            bal.originBridgeInfo.sourceChainTokens
               .map((sc) => sc.id)
               .flat()
               .includes(sourceChainKey) &&
@@ -174,12 +179,12 @@ export class ObservableTransferUIConfig {
       const sourceChainKey: SourceChainKey =
         (await this.kvStore.get(makeAssetSrcNetworkPreferredKey(coinDenom))) ||
         balance.originBridgeInfo?.defaultSourceChainId ||
-        balance.originBridgeInfo.sourceChains[0].id;
+        balance.originBridgeInfo.sourceChainTokens[0].id;
 
       // bridge integration
       const applicableWallets = this._ethClientWallets.filter(({ key }) =>
         balance.originBridgeInfo!.wallets.includes(key)
-      ) as Wallet[];
+      ) as ObservableWallet[];
       const alreadyConnectedWallet = applicableWallets.find(
         (wallet) => wallet.isConnected
       );
@@ -187,7 +192,9 @@ export class ObservableTransferUIConfig {
       if (
         alreadyConnectedWallet &&
         alreadyConnectedWallet.chainId &&
-        (!balance.fiatRamps || balance.fiatRamps.length === 0)
+        (direction === "withdraw" ||
+          !balance.fiatRamps ||
+          balance.fiatRamps.length === 0)
       ) {
         this.launchBridgeTransferModal(
           direction,
@@ -209,11 +216,6 @@ export class ObservableTransferUIConfig {
     } else {
       this.launchIbcTransferModal(direction, balance);
     }
-  }
-
-  @action
-  buyOsmo() {
-    this.launchFiatRampsModal("transak", "OSMO");
   }
 
   // SECTION - methods for launching a particular modal
@@ -323,7 +325,7 @@ export class ObservableTransferUIConfig {
     balanceOnOsmosis: IBCBalance,
     sourceChainKey: SourceChainKey
   ) {
-    const wallets = this._ethClientWallets as Wallet[];
+    const wallets = this._ethClientWallets as ObservableWallet[];
     const applicableWallets = wallets.filter(({ key }) =>
       balanceOnOsmosis.originBridgeInfo!.wallets.includes(key)
     );
@@ -337,9 +339,10 @@ export class ObservableTransferUIConfig {
       isWithdraw: direction === "withdraw",
       onRequestClose: () => this.closeAllModals(),
       wallets,
-      fiatRamps: this._isMobile
-        ? []
-        : balanceOnOsmosis.fiatRamps?.map(({ rampKey }) => rampKey),
+      fiatRamps:
+        this._isMobile || direction === "withdraw" // ramps: only show when depositing
+          ? []
+          : balanceOnOsmosis.fiatRamps?.map(({ rampKey }) => rampKey),
       onSelectSource: (key) => {
         const selectedWallet = wallets.find((wallet) => wallet.key === key);
         const selectedFiatRamp = balanceOnOsmosis.fiatRamps?.find(
@@ -396,7 +399,7 @@ export class ObservableTransferUIConfig {
   protected launchBridgeTransferModal(
     direction: TransferDir,
     balanceOnOsmosis: IBCBalance,
-    connectedWalletClient: Wallet,
+    connectedWalletClient: ObservableWallet,
     sourceChainKey: SourceChainKey,
     onRequestSwitchWallet: () => void,
     onRequestBack?: () => void
@@ -419,7 +422,7 @@ export class ObservableTransferUIConfig {
   }
 
   @action
-  protected launchFiatRampsModal(fiatRampKey: FiatRampKey, assetKey: string) {
+  launchFiatRampsModal(fiatRampKey: FiatRampKey, assetKey: string) {
     this._fiatRampsModal = {
       isOpen: true,
       onRequestClose: () => this.closeAllModals(),

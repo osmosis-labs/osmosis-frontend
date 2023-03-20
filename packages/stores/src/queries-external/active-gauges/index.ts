@@ -3,7 +3,11 @@ import { QueryResponse } from "@keplr-wallet/stores";
 import { computed } from "mobx";
 import { computedFn } from "mobx-utils";
 
-import { ObservableQueryGauges } from "../../queries/incentives";
+import {
+  ObservableQueryGauge,
+  ObservableQueryGauges,
+} from "../../queries/incentives";
+import { ObservableQueryIncentivizedPools } from "../../queries/pool-incentives";
 import { ObservableQueryExternalBase } from "../base";
 import { ActiveGauges } from "./types";
 
@@ -16,28 +20,42 @@ export class ObservableQueryActiveGauges extends ObservableQueryExternalBase<Act
   constructor(
     kvStore: KVStore,
     baseURL: string,
-    protected readonly queryGauge: ObservableQueryGauges
+    protected readonly queryGauge: ObservableQueryGauges,
+    protected readonly incentivizedPools: ObservableQueryIncentivizedPools
   ) {
     super(kvStore, baseURL, "/api/active-gauges");
   }
 
+  readonly get = computedFn((gaugeId: string) => {
+    if (
+      this.response?.data?.data.some(({ id }) => id === gaugeId) ||
+      this.incentivizedPools.isGaugeIdInternalIncentive(gaugeId)
+    ) {
+      return this.queryGauge.get(gaugeId);
+    }
+  });
+
   protected setResponse(response: Readonly<QueryResponse<ActiveGauges>>) {
     super.setResponse(response);
-
     // set gauges in the gauge map store
     response.data.data.forEach((gauge) => this.queryGauge.setWithGauge(gauge));
   }
 
   /** Active external gauges for a given pool. */
   readonly getExternalGaugesForPool = computedFn((poolId: string) => {
-    return this.response?.data?.data
-      .filter((gauge) => {
-        if (!gauge.distribute_to.denom.includes("gamm/")) return false;
+    return (
+      this.response?.data?.data
+        .filter((gauge) => {
+          if (!gauge.distribute_to.denom.includes("gamm/")) return false;
 
-        const distributePoolId = gauge.distribute_to.denom.split("/")[2];
-        return poolId === distributePoolId;
-      })
-      .map((gauge) => this.queryGauge.get(gauge.id));
+          const distributePoolId = gauge.distribute_to.denom.split("/")[2];
+          return poolId === distributePoolId;
+        })
+        .map((gauge) => this.get(gauge.id))
+        .filter(
+          (gauge): gauge is ObservableQueryGauge => gauge !== undefined
+        ) ?? []
+    );
   });
 
   /** Returns a unique list of pool IDs encountered in the currently active gauges. */

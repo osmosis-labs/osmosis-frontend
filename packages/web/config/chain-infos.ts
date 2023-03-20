@@ -43,9 +43,9 @@ const chainInfos = (
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
-            low: 0,
-            average: 0,
-            high: 0.025,
+            low: 0.0025,
+            average: 0.025,
+            high: 0.04,
           },
         },
         {
@@ -58,14 +58,14 @@ const chainInfos = (
         },
         ...(IS_TESTNET
           ? [
-            {
-              coinDenom: "IBCX",
-              coinMinimalDenom:
-                "factory/osmo13t90mkyvdnmn9wm8hfen6jk3hnlt8uqx8savlvjd5xghy5z6ye2qymy6cy/uibcx",
-              coinDecimals: 6,
-              coinImageUrl: "/tokens/ibcx.svg",
-            },
-          ]
+              {
+                coinDenom: "IBCX",
+                coinMinimalDenom:
+                  "factory/osmo13t90mkyvdnmn9wm8hfen6jk3hnlt8uqx8savlvjd5xghy5z6ye2qymy6cy/uibcx",
+                coinDecimals: 6,
+                coinImageUrl: "/tokens/ibcx.svg",
+              },
+            ]
           : []),
       ],
       features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
@@ -94,6 +94,11 @@ const chainInfos = (
           coinImageUrl: "/tokens/atom.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.01,
+            average: 0.025,
+            high: 0.03,
+          },
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
@@ -119,9 +124,9 @@ const chainInfos = (
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
-            low: 5.665,
-            average: 5.665,
-            high: 10,
+            low: 28.325,
+            average: 28.325,
+            high: 50,
           },
         },
         {
@@ -132,6 +137,11 @@ const chainInfos = (
           coinGeckoId: "pool:uustc",
           coinImageUrl: "/tokens/ust.svg",
           isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.75,
+            average: 0.75,
+            high: 0.75,
+          },
           pegMechanism: "algorithmic",
         },
         {
@@ -166,6 +176,11 @@ const chainInfos = (
           coinImageUrl: "/tokens/scrt.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.0125,
+            average: 0.1,
+            high: 0.25,
+          },
         },
         {
           type: "cw20",
@@ -275,6 +290,11 @@ const chainInfos = (
           coinGeckoId: "pool:uregen",
           isStakeCurrency: true,
           isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.015,
+            average: 0.025,
+            high: 0.04,
+          },
         },
       ],
       features: ["ibc-transfer"],
@@ -297,6 +317,11 @@ const chainInfos = (
           coinImageUrl: "/tokens/dvpn.png",
           isStakeCurrency: true,
           isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.1,
+            average: 0.25,
+            high: 0.4,
+          },
         },
       ],
       explorerUrlToTx: "https://www.mintscan.io/sentinel/txs/{txHash}",
@@ -321,6 +346,11 @@ const chainInfos = (
           coinImageUrl: "/tokens/xprt.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0,
+            average: 0.025,
+            high: 0.04,
+          },
         },
         {
           coinDenom: "PSTAKE",
@@ -362,6 +392,11 @@ const chainInfos = (
           coinImageUrl: "/tokens/iris.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.2,
+            average: 0.3,
+            high: 0.4,
+          },
         },
       ],
       features: ["ibc-transfer"],
@@ -386,6 +421,11 @@ const chainInfos = (
           coinImageUrl: "/tokens/cro.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.025,
+            average: 0.03,
+            high: 0.04,
+          },
         },
       ],
       features: ["ibc-transfer"],
@@ -410,6 +450,11 @@ const chainInfos = (
           coinImageUrl: "/tokens/iov.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
+          gasPriceStep: {
+            low: 1,
+            average: 2,
+            high: 3,
+          },
         },
       ],
       features: ["ibc-transfer"],
@@ -447,6 +492,12 @@ const chainInfos = (
           // coinGeckoId: "e-money-eur",
           coinGeckoId: "pool:eeur",
           coinImageUrl: "/tokens/eeur.png",
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 1,
+            average: 1,
+            high: 1,
+          },
         },
       ],
       features: ["ibc-transfer"],
@@ -471,6 +522,11 @@ const chainInfos = (
           coinImageUrl: "/tokens/juno.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.001,
+            average: 0.0025,
+            high: 0.004,
+          },
         },
         {
           type: "cw20",
@@ -710,7 +766,7 @@ const chainInfos = (
           coinGeckoId: "pool:nride",
           coinImageUrl: "/tokens/nride.svg",
         },
-         {
+        {
           type: "cw20",
           contractAddress:
             "juno1u8cr3hcjvfkzxcaacv9q75uw9hwjmn8pucc93pmy6yvkzz79kh3qncca8x",
@@ -720,7 +776,7 @@ const chainInfos = (
           coinDecimals: 6,
           coinGeckoId: "pool:fox",
           coinImageUrl: "/tokens/fox.svg",
-         },
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: "https://www.mintscan.io/juno/txs/{txHash}",
@@ -768,6 +824,11 @@ const chainInfos = (
           coinImageUrl: "/tokens/like.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
+          gasPriceStep: {
+            low: 1,
+            average: 10,
+            high: 1000,
+          },
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
@@ -792,6 +853,11 @@ const chainInfos = (
           coinImageUrl: "/tokens/ixo.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.015,
+            average: 0.025,
+            high: 0.04,
+          },
         },
       ],
       features: ["ibc-transfer"],
@@ -816,6 +882,11 @@ const chainInfos = (
           coinImageUrl: "/tokens/bcna.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.001,
+            average: 0.0025,
+            high: 0.01,
+          },
         },
       ],
       features: ["ibc-transfer"],
@@ -840,6 +911,11 @@ const chainInfos = (
           coinImageUrl: "/tokens/btsg.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
+          gasPriceStep: {
+            low: 3,
+            average: 10,
+            high: 20,
+          },
         },
         {
           coinDenom: "CLAY",
@@ -1038,6 +1114,11 @@ const chainInfos = (
           coinImageUrl: "/tokens/boot.png",
           isStakeCurrency: true,
           isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0,
+            average: 0,
+            high: 0.01,
+          },
         },
       ],
       features: ["ibc-transfer"],
@@ -1062,6 +1143,11 @@ const chainInfos = (
           coinImageUrl: "/tokens/cmdx.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0,
+            average: 0.025,
+            high: 0.04,
+          },
         },
         {
           coinDenom: "CMST",
@@ -1183,6 +1269,11 @@ const chainInfos = (
           coinImageUrl: "/tokens/lum.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.01,
+            average: 0.025,
+            high: 0.04,
+          },
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
@@ -1231,6 +1322,11 @@ const chainInfos = (
           coinImageUrl: "/tokens/dsm.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.01,
+            average: 0.03,
+            high: 0.05,
+          },
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
@@ -1308,6 +1404,11 @@ const chainInfos = (
           coinImageUrl: "/tokens/rowan.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
+          gasPriceStep: {
+            low: 1000000000000,
+            average: 1500000000000,
+            high: 2000000000000,
+          },
         },
       ],
       features: ["ibc-transfer"],
@@ -1380,6 +1481,11 @@ const chainInfos = (
           coinImageUrl: "/tokens/umee.png",
           isStakeCurrency: true,
           isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.05,
+            average: 0.06,
+            high: 0.1,
+          },
         },
       ],
       features: ["ibc-transfer"],
@@ -1442,6 +1548,12 @@ const chainInfos = (
           coinGeckoId: "pool:uusdc.grv",
           coinImageUrl: "/tokens/gusdc.png",
           pegMechanism: "collateralized",
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.0002,
+            average: 0.0005,
+            high: 0.0008,
+          },
         },
         {
           coinDenom: "DAI.grv",
@@ -1460,6 +1572,12 @@ const chainInfos = (
           coinGeckoId: "pool:uusdt.grv",
           coinImageUrl: "/tokens/gusdt.png",
           pegMechanism: "collateralized",
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.0002,
+            average: 0.0005,
+            high: 0.0008,
+          },
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
@@ -1534,9 +1652,9 @@ const chainInfos = (
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
-            low: 769.23077,
-            average: 769.23077,
-            high: 769.23077,
+            low: 1,
+            average: 1,
+            high: 1,
           },
         },
       ],
@@ -1564,9 +1682,9 @@ const chainInfos = (
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
-            low: 0.0005,
-            average: 0.0007,
-            high: 0.0009,
+            low: 500000000,
+            average: 700000000,
+            high: 900000000,
           },
         },
       ],
@@ -1646,6 +1764,11 @@ const chainInfos = (
           coinImageUrl: "/tokens/mntl.png",
           isStakeCurrency: true,
           isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.01,
+            average: 0.025,
+            high: 0.04,
+          },
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
@@ -1728,8 +1851,8 @@ const chainInfos = (
           isFeeCurrency: true,
           gasPriceStep: {
             low: 0.025,
-            average: 0.025,
-            high: 0.035,
+            average: 0.035,
+            high: 0.045,
           },
         },
       ],
@@ -1756,7 +1879,7 @@ const chainInfos = (
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
-            low: 10000000000,
+            low: 25000000000,
             average: 25000000000,
             high: 40000000000,
           },
@@ -1785,9 +1908,9 @@ const chainInfos = (
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
-            low: 0.15,
-            average: 0.2,
-            high: 0.25,
+            low: 0.015,
+            average: 0.025,
+            high: 0.04,
           },
         },
       ],
@@ -1842,6 +1965,11 @@ const chainInfos = (
           coinImageUrl: "/tokens/kava.png",
           isStakeCurrency: true,
           isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.05,
+            average: 0.1,
+            high: 0.25,
+          },
         },
         {
           coinDenom: "HARD",
@@ -1896,11 +2024,6 @@ const chainInfos = (
           },
         },
       ],
-      gasPriceStep: {
-        low: 999999999,
-        average: 1000000000,
-        high: 1000000001,
-      },
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://ping.pub/genesisL1/tx/{txHash}",
     },
@@ -2064,8 +2187,8 @@ const chainInfos = (
           isFeeCurrency: true,
           gasPriceStep: {
             low: 0.01,
-            average: 0.02,
-            high: 0.1,
+            average: 0.025,
+            high: 0.03,
           },
         },
       ],
@@ -2177,6 +2300,11 @@ const chainInfos = (
           coinImageUrl: "/tokens/bld.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.03,
+            average: 0.05,
+            high: 0.07,
+          },
         },
         {
           coinDenom: "IST",
@@ -2184,6 +2312,12 @@ const chainInfos = (
           coinDecimals: 6,
           coinGeckoId: "pool:uist",
           coinImageUrl: "/tokens/ist.svg",
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.0034,
+            average: 0.007,
+            high: 0.02,
+          },
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
@@ -2340,6 +2474,11 @@ const chainInfos = (
           coinImageUrl: "/tokens/lambda.png",
           isStakeCurrency: true,
           isFeeCurrency: true,
+          gasPriceStep: {
+            low: 10000000000,
+            average: 25000000000,
+            high: 40000000000,
+          },
         },
       ],
       features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
@@ -2393,6 +2532,11 @@ const chainInfos = (
           coinImageUrl: "/tokens/jkl.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.01,
+            average: 0.025,
+            high: 0.03,
+          },
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
@@ -2442,7 +2586,7 @@ const chainInfos = (
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
-            low: 10000000000,
+            low: 20000000000,
             average: 25000000000,
             high: 40000000000,
           },
@@ -2513,9 +2657,9 @@ const chainInfos = (
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
-            low: 1.0,
-            average: 5.0,
-            high: 10.0,
+            low: 0,
+            average: 0.0001,
+            high: 0.00025,
           },
         },
       ],
@@ -2569,8 +2713,8 @@ const chainInfos = (
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
-            low: 20000000000,
-            average: 25000000000,
+            low: 30000000000,
+            average: 35000000000,
             high: 40000000000,
           },
         },
@@ -2631,15 +2775,15 @@ const chainInfos = (
           isFeeCurrency: true,
           gasPriceStep: IS_TESTNET
             ? {
-              low: 0,
-              average: 0,
-              high: 0.025,
-            }
+                low: 0,
+                average: 0,
+                high: 0.025,
+              }
             : {
-              low: 0,
-              average: 0,
-              high: 0,
-            },
+                low: 0,
+                average: 0,
+                high: 0.01,
+              },
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
@@ -2667,8 +2811,8 @@ const chainInfos = (
           isFeeCurrency: true,
           gasPriceStep: {
             low: 1000000000000,
-            average: 1500000000000,
-            high: 2000000000000,
+            average: 2000000000000,
+            high: 3000000000000,
           },
         },
       ],
@@ -2719,7 +2863,7 @@ const chainInfos = (
           coinDecimals: 6,
           coinImageUrl: "/tokens/qregen.svg",
           coinGeckoId: "pool:uqregen",
-        }
+        },
       ],
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/quicksilver/txs/{txHash}",
@@ -2743,7 +2887,7 @@ const chainInfos = (
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
-            low: 0.0001,
+            low: 0,
             average: 0.025,
             high: 0.04,
           },
@@ -2820,7 +2964,7 @@ chainInfos.push({
       pegMechanism: "collateralized",
     },
     {
-      coinDenom: "wETH",
+      coinDenom: "ETH",
       coinMinimalDenom: "weth-wei",
       coinDecimals: 18,
       // coinGeckoId: "weth",
@@ -2908,7 +3052,7 @@ chainInfos.push({
       coinImageUrl: "/tokens/xcn.svg",
     },
     {
-      coinDenom: "wGLMR",
+      coinDenom: "GLMR",
       coinMinimalDenom: IS_TESTNET ? "wdev-wei" : "wglmr-wei",
       coinDecimals: 18,
       coinGeckoId: "wrapped-moonbeam",
@@ -2923,7 +3067,7 @@ chainInfos.push({
       coinImageUrl: "/tokens/dot.svg",
     },
     {
-      coinDenom: "wBNB",
+      coinDenom: "BNB",
       coinMinimalDenom: "wbnb-wei",
       coinDecimals: 18,
       //coinGeckoId: "wbnb",
@@ -2931,7 +3075,7 @@ chainInfos.push({
       coinImageUrl: "/tokens/bnb.svg",
     },
     {
-      coinDenom: "wMATIC",
+      coinDenom: "MATIC",
       coinMinimalDenom: "wmatic-wei",
       coinDecimals: 18,
       //coinGeckoId: "wmatic",
@@ -2947,7 +3091,7 @@ chainInfos.push({
       coinImageUrl: "/tokens/busd.svg",
     },
     {
-      coinDenom: "wAVAX",
+      coinDenom: "AVAX",
       coinMinimalDenom: "wavax-wei",
       coinDecimals: 18,
       //coinGeckoId: "avalanche-2",
@@ -2955,7 +3099,7 @@ chainInfos.push({
       coinImageUrl: "/tokens/avax.svg",
     },
     {
-      coinDenom: "wFTM",
+      coinDenom: "FTM",
       coinMinimalDenom: "wftm-wei",
       coinDecimals: 18,
       //coinGeckoId: "fantom",
@@ -2990,15 +3134,15 @@ chainInfos.push({
   ],
   gasPriceStep: IS_TESTNET
     ? {
-      low: 0.007,
-      average: 0.125,
-      high: 0.2,
-    }
+        low: 0.007,
+        average: 0.125,
+        high: 0.2,
+      }
     : {
-      low: 0.00005,
-      average: 0.00007,
-      high: 0.00009,
-    },
+        low: 0.007,
+        average: 0.007,
+        high: 0.01,
+      },
   features: ["ibc-transfer", "ibc-go"],
   explorerUrlToTx: IS_TESTNET
     ? "https://testnet.axelarscan.io/tx/{txHash}"

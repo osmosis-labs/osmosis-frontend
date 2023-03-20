@@ -62,6 +62,16 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
     return this.incentivizedPools.includes(poolId);
   });
 
+  readonly isGaugeIdInternalIncentive = computedFn((gaugeId: string) => {
+    if (!this.response) {
+      return false;
+    }
+
+    return this.response.data.incentivized_pools.some(
+      (incentivizedPool) => incentivizedPool.gauge_id === gaugeId
+    );
+  });
+
   /** Internal incentives (OSMO). */
   readonly getIncentivizedGaugeId = computedFn(
     (poolId: string, duration: Duration): string | undefined => {
@@ -448,15 +458,12 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
 
   @computed
   get isAprFetching(): boolean {
-    if (
+    return (
       this.queryPools.isFetching ||
       (!this.queryMintParmas.response && !this.queryPools.error) ||
       (!this.queryEpochs.response && !this.queryEpochs.error) ||
       (!this.queryDistrInfo.response && !this.queryDistrInfo.error) ||
       (!this.queryEpochProvision.response && !this.queryEpochProvision.error)
-    ) {
-      return true;
-    }
-    return false;
+    );
   }
 }

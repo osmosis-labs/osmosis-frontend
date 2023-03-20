@@ -1,4 +1,5 @@
 import EventEmitter, { ValidEventTypes } from "eventemitter3";
+
 import { Alert } from "../components/alert";
 
 export type WalletKey = "metamask" | "walletconnect";
@@ -10,8 +11,8 @@ export type WalletDisplay = {
 
 export type GeneralTxEvent = "pending" | "confirmed" | "failed";
 
-/** Generalized non-Keplr wallet & client. */
-export interface Wallet<
+/** Generalized non-Keplr wallet & client, made observable by MobX. */
+export interface ObservableWallet<
   TTxSend = unknown,
   TSendingMsg = unknown,
   TTxEvents extends ValidEventTypes = GeneralTxEvent

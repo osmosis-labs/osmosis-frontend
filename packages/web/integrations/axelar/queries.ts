@@ -6,8 +6,9 @@ export type TransferStep = {
     | "axelar"
     | "Vote"
     | "RouteIBCTransfersRequest"
+    | "evm"
     | string;
-  status: "success" | string;
+  status: "executed" | string;
   created_at: {
     ms: number;
   };
@@ -20,7 +21,15 @@ export type TransferStep = {
  */
 export type TransferStatus = Array<{
   id: string;
+  type?: "wrap" | "deposit_address";
   /** Axelarscan: SEND ASSET */
+  wrap?: TransferStep & {
+    tx_hash: string;
+    source_chain: string;
+    destination_chain: string;
+    ts_hash_wrap: string;
+    sender_address: string;
+  };
   send?: TransferStep & {
     /** Decimal amount. Displayed by Axelarscan (doesn't sub fees). */
     amount: number;

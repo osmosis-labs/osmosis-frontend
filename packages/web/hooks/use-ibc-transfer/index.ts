@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { AmountConfig } from "@keplr-wallet/hooks";
 import {
   AccountSetBase,
   CosmosAccount,
@@ -8,15 +8,16 @@ import {
 } from "@keplr-wallet/stores";
 import {
   basicIbcTransfer,
-  OsmosisAccount,
   IBCTransferHistory,
+  OsmosisAccount,
   UncommitedHistory,
 } from "@osmosis-labs/stores";
-import { AmountConfig } from "@keplr-wallet/hooks";
+import { useCallback, useEffect } from "react";
+
 import { useStore } from "../../stores";
+import { useAmountConfig, useFakeFeeConfig } from "..";
+import { CustomCounterpartyConfig, IbcTransfer } from ".";
 import { useCustomBech32Address } from "./use-custom-bech32address";
-import { IbcTransfer, CustomCounterpartyConfig } from ".";
-import { useFakeFeeConfig, useAmountConfig } from "..";
 
 /**
  * Convenience hook for handling IBC transfer state. Supports user setting custom & validated bech32 counterparty address when withdrawing.
@@ -141,60 +142,76 @@ export function useIbcTransfer({
     ) => void,
     onBroadcasted?: (event: Omit<UncommitedHistory, "createdAt">) => void,
     onFailure?: (txHash: string, code: number) => void
-  ) => void = async (onFulfill, onBroadcasted, onFailure) => {
-    try {
-      if (isWithdraw) {
-        await basicIbcTransfer(
-          {
-            account,
-            chainId,
-            channelId: sourceChannelId,
-          },
-          {
-            account:
-              customBech32Address !== ""
-                ? customBech32Address
-                : counterpartyAccount,
-            chainId: counterpartyChainId,
-            channelId: destChannelId,
-          },
-          amountConfig,
-          onBroadcasted,
-          onFulfill,
-          onFailure
-        );
-      } else {
-        await basicIbcTransfer(
-          {
-            account: counterpartyAccount,
-            chainId: counterpartyChainId,
-            channelId: destChannelId,
-            contractTransfer:
-              ics20ContractAddress &&
-              currency.originCurrency &&
-              "contractAddress" in currency.originCurrency
-                ? {
-                    contractAddress: currency.originCurrency["contractAddress"],
-                    cosmwasmAccount: counterpartyAccount,
-                    ics20ContractAddress: ics20ContractAddress,
-                  }
-                : undefined,
-          },
-          {
-            account,
-            chainId,
-            channelId: sourceChannelId,
-          },
-          amountConfig,
-          onBroadcasted,
-          onFulfill,
-          onFailure
-        );
+  ) => void = useCallback(
+    async (onFulfill, onBroadcasted, onFailure) => {
+      try {
+        if (isWithdraw) {
+          await basicIbcTransfer(
+            {
+              account,
+              chainId,
+              channelId: sourceChannelId,
+            },
+            {
+              account:
+                customBech32Address !== ""
+                  ? customBech32Address
+                  : counterpartyAccount,
+              chainId: counterpartyChainId,
+              channelId: destChannelId,
+            },
+            amountConfig,
+            onBroadcasted,
+            onFulfill,
+            onFailure
+          );
+        } else {
+          await basicIbcTransfer(
+            {
+              account: counterpartyAccount,
+              chainId: counterpartyChainId,
+              channelId: destChannelId,
+              contractTransfer:
+                ics20ContractAddress &&
+                currency.originCurrency &&
+                "contractAddress" in currency.originCurrency
+                  ? {
+                      contractAddress:
+                        currency.originCurrency["contractAddress"],
+                      cosmwasmAccount: counterpartyAccount,
+                      ics20ContractAddress: ics20ContractAddress,
+                    }
+                  : undefined,
+            },
+            {
+              account,
+              chainId,
+              channelId: sourceChannelId,
+            },
+            amountConfig,
+            onBroadcasted,
+            onFulfill,
+            onFailure
+          );
+        }
+      } catch (e) {
+        console.error(e);
       }
-    } catch (e) {
-      console.error(e);
-    }
-  };
+    },
+    [
+      isWithdraw,
+      account,
+      amountConfig,
+      chainId,
+      counterpartyAccount,
+      currency.originCurrency,
+      counterpartyChainId,
+      customBech32Address,
+      destChannelId,
+      ics20ContractAddress,
+      sourceChannelId,
+    ]
+  );
 
   return [
     account,

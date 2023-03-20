@@ -1,17 +1,17 @@
-import { FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { useStore } from "../stores";
-import { Transfer } from "../components/complex/transfer";
+import { FunctionComponent, useState } from "react";
+import { useTranslation } from "react-multi-lang";
 
+import { Transfer } from "../components/complex/transfer";
+import { EventName } from "../config";
 import {
   IbcTransfer,
-  useIbcTransfer,
-  useConnectWalletModalRedirect,
   useAmplitudeAnalytics,
+  useConnectWalletModalRedirect,
+  useIbcTransfer,
 } from "../hooks";
-import { EventName } from "../config";
+import { useStore } from "../stores";
 import { ModalBase, ModalBaseProps } from ".";
-import { useTranslation } from "react-multi-lang";
 
 export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
   observer((props) => {
@@ -80,10 +80,6 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
             transfer(
               (txFullfillEvent) => {
                 // success
-                ibcTransferHistoryStore.pushPendingHistory(txFullfillEvent);
-                props.onRequestClose();
-              },
-              (txBroadcastEvent) => {
                 logEvent([
                   isWithdraw
                     ? EventName.Assets.withdrawAssetCompleted
@@ -94,7 +90,14 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                     bridge: "IBC",
                   },
                 ]);
+                ibcTransferHistoryStore.pushPendingHistory(txFullfillEvent);
+                props.onRequestClose();
+              },
+              (txBroadcastEvent) => {
                 ibcTransferHistoryStore.pushUncommitedHistory(txBroadcastEvent);
+              },
+              (txHash) => {
+                ibcTransferHistoryStore.removeUncommittedHistory(txHash);
               }
             );
           },
@@ -138,7 +141,6 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                     networkName: chainStore.getChain(osmosisChainId).chainName,
                     iconUrl: "/tokens/osmo.svg",
                   },
-                  undefined,
                   {
                     address: counterpartyAccount.bech32Address,
                     networkName:
@@ -153,7 +155,6 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                       chainStore.getChain(counterpartyChainId).chainName,
                     iconUrl: currency.coinImageUrl,
                   },
-                  undefined,
                   {
                     address: account.bech32Address,
                     networkName: chainStore.getChain(osmosisChainId).chainName,
@@ -186,7 +187,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                 }
               : undefined
           }
-          disablePanel={!walletConnected}
+          disabled={!walletConnected}
           toggleIsMax={() => amountConfig.toggleIsMax()}
           currentValue={amountConfig.amount}
           onInput={(value) => amountConfig.setAmount(value)}

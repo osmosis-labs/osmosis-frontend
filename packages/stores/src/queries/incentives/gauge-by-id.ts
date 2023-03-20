@@ -49,7 +49,6 @@ export class ObservableQueryGauge extends ObservableChainQuery<GaugeById> {
       gauge.id
     );
     queryGauge.setRaw(gauge);
-    queryGauge.allowFetch();
     return queryGauge;
   }
 

@@ -14,16 +14,15 @@ import { BridgeAnimation } from "../animation/bridge";
 import { GradientView } from "../assets/gradient-view";
 import { Button } from "../buttons";
 import { SwitchWalletButton } from "../buttons/switch-wallet";
-import { CheckBox } from "../control";
+import { CheckBox, MenuToggle } from "../control";
 import { InputBox } from "../input";
-import { Disableable, InputProps, LoadingProps } from "../types";
+import { Disableable, InputProps } from "../types";
 
 export type TransferProps = {
   isWithdraw: boolean;
   /** If there is a bridge it is assumed there is a nonKeplr wallet and the switch button will be shown. */
   transferPath: [
     { address: string; networkName: string; iconUrl?: string },
-    ({ bridgeName: string; bridgeIconUrl?: string } & LoadingProps) | undefined,
     { address: string; networkName: string; iconUrl?: string }
   ];
   selectedWalletDisplay?: WalletDisplay;
@@ -39,10 +38,16 @@ export type TransferProps = {
   };
   warningMessage?: string;
   toggleIsMax: () => void;
-  transferFee?: CoinPretty;
+  toggleUseWrappedConfig?: {
+    isUsingWrapped: boolean;
+    setIsUsingWrapped: (isUsingWrapped: boolean) => void;
+    nativeDenom: string;
+    wrapDenom: string;
+  };
   /** Required, can be hardcoded estimate. */
+  transferFee?: CoinPretty;
+  gasCost?: CoinPretty;
   waitTime: string;
-  disablePanel?: boolean;
 } & InputProps<string> &
   Disableable;
 
@@ -50,7 +55,7 @@ export type TransferProps = {
 export const Transfer: FunctionComponent<TransferProps> = observer(
   ({
     isWithdraw,
-    transferPath: [from, bridge, to],
+    transferPath: [from, to],
     selectedWalletDisplay,
     isOsmosisAccountLoaded,
     onRequestSwitchWallet,
@@ -60,9 +65,11 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
     editWithdrawAddrConfig,
     warningMessage,
     toggleIsMax,
+    toggleUseWrappedConfig,
     transferFee,
+    gasCost,
     waitTime,
-    disablePanel = false,
+    disabled = false,
   }) => {
     const { queriesExternalStore } = useStore();
     const { isMobile } = useWindowSize();
@@ -79,8 +86,6 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
         }, 5000);
       }
     }, [showCopied, setShowCopied]);
-
-    const panelDisabled = disablePanel || bridge?.isLoading || false;
 
     const maxFromChars = isEditingWithdrawAddr
       ? 13 // can't be on mobile
@@ -116,15 +121,43 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
     );
 
     return (
-      <div className="flex flex-col gap-11 overflow-x-auto">
+      <div className="flex flex-col gap-11 overflow-x-auto md:gap-4">
+        {toggleUseWrappedConfig && (
+          <div className="mx-auto w-fit pt-[10px]">
+            <MenuToggle
+              options={[
+                {
+                  id: toggleUseWrappedConfig.nativeDenom,
+                  display: toggleUseWrappedConfig.nativeDenom,
+                },
+                {
+                  id: toggleUseWrappedConfig.wrapDenom,
+                  display: toggleUseWrappedConfig.wrapDenom,
+                },
+              ]}
+              onSelect={(id) => {
+                toggleUseWrappedConfig.setIsUsingWrapped(
+                  id === toggleUseWrappedConfig.wrapDenom
+                );
+              }}
+              selectedOptionId={
+                toggleUseWrappedConfig.isUsingWrapped
+                  ? toggleUseWrappedConfig.wrapDenom
+                  : toggleUseWrappedConfig.nativeDenom
+              }
+            />
+          </div>
+        )}
         <BridgeAnimation
-          className={`mx-auto ${bridge ? "mt-4 -mb-2 md:-mb-6" : "mt-6 -mb-4"}`}
-          transferPath={[from, bridge, to]}
+          className={`mx-auto ${
+            toggleUseWrappedConfig ? "mt-0" : "mt-6 -mb-4"
+          }`}
+          transferPath={[from, to]}
         />
         <div
           className={classNames(
             "body1 flex gap-4 text-osmoverse-400 transition-opacity duration-300 md:gap-2",
-            { "opacity-30": panelDisabled }
+            { "opacity-30": disabled }
           )}
         >
           <div
@@ -136,7 +169,7 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
               }
             )}
           >
-            {!(isMobile && isEditingWithdrawAddr) && !panelDisabled && (
+            {!(isMobile && isEditingWithdrawAddr) && !disabled && (
               <div
                 className="md:caption mx-auto flex flex-wrap items-center justify-center gap-2"
                 title={from.address}
@@ -152,12 +185,12 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
                   truncateEthAddress(from.address)
                 )}
                 {from.address.length > 0 &&
-                  !from.address.startsWith("osmo") &&
+                  !from.address.includes("osmo") &&
                   selectedWalletDisplay && (
                     <SwitchWalletButton
                       selectedWalletIconUrl={selectedWalletDisplay.iconUrl}
                       onClick={() => onRequestSwitchWallet?.()}
-                      disabled={panelDisabled}
+                      disabled={disabled}
                     />
                   )}
               </div>
@@ -174,7 +207,7 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
           >
             <div className="md:caption mx-auto flex flex-wrap items-center justify-center gap-2">
               {!isEditingWithdrawAddr &&
-                !panelDisabled &&
+                !disabled &&
                 (!to.address.startsWith("0x") || to.address.length === 0 ? (
                   isOsmosisAccountLoaded ? (
                     <span title={toAddressToDisplay}>
@@ -191,17 +224,17 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
                   truncateEthAddress(to.address)
                 ))}
               {to.address.length > 0 &&
-              !to.address.startsWith("osmo") &&
+              !to.address.includes("osmo") &&
               selectedWalletDisplay ? (
                 <SwitchWalletButton
                   selectedWalletIconUrl={selectedWalletDisplay.iconUrl}
                   onClick={() => onRequestSwitchWallet?.()}
-                  disabled={panelDisabled}
+                  disabled={disabled}
                 />
               ) : undefined}
               {isWithdraw &&
                 editWithdrawAddrConfig &&
-                !panelDisabled &&
+                !disabled &&
                 !isEditingWithdrawAddr && (
                   <Button
                     mode="amount"
@@ -218,7 +251,7 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
                   className="w-full"
                   style="no-border"
                   currentValue={editWithdrawAddrConfig.customAddress}
-                  disabled={panelDisabled}
+                  disabled={disabled}
                   onInput={(value) => {
                     editWithdrawAddrConfig.setDidAckWithdrawRisk(false);
                     editWithdrawAddrConfig.setCustomAddress(value);
@@ -240,7 +273,7 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
         <div
           className={classNames(
             "flex flex-col gap-4 transition-opacity duration-300",
-            { "opacity-30": panelDisabled }
+            { "opacity-30": disabled }
           )}
         >
           <div className="flex flex-col gap-3">
@@ -255,9 +288,7 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
               <div
                 className={classNames(
                   "caption text-xs text-white-high transition-opacity",
-                  availableBalance && availableBalance.isReady
-                    ? "opacity-100"
-                    : "opacity-0"
+                  availableBalance ? "opacity-100" : "opacity-0"
                 )}
               >
                 {isMobile
@@ -288,7 +319,10 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
             {transferFee && (
               <div className="flex place-content-between items-center">
                 <span>{t("assets.transfer.transferFee")}</span>
-                <span>{transferFee!.trim(true).toString()}</span>
+                <span>
+                  {transferFee!.trim(true).toString()}
+                  {gasCost && ` + ${gasCost.trim(true).toString()}`}
+                </span>
               </div>
             )}
             <div className="flex place-content-between items-center">

@@ -10,7 +10,7 @@ export interface AxelarBridgeConfig {
    *  See this FigJam for axlUSDC case:
    *  https://www.figma.com/file/utRjpBIvD7sRm31vxif7hF/Bridge-Integration-Diagram?node-id=340%3A935
    */
-  sourceChains: SourceChainConfig[];
+  sourceChainTokens: SourceChainTokenConfig[];
   /** Default source chain to be selected. Defaults to first in `sourceChains` if left `undefined`. */
   defaultSourceChainId?: SourceChain;
   /** Ex: `uusdc`. NOTE: Will get currency info from `originCurrency` on the IBC balance (from registrar).
@@ -54,7 +54,7 @@ export const AxelarChainIds_SourceChainMap: {
       Polygon: "Polygon",
     };
 
-export type SourceChainConfig = {
+export type SourceChainTokenConfig = {
   /** Source Chain identifier. */
   id: SourceChain;
 
@@ -72,4 +72,20 @@ export type SourceChainConfig = {
   };
 
   logoUrl: string;
+
+  /** If this **EVM** token is auto-wrappable by Axelar, specify the native token.
+   *  The token on Osmosis is assumed to be the wrapped version of the native token, but labelled as the native token.
+   *  Assume we're transferring native token, since it's the gas token as well and generally takes precedence.
+   *
+   *  i.e. ETH for WETH, BNB for WBNB, etc.
+   *
+   *  Specified per Axelar bridged token & network due to each token having a single source chain ERC20 instance.
+   */
+  nativeWrapEquivalent?: {
+    /** Used as key for Axelar JS-SDK/APIs, only when *transfering TO* Osmosis (depositing).
+     * See (unofficial): https://github.com/axelarnetwork/axelarjs-sdk/blob/302cb4673e0293b707d3401ad141be5e9cec2bbf/src/libs/types/index.ts#L122 */
+    tokenMinDenom: string;
+    /** Wrap denom (e.g. WETH), since it's assumed we're labeling Osmosis balance as native. */
+    wrapDenom: string;
+  };
 };

@@ -40,6 +40,7 @@ export class DerivedDataStore {
     this.poolDetails = new ObservablePoolDetails(
       this.osmosisChainId,
       this.queriesStore,
+      this.externalQueries,
       this.accountStore,
       this.priceStore
     );

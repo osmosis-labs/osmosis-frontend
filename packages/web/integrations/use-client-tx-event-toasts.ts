@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo } from "react";
 
 import { displayToast as _displayToast, ToastType } from "../components/alert";
-import { GeneralTxEvent, Wallet } from "./wallets";
+import { GeneralTxEvent, ObservableWallet } from "./wallets";
 
 /** Displays toasts messages for a non-inter chain client. Presents block explorer urls.
  *  @param client Memoized ref to client.
  */
 export function useTxEventToasts(
-  client?: Pick<Wallet, "txStatusEventEmitter" | "makeExplorerUrl">
+  client?: Pick<ObservableWallet, "txStatusEventEmitter" | "makeExplorerUrl">
 ) {
   const displayToast = useCallback(
     (status: GeneralTxEvent, txHash?: string) =>
