@@ -608,7 +608,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "junoswap-raw-dao",
           coinGeckoId: "pool:raw",
-          coinImageUrl: "/tokens/raw.png",
+          coinImageUrl: "/tokens/raw.svg",
         },
         {
           type: "cw20",
