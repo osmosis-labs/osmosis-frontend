@@ -1500,7 +1500,7 @@ export const IBCAssetInfos: (IBCAsset & {
         counterpartyChainId: "arkh",
         sourceChannelId: "channel-648",
         destChannelId: "channel-12",
-        coinMinimalDenom: "uarkh",
+        coinMinimalDenom: "arkh",
       },
     ].filter((ibcAsset) => {
       // validate IBC asset config
