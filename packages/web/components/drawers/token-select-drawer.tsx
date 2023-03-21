@@ -76,6 +76,12 @@ export const TokenSelectDrawer: FunctionComponent<{
     const [tokens, setTokens] = useState(tokensProp);
     const [isRequestingClose, setIsRequestingClose] = useState(false);
 
+    // Only update tokens while not requesting to close
+    useEffect(() => {
+      if (isRequestingClose) return;
+      setTokens(tokensProp);
+    }, [isRequestingClose, tokensProp]);
+
     const [_searchValue, setTokenSearch, searchedTokens] = useFilteredData(
       tokens,
       [
@@ -104,19 +110,11 @@ export const TokenSelectDrawer: FunctionComponent<{
 
     const onSelect = (coinDenom: string) => {
       onSelectProp?.(coinDenom);
-      onClose?.();
+      onClose();
     };
 
-    // Only update tokens while not requesting to close
-    useEffect(() => {
-      if (isRequestingClose) return;
-      setTokens(tokensProp);
-    }, [isRequestingClose, tokensProp]);
-
     useWindowKeyActions({
-      Escape: () => {
-        onClose?.();
-      },
+      Escape: onClose,
     });
 
     const { handleKeyDown: containerKeyDown } = useKeyActions({
@@ -303,6 +301,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                         .hideDenom(true)
                         .maxDecimals(8)
                         .trim(true)
+                        .locale(false)
                         .toString()
                     : undefined;
                 const tokenPrice =
