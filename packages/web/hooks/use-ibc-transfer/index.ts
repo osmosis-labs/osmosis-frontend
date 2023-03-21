@@ -163,7 +163,7 @@ export function useIbcTransfer({
         if (isWithdraw) {
           await basicIbcTransfer(
             {
-              account,
+              account: account as any,
               chainId,
               channelId: sourceChannelId,
             },
@@ -171,7 +171,7 @@ export function useIbcTransfer({
               account:
                 customBech32Address !== ""
                   ? customBech32Address
-                  : counterpartyAccount,
+                  : (counterpartyAccount as any),
               chainId: counterpartyChainId,
               channelId: destChannelId,
             },
@@ -183,7 +183,7 @@ export function useIbcTransfer({
         } else {
           await basicIbcTransfer(
             {
-              account: counterpartyAccount,
+              account: counterpartyAccount as any,
               chainId: counterpartyChainId,
               channelId: destChannelId,
               contractTransfer:
@@ -193,13 +193,13 @@ export function useIbcTransfer({
                   ? {
                       contractAddress:
                         currency.originCurrency["contractAddress"],
-                      cosmwasmAccount: counterpartyAccount,
+                      cosmwasmAccount: counterpartyAccount as any,
                       ics20ContractAddress: ics20ContractAddress,
                     }
                   : undefined,
             },
             {
-              account,
+              account: account as any,
               chainId,
               channelId: sourceChannelId,
             },

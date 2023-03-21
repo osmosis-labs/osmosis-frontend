@@ -283,11 +283,11 @@ const MyPoolsSection = observer(() => {
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
-  const account = accountStore.getAccount(chainId);
+  const account = accountStore.getWallet(chainId);
 
   // my pools
   const myPoolIds = queryOsmosis.queryGammPoolShare.getOwnPools(
-    account.bech32Address
+    account?.address ?? ""
   );
   const poolCountShowMoreThreshold = isMobile ? 3 : 6;
   const myPools = useMemo(
@@ -315,7 +315,7 @@ const MyPoolsSection = observer(() => {
         if (!_queryPool) return;
         return pool.totalValueLocked.mul(
           queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
-            account.bech32Address,
+            account?.address ?? "",
             _queryPool.id
           )
         );

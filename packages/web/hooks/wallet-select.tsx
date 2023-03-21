@@ -1,4 +1,5 @@
 import { SimpleAccount } from "@cosmos-kit/core";
+import { cosmosKitLocalStorageKey } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import {
   FunctionComponent,
@@ -41,7 +42,7 @@ export const WalletSelectProvider: FunctionComponent = observer(
       // Try to reconnect to wallet if user has changed account for current wallet
       const tryReconnectToWallet = () => {
         const accountsStr = window.localStorage.getItem(
-          "cosmos-kit@1:core//accounts"
+          cosmosKitLocalStorageKey
         );
 
         if (accountsStr) {
@@ -59,7 +60,7 @@ export const WalletSelectProvider: FunctionComponent = observer(
           tryReconnectToWallet
         );
       };
-    }, []);
+    }, [accountStore]);
 
     const setUserAmplitudeProperties = useCallback(() => {
       const wallet = accountStore.getWallet(chainId);
@@ -74,7 +75,7 @@ export const WalletSelectProvider: FunctionComponent = observer(
       return () => {
         accountStore.walletManager.onUnmounted();
       };
-    }, []);
+    }, [accountStore.walletManager, setUserAmplitudeProperties]);
 
     const onOpenWalletSelect = useCallback((chainName: string) => {
       setIsWalletSelectOpen(true);

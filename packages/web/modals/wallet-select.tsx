@@ -125,7 +125,7 @@ const ModalContent: FunctionComponent<
 
   const onConnect = (sync: boolean, wallet?: ChainWalletBase) => {
     if (!wallet) return;
-    wallet.connect(undefined, undefined, sync).then(() => {
+    wallet.connect(sync).then(() => {
       onConnectProp?.();
     });
   };
@@ -379,10 +379,7 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
             <div className="absolute inset-0 rounded-xl bg-white-high/80" />
             <QRCode value="https//" size={260} />
             <div className="absolute inset-0 flex items-center justify-center">
-              <Button
-                className="w-fit"
-                onClick={() => wallet?.connect(undefined, undefined, false)}
-              >
+              <Button className="w-fit" onClick={() => wallet?.connect(false)}>
                 {t("walletSelect.refresh")}
               </Button>
             </div>

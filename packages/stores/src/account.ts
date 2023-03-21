@@ -49,6 +49,8 @@ const aminoConverters = {
   ...osmosisAminoConverters,
 };
 
+export const cosmosKitLocalStorageKey = "cosmos-kit@1:core//accounts";
+
 const registry = new Registry(protoRegistry);
 const aminoTypes = new AminoTypes(aminoConverters);
 export class AccountStore<Injects extends Record<string, any>[] = []> {
@@ -92,9 +94,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         aminoTypes,
       }),
     },
-    undefined,
     {
-      duration: Infinity,
+      isLazy: true,
+    },
+    {
+      duration: 31556926000, // 1 year
+      callback() {
+        window?.localStorage.removeItem(cosmosKitLocalStorageKey);
+      },
     }
   );
 
@@ -340,7 +347,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     const rpcEndpoint = await wallet?.getRpcEndpoint();
 
-    const txTracer = new TxTracer(rpcEndpoint ?? "", "/websocket");
+    const txTracer = new TxTracer((rpcEndpoint as string) ?? "", "/websocket");
 
     txTracer.traceTx(txHash).then((tx) => {
       txTracer.close();
