@@ -44,7 +44,8 @@ import {
   AxelarChainIds_SourceChainMap,
   waitByTransferFromSourceChain,
 } from ".";
-import { useDepositAddress, useTransferFeeQuery } from "./hooks";
+import { useTransferFeeQuery } from "./hooks";
+import { useAxelarConfig } from "./hooks/use-axelar-config";
 
 /** Axelar-specific bridge transfer integration UI. */
 const AxelarTransfer: FunctionComponent<
@@ -295,18 +296,30 @@ const AxelarTransfer: FunctionComponent<
       (AxelarChainIds_SourceChainMap[selectedSourceChainAxelarKey] ??
         selectedSourceChainAxelarKey);
 
-    const { depositAddress, isLoading: isDepositAddressLoading } =
-      useDepositAddress(
-        sourceChain,
-        destChain,
-        isWithdraw || correctChainSelected ? accountAddress : undefined,
-        !isWithdraw && useNativeToken
-          ? sourceChainConfig!.nativeWrapEquivalent!.tokenMinDenom
-          : originCurrency.coinMinimalDenom, // evm -> osmosis uses the native denom if native (autowrap) selected
-        isWithdraw ? useNativeToken : undefined,
-        isTestNet ? Environment.TESTNET : Environment.MAINNET,
-        isWithdraw ? balanceOnOsmosis.balance.toDec().gt(new Dec(0)) : true
-      );
+    const axelar = useAxelarConfig(
+      isTestNet ? Environment.TESTNET : Environment.MAINNET
+    );
+
+    const useGeneratedAddress =
+      accountAddress &&
+      (!isWithdraw ||
+        (balanceOnOsmosis.balance.toDec().gt(new Dec(0)) &&
+          correctChainSelected));
+    const observable = useGeneratedAddress
+      ? axelar.getGeneratedAddress(
+          sourceChain,
+          destChain,
+          accountAddress,
+          !isWithdraw && useNativeToken
+            ? sourceChainConfig!.nativeWrapEquivalent!.tokenMinDenom
+            : originCurrency.coinMinimalDenom, // evm -> osmosis uses the native denom if native (autowrap) selected
+          isWithdraw ? useNativeToken : undefined
+        )
+      : undefined;
+
+    const depositAddress =
+      observable?.state === "fulfilled" ? observable.value : undefined;
+    const isDepositAddressLoading = observable?.state === "pending";
 
     // notify user they are withdrawing into a different account then they last deposited to
     const [lastDepositAccountAddress, setLastDepositAccountAddress] =
