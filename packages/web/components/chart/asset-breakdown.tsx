@@ -62,7 +62,7 @@ export const AssetBreakdownChart: FunctionComponent<{
             <h6 className="md:subtitle2 text-osmoverse-100">
               {amount.toDec().round().gt(new Int(0))
                 ? amount.maxDecimals(0).hideDenom(true).toString()
-                : amount.hideDenom(true).toString()}
+                : amount.maxDecimals(8).hideDenom(true).toString()}
             </h6>
           </div>
           <div
