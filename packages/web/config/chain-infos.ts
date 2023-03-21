@@ -2908,10 +2908,10 @@ const chainInfos = (
       currencies: [
         {
           coinDenom: "ARKH",
-          coinMinimalDenom: "uarkh",
+          coinMinimalDenom: "arkh",
           coinDecimals: 6,
           coinImageUrl: "/tokens/arkh.png",
-          coinGeckoId: "pool:uarkh",
+          coinGeckoId: "pool:arkh",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
