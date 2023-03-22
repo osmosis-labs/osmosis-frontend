@@ -1708,7 +1708,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "cerberus-2",
           coinGeckoId: "pool:ucrbrus",
-          coinImageUrl: "/tokens/crbrus.png",
+          coinImageUrl: "/tokens/crbrus.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
         },
