@@ -1,4 +1,4 @@
-import { Dec, Int } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 
 import { SwapStrategy } from "./swap-strategy";
 import {

@@ -1,4 +1,4 @@
-import { Dec, Int } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 
 import { OneForZeroStrategy } from "./one-for-zero";
 import { ZeroForOneStrategy } from "./zero-for-one";

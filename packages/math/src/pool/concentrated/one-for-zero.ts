@@ -1,4 +1,4 @@
-import { Dec, Int } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 
 import { maxSqrtRatio } from "./const";
 import { SwapStrategy } from "./swap-strategy";
