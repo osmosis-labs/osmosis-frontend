@@ -142,8 +142,12 @@ export class ZeroForOneStrategy implements SwapStrategy {
     };
   }
 
-  initTickValue(curTick: Int): Int {
-    return curTick.add(new Int(1));
+  initTickValue(curTick: number): number {
+    return curTick + 1;
+  }
+
+  nextInitializedTickIndex(index: number): number {
+    return index + 1;
   }
 
   validatePriceLimit(sqrtPriceLimit: Dec, curSqrtPrice: Dec): boolean {

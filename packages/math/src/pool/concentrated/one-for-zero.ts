@@ -137,8 +137,12 @@ export class OneForZeroStrategy implements SwapStrategy {
     };
   }
 
-  initTickValue(curTick: Int): Int {
+  initTickValue(curTick: number): number {
     return curTick;
+  }
+
+  nextInitializedTickIndex(index: number): number {
+    return index - 1;
   }
 
   validatePriceLimit(sqrtPriceLimit: Dec, curSqrtPrice: Dec): boolean {

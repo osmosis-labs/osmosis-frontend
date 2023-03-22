@@ -3,7 +3,8 @@ import { Coin, Dec, Int } from "@keplr-wallet/unit";
 import { maxSpotPrice, minSpotPrice, smallestDec } from "./const";
 import { TickOverflowError } from "./errors";
 import { makeSwapStrategy } from "./swap-strategy";
-import { sqrtPriceToTick, tickToSqrtPrice } from "./tick";
+import { tickToSqrtPrice } from "./tick";
+import { TickWithNetLiquidity } from "./types";
 import { addLiquidity, approxSqrt } from "./utils";
 
 export const ConcentratedLiquidityMath = {
@@ -16,7 +17,6 @@ interface SwapState {
   amountRemaining: Dec;
   amountCalculated: Dec;
   sqrtPrice: Dec;
-  tick: Int;
   liquidity: Dec;
   feeGrowthGlobal: Dec;
 }
@@ -25,8 +25,7 @@ function calcOutGivenIn(
   tokenIn: Coin,
   tokenDenom0: string,
   poolLiquidity: Dec,
-  tickDepths: Int[],
-  curTickIndex: number,
+  inittedTicksWithNetLiquidity: TickWithNetLiquidity[],
   curTick: Int,
   curSqrtPrice: Dec,
   precisionFactorAtPriceOne: number,
@@ -44,30 +43,41 @@ function calcOutGivenIn(
   const swapStrategy = makeSwapStrategy(isZeroForOne, sqrtPriceLimit, swapFee);
   const tokenInAmountSpecified = new Dec(tokenIn.amount);
 
+  const curTickWithNetLiq = inittedTicksWithNetLiquidity.find(({ tickIndex }) =>
+    tickIndex.equals(curTick)
+  );
+  if (!curTickWithNetLiq) {
+    throw new Error("curTickNet not found in inittedTicksWithNetLiquidity");
+  }
+  let curTickArrIndex = inittedTicksWithNetLiquidity.indexOf(curTickWithNetLiq);
+  if (curTickArrIndex < 0) {
+    throw new Error(
+      "curTickWithNetLiq not found in inittedTicksWithNetLiquidity"
+    );
+  }
+  curTickArrIndex = swapStrategy.initTickValue(curTickArrIndex);
+
   const swapState: SwapState = {
     amountRemaining: tokenInAmountSpecified, // tokenIn
     amountCalculated: new Dec(0), // tokenOut
     sqrtPrice: curSqrtPrice,
-    tick: swapStrategy.initTickValue(curTick),
     liquidity: poolLiquidity,
     feeGrowthGlobal: new Dec(0),
   };
 
-  let sqrtPriceStart: Dec;
-  let i = curTickIndex;
+  let i = curTickArrIndex;
   while (
     swapState.amountRemaining.gt(smallestDec) &&
     !swapState.sqrtPrice.equals(sqrtPriceLimit)
   ) {
-    sqrtPriceStart = swapState.sqrtPrice;
-
-    const nextTick: Int | undefined = tickDepths?.[i]; // TODO: use iterator instead of array
+    const nextTick: TickWithNetLiquidity | undefined =
+      inittedTicksWithNetLiquidity?.[i];
     if (!nextTick) {
       throw new TickOverflowError("Not enough ticks to calculate swap");
     }
 
     const nextTickSqrtPrice = tickToSqrtPrice(
-      nextTick,
+      nextTick.tickIndex,
       precisionFactorAtPriceOne
     );
 
@@ -93,20 +103,13 @@ function calcOutGivenIn(
 
     if (nextTickSqrtPrice.equals(sqrtPriceNext)) {
       const liquidityNet = swapStrategy.setLiquidityDeltaSign(
-        new Dec(nextTick) // TODO: make sure we're getting liquidity net from next tick
+        new Dec(nextTick.netLiquidity.toString())
       );
 
       swapState.liquidity = addLiquidity(swapState.liquidity, liquidityNet);
-
-      swapState.tick = nextTick;
-    } else if (!sqrtPriceStart.equals(sqrtPriceNext)) {
-      swapState.tick = sqrtPriceToTick(
-        sqrtPriceNext,
-        precisionFactorAtPriceOne
-      );
     }
 
-    i++;
+    i = swapStrategy.nextInitializedTickIndex(i);
   } // end while
 
   return swapState.amountCalculated.truncate();
@@ -116,8 +119,7 @@ export function calcInGivenOut(
   tokenOut: Coin,
   tokenDenom0: string,
   poolLiquidity: Dec,
-  tickDepths: Int[],
-  curTickIndex: number,
+  inittedTicksWithNetLiquidity: TickWithNetLiquidity[],
   curTick: Int,
   curSqrtPrice: Dec,
   precisionFactorAtPriceOne: number,
@@ -135,30 +137,41 @@ export function calcInGivenOut(
   const swapStrategy = makeSwapStrategy(isZeroForOne, sqrtPriceLimit, swapFee);
   const tokenOutAmountSpecified = new Dec(tokenOut.amount);
 
+  const curTickWithNetLiq = inittedTicksWithNetLiquidity.find(({ tickIndex }) =>
+    tickIndex.equals(curTick)
+  );
+  if (!curTickWithNetLiq) {
+    throw new Error("curTickNet not found in inittedTicksWithNetLiquidity");
+  }
+  let curTickArrIndex = inittedTicksWithNetLiquidity.indexOf(curTickWithNetLiq);
+  if (curTickArrIndex < 0) {
+    throw new Error(
+      "curTickWithNetLiq not found in inittedTicksWithNetLiquidity"
+    );
+  }
+  curTickArrIndex = swapStrategy.initTickValue(curTickArrIndex);
+
   const swapState: SwapState = {
     amountRemaining: tokenOutAmountSpecified,
     amountCalculated: new Dec(0),
     sqrtPrice: curSqrtPrice,
-    tick: swapStrategy.initTickValue(curTick),
     liquidity: poolLiquidity,
     feeGrowthGlobal: new Dec(0),
   };
 
-  let sqrtPriceStart: Dec;
-  let i = curTickIndex;
+  let i = curTickArrIndex;
   while (
     swapState.amountRemaining.gt(smallestDec) &&
     !swapState.sqrtPrice.equals(sqrtPriceLimit)
   ) {
-    sqrtPriceStart = swapState.sqrtPrice;
-
-    const nextTick: Int | undefined = tickDepths?.[i]; // TODO: use iterator instead of array
+    const nextTick: TickWithNetLiquidity | undefined =
+      inittedTicksWithNetLiquidity?.[i];
     if (!nextTick) {
       throw new TickOverflowError("Not enough ticks to calculate swap");
     }
 
     const nextTickSqrtPrice = tickToSqrtPrice(
-      nextTick,
+      nextTick.tickIndex,
       precisionFactorAtPriceOne
     );
 
@@ -184,19 +197,13 @@ export function calcInGivenOut(
 
     if (nextTickSqrtPrice.equals(sqrtPriceNext)) {
       const liquidityNet = swapStrategy.setLiquidityDeltaSign(
-        new Dec(nextTick) // TODO: make sure we're getting liquidity net from next tick
+        new Dec(nextTick.netLiquidity.toString())
       );
 
       swapState.liquidity = addLiquidity(swapState.liquidity, liquidityNet);
-      swapState.tick = nextTick;
-    } else if (!sqrtPriceStart.equals(sqrtPriceNext)) {
-      swapState.tick = sqrtPriceToTick(
-        sqrtPriceNext.pow(new Int(2)),
-        precisionFactorAtPriceOne
-      );
     }
 
-    i++;
+    i = swapStrategy.nextInitializedTickIndex(i);
   }
 
   return swapState.amountCalculated.truncate();
