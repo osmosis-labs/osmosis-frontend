@@ -6,6 +6,7 @@ import {
   calcAmount0Delta,
   calcAmount1Delta,
   getFeeChargePerSwapStepOutGivenIn,
+  getNextSqrtPriceFromAmount0OutRoundingUp,
   getNextSqrtPriceFromAmount1InRoundingDown,
 } from "./utils";
 
@@ -74,6 +75,64 @@ export class OneForZeroStrategy implements SwapStrategy {
       sqrtPriceNext,
       amountInConsumed: amountOneIn,
       amountOutComputed: amountZeroOut,
+      feeChargeTotal,
+    };
+  }
+
+  computeSwapStepInGivenOut(
+    curSqrtPrice: Dec,
+    sqrtPriceTarget: Dec,
+    liquidity: Dec,
+    amountZeroRemainingOut: Dec
+  ): {
+    sqrtPriceNext: Dec;
+    amountOutConsumed: Dec;
+    amountInComputed: Dec;
+    feeChargeTotal: Dec;
+  } {
+    let amountZeroOut = calcAmount0Delta(
+      liquidity,
+      sqrtPriceTarget,
+      curSqrtPrice,
+      false
+    );
+
+    let sqrtPriceNext;
+    if (amountZeroRemainingOut.gte(amountZeroOut)) {
+      sqrtPriceNext = sqrtPriceTarget;
+    } else {
+      sqrtPriceNext = getNextSqrtPriceFromAmount0OutRoundingUp(
+        curSqrtPrice,
+        liquidity,
+        amountZeroRemainingOut
+      );
+    }
+
+    const hasReachedTarget = sqrtPriceTarget.equals(sqrtPriceNext);
+
+    if (!hasReachedTarget) {
+      amountZeroOut = calcAmount0Delta(
+        liquidity,
+        sqrtPriceNext,
+        curSqrtPrice,
+        false
+      );
+    }
+
+    const amountOneIn = calcAmount1Delta(
+      liquidity,
+      sqrtPriceNext,
+      curSqrtPrice
+    );
+
+    const feeChargeTotal = amountOneIn
+      .mul(this.oneForZero.swapFee)
+      .quo(new Dec(1).sub(this.oneForZero.swapFee));
+
+    return {
+      sqrtPriceNext,
+      amountOutConsumed: amountZeroOut,
+      amountInComputed: amountOneIn,
       feeChargeTotal,
     };
   }

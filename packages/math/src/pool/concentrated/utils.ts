@@ -37,7 +37,7 @@ export function calcAmount1Delta(
   return liquidity.mul(diff);
 }
 
-export function getNextSqrtPriceFromAmount0RoundUp(
+export function getNextSqrtPriceFromAmount0InRoundingUp(
   sqrtPriceCurrent: Dec,
   liquidity: Dec,
   amountRemaining: Dec
@@ -57,6 +57,28 @@ export function getNextSqrtPriceFromAmount1InRoundingDown(
   amountRemaining: Dec
 ): Dec {
   return sqrtPriceCurrent.add(amountRemaining.quoTruncate(liquidity));
+}
+
+export function getNextSqrtPriceFromAmount0OutRoundingUp(
+  sqrtPriceCurrent: Dec,
+  liquidity: Dec,
+  amountRemaining: Dec
+) {
+  if (amountRemaining.equals(new Dec(0))) {
+    return sqrtPriceCurrent;
+  }
+
+  const product = amountRemaining.mul(sqrtPriceCurrent);
+  const denom = liquidity.sub(product);
+  return liquidity.mul(sqrtPriceCurrent).quoRoundUp(denom);
+}
+
+export function getNextsqrtPriceFromAmount1OutRoundingDown(
+  sqrtPriceCurrent: Dec,
+  liquidity: Dec,
+  amountRemaining: Dec
+) {
+  return sqrtPriceCurrent.sub(amountRemaining.quoRoundUp(liquidity));
 }
 
 export function getFeeChargePerSwapStepOutGivenIn(

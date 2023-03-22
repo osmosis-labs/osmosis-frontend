@@ -5,7 +5,8 @@ import {
   calcAmount0Delta,
   calcAmount1Delta,
   getFeeChargePerSwapStepOutGivenIn,
-  getNextSqrtPriceFromAmount0RoundUp,
+  getNextSqrtPriceFromAmount0InRoundingUp,
+  getNextsqrtPriceFromAmount1OutRoundingDown,
 } from "./utils";
 
 export type ZeroForOne = {
@@ -16,7 +17,6 @@ export type ZeroForOne = {
 export class ZeroForOneStrategy implements SwapStrategy {
   constructor(private readonly zeroForOne: ZeroForOne) {}
 
-  // TODO: may be private
   getSqrtTargetPrice(nextTickSqrtPrice: Dec): Dec {
     if (nextTickSqrtPrice.lt(this.zeroForOne.sqrtPriceLimit)) {
       return this.zeroForOne.sqrtPriceLimit;
@@ -49,7 +49,7 @@ export class ZeroForOneStrategy implements SwapStrategy {
     if (amountZeroInRemainingLessFee.gte(amountZeroIn)) {
       sqrtPriceNext = sqrtPriceTarget;
     } else {
-      sqrtPriceNext = getNextSqrtPriceFromAmount0RoundUp(
+      sqrtPriceNext = getNextSqrtPriceFromAmount0InRoundingUp(
         curSqrtPrice,
         liquidity,
         amountZeroInRemainingLessFee
@@ -80,6 +80,64 @@ export class ZeroForOneStrategy implements SwapStrategy {
       sqrtPriceNext: sqrtPriceNext,
       amountInConsumed: amountZeroIn,
       amountOutComputed: amountOneOut,
+      feeChargeTotal,
+    };
+  }
+
+  computeSwapStepInGivenOut(
+    curSqrtPrice: Dec,
+    sqrtPriceTarget: Dec,
+    liquidity: Dec,
+    amountOneRemainingOut: Dec
+  ): {
+    sqrtPriceNext: Dec;
+    amountOutConsumed: Dec;
+    amountInComputed: Dec;
+    feeChargeTotal: Dec;
+  } {
+    let amountOneOut = calcAmount1Delta(
+      liquidity,
+      sqrtPriceTarget,
+      curSqrtPrice,
+      false
+    );
+
+    let sqrtPriceNext;
+    if (amountOneRemainingOut.gte(amountOneOut)) {
+      sqrtPriceNext = sqrtPriceTarget;
+    } else {
+      sqrtPriceNext = getNextsqrtPriceFromAmount1OutRoundingDown(
+        curSqrtPrice,
+        liquidity,
+        amountOneRemainingOut
+      );
+    }
+
+    const hasReachedTarget = sqrtPriceTarget.equals(sqrtPriceNext);
+
+    if (!hasReachedTarget) {
+      amountOneOut = calcAmount1Delta(
+        liquidity,
+        sqrtPriceNext,
+        curSqrtPrice,
+        false
+      );
+    }
+
+    const amountZeroIn = calcAmount0Delta(
+      liquidity,
+      sqrtPriceNext,
+      curSqrtPrice
+    );
+
+    const feeChargeTotal = amountZeroIn
+      .mul(this.zeroForOne.swapFee)
+      .quo(new Dec(1).sub(this.zeroForOne.swapFee));
+
+    return {
+      sqrtPriceNext,
+      amountOutConsumed: amountOneOut,
+      amountInComputed: amountZeroIn,
       feeChargeTotal,
     };
   }

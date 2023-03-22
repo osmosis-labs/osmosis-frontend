@@ -8,7 +8,7 @@ import { addLiquidity, approxSqrt } from "./utils";
 
 export const ConcentratedLiquidityMath = {
   calcOutGivenIn,
-  // calcInGivenOut,
+  calcInGivenOut,
   // calcSpotPrice,
 };
 
@@ -33,8 +33,6 @@ function calcOutGivenIn(
   swapFee: Dec,
   priceLimit = new Dec(0)
 ): Int {
-  const tokenInAmountSpecified = new Dec(tokenIn.amount);
-
   const isZeroForOne = tokenIn.denom === tokenDenom0;
   if (isZeroForOne && priceLimit.equals(new Dec(0))) {
     priceLimit = minSpotPrice;
@@ -43,8 +41,8 @@ function calcOutGivenIn(
   }
 
   const sqrtPriceLimit = approxSqrt(priceLimit);
-
   const swapStrategy = makeSwapStrategy(isZeroForOne, sqrtPriceLimit, swapFee);
+  const tokenInAmountSpecified = new Dec(tokenIn.amount);
 
   const swapState: SwapState = {
     amountRemaining: tokenInAmountSpecified, // tokenIn
@@ -95,10 +93,12 @@ function calcOutGivenIn(
 
     if (nextTickSqrtPrice.equals(sqrtPriceNext)) {
       const liquidityNet = swapStrategy.setLiquidityDeltaSign(
-        new Dec(nextTick)
+        new Dec(nextTick) // TODO: make sure we're getting liquidity net from next tick
       );
 
       swapState.liquidity = addLiquidity(swapState.liquidity, liquidityNet);
+
+      swapState.tick = nextTick;
     } else if (!sqrtPriceStart.equals(sqrtPriceNext)) {
       swapState.tick = sqrtPriceToTick(
         sqrtPriceNext,
@@ -108,6 +108,96 @@ function calcOutGivenIn(
 
     i++;
   } // end while
+
+  return swapState.amountCalculated.truncate();
+}
+
+export function calcInGivenOut(
+  tokenOut: Coin,
+  tokenDenom0: string,
+  poolLiquidity: Dec,
+  tickDepths: Int[],
+  curTickIndex: number,
+  curTick: Int,
+  curSqrtPrice: Dec,
+  precisionFactorAtPriceOne: number,
+  swapFee: Dec,
+  priceLimit = new Dec(0)
+): Int {
+  const isZeroForOne = tokenOut.denom === tokenDenom0;
+  if (isZeroForOne && priceLimit.equals(new Dec(0))) {
+    priceLimit = minSpotPrice;
+  } else if (!isZeroForOne && priceLimit.equals(new Dec(0))) {
+    priceLimit = maxSpotPrice;
+  }
+
+  const sqrtPriceLimit = approxSqrt(priceLimit);
+  const swapStrategy = makeSwapStrategy(isZeroForOne, sqrtPriceLimit, swapFee);
+  const tokenOutAmountSpecified = new Dec(tokenOut.amount);
+
+  const swapState: SwapState = {
+    amountRemaining: tokenOutAmountSpecified,
+    amountCalculated: new Dec(0),
+    sqrtPrice: curSqrtPrice,
+    tick: swapStrategy.initTickValue(curTick),
+    liquidity: poolLiquidity,
+    feeGrowthGlobal: new Dec(0),
+  };
+
+  let sqrtPriceStart: Dec;
+  let i = curTickIndex;
+  while (
+    swapState.amountRemaining.gt(smallestDec) &&
+    !swapState.sqrtPrice.equals(sqrtPriceLimit)
+  ) {
+    sqrtPriceStart = swapState.sqrtPrice;
+
+    const nextTick: Int | undefined = tickDepths?.[i]; // TODO: use iterator instead of array
+    if (!nextTick) {
+      throw new TickOverflowError("Not enough ticks to calculate swap");
+    }
+
+    const nextTickSqrtPrice = tickToSqrtPrice(
+      nextTick,
+      precisionFactorAtPriceOne
+    );
+
+    const sqrtPriceTarget = swapStrategy.getSqrtTargetPrice(nextTickSqrtPrice);
+
+    const {
+      sqrtPriceNext,
+      amountOutConsumed: amountOut,
+      amountInComputed: amountIn,
+      feeChargeTotal,
+    } = swapStrategy.computeSwapStepInGivenOut(
+      swapState.sqrtPrice,
+      sqrtPriceTarget,
+      swapState.liquidity,
+      swapState.amountRemaining
+    );
+
+    swapState.sqrtPrice = sqrtPriceNext;
+    swapState.amountRemaining = swapState.amountRemaining.sub(amountOut);
+    swapState.amountCalculated = swapState.amountCalculated.add(
+      amountIn.add(feeChargeTotal)
+    );
+
+    if (nextTickSqrtPrice.equals(sqrtPriceNext)) {
+      const liquidityNet = swapStrategy.setLiquidityDeltaSign(
+        new Dec(nextTick) // TODO: make sure we're getting liquidity net from next tick
+      );
+
+      swapState.liquidity = addLiquidity(swapState.liquidity, liquidityNet);
+      swapState.tick = nextTick;
+    } else if (!sqrtPriceStart.equals(sqrtPriceNext)) {
+      swapState.tick = sqrtPriceToTick(
+        sqrtPriceNext.pow(new Int(2)),
+        precisionFactorAtPriceOne
+      );
+    }
+
+    i++;
+  }
 
   return swapState.amountCalculated.truncate();
 }
