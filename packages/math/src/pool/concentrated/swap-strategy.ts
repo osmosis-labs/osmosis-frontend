@@ -5,15 +5,15 @@ import { ZeroForOneStrategy } from "./zero-for-one";
 
 export interface SwapStrategy {
   getSqrtTargetPrice(nextTickSqrtPrice: Dec): Dec;
-  computeSwapStep(
+  computeSwapStepOutGivenIn(
     curSqrtPrice: Dec,
-    targetSqrtPrice: Dec,
+    sqrtPriceTarget: Dec,
     liquidity: Dec,
-    amountRemaining: Dec
+    amountRemainingIn: Dec
   ): {
-    nextSqrtPrice: Dec;
-    amountRemaining: Dec;
-    amountComputed: Dec;
+    sqrtPriceNext: Dec;
+    amountInConsumed: Dec;
+    amountOutComputed: Dec;
     feeChargeTotal: Dec;
   };
   initTickValue(curTick: Int): Int;
@@ -23,12 +23,11 @@ export interface SwapStrategy {
 
 export function makeSwapStrategy(
   izZeroForOne: boolean,
-  isOutGivenIn: boolean,
   sqrtPriceLimit: Dec,
   swapFee: Dec
 ) {
   if (izZeroForOne) {
-    return new ZeroForOneStrategy({ isOutGivenIn, sqrtPriceLimit, swapFee });
+    return new ZeroForOneStrategy({ sqrtPriceLimit, swapFee });
   }
-  return new OneForZeroStrategy({ isOutGivenIn, sqrtPriceLimit, swapFee });
+  return new OneForZeroStrategy({ sqrtPriceLimit, swapFee });
 }

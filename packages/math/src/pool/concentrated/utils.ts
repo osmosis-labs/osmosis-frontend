@@ -51,24 +51,12 @@ export function getNextSqrtPriceFromAmount0RoundUp(
   return liquidity.mul(sqrtPriceCurrent).quoRoundUp(denom);
 }
 
-export function getNextSqrtPriceFromAmount1RoundDown(
+export function getNextSqrtPriceFromAmount1InRoundingDown(
   sqrtPriceCurrent: Dec,
   liquidity: Dec,
   amountRemaining: Dec
 ): Dec {
   return sqrtPriceCurrent.add(amountRemaining.quoTruncate(liquidity));
-}
-
-export function getAmountRemainingLessFee(
-  amountRemaining: Dec,
-  swapFee: Dec,
-  isOutGivenIn: boolean
-): Dec {
-  if (isOutGivenIn) {
-    return amountRemaining.mul(new Dec(1).sub(swapFee));
-  }
-
-  return amountRemaining;
 }
 
 export function getFeeChargePerSwapStepOutGivenIn(

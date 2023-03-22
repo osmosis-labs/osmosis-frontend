@@ -42,18 +42,13 @@ function calcOutGivenIn(
     priceLimit = maxSpotPrice;
   }
 
-  const sqrtPriceLimit = approxSqrt(priceLimit); // TODO: use function on updated keplr unit package: https://github.com/chainapsis/keplr-wallet/pull/674
+  const sqrtPriceLimit = approxSqrt(priceLimit);
 
-  const swapStrategy = makeSwapStrategy(
-    isZeroForOne,
-    true,
-    sqrtPriceLimit,
-    swapFee
-  );
+  const swapStrategy = makeSwapStrategy(isZeroForOne, sqrtPriceLimit, swapFee);
 
   const swapState: SwapState = {
-    amountRemaining: tokenInAmountSpecified,
-    amountCalculated: new Dec(0),
+    amountRemaining: tokenInAmountSpecified, // tokenIn
+    amountCalculated: new Dec(0), // tokenOut
     sqrtPrice: curSqrtPrice,
     tick: swapStrategy.initTickValue(curTick),
     liquidity: poolLiquidity,
@@ -68,7 +63,7 @@ function calcOutGivenIn(
   ) {
     sqrtPriceStart = swapState.sqrtPrice;
 
-    const nextTick: Int | undefined = tickDepths?.[i];
+    const nextTick: Int | undefined = tickDepths?.[i]; // TODO: use iterator instead of array
     if (!nextTick) {
       throw new TickOverflowError("Not enough ticks to calculate swap");
     }
@@ -78,29 +73,35 @@ function calcOutGivenIn(
       precisionFactorAtPriceOne
     );
 
-    const { nextSqrtPrice, amountRemaining, amountComputed, feeChargeTotal } =
-      swapStrategy.computeSwapStep(
-        swapState.sqrtPrice,
-        nextTickSqrtPrice,
-        swapState.liquidity,
-        swapState.amountRemaining
-      );
+    const sqrtPriceTarget = swapStrategy.getSqrtTargetPrice(nextTickSqrtPrice);
 
-    swapState.sqrtPrice = nextSqrtPrice;
-    swapState.amountRemaining = swapState.amountRemaining.sub(
-      amountRemaining.add(feeChargeTotal)
+    const {
+      sqrtPriceNext,
+      amountInConsumed: amountOneIn,
+      amountOutComputed: amountZeroOut,
+      feeChargeTotal,
+    } = swapStrategy.computeSwapStepOutGivenIn(
+      swapState.sqrtPrice,
+      sqrtPriceTarget,
+      swapState.liquidity,
+      swapState.amountRemaining
     );
-    swapState.amountCalculated = swapState.amountCalculated.add(amountComputed);
 
-    if (nextTickSqrtPrice.equals(nextSqrtPrice)) {
+    swapState.sqrtPrice = sqrtPriceNext;
+    swapState.amountRemaining = swapState.amountRemaining.sub(
+      amountOneIn.add(feeChargeTotal)
+    );
+    swapState.amountCalculated = swapState.amountCalculated.add(amountZeroOut);
+
+    if (nextTickSqrtPrice.equals(sqrtPriceNext)) {
       const liquidityNet = swapStrategy.setLiquidityDeltaSign(
         new Dec(nextTick)
       );
 
       swapState.liquidity = addLiquidity(swapState.liquidity, liquidityNet);
-    } else if (!sqrtPriceStart.equals(nextSqrtPrice)) {
+    } else if (!sqrtPriceStart.equals(sqrtPriceNext)) {
       swapState.tick = sqrtPriceToTick(
-        nextSqrtPrice,
+        sqrtPriceNext,
         precisionFactorAtPriceOne
       );
     }

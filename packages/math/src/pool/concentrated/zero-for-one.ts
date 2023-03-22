@@ -4,13 +4,11 @@ import { SwapStrategy } from "./swap-strategy";
 import {
   calcAmount0Delta,
   calcAmount1Delta,
-  getAmountRemainingLessFee,
   getFeeChargePerSwapStepOutGivenIn,
   getNextSqrtPriceFromAmount0RoundUp,
 } from "./utils";
 
 export type ZeroForOne = {
-  isOutGivenIn: boolean;
   sqrtPriceLimit: Dec;
   swapFee: Dec;
 };
@@ -26,75 +24,62 @@ export class ZeroForOneStrategy implements SwapStrategy {
     return nextTickSqrtPrice;
   }
 
-  computeSwapStep(
+  computeSwapStepOutGivenIn(
     curSqrtPrice: Dec,
-    targetSqrtPrice: Dec,
+    sqrtPriceTarget: Dec,
     liquidity: Dec,
-    amountRemaining: Dec
+    amountZeroInRemaining: Dec
   ): {
-    nextSqrtPrice: Dec;
-    amountRemaining: Dec;
-    amountComputed: Dec;
+    sqrtPriceNext: Dec;
+    amountInConsumed: Dec;
+    amountOutComputed: Dec;
     feeChargeTotal: Dec;
   } {
-    const sqrtPriceTarget = this.getSqrtTargetPrice(targetSqrtPrice);
-
-    let amountZero = calcAmount0Delta(
+    let amountZeroIn = calcAmount0Delta(
       liquidity,
       sqrtPriceTarget,
-      curSqrtPrice,
-      this.zeroForOne.isOutGivenIn
+      curSqrtPrice
     );
 
-    const amountRemainingLessFee = getAmountRemainingLessFee(
-      amountRemaining,
-      this.zeroForOne.swapFee,
-      this.zeroForOne.isOutGivenIn
+    const amountZeroInRemainingLessFee = amountZeroInRemaining.mul(
+      new Dec(1).sub(this.zeroForOne.swapFee)
     );
 
-    let nextSqrtPrice: Dec;
-    let hasReachedTarget = false;
-
-    if (amountRemainingLessFee.gte(amountZero)) {
-      nextSqrtPrice = sqrtPriceTarget;
-      hasReachedTarget = true;
+    let sqrtPriceNext: Dec;
+    if (amountZeroInRemainingLessFee.gte(amountZeroIn)) {
+      sqrtPriceNext = sqrtPriceTarget;
     } else {
-      nextSqrtPrice = getNextSqrtPriceFromAmount0RoundUp(
+      sqrtPriceNext = getNextSqrtPriceFromAmount0RoundUp(
         curSqrtPrice,
         liquidity,
-        amountRemainingLessFee
+        amountZeroInRemainingLessFee
       );
     }
 
+    const hasReachedTarget = sqrtPriceTarget.equals(sqrtPriceNext);
+
     if (!hasReachedTarget) {
-      amountZero = calcAmount0Delta(liquidity, nextSqrtPrice, curSqrtPrice);
+      amountZeroIn = calcAmount0Delta(liquidity, sqrtPriceNext, curSqrtPrice);
     }
 
-    const amountOne = calcAmount1Delta(
+    const amountOneOut = calcAmount1Delta(
       liquidity,
-      nextSqrtPrice,
+      sqrtPriceNext,
       curSqrtPrice,
       false
     );
 
-    let feeChargeTotal: Dec;
-    if (this.zeroForOne.isOutGivenIn) {
-      feeChargeTotal = getFeeChargePerSwapStepOutGivenIn(
-        hasReachedTarget,
-        amountZero,
-        amountRemaining,
-        this.zeroForOne.swapFee
-      );
-    } else {
-      feeChargeTotal = amountOne
-        .mul(this.zeroForOne.swapFee)
-        .quo(new Dec(1).sub(this.zeroForOne.swapFee));
-    }
+    const feeChargeTotal = getFeeChargePerSwapStepOutGivenIn(
+      hasReachedTarget,
+      amountZeroIn,
+      amountZeroInRemaining,
+      this.zeroForOne.swapFee
+    );
 
     return {
-      nextSqrtPrice,
-      amountRemaining: amountZero,
-      amountComputed: amountOne,
+      sqrtPriceNext: sqrtPriceNext,
+      amountInConsumed: amountZeroIn,
+      amountOutComputed: amountOneOut,
       feeChargeTotal,
     };
   }
