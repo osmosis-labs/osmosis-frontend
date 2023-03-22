@@ -1624,7 +1624,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "certik",
           coinGeckoId: "pool:uctk",
-          coinImageUrl: "/tokens/ctk.png",
+          coinImageUrl: "/tokens/ctk.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
         },
