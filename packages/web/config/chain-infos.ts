@@ -1213,7 +1213,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "stargaze",
           coinGeckoId: "pool:ustars",
-          coinImageUrl: "/tokens/stars.png",
+          coinImageUrl: "/tokens/stars.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
         },
