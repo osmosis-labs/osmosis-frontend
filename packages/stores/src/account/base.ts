@@ -305,13 +305,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         throw new Error("There is no msg to send");
       }
 
-      console.log(msgs);
-
       const result = await wallet.signAndBroadcast(msgs, fee, memo);
 
       txHash = new TextEncoder().encode(result.transactionHash);
     } catch (e) {
-      console.log(e);
       const error = e as Error;
       runInAction(() => {
         this.txTypeInProgressByChain.set(chainNameOrId, "");
