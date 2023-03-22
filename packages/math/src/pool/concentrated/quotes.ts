@@ -16,6 +16,7 @@ export const ConcentratedLiquidityMath = {
 interface SwapState {
   amountRemaining: Dec;
   amountCalculated: Dec;
+  inittedTickIndex: number;
   sqrtPrice: Dec;
   liquidity: Dec;
   feeGrowthGlobal: Dec;
@@ -49,29 +50,29 @@ function calcOutGivenIn(
   if (!curTickWithNetLiq) {
     throw new Error("curTickNet not found in inittedTicksWithNetLiquidity");
   }
-  let curTickArrIndex = inittedTicksWithNetLiquidity.indexOf(curTickWithNetLiq);
+  const curTickArrIndex =
+    inittedTicksWithNetLiquidity.indexOf(curTickWithNetLiq);
   if (curTickArrIndex < 0) {
     throw new Error(
       "curTickWithNetLiq not found in inittedTicksWithNetLiquidity"
     );
   }
-  curTickArrIndex = swapStrategy.initTickValue(curTickArrIndex);
 
   const swapState: SwapState = {
     amountRemaining: tokenInAmountSpecified, // tokenIn
     amountCalculated: new Dec(0), // tokenOut
+    inittedTickIndex: swapStrategy.initTickValue(curTickArrIndex),
     sqrtPrice: curSqrtPrice,
     liquidity: poolLiquidity,
     feeGrowthGlobal: new Dec(0),
   };
 
-  let i = curTickArrIndex;
   while (
     swapState.amountRemaining.gt(smallestDec) &&
     !swapState.sqrtPrice.equals(sqrtPriceLimit)
   ) {
     const nextTick: TickWithNetLiquidity | undefined =
-      inittedTicksWithNetLiquidity?.[i];
+      inittedTicksWithNetLiquidity?.[swapState.inittedTickIndex];
     if (!nextTick) {
       throw new TickOverflowError("Not enough ticks to calculate swap");
     }
@@ -109,7 +110,9 @@ function calcOutGivenIn(
       swapState.liquidity = addLiquidity(swapState.liquidity, liquidityNet);
     }
 
-    i = swapStrategy.nextInitializedTickIndex(i);
+    swapState.inittedTickIndex = swapStrategy.nextInitializedTickIndex(
+      swapState.inittedTickIndex
+    );
   } // end while
 
   return swapState.amountCalculated.truncate();
@@ -143,29 +146,29 @@ export function calcInGivenOut(
   if (!curTickWithNetLiq) {
     throw new Error("curTickNet not found in inittedTicksWithNetLiquidity");
   }
-  let curTickArrIndex = inittedTicksWithNetLiquidity.indexOf(curTickWithNetLiq);
+  const curTickArrIndex =
+    inittedTicksWithNetLiquidity.indexOf(curTickWithNetLiq);
   if (curTickArrIndex < 0) {
     throw new Error(
       "curTickWithNetLiq not found in inittedTicksWithNetLiquidity"
     );
   }
-  curTickArrIndex = swapStrategy.initTickValue(curTickArrIndex);
 
   const swapState: SwapState = {
     amountRemaining: tokenOutAmountSpecified,
     amountCalculated: new Dec(0),
+    inittedTickIndex: swapStrategy.initTickValue(curTickArrIndex),
     sqrtPrice: curSqrtPrice,
     liquidity: poolLiquidity,
     feeGrowthGlobal: new Dec(0),
   };
 
-  let i = curTickArrIndex;
   while (
     swapState.amountRemaining.gt(smallestDec) &&
     !swapState.sqrtPrice.equals(sqrtPriceLimit)
   ) {
     const nextTick: TickWithNetLiquidity | undefined =
-      inittedTicksWithNetLiquidity?.[i];
+      inittedTicksWithNetLiquidity?.[swapState.inittedTickIndex];
     if (!nextTick) {
       throw new TickOverflowError("Not enough ticks to calculate swap");
     }
@@ -203,7 +206,9 @@ export function calcInGivenOut(
       swapState.liquidity = addLiquidity(swapState.liquidity, liquidityNet);
     }
 
-    i = swapStrategy.nextInitializedTickIndex(i);
+    swapState.inittedTickIndex = swapStrategy.nextInitializedTickIndex(
+      swapState.inittedTickIndex
+    );
   }
 
   return swapState.amountCalculated.truncate();
