@@ -2471,7 +2471,7 @@ const chainInfos = (
           coinDecimals: 18,
           // coinGeckoId: "lambda",
           coinGeckoId: "pool:lambda",
-          coinImageUrl: "/tokens/lambda.png",
+          coinImageUrl: "/tokens/lambda.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
