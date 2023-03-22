@@ -2681,7 +2681,7 @@ const chainInfos = (
           coinMinimalDenom: "anom",
           coinDecimals: 18,
           coinGeckoId: "pool:anom",
-          coinImageUrl: "/tokens/nom.png",
+          coinImageUrl: "/tokens/nom.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
