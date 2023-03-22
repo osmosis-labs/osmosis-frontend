@@ -13,10 +13,10 @@ import * as PoolMath from "@osmosis-labs/math";
 import { Pool } from "@osmosis-labs/pools";
 import deepmerge from "deepmerge";
 import Long from "long";
-import { AccountStore } from "src/account";
 import { DeepPartial } from "utility-types";
 
-import { OsmosisQueries } from "../queries";
+import { AccountStore, CosmosAccount, CosmwasmAccount } from "../../account";
+import { OsmosisQueries } from "../../queries";
 import { osmosisMsgOpts } from "./types";
 
 export interface OsmosisAccount {
@@ -30,7 +30,7 @@ export const OsmosisAccount = {
     ) => DeepPartial<typeof osmosisMsgOpts> | undefined;
     queriesStore: IQueriesStore<CosmosQueries & OsmosisQueries>;
   }): (
-    base: AccountStore,
+    base: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>,
     chainGetter: ChainGetter,
     chainId: string
   ) => OsmosisAccount {

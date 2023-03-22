@@ -5,7 +5,7 @@ import {
   getEventFromTx,
   RootStore,
   waitAccountLoaded,
-} from "../../__tests__/test-env";
+} from "../../../__tests__/test-env";
 import { Dec, DecUtils, Int, IntPretty, Coin } from "@keplr-wallet/unit";
 import { Currency } from "@keplr-wallet/types";
 import { estimateSwapExactAmountIn } from "@osmosis-labs/math";

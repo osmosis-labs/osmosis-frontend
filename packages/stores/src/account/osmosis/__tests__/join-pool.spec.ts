@@ -6,7 +6,7 @@ import {
   getEventFromTx,
   RootStore,
   waitAccountLoaded,
-} from "../../__tests__/test-env";
+} from "../../../__tests__/test-env";
 import { estimateJoinSwap } from "@osmosis-labs/math";
 
 jest.setTimeout(100 * 1000);

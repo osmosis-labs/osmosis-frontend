@@ -32,8 +32,8 @@ import {
 } from "osmojs";
 import { UnionToIntersection } from "utility-types";
 
-import { OsmosisQueries } from "./queries";
-import { TxTracer } from "./tx";
+import { OsmosisQueries } from "../queries";
+import { TxTracer } from "../tx";
 
 const logger = new Logger("WARN");
 
@@ -191,7 +191,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     if (wallet) {
       const walletWithAccountSet = wallet as ChainWalletBase &
-        UnionToIntersection<Injects[number]> & { txTypeInProgress: string };
+        UnionToIntersection<Injects[number]> & {
+          txTypeInProgress: string;
+          isReadyToSendTx: boolean;
+        };
 
       const injectedAccountsForChain = this.getInjectedAccounts(chainNameOrId);
 
@@ -213,6 +216,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
 
       walletWithAccountSet.txTypeInProgress = txInProgress ?? "";
+      walletWithAccountSet.isReadyToSendTx =
+        walletWithAccountSet.walletStatus === WalletStatus.Connected &&
+        Boolean(walletWithAccountSet.address);
+      walletWithAccountSet.activate();
 
       return walletWithAccountSet;
     }

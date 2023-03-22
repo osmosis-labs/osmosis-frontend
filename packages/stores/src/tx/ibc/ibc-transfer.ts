@@ -19,16 +19,16 @@ export async function basicIbcTransfer(
   onFailure?: (txHash: string, code: number) => void
 ) {
   if (
-    !sender.account.isReadyToSendTx ||
+    !sender.account?.isReadyToSendTx ||
     (!(typeof counterparty.account === "string") &&
-      !counterparty.account.bech32Address)
+      !counterparty.account?.address)
   )
     return;
 
   const recipient =
     typeof counterparty.account === "string"
       ? counterparty.account
-      : counterparty.account.bech32Address;
+      : counterparty.account?.address ?? "";
 
   // process & report ibc transfer events
   const decodedTxEvents = {
@@ -41,7 +41,7 @@ export async function basicIbcTransfer(
           amount: amountConfig.amount,
           currency: amountConfig.sendCurrency,
         },
-        sender: sender.account.bech32Address,
+        sender: sender.account?.address ?? "",
         recipient,
       }),
     onFulfill: (tx: any) => {
@@ -98,7 +98,7 @@ export async function basicIbcTransfer(
                 destChainId: counterparty.chainId,
                 destChannelId: destChannel,
                 sequence,
-                sender: sender.account.bech32Address,
+                sender: sender.account?.address ?? "",
                 recipient,
                 amount: {
                   amount: amountConfig.amount,
@@ -128,7 +128,7 @@ export async function basicIbcTransfer(
       timeout: 900,
     };
 
-    await cosmwasmAccount.cosmwasm.sendExecuteContractMsg(
+    await cosmwasmAccount?.cosmwasm.sendExecuteContractMsg(
       "ibcTransfer" as any,
       contractAddress,
       {
@@ -139,16 +139,14 @@ export async function basicIbcTransfer(
         },
       },
       [],
-      "",
       {
         gas: "350000",
       },
-      undefined,
       decodedTxEvents
     );
   } else {
     // perform standard IBC token transfer
-    await sender.account.cosmos.sendIBCTransferMsg(
+    await sender.account?.cosmos.sendIBCTransferMsg(
       {
         portId: "transfer",
         channelId: sender.channelId,
@@ -157,9 +155,6 @@ export async function basicIbcTransfer(
       amountConfig.amount,
       amountConfig.sendCurrency,
       recipient,
-      "",
-      undefined,
-      undefined,
       decodedTxEvents
     );
   }

@@ -1,9 +1,7 @@
 import {
   AccountStore as OldAccountStore,
   ChainInfoInner,
-  CosmosAccount,
   CosmosQueries,
-  CosmwasmAccount,
   CosmwasmQueries,
   IBCCurrencyRegsitrar,
   QueriesStore,
@@ -11,6 +9,8 @@ import {
 import { AppCurrency, Keplr } from "@keplr-wallet/types";
 import {
   AccountStore,
+  CosmosAccount,
+  CosmwasmAccount,
   DerivedDataStore,
   IBCTransferHistoryStore,
   LPCurrencyRegistrar,
@@ -56,10 +56,10 @@ export class RootStore {
     [CosmosQueries, CosmwasmQueries, OsmosisQueries]
   >;
 
-  public readonly oldAccountStore: OldAccountStore<
-    [CosmosAccount, CosmwasmAccount, OsmosisAccount]
+  public readonly oldAccountStore: OldAccountStore<[OsmosisAccount]>;
+  public readonly accountStore: AccountStore<
+    [OsmosisAccount, CosmosAccount, CosmwasmAccount]
   >;
-  public readonly accountStore: AccountStore<[OsmosisAccount]>;
 
   public readonly priceStore: PoolFallbackPriceStore;
 
@@ -134,7 +134,9 @@ export class RootStore {
           ),
         },
       },
-      OsmosisAccount.use({ queriesStore: this.queriesStore })
+      OsmosisAccount.use({ queriesStore: this.queriesStore }),
+      CosmosAccount.use({ queriesStore: this.queriesStore }),
+      CosmwasmAccount.use({ queriesStore: this.queriesStore })
     );
 
     this.oldAccountStore = new OldAccountStore(
@@ -147,31 +149,29 @@ export class RootStore {
           getKeplr,
         };
       },
+      // @ts-ignore
       CosmosAccount.use({
         queriesStore: this.queriesStore,
-        msgOptsCreator: (chainId) => {
-          if (chainId.startsWith("osmosis")) {
-            return { ibcTransfer: { gas: 300000 } };
-          }
-
-          if (chainId.startsWith("evmos_")) {
-            return { ibcTransfer: { gas: 250000 } };
-          } else {
-            return { ibcTransfer: { gas: 210000 } };
-          }
-        },
-        preTxEvents: {
-          onBroadcastFailed: toastOnBroadcastFailed((chainId) =>
-            this.chainStore.getChain(chainId)
-          ),
-          onBroadcasted: toastOnBroadcast(),
-          onFulfill: toastOnFulfill((chainId) =>
-            this.chainStore.getChain(chainId)
-          ),
-        },
-      }),
-      CosmwasmAccount.use({ queriesStore: this.queriesStore }),
-      OsmosisAccount.use({ queriesStore: this.queriesStore })
+        // msgOptsCreator: (chainId) => {
+        //   if (chainId.startsWith("osmosis")) {
+        //     return { ibcTransfer: { gas: 300000 } };
+        //   }
+        //   if (chainId.startsWith("evmos_")) {
+        //     return { ibcTransfer: { gas: 250000 } };
+        //   } else {
+        //     return { ibcTransfer: { gas: 210000 } };
+        //   }
+        // },
+        // preTxEvents: {
+        //   onBroadcastFailed: toastOnBroadcastFailed((chainId) =>
+        //     this.chainStore.getChain(chainId)
+        //   ),
+        //   onBroadcasted: toastOnBroadcast(),
+        //   onFulfill: toastOnFulfill((chainId) =>
+        //     this.chainStore.getChain(chainId)
+        //   ),
+        // },
+      })
     );
 
     this.priceStore = new PoolFallbackPriceStore(

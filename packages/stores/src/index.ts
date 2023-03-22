@@ -3,7 +3,6 @@ export * from "./bridge-history";
 export * from "./currency-registrar";
 export * from "./derived-data";
 export * from "./ibc-history";
-export * from "./osmosis-account";
 export * from "./price";
 export * from "./queries";
 export * from "./queries-external";

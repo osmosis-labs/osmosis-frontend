@@ -73,7 +73,6 @@ const AxelarTransfer: FunctionComponent<
   }) => {
     const {
       chainStore,
-      oldAccountStore,
       accountStore,
       queriesStore,
       queriesExternalStore,
@@ -82,7 +81,6 @@ const AxelarTransfer: FunctionComponent<
     const t = useTranslation();
 
     const { chainId } = chainStore.osmosis;
-    const oldOsmosisAccount = oldAccountStore.getAccount(chainId);
     const osmosisAccount = accountStore.getWallet(chainId);
     const address = osmosisAccount?.address ?? "";
     const osmoIcnsName =
@@ -190,7 +188,7 @@ const AxelarTransfer: FunctionComponent<
     const feeConfig = useFakeFeeConfig(
       chainStore,
       chainId,
-      oldOsmosisAccount.cosmos.msgOpts.ibcTransfer.gas
+      osmosisAccount?.cosmos.msgOpts.ibcTransfer.gas ?? 0
     );
     const withdrawAmountConfig = useAmountConfig(
       chainStore,
@@ -343,7 +341,7 @@ const AxelarTransfer: FunctionComponent<
           try {
             await basicIbcTransfer(
               {
-                account: oldOsmosisAccount,
+                account: osmosisAccount,
                 chainId,
                 channelId: balanceOnOsmosis.sourceChannelId,
               },
@@ -467,7 +465,7 @@ const AxelarTransfer: FunctionComponent<
       isWithdraw,
       useNativeToken,
       originCurrency,
-      oldOsmosisAccount,
+      osmosisAccount,
       trackTransferStatus,
       withdrawAmountConfig,
       inputAmount,
@@ -478,7 +476,7 @@ const AxelarTransfer: FunctionComponent<
     ]);
     // close modal when initial eth transaction is committed
     const isSendTxPending = isWithdraw
-      ? oldOsmosisAccount.txTypeInProgress !== ""
+      ? osmosisAccount?.txTypeInProgress !== ""
       : isEthTxPending || ethWalletClient.isSending === "eth_sendTransaction";
     useEffect(() => {
       if (transferInitiated && !isSendTxPending) {
@@ -487,7 +485,7 @@ const AxelarTransfer: FunctionComponent<
     }, [
       transferInitiated,
       isSendTxPending,
-      oldOsmosisAccount.txTypeInProgress,
+      osmosisAccount?.txTypeInProgress,
       ethWalletClient.isSending,
       isEthTxPending,
       onRequestClose,
@@ -500,7 +498,7 @@ const AxelarTransfer: FunctionComponent<
         correctChainSelected &&
         !isDepositAddressLoading &&
         !isEthTxPending) ||
-      (isWithdraw && oldOsmosisAccount.txTypeInProgress === "");
+      (isWithdraw && osmosisAccount?.txTypeInProgress === "");
     const isInsufficientFee =
       inputAmountRaw !== "" &&
       transferFee !== undefined &&

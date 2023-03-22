@@ -3,7 +3,7 @@ import {
   chainId,
   RootStore,
   waitAccountLoaded,
-} from "../../__tests__/test-env";
+} from "../../../__tests__/test-env";
 
 jest.setTimeout(60000);
 
