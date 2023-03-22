@@ -2805,7 +2805,7 @@ const chainInfos = (
           coinDenom: "CANTO",
           coinMinimalDenom: "acanto",
           coinDecimals: 18,
-          coinImageUrl: "/tokens/canto.png",
+          coinImageUrl: "/tokens/canto.svg",
           coinGeckoId: "pool:acanto",
           isStakeCurrency: true,
           isFeeCurrency: true,
