@@ -476,7 +476,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "e-money",
           coinGeckoId: "pool:ungm",
-          coinImageUrl: "/tokens/ngm.png",
+          coinImageUrl: "/tokens/ngm.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
@@ -491,7 +491,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "e-money-eur",
           coinGeckoId: "pool:eeur",
-          coinImageUrl: "/tokens/eeur.png",
+          coinImageUrl: "/tokens/eeur.svg",
           isFeeCurrency: true,
           gasPriceStep: {
             low: 1,
