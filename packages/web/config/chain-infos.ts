@@ -314,7 +314,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "sentinel",
           coinGeckoId: "pool:udvpn",
-          coinImageUrl: "/tokens/dvpn.png",
+          coinImageUrl: "/tokens/dvpn.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
