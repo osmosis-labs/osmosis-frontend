@@ -742,7 +742,7 @@ const chainInfos = (
             "cw20:juno1u45shlp0q4gcckvsj06ss4xuvsu0z24a0d0vr9ce6r24pht4e5xq7q995n:HOPERS",
           coinDecimals: 6,
           coinGeckoId: "pool:hopers",
-          coinImageUrl: "/tokens/hopers.png",
+          coinImageUrl: "/tokens/hopers.svg",
         },
         {
           type: "cw20",
