@@ -36,7 +36,13 @@ export const Announcement:
         "Chain is halted, transactions are temporarily disabled",
       isWarning: true,
     }
-  : undefined;
+  : {
+      enTextOrLocalizationPath: "Quasar has launched",
+      link: {
+        enTextOrLocalizationKey: "Click here to learn more",
+        url: "http://app.quasar.fi/",
+      },
+    };
 
 // Past localstorage keys:
 // * "feedback_wQ1KR7": "Help us shape the future of Osmosis." Give us feedback -> https://tally.so/r/wQ1KR7
