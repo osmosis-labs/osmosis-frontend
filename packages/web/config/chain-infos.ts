@@ -1790,7 +1790,7 @@ const chainInfos = (
           // coinGeckoId: "provenance-blockchain",
           coinGeckoId: "pool:nhash",
           coinDecimals: 9,
-          coinImageUrl: "/tokens/hash.svg",
+          coinImageUrl: "/tokens/prov.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
