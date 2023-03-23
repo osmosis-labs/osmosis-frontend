@@ -1,5 +1,4 @@
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { ObservableQueryPool } from "@osmosis-labs/stores";
 import {
   createColumnHelper,
   getCoreRowModel,
@@ -36,21 +35,6 @@ import {
 import PaginatedTable from "./paginated-table";
 
 const TVL_FILTER_THRESHOLD = 1000;
-
-type PoolWithMetrics = {
-  pool: ObservableQueryPool;
-  liquidity: PricePretty;
-  myLiquidity: PricePretty;
-  myAvailableLiquidity: PricePretty;
-  apr?: RatePretty;
-  poolName: string;
-  networkNames: string;
-  volume24h: PricePretty;
-  volume7d: PricePretty;
-  feesSpent24h: PricePretty;
-  feesSpent7d: PricePretty;
-  feesPercentage: string;
-};
 
 export type Pool = [
   {
@@ -99,13 +83,8 @@ export const AllPoolsTable: FunctionComponent<{
   quickLockTokens: (poolId: string) => void;
 }> = observer(
   ({ quickAddLiquidity, quickRemoveLiquidity, quickLockTokens, topOffset }) => {
-    const {
-      chainStore,
-      queriesExternalStore,
-      derivedDataStore,
-      priceStore,
-      queriesStore,
-    } = useStore();
+    const { chainStore, queriesExternalStore, derivedDataStore, queriesStore } =
+      useStore();
     const t = useTranslation();
 
     const router = useRouter();
