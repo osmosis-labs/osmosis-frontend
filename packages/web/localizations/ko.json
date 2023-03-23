@@ -17,7 +17,7 @@
     "scalingFactorInformation": "이 인수를 설정하면 유동성으로 공급한 스테이킹 토큰의 가치 변동과 같은 예측가능한 가격 변동에 대해 곡선을 조정할 수 있습니다.",
     "singleAsset": "단일 자산",
     "stablecoinWarning": "{mechanism}(으)로 유지되는 스테이블 코인인 {denom}에 유동성을 추가하고 있습니다.",
-    "title": "유동성 추가하기",
+    "title": "유동성 추가",
     "titleInPool": "#{poolId}풀에 유동성을 추가합니다."
   },
   "app": {
@@ -35,23 +35,23 @@
     "bondedAssets": "예치된 자산",
     "historyTable": {
       "colums": {
-        "amount": "Amount",
-        "deposit": "Deposit",
-        "status": "Status",
-        "transactionHash": "Transaction Hash",
-        "type": "Type",
-        "withdraw": "Withdraw"
+        "amount": "수량",
+        "deposit": "입금",
+        "status": "상태",
+        "transactionHash": "트랜잭션 해시",
+        "type": "타입",
+        "withdraw": "출금"
       },
       "errors": {
-        "insufficientFee": "Insufficient Fee"
+        "insufficientFee": "수수료가 부족합니다"
       },
-      "failed": "Failed",
-      "failedWithReason": "Failed: {reason}",
-      "pending": "Pending",
-      "pendingRefunded": "Failed: Pending refund",
-      "refunded": "Refunded",
-      "success": "Success",
-      "title": "Transfer History"
+      "failed": "실패했습니다",
+      "failedWithReason": "실패: {reason}",
+      "pending": "보류중",
+      "pendingRefunded": "실패: 환불 대기 중",
+      "refunded": "환불됨",
+      "success": "성공",
+      "title": "전송 내역"
     },
     "ibcTransfer": {
       "amoutDeposit": "입금할 수량",
@@ -69,11 +69,11 @@
       "from": "발신 체인",
       "IBCTransfer": "IBC 전송",
       "MAX": "최대",
-      "selectAmount": "Select Amount",
-      "titleDeposit": "Deposit {coinDenom}",
-      "titleWithdraw": "Withdraw {coinDenom}",
+      "selectAmount": "수량 선택",
+      "titleDeposit": "{coinDenom} 입금",
+      "titleWithdraw": "{coinDenom} 출금",
       "to": "수신 체인",
-      "waitTime": "20 seconds",
+      "waitTime": "20초",
       "warningLossFunds": "주의: 중앙화 거래소로 출금하면 자산을 잃어버릴 수 있습니다."
     },
     "myPools": "내 풀",
@@ -130,8 +130,8 @@
       "titleWithdraw": "{coinDenom} 출금",
       "to": "수신 체인",
       "transferFee": "전송 수수료",
-      "useWrappedDeposit": "Deposit {wrapDenom} with Satellite",
-      "useWrappedWithdraw": "Withdraw {wrapDenom} with Satellite",
+      "useWrappedDeposit": "Satellite로 {wrapDenom} 입금하기",
+      "useWrappedWithdraw": "Satellite로 {wrapDenom} 출금하기",
       "via": "경유",
       "waitTime": "{minutes}분",
       "warnDepositAddressDifferent": "주의: {address}에서 선택한 계정이 마지막으로 입금한 주소와 다릅니다."
@@ -142,7 +142,7 @@
       "network": "네트워크",
       "withdraw": "출금"
     },
-    "unbondedAssets": "Unbonded"
+    "unbondedAssets": "예치해제된 자산"
   },
   "buyTokens": "토큰 구매",
   "components": {
@@ -185,12 +185,12 @@
     "emptyAmount": "수량이 비어있습니다",
     "generic": "에러",
     "highSwapFee": "교환 수수료가 너무 높습니다",
-    "insufficientAmount": "Insufficient amount",
+    "insufficientAmount": "수수료가 부족합니다",
     "insufficientBal": "잔액 부족",
-    "insufficientLiquidity": "유동성 부족",
-    "invalidNumberAmount": "Invalid form of number",
+    "insufficientLiquidity": "유동성이 부족합니다",
+    "invalidNumberAmount": "숫자 형식이 아닙니다",
     "invalidScalingFactorControllerAddress": "잘못된 단위조정인수 컨트롤러 주소",
-    "invalidSlippage": "잘못된 슬리피지",
+    "invalidSlippage": "슬리피지가 잘못 되었습니다",
     "invalidSwapFee": "교환 수수료가 잘못 되었습니다",
     "maxAssetsCount": "최대 {num}개의 자산만 허용됩니다",
     "minAssetsCount": "최소 {num}개의 자산이 필요합니다",
@@ -199,12 +199,12 @@
     "negativeSlippage": "슬리피지가 음수입니다",
     "negativeSwapFee": "Swap fee is negative",
     "noAvailableShares": "사용 가능한 {denom}이 없습니다",
-    "noRoute": "이 거래를 위한 경로 없음",
+    "noRoute": "이 거래를 위한 경로가 없습니다",
     "noSendCurrency": "전송할 토큰이 설정되지 않았습니다",
     "notInitialized": "초기화되지 않았습니다",
     "percentageSum": "퍼센티지의 합이 100이 아닙니다",
-    "scalingFactorTooLow": "단위조정인수가 너무 낮음",
-    "zeroAmount": "Amount is zero"
+    "scalingFactorTooLow": "단위조정인수가 너무 낮습니다",
+    "zeroAmount": "수량이 0입니다."
   },
   "keplr": {
     "extension": "Keplr 브라우저 익스텐션",
@@ -288,7 +288,7 @@
     "all": "전체 풀",
     "allPools": {
       "APR": "APR",
-      "APRIncentivized": "7d Vol.",
+      "APRIncentivized": "7일 Vol.",
       "displayLowLiquidity": "풀 보기 < {value}",
       "myLiquidity": "내 유동성",
       "search": "풀 검색하기",
@@ -404,16 +404,16 @@
     "titleMobile": "검증인을 선택하세요"
   },
   "swap": {
-    "autoRouter": "노선",
+    "autoRouter": "경로",
     "autoRouterToggle": {
-      "hide": "숨다",
+      "hide": "숨기기",
       "show": "보여주다"
     },
     "available": "거래 가능수량",
     "button": "거래",
     "buttonError": "무시하고 교환하기",
     "error": {
-      "findCurrency": "토큰 A {currency}를 찾을 수 없습니다"
+      "findCurrency": "토큰 {currency}를 찾을 수 없습니다"
     },
     "expectedOutput": "예상 교환치",
     "fee": "교환 수수료 ({fee})",
