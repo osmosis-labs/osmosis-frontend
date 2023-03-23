@@ -18,6 +18,7 @@ import {
 import classNames from "classnames";
 import { debounce } from "debounce";
 import { observer } from "mobx-react-lite";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import {
@@ -30,7 +31,6 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import ConcentratedLiquidityDepthChart from "~/components/chart/concentrated-liquidity-depth";
 import { findNearestTick, getPriceAtTick } from "~/utils/math";
 
 import { useStore } from "../../stores";
@@ -39,6 +39,11 @@ import { PoolAssetsIcon } from "../assets";
 import { Button } from "../buttons";
 import { InputBox } from "../input";
 import { CustomClasses } from "../types";
+
+const ConcentratedLiquidityDepthChart = dynamic(
+  () => import("~/components/chart/concentrated-liquidity-depth"),
+  { ssr: false }
+);
 
 enum AddConcLiquidityModalView {
   Overview,
@@ -82,7 +87,7 @@ async function getDepthFromRange(min: number, max: number) {
   const minTick = findNearestTick(min);
   const maxTick = findNearestTick(max);
   const batchUnit = Math.max(1, Math.floor((maxTick - minTick) / 20));
-  console.log(minTick, maxTick, batchUnit);
+  // console.log(minTick, maxTick, batchUnit);
 
   const returnData = await fetch(
     `http://localhost:1317/osmosis/concentratedliquidity/v1beta1/tick_liquidity_in_batches?pool_id=1&lower_tick=${minTick}&upper_tick=${maxTick}&batch_unit=${batchUnit}`
