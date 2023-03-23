@@ -124,36 +124,8 @@ export const AllPoolsTable: FunctionComponent<{
     const queriesOsmosis = queriesStore.get(chainId).osmosis!;
     const queryActiveGauges = queriesExternalStore.queryActiveGauges;
 
-    const allPools = queriesOsmosis.queryGammPools.getAllPools();
-
-    const allPoolsWithMetrics: PoolWithMetrics[] = allPools.map((pool) => {
-      const poolDetail = derivedDataStore.poolDetails.get(pool.id);
-      return {
-        pool,
-        ...queriesExternalStore.queryGammPoolFeeMetrics.getPoolFeesMetrics(
-          pool.id,
-          priceStore
-        ),
-        liquidity: poolDetail.totalValueLocked,
-        myLiquidity: poolDetail.userShareValue,
-        myAvailableLiquidity: poolDetail.userAvailableValue,
-        poolName: pool.poolAssets
-          .map((asset) => asset.amount.currency.coinDenom)
-          .join("/"),
-        networkNames: pool.poolAssets
-          .map(
-            (asset) =>
-              chainStore.getChainFromCurrency(asset.amount.denom)?.chainName ??
-              ""
-          )
-          .join(" "),
-        apr:
-          derivedDataStore.poolsBonding
-            .get(pool.id)
-            ?.highestBondDuration?.aggregateApr.maxDecimals(0) ??
-          poolDetail.swapFeeApr.maxDecimals(0),
-      };
-    });
+    const allPoolsWithMetrics =
+      derivedDataStore.poolsWithMetrics.get(chainId).allPools;
 
     const tvlFilteredPools = useMemo(
       () =>

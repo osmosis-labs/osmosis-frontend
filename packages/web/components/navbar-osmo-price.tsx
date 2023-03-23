@@ -104,6 +104,11 @@ const NavbarOsmoPrice = observer(() => {
             width={25}
             height={24}
             lineWidth={2}
+            color={
+              tokenDataQuery.get24hrChange?.toDec().gte(new Dec(0))
+                ? "#6BDEC9"
+                : "#E91F4F"
+            }
           />
 
           <p
