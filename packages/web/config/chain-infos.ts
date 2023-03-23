@@ -1962,7 +1962,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "kava",
           coinGeckoId: "pool:ukava",
-          coinImageUrl: "/tokens/kava.png",
+          coinImageUrl: "/tokens/kava.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
@@ -1993,7 +1993,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "usdx",
           coinGeckoId: "pool:usdx",
-          coinImageUrl: "/tokens/usdx.png",
+          coinImageUrl: "/tokens/usdx.svg",
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
