@@ -2,10 +2,10 @@ import { Coin, Dec, Int } from "@keplr-wallet/unit";
 
 import { maxSpotPrice, minSpotPrice, smallestDec } from "./const";
 import { TickOverflowError } from "./errors";
+import { addLiquidity, approxSqrt } from "./math";
 import { makeSwapStrategy } from "./swap-strategy";
 import { tickToSqrtPrice } from "./tick";
 import { TickWithNetLiquidity } from "./types";
-import { addLiquidity, approxSqrt } from "./utils";
 
 export const ConcentratedLiquidityMath = {
   calcOutGivenIn,

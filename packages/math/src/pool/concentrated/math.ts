@@ -46,7 +46,7 @@ export function getNextSqrtPriceFromAmount0InRoundingUp(
     return sqrtPriceCurrent;
   }
 
-  const product = sqrtPriceCurrent.mul(sqrtPriceCurrent);
+  const product = amountRemaining.mul(sqrtPriceCurrent);
   const denom = liquidity.add(product);
   return liquidity.mul(sqrtPriceCurrent).quoRoundUp(denom);
 }
@@ -73,7 +73,7 @@ export function getNextSqrtPriceFromAmount0OutRoundingUp(
   return liquidity.mul(sqrtPriceCurrent).quoRoundUp(denom);
 }
 
-export function getNextsqrtPriceFromAmount1OutRoundingDown(
+export function getNextSqrtPriceFromAmount1OutRoundingDown(
   sqrtPriceCurrent: Dec,
   liquidity: Dec,
   amountRemaining: Dec
@@ -89,6 +89,10 @@ export function getFeeChargePerSwapStepOutGivenIn(
 ): Dec {
   let feeChargeTotal = new Dec(0);
 
+  if (swapFee.isNegative()) {
+    throw new Error("Swap fee should be non-negative");
+  }
+
   if (swapFee.isZero()) {
     return feeChargeTotal;
   }
@@ -97,6 +101,10 @@ export function getFeeChargePerSwapStepOutGivenIn(
     feeChargeTotal = amountIn.mul(swapFee).quo(new Dec(1).sub(swapFee));
   } else {
     feeChargeTotal = amountSpecifiedRemaining.sub(amountIn);
+  }
+
+  if (feeChargeTotal.isNegative()) {
+    throw new Error("Fee charge should be non-negative");
   }
 
   return feeChargeTotal;

@@ -1,13 +1,13 @@
 import { Dec } from "@keplr-wallet/unit";
 
-import { SwapStrategy } from "./swap-strategy";
 import {
   calcAmount0Delta,
   calcAmount1Delta,
   getFeeChargePerSwapStepOutGivenIn,
   getNextSqrtPriceFromAmount0InRoundingUp,
-  getNextsqrtPriceFromAmount1OutRoundingDown,
-} from "./utils";
+  getNextSqrtPriceFromAmount1OutRoundingDown,
+} from "./math";
+import { SwapStrategy } from "./swap-strategy";
 
 export type ZeroForOne = {
   sqrtPriceLimit: Dec;
@@ -106,7 +106,7 @@ export class ZeroForOneStrategy implements SwapStrategy {
     if (amountOneRemainingOut.gte(amountOneOut)) {
       sqrtPriceNext = sqrtPriceTarget;
     } else {
-      sqrtPriceNext = getNextsqrtPriceFromAmount1OutRoundingDown(
+      sqrtPriceNext = getNextSqrtPriceFromAmount1OutRoundingDown(
         curSqrtPrice,
         liquidity,
         amountOneRemainingOut

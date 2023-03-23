@@ -1,14 +1,14 @@
 import { Dec } from "@keplr-wallet/unit";
 
 import { maxSqrtRatio } from "./const";
-import { SwapStrategy } from "./swap-strategy";
 import {
   calcAmount0Delta,
   calcAmount1Delta,
   getFeeChargePerSwapStepOutGivenIn,
   getNextSqrtPriceFromAmount0OutRoundingUp,
   getNextSqrtPriceFromAmount1InRoundingDown,
-} from "./utils";
+} from "./math";
+import { SwapStrategy } from "./swap-strategy";
 
 export type OneForZero = {
   sqrtPriceLimit: Dec;

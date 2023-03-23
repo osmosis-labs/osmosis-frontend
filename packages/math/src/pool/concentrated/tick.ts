@@ -7,7 +7,7 @@ import {
   maxSpotPrice,
   minSpotPrice,
 } from "./const";
-import { approxSqrt } from "./utils";
+import { approxSqrt } from "./math";
 const nine = new Dec(9);
 
 // Ref: https://github.com/osmosis-labs/osmosis/blob/main/x/concentrated-liquidity/README.md#tick-spacing-example-tick-to-price
