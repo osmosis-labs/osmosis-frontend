@@ -416,7 +416,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         this.txTypeInProgressByChain.set(chainNameOrId, "");
       });
 
-      // After sending tx, the balances is probably changed due to the fee.
+      /**
+       * Refetch balances.
+       * After sending tx, the balances is probably changed due to the fee.
+       */
       for (const feeAmount of fee.amount) {
         if (!wallet.address) continue;
 
