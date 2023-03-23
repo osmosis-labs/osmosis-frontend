@@ -37,10 +37,11 @@ export const Announcement:
       isWarning: true,
     }
   : {
-      enTextOrLocalizationPath: "Quasar has launched",
+      enTextOrLocalizationPath: "Osmosis Interchain Vaults have launched.",
       link: {
-        enTextOrLocalizationKey: "Click here to learn more",
+        enTextOrLocalizationKey: "Jump into Quasar",
         url: "http://app.quasar.fi/",
+        isExternal: true,
       },
     };
 
