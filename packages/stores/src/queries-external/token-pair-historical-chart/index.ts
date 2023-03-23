@@ -6,10 +6,10 @@ import { IPriceStore } from "src/price";
 
 import { IMPERATOR_HISTORICAL_DATA_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
-import { TokenPairHistoricalPrice } from "./types";
+import { PriceRange, TokenPairHistoricalPrice } from "./types";
 
 const AvailableRangeValues = ["7d", "1mo", "1y"] as const;
-type Tf = typeof AvailableRangeValues[number];
+type Tf = PriceRange;
 
 /** Queries Imperator token history data chart. */
 export class ObservableQueryTokenPairHistoricalChart extends ObservableQueryExternalBase<
@@ -26,7 +26,7 @@ export class ObservableQueryTokenPairHistoricalChart extends ObservableQueryExte
      * Range of historical data
      * Available values: ["7d", "1mo", "1y"]
      */
-    protected readonly tf: Tf = "7d"
+    protected readonly tf: Tf
   ) {
     super(
       kvStore,
@@ -84,7 +84,7 @@ export class ObservableQueryTokensPairHistoricalChart extends HasMapStore<Observ
     });
   }
 
-  get(poolId: string, tf: Tf = "7d", baseDenom = "", quoteDenom = "") {
+  get(poolId: string, tf?: Tf, baseDenom = "", quoteDenom = "") {
     return super.get(
       `${poolId},${tf},${baseDenom},${quoteDenom}`
     ) as ObservableQueryTokenPairHistoricalChart;
