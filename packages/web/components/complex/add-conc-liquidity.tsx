@@ -45,12 +45,6 @@ const ConcentratedLiquidityDepthChart = dynamic(
   { ssr: false }
 );
 
-enum AddConcLiquidityModalView {
-  Overview,
-  AddManual,
-  AddManaged,
-}
-
 const accessors = {
   xAccessor: (d: any) => {
     return d?.time;
@@ -155,9 +149,9 @@ export const AddConcLiquidity: FunctionComponent<
   ({ className, addLiquidityConfig, actionButton, getFiatValue }) => {
     const router = useRouter();
     const { id: poolId } = router.query as { id: string };
-    const [view, setView] = useState<AddConcLiquidityModalView>(
-      AddConcLiquidityModalView.Overview
-    );
+    // const [view, setView] = useState<AddConcLiquidityModalView>(
+    //   AddConcLiquidityModalView.Overview
+    // );
     const { derivedDataStore } = useStore();
 
     // initialize pool data stores once root pool store is loaded
@@ -186,28 +180,27 @@ export const AddConcLiquidity: FunctionComponent<
     return (
       <div className={classNames("flex flex-col gap-8", className)}>
         {(() => {
-          switch (view) {
-            case AddConcLiquidityModalView.Overview:
+          switch (addLiquidityConfig.addConcLiquidityModalView) {
+            case "overview":
               return (
                 <Overview
                   pool={pool}
                   poolName={poolName}
                   poolDetail={poolDetail}
                   superfluidPoolDetail={superfluidPoolDetail}
-                  setView={setView}
+                  addLiquidityConfig={addLiquidityConfig}
                 />
               );
-            case AddConcLiquidityModalView.AddManual:
+            case "add_manual":
               return (
                 <AddConcLiqView
                   getFiatValue={getFiatValue}
                   pool={pool}
                   addLiquidityConfig={addLiquidityConfig}
                   actionButton={actionButton}
-                  setView={setView}
                 />
               );
-            case AddConcLiquidityModalView.AddManaged:
+            case "add_managed":
               return null;
           }
         })()}
@@ -222,17 +215,24 @@ const Overview: FunctionComponent<
     poolName?: string;
     poolDetail?: ObservablePoolDetail;
     superfluidPoolDetail?: ObservableSuperfluidPoolDetail;
-    setView: (view: AddConcLiquidityModalView) => void;
+    addLiquidityConfig: ObservableAddLiquidityConfig;
   } & CustomClasses
 > = observer(
-  ({ setView, pool, poolName, superfluidPoolDetail, poolDetail }) => {
+  ({
+    addLiquidityConfig,
+    pool,
+    poolName,
+    superfluidPoolDetail,
+    poolDetail,
+  }) => {
     const { priceStore, queriesExternalStore } = useStore();
     const router = useRouter();
     const { id: poolId } = router.query as { id: string };
     const t = useTranslation();
-    const [selected, selectView] = useState<AddConcLiquidityModalView>(
-      AddConcLiquidityModalView.AddManual
-    );
+    const [selected, selectView] =
+      useState<typeof addLiquidityConfig.addConcLiquidityModalView>(
+        "add_manual"
+      );
     const queryGammPoolFeeMetrics =
       queriesExternalStore.queryGammPoolFeeMetrics;
 
@@ -310,20 +310,25 @@ const Overview: FunctionComponent<
             <StrategySelector
               title={t("addConcentratedLiquidity.managed")}
               description={t("addConcentratedLiquidity.managedDescription")}
-              selected={selected === AddConcLiquidityModalView.AddManaged}
+              selected={selected === "add_managed"}
               imgSrc="/images/managed_liquidity_mock.png"
             />
             <StrategySelector
               title={t("addConcentratedLiquidity.manual")}
               description={t("addConcentratedLiquidity.manualDescription")}
-              selected={selected === AddConcLiquidityModalView.AddManual}
-              onClick={() => selectView(AddConcLiquidityModalView.AddManual)}
+              selected={selected === "add_manual"}
+              onClick={() => selectView("add_manual")}
               imgSrc="/images/conliq_mock_range.png"
             />
           </div>
         </div>
         <div className="flex w-full items-center justify-center">
-          <Button className="w-[25rem]" onClick={() => setView(selected)}>
+          <Button
+            className="w-[25rem]"
+            onClick={() =>
+              addLiquidityConfig.setAddConcLiquidityModalView(selected)
+            }
+          >
             Next
           </Button>
         </div>
@@ -368,339 +373,326 @@ const AddConcLiqView: FunctionComponent<
     addLiquidityConfig: ObservableAddLiquidityConfig;
     actionButton: ReactNode;
     getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
-    setView: (view: AddConcLiquidityModalView) => void;
   } & CustomClasses
-> = observer(
-  ({
-    // className,
-    // addLiquidityConfig,
-    actionButton,
-    getFiatValue,
-    setView,
-    pool,
-  }) => {
-    const { queriesExternalStore } = useStore();
-    const t = useTranslation();
-    const [data, setData] = useState<{ price: number; time: number }[]>([]);
-    const [baseDeposit, setBaseDeposit] = useState(0);
-    const [quoteDeposit, setQuoteDeposit] = useState(0);
-    const yRange = getRangeFromData(data.map(accessors.yAccessor));
-    const [inputMin, setInputMin] = useState("0");
-    const [inputMax, setInputMax] = useState("0");
-    const [min, setMin] = useState(0);
-    const [max, setMax] = useState(0);
-    const baseDenom = pool?.poolAssets[0].amount.denom || "";
-    const quoteDenom = pool?.poolAssets[1].amount.denom || "";
-    const [range, setRange] = useState<"7d" | "1mo" | "1y">("7d");
-    const router = useRouter();
-    const { id: poolId } = router.query as { id: string };
-    const [zoom, setZoom] = useState(1);
-    const [depthData, setDepthData] = useState<
-      { tick: number; depth: number }[]
-    >([]);
+> = observer(({ addLiquidityConfig, actionButton, getFiatValue, pool }) => {
+  const { queriesExternalStore } = useStore();
+  const t = useTranslation();
+  const [data, setData] = useState<{ price: number; time: number }[]>([]);
+  const [baseDeposit, setBaseDeposit] = useState(0);
+  const [quoteDeposit, setQuoteDeposit] = useState(0);
+  const yRange = getRangeFromData(data.map(accessors.yAccessor));
+  const [inputMin, setInputMin] = useState("0");
+  const [inputMax, setInputMax] = useState("0");
+  const [min, setMin] = useState(0);
+  const [max, setMax] = useState(0);
+  const baseDenom = pool?.poolAssets[0].amount.denom || "";
+  const quoteDenom = pool?.poolAssets[1].amount.denom || "";
+  const [range, setRange] = useState<"7d" | "1mo" | "1y">("7d");
+  const router = useRouter();
+  const { id: poolId } = router.query as { id: string };
+  const [zoom, setZoom] = useState(1);
+  const [depthData, setDepthData] = useState<{ tick: number; depth: number }[]>(
+    []
+  );
 
-    const absMin = zoom > 1 ? yRange.min / zoom : yRange.min * zoom;
-    const absMax = yRange.max * zoom;
+  const absMin = zoom > 1 ? yRange.min / zoom : yRange.min * zoom;
+  const absMax = yRange.max * zoom;
 
-    const xMax = Math.max(...depthData.map((d) => d.depth)) * 1.2;
+  const xMax = Math.max(...depthData.map((d) => d.depth)) * 1.2;
 
-    useEffect(() => {
-      (async () => {
-        console.log(absMin, absMax);
-        if (!absMin && !absMax) return;
-        const data = await getDepthFromRange(
-          zoom > 1 ? yRange.min / zoom : yRange.min * zoom,
-          yRange.max * zoom
+  useEffect(() => {
+    (async () => {
+      // console.log(absMin, absMax);
+      if (!absMin && !absMax) return;
+      const data = await getDepthFromRange(
+        zoom > 1 ? yRange.min / zoom : yRange.min * zoom,
+        yRange.max * zoom
+      );
+      setDepthData(data);
+    })();
+  }, [absMin, absMax]);
+
+  const updateMin = useCallback(
+    (val: string | number, shouldUpdateRange = false) => {
+      const out = Math.min(Math.max(Number(val), 0), Number(inputMax));
+      const price = getPriceAtTick(findNearestTick(out));
+      if (shouldUpdateRange) setMin(price);
+      if (Number(val) !== price) {
+        setInputMin("" + price);
+      } else {
+        setInputMin("" + val);
+      }
+    },
+    [inputMax]
+  );
+
+  const updateMax = useCallback(
+    (val: string | number, shouldUpdateRange = false) => {
+      const out = Math.max(Number(val), Number(inputMin));
+      const price = getPriceAtTick(findNearestTick(out));
+      if (shouldUpdateRange) setMax(price);
+      if (Number(val) !== price) {
+        setInputMax("" + price);
+      } else {
+        setInputMax("" + val);
+      }
+    },
+    [inputMin]
+  );
+
+  const updateData = useCallback((data: { price: number; time: number }[]) => {
+    const last = data[data.length - 1];
+    setData(data);
+    setInputMin("" + last.price * 0.9);
+    setMin(last.price * 0.9);
+    setInputMax("" + last.price * 1.15);
+    setMax(last.price * 1.15);
+  }, []);
+
+  const query = queriesExternalStore.queryTokenPairHistoricalChart.get(
+    poolId,
+    range,
+    baseDenom,
+    quoteDenom
+  );
+
+  useEffect(() => {
+    (async () => {
+      if (!query.isFetching && query.getChartPrices) {
+        updateData(
+          query.getChartPrices.map(({ price, time }) => ({
+            time,
+            price: parseFloat(price.toString()),
+          }))
         );
-        setDepthData(data);
-      })();
-    }, [absMin, absMax]);
+      }
+    })();
+  }, [updateData, query.getChartPrices, query.isFetching]);
 
-    const updateMin = useCallback(
-      (val: string | number, shouldUpdateRange = false) => {
-        const out = Math.min(Math.max(Number(val), 0), Number(inputMax));
-        const price = getPriceAtTick(findNearestTick(out));
-        if (shouldUpdateRange) setMin(price);
-        if (Number(val) !== price) {
-          setInputMin("" + price);
-        } else {
-          setInputMin("" + val);
-        }
-      },
-      [inputMax]
-    );
-
-    const updateMax = useCallback(
-      (val: string | number, shouldUpdateRange = false) => {
-        const out = Math.max(Number(val), Number(inputMin));
-        const price = getPriceAtTick(findNearestTick(out));
-        if (shouldUpdateRange) setMax(price);
-        if (Number(val) !== price) {
-          setInputMax("" + price);
-        } else {
-          setInputMax("" + val);
-        }
-      },
-      [inputMin]
-    );
-
-    const updateData = useCallback(
-      (data: { price: number; time: number }[]) => {
-        const last = data[data.length - 1];
-        setData(data);
-        setInputMin("" + last.price * 0.9);
-        setMin(last.price * 0.9);
-        setInputMax("" + last.price * 1.15);
-        setMax(last.price * 1.15);
-      },
-      []
-    );
-
-    const query = queriesExternalStore.queryTokenPairHistoricalChart.get(
-      poolId,
-      range,
-      baseDenom,
-      quoteDenom
-    );
-
-    useEffect(() => {
-      (async () => {
-        if (!query.isFetching && query.getChartPrices) {
-          updateData(
-            query.getChartPrices.map(({ price, time }) => ({
-              time,
-              price: parseFloat(price.toString()),
-            }))
-          );
-        }
-      })();
-    }, [updateData, query.getChartPrices, query.isFetching]);
-
-    return (
-      <>
-        <div className="align-center relative flex flex-row">
-          <div
-            className="absolute left-0 flex flex h-full cursor-pointer flex-row items-center text-sm"
-            onClick={() => setView(AddConcLiquidityModalView.Overview)}
-          >
-            <Image src="/icons/arrow-left.svg" width={24} height={24} />
-            <span className="pl-1">{t("addConcentratedLiquidity.back")}</span>
-          </div>
-          <div className="flex-1 text-center text-lg">
-            {t("addConcentratedLiquidity.step2Title")}
-          </div>
-          <div className="absolute right-0 flex h-full items-center text-xs font-subtitle2 text-osmoverse-200">
-            {t("addConcentratedLiquidity.priceShownIn", {
-              base: baseDenom,
-              quote: quoteDenom,
-            })}
-          </div>
+  return (
+    <>
+      <div className="align-center relative flex flex-row">
+        <div
+          className="absolute left-0 flex flex h-full cursor-pointer flex-row items-center text-sm"
+          onClick={() =>
+            addLiquidityConfig.setAddConcLiquidityModalView("overview")
+          }
+        >
+          <Image src="/icons/arrow-left.svg" width={24} height={24} />
+          <span className="pl-1">{t("addConcentratedLiquidity.back")}</span>
         </div>
-        <div className="flex flex-col">
-          <div className="px-2 py-1 text-sm">
-            {t("addConcentratedLiquidity.priceRange")}
-          </div>
-          <div className="flex flex-row">
-            <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col bg-osmoverse-700">
-              <div className="flex flex-row">
-                <div className="flex flex-1 flex-row pt-4 pl-4">
-                  <h4 className="row-span-2 pr-1 font-caption">
-                    {!!data.length && data[data.length - 1].price.toFixed(2)}
-                  </h4>
-                  <div className="flex flex-col justify-center font-caption">
-                    <div className="text-caption text-osmoverse-300">
-                      {t("addConcentratedLiquidity.currentPrice")}
-                    </div>
-                    <div className="text-caption text-osmoverse-300">
-                      {t("addConcentratedLiquidity.basePerQuote", {
-                        base: baseDenom,
-                        quote: quoteDenom,
-                      })}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex flex-1 flex-row justify-end gap-1 pt-2 pr-2">
-                  <RangeSelector
-                    label="7 day"
-                    onClick={() => setRange("7d")}
-                    selected={range === "7d"}
-                  />
-                  <RangeSelector
-                    label="30 days"
-                    onClick={() => setRange("1mo")}
-                    selected={range === "1mo"}
-                  />
-                  <RangeSelector
-                    label="1 year"
-                    onClick={() => setRange("1y")}
-                    selected={range === "1y"}
-                  />
-                </div>
-              </div>
-              <LineChart min={min} max={max} data={data} zoom={zoom} />
-            </div>
-            <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-row bg-osmoverse-700">
-              <div className="flex flex-1 flex-col">
-                <div className="mt-6 mr-6 flex h-6 flex-row justify-end gap-1">
-                  <SelectorWrapper selected={false} onClick={() => setZoom(1)}>
-                    <Image
-                      alt="refresh"
-                      src="/icons/refresh-ccw.svg"
-                      width={16}
-                      height={16}
-                    />
-                  </SelectorWrapper>
-                  <SelectorWrapper
-                    selected={false}
-                    onClick={() => setZoom(Math.max(1, zoom - 0.2))}
-                  >
-                    <Image
-                      alt="zoom in"
-                      src="/icons/zoom-in.svg"
-                      width={16}
-                      height={16}
-                    />
-                  </SelectorWrapper>
-                  <SelectorWrapper
-                    selected={false}
-                    onClick={() => setZoom(zoom + 0.2)}
-                  >
-                    <Image
-                      alt="zoom out"
-                      src="/icons/zoom-out.svg"
-                      width={16}
-                      height={16}
-                    />
-                  </SelectorWrapper>
-                </div>
-                <ConcentratedLiquidityDepthChart
-                  min={min}
-                  max={max}
-                  yRange={calculateRange(
-                    zoom > 1 ? yRange.min / zoom : yRange.min * zoom,
-                    yRange.max * zoom,
-                    min,
-                    max,
-                    yRange.last
-                  )}
-                  xRange={[0, xMax]}
-                  data={depthData}
-                  annotationDatum={{ tick: yRange.last, depth: xMax }}
-                  onMoveMax={debounce((val: number) => updateMax(val), 100)}
-                  onMoveMin={debounce((val: number) => updateMin(val), 100)}
-                  onSubmitMin={(val) => updateMin(val, true)}
-                  onSubmitMax={(val) => updateMax(val, true)}
-                  offset={{ top: 58 - 48, right: 36, bottom: 36, left: 0 }}
-                  horizontal
-                />
-              </div>
-              <div className="flex flex-col items-center justify-center gap-4 pr-8">
-                <PriceInputBox
-                  currentValue={inputMax}
-                  label="high"
-                  onChange={(val) => setInputMax(val)}
-                  onBlur={(e) => updateMax(+e.target.value, true)}
-                />
-                <PriceInputBox
-                  currentValue={inputMin}
-                  label="low"
-                  onChange={(val) => setInputMin(val)}
-                  onBlur={(e) => updateMin(+e.target.value, true)}
-                />
-              </div>
-            </div>
-          </div>
+        <div className="flex-1 text-center text-lg">
+          {t("addConcentratedLiquidity.step2Title")}
+        </div>
+        <div className="absolute right-0 flex h-full items-center text-xs font-subtitle2 text-osmoverse-200">
+          {t("addConcentratedLiquidity.priceShownIn", {
+            base: baseDenom,
+            quote: quoteDenom,
+          })}
+        </div>
+      </div>
+      <div className="flex flex-col">
+        <div className="px-2 py-1 text-sm">
+          {t("addConcentratedLiquidity.priceRange")}
         </div>
         <div className="flex flex-row">
-          <div className="mx-4 flex max-w-[16.375rem] flex-col">
-            <div className="text-subtitle1">
-              {t("addConcentratedLiquidity.selectVolatilityRange")}
+          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col bg-osmoverse-700">
+            <div className="flex flex-row">
+              <div className="flex flex-1 flex-row pt-4 pl-4">
+                <h4 className="row-span-2 pr-1 font-caption">
+                  {!!data.length && data[data.length - 1].price.toFixed(2)}
+                </h4>
+                <div className="flex flex-col justify-center font-caption">
+                  <div className="text-caption text-osmoverse-300">
+                    {t("addConcentratedLiquidity.currentPrice")}
+                  </div>
+                  <div className="text-caption text-osmoverse-300">
+                    {t("addConcentratedLiquidity.basePerQuote", {
+                      base: baseDenom,
+                      quote: quoteDenom,
+                    })}
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-1 flex-row justify-end gap-1 pt-2 pr-2">
+                <RangeSelector
+                  label="7 day"
+                  onClick={() => setRange("7d")}
+                  selected={range === "7d"}
+                />
+                <RangeSelector
+                  label="30 days"
+                  onClick={() => setRange("1mo")}
+                  selected={range === "1mo"}
+                />
+                <RangeSelector
+                  label="1 year"
+                  onClick={() => setRange("1y")}
+                  selected={range === "1y"}
+                />
+              </div>
             </div>
-            <div className="text-caption font-caption text-osmoverse-200">
-              {t("addConcentratedLiquidity.volatilityDescription")}
-            </div>
-            <a
-              className="flex flex-row items-center text-caption font-caption text-wosmongton-300"
-              href="#"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {t("addConcentratedLiquidity.superchargedLearnMore")}
-              <Image src="/icons/arrow-right.svg" height={12} width={12} />
-            </a>
+            <LineChart min={min} max={max} data={data} zoom={zoom} />
           </div>
-          <div className="flex flex-1 flex-row justify-end gap-4">
-            <PresetVolatilityCard
-              src="/images/small-vial.svg"
-              upper={15}
-              lower={-10}
-              selected={max === yRange.last * 1.15 && min === yRange.last * 0.9}
-              onClick={() => {
-                setMax(yRange.last * 1.15);
-                setInputMax("" + yRange.last * 1.15);
-                setMin(yRange.last * 0.9);
-                setInputMin("" + yRange.last * 0.9);
-              }}
-            />
-            <PresetVolatilityCard
-              src="/images/medium-vial.svg"
-              upper={25}
-              lower={-25}
-              selected={
-                max === yRange.last * 1.25 && min === yRange.last * 0.75
-              }
-              onClick={() => {
-                setMax(yRange.last * 1.25);
-                setInputMax("" + yRange.last * 1.25);
-                setMin(yRange.last * 0.75);
-                setInputMin("" + yRange.last * 0.75);
-              }}
-            />
-            <PresetVolatilityCard
-              src="/images/large-vial.svg"
-              upper={50}
-              lower={-50}
-              selected={max === yRange.last * 1.5 && min === yRange.last * 0.5}
-              onClick={() => {
-                setMax(yRange.last * 1.5);
-                setInputMax("" + yRange.last * 1.5);
-                setMin(yRange.last * 0.5);
-                setInputMin("" + yRange.last * 0.5);
-              }}
-            />
-          </div>
-        </div>
-        <div className="flex flex-col">
-          <div className="px-2 py-1 text-sm">Amount to deposit</div>
-          <div className="flex flex-row justify-center rounded-[20px] bg-osmoverse-700 p-[1.25rem]">
-            <DepositAmountGroup
-              getFiatValue={getFiatValue}
-              coin={pool?.poolAssets[0].amount}
-              onInput={setBaseDeposit}
-              currentValue={baseDeposit}
-            />
-            <div className="mx-8 my-4">
-              <Image
-                alt=""
-                className="m-4"
-                src="/icons/link-2.svg"
-                width={35}
-                height={35}
+          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-row bg-osmoverse-700">
+            <div className="flex flex-1 flex-col">
+              <div className="mt-6 mr-6 flex h-6 flex-row justify-end gap-1">
+                <SelectorWrapper selected={false} onClick={() => setZoom(1)}>
+                  <Image
+                    alt="refresh"
+                    src="/icons/refresh-ccw.svg"
+                    width={16}
+                    height={16}
+                  />
+                </SelectorWrapper>
+                <SelectorWrapper
+                  selected={false}
+                  onClick={() => setZoom(Math.max(1, zoom - 0.2))}
+                >
+                  <Image
+                    alt="zoom in"
+                    src="/icons/zoom-in.svg"
+                    width={16}
+                    height={16}
+                  />
+                </SelectorWrapper>
+                <SelectorWrapper
+                  selected={false}
+                  onClick={() => setZoom(zoom + 0.2)}
+                >
+                  <Image
+                    alt="zoom out"
+                    src="/icons/zoom-out.svg"
+                    width={16}
+                    height={16}
+                  />
+                </SelectorWrapper>
+              </div>
+              <ConcentratedLiquidityDepthChart
+                min={min}
+                max={max}
+                yRange={calculateRange(
+                  zoom > 1 ? yRange.min / zoom : yRange.min * zoom,
+                  yRange.max * zoom,
+                  min,
+                  max,
+                  yRange.last
+                )}
+                xRange={[0, xMax]}
+                data={depthData}
+                annotationDatum={{ tick: yRange.last, depth: xMax }}
+                onMoveMax={debounce((val: number) => updateMax(val), 100)}
+                onMoveMin={debounce((val: number) => updateMin(val), 100)}
+                onSubmitMin={(val) => updateMin(val, true)}
+                onSubmitMax={(val) => updateMax(val, true)}
+                offset={{ top: 58 - 48, right: 36, bottom: 36, left: 0 }}
+                horizontal
               />
             </div>
-            <DepositAmountGroup
-              getFiatValue={getFiatValue}
-              coin={pool?.poolAssets[1].amount}
-              onInput={setQuoteDeposit}
-              currentValue={quoteDeposit}
-            />
+            <div className="flex flex-col items-center justify-center gap-4 pr-8">
+              <PriceInputBox
+                currentValue={inputMax}
+                label="high"
+                onChange={(val) => setInputMax(val)}
+                onBlur={(e) => updateMax(+e.target.value, true)}
+              />
+              <PriceInputBox
+                currentValue={inputMin}
+                label="low"
+                onChange={(val) => setInputMin(val)}
+                onBlur={(e) => updateMin(+e.target.value, true)}
+              />
+            </div>
           </div>
         </div>
-        {actionButton}
-      </>
-    );
-  }
-);
+      </div>
+      <div className="flex flex-row">
+        <div className="mx-4 flex max-w-[16.375rem] flex-col">
+          <div className="text-subtitle1">
+            {t("addConcentratedLiquidity.selectVolatilityRange")}
+          </div>
+          <div className="text-caption font-caption text-osmoverse-200">
+            {t("addConcentratedLiquidity.volatilityDescription")}
+          </div>
+          <a
+            className="flex flex-row items-center text-caption font-caption text-wosmongton-300"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t("addConcentratedLiquidity.superchargedLearnMore")}
+            <Image src="/icons/arrow-right.svg" height={12} width={12} />
+          </a>
+        </div>
+        <div className="flex flex-1 flex-row justify-end gap-4">
+          <PresetVolatilityCard
+            src="/images/small-vial.svg"
+            upper={15}
+            lower={-10}
+            selected={max === yRange.last * 1.15 && min === yRange.last * 0.9}
+            onClick={() => {
+              setMax(yRange.last * 1.15);
+              setInputMax("" + yRange.last * 1.15);
+              setMin(yRange.last * 0.9);
+              setInputMin("" + yRange.last * 0.9);
+            }}
+          />
+          <PresetVolatilityCard
+            src="/images/medium-vial.svg"
+            upper={25}
+            lower={-25}
+            selected={max === yRange.last * 1.25 && min === yRange.last * 0.75}
+            onClick={() => {
+              setMax(yRange.last * 1.25);
+              setInputMax("" + yRange.last * 1.25);
+              setMin(yRange.last * 0.75);
+              setInputMin("" + yRange.last * 0.75);
+            }}
+          />
+          <PresetVolatilityCard
+            src="/images/large-vial.svg"
+            upper={50}
+            lower={-50}
+            selected={max === yRange.last * 1.5 && min === yRange.last * 0.5}
+            onClick={() => {
+              setMax(yRange.last * 1.5);
+              setInputMax("" + yRange.last * 1.5);
+              setMin(yRange.last * 0.5);
+              setInputMin("" + yRange.last * 0.5);
+            }}
+          />
+        </div>
+      </div>
+      <div className="flex flex-col">
+        <div className="px-2 py-1 text-sm">Amount to deposit</div>
+        <div className="flex flex-row justify-center rounded-[20px] bg-osmoverse-700 p-[1.25rem]">
+          <DepositAmountGroup
+            getFiatValue={getFiatValue}
+            coin={pool?.poolAssets[0].amount}
+            onInput={setBaseDeposit}
+            currentValue={baseDeposit}
+          />
+          <div className="mx-8 my-4">
+            <Image
+              alt=""
+              className="m-4"
+              src="/icons/link-2.svg"
+              width={35}
+              height={35}
+            />
+          </div>
+          <DepositAmountGroup
+            getFiatValue={getFiatValue}
+            coin={pool?.poolAssets[1].amount}
+            onInput={setQuoteDeposit}
+            currentValue={quoteDeposit}
+          />
+        </div>
+      </div>
+      {actionButton}
+    </>
+  );
+});
 
 function SelectorWrapper(props: {
   children: ReactNode;

@@ -42,6 +42,15 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
   @observable
   protected _singleAmountInConfigIndex: number = 0;
 
+  /*
+	 Used to get current view type of AddConcLiquidity modal
+	 */
+  @observable
+  protected _addConcLiquidityModalView:
+    | "overview"
+    | "add_manual"
+    | "add_managed" = "overview";
+
   protected _cacheAmountConfigs?: {
     poolId: string;
     sender: string;
@@ -575,5 +584,16 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
         "Calculating the share out amount"
       );
     }
+  }
+
+  @action
+  setAddConcLiquidityModalView(
+    viewType: "overview" | "add_manual" | "add_managed"
+  ) {
+    this._addConcLiquidityModalView = viewType;
+  }
+
+  get addConcLiquidityModalView(): "overview" | "add_manual" | "add_managed" {
+    return this._addConcLiquidityModalView;
   }
 }
