@@ -418,7 +418,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       /**
        * Refetch balances.
-       * After sending tx, the balances is probably changed due to the fee.
+       * After sending tx, the balances are probably changed due to the fee.
        */
       for (const feeAmount of fee.amount) {
         if (!wallet.address) continue;
