@@ -1,3 +1,4 @@
+import { DeliverTxResponse } from "@cosmjs/stargate";
 import { ChainIdHelper } from "@keplr-wallet/cosmos";
 import {
   ChainGetter,
@@ -88,7 +89,7 @@ export class CosmosAccountImpl {
       | ((tx: any) => void)
       | {
           onBroadcasted?: (txHash: Uint8Array) => void;
-          onFulfill?: (tx: any) => void;
+          onFulfill?: (tx: DeliverTxResponse) => void;
         }
   ) {
     const actualAmount = (() => {

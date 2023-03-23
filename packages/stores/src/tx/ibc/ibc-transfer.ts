@@ -1,3 +1,4 @@
+import { DeliverTxResponse } from "@cosmjs/stargate";
 import { AmountConfig } from "@keplr-wallet/hooks";
 import { Buffer } from "buffer";
 
@@ -44,9 +45,12 @@ export async function basicIbcTransfer(
         sender: sender.account?.address ?? "",
         recipient,
       }),
-    onFulfill: (tx: any) => {
+    onFulfill: (tx: DeliverTxResponse) => {
       if (!tx.code) {
-        const events = tx?.events as Event[] | undefined;
+        const events = JSON.parse(tx?.rawLog ?? "{}")[0]?.events as
+          | Event[]
+          | undefined;
+
         for (const event of events ?? []) {
           if (event.type === "send_packet") {
             const attributes = event.attributes;
@@ -92,7 +96,7 @@ export async function basicIbcTransfer(
 
             if (sourceChannel && destChannel && sequence) {
               onFulfill?.({
-                txHash: tx.hash,
+                txHash: tx.transactionHash,
                 sourceChainId: sender.chainId,
                 sourceChannelId: sourceChannel,
                 destChainId: counterparty.chainId,
@@ -111,7 +115,7 @@ export async function basicIbcTransfer(
           }
         }
       } else {
-        onFailure?.(tx.hash, tx.code as number);
+        onFailure?.(tx.transactionHash, tx.code as number);
       }
     },
   };

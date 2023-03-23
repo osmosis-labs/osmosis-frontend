@@ -1,7 +1,16 @@
 import { EncodeObject, GeneratedType, Registry } from "@cosmjs/proto-signing";
-import { AminoTypes, StdFee } from "@cosmjs/stargate";
 import {
+  AminoTypes,
+  BroadcastTxError,
+  DeliverTxResponse,
+  StdFee,
+  TimeoutError,
+} from "@cosmjs/stargate";
+import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
+import {
+  ChainName,
   ChainWalletBase,
+  Endpoints,
   Logger,
   WalletManager,
   WalletStatus,
@@ -20,7 +29,9 @@ import {
   QueriesStore,
 } from "@keplr-wallet/stores";
 import { KeplrSignOptions } from "@keplr-wallet/types";
+import { Buffer } from "buffer";
 import { assets, chains } from "chain-registry";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { action, makeObservable, observable, runInAction } from "mobx";
 import {
   cosmosAminoConverters,
@@ -33,7 +44,7 @@ import {
 import { UnionToIntersection } from "utility-types";
 
 import { OsmosisQueries } from "../queries";
-import { TxTracer } from "../tx";
+import { sleep } from "./utils";
 
 const logger = new Logger("WARN");
 
@@ -48,6 +59,18 @@ const aminoConverters = {
   ...ibcAminoConverters,
   ...osmosisAminoConverters,
 };
+
+const endpoints = chains.reduce((endpoints, chain) => {
+  const newEndpoints: Record<ChainName, Endpoints> = {
+    ...endpoints,
+    [chain.chain_name]: {
+      rpc: chain.apis?.rpc?.map(({ address }) => address) ?? [],
+      rest: chain.apis?.rest?.map(({ address }) => address) ?? [],
+      isLazy: true,
+    },
+  };
+  return newEndpoints;
+}, {} as Record<ChainName, Endpoints>);
 
 export const cosmosKitLocalStorageKey = "cosmos-kit@1:core//accounts";
 
@@ -96,6 +119,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     },
     {
       isLazy: true,
+      endpoints,
     },
     {
       duration: 31556926000, // 1 year
@@ -273,15 +297,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     fee: StdFee,
     _signOptions?: KeplrSignOptions,
     onTxEvents?:
-      | ((tx: any) => void)
+      | ((tx: DeliverTxResponse) => void)
       | {
           onBroadcastFailed?: (e?: Error) => void;
           onBroadcasted?: (txHash: Uint8Array) => void;
-          onFulfill?: (tx: any) => void;
+          onFulfill?: (tx: DeliverTxResponse) => void;
         }
   ) {
-    let txHash: Uint8Array;
-
     runInAction(() => {
       this.txTypeInProgressByChain.set(chainNameOrId, type);
     });
@@ -305,56 +327,90 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         throw new Error("There is no msg to send");
       }
 
-      const result = await wallet.signAndBroadcast(msgs, fee, memo);
+      let onBroadcasted: ((txHash: Uint8Array) => void) | undefined;
+      let onFulfill: ((tx: DeliverTxResponse) => void) | undefined;
 
-      txHash = new TextEncoder().encode(result.transactionHash);
-    } catch (e) {
-      const error = e as Error;
-      runInAction(() => {
-        this.txTypeInProgressByChain.set(chainNameOrId, "");
-      });
-
-      if (this.txOpts.preTxEvents?.onBroadcastFailed) {
-        this.txOpts.preTxEvents.onBroadcastFailed(chainNameOrId, error);
+      if (onTxEvents) {
+        if (typeof onTxEvents === "function") {
+          onFulfill = onTxEvents;
+        } else {
+          onBroadcasted = onTxEvents?.onBroadcasted;
+          onFulfill = onTxEvents?.onFulfill;
+        }
       }
 
-      if (
-        onTxEvents &&
-        "onBroadcastFailed" in onTxEvents &&
-        onTxEvents.onBroadcastFailed
-      ) {
-        onTxEvents.onBroadcastFailed(error);
+      const txRaw = await wallet.sign(msgs, fee, memo);
+      const encodedTx = TxRaw.encode(txRaw).finish();
+      const endpoint = await wallet.getRpcEndpoint(true);
+
+      /**
+       * Manually create a Tendermint client to broadcast the transaction to have more control over transaction tracking.
+       * Cosmjs team is working on a similar solution within their library.
+       * @see https://github.com/cosmos/cosmjs/issues/1316
+       */
+      const tmClient = await Tendermint34Client.connect(endpoint);
+
+      const broadcasted = await tmClient.broadcastTxSync({ tx: encodedTx });
+      if (broadcasted.code) {
+        throw new BroadcastTxError(
+          broadcasted.code,
+          broadcasted.codespace ?? "",
+          broadcasted.log
+        );
       }
 
-      throw e;
-    }
-
-    let onBroadcasted: ((txHash: Uint8Array) => void) | undefined;
-    let onFulfill: ((tx: any) => void) | undefined;
-
-    if (onTxEvents) {
-      if (typeof onTxEvents === "function") {
-        onFulfill = onTxEvents;
-      } else {
-        onBroadcasted = onTxEvents?.onBroadcasted;
-        onFulfill = onTxEvents?.onFulfill;
+      if (this.txOpts.preTxEvents?.onBroadcasted) {
+        this.txOpts.preTxEvents.onBroadcasted(chainNameOrId, broadcasted.hash);
       }
-    }
 
-    if (this.txOpts.preTxEvents?.onBroadcasted) {
-      this.txOpts.preTxEvents.onBroadcasted(chainNameOrId, txHash);
-    }
+      if (onBroadcasted) {
+        onBroadcasted(broadcasted.hash);
+      }
 
-    if (onBroadcasted) {
-      onBroadcasted(txHash);
-    }
+      const signingClient = await wallet.getSigningStargateClient();
+      const timeoutMs = signingClient.broadcastTimeoutMs ?? 60_000;
+      const pollIntervalMs = signingClient.broadcastPollIntervalMs ?? 3_000;
 
-    const rpcEndpoint = await wallet?.getRpcEndpoint();
+      let timedOut = false;
+      const txPollTimeout = setTimeout(() => {
+        timedOut = true;
+      }, timeoutMs);
 
-    const txTracer = new TxTracer((rpcEndpoint as string) ?? "", "/websocket");
+      const pollForTx = async (txId: string): Promise<DeliverTxResponse> => {
+        if (timedOut) {
+          throw new TimeoutError(
+            `Transaction with ID ${txId} was submitted but was not yet found on the chain. You might want to check later. There was a wait of ${
+              timeoutMs / 1000
+            } seconds.`,
+            txId
+          );
+        }
+        await sleep(pollIntervalMs);
+        const result = await signingClient.getTx(txId);
+        return result
+          ? {
+              code: result.code,
+              height: result.height,
+              rawLog: result.rawLog,
+              transactionHash: txId,
+              gasUsed: result.gasUsed,
+              gasWanted: result.gasWanted,
+            }
+          : pollForTx(txId);
+      };
 
-    txTracer.traceTx(txHash).then((tx) => {
-      txTracer.close();
+      const tx = await new Promise<DeliverTxResponse>((resolve, reject) =>
+        pollForTx(Buffer.from(broadcasted.hash).toString("hex")).then(
+          (value) => {
+            clearTimeout(txPollTimeout);
+            resolve(value);
+          },
+          (error) => {
+            clearTimeout(txPollTimeout);
+            reject(error);
+          }
+        )
+      );
 
       runInAction(() => {
         this.txTypeInProgressByChain.set(chainNameOrId, "");
@@ -376,11 +432,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         }
       }
 
-      // Always add the tx hash data.
-      if (tx && !tx.hash) {
-        tx.hash = Buffer.from(txHash).toString("hex");
-      }
-
       if (this.txOpts.preTxEvents?.onFulfill) {
         this.txOpts.preTxEvents.onFulfill(chainNameOrId, tx);
       }
@@ -389,6 +440,25 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         console.log("fulfilled!");
         onFulfill(tx);
       }
-    });
+    } catch (e) {
+      const error = e as Error;
+      runInAction(() => {
+        this.txTypeInProgressByChain.set(chainNameOrId, "");
+      });
+
+      if (this.txOpts.preTxEvents?.onBroadcastFailed) {
+        this.txOpts.preTxEvents.onBroadcastFailed(chainNameOrId, error);
+      }
+
+      if (
+        onTxEvents &&
+        "onBroadcastFailed" in onTxEvents &&
+        onTxEvents.onBroadcastFailed
+      ) {
+        onTxEvents.onBroadcastFailed(error);
+      }
+
+      throw e;
+    }
   }
 }

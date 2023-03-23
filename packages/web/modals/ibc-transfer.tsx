@@ -59,8 +59,8 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
           className: "md:mt-4 mt-6 hover:opacity-75",
           mode: isChainBlockedOrCongested ? "primary-warning" : "primary",
           disabled:
-            // !account.isReadyToSendTx || TODO: uncomment this when we can check if the account is ready to send tx
-            // !counterpartyAccount.isReadyToSendTx ||
+            !account?.isReadyToSendTx ||
+            !counterpartyAccount?.isReadyToSendTx ||
             account?.txTypeInProgress !== "" ||
             amountConfig.error != undefined ||
             inTransit ||

@@ -1,4 +1,4 @@
-import { StdFee } from "@cosmjs/stargate";
+import { DeliverTxResponse, StdFee } from "@cosmjs/stargate";
 import {
   ChainGetter,
   CoinPrimitive,
@@ -79,10 +79,10 @@ export class CosmwasmAccountImpl {
     funds: CoinPrimitive[],
     stdFee: Optional<StdFee, "amount">,
     onTxEvents?:
-      | ((tx: any) => void)
+      | ((tx: DeliverTxResponse) => void)
       | {
           onBroadcasted?: (txHash: Uint8Array) => void;
-          onFulfill?: (tx: any) => void;
+          onFulfill?: (tx: DeliverTxResponse) => void;
         }
   ) {
     const msg = this.msgOpts.executeWasm.messageComposer({
