@@ -33,6 +33,26 @@
   },
   "assets": {
     "bondedAssets": "예치된 자산",
+    "historyTable": {
+      "colums": {
+        "amount": "Amount",
+        "deposit": "Deposit",
+        "status": "Status",
+        "transactionHash": "Transaction Hash",
+        "type": "Type",
+        "withdraw": "Withdraw"
+      },
+      "errors": {
+        "insufficientFee": "Insufficient Fee"
+      },
+      "failed": "Failed",
+      "failedWithReason": "Failed: {reason}",
+      "pending": "Pending",
+      "pendingRefunded": "Failed: Pending refund",
+      "refunded": "Refunded",
+      "success": "Success",
+      "title": "Transfer History"
+    },
     "ibcTransfer": {
       "amoutDeposit": "입금할 수량",
       "amoutWithdraw": "출금할 수량",
@@ -45,10 +65,15 @@
       "channelCongestedWithdraw": "출금 (채널 혼잡)",
       "checkboxVerify": "중앙화 거래소 주소로 전송하지 않겠습니다.",
       "copied": "복사완료!",
+      "estimatedTime": "Estimated Time",
       "from": "발신 체인",
       "IBCTransfer": "IBC 전송",
       "MAX": "최대",
+      "selectAmount": "Select Amount",
+      "titleDeposit": "Deposit {coinDenom}",
+      "titleWithdraw": "Withdraw {coinDenom}",
       "to": "수신 체인",
+      "waitTime": "20 seconds",
       "warningLossFunds": "주의: 중앙화 거래소로 출금하면 자산을 잃어버릴 수 있습니다."
     },
     "myPools": "내 풀",
@@ -56,10 +81,10 @@
       "APR": "APR",
       "bonded": "예치된 자산",
       "FeeAPY": "수수료 APY",
-      "liquidity": "내 유동성",
-      "myLiquidity": "내 유동성"
+      "liquidity": "내 유동성"
     },
     "selectAssetSource": {
+      "installWallet": "Install {walletName}",
       "next": "다음",
       "titleDeposit": "입금할 지갑",
       "titleWithdraw": "출금할 지갑"
@@ -74,18 +99,12 @@
         "withdraw": "출금"
       },
       "depositButton": "입금",
-      "errors": {
-        "insufficientFee": "수수료 부족"
-      },
-      "failed": "실패",
-      "failedWithReason": "실패: {reason}",
       "hideZero": "소액 자산 숨기기",
       "preTransfer": {
         "currentBal": "현재 수량",
         "deposit": "입금",
         "withdraw": "출금"
       },
-
       "search": "검색",
       "sort": {
         "balance": "수량",
@@ -95,6 +114,7 @@
       "title": "모든 자산",
       "withdrawButton": "출금"
     },
+    "totalAssets": "Total assets",
     "transfer": {
       "availableMobile": "잔고",
       "availableOn": "{network} 잔고",
@@ -110,17 +130,19 @@
       "titleWithdraw": "{coinDenom} 출금",
       "to": "수신 체인",
       "transferFee": "전송 수수료",
+      "useWrappedDeposit": "Deposit {wrapDenom} with Satellite",
+      "useWrappedWithdraw": "Withdraw {wrapDenom} with Satellite",
       "via": "경유",
       "waitTime": "{minutes}분",
-      "warnDepositAddressDifferent": "주의: {address}에서 선택한 계정이 마지막으로 입금한 주소와 다릅니다.",
-      "wrapNativeLink": "{platformName}에서 {fromDenom}를 {toDenom}로 변환"
+      "warnDepositAddressDifferent": "주의: {address}에서 선택한 계정이 마지막으로 입금한 주소와 다릅니다."
     },
     "transferAssetSelect": {
       "buttonNext": "다음",
       "deposit": "입금",
       "network": "네트워크",
       "withdraw": "출금"
-    }
+    },
+    "unbondedAssets": "Unbonded"
   },
   "buyTokens": "토큰 구매",
   "components": {
@@ -163,8 +185,10 @@
     "emptyAmount": "수량이 비어있습니다",
     "generic": "에러",
     "highSwapFee": "교환 수수료가 너무 높습니다",
+    "insufficientAmount": "Insufficient amount",
     "insufficientBal": "잔액 부족",
     "insufficientLiquidity": "유동성 부족",
+    "invalidNumberAmount": "Invalid form of number",
     "invalidScalingFactorControllerAddress": "잘못된 단위조정인수 컨트롤러 주소",
     "invalidSlippage": "잘못된 슬리피지",
     "invalidSwapFee": "교환 수수료가 잘못 되었습니다",
@@ -173,12 +197,14 @@
     "negativeAmount": "수량이 음수입니다",
     "negativePercentage": "퍼센티지는 양수여야합니다",
     "negativeSlippage": "슬리피지가 음수입니다",
+    "negativeSwapFee": "Swap fee is negative",
     "noAvailableShares": "사용 가능한 {denom}이 없습니다",
     "noRoute": "이 거래를 위한 경로 없음",
     "noSendCurrency": "전송할 토큰이 설정되지 않았습니다",
     "notInitialized": "초기화되지 않았습니다",
     "percentageSum": "퍼센티지의 합이 100이 아닙니다",
-    "scalingFactorTooLow": "단위조정인수가 너무 낮음"
+    "scalingFactorTooLow": "단위조정인수가 너무 낮음",
+    "zeroAmount": "Amount is zero"
   },
   "keplr": {
     "extension": "Keplr 브라우저 익스텐션",
