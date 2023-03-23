@@ -42,8 +42,8 @@ import { CustomClasses } from "../types";
 
 enum AddConcLiquidityModalView {
   Overview,
-  AddConcLiq,
-  AddFullRange,
+  AddManual,
+  AddManaged,
 }
 
 const accessors = {
@@ -89,8 +89,7 @@ async function getDepthFromRange(min: number, max: number) {
   )
     .then((resp) => resp.json())
     .then((json) => {
-      console.log(json);
-      return json.liquidity_depths.map(
+      return (json?.liquidity_depths || []).map(
         ({ liquidity_net, tick_index }: any) => ({
           net: +liquidity_net,
           price: getPriceAtTick(tick_index),
@@ -132,13 +131,11 @@ async function getDepthFromRange(min: number, max: number) {
   ): number {
     const price = target;
     let val = 0;
-    console.log(price);
     for (let i = 0; i < list.length; i++) {
       if (list[i].tick <= price) {
         val = list[i].depth;
       }
     }
-    console.log(val);
     return val;
   }
 }
@@ -195,7 +192,7 @@ export const AddConcLiquidity: FunctionComponent<
                   setView={setView}
                 />
               );
-            case AddConcLiquidityModalView.AddConcLiq:
+            case AddConcLiquidityModalView.AddManual:
               return (
                 <AddConcLiqView
                   getFiatValue={getFiatValue}
@@ -205,7 +202,7 @@ export const AddConcLiquidity: FunctionComponent<
                   setView={setView}
                 />
               );
-            case AddConcLiquidityModalView.AddFullRange:
+            case AddConcLiquidityModalView.AddManaged:
               return null;
           }
         })()}
@@ -229,7 +226,7 @@ const Overview: FunctionComponent<
     const { id: poolId } = router.query as { id: string };
     const t = useTranslation();
     const [selected, selectView] = useState<AddConcLiquidityModalView>(
-      AddConcLiquidityModalView.AddFullRange
+      AddConcLiquidityModalView.AddManual
     );
     const queryGammPoolFeeMetrics =
       queriesExternalStore.queryGammPoolFeeMetrics;
@@ -239,7 +236,7 @@ const Overview: FunctionComponent<
         <div className="align-center relative flex flex-row">
           <div className="absolute left-0 flex h-full items-center text-sm" />
           <div className="flex-1 text-center text-lg">
-            {t("addLiquidity.title")}
+            {t("addConcentratedLiquidity.step1Title")}
           </div>
           <div className="absolute right-0 flex h-full items-center text-xs font-subtitle2 text-osmoverse-200" />
         </div>
@@ -306,17 +303,16 @@ const Overview: FunctionComponent<
         <div className="flex flex-col">
           <div className="flex flex-row justify-center gap-8">
             <StrategySelector
-              title="Full range"
-              description="If you don’t plan on rebalancing your positions frequently, this is the best way to add liquidity."
-              selected={selected === AddConcLiquidityModalView.AddFullRange}
-              onClick={() => selectView(AddConcLiquidityModalView.AddFullRange)}
-              imgSrc="/images/fullrange_mock_range.png"
+              title={t("addConcentratedLiquidity.managed")}
+              description={t("addConcentratedLiquidity.managedDescription")}
+              selected={selected === AddConcLiquidityModalView.AddManaged}
+              imgSrc="/images/managed_liquidity_mock.png"
             />
             <StrategySelector
-              title="Concentrated"
-              description="If you don’t plan on rebalancing your positions frequently, this is the best way to add liquidity."
-              selected={selected === AddConcLiquidityModalView.AddConcLiq}
-              onClick={() => selectView(AddConcLiquidityModalView.AddConcLiq)}
+              title={t("addConcentratedLiquidity.manual")}
+              description={t("addConcentratedLiquidity.manualDescription")}
+              selected={selected === AddConcLiquidityModalView.AddManual}
+              onClick={() => selectView(AddConcLiquidityModalView.AddManual)}
               imgSrc="/images/conliq_mock_range.png"
             />
           </div>
@@ -335,22 +331,25 @@ function StrategySelector(props: {
   title: string;
   description: string;
   selected: boolean;
-  onClick: () => void;
+  onClick?: () => void;
   imgSrc: string;
 }) {
   const { selected, onClick, title, description, imgSrc } = props;
   return (
     <div
       className={classNames(
-        "flex cursor-pointer flex-col items-center justify-center gap-4 rounded-[20px] border-2 border-osmoverse-700 py-6 px-8 hover:border-osmoverse-100 hover:bg-osmoverse-700",
+        "flex flex-1 flex-col items-center justify-center gap-4 rounded-[20px]",
+        "border-2 border-osmoverse-700 py-6 px-8",
         {
           "border-osmoverse-100 bg-osmoverse-700": selected,
+          "cursor-pointer hover:border-osmoverse-100 hover:bg-osmoverse-700 ":
+            onClick,
         }
       )}
       onClick={onClick}
     >
       <div className="mb-16 text-h6 font-h6">{title}</div>
-      <Image alt="" src={imgSrc} width={325} height={101} />
+      <Image alt="" src={imgSrc} width={255} height={145} />
       <div className="text-center text-body2 font-body2 text-osmoverse-200">
         {description}
       </div>
@@ -385,8 +384,8 @@ const AddConcLiqView: FunctionComponent<
     const [inputMax, setInputMax] = useState("0");
     const [min, setMin] = useState(0);
     const [max, setMax] = useState(0);
-    const baseDenom = pool?.poolAssets[0].amount.denom;
-    const quoteDenom = pool?.poolAssets[1].amount.denom;
+    const baseDenom = pool?.poolAssets[0].amount.denom || "";
+    const quoteDenom = pool?.poolAssets[1].amount.denom || "";
     const [range, setRange] = useState<"7d" | "1mo" | "1y">("7d");
     const router = useRouter();
     const { id: poolId } = router.query as { id: string };
@@ -402,11 +401,12 @@ const AddConcLiqView: FunctionComponent<
 
     useEffect(() => {
       (async () => {
+        console.log(absMin, absMax);
+        if (!absMin && !absMax) return;
         const data = await getDepthFromRange(
           zoom > 1 ? yRange.min / zoom : yRange.min * zoom,
           yRange.max * zoom
         );
-
         setDepthData(data);
       })();
     }, [absMin, absMax]);
@@ -475,20 +475,26 @@ const AddConcLiqView: FunctionComponent<
       <>
         <div className="align-center relative flex flex-row">
           <div
-            className="absolute left-0 flex h-full cursor-pointer items-center text-sm"
+            className="absolute left-0 flex flex h-full cursor-pointer flex-row items-center text-sm"
             onClick={() => setView(AddConcLiquidityModalView.Overview)}
           >
-            {"<- Back"}
+            <Image src="/icons/arrow-left.svg" width={24} height={24} />
+            <span className="pl-1">{t("addConcentratedLiquidity.back")}</span>
           </div>
           <div className="flex-1 text-center text-lg">
-            {t("addLiquidity.title")}
+            {t("addConcentratedLiquidity.step2Title")}
           </div>
           <div className="absolute right-0 flex h-full items-center text-xs font-subtitle2 text-osmoverse-200">
-            {`Prices shown in ${baseDenom} per ${quoteDenom}`}
+            {t("addConcentratedLiquidity.priceShownIn", {
+              base: baseDenom,
+              quote: quoteDenom,
+            })}
           </div>
         </div>
         <div className="flex flex-col">
-          <div className="px-2 py-1 text-sm">Price Range</div>
+          <div className="px-2 py-1 text-sm">
+            {t("addConcentratedLiquidity.priceRange")}
+          </div>
           <div className="flex flex-row">
             <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col bg-osmoverse-700">
               <div className="flex flex-row">
@@ -498,9 +504,14 @@ const AddConcLiqView: FunctionComponent<
                   </h4>
                   <div className="flex flex-col justify-center font-caption">
                     <div className="text-caption text-osmoverse-300">
-                      current price
+                      {t("addConcentratedLiquidity.currentPrice")}
                     </div>
-                    <div className="text-caption text-osmoverse-300">{`${baseDenom} per ${quoteDenom}`}</div>
+                    <div className="text-caption text-osmoverse-300">
+                      {t("addConcentratedLiquidity.basePerQuote", {
+                        base: baseDenom,
+                        quote: quoteDenom,
+                      })}
+                    </div>
                   </div>
                 </div>
                 <div className="flex flex-1 flex-row justify-end gap-1 pt-2 pr-2">
@@ -596,12 +607,22 @@ const AddConcLiqView: FunctionComponent<
           </div>
         </div>
         <div className="flex flex-row">
-          <div className="flex max-w-[15.8125rem] flex-col px-4">
-            <div className="text-subtitle1">Select volatility range</div>
-            <div className="text-body2 text-osmoverse-200">
-              Tight ranges earn more fees per dollar, but earn no fees when
-              price is out of range.
+          <div className="mx-4 flex max-w-[16.375rem] flex-col">
+            <div className="text-subtitle1">
+              {t("addConcentratedLiquidity.selectVolatilityRange")}
             </div>
+            <div className="text-caption font-caption text-osmoverse-200">
+              {t("addConcentratedLiquidity.volatilityDescription")}
+            </div>
+            <a
+              className="flex flex-row items-center text-caption font-caption text-wosmongton-300"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t("addConcentratedLiquidity.superchargedLearnMore")}
+              <Image src="/icons/arrow-right.svg" height={12} width={12} />
+            </a>
           </div>
           <div className="flex flex-1 flex-row justify-end gap-4">
             <PresetVolatilityCard
