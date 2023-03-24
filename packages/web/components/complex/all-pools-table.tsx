@@ -5,8 +5,6 @@ import {
   createColumnHelper,
   getCoreRowModel,
   getSortedRowModel,
-  Row,
-  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import EventEmitter from "eventemitter3";
@@ -22,11 +20,11 @@ import {
 import { useTranslation } from "react-multi-lang";
 
 import { MenuOptionsModal } from "~/modals";
+import { runIfFn } from "~/utils/function";
 
 import { useFilteredData, useWindowSize } from "../../hooks";
 import { useStore } from "../../stores";
 import { Icon } from "../assets";
-import { AssetCard } from "../cards";
 import { SelectMenu } from "../control/select-menu";
 import { SearchBox } from "../input";
 import {
@@ -105,8 +103,18 @@ export const AllPoolsTable: FunctionComponent<{
     const queriesOsmosis = queriesStore.get(chainId).osmosis!;
     const queryActiveGauges = queriesExternalStore.queryActiveGauges;
 
-    const allPoolsWithMetrics =
-      derivedDataStore.poolsWithMetrics.get(chainId).allPools;
+    const [sorting, setSorting] = useState<
+      { id: keyof ObservablePoolWithMetric; desc: boolean }[]
+    >([
+      {
+        id: "liquidity",
+        desc: true,
+      },
+    ]);
+
+    const allPoolsWithMetrics = derivedDataStore.poolsWithMetrics
+      .get(chainId)
+      .getAllPools(sorting[0]?.id, sorting[0]?.desc);
 
     const initiallyFilteredPools = useMemo(
       () =>
@@ -176,7 +184,6 @@ export const AllPoolsTable: FunctionComponent<{
     const columnHelper = createColumnHelper<ObservablePoolWithMetric>();
     const cellGroupEventEmitter = useRef(new EventEmitter()).current;
 
-    console.log(filteredPools);
     const columns = useMemo(
       () => [
         columnHelper.accessor((row) => row, {
@@ -204,7 +211,7 @@ export const AllPoolsTable: FunctionComponent<{
             }
           ),
           header: t("pools.allPools.sort.poolName"),
-          id: "id",
+          id: "pool",
         }),
         columnHelper.accessor((row) => row, {
           cell: observer(
@@ -256,7 +263,7 @@ export const AllPoolsTable: FunctionComponent<{
             }
           ),
           header: t("pools.allPools.sort.fees"),
-          id: "fees",
+          id: "feesSpent7d",
           sortDescFirst: true,
         }),
         columnHelper.accessor((row) => row, {
@@ -267,7 +274,6 @@ export const AllPoolsTable: FunctionComponent<{
                 ObservablePoolWithMetric
               >
             ) => {
-              console.log(props.getValue().apr);
               return (
                 <MetricLoaderCell value={props.getValue().apr.toString()} />
               );
@@ -320,13 +326,6 @@ export const AllPoolsTable: FunctionComponent<{
       ]
     );
 
-    const [sorting, setSorting] = useState<SortingState>([
-      {
-        id: "liquidity",
-        desc: true,
-      },
-    ]);
-
     const table = useReactTable({
       data: filteredPools,
       columns,
@@ -335,10 +334,27 @@ export const AllPoolsTable: FunctionComponent<{
       },
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: getSortedRowModel(),
-      onSortingChange: (s) => {
+      onSortingChange: (updaterOrValue) => {
         queriesOsmosis.queryGammPools.fetchRemainingPools();
-        setSorting(s);
+
+        const nextState = runIfFn(updaterOrValue, sorting);
+        const nextId: string | undefined = nextState[0]?.id;
+
+        const accessors: Record<string, keyof ObservablePoolWithMetric> = {
+          pool: "pool",
+          liquidity: "liquidity",
+          volume24h: "volume24h",
+          feesSpent7d: "feesSpent7d",
+          apr: "apr",
+        };
+
+        if (accessors[nextId]) {
+          setSorting([{ id: accessors[nextId], desc: nextState[0].desc }]);
+        } else {
+          setSorting([]);
+        }
       },
+      manualSorting: true,
     });
 
     const handleFetchRemaining = useCallback(
@@ -497,7 +513,6 @@ export const AllPoolsTable: FunctionComponent<{
             <PaginatedTable
               paginate={handleFetchRemaining}
               mobileSize={170}
-              renderMobileItem={MobileTableRow}
               size={69}
               table={table}
               topOffset={topOffset}
@@ -524,27 +539,3 @@ export const AllPoolsTable: FunctionComponent<{
     );
   }
 );
-
-const MobileTableRow = observer((row: Row<ObservablePoolWithMetric>) => {
-  const poolAssets = row.original.pool.poolAssets.map((poolAsset) => ({
-    coinImageUrl: poolAsset.amount.currency.coinImageUrl,
-    coinDenom: poolAsset.amount.currency.coinDenom,
-  }));
-
-  return (
-    <AssetCard
-      coinDenom={poolAssets.map((asset) => asset.coinDenom).join("/")}
-      metrics={[
-        {
-          label: "TVL",
-          value: row.original.liquidity.toString(),
-        },
-        {
-          label: "APR",
-          value: row.original.apr.toString(),
-        },
-      ]}
-      coinImageUrl={poolAssets}
-    />
-  );
-});
