@@ -114,9 +114,7 @@ function calcOutGivenIn({
       swapState.liquidity = addLiquidity(swapState.liquidity, liquidityNet);
     }
 
-    swapState.inittedTickIndex = swapStrategy.nextInitializedTickIndex(
-      swapState.inittedTickIndex
-    );
+    swapState.inittedTickIndex++;
   } // end while
 
   return swapState.amountCalculated.truncate();
@@ -210,9 +208,7 @@ export function calcInGivenOut({
       swapState.liquidity = addLiquidity(swapState.liquidity, liquidityNet);
     }
 
-    swapState.inittedTickIndex = swapStrategy.nextInitializedTickIndex(
-      swapState.inittedTickIndex
-    );
+    swapState.inittedTickIndex++;
   }
 
   return swapState.amountCalculated.truncate();

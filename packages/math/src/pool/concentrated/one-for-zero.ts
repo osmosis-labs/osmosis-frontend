@@ -141,10 +141,6 @@ export class OneForZeroStrategy implements SwapStrategy {
     return curTick;
   }
 
-  nextInitializedTickIndex(index: number): number {
-    return index - 1;
-  }
-
   validatePriceLimit(sqrtPriceLimit: Dec, curSqrtPrice: Dec): boolean {
     if (sqrtPriceLimit.lt(curSqrtPrice) || sqrtPriceLimit.gt(maxSqrtRatio)) {
       return false;
