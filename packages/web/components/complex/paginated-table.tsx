@@ -1,3 +1,4 @@
+import { ObservablePoolWithMetric } from "@osmosis-labs/stores";
 import { flexRender, Row, Table } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import Image from "next/image";
@@ -8,14 +9,13 @@ import { useIntersection } from "react-use";
 
 import { IS_FRONTIER } from "../../config";
 import { useWindowSize } from "../../hooks";
-import { Pool } from "./all-pools-table";
 
 type Props = {
   mobileSize?: number;
   paginate: () => void;
-  renderMobileItem?: (row: Row<Pool>) => React.ReactNode;
+  renderMobileItem?: (row: Row<ObservablePoolWithMetric>) => React.ReactNode;
   size: number;
-  table: Table<Pool>;
+  table: Table<ObservablePoolWithMetric>;
   topOffset: number;
 };
 
@@ -70,11 +70,11 @@ const PaginatedTable = ({
         }}
       >
         {virtualRows.map((virtualRow) => {
-          const row = rows[virtualRow.index] as Row<Pool>;
+          const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
           return (
             <Link
-              key={row.original[0].poolId}
-              href={`/pool/${row.original[0].poolId}`}
+              key={row.original.pool.id}
+              href={`/pool/${row.original.pool.id}`}
             >
               <a
                 style={{
@@ -157,19 +157,19 @@ const PaginatedTable = ({
           </tr>
         )}
         {virtualRows.map((virtualRow, i) => {
-          const row = rows[virtualRow.index] as Row<Pool>;
+          const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
           return (
             <tr
               key={row.id}
               className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
               ref={i === virtualRows.length - 1 ? intersectionRef : null}
-              onClick={() => router.push(`/pool/${row.original[0].poolId}`)}
+              onClick={() => router.push(`/pool/${row.original.pool.id}`)}
             >
               {row.getVisibleCells().map((cell) => {
                 return (
                   <td key={cell.id} onClick={(e) => e.stopPropagation()}>
                     <Link
-                      href={`/pool/${row.original[0].poolId}`}
+                      href={`/pool/${row.original.pool.id}`}
                       key={virtualRow.index}
                     >
                       <a className="focus:outline-none">

@@ -6,6 +6,7 @@ import {
   observable,
   runInAction,
 } from "mobx";
+import { computedFn } from "mobx-utils";
 
 import { ChainStore } from "../../chain";
 import { IPriceStore } from "../../price";
@@ -17,7 +18,7 @@ import {
 import { ObservablePoolsBonding } from "../pool/bonding";
 import { ObservablePoolDetails } from "../pool/details";
 
-class ObservablePoolWithMetric {
+export class ObservablePoolWithMetric {
   @observable
   pool: ObservableQueryPool;
 
@@ -148,6 +149,10 @@ export class ObservablePoolsWithMetric {
 
     return Array.from(this._pools.values());
   }
+
+  getPool = computedFn((poolId: string) => {
+    return this._pools.get(poolId);
+  });
 }
 
 export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithMetric> {

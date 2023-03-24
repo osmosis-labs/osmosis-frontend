@@ -20,7 +20,8 @@ export type SpriteIconId =
   | "tune"
   | "help-circle"
   | "kado-logo"
-  | "transak-logo";
+  | "transak-logo"
+  | "more-menu";
 
 /**
  * It takes an icon id and returns an svg element with the corresponding icon defined in /public/icons/sprite.svg.

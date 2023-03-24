@@ -1,5 +1,7 @@
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { ObservablePoolWithMetric } from "@osmosis-labs/stores";
 import {
+  CellContext,
   createColumnHelper,
   getCoreRowModel,
   getSortedRowModel,
@@ -171,122 +173,151 @@ export const AllPoolsTable: FunctionComponent<{
       [_setQuery, queriesOsmosis.queryGammPools]
     );
 
+    const columnHelper = createColumnHelper<ObservablePoolWithMetric>();
     const cellGroupEventEmitter = useRef(new EventEmitter()).current;
-    const tableData: Pool[] = useMemo(
-      () =>
-        filteredPools.map((poolWithMetrics) => {
-          const poolId = poolWithMetrics.pool.id;
-          const poolAssets = poolWithMetrics.pool.poolAssets.map(
-            (poolAsset) => ({
-              coinImageUrl: poolAsset.amount.currency.coinImageUrl,
-              coinDenom: poolAsset.amount.currency.coinDenom,
-            })
-          );
 
-          const pool: Pool = [
-            {
-              poolId,
-              poolAssets,
-              stableswapPool: poolWithMetrics.pool.type === "stable",
-            },
-            { value: poolWithMetrics.liquidity },
-            {
-              value: poolWithMetrics.volume24h,
-            },
-            {
-              value: poolWithMetrics.feesSpent7d,
-            },
-            {
-              value: poolWithMetrics.apr,
-            },
-            {
-              poolId,
-              cellGroupEventEmitter,
-              onAddLiquidity: () => quickAddLiquidity(poolId),
-              onRemoveLiquidity: !poolWithMetrics.myAvailableLiquidity
-                .toDec()
-                .isZero()
-                ? () => quickRemoveLiquidity(poolId)
-                : undefined,
-              onLockTokens: !poolWithMetrics.myAvailableLiquidity
-                .toDec()
-                .isZero()
-                ? () => quickLockTokens(poolId)
-                : undefined,
-            },
-          ];
-          return pool;
-        }),
-      [
-        cellGroupEventEmitter,
-        filteredPools,
-        quickAddLiquidity,
-        quickLockTokens,
-        quickRemoveLiquidity,
-      ]
-    );
-
-    const columnHelper = createColumnHelper<Pool>();
-
+    console.log(filteredPools);
     const columns = useMemo(
       () => [
-        columnHelper.accessor((row) => row[0].poolId, {
-          cell: (props) => <PoolCompositionCell {...props.row.original[0]} />,
+        columnHelper.accessor((row) => row, {
+          cell: observer(
+            (
+              props: CellContext<
+                ObservablePoolWithMetric,
+                ObservablePoolWithMetric
+              >
+            ) => {
+              const poolAssets = props.row.original.pool.poolAssets.map(
+                (poolAsset) => ({
+                  coinImageUrl: poolAsset.amount.currency.coinImageUrl,
+                  coinDenom: poolAsset.amount.currency.coinDenom,
+                })
+              );
+
+              return (
+                <PoolCompositionCell
+                  poolAssets={poolAssets}
+                  poolId={props.row.original.pool.id}
+                  stableswapPool={props.row.original.pool.type === "stable"}
+                />
+              );
+            }
+          ),
           header: t("pools.allPools.sort.poolName"),
           id: "id",
         }),
-        columnHelper.accessor(
-          (row) => row[1].value.toDec().truncate().toString(),
-          {
-            cell: (props) => props.row.original[1].value.toString(),
-            header: t("pools.allPools.sort.liquidity"),
-            id: "liquidity",
-            sortDescFirst: true,
-          }
-        ),
-        columnHelper.accessor(
-          (row) => row[2].value.toDec().truncate().toString(),
-          {
-            cell: (props) => (
-              <MetricLoaderCell
-                value={props.row.original[2].value.toString()}
-              />
-            ),
-            header: t("pools.allPools.sort.volume24h"),
-            id: "volume24h",
-            sortDescFirst: true,
-          }
-        ),
-        columnHelper.accessor(
-          (row) => row[3].value.toDec().truncate().toString(),
-          {
-            cell: (props) => (
-              <MetricLoaderCell
-                value={props.row.original[3].value.toString()}
-              />
-            ),
-            header: t("pools.allPools.sort.fees"),
-            id: "fees",
-            sortDescFirst: true,
-          }
-        ),
-        columnHelper.accessor((row) => row[4].value?.toDec().toString(), {
-          cell: (props) => (
-            <MetricLoaderCell value={props.row.original[4].value?.toString()} />
+        columnHelper.accessor((row) => row, {
+          cell: observer(
+            (
+              props: CellContext<
+                ObservablePoolWithMetric,
+                ObservablePoolWithMetric
+              >
+            ) => {
+              return <>{props.row.original.liquidity.toString()}</>;
+            }
+          ),
+          header: t("pools.allPools.sort.liquidity"),
+          id: "liquidity",
+          sortDescFirst: true,
+        }),
+        columnHelper.accessor((row) => row, {
+          cell: observer(
+            (
+              props: CellContext<
+                ObservablePoolWithMetric,
+                ObservablePoolWithMetric
+              >
+            ) => {
+              return (
+                <MetricLoaderCell
+                  value={props.row.original.volume24h.toString()}
+                />
+              );
+            }
+          ),
+          header: t("pools.allPools.sort.volume24h"),
+          id: "volume24h",
+          sortDescFirst: true,
+        }),
+        columnHelper.accessor((row) => row, {
+          cell: observer(
+            (
+              props: CellContext<
+                ObservablePoolWithMetric,
+                ObservablePoolWithMetric
+              >
+            ) => {
+              return (
+                <MetricLoaderCell
+                  value={props.row.original.feesSpent7d.toString()}
+                />
+              );
+            }
+          ),
+          header: t("pools.allPools.sort.fees"),
+          id: "fees",
+          sortDescFirst: true,
+        }),
+        columnHelper.accessor((row) => row, {
+          cell: observer(
+            (
+              props: CellContext<
+                ObservablePoolWithMetric,
+                ObservablePoolWithMetric
+              >
+            ) => {
+              console.log(props.getValue().apr);
+              return (
+                <MetricLoaderCell value={props.getValue().apr.toString()} />
+              );
+            }
           ),
           header: t("pools.allPools.sort.APRIncentivized"),
           id: "apr",
           sortDescFirst: true,
         }),
-        columnHelper.accessor((row) => row[5], {
-          cell: (props) => {
-            return <PoolQuickActionCell {...props.row.original[5]} />;
-          },
+        columnHelper.accessor((row) => row, {
+          cell: observer(
+            (
+              props: CellContext<
+                ObservablePoolWithMetric,
+                ObservablePoolWithMetric
+              >
+            ) => {
+              const poolWithMetrics = props.row.original;
+              const poolId = poolWithMetrics.pool.id;
+              return (
+                <PoolQuickActionCell
+                  poolId={poolId}
+                  cellGroupEventEmitter={cellGroupEventEmitter}
+                  onAddLiquidity={() => quickAddLiquidity(poolId)}
+                  onRemoveLiquidity={
+                    !poolWithMetrics.myAvailableLiquidity.toDec().isZero()
+                      ? () => quickRemoveLiquidity(poolId)
+                      : undefined
+                  }
+                  onLockTokens={
+                    !poolWithMetrics.myAvailableLiquidity.toDec().isZero()
+                      ? () => quickLockTokens(poolId)
+                      : undefined
+                  }
+                />
+              );
+            }
+          ),
           header: "",
           id: "actions",
         }),
       ],
-      [columnHelper, t]
+      [
+        cellGroupEventEmitter,
+        columnHelper,
+        quickAddLiquidity,
+        quickLockTokens,
+        quickRemoveLiquidity,
+        t,
+      ]
     );
 
     const [sorting, setSorting] = useState<SortingState>([
@@ -297,7 +328,7 @@ export const AllPoolsTable: FunctionComponent<{
     ]);
 
     const table = useReactTable({
-      data: tableData,
+      data: filteredPools,
       columns,
       state: {
         sorting,
@@ -317,26 +348,6 @@ export const AllPoolsTable: FunctionComponent<{
 
     const [mobileSortMenuIsOpen, setMobileSortMenuIsOpen] = useState(false);
 
-    const mobileTableRow = useCallback((row: Row<Pool>) => {
-      return (
-        <AssetCard
-          coinDenom={row.original[0].poolAssets
-            .map((asset) => asset.coinDenom)
-            .join("/")}
-          metrics={[
-            {
-              label: "TVL",
-              value: row.original[1].value.toString(),
-            },
-            {
-              label: "APR",
-              value: row.original[4].value!.toString(),
-            },
-          ]}
-          coinImageUrl={row.original[0].poolAssets}
-        />
-      );
-    }, []);
     const onSelectFilter = useCallback(
       (id: string) => {
         if (id === poolFilter) {
@@ -486,7 +497,7 @@ export const AllPoolsTable: FunctionComponent<{
             <PaginatedTable
               paginate={handleFetchRemaining}
               mobileSize={170}
-              renderMobileItem={mobileTableRow}
+              renderMobileItem={MobileTableRow}
               size={69}
               table={table}
               topOffset={topOffset}
@@ -513,3 +524,27 @@ export const AllPoolsTable: FunctionComponent<{
     );
   }
 );
+
+const MobileTableRow = observer((row: Row<ObservablePoolWithMetric>) => {
+  const poolAssets = row.original.pool.poolAssets.map((poolAsset) => ({
+    coinImageUrl: poolAsset.amount.currency.coinImageUrl,
+    coinDenom: poolAsset.amount.currency.coinDenom,
+  }));
+
+  return (
+    <AssetCard
+      coinDenom={poolAssets.map((asset) => asset.coinDenom).join("/")}
+      metrics={[
+        {
+          label: "TVL",
+          value: row.original.liquidity.toString(),
+        },
+        {
+          label: "APR",
+          value: row.original.apr.toString(),
+        },
+      ]}
+      coinImageUrl={poolAssets}
+    />
+  );
+});
