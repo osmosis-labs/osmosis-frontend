@@ -34,7 +34,7 @@ export function tickToSqrtPrice(
   );
 
   const { minTick, maxTick } = computeMinMaxTicksFromExponentAtPriceOne(
-    geometricExponentIncrementDistanceInTicks
+    new Dec(exponentAtPriceOne)
   );
   if (tickIndex.lt(minTick) || tickIndex.gt(maxTick)) {
     throw new Error(
@@ -80,7 +80,7 @@ export function tickToSqrtPrice(
   return approxSqrt(price);
 }
 
-export function sqrtPriceToTick(price: Dec, exponentAtPriceOne: number): Int {
+export function priceToTick(price: Dec, exponentAtPriceOne: number): Int {
   if (price.equals(new Dec(1))) {
     return new Int(0);
   }
