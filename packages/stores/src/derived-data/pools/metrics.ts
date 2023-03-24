@@ -1,5 +1,11 @@
 import { HasMapStore, IQueriesStore } from "@keplr-wallet/stores";
-import { computed, makeObservable, observable } from "mobx";
+import {
+  action,
+  computed,
+  makeObservable,
+  observable,
+  runInAction,
+} from "mobx";
 
 import { ChainStore } from "../../chain";
 import { IPriceStore } from "../../price";
@@ -12,8 +18,11 @@ import { ObservablePoolsBonding } from "../pool/bonding";
 import { ObservablePoolDetails } from "../pool/details";
 
 class ObservablePoolWithMetric {
+  @observable
+  pool: ObservableQueryPool;
+
   constructor(
-    readonly pool: ObservableQueryPool,
+    pool: ObservableQueryPool,
     protected readonly poolDetails: ObservablePoolDetails,
     protected readonly poolsBonding: ObservablePoolsBonding,
     protected readonly chainStore: ChainStore,
@@ -23,25 +32,27 @@ class ObservablePoolWithMetric {
     },
     protected readonly priceStore: IPriceStore
   ) {
+    this.pool = pool;
     makeObservable(this);
   }
 
-  @computed
+  @action
+  setPool(pool: ObservableQueryPool) {
+    this.pool = pool;
+  }
+
   get poolDetail() {
     return this.poolDetails.get(this.pool.id);
   }
 
-  @computed
   get liquidity() {
     return this.poolDetail.totalValueLocked;
   }
 
-  @computed
   get myLiquidity() {
     return this.poolDetail.userShareValue;
   }
 
-  @computed
   get myAvailableLiquidity() {
     return this.poolDetail.userAvailableValue;
   }
@@ -74,7 +85,6 @@ class ObservablePoolWithMetric {
     );
   }
 
-  @computed
   get feePoolMetrics() {
     return this.externalQueries.queryGammPoolFeeMetrics.getPoolFeesMetrics(
       this.pool.id,
@@ -82,12 +92,10 @@ class ObservablePoolWithMetric {
     );
   }
 
-  @computed
   get volume24h() {
     return this.feePoolMetrics.volume24h;
   }
 
-  @computed
   get feesSpent7d() {
     return this.feePoolMetrics.feesSpent7d;
   }
@@ -95,7 +103,8 @@ class ObservablePoolWithMetric {
 
 /** Fetches all pools directly from node in order of pool creation. */
 export class ObservablePoolsWithMetric {
-  protected _pools = observable.array();
+  @observable
+  protected _pools = new Map<string, ObservablePoolWithMetric>();
 
   constructor(
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
@@ -118,19 +127,29 @@ export class ObservablePoolsWithMetric {
       .get(this.chainId)
       .osmosis?.queryGammPools.getAllPools();
 
-    const pools = allPools?.map(
-      (pool) =>
-        new ObservablePoolWithMetric(
-          pool,
-          this.poolDetails,
-          this.poolsBonding,
-          this.chainStore,
-          this.externalQueries,
-          this.priceStore
-        )
-    );
+    for (const pool of allPools ?? []) {
+      const existingPool = this._pools.get(pool.id);
 
-    return pools ?? [];
+      if (existingPool) {
+        existingPool.setPool(pool);
+      } else {
+        runInAction(() => {
+          this._pools.set(
+            pool.id,
+            new ObservablePoolWithMetric(
+              pool,
+              this.poolDetails,
+              this.poolsBonding,
+              this.chainStore,
+              this.externalQueries,
+              this.priceStore
+            )
+          );
+        });
+      }
+    }
+
+    return Array.from(this._pools.values());
   }
 }
 

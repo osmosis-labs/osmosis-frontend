@@ -106,28 +106,19 @@ export const AllPoolsTable: FunctionComponent<{
     const allPoolsWithMetrics =
       derivedDataStore.poolsWithMetrics.get(chainId).allPools;
 
-    const tvlFilteredPools = useMemo(
+    const initiallyFilteredPools = useMemo(
       () =>
-        allPoolsWithMetrics.filter((p) =>
-          p.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
-        ),
-      [allPoolsWithMetrics]
-    );
-
-    const poolFilteredPools = useMemo(
-      () =>
-        tvlFilteredPools.filter((p) => {
-          if (poolFilter) {
-            return p.pool.type === poolFilter;
+        allPoolsWithMetrics.filter((p) => {
+          // Filter out pools with low TVL.
+          if (!p.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))) {
+            return false;
           }
-          return true;
-        }),
-      [poolFilter, tvlFilteredPools]
-    );
 
-    const incentiveFilteredPools = useMemo(
-      () =>
-        poolFilteredPools.filter((p) => {
+          // Filter out pools that do not match the pool filter.
+          if (poolFilter && p.pool.type !== poolFilter) {
+            return false;
+          }
+
           if (incentiveFilter === "superfluid") {
             return queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
               p.pool.id
@@ -147,8 +138,9 @@ export const AllPoolsTable: FunctionComponent<{
           return true;
         }),
       [
+        allPoolsWithMetrics,
         incentiveFilter,
-        poolFilteredPools,
+        poolFilter,
         queriesOsmosis.queryIncentivizedPools,
         queriesOsmosis.querySuperfluidPools,
         queryActiveGauges,
@@ -156,7 +148,7 @@ export const AllPoolsTable: FunctionComponent<{
     );
 
     const [query, _setQuery, filteredPools] = useFilteredData(
-      incentiveFilteredPools,
+      initiallyFilteredPools,
       useMemo(
         () => [
           "pool.id",
