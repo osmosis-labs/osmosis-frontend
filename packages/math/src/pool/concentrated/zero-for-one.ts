@@ -1,5 +1,6 @@
 import { Dec } from "@keplr-wallet/unit";
 
+import { minSpotPrice } from "./const";
 import {
   calcAmount0Delta,
   calcAmount1Delta,
@@ -147,7 +148,7 @@ export class ZeroForOneStrategy implements SwapStrategy {
   }
 
   validatePriceLimit(sqrtPriceLimit: Dec, curSqrtPrice: Dec): boolean {
-    if (sqrtPriceLimit.gt(curSqrtPrice) || sqrtPriceLimit.lt(new Dec(0))) {
+    if (sqrtPriceLimit.gt(curSqrtPrice) || sqrtPriceLimit.lt(minSpotPrice)) {
       return false;
     }
     return true;

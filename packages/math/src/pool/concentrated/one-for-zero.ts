@@ -1,6 +1,6 @@
 import { Dec } from "@keplr-wallet/unit";
 
-import { maxSqrtRatio } from "./const";
+import { maxSpotPrice } from "./const";
 import {
   calcAmount0Delta,
   calcAmount1Delta,
@@ -142,7 +142,7 @@ export class OneForZeroStrategy implements SwapStrategy {
   }
 
   validatePriceLimit(sqrtPriceLimit: Dec, curSqrtPrice: Dec): boolean {
-    if (sqrtPriceLimit.lt(curSqrtPrice) || sqrtPriceLimit.gt(maxSqrtRatio)) {
+    if (sqrtPriceLimit.lt(curSqrtPrice) || sqrtPriceLimit.gt(maxSpotPrice)) {
       return false;
     }
     return true;
