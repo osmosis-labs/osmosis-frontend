@@ -1530,7 +1530,7 @@ const chainInfos = (
           coinDecimals: 8,
           // coinGeckoId: "wrapped-bitcoin",
           coinGeckoId: "pool:wbtc-satoshi",
-          coinImageUrl: "/tokens/gwbtc.png",
+          coinImageUrl: "/tokens/wbtc.grv.svg",
         },
         {
           coinDenom: "wETH.grv",
@@ -1538,7 +1538,7 @@ const chainInfos = (
           coinDecimals: 18,
           // coinGeckoId: "weth",
           coinGeckoId: "pool:weth-wei.grv",
-          coinImageUrl: "/tokens/gweth.png",
+          coinImageUrl: "/tokens/weth.grv.svg",
         },
         {
           coinDenom: "USDC.grv",
@@ -1546,7 +1546,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "usd-coin",
           coinGeckoId: "pool:uusdc.grv",
-          coinImageUrl: "/tokens/gusdc.png",
+          coinImageUrl: "/tokens/usdc.grv.svg",
           pegMechanism: "collateralized",
           isFeeCurrency: true,
           gasPriceStep: {
@@ -1561,7 +1561,7 @@ const chainInfos = (
           coinDecimals: 18,
           // coinGeckoId: "dai",
           coinGeckoId: "pool:dai-wei",
-          coinImageUrl: "/tokens/gdai.png",
+          coinImageUrl: "/tokens/dai.grv.svg",
           pegMechanism: "collateralized",
         },
         {
@@ -1570,7 +1570,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "tether",
           coinGeckoId: "pool:uusdt.grv",
-          coinImageUrl: "/tokens/gusdt.png",
+          coinImageUrl: "/tokens/usdt.grv.svg",
           pegMechanism: "collateralized",
           isFeeCurrency: true,
           gasPriceStep: {
