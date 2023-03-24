@@ -6,7 +6,7 @@ export function calcAmount0Delta(
   liquidity: Dec,
   sqrtPriceA: Dec,
   sqrtPriceB: Dec,
-  roundUp = true
+  roundUp: boolean
 ): Dec {
   if (sqrtPriceA.gt(sqrtPriceB)) {
     [sqrtPriceA, sqrtPriceB] = [sqrtPriceB, sqrtPriceA];
@@ -24,7 +24,7 @@ export function calcAmount1Delta(
   liquidity: Dec,
   sqrtPriceA: Dec,
   sqrtPriceB: Dec,
-  roundUp = true
+  roundUp: boolean
 ): Dec {
   if (sqrtPriceA.gt(sqrtPriceB)) {
     [sqrtPriceA, sqrtPriceB] = [sqrtPriceB, sqrtPriceA];

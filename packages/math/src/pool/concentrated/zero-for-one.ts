@@ -39,7 +39,8 @@ export class ZeroForOneStrategy implements SwapStrategy {
     let amountZeroIn = calcAmount0Delta(
       liquidity,
       sqrtPriceTarget,
-      curSqrtPrice
+      curSqrtPrice,
+      true
     );
 
     const amountZeroInRemainingLessFee = amountZeroInRemaining.mul(
@@ -60,7 +61,12 @@ export class ZeroForOneStrategy implements SwapStrategy {
     const hasReachedTarget = sqrtPriceTarget.equals(sqrtPriceNext);
 
     if (!hasReachedTarget) {
-      amountZeroIn = calcAmount0Delta(liquidity, sqrtPriceNext, curSqrtPrice);
+      amountZeroIn = calcAmount0Delta(
+        liquidity,
+        sqrtPriceNext,
+        curSqrtPrice,
+        true
+      );
     }
 
     const amountOneOut = calcAmount1Delta(
@@ -128,7 +134,8 @@ export class ZeroForOneStrategy implements SwapStrategy {
     const amountZeroIn = calcAmount0Delta(
       liquidity,
       sqrtPriceNext,
-      curSqrtPrice
+      curSqrtPrice,
+      true
     );
 
     const feeChargeTotal = amountZeroIn
