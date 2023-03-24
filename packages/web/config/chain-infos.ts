@@ -296,6 +296,13 @@ const chainInfos = (
             high: 0.04,
           },
         },
+        {
+          coinDenom: "NCT",
+          coinMinimalDenom: "eco.uC.NCT",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/nct.svg",
+          coinGeckoId: "pool:nct",
+        },
       ],
       features: ["ibc-transfer"],
       explorerUrlToTx: "https://regen.aneka.io/txs/{txHash}",
