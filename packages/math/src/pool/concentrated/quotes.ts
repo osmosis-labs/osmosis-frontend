@@ -1,11 +1,15 @@
-import { Coin, Dec, Int } from "@keplr-wallet/unit";
+import { Dec, Int } from "@keplr-wallet/unit";
 
 import { maxSpotPrice, minSpotPrice, smallestDec } from "./const";
 import { TickOverflowError } from "./errors";
 import { addLiquidity, approxSqrt } from "./math";
 import { makeSwapStrategy } from "./swap-strategy";
 import { tickToSqrtPrice } from "./tick";
-import { TickWithNetLiquidity } from "./types";
+import {
+  LiquidityDepth,
+  QuoteInGivenOutParams,
+  QuoteOutGivenInParams,
+} from "./types";
 
 export const ConcentratedLiquidityMath = {
   calcOutGivenIn,
@@ -22,17 +26,17 @@ interface SwapState {
   feeGrowthGlobal: Dec;
 }
 
-function calcOutGivenIn(
-  tokenIn: Coin,
-  tokenDenom0: string,
-  poolLiquidity: Dec,
-  inittedTicksWithNetLiquidity: TickWithNetLiquidity[],
-  curTick: Int,
-  curSqrtPrice: Dec,
-  precisionFactorAtPriceOne: number,
-  swapFee: Dec,
-  priceLimit = new Dec(0)
-): Int {
+function calcOutGivenIn({
+  tokenIn,
+  tokenDenom0,
+  poolLiquidity,
+  inittedTicksWithNetLiquidity,
+  curTick,
+  curSqrtPrice,
+  precisionFactorAtPriceOne,
+  swapFee,
+  priceLimit = new Dec(0),
+}: QuoteOutGivenInParams): Int {
   const isZeroForOne = tokenIn.denom === tokenDenom0;
   if (isZeroForOne && priceLimit.equals(new Dec(0))) {
     priceLimit = minSpotPrice;
@@ -71,7 +75,7 @@ function calcOutGivenIn(
     swapState.amountRemaining.gt(smallestDec) &&
     !swapState.sqrtPrice.equals(sqrtPriceLimit)
   ) {
-    const nextTick: TickWithNetLiquidity | undefined =
+    const nextTick: LiquidityDepth | undefined =
       inittedTicksWithNetLiquidity?.[swapState.inittedTickIndex];
     if (!nextTick) {
       throw new TickOverflowError("Not enough ticks to calculate swap");
@@ -118,17 +122,17 @@ function calcOutGivenIn(
   return swapState.amountCalculated.truncate();
 }
 
-export function calcInGivenOut(
-  tokenOut: Coin,
-  tokenDenom0: string,
-  poolLiquidity: Dec,
-  inittedTicksWithNetLiquidity: TickWithNetLiquidity[],
-  curTick: Int,
-  curSqrtPrice: Dec,
-  precisionFactorAtPriceOne: number,
-  swapFee: Dec,
-  priceLimit = new Dec(0)
-): Int {
+export function calcInGivenOut({
+  tokenOut,
+  tokenDenom0,
+  poolLiquidity,
+  inittedTicksWithNetLiquidity,
+  curTick,
+  curSqrtPrice,
+  precisionFactorAtPriceOne,
+  swapFee,
+  priceLimit = new Dec(0),
+}: QuoteInGivenOutParams): Int {
   const isZeroForOne = tokenOut.denom === tokenDenom0;
   if (isZeroForOne && priceLimit.equals(new Dec(0))) {
     priceLimit = minSpotPrice;
@@ -167,7 +171,7 @@ export function calcInGivenOut(
     swapState.amountRemaining.gt(smallestDec) &&
     !swapState.sqrtPrice.equals(sqrtPriceLimit)
   ) {
-    const nextTick: TickWithNetLiquidity | undefined =
+    const nextTick: LiquidityDepth | undefined =
       inittedTicksWithNetLiquidity?.[swapState.inittedTickIndex];
     if (!nextTick) {
       throw new TickOverflowError("Not enough ticks to calculate swap");
