@@ -57,14 +57,12 @@ class ObservablePoolWithMetric {
     return this.poolDetail.userAvailableValue;
   }
 
-  @computed
   get poolName() {
     return this.pool.poolAssets
       .map((asset) => asset.amount.currency.coinDenom)
       .join("/");
   }
 
-  @computed
   get networkNames() {
     return this.pool.poolAssets
       .map(
@@ -75,7 +73,6 @@ class ObservablePoolWithMetric {
       .join(" ");
   }
 
-  @computed
   get apr() {
     return (
       this.poolsBonding
