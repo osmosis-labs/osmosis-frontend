@@ -2500,7 +2500,7 @@ const chainInfos = (
           coinDecimals: 9,
           // coinGeckoId: "unification",
           coinGeckoId: "pool:nund",
-          coinImageUrl: "/tokens/fund.png",
+          coinImageUrl: "/tokens/fund.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
