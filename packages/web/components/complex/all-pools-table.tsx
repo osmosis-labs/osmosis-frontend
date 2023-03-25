@@ -212,6 +212,7 @@ export const AllPoolsTable: FunctionComponent<{
           ),
           header: t("pools.allPools.sort.poolName"),
           id: "pool",
+          sortDescFirst: false,
         }),
         columnHelper.accessor((row) => row, {
           cell: observer(
@@ -226,7 +227,6 @@ export const AllPoolsTable: FunctionComponent<{
           ),
           header: t("pools.allPools.sort.liquidity"),
           id: "liquidity",
-          sortDescFirst: true,
         }),
         columnHelper.accessor((row) => row, {
           cell: observer(
@@ -245,7 +245,6 @@ export const AllPoolsTable: FunctionComponent<{
           ),
           header: t("pools.allPools.sort.volume24h"),
           id: "volume24h",
-          sortDescFirst: true,
         }),
         columnHelper.accessor((row) => row, {
           cell: observer(
@@ -264,7 +263,6 @@ export const AllPoolsTable: FunctionComponent<{
           ),
           header: t("pools.allPools.sort.fees"),
           id: "feesSpent7d",
-          sortDescFirst: true,
         }),
         columnHelper.accessor((row) => row, {
           cell: observer(
@@ -281,7 +279,6 @@ export const AllPoolsTable: FunctionComponent<{
           ),
           header: t("pools.allPools.sort.APRIncentivized"),
           id: "apr",
-          sortDescFirst: true,
         }),
         columnHelper.accessor((row) => row, {
           cell: observer(

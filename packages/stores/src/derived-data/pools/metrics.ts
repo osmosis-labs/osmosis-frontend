@@ -147,6 +147,7 @@ export class ObservablePoolsWithMetric {
 
       const pools = Array.from(this._pools.values());
       if (sortingColumn && isSortingDesc !== undefined) {
+        // Clone the array to prevent the original array from being sorted, and triggering a re-render.
         const sortedPools = [...pools];
         return sortedPools.sort((a, b) => {
           let valueToCompareA: typeof a[keyof typeof a] | number =
@@ -154,7 +155,7 @@ export class ObservablePoolsWithMetric {
           let valueToCompareB: typeof b[keyof typeof b] | number =
             b[sortingColumn];
 
-          // If is sorting by pool, then sort by pool id
+          // If user is sorting by pool, then sort by pool id
           if (sortingColumn === "pool") {
             valueToCompareA = Number(a.pool.id);
             valueToCompareB = Number(b.pool.id);
