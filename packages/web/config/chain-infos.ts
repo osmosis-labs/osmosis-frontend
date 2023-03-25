@@ -1478,7 +1478,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "umee",
           coinGeckoId: "pool:uumee",
-          coinImageUrl: "/tokens/umee.png",
+          coinImageUrl: "/tokens/umee.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
