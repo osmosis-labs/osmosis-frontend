@@ -320,121 +320,121 @@
       "infoMessage": "Pool Creation Fee",
       "interestedCreate": "Interested in creating a new pool?",
       "scalingFactorController": "Set scaling factor controller (optional)",
-      "stablePool": "Stable pool",
-      "startProcess": "Click here to start the process",
+      "stablePool": "استخر پایدار",
+      "startProcess": "برای انجام کار اینجا را بفشارید",
       "step": {
         "one": {
-          "stable": "Step {step} / {nbStep} - Set scaling factors",
-          "weighted": "Step {step} / {nbStep} - Set token ratios"
+          "stable": "گام {step} / {nbStep} - تنظیم فاکتورها",
+          "weighted": "پام {step} / {nbStep} - تنظیم نسبت های توکن ها"
         },
         "three": "Step {step} / {nbStep} - Confirm pool ratio and token amount",
         "two": "Step {step} / {nbStep} - Input amount to add"
       },
-      "swapFee": "Set Swap Fee",
-      "title": "Create New Pool",
-      "token": "Token",
-      "undersandCost": "I understand that creating a new pool will cost {POOL_CREATION_FEE}.",
-      "weightedPool": "Weighted pool"
+      "swapFee": "تنظیم نرخ تبدیل",
+      "title": "ایجاد استخر جدید",
+      "token": "توکن",
+      "undersandCost": "من می دانم هزینه ایجاد استخر {POOL_CREATION_FEE} می باشد.",
+      "weightedPool": "وزن استخر"
     },
     "externalIncentivized": {
-      "APR": "APR",
-      "search": "Search by symbol",
+      "APR": "نرخ بازده",
+      "search": "جسنجوی نماد",
       "sort": {
-        "APR": "APR",
-        "epochs": "Epochs Remaining",
-        "liquidity": "Liquidity",
-        "myLiquidity": "My Liquidity",
-        "poolName": "Pool Name/Number"
+        "APR": "نرخ بازده",
+        "epochs": "تعداد مانده توزیع جایزه",
+        "liquidity": "نقدینگی من",
+        "myLiquidity": "نقدینگی من",
+        "poolName": "استخر شماره/نام"
       },
-      "title": "Externally Incentivized Pools",
+      "title": "مشوش های خارجی استخر",
       "TVL": "TVL"
     },
-    "incentivized": "Incentivized",
-    "liquidity": "Liquidity",
-    "myLiquidity": "My Liquidity",
-    "myPools": "My Pools",
-    "poolId": "Pool #{id}",
-    "priceOsmo": "OSMO Price",
-    "rewardDistribution": "Reward distribution in",
+    "incentivized": "مشوق ها - جایزه ها",
+    "liquidity": "نقدینگی",
+    "myLiquidity": "نقدینگی های من",
+    "myPools": "استخر های من",
+    "poolId": "استخر #{id}",
+    "priceOsmo": "قیمت OSMO",
+    "rewardDistribution": "زمان توزیع جوایز",
     "superfluid": {
-      "APR": "APR",
-      "fees7D": "Fees (7D)",
-      "liquidity": "Liquidity",
+      "APR": "نرخ بازده",
+      "fees7D": "کارمزد (هفت روزه)",
+      "liquidity": "نقدینگی",
       "tab": "Superfluid",
-      "title": "Superfluid Pools"
+      "title": "استخر های Superfluid"
     },
-    "title": "Active Pools"
+    "title": "استخرهای فعال"
   },
   "profile": {
-    "balance": "Balance",
-    "modalTitle": "Profile",
-    "viewAllAssets": "View all assets",
-    "wallet": "Wallet"
+    "balance": "موجودی",
+    "modalTitle": "پروفایل",
+    "viewAllAssets": "نمایش همه دارایی ها",
+    "wallet": "کیف پول"
   },
-  "protocolDisclaimer": "Protocol Disclaimer",
+  "protocolDisclaimer": "سلب مسئولیت",
   "removeLiquidity": {
-    "sharesAmount": "{shares} shares",
-    "title": "Remove Liquidity",
-    "titleInPool": "Remove liquidity from pool #{poolId}"
+    "sharesAmount": "{shares} مشارکت",
+    "title": "حذف نقدینگی",
+    "titleInPool": "حذف نقدینگی از استخر #{poolId}"
   },
-  "requestRejected": "Request rejected",
+  "requestRejected": "درخواست رد شد",
   "settings": {
-    "filterDust": "Filter Dust",
-    "selectLanguage": "Select language",
-    "title": "Global settings",
-    "titleHideDust": "Hide pools with < {fiatSymbol}0.01",
-    "titleLanguage": "Language"
+    "filterDust": "فیلتر",
+    "selectLanguage": "انتخاب زبان",
+    "title": "تنظیمات کلی",
+    "titleHideDust": "مخفی سازی استخر با موجودی کمتر از < {fiatSymbol}0.01",
+    "titleLanguage": "زبان"
   },
   "stablecoinTypes": {
-    "collateralized": "collateralized"
+    "collateralized": "سپرده شده"
   },
   "superfluidValidator": {
-    "bondedAmount": "Bonded Amount",
-    "buttonBond": "Bond & Stake",
-    "choose": "Choose your superfluid validator",
+    "bondedAmount": "میزان قفل کردن",
+    "buttonBond": "قفل کردن و سپرده گذاری",
+    "choose": "انتخاب تایید کننده superfluid",
     "columns": {
-      "commission": "Commission",
-      "validator": "Validator"
+      "commission": "کمسیون",
+      "validator": "تایید کننده"
     },
-    "estimation": "Estimated Superfluid Delegation",
-    "estimationInfo": "The value of this delegation fluctuates and is estimated based on the amount of OSMO in the pool.",
-    "estimationMobile": "Est. Delegation",
-    "search": "Search by name",
-    "title": "Select Superfluid Validator",
-    "titleMobile": "Select Validator"
+    "estimation": "میزان مشارکت تقریبی",
+    "estimationInfo": "میزان مشارکت تقریبی شما با توجه به OSMO موجود در استخر بدست می آید.",
+    "estimationMobile": "مشارکت تقریبی",
+    "search": "جستجو با نام",
+    "title": "انتخاب تایید کننده Superfuild",
+    "titleMobile": "انتخاب تایید کننده"
   },
   "swap": {
-    "autoRouter": "Route",
+    "autoRouter": "مسیر",
     "autoRouterToggle": {
-      "hide": "Hide",
-      "show": "Show"
+      "hide": "مخفی",
+      "show": "نماید"
     },
-    "available": "Available",
-    "button": "Swap",
-    "buttonError": "Swap anyway",
+    "available": "موجود",
+    "button": "تبدیل کن",
+    "buttonError": "در هر شرایطی تبدیل کن",
     "error": {
-      "findCurrency": "Failed to find currency {currency}"
+      "findCurrency": "{currency} پیدا نشد."
     },
-    "expectedOutput": "Expected Output",
-    "fee": "Swap Fee ({fee})",
-    "HALF": "HALF",
-    "MAX": "MAX",
-    "minimumSlippage": "Minimum received after slippage ({slippage})",
-    "pool": "Pool #{id}",
-    "priceImpact": "Price Impact",
-    "routerTooltipFee": "Fee",
+    "expectedOutput": "خروجی مورد انتظار",
+    "fee": "کارمزد تبدیل ({fee})",
+    "HALF": "نصف",
+    "MAX": "همه",
+    "minimumSlippage": "حداقل تغییرات قابل قبول ({slippage})",
+    "pool": "استخر #{id}",
+    "priceImpact": "تاثیر قیمت",
+    "routerTooltipFee": "کارمزد",
     "settings": {
-      "slippage": "Slippage tolerance",
-      "slippageInfo": "Your transaction will revert if the price changes unfavorably by more than this percentage.",
-      "title": "Transaction settings"
+      "slippage": "تغیرات قابل قبول",
+      "slippageInfo": "تراکنش در صورتی که تغییرات با درصد قابل قبول شما برابری کند انجام می شود.",
+      "title": "تنظیمات تراکنش"
     },
-    "title": "Swap"
+    "title": "تبدیل"
   },
-  "swapFailed": "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.",
-  "transactionBroadcasting": "Transaction Broadcasting",
-  "transactionFailed": "Transaction Failed",
-  "transactionSuccessful": "Transaction Successful",
-  "unknownError": "Unknown error",
-  "viewExplorer": "View explorer",
-  "waitingForTransaction": "Waiting for transaction to be included in the block"
+  "swapFailed": "تبدیل موفق نبود باید میزان تغییرات قابل قبول شما بیشتر باشد. ",
+  "transactionBroadcasting": "در حال ارسال تراکنش",
+  "transactionFailed": "تراکنش با موفقیت انجام نشد",
+  "transactionSuccessful": "تراکنش با موفقیت انجام شد",
+  "unknownError": "خطای نا شناس",
+  "viewExplorer": "مشاهده جزئیات تراکنش",
+  "waitingForTransaction": "صبر کنید تا یک تراکنش در بلاک قرار بگیرد"
 }
