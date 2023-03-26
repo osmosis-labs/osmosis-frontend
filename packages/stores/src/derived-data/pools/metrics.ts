@@ -96,7 +96,6 @@ export class ObservablePoolWithMetric {
 
 /** Fetches all pools directly from node in order of pool creation. */
 export class ObservablePoolsWithMetric {
-  @observable
   protected _pools = new Map<string, ObservablePoolWithMetric>();
 
   constructor(
@@ -110,9 +109,7 @@ export class ObservablePoolsWithMetric {
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly priceStore: IPriceStore
-  ) {
-    makeObservable(this);
-  }
+  ) {}
 
   getAllPools = computedFn(
     (
