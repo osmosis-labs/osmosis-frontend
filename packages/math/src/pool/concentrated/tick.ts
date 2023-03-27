@@ -133,7 +133,7 @@ export function computeMinMaxTicksFromExponentAtPriceOne(
   };
 }
 
-function calculatePriceAndTicksPassed(
+export function calculatePriceAndTicksPassed(
   price: Dec,
   exponentAtPriceOne: number
 ): {
