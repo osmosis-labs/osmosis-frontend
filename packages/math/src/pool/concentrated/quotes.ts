@@ -22,7 +22,7 @@ interface SwapState {
   amountCalculated: Dec;
   inittedTickIndex: number;
   sqrtPrice: Dec;
-  liquidity: Dec;
+  currentTickLiquidity: Dec;
   feeGrowthGlobal: Dec;
 }
 
@@ -64,7 +64,7 @@ function calcOutGivenIn({
     amountCalculated: new Dec(0), // tokenOut
     inittedTickIndex: swapStrategy.initTickValue(curTickArrIndex),
     sqrtPrice: curSqrtPrice,
-    liquidity: poolLiquidity,
+    currentTickLiquidity: poolLiquidity,
     feeGrowthGlobal: new Dec(0),
   };
 
@@ -93,7 +93,7 @@ function calcOutGivenIn({
     } = swapStrategy.computeSwapStepOutGivenIn(
       swapState.sqrtPrice,
       sqrtPriceTarget,
-      swapState.liquidity,
+      swapState.currentTickLiquidity,
       swapState.amountRemaining
     );
 
@@ -109,7 +109,10 @@ function calcOutGivenIn({
         new Dec(nextTick.netLiquidity.toString())
       );
 
-      swapState.liquidity = addLiquidity(swapState.liquidity, liquidityNet);
+      swapState.currentTickLiquidity = addLiquidity(
+        swapState.currentTickLiquidity,
+        liquidityNet
+      );
 
       swapState.inittedTickIndex++;
     }
@@ -156,7 +159,7 @@ export function calcInGivenOut({
     amountCalculated: new Dec(0),
     inittedTickIndex: swapStrategy.initTickValue(curTickArrIndex),
     sqrtPrice: curSqrtPrice,
-    liquidity: poolLiquidity,
+    currentTickLiquidity: poolLiquidity,
     feeGrowthGlobal: new Dec(0),
   };
 
@@ -185,7 +188,7 @@ export function calcInGivenOut({
     } = swapStrategy.computeSwapStepInGivenOut(
       swapState.sqrtPrice,
       sqrtPriceTarget,
-      swapState.liquidity,
+      swapState.currentTickLiquidity,
       swapState.amountRemaining
     );
 
@@ -200,7 +203,10 @@ export function calcInGivenOut({
         new Dec(nextTick.netLiquidity.toString())
       );
 
-      swapState.liquidity = addLiquidity(swapState.liquidity, liquidityNet);
+      swapState.currentTickLiquidity = addLiquidity(
+        swapState.currentTickLiquidity,
+        liquidityNet
+      );
 
       swapState.inittedTickIndex++;
     }
