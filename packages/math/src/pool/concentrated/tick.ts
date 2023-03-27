@@ -1,6 +1,6 @@
 import { Dec, DecUtils, Int } from "@keplr-wallet/unit";
-import { BigDec } from "src/big-dec";
 
+import { BigDec } from "../../big-dec";
 import {
   exponentAtPriceOneMax,
   exponentAtPriceOneMin,
