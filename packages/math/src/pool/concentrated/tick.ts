@@ -30,7 +30,7 @@ export function tickToSqrtPrice(
   }
 
   const geometricExponentIncrementDistanceInTicks = nine.mul(
-    DecUtils.getTenExponentN(-exponentAtPriceOne) // TODO: Check this
+    DecUtils.getTenExponentN(-exponentAtPriceOne)
   );
 
   const { minTick, maxTick } = computeMinMaxTicksFromExponentAtPriceOne(
@@ -42,23 +42,25 @@ export function tickToSqrtPrice(
     );
   }
 
-  const geometricExponentDelta = new Dec(tickIndex).quoTruncate(
-    geometricExponentIncrementDistanceInTicks.truncateDec()
-  );
+  const geometricExponentDelta = new Dec(tickIndex)
+    .quoTruncate(new Dec(geometricExponentIncrementDistanceInTicks.truncate()))
+    .truncate();
 
-  let exponentAtCurTick = new Dec(exponentAtPriceOne).add(
+  let exponentAtCurTick = new Int(exponentAtPriceOne).add(
     geometricExponentDelta
   );
   if (tickIndex.lt(new Int(0))) {
-    exponentAtCurTick = exponentAtCurTick.sub(new Dec(1));
+    exponentAtCurTick = exponentAtCurTick.sub(new Int(1));
   }
 
   const currentAdditiveIncrementInTicks = DecUtils.getTenExponentN(
     Number(exponentAtCurTick.toString())
   );
 
-  const numAdditiveTicks = new Dec(tickIndex).sub(
-    geometricExponentDelta.mul(geometricExponentIncrementDistanceInTicks)
+  const numAdditiveTicks = tickIndex.sub(
+    geometricExponentDelta.mul(
+      geometricExponentIncrementDistanceInTicks.truncate()
+    )
   );
 
   const price = new BigDec(

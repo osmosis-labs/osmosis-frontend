@@ -8,7 +8,7 @@ export interface QuoteParams {
   /** List of initted ticks, tick index gaps expected. Current price is always array index 0, and desired liquidity
    *  is always in indices > 0. Even if swapping for token 0, where ticks increment negatively.
    */
-  inittedTicksWithNetLiquidity: LiquidityDepth[];
+  inittedTicks: LiquidityDepth[];
   /** Current tick identifier, NOT an index into `inittedTicksWithNetLiquidity`. */
   curTick: Int;
   /** Current tick as price. */

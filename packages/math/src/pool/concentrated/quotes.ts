@@ -30,7 +30,7 @@ function calcOutGivenIn({
   tokenIn,
   tokenDenom0,
   poolLiquidity,
-  inittedTicksWithNetLiquidity,
+  inittedTicks,
   curTick,
   curSqrtPrice,
   precisionFactorAtPriceOne,
@@ -48,14 +48,13 @@ function calcOutGivenIn({
   const swapStrategy = makeSwapStrategy(isZeroForOne, sqrtPriceLimit, swapFee);
   const tokenInAmountSpecified = new Dec(tokenIn.amount);
 
-  const curTickWithNetLiq = inittedTicksWithNetLiquidity.find(({ tickIndex }) =>
+  const curTickWithNetLiq = inittedTicks.find(({ tickIndex }) =>
     tickIndex.equals(curTick)
   );
   if (!curTickWithNetLiq) {
     throw new Error("curTickNet not found in inittedTicksWithNetLiquidity");
   }
-  const curTickArrIndex =
-    inittedTicksWithNetLiquidity.indexOf(curTickWithNetLiq);
+  const curTickArrIndex = inittedTicks.indexOf(curTickWithNetLiq);
   if (curTickArrIndex < 0) {
     throw new Error(
       "curTickWithNetLiq not found in inittedTicksWithNetLiquidity"
@@ -76,7 +75,7 @@ function calcOutGivenIn({
     !swapState.sqrtPrice.equals(sqrtPriceLimit)
   ) {
     const nextTick: LiquidityDepth | undefined =
-      inittedTicksWithNetLiquidity?.[swapState.inittedTickIndex];
+      inittedTicks?.[swapState.inittedTickIndex];
     if (!nextTick) {
       throw new TickOverflowError("Not enough ticks to calculate swap");
     }
@@ -112,9 +111,9 @@ function calcOutGivenIn({
       );
 
       swapState.liquidity = addLiquidity(swapState.liquidity, liquidityNet);
-    }
 
-    swapState.inittedTickIndex++;
+      swapState.inittedTickIndex++;
+    }
   } // end while
 
   return swapState.amountCalculated.truncate();
@@ -124,7 +123,7 @@ export function calcInGivenOut({
   tokenOut,
   tokenDenom0,
   poolLiquidity,
-  inittedTicksWithNetLiquidity,
+  inittedTicks: inittedTicksWithNetLiquidity,
   curTick,
   curSqrtPrice,
   precisionFactorAtPriceOne,
@@ -206,9 +205,9 @@ export function calcInGivenOut({
       );
 
       swapState.liquidity = addLiquidity(swapState.liquidity, liquidityNet);
-    }
 
-    swapState.inittedTickIndex++;
+      swapState.inittedTickIndex++;
+    }
   }
 
   return swapState.amountCalculated.truncate();
