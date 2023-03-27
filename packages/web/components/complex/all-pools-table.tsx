@@ -1,3 +1,4 @@
+import { Menu } from "@headlessui/react";
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservablePoolWithMetric } from "@osmosis-labs/stores";
 import {
@@ -7,10 +8,12 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import classNames from "classnames";
 import EventEmitter from "eventemitter3";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import {
+  FC,
   FunctionComponent,
   useCallback,
   useMemo,
@@ -25,6 +28,7 @@ import { runIfFn } from "~/utils/function";
 import { useFilteredData, useWindowSize } from "../../hooks";
 import { useStore } from "../../stores";
 import { Icon } from "../assets";
+import { CheckBox, MenuSelectProps } from "../control";
 import { SelectMenu } from "../control/select-menu";
 import { SearchBox } from "../input";
 import {
@@ -466,7 +470,7 @@ export const AllPoolsTable: FunctionComponent<{
             <div className="flex place-content-between items-center">
               <h5>{t("pools.allPools.title")}</h5>
               <div className="flex flex-wrap items-center gap-3 lg:w-full lg:place-content-between">
-                <SelectMenu
+                <CheckboxSelect
                   label={
                     isMobile
                       ? t("components.pool.mobileTitle")
@@ -480,7 +484,7 @@ export const AllPoolsTable: FunctionComponent<{
                   selectedOptionId={poolFilter}
                   onSelect={onSelectFilter}
                 />
-                <SelectMenu
+                <CheckboxSelect
                   label={
                     isMobile
                       ? t("components.incentive.mobileTitle")
@@ -506,6 +510,7 @@ export const AllPoolsTable: FunctionComponent<{
               </div>
             </div>
           )}
+
           <div className="h-auto overflow-auto">
             <PaginatedTable
               paginate={handleFetchRemaining}
@@ -536,3 +541,61 @@ export const AllPoolsTable: FunctionComponent<{
     );
   }
 );
+
+const CheckboxSelect: FC<
+  {
+    label: string;
+    selectedOptionLabel?: string;
+  } & MenuSelectProps
+> = ({ label, selectedOptionLabel, options }) => {
+  const { isMobile } = useWindowSize();
+  const selectedOptionId = "";
+
+  return (
+    <Menu>
+      {({ open }) => (
+        <div className="relative">
+          <Menu.Button
+            className={classNames(
+              "relative flex h-10 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl px-6 text-sm transition-colors",
+              "border border-osmoverse-500 hover:border-2 hover:border-osmoverse-200 hover:px-[23px]",
+              open && "border-2 border-osmoverse-200 px-[23px]",
+              selectedOptionId ? "text-rust-200" : "text-osmoverse-200"
+            )}
+          >
+            {selectedOptionLabel ?? label}
+            <Icon
+              className="flex shrink-0 items-center text-osmoverse-200"
+              id={open ? "chevron-up" : "chevron-down"}
+              height={isMobile ? 12 : 16}
+              width={isMobile ? 12 : 16}
+            />
+          </Menu.Button>
+
+          <Menu.Items className="absolute top-full -left-px z-[1000] flex select-none flex-col rounded-b-xl border border-osmoverse-600 bg-osmoverse-900 text-left">
+            {options.map(({ id, display }, index) => (
+              <Menu.Item key={id}>
+                {({ active }) => (
+                  <button
+                    className={classNames(
+                      "flex cursor-pointer px-4 py-1.5 text-left transition-colors",
+                      {
+                        "text-rust-200": id === selectedOptionId,
+                        "text-osmoverse-200": id !== selectedOptionId,
+                        "hover:bg-osmoverse-700": active,
+                        "rounded-b-xlinset": index === options.length - 1,
+                      }
+                    )}
+                  >
+                    <CheckBox className="w-fit" isOn onToggle={() => {}} />
+                    <span>{display}</span>
+                  </button>
+                )}
+              </Menu.Item>
+            ))}
+          </Menu.Items>
+        </div>
+      )}
+    </Menu>
+  );
+};
