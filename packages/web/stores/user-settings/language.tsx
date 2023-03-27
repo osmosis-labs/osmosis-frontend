@@ -55,6 +55,10 @@ const SUPPORTED_LANGUAGES: MenuDropdownIconItemProps[] = [
     value: "zh-hk",
     display: "香港語",
   },
+  {
+    value: "fa",
+    display: "فارسی",
+  },
 ];
 
 export class LanguageUserSetting implements UserSetting<LanguageState> {
