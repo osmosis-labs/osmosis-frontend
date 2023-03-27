@@ -169,16 +169,16 @@ const Home: NextPage = observer(function () {
 
   return (
     <main className="relative h-full bg-osmoverse-900">
-      <div className="absolute h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">
+      <div className="absolute h-full w-full">
         <svg
           className="absolute h-full w-full lg:hidden"
           pointerEvents="none"
           viewBox="0 0 1300 900"
-          height="900"
+          height=""
           preserveAspectRatio="xMidYMid slice"
         >
           <g>
-            {!IS_FRONTIER && (
+            {/* {!IS_FRONTIER && (
               <ProgressiveSvgImage
                 lowResXlinkHref="/images/osmosis-home-bg-low.png"
                 xlinkHref="/images/osmosis-home-bg.png"
@@ -187,22 +187,20 @@ const Home: NextPage = observer(function () {
                 width="578.7462"
                 height="725.6817"
               />
-            )}
+            )} */}
             <ProgressiveSvgImage
               lowResXlinkHref={
-                IS_FRONTIER
-                  ? "/images/osmosis-cowboy-woz-low.png"
-                  : "/images/osmosis-home-fg-low.png"
+                IS_FRONTIER ? "/images/osmosis-cowboy-woz-low.png" : undefined
               }
               xlinkHref={
                 IS_FRONTIER
                   ? "/images/osmosis-cowboy-woz.png"
-                  : "/images/osmosis-home-fg.png"
+                  : "/images/quasar-web-bg.png"
               }
-              x={IS_FRONTIER ? "-100" : "61"}
-              y={IS_FRONTIER ? "100" : "682"}
-              width={IS_FRONTIER ? "800" : "448.8865"}
-              height={IS_FRONTIER ? "800" : "285.1699"}
+              x={IS_FRONTIER ? "-100" : "-140"}
+              y={IS_FRONTIER ? "100" : "0"}
+              width={IS_FRONTIER ? "800" : "130%"}
+              height={IS_FRONTIER ? "800" : "100%"}
             />
           </g>
         </svg>
