@@ -13,103 +13,103 @@
     "scalingFactorController": "کنترل کننده",
     "scalingFactorControllerWarning_first": "کنترل کننده ضریب فعال است برای ",
     "scalingFactorControllerWarning_second": "می تواند تنظیم کند ",
-    "scalingFactorControllerWarning_third": "to maintain the peg. The current scaling factor is",
-    "scalingFactorInformation": "This factor allows the curve to adjust to predictable price changes, such as the value accruing to a liquid staking token.",
-    "singleAsset": "Single asset",
-    "stablecoinWarning": "You are adding liquidity to {denom}, a {mechanism}-backed stablecoin.",
-    "title": "Add Liquidity",
-    "titleInPool": "Add liquidity to pool #{poolId}"
+    "scalingFactorControllerWarning_third": "برای کنترل وابستنگی کنترل کننده روی",
+    "scalingFactorInformation": "این فاکتور می تواند قیمت را برای شما مشخص نماید.",
+    "singleAsset": "یک توکن",
+    "stablecoinWarning": "شما در حال اضافه کردن {denom} نقدینگی به سیستم قیمت ثابت {mechanism} هستید.",
+    "title": "افزودن نقدینگی",
+    "titleInPool": "افزودن نقدینگی به  #{poolId}"
   },
   "app": {
     "banner": {
-      "backToOsmosis": "Back to Osmosis",
-      "externalLink": "You are now leaving the Osmosis app to go to",
-      "externalLinkDisclaimer": "By clicking the link, you acknowledge that you have read and understand that Osmosis makes no guarantees of quality of service for external pages which may have a different ToS.",
-      "externalLinkModalTitle": "Leaving Osmosis",
-      "goToSite": "Go to Site",
-      "linkText": "Click here to return to the main app",
-      "title": "You're viewing all permissionless assets."
+      "backToOsmosis": "بازگشت به Osmosis",
+      "externalLink": "شما Osmosis را ترک می کنید و به یک برنامه دیگر می روید",
+      "externalLinkDisclaimer": "با کلیک کرد بر روی لینک شما تمام شرایط را پذیرفته و با اطلاع خودتان Osmosis را ترک می کنید.",
+      "externalLinkModalTitle": "ترک Osmosis",
+      "goToSite": "بازگشت به سایت",
+      "linkText": "با کلیک بر روی این لینک به برنامه اصلی بازگردید.",
+      "title": "شما در حال مشاهده برنامه بدون کنترل هستید.."
     }
   },
   "assets": {
-    "bondedAssets": "Bonded",
+    "bondedAssets": "قفل شده",
     "historyTable": {
       "colums": {
-        "amount": "Amount",
-        "deposit": "Deposit",
-        "status": "Status",
-        "transactionHash": "Transaction Hash",
-        "type": "Type",
-        "withdraw": "Withdraw"
+        "amount": "مقدار",
+        "deposit": "واریز وجه",
+        "status": "وضعیت",
+        "transactionHash": "کد رهگیری تراکنش",
+        "type": "نو",
+        "withdraw": "برداشت وجه"
       },
       "errors": {
-        "insufficientFee": "Insufficient Fee"
+        "insufficientFee": "کارمزد کافی نیست"
       },
-      "failed": "Failed",
-      "failedWithReason": "Failed: {reason}",
-      "pending": "Pending",
-      "pendingRefunded": "Failed: Pending refund",
-      "refunded": "Refunded",
-      "success": "Success",
-      "title": "Transfer History"
+      "failed": "نا موفق",
+      "failedWithReason": "دلیل: {reason}",
+      "pending": "معلق",
+      "pendingRefunded": "دلیل: بازگشت وجه معلق",
+      "refunded": "بازگشت وجه",
+      "success": "موفق",
+      "title": "تاریخ چه انتقال"
     },
     "ibcTransfer": {
-      "amoutDeposit": "Amount To Deposit",
-      "amoutWithdraw": "Amount To Withdraw",
-      "availableBalance": "Available balance:",
-      "buttonEdit": "Edit",
-      "buttonEnter": "Enter",
-      "channelBlocked": "Channel blocked",
-      "channelCongested": "Channel congested",
-      "channelCongestedDeposit": "Deposit (Channel congested)",
-      "channelCongestedWithdraw": "Withdraw (Channel congested)",
-      "checkboxVerify": "I verify I am not sending to an exchange address.",
-      "copied": "Copied!",
-      "estimatedTime": "Estimated Time",
-      "from": "from",
-      "IBCTransfer": "IBC Transfer",
-      "MAX": "MAX",
-      "selectAmount": "Select Amount",
-      "titleDeposit": "Deposit {coinDenom}",
-      "titleWithdraw": "Withdraw {coinDenom}",
-      "to": "to",
-      "waitTime": "20 seconds",
-      "warningLossFunds": "Warning: Withdrawing to central exchange address will result in loss of funds."
+      "amoutDeposit": "مقدار واریز وجه",
+      "amoutWithdraw": "مقدار برداشت وجه",
+      "availableBalance": "موجودی فعلی:",
+      "buttonEdit": "ویرایش",
+      "buttonEnter": "ورود",
+      "channelBlocked": "کانال مسدود",
+      "channelCongested": "کانال شلوغ",
+      "channelCongestedDeposit": "واریز وجه(کانال شلوغ)",
+      "channelCongestedWithdraw": "برداشت وجه(کانال شلوغ)",
+      "checkboxVerify": "من تایید می کنم که این آدرس من است.",
+      "copied": "کپی شد",
+      "estimatedTime": "زمان تقریبی انتقال",
+      "from": "از",
+      "IBCTransfer": "انتقال بین شبکه ای",
+      "MAX": "حداکثر",
+      "selectAmount": "انتخاب مقدار",
+      "titleDeposit": "واریز {coinDenom}",
+      "titleWithdraw": "برداشت {coinDenom}",
+      "to": "به",
+      "waitTime": "20 ثانیه",
+      "warningLossFunds": "اخطار:انتقال وجه به صرافی های متمرکز ممکن است باعث از دست رفتن پول شما شود."
     },
-    "myPools": "My Pools",
+    "myPools": "استخرهای من",
     "poolCards": {
-      "APR": "APR",
-      "bonded": "Bonded",
-      "FeeAPY": "Fee APY",
-      "liquidity": "My Liquidity"
+      "APR": "نرخ بازدهی",
+      "bonded": "قفل شده",
+      "FeeAPY": "کارمزذ سپرده گذاری",
+      "liquidity": "نقدینگی من"
     },
     "selectAssetSource": {
-      "installWallet": "Install {walletName}",
-      "next": "Next",
-      "titleDeposit": "Deposit from",
-      "titleWithdraw": "Withdraw to"
+      "installWallet": "نصب کیف پول {walletName}",
+      "next": "بعدی",
+      "titleDeposit": "برداشت از",
+      "titleWithdraw": "پرداخت به"
     },
-    "stakedAssets": "Staked OSMO",
+    "stakedAssets": "قفل شده OSMO",
     "table": {
       "columns": {
-        "assetChain": "Asset / Chain",
-        "balance": "Balance",
-        "deposit": "Deposit",
-        "transfer": "Transfer",
-        "withdraw": "Withdraw"
+        "assetChain": "دارایی/شبکه",
+        "balance": "موجودی",
+        "deposit": "واریزوجه",
+        "transfer": "انتقال",
+        "withdraw": "برداشت وجه"
       },
-      "depositButton": "Deposit",
-      "hideZero": "Hide zero balances",
+      "depositButton": "برداشت",
+      "hideZero": "مخفی کردن موجودی های صفر",
       "preTransfer": {
-        "currentBal": "Current Balance",
-        "deposit": "Deposit",
-        "withdraw": "Withdraw"
+        "currentBal": "موجودی فعلی",
+        "deposit": "برداشت وجه",
+        "withdraw": "واریز وجه"
       },
-      "search": "Search",
+      "search": "جستجو",
       "sort": {
-        "balance": "Balance",
-        "network": "Network",
-        "symbol": "Symbol"
+        "balance": "موجودی",
+        "network": "شبکه",
+        "symbol": "نماد"
       },
       "title": "All Assets",
       "withdrawButton": "Withdraw"
