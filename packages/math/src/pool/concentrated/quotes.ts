@@ -37,9 +37,9 @@ function calcOutGivenIn({
   priceLimit = new Dec(0),
 }: QuoteOutGivenInParams): Int {
   const isZeroForOne = tokenIn.denom === tokenDenom0;
-  if (isZeroForOne && priceLimit.equals(new Dec(0))) {
+  if (isZeroForOne && priceLimit.isZero()) {
     priceLimit = minSpotPrice;
-  } else if (!isZeroForOne && priceLimit.equals(new Dec(0))) {
+  } else if (!isZeroForOne && priceLimit.isZero()) {
     priceLimit = maxSpotPrice;
   }
 
@@ -62,7 +62,7 @@ function calcOutGivenIn({
   ) {
     const nextTick: LiquidityDepth | undefined =
       inittedTicks?.[swapState.inittedTickIndex];
-    if (!nextTick) {
+    if (nextTick === undefined) {
       throw new TickOverflowError("Not enough ticks to calculate swap");
     }
 
@@ -120,9 +120,9 @@ export function calcInGivenOut({
   priceLimit = new Dec(0),
 }: QuoteInGivenOutParams): Int {
   const isZeroForOne = tokenOut.denom === tokenDenom0;
-  if (isZeroForOne && priceLimit.equals(new Dec(0))) {
+  if (isZeroForOne && priceLimit.isZero()) {
     priceLimit = minSpotPrice;
-  } else if (!isZeroForOne && priceLimit.equals(new Dec(0))) {
+  } else if (!isZeroForOne && priceLimit.isZero()) {
     priceLimit = maxSpotPrice;
   }
 
@@ -145,7 +145,7 @@ export function calcInGivenOut({
   ) {
     const nextTick: LiquidityDepth | undefined =
       inittedTicks?.[swapState.inittedTickIndex];
-    if (!nextTick) {
+    if (nextTick === undefined) {
       throw new TickOverflowError("Not enough ticks to calculate swap");
     }
 
