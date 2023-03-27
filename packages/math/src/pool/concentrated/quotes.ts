@@ -87,8 +87,8 @@ function calcOutGivenIn({
 
     const {
       sqrtPriceNext,
-      amountInConsumed: amountOneIn,
-      amountOutComputed: amountZeroOut,
+      amountInConsumed,
+      amountOutComputed,
       feeChargeTotal,
     } = swapStrategy.computeSwapStepOutGivenIn(
       swapState.sqrtPrice,
@@ -99,9 +99,10 @@ function calcOutGivenIn({
 
     swapState.sqrtPrice = sqrtPriceNext;
     swapState.amountRemaining = swapState.amountRemaining.sub(
-      amountOneIn.add(feeChargeTotal)
+      amountInConsumed.add(feeChargeTotal)
     );
-    swapState.amountCalculated = swapState.amountCalculated.add(amountZeroOut);
+    swapState.amountCalculated =
+      swapState.amountCalculated.add(amountOutComputed);
 
     if (nextTickSqrtPrice.equals(sqrtPriceNext)) {
       const liquidityNet = swapStrategy.setLiquidityDeltaSign(

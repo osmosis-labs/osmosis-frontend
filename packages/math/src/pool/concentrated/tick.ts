@@ -11,6 +11,7 @@ import { approxSqrt } from "./math";
 const nine = new Dec(9);
 
 // Ref: https://github.com/osmosis-labs/osmosis/blob/main/x/concentrated-liquidity/README.md#tick-spacing-example-tick-to-price
+// chain: https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/internal/math/tick.go#L39
 export function tickToSqrtPrice(
   tickIndex: Int,
   exponentAtPriceOne: number
@@ -32,9 +33,8 @@ export function tickToSqrtPrice(
     DecUtils.getTenExponentN(-exponentAtPriceOne)
   );
 
-  const { minTick, maxTick } = computeMinMaxTicksFromExponentAtPriceOne(
-    new Dec(exponentAtPriceOne)
-  );
+  const { minTick, maxTick } =
+    computeMinMaxTicksFromExponentAtPriceOne(exponentAtPriceOne);
   if (tickIndex.lt(minTick) || tickIndex.gt(maxTick)) {
     throw new Error(
       `tickIndex is out of range: ${tickIndex.toString()}, min: ${minTick.toString()}, max: ${maxTick.toString()}`
@@ -105,22 +105,31 @@ export function priceToTick(price: Dec, exponentAtPriceOne: number): Int {
     ticksToBeFilledByExponentAtCurrentTick.toDec().truncate()
   );
 
-  const { minTick, maxTick } = computeMinMaxTicksFromExponentAtPriceOne(
-    new Dec(exponentAtPriceOne)
-  );
+  const { minTick, maxTick } =
+    computeMinMaxTicksFromExponentAtPriceOne(exponentAtPriceOne);
   if (tickIndex.lt(minTick) || tickIndex.gt(maxTick))
     throw new Error("Tick index not within bounds");
 
   return tickIndex;
 }
 
-function computeMinMaxTicksFromExponentAtPriceOne(distanceTicks: Dec): {
+export function computeMinMaxTicksFromExponentAtPriceOne(
+  exponentAtPriceOne: number
+): {
   minTick: Int;
   maxTick: Int;
 } {
+  const geometricExponentIncrementDistanceInTicks = new Dec(9).mul(
+    new Dec(10).pow(new Int(exponentAtPriceOne).neg())
+  );
   return {
-    minTick: new Dec(18).mul(distanceTicks).neg().round(),
-    maxTick: new Dec(38).mul(distanceTicks).truncate(),
+    minTick: new Dec(18)
+      .mul(geometricExponentIncrementDistanceInTicks)
+      .neg()
+      .round(),
+    maxTick: new Dec(38)
+      .mul(geometricExponentIncrementDistanceInTicks)
+      .truncate(),
   };
 }
 
