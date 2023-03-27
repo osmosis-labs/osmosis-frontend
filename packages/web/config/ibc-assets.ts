@@ -812,7 +812,6 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-95",
         destChannelId: "channel-2",
         coinMinimalDenom: "boot",
-        isUnstable: true,
       },
       {
         counterpartyChainId: "emoney-3",
