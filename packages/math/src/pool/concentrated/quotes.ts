@@ -31,7 +31,6 @@ function calcOutGivenIn({
   tokenDenom0,
   poolLiquidity,
   inittedTicks,
-  curTick,
   curSqrtPrice,
   precisionFactorAtPriceOne,
   swapFee,
@@ -48,21 +47,10 @@ function calcOutGivenIn({
   const swapStrategy = makeSwapStrategy(isZeroForOne, sqrtPriceLimit, swapFee);
   const tokenInAmountSpecified = new Dec(tokenIn.amount);
 
-  const curTickWithNetLiq = inittedTicks.find(({ tickIndex }) =>
-    tickIndex.equals(curTick)
-  );
-  if (!curTickWithNetLiq) {
-    throw new Error("curTickNet not found in inittedTicks");
-  }
-  const curTickArrIndex = inittedTicks.indexOf(curTickWithNetLiq);
-  if (curTickArrIndex < 0) {
-    throw new Error("curTickWithNetLiq not found in inittedTicks");
-  }
-
   const swapState: SwapState = {
     amountRemaining: tokenInAmountSpecified, // tokenIn
     amountCalculated: new Dec(0), // tokenOut
-    inittedTickIndex: swapStrategy.initTickValue(curTickArrIndex),
+    inittedTickIndex: swapStrategy.initTickValue(0),
     sqrtPrice: curSqrtPrice,
     currentTickLiquidity: poolLiquidity,
     feeGrowthGlobal: new Dec(0),
@@ -126,7 +114,6 @@ export function calcInGivenOut({
   tokenDenom0,
   poolLiquidity,
   inittedTicks,
-  curTick,
   curSqrtPrice,
   precisionFactorAtPriceOne,
   swapFee,
@@ -143,21 +130,10 @@ export function calcInGivenOut({
   const swapStrategy = makeSwapStrategy(isZeroForOne, sqrtPriceLimit, swapFee);
   const tokenOutAmountSpecified = new Dec(tokenOut.amount);
 
-  const curTickWithNetLiq = inittedTicks.find(({ tickIndex }) =>
-    tickIndex.equals(curTick)
-  );
-  if (!curTickWithNetLiq) {
-    throw new Error("curTickNet not found in inittedTicks");
-  }
-  const curTickArrIndex = inittedTicks.indexOf(curTickWithNetLiq);
-  if (curTickArrIndex < 0) {
-    throw new Error("curTickWithNetLiq not found in inittedTicks");
-  }
-
   const swapState: SwapState = {
     amountRemaining: tokenOutAmountSpecified,
     amountCalculated: new Dec(0),
-    inittedTickIndex: swapStrategy.initTickValue(curTickArrIndex),
+    inittedTickIndex: swapStrategy.initTickValue(0),
     sqrtPrice: curSqrtPrice,
     currentTickLiquidity: poolLiquidity,
     feeGrowthGlobal: new Dec(0),

@@ -5,12 +5,10 @@ export interface QuoteParams {
   tokenDenom0: string;
   /** Derivative of total tokens in pool. */
   poolLiquidity: Dec;
-  /** List of initted ticks, tick index gaps expected. Current price is always array index 0, and desired liquidity
+  /** List of initted ticks, tick index gaps expected. Current tick is always array index 0, and desired liquidity
    *  is always in indices > 0. Even if swapping for token 0, where ticks increment negatively.
    */
   inittedTicks: LiquidityDepth[];
-  /** Current tick identifier, NOT an index into `inittedTicksWithNetLiquidity`. */
-  curTick: Int;
   /** Current tick as price. */
   curSqrtPrice: Dec;
   /** Precision factor of pool. */
