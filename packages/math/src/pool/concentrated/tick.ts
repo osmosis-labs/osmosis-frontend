@@ -16,7 +16,6 @@ export function tickToSqrtPrice(
   exponentAtPriceOne: number
 ): Dec {
   if (tickIndex.isZero()) {
-    console.warn("tickIndex is 0");
     return new Dec(1);
   }
 

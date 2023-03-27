@@ -52,13 +52,11 @@ function calcOutGivenIn({
     tickIndex.equals(curTick)
   );
   if (!curTickWithNetLiq) {
-    throw new Error("curTickNet not found in inittedTicksWithNetLiquidity");
+    throw new Error("curTickNet not found in inittedTicks");
   }
   const curTickArrIndex = inittedTicks.indexOf(curTickWithNetLiq);
   if (curTickArrIndex < 0) {
-    throw new Error(
-      "curTickWithNetLiq not found in inittedTicksWithNetLiquidity"
-    );
+    throw new Error("curTickWithNetLiq not found in inittedTicks");
   }
 
   const swapState: SwapState = {
@@ -123,7 +121,7 @@ export function calcInGivenOut({
   tokenOut,
   tokenDenom0,
   poolLiquidity,
-  inittedTicks: inittedTicksWithNetLiquidity,
+  inittedTicks,
   curTick,
   curSqrtPrice,
   precisionFactorAtPriceOne,
@@ -141,18 +139,15 @@ export function calcInGivenOut({
   const swapStrategy = makeSwapStrategy(isZeroForOne, sqrtPriceLimit, swapFee);
   const tokenOutAmountSpecified = new Dec(tokenOut.amount);
 
-  const curTickWithNetLiq = inittedTicksWithNetLiquidity.find(({ tickIndex }) =>
+  const curTickWithNetLiq = inittedTicks.find(({ tickIndex }) =>
     tickIndex.equals(curTick)
   );
   if (!curTickWithNetLiq) {
-    throw new Error("curTickNet not found in inittedTicksWithNetLiquidity");
+    throw new Error("curTickNet not found in inittedTicks");
   }
-  const curTickArrIndex =
-    inittedTicksWithNetLiquidity.indexOf(curTickWithNetLiq);
+  const curTickArrIndex = inittedTicks.indexOf(curTickWithNetLiq);
   if (curTickArrIndex < 0) {
-    throw new Error(
-      "curTickWithNetLiq not found in inittedTicksWithNetLiquidity"
-    );
+    throw new Error("curTickWithNetLiq not found in inittedTicks");
   }
 
   const swapState: SwapState = {
@@ -169,7 +164,7 @@ export function calcInGivenOut({
     !swapState.sqrtPrice.equals(sqrtPriceLimit)
   ) {
     const nextTick: LiquidityDepth | undefined =
-      inittedTicksWithNetLiquidity?.[swapState.inittedTickIndex];
+      inittedTicks?.[swapState.inittedTickIndex];
     if (!nextTick) {
       throw new TickOverflowError("Not enough ticks to calculate swap");
     }
