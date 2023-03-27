@@ -111,38 +111,38 @@
         "network": "شبکه",
         "symbol": "نماد"
       },
-      "title": "All Assets",
-      "withdrawButton": "Withdraw"
+      "title": "همه دارایی ها",
+      "withdrawButton": "برداشت"
     },
-    "totalAssets": "Total assets",
+    "totalAssets": "کل دارایی ها",
     "transfer": {
-      "availableMobile": "Available",
-      "availableOn": "Available on {network}",
+      "availableMobile": "دارایی قابل برداشت",
+      "availableOn": "دارایی در شبکه {network}",
       "errors": {
-        "insufficientBal": "Insufficient Balance",
-        "insufficientFee": "Insufficient Fee",
-        "reconnectWallet": "Reconnect {walletName}",
-        "wrongNetworkInWallet": "Wrong network in {walletName}"
+        "insufficientBal": "موجودی نا کافی",
+        "insufficientFee": "کارمزد ناکافی",
+        "reconnectWallet": "اتصال مجدد کیف پول {walletName}",
+        "wrongNetworkInWallet": "شبکه اشتباه در  {walletName}"
       },
-      "from": "From",
-      "loading": "Loading",
-      "titleDeposit": "Deposit {coinDenom}",
-      "titleWithdraw": "Withdraw {coinDenom}",
-      "to": "To",
-      "transferFee": "Transfer Fee",
-      "useWrappedDeposit": "Deposit {wrapDenom} with Satellite",
-      "useWrappedWithdraw": "Withdraw {wrapDenom} with Satellite",
-      "via": "via",
-      "waitTime": "{minutes} minutes",
-      "warnDepositAddressDifferent": "Warning: the selected account in {address} differs from the account you last deposited with."
+      "from": "از",
+      "loading": "در حال بارگذاری",
+      "titleDeposit": "واریز {coinDenom}",
+      "titleWithdraw": "برداشت {coinDenom}",
+      "to": "به",
+      "transferFee": "کارمزد انتقال",
+      "useWrappedDeposit": "واریز  {wrapDenom} با Satellite ",
+      "useWrappedWithdraw": "برداشت {wrapDenom} با Satellite",
+      "via": "توسط",
+      "waitTime": "{minutes} دقیقه",
+      "warnDepositAddressDifferent": "هشدار: {address}  با آخرین آدرس برداشت و واریز شما متفاوت است."
     },
     "transferAssetSelect": {
-      "buttonNext": "Next",
-      "deposit": "Deposit",
-      "network": "Network",
-      "withdraw": "Withdraw"
+      "buttonNext": "بعدی",
+      "deposit": "واریز",
+      "network": "شبکه",
+      "withdraw": "برداشت"
     },
-    "unbondedAssets": "Unbonded"
+    "unbondedAssets": "بازکردن"
   },
   "buyTokens": "Buy tokens",
   "components": {
