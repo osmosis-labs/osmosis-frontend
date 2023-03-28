@@ -1,10 +1,11 @@
 import { Coin, Dec, Int } from "@keplr-wallet/unit";
 
 import { TickOverflowError } from "../errors";
-import { ConcentratedLiquidityMath } from "../quotes";
+import { calcInGivenOut, ConcentratedLiquidityMath } from "../quotes";
 const { calcOutGivenIn } = ConcentratedLiquidityMath;
 
 describe("calcOutGivenIn matches chain code", () => {
+  // Note: liquidity value for the default position is 1517882343.751510418088349649
   describe("without fees, base case", () => {
     // eth is denom0
     // https://github.com/osmosis-labs/osmosis/blob/2be30828d8c8a818652a15c3c19ae27b4c123c60/x/concentrated-liquidity/swaps_test.go#L63
@@ -710,6 +711,47 @@ describe("calcOutGivenIn matches chain code", () => {
           swapFee,
         })
       ).toThrowError(TickOverflowError);
+    });
+  });
+});
+
+describe("calcInGivenOut matches chain code", () => {
+  // Note: liquidity value for the default position is 1517882343.751510418088349649
+  describe("without fees, base case", () => {
+    // https://github.com/osmosis-labs/osmosis/blob/2be30828d8c8a818652a15c3c19ae27b4c123c60/x/concentrated-liquidity/swaps_test.go#L63
+    //  One price range
+    //
+    //          5000
+    //  4545 -----|----- 5500
+    it("single position within one tick: eth (in) -> usdc (out) | zfo", () => {
+      const tokenOut = new Coin("usdc", "42000000");
+      const tokenDenom0 = "eth";
+      const poolLiquidity = new Dec("1517882343.751510418088349649");
+      // found by printing liquidity net values to console with go test
+      const inittedTicks = [
+        {
+          tickIndex: new Int(305450),
+          netLiquidity: new Dec("1517882343.751510418088349649"),
+        },
+        {
+          tickIndex: new Int(315000),
+          netLiquidity: new Dec("-1517882343.751510418088349649"),
+        },
+      ];
+      const curSqrtPrice = new Dec("70.710678118654752440");
+      const precisionFactorAtPriceOne = -4;
+      const swapFee = new Dec("0");
+      const { amountIn, finalPrice } = calcInGivenOut({
+        tokenOut,
+        tokenDenom0,
+        poolLiquidity,
+        inittedTicks,
+        curSqrtPrice,
+        precisionFactorAtPriceOne,
+        swapFee,
+      });
+      expect(amountIn.toString()).toEqual("8404");
+      expect(finalPrice.toString()).toEqual("70.683007989825007162");
     });
   });
 });
