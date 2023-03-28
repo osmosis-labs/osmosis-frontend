@@ -203,4 +203,40 @@ describe("calcOutGivenIn", () => {
     });
     expect(result.toString()).toEqual("1820630");
   });
+  // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L167
+  //  Consecutive price ranges
+  //          5000
+  //  4545 -----|----- 5500
+  //             5500 ----------- 6250
+  it("matches chain code - two positions with consecutive price ranges: eth -> usdc", () => {
+    const tokenIn = new Coin("eth", "2000000");
+    const tokenDenom0 = "eth";
+    const poolLiquidity = new Dec("1517882343.751510418088349649");
+    // found by printing liquidity net values to console with go test
+    const inittedTicks = [
+      {
+        tickIndex: new Int(305450),
+        netLiquidity: new Dec("319146854.1542601224183902529"),
+      },
+      {
+        tickIndex: new Int(300000),
+        netLiquidity: new Dec("1198735489.597250295669959397"),
+      },
+    ];
+    const curSqrtPrice = new Dec("70.710678118654752440");
+    const precisionFactorAtPriceOne = -4;
+    const swapFee = new Dec("0");
+    const priceLimit = new Dec(3900);
+    const result = calcOutGivenIn({
+      tokenIn,
+      tokenDenom0,
+      poolLiquidity,
+      inittedTicks,
+      curSqrtPrice,
+      precisionFactorAtPriceOne,
+      swapFee,
+      priceLimit,
+    });
+    expect(result.toString()).toEqual("9103422788");
+  });
 });
