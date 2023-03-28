@@ -29,7 +29,6 @@ import { useFilteredData, useWindowSize } from "../../hooks";
 import { useStore } from "../../stores";
 import { Icon } from "../assets";
 import { CheckBox, MenuSelectProps } from "../control";
-import { SelectMenu } from "../control/select-menu";
 import { SearchBox } from "../input";
 import {
   MetricLoaderCell,
@@ -68,17 +67,25 @@ export type Pool = [
   }
 ];
 
-const PoolFilters: Record<"stable" | "weighted", string> = {
+const PoolFilters: Record<
+  "deselectAll" | "stable" | "weighted" | "supercharged",
+  string
+> = {
+  deselectAll: "Deselect all",
   stable: "Stableswap",
   weighted: "Weighted",
+  supercharged: "Supercharged",
 };
 
-const IncentiveFilters: Record<"internal" | "external" | "superfluid", string> =
-  {
-    internal: "Internal incentives",
-    external: "External incentives",
-    superfluid: "Superfluid",
-  };
+const IncentiveFilters: Record<
+  "internal" | "external" | "superfluid" | "noIncentives",
+  string
+> = {
+  internal: "Internal incentives",
+  external: "External incentives",
+  superfluid: "Superfluid",
+  noIncentives: "No incentives",
+};
 
 export const AllPoolsTable: FunctionComponent<{
   topOffset: number;
@@ -437,7 +444,7 @@ export const AllPoolsTable: FunctionComponent<{
               </div>
               <div className="flex flex-wrap items-center gap-3">
                 <div className="flex-1">
-                  <SelectMenu
+                  <CheckboxSelect
                     label={t("components.pool.mobileTitle")}
                     selectedOptionLabel={PoolFilters[poolFilter]}
                     options={Object.entries(PoolFilters).map(
@@ -451,7 +458,7 @@ export const AllPoolsTable: FunctionComponent<{
                   />
                 </div>
                 <div className="flex-1">
-                  <SelectMenu
+                  <CheckboxSelect
                     label={t("components.incentive.mobileTitle")}
                     options={Object.entries(IncentiveFilters).map(
                       ([id, display]) => ({
@@ -547,7 +554,7 @@ const CheckboxSelect: FC<
     label: string;
     selectedOptionLabel?: string;
   } & MenuSelectProps
-> = ({ label, selectedOptionLabel, options }) => {
+> = ({ label, selectedOptionLabel, options, onSelect }) => {
   const { isMobile } = useWindowSize();
   const selectedOptionId = "";
 
@@ -557,7 +564,7 @@ const CheckboxSelect: FC<
         <div className="relative">
           <Menu.Button
             className={classNames(
-              "relative flex h-10 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl px-6 text-sm transition-colors",
+              "relative flex h-10 w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl px-6 text-sm transition-colors",
               "border border-osmoverse-500 hover:border-2 hover:border-osmoverse-200 hover:px-[23px]",
               open && "border-2 border-osmoverse-200 px-[23px]",
               selectedOptionId ? "text-rust-200" : "text-osmoverse-200"
@@ -572,13 +579,13 @@ const CheckboxSelect: FC<
             />
           </Menu.Button>
 
-          <Menu.Items className="absolute top-full -left-px z-[1000] flex select-none flex-col rounded-b-xl border border-osmoverse-600 bg-osmoverse-900 text-left">
+          <Menu.Items className="absolute top-full -left-px z-[1000] mt-2 flex w-max select-none flex-col overflow-hidden rounded-xl border border-osmoverse-700 bg-osmoverse-800 text-left">
             {options.map(({ id, display }, index) => (
               <Menu.Item key={id}>
                 {({ active }) => (
                   <button
                     className={classNames(
-                      "flex cursor-pointer px-4 py-1.5 text-left transition-colors",
+                      "flex cursor-pointer items-center gap-3 px-4 py-2 text-left transition-colors",
                       {
                         "text-rust-200": id === selectedOptionId,
                         "text-osmoverse-200": id !== selectedOptionId,
@@ -586,6 +593,10 @@ const CheckboxSelect: FC<
                         "rounded-b-xlinset": index === options.length - 1,
                       }
                     )}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onSelect(id);
+                    }}
                   >
                     <CheckBox className="w-fit" isOn onToggle={() => {}} />
                     <span>{display}</span>
