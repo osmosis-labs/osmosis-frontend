@@ -89,7 +89,7 @@
       "titleDeposit": "برداشت از",
       "titleWithdraw": "پرداخت به"
     },
-    "stakedAssets": "قفل شده OSMO",
+    "stakedAssets": "سپرده گذاری شده OSMO",
     "table": {
       "columns": {
         "assetChain": "دارایی/شبکه",
@@ -98,7 +98,7 @@
         "transfer": "انتقال",
         "withdraw": "برداشت وجه"
       },
-      "depositButton": "برداشت",
+      "depositButton": "واریز",
       "hideZero": "مخفی کردن موجودی های صفر",
       "preTransfer": {
         "currentBal": "موجودی فعلی",
