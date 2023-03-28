@@ -102,8 +102,8 @@
       "hideZero": "مخفی کردن موجودی های صفر",
       "preTransfer": {
         "currentBal": "موجودی فعلی",
-        "deposit": "برداشت وجه",
-        "withdraw": "واریز وجه"
+        "deposit": "واریز وجه",
+        "withdraw": "برداشت وجه"
       },
       "search": "جستجو",
       "sort": {
