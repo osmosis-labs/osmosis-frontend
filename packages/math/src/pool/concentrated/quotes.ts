@@ -124,7 +124,7 @@ export function calcInGivenOut({
   precisionFactorAtPriceOne,
   swapFee,
 }: QuoteInGivenOutParams): { amountIn: Int; finalPrice: Dec } {
-  const isZeroForOne = tokenOut.denom === tokenDenom0;
+  const isZeroForOne = tokenOut.denom !== tokenDenom0;
   /** Max and min constraints on chain. */
   let priceLimit: Dec;
   if (isZeroForOne) {
@@ -165,8 +165,8 @@ export function calcInGivenOut({
 
     const {
       sqrtPriceNext,
-      amountOutConsumed: amountOut,
-      amountInComputed: amountIn,
+      amountOutConsumed,
+      amountInComputed,
       feeChargeTotal,
     } = swapStrategy.computeSwapStepInGivenOut(
       swapState.sqrtPrice,
@@ -176,9 +176,10 @@ export function calcInGivenOut({
     );
 
     swapState.sqrtPrice = sqrtPriceNext;
-    swapState.amountRemaining = swapState.amountRemaining.sub(amountOut);
+    swapState.amountRemaining =
+      swapState.amountRemaining.sub(amountOutConsumed);
     swapState.amountCalculated = swapState.amountCalculated.add(
-      amountIn.add(feeChargeTotal)
+      amountInComputed.add(feeChargeTotal)
     );
 
     if (nextTickSqrtPrice.equals(sqrtPriceNext)) {
