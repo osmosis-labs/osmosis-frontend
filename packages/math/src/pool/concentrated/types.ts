@@ -15,8 +15,6 @@ export interface QuoteParams {
   precisionFactorAtPriceOne: number;
   /** Swap fee. i.e. `0.01` */
   swapFee: Dec;
-  /** User-tolerated limit price can move to. */
-  priceLimit?: Dec;
 }
 
 export interface QuoteOutGivenInParams extends QuoteParams {

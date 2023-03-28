@@ -32,8 +32,7 @@ describe("calcOutGivenIn", () => {
     const curSqrtPrice = new Dec("70.710678118654752440");
     const precisionFactorAtPriceOne = -4;
     const swapFee = new Dec("0");
-    const priceLimit = new Dec(5004);
-    const result = calcOutGivenIn({
+    const { amountOut } = calcOutGivenIn({
       tokenIn,
       tokenDenom0,
       poolLiquidity,
@@ -41,9 +40,8 @@ describe("calcOutGivenIn", () => {
       curSqrtPrice,
       precisionFactorAtPriceOne,
       swapFee,
-      priceLimit,
     });
-    expect(result.toString()).toEqual("8396");
+    expect(amountOut.toString()).toEqual("8396");
   });
   // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L92
   //  One price range
@@ -72,8 +70,7 @@ describe("calcOutGivenIn", () => {
     const curSqrtPrice = new Dec("70.710678118654752440");
     const precisionFactorAtPriceOne = -4;
     const swapFee = new Dec("0");
-    const priceLimit = new Dec(4993);
-    const result = calcOutGivenIn({
+    const { amountOut } = calcOutGivenIn({
       tokenIn,
       tokenDenom0,
       poolLiquidity,
@@ -81,9 +78,8 @@ describe("calcOutGivenIn", () => {
       curSqrtPrice,
       precisionFactorAtPriceOne,
       swapFee,
-      priceLimit,
     });
-    expect(result.toString()).toEqual("66808388");
+    expect(amountOut.toString()).toEqual("66808388");
   });
   // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L115
   //  Two equal price ranges
@@ -113,8 +109,7 @@ describe("calcOutGivenIn", () => {
     const curSqrtPrice = new Dec("70.710678118654752440");
     const precisionFactorAtPriceOne = -4;
     const swapFee = new Dec("0");
-    const priceLimit = new Dec(4993);
-    const result = calcOutGivenIn({
+    const { amountOut } = calcOutGivenIn({
       tokenIn,
       tokenDenom0,
       poolLiquidity,
@@ -122,9 +117,8 @@ describe("calcOutGivenIn", () => {
       curSqrtPrice,
       precisionFactorAtPriceOne,
       swapFee,
-      priceLimit,
     });
-    expect(result.toString()).toEqual("8398");
+    expect(amountOut.toString()).toEqual("8398");
   });
   // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L138
   //  Two equal price ranges
@@ -154,8 +148,7 @@ describe("calcOutGivenIn", () => {
     const curSqrtPrice = new Dec("70.710678118654752440");
     const precisionFactorAtPriceOne = -4;
     const swapFee = new Dec("0");
-    const priceLimit = new Dec(4993);
-    const result = calcOutGivenIn({
+    const { amountOut } = calcOutGivenIn({
       tokenIn,
       tokenDenom0,
       poolLiquidity,
@@ -163,9 +156,8 @@ describe("calcOutGivenIn", () => {
       curSqrtPrice,
       precisionFactorAtPriceOne,
       swapFee,
-      priceLimit,
     });
-    expect(result.toString()).toEqual("66829187");
+    expect(amountOut.toString()).toEqual("66829187");
   });
   // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L167
   //  Consecutive price ranges
@@ -190,8 +182,7 @@ describe("calcOutGivenIn", () => {
     const curSqrtPrice = new Dec("70.710678118654752440");
     const precisionFactorAtPriceOne = -4;
     const swapFee = new Dec("0");
-    const priceLimit = new Dec(6255);
-    const result = calcOutGivenIn({
+    const { amountOut } = calcOutGivenIn({
       tokenIn,
       tokenDenom0,
       poolLiquidity,
@@ -199,9 +190,8 @@ describe("calcOutGivenIn", () => {
       curSqrtPrice,
       precisionFactorAtPriceOne,
       swapFee,
-      priceLimit,
     });
-    expect(result.toString()).toEqual("1820630");
+    expect(amountOut.toString()).toEqual("1820630");
   });
   // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L167
   //  Consecutive price ranges
@@ -226,8 +216,7 @@ describe("calcOutGivenIn", () => {
     const curSqrtPrice = new Dec("70.710678118654752440");
     const precisionFactorAtPriceOne = -4;
     const swapFee = new Dec("0");
-    const priceLimit = new Dec(3900);
-    const result = calcOutGivenIn({
+    const { amountOut } = calcOutGivenIn({
       tokenIn,
       tokenDenom0,
       poolLiquidity,
@@ -235,8 +224,7 @@ describe("calcOutGivenIn", () => {
       curSqrtPrice,
       precisionFactorAtPriceOne,
       swapFee,
-      priceLimit,
     });
-    expect(result.toString()).toEqual("9103422788");
+    expect(amountOut.toString()).toEqual("9103422788");
   });
 });

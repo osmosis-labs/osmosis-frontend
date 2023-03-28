@@ -26,6 +26,7 @@ interface SwapState {
   feeGrowthGlobal: Dec;
 }
 
+/** Estimate the output amount and final price given user's desired input token. */
 function calcOutGivenIn({
   tokenIn,
   tokenDenom0,
@@ -34,12 +35,13 @@ function calcOutGivenIn({
   curSqrtPrice,
   precisionFactorAtPriceOne,
   swapFee,
-  priceLimit = new Dec(0),
-}: QuoteOutGivenInParams): Int {
+}: QuoteOutGivenInParams): { amountOut: Int; finalPrice: Dec } {
   const isZeroForOne = tokenIn.denom === tokenDenom0;
-  if (isZeroForOne && priceLimit.isZero()) {
+  /** Max and min constraints on chain. */
+  let priceLimit: Dec;
+  if (isZeroForOne) {
     priceLimit = minSpotPrice;
-  } else if (!isZeroForOne && priceLimit.isZero()) {
+  } else {
     priceLimit = maxSpotPrice;
   }
 
@@ -106,9 +108,13 @@ function calcOutGivenIn({
     }
   } // end while
 
-  return swapState.amountCalculated.truncate();
+  return {
+    amountOut: swapState.amountCalculated.truncate(),
+    finalPrice: swapState.sqrtPrice,
+  };
 }
 
+/** Estimate the necessary input amount and final price given user's desired output token. */
 export function calcInGivenOut({
   tokenOut,
   tokenDenom0,
@@ -117,12 +123,13 @@ export function calcInGivenOut({
   curSqrtPrice,
   precisionFactorAtPriceOne,
   swapFee,
-  priceLimit = new Dec(0),
-}: QuoteInGivenOutParams): Int {
+}: QuoteInGivenOutParams): { amountIn: Int; finalPrice: Dec } {
   const isZeroForOne = tokenOut.denom === tokenDenom0;
-  if (isZeroForOne && priceLimit.isZero()) {
+  /** Max and min constraints on chain. */
+  let priceLimit: Dec;
+  if (isZeroForOne) {
     priceLimit = minSpotPrice;
-  } else if (!isZeroForOne && priceLimit.isZero()) {
+  } else {
     priceLimit = maxSpotPrice;
   }
 
@@ -188,5 +195,8 @@ export function calcInGivenOut({
     }
   }
 
-  return swapState.amountCalculated.truncate();
+  return {
+    amountIn: swapState.amountCalculated.truncate(),
+    finalPrice: swapState.sqrtPrice,
+  };
 }
