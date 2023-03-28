@@ -3139,7 +3139,7 @@ chainInfos.push({
       coinMinimalDenom: "polygon-uusdc",
       coinDecimals: 6,
       coinGeckoId: "usd-coin",
-      coinImageUrl: "/tokens/usdc.svg",
+      coinImageUrl: "/tokens/polygon.usdc.svg",
       pegMechanism: "collateralized",
     },
     {
@@ -3147,7 +3147,7 @@ chainInfos.push({
       coinMinimalDenom: "avalanche-uusdc",
       coinDecimals: 6,
       coinGeckoId: "usd-coin",
-      coinImageUrl: "/tokens/usdc.svg",
+      coinImageUrl: "/tokens/avalanche.usdc.svg",
       pegMechanism: "collateralized",
     },
   ],
