@@ -2864,6 +2864,13 @@ const chainInfos = (
           coinImageUrl: "/tokens/qregen.svg",
           coinGeckoId: "pool:uqregen",
         },
+        {
+          coinDenom: "qOSMO",
+          coinMinimalDenom: "uqosmo",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/qosmo.svg",
+          coinGeckoId: "pool:uqosmo",
+        },
       ],
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/quicksilver/txs/{txHash}",
