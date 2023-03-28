@@ -50,7 +50,7 @@ function calcOutGivenIn({
   const swapState: SwapState = {
     amountRemaining: tokenInAmountSpecified, // tokenIn
     amountCalculated: new Dec(0), // tokenOut
-    inittedTickIndex: swapStrategy.initTickValue(0),
+    inittedTickIndex: 0,
     sqrtPrice: curSqrtPrice,
     currentTickLiquidity: poolLiquidity,
     feeGrowthGlobal: new Dec(0),
@@ -133,7 +133,7 @@ export function calcInGivenOut({
   const swapState: SwapState = {
     amountRemaining: tokenOutAmountSpecified,
     amountCalculated: new Dec(0),
-    inittedTickIndex: swapStrategy.initTickValue(0),
+    inittedTickIndex: 0,
     sqrtPrice: curSqrtPrice,
     currentTickLiquidity: poolLiquidity,
     feeGrowthGlobal: new Dec(0),

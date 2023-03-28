@@ -27,7 +27,6 @@ export interface SwapStrategy {
     amountInComputed: Dec;
     feeChargeTotal: Dec;
   };
-  initTickValue(curTick: number): number;
   validatePriceLimit(sqrtPriceLimit: Dec, curSqrtPrice: Dec): boolean;
   setLiquidityDeltaSign(liquidityDelta: Dec): Dec;
 }
