@@ -546,6 +546,7 @@ export const AllPoolsTable: FunctionComponent<{
                         id as keyof typeof IncentiveFilters
                       )
                     }
+                    menuItemsClassName="sm:left-auto sm:-right-px"
                   />
                 </div>
               </div>
@@ -633,8 +634,9 @@ const CheckboxSelect: FC<
     label: string;
     selectedOptionIds?: string[];
     showDeselectAll?: boolean;
+    menuItemsClassName?: string;
   } & MenuSelectProps
-> = ({ label, selectedOptionIds, options, onSelect }) => {
+> = ({ label, selectedOptionIds, options, onSelect, menuItemsClassName }) => {
   const { isMobile } = useWindowSize();
 
   return (
@@ -658,7 +660,12 @@ const CheckboxSelect: FC<
             />
           </Menu.Button>
 
-          <Menu.Items className="absolute top-full -left-px z-[1000] mt-2 flex w-max select-none flex-col overflow-hidden rounded-xl border border-osmoverse-700 bg-osmoverse-800 text-left">
+          <Menu.Items
+            className={classNames(
+              "absolute top-full -left-px z-[1000] mt-2 flex w-max select-none flex-col overflow-hidden rounded-xl border border-osmoverse-700 bg-osmoverse-800 text-left",
+              menuItemsClassName
+            )}
+          >
             {options.map(({ id, display }, index) => {
               return (
                 <Menu.Item key={id}>
