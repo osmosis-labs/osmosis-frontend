@@ -1,6 +1,6 @@
 import { HasMapStore, IQueriesStore } from "@keplr-wallet/stores";
 import { PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { action, makeObservable, observable, runInAction } from "mobx";
+import { action, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 
 import { ChainStore } from "../../chain";
