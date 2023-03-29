@@ -24,10 +24,6 @@ describe("calcOutGivenIn matches chain code", () => {
           netLiquidity: new Dec("1517882343.751510418088349649"),
         },
         {
-          tickIndex: new Int(0),
-          netLiquidity: new Dec("0"),
-        },
-        {
           tickIndex: new Int(315000),
           netLiquidity: new Dec("-1517882343.751510418088349649"),
         },
@@ -61,10 +57,6 @@ describe("calcOutGivenIn matches chain code", () => {
         {
           tickIndex: new Int(305450),
           netLiquidity: new Dec("1517882343.751510418088349649"),
-        },
-        {
-          tickIndex: new Int(0),
-          netLiquidity: new Dec("0"),
         },
         {
           tickIndex: new Int(315000),
@@ -103,10 +95,6 @@ describe("calcOutGivenIn matches chain code", () => {
           netLiquidity: new Dec("1517882343.751510418088349649"),
         },
         {
-          tickIndex: new Int(0),
-          netLiquidity: new Dec("0"),
-        },
-        {
           tickIndex: new Int(315000),
           netLiquidity: new Dec("-1517882343.751510418088349649"),
         },
@@ -141,10 +129,6 @@ describe("calcOutGivenIn matches chain code", () => {
         {
           tickIndex: new Int(305450),
           netLiquidity: new Dec("1517882343.751510418088349649"),
-        },
-        {
-          tickIndex: new Int(0),
-          netLiquidity: new Dec("0"),
         },
         {
           tickIndex: new Int(315000),
@@ -443,10 +427,6 @@ describe("calcOutGivenIn matches chain code", () => {
           netLiquidity: new Dec("1517882343.751510418088349649"),
         },
         {
-          tickIndex: new Int(0),
-          netLiquidity: new Dec("0"),
-        },
-        {
           tickIndex: new Int(315000),
           netLiquidity: new Dec("-1517882343.751510418088349649"),
         },
@@ -481,10 +461,6 @@ describe("calcOutGivenIn matches chain code", () => {
         {
           tickIndex: new Int(305450),
           netLiquidity: new Dec("1517882343.751510418088349649"),
-        },
-        {
-          tickIndex: new Int(0),
-          netLiquidity: new Dec("0"),
         },
         {
           tickIndex: new Int(315000),
@@ -790,14 +766,72 @@ describe("calcInGivenOut matches chain code", () => {
     //          5000
     //  4545 -----|----- 5500
     //  4545 -----|----- 5500
-    // ^^ skipping because there is no way to represent this in the current implementation, given since the price limit is getting hit
+    it("two positions within one tick: eth (in) -> usdc (out) | zfo", () => {
+      const tokenOut = new Coin("usdc", "66829187");
+      const tokenDenom0 = "eth";
+      const poolLiquidity = new Dec("3035764687.503020836176699298");
+      // found by printing liquidity net values to console with go test
+      const inittedTicks = [
+        {
+          tickIndex: new Int(305450),
+          netLiquidity: new Dec("3035764687.503020836176699298"),
+        },
+        {
+          tickIndex: new Int(315000),
+          netLiquidity: new Dec("-3035764687.503020836176699298"),
+        },
+      ];
+      const curSqrtPrice = new Dec("70.710678118654752440");
+      const precisionFactorAtPriceOne = -4;
+      const swapFee = new Dec("0");
+      const { amountIn, finalPrice } = calcInGivenOut({
+        tokenOut,
+        tokenDenom0,
+        poolLiquidity,
+        inittedTicks,
+        curSqrtPrice,
+        precisionFactorAtPriceOne,
+        swapFee,
+      });
+      expect(amountIn.toString()).toEqual("13370");
+      expect(finalPrice.toString()).toEqual("70.688664163727643650");
+    });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L682
     //  Two equal price ranges
     //
     //          5000
     //  4545 -----|----- 5500
     //  4545 -----|----- 5500
-    // ^^ skipping because there is no way to represent this in the current implementation, given since the price limit is getting hit
+    it("two positions within one tick: usdc (in) -> eth (out) | ofz", () => {
+      const tokenOut = new Coin("eth", "8398");
+      const tokenDenom0 = "eth";
+      const poolLiquidity = new Dec("3035764687.503020836176699298");
+      // found by printing liquidity net values to console with go test
+      const inittedTicks = [
+        {
+          tickIndex: new Int(305450),
+          netLiquidity: new Dec("3035764687.503020836176699298"),
+        },
+        {
+          tickIndex: new Int(315000),
+          netLiquidity: new Dec("-3035764687.503020836176699298"),
+        },
+      ];
+      const curSqrtPrice = new Dec("70.710678118654752440");
+      const precisionFactorAtPriceOne = -4;
+      const swapFee = new Dec("0");
+      const { amountIn, finalPrice } = calcInGivenOut({
+        tokenOut,
+        tokenDenom0,
+        poolLiquidity,
+        inittedTicks,
+        curSqrtPrice,
+        precisionFactorAtPriceOne,
+        swapFee,
+      });
+      expect(amountIn.toString()).toEqual("41998216");
+      expect(finalPrice.toString()).toEqual("70.724512595179305566");
+    });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L713
     //  Consecutive price ranges
     //
@@ -1073,6 +1107,268 @@ describe("calcInGivenOut matches chain code", () => {
       expect(finalPrice.toString()).toEqual("78.138050797173647031");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L1076
-    // won't do slippage protection test since we are generating estimates to protect against slippage on frontends
+    // won't do slippage protection test since we are generating estimates to protect against slippage on chain from frontends
+  });
+
+  describe("with fees", () => {
+    // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L1105
+    it("fee 1: single position within one tick: eth (in) -> usdc (out) (1% fee) | zfo", () => {
+      const tokenOut = new Coin("usdc", "42000000");
+      const tokenDenom0 = "eth";
+      const poolLiquidity = new Dec("1517882343.751510418088349649");
+      // found by printing liquidity net values to console with go test
+      const inittedTicks = [
+        {
+          tickIndex: new Int(305450),
+          netLiquidity: new Dec("1517882343.751510418088349649"),
+        },
+        {
+          tickIndex: new Int(315000),
+          netLiquidity: new Dec("-1517882343.751510418088349649"),
+        },
+      ];
+      const curSqrtPrice = new Dec("70.710678118654752440");
+      const precisionFactorAtPriceOne = -4;
+      const swapFee = new Dec("0.01");
+      const { amountIn, finalPrice } = calcInGivenOut({
+        tokenOut,
+        tokenDenom0,
+        poolLiquidity,
+        inittedTicks,
+        curSqrtPrice,
+        precisionFactorAtPriceOne,
+        swapFee,
+      });
+      expect(amountIn.toString()).toEqual("8489");
+      expect(finalPrice.toString()).toEqual("70.683007989825007162");
+    });
+    // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L1135
+    it("fee 2: two positions within one tick: usdc (in) -> eth (out) (3% fee) | ofz", () => {
+      const tokenOut = new Coin("eth", "8398");
+      const tokenDenom0 = "eth";
+      const poolLiquidity = new Dec("3035764687.503020836176699298");
+      // found by printing liquidity net values to console with go test
+      const inittedTicks = [
+        {
+          tickIndex: new Int(305450),
+          netLiquidity: new Dec("3035764687.503020836176699298"),
+        },
+        {
+          tickIndex: new Int(315000),
+          netLiquidity: new Dec("-3035764687.503020836176699298"),
+        },
+      ];
+      const curSqrtPrice = new Dec("70.710678118654752440");
+      const precisionFactorAtPriceOne = -4;
+      const swapFee = new Dec("0.03");
+      const { amountIn, finalPrice } = calcInGivenOut({
+        tokenOut,
+        tokenDenom0,
+        poolLiquidity,
+        inittedTicks,
+        curSqrtPrice,
+        precisionFactorAtPriceOne,
+        swapFee,
+      });
+      expect(amountIn.toString()).toEqual("43297130");
+      expect(finalPrice.toString()).toEqual("70.724512595179305566");
+    });
+    // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L1170
+    it("fee 3: two positions with consecutive price ranges: usdc (in) -> eth (out) (0.1% fee) | ofz", () => {
+      const tokenOut = new Coin("eth", "1820630");
+      const tokenDenom0 = "eth";
+      const poolLiquidity = new Dec("1517882343.751510418088349649");
+      // found by printing liquidity net values to console with go test
+      const inittedTicks = [
+        {
+          tickIndex: new Int(315000),
+          netLiquidity: new Dec("-320114898.796002294865348513"),
+        },
+        {
+          tickIndex: new Int(322500),
+          netLiquidity: new Dec("-1197767444.955508123223001136"),
+        },
+        {
+          tickIndex: new Int(315010),
+          netLiquidity: new Dec("1199528406.187413669220031452"),
+        },
+      ];
+      const curSqrtPrice = new Dec("70.710678118654752440");
+      const precisionFactorAtPriceOne = -4;
+      const swapFee = new Dec("0.001");
+      const { amountIn, finalPrice } = calcInGivenOut({
+        tokenOut,
+        tokenDenom0,
+        poolLiquidity,
+        inittedTicks,
+        curSqrtPrice,
+        precisionFactorAtPriceOne,
+        swapFee,
+      });
+      expect(amountIn.toString()).toEqual("10010009580");
+      expect(finalPrice.toString()).toEqual("78.137148837036751553");
+    });
+    // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L1218
+    it("fee 4: two positions with partially overlapping price ranges: eth (in) -> usdc (out) (10% fee) | zfo", () => {
+      const tokenOut = new Coin("usdc", "9321276930");
+      const tokenDenom0 = "eth";
+      const poolLiquidity = new Dec("1517882343.751510418088349649");
+      // found by printing liquidity net values to console with go test
+      const inittedTicks = [
+        {
+          tickIndex: new Int(309990),
+          netLiquidity: new Dec("-670416215.718827443660400593"),
+        },
+        {
+          tickIndex: new Int(305450),
+          netLiquidity: new Dec("1517882343.751510418088349649"),
+        },
+        {
+          tickIndex: new Int(300000),
+          netLiquidity: new Dec("670416215.718827443660400593"),
+        },
+      ];
+      const curSqrtPrice = new Dec("70.710678118654752440");
+      const precisionFactorAtPriceOne = -4;
+      const swapFee = new Dec("0.1");
+      const { amountIn, finalPrice } = calcInGivenOut({
+        tokenOut,
+        tokenDenom0,
+        poolLiquidity,
+        inittedTicks,
+        curSqrtPrice,
+        precisionFactorAtPriceOne,
+        swapFee,
+      });
+      expect(amountIn.toString()).toEqual("2222223");
+      expect(finalPrice.toString()).toEqual("64.257943796086567725");
+    });
+    // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L1278
+    it("fee 5: two positions with partially overlapping price ranges, not utilizing full liquidity of second position: usdc (in) -> eth (out) (5% fee) | ofz", () => {
+      const tokenOut = new Coin("eth", "1609138");
+      const tokenDenom0 = "eth";
+      const poolLiquidity = new Dec("1517882343.751510418088349649");
+      // found by printing liquidity net values to console with go test
+      const inittedTicks = [
+        {
+          tickIndex: new Int(310010),
+          netLiquidity: new Dec("670416088.605668727039240782"),
+        },
+        {
+          tickIndex: new Int(315000),
+          netLiquidity: new Dec("-1517882343.751510418088349649"),
+        },
+        {
+          tickIndex: new Int(322500),
+          netLiquidity: new Dec("-670416088.605668727039240782"),
+        },
+      ];
+      const curSqrtPrice = new Dec("70.710678118654752440");
+      const precisionFactorAtPriceOne = -4;
+      const swapFee = new Dec("0.05");
+      const { amountIn, finalPrice } = calcInGivenOut({
+        tokenOut,
+        tokenDenom0,
+        poolLiquidity,
+        inittedTicks,
+        curSqrtPrice,
+        precisionFactorAtPriceOne,
+        swapFee,
+      });
+      expect(amountIn.toString()).toEqual("8947367851");
+      expect(finalPrice.toString()).toEqual("75.582372355128594341");
+    });
+    // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L1336
+    it("fee 6: two sequential positions with a gap usdc (in) -> eth (out) (0.03% fee) | ofz", () => {
+      const tokenOut = new Coin("eth", "1820545");
+      const tokenDenom0 = "eth";
+      const poolLiquidity = new Dec("1517882343.751510418088349649");
+      // found by printing liquidity net values to console with go test
+      const inittedTicks = [
+        {
+          tickIndex: new Int(315000),
+          netLiquidity: new Dec("-1517882343.751510418088349649"),
+        },
+        {
+          tickIndex: new Int(315010),
+          netLiquidity: new Dec("1199528406.187413669220031452"),
+        },
+        {
+          tickIndex: new Int(322500),
+          netLiquidity: new Dec("670416215.718827443660400593"),
+        },
+      ];
+      const curSqrtPrice = new Dec("70.710678118654752440");
+      const precisionFactorAtPriceOne = -4;
+      const swapFee = new Dec("0.0003");
+      const { amountIn, finalPrice } = calcInGivenOut({
+        tokenOut,
+        tokenDenom0,
+        poolLiquidity,
+        inittedTicks,
+        curSqrtPrice,
+        precisionFactorAtPriceOne,
+        swapFee,
+      });
+      expect(amountIn.toString()).toEqual("10002995655");
+      expect(finalPrice.toString()).toEqual("78.138050797173647031");
+    });
+    // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L1383
+    // won't do slippage protection test since we are generating estimates to protect against slippage on chain from frontends
+  });
+
+  describe("failure cases", () => {
+    it("single position within one tick, trade does not complete due to lack of liquidity: usdc -> eth ", () => {
+      const tokenOut = new Coin("usdc", "5300000000");
+      const tokenDenom0 = "eth";
+      const poolLiquidity = new Dec("1517882343.751510418088349649");
+      // found by printing liquidity net values to console with go test
+      const inittedTicks = [
+        {
+          tickIndex: new Int(315000),
+          netLiquidity: new Dec("-1517882343.751510418088349649"),
+        },
+      ];
+      const curSqrtPrice = new Dec("70.710678118654752440");
+      const precisionFactorAtPriceOne = -4;
+      const swapFee = new Dec("0");
+      expect(() =>
+        calcInGivenOut({
+          tokenOut,
+          tokenDenom0,
+          poolLiquidity,
+          inittedTicks,
+          curSqrtPrice,
+          precisionFactorAtPriceOne,
+          swapFee,
+        })
+      ).toThrowError(TickOverflowError);
+    });
+    it("single position within one tick, trade does not complete due to lack of liquidity: eth -> usdc ", () => {
+      const tokenOut = new Coin("eth", "1100000");
+      const tokenDenom0 = "eth";
+      const poolLiquidity = new Dec("1517882343.751510418088349649");
+      // found by printing liquidity net values to console with go test
+      const inittedTicks = [
+        {
+          tickIndex: new Int(315000),
+          netLiquidity: new Dec("-1517882343.751510418088349649"),
+        },
+      ];
+      const curSqrtPrice = new Dec("70.710678118654752440");
+      const precisionFactorAtPriceOne = -4;
+      const swapFee = new Dec("0");
+      expect(() =>
+        calcInGivenOut({
+          tokenOut,
+          tokenDenom0,
+          poolLiquidity,
+          inittedTicks,
+          curSqrtPrice,
+          precisionFactorAtPriceOne,
+          swapFee,
+        })
+      ).toThrowError(TickOverflowError);
+    });
   });
 });
