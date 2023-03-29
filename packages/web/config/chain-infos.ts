@@ -1,6 +1,6 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
+import { ChainInfoWithExplorer } from "@osmosis-labs/stores";
 
-import { ChainInfoWithExplorer } from "../stores/chain";
 import {
   IS_TESTNET,
   OSMOSIS_CHAIN_ID_OVERWRITE,
