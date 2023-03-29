@@ -16,6 +16,7 @@ import {
   FC,
   FunctionComponent,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -23,12 +24,12 @@ import {
 import { useTranslation } from "react-multi-lang";
 
 import { MenuOptionsModal } from "~/modals";
-import { runIfFn } from "~/utils/function";
+import { noop, runIfFn } from "~/utils/function";
 
 import { useFilteredData, useWindowSize } from "../../hooks";
 import { useStore } from "../../stores";
 import { Icon } from "../assets";
-import { CheckBox, MenuSelectProps } from "../control";
+import { CheckBox } from "../control";
 import { SearchBox } from "../input";
 import {
   MetricLoaderCell,
@@ -67,11 +68,7 @@ export type Pool = [
   }
 ];
 
-const PoolFilters: Record<
-  "deselectAll" | "stable" | "weighted" | "supercharged",
-  string
-> = {
-  deselectAll: "Deselect all",
+const PoolFilters: Record<"stable" | "weighted" | "supercharged", string> = {
   stable: "Stableswap",
   weighted: "Weighted",
   supercharged: "Supercharged",
@@ -99,14 +96,40 @@ export const AllPoolsTable: FunctionComponent<{
     const t = useTranslation();
 
     const router = useRouter();
-    const poolFilter = router.query.pool as keyof Record<
-      "stable" | "weighted",
-      string
-    >;
-    const incentiveFilter = router.query.incentive as keyof Record<
-      "internal" | "external" | "superfluid",
-      string
-    >;
+    const poolFilterQuery = String(router.query?.pool ?? "")
+      .split(",")
+      .filter(Boolean) as Array<keyof typeof PoolFilters>;
+    const incentiveFilterQuery = String(router.query?.incentive ?? "")
+      .split(",")
+      .filter(Boolean) as Array<keyof typeof IncentiveFilters>;
+
+    // Initially display everything
+    useEffect(() => {
+      const poolQuery = router.query.pool;
+      const incentiveQuery = router.query.incentive;
+
+      if (
+        !location.search.includes("pool") ||
+        !location.search.includes("incentive")
+      ) {
+        router.replace(
+          {
+            query: {
+              ...router.query,
+              ...(!poolQuery && { pool: Object.keys(PoolFilters) }),
+              ...(!incentiveQuery && {
+                incentive: Object.keys(IncentiveFilters),
+              }),
+            },
+          },
+          undefined,
+          {
+            scroll: false,
+          }
+        );
+      }
+    }, [poolFilterQuery, router, router.query.incentive, router.query.pools]);
+
     const fetchedRemainingPoolsRef = useRef(false);
     const { isMobile } = useWindowSize();
 
@@ -136,21 +159,21 @@ export const AllPoolsTable: FunctionComponent<{
           }
 
           // Filter out pools that do not match the pool filter.
-          if (poolFilter && p.pool.type !== poolFilter) {
+          if (poolFilterQuery && !poolFilterQuery.includes(p.pool.type)) {
             return false;
           }
 
-          if (incentiveFilter === "superfluid") {
+          if (incentiveFilterQuery.includes("superfluid")) {
             return queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
               p.pool.id
             );
           }
-          if (incentiveFilter === "internal") {
+          if (incentiveFilterQuery.includes("internal")) {
             return queriesOsmosis.queryIncentivizedPools.isIncentivized(
               p.pool.id
             );
           }
-          if (incentiveFilter === "external") {
+          if (incentiveFilterQuery.includes("external")) {
             const gauges = queryActiveGauges.getExternalGaugesForPool(
               p.pool.id
             );
@@ -160,8 +183,8 @@ export const AllPoolsTable: FunctionComponent<{
         }),
       [
         allPoolsWithMetrics,
-        incentiveFilter,
-        poolFilter,
+        incentiveFilterQuery,
+        poolFilterQuery,
         queriesOsmosis.queryIncentivizedPools,
         queriesOsmosis.querySuperfluidPools,
         queryActiveGauges,
@@ -373,34 +396,16 @@ export const AllPoolsTable: FunctionComponent<{
     const [mobileSortMenuIsOpen, setMobileSortMenuIsOpen] = useState(false);
 
     const onSelectFilter = useCallback(
-      (id: string) => {
-        if (id === poolFilter) {
+      (id: keyof typeof PoolFilters) => {
+        if (poolFilterQuery.includes(id)) {
           router.replace(
             {
-              query: router.query.incentive
-                ? { incentive: router.query.incentive }
-                : null,
-            },
-            undefined,
-            {
-              scroll: false,
-            }
-          );
-        } else {
-          router.push({ query: { ...router.query, pool: id } }, undefined, {
-            scroll: false,
-          });
-        }
-        handleFetchRemaining();
-      },
-      [handleFetchRemaining, poolFilter, router]
-    );
-    const onSelectIncentiveFilter = useCallback(
-      (id: string) => {
-        if (id === incentiveFilter) {
-          router.replace(
-            {
-              query: router.query.pool ? { pool: router.query.pool } : null,
+              query: {
+                ...router.query,
+                pool: poolFilterQuery
+                  .filter((incentive) => incentive !== id)
+                  .join(","),
+              },
             },
             undefined,
             {
@@ -409,7 +414,12 @@ export const AllPoolsTable: FunctionComponent<{
           );
         } else {
           router.push(
-            { query: { ...router.query, incentive: id } },
+            {
+              query: {
+                ...router.query,
+                pool: [...poolFilterQuery, id].join(","),
+              },
+            },
             undefined,
             {
               scroll: false,
@@ -418,8 +428,77 @@ export const AllPoolsTable: FunctionComponent<{
         }
         handleFetchRemaining();
       },
-      [handleFetchRemaining, incentiveFilter, router]
+      [handleFetchRemaining, poolFilterQuery, router]
     );
+    const onSelectIncentiveFilter = useCallback(
+      (id: keyof typeof IncentiveFilters) => {
+        if (incentiveFilterQuery.includes(id)) {
+          router.replace(
+            {
+              query: {
+                ...router.query,
+                incentive: incentiveFilterQuery
+                  .filter((incentive) => incentive !== id)
+                  .join(","),
+              },
+            },
+            undefined,
+            {
+              scroll: false,
+            }
+          );
+        } else {
+          router.push(
+            {
+              query: {
+                ...router.query,
+                incentive: [...incentiveFilterQuery, id].join(","),
+              },
+            },
+            undefined,
+            {
+              scroll: false,
+            }
+          );
+        }
+        handleFetchRemaining();
+      },
+      [handleFetchRemaining, incentiveFilterQuery, router]
+    );
+
+    const onSelectAll = (type: "pool" | "incentive") => () => {
+      router.replace(
+        {
+          query: {
+            ...router.query,
+            ...(type === "pool"
+              ? { pool: Object.keys(PoolFilters) }
+              : {
+                  incentive: Object.keys(IncentiveFilters),
+                }),
+          },
+        },
+        undefined,
+        {
+          scroll: false,
+        }
+      );
+    };
+
+    const onDeselectAll = (type: "pool" | "incentive") => () => {
+      router.replace(
+        {
+          query: {
+            ...router.query,
+            ...(type === "pool" ? { pool: "" } : { incentive: "" }),
+          },
+        },
+        undefined,
+        {
+          scroll: false,
+        }
+      );
+    };
 
     return (
       <>
@@ -446,15 +525,19 @@ export const AllPoolsTable: FunctionComponent<{
                 <div className="flex-1">
                   <CheckboxSelect
                     label={t("components.pool.mobileTitle")}
-                    selectedOptionLabel={PoolFilters[poolFilter]}
                     options={Object.entries(PoolFilters).map(
                       ([id, display]) => ({
                         id,
                         display,
                       })
                     )}
-                    selectedOptionId={poolFilter}
-                    onSelect={onSelectFilter}
+                    selectedOptionIds={poolFilterQuery}
+                    onSelect={(id) =>
+                      onSelectFilter(id as keyof typeof PoolFilters)
+                    }
+                    showDeselectAll
+                    onSelectAll={onSelectAll("pool")}
+                    onDeselectAll={onDeselectAll("pool")}
                   />
                 </div>
                 <div className="flex-1">
@@ -466,9 +549,12 @@ export const AllPoolsTable: FunctionComponent<{
                         display,
                       })
                     )}
-                    selectedOptionLabel={IncentiveFilters[incentiveFilter]}
-                    selectedOptionId={incentiveFilter}
-                    onSelect={onSelectIncentiveFilter}
+                    selectedOptionIds={incentiveFilterQuery}
+                    onSelect={(id) =>
+                      onSelectIncentiveFilter(
+                        id as keyof typeof IncentiveFilters
+                      )
+                    }
                   />
                 </div>
               </div>
@@ -483,13 +569,17 @@ export const AllPoolsTable: FunctionComponent<{
                       ? t("components.pool.mobileTitle")
                       : t("components.pool.title")
                   }
-                  selectedOptionLabel={PoolFilters[poolFilter]}
                   options={Object.entries(PoolFilters).map(([id, display]) => ({
                     id,
                     display,
                   }))}
-                  selectedOptionId={poolFilter}
-                  onSelect={onSelectFilter}
+                  selectedOptionIds={poolFilterQuery}
+                  onSelect={(id) =>
+                    onSelectFilter(id as keyof typeof PoolFilters)
+                  }
+                  showDeselectAll
+                  onSelectAll={onSelectAll("pool")}
+                  onDeselectAll={onDeselectAll("pool")}
                 />
                 <CheckboxSelect
                   label={
@@ -503,9 +593,10 @@ export const AllPoolsTable: FunctionComponent<{
                       display,
                     })
                   )}
-                  selectedOptionLabel={IncentiveFilters[incentiveFilter]}
-                  selectedOptionId={incentiveFilter}
-                  onSelect={onSelectIncentiveFilter}
+                  selectedOptionIds={incentiveFilterQuery}
+                  onSelect={(id) =>
+                    onSelectIncentiveFilter(id as keyof typeof IncentiveFilters)
+                  }
                 />
                 <SearchBox
                   currentValue={query}
@@ -549,14 +640,32 @@ export const AllPoolsTable: FunctionComponent<{
   }
 );
 
-const CheckboxSelect: FC<
-  {
-    label: string;
-    selectedOptionLabel?: string;
-  } & MenuSelectProps
-> = ({ label, selectedOptionLabel, options, onSelect }) => {
+const CheckboxSelect: FC<{
+  label: string;
+  selectedOptionIds?: string[];
+  showDeselectAll?: boolean;
+  options: {
+    id: string;
+    display: string;
+    isDeselect?: boolean;
+  }[];
+  onSelect: (optionId: string) => void;
+  onSelectAll?: () => void;
+  onDeselectAll?: () => void;
+}> = ({
+  label,
+  selectedOptionIds,
+  options: optionsProp,
+  onSelect,
+  showDeselectAll,
+  onSelectAll,
+  onDeselectAll,
+}) => {
   const { isMobile } = useWindowSize();
-  const selectedOptionId = "";
+
+  const options = showDeselectAll
+    ? [{ id: "0", display: "Deselect All", isDeselect: true }, ...optionsProp]
+    : optionsProp;
 
   return (
     <Menu>
@@ -564,13 +673,13 @@ const CheckboxSelect: FC<
         <div className="relative">
           <Menu.Button
             className={classNames(
-              "relative flex h-10 w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl px-6 text-sm transition-colors",
+              "relative flex h-10 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl px-6 text-sm transition-colors md:w-full",
               "border border-osmoverse-500 hover:border-2 hover:border-osmoverse-200 hover:px-[23px]",
-              open && "border-2 border-osmoverse-200 px-[23px]",
-              selectedOptionId ? "text-rust-200" : "text-osmoverse-200"
+              open &&
+                "border-2 border-osmoverse-200 px-[23px] text-osmoverse-200"
             )}
           >
-            {selectedOptionLabel ?? label}
+            {label}
             <Icon
               className="flex shrink-0 items-center text-osmoverse-200"
               id={open ? "chevron-up" : "chevron-down"}
@@ -580,30 +689,52 @@ const CheckboxSelect: FC<
           </Menu.Button>
 
           <Menu.Items className="absolute top-full -left-px z-[1000] mt-2 flex w-max select-none flex-col overflow-hidden rounded-xl border border-osmoverse-700 bg-osmoverse-800 text-left">
-            {options.map(({ id, display }, index) => (
-              <Menu.Item key={id}>
-                {({ active }) => (
-                  <button
-                    className={classNames(
-                      "flex cursor-pointer items-center gap-3 px-4 py-2 text-left transition-colors",
-                      {
-                        "text-rust-200": id === selectedOptionId,
-                        "text-osmoverse-200": id !== selectedOptionId,
-                        "hover:bg-osmoverse-700": active,
-                        "rounded-b-xlinset": index === options.length - 1,
-                      }
-                    )}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      onSelect(id);
-                    }}
-                  >
-                    <CheckBox className="w-fit" isOn onToggle={() => {}} />
-                    <span>{display}</span>
-                  </button>
-                )}
-              </Menu.Item>
-            ))}
+            {options.map(({ id, display, isDeselect }, index) => {
+              const areAllSelected =
+                optionsProp?.length === selectedOptionIds?.length;
+              const isIndeterminate =
+                !areAllSelected && selectedOptionIds?.length !== 0;
+
+              return (
+                <Menu.Item key={id}>
+                  {({ active }) => (
+                    <button
+                      className={classNames(
+                        "flex cursor-pointer items-center gap-3 px-4 py-2 text-left text-osmoverse-200 transition-colors",
+                        {
+                          "hover:bg-osmoverse-700": active,
+                          "rounded-b-xlinset": index === options.length - 1,
+                        }
+                      )}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (isDeselect) {
+                          isIndeterminate || !areAllSelected
+                            ? onSelectAll?.()
+                            : onDeselectAll?.();
+                          return;
+                        }
+                        onSelect(id);
+                      }}
+                    >
+                      <CheckBox
+                        className="w-fit"
+                        isOn={
+                          isDeselect
+                            ? areAllSelected
+                            : Boolean(selectedOptionIds?.includes(id))
+                        }
+                        isIndeterminate={
+                          isDeselect ? isIndeterminate : undefined
+                        }
+                        onToggle={noop}
+                      />
+                      <span>{display}</span>
+                    </button>
+                  )}
+                </Menu.Item>
+              );
+            })}
           </Menu.Items>
         </div>
       )}

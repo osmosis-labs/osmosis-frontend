@@ -13,6 +13,7 @@ export const CheckBox: FunctionComponent<
     CustomClasses & {
       labelClassName?: string;
       checkClassName?: string;
+      isIndeterminate?: boolean;
     }
 > = ({
   isOn,
@@ -22,6 +23,7 @@ export const CheckBox: FunctionComponent<
   checkClassName,
   className,
   children,
+  isIndeterminate,
 }) => {
   const [inputRef, { width, height }] = useDimension<HTMLInputElement>();
   const [showImg, setShowImg] = useState(false);
@@ -38,7 +40,17 @@ export const CheckBox: FunctionComponent<
         }}
         className="relative flex items-center justify-center"
       >
-        {isOn && showImg && (
+        {isIndeterminate && showImg && (
+          <Icon
+            id="minus"
+            className={classNames(
+              "absolute z-20 h-[11px] w-[15px] cursor-pointer text-osmoverse-800",
+              disabled ? "cursor-default opacity-50" : null,
+              checkClassName
+            )}
+          />
+        )}
+        {isOn && showImg && !isIndeterminate && (
           <Icon
             id="check-mark"
             className={classNames(
@@ -55,10 +67,10 @@ export const CheckBox: FunctionComponent<
             "absolute h-6 w-6 cursor-pointer appearance-none",
             "z-10 after:absolute after:h-6 after:w-6 after:rounded-lg", // box
             disabled
-              ? isOn
+              ? isOn || isIndeterminate
                 ? "cursor-default opacity-30 checked:after:bg-osmoverse-400" // disabled AND on
                 : "cursor-default opacity-30 after:border-2 after:border-osmoverse-400"
-              : isOn
+              : isOn || isIndeterminate
               ? "after:bg-osmoverse-300" // not disabled AND on
               : "after:border-2 after:border-osmoverse-300",
             className

@@ -24,7 +24,8 @@ export type SpriteIconId =
   | "more-menu"
   | "sort-up"
   | "sort-down"
-  | "check-mark";
+  | "check-mark"
+  | "minus";
 
 /**
  * It takes an icon id and returns an svg element with the corresponding icon defined in /public/icons/sprite.svg.
