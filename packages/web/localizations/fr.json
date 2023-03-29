@@ -146,10 +146,6 @@
   },
   "buyTokens": "Acheter jetons",
   "components": {
-    "checkbox-select": {
-      "deselectAll": "Désélectionner tout",
-      "selectAll": "Sélectionner tout"
-    },
     "fiatOnrampSelection": {
       "chooseOnramp": "Choisir une rampe de paiement en Fiat",
       "kadoSubtitle": "Prend en charge USDC",

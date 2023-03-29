@@ -146,10 +146,6 @@
   },
   "buyTokens": "Cumpărați jetoane",
   "components": {
-    "checkbox-select": {
-      "deselectAll": "Deselectați tot",
-      "selectAll": "Selectați tot"
-    },
     "fiatOnrampSelection": {
       "chooseOnramp": "Alegeți rampa fiat",
       "kadoSubtitle": "Acceptă USDC",

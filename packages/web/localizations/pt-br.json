@@ -146,10 +146,6 @@
   },
   "buyTokens": "Comprar tokens",
   "components": {
-    "checkbox-select": {
-      "deselectAll": "Desmarcar tudo",
-      "selectAll": "Selecionar tudo"
-    },
     "fiatOnrampSelection": {
       "chooseOnramp": "Escolher rampa Fiat",
       "kadoSubtitle": "Suporta USDC",

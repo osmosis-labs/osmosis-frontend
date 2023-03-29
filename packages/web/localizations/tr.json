@@ -146,10 +146,6 @@
   },
   "buyTokens": "jeton satın al",
   "components": {
-    "checkbox-select": {
-      "deselectAll": "Tümünü seçme",
-      "selectAll": "Tümünü seçme"
-    },
     "fiatOnrampSelection": {
       "chooseOnramp": "Fiat Onramp Seçin",
       "kadoSubtitle": "USDC'yi destekler",

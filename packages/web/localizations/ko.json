@@ -122,10 +122,6 @@
   },
   "buyTokens": "토큰 구매",
   "components": {
-    "checkbox-select": {
-      "deselectAll": "모두 선택 해제",
-      "selectAll": "모두 선택"
-    },
     "fiatOnrampSelection": {
       "chooseOnramp": "피아트 온램프 선택",
       "kadoSubtitle": "USDC를 지원합니다",

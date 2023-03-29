@@ -146,10 +146,6 @@
   },
   "buyTokens": "Buy tokens",
   "components": {
-    "checkbox-select": {
-      "deselectAll": "Deselect all",
-      "selectAll": "Select all"
-    },
     "fiatOnrampSelection": {
       "chooseOnramp": "Choose Fiat Onramp",
       "kadoSubtitle": "Supports USDC",
