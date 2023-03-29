@@ -146,6 +146,10 @@
   },
   "buyTokens": "Acheter jetons",
   "components": {
+    "checkbox-select": {
+      "deselectAll": "Désélectionner tout",
+      "selectAll": "Sélectionner tout"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "Choisir une rampe de paiement en Fiat",
       "kadoSubtitle": "Prend en charge USDC",
@@ -174,7 +178,12 @@
       "SORTMobile": "TRIER"
     },
     "table": {
-      "poolId": "Bassin n°{id}"
+      "stable": "Stableswap",
+      "weighted": "Weighted",
+      "internal": "Incitations internes",
+      "external": "Incitations externes",
+      "superfluid": "Superfluid",
+      "noIncentives": "Pas d'incitations"
     }
   },
   "connectDisclaimer": "En connectant un portefeuille, vous reconnaissez avoir lu et compris la politique Osmosis",

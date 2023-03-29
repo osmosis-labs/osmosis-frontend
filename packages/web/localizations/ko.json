@@ -122,6 +122,10 @@
   },
   "buyTokens": "토큰 구매",
   "components": {
+    "checkbox-select": {
+      "deselectAll": "모두 선택 해제",
+      "selectAll": "모두 선택"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "피아트 온램프 선택",
       "kadoSubtitle": "USDC를 지원합니다",
@@ -150,7 +154,13 @@
       "SORTMobile": "정렬"
     },
     "table": {
-      "poolId": "풀 {id}"
+      "poolId": "풀 {id}",
+      "stable": "스테이블스왑",
+      "weighted": "가중치",
+      "internal": "내부 인센티브",
+      "external": "외부 인센티브",
+      "superfluid": "슈퍼플루이드",
+      "noIncentives": "인센티브 없음"
     }
   },
   "connectDisclaimer": "지갑을 연결하면 링크된 내용을 읽고 이해했음을 인정하는 것으로 간주합니다.",

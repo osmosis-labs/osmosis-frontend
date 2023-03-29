@@ -146,6 +146,10 @@
   },
   "buyTokens": "Buy tokens",
   "components": {
+    "checkbox-select": {
+      "deselectAll": "Deselect all",
+      "selectAll": "Select all"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "Choose Fiat Onramp",
       "kadoSubtitle": "Supports USDC",
@@ -174,7 +178,13 @@
       "SORTMobile": "Sort"
     },
     "table": {
-      "poolId": "Pool #{id}"
+      "poolId": "Pool #{id}",
+      "stable": "Stableswap",
+      "weighted": "Weighted",
+      "internal": "Internal incentives",
+      "external": "External incentives",
+      "superfluid": "Superfluid",
+      "noIncentives": "No incentives"
     }
   },
   "connectDisclaimer": "By connecting a wallet, you acknowledge that you have read and understand the Osmosis",

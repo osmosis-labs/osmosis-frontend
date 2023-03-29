@@ -146,6 +146,10 @@
   },
   "buyTokens": "購買代幣",
   "components": {
+    "checkbox-select": {
+      "deselectAll": "取消全選",
+      "selectAll": "全選"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "選擇法幣入口",
       "kadoSubtitle": "支援USDC",
@@ -174,7 +178,13 @@
       "SORTMobile": "排序"
     },
     "table": {
-      "poolId": "流動性池 #{id}"
+      "poolId": "流動性池 #{id}",
+      "stable": "穩定兌換",
+      "weighted": "加權",
+      "internal": "內部激勵",
+      "external": "外部激勵",
+      "superfluid": "超流體",
+      "noIncentives": "無激勵"
     }
   },
   "connectDisclaimer": "連接錢包即表示您已經閱讀和理解 Osmosis 的",

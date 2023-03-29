@@ -146,6 +146,10 @@
   },
   "buyTokens": "jeton satın al",
   "components": {
+    "checkbox-select": {
+      "deselectAll": "Tümünü seçme",
+      "selectAll": "Tümünü seçme"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "Fiat Onramp Seçin",
       "kadoSubtitle": "USDC'yi destekler",
@@ -174,7 +178,13 @@
       "SORTMobile": "SIRALA"
     },
     "table": {
-      "poolId": "Havuz #{id}"
+      "poolId": "Havuz #{id}",
+      "stable": "Stableswap",
+      "weighted": "Ağırlıklı",
+      "internal": "Dahili teşvikler",
+      "external": "Harici teşvikler",
+      "superfluid": "Superfluid",
+      "noIncentives": "Teşvik yok"
     }
   },
   "connectDisclaimer": "Cüzdanı bağlayarak, Osmosis'i okuyup anladığınızı kabul etmiş olursunuz.",

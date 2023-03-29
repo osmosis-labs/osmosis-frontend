@@ -146,6 +146,10 @@
   },
   "buyTokens": "Comprar fichas",
   "components": {
+    "checkbox-select": {
+      "deselectAll": "Deseleccionar todo",
+      "selectAll": "Seleccionar todo"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "Seleccionar acceso de Fiat",
       "kadoSubtitle": "Soporta USDC",
@@ -174,7 +178,13 @@
       "SORTMobile": "CLASIFICAR"
     },
     "table": {
-      "poolId": "Grupo #{id}"
+      "poolId": "Grupo #{id}",
+      "stable": "Stableswap",
+      "weighted": "Weighted",
+      "internal": "Incentivos internos",
+      "external": "Incentivos externos",
+      "superfluid": "Superfluid",
+      "noIncentives": "Sin incentivos"
     }
   },
   "connectDisclaimer": "Al conectar una billetera, reconoce que ha leído y comprende Osmosis",

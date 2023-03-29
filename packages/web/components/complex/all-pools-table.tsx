@@ -68,20 +68,25 @@ export type Pool = [
   }
 ];
 
-const PoolFilters: Record<"stable" | "weighted", string> = {
-  stable: "Stableswap",
-  weighted: "Weighted",
-};
+function getPoolFilters(
+  t: ReturnType<typeof useTranslation>
+): Record<"stable" | "weighted", string> {
+  return {
+    stable: t("components.table.stable"),
+    weighted: t("components.table.weighted"),
+  };
+}
 
-const IncentiveFilters: Record<
-  "internal" | "external" | "superfluid" | "noIncentives",
-  string
-> = {
-  internal: "Internal incentives",
-  external: "External incentives",
-  superfluid: "Superfluid",
-  noIncentives: "No incentives",
-};
+function getIncentiveFilters(
+  t: ReturnType<typeof useTranslation>
+): Record<"internal" | "external" | "superfluid" | "noIncentives", string> {
+  return {
+    internal: t("components.table.internal"),
+    external: t("components.table.external"),
+    superfluid: t("components.table.superfluid"),
+    noIncentives: t("components.table.noIncentives"),
+  };
+}
 
 export const AllPoolsTable: FunctionComponent<{
   topOffset: number;
@@ -95,6 +100,8 @@ export const AllPoolsTable: FunctionComponent<{
     const t = useTranslation();
 
     const router = useRouter();
+    const PoolFilters = getPoolFilters(t);
+    const IncentiveFilters = getIncentiveFilters(t);
     const poolFilterQuery = String(router.query?.pool ?? "")
       .split(",")
       .filter(Boolean) as Array<keyof typeof PoolFilters>;
@@ -550,9 +557,6 @@ export const AllPoolsTable: FunctionComponent<{
                     onSelect={(id) =>
                       onSelectFilter(id as keyof typeof PoolFilters)
                     }
-                    showDeselectAll
-                    onSelectAll={onSelectAll("pool")}
-                    onDeselectAll={onDeselectAll("pool")}
                   />
                 </div>
                 <div className="flex-1">
@@ -570,6 +574,9 @@ export const AllPoolsTable: FunctionComponent<{
                         id as keyof typeof IncentiveFilters
                       )
                     }
+                    showDeselectAll
+                    onSelectAll={onSelectAll("incentive")}
+                    onDeselectAll={onDeselectAll("incentive")}
                   />
                 </div>
               </div>
@@ -592,9 +599,6 @@ export const AllPoolsTable: FunctionComponent<{
                   onSelect={(id) =>
                     onSelectFilter(id as keyof typeof PoolFilters)
                   }
-                  showDeselectAll
-                  onSelectAll={onSelectAll("pool")}
-                  onDeselectAll={onDeselectAll("pool")}
                 />
                 <CheckboxSelect
                   label={
@@ -612,6 +616,9 @@ export const AllPoolsTable: FunctionComponent<{
                   onSelect={(id) =>
                     onSelectIncentiveFilter(id as keyof typeof IncentiveFilters)
                   }
+                  showDeselectAll
+                  onSelectAll={onSelectAll("incentive")}
+                  onDeselectAll={onDeselectAll("incentive")}
                 />
                 <SearchBox
                   currentValue={query}
@@ -677,9 +684,21 @@ const CheckboxSelect: FC<{
   onDeselectAll,
 }) => {
   const { isMobile } = useWindowSize();
+  const t = useTranslation();
 
+  const areAllSelected = optionsProp?.length === selectedOptionIds?.length;
+  const isIndeterminate = !areAllSelected && selectedOptionIds?.length !== 0;
   const options = showDeselectAll
-    ? [{ id: "0", display: "Deselect All", isDeselect: true }, ...optionsProp]
+    ? [
+        {
+          id: "0",
+          display: !areAllSelected
+            ? t("components.checkbox-select.selectAll")
+            : t("components.checkbox-select.deselectAll"),
+          isDeselect: true,
+        },
+        ...optionsProp,
+      ]
     : optionsProp;
 
   return (
@@ -705,11 +724,6 @@ const CheckboxSelect: FC<{
 
           <Menu.Items className="absolute top-full -left-px z-[1000] mt-2 flex w-max select-none flex-col overflow-hidden rounded-xl border border-osmoverse-700 bg-osmoverse-800 text-left">
             {options.map(({ id, display, isDeselect }, index) => {
-              const areAllSelected =
-                optionsProp?.length === selectedOptionIds?.length;
-              const isIndeterminate =
-                !areAllSelected && selectedOptionIds?.length !== 0;
-
               return (
                 <Menu.Item key={id}>
                   {({ active }) => (
