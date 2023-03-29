@@ -126,19 +126,17 @@ export class ObservablePoolsWithMetric {
         if (existingPool) {
           existingPool.setPool(pool);
         } else {
-          runInAction(() => {
-            this._pools.set(
-              pool.id,
-              new ObservablePoolWithMetric(
-                pool,
-                this.poolDetails,
-                this.poolsBonding,
-                this.chainStore,
-                this.externalQueries,
-                this.priceStore
-              )
-            );
-          });
+          this._pools.set(
+            pool.id,
+            new ObservablePoolWithMetric(
+              pool,
+              this.poolDetails,
+              this.poolsBonding,
+              this.chainStore,
+              this.externalQueries,
+              this.priceStore
+            )
+          );
         }
       }
 
