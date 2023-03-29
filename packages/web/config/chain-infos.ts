@@ -837,7 +837,7 @@ const chainInfos = (
     {
       rpc: "https://rpc-impacthub.keplr.app",
       rest: "https://lcd-impacthub.keplr.app",
-      chainId: "ixo-4",
+      chainId: "ixo-5",
       chainName: "IXO",
       bip44: {
         coinType: 118,
