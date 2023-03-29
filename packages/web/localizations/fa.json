@@ -269,7 +269,7 @@
     "putAssetsToWorkCaption": "دارای خود را در مدت زمان مشخص قفل کنید و جایزه دریافت کنید مدت زمان بیشتر سود بیشتر دارد.",
     "rewardDistribution": "جوایز به همه تامین کنندگان نقدینگی تخصیص می یابد.",
     "sharesAmount": "{shares} سهم",
-    "sharesAvailableIn": "موجود در مدت ",
+    "sharesAvailableIn": "قابل برداشت پس از ",
     "showDetails": "نمایش جزئیات استخر",
     "stableswapEnabled": "تبدیل پاید فعال",
     "superfluidEarnMore": "بدست آوردن {rate} بازده بیشتر با فعال سازی Superfluid ممکن است",
