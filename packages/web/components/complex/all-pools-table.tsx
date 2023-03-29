@@ -68,10 +68,9 @@ export type Pool = [
   }
 ];
 
-const PoolFilters: Record<"stable" | "weighted" | "supercharged", string> = {
+const PoolFilters: Record<"stable" | "weighted", string> = {
   stable: "Stableswap",
   weighted: "Weighted",
-  supercharged: "Supercharged",
 };
 
 const IncentiveFilters: Record<
@@ -164,22 +163,38 @@ export const AllPoolsTable: FunctionComponent<{
           }
 
           if (incentiveFilterQuery.includes("superfluid")) {
-            return queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
-              p.pool.id
-            );
+            const isSuperfluid =
+              queriesOsmosis.querySuperfluidPools.isSuperfluidPool(p.pool.id);
+            if (isSuperfluid) return true;
           }
+
           if (incentiveFilterQuery.includes("internal")) {
-            return queriesOsmosis.queryIncentivizedPools.isIncentivized(
-              p.pool.id
-            );
+            const isInternallyIncentivized =
+              queriesOsmosis.queryIncentivizedPools.isIncentivized(p.pool.id);
+            if (isInternallyIncentivized) return true;
           }
+
           if (incentiveFilterQuery.includes("external")) {
             const gauges = queryActiveGauges.getExternalGaugesForPool(
               p.pool.id
             );
-            return gauges && gauges.length > 0;
+            const isExternallyIncentivized = gauges && gauges.length > 0;
+            if (isExternallyIncentivized) return true;
           }
-          return true;
+
+          if (incentiveFilterQuery.includes("noIncentives")) {
+            const gauges = queryActiveGauges.getExternalGaugesForPool(
+              p.pool.id
+            );
+            const isInternallyIncentivized =
+              queriesOsmosis.queryIncentivizedPools.isIncentivized(p.pool.id);
+
+            const hasNoIncentives =
+              !(gauges && gauges.length > 0) && !isInternallyIncentivized;
+            if (hasNoIncentives) return true;
+          }
+
+          return false;
         }),
       [
         allPoolsWithMetrics,
