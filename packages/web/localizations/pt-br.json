@@ -146,6 +146,10 @@
   },
   "buyTokens": "Comprar tokens",
   "components": {
+    "checkbox-select": {
+      "deselectAll": "Desmarcar tudo",
+      "selectAll": "Selecionar tudo"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "Escolher rampa Fiat",
       "kadoSubtitle": "Suporta USDC",
@@ -174,7 +178,13 @@
       "SORTMobile": "Organizar"
     },
     "table": {
-      "poolId": "Piscina #{id}"
+      "poolId": "Piscina #{id}",
+      "stable": "Stableswap",
+      "weighted": "Ponderado",
+      "internal": "Incentivos internos",
+      "external": "Incentivos externos",
+      "superfluid": "Superfluid",
+      "noIncentives": "Sem incentivos"
     }
   },
   "connectDisclaimer": "Conectando uma carteira, você reconhece que você leu e entendeu o Osmosis",

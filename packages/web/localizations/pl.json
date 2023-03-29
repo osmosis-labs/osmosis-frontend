@@ -146,6 +146,10 @@
   },
   "buyTokens": "Kup tokeny",
   "components": {
+    "checkbox-select": {
+      "deselectAll": "Odznacz wszystko",
+      "selectAll": "Zaznacz wszystko"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "Wybierz rampę Fiat",
       "kadoSubtitle": "Obsługuje USDC",
@@ -174,7 +178,13 @@
       "SORTMobile": "SORTUJ"
     },
     "table": {
-      "poolId": "Pula #{id}"
+      "poolId": "Pula #{id}",
+      "stable": "Stableswap",
+      "weighted": "Ważone",
+      "internal": "Wewnętrzne zachęty",
+      "external": "Zewnętrzne zachęty",
+      "superfluid": "Superfluid",
+      "noIncentives": "Brak zachęt"
     }
   },
   "connectDisclaimer": "Podłączając portfel, potwierdzasz, że przeczytałeś i zrozumiałeś Osmosis",

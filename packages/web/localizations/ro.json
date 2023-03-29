@@ -146,6 +146,10 @@
   },
   "buyTokens": "Cumpărați jetoane",
   "components": {
+    "checkbox-select": {
+      "deselectAll": "Deselectați tot",
+      "selectAll": "Selectați tot"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "Alegeți rampa fiat",
       "kadoSubtitle": "Acceptă USDC",
@@ -174,7 +178,13 @@
       "SORTMobile": "Sorteaza"
     },
     "table": {
-      "poolId": "Pool-ul #{id}"
+      "poolId": "Pool-ul #{id}",
+      "stable": "Stableswap",
+      "weighted": "Ponderat",
+      "internal": "Incentive interne",
+      "external": "Incentive externe",
+      "superfluid": "Superfluid",
+      "noIncentives": "Fără incentivi"
     }
   },
   "connectDisclaimer": "Conectand un portofel declari ca ai inteles cum functioneaza Osmosis.",

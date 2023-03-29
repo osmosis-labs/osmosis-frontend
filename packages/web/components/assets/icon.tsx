@@ -23,7 +23,9 @@ export type SpriteIconId =
   | "transak-logo"
   | "more-menu"
   | "sort-up"
-  | "sort-down";
+  | "sort-down"
+  | "check-mark"
+  | "minus";
 
 /**
  * It takes an icon id and returns an svg element with the corresponding icon defined in /public/icons/sprite.svg.

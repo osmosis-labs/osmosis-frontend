@@ -300,5 +300,24 @@
         fill="currentColor"
       />
     </symbol>
+
+    <symbol id="check-mark" viewBox="0 0 15 12" fill="none">
+      <path
+        d="M1.5 6L4.80769 9.5L13 2"
+        stroke="currentColor"
+        stroke-width="3"
+        stroke-linecap="round"
+      />
+    </symbol>
+
+    <symbol id="minus" viewBox="0 0 20 4">
+      <path
+        d="M1.51477 2H18.4853"
+        stroke="currentColor"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </symbol>
   </defs>
 </svg>
