@@ -790,7 +790,7 @@ const chainInfos = (
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: IS_TESTNET
-        ? "https://testnet.mintscan.io/juno-testnet/txs/{txHash}",
+        ? "https://testnet.mintscan.io/juno-testnet/txs/{txHash}"
         : "https://www.mintscan.io/juno/txs/{txHash}",
     },
     {
