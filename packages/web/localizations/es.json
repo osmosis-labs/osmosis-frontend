@@ -146,10 +146,6 @@
   },
   "buyTokens": "Comprar fichas",
   "components": {
-    "checkbox-select": {
-      "deselectAll": "Deseleccionar todo",
-      "selectAll": "Seleccionar todo"
-    },
     "fiatOnrampSelection": {
       "chooseOnramp": "Seleccionar acceso de Fiat",
       "kadoSubtitle": "Soporta USDC",

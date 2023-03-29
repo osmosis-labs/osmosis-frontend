@@ -29,7 +29,7 @@ import { noop, runIfFn } from "~/utils/function";
 import { useFilteredData, useWindowSize } from "../../hooks";
 import { useStore } from "../../stores";
 import { Icon } from "../assets";
-import { CheckBox } from "../control";
+import { CheckBox, MenuSelectProps } from "../control";
 import { SearchBox } from "../input";
 import {
   MetricLoaderCell,
@@ -100,8 +100,8 @@ export const AllPoolsTable: FunctionComponent<{
     const t = useTranslation();
 
     const router = useRouter();
-    const PoolFilters = getPoolFilters(t);
-    const IncentiveFilters = getIncentiveFilters(t);
+    const PoolFilters = useMemo(() => getPoolFilters(t), [t]);
+    const IncentiveFilters = useMemo(() => getIncentiveFilters(t), [t]);
     const poolFilterQuery = String(router.query?.pool ?? "")
       .split(",")
       .filter(Boolean) as Array<keyof typeof PoolFilters>;
@@ -134,7 +134,13 @@ export const AllPoolsTable: FunctionComponent<{
           }
         );
       }
-    }, [poolFilterQuery, router, router.query.incentive, router.query.pools]);
+    }, [
+      IncentiveFilters,
+      PoolFilters,
+      router,
+      router.query.incentive,
+      router.query.pools,
+    ]);
 
     const fetchedRemainingPoolsRef = useRef(false);
     const { isMobile } = useWindowSize();
@@ -488,40 +494,6 @@ export const AllPoolsTable: FunctionComponent<{
       [handleFetchRemaining, incentiveFilterQuery, router]
     );
 
-    const onSelectAll = (type: "pool" | "incentive") => () => {
-      router.replace(
-        {
-          query: {
-            ...router.query,
-            ...(type === "pool"
-              ? { pool: Object.keys(PoolFilters) }
-              : {
-                  incentive: Object.keys(IncentiveFilters),
-                }),
-          },
-        },
-        undefined,
-        {
-          scroll: false,
-        }
-      );
-    };
-
-    const onDeselectAll = (type: "pool" | "incentive") => () => {
-      router.replace(
-        {
-          query: {
-            ...router.query,
-            ...(type === "pool" ? { pool: "" } : { incentive: "" }),
-          },
-        },
-        undefined,
-        {
-          scroll: false,
-        }
-      );
-    };
-
     return (
       <>
         <div className="mt-5 flex flex-col gap-3">
@@ -574,9 +546,7 @@ export const AllPoolsTable: FunctionComponent<{
                         id as keyof typeof IncentiveFilters
                       )
                     }
-                    showDeselectAll
-                    onSelectAll={onSelectAll("incentive")}
-                    onDeselectAll={onDeselectAll("incentive")}
+                    menuItemsClassName="sm:left-auto sm:-right-px"
                   />
                 </div>
               </div>
@@ -616,9 +586,6 @@ export const AllPoolsTable: FunctionComponent<{
                   onSelect={(id) =>
                     onSelectIncentiveFilter(id as keyof typeof IncentiveFilters)
                   }
-                  showDeselectAll
-                  onSelectAll={onSelectAll("incentive")}
-                  onDeselectAll={onDeselectAll("incentive")}
                 />
                 <SearchBox
                   currentValue={query}
@@ -662,44 +629,15 @@ export const AllPoolsTable: FunctionComponent<{
   }
 );
 
-const CheckboxSelect: FC<{
-  label: string;
-  selectedOptionIds?: string[];
-  showDeselectAll?: boolean;
-  options: {
-    id: string;
-    display: string;
-    isDeselect?: boolean;
-  }[];
-  onSelect: (optionId: string) => void;
-  onSelectAll?: () => void;
-  onDeselectAll?: () => void;
-}> = ({
-  label,
-  selectedOptionIds,
-  options: optionsProp,
-  onSelect,
-  showDeselectAll,
-  onSelectAll,
-  onDeselectAll,
-}) => {
+const CheckboxSelect: FC<
+  {
+    label: string;
+    selectedOptionIds?: string[];
+    showDeselectAll?: boolean;
+    menuItemsClassName?: string;
+  } & MenuSelectProps
+> = ({ label, selectedOptionIds, options, onSelect, menuItemsClassName }) => {
   const { isMobile } = useWindowSize();
-  const t = useTranslation();
-
-  const areAllSelected = optionsProp?.length === selectedOptionIds?.length;
-  const isIndeterminate = !areAllSelected && selectedOptionIds?.length !== 0;
-  const options = showDeselectAll
-    ? [
-        {
-          id: "0",
-          display: !areAllSelected
-            ? t("components.checkbox-select.selectAll")
-            : t("components.checkbox-select.deselectAll"),
-          isDeselect: true,
-        },
-        ...optionsProp,
-      ]
-    : optionsProp;
 
   return (
     <Menu>
@@ -722,8 +660,13 @@ const CheckboxSelect: FC<{
             />
           </Menu.Button>
 
-          <Menu.Items className="absolute top-full -left-px z-[1000] mt-2 flex w-max select-none flex-col overflow-hidden rounded-xl border border-osmoverse-700 bg-osmoverse-800 text-left">
-            {options.map(({ id, display, isDeselect }, index) => {
+          <Menu.Items
+            className={classNames(
+              "absolute top-full -left-px z-[1000] mt-2 flex w-max select-none flex-col overflow-hidden rounded-xl border border-osmoverse-700 bg-osmoverse-800 text-left",
+              menuItemsClassName
+            )}
+          >
+            {options.map(({ id, display }, index) => {
               return (
                 <Menu.Item key={id}>
                   {({ active }) => (
@@ -737,25 +680,12 @@ const CheckboxSelect: FC<{
                       )}
                       onClick={(e) => {
                         e.preventDefault();
-                        if (isDeselect) {
-                          isIndeterminate || !areAllSelected
-                            ? onSelectAll?.()
-                            : onDeselectAll?.();
-                          return;
-                        }
                         onSelect(id);
                       }}
                     >
                       <CheckBox
                         className="w-fit"
-                        isOn={
-                          isDeselect
-                            ? areAllSelected
-                            : Boolean(selectedOptionIds?.includes(id))
-                        }
-                        isIndeterminate={
-                          isDeselect ? isIndeterminate : undefined
-                        }
+                        isOn={Boolean(selectedOptionIds?.includes(id))}
                         onToggle={noop}
                       />
                       <span>{display}</span>

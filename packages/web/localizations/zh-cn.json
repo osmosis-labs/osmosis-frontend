@@ -145,10 +145,6 @@
   },
   "buyTokens": "购买代币",
   "components": {
-    "checkbox-select": {
-      "deselectAll": "取消全选",
-      "selectAll": "全选"
-    },
     "fiatOnrampSelection": {
       "chooseOnramp": "选择法币入口",
       "kadoSubtitle": "支持USDC",
