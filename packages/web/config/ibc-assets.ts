@@ -139,6 +139,13 @@ export const IBCAssetInfos: (IBCAsset & {
           sourceChainTokens: [AxelarSourceChainConfigs.wftm.fantom],
         },
       },
+      {
+        counterpartyChainId: "uni-6",
+        sourceChannelId: "channel-3316",
+        destChannelId: "channel-140",
+        coinMinimalDenom: "ujunox",
+        isVerified: true,
+      },
     ]
   : [
       {
