@@ -2210,7 +2210,7 @@ const chainInfos = (
           coinMinimalDenom: "ulumen",
           coinDecimals: 6,
           coinGeckoId: "pool:ulumen",
-          coinImageUrl: "/tokens/lumen.png",
+          coinImageUrl: "/tokens/lumen.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
