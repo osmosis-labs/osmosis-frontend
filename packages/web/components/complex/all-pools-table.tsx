@@ -151,7 +151,7 @@ export const AllPoolsTable: FunctionComponent<{
     const queriesOsmosis = queriesStore.get(chainId).osmosis!;
     const queryActiveGauges = queriesExternalStore.queryActiveGauges;
 
-    const [sorting, setSorting] = useState<
+    const [sorting, _setSorting] = useState<
       { id: keyof ObservablePoolWithMetric; desc: boolean }[]
     >([
       {
@@ -159,6 +159,24 @@ export const AllPoolsTable: FunctionComponent<{
         desc: true,
       },
     ]);
+    const setSorting = useCallback(
+      (s) => {
+        if (typeof s === "function") {
+          const sort = s()?.[0];
+          if (sort)
+            logEvent([
+              EventName.Pools.allPoolsListSorted,
+              {
+                sortedBy: sort.id,
+                sortedOn: isMobile ? "dropdown" : "table",
+                sortDirection: sort.desc ? "descending" : "ascending",
+              },
+            ]);
+        }
+        _setSorting(s);
+      },
+      [logEvent, isMobile]
+    );
 
     const allPoolsWithMetrics = derivedDataStore.poolsWithMetrics
       .get(chainId)
@@ -219,31 +237,6 @@ export const AllPoolsTable: FunctionComponent<{
         queriesOsmosis.querySuperfluidPools,
         queryActiveGauges,
       ]
-    );
-
-    const [sorting, _setSorting] = useState<SortingState>([
-      {
-        id: "liquidity",
-        desc: true,
-      },
-    ]);
-    const setSorting = useCallback(
-      (s) => {
-        if (typeof s === "function") {
-          const sort = s()?.[0];
-          if (sort)
-            logEvent([
-              EventName.Pools.allPoolsListSorted,
-              {
-                sortedBy: sort.id,
-                sortedOn: isMobile ? "dropdown" : "table",
-                sortDirection: sort.desc ? "descending" : "ascending",
-              },
-            ]);
-        }
-        _setSorting(s);
-      },
-      [logEvent, isMobile]
     );
 
     const [query, _setQuery, filteredPools] = useFilteredData(
