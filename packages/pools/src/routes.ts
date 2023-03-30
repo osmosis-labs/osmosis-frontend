@@ -76,7 +76,6 @@ export class OptimizedRoutes {
           tokenOutDenoms: [...currentTokenOuts, tokenOutDenom],
           tokenInDenom,
         };
-        console.log({ foundRoute, currentRoute });
         const existingRoutes = this.candidatePathsCache.get(cacheKey);
         if (existingRoutes) {
           existingRoutes.push(foundRoute);
