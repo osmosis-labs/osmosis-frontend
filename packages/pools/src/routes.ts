@@ -76,13 +76,6 @@ export class OptimizedRoutes {
           tokenOutDenoms: [...currentTokenOuts, tokenOutDenom],
           tokenInDenom,
         };
-        const existingRoutes = this.candidatePathsCache.get(cacheKey);
-        if (existingRoutes) {
-          existingRoutes.push(foundRoute);
-          this.candidatePathsCache.set(cacheKey, existingRoutes);
-        } else {
-          this.candidatePathsCache.set(cacheKey, [foundRoute]);
-        }
         routes.push(foundRoute);
         return;
       }
@@ -139,6 +132,7 @@ export class OptimizedRoutes {
     };
 
     computeRoutes(tokenInDenom, tokenOutDenom, [], [], poolsUsed);
+    this.candidatePathsCache.set(cacheKey, routes);
 
     return routes.filter(({ pools }) => pools.length < maxHops);
   }
