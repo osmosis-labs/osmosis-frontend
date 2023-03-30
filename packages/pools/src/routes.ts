@@ -65,10 +65,14 @@ export class OptimizedRoutes {
       poolsUsed: boolean[],
       _previousTokenOuts?: string[]
     ) => {
-      if (currentRoute.length > maxHops) return;
+      if (currentRoute.length > maxHops) {
+        console.log("max hops");
+        return;
+      }
 
       if (
         currentRoute.length > 0 &&
+        currentRoute.length <= maxHops &&
         currentRoute[currentRoute.length - 1]!.hasPoolAsset(tokenOutDenom)
       ) {
         const foundRoute: RoutePath = {
@@ -76,6 +80,7 @@ export class OptimizedRoutes {
           tokenOutDenoms: [...currentTokenOuts, tokenOutDenom],
           tokenInDenom,
         };
+        console.log({ foundRoute, currentRoute });
         const existingRoutes = this.candidatePathsCache.get(cacheKey);
         if (existingRoutes) {
           existingRoutes.push(foundRoute);
@@ -140,7 +145,7 @@ export class OptimizedRoutes {
 
     computeRoutes(tokenInDenom, tokenOutDenom, [], [], poolsUsed);
 
-    return routes;
+    return routes.filter(({ pools }) => pools.length < maxHops);
   }
 
   getOptimizedRoutesByTokenIn(
@@ -163,30 +168,9 @@ export class OptimizedRoutes {
       maxRoutes
     );
 
-    // sort routes by highest normalized liquidity first
+    // prioritize shorter routes
     routes = routes.sort((path1, path2) => {
-      const path1IsDirect = path1.pools.length === 1;
-      const path2IsDirect = path2.pools.length === 1;
-      if (!path1IsDirect || !path2IsDirect) {
-        return path1IsDirect ? -1 : 1;
-      }
-
-      const getNormLiquidityInPath = (path: RoutePath) => {
-        let totalNormLiquidity = new Dec(0);
-        path.pools.forEach((pool, i) => {
-          const normLiquidity = pool.getNormalizedLiquidity(
-            path.tokenInDenom,
-            path.tokenOutDenoms[i]
-          );
-          totalNormLiquidity = totalNormLiquidity.add(normLiquidity);
-        });
-        return totalNormLiquidity;
-      };
-
-      const path1TotalNormLiquidity = getNormLiquidityInPath(path1);
-      const path2TotalNormLiquidity = getNormLiquidityInPath(path2);
-
-      return path1TotalNormLiquidity.gte(path2TotalNormLiquidity) ? -1 : 1;
+      return path1.pools.length < path2.pools.length ? -1 : 1;
     });
 
     // Priority is given to direct swap.
