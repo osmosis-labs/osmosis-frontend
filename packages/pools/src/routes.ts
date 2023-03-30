@@ -65,14 +65,10 @@ export class OptimizedRoutes {
       poolsUsed: boolean[],
       _previousTokenOuts?: string[]
     ) => {
-      if (currentRoute.length > maxHops) {
-        console.log("max hops");
-        return;
-      }
+      if (currentRoute.length > maxHops) return;
 
       if (
         currentRoute.length > 0 &&
-        currentRoute.length <= maxHops &&
         currentRoute[currentRoute.length - 1]!.hasPoolAsset(tokenOutDenom)
       ) {
         const foundRoute: RoutePath = {
