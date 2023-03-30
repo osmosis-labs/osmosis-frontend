@@ -173,7 +173,13 @@
       "SORTMobile": "排序"
     },
     "table": {
-      "poolId": "资金池 #{id}"
+      "poolId": "资金池 #{id}",
+      "stable": "稳定兑换",
+      "weighted": "加权",
+      "internal": "内部激励",
+      "external": "外部激励",
+      "superfluid": "超流体",
+      "noIncentives": "无激励"
     }
   },
   "connectDisclaimer": "连接钱包即表示您已经阅读和理解 Osmosis 相关内容",

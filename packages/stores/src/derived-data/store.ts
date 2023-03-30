@@ -1,11 +1,11 @@
 import {
-  ChainGetter,
   CosmosQueries,
   IAccountStore,
   IQueriesStore,
 } from "@keplr-wallet/stores";
 import { DeepReadonly } from "utility-types";
 
+import { ChainStore } from "../chain";
 import { IPriceStore } from "../price";
 import { OsmosisQueries } from "../queries";
 import {
@@ -17,10 +17,12 @@ import {
   ObservablePoolsBonding,
   ObservableSuperfluidPoolDetails,
 } from "./pool";
+import { ObservablePoolsWithMetrics } from "./pools";
 
 /** Contains stores that compute on the lower level . */
 export class DerivedDataStore {
   public readonly poolDetails: DeepReadonly<ObservablePoolDetails>;
+  public readonly poolsWithMetrics: DeepReadonly<ObservablePoolsWithMetrics>;
   public readonly superfluidPoolDetails: DeepReadonly<ObservableSuperfluidPoolDetails>;
   public readonly poolsBonding: DeepReadonly<ObservablePoolsBonding>;
 
@@ -35,7 +37,7 @@ export class DerivedDataStore {
     },
     protected readonly accountStore: IAccountStore,
     protected readonly priceStore: IPriceStore,
-    protected readonly chainGetter: ChainGetter
+    protected readonly chainGetter: ChainStore
   ) {
     this.poolDetails = new ObservablePoolDetails(
       this.osmosisChainId,
@@ -60,6 +62,15 @@ export class DerivedDataStore {
       this.externalQueries,
       this.accountStore,
       this.queriesStore
+    );
+    this.poolsWithMetrics = new ObservablePoolsWithMetrics(
+      this.osmosisChainId,
+      this.queriesStore,
+      this.poolDetails,
+      this.poolsBonding,
+      this.chainGetter,
+      this.externalQueries,
+      this.priceStore
     );
   }
 
