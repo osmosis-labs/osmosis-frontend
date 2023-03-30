@@ -39,13 +39,10 @@ export class OptimizedRoutes {
     return this._pools;
   }
 
-  protected clearCache() {
-    this.candidatePathsCache = new Map();
-  }
-
   protected getCandidatePaths(
     tokenInDenom: string,
     tokenOutDenom: string,
+    maxHops = 3,
     maxRouteCount = 3
   ): RoutePath[] {
     if (this.pools.length === 0) {
@@ -59,7 +56,6 @@ export class OptimizedRoutes {
 
     const poolsUsed = Array<boolean>(this.pools.length).fill(false);
     const routes: RoutePath[] = [];
-    let iters = this.pools.length * this.pools.length;
 
     const computeRoutes = (
       tokenInDenom: string,
@@ -69,6 +65,8 @@ export class OptimizedRoutes {
       poolsUsed: boolean[],
       _previousTokenOuts?: string[]
     ) => {
+      if (currentRoute.length > maxHops) return;
+
       if (
         currentRoute.length > 0 &&
         currentRoute[currentRoute.length - 1]!.hasPoolAsset(tokenOutDenom)
@@ -89,17 +87,12 @@ export class OptimizedRoutes {
         return;
       }
 
-      if (routes.length > maxRouteCount) {
+      if (routes.length >= maxRouteCount) {
         // only find top routes by iterating all pools by high liquidity first
         return;
       }
 
       for (let i = 0; i < this.pools.length; i++) {
-        iters--;
-        if (iters < 0) {
-          throw new Error("Too many iterations");
-        }
-
         if (poolsUsed[i]) {
           continue;
         }
@@ -121,10 +114,9 @@ export class OptimizedRoutes {
               return false;
             })
           );
-        if (!curPoolContainsAssetOutOfLastPool) {
+        if (!curPoolContainsAssetOutOfLastPool || !prevPoolCurPoolTokenMatch) {
           continue;
         }
-        if (!prevPoolCurPoolTokenMatch) continue;
 
         currentRoute.push(curPool);
         if (prevPoolCurPoolTokenMatch !== tokenInDenom)
@@ -141,6 +133,7 @@ export class OptimizedRoutes {
             .map(({ denom }) => denom)
         );
         poolsUsed[i] = false;
+        currentTokenOuts.pop();
         currentRoute.pop();
       }
     };
@@ -156,13 +149,19 @@ export class OptimizedRoutes {
       amount: Int;
     },
     tokenOutDenom: string,
-    maxPools: number
+    maxPools: number,
+    maxRoutes = 3
   ): RoutePathWithAmount[] {
     if (!tokenIn.amount.isPositive()) {
       throw new Error("Token in amount is zero or negative");
     }
 
-    let routes = this.getCandidatePaths(tokenIn.denom, tokenOutDenom);
+    let routes = this.getCandidatePaths(
+      tokenIn.denom,
+      tokenOutDenom,
+      maxPools,
+      maxRoutes
+    );
 
     // sort routes by highest normalized liquidity first
     routes = routes.sort((path1, path2) => {
@@ -216,8 +215,6 @@ export class OptimizedRoutes {
     if (routes.length === 0) {
       throw new NoPoolsError();
     }
-
-    routes = routes.slice(0, maxPools);
 
     const initialSwapAmounts: Int[] = [];
     let totalLimitAmount = new Int(0);
