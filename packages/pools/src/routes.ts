@@ -7,7 +7,7 @@ import {
 import { NoPoolsError, NotEnoughLiquidityError } from "./errors";
 import { Pool } from "./interface";
 
-export interface RoutePath {
+export interface Route {
   pools: Pool[];
   // tokenOutDenoms means the token to come out from each pool.
   // This should the same length with the pools.
@@ -17,14 +17,14 @@ export interface RoutePath {
   tokenInDenom: string;
 }
 
-export interface RoutePathWithAmount extends RoutePath {
+export interface RouteWithAmount extends Route {
   amount: Int;
 }
 
 export class OptimizedRoutes {
   protected _pools: ReadonlyArray<Pool>;
   protected _incentivizedPoolIds: string[];
-  protected candidatePathsCache = new Map<string, RoutePath[]>();
+  protected candidatePathsCache = new Map<string, Route[]>();
 
   constructor(
     pools: ReadonlyArray<Pool>,
@@ -39,12 +39,12 @@ export class OptimizedRoutes {
     return this._pools;
   }
 
-  protected getCandidatePaths(
+  protected getCandidateRoutes(
     tokenInDenom: string,
     tokenOutDenom: string,
-    maxHops = 3,
+    maxHops = 4,
     maxRouteCount = 3
-  ): RoutePath[] {
+  ): Route[] {
     if (this.pools.length === 0) {
       return [];
     }
@@ -55,7 +55,7 @@ export class OptimizedRoutes {
     }
 
     const poolsUsed = Array<boolean>(this.pools.length).fill(false);
-    const routes: RoutePath[] = [];
+    const routes: Route[] = [];
 
     const computeRoutes = (
       tokenInDenom: string,
@@ -71,7 +71,7 @@ export class OptimizedRoutes {
         currentRoute.length > 0 &&
         currentRoute[currentRoute.length - 1]!.hasPoolAsset(tokenOutDenom)
       ) {
-        const foundRoute: RoutePath = {
+        const foundRoute: Route = {
           pools: [...currentRoute],
           tokenOutDenoms: [...currentTokenOuts, tokenOutDenom],
           tokenInDenom,
@@ -145,12 +145,12 @@ export class OptimizedRoutes {
     tokenOutDenom: string,
     maxPools: number,
     maxRoutes = 3
-  ): RoutePathWithAmount[] {
+  ): RouteWithAmount[] {
     if (!tokenIn.amount.isPositive()) {
       throw new Error("Token in amount is zero or negative");
     }
 
-    let routes = this.getCandidatePaths(
+    let routes = this.getCandidateRoutes(
       tokenIn.denom,
       tokenOutDenom,
       maxPools,
@@ -226,7 +226,7 @@ export class OptimizedRoutes {
     });
   }
 
-  calculateTokenOutByTokenIn(routes: RoutePathWithAmount[]): {
+  calculateTokenOutByTokenIn(routes: RouteWithAmount[]): {
     amount: Int;
     beforeSpotPriceInOverOut: Dec;
     beforeSpotPriceOutOverIn: Dec;
