@@ -13,7 +13,7 @@ import {
   NotEnoughLiquidityError,
   OptimizedRoutes,
   Pool,
-  RoutePathWithAmount,
+  RouteWithAmount,
 } from "@osmosis-labs/pools";
 import {
   action,
@@ -237,7 +237,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   }
 
   @computed
-  get optimizedRoutePaths(): RoutePathWithAmount[] {
+  get optimizedRoutePaths(): RouteWithAmount[] {
     runInAction(() => {
       this._notEnoughLiquidity = false;
     });
