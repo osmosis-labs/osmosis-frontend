@@ -2945,7 +2945,7 @@ const chainInfos = (
           coinDenom: "WHALE",
           coinMinimalDenom: "uwhale",
           coinDecimals: 6,
-          coinImageUrl: "/tokens/whitewhale.png",
+          coinImageUrl: "/tokens/white-whale.svg",
           coinGeckoId: "pool:uwhale",
           isStakeCurrency: true,
           isFeeCurrency: true,
