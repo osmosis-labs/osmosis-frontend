@@ -1,7 +1,10 @@
 import { ChainInfoInner } from "@keplr-wallet/stores";
-import { isSlippageError, prettifyTxError } from "@osmosis-labs/stores";
+import {
+  ChainInfoWithExplorer,
+  isSlippageError,
+  prettifyTxError,
+} from "@osmosis-labs/stores";
 
-import { ChainInfoWithExplorer } from "../../stores/chain";
 import { displayToast } from "./toast";
 import { ToastType } from "./types";
 

@@ -282,9 +282,7 @@ export class ObservablePoolBonding {
 
   @computed
   get highestBondDuration(): BondDuration | undefined {
-    return this.bondDurations.find(
-      (_, i) => i === this.bondDurations.length - 1
-    );
+    return this.bondDurations[this.bondDurations.length - 1];
   }
 }
 

@@ -9,6 +9,8 @@ import {
 import { AppCurrency, Keplr } from "@keplr-wallet/types";
 import {
   AccountStore,
+  ChainInfoWithExplorer,
+  ChainStore,
   CosmosAccount,
   CosmwasmAccount,
   DerivedDataStore,
@@ -36,7 +38,6 @@ import {
 import { AxelarTransferStatusSource } from "~/integrations/axelar";
 
 import { ObservableAssets } from "./assets";
-import { ChainInfoWithExplorer, ChainStore } from "./chain";
 import { makeIndexedKVStore, makeLocalStorageKVStore } from "./kv-store";
 import { NavBarStore } from "./nav-bar";
 import { OsmoPixelsQueries } from "./pixels";

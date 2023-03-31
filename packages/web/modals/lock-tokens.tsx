@@ -161,11 +161,9 @@ export const LockTokensModal: FunctionComponent<
         </div>
         {superfluidPoolDetail?.isSuperfluid && (
           <CheckBox
-            className="-top-0.5 -left-0.5 transition-all after:!h-6 after:!w-6 after:!rounded-[10px] after:!border-2 after:!border-superfluid after:!bg-transparent checked:after:border-none checked:after:bg-superfluid"
+            className="transition-all after:!h-6 after:!w-6 after:!rounded-[10px] after:!border-2 after:!border-superfluid after:!bg-transparent checked:after:border-none checked:after:bg-superfluid"
             isOn={superfluidDurationSelected && electSuperfluid}
             onToggle={() => setElectSuperfluid(!electSuperfluid)}
-            checkMarkIconUrl="/icons/check-mark-dark.svg"
-            checkMarkClassName="left-0 h-6 w-6"
             disabled={!superfluidDurationSelected || hasSuperfluidValidator}
           >
             <div

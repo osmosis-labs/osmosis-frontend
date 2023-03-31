@@ -1,7 +1,7 @@
 /**
- * The inlang config is the entry point for every inlang app. 
- * 
- * More information about the config is available here 
+ * The inlang config is the entry point for every inlang app.
+ *
+ * More information about the config is available here
  * https://inlang.com/documentation/config
  */
 export async function defineConfig(env) {
@@ -27,6 +27,7 @@ export async function defineConfig(env) {
 			"zh-cn",
 			"zh-hk",
 			"zh-tw",
+			"fa",
 		],
 		readResources: (args) => {
 			return plugin.readResources({ ...args, ...env, pluginConfig });

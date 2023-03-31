@@ -6,6 +6,7 @@ import {
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import {
   AccountStore,
+  ChainStore,
   IPriceStore,
   OsmosisQueries,
 } from "@osmosis-labs/stores";
@@ -13,7 +14,6 @@ import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
 import { IS_FRONTIER } from "../../config";
-import { ChainStore } from "../chain";
 import {
   CoinBalance,
   IBCAsset,

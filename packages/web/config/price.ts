@@ -1124,6 +1124,16 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     destCoinId: "pool:uosmo",
   },
   {
+    alternativeCoinId: "pool:uqck",
+    poolId: "952",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-522" }],
+      "uqck"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
     alternativeCoinId: "pool:uqstars",
     poolId: "903",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
@@ -1161,6 +1171,16 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       "uregen"
     ),
     destCoinId: "pool:uregen",
+  },
+  {
+    alternativeCoinId: "pool:uqosmo",
+    poolId: "956",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-522" }],
+      "uqosmo"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
   },
   {
     alternativeCoinId: "pool:wftm-wei",
@@ -1347,6 +1367,16 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     spotPriceSourceDenom: DenomHelper.ibcDenom(
       [{ portId: "transfer", channelId: "channel-169" }],
       "cw20:juno1u8cr3hcjvfkzxcaacv9q75uw9hwjmn8pucc93pmy6yvkzz79kh3qncca8x"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:arkh",
+    poolId: "954",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-648" }],
+      "arkh"
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",

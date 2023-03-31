@@ -2,6 +2,7 @@ import { AppCurrency } from "@keplr-wallet/types";
 import { Dec } from "@keplr-wallet/unit";
 import { getOsmoRoutedMultihopTotalSwapFee } from "@osmosis-labs/math";
 import { Pool, RoutePathWithAmount } from "@osmosis-labs/pools";
+import { ChainStore } from "@osmosis-labs/stores";
 import { useSingleton } from "@tippyjs/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -9,7 +10,6 @@ import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { useStore } from "../../stores";
-import { ChainStore } from "../../stores/chain";
 import { DenomImage } from "../assets";
 import { Tooltip } from "../tooltip";
 
