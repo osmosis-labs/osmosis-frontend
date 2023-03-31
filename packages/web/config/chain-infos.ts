@@ -2931,6 +2931,40 @@ const chainInfos = (
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://explorer.kynraze.com/arkhadian/tx/{txHash}",
     },
+    {
+      rpc: "https://noble-rpc.polkachu.com",
+      rest: "https://noble-api.polkachu.com",
+      chainId: "noble-1",
+      chainName: "Noble",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("noble"),
+      currencies: [
+        {
+          coinDenom: "USDC",
+          coinMinimalDenom: "uusdc",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/usdc.svg",
+          coinGeckoId: "pool:nusdc",
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.01,
+            average: 0.025,
+            high: 0.03,
+          },
+        },
+        {
+          coinDenom: "FRNZ",
+          coinMinimalDenom: "ufrienzies",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/frnz.svg",
+          coinGeckoId: "pool:frnz",
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx: "https://www.mintscan.io/noble/txs/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
