@@ -112,51 +112,51 @@ describe("OptimizedRoutes", () => {
   });
 
   describe("scaling factors with stable pools", () => {
-    // test("scaling factors don't affect amounts", () => {
-    //   const normalPools = [
-    //     makeStablePool({
-    //       firstPoolAsset: { denom: "uust" },
-    //       secondPoolAsset: { denom: "uusdc" },
-    //     }),
-    //     makeStablePool({
-    //       id: "2",
-    //       firstPoolAsset: { denom: "uusdc" },
-    //       secondPoolAsset: { denom: "uusdt" },
-    //     }),
-    //   ];
-    //   const scaledPools = [
-    //     makeStablePool({
-    //       firstPoolAsset: { denom: "uust" },
-    //       secondPoolAsset: { denom: "uusdc" },
-    //     }),
-    //     makeStablePool({
-    //       id: "2",
-    //       firstPoolAsset: { denom: "uusdc", scalingFactor: "10000" },
-    //       secondPoolAsset: { denom: "uusdt", scalingFactor: "10000" },
-    //     }),
-    //   ];
-    //   const normalRouter = new OptimizedRoutes(normalPools, [], "ufoo");
-    //   const scaledRouter = new OptimizedRoutes(scaledPools, [], "ufoo");
-    //   const normalRoutes = normalRouter.getOptimizedRoutesByTokenIn(
-    //     {
-    //       denom: "uust",
-    //       amount: new Int("100"),
-    //     },
-    //     "uusdt",
-    //     10
-    //   );
-    //   const scaledRoutes = scaledRouter.getOptimizedRoutesByTokenIn(
-    //     {
-    //       denom: "uust",
-    //       amount: new Int("100"),
-    //     },
-    //     "uusdt",
-    //     10
-    //   );
-    //   const normalOut = normalRouter.calculateTokenOutByTokenIn(normalRoutes);
-    //   const scaledOut = scaledRouter.calculateTokenOutByTokenIn(scaledRoutes);
-    //   expect(scaledOut.amount.toString()).toEqual(normalOut.amount.toString());
-    // });
+    test("scaling factors don't affect amounts", () => {
+      const normalPools = [
+        makeStablePool({
+          firstPoolAsset: { denom: "uust" },
+          secondPoolAsset: { denom: "uusdc" },
+        }),
+        makeStablePool({
+          id: "2",
+          firstPoolAsset: { denom: "uusdc" },
+          secondPoolAsset: { denom: "uusdt" },
+        }),
+      ];
+      const scaledPools = [
+        makeStablePool({
+          firstPoolAsset: { denom: "uust" },
+          secondPoolAsset: { denom: "uusdc" },
+        }),
+        makeStablePool({
+          id: "2",
+          firstPoolAsset: { denom: "uusdc", scalingFactor: "10000" },
+          secondPoolAsset: { denom: "uusdt", scalingFactor: "10000" },
+        }),
+      ];
+      const normalRouter = new OptimizedRoutes(normalPools, [], "ufoo");
+      const scaledRouter = new OptimizedRoutes(scaledPools, [], "ufoo");
+      const normalRoutes = normalRouter.getOptimizedRoutesByTokenIn(
+        {
+          denom: "uust",
+          amount: new Int("100"),
+        },
+        "uusdt",
+        10
+      );
+      const scaledRoutes = scaledRouter.getOptimizedRoutesByTokenIn(
+        {
+          denom: "uust",
+          amount: new Int("100"),
+        },
+        "uusdt",
+        10
+      );
+      const normalOut = normalRouter.calculateTokenOutByTokenIn(normalRoutes);
+      const scaledOut = scaledRouter.calculateTokenOutByTokenIn(scaledRoutes);
+      expect(scaledOut.amount.toString()).toEqual(normalOut.amount.toString());
+    });
   });
 
   describe("OSMO fee discount", () => {
