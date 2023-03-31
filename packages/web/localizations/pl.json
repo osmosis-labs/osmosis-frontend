@@ -174,7 +174,13 @@
       "SORTMobile": "SORTUJ"
     },
     "table": {
-      "poolId": "Pula #{id}"
+      "poolId": "Pula #{id}",
+      "stable": "Stableswap",
+      "weighted": "Ważone",
+      "internal": "Wewnętrzne zachęty",
+      "external": "Zewnętrzne zachęty",
+      "superfluid": "Superfluid",
+      "noIncentives": "Brak zachęt"
     }
   },
   "connectDisclaimer": "Podłączając portfel, potwierdzasz, że przeczytałeś i zrozumiałeś Osmosis",

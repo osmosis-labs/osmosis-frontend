@@ -1,5 +1,4 @@
 import classNames from "classnames";
-import Image from "next/image";
 import { FunctionComponent } from "react";
 
 import { PoolAssetInfo } from "./types";
@@ -44,14 +43,14 @@ export const PoolAssetsIcon: FunctionComponent<Props> = ({
                 assets.length - 3
               }`}</div>
             ) : coinImageUrl ? (
-              <Image
+              <img
                 src={coinImageUrl}
                 alt={coinDenom}
                 width={size === "md" ? 50 : 40}
                 height={size === "md" ? 50 : 40}
               />
             ) : (
-              <Image
+              <img
                 src="/icons/question-mark.svg"
                 alt="no token icon"
                 width={size === "md" ? 50 : 40}

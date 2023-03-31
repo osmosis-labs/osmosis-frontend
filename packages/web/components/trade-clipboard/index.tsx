@@ -81,19 +81,7 @@ export const TradeClipboard: FunctionComponent<{
       queriesStore,
       pools
     );
-    // Some validators allow 0 fee tx.
-    // Therefore, users can send tx at 0 fee even though they have no OSMO,
-    // Users who have OSMO pay a fee by default so that tx is processed faster.
-    let preferZeroFee = true;
-    const queryOsmo = queries.queryBalances.getQueryBech32Address(
-      account.bech32Address
-    ).stakable;
-    if (
-      // If user has an OSMO 0.001 or higher, he pay the fee by default.
-      queryOsmo.balance.toDec().gt(DecUtils.getTenExponentN(-3))
-    ) {
-      preferZeroFee = false;
-    }
+
     const gasForecasted = (() => {
       if (
         tradeTokenInConfig.optimizedRoutePaths.length === 0 ||
@@ -108,8 +96,7 @@ export const TradeClipboard: FunctionComponent<{
     const feeConfig = useFakeFeeConfig(
       chainStore,
       chainStore.osmosis.chainId,
-      gasForecasted,
-      preferZeroFee
+      gasForecasted
     );
     tradeTokenInConfig.setFeeConfig(feeConfig);
 
@@ -413,9 +400,7 @@ export const TradeClipboard: FunctionComponent<{
                   },
                 ],
               },
-              {
-                preferNoSetFee: preferZeroFee,
-              },
+              undefined,
               () => {
                 logEvent([
                   EventName.Swap.swapCompleted,
@@ -444,9 +429,7 @@ export const TradeClipboard: FunctionComponent<{
                   },
                 ],
               },
-              {
-                preferNoSetFee: preferZeroFee,
-              },
+              undefined,
               () => {
                 logEvent([
                   EventName.Swap.swapCompleted,
