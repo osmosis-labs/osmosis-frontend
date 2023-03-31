@@ -318,8 +318,14 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     const multiplicationInOverOut = DecUtils.getTenExponentN(
       this.outCurrency.coinDecimals - this.sendCurrency.coinDecimals
     );
-    const result = this.optimizedRoutes.calculateTokenOutByTokenIn(paths);
-
+    let result;
+    try {
+      result = this.optimizedRoutes.calculateTokenOutByTokenIn(paths);
+    } catch (e: any) {
+      console.error(e);
+      this.setError(new NoRouteError("No route found"));
+      return zero;
+    }
     if (!result.amount.gt(new Int(0))) {
       this.setError(new Error("Not enough liquidity"));
       return zero;
