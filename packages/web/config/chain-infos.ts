@@ -2942,6 +2942,14 @@ const chainInfos = (
       bech32Config: Bech32Address.defaultBech32Config("noble"),
       currencies: [
         {
+          coinDenom: "STAKE",
+          coinMinimalDenom: "ustake",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/stake.svg",
+          coinGeckoId: "pool:ustake",
+          isStakeCurrency: true,
+        },
+        {
           coinDenom: "USDC",
           coinMinimalDenom: "uusdc",
           coinDecimals: 6,
