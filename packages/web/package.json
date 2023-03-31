@@ -45,7 +45,7 @@
     "@walletconnect/client": "^1.7.0",
     "@walletconnect/types": "^1.7.0",
     "axios": "^0.27.2",
-    "chain-registry": "^1.9.0",
+    "chain-registry": "^1.10.0",
     "class-variance-authority": "^0.4.0",
     "classnames": "^2.3.1",
     "dayjs": "^1.10.7",

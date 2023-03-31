@@ -348,15 +348,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
        * Cosmjs team is working on a similar solution within their library.
        * @see https://github.com/cosmos/cosmjs/issues/1316
        */
-      const tmClient = await Tendermint34Client.connect(endpoint);
+      const tmClient = await Tendermint34Client.connect(
+        typeof endpoint === "string" ? endpoint : endpoint.url
+      );
 
       const broadcasted = await tmClient.broadcastTxSync({ tx: encodedTx });
+
       if (broadcasted.code) {
-        throw new BroadcastTxError(
-          broadcasted.code,
-          broadcasted.codespace ?? "",
-          broadcasted.log
-        );
+        throw new BroadcastTxError(broadcasted.code, "", broadcasted.log);
       }
 
       if (this.txOpts.preTxEvents?.onBroadcasted) {
@@ -440,7 +439,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
 
       if (onFulfill) {
-        console.log("fulfilled!");
         onFulfill(tx);
       }
     } catch (e) {

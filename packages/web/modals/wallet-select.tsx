@@ -86,7 +86,10 @@ export const WalletSelectModal: FunctionComponent<
 
   const onClose = () => {
     onRequestClose();
-    if (walletStatus === WalletStatus.Connecting) {
+    if (
+      walletStatus === WalletStatus.Connecting ||
+      walletStatus === WalletStatus.Rejected
+    ) {
       walletRepo?.disconnect();
     }
   };
@@ -286,27 +289,26 @@ const ModalContent: FunctionComponent<
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="grid grid-cols-2 gap-x-3 gap-y-2">
-        {wallets?.map((wallet, index) => {
-          const isHighlighted = index < 2;
+      <div className="grid max-h-[50vh] grid-cols-2 gap-3 overflow-auto">
+        {wallets?.map((wallet) => {
           return (
             <button
               className={classNames(
                 "flex items-center gap-3 rounded-xl bg-osmoverse-900 px-3 text-h6 font-h6 transition-colors hover:bg-osmoverse-700",
-                {
-                  "col-span-1 flex-col py-5 text-h6 font-h6": isHighlighted,
-                  "col-span-2 py-3 text-body2 font-normal": !isHighlighted,
-                }
+                "col-span-2 py-3 font-normal"
               )}
               key={wallet.walletName}
               onClick={() => onConnect(true, wallet)}
             >
-              <img
-                className={isHighlighted ? "h-20 w-20" : "h-8 w-8"}
-                src={wallet.walletInfo.logo}
-                alt=""
-              />
-              {wallet.walletInfo.prettyName}
+              <img className="h-16 w-16" src={wallet.walletInfo.logo} alt="" />
+              <div className="flex flex-col gap-1 text-left">
+                <span>{wallet.walletInfo.prettyName}</span>
+                <span className="text-body2 font-body2 text-osmoverse-500">
+                  {wallet.walletInfo.mode === "wallet-connect"
+                    ? "Mobile wallet"
+                    : "Browser extension"}
+                </span>
+              </div>
               {wallet.walletInfo.mode === "wallet-connect" && (
                 <div className="flex-1" title="WalletConnect">
                   <Icon id="walletconnect" className="ml-auto" />

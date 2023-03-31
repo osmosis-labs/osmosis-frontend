@@ -75,6 +75,6 @@
     "@cosmos-kit/leap": "0.14.12",
     "@cosmos-kit/trust": "0.14.13",
     "@cosmos-kit/xdefi-extension": "0.15.12",
-    "chain-registry": "^1.9.0"
+    "chain-registry": "^1.10.0"
   }
 }

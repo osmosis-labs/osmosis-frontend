@@ -5201,10 +5201,10 @@ chai@^4.3.7:
     pathval "^1.1.1"
     type-detect "^4.0.5"
 
-chain-registry@^1.9.0:
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/chain-registry/-/chain-registry-1.9.0.tgz#85b7d2561f5440deab5ba991a85627a1eddf4b7d"
-  integrity sha512-OIOcR/5wnhcOmsXtLlR7GCPoOhtD/gdYEYCod356+l8F6TAyphH6oVb7CzJhtUvNJK9RxH4U/S2xfELuk8ae0A==
+chain-registry@^1.10.0:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/chain-registry/-/chain-registry-1.10.0.tgz#b0afb3d0919fee40bafccea465ac19117ad9ed7c"
+  integrity sha512-JfdJufFq2F5tRpw1PMO32pv199xnZvwoSLKpW/wlbVOdpyLka7s4GwxgqYK+CPOdfCj5v6GiaGfWTq7slUemXg==
   dependencies:
     "@babel/runtime" "^7.19.4"
     "@chain-registry/types" "^0.14.0"
