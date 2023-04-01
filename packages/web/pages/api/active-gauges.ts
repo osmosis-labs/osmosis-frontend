@@ -23,7 +23,7 @@ export default async function activeGauges(
   const resp = await fetch(endpoint);
   const { data } = (await resp.json()) as ExternalIncentiveGaugesResponse;
   
-  const epochs_endpoint = `${ChainInfos[0].rest}osmosis/epochs/v1beta1/epoch-infos`;
+  const epochs_endpoint = `${ChainInfos[0].rest}osmosis/epochs/v1beta1/epochs`;
   const epoch_resp = await fetch(epochs_endpoint);
   const { epoch_data } = (await epoch_resp.json()) as EpochInfosResponse;
 
