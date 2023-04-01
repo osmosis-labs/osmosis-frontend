@@ -5,11 +5,11 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { ChainInfos } from "../../config";
 
 type ExternalIncentiveGaugesResponse = {
-  epoch_data: Epochs;
+  data: Gauge[];
 };
 
 type EpochInfosResponse = {
-  data: Gauge[];
+  epoch_data: Epochs;
 };
 
 /** Filters for active external gauges from chain query.
