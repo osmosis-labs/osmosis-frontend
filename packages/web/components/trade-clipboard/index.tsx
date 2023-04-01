@@ -81,19 +81,47 @@ export const TradeClipboard: FunctionComponent<{
       queriesStore,
       pools
     );
-    // Some validators allow 0 fee tx.
-    // Therefore, users can send tx at 0 fee even though they have no OSMO,
-    // Users who have OSMO pay a fee by default so that tx is processed faster.
-    let preferZeroFee = true;
+    const tradeTokenOutConfig = useTradeTokenInConfig(
+      chainStore,
+      chainId,
+      account.bech32Address,
+      queriesStore,
+      pools
+    );
+
+    useEffect(() => {
+      tradeTokenOutConfig.setOutCurrency(tradeTokenInConfig.sendCurrency);
+    }, [tradeTokenOutConfig, tradeTokenInConfig.sendCurrency]);
+
+    useEffect(() => {
+      tradeTokenOutConfig.setSendCurrency(tradeTokenInConfig.outCurrency);
+    }, [tradeTokenOutConfig, tradeTokenInConfig.outCurrency]);
+
+    // Trigger tradeTokenInConfig amount change when tradeTokenOutConfig amount changes
+    useEffect(() => {
+      const amount = tradeTokenOutConfig.expectedSwapResult.amount;
+      if (amount.denom !== "UNKNOWN") {
+        const displayAmount = amount
+          .trim(true)
+          .shrink(true)
+          .hideDenom(true)
+          .toString();
+        tradeTokenInConfig.setAmount(displayAmount);
+      }
+    }, [tradeTokenOutConfig.expectedSwapResult.amount, tradeTokenInConfig]);
+
     const queryOsmo = queries.queryBalances.getQueryBech32Address(
       account.bech32Address
     ).stakable;
-    if (
-      // If user has an OSMO 0.001 or higher, he pay the fee by default.
-      queryOsmo.balance.toDec().gt(DecUtils.getTenExponentN(-3))
-    ) {
-      preferZeroFee = false;
-    }
+
+    // Some validators allow 0 fee tx.
+    // Therefore, users can send tx at 0 fee even though they have no OSMO,
+    // Users who have OSMO pay a fee by default so that tx is processed faster.
+    // If user doesn't an OSMO 0.001 or higher, he pay the fee by default.
+    let preferZeroFee = !queryOsmo.balance
+      .toDec()
+      .gt(DecUtils.getTenExponentN(-3));
+
     const gasForecasted = (() => {
       if (
         tradeTokenInConfig.optimizedRoutePaths.length === 0 ||
@@ -267,22 +295,18 @@ export const TradeClipboard: FunctionComponent<{
       [priceStore, tradeTokenInConfig.expectedSwapResult.amount]
     );
 
-    const swapResultAmount = useMemo(
-      () =>
-        tradeTokenInConfig.expectedSwapResult.amount
-          .trim(true)
-          .shrink(true)
-          .maxDecimals(
-            Math.min(
-              tradeTokenInConfig.expectedSwapResult.amount.currency
-                .coinDecimals,
-              8
-            )
-          )
-          .hideDenom(true)
-          .toString(),
-      [tradeTokenInConfig.expectedSwapResult.amount]
-    );
+    const swapResultAmount = useMemo(() => {
+      const amount = tradeTokenInConfig.expectedSwapResult.amount;
+      if (amount.denom === "UNKNOWN") {
+        return ""; // "0"
+      }
+      return amount
+        .trim(true)
+        .shrink(true)
+        .maxDecimals(Math.min(amount.currency.coinDecimals, 8))
+        .hideDenom(true)
+        .toString();
+    }, [tradeTokenInConfig.expectedSwapResult.amount]);
 
     /** Filters tokens (by denom) on
      * 1. not given token selected in other token select component
@@ -760,6 +784,7 @@ export const TradeClipboard: FunctionComponent<{
                 <input
                   ref={fromAmountInput}
                   type="number"
+                  data-testid="from-amount-input"
                   className={classNames(
                     "w-full bg-transparent text-right text-white-full placeholder:text-white-disabled focus:outline-none md:text-subtitle1",
                     tradeTokenInConfig.amount.length >= 14
@@ -921,21 +946,37 @@ export const TradeClipboard: FunctionComponent<{
                 }}
               />
               <div className="flex w-full flex-col items-end">
-                <h5
+                <input
+                  type="number"
+                  data-testid="to-amount-input"
                   className={classNames(
-                    "md:subtitle1 text-right",
-                    tradeTokenInConfig.expectedSwapResult.amount
-                      .toDec()
-                      .isPositive()
-                      ? "text-white-full"
-                      : "text-white-disabled"
+                    "w-full bg-transparent text-right text-white-full placeholder:text-white-disabled focus:outline-none md:text-subtitle1",
+                    tradeTokenInConfig.amount.length >= 14
+                      ? "caption"
+                      : "text-h5 font-h5 md:font-subtitle1"
                   )}
-                >{`≈ ${
-                  tradeTokenInConfig.expectedSwapResult.amount.denom !==
-                  "UNKNOWN"
-                    ? swapResultAmount
-                    : "0"
-                }`}</h5>
+                  placeholder="0"
+                  onChange={(e) => {
+                    e.preventDefault();
+                    if (
+                      !isNaN(Number(e.target.value)) &&
+                      Number(e.target.value) >= 0 &&
+                      Number(e.target.value) <= Number.MAX_SAFE_INTEGER &&
+                      e.target.value.length <= (isMobile ? 19 : 26)
+                    ) {
+                      logEvent([
+                        EventName.Swap.toInputEntered,
+                        {
+                          fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+                          toToken: tradeTokenInConfig.outCurrency.coinDenom,
+                          isOnHome: !isInModal,
+                        },
+                      ]);
+                      tradeTokenOutConfig.setAmount(e.target.value);
+                    }
+                  }}
+                  value={swapResultAmount}
+                />
                 <div
                   className={classNames(
                     "subtitle1 md:caption text-osmoverse-300 transition-opacity",
