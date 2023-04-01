@@ -48,7 +48,7 @@ function checkForStaleness(gauge: Gauge, lastGaugeId: number, epochs: Epochs) {
   let parsedGaugeStartTime = Date.parse(gauge.start_time);
 
   const NOW = Date.now();
-  const CURRENT_EPOCH_START_TIME = Date.parse(epochs[0].current_epoch_start_time);
+  const CURRENT_EPOCH_START_TIME = Date.parse(epochs.epochs[0].current_epoch_start_time);
 
   return (
     gauge.distributed_coins.length > 0 ||
