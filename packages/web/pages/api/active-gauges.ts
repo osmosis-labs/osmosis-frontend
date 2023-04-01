@@ -36,7 +36,7 @@ export default async function activeGauges(
         gauge.distribute_to.denom.match(/gamm\/pool\/[0-9]+/m) && // only gamm share incentives
         !gauge.coins.some((coin) => coin.denom.match(/gamm\/pool\/[0-9]+/m)) && // no gamm share rewards
         gauge.filled_epochs != gauge.num_epochs_paid_over && // no completed gauges
-        checkForStaleness(gauge, parseInt(data[data.length - 1].id), epoch_data[0])
+        checkForStaleness(gauge, parseInt(data[data.length - 1].id), epoch_data)
     ),
   });
 }
@@ -44,11 +44,11 @@ export default async function activeGauges(
 const DURATION_1_DAY = 86400000;
 const MAX_NEW_GAUGES_PER_DAY = 100;
 
-function checkForStaleness(gauge: Gauge, lastGaugeId: number, current_epoch: Epoch) {
+function checkForStaleness(gauge: Gauge, lastGaugeId: number, epochs: Epochs) {
   let parsedGaugeStartTime = Date.parse(gauge.start_time);
 
   const NOW = Date.now();
-  const CURRENT_EPOCH_START_TIME = Date.parse(current_epoch.current_epoch_start_time);
+  const CURRENT_EPOCH_START_TIME = Date.parse(epochs[0].current_epoch_start_time);
 
   return (
     gauge.distributed_coins.length > 0 ||
