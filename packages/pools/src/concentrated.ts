@@ -1,6 +1,7 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 
 import { BasePool } from "./interface";
+import { RoutablePool } from "./routes";
 
 export interface ConcentratedLiquidityPoolRaw {
   "@type": string;
@@ -23,7 +24,7 @@ export type LiquidityDepth = {
   netLiquidity: Int;
 };
 
-export class ConcentratedLiquidityPool implements BasePool {
+export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
   protected _token0Amount = new Int(0);
   set token0Amount(amount: Int) {
     this._token0Amount = amount;
@@ -63,12 +64,6 @@ export class ConcentratedLiquidityPool implements BasePool {
     ];
   }
 
-  get totalShare(): Int {
-    return new Int(0);
-  }
-  get shareDenom(): string {
-    return "";
-  }
   get swapFee(): Dec {
     return new Dec(this.raw.swap_fee);
   }

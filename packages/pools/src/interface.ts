@@ -1,13 +1,10 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 
-/** Interface for pool data and basic operations on that data. */
-export interface Pool {
-  get type(): "weighted" | "stable";
+/** Interface for base pool data and basic operations on that data. */
+export interface BasePool {
+  get type(): "weighted" | "stable" | "concentrated";
 
   get id(): string;
-
-  get totalShare(): Int;
-  get shareDenom(): string;
 
   get swapFee(): Dec;
   get exitFee(): Dec;
@@ -67,7 +64,10 @@ export interface Pool {
     effectivePriceOutOverIn: Dec;
     priceImpact: Dec;
   };
+}
 
-  getNormalizedLiquidity(tokenInDenom: string, tokenOutDenom: string): Dec;
-  getLimitAmountByTokenIn(denom: string): Int;
+/** Pool with user ownership represented as pro-rata shares. */
+export interface SharePool extends BasePool {
+  get totalShare(): Int;
+  get shareDenom(): string;
 }

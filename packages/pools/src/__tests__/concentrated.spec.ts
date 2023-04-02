@@ -3,6 +3,7 @@ import {
   ConcentratedLiquidityPoolRaw,
 } from "../concentrated";
 
+/** This is an extension simply to gain access to protected methods */
 class TestPool extends ConcentratedLiquidityPool {
   constructor(
     ...args: ConstructorParameters<typeof ConcentratedLiquidityPool>

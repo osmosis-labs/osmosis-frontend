@@ -1,7 +1,8 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 import { WeightedPoolMath } from "@osmosis-labs/math";
 
-import { Pool } from "./interface";
+import { SharePool } from "./interface";
+import { RoutablePool } from "./routes";
 
 /** Raw query response representation of pool. */
 export interface WeightedPoolRaw {
@@ -83,9 +84,7 @@ export type SmoothWeightChangeParams = {
 };
 
 /** Implementation of Pool interface w/ related weighted/balancer calculations & metadata. */
-export class WeightedPool implements Pool {
-  constructor(public readonly raw: WeightedPoolRaw) {}
-
+export class WeightedPool implements SharePool, RoutablePool {
   get type(): "weighted" {
     return "weighted";
   }
@@ -144,6 +143,8 @@ export class WeightedPool implements Pool {
     }
   }
 
+  constructor(public readonly raw: WeightedPoolRaw) {}
+
   getPoolAsset(denom: string): { denom: string; amount: Int; weight: Int } {
     const poolAsset = this.poolAssets.find((asset) => asset.denom === denom);
     if (!poolAsset) {
@@ -156,8 +157,7 @@ export class WeightedPool implements Pool {
   }
 
   hasPoolAsset(denom: string): boolean {
-    const poolAsset = this.poolAssets.find((asset) => asset.denom === denom);
-    return poolAsset !== undefined;
+    return this.poolAssets.some((asset) => asset.denom === denom);
   }
 
   getSpotPriceInOverOut(tokenInDenom: string, tokenOutDenom: string): Dec {

@@ -1,7 +1,8 @@
 import { Coin, Dec, Int } from "@keplr-wallet/unit";
 import { StableSwapMath, StableSwapToken } from "@osmosis-labs/math";
 
-import { Pool } from "./interface";
+import { SharePool } from "./interface";
+import { RoutablePool } from "./routes";
 
 /** Raw query response representation of pool. */
 export interface StablePoolRaw {
@@ -28,9 +29,7 @@ export interface StablePoolRaw {
 }
 
 /** Implementation of stableswap Pool interface w/ related stableswap calculations & metadata. */
-export class StablePool implements Pool {
-  constructor(public readonly raw: StablePoolRaw) {}
-
+export class StablePool implements SharePool, RoutablePool {
   get type(): "stable" {
     return "stable";
   }
@@ -85,6 +84,11 @@ export class StablePool implements Pool {
     });
   }
 
+  constructor(public readonly raw: StablePoolRaw) {}
+  getSpotPriceInOverOut(tokenInDenom: string, tokenOutDenom: string): Dec {
+    throw new Error("Method not implemented.");
+  }
+
   getPoolAsset(denom: string): {
     denom: string;
     amount: Int;
@@ -101,19 +105,7 @@ export class StablePool implements Pool {
   }
 
   hasPoolAsset(denom: string): boolean {
-    const poolAsset = this.poolAssets.find((asset) => asset.denom === denom);
-    return poolAsset !== undefined;
-  }
-
-  getSpotPriceInOverOut(tokenInDenom: string, tokenOutDenom: string): Dec {
-    const inPoolAsset = this.getPoolAsset(tokenInDenom);
-    const outPoolAsset = this.getPoolAsset(tokenOutDenom);
-
-    return StableSwapMath.calcSpotPrice(
-      this.stableSwapTokens,
-      inPoolAsset.denom,
-      outPoolAsset.denom
-    );
+    return this.poolAssets.some((asset) => asset.denom === denom);
   }
 
   getSpotPriceInOverOutWithoutSwapFee(

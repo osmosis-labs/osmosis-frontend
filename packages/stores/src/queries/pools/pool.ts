@@ -15,7 +15,7 @@ import {
   RatePretty,
 } from "@keplr-wallet/unit";
 import {
-  Pool,
+  BasePool,
   StablePool,
   StablePoolRaw,
   WeightedPool,
@@ -145,7 +145,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   }
 
   @computed
-  get pool(): Pool {
+  get pool(): BasePool {
     if (this.raw["@type"] === STABLE_POOL_TYPE) {
       return new StablePool(this.raw as StablePoolRaw);
     }
@@ -334,24 +334,6 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     }
 
     return asset;
-  });
-
-  readonly getSpotPriceInOverOut: (
-    tokenInDenom: string,
-    tokenOutDenom: string
-  ) => IntPretty = computedFn((tokenInDenom: string, tokenOutDenom: string) => {
-    const chainInfo = this.chainGetter.getChain(this.chainId);
-
-    const multiplication = DecUtils.getTenExponentN(
-      chainInfo.forceFindCurrency(tokenOutDenom).coinDecimals -
-        chainInfo.forceFindCurrency(tokenInDenom).coinDecimals
-    );
-
-    return new IntPretty(
-      this.pool
-        .getSpotPriceInOverOut(tokenInDenom, tokenOutDenom)
-        .mulTruncate(multiplication)
-    );
   });
 
   readonly getSpotPriceOutOverIn: (
