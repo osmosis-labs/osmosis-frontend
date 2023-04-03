@@ -777,6 +777,17 @@ const chainInfos = (
           coinGeckoId: "pool:fox",
           coinImageUrl: "/tokens/fox.svg",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1xekkh27punj0uxruv3gvuydyt856fax0nu750xns99t2qcxp7xmsqwhfma",
+          coinDenom: "GRDN",
+          coinMinimalDenom:
+            "cw20:juno1xekkh27punj0uxruv3gvuydyt856fax0nu750xns99t2qcxp7xmsqwhfma:GRDN",
+          coinDecimals: 6,
+          coinGeckoId: "pool:grdn",
+          coinImageUrl: "/tokens/grdn.svg",
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: "https://www.mintscan.io/juno/txs/{txHash}",
