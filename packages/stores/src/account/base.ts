@@ -32,6 +32,7 @@ import { KeplrSignOptions } from "@keplr-wallet/types";
 import { Buffer } from "buffer";
 import { assets, chains } from "chain-registry";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import Long from "long";
 import { action, makeObservable, observable, runInAction } from "mobx";
 import {
   cosmosAminoConverters,
@@ -41,6 +42,7 @@ import {
   osmosisAminoConverters,
   osmosisProtoRegistry,
 } from "osmojs";
+import { MsgCreateBalancerPool } from "osmojs/types/codegen/osmosis/gamm/pool-models/balancer/tx/tx";
 import { UnionToIntersection } from "utility-types";
 
 import { OsmosisQueries } from "../queries";
@@ -58,6 +60,46 @@ const aminoConverters = {
   ...cosmosAminoConverters,
   ...ibcAminoConverters,
   ...osmosisAminoConverters,
+  /**
+   * Override the amino type of the MsgBeginUnlocking to use a compatible amino type to previous versions.
+   */
+  "/osmosis.lockup.MsgBeginUnlocking": {
+    ...osmosisAminoConverters["/osmosis.lockup.MsgBeginUnlocking"],
+    aminoType: "osmosis/lockup/begin-unlock-period-lock",
+  },
+  /**
+   * Override the amino type of the MsgCreateBalancerPool to use a compatible amino type to previous versions.
+   */
+  "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool": {
+    ...osmosisAminoConverters[
+      "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool"
+    ],
+    aminoType: "osmosis/gamm/create-balancer-pool",
+    toAmino: ({
+      sender,
+      poolParams,
+      poolAssets,
+      futurePoolGovernor,
+    }: MsgCreateBalancerPool) => {
+      return {
+        sender,
+        pool_params: {
+          swap_fee: poolParams?.swapFee,
+          exit_fee: poolParams?.exitFee,
+        },
+        pool_assets: poolAssets.map((el0) => ({
+          token: {
+            denom: el0?.token?.denom,
+            amount: el0?.token?.amount
+              ? Long.fromValue(el0?.token?.amount).toString()
+              : "",
+          },
+          weight: el0.weight,
+        })),
+        future_pool_governor: futurePoolGovernor,
+      };
+    },
+  },
 };
 
 const endpoints = chains.reduce((endpoints, chain) => {

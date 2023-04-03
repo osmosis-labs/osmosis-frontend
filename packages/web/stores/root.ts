@@ -1,12 +1,11 @@
 import {
-  AccountStore as OldAccountStore,
   ChainInfoInner,
   CosmosQueries,
   CosmwasmQueries,
   IBCCurrencyRegsitrar,
   QueriesStore,
 } from "@keplr-wallet/stores";
-import { AppCurrency, Keplr } from "@keplr-wallet/types";
+import { AppCurrency } from "@keplr-wallet/types";
 import {
   AccountStore,
   ChainInfoWithExplorer,
@@ -22,7 +21,6 @@ import {
   PoolFallbackPriceStore,
   QueriesExternalStore,
 } from "@osmosis-labs/stores";
-import EventEmitter from "eventemitter3";
 
 import {
   toastOnBroadcast,
@@ -57,7 +55,6 @@ export class RootStore {
     [CosmosQueries, CosmwasmQueries, OsmosisQueries]
   >;
 
-  public readonly oldAccountStore: OldAccountStore<[OsmosisAccount]>;
   public readonly accountStore: AccountStore<
     [OsmosisAccount, CosmosAccount, CosmwasmAccount]
   >;
@@ -84,34 +81,12 @@ export class RootStore {
 
   public readonly profileStore: ProfileStore;
 
-  constructor(
-    getKeplr: () => Promise<Keplr | undefined> = () =>
-      Promise.resolve(undefined)
-  ) {
+  constructor() {
     this.chainStore = new ChainStore(
       ChainInfos,
       process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE ??
         (IS_TESTNET ? "osmo-test-4" : "osmosis")
     );
-
-    const eventListener = (() => {
-      // On client-side (web browser), use the global window object.
-      if (typeof window !== "undefined") {
-        return window;
-      }
-
-      // On server-side (nodejs), there is no global window object.
-      // Alternatively, use the event emitter library.
-      const emitter = new EventEmitter();
-      return {
-        addEventListener: (type: string, fn: () => unknown) => {
-          emitter.addListener(type, fn);
-        },
-        removeEventListener: (type: string, fn: () => unknown) => {
-          emitter.removeListener(type, fn);
-        },
-      };
-    })();
 
     this.queriesStore = new QueriesStore(
       makeIndexedKVStore("store_web_queries_v12"),
@@ -136,43 +111,20 @@ export class RootStore {
         },
       },
       OsmosisAccount.use({ queriesStore: this.queriesStore }),
-      CosmosAccount.use({ queriesStore: this.queriesStore }),
-      CosmwasmAccount.use({ queriesStore: this.queriesStore })
-    );
-
-    this.oldAccountStore = new OldAccountStore(
-      eventListener,
-      this.chainStore,
-      () => {
-        return {
-          suggestChain: true,
-          autoInit: false,
-          getKeplr,
-        };
-      },
-      // @ts-ignore
       CosmosAccount.use({
         queriesStore: this.queriesStore,
-        // msgOptsCreator: (chainId) => {
-        //   if (chainId.startsWith("osmosis")) {
-        //     return { ibcTransfer: { gas: 300000 } };
-        //   }
-        //   if (chainId.startsWith("evmos_")) {
-        //     return { ibcTransfer: { gas: 250000 } };
-        //   } else {
-        //     return { ibcTransfer: { gas: 210000 } };
-        //   }
-        // },
-        // preTxEvents: {
-        //   onBroadcastFailed: toastOnBroadcastFailed((chainId) =>
-        //     this.chainStore.getChain(chainId)
-        //   ),
-        //   onBroadcasted: toastOnBroadcast(),
-        //   onFulfill: toastOnFulfill((chainId) =>
-        //     this.chainStore.getChain(chainId)
-        //   ),
-        // },
-      })
+        msgOptsCreator(chainId) {
+          if (chainId.startsWith("osmosis")) {
+            return { ibcTransfer: { gas: 300000 } };
+          }
+          if (chainId.startsWith("evmos_")) {
+            return { ibcTransfer: { gas: 250000 } };
+          } else {
+            return { ibcTransfer: { gas: 210000 } };
+          }
+        },
+      }),
+      CosmwasmAccount.use({ queriesStore: this.queriesStore })
     );
 
     this.priceStore = new PoolFallbackPriceStore(

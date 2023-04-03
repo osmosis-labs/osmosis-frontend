@@ -40,7 +40,6 @@
   "devDependencies": {
     "@keplr-wallet/provider-mock": "^0.10.24",
     "@types/ws": "^7.4.1",
-    "eventemitter3": "^4.0.7",
     "ws": "^7.4.5"
   },
   "dependencies": {
@@ -65,7 +64,7 @@
     "long": "^5.2.0",
     "mobx": "^6.3.10",
     "mobx-utils": "^6.0.4",
-    "osmojs": "^14.0.0-rc.0",
+    "osmojs": "^15.0.5",
     "protobufjs": "^6.11.2",
     "utility-types": "^3.10.0"
   },

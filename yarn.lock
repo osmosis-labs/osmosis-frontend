@@ -9661,10 +9661,10 @@ osenv@^0.1.4:
     os-homedir "^1.0.0"
     os-tmpdir "^1.0.0"
 
-osmojs@^14.0.0-rc.0:
-  version "14.0.0-rc.0"
-  resolved "https://registry.yarnpkg.com/osmojs/-/osmojs-14.0.0-rc.0.tgz#c49847b667ee86973f2260c9ca71cc2a76bbedbc"
-  integrity sha512-YXtg5mxaACWc0N8vKqWvdV3ZO9y/NgtJeUQPvjin+bkveEMkJA4RSN0nl0kRTKQIY6Tjt8YWgae+/98VF/2pzA==
+osmojs@^15.0.5:
+  version "15.0.5"
+  resolved "https://registry.yarnpkg.com/osmojs/-/osmojs-15.0.5.tgz#384363ad6bf7de17fc58895eed3275c0c6cd44b0"
+  integrity sha512-BguDCH004JlMo4LGgpoHXUcthepWyrHz38R5jeicCDhjIO3sR6XRTRpFPOK2FMPAh32mGFMAXK/ElnPPCPRn/g==
   dependencies:
     "@babel/runtime" "^7.19.0"
     "@cosmjs/amino" "0.29.3"

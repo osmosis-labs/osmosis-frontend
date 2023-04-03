@@ -1,6 +1,7 @@
-import { FunctionComponent, useState } from "react";
-import { observer } from "mobx-react-lite";
 import { ObservableCreatePoolConfig } from "@osmosis-labs/stores";
+import { observer } from "mobx-react-lite";
+import { FunctionComponent, useState } from "react";
+
 import {
   SelectType,
   Step1SetRatios,

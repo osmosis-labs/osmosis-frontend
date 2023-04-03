@@ -91,13 +91,6 @@ export class OsmosisAccountImpl {
     memo: string = "",
     onFulfill?: (tx: any) => void
   ) {
-    const poolParams = {
-      swapFee: new Dec(swapFee)
-        .quo(DecUtils.getTenExponentNInPrecisionRange(2))
-        .toString(),
-      exitFee: new Dec(0).toString(),
-    };
-
     const poolAssets: {
       weight: string;
       token: {
@@ -127,7 +120,12 @@ export class OsmosisAccountImpl {
       futurePoolGovernor: "24h",
       poolAssets,
       sender: this.address,
-      poolParams,
+      poolParams: {
+        swapFee: new Dec(swapFee)
+          .quo(DecUtils.getTenExponentNInPrecisionRange(2))
+          .toString(),
+        exitFee: new Dec(0).toString(),
+      },
     });
 
     await this.base.sign(
@@ -1134,10 +1132,12 @@ export class OsmosisAccountImpl {
     const msg = this.msgOpts.lockTokens.messageComposer({
       owner: this.address,
       coins: primitiveTokens,
-      duration: {
-        seconds: Long.fromNumber(duration),
-        nanos: duration * 1_000_000_000,
-      },
+      /**
+       * Marking as 'any' because Duration type definition in telescope is wrong.
+       * @see https://github.com/osmosis-labs/osmojs/issues/12
+       * @see https://github.com/osmosis-labs/telescope/issues/211
+       */
+      duration: duration as any,
     });
 
     await this.base.sign(
