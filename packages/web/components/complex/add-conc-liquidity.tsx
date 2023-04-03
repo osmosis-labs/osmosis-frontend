@@ -54,7 +54,7 @@ const accessors = {
   },
 };
 
-function getRangeFromData(data: number[]) {
+function getViewRangeFromData(data: number[], zoom = 1) {
   if (!data.length) {
     return {
       min: 0,
@@ -65,14 +65,20 @@ function getRangeFromData(data: number[]) {
   const max = Math.max(...data);
   const min = Math.min(...data);
   const last = data[data.length - 1];
-  const diff = Math.max(
+  const padding = Math.max(
     Math.max(Math.abs(last - max), Math.abs(last - min)),
     last * 0.25
   );
 
+  const minWithPadding = Math.max(0, last - padding);
+  const maxWithPadding = last + padding;
+
+  const zoomMin = zoom > 1 ? minWithPadding / zoom : minWithPadding * zoom;
+  const zoomMax = maxWithPadding * zoom;
+
   return {
-    min: Math.max(0, last - diff),
-    max: last + diff,
+    min: zoomMin,
+    max: zoomMax,
     last,
   };
 }
@@ -395,12 +401,9 @@ const AddConcLiqView: FunctionComponent<
   const [zoom, setZoom] = useState(1);
 
   const { id: poolId } = router.query as { id: string };
-  const yRange = getRangeFromData(data.map(accessors.yAccessor));
+  const viewRange = getViewRangeFromData(data.map(accessors.yAccessor), zoom);
   const rangeMin = Number(conliqRange[0].toString());
   const rangeMax = Number(conliqRange[1].toString());
-
-  const absMin = zoom > 1 ? yRange.min / zoom : yRange.min * zoom;
-  const absMax = yRange.max * zoom;
 
   const xMax = Math.max(...depthData.map((d) => d.depth)) * 1.2;
 
@@ -413,14 +416,11 @@ const AddConcLiqView: FunctionComponent<
 
   useEffect(() => {
     (async () => {
-      if (!absMin && !absMax) return;
-      const data = await getDepthFromRange(
-        zoom > 1 ? yRange.min / zoom : yRange.min * zoom,
-        yRange.max * zoom
-      );
+      if (!viewRange.min && !viewRange.max) return;
+      const data = await getDepthFromRange(viewRange.min, viewRange.max);
       setDepthData(data);
     })();
-  }, [absMin, absMax]);
+  }, [viewRange.min, viewRange.max]);
 
   const updateMin = useCallback(
     (val: string | number, shouldUpdateRange = false) => {
@@ -571,15 +571,15 @@ const AddConcLiqView: FunctionComponent<
                 min={rangeMin}
                 max={rangeMax}
                 yRange={calculateRange(
-                  zoom > 1 ? yRange.min / zoom : yRange.min * zoom,
-                  yRange.max * zoom,
+                  viewRange.min,
+                  viewRange.max,
                   rangeMin,
                   rangeMax,
-                  yRange.last
+                  viewRange.last
                 )}
                 xRange={[0, xMax]}
                 data={depthData}
-                annotationDatum={{ tick: yRange.last, depth: xMax }}
+                annotationDatum={{ tick: viewRange.last, depth: xMax }}
                 onMoveMax={debounce((val: number) => updateMax(val), 100)}
                 onMoveMin={debounce((val: number) => updateMin(val), 100)}
                 onSubmitMin={(val) => updateMin(val, true)}
@@ -606,7 +606,7 @@ const AddConcLiqView: FunctionComponent<
         </div>
       </div>
       <VolitilitySelectorGroup
-        lastPrice={yRange.last}
+        lastPrice={viewRange.last}
         updateInputAndRangeMinMax={updateInputAndRangeMinMax}
         addLiquidityConfig={addLiquidityConfig}
       />
@@ -971,15 +971,10 @@ function LineChart(props: {
   zoom: number;
   data: { price: number; time: number }[];
 }) {
-  const yRange = getRangeFromData(props.data.map(accessors.yAccessor));
-
-  if (props.zoom > 1) {
-    yRange.min = yRange.min / props.zoom;
-    yRange.max = yRange.max * props.zoom;
-  } else if (props.zoom < 1) {
-    yRange.min = yRange.min * props.zoom;
-    yRange.max = yRange.max * props.zoom;
-  }
+  const yRange = getViewRangeFromData(
+    props.data.map(accessors.yAccessor),
+    props.zoom
+  );
 
   const domain = calculateRange(
     yRange.min,
