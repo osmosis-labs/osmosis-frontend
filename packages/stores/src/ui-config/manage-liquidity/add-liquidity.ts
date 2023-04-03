@@ -16,6 +16,7 @@ import {
 import { action, computed, makeObservable, observable } from "mobx";
 
 import { ObservableQueryGammPoolShare, PoolGetter } from "../../queries";
+import { PriceRange } from "../../queries-external/token-pair-historical-chart/types";
 import { OSMO_MEDIUM_TX_FEE } from ".";
 import { ManageLiquidityConfigBase } from "./base";
 import { CalculatingShareOutAmountError, NotInitializedError } from "./errors";
@@ -46,10 +47,32 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
 	 Used to get current view type of AddConcLiquidity modal
 	 */
   @observable
-  protected _addConcLiquidityModalView:
-    | "overview"
-    | "add_manual"
-    | "add_managed" = "overview";
+  protected _conliqModalView: "overview" | "add_manual" | "add_managed" =
+    "overview";
+
+  /*
+   Used to get historical range for price chart
+   */
+  @observable
+  protected _conliqHistoricalRange: PriceRange = "7d";
+
+  /*
+   Used to get min and max range for adding concentrated liquidity
+   */
+  @observable
+  protected _conliqRange: [Dec, Dec] = [new Dec(0), new Dec(0)];
+
+  @observable
+  protected _conliqFullRange: boolean = false;
+
+  /*
+   Used to get base and quote asset deposit for adding concentrated liquidity
+   */
+  @observable
+  protected _conliqBaseDepositAmountIn: Dec = new Dec(0);
+
+  @observable
+  protected _conliqQuoteDepositAmountIn: Dec = new Dec(0);
 
   protected _cacheAmountConfigs?: {
     poolId: string;
@@ -587,13 +610,71 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
   }
 
   @action
-  setAddConcLiquidityModalView(
+  setConliqModalView = (
     viewType: "overview" | "add_manual" | "add_managed"
-  ) {
-    this._addConcLiquidityModalView = viewType;
+  ) => {
+    this._conliqModalView = viewType;
+  };
+
+  get conliqModalView(): "overview" | "add_manual" | "add_managed" {
+    return this._conliqModalView;
   }
 
-  get addConcLiquidityModalView(): "overview" | "add_manual" | "add_managed" {
-    return this._addConcLiquidityModalView;
+  @action
+  setConliqHistoricalRange = (range: PriceRange) => {
+    this._conliqHistoricalRange = range;
+  };
+
+  get conliqHistoricalRange(): PriceRange {
+    return this._conliqHistoricalRange;
+  }
+
+  @action
+  setConliqMinRange = (min: Dec | number) => {
+    this._conliqRange = [
+      typeof min === "number" ? new Dec(min) : min,
+      this._conliqRange[1],
+    ];
+  };
+
+  @action
+  setConliqMaxRange = (max: Dec | number) => {
+    this._conliqRange = [
+      this._conliqRange[0],
+      typeof max === "number" ? new Dec(max) : max,
+    ];
+  };
+
+  get conliqRange(): [Dec, Dec] {
+    return this._conliqRange;
+  }
+
+  @action
+  setConliqFullRange = (isFullRange: boolean) => {
+    this._conliqFullRange = isFullRange;
+  };
+
+  get conliqFullRange(): boolean {
+    return this._conliqFullRange;
+  }
+
+  @action
+  setConliqBaseDepositAmountIn = (amount: Dec | number) => {
+    this._conliqBaseDepositAmountIn =
+      typeof amount === "number" ? new Dec(amount) : amount;
+  };
+
+  @action
+  setConliqQuoteDepositAmountIn = (amount: Dec | number) => {
+    this._conliqQuoteDepositAmountIn =
+      typeof amount === "number" ? new Dec(amount) : amount;
+  };
+
+  get conliqBaseDepositAmountIn(): Dec {
+    return this._conliqBaseDepositAmountIn;
+  }
+
+  get conliqQuoteDepositAmountIn(): Dec {
+    return this._conliqQuoteDepositAmountIn;
   }
 }
