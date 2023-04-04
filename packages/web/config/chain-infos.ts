@@ -504,29 +504,39 @@ const chainInfos = (
       explorerUrlToTx: "https://emoney.bigdipper.live/transactions/{txHash}",
     },
     {
-      rpc: "https://rpc-juno.keplr.app",
-      rest: "https://lcd-juno.keplr.app",
-      chainId: "juno-1",
-      chainName: "Juno",
+      rpc: IS_TESTNET
+        ? "https://rpc.uni.junonetwork.io"
+        : "https://rpc-juno.keplr.app",
+      rest: IS_TESTNET
+        ? "https://api.uni.junonetwork.io"
+        : "https://lcd-juno.keplr.app",
+      chainId: IS_TESTNET ? "uni-6" : "juno-1",
+      chainName: IS_TESTNET ? "Juno Testnet" : "Juno",
       bip44: {
         coinType: 118,
       },
       bech32Config: Bech32Address.defaultBech32Config("juno"),
       currencies: [
         {
-          coinDenom: "JUNO",
-          coinMinimalDenom: "ujuno",
+          coinDenom: IS_TESTNET ? "JUNOX" : "JUNO",
+          coinMinimalDenom: IS_TESTNET ? "ujunox" : "ujuno",
           coinDecimals: 6,
           // coinGeckoId: "juno-network",
           coinGeckoId: "pool:ujuno",
           coinImageUrl: "/tokens/juno.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
-          gasPriceStep: {
-            low: 0.001,
-            average: 0.0025,
-            high: 0.004,
-          },
+          gasPriceStep: IS_TESTNET
+            ? {
+                low: 0.001,
+                average: 0.0025,
+                high: 0.004,
+              }
+            : {
+                low: 0.03,
+                average: 0.04,
+                high: 0.05,
+              },
         },
         {
           type: "cw20",
@@ -779,7 +789,9 @@ const chainInfos = (
         },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
-      explorerUrlToTx: "https://www.mintscan.io/juno/txs/{txHash}",
+      explorerUrlToTx: IS_TESTNET
+        ? "https://testnet.mintscan.io/juno-testnet/txs/{txHash}"
+        : "https://www.mintscan.io/juno/txs/{txHash}",
     },
     {
       rpc: "https://rpc-microtick.keplr.app",
