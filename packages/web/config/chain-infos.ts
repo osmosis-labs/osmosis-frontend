@@ -2932,7 +2932,7 @@ const chainInfos = (
       explorerUrlToTx: "https://explorer.kynraze.com/arkhadian/tx/{txHash}",
     },
     {
-      rpc: "https://noble-rpc.polkachu.com",
+      rpc: "https://rpc.mainnet.noble.strange.love",
       rest: "https://noble-api.polkachu.com",
       chainId: "noble-1",
       chainName: "Noble",
