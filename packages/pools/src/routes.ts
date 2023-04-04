@@ -134,7 +134,7 @@ export class OptimizedRoutes {
     computeRoutes(tokenInDenom, tokenOutDenom, [], [], poolsUsed);
     this.candidatePathsCache.set(cacheKey, routes);
 
-    return routes.filter(({ pools }) => pools.length < maxHops);
+    return routes.filter(({ pools }) => pools.length <= maxHops);
   }
 
   getOptimizedRoutesByTokenIn(
