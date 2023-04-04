@@ -2973,11 +2973,11 @@ const chainInfos = (
           isStakeCurrency: true,
         },
         {
-          coinDenom: "USDC",
+          coinDenom: "nUSDC",
           coinMinimalDenom: "uusdc",
           coinDecimals: 6,
           coinImageUrl: "/tokens/usdc.svg",
-          coinGeckoId: "pool:nusdc",
+          coinGeckoId: "usd-coin",
           isFeeCurrency: true,
           gasPriceStep: {
             low: 0.01,
