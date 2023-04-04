@@ -4,11 +4,9 @@ import {
   ObservableChainQuery,
   QueryResponse,
 } from "@keplr-wallet/stores";
-import { autorun, makeObservable } from "mobx";
+import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
-import { GET_POOLS_PAGINATION_LIMIT } from ".";
-import { ObservableQueryNumPools } from "./num-pools";
 import { ObservableQueryPool } from "./pool";
 import { PoolGetter, Pools } from "./types";
 
@@ -23,29 +21,15 @@ export class ObservableQueryPools
     ObservableQueryPool
   >();
 
-  constructor(
-    kvStore: KVStore,
-    chainId: string,
-    chainGetter: ChainGetter,
-    queryNumPools: ObservableQueryNumPools,
-    limit = GET_POOLS_PAGINATION_LIMIT
-  ) {
+  constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
     super(
       kvStore,
       chainId,
       chainGetter,
-      `/osmosis/gamm/v1beta1/pools?pagination.limit=${limit}`
+      "/osmosis/poolmanager/v1beta1/all-pools"
     );
 
     makeObservable(this);
-
-    autorun(() => {
-      const numPools = queryNumPools.numPools;
-      if (numPools > limit) {
-        limit = numPools;
-        this.setUrl(`/osmosis/gamm/v1beta1/pools?pagination.limit=${limit}`);
-      }
-    });
   }
 
   protected setResponse(response: Readonly<QueryResponse<Pools>>) {
