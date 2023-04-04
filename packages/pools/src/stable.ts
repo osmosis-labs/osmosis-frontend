@@ -318,7 +318,7 @@ export class StablePool implements SharePool, RoutablePool {
     return tokenOut.amount
       .toDec()
       .mul(new Dec(tokenIn.scalingFactor))
-      .quo(new Dec(tokenIn.scalingFactor).add(new Dec(tokenOut.scalingFactor))); // TODO: ensure this works in router
+      .quo(new Dec(tokenIn.scalingFactor).add(new Dec(tokenOut.scalingFactor)));
   }
 
   getLimitAmountByTokenIn(denom: string): Int {

@@ -12,7 +12,7 @@ import {
 import {
   NotEnoughLiquidityError,
   OptimizedRoutes,
-  Pool,
+  RoutablePool,
   RoutePathWithAmount,
 } from "@osmosis-labs/pools";
 import {
@@ -32,7 +32,7 @@ import {
 
 export class ObservableTradeTokenInConfig extends AmountConfig {
   @observable.ref
-  protected _pools: Pool[];
+  protected _pools: RoutablePool[];
   @observable
   protected _incentivizedPoolIds: string[];
 
@@ -51,7 +51,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     protected readonly initialChainId: string,
     sender: string,
     feeConfig: IFeeConfig | undefined,
-    pools: Pool[],
+    pools: RoutablePool[],
     incentivizedPoolIds: string[] = [],
     protected readonly initialSelectCurrencies: {
       send: AppCurrency;
@@ -67,7 +67,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   }
 
   @action
-  setPools(pools: Pool[]) {
+  setPools(pools: RoutablePool[]) {
     this._pools = pools;
   }
 
@@ -119,7 +119,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     this._outCurrencyMinDenom = prevInCurrency;
   }
 
-  get pools(): Pool[] {
+  get pools(): RoutablePool[] {
     return this._pools;
   }
 

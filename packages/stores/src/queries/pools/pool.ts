@@ -16,6 +16,9 @@ import {
 } from "@keplr-wallet/unit";
 import {
   BasePool,
+  ConcentratedLiquidityPool,
+  ConcentratedLiquidityPoolRaw,
+  SharePool,
   StablePool,
   StablePoolRaw,
   WeightedPool,
@@ -29,11 +32,20 @@ import { IPriceStore } from "src/price";
 
 import { Head } from "./types";
 
-export type PoolRaw = WeightedPoolRaw | StablePoolRaw;
+export type PoolRaw =
+  | WeightedPoolRaw
+  | StablePoolRaw
+  | ConcentratedLiquidityPoolRaw;
 
 const STABLE_POOL_TYPE = "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool";
-// const WEIGHTED_POOL_TYPE = "/osmosis.gamm.v1beta1.Pool";
+const WEIGHTED_POOL_TYPE = "/osmosis.gamm.v1beta1.Pool";
+const CONCENTRATED_LIQ_POOL_TYPE =
+  "/osmosis.concentratedliquidity.v1beta1.Pool";
 
+/** Query store that can refresh an individual pool's data from the node.
+ *  Uses a few different concrete classes to represent the different types of pools.
+ *  Converts the common fields of the raw pool data into more useful types, such as prettified types for display.
+ */
 export class ObservableQueryPool extends ObservableChainQuery<{
   pool: PoolRaw;
 }> {
@@ -42,7 +54,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   protected raw: PoolRaw;
 
   protected static makeEndpointUrl(poolId: string) {
-    return `/osmosis/gamm/v1beta1/pools/${poolId}`;
+    return `/osmosis/poolmanager/v1beta1/pools/${poolId}`;
   }
 
   constructor(
@@ -123,11 +135,15 @@ export class ObservableQueryPool extends ObservableChainQuery<{
       for (const asset of raw.pool_assets) {
         denomsInPool.push(asset.token.denom);
       }
-    } else {
+    } else if ("pool_liquidity" in raw) {
       // stable pool
       for (const asset of raw.pool_liquidity) {
         denomsInPool.push(asset.denom);
       }
+    } else if ("token0" in raw && "token1" in raw) {
+      // concentrated liquidity pool
+      denomsInPool.push(raw.token0);
+      denomsInPool.push(raw.token1);
     }
 
     chainInfo.addUnknownCurrencies(...denomsInPool);
@@ -149,7 +165,22 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     if (this.raw["@type"] === STABLE_POOL_TYPE) {
       return new StablePool(this.raw as StablePoolRaw);
     }
-    return new WeightedPool(this.raw as WeightedPoolRaw);
+    if (this.raw["@type"] === WEIGHTED_POOL_TYPE) {
+      return new WeightedPool(this.raw as WeightedPoolRaw);
+    }
+    if (this.raw["@type"] === CONCENTRATED_LIQ_POOL_TYPE) {
+      return new ConcentratedLiquidityPool(
+        this.raw as ConcentratedLiquidityPoolRaw
+      );
+    }
+
+    throw new Error("Raw type not recognized");
+  }
+
+  get sharePool(): SharePool | undefined {
+    if (this.pool instanceof WeightedPool || this.pool instanceof StablePool) {
+      return this.pool;
+    }
   }
 
   /** Info specific to and relevant if is stableswap pool. */
@@ -189,7 +220,19 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   }
 
   @computed
-  get type(): "weighted" | "stable" {
+  get concentratedLiquidityPoolInfo() {
+    if (this.pool instanceof ConcentratedLiquidityPool) {
+      return {
+        currentSqrtPrice: this.pool.currentSqrtPrice,
+        currentTickLiquidity: this.pool.currentTickLiquidity,
+        tickSpacing: this.pool.tickSpacing,
+        precisionFactorAtPriceOne: this.pool.precisionFactorAtPriceOne,
+      };
+    }
+  }
+
+  @computed
+  get type(): "weighted" | "stable" | "concentrated" {
     return this.pool.type;
   }
 
@@ -208,13 +251,23 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     return new RatePretty(this.pool.exitFee);
   }
 
+  /** Only relevant to SharePool types. */
   @computed
   get shareDenom(): string {
-    return this.pool.shareDenom;
+    if (this.pool instanceof ConcentratedLiquidityPool) {
+      throw new Error("Not a share pool");
+    }
+
+    return (this.pool as SharePool).shareDenom;
   }
 
+  /** Only relevant to SharePool types. */
   @computed
   get shareCurrency(): Currency {
+    if (this.pool instanceof ConcentratedLiquidityPool) {
+      throw new Error("Not a share pool");
+    }
+
     return {
       coinDenom: `GAMM/${this.id}`,
       coinMinimalDenom: this.shareDenom,
@@ -223,11 +276,20 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     };
   }
 
+  /** Only relevant to SharePool types. */
   @computed
   get totalShare(): CoinPretty {
-    return new CoinPretty(this.shareCurrency, this.pool.totalShare);
+    if (this.pool instanceof ConcentratedLiquidityPool) {
+      throw new Error("Not a share pool");
+    }
+
+    return new CoinPretty(
+      this.shareCurrency,
+      (this.pool as SharePool).totalShare
+    );
   }
 
+  /** Only relevant to weighted pools. */
   @computed
   get smoothWeightChange():
     | {

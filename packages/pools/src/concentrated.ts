@@ -300,8 +300,9 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
 
   getNormalizedLiquidity(tokenInDenom: string, tokenOutDenom: string): Dec {
     this.validateDenoms(tokenInDenom, tokenOutDenom);
+    const tokenOut = this.getPoolAsset(tokenOutDenom);
 
-    throw new Error("Method not implemented.");
+    return tokenOut.amount.toDec();
   }
   getLimitAmountByTokenIn(denom: string): Int {
     this.validateDenoms(denom);

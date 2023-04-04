@@ -10,7 +10,7 @@ import { BondStatus } from "@keplr-wallet/stores/build/query/cosmos/staking/type
 import { Currency, KeplrSignOptions } from "@keplr-wallet/types";
 import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import * as WeightedPoolEstimates from "@osmosis-labs/math";
-import { Pool } from "@osmosis-labs/pools";
+import { BasePool } from "@osmosis-labs/pools";
 import deepmerge from "deepmerge";
 import Long from "long";
 import { DeepPartial } from "utility-types";
@@ -361,9 +361,9 @@ export class OsmosisAccountImpl {
 
         await queryPool.waitFreshResponse();
 
-        const pool = queryPool.pool;
+        const pool = queryPool.sharePool;
         if (!pool) {
-          throw new Error("Unknown pool");
+          throw new Error("Not a share pool");
         }
 
         const maxSlippageDec = new Dec(maxSlippage).quo(
@@ -485,7 +485,8 @@ export class OsmosisAccountImpl {
 
         await queryPool.waitFreshResponse();
 
-        const pool = queryPool.pool;
+        // TODO: fork on the pool type
+        const pool = queryPool.sharePool;
         if (!pool) {
           throw new Error("Unknown pool");
         }
@@ -614,7 +615,7 @@ export class OsmosisAccountImpl {
       async () => {
         // refresh data and get pools
         await queries.queryIncentivizedPools.waitFreshResponse();
-        const pools: Pool[] = [];
+        const pools: BasePool[] = [];
         for (const route of routes) {
           const queryPool = queries.queryGammPools.getPool(route.poolId);
 
@@ -1059,7 +1060,7 @@ export class OsmosisAccountImpl {
 
         await queryPool.waitFreshResponse();
 
-        const pool = queryPool.pool;
+        const pool = queryPool.sharePool;
         if (!pool) {
           throw new Error("Unknown pool");
         }
