@@ -147,14 +147,7 @@ export class OsmosisQueriesImpl {
     /** Contains a reference to the currently responsive pool store. */
     const poolsQueryFallbacks = new FallbackStore(
       isTestnet
-        ? [
-            new ObservableQueryPools(
-              kvStore,
-              chainId,
-              chainGetter,
-              this.queryGammNumPools
-            ),
-          ]
+        ? [new ObservableQueryPools(kvStore, chainId, chainGetter)]
         : [
             new ObservableQueryFilteredPools(
               kvStore,
@@ -162,12 +155,7 @@ export class OsmosisQueriesImpl {
               chainGetter,
               this.queryGammNumPools
             ),
-            new ObservableQueryPools(
-              kvStore,
-              chainId,
-              chainGetter,
-              this.queryGammNumPools
-            ),
+            new ObservableQueryPools(kvStore, chainId, chainGetter),
           ]
     );
     this._queryGammPools = poolsQueryFallbacks.responsiveStore;
