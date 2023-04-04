@@ -1528,7 +1528,17 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-642",
         destChannelId: "channel-5",
         coinMinimalDenom: "uwhale",
-      }
+      },
+      {
+        //GRDN
+        counterpartyChainId: "juno-1",
+        sourceChannelId: "channel-169",
+        destChannelId: "channel-47",
+        coinMinimalDenom:
+          "cw20:juno1xekkh27punj0uxruv3gvuydyt856fax0nu750xns99t2qcxp7xmsqwhfma",
+        ics20ContractAddress:
+          "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (
