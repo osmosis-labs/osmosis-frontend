@@ -1132,12 +1132,10 @@ export class OsmosisAccountImpl {
     const msg = this.msgOpts.lockTokens.messageComposer({
       owner: this.address,
       coins: primitiveTokens,
-      /**
-       * Marking as 'any' because Duration type definition in telescope is wrong.
-       * @see https://github.com/osmosis-labs/osmojs/issues/12
-       * @see https://github.com/osmosis-labs/telescope/issues/211
-       */
-      duration: duration as any,
+      duration: {
+        seconds: Long.fromNumber(duration),
+        nanos: duration * 1_000_000_000,
+      },
     });
 
     await this.base.sign(

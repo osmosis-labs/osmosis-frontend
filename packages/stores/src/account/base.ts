@@ -1,4 +1,4 @@
-import { EncodeObject, GeneratedType, Registry } from "@cosmjs/proto-signing";
+import { EncodeObject } from "@cosmjs/proto-signing";
 import {
   AminoTypes,
   BroadcastTxError,
@@ -7,14 +7,7 @@ import {
   TimeoutError,
 } from "@cosmjs/stargate";
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
-import {
-  ChainName,
-  ChainWalletBase,
-  Endpoints,
-  Logger,
-  WalletManager,
-  WalletStatus,
-} from "@cosmos-kit/core";
+import { ChainWalletBase, WalletManager, WalletStatus } from "@cosmos-kit/core";
 import { wallets as cosmosStationWallets } from "@cosmos-kit/cosmostation";
 import { wallets as keplrWallets } from "@cosmos-kit/keplr";
 import { wallets as leapWallets } from "@cosmos-kit/leap";
@@ -32,92 +25,13 @@ import { KeplrSignOptions } from "@keplr-wallet/types";
 import { Buffer } from "buffer";
 import { assets, chains } from "chain-registry";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import Long from "long";
 import { action, makeObservable, observable, runInAction } from "mobx";
-import {
-  cosmosAminoConverters,
-  cosmosProtoRegistry,
-  ibcAminoConverters,
-  ibcProtoRegistry,
-  osmosisAminoConverters,
-  osmosisProtoRegistry,
-} from "osmojs";
-import { MsgCreateBalancerPool } from "osmojs/types/codegen/osmosis/gamm/pool-models/balancer/tx/tx";
 import { UnionToIntersection } from "utility-types";
 
 import { OsmosisQueries } from "../queries";
-import { sleep } from "./utils";
+import { aminoConverters } from "./amino-converters";
+import { CosmosKitLocalStorageKey, endpoints, logger, sleep } from "./utils";
 
-const logger = new Logger("WARN");
-
-const protoRegistry: ReadonlyArray<[string, GeneratedType]> = [
-  ...cosmosProtoRegistry,
-  ...ibcProtoRegistry,
-  ...osmosisProtoRegistry,
-];
-
-const aminoConverters = {
-  ...cosmosAminoConverters,
-  ...ibcAminoConverters,
-  ...osmosisAminoConverters,
-  /**
-   * Override the amino type of the MsgBeginUnlocking to use a compatible amino type to previous versions.
-   */
-  "/osmosis.lockup.MsgBeginUnlocking": {
-    ...osmosisAminoConverters["/osmosis.lockup.MsgBeginUnlocking"],
-    aminoType: "osmosis/lockup/begin-unlock-period-lock",
-  },
-  /**
-   * Override the amino type of the MsgCreateBalancerPool to use a compatible amino type to previous versions.
-   */
-  "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool": {
-    ...osmosisAminoConverters[
-      "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool"
-    ],
-    aminoType: "osmosis/gamm/create-balancer-pool",
-    toAmino: ({
-      sender,
-      poolParams,
-      poolAssets,
-      futurePoolGovernor,
-    }: MsgCreateBalancerPool) => {
-      return {
-        sender,
-        pool_params: {
-          swap_fee: poolParams?.swapFee,
-          exit_fee: poolParams?.exitFee,
-        },
-        pool_assets: poolAssets.map((el0) => ({
-          token: {
-            denom: el0?.token?.denom,
-            amount: el0?.token?.amount
-              ? Long.fromValue(el0?.token?.amount).toString()
-              : "",
-          },
-          weight: el0.weight,
-        })),
-        future_pool_governor: futurePoolGovernor,
-      };
-    },
-  },
-};
-
-const endpoints = chains.reduce((endpoints, chain) => {
-  const newEndpoints: Record<ChainName, Endpoints> = {
-    ...endpoints,
-    [chain.chain_name]: {
-      rpc: chain.apis?.rpc?.map(({ address }) => address) ?? [],
-      rest: chain.apis?.rest?.map(({ address }) => address) ?? [],
-      isLazy: true,
-    },
-  };
-  return newEndpoints;
-}, {} as Record<ChainName, Endpoints>);
-
-export const cosmosKitLocalStorageKey = "cosmos-kit@1:core//accounts";
-
-const registry = new Registry(protoRegistry);
-const aminoTypes = new AminoTypes(aminoConverters);
 export class AccountStore<Injects extends Record<string, any>[] = []> {
   protected accountSetCreators: ChainedFunctionifyTuple<
     AccountStore<Injects>,
@@ -155,8 +69,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     },
     {
       signingStargate: () => ({
-        registry: registry as any,
-        aminoTypes,
+        aminoTypes: new AminoTypes(aminoConverters),
       }),
     },
     {
@@ -166,7 +79,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     {
       duration: 31556926000, // 1 year
       callback() {
-        window?.localStorage.removeItem(cosmosKitLocalStorageKey);
+        window?.localStorage.removeItem(CosmosKitLocalStorageKey);
       },
     }
   );
@@ -459,7 +372,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       /**
        * Refetch balances.
-       * After sending tx, the balances are probably changed due to the fee.
+       * After sending tx, the balances have probably changed due to the fee.
        */
       for (const feeAmount of fee.amount) {
         if (!wallet.address) continue;
