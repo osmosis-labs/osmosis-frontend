@@ -2932,6 +2932,48 @@ const chainInfos = (
       explorerUrlToTx: "https://explorer.kynraze.com/arkhadian/tx/{txHash}",
     },
     {
+      rpc: "https://rpc.mainnet.noble.strange.love",
+      rest: "https://noble-api.polkachu.com",
+      chainId: "noble-1",
+      chainName: "Noble",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("noble"),
+      currencies: [
+        {
+          coinDenom: "STAKE",
+          coinMinimalDenom: "ustake",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/stake.svg",
+          coinGeckoId: "pool:ustake",
+          isStakeCurrency: true,
+        },
+        {
+          coinDenom: "USDC",
+          coinMinimalDenom: "uusdc",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/usdc.svg",
+          coinGeckoId: "pool:nusdc",
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.01,
+            average: 0.025,
+            high: 0.03,
+          },
+        },
+        {
+          coinDenom: "FRNZ",
+          coinMinimalDenom: "ufrienzies",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/frnz.svg",
+          coinGeckoId: "pool:frnz",
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx: "https://www.mintscan.io/noble/txs/{txHash}",
+    },
+    {
       rpc: "https://whitewhale-rpc.lavenderfive.com",
       rest: "https://whitewhale-api.lavenderfive.com",
       chainId: "migaloo-1",
@@ -2958,7 +3000,7 @@ const chainInfos = (
       ],
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://ping.pub/migaloo/tx/{txHash}",
-    },
+    }
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
