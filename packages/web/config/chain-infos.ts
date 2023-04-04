@@ -2973,6 +2973,34 @@ const chainInfos = (
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/noble/txs/{txHash}",
     },
+    {
+      rpc: "https://whitewhale-rpc.lavenderfive.com",
+      rest: "https://whitewhale-api.lavenderfive.com",
+      chainId: "migaloo-1",
+      chainName: "Migaloo",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("migaloo"),
+      currencies: [
+        {
+          coinDenom: "WHALE",
+          coinMinimalDenom: "uwhale",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/white-whale.svg",
+          coinGeckoId: "pool:uwhale",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0,
+            average: 0,
+            high: 0,
+          },
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx: "https://ping.pub/migaloo/tx/{txHash}",
+    }
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
