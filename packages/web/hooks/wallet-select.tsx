@@ -1,5 +1,5 @@
 import { SimpleAccount } from "@cosmos-kit/core";
-import { cosmosKitLocalStorageKey } from "@osmosis-labs/stores";
+import { CosmosKitLocalStorageKey } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import {
   FunctionComponent,
@@ -42,7 +42,7 @@ export const WalletSelectProvider: FunctionComponent = observer(
       // Try to reconnect to wallet if user has changed account for current wallet
       const tryReconnectToWallet = () => {
         const accountsStr = window.localStorage.getItem(
-          cosmosKitLocalStorageKey
+          CosmosKitLocalStorageKey
         );
 
         if (accountsStr) {

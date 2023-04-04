@@ -66,8 +66,8 @@ export function useIbcTransfer({
     chainStore,
     isWithdraw ? chainId : counterpartyChainId,
     isWithdraw
-      ? account!.cosmos.msgOpts.ibcTransfer.gas
-      : counterpartyAccount!.cosmos.msgOpts.ibcTransfer.gas
+      ? account?.cosmos.msgOpts.ibcTransfer.gas ?? 0
+      : counterpartyAccount?.cosmos.msgOpts.ibcTransfer.gas ?? 0
   );
   const amountConfig = useAmountConfig(
     chainStore,

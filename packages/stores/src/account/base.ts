@@ -1,4 +1,4 @@
-import { EncodeObject } from "@cosmjs/proto-signing";
+import { EncodeObject, Registry } from "@cosmjs/proto-signing";
 import {
   AminoTypes,
   BroadcastTxError,
@@ -7,7 +7,12 @@ import {
   TimeoutError,
 } from "@cosmjs/stargate";
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
-import { ChainWalletBase, WalletManager, WalletStatus } from "@cosmos-kit/core";
+import {
+  ChainWalletBase,
+  CosmosClientType,
+  WalletManager,
+  WalletStatus,
+} from "@cosmos-kit/core";
 import { wallets as cosmosStationWallets } from "@cosmos-kit/cosmostation";
 import { wallets as keplrWallets } from "@cosmos-kit/keplr";
 import { wallets as leapWallets } from "@cosmos-kit/leap";
@@ -21,11 +26,16 @@ import {
   Functionify,
   QueriesStore,
 } from "@keplr-wallet/stores";
-import { KeplrSignOptions } from "@keplr-wallet/types";
 import { Buffer } from "buffer";
 import { assets, chains } from "chain-registry";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { action, makeObservable, observable, runInAction } from "mobx";
+import {
+  cosmosProtoRegistry,
+  cosmwasmProtoRegistry,
+  ibcProtoRegistry,
+  osmosisProtoRegistry,
+} from "osmojs";
 import { UnionToIntersection } from "utility-types";
 
 import { OsmosisQueries } from "../queries";
@@ -70,6 +80,12 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     {
       signingStargate: () => ({
         aminoTypes: new AminoTypes(aminoConverters),
+        registry: new Registry([
+          ...cosmwasmProtoRegistry,
+          ...cosmosProtoRegistry,
+          ...ibcProtoRegistry,
+          ...osmosisProtoRegistry,
+        ]) as any,
       }),
     },
     {
@@ -250,7 +266,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     msgs: EncodeObject[] | (() => Promise<EncodeObject[]> | EncodeObject[]),
     memo = "",
     fee: StdFee,
-    _signOptions?: KeplrSignOptions,
+    signOptions?: CosmosClientType,
     onTxEvents?:
       | ((tx: DeliverTxResponse) => void)
       | {
@@ -294,7 +310,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         }
       }
 
-      const txRaw = await wallet.sign(msgs, fee, memo);
+      const txRaw = await wallet.sign(msgs, fee, memo, signOptions);
       const encodedTx = TxRaw.encode(txRaw).finish();
       const endpoint = await wallet.getRpcEndpoint(true);
 

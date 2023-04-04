@@ -1,9 +1,12 @@
+import { AminoMsgTransfer } from "@cosmjs/stargate";
 import Long from "long";
 import {
   cosmosAminoConverters,
-  ibcAminoConverters,
+  cosmwasmAminoConverters,
+  ibcAminoConverters as osmojsIbcAminoConverters,
   osmosisAminoConverters as osmojsOsmosisAminoConverters,
 } from "osmojs";
+import { MsgTransfer } from "osmojs/types/codegen/ibc/applications/transfer/v1/tx";
 import { MsgCreateBalancerPool } from "osmojs/types/codegen/osmosis/gamm/pool-models/balancer/tx/tx";
 import { MsgLockTokens } from "osmojs/types/codegen/osmosis/lockup/tx";
 
@@ -73,7 +76,78 @@ const osmosisAminoConverters: Record<
   },
 };
 
+const ibcAminoConverters: Record<
+  keyof typeof osmojsIbcAminoConverters,
+  {
+    aminoType: string;
+    toAmino: (msg: any) => any;
+    fromAmino: (msg: any) => any;
+  }
+> = {
+  ...osmojsIbcAminoConverters,
+  "/ibc.applications.transfer.v1.MsgTransfer": {
+    ...osmojsIbcAminoConverters["/ibc.applications.transfer.v1.MsgTransfer"],
+    toAmino: ({
+      sourcePort,
+      sourceChannel,
+      token,
+      sender,
+      receiver,
+      timeoutHeight,
+    }: MsgTransfer) => ({
+      source_port: sourcePort,
+      source_channel: sourceChannel,
+      token: {
+        denom: token?.denom,
+        amount: token?.amount ? Long.fromValue(token.amount).toString() : "0",
+      },
+      sender,
+      receiver,
+      timeout_height: timeoutHeight
+        ? {
+            revision_height: timeoutHeight.revisionHeight?.toString(),
+            revision_number: timeoutHeight.revisionNumber?.toString(),
+          }
+        : {},
+    }),
+    fromAmino: ({
+      source_port,
+      source_channel,
+      token,
+      sender,
+      receiver,
+      timeout_height,
+      timeout_timestamp,
+    }: AminoMsgTransfer["value"]): MsgTransfer => {
+      return {
+        sourcePort: source_port,
+        sourceChannel: source_channel,
+        token: {
+          denom: token?.denom ?? "",
+          amount: token?.amount ?? "",
+        },
+        sender,
+        receiver,
+        timeoutHeight: timeout_height
+          ? {
+              revisionHeight: Long.fromString(
+                timeout_height.revision_height || "0",
+                true
+              ),
+              revisionNumber: Long.fromString(
+                timeout_height.revision_number || "0",
+                true
+              ),
+            }
+          : undefined,
+        timeoutTimestamp: Long.fromString(timeout_timestamp ?? "0"),
+      };
+    },
+  },
+};
+
 export const aminoConverters = {
+  ...cosmwasmAminoConverters,
   ...cosmosAminoConverters,
   ...ibcAminoConverters,
   ...osmosisAminoConverters,
