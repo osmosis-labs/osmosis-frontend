@@ -1,10 +1,11 @@
+import { RoutablePool } from "@osmosis-labs/pools";
 import { FunctionComponent } from "react";
-import { ModalBase, ModalBaseProps } from "./base";
+
 import { TradeClipboard } from "../components/trade-clipboard";
-import { Pool } from "@osmosis-labs/pools";
+import { ModalBase, ModalBaseProps } from "./base";
 
 interface Props extends ModalBaseProps {
-  pools: Pool[];
+  pools: RoutablePool[];
 }
 
 export const TradeTokens: FunctionComponent<Props> = (props) => {

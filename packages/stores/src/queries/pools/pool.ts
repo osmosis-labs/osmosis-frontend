@@ -15,9 +15,9 @@ import {
   RatePretty,
 } from "@keplr-wallet/unit";
 import {
-  BasePool,
   ConcentratedLiquidityPool,
   ConcentratedLiquidityPoolRaw,
+  RoutablePool,
   SharePool,
   StablePool,
   StablePoolRaw,
@@ -161,7 +161,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   }
 
   @computed
-  get pool(): BasePool {
+  get pool(): RoutablePool {
     if (this.raw["@type"] === STABLE_POOL_TYPE) {
       return new StablePool(this.raw as StablePoolRaw);
     }
@@ -254,11 +254,11 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   /** Only relevant to SharePool types. */
   @computed
   get shareDenom(): string {
-    if (this.pool instanceof ConcentratedLiquidityPool) {
+    if (!this.sharePool) {
       throw new Error("Not a share pool");
     }
 
-    return (this.pool as SharePool).shareDenom;
+    return this.sharePool.shareDenom;
   }
 
   /** Only relevant to SharePool types. */
@@ -279,14 +279,11 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   /** Only relevant to SharePool types. */
   @computed
   get totalShare(): CoinPretty {
-    if (this.pool instanceof ConcentratedLiquidityPool) {
+    if (!this.sharePool) {
       throw new Error("Not a share pool");
     }
 
-    return new CoinPretty(
-      this.shareCurrency,
-      (this.pool as SharePool).totalShare
-    );
+    return new CoinPretty(this.shareCurrency, this.sharePool.totalShare);
   }
 
   /** Only relevant to weighted pools. */
