@@ -1511,6 +1511,18 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "uqosmo",
       },
       {
+        counterpartyChainId: "noble-1",
+        sourceChannelId: "channel-750",
+        destChannelId: "channel-1",
+        coinMinimalDenom: "ufrienzies",
+      },
+      {
+        counterpartyChainId: "migaloo-1",
+        sourceChannelId: "channel-642",
+        destChannelId: "channel-5",
+        coinMinimalDenom: "uwhale",
+      },
+      {
         //GRDN
         counterpartyChainId: "juno-1",
         sourceChannelId: "channel-169",
