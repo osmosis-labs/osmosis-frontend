@@ -7,7 +7,7 @@ import {
 import { NoPoolsError, NotEnoughLiquidityError } from "./errors";
 import { Pool } from "./interface";
 
-export interface RoutePath {
+export interface Route {
   pools: Pool[];
   // tokenOutDenoms means the token to come out from each pool.
   // This should the same length with the pools.
@@ -17,14 +17,14 @@ export interface RoutePath {
   tokenInDenom: string;
 }
 
-export interface RoutePathWithAmount extends RoutePath {
+export interface RouteWithAmount extends Route {
   amount: Int;
 }
 
 export class OptimizedRoutes {
   protected _pools: ReadonlyArray<Pool>;
   protected _incentivizedPoolIds: string[];
-  protected candidatePathsCache = new Map<string, RoutePath[]>();
+  protected candidatePathsCache = new Map<string, Route[]>();
 
   constructor(
     pools: ReadonlyArray<Pool>,
@@ -39,183 +39,102 @@ export class OptimizedRoutes {
     return this._pools;
   }
 
-  protected clearCache() {
-    this.candidatePathsCache = new Map();
-  }
-
-  protected getCandidatePaths(
+  protected getCandidateRoutes(
     tokenInDenom: string,
     tokenOutDenom: string,
-    permitIntermediate: boolean
-  ): RoutePath[] {
+    maxHops = 4,
+    maxRouteCount = 3
+  ): Route[] {
     if (this.pools.length === 0) {
       return [];
     }
-
-    const cacheKey = `${tokenInDenom}/${tokenOutDenom}/${permitIntermediate}`;
+    const cacheKey = `${tokenInDenom}/${tokenOutDenom}`;
     const cached = this.candidatePathsCache.get(cacheKey);
     if (cached) {
       return cached;
     }
 
-    let filteredRoutePaths: RoutePath[] = [];
+    const poolsUsed = Array<boolean>(this.pools.length).fill(false);
+    const routes: Route[] = [];
 
-    // Key is denom.
-    const multihopCandiateHasOnlyInIntermediates: Map<string, Pool[]> =
-      new Map();
-    const multihopCandiateHasOnlyOutIntermediates: Map<string, Pool[]> =
-      new Map();
+    const computeRoutes = (
+      tokenInDenom: string,
+      tokenOutDenom: string,
+      currentRoute: Pool[],
+      currentTokenOuts: string[],
+      poolsUsed: boolean[],
+      _previousTokenOuts?: string[]
+    ) => {
+      if (currentRoute.length > maxHops) return;
 
-    for (const pool of this.pools) {
-      const hasTokenIn = pool.hasPoolAsset(tokenInDenom);
-      const hasTokenOut = pool.hasPoolAsset(tokenOutDenom);
-      if (hasTokenIn && hasTokenOut) {
-        // If the pool has both token in and token out, we can swap directly from this pool.
-        filteredRoutePaths.push({
-          pools: [pool],
-          tokenOutDenoms: [tokenOutDenom],
+      if (
+        currentRoute.length > 0 &&
+        currentRoute[currentRoute.length - 1]!.hasPoolAsset(tokenOutDenom)
+      ) {
+        const foundRoute: Route = {
+          pools: [...currentRoute],
+          tokenOutDenoms: [...currentTokenOuts, tokenOutDenom],
           tokenInDenom,
-        });
-      } else {
-        if (permitIntermediate && (hasTokenIn || hasTokenOut)) {
-          for (const poolAsset of pool.poolAssets) {
-            const denom = poolAsset.denom;
-            if (denom !== tokenInDenom && denom !== tokenOutDenom) {
-              if (hasTokenIn) {
-                const candiateData =
-                  multihopCandiateHasOnlyInIntermediates.get(denom);
-                if (candiateData) {
-                  candiateData.push(pool);
-                  multihopCandiateHasOnlyInIntermediates.set(
-                    denom,
-                    candiateData
-                  );
-                } else {
-                  multihopCandiateHasOnlyInIntermediates.set(denom, [pool]);
-                }
-              } else {
-                const candiateData =
-                  multihopCandiateHasOnlyOutIntermediates.get(denom);
-                if (candiateData) {
-                  candiateData.push(pool);
-                  multihopCandiateHasOnlyOutIntermediates.set(
-                    denom,
-                    candiateData
-                  );
-                } else {
-                  multihopCandiateHasOnlyOutIntermediates.set(denom, [pool]);
-                }
-              }
-            }
-          }
+        };
+        routes.push(foundRoute);
+        return;
+      }
+
+      if (routes.length >= maxRouteCount) {
+        // only find top routes by iterating all pools by high liquidity first
+        return;
+      }
+
+      for (let i = 0; i < this.pools.length; i++) {
+        if (poolsUsed[i]) {
+          continue;
         }
-      }
-    }
 
-    // This method is actually used to calculate an optimized routes.
-    // In the case of overlapping pools in the optimized route,
-    // it is difficult because the change of the pool by each swap should be calculated in advance...
-    // So, make sure that the pools do not overlap.
-    // Key is pool id
-    const usedFirstPoolMap: Map<string, boolean> = new Map();
-    // Key is pool id
-    const usedSecondPoolMap: Map<string, boolean> = new Map();
+        const previousTokenOuts = _previousTokenOuts
+          ? _previousTokenOuts
+          : [tokenInDenom]; // imaginary prev pool
 
-    multihopCandiateHasOnlyInIntermediates.forEach(
-      (hasOnlyInPools, intermediateDenom) => {
-        const hasOnlyOutIntermediates =
-          multihopCandiateHasOnlyOutIntermediates.get(intermediateDenom);
-        if (hasOnlyOutIntermediates) {
-          let highestNormalizedLiquidityFirst = new Dec(0);
-          let highestNormalizedLiquidityFirstPool: Pool | undefined;
-
-          for (const pool of hasOnlyInPools) {
-            if (!usedFirstPoolMap.get(pool.id)) {
-              const normalizedLiquidity = pool.getNormalizedLiquidity(
-                tokenInDenom,
-                intermediateDenom
-              );
-
-              if (normalizedLiquidity.gte(highestNormalizedLiquidityFirst)) {
-                highestNormalizedLiquidityFirst = normalizedLiquidity;
-                highestNormalizedLiquidityFirstPool = pool;
+        const curPool = this.pools[i];
+        let prevPoolCurPoolTokenMatch: string | undefined;
+        const curPoolContainsAssetOutOfLastPool =
+          previousTokenOuts &&
+          curPool.poolAssets.some(({ denom }) =>
+            previousTokenOuts.some((d) => {
+              if (d === denom) {
+                prevPoolCurPoolTokenMatch = denom;
+                return true;
               }
-            }
-          }
-
-          if (
-            highestNormalizedLiquidityFirst.isPositive() &&
-            highestNormalizedLiquidityFirstPool
-          ) {
-            let highestNormalizedLiquiditySecond = new Dec(0);
-            let highestNormalizedLiquiditySecondPool: Pool | undefined;
-
-            for (const pool of hasOnlyOutIntermediates) {
-              if (!usedSecondPoolMap.get(pool.id)) {
-                const normalizedLiquidity = pool.getNormalizedLiquidity(
-                  intermediateDenom,
-                  tokenOutDenom
-                );
-
-                if (normalizedLiquidity.gte(highestNormalizedLiquiditySecond)) {
-                  highestNormalizedLiquiditySecond = normalizedLiquidity;
-                  highestNormalizedLiquiditySecondPool = pool;
-                }
-              }
-            }
-
-            if (
-              highestNormalizedLiquiditySecond.isPositive() &&
-              highestNormalizedLiquiditySecondPool
-            ) {
-              usedFirstPoolMap.set(
-                highestNormalizedLiquidityFirstPool.id,
-                true
-              );
-              usedSecondPoolMap.set(
-                highestNormalizedLiquiditySecondPool.id,
-                true
-              );
-              filteredRoutePaths.push({
-                pools: [
-                  highestNormalizedLiquidityFirstPool,
-                  highestNormalizedLiquiditySecondPool,
-                ],
-                tokenOutDenoms: [intermediateDenom, tokenOutDenom],
-                tokenInDenom,
-              });
-            }
-          }
+              return false;
+            })
+          );
+        if (!curPoolContainsAssetOutOfLastPool || !prevPoolCurPoolTokenMatch) {
+          continue;
         }
+
+        currentRoute.push(curPool);
+        if (prevPoolCurPoolTokenMatch !== tokenInDenom)
+          currentTokenOuts.push(prevPoolCurPoolTokenMatch);
+        poolsUsed[i] = true;
+        computeRoutes(
+          tokenInDenom,
+          tokenOutDenom,
+          currentRoute,
+          currentTokenOuts,
+          poolsUsed,
+          curPool.poolAssets
+            .filter(({ denom }) => denom !== prevPoolCurPoolTokenMatch)
+            .map(({ denom }) => denom)
+        );
+        poolsUsed[i] = false;
+        currentTokenOuts.pop();
+        currentRoute.pop();
       }
-    );
+    };
 
-    filteredRoutePaths = filteredRoutePaths.sort((path1, path2) => {
-      // Priority is given to direct swap.
-      // For direct swap, sort by normalized liquidity.
-      // In case of multihop swap, sort by first normalized liquidity.
+    computeRoutes(tokenInDenom, tokenOutDenom, [], [], poolsUsed);
+    this.candidatePathsCache.set(cacheKey, routes);
 
-      const path1IsDirect = path1.pools.length === 1;
-      const path2IsDirect = path2.pools.length === 1;
-      if (!path1IsDirect || !path2IsDirect) {
-        return path1IsDirect ? -1 : 1;
-      }
-
-      const path1NormalizedLiquidity = path1.pools[0].getNormalizedLiquidity(
-        tokenInDenom,
-        path1.tokenOutDenoms[0]
-      );
-      const path2NormalizedLiquidity = path2.pools[0].getNormalizedLiquidity(
-        tokenInDenom,
-        path2.tokenOutDenoms[0]
-      );
-
-      return path1NormalizedLiquidity.gte(path2NormalizedLiquidity) ? -1 : 1;
-    });
-
-    this.candidatePathsCache.set(cacheKey, filteredRoutePaths);
-
-    return filteredRoutePaths;
+    return routes.filter(({ pools }) => pools.length <= maxHops);
   }
 
   getOptimizedRoutesByTokenIn(
@@ -224,19 +143,51 @@ export class OptimizedRoutes {
       amount: Int;
     },
     tokenOutDenom: string,
-    maxPools: number
-  ): RoutePathWithAmount[] {
+    maxPools: number,
+    maxRoutes = 3
+  ): RouteWithAmount[] {
     if (!tokenIn.amount.isPositive()) {
       throw new Error("Token in amount is zero or negative");
     }
 
-    let routes = this.getCandidatePaths(tokenIn.denom, tokenOutDenom, true);
+    let routes = this.getCandidateRoutes(
+      tokenIn.denom,
+      tokenOutDenom,
+      maxPools,
+      maxRoutes
+    );
+
+    // prioritize shorter routes
+    routes = routes.sort((path1, path2) => {
+      return path1.pools.length < path2.pools.length ? -1 : 1;
+    });
+
+    // Priority is given to direct swap.
+    // For direct swap, sort by normalized liquidity.
+    // In case of multihop swap, sort by first normalized liquidity.
+    routes = routes.sort((path1, path2) => {
+      const path1IsDirect = path1.pools.length === 1;
+      const path2IsDirect = path2.pools.length === 1;
+      if (!path1IsDirect || !path2IsDirect) {
+        return path1IsDirect ? -1 : 1;
+      }
+
+      const path1NormalizedLiquidity = path1.pools[0].getNormalizedLiquidity(
+        tokenIn.denom,
+        path1.tokenOutDenoms[0]
+      );
+      const path2NormalizedLiquidity = path2.pools[0].getNormalizedLiquidity(
+        tokenIn.denom,
+        path2.tokenOutDenoms[0]
+      );
+
+      return path1NormalizedLiquidity.gte(path2NormalizedLiquidity) ? -1 : 1;
+    });
+
     // TODO: if paths is single pool - confirm enough liquidity otherwise find different route
     if (routes.length === 0) {
       throw new NoPoolsError();
     }
-
-    routes = routes.slice(0, maxPools);
 
     const initialSwapAmounts: Int[] = [];
     let totalLimitAmount = new Int(0);
@@ -275,7 +226,7 @@ export class OptimizedRoutes {
     });
   }
 
-  calculateTokenOutByTokenIn(routes: RoutePathWithAmount[]): {
+  calculateTokenOutByTokenIn(routes: RouteWithAmount[]): {
     amount: Int;
     beforeSpotPriceInOverOut: Dec;
     beforeSpotPriceOutOverIn: Dec;
@@ -307,11 +258,13 @@ export class OptimizedRoutes {
 
     let outDenom: string | undefined;
     for (const route of routes) {
-      if (
-        route.pools.length !== route.tokenOutDenoms.length ||
-        route.pools.length === 0
-      ) {
-        throw new Error("Invalid path");
+      if (route.pools.length !== route.tokenOutDenoms.length) {
+        throw new Error(
+          "Invalid path: pools and tokenOutDenoms length mismatch"
+        );
+      }
+      if (route.pools.length === 0) {
+        throw new Error("Invalid path: pools length is 0");
       }
 
       if (!outDenom) {
