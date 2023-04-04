@@ -87,7 +87,7 @@ export class OptimizedRoutes {
 
       for (let i = 0; i < this.pools.length; i++) {
         if (poolsUsed[i]) {
-          continue;
+          continue; // skip pool
         }
 
         const previousTokenOuts = _previousTokenOuts
@@ -108,7 +108,7 @@ export class OptimizedRoutes {
             })
           );
         if (!curPoolContainsAssetOutOfLastPool || !prevPoolCurPoolTokenMatch) {
-          continue;
+          continue; // skip pool
         }
 
         currentRoute.push(curPool);

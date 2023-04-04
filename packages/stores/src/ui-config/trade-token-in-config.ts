@@ -403,7 +403,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         this.outCurrency.coinMinimalDenom,
         5
       );
-    } catch {
+    } catch (e: any) {
+      console.error("No route found", e.message);
       return new IntPretty(0).ready(false);
     }
 
