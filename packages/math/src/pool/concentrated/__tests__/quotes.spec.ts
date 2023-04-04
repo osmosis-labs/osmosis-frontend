@@ -31,7 +31,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountOut, finalPrice } = calcOutGivenIn({
+      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -41,7 +41,7 @@ describe("calcOutGivenIn matches chain code", () => {
         swapFee,
       });
       expect(amountOut.toString()).toEqual("8396");
-      expect(finalPrice.toString()).toEqual("70.738348247484497717");
+      expect(afterSqrtPrice.toString()).toEqual("70.738348247484497717");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L92
     //  One price range
@@ -66,7 +66,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountOut, finalPrice } = calcOutGivenIn({
+      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -76,7 +76,7 @@ describe("calcOutGivenIn matches chain code", () => {
         swapFee,
       });
       expect(amountOut.toString()).toEqual("66808388");
-      expect(finalPrice.toString()).toEqual("70.666663910857144332");
+      expect(afterSqrtPrice.toString()).toEqual("70.666663910857144332");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L115
     //  Two equal price ranges
@@ -102,7 +102,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountOut, finalPrice } = calcOutGivenIn({
+      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -112,7 +112,7 @@ describe("calcOutGivenIn matches chain code", () => {
         swapFee,
       });
       expect(amountOut.toString()).toEqual("8398");
-      expect(finalPrice.toString()).toEqual("70.724513183069625078");
+      expect(afterSqrtPrice.toString()).toEqual("70.724513183069625078");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L138
     //  Two equal price ranges
@@ -138,7 +138,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountOut, finalPrice } = calcOutGivenIn({
+      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -148,7 +148,7 @@ describe("calcOutGivenIn matches chain code", () => {
         swapFee,
       });
       expect(amountOut.toString()).toEqual("66829187");
-      expect(finalPrice.toString()).toEqual("70.688664163408836320");
+      expect(afterSqrtPrice.toString()).toEqual("70.688664163408836320");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L167
     //  Consecutive price ranges
@@ -173,7 +173,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountOut, finalPrice } = calcOutGivenIn({
+      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -183,7 +183,7 @@ describe("calcOutGivenIn matches chain code", () => {
         swapFee,
       });
       expect(amountOut.toString()).toEqual("1820630");
-      expect(finalPrice.toString()).toEqual("78.137149196095607129");
+      expect(afterSqrtPrice.toString()).toEqual("78.137149196095607129");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L206
     //  Consecutive price ranges
@@ -208,7 +208,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountOut, finalPrice } = calcOutGivenIn({
+      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -218,7 +218,7 @@ describe("calcOutGivenIn matches chain code", () => {
         swapFee,
       });
       expect(amountOut.toString()).toEqual("9103422788");
-      expect(finalPrice.toString()).toEqual("63.993489023323078693");
+      expect(afterSqrtPrice.toString()).toEqual("63.993489023323078693");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L241
     ///  Partially overlapping price ranges
@@ -247,7 +247,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountOut, finalPrice } = calcOutGivenIn({
+      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -257,7 +257,7 @@ describe("calcOutGivenIn matches chain code", () => {
         swapFee,
       });
       expect(amountOut.toString()).toEqual("1864161");
-      expect(finalPrice.toString()).toEqual("77.819789636800169392");
+      expect(afterSqrtPrice.toString()).toEqual("77.819789636800169392");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L273
     it("two positions with partially overlapping price ranges, not utilizing full liquidity of second position: usdc -> eth", () => {
@@ -282,7 +282,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountOut, finalPrice } = calcOutGivenIn({
+      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -292,7 +292,7 @@ describe("calcOutGivenIn matches chain code", () => {
         swapFee,
       });
       expect(amountOut.toString()).toEqual("1609138");
-      expect(finalPrice.toString()).toEqual("75.582373164412551491");
+      expect(afterSqrtPrice.toString()).toEqual("75.582373164412551491");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L309
     //  Partially overlapping price ranges
@@ -321,7 +321,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountOut, finalPrice } = calcOutGivenIn({
+      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -331,7 +331,7 @@ describe("calcOutGivenIn matches chain code", () => {
         swapFee,
       });
       expect(amountOut.toString()).toEqual("9321276930");
-      expect(finalPrice.toString()).toEqual("64.257943794993248954");
+      expect(afterSqrtPrice.toString()).toEqual("64.257943794993248954");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L339
     //          		5000
@@ -359,7 +359,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountOut, finalPrice } = calcOutGivenIn({
+      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -369,7 +369,7 @@ describe("calcOutGivenIn matches chain code", () => {
         swapFee,
       });
       expect(amountOut.toString()).toEqual("8479320318");
-      expect(finalPrice.toString()).toEqual("65.513815285481060960");
+      expect(afterSqrtPrice.toString()).toEqual("65.513815285481060960");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L372
     //          5000
@@ -397,7 +397,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountOut, finalPrice } = calcOutGivenIn({
+      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -407,7 +407,7 @@ describe("calcOutGivenIn matches chain code", () => {
         swapFee,
       });
       expect(amountOut.toString()).toEqual("1820545");
-      expect(finalPrice.toString()).toEqual("78.138055169663761658");
+      expect(afterSqrtPrice.toString()).toEqual("78.138055169663761658");
     });
     // skipping price limit / slippage test, since we're generating the price limit for the chain to use
   });
@@ -434,7 +434,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0.01");
-      const { amountOut, finalPrice } = calcOutGivenIn({
+      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -444,7 +444,7 @@ describe("calcOutGivenIn matches chain code", () => {
         swapFee,
       });
       expect(amountOut.toString()).toEqual("8312");
-      expect(finalPrice.toString()).toEqual("70.738071546196200264");
+      expect(afterSqrtPrice.toString()).toEqual("70.738071546196200264");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L453
     //  Two equal price ranges
@@ -470,7 +470,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0.03");
-      const { amountOut, finalPrice } = calcOutGivenIn({
+      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -480,7 +480,7 @@ describe("calcOutGivenIn matches chain code", () => {
         swapFee,
       });
       expect(amountOut.toString()).toEqual("64824917");
-      expect(finalPrice.toString()).toEqual("70.689324382628080102");
+      expect(afterSqrtPrice.toString()).toEqual("70.689324382628080102");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L481
     //          		   5000
@@ -504,7 +504,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0.05");
-      const { amountOut, finalPrice } = calcOutGivenIn({
+      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -514,7 +514,7 @@ describe("calcOutGivenIn matches chain code", () => {
         swapFee,
       });
       expect(amountOut.toString()).toEqual("8691708221");
-      expect(finalPrice.toString()).toEqual("64.336946417392457832");
+      expect(afterSqrtPrice.toString()).toEqual("64.336946417392457832");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L505
     //          5000
@@ -542,7 +542,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0.1");
-      const { amountOut, finalPrice } = calcOutGivenIn({
+      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -552,7 +552,7 @@ describe("calcOutGivenIn matches chain code", () => {
         swapFee,
       });
       expect(amountOut.toString()).toEqual("1695807");
-      expect(finalPrice.toString()).toEqual("76.328178655208424124");
+      expect(afterSqrtPrice.toString()).toEqual("76.328178655208424124");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L528
     //  Partially overlapping price ranges
@@ -581,7 +581,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0.005");
-      const { amountOut, finalPrice } = calcOutGivenIn({
+      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -591,7 +591,7 @@ describe("calcOutGivenIn matches chain code", () => {
         swapFee,
       });
       expect(amountOut.toString()).toEqual("8440657775");
-      expect(finalPrice.toString()).toEqual("65.571484748647169032");
+      expect(afterSqrtPrice.toString()).toEqual("65.571484748647169032");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L548
     //          5000
@@ -619,7 +619,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0.03");
-      const { amountOut, finalPrice } = calcOutGivenIn({
+      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -629,7 +629,7 @@ describe("calcOutGivenIn matches chain code", () => {
         swapFee,
       });
       expect(amountOut.toString()).toEqual("1771252");
-      expect(finalPrice.toString()).toEqual("77.887956882326389372");
+      expect(afterSqrtPrice.toString()).toEqual("77.887956882326389372");
     });
   });
 
@@ -717,7 +717,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountIn, finalPrice } = calcInGivenOut({
+      const { amountIn, afterSqrtPrice } = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -727,7 +727,7 @@ describe("calcInGivenOut matches chain code", () => {
         swapFee,
       });
       expect(amountIn.toString()).toEqual("8404");
-      expect(finalPrice.toString()).toEqual("70.683007989825007162");
+      expect(afterSqrtPrice.toString()).toEqual("70.683007989825007162");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L630
     it("single position within one tick: usdc (in) -> eth (out) ofz", () => {
@@ -748,7 +748,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountIn, finalPrice } = calcInGivenOut({
+      const { amountIn, afterSqrtPrice } = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -758,7 +758,7 @@ describe("calcInGivenOut matches chain code", () => {
         swapFee,
       });
       expect(amountIn.toString()).toEqual("66891663");
-      expect(finalPrice.toString()).toEqual("70.754747188468900467");
+      expect(afterSqrtPrice.toString()).toEqual("70.754747188468900467");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L656
     //  Two equal price ranges
@@ -784,7 +784,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountIn, finalPrice } = calcInGivenOut({
+      const { amountIn, afterSqrtPrice } = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -794,7 +794,7 @@ describe("calcInGivenOut matches chain code", () => {
         swapFee,
       });
       expect(amountIn.toString()).toEqual("13370");
-      expect(finalPrice.toString()).toEqual("70.688664163727643650");
+      expect(afterSqrtPrice.toString()).toEqual("70.688664163727643650");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L682
     //  Two equal price ranges
@@ -820,7 +820,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountIn, finalPrice } = calcInGivenOut({
+      const { amountIn, afterSqrtPrice } = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -830,7 +830,7 @@ describe("calcInGivenOut matches chain code", () => {
         swapFee,
       });
       expect(amountIn.toString()).toEqual("41998216");
-      expect(finalPrice.toString()).toEqual("70.724512595179305566");
+      expect(afterSqrtPrice.toString()).toEqual("70.724512595179305566");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L713
     //  Consecutive price ranges
@@ -860,7 +860,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountIn, finalPrice } = calcInGivenOut({
+      const { amountIn, afterSqrtPrice } = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -870,7 +870,7 @@ describe("calcInGivenOut matches chain code", () => {
         swapFee,
       });
       expect(amountIn.toString()).toEqual("2000000");
-      expect(finalPrice.toString()).toEqual("63.993489023888951975");
+      expect(afterSqrtPrice.toString()).toEqual("63.993489023888951975");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L761
     //  Consecutive price ranges
@@ -899,7 +899,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountIn, finalPrice } = calcInGivenOut({
+      const { amountIn, afterSqrtPrice } = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -909,7 +909,7 @@ describe("calcInGivenOut matches chain code", () => {
         swapFee,
       });
       expect(amountIn.toString()).toEqual("9999999570");
-      expect(finalPrice.toString()).toEqual("78.137148837036751553");
+      expect(afterSqrtPrice.toString()).toEqual("78.137148837036751553");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L809
     //  Partially overlapping price ranges
@@ -938,7 +938,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountIn, finalPrice } = calcInGivenOut({
+      const { amountIn, afterSqrtPrice } = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -948,7 +948,7 @@ describe("calcInGivenOut matches chain code", () => {
         swapFee,
       });
       expect(amountIn.toString()).toEqual("2000000");
-      expect(finalPrice.toString()).toEqual("64.257943796086567725");
+      expect(afterSqrtPrice.toString()).toEqual("64.257943796086567725");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L809
     //  Partially overlapping price ranges
@@ -977,7 +977,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountIn, finalPrice } = calcInGivenOut({
+      const { amountIn, afterSqrtPrice } = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -987,7 +987,7 @@ describe("calcInGivenOut matches chain code", () => {
         swapFee,
       });
       expect(amountIn.toString()).toEqual("1800000");
-      expect(finalPrice.toString()).toEqual("65.513815286452064191");
+      expect(afterSqrtPrice.toString()).toEqual("65.513815286452064191");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L925
     //  Partially overlapping price ranges
@@ -1016,7 +1016,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountIn, finalPrice } = calcInGivenOut({
+      const { amountIn, afterSqrtPrice } = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -1026,7 +1026,7 @@ describe("calcInGivenOut matches chain code", () => {
         swapFee,
       });
       expect(amountIn.toString()).toEqual("9999994688");
-      expect(finalPrice.toString()).toEqual("77.819781711876553576");
+      expect(afterSqrtPrice.toString()).toEqual("77.819781711876553576");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L976
     //  Partially overlapping price ranges
@@ -1055,7 +1055,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountIn, finalPrice } = calcInGivenOut({
+      const { amountIn, afterSqrtPrice } = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -1065,7 +1065,7 @@ describe("calcInGivenOut matches chain code", () => {
         swapFee,
       });
       expect(amountIn.toString()).toEqual("8499999458");
-      expect(finalPrice.toString()).toEqual("75.582372355128594341");
+      expect(afterSqrtPrice.toString()).toEqual("75.582372355128594341");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L1032
     //  Sequential price ranges with a gap
@@ -1094,7 +1094,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountIn, finalPrice } = calcInGivenOut({
+      const { amountIn, afterSqrtPrice } = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -1104,7 +1104,7 @@ describe("calcInGivenOut matches chain code", () => {
         swapFee,
       });
       expect(amountIn.toString()).toEqual("9999994756");
-      expect(finalPrice.toString()).toEqual("78.138050797173647031");
+      expect(afterSqrtPrice.toString()).toEqual("78.138050797173647031");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L1076
     // won't do slippage protection test since we are generating estimates to protect against slippage on chain from frontends
@@ -1130,7 +1130,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0.01");
-      const { amountIn, finalPrice } = calcInGivenOut({
+      const { amountIn, afterSqrtPrice } = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -1140,7 +1140,7 @@ describe("calcInGivenOut matches chain code", () => {
         swapFee,
       });
       expect(amountIn.toString()).toEqual("8489");
-      expect(finalPrice.toString()).toEqual("70.683007989825007162");
+      expect(afterSqrtPrice.toString()).toEqual("70.683007989825007162");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L1135
     it("fee 2: two positions within one tick: usdc (in) -> eth (out) (3% fee) | ofz", () => {
@@ -1161,7 +1161,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0.03");
-      const { amountIn, finalPrice } = calcInGivenOut({
+      const { amountIn, afterSqrtPrice } = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -1171,7 +1171,7 @@ describe("calcInGivenOut matches chain code", () => {
         swapFee,
       });
       expect(amountIn.toString()).toEqual("43297130");
-      expect(finalPrice.toString()).toEqual("70.724512595179305566");
+      expect(afterSqrtPrice.toString()).toEqual("70.724512595179305566");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L1170
     it("fee 3: two positions with consecutive price ranges: usdc (in) -> eth (out) (0.1% fee) | ofz", () => {
@@ -1196,7 +1196,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0.001");
-      const { amountIn, finalPrice } = calcInGivenOut({
+      const { amountIn, afterSqrtPrice } = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -1206,7 +1206,7 @@ describe("calcInGivenOut matches chain code", () => {
         swapFee,
       });
       expect(amountIn.toString()).toEqual("10010009580");
-      expect(finalPrice.toString()).toEqual("78.137148837036751553");
+      expect(afterSqrtPrice.toString()).toEqual("78.137148837036751553");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L1218
     it("fee 4: two positions with partially overlapping price ranges: eth (in) -> usdc (out) (10% fee) | zfo", () => {
@@ -1231,7 +1231,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0.1");
-      const { amountIn, finalPrice } = calcInGivenOut({
+      const { amountIn, afterSqrtPrice } = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -1241,7 +1241,7 @@ describe("calcInGivenOut matches chain code", () => {
         swapFee,
       });
       expect(amountIn.toString()).toEqual("2222223");
-      expect(finalPrice.toString()).toEqual("64.257943796086567725");
+      expect(afterSqrtPrice.toString()).toEqual("64.257943796086567725");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L1278
     it("fee 5: two positions with partially overlapping price ranges, not utilizing full liquidity of second position: usdc (in) -> eth (out) (5% fee) | ofz", () => {
@@ -1266,7 +1266,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0.05");
-      const { amountIn, finalPrice } = calcInGivenOut({
+      const { amountIn, afterSqrtPrice } = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -1276,7 +1276,7 @@ describe("calcInGivenOut matches chain code", () => {
         swapFee,
       });
       expect(amountIn.toString()).toEqual("8947367851");
-      expect(finalPrice.toString()).toEqual("75.582372355128594341");
+      expect(afterSqrtPrice.toString()).toEqual("75.582372355128594341");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L1336
     it("fee 6: two sequential positions with a gap usdc (in) -> eth (out) (0.03% fee) | ofz", () => {
@@ -1301,7 +1301,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0.0003");
-      const { amountIn, finalPrice } = calcInGivenOut({
+      const { amountIn, afterSqrtPrice } = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -1311,7 +1311,7 @@ describe("calcInGivenOut matches chain code", () => {
         swapFee,
       });
       expect(amountIn.toString()).toEqual("10002995655");
-      expect(finalPrice.toString()).toEqual("78.138050797173647031");
+      expect(afterSqrtPrice.toString()).toEqual("78.138050797173647031");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L1383
     // won't do slippage protection test since we are generating estimates to protect against slippage on chain from frontends

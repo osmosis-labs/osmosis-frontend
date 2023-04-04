@@ -85,9 +85,6 @@ export class StablePool implements SharePool, RoutablePool {
   }
 
   constructor(public readonly raw: StablePoolRaw) {}
-  getSpotPriceInOverOut(tokenInDenom: string, tokenOutDenom: string): Dec {
-    throw new Error("Method not implemented.");
-  }
 
   getPoolAsset(denom: string): {
     denom: string;
@@ -106,6 +103,17 @@ export class StablePool implements SharePool, RoutablePool {
 
   hasPoolAsset(denom: string): boolean {
     return this.poolAssets.some((asset) => asset.denom === denom);
+  }
+
+  getSpotPriceInOverOut(tokenInDenom: string, tokenOutDenom: string): Dec {
+    const inPoolAsset = this.getPoolAsset(tokenInDenom);
+    const outPoolAsset = this.getPoolAsset(tokenOutDenom);
+
+    return StableSwapMath.calcSpotPrice(
+      this.stableSwapTokens,
+      inPoolAsset.denom,
+      outPoolAsset.denom
+    );
   }
 
   getSpotPriceInOverOutWithoutSwapFee(
