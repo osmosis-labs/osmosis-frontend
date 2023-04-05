@@ -1,7 +1,7 @@
 import { WalletStatus } from "@keplr-wallet/stores";
 import { AppCurrency, Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
-import { Pool } from "@osmosis-labs/pools";
+import { RoutablePool } from "@osmosis-labs/pools";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -40,7 +40,7 @@ import TradeRoute from "./trade-route";
 
 export const TradeClipboard: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!
-  pools: Pool[];
+  pools: RoutablePool[];
 
   containerClassName?: string;
   isInModal?: boolean;

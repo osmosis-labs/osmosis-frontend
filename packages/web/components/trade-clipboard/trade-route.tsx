@@ -1,7 +1,7 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import { Dec } from "@keplr-wallet/unit";
 import { getOsmoRoutedMultihopTotalSwapFee } from "@osmosis-labs/math";
-import { Pool, RoutePathWithAmount } from "@osmosis-labs/pools";
+import { RoutablePool, RoutePathWithAmount } from "@osmosis-labs/pools";
 import { useSingleton } from "@tippyjs/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -13,7 +13,7 @@ import { ChainStore } from "../../stores/chain";
 import { DenomImage } from "../assets";
 import { Tooltip } from "../tooltip";
 
-function getDenomsFromPool(chainStore: ChainStore, pool: Pool) {
+function getDenomsFromPool(chainStore: ChainStore, pool: RoutablePool) {
   const chainInfo = chainStore.getChain(chainStore.osmosis.chainId);
   const firstDenom = chainInfo.forceFindCurrency(pool.poolAssets[0].denom);
   const secondDenom = chainInfo.forceFindCurrency(pool.poolAssets[1].denom);
@@ -26,7 +26,7 @@ function getPoolsWithDenomAndFee(
   isMultihopDiscount: boolean,
   maxSwapFee: Dec,
   swapFeeSum: Dec,
-  pool: Pool
+  pool: RoutablePool
 ) {
   return {
     id: pool.id,

@@ -5,10 +5,10 @@ import {
 } from "@osmosis-labs/math";
 
 import { NoPoolsError, NotEnoughLiquidityError } from "./errors";
-import { Pool } from "./interface";
+import { BasePool } from "./interface";
 
 export interface RoutePath {
-  pools: Pool[];
+  pools: RoutablePool[];
   // tokenOutDenoms means the token to come out from each pool.
   // This should the same length with the pools.
   // RoutePath consists of token in -> pool -> token out -> pool -> token out...
@@ -21,13 +21,18 @@ export interface RoutePathWithAmount extends RoutePath {
   amount: Int;
 }
 
+export interface RoutablePool extends BasePool {
+  getNormalizedLiquidity(tokenInDenom: string, tokenOutDenom: string): Dec;
+  getLimitAmountByTokenIn(denom: string): Int;
+}
+
 export class OptimizedRoutes {
-  protected _pools: ReadonlyArray<Pool>;
+  protected _pools: ReadonlyArray<RoutablePool>;
   protected _incentivizedPoolIds: string[];
   protected candidatePathsCache = new Map<string, RoutePath[]>();
 
   constructor(
-    pools: ReadonlyArray<Pool>,
+    pools: ReadonlyArray<RoutablePool>,
     incventivizedPoolIds: string[],
     protected readonly stakeCurrencyMinDenom: string
   ) {
@@ -35,7 +40,7 @@ export class OptimizedRoutes {
     this._incentivizedPoolIds = incventivizedPoolIds;
   }
 
-  get pools(): ReadonlyArray<Pool> {
+  get pools(): ReadonlyArray<RoutablePool> {
     return this._pools;
   }
 
@@ -61,9 +66,9 @@ export class OptimizedRoutes {
     let filteredRoutePaths: RoutePath[] = [];
 
     // Key is denom.
-    const multihopCandiateHasOnlyInIntermediates: Map<string, Pool[]> =
+    const multihopCandiateHasOnlyInIntermediates: Map<string, RoutablePool[]> =
       new Map();
-    const multihopCandiateHasOnlyOutIntermediates: Map<string, Pool[]> =
+    const multihopCandiateHasOnlyOutIntermediates: Map<string, RoutablePool[]> =
       new Map();
 
     for (const pool of this.pools) {
@@ -127,7 +132,7 @@ export class OptimizedRoutes {
           multihopCandiateHasOnlyOutIntermediates.get(intermediateDenom);
         if (hasOnlyOutIntermediates) {
           let highestNormalizedLiquidityFirst = new Dec(0);
-          let highestNormalizedLiquidityFirstPool: Pool | undefined;
+          let highestNormalizedLiquidityFirstPool: RoutablePool | undefined;
 
           for (const pool of hasOnlyInPools) {
             if (!usedFirstPoolMap.get(pool.id)) {
@@ -148,7 +153,7 @@ export class OptimizedRoutes {
             highestNormalizedLiquidityFirstPool
           ) {
             let highestNormalizedLiquiditySecond = new Dec(0);
-            let highestNormalizedLiquiditySecondPool: Pool | undefined;
+            let highestNormalizedLiquiditySecondPool: RoutablePool | undefined;
 
             for (const pool of hasOnlyOutIntermediates) {
               if (!usedSecondPoolMap.get(pool.id)) {

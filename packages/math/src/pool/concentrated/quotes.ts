@@ -14,13 +14,13 @@ import {
 export const ConcentratedLiquidityMath = {
   calcOutGivenIn,
   calcInGivenOut,
-  // calcSpotPrice,
 };
 
 interface SwapState {
   amountRemaining: Dec;
   amountCalculated: Dec;
   inittedTickIndex: number;
+  /** amountToken1/amountToken0 */
   sqrtPrice: Dec;
   currentTickLiquidity: Dec;
   feeGrowthGlobal: Dec;
@@ -35,7 +35,7 @@ function calcOutGivenIn({
   curSqrtPrice,
   precisionFactorAtPriceOne,
   swapFee,
-}: QuoteOutGivenInParams): { amountOut: Int; finalPrice: Dec } {
+}: QuoteOutGivenInParams): { amountOut: Int; afterSqrtPrice: Dec } {
   const isZeroForOne = tokenIn.denom === tokenDenom0;
   /** Max and min constraints on chain. */
   let priceLimit: Dec;
@@ -110,7 +110,7 @@ function calcOutGivenIn({
 
   return {
     amountOut: swapState.amountCalculated.truncate(),
-    finalPrice: swapState.sqrtPrice,
+    afterSqrtPrice: swapState.sqrtPrice,
   };
 }
 
@@ -123,7 +123,7 @@ export function calcInGivenOut({
   curSqrtPrice,
   precisionFactorAtPriceOne,
   swapFee,
-}: QuoteInGivenOutParams): { amountIn: Int; finalPrice: Dec } {
+}: QuoteInGivenOutParams): { amountIn: Int; afterSqrtPrice: Dec } {
   const isZeroForOne = tokenOut.denom !== tokenDenom0;
   /** Max and min constraints on chain. */
   let priceLimit: Dec;
@@ -198,6 +198,6 @@ export function calcInGivenOut({
 
   return {
     amountIn: swapState.amountCalculated.truncate(),
-    finalPrice: swapState.sqrtPrice,
+    afterSqrtPrice: swapState.sqrtPrice,
   };
 }
