@@ -265,7 +265,16 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   @computed
   get shareCurrency(): Currency {
     if (this.pool instanceof ConcentratedLiquidityPool) {
-      throw new Error("Not a share pool");
+      console.warn(
+        "Share currency not available for concentrated liquidity pool ID: ",
+        this.pool.id
+      );
+
+      return {
+        coinDenom: "CLPOOL-ERR",
+        coinMinimalDenom: "clpool-err",
+        coinDecimals: 0,
+      };
     }
 
     return {
@@ -280,7 +289,12 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   @computed
   get totalShare(): CoinPretty {
     if (!this.sharePool) {
-      throw new Error("Not a share pool");
+      console.warn(
+        "Share currency not available for concentrated liquidity pool ID: ",
+        this.pool.id
+      );
+
+      return new CoinPretty(this.shareCurrency, 0).ready(false);
     }
 
     return new CoinPretty(this.shareCurrency, this.sharePool.totalShare);
