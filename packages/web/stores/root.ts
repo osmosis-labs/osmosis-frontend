@@ -21,7 +21,7 @@ import {
   PoolFallbackPriceStore,
   QueriesExternalStore,
 } from "@osmosis-labs/stores";
-import { assets, chains } from "chain-registry";
+import { assets } from "chain-registry";
 
 import {
   toastOnBroadcast,
@@ -98,7 +98,7 @@ export class RootStore {
     );
 
     this.accountStore = new AccountStore(
-      chains,
+      ChainInfos,
       assets,
       this.queriesStore,
       this.chainStore,

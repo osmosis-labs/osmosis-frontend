@@ -1,4 +1,8 @@
+import type { Chain } from "@chain-registry/types";
 import { Bech32Address } from "@keplr-wallet/cosmos";
+import { ChainInfoWithExplorer } from "@osmosis-labs/stores";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { chains } from "chain-registry";
 import * as fs from "fs";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as prettier from "prettier";
@@ -20,12 +24,12 @@ const chainInfos = (
         OSMOSIS_RPC_OVERWRITE ??
         (IS_TESTNET
           ? "https://rpc.testnet.osmosis.zone/"
-          : "https://rpc-osmosis.keplr.app/"),
+          : "https://rpc.osmosis.zone/"),
       rest:
         OSMOSIS_REST_OVERWRITE ??
         (IS_TESTNET
           ? "https://lcd.testnet.osmosis.zone/"
-          : "https://lcd-osmosis.keplr.app/"),
+          : "https://lcd.osmosis.zone/"),
       chainId:
         OSMOSIS_CHAIN_ID_OVERWRITE ??
         (IS_TESTNET ? "osmo-test-4" : "osmosis-1"),
@@ -3186,15 +3190,48 @@ chainInfos.push({
     : "https://axelarscan.io/tx/{txHash}",
 });
 
+function getChainInfos(): (ChainInfoWithExplorer & Chain)[] {
+  return chainInfos.map((localChain) => {
+    const registryChain = chains.find(
+      ({ chain_id }) => chain_id === localChain.chainId
+    )!;
+
+    return {
+      ...localChain,
+      ...registryChain,
+      chain_name: localChain.chainName,
+      peers: undefined,
+      explorers: undefined,
+      codebase: undefined,
+      staking: undefined,
+      $schema: undefined,
+      apis: {
+        rpc: [
+          {
+            address: localChain.rpc,
+          },
+        ],
+        rest: [
+          {
+            address: localChain.rest,
+          },
+        ],
+      },
+    };
+  });
+}
+
 async function generateChainInfo() {
+  const chainInfos = getChainInfos();
   const content = `
+    import type { Chain } from "@chain-registry/types";
     import { ChainInfoWithExplorer } from "@osmosis-labs/stores";
 
     export const ChainInfos = ${JSON.stringify(
       chainInfos,
       null,
       2
-    )} as ChainInfoWithExplorer[];
+    )} as (ChainInfoWithExplorer & Chain)[];
   `;
 
   const prettierConfig = await prettier.resolveConfig("./");

@@ -36,7 +36,12 @@ import { UnionToIntersection } from "utility-types";
 
 import { OsmosisQueries } from "../queries";
 import { aminoConverters } from "./amino-converters";
-import { CosmosKitLocalStorageKey, endpoints, logger, sleep } from "./utils";
+import {
+  CosmosKitLocalStorageKey,
+  getWalletEndpoints,
+  logger,
+  sleep,
+} from "./utils";
 
 export class AccountStore<Injects extends Record<string, any>[] = []> {
   protected accountSetCreators: ChainedFunctionifyTuple<
@@ -108,7 +113,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       },
       {
         isLazy: true,
-        endpoints,
+        endpoints: getWalletEndpoints(this.chains),
       },
       {
         duration: 31556926000, // 1 year

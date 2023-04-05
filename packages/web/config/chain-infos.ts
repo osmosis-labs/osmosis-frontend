@@ -1,9 +1,10 @@
+import type { Chain } from "@chain-registry/types";
 import { ChainInfoWithExplorer } from "@osmosis-labs/stores";
 
 export const ChainInfos = [
   {
-    rpc: "https://rpc-osmosis.keplr.app/",
-    rest: "https://lcd-osmosis.keplr.app/",
+    rpc: "https://rpc.osmosis.zone/",
+    rest: "https://lcd.osmosis.zone/",
     chainId: "osmosis-1",
     chainName: "Osmosis",
     bip44: {
@@ -72,6 +73,54 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Osmosis",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://osmosis.zone/",
+    update_link:
+      "https://raw.githubusercontent.com/osmosis-labs/osmosis/main/chain.schema.json",
+    pretty_name: "Osmosis",
+    chain_id: "osmosis-1",
+    bech32_prefix: "osmo",
+    daemon_name: "osmosisd",
+    node_home: "$HOME/.osmosisd",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "uosmo",
+          fixed_min_gas_price: 0,
+          low_gas_price: 0,
+          average_gas_price: 0.025,
+          high_gas_price: 0.04,
+        },
+      ],
+    },
+    images: [
+      {
+        png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmosis-chain-logo.png",
+        theme: {
+          primary_color_hex: "#231D4B",
+        },
+      },
+    ],
+    logo_URIs: {
+      png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmosis-chain-logo.png",
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.osmosis.zone/",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd.osmosis.zone/",
+        },
+      ],
+    },
+    keywords: ["dex"],
   },
   {
     rpc: "https://rpc-cosmoshub.keplr.app",
@@ -137,6 +186,40 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Cosmos Hub",
+    chain_id: "cosmoshub-4",
+    website: "https://cosmos.network/",
+    pretty_name: "Cosmos Hub",
+    status: "live",
+    network_type: "mainnet",
+    bech32_prefix: "cosmos",
+    daemon_name: "gaiad",
+    node_home: "$HOME/.gaia",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "uatom",
+          fixed_min_gas_price: 0,
+          low_gas_price: 0.01,
+          average_gas_price: 0.025,
+          high_gas_price: 0.03,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-cosmoshub.keplr.app",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd-cosmoshub.keplr.app",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc-terra-ia.cosmosia.notional.ventures/",
@@ -238,6 +321,43 @@ export const ChainInfos = [
         pegMechanism: "algorithmic",
       },
     ],
+    chain_name: "Terra Classic",
+    status: "live",
+    network_type: "mainnet",
+    pretty_name: "Terra Classic",
+    chain_id: "columbus-5",
+    daemon_name: "terrad",
+    node_home: "$HOME/.terra",
+    bech32_prefix: "terra",
+    slip44: 330,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "uluna",
+          low_gas_price: 28.325,
+          average_gas_price: 28.325,
+          high_gas_price: 50,
+        },
+        {
+          denom: "uusd",
+          low_gas_price: 0.75,
+          average_gas_price: 0.75,
+          high_gas_price: 0.75,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-terra-ia.cosmosia.notional.ventures/",
+        },
+      ],
+      rest: [
+        {
+          address: "https://api-terra-ia.cosmosia.notional.ventures/",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc-secret.keplr.app",
@@ -363,6 +483,41 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Secret Network",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://scrt.network/",
+    pretty_name: "Secret Network",
+    chain_id: "secret-4",
+    bech32_prefix: "secret",
+    daemon_name: "secretd",
+    node_home: "$HOME/.secretd",
+    key_algos: ["secp256k1"],
+    slip44: 529,
+    alternative_slip44s: [118],
+    fees: {
+      fee_tokens: [
+        {
+          denom: "uscrt",
+          fixed_min_gas_price: 0.0125,
+          low_gas_price: 0.0125,
+          average_gas_price: 0.1,
+          high_gas_price: 0.25,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-secret.keplr.app",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd-secret.keplr.app",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc-akash.keplr.app",
@@ -413,6 +568,36 @@ export const ChainInfos = [
         isFeeCurrency: true,
       },
     ],
+    chain_name: "Akash",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://akash.network/",
+    pretty_name: "Akash",
+    chain_id: "akashnet-2",
+    bech32_prefix: "akash",
+    daemon_name: "akash",
+    node_home: "$HOME/.akash",
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "uakt",
+          fixed_min_gas_price: 0,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-akash.keplr.app",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd-akash.keplr.app",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc-regen.keplr.app",
@@ -478,6 +663,42 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Regen Network",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://www.regen.network/",
+    pretty_name: "Regen",
+    chain_id: "regen-1",
+    bech32_prefix: "regen",
+    daemon_name: "regen",
+    node_home: "$HOME/.regen",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "uregen",
+          low_gas_price: 0.015,
+          average_gas_price: 0.025,
+          high_gas_price: 0.04,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-regen.keplr.app",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd-regen.keplr.app",
+        },
+      ],
+    },
+    logo_URIs: {
+      png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/regen/images/regen.png",
+    },
   },
   {
     rpc: "https://rpc-sentinel.keplr.app",
@@ -543,6 +764,39 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Sentinel",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://sentinel.co/",
+    pretty_name: "Sentinel",
+    chain_id: "sentinelhub-2",
+    bech32_prefix: "sent",
+    daemon_name: "sentinelhub",
+    node_home: "$HOME/.sentinelhub",
+    slip44: 118,
+    key_algos: ["secp256k1"],
+    fees: {
+      fee_tokens: [
+        {
+          denom: "udvpn",
+          low_gas_price: 0.1,
+          average_gas_price: 0.25,
+          high_gas_price: 0.4,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-sentinel.keplr.app",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd-sentinel.keplr.app",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc-persistence.keplr.app",
@@ -623,6 +877,41 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Persistence",
+    chain_id: "core-1",
+    pretty_name: "Persistence",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://persistence.one/",
+    bech32_prefix: "persistence",
+    daemon_name: "persistenceCore",
+    node_home: "$HOME/.persistenceCore",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    alternative_slip44s: [750],
+    fees: {
+      fee_tokens: [
+        {
+          denom: "uxprt",
+          fixed_min_gas_price: 0,
+          low_gas_price: 0,
+          average_gas_price: 0.025,
+          high_gas_price: 0.04,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-persistence.keplr.app",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd-persistence.keplr.app",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc-iris.keplr.app",
@@ -688,6 +977,39 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "IRISnet",
+    status: "live",
+    network_type: "mainnet",
+    pretty_name: "IRISnet",
+    chain_id: "irishub-1",
+    bech32_prefix: "iaa",
+    daemon_name: "iris",
+    node_home: "$HOME/.iris",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    alternative_slip44s: [566],
+    fees: {
+      fee_tokens: [
+        {
+          denom: "uiris",
+          low_gas_price: 0.2,
+          average_gas_price: 0.3,
+          high_gas_price: 0.4,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-iris.keplr.app",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd-iris.keplr.app",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc-crypto-org.keplr.app/",
@@ -753,6 +1075,38 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Crypto.org",
+    status: "live",
+    network_type: "mainnet",
+    pretty_name: "Crypto.org Chain",
+    chain_id: "crypto-org-chain-mainnet-1",
+    bech32_prefix: "cro",
+    daemon_name: "chain-maind",
+    node_home: "$HOME/.chain-maind",
+    slip44: 394,
+    alternative_slip44s: [118],
+    fees: {
+      fee_tokens: [
+        {
+          denom: "basecro",
+          low_gas_price: 0.025,
+          average_gas_price: 0.03,
+          high_gas_price: 0.04,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-crypto-org.keplr.app/",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd-crypto-org.keplr.app/",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc-iov.keplr.app",
@@ -818,6 +1172,37 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Starname",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://www.starname.me/",
+    pretty_name: "Starname",
+    chain_id: "iov-mainnet-ibc",
+    bech32_prefix: "star",
+    slip44: 234,
+    alternative_slip44s: [118],
+    fees: {
+      fee_tokens: [
+        {
+          denom: "uiov",
+          low_gas_price: 1,
+          average_gas_price: 2,
+          high_gas_price: 3,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-iov.keplr.app",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd-iov.keplr.app",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc-emoney.keplr.app",
@@ -909,6 +1294,68 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "e-Money",
+    status: "live",
+    network_type: "mainnet",
+    pretty_name: "e-Money",
+    chain_id: "emoney-3",
+    bech32_prefix: "emoney",
+    daemon_name: "emd",
+    node_home: "$HOME/.emd",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "ungm",
+          low_gas_price: 1,
+          average_gas_price: 1,
+          high_gas_price: 1,
+        },
+        {
+          denom: "eeur",
+          low_gas_price: 1,
+          average_gas_price: 1,
+          high_gas_price: 1,
+        },
+        {
+          denom: "echf",
+          low_gas_price: 1,
+          average_gas_price: 1,
+          high_gas_price: 1,
+        },
+        {
+          denom: "enok",
+          low_gas_price: 1,
+          average_gas_price: 1,
+          high_gas_price: 1,
+        },
+        {
+          denom: "esek",
+          low_gas_price: 1,
+          average_gas_price: 1,
+          high_gas_price: 1,
+        },
+        {
+          denom: "edkk",
+          low_gas_price: 1,
+          average_gas_price: 1,
+          high_gas_price: 1,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-emoney.keplr.app",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd-emoney.keplr.app",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc-juno.keplr.app",
@@ -1214,6 +1661,40 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Juno",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://www.junonetwork.io/",
+    pretty_name: "Juno",
+    chain_id: "juno-1",
+    bech32_prefix: "juno",
+    daemon_name: "junod",
+    node_home: "$HOME/.juno",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "ujuno",
+          fixed_min_gas_price: 0.001,
+          low_gas_price: 0.001,
+          average_gas_price: 0.0025,
+          high_gas_price: 0.004,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-juno.keplr.app",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd-juno.keplr.app",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc-microtick.keplr.app",
@@ -1264,6 +1745,33 @@ export const ChainInfos = [
         isFeeCurrency: true,
       },
     ],
+    chain_name: "Microtick",
+    status: "killed",
+    network_type: "mainnet",
+    pretty_name: "Microtick",
+    chain_id: "microtick-1",
+    bech32_prefix: "micro",
+    daemon_name: "mtm",
+    fees: {
+      fee_tokens: [
+        {
+          denom: "utick",
+        },
+      ],
+    },
+    slip44: 118,
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-microtick.keplr.app",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd-microtick.keplr.app",
+        },
+      ],
+    },
   },
   {
     rpc: "https://mainnet-node.like.co/rpc",
@@ -1329,6 +1837,44 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "LikeCoin",
+    status: "live",
+    website: "https://like.co/",
+    network_type: "mainnet",
+    pretty_name: "LikeCoin",
+    chain_id: "likecoin-mainnet-2",
+    bech32_prefix: "like",
+    daemon_name: "liked",
+    node_home: "$HOME/.liked",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "nanolike",
+          low_gas_price: 1,
+          average_gas_price: 10,
+          high_gas_price: 1000,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://mainnet-node.like.co/rpc",
+        },
+      ],
+      rest: [
+        {
+          address: "https://mainnet-node.like.co",
+        },
+      ],
+    },
+    logo_URIs: {
+      png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/likecoin/images/likecoin-chain-logo.png",
+      svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/likecoin/images/likecoin-chain-logo.svg",
+    },
+    keywords: ["depub", "like"],
   },
   {
     rpc: "https://rpc-impacthub.keplr.app",
@@ -1394,6 +1940,40 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "IXO",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://www.ixo.world/",
+    pretty_name: "ixo",
+    chain_id: "ixo-5",
+    bech32_prefix: "ixo",
+    daemon_name: "ixod",
+    node_home: "$HOME/.ixod",
+    key_algos: ["secp256k1", "ed25519"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "uixo",
+          fixed_min_gas_price: 0.015,
+          low_gas_price: 0.015,
+          average_gas_price: 0.025,
+          high_gas_price: 0.04,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-impacthub.keplr.app",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd-impacthub.keplr.app",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc.bitcanna.io",
@@ -1459,6 +2039,40 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "BitCanna",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://www.bitcanna.io/",
+    pretty_name: "BitCanna",
+    chain_id: "bitcanna-1",
+    bech32_prefix: "bcna",
+    daemon_name: "bcnad",
+    node_home: "$HOME/.bcna",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "ubcna",
+          fixed_min_gas_price: 0.001,
+          low_gas_price: 0.001,
+          average_gas_price: 0.0025,
+          high_gas_price: 0.01,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.bitcanna.io",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd.bitcanna.io",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc.explorebitsong.com",
@@ -1614,6 +2228,39 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "BitSong",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://bitsong.io/",
+    pretty_name: "BitSong",
+    chain_id: "bitsong-2b",
+    bech32_prefix: "bitsong",
+    slip44: 639,
+    daemon_name: "bitsongd",
+    node_home: "$HOME/.bitsongd",
+    fees: {
+      fee_tokens: [
+        {
+          denom: "ubtsg",
+          fixed_min_gas_price: 0,
+          low_gas_price: 3,
+          average_gas_price: 10,
+          high_gas_price: 20,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.explorebitsong.com",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd.explorebitsong.com",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc-mainnet.blockchain.ki",
@@ -1690,6 +2337,40 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Ki",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://foundation.ki/",
+    pretty_name: "Ki",
+    chain_id: "kichain-2",
+    bech32_prefix: "ki",
+    daemon_name: "kid",
+    node_home: "$HOME/.kid",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "uxki",
+          fixed_min_gas_price: 0.025,
+          low_gas_price: 0.025,
+          average_gas_price: 0.03,
+          high_gas_price: 0.05,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-mainnet.blockchain.ki",
+        },
+      ],
+      rest: [
+        {
+          address: "https://api-mainnet.blockchain.ki",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc.gopanacea.org",
@@ -1755,6 +2436,40 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "MediBloc",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://medibloc.com/en/",
+    pretty_name: "Medibloc",
+    chain_id: "panacea-3",
+    bech32_prefix: "panacea",
+    daemon_name: "panacead",
+    node_home: "$HOME/.panacead",
+    key_algos: ["secp256k1"],
+    slip44: 371,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "umed",
+          fixed_min_gas_price: 5,
+          low_gas_price: 5,
+          average_gas_price: 7,
+          high_gas_price: 9,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.gopanacea.org",
+        },
+      ],
+      rest: [
+        {
+          address: "https://api.gopanacea.org",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc.bostrom.cybernode.ai",
@@ -1820,6 +2535,37 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Bostrom",
+    status: "live",
+    network_type: "mainnet",
+    pretty_name: "bostrom",
+    chain_id: "bostrom",
+    bech32_prefix: "bostrom",
+    daemon_name: "cyber",
+    node_home: "$HOME/.cyber",
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "boot",
+          low_gas_price: 0,
+          average_gas_price: 0,
+          high_gas_price: 0.01,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.bostrom.cybernode.ai",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd.bostrom.cybernode.ai",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc.comdex.one",
@@ -1900,6 +2646,40 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Comdex",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://comdex.one/",
+    pretty_name: "Comdex",
+    chain_id: "comdex-1",
+    bech32_prefix: "comdex",
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "ucmdx",
+          fixed_min_gas_price: 0,
+          low_gas_price: 0,
+          average_gas_price: 0.025,
+          high_gas_price: 0.04,
+        },
+      ],
+    },
+    daemon_name: "comdex",
+    node_home: "$HOME/.comdex",
+    key_algos: ["secp256k1"],
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.comdex.one",
+        },
+      ],
+      rest: [
+        {
+          address: "https://rest.comdex.one",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc.cheqd.net",
@@ -1965,6 +2745,43 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "cheqd",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://www.cheqd.io/",
+    pretty_name: "cheqd",
+    chain_id: "cheqd-mainnet-1",
+    bech32_prefix: "cheqd",
+    daemon_name: "cheqd-noded",
+    node_home: "$HOME/.cheqdnode",
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "ncheq",
+          fixed_min_gas_price: 25,
+          low_gas_price: 25,
+          average_gas_price: 50,
+          high_gas_price: 100,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.cheqd.net",
+        },
+      ],
+      rest: [
+        {
+          address: "https://api.cheqd.net",
+        },
+      ],
+    },
+    logo_URIs: {
+      png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/cheqd/images/cheq.png",
+      svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/cheqd/images/cheq.svg",
+    },
   },
   {
     rpc: "https://rpc.stargaze-apis.com",
@@ -2015,6 +2832,35 @@ export const ChainInfos = [
         isFeeCurrency: true,
       },
     ],
+    chain_name: "Stargaze",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://stargaze.zone/",
+    pretty_name: "Stargaze",
+    chain_id: "stargaze-1",
+    bech32_prefix: "stars",
+    daemon_name: "starsd",
+    node_home: "$HOME/.starsd",
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "ustars",
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.stargaze-apis.com",
+        },
+      ],
+      rest: [
+        {
+          address: "https://rest.stargaze-apis.com",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc.chihuahua.wtf",
@@ -2080,6 +2926,39 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Chihuahua",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://chihuahua.wtf/",
+    pretty_name: "Chihuahua",
+    chain_id: "chihuahua-1",
+    bech32_prefix: "chihuahua",
+    daemon_name: "chihuahuad",
+    node_home: "$HOME/.chihuahuad",
+    fees: {
+      fee_tokens: [
+        {
+          denom: "uhuahua",
+          fixed_min_gas_price: 0,
+          low_gas_price: 1,
+          average_gas_price: 5,
+          high_gas_price: 10,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.chihuahua.wtf",
+        },
+      ],
+      rest: [
+        {
+          address: "https://api.chihuahua.wtf",
+        },
+      ],
+    },
+    slip44: 118,
   },
   {
     rpc: "https://node0.mainnet.lum.network/rpc",
@@ -2145,6 +3024,40 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Lum Network",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://lum.network/",
+    pretty_name: "Lum Network",
+    chain_id: "lum-network-1",
+    bech32_prefix: "lum",
+    daemon_name: "lumd",
+    node_home: "$HOME/.lumd",
+    key_algos: ["secp256k1"],
+    slip44: 880,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "ulum",
+          fixed_min_gas_price: 0.001,
+          low_gas_price: 0.01,
+          average_gas_price: 0.025,
+          high_gas_price: 0.04,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://node0.mainnet.lum.network/rpc",
+        },
+      ],
+      rest: [
+        {
+          address: "https://node0.mainnet.lum.network/rest",
+        },
+      ],
+    },
   },
   {
     rpc: "https://mainnet-rpc.vidulum.app",
@@ -2195,6 +3108,37 @@ export const ChainInfos = [
         isFeeCurrency: true,
       },
     ],
+    chain_name: "Vidulum",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://vidulum.app/",
+    pretty_name: "Vidulum",
+    chain_id: "vidulum-1",
+    bech32_prefix: "vdl",
+    daemon_name: "vidulumd",
+    node_home: "$HOME/.vidulum",
+    key_algos: ["secp256k1"],
+    slip44: 370,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "uvdl",
+          fixed_min_gas_price: 0,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://mainnet-rpc.vidulum.app",
+        },
+      ],
+      rest: [
+        {
+          address: "https://mainnet-lcd.vidulum.app",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc.mainnet.desmos.network",
@@ -2260,6 +3204,40 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Desmos",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://desmos.network/",
+    pretty_name: "Desmos",
+    chain_id: "desmos-mainnet",
+    bech32_prefix: "desmos",
+    daemon_name: "desmos",
+    node_home: "$HOME/.desmos",
+    key_algos: ["secp256k1"],
+    slip44: 852,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "udsm",
+          fixed_min_gas_price: 0.001,
+          low_gas_price: 0.01,
+          average_gas_price: 0.03,
+          high_gas_price: 0.05,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.mainnet.desmos.network",
+        },
+      ],
+      rest: [
+        {
+          address: "https://api.mainnet.desmos.network",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc-1-dig.notional.ventures",
@@ -2325,6 +3303,40 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Dig",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://digchain.org/",
+    pretty_name: "Dig Chain",
+    chain_id: "dig-1",
+    bech32_prefix: "dig",
+    daemon_name: "digd",
+    node_home: "$HOME/.dig",
+    key_algos: ["secp256k1", "ethsecp256k1"],
+    extra_codecs: ["ethermint"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "udig",
+          low_gas_price: 0.025,
+          average_gas_price: 0.03,
+          high_gas_price: 0.035,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-1-dig.notional.ventures",
+        },
+      ],
+      rest: [
+        {
+          address: "https://api-1-dig.notional.ventures",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc-sommelier.keplr.app",
@@ -2375,6 +3387,36 @@ export const ChainInfos = [
         isFeeCurrency: true,
       },
     ],
+    chain_name: "Sommelier",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://sommelier.finance/",
+    pretty_name: "Sommelier",
+    chain_id: "sommelier-3",
+    bech32_prefix: "somm",
+    daemon_name: "sommelier",
+    node_home: "$HOME/.sommelier",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "usomm",
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-sommelier.keplr.app",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd-sommelier.keplr.app",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc.sifchain.finance",
@@ -2440,6 +3482,38 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Sifchain",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://sifchain.finance/",
+    pretty_name: "Sifchain",
+    chain_id: "sifchain-1",
+    bech32_prefix: "sif",
+    daemon_name: "sifnoded",
+    node_home: "$HOME/.sifnoded",
+    fees: {
+      fee_tokens: [
+        {
+          denom: "rowan",
+          low_gas_price: 1000000000000,
+          average_gas_price: 1500000000000,
+          high_gas_price: 2000000000000,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.sifchain.finance",
+        },
+      ],
+      rest: [
+        {
+          address: "https://api-int.sifchain.finance",
+        },
+      ],
+    },
+    slip44: 118,
   },
   {
     rpc: "https://rpc.laozi3.bandchain.org",
@@ -2490,6 +3564,35 @@ export const ChainInfos = [
         isFeeCurrency: true,
       },
     ],
+    chain_name: "BandChain",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://bandprotocol.com/",
+    pretty_name: "Band Protocol",
+    chain_id: "laozi-mainnet",
+    daemon_name: "bandd",
+    node_home: "$HOME/.band",
+    bech32_prefix: "band",
+    slip44: 494,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "uband",
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.laozi3.bandchain.org",
+        },
+      ],
+      rest: [
+        {
+          address: "https://laozi1.bandchain.org/api",
+        },
+      ],
+    },
   },
   {
     rpc: "https://node1.konstellation.tech:26657",
@@ -2540,6 +3643,36 @@ export const ChainInfos = [
         isFeeCurrency: true,
       },
     ],
+    chain_name: "Konstellation",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://konstellation.tech/",
+    pretty_name: "Konstellation",
+    chain_id: "darchub",
+    bech32_prefix: "darc",
+    daemon_name: "knstld",
+    node_home: "$HOME/.knstld",
+    fees: {
+      fee_tokens: [
+        {
+          denom: "udarc",
+          fixed_min_gas_price: 0,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://node1.konstellation.tech:26657",
+        },
+      ],
+      rest: [
+        {
+          address: "https://node1.konstellation.tech:1318",
+        },
+      ],
+    },
+    slip44: 118,
   },
   {
     rpc: "https://rpc-umee.keplr.app",
@@ -2605,6 +3738,39 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Umee",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://www.umee.cc/",
+    pretty_name: "Umee",
+    chain_id: "umee-1",
+    bech32_prefix: "umee",
+    daemon_name: "umeed",
+    node_home: "$HOME/.umee",
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "uumee",
+          fixed_min_gas_price: 0.1,
+          low_gas_price: 0.1,
+          average_gas_price: 0.12,
+          high_gas_price: 0.2,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-umee.keplr.app",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd-umee.keplr.app",
+        },
+      ],
+    },
   },
   {
     rpc: "https://gravitychain.io:26657",
@@ -2755,6 +3921,52 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Gravity Bridge",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://www.gravitybridge.net/",
+    pretty_name: "Gravity Bridge",
+    chain_id: "gravity-bridge-3",
+    bech32_prefix: "gravity",
+    daemon_name: "gravity",
+    node_home: "$HOME/.gravity",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "ugraviton",
+          fixed_min_gas_price: 0,
+          low_gas_price: 0,
+          average_gas_price: 0,
+          high_gas_price: 0.035,
+        },
+        {
+          denom: "gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          low_gas_price: 0.0002,
+          average_gas_price: 0.0005,
+          high_gas_price: 0.0008,
+        },
+        {
+          denom: "gravity0xdAC17F958D2ee523a2206206994597C13D831ec7",
+          low_gas_price: 0.0002,
+          average_gas_price: 0.0005,
+          high_gas_price: 0.0008,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://gravitychain.io:26657",
+        },
+      ],
+      rest: [
+        {
+          address: "https://gravitychain.io:1317",
+        },
+      ],
+    },
   },
   {
     rpc: "https://poseidon.mainnet.decentr.xyz",
@@ -2806,6 +4018,36 @@ export const ChainInfos = [
         isFeeCurrency: true,
       },
     ],
+    chain_name: "Decentr",
+    status: "live",
+    network_type: "mainnet",
+    pretty_name: "Decentr",
+    chain_id: "mainnet-3",
+    bech32_prefix: "decentr",
+    daemon_name: "decentrd",
+    node_home: "$HOME/.decentr",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "udec",
+          fixed_min_gas_price: 0.025,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://poseidon.mainnet.decentr.xyz",
+        },
+      ],
+      rest: [
+        {
+          address: "https://rest.mainnet.decentr.xyz",
+        },
+      ],
+    },
   },
   {
     rpc: "https://shenturpc.certikpowered.info",
@@ -2856,6 +4098,36 @@ export const ChainInfos = [
         isFeeCurrency: true,
       },
     ],
+    chain_name: "Certik",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://www.shentu.technology/",
+    pretty_name: "Shentu",
+    chain_id: "shentu-2.2",
+    bech32_prefix: "certik",
+    daemon_name: "shentud",
+    node_home: "$HOME/.shentud",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "uctk",
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://shenturpc.certikpowered.info",
+        },
+      ],
+      rest: [
+        {
+          address: "https://azuredragon.noopsbycertik.com",
+        },
+      ],
+    },
   },
   {
     rpc: "https://tm-api.carbon.network",
@@ -2922,6 +4194,261 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Carbon",
+    status: "live",
+    network_type: "mainnet",
+    pretty_name: "Carbon",
+    chain_id: "carbon-1",
+    bech32_prefix: "swth",
+    daemon_name: "carbond",
+    node_home: "$HOME/.carbon",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "swth",
+          fixed_min_gas_price: 0,
+          low_gas_price: 1,
+          average_gas_price: 1,
+          high_gas_price: 1,
+          gas_costs: {
+            cosmos_send: 100000000,
+            ibc_transfer: 100000000,
+          },
+        },
+        {
+          denom: "usc",
+          fixed_min_gas_price: 0,
+          low_gas_price: 0.0001,
+          average_gas_price: 0.0001,
+          high_gas_price: 0.0001,
+          gas_costs: {
+            cosmos_send: 100000000,
+            ibc_transfer: 100000000,
+          },
+        },
+        {
+          denom: "bnb.1.6.773edb",
+          fixed_min_gas_price: 0,
+          low_gas_price: 1000000,
+          average_gas_price: 1000000,
+          high_gas_price: 1000000,
+          gas_costs: {
+            cosmos_send: 100000000,
+            ibc_transfer: 100000000,
+          },
+        },
+        {
+          denom: "bneo.1.14.e2e5f6",
+          fixed_min_gas_price: 0,
+          low_gas_price: 0.0015,
+          average_gas_price: 0.0015,
+          high_gas_price: 0.0015,
+          gas_costs: {
+            cosmos_send: 100000000,
+            ibc_transfer: 100000000,
+          },
+        },
+        {
+          denom: "busd.1.6.754a80",
+          fixed_min_gas_price: 0,
+          low_gas_price: 100000000,
+          average_gas_price: 100000000,
+          high_gas_price: 100000000,
+          gas_costs: {
+            cosmos_send: 100000000,
+            ibc_transfer: 100000000,
+          },
+        },
+        {
+          denom: "cglp.1.19.1698d3",
+          fixed_min_gas_price: 0,
+          low_gas_price: 100000000,
+          average_gas_price: 100000000,
+          high_gas_price: 100000000,
+          gas_costs: {
+            cosmos_send: 100000000,
+            ibc_transfer: 100000000,
+          },
+        },
+        {
+          denom: "cgt/1",
+          fixed_min_gas_price: 0,
+          low_gas_price: 100000000,
+          average_gas_price: 100000000,
+          high_gas_price: 100000000,
+          gas_costs: {
+            cosmos_send: 100000000,
+            ibc_transfer: 100000000,
+          },
+        },
+        {
+          denom: "eth.1.19.c3b805",
+          fixed_min_gas_price: 0,
+          low_gas_price: 100000,
+          average_gas_price: 100000,
+          high_gas_price: 100000,
+          gas_costs: {
+            cosmos_send: 100000000,
+            ibc_transfer: 100000000,
+          },
+        },
+        {
+          denom: "eth.1.2.942d87",
+          fixed_min_gas_price: 0,
+          low_gas_price: 100000,
+          average_gas_price: 100000,
+          high_gas_price: 100000,
+          gas_costs: {
+            cosmos_send: 100000000,
+            ibc_transfer: 100000000,
+          },
+        },
+        {
+          denom:
+            "ibc/07FA7831E1920D0C87C9388F86B0108677F6ED0C9DE7E4063F05ED675192405C",
+          fixed_min_gas_price: 0,
+          low_gas_price: 0.0035,
+          average_gas_price: 0.0035,
+          high_gas_price: 0.0035,
+          gas_costs: {
+            cosmos_send: 100000000,
+            ibc_transfer: 100000000,
+          },
+        },
+        {
+          denom:
+            "ibc/2B58B8C147E8718EECCB3713271DF46DEE8A3A00A27242628604E31C2F370EF5",
+          fixed_min_gas_price: 0,
+          low_gas_price: 0.00005,
+          average_gas_price: 0.00005,
+          high_gas_price: 0.00005,
+          gas_costs: {
+            cosmos_send: 100000000,
+            ibc_transfer: 100000000,
+          },
+        },
+        {
+          denom:
+            "ibc/3552CECB7BCE1891DB6070D37EC6E954C972B1400141308FCD85FD148BD06DE5",
+          fixed_min_gas_price: 0,
+          low_gas_price: 0.00032,
+          average_gas_price: 0.00032,
+          high_gas_price: 0.00032,
+          gas_costs: {
+            cosmos_send: 100000000,
+            ibc_transfer: 100000000,
+          },
+        },
+        {
+          denom:
+            "ibc/662914D0C1CEBCB070C68F061D035E8B10A07C79AB286E7342C85F3BE74612C5",
+          fixed_min_gas_price: 0,
+          low_gas_price: 0.00015,
+          average_gas_price: 0.00015,
+          high_gas_price: 0.00015,
+          gas_costs: {
+            cosmos_send: 100000000,
+            ibc_transfer: 100000000,
+          },
+        },
+        {
+          denom:
+            "ibc/75249A18DEFBEFE55F83B1C70CAD234DF164F174C6BC51682EE92C2C81C18C93",
+          fixed_min_gas_price: 0,
+          low_gas_price: 0.00015,
+          average_gas_price: 0.00015,
+          high_gas_price: 0.00015,
+          gas_costs: {
+            cosmos_send: 100000000,
+            ibc_transfer: 100000000,
+          },
+        },
+        {
+          denom:
+            "ibc/92E974290AF9E2BC3AEEEC35305C8FD76AC5A22A74CF8D91270FDF5A1C41E861",
+          fixed_min_gas_price: 0,
+          low_gas_price: 200000000,
+          average_gas_price: 200000000,
+          high_gas_price: 200000000,
+          gas_costs: {
+            cosmos_send: 100000000,
+            ibc_transfer: 100000000,
+          },
+        },
+        {
+          denom:
+            "ibc/A4DB47A9D3CF9A068D454513891B526702455D3EF08FB9EB558C561F9DC2B701",
+          fixed_min_gas_price: 0,
+          low_gas_price: 0.00001,
+          average_gas_price: 0.00001,
+          high_gas_price: 0.00001,
+          gas_costs: {
+            cosmos_send: 100000000,
+            ibc_transfer: 100000000,
+          },
+        },
+        {
+          denom:
+            "ibc/B7864B03E1B9FD4F049243E92ABD691586F682137037A9F3FCA5222815620B3C",
+          fixed_min_gas_price: 0,
+          low_gas_price: 0.00001,
+          average_gas_price: 0.00001,
+          high_gas_price: 0.00001,
+          gas_costs: {
+            cosmos_send: 100000000,
+            ibc_transfer: 100000000,
+          },
+        },
+        {
+          denom:
+            "ibc/ED07A3391A112B175915CD8FAF43A2DA8E4790EDE12566649D0C2F97716B8518",
+          fixed_min_gas_price: 0,
+          low_gas_price: 0.00015,
+          average_gas_price: 0.00015,
+          high_gas_price: 0.00015,
+          gas_costs: {
+            cosmos_send: 100000000,
+            ibc_transfer: 100000000,
+          },
+        },
+        {
+          denom: "usdc.1.2.343151",
+          fixed_min_gas_price: 0,
+          low_gas_price: 0.0001,
+          average_gas_price: 0.0001,
+          high_gas_price: 0.0001,
+          gas_costs: {
+            cosmos_send: 100000000,
+            ibc_transfer: 100000000,
+          },
+        },
+        {
+          denom: "usdc.1.6.53ff75",
+          fixed_min_gas_price: 0,
+          low_gas_price: 100000000,
+          average_gas_price: 100000000,
+          high_gas_price: 100000000,
+          gas_costs: {
+            cosmos_send: 100000000,
+            ibc_transfer: 100000000,
+          },
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://tm-api.carbon.network",
+        },
+      ],
+      rest: [
+        {
+          address: "https://api.carbon.network",
+        },
+      ],
+    },
   },
   {
     rpc: "https://public.api.injective.network",
@@ -2987,6 +4514,40 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Injective",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://injective.com/",
+    pretty_name: "Injective",
+    chain_id: "injective-1",
+    bech32_prefix: "inj",
+    extra_codecs: ["injective"],
+    slip44: 60,
+    daemon_name: "injectived",
+    node_home: "$HOME/.injectived",
+    fees: {
+      fee_tokens: [
+        {
+          denom: "inj",
+          fixed_min_gas_price: 500000000,
+          low_gas_price: 500000000,
+          average_gas_price: 700000000,
+          high_gas_price: 900000000,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://public.api.injective.network",
+        },
+      ],
+      rest: [
+        {
+          address: "https://public.lcd.injective.network",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc.cerberus.zone:26657",
@@ -3037,6 +4598,36 @@ export const ChainInfos = [
         isFeeCurrency: true,
       },
     ],
+    chain_name: "Cerberus",
+    status: "killed",
+    network_type: "mainnet",
+    website: "https://cerberus.zone/",
+    pretty_name: "Cerberus",
+    chain_id: "cerberus-chain-1",
+    bech32_prefix: "cerberus",
+    daemon_name: "cerberusd",
+    node_home: "$HOME/.cerberus",
+    fees: {
+      fee_tokens: [
+        {
+          denom: "ucrbrus",
+          fixed_min_gas_price: 0,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.cerberus.zone:26657",
+        },
+      ],
+      rest: [
+        {
+          address: "https://api.cerberus.zone:1317",
+        },
+      ],
+    },
+    slip44: 118,
   },
   {
     rpc: "https://rpc-fetchhub.fetch.ai:443",
@@ -3102,6 +4693,37 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Fetch.ai",
+    status: "live",
+    network_type: "mainnet",
+    pretty_name: "Fetch.ai",
+    chain_id: "fetchhub-4",
+    bech32_prefix: "fetch",
+    daemon_name: "fetchd",
+    node_home: "$HOME/.fetchd",
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "afet",
+          low_gas_price: 0.025,
+          average_gas_price: 0.025,
+          high_gas_price: 0.035,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-fetchhub.fetch.ai:443",
+        },
+      ],
+      rest: [
+        {
+          address: "https://rest-fetchhub.fetch.ai",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc.assetmantle.one/",
@@ -3167,6 +4789,38 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "AssetMantle",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://assetmantle.one/",
+    pretty_name: "AssetMantle",
+    chain_id: "mantle-1",
+    bech32_prefix: "mantle",
+    daemon_name: "mantleNode",
+    node_home: "$HOME/.mantleNode",
+    fees: {
+      fee_tokens: [
+        {
+          denom: "umntl",
+          low_gas_price: 0.01,
+          average_gas_price: 0.025,
+          high_gas_price: 0.04,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.assetmantle.one/",
+        },
+      ],
+      rest: [
+        {
+          address: "https://rest.assetmantle.one/",
+        },
+      ],
+    },
+    slip44: 118,
   },
   {
     rpc: "https://rpc.provenance.io/",
@@ -3232,6 +4886,40 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Provenance",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://provenance.io/",
+    pretty_name: "Provenance",
+    chain_id: "pio-mainnet-1",
+    bech32_prefix: "pb",
+    daemon_name: "provenanced",
+    node_home: "$HOME/Provenance",
+    key_algos: ["secp256k1"],
+    slip44: 505,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "nhash",
+          fixed_min_gas_price: 1905,
+          low_gas_price: 1905,
+          average_gas_price: 2100,
+          high_gas_price: 2500,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.provenance.io/",
+        },
+      ],
+      rest: [
+        {
+          address: "https://api.provenance.io",
+        },
+      ],
+    },
   },
   {
     rpc: "https://galaxy-rpc.brocha.in",
@@ -3297,6 +4985,38 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Galaxy",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://galaxychain.zone/",
+    pretty_name: "Galaxy",
+    chain_id: "galaxy-1",
+    bech32_prefix: "galaxy",
+    daemon_name: "galaxyd",
+    node_home: "$HOME/.galaxy",
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "uglx",
+          low_gas_price: 0.025,
+          average_gas_price: 0.025,
+          high_gas_price: 0.035,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://galaxy-rpc.brocha.in",
+        },
+      ],
+      rest: [
+        {
+          address: "https://galaxy-rest.brocha.in",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc-meme-1.meme.sx:443",
@@ -3362,6 +5082,39 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Meme",
+    status: "live",
+    network_type: "mainnet",
+    pretty_name: "MEME",
+    chain_id: "meme-1",
+    bech32_prefix: "meme",
+    daemon_name: "memed",
+    node_home: "$HOME/.memed",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "umeme",
+          fixed_min_gas_price: 0.025,
+          low_gas_price: 0.025,
+          average_gas_price: 0.035,
+          high_gas_price: 0.045,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-meme-1.meme.sx:443",
+        },
+      ],
+      rest: [
+        {
+          address: "https://api-meme-1.meme.sx:443",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc-evmos.keplr.app/",
@@ -3427,6 +5180,41 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Evmos",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://evmos.org/",
+    pretty_name: "Evmos",
+    chain_id: "evmos_9001-2",
+    bech32_prefix: "evmos",
+    node_home: "$HOME/.evmosd",
+    daemon_name: "evmosd",
+    key_algos: ["ethsecp256k1"],
+    extra_codecs: ["ethermint"],
+    slip44: 60,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "aevmos",
+          fixed_min_gas_price: 250000000,
+          low_gas_price: 20000000000,
+          average_gas_price: 25000000000,
+          high_gas_price: 40000000000,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-evmos.keplr.app/",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd-evmos.keplr.app/",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc.terrav2.ccvalidators.com/",
@@ -3492,6 +5280,39 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Terra 2.0",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://www.terra.money/",
+    pretty_name: "Terra 2.0",
+    chain_id: "phoenix-1",
+    daemon_name: "terrad",
+    node_home: "$HOME/.terra",
+    bech32_prefix: "terra",
+    slip44: 330,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "uluna",
+          fixed_min_gas_price: 0.0125,
+          low_gas_price: 0.015,
+          average_gas_price: 0.025,
+          high_gas_price: 0.04,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.terrav2.ccvalidators.com/",
+        },
+      ],
+      rest: [
+        {
+          address: "https://phoenix-lcd.terra.dev/",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpcapi.rizon.world/",
@@ -3557,6 +5378,39 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Rizon",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://rizon.world/",
+    pretty_name: "Rizon",
+    chain_id: "titan-1",
+    bech32_prefix: "rizon",
+    daemon_name: "rizond",
+    node_home: "$HOME/.rizon",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "uatolo",
+          low_gas_price: 0.025,
+          average_gas_price: 0.025,
+          high_gas_price: 0.035,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpcapi.rizon.world/",
+        },
+      ],
+      rest: [
+        {
+          address: "https://restapi.rizon.world/",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc-kava.keplr.app",
@@ -3643,6 +5497,39 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Kava",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://www.kava.io/",
+    pretty_name: "Kava",
+    chain_id: "kava_2222-10",
+    bech32_prefix: "kava",
+    daemon_name: "kava",
+    node_home: "$HOME/.kava",
+    slip44: 459,
+    alternative_slip44s: [118],
+    fees: {
+      fee_tokens: [
+        {
+          denom: "ukava",
+          low_gas_price: 0.05,
+          average_gas_price: 0.1,
+          high_gas_price: 0.25,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-kava.keplr.app",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd-kava.keplr.app",
+        },
+      ],
+    },
   },
   {
     rpc: "https://26657.genesisl1.org",
@@ -3708,6 +5595,37 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "GenesisL1",
+    status: "live",
+    network_type: "mainnet",
+    pretty_name: "GenesisL1",
+    chain_id: "genesis_29-2",
+    bech32_prefix: "genesis",
+    daemon_name: "genesisd",
+    node_home: "$HOME/.genesisd",
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "el1",
+          low_gas_price: 999999999,
+          average_gas_price: 1000000000,
+          high_gas_price: 1000000001,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://26657.genesisl1.org",
+        },
+      ],
+      rest: [
+        {
+          address: "https://api.genesisl1.org",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc.kaiyo.kujira.setten.io",
@@ -3781,6 +5699,43 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Kujira",
+    chain_id: "kaiyo-1",
+    pretty_name: "Kujira",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://kujira.app/",
+    bech32_prefix: "kujira",
+    daemon_name: "kujirad",
+    node_home: "$HOME/.kujira",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "ukuji",
+          fixed_min_gas_price: 0.00119,
+          low_gas_price: 0.01,
+          average_gas_price: 0.025,
+          high_gas_price: 0.03,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.kaiyo.kujira.setten.io",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd.kaiyo.kujira.setten.io",
+        },
+      ],
+    },
+    logo_URIs: {
+      png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/kujira/images/kujira-chain-logo.png",
+    },
   },
   {
     rpc: "https://rpc.mainnet-1.tgrade.confio.run",
@@ -3846,6 +5801,43 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Tgrade",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://tgrade.finance/",
+    pretty_name: "Tgrade",
+    chain_id: "tgrade-mainnet-1",
+    bech32_prefix: "tgrade",
+    daemon_name: "tgrade",
+    node_home: "$HOME/.tgrade",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "utgd",
+          fixed_min_gas_price: 0.05,
+          low_gas_price: 0.05,
+          average_gas_price: 0.075,
+          high_gas_price: 0.1,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.mainnet-1.tgrade.confio.run",
+        },
+      ],
+      rest: [
+        {
+          address: "https://api.mainnet-1.tgrade.confio.run",
+        },
+      ],
+    },
+    logo_URIs: {
+      png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/tgrade/images/tgrade-logo-gradient_h.png",
+    },
   },
   {
     rpc: "https://rpc-echelon.whispernode.com/",
@@ -3911,6 +5903,36 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Echelon",
+    status: "live",
+    network_type: "mainnet",
+    pretty_name: "Echelon",
+    chain_id: "echelon_3000-3",
+    bech32_prefix: "echelon",
+    node_home: "$HOME/.echelond",
+    slip44: 60,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "aechelon",
+          low_gas_price: 10000000000,
+          average_gas_price: 25000000000,
+          high_gas_price: 40000000000,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-echelon.whispernode.com/",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd-echelon.whispernode.com/",
+        },
+      ],
+    },
   },
   {
     rpc: "https://node.odin-freya-website.odinprotocol.io/mainnet/a/",
@@ -3990,6 +6012,41 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Odin",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://odinprotocol.io/",
+    pretty_name: "Odin Protocol",
+    chain_id: "odin-mainnet-freya",
+    bech32_prefix: "odin",
+    daemon_name: "odind",
+    node_home: "$HOME/.odin",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "loki",
+          fixed_min_gas_price: 0.0125,
+          low_gas_price: 0.025,
+          average_gas_price: 0.05,
+          high_gas_price: 0.06,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://node.odin-freya-website.odinprotocol.io/mainnet/a/",
+        },
+      ],
+      rest: [
+        {
+          address:
+            "https://node.odin-freya-website.odinprotocol.io/mainnet/a/api/",
+        },
+      ],
+    },
   },
   {
     rpc: "https://mainnet.crescent.network:26657",
@@ -4055,6 +6112,39 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Crescent",
+    status: "live",
+    network_type: "mainnet",
+    pretty_name: "Crescent",
+    chain_id: "crescent-1",
+    bech32_prefix: "cre",
+    daemon_name: "crescentd",
+    node_home: "$HOME/.crescent",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "ucre",
+          fixed_min_gas_price: 0,
+          low_gas_price: 0.01,
+          average_gas_price: 0.025,
+          high_gas_price: 0.03,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://mainnet.crescent.network:26657",
+        },
+      ],
+      rest: [
+        {
+          address: "https://mainnet.crescent.network:1317",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc.lumenx.chaintools.tech",
@@ -4120,6 +6210,39 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "LumenX",
+    status: "live",
+    network_type: "mainnet",
+    pretty_name: "LumenX",
+    chain_id: "LumenX",
+    bech32_prefix: "lumen",
+    daemon_name: "lumenxd",
+    node_home: "$HOME/.lumenx",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "ulumen",
+          fixed_min_gas_price: 0.0025,
+          low_gas_price: 0.01,
+          average_gas_price: 0.025,
+          high_gas_price: 0.03,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.lumenx.chaintools.tech",
+        },
+      ],
+      rest: [
+        {
+          address: "https://api.lumenx.chaintools.tech",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc.orai.io",
@@ -4185,6 +6308,40 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Oraichain",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://orai.io/",
+    pretty_name: "Oraichain",
+    chain_id: "Oraichain",
+    bech32_prefix: "orai",
+    daemon_name: "oraid",
+    node_home: "$WORKSPACE/.oraid",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "orai",
+          fixed_min_gas_price: 0,
+          low_gas_price: 0.003,
+          average_gas_price: 0.005,
+          high_gas_price: 0.007,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.orai.io",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd.orai.io",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc.cudos.org",
@@ -4250,6 +6407,38 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Cudos",
+    status: "live",
+    network_type: "mainnet",
+    pretty_name: "Cudos",
+    chain_id: "cudos-1",
+    bech32_prefix: "cudos",
+    daemon_name: "cudos-noded",
+    node_home: "$HOME/cudos-data",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "acudos",
+          low_gas_price: 5000000000000,
+          average_gas_price: 10000000000000,
+          high_gas_price: 20000000000000,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.cudos.org",
+        },
+      ],
+      rest: [
+        {
+          address: "https://rest.cudos.org",
+        },
+      ],
+    },
   },
   {
     rpc: "https://main.rpc.agoric.net",
@@ -4341,6 +6530,45 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Agoric",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://agoric.com/",
+    pretty_name: "Agoric",
+    chain_id: "agoric-3",
+    bech32_prefix: "agoric",
+    daemon_name: "agd",
+    node_home: "$HOME/.agoric",
+    slip44: 564,
+    alternative_slip44s: [118],
+    fees: {
+      fee_tokens: [
+        {
+          denom: "ubld",
+          low_gas_price: 0.03,
+          average_gas_price: 0.05,
+          high_gas_price: 0.07,
+        },
+        {
+          denom: "uist",
+          low_gas_price: 0.0034,
+          average_gas_price: 0.007,
+          high_gas_price: 0.02,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://main.rpc.agoric.net",
+        },
+      ],
+      rest: [
+        {
+          address: "https://main.api.agoric.net",
+        },
+      ],
+    },
   },
   {
     rpc: "https://stride-rpc.polkachu.com/",
@@ -4455,6 +6683,43 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Stride",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://stride.zone/",
+    pretty_name: "Stride",
+    chain_id: "stride-1",
+    bech32_prefix: "stride",
+    daemon_name: "strided",
+    node_home: "$HOME/.stride",
+    key_algos: ["ed25519"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "ustrd",
+          fixed_min_gas_price: 0,
+          low_gas_price: 0,
+          average_gas_price: 0,
+          high_gas_price: 0.04,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://stride-rpc.polkachu.com/",
+        },
+      ],
+      rest: [
+        {
+          address: "https://stride-api.polkachu.com/",
+        },
+      ],
+    },
+    logo_URIs: {
+      png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/stride/images/stride-chain-logo.png",
+    },
   },
   {
     rpc: "https://api.mainnet.rebus.money:26657",
@@ -4505,6 +6770,37 @@ export const ChainInfos = [
         isFeeCurrency: true,
       },
     ],
+    chain_name: "Rebus",
+    website: "https://www.rebuschain.com/",
+    status: "live",
+    network_type: "mainnet",
+    pretty_name: "Rebus",
+    chain_id: "reb_1111-1",
+    bech32_prefix: "rebus",
+    daemon_name: "rebusd",
+    node_home: "$HOME/.rebusd",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "arebus",
+          fixed_min_gas_price: 0,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://api.mainnet.rebus.money:26657",
+        },
+      ],
+      rest: [
+        {
+          address: "https://api.mainnet.rebus.money:1317",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc.mainnet.teritori.com/",
@@ -4570,6 +6866,38 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Teritori",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://teritori.com/",
+    pretty_name: "Teritori",
+    chain_id: "teritori-1",
+    daemon_name: "teritorid",
+    node_home: "$HOME/.teritorid",
+    bech32_prefix: "tori",
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "utori",
+          low_gas_price: 0,
+          average_gas_price: 0.25,
+          high_gas_price: 0.5,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.mainnet.teritori.com/",
+        },
+      ],
+      rest: [
+        {
+          address: "https://rest.mainnet.teritori.com/",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc.lambda.im",
@@ -4635,6 +6963,37 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Lambda",
+    status: "live",
+    network_type: "mainnet",
+    pretty_name: "Lambda",
+    chain_id: "lambda_92000-1",
+    bech32_prefix: "lamb",
+    node_home: "$HOME/.lambdavm",
+    daemon_name: "lambdavm",
+    slip44: 60,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "ulamb",
+          low_gas_price: 10000000000,
+          average_gas_price: 25000000000,
+          high_gas_price: 40000000000,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.lambda.im",
+        },
+      ],
+      rest: [
+        {
+          address: "https://rest.lambda.im",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc.unification.chainmasters.ninja",
@@ -4701,6 +7060,40 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Unification",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://unification.com/",
+    pretty_name: "Unification",
+    chain_id: "FUND-MainNet-2",
+    bech32_prefix: "und",
+    daemon_name: "und",
+    node_home: "$HOME/.und_mainchain",
+    key_algos: ["secp256k1"],
+    slip44: 5555,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "nund",
+          fixed_min_gas_price: 25,
+          low_gas_price: 100,
+          average_gas_price: 200,
+          high_gas_price: 300,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.unification.chainmasters.ninja",
+        },
+      ],
+      rest: [
+        {
+          address: "https://rest.unification.chainmasters.ninja",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc.jackalprotocol.com",
@@ -4766,6 +7159,40 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Jackal",
+    chain_id: "jackal-1",
+    website: "https://jackalprotocol.com",
+    pretty_name: "Jackal",
+    status: "live",
+    network_type: "mainnet",
+    bech32_prefix: "jkl",
+    daemon_name: "canined",
+    node_home: "$HOME/.canine",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "ujkl",
+          fixed_min_gas_price: 0,
+          low_gas_price: 0.01,
+          average_gas_price: 0.025,
+          high_gas_price: 0.03,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.jackalprotocol.com",
+        },
+      ],
+      rest: [
+        {
+          address: "https://api.jackalprotocol.com",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc.getbze.com",
@@ -4816,6 +7243,36 @@ export const ChainInfos = [
         isFeeCurrency: true,
       },
     ],
+    chain_name: "BeeZee",
+    status: "live",
+    network_type: "mainnet",
+    pretty_name: "BeeZee",
+    chain_id: "beezee-1",
+    bech32_prefix: "bze",
+    daemon_name: "bzed",
+    node_home: "$HOME/.bze",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "ubze",
+          fixed_min_gas_price: 0,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.getbze.com",
+        },
+      ],
+      rest: [
+        {
+          address: "https://rest.getbze.com",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc-acre.synergynodes.com/",
@@ -4895,6 +7352,40 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Acrechain",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://arable.finance/",
+    pretty_name: "Acrechain",
+    chain_id: "acre_9052-1",
+    bech32_prefix: "acre",
+    node_home: "$HOME/.acred",
+    daemon_name: "acred",
+    key_algos: ["ethsecp256k1"],
+    slip44: 60,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "aacre",
+          fixed_min_gas_price: 250000000,
+          low_gas_price: 20000000000,
+          average_gas_price: 25000000000,
+          high_gas_price: 40000000000,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-acre.synergynodes.com/",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd-acre.synergynodes.com/",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc.imversed.network:443",
@@ -4960,6 +7451,41 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Imversed",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://imversed.network/",
+    pretty_name: "Imversed",
+    chain_id: "imversed_5555555-1",
+    bech32_prefix: "imv",
+    daemon_name: "imversed",
+    node_home: "$HOME/.imversed",
+    key_algos: ["ethsecp256k1"],
+    extra_codecs: ["ethermint"],
+    slip44: 60,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "aimv",
+          fixed_min_gas_price: 250000000,
+          low_gas_price: 20000000000,
+          average_gas_price: 25000000000,
+          high_gas_price: 40000000000,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.imversed.network:443",
+        },
+      ],
+      rest: [
+        {
+          address: "https://rest.imversed.network:443",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc.medas-digital.io:26657",
@@ -5025,6 +7551,40 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Medas Digital Network",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://medas-digital.io/",
+    pretty_name: "Medas Digital Network",
+    chain_id: "medasdigital-1",
+    bech32_prefix: "medas",
+    daemon_name: "medasdigitald",
+    node_home: "$HOME/.medasdigital",
+    key_algos: ["secp256k1"],
+    fees: {
+      fee_tokens: [
+        {
+          denom: "umedas",
+          fixed_min_gas_price: 0,
+          low_gas_price: 0,
+          average_gas_price: 0.0001,
+          high_gas_price: 0.00025,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.medas-digital.io:26657",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd.medas-digital.io:1317",
+        },
+      ],
+    },
+    slip44: 118,
   },
   {
     rpc: "https://rpc-mainnet.onomy.io",
@@ -5090,6 +7650,43 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Onomy",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://onomy.io/",
+    pretty_name: "Onomy",
+    chain_id: "onomy-mainnet-1",
+    bech32_prefix: "onomy",
+    daemon_name: "onomyd",
+    node_home: "$HOME/.onomyd",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "anom",
+          low_gas_price: 0,
+          average_gas_price: 0.03,
+          high_gas_price: 0.06,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-mainnet.onomy.io",
+        },
+      ],
+      rest: [
+        {
+          address: "https://rest-mainnet.onomy.io",
+        },
+      ],
+    },
+    logo_URIs: {
+      png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/onomy/images/nom.png",
+    },
+    keywords: ["dex", "stablecoin", "bridge", "staking"],
   },
   {
     rpc: "https://rpc.planq.network/",
@@ -5155,6 +7752,40 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Planq",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://planq.network/",
+    pretty_name: "Planq",
+    chain_id: "planq_7070-2",
+    bech32_prefix: "plq",
+    node_home: "$HOME/.planqd",
+    daemon_name: "planqd",
+    key_algos: ["ethsecp256k1"],
+    slip44: 60,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "aplanq",
+          fixed_min_gas_price: 20000000000,
+          low_gas_price: 30000000000,
+          average_gas_price: 35000000000,
+          high_gas_price: 40000000000,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.planq.network/",
+        },
+      ],
+      rest: [
+        {
+          address: "https://rest.planq.network/",
+        },
+      ],
+    },
   },
   {
     rpc: "https://dys-tm.dysonprotocol.com:443",
@@ -5220,6 +7851,38 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Dyson Protocol",
+    website: "https://dysonprotocol.com/",
+    status: "live",
+    network_type: "mainnet",
+    pretty_name: "Dyson Protocol",
+    chain_id: "dyson-mainnet-01",
+    bech32_prefix: "dys",
+    node_home: "$HOME/.dyson",
+    daemon_name: "dysond",
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "dys",
+          low_gas_price: 0.0001,
+          average_gas_price: 0.0002,
+          high_gas_price: 0.0003,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://dys-tm.dysonprotocol.com:443",
+        },
+      ],
+      rest: [
+        {
+          address: "https://dys-api.dysonprotocol.com:443",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc.marsprotocol.io/",
@@ -5285,6 +7948,45 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Mars Hub",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://www.marsprotocol.io/",
+    pretty_name: "Mars Hub",
+    chain_id: "mars-1",
+    bech32_prefix: "mars",
+    daemon_name: "marsd",
+    node_home: "$HOME/.mars",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    alternative_slip44s: [330],
+    fees: {
+      fee_tokens: [
+        {
+          denom: "umars",
+          fixed_min_gas_price: 0,
+          low_gas_price: 0,
+          average_gas_price: 0,
+          high_gas_price: 0.01,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.marsprotocol.io/",
+        },
+      ],
+      rest: [
+        {
+          address: "https://rest.marsprotocol.io/",
+        },
+      ],
+    },
+    logo_URIs: {
+      png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/mars/images/mars-protocol.png",
+      svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/mars/images/mars-protocol.svg",
+    },
   },
   {
     rpc: "https://rpc.canto.nodestake.top",
@@ -5350,6 +8052,39 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Canto",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://canto.io/",
+    pretty_name: "Canto",
+    chain_id: "canto_7700-1",
+    bech32_prefix: "canto",
+    node_home: "$HOME/.cantod",
+    daemon_name: "cantod",
+    slip44: 60,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "acanto",
+          fixed_min_gas_price: 1000000000000,
+          low_gas_price: 1000000000000,
+          average_gas_price: 2000000000000,
+          high_gas_price: 3000000000000,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.canto.nodestake.top",
+        },
+      ],
+      rest: [
+        {
+          address: "https://api.canto.nodestake.top",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc-quicksilver.keplr.app",
@@ -5443,6 +8178,39 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Quicksilver",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://quicksilver.zone/",
+    pretty_name: "Quicksilver",
+    chain_id: "quicksilver-2",
+    daemon_name: "quicksilverd",
+    node_home: "$HOME/.quicksilverd",
+    bech32_prefix: "quick",
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "uqck",
+          fixed_min_gas_price: 0.0001,
+          low_gas_price: 0.0001,
+          average_gas_price: 0.0001,
+          high_gas_price: 0.00025,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-quicksilver.keplr.app",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd-quicksilver.keplr.app",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc.8ball.info",
@@ -5508,6 +8276,44 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "8ball",
+    status: "live",
+    website: "https://8ball.info/",
+    network_type: "mainnet",
+    pretty_name: "8ball",
+    chain_id: "eightball-1",
+    bech32_prefix: "8ball",
+    daemon_name: "8ball",
+    node_home: "$HOME/.8ball",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "uebl",
+          fixed_min_gas_price: 0,
+          low_gas_price: 0,
+          average_gas_price: 0.025,
+          high_gas_price: 0.04,
+        },
+      ],
+    },
+    logo_URIs: {
+      png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/8ball/images/8ball.png",
+      svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/8ball/images/8ball.svg",
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc.8ball.info",
+        },
+      ],
+      rest: [
+        {
+          address: "https://rest.8ball.info",
+        },
+      ],
+    },
   },
   {
     rpc: "https://arkh-rpc.kynraze.com",
@@ -5573,6 +8379,40 @@ export const ChainInfos = [
         },
       },
     ],
+    chain_name: "Arkhadian",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://arkhadian.com/",
+    pretty_name: "Arkhadian",
+    chain_id: "arkh",
+    bech32_prefix: "arkh",
+    daemon_name: "arkhd",
+    node_home: "$HOME/.arkhd",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "arkh",
+          fixed_min_gas_price: 0.01,
+          low_gas_price: 0.01,
+          average_gas_price: 0.025,
+          high_gas_price: 0.03,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://arkh-rpc.kynraze.com",
+        },
+      ],
+      rest: [
+        {
+          address: "https://arkh-api.kynraze.com",
+        },
+      ],
+    },
   },
   {
     rpc: "https://rpc-axelar.keplr.app",
@@ -5803,5 +8643,39 @@ export const ChainInfos = [
     },
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://axelarscan.io/tx/{txHash}",
+    chain_name: "Axelar",
+    chain_id: "axelar-dojo-1",
+    pretty_name: "Axelar",
+    status: "live",
+    network_type: "mainnet",
+    website: "https://axelar.network/",
+    bech32_prefix: "axelar",
+    daemon_name: "axelard",
+    node_home: "$HOME/.axelard",
+    key_algos: ["secp256k1"],
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "uaxl",
+          fixed_min_gas_price: 0.007,
+          low_gas_price: 0.007,
+          average_gas_price: 0.007,
+          high_gas_price: 0.01,
+        },
+      ],
+    },
+    apis: {
+      rpc: [
+        {
+          address: "https://rpc-axelar.keplr.app",
+        },
+      ],
+      rest: [
+        {
+          address: "https://lcd-axelar.keplr.app",
+        },
+      ],
+    },
   },
-] as ChainInfoWithExplorer[];
+] as (ChainInfoWithExplorer & Chain)[];
