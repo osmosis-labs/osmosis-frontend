@@ -260,7 +260,11 @@ export class OptimizedRoutes {
     for (const route of routes) {
       if (route.pools.length !== route.tokenOutDenoms.length) {
         throw new Error(
-          "Invalid path: pools and tokenOutDenoms length mismatch"
+          `Invalid path: pools and tokenOutDenoms length mismatch, IDs:${route.pools.map(
+            (p) => p.id
+          )} ${route.pools
+            .flatMap((p) => p.poolAssets.map((pa) => pa.denom))
+            .join(",")} !== ${route.tokenOutDenoms.join(",")}`
         );
       }
       if (route.pools.length === 0) {
