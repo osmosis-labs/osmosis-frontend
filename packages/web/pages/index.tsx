@@ -11,7 +11,7 @@ import { EventName, IS_FRONTIER } from "../config";
 import { useAmplitudeAnalytics } from "../hooks";
 
 const Home: NextPage = observer(function () {
-  const { chainStore, queriesStore } = useStore();
+  const { chainStore, queriesStore, priceStore } = useStore();
   const { chainId } = chainStore.osmosis;
 
   const queries = queriesStore.get(chainId);
@@ -159,8 +159,15 @@ const Home: NextPage = observer(function () {
 
           return hasEnoughAssets;
         })
+        .sort((a, b) => {
+          // sort by TVL to find routes amongst most valuable pools
+          const aTVL = a.computeTotalValueLocked(priceStore);
+          const bTVL = b.computeTotalValueLocked(priceStore);
+
+          return Number(bTVL.sub(aTVL).toDec().toString());
+        })
         .map((pool) => pool.pool),
-    [allPools]
+    [allPools, priceStore.response]
   );
 
   useAmplitudeAnalytics({
