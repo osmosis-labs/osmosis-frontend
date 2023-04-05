@@ -5,7 +5,7 @@ module.exports = {
     "plugin:import/typescript",
     "prettier",
   ],
-  plugins: ["unicorn", "simple-import-sort", "import"],
+  plugins: ["unicorn", "simple-import-sort", "unused-imports", "import"],
   parserOptions: {
     ecmaVersion: 2018,
     sourceType: "module",
@@ -40,5 +40,6 @@ module.exports = {
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",
     "import/no-default-export": "error",
+    "unused-imports/no-unused-imports": "error",
   },
 };

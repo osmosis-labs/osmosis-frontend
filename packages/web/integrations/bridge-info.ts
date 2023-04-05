@@ -1,3 +1,5 @@
+import { SpriteIconId } from "~/components/assets";
+
 import { AxelarBridgeConfig } from "./axelar/types";
 import { WalletKey } from "./wallets";
 
@@ -53,16 +55,31 @@ export const EthClientChainIds_SourceChainMap: {
 
 // Fiat on/off ramps
 
-export type FiatRampKey = "kado" | "transak";
-export const FiatRampDisplayInfos: {
-  [key: string]: { iconUrl: string; displayName: string };
-} = {
+export type FiatRampKey = "kado" | "transak" | "layerswapcoinbase";
+export const FiatRampDisplayInfos: Record<
+  FiatRampKey,
+  {
+    rampKey: FiatRampKey;
+    iconUrl: string;
+    displayName: string;
+    logoId?: SpriteIconId;
+  }
+> = {
   kado: {
+    rampKey: "kado",
     iconUrl: "/logos/kado.svg",
     displayName: "Kado",
+    logoId: "kado-logo",
   },
   transak: {
+    rampKey: "transak",
     iconUrl: "/logos/transak.svg",
     displayName: "Transak",
+    logoId: "transak-logo",
+  },
+  layerswapcoinbase: {
+    rampKey: "layerswapcoinbase",
+    iconUrl: "/logos/coinbase.svg",
+    displayName: "Coinbase",
   },
 };

@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+
 import { Breakpoint } from "../../components/types";
 
 export interface WindowSize {

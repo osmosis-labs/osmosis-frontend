@@ -1,5 +1,6 @@
 export * from "./account";
 export * from "./bridge-history";
+export * from "./chain";
 export * from "./currency-registrar";
 export * from "./derived-data";
 export * from "./ibc-history";

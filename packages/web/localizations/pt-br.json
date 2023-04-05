@@ -5,419 +5,442 @@
   "500": {
     "title": "Erro do servidor"
   },
-  "app": {
-    "banner": {
-      "title": "Você está vendo todos os ativos sem permissão",
-      "linkText": "Você está vendo todos os ativos sem permissão. <link>Clique aqui para retornar à aplicação principal</link>."
-    }
-  },
-  "swap": {
-    "title": "Trocar",
-    "settings": {
-      "title": "Configurações de Transação",
-      "slippage": "Tolerância de spread",
-      "slippageInfo": "Sua transação irá reverter se o preço mudar desfavoravelmente acima desta porcentagem."
-    },
-    "available": "Disponível",
-    "MAX": "MÁXIMO",
-    "HALF": "METADE",
-    "button": "Trocar",
-    "buttonError": "Trocar mesmo assim",
-    "priceImpact": "Impacto sobre o preço",
-    "fee": "Taxa de Troca ({fee})",
-    "expectedOutput": "Resultado Esperado",
-    "minimumSlippage": "Mínimo recebido após o spread ({slippage})",
-    "error": {
-      "findCurrency": "Não foi possível encontrar a moeda {currency}"
-    },
-    "autoRouter": "Rota",
-    "routerTooltipFee": "Taxa",
-    "autoRouterToggle": {
-      "show": "Mostrar",
-      "hide": "Esconder"
-    },
-    "pool": "Piscina #{id}"
-  },
-  "pools": {
-    "title": "Piscinas Ativas",
-    "poolId": "Piscina #{id}",
-    "priceOsmo": "Preço de OSMO",
-    "rewardDistribution": "Distribuição de Recompensa em",
-    "myPools": "Minhas Piscinas",
-    "APR": "APR",
-    "available": "Disponível",
-    "liquidity": "Liquidez",
-    "myLiquidity": "Minha Liquidez",
-    "bonded": "Travado",
-    "incentivized": "Incentivada",
-    "all": "Todas as Piscinas",
-    "allTab": "Todas",
-    "superfluid": {
-      "title": "Piscinas Superfluidas",
-      "tab": "Superfluido",
-      "APR": "APR",
-      "liquidity": "Liquidez",
-      "fees7D": "Taxas (7D)"
-    },
-    "allPools": {
-      "title": "Todas as Piscinas",
-      "myLiquidity": "Minha Liquidez",
-      "TVL": "TVL",
-      "APR": "APR",
-      "APRIncentivized": "7d Vol.",
-      "search": "Pesquisar piscinas",
-      "displayLowLiquidity": "Mostrar piscinas < {value}",
-      "sort": {
-        "poolName": "Nome/Número da Piscina",
-        "liquidity": "Liquidez",
-        "volume24h": "Volume (24H)",
-        "fees": "Taxas (7D)",
-        "APRIncentivized": "APR",
-        "APR": "Minha Liquidez",
-        "poolId": "ID da Piscina"
-      }
-    },
-    "externalIncentivized": {
-      "title": "Piscinas Incentivadas Externamente",
-      "TVL": "TVL",
-      "APR": "APR",
-      "search": "Procurar pelo símbolo",
-      "sort": {
-        "poolName": "Nome/Número da Piscina",
-        "liquidity": "Liquidez",
-        "APR": "APR",
-        "epochs": "Épocas Restantes",
-        "myLiquidity": "Minha Liquidez"
-      }
-    },
-    "createPool": {
-      "title": "Criar Nova Piscina",
-      "button": "Criar Nova Piscina",
-      "weightedPool": "Piscina ponderada",
-      "stablePool": "Piscina estável",
-      "step": {
-        "one": {
-          "weighted": "Etapa {step} / {nbStep} - Configurar proporção de token",
-          "stable": "Etapa {step} / {nbStep} - Configurar fatores de escalamento"
-        },
-        "two": "Etapa {step} / {nbStep} - Insira quantidade para acrescentar",
-        "three": "Etapa {step} / {nbStep} - Confirmar proporção da piscina e quantidade de token"
-      },
-      "infoMessage": "Criação da Taxa da Pool",
-      "infoCaption": "Transferido para a piscina comunitária da Osmosis",
-      "buttonCreate": "Criar Piscina",
-      "buttonNext": "Próximo",
-      "buttonBack": "Anterior",
-      "buttonAddToken": "Adicionar novo token",
-      "available": "Disponível",
-      "amount": "Quantidade",
-      "token": "Token",
-      "swapFee": "Configurar Taxa de Troca",
-      "scalingFactorController": "Configurar controle de fator de escalonamento (opcional)",
-      "undersandCost": "Eu entendo que criando uma nova piscina custará {POOL_CREATION_FEE}.",
-      "interestedCreate": "Interessado em criar uma nova piscina?",
-      "startProcess": "Clique aqui para iniciar o processo"
-    }
-  },
-  "pool": {
-    "title": "Piscina #{id}",
-    "swap": "Par de Negociação",
-    "superfluidEnabled": "Staking superfluido habilitado",
-    "stableswapEnabled": "Stableswap habilitado",
-    "24hrTradingVolume": "Volume de negociação em 24h",
-    "liquidity": "Liquidez da Piscina",
-    "swapFee": "Taxa de Troca",
-    "yourStats": "O saldo da sua piscina",
-    "sharesAmount": "{shares} participações",
-    "currentDailyEarn": "Você está ganhando atualmente",
-    "earnMore": "Ganhe {amount} mais travando",
-    "day": "dia",
-    "dailyEarnAmount": "{amount} / dia",
-    "putAssetsToWork": "Coloque seus ativos para trabalhar",
-    "putAssetsToWorkCaption": "Adicione seus ativos à esta pool para desbloquear APRs. Quanto mais longo seu tempo para deixar de delegar, mais você ganha.",
-    "learnMore": "Saiba mais",
-    "level": "Nível {level}",
-    "earnSwapFees": "Ganhe taxas de troca",
-    "earnSwapFeesCaption": "Converta seus tokens em ações e ganhe em cada troca",
-    "APR": "APR",
-    "bondLiquidity": "Liquidez travada",
-    "bondLiquidityUnavailable": "Liquidez delegada (indisponível)",
-    "checkBackForBondingRewards": "Confira mais tarde por recompensas de delegação",
-    "bondLiquidityCaption": "Tranque suas ações por um período mais longo para ganhar APRs mais altos.",
-    "bondSuperfluidLiquidityCaption": "Habilite superfluido para recompensas maiores",
-    "bondShares": "Travar participações",
-    "amountDaysUnbonding": "{numDays} dias destravando",
-    "amountDaysUnbonding_plural": "{numDays} dias destravando",
-    "available": "Disponível",
-    "unbond": "Destravado",
-    "bonded": "Travado",
-    "showDetails": "Mostrar composição da piscina",
-    "collapseDetails": "Esconder composição da piscina",
-    "sharesAvailableIn": "disponível em",
-    "unbonding": "destravando",
-    "superfluidEarnMore": "Ganhe{rate} mais. Ative o superfluido",
-    "incentives": "Incentivos",
-    "details": "Detalhes",
-    "rewardDistribution": "Recompensas distribuídas para todos os fornecedores de liquidez",
-    "superfluidStaking": "Staking Superfluido",
-    "delegated": "delegado",
-    "undelegating": "removendo delegação",
-    "commission": "comissão",
-    "numDaysRemaining": "{numDays} dias restantes",
-    "from": "de",
-    "swapFees": "taxas de trocas",
-    "7davg": "(7d avg)"
-  },
-  "removeLiquidity": {
-    "title": "Remover Liquidez",
-    "titleInPool": "Remover liquidez de uma piscina #{poolId}",
-    "sharesAmount": "{shares} participações"
-  },
   "addLiquidity": {
-    "title": "Adicionar Liquidez",
-    "titleInPool": "Adicionar liquidez para a piscina #{poolId}",
     "allAssets": "Todos os ativos",
-    "singleAsset": "Um único ativo",
-    "available": "Disponível",
     "autoswapCaption": "Use autoswap para adicionar liquidez com um único ativo.",
-    "stablecoinWarning": "Você está adicionando liquidez para {denom}, um {mechanism}-apoiado por stablecoin.",
+    "available": "Disponível",
     "scalingFactor": "fator de escalonamento",
-    "scalingFactorInformation": "Esse fator permite à curva se ajustar à uma mudança de preço previsível, como o valor acumulado para staking líquido do token.",
+    "scalingFactorController": "controlador",
     "scalingFactorControllerWarning_first": "O fator controlador de escalonamento está habilitado. O",
     "scalingFactorControllerWarning_second": "pode ajustar o",
     "scalingFactorControllerWarning_third": "para manter a paridade. O fator de escalonamento atual é",
-    "scalingFactorController": "controlador"
+    "scalingFactorInformation": "Esse fator permite à curva se ajustar à uma mudança de preço previsível, como o valor acumulado para staking líquido do token.",
+    "singleAsset": "Um único ativo",
+    "stablecoinWarning": "Você está adicionando liquidez para {denom}, um {mechanism}-apoiado por stablecoin.",
+    "title": "Adicionar Liquidez",
+    "titleInPool": "Adicionar liquidez para a piscina #{poolId}"
   },
-  "lockToken": {
-    "title": "Travar Participações em LP",
-    "titleInPool": "Travar participações na piscina #{poolId}",
-    "selectPeriod": "Selecionar período para destravar",
-    "availableToken": "Disponível",
-    "amountToBond": "Quantia para travar",
-    "superfluidStake": "Staking superfluido",
-    "bondingRequirement": "{numDays} dia requerido para travamento",
-    "buttonNext": "Próxima",
-    "buttonBond": "Travar",
-    "buttonBondStake": "Travar & Fazer Stake"
-  },
-  "superfluidValidator": {
-    "title": "Selecionar Validador Superfluido",
-    "titleMobile": "Selecionar Validador",
-    "choose": "Escolha seu validador superfluido",
-    "search": "Procurar pelo nome",
-    "bondedAmount": "Quantia Travada",
-    "estimation": "Delegação Superfluida Estimada",
-    "estimationMobile": "Delegação Estimada",
-    "estimationInfo": "O valor dessa delegação flutua e é eestimada baseada na quantia de OSMO na piscina.",
-    "buttonBond": "Travar & Fazer Stake",
-    "columns": {
-      "validator": "Validador",
-      "commission": "Comissão"
+  "app": {
+    "banner": {
+      "backToOsmosis": "Voltar para o Osmosis",
+      "externalLink": "Você está saindo do aplicativo Osmosis para ir para",
+      "externalLinkDisclaimer": "Ao clicar no link, você reconhece que leu e entendeu que o Osmosis não garante a qualidade do serviço para as páginas externas que podem ter termos de serviço diferentes.",
+      "externalLinkModalTitle": "Saindo do Osmosis",
+      "goToSite": "Ir para o site",
+      "linkText": "Você está vendo todos os ativos sem permissão. <link>Clique aqui para retornar à aplicação principal</link>.",
+      "title": "Você está vendo todos os ativos sem permissão"
     }
   },
   "assets": {
-    "totalAssets": "Total de ativos",
-    "unbondedAssets": "Destravado",
     "bondedAssets": "Travado",
-    "stakedAssets": "OSMO em stake",
-    "myPools": "Minhas Piscinas",
-    "transferAssetSelect": {
-      "deposit": "Depositar",
-      "withdraw": "Saque",
-      "network": "Rede",
-      "buttonNext": "Próximo"
-    },
-    "poolCards": {
-      "APR": "APR",
-      "FeeAPY": "Taxa de APY",
-      "liquidity": "Minha Liquidez",
-      "bonded": "Travado",
-      "myLiquidity": "Minha Liquidez"
-    },
-    "ibcTransfer": {
-      "titleWithdraw": "Sacar {coinDenom}",
-      "titleDeposit": "Depositar {coinDenom}",
-      "channelCongested": "Canal congestionado",
-      "channelCongestedWithdraw": "Sacar (Canal congestionado)",
-      "channelCongestedDeposit": "Depositar (Canal congestionada)",
-      "channelBlocked": "Canal bloqueado",
-      "selectAmount": "Selecionar Quantia",
-      "estimatedTime": "Tempo Estimado",
-      "waitTime": "20 segundos",
-      "copied": "Copiado!",
-      "IBCTransfer": "Transferência IBC",
-      "from": "de",
-      "to": "para",
-      "warningLossFunds": "Aviso: Sacar para uma exchange centralizada irá resultar em perda de fundos.",
-      "buttonEnter": "Entrar",
-      "checkboxVerify": "Eu confirmo que não estou enviando para um endereço de exchange.",
-      "buttonEdit": "Editar",
-      "amoutWithdraw": "Quantia para Saque",
-      "amoutDeposit": "Quantia para depositar",
-      "availableBalance": "Saldo disponível:",
-      "MAX": "MÁX"
-    },
-    "transfer": {
-      "titleWithdraw": "Sacar {coinDenom}",
-      "titleDeposit": "Depositar {coinDenom}",
-      "warnDepositAddressDifferent": "Aviso: A conta selecionada em {address} é diferente da conta com a qual você depositou com da última vez.",
-      "from": "De",
-      "to": "Para",
-      "via": "via",
-      "loading": "Carregando",
-      "availableOn": "Disponível em {network}",
-      "availableMobile": "Disponível",
-      "transferFee": "Taxa de Transferência",
-      "errors": {
-        "reconnectWallet": "Reconectar {walletName}",
-        "wrongNetworkInWallet": "Rede errada em {walletName}",
-        "insufficientFee": "Taxa Insuficiente",
-        "insufficientBal": "Saldo Insuficiente"
-      },
-      "useWrappedDeposit": "Deposite {wrapDenom} em Satellite",
-      "useWrappedWithdraw": "Retirar {wrapDenom} de Satellite",
-      "waitTime": "{minutes} minutos"
-    },
-    "selectAssetSource": {
-      "titleWithdraw": "Sacar para",
-      "titleDeposit": "Depositar de",
-      "next": "Próximo",
-      "installWallet": "Instalar {walletName}"
-    },
-    "table": {
-      "depositButton": "Depositar",
-      "withdrawButton": "Sacar",
-      "search": "Buscar",
-      "title": "Todos os ativos",
-      "hideZero": "Esconder saldos zerados",
-      "preTransfer": {
-        "deposit": "Deposit",
-        "withdraw": "Sacar",
-        "currentBal": "Saldo Atual"
-      },
-      "columns": {
-        "assetChain": "Ativo / Rede",
-        "balance": "Saldo",
-        "transfer": "Transferir",
-        "deposit": "Depositar",
-        "withdraw": "Sacar"
-      },
-      "sort": {
-        "symbol": "Símbolo",
-        "network": "Rede",
-        "balance": "Saldo"
-      }
-    },
     "historyTable": {
-      "title": "Histórico de Transferências",
-      "pending": "Pendente",
-      "success": "Sucesso",
-      "refunded": "Reembolsado",
-      "pendingRefunded": "Falhou: Reembolso pendente",
       "colums": {
+        "amount": "Quantia",
+        "deposit": "Depositar",
+        "status": "Status",
         "transactionHash": "Hash da Transação",
         "type": "Tipo",
-        "amount": "Quantia",
-        "status": "Status",
-        "deposit": "Depositar",
         "withdraw": "Sacar"
+      },
+      "errors": {
+        "insufficientFee": "Taxa Insuficiente"
       },
       "failed": "Falhou",
       "failedWithReason": "Falhou: {reason}",
-      "errors": {
-        "insufficientFee": "Taxa Insuficiente"
-      }
-    }
-  },
-  "components": {
-    "show": {
-      "more": "Visualizar mais",
-      "less": "Visualizar menos"
+      "pending": "Pendente",
+      "pendingRefunded": "Falhou: Reembolso pendente",
+      "refunded": "Reembolsado",
+      "success": "Sucesso",
+      "title": "Histórico de Transferências"
     },
+    "ibcTransfer": {
+      "amoutDeposit": "Quantia para depositar",
+      "amoutWithdraw": "Quantia para Saque",
+      "availableBalance": "Saldo disponível:",
+      "buttonEdit": "Editar",
+      "buttonEnter": "Entrar",
+      "channelBlocked": "Canal bloqueado",
+      "channelCongested": "Canal congestionado",
+      "channelCongestedDeposit": "Depositar (Canal congestionada)",
+      "channelCongestedWithdraw": "Sacar (Canal congestionado)",
+      "checkboxVerify": "Eu confirmo que não estou enviando para um endereço de exchange.",
+      "copied": "Copiado!",
+      "estimatedTime": "Tempo Estimado",
+      "from": "de",
+      "IBCTransfer": "Transferência IBC",
+      "MAX": "MÁX",
+      "selectAmount": "Selecionar Quantia",
+      "titleDeposit": "Depositar {coinDenom}",
+      "titleWithdraw": "Sacar {coinDenom}",
+      "to": "para",
+      "waitTime": "20 segundos",
+      "warningLossFunds": "Aviso: Sacar para uma exchange centralizada irá resultar em perda de fundos."
+    },
+    "myPools": "Minhas Piscinas",
+    "poolCards": {
+      "APR": "APR",
+      "bonded": "Travado",
+      "FeeAPY": "Taxa de APY",
+      "liquidity": "Minha Liquidez"
+    },
+    "selectAssetSource": {
+      "installWallet": "Instalar {walletName}",
+      "next": "Próximo",
+      "titleDeposit": "Depositar de",
+      "titleWithdraw": "Sacar para"
+    },
+    "stakedAssets": "OSMO em stake",
     "table": {
-      "poolId": "Piscina #{id}"
+      "columns": {
+        "assetChain": "Ativo / Rede",
+        "balance": "Saldo",
+        "deposit": "Depositar",
+        "transfer": "Transferir",
+        "withdraw": "Sacar"
+      },
+      "depositButton": "Depositar",
+      "hideZero": "Esconder saldos zerados",
+      "preTransfer": {
+        "currentBal": "Saldo Atual",
+        "deposit": "Deposit",
+        "withdraw": "Sacar"
+      },
+      "search": "Buscar",
+      "sort": {
+        "balance": "Saldo",
+        "network": "Rede",
+        "symbol": "Símbolo"
+      },
+      "title": "Todos os ativos",
+      "withdrawButton": "Sacar"
     },
-    "sort": {
-      "SORT": "Organizar por",
-      "SORTMobile": "Organizar",
-      "mobileMenu": "Orgaanizar por"
+    "totalAssets": "Total de ativos",
+    "transfer": {
+      "availableMobile": "Disponível",
+      "availableOn": "Disponível em {network}",
+      "errors": {
+        "insufficientBal": "Saldo Insuficiente",
+        "insufficientFee": "Taxa Insuficiente",
+        "reconnectWallet": "Reconectar {walletName}",
+        "wrongNetworkInWallet": "Rede errada em {walletName}"
+      },
+      "from": "De",
+      "loading": "Carregando",
+      "titleDeposit": "Depositar {coinDenom}",
+      "titleWithdraw": "Sacar {coinDenom}",
+      "to": "Para",
+      "transferFee": "Taxa de Transferência",
+      "useWrappedDeposit": "Deposite {wrapDenom} em Satellite",
+      "useWrappedWithdraw": "Retirar {wrapDenom} de Satellite",
+      "via": "via",
+      "waitTime": "{minutes} minutos",
+      "warnDepositAddressDifferent": "Aviso: A conta selecionada em {address} é diferente da conta com a qual você depositou com da última vez."
+    },
+    "transferAssetSelect": {
+      "buttonNext": "Próximo",
+      "deposit": "Depositar",
+      "network": "Rede",
+      "withdraw": "Saque"
+    },
+    "unbondedAssets": "Destravado"
+  },
+  "buyTokens": "Comprar tokens",
+  "components": {
+    "fiatOnrampSelection": {
+      "chooseOnramp": "Escolher rampa Fiat",
+      "kadoSubtitle": "Suporta USDC",
+      "transakSubtitle": "Suporta OSMO"
+    },
+    "incentive": {
+      "mobileTitle": "Incentivo",
+      "title": "Tipos de incentivo"
     },
     "MAX": "MÁX",
+    "pool": {
+      "mobileTitle": "Piscina",
+      "title": "Tipos de piscina"
+    },
     "searchTokens": "Procurar",
     "selectToken": {
       "title": "Selecionar um token"
+    },
+    "show": {
+      "less": "Visualizar menos",
+      "more": "Visualizar mais"
+    },
+    "sort": {
+      "mobileMenu": "Orgaanizar por",
+      "SORT": "Organizar por",
+      "SORTMobile": "Organizar"
+    },
+    "table": {
+      "poolId": "Piscina #{id}",
+      "stable": "Stableswap",
+      "weighted": "Ponderado",
+      "internal": "Incentivos internos",
+      "external": "Incentivos externos",
+      "superfluid": "Superfluid",
+      "noIncentives": "Sem incentivos"
     }
   },
-  "menu": {
-    "swap": "Trocar",
-    "pools": "Piscinas",
-    "assets": "Ativos",
-    "stake": "Stake",
-    "vote": "Votar",
-    "info": "Status",
-    "signOut": "Desconectar",
-    "help": "Obter Ajuda do Laboratório de Suporte"
-  },
-  "settings": {
-    "title": "Configurações Globais",
-    "titleLanguage": "Idioma",
-    "titleHideDust": "Esconder piscinas com < {fiatSymbol}0.01",
-    "selectLanguage": "Selecionar idioma",
-    "filterDust": "Filtrar Poeira"
-  },
+  "connectDisclaimer": "Conectando uma carteira, você reconhece que você leu e entendeu o Osmosis",
+  "connectWallet": "Conectar carteira",
   "errors": {
-    "emptyAmount": "Quantia está vazia",
-    "invalidNumberAmount": "Forma de número inválida",
-    "zeroAmount": "Quantia é zero",
-    "negativeAmount": "Quantia é negativo",
-    "insufficientAmount": "Quantia insuficiente",
-    "negativeSwapFee": "Taxa de troca está negativa",
-    "highSwapFee": "Taxa de troca está muito alta",
-    "invalidSwapFee": "Taxa de troca está inválida",
-    "invalidScalingFactorControllerAddress": "Endereço controlador de fator de escala inválido",
-    "minAssetsCount": "Mínimo de {num} ativos necessários",
-    "maxAssetsCount": "Máximo de {num} ativos necessários",
-    "negativePercentage": "Porcentagem necessitra ser positiva",
-    "scalingFactorTooLow": "Fator de escalonamento muito baixo",
-    "percentageSum": "A soma das porcentagens não é 100",
+    "calculatingShareOutAmount": "Problema ao calcular o valor",
     "depositNoBalance": "Você não tem ativos para depositar",
-    "negativeSlippage": "Spread não pode ser negativo",
-    "invalidSlippage": "Spread invalido",
-    "noSendCurrency": "Moeda para envio não configurada",
+    "emptyAmount": "Quantia está vazia",
+    "generic": "Erro",
+    "highSwapFee": "Taxa de troca está muito alta",
+    "insufficientAmount": "Quantia insuficiente",
     "insufficientBal": "Saldo insuficiente",
     "insufficientLiquidity": "Liquidez Insuficiente",
-    "noRoute": "Sem rota para esta troca",
-    "notInitialized": "Não Inicializado",
-    "calculatingShareOutAmount": "Problema ao calcular o valor",
+    "invalidNumberAmount": "Forma de número inválida",
+    "invalidScalingFactorControllerAddress": "Endereço controlador de fator de escala inválido",
+    "invalidSlippage": "Spread invalido",
+    "invalidSwapFee": "Taxa de troca está inválida",
+    "maxAssetsCount": "Máximo de {num} ativos necessários",
+    "minAssetsCount": "Mínimo de {num} ativos necessários",
+    "negativeAmount": "Quantia é negativo",
+    "negativePercentage": "Porcentagem necessitra ser positiva",
+    "negativeSlippage": "Spread não pode ser negativo",
+    "negativeSwapFee": "Taxa de troca está negativa",
     "noAvailableShares": "Não está disponivel {denom} participações",
-    "generic": "Erro"
-  },
-  "connectWallet": "Conectar carteira",
-  "buyTokens": "Comprar tokens",
-  "profile": {
-    "modalTitle": "Perfil",
-    "balance": "Saldo",
-    "wallet": "Carteira",
-    "viewAllAssets": "Ver todos os ativos"
+    "noRoute": "Sem rota para esta troca",
+    "noSendCurrency": "Moeda para envio não configurada",
+    "notInitialized": "Não Inicializado",
+    "percentageSum": "A soma das porcentagens não é 100",
+    "scalingFactorTooLow": "Fator de escalonamento muito baixo",
+    "zeroAmount": "Quantia é zero"
   },
   "keplr": {
-    "install": "Instalar Keplr",
-    "wallet": "Carteira Keplr",
     "extension": "Extensão de Browser Keplr",
-    "walletConnect": "WalletConnect",
-    "mobile": "Keplr Mobile"
+    "install": "Instalar Keplr",
+    "mobile": "Keplr Mobile",
+    "wallet": "Carteira Keplr",
+    "walletConnect": "WalletConnect"
   },
-  "connectDisclaimer": "Conectando uma carteira, você reconhece que você leu e entendeu o Osmosis",
+  "lockToken": {
+    "amountToBond": "Quantia para travar",
+    "availableToken": "Disponível",
+    "bondingRequirement": "{numDays} dia requerido para travamento",
+    "buttonBond": "Travar",
+    "buttonBondStake": "Travar & Fazer Stake",
+    "buttonNext": "Próxima",
+    "selectPeriod": "Selecionar período para destravar",
+    "superfluidStake": "Staking superfluido",
+    "title": "Travar Participações em LP",
+    "titleInPool": "Travar participações na piscina #{poolId}"
+  },
+  "menu": {
+    "assets": "Ativos",
+    "help": "Apoiar",
+    "info": "Status",
+    "pools": "Piscinas",
+    "signOut": "Desconectar",
+    "stake": "Stake",
+    "swap": "Trocar",
+    "vote": "Votar"
+  },
+  "pool": {
+    "24hrTradingVolume": "Volume de negociação em 24h",
+    "7davg": "(7d avg)",
+    "amountDaysUnbonding": "{numDays} dias destravando",
+    "amountDaysUnbonding_plural": "{numDays} dias destravando",
+    "APR": "APR",
+    "available": "Disponível",
+    "bonded": "Travado",
+    "bondLiquidity": "Liquidez travada",
+    "bondLiquidityCaption": "Tranque suas ações por um período mais longo para ganhar APRs mais altos.",
+    "bondLiquidityUnavailable": "Liquidez delegada (indisponível)",
+    "bondShares": "Travar participações",
+    "bondSuperfluidLiquidityCaption": "Habilite superfluido para recompensas maiores",
+    "checkBackForBondingRewards": "Confira mais tarde por recompensas de delegação",
+    "collapseDetails": "Esconder composição da piscina",
+    "commission": "comissão",
+    "currentDailyEarn": "Você está ganhando atualmente",
+    "dailyEarnAmount": "{amount} / dia",
+    "day": "dia",
+    "delegated": "delegado",
+    "details": "Detalhes",
+    "earnMore": "Ganhe {amount} mais travando",
+    "earnSwapFees": "Ganhe taxas de troca",
+    "earnSwapFeesCaption": "Converta seus tokens em ações e ganhe em cada troca",
+    "from": "de",
+    "incentives": "Incentivos",
+    "learnMore": "Saiba mais",
+    "level": "Nível {level}",
+    "liquidity": "Liquidez da Piscina",
+    "numDaysRemaining": "{numDays} dias restantes",
+    "putAssetsToWork": "Coloque seus ativos para trabalhar",
+    "putAssetsToWorkCaption": "Adicione seus ativos à esta pool para desbloquear APRs. Quanto mais longo seu tempo para deixar de delegar, mais você ganha.",
+    "rewardDistribution": "Recompensas distribuídas para todos os fornecedores de liquidez",
+    "sharesAmount": "{shares} participações",
+    "sharesAvailableIn": "disponível em",
+    "showDetails": "Mostrar composição da piscina",
+    "stableswapEnabled": "Stableswap habilitado",
+    "superfluidEarnMore": "Ganhe{rate} mais. Ative o superfluido",
+    "superfluidEnabled": "Staking superfluido habilitado",
+    "superfluidStaking": "Staking Superfluido",
+    "swap": "Par de Negociação",
+    "swapFee": "Taxa de Troca",
+    "swapFees": "taxas de trocas",
+    "title": "Piscina #{id}",
+    "unbond": "Destravado",
+    "unbonding": "destravando",
+    "undelegating": "removendo delegação",
+    "yourStats": "O saldo da sua piscina"
+  },
+  "pools": {
+    "all": "Todas as Piscinas",
+    "allPools": {
+      "APR": "APR",
+      "APRIncentivized": "7d Vol.",
+      "displayLowLiquidity": "Mostrar piscinas < {value}",
+      "myLiquidity": "Minha Liquidez",
+      "search": "Pesquisar piscinas",
+      "sort": {
+        "APR": "Minha Liquidez",
+        "APRIncentivized": "APR",
+        "fees": "Taxas (7D)",
+        "liquidity": "Liquidez",
+        "poolId": "ID da Piscina",
+        "poolName": "Nome/Número da Piscina",
+        "volume24h": "Volume (24H)"
+      },
+      "title": "Todas as Piscinas",
+      "TVL": "TVL"
+    },
+    "allTab": "Todas",
+    "APR": "APR",
+    "available": "Disponível",
+    "bonded": "Travado",
+    "createPool": {
+      "amount": "Quantidade",
+      "available": "Disponível",
+      "button": "Criar Nova Piscina",
+      "buttonAddToken": "Adicionar novo token",
+      "buttonBack": "Anterior",
+      "buttonCreate": "Criar Piscina",
+      "buttonNext": "Próximo",
+      "infoCaption": "Transferido para a piscina comunitária da Osmosis",
+      "infoMessage": "Criação da Taxa da Pool",
+      "interestedCreate": "Interessado em criar uma nova piscina?",
+      "scalingFactorController": "Configurar controle de fator de escalonamento (opcional)",
+      "stablePool": "Piscina estável",
+      "startProcess": "Clique aqui para iniciar o processo",
+      "step": {
+        "one": {
+          "stable": "Etapa {step} / {nbStep} - Configurar fatores de escalamento",
+          "weighted": "Etapa {step} / {nbStep} - Configurar proporção de token"
+        },
+        "three": "Etapa {step} / {nbStep} - Confirmar proporção da piscina e quantidade de token",
+        "two": "Etapa {step} / {nbStep} - Insira quantidade para acrescentar"
+      },
+      "swapFee": "Configurar Taxa de Troca",
+      "title": "Criar Nova Piscina",
+      "token": "Token",
+      "undersandCost": "Eu entendo que criando uma nova piscina custará {POOL_CREATION_FEE}.",
+      "weightedPool": "Piscina ponderada"
+    },
+    "externalIncentivized": {
+      "APR": "APR",
+      "search": "Procurar pelo símbolo",
+      "sort": {
+        "APR": "APR",
+        "epochs": "Épocas Restantes",
+        "liquidity": "Liquidez",
+        "myLiquidity": "Minha Liquidez",
+        "poolName": "Nome/Número da Piscina"
+      },
+      "title": "Piscinas Incentivadas Externamente",
+      "TVL": "TVL"
+    },
+    "incentivized": "Incentivada",
+    "liquidity": "Liquidez",
+    "myLiquidity": "Minha Liquidez",
+    "myPools": "Minhas Piscinas",
+    "poolId": "Piscina #{id}",
+    "priceOsmo": "Preço de OSMO",
+    "rewardDistribution": "Distribuição de Recompensa em",
+    "superfluid": {
+      "APR": "APR",
+      "fees7D": "Taxas (7D)",
+      "liquidity": "Liquidez",
+      "tab": "Superfluido",
+      "title": "Piscinas Superfluidas"
+    },
+    "title": "Piscinas Ativas"
+  },
+  "profile": {
+    "balance": "Saldo",
+    "modalTitle": "Perfil",
+    "viewAllAssets": "Ver todos os ativos",
+    "wallet": "Carteira"
+  },
   "protocolDisclaimer": "Aviso Legal do Protocolo",
-  "transactionFailed": "Transação falhou",
-  "transactionSuccessful": "Transação Bem-Sucedida",
-  "transactionBroadcasting": "Transmitindo Transação",
-  "swapFailed": "Troca falhou. Liquidez pode não ser o suficiente. Tente ajustar o spread permitido.",
-  "waitingForTransaction": "Aguardando para que a transação seja incluida no bloco",
-  "viewExplorer": "Visualizar explorer",
-  "unknownError": "Erro desconhecido",
+  "removeLiquidity": {
+    "sharesAmount": "{shares} participações",
+    "title": "Remover Liquidez",
+    "titleInPool": "Remover liquidez de uma piscina #{poolId}"
+  },
   "requestRejected": "Solicitação rejeitada",
+  "settings": {
+    "filterDust": "Filtrar Poeira",
+    "selectLanguage": "Selecionar idioma",
+    "title": "Configurações Globais",
+    "titleHideDust": "Esconder piscinas com < {fiatSymbol}0.01",
+    "titleLanguage": "Idioma"
+  },
   "stablecoinTypes": {
     "collateralized": "colateralizado"
-  }
+  },
+  "superfluidValidator": {
+    "bondedAmount": "Quantia Travada",
+    "buttonBond": "Travar & Fazer Stake",
+    "choose": "Escolha seu validador superfluido",
+    "columns": {
+      "commission": "Comissão",
+      "validator": "Validador"
+    },
+    "estimation": "Delegação Superfluida Estimada",
+    "estimationInfo": "O valor dessa delegação flutua e é eestimada baseada na quantia de OSMO na piscina.",
+    "estimationMobile": "Delegação Estimada",
+    "search": "Procurar pelo nome",
+    "title": "Selecionar Validador Superfluido",
+    "titleMobile": "Selecionar Validador"
+  },
+  "swap": {
+    "autoRouter": "Rota",
+    "autoRouterToggle": {
+      "hide": "Esconder",
+      "show": "Mostrar"
+    },
+    "available": "Disponível",
+    "button": "Trocar",
+    "buttonError": "Trocar mesmo assim",
+    "error": {
+      "findCurrency": "Não foi possível encontrar a moeda {currency}"
+    },
+    "expectedOutput": "Resultado Esperado",
+    "fee": "Taxa de Troca ({fee})",
+    "HALF": "METADE",
+    "MAX": "MÁXIMO",
+    "minimumSlippage": "Mínimo recebido após o spread ({slippage})",
+    "pool": "Piscina #{id}",
+    "priceImpact": "Impacto sobre o preço",
+    "routerTooltipFee": "Taxa",
+    "settings": {
+      "slippage": "Tolerância de spread",
+      "slippageInfo": "Sua transação irá reverter se o preço mudar desfavoravelmente acima desta porcentagem.",
+      "title": "Configurações de Transação"
+    },
+    "title": "Trocar"
+  },
+  "swapFailed": "Troca falhou. Liquidez pode não ser o suficiente. Tente ajustar o spread permitido.",
+  "transactionBroadcasting": "Transmitindo Transação",
+  "transactionFailed": "Transação falhou",
+  "transactionSuccessful": "Transação Bem-Sucedida",
+  "unknownError": "Erro desconhecido",
+  "viewExplorer": "Visualizar explorer",
+  "waitingForTransaction": "Aguardando para que a transação seja incluida no bloco"
 }

@@ -9,7 +9,11 @@ import {
 } from "mobx";
 import { ComponentProps } from "react";
 
-import { FiatRampKey, SourceChainKey, Wallet } from "../../integrations";
+import {
+  FiatRampKey,
+  ObservableWallet,
+  SourceChainKey,
+} from "../../integrations";
 import {
   EthWallet,
   ObservableMetamask,
@@ -180,7 +184,7 @@ export class ObservableTransferUIConfig {
       // bridge integration
       const applicableWallets = this._ethClientWallets.filter(({ key }) =>
         balance.originBridgeInfo!.wallets.includes(key)
-      ) as Wallet[];
+      ) as ObservableWallet[];
       const alreadyConnectedWallet = applicableWallets.find(
         (wallet) => wallet.isConnected
       );
@@ -212,11 +216,6 @@ export class ObservableTransferUIConfig {
     } else {
       this.launchIbcTransferModal(direction, balance);
     }
-  }
-
-  @action
-  buyOsmo() {
-    this.launchFiatRampsModal("transak", "OSMO");
   }
 
   // SECTION - methods for launching a particular modal
@@ -326,7 +325,7 @@ export class ObservableTransferUIConfig {
     balanceOnOsmosis: IBCBalance,
     sourceChainKey: SourceChainKey
   ) {
-    const wallets = this._ethClientWallets as Wallet[];
+    const wallets = this._ethClientWallets as ObservableWallet[];
     const applicableWallets = wallets.filter(({ key }) =>
       balanceOnOsmosis.originBridgeInfo!.wallets.includes(key)
     );
@@ -400,7 +399,7 @@ export class ObservableTransferUIConfig {
   protected launchBridgeTransferModal(
     direction: TransferDir,
     balanceOnOsmosis: IBCBalance,
-    connectedWalletClient: Wallet,
+    connectedWalletClient: ObservableWallet,
     sourceChainKey: SourceChainKey,
     onRequestSwitchWallet: () => void,
     onRequestBack?: () => void
@@ -423,7 +422,7 @@ export class ObservableTransferUIConfig {
   }
 
   @action
-  protected launchFiatRampsModal(fiatRampKey: FiatRampKey, assetKey: string) {
+  launchFiatRampsModal(fiatRampKey: FiatRampKey, assetKey: string) {
     this._fiatRampsModal = {
       isOpen: true,
       onRequestClose: () => this.closeAllModals(),

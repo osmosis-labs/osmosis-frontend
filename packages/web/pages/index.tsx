@@ -11,7 +11,7 @@ import { EventName, IS_FRONTIER } from "../config";
 import { useAmplitudeAnalytics } from "../hooks";
 
 const Home: NextPage = observer(function () {
-  const { chainStore, queriesStore } = useStore();
+  const { chainStore, queriesStore, priceStore } = useStore();
   const { chainId } = chainStore.osmosis;
 
   const queries = queriesStore.get(chainId);
@@ -104,6 +104,18 @@ const Home: NextPage = observer(function () {
               }
             }
 
+            // only pools with at least 10,000 USDT
+            if (
+              "originChainId" in asset.amount.currency &&
+              asset.amount.currency.coinMinimalDenom ===
+                "ibc/8242AD24008032E457D2E12D46588FD39FB54FB29680C6C7663D296B383C37C4"
+            ) {
+              if (asset.amount.toDec().gt(new Dec(10_000))) {
+                hasEnoughAssets = true;
+                break;
+              }
+            }
+
             // only pools with at least 1,000,000 STARS
             if (
               "originChainId" in asset.amount.currency &&
@@ -147,8 +159,15 @@ const Home: NextPage = observer(function () {
 
           return hasEnoughAssets;
         })
+        .sort((a, b) => {
+          // sort by TVL to find routes amongst most valuable pools
+          const aTVL = a.computeTotalValueLocked(priceStore);
+          const bTVL = b.computeTotalValueLocked(priceStore);
+
+          return Number(bTVL.sub(aTVL).toDec().toString());
+        })
         .map((pool) => pool.pool),
-    [allPools]
+    [allPools, priceStore.response]
   );
 
   useAmplitudeAnalytics({

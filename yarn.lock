@@ -38,17 +38,17 @@
   resolved "https://registry.npmjs.org/@amplitude/ua-parser-js/-/ua-parser-js-0.7.31.tgz"
   integrity sha512-+z8UGRaj13Pt5NDzOnkTBy49HE2CX64jeL0ArB86HAtilpnfkPB7oqkigN7Lf2LxscMg4QhFD7mmCfedh3rqTg==
 
-"@axelar-network/axelar-cgp-solidity@^4.3.0":
-  version "4.3.1"
-  resolved "https://registry.yarnpkg.com/@axelar-network/axelar-cgp-solidity/-/axelar-cgp-solidity-4.3.1.tgz#49877b2599083fdd4bda92d3eb0ccdfcfeff3785"
-  integrity sha512-efJsTvoGITUPr50PQc8fCwzT9JOJMnchW+WnXAivXaEm/mw2bcEAYX6dCcZn4j6tgFTAVZnYqrABItQwDaStag==
+"@axelar-network/axelar-cgp-solidity@^4.5.0":
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/@axelar-network/axelar-cgp-solidity/-/axelar-cgp-solidity-4.5.0.tgz#f0456a2a6665302613a4d5243282ce1b18842348"
+  integrity sha512-4F4rmHei0cmzeUR7/mW4Bap5rc/KlPV2crD9HA7HTRfl15mVcN6/3z8p+pAm9We6bOrQplNW9KBZ3HJFP3C1Gw==
 
-"@axelar-network/axelarjs-sdk@^0.12.4":
-  version "0.12.4"
-  resolved "https://registry.yarnpkg.com/@axelar-network/axelarjs-sdk/-/axelarjs-sdk-0.12.4.tgz#2d8111d4ed3ba60e805a36a5337d127ad72325c7"
-  integrity sha512-1MFwyAzLu5VDfuXUk0IlM4tFhImL5uROxptBHpu7CJoFkbcM+PGquoUl61bf3+WmmewTv0DVeYvZ5dS2yrLVjA==
+"@axelar-network/axelarjs-sdk@0.12.5-alpha.5":
+  version "0.12.5-alpha.5"
+  resolved "https://registry.yarnpkg.com/@axelar-network/axelarjs-sdk/-/axelarjs-sdk-0.12.5-alpha.5.tgz#ee2fa5869cba7d54d6900b0dd2a0763d6f313d2e"
+  integrity sha512-n3vMheV1vWwiNnVA7dUzhURDkfhQqWgQly+8MsUAY4OVd8LQserDr5rxvWodHdXtNRIIebu90+i2KyUHFo/Wgw==
   dependencies:
-    "@axelar-network/axelar-cgp-solidity" "^4.3.0"
+    "@axelar-network/axelar-cgp-solidity" "^4.5.0"
     "@axelar-network/axelarjs-types" "^0.27.0"
     "@cosmjs/stargate" "^0.28.4"
     "@types/uuid" "^8.3.1"
@@ -60,6 +60,7 @@
     standard-http-error "^2.0.1"
     string-similarity-js "^2.1.4"
     uuid "^8.3.2"
+    ws "^8.12.0"
 
 "@axelar-network/axelarjs-types@^0.27.0":
   version "0.27.0"
@@ -2972,6 +2973,30 @@
   version "3.1.0"
   resolved "https://registry.npmjs.org/@socket.io/component-emitter/-/component-emitter-3.1.0.tgz"
   integrity sha512-+9jVqKhRSpsc591z5vX+X5Yyw+he/HCB4iQ/RYxw35CEPaY1gnsNE43nf9n9AaYjAQrTiI/mOwKUKdUs9vf7Xg==
+
+"@tanstack/react-table@^8.7.9":
+  version "8.7.9"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-table/-/react-table-8.7.9.tgz#9efcd168fb0080a7e0bc213b5eac8b55513babf4"
+  integrity sha512-6MbbQn5AupSOkek1+6IYu+1yZNthAKTRZw9tW92Vi6++iRrD1GbI3lKTjJalf8lEEKOqapPzQPE20nywu0PjCA==
+  dependencies:
+    "@tanstack/table-core" "8.7.9"
+
+"@tanstack/react-virtual@^3.0.0-beta.54":
+  version "3.0.0-beta.54"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-virtual/-/react-virtual-3.0.0-beta.54.tgz#755979455adf13f2584937204a3f38703e446037"
+  integrity sha512-D1mDMf4UPbrtHRZZriCly5bXTBMhylslm4dhcHqTtDJ6brQcgGmk8YD9JdWBGWfGSWPKoh2x1H3e7eh+hgPXtQ==
+  dependencies:
+    "@tanstack/virtual-core" "3.0.0-beta.54"
+
+"@tanstack/table-core@8.7.9":
+  version "8.7.9"
+  resolved "https://registry.yarnpkg.com/@tanstack/table-core/-/table-core-8.7.9.tgz#0e975f8a5079972f1827a569079943d43257c42f"
+  integrity sha512-4RkayPMV1oS2SKDXfQbFoct1w5k+pvGpmX18tCXMofK/VDRdA2hhxfsQlMvsJ4oTX8b0CI4Y3GDKn5T425jBCw==
+
+"@tanstack/virtual-core@3.0.0-beta.54":
+  version "3.0.0-beta.54"
+  resolved "https://registry.yarnpkg.com/@tanstack/virtual-core/-/virtual-core-3.0.0-beta.54.tgz#12259d007911ad9fce1388385c54a9141f4ecdc4"
+  integrity sha512-jtkwqdP2rY2iCCDVAFuaNBH3fiEi29aTn2RhtIoky8DTTiCdc48plpHHreLwmv1PICJ4AJUUESaq3xa8fZH8+g==
 
 "@tippyjs/react@^4.2.6":
   version "4.2.6"
@@ -11130,6 +11155,11 @@ ws@^7.4.6:
   version "7.5.6"
   resolved "https://registry.npmjs.org/ws/-/ws-7.5.6.tgz"
   integrity sha512-6GLgCqo2cy2A2rjCNFlxQS6ZljG/coZfZXclldI8FB/1G3CCI36Zd8xy2HrFVACi8tfk5XrgLQEk+P0Tnz9UcA==
+
+ws@^8.12.0:
+  version "8.13.0"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.13.0.tgz#9a9fb92f93cf41512a0735c8f4dd09b8a1211cd0"
+  integrity sha512-x9vcZYTrFPC7aSIbj7sRCYo7L/Xb8Iy+pW0ng0wt2vCJv7M9HOMy0UoN3rr+IFC7hb7vXoqS+P9ktyLLLhO+LA==
 
 ws@~8.2.3:
   version "8.2.3"

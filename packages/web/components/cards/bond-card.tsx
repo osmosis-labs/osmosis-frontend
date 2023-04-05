@@ -29,6 +29,7 @@ export const BondCard: FunctionComponent<
   }
 > = ({
   duration,
+  bondable,
   userShares,
   userLockedShareValue,
   userUnlockingShares,
@@ -155,22 +156,24 @@ export const BondCard: FunctionComponent<
         onClick={() => setDrawerUp(false)}
       />
 
-      <Drawer
-        duration={duration}
-        aggregateApr={aggregateApr}
-        userShares={userShares}
-        swapFeeApr={swapFeeApr}
-        swapFeeDailyReward={swapFeeDailyReward}
-        incentivesBreakdown={incentivesBreakdown}
-        superfluid={superfluid}
-        drawerUp={drawerUp}
-        toggleDetailsVisible={() => {
-          const nextValue = !drawerUp;
-          onToggleDetails?.(nextValue);
-          setDrawerUp(nextValue);
-        }}
-        onGoSuperfluid={onGoSuperfluid}
-      />
+      {bondable && (
+        <Drawer
+          duration={duration}
+          aggregateApr={aggregateApr}
+          userShares={userShares}
+          swapFeeApr={swapFeeApr}
+          swapFeeDailyReward={swapFeeDailyReward}
+          incentivesBreakdown={incentivesBreakdown}
+          superfluid={superfluid}
+          drawerUp={drawerUp}
+          toggleDetailsVisible={() => {
+            const nextValue = !drawerUp;
+            onToggleDetails?.(nextValue);
+            setDrawerUp(nextValue);
+          }}
+          onGoSuperfluid={onGoSuperfluid}
+        />
+      )}
     </div>
   );
 };

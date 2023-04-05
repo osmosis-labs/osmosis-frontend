@@ -70,7 +70,7 @@ export const Sparkline: FunctionComponent<{
     }
 
     ctx.stroke();
-  }, [data, trendColor]);
+  }, [data, lineWidth, trendColor]);
 
   useEffect(() => {
     if (shouldFillContainer) resizeCanvas(canvasRef.current!);

@@ -11,6 +11,8 @@ import {
 import { AppCurrency, Keplr } from "@keplr-wallet/types";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 import {
+  ChainInfoWithExplorer,
+  ChainStore,
   DerivedDataStore,
   IBCTransferHistoryStore,
   LPCurrencyRegistrar,
@@ -32,7 +34,6 @@ import { PoolPriceRoutes } from "../config";
 import { suggestChainFromWindow } from "../hooks/use-keplr/utils";
 import { AxelarTransferStatusSource } from "../integrations/axelar";
 import { ObservableAssets } from "./assets";
-import { ChainInfoWithExplorer, ChainStore } from "./chain";
 import { makeIndexedKVStore, makeLocalStorageKVStore } from "./kv-store";
 import { NavBarStore } from "./nav-bar";
 import { OsmoPixelsQueries } from "./pixels";
@@ -146,10 +147,17 @@ export class RootStore {
       },
       CosmosAccount.use({
         queriesStore: this.queriesStore,
-        msgOptsCreator: (chainId) =>
-          chainId.startsWith("evmos_")
-            ? { ibcTransfer: { gas: 250000 } }
-            : { ibcTransfer: { gas: 210000 } },
+        msgOptsCreator: (chainId) => {
+          if (chainId.startsWith("osmosis")) {
+            return { ibcTransfer: { gas: 300000 } };
+          }
+
+          if (chainId.startsWith("evmos_")) {
+            return { ibcTransfer: { gas: 250000 } };
+          } else {
+            return { ibcTransfer: { gas: 210000 } };
+          }
+        },
         preTxEvents: {
           onBroadcastFailed: toastOnBroadcastFailed((chainId) =>
             this.chainStore.getChain(chainId)
@@ -191,6 +199,9 @@ export class RootStore {
       this.queriesStore.get(
         this.chainStore.osmosis.chainId
       ).osmosis!.queryGauge,
+      this.queriesStore.get(
+        this.chainStore.osmosis.chainId
+      ).osmosis!.queryIncentivizedPools,
       typeof window !== "undefined"
         ? window.origin
         : IS_FRONTIER

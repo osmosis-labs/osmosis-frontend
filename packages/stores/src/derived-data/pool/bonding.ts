@@ -40,7 +40,6 @@ export class ObservablePoolBonding {
     makeObservable(this);
   }
 
-  @computed
   protected get bech32Address() {
     return this.accountStore.getAccount(this.osmosisChainId).bech32Address;
   }
@@ -52,17 +51,14 @@ export class ObservablePoolBonding {
     return osmosisQueries;
   }
 
-  @computed
   protected get queryPool() {
     return this.queries.queryGammPools.getPool(this.poolId);
   }
 
-  @computed
   protected get poolDetail() {
     return this.poolDetails.get(this.poolId);
   }
 
-  @computed
   protected get superfluidPoolDetail() {
     return this.superfluidPoolDetails.get(this.poolId);
   }
@@ -75,12 +71,12 @@ export class ObservablePoolBonding {
   readonly calculateBondLevel = computedFn(
     (bondDurations: BondDuration[]): 1 | 2 | undefined => {
       if (
-        this.poolDetail.userAvailableValue.toDec().gt(new Dec(0)) &&
+        this.poolDetail.userAvailableShares.toDec().gt(new Dec(0)) &&
         bondDurations.some((duration) => duration.bondable)
       )
         return 2;
 
-      if (this.poolDetail?.userAvailableValue.toDec().isZero()) return 1;
+      if (this.poolDetail.userAvailableShares.toDec().isZero()) return 1;
     }
   );
 
@@ -101,7 +97,7 @@ export class ObservablePoolBonding {
     const externalGauges =
       this.externalQueries.queryActiveGauges.getExternalGaugesForPool(
         this.poolId
-      ) ?? [];
+      );
 
     /** Set of all available durations. */
     const durationsMsSet = new Set<number>();
@@ -266,12 +262,7 @@ export class ObservablePoolBonding {
           (sum, { apr }) => sum.add(apr),
           new RatePretty(0)
         );
-        const swapFeeApr =
-          this.externalQueries.queryGammPoolFeeMetrics.get7dPoolFeeApr(
-            _queryPool,
-            this.priceStore
-          );
-        aggregateApr = aggregateApr.add(swapFeeApr);
+        aggregateApr = aggregateApr.add(this.poolDetail.swapFeeApr);
         if (superfluid) aggregateApr = aggregateApr.add(superfluid.apr);
 
         return {
@@ -283,7 +274,7 @@ export class ObservablePoolBonding {
           userLockedShareValue,
           userUnlockingShares,
           aggregateApr,
-          swapFeeApr,
+          swapFeeApr: this.poolDetail.swapFeeApr,
           swapFeeDailyReward: this.externalQueries.queryGammPoolFeeMetrics
             .getPoolFeesMetrics(this.poolId, this.priceStore)
             .feesSpent7d.quo(new Dec(7)),
@@ -295,9 +286,7 @@ export class ObservablePoolBonding {
 
   @computed
   get highestBondDuration(): BondDuration | undefined {
-    return this.bondDurations.find(
-      (_, i) => i === this.bondDurations.length - 1
-    );
+    return this.bondDurations[this.bondDurations.length - 1];
   }
 }
 

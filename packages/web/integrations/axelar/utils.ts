@@ -1,7 +1,10 @@
-import { SourceChain } from "../bridge-info";
 import { t } from "react-multi-lang";
 
-export function waitBySourceChain(sourceChain: SourceChain) {
+import { SourceChain } from "../bridge-info";
+
+export function waitByTransferFromSourceChain(
+  sourceChain: SourceChain | "Osmosis"
+) {
   switch (sourceChain) {
     case "Ethereum":
     case "Polygon":

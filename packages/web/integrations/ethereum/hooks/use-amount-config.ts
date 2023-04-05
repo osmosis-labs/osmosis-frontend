@@ -83,13 +83,14 @@ export function useAmountConfig({
   const amountLessGasRaw = useMemo(() => {
     if (!gasCurrency || !gasCost || amount === "") return amount;
     const amountDec = new Dec(amount);
-    if (gasCost.toDec().gt(amountDec)) return "0";
+    if (amountDec.isZero()) return amount;
+    if (isMax && gasCost.toDec().gt(amountDec)) return "0";
     if (isMax && amountDec.gt(gasCost.toDec())) {
       return amountDec.sub(gasCost.toDec()).toString();
     }
 
     return amount;
-  }, [gasCost, isMax, balance, amount]);
+  }, [gasCurrency, gasCost, isMax, amount]);
 
   const toggleIsMax = useCallback(() => {
     if (isMax) {

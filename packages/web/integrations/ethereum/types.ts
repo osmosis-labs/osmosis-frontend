@@ -1,9 +1,9 @@
-import { Wallet } from "../wallets";
+import { ObservableWallet } from "../wallets";
 
 type Method = "eth_getBalance" | "eth_sendTransaction" | "eth_call" | string;
 
 export interface EthWallet
-  extends Wallet<
+  extends ObservableWallet<
     {
       method: Method;
       params:

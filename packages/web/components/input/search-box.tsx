@@ -6,7 +6,7 @@ import { Icon } from "../assets";
 import { CustomClasses, Disableable, InputProps } from "../types";
 
 const searchBoxClasses = cva(
-  "flex flex-nowrap items-center justify-between gap-2 rounded-xl border border-osmoverse-500 transition-colors [&_input]:placeholder:text-osmoverse-500 [&_input]:placeholder:font-medium",
+  "flex flex-nowrap items-center justify-between gap-2 rounded-xl border border-osmoverse-500 relative transition-colors [&_input]:placeholder:text-osmoverse-500 [&_input]:placeholder:font-medium",
   {
     variants: {
       /**
@@ -20,9 +20,10 @@ const searchBoxClasses = cva(
        * - letter spacing
        */
       size: {
-        small: "h-10 px-5 w-max [&_input]:text-body2 [&_input]:font-body2",
-        medium: "h-12 px-5 w-max [&_input]:text-body2 [&_input]:font-body2",
-        large: "h-14 px-5 w-max [&_input]:text-body1 [&_input]:font-body2",
+        small: "h-10 pl-5 pr-1 w-max [&_input]:text-body2 [&_input]:font-body2",
+        medium:
+          "h-12 pl-5 pr-2 w-max [&_input]:text-body2 [&_input]:font-body2",
+        large: "h-14 pl-5 pr-3 w-max [&_input]:text-body1 [&_input]:font-body2",
       },
     },
     defaultVariants: {
@@ -38,6 +39,8 @@ type SearchBoxProps = Omit<InputProps<string>, "currentValue"> &
     type?: string;
     currentValue?: string;
     onKeyDown?: DOMAttributes<HTMLInputElement>["onKeyDown"];
+    onFocusChange?: (isFocused: boolean) => void;
+    rightIcon?: () => React.ReactNode;
   };
 
 export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
@@ -52,7 +55,9 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
       autoFocus,
       className,
       onKeyDown,
+      onFocusChange,
       size,
+      rightIcon,
     },
     ref
   ) {
@@ -64,7 +69,7 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
           searchBoxClasses({ size }),
           {
             "opacity-50": disabled,
-            "border-2 border-osmoverse-200 px-[19px]": isFocused,
+            "border border-osmoverse-200": isFocused,
           },
           className
         )}
@@ -83,15 +88,20 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
             autoComplete="off"
             onFocus={(e: any) => {
               setIsFocused(true);
+              onFocusChange?.(true);
               onFocus?.(e);
             }}
-            onBlur={() => setIsFocused(false)}
+            onBlur={() => {
+              setIsFocused(false);
+              onFocusChange?.(false);
+            }}
             onInput={(e: any) => onInput(e.target.value)}
             onClick={(e: any) => e.target.select()}
             disabled={disabled}
             onKeyDown={onKeyDown}
           />
         </label>
+        {rightIcon && rightIcon()}
       </div>
     );
   }

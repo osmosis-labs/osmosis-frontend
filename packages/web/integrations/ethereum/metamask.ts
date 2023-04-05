@@ -1,20 +1,21 @@
-import {
-  runInAction,
-  makeObservable,
-  observable,
-  action,
-  computed,
-} from "mobx";
-import { computedFn } from "mobx-utils";
-import { toHex, isAddress } from "web3-utils";
 import { KVStore } from "@keplr-wallet/common";
 import { EventEmitter } from "eventemitter3";
+import {
+  action,
+  computed,
+  makeObservable,
+  observable,
+  runInAction,
+} from "mobx";
+import { computedFn } from "mobx-utils";
+import { isAddress, toHex } from "web3-utils";
+
 import { Alert } from "../../components/alert";
+import { getKeyByValue } from "../../utils/object";
 import { WalletDisplay, WalletKey } from "../wallets";
-import { ChainNames, EthWallet } from "./types";
 import { switchToChain, withEthInWindow } from "./metamask-utils";
 import { pollTransactionReceipt } from "./queries";
-import { getKeyByValue } from "../../utils/object";
+import { ChainNames, EthWallet } from "./types";
 
 const CONNECTED_ACCOUNT_KEY = "metamask-connected-account";
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
@@ -142,6 +143,8 @@ export class ObservableMetamask implements EthWallet {
 
     if (ethChainId) {
       this._preferredChainId = ethChainId;
+    } else {
+      console.warn("Invalid chain name:", chainName, "is not in ChainNames");
     }
   }
 

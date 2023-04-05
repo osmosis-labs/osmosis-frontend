@@ -1,6 +1,6 @@
-import { useState } from "react";
 import { ChainGetter } from "@keplr-wallet/stores";
 import { FakeFeeConfig } from "@osmosis-labs/stores";
+import { useState } from "react";
 
 /** Maintains a single instance of `FakeFeeConfig` for React view lifecycle.
  *  Updates `chainId` and `feeType` on render.

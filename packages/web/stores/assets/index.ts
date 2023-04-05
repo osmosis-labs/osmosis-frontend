@@ -1,21 +1,21 @@
-import { computed, makeObservable } from "mobx";
-import { computedFn } from "mobx-utils";
-import { Dec, PricePretty, CoinPretty } from "@keplr-wallet/unit";
 import {
   CosmosQueries,
   CosmwasmQueries,
   IQueriesStore,
 } from "@keplr-wallet/stores";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { ChainStore, IPriceStore, OsmosisQueries } from "@osmosis-labs/stores";
+import { computed, makeObservable } from "mobx";
+import { computedFn } from "mobx-utils";
+
 import { IS_FRONTIER } from "../../config";
-import { ChainStore } from "../chain";
-import { OsmosisQueries, IPriceStore } from "@osmosis-labs/stores";
-import { makeIBCMinimalDenom } from "./utils";
 import {
+  CoinBalance,
   IBCAsset,
   IBCBalance,
   IBCCW20ContractBalance,
-  CoinBalance,
 } from "./types";
+import { makeIBCMinimalDenom } from "./utils";
 
 /**
  * Wrapper around IBC asset config and stores to provide memoized metrics about osmosis assets.

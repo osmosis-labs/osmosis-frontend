@@ -5,423 +5,441 @@
   "500": {
     "title": "服务器错误"
   },
-  "app": {
-    "banner": {
-      "title": "您正在查看所有无许可资产.",
-      "linkText": "点击此处返回主应用",
-      "externalLinkDisclaimer": "通过点击链接，您承认您已阅读并理解，Osmosis对可能具有不同ToS的外部页面的服务质量没有任何保证。",
-      "externalLink": "您现在正在离开Osmosis应用程序去",
-      "goToSite": "前往网站",
-      "backToOsmosis": "返回Osmosis",
-      "externalLinkModalTitle": "离开Osmosis"
-    }
-  },
-  "swap": {
-    "title": "兑换",
-    "settings": {
-      "title": "交易设置",
-      "slippage": "滑点上限",
-      "slippageInfo": "如果价格的不利变动超过此百分比，您的交易将被撤回."
-    },
-    "available": "可用",
-    "MAX": "最大",
-    "HALF": "对半",
-    "button": "兑换",
-    "buttonError": "继续兑换",
-    "priceImpact": "价格影响",
-    "fee": "交易费 ({fee})",
-    "expectedOutput": "预期产出",
-    "minimumSlippage": "扣除滑点后最少获得 ({slippage})",
-    "error": {
-      "findCurrency": "无法找到代币 {currency}"
-    },
-    "autoRouter": "路线",
-    "routerTooltipFee": "费用",
-    "autoRouterToggle": {
-      "show": "节目",
-      "hide": "隐藏"
-    },
-    "pool": "资金池 #{id}"
-  },
-  "pools": {
-    "title": "活跃资金池",
-    "poolId": "资金池 #{id}",
-    "priceOsmo": "OSMO 价格",
-    "rewardDistribution": "奖励分配",
-    "myPools": "我的资金池",
-    "APR": "APR",
-    "available": "可用",
-    "liquidity": "流动性",
-    "myLiquidity": "我的流动性",
-    "bonded": "已绑定",
-    "incentivized": "激励池",
-    "all": "所有池",
-    "allTab": "所有",
-    "superfluid": {
-      "title": "超流质押池",
-      "tab": "超流质押",
-      "APR": "APR",
-      "liquidity": "流动性",
-      "fees7D": "交易费 (7天)"
-    },
-    "allPools": {
-      "title": "所有资金池",
-      "myLiquidity": "我的流动性",
-      "TVL": "TVL",
-      "APR": "APR",
-      "APRIncentivized": "7天成交量",
-      "search": "搜索资金池",
-      "displayLowLiquidity": "显示资金池 < {value}",
-      "sort": {
-        "poolName": "池名称/编号",
-        "liquidity": "流动性",
-        "volume24h": "成交额 (24时)",
-        "fees": "交易费 (7天)",
-        "APRIncentivized": "APR",
-        "APR": "我的流动性",
-        "poolId": "资金池 ID"
-      }
-    },
-    "externalIncentivized": {
-      "title": "外部激励矿池",
-      "TVL": "TVL",
-      "APR": "APR",
-      "search": "搜索代币",
-      "sort": {
-        "poolName": "池名称/编号",
-        "liquidity": "流动性",
-        "APR": "APR",
-        "epochs": "剩余奖励周期",
-        "myLiquidity": "我的流动性"
-      }
-    },
-    "createPool": {
-      "title": "创建新的资金池",
-      "button": "创建新的资金池",
-      "weightedPool": "加权池",
-      "stablePool": "稳定池",
-      "step": {
-        "one": {
-          "weighted": "步骤 {step} / {nbStep} - 设置代币比率",
-          "stable": "步骤 {step} / {nbStep} - 设置比例因子"
-        },
-        "two": "步骤 {step} / {nbStep} - 输入添加总量",
-        "three": "步骤 {step} / {nbStep} - 确认资金池的代币比率和总量"
-      },
-      "infoMessage": "资金池创建费",
-      "infoCaption": "已发送到 Osmosis 社区池",
-      "buttonCreate": "创建资金池",
-      "buttonNext": "下一步",
-      "buttonBack": "上一步",
-      "buttonAddToken": "添加新的代币",
-      "available": "可用",
-      "amount": "总量",
-      "token": "代币",
-      "swapFee": "设置交易费",
-      "scalingFactorController": "设置比例因子控制器（可选）",
-      "undersandCost": "我已理解创建资金池将会花费 {POOL_CREATION_FEE}.",
-      "interestedCreate": "对创建新的资金池感兴趣?",
-      "startProcess": "点击此处开始创建"
-    }
-  },
-  "pool": {
-    "title": "资金池 #{id}",
-    "swap": "兑换代币",
-    "superfluidEnabled": "已启用超流质押",
-    "stableswapEnabled": "启用稳定交换",
-    "24hrTradingVolume": "24时成交额",
-    "liquidity": "资金池流动性",
-    "swapFee": "交易费",
-    "yourStats": "您的资金池余额",
-    "sharesAmount": "{shares} 份额",
-    "currentDailyEarn": "您当前正在赚取",
-    "earnMore": "通过结合赚取 {amount}",
-    "day": "天",
-    "dailyEarnAmount": "{amount} / 天",
-    "putAssetsToWork": "让您的资产发挥作用.",
-    "putAssetsToWorkCaption": "将您的资产添加到此资金池中以解锁令人兴奋的 APR，解绑期越长您赚得越多.",
-    "learnMore": "了解更多",
-    "level": "等级 {level}",
-    "earnSwapFees": "赚取交易费",
-    "earnSwapFeesCaption": "将您的代币转为份额并在每次兑换中赚取收益.",
-    "APR": "APR",
-    "bondLiquidity": "绑定流动性",
-    "bondLiquidityUnavailable": "绑定流动性（不可用）",
-    "checkBackForBondingRewards": "查看绑定奖励",
-    "bondLiquidityCaption": "将您的份额锁定更长时间以赚取更高的APRs.",
-    "bondSuperfluidLiquidityCaption": "去超流质押获得最大收益.",
-    "bondShares": "绑定份额",
-    "amountDaysUnbonding": "{numDays} 天解绑",
-    "amountDaysUnbonding_plural": "{numDays} 天解绑期",
-    "available": "可用的",
-    "unbond": "解绑",
-    "bonded": "绑定",
-    "showDetails": "显示详情",
-    "collapseDetails": "收起详情",
-    "sharesAvailableIn": "可用",
-    "unbonding": "解绑期",
-    "superfluidEarnMore": "赚取 {rate} 更多. 去超流质押",
-    "incentives": "奖励",
-    "details": "详情",
-    "rewardDistribution": "向所有流动性提供者发放奖励",
-    "superfluidStaking": "超流质押",
-    "delegated": "委托",
-    "undelegating": "取消委托",
-    "commission": "佣金",
-    "numDaysRemaining": "还剩 {numDays} 天",
-    "from": "来自",
-    "swapFees": "交易费",
-    "7davg": "(7日平均)"
-  },
-  "removeLiquidity": {
-    "title": "移除流动性",
-    "titleInPool": "从#{poolId}号资金池移除流动性",
-    "sharesAmount": "{shares} 份额"
-  },
   "addLiquidity": {
-    "title": "添加流动性",
-    "titleInPool": "向#{poolId}号资金池添加流动性",
     "allAssets": "全部资产",
-    "singleAsset": "单边资产",
-    "available": "可用",
     "autoswapCaption": "使用自动兑换为单边资产添加流动性.",
+    "available": "可用",
     "scalingFactor": "比例因子",
-    "scalingFactorInformation": "该因素允许曲线根据可预测的价格变化进行调整，例如流动性质押代币的增值。",
+    "scalingFactorController": "控制器",
     "scalingFactorControllerWarning_first": "启用了缩放因子控制器。这",
     "scalingFactorControllerWarning_second": "可以调整",
     "scalingFactorControllerWarning_third": "保持钉子。当前的缩放因素是",
-    "scalingFactorController": "控制器"
+    "scalingFactorInformation": "该因素允许曲线根据可预测的价格变化进行调整，例如流动性质押代币的增值。",
+    "singleAsset": "单边资产",
+    "title": "添加流动性",
+    "titleInPool": "向#{poolId}号资金池添加流动性"
   },
-  "lockToken": {
-    "title": "绑定LP份额",
-    "titleInPool": "将份额绑定在 #{poolId}号资金池",
-    "selectPeriod": "选择解绑周期",
-    "availableToken": "可用",
-    "amountToBond": "绑定数量",
-    "superfluidStake": "超流质押",
-    "bondingRequirement": "需要绑定{numDays}天",
-    "buttonNext": "下一步",
-    "buttonBond": "绑定",
-    "buttonBondStake": "绑定 & 质押"
-  },
-  "superfluidValidator": {
-    "title": "选择超流验证节点",
-    "titleMobile": "选择验证节点",
-    "choose": "选择您需要的超流验证节点",
-    "search": "通过名称查找",
-    "bondedAmount": "已绑定数量",
-    "estimation": "预估超流委派值",
-    "estimationMobile": "预估委派值",
-    "estimationInfo": "此委派值是会改变的，并且基于资金池中的 OSMO 数量预估",
-    "buttonBond": "绑定 & 质押",
-    "columns": {
-      "validator": "验证节点",
-      "commission": "佣金"
+  "app": {
+    "banner": {
+      "backToOsmosis": "返回Osmosis",
+      "externalLink": "您现在正在离开Osmosis应用程序去",
+      "externalLinkDisclaimer": "通过点击链接，您承认您已阅读并理解，Osmosis对可能具有不同ToS的外部页面的服务质量没有任何保证。",
+      "externalLinkModalTitle": "离开Osmosis",
+      "goToSite": "前往网站",
+      "linkText": "点击此处返回主应用",
+      "title": "您正在查看所有无许可资产."
     }
   },
   "assets": {
-    "totalAssets": "总资产",
-    "unbondedAssets": "未绑定资产",
     "bondedAssets": "已绑定资产",
-    "stakedAssets": "质押 OSMO",
-    "myPools": "我的资金池",
-    "transferAssetSelect": {
-      "deposit": "存入",
-      "withdraw": "提币",
-      "network": "网络",
-      "buttonNext": "下一步"
-    },
-    "poolCards": {
-      "APR": "APR",
-      "FeeAPY": "费用 APY",
-      "liquidity": "我的流动性",
-      "bonded": "已绑定",
-      "myLiquidity": "我的流动性"
-    },
-    "ibcTransfer": {
-      "titleWithdraw": "提币 {coinDenom}",
-      "titleDeposit": "存入 {coinDenom}",
-      "channelCongested": "频道争抢",
-      "channelCongestedWithdraw": "提币 (频道争抢)",
-      "channelCongestedDeposit": "存入 (频道争抢)",
-      "channelBlocked": "频道被封锁",
-      "selectAmount": "选择数量",
-      "estimatedTime": "预估时间",
-      "waitTime": "20 秒",
-      "copied": "已复制！",
-      "IBCTransfer": "IBC 转账",
-      "from": "从",
-      "to": "至",
-      "warningLossFunds": "警告：提币到中心化交易所地址会导致资产损失",
-      "buttonEnter": "确定",
-      "checkboxVerify": "我确认没有发送到一个交易所的地址.",
-      "buttonEdit": "编辑",
-      "amoutWithdraw": "提币数量",
-      "amoutDeposit": "存入数量",
-      "availableBalance": "可用余额：",
-      "MAX": "最大"
-    },
-    "transfer": {
-      "titleWithdraw": "提币 {coinDenom}",
-      "titleDeposit": "存入 {coinDenom}",
-      "warnDepositAddressDifferent": "警告：{address}中选定的帐户与您上次存入的帐户不同.",
-      "from": "从",
-      "to": "至",
-      "via": "经过",
-      "loading": "加载中",
-      "availableOn": "在 {network} 网络上可用",
-      "availableMobile": "可用",
-      "transferFee": "转账费",
-      "errors": {
-        "reconnectWallet": "重新连接 {walletName}",
-        "wrongNetworkInWallet": "在 {walletName} 中网络错误",
-        "insufficientFee": "费用不足",
-        "insufficientBal": "余额不足"
-      },
-      "useWrappedDeposit": "在 Satellite 上存入 {wrapDenom}",
-      "useWrappedWithdraw": "从 Satellite 中提取 {wrapDenom}",
-      "waitTime": "{minutes} 分钟"
-    },
-    "selectAssetSource": {
-      "titleWithdraw": "提币至",
-      "titleDeposit": "存入于",
-      "next": "下一步",
-      "installWallet": "安装 {walletName}"
-    },
-    "table": {
-      "depositButton": "存入",
-      "withdrawButton": "提币",
-      "search": "搜索",
-      "title": "所有资产",
-      "hideZero": "隐藏0余额",
-      "preTransfer": {
-        "deposit": "存入",
-        "withdraw": "提币",
-        "currentBal": "当前余额"
-      },
-      "columns": {
-        "assetChain": "资产 / 链",
-        "balance": "余额",
-        "transfer": "转账",
-        "deposit": "存入",
-        "withdraw": "提币"
-      },
-      "sort": {
-        "symbol": "符号",
-        "network": "网络",
-        "balance": "余额"
-      }
-    },
     "historyTable": {
-      "title": "转账记录",
-      "pending": "处理中",
-      "success": "成功",
-      "refunded": "退款",
-      "pendingRefunded": "失败：等待退款",
       "colums": {
+        "amount": "数量",
+        "deposit": "存入",
+        "status": "状态",
         "transactionHash": "交易哈希",
         "type": "类型",
-        "amount": "数量",
-        "status": "状态",
-        "deposit": "存入",
         "withdraw": "提币"
+      },
+      "errors": {
+        "insufficientFee": "费用不足"
       },
       "failed": "失败的",
       "failedWithReason": "失败的: {reason}",
-      "errors": {
-        "insufficientFee": "费用不足"
-      }
-    }
-  },
-  "components": {
-    "show": {
-      "more": "查看更多",
-      "less": "收起更多"
+      "pending": "处理中",
+      "pendingRefunded": "失败：等待退款",
+      "refunded": "退款",
+      "success": "成功",
+      "title": "转账记录"
     },
+    "ibcTransfer": {
+      "amoutDeposit": "存入数量",
+      "amoutWithdraw": "提币数量",
+      "availableBalance": "可用余额：",
+      "buttonEdit": "编辑",
+      "buttonEnter": "确定",
+      "channelBlocked": "频道被封锁",
+      "channelCongested": "频道争抢",
+      "channelCongestedDeposit": "存入 (频道争抢)",
+      "channelCongestedWithdraw": "提币 (频道争抢)",
+      "checkboxVerify": "我确认没有发送到一个交易所的地址.",
+      "copied": "已复制！",
+      "estimatedTime": "预估时间",
+      "from": "从",
+      "IBCTransfer": "IBC 转账",
+      "MAX": "最大",
+      "selectAmount": "选择数量",
+      "titleDeposit": "存入 {coinDenom}",
+      "titleWithdraw": "提币 {coinDenom}",
+      "to": "至",
+      "waitTime": "20 秒",
+      "warningLossFunds": "警告：提币到中心化交易所地址会导致资产损失"
+    },
+    "myPools": "我的资金池",
+    "poolCards": {
+      "APR": "APR",
+      "bonded": "已绑定",
+      "FeeAPY": "费用 APY",
+      "liquidity": "我的流动性"
+    },
+    "selectAssetSource": {
+      "installWallet": "安装 {walletName}",
+      "next": "下一步",
+      "titleDeposit": "存入于",
+      "titleWithdraw": "提币至"
+    },
+    "stakedAssets": "质押 OSMO",
     "table": {
-      "poolId": "资金池 #{id}"
+      "columns": {
+        "assetChain": "资产 / 链",
+        "balance": "余额",
+        "deposit": "存入",
+        "transfer": "转账",
+        "withdraw": "提币"
+      },
+      "depositButton": "存入",
+      "hideZero": "隐藏0余额",
+      "preTransfer": {
+        "currentBal": "当前余额",
+        "deposit": "存入",
+        "withdraw": "提币"
+      },
+      "search": "搜索",
+      "sort": {
+        "balance": "余额",
+        "network": "网络",
+        "symbol": "符号"
+      },
+      "title": "所有资产",
+      "withdrawButton": "提币"
     },
-    "sort": {
-      "SORT": "排序",
-      "SORTMobile": "排序",
-      "mobileMenu": "排序"
+    "totalAssets": "总资产",
+    "transfer": {
+      "availableMobile": "可用",
+      "availableOn": "在 {network} 网络上可用",
+      "errors": {
+        "insufficientBal": "余额不足",
+        "insufficientFee": "费用不足",
+        "reconnectWallet": "重新连接 {walletName}",
+        "wrongNetworkInWallet": "在 {walletName} 中网络错误"
+      },
+      "from": "从",
+      "loading": "加载中",
+      "titleDeposit": "存入 {coinDenom}",
+      "titleWithdraw": "提币 {coinDenom}",
+      "to": "至",
+      "transferFee": "转账费",
+      "useWrappedDeposit": "在 Satellite 上存入 {wrapDenom}",
+      "useWrappedWithdraw": "从 Satellite 中提取 {wrapDenom}",
+      "via": "经过",
+      "waitTime": "{minutes} 分钟",
+      "warnDepositAddressDifferent": "警告：{address}中选定的帐户与您上次存入的帐户不同."
+    },
+    "transferAssetSelect": {
+      "buttonNext": "下一步",
+      "deposit": "存入",
+      "network": "网络",
+      "withdraw": "提币"
+    },
+    "unbondedAssets": "未绑定资产"
+  },
+  "buyTokens": "购买代币",
+  "components": {
+    "fiatOnrampSelection": {
+      "chooseOnramp": "选择法币入口",
+      "kadoSubtitle": "支持USDC",
+      "transakSubtitle": "支持OSMO"
+    },
+    "incentive": {
+      "mobileTitle": "獎勵",
+      "title": "獎勵類型"
     },
     "MAX": "最大",
+    "pool": {
+      "mobileTitle": "游泳池",
+      "title": "游泳池類型"
+    },
     "searchTokens": "搜索",
     "selectToken": {
       "title": "选择一个代币"
+    },
+    "show": {
+      "less": "收起更多",
+      "more": "查看更多"
+    },
+    "sort": {
+      "mobileMenu": "排序",
+      "SORT": "排序",
+      "SORTMobile": "排序"
+    },
+    "table": {
+      "poolId": "资金池 #{id}",
+      "stable": "稳定兑换",
+      "weighted": "加权",
+      "internal": "内部激励",
+      "external": "外部激励",
+      "superfluid": "超流体",
+      "noIncentives": "无激励"
     }
   },
-  "menu": {
-    "swap": "兑换",
-    "pools": "资金池",
-    "assets": "资产",
-    "stake": "质押",
-    "vote": "投票",
-    "info": "统计数据",
-    "signOut": "断开连接",
-    "help": "获取 Support Lab 帮助"
-  },
-  "settings": {
-    "title": "全局设置",
-    "titleLanguage": "语言",
-    "titleHideDust": "使用 < {fiatSymbol}0.01 隐藏矿池",
-    "selectLanguage": "选择语言",
-    "filterDust": "滤尘"
-  },
+  "connectDisclaimer": "连接钱包即表示您已经阅读和理解 Osmosis 相关内容",
+  "connectWallet": "连接钱包",
   "errors": {
-    "emptyAmount": "数量为空",
-    "invalidNumberAmount": "无效的数字",
-    "zeroAmount": "数量为零",
-    "negativeAmount": "数量为负数",
-    "insufficientAmount": "数量不足",
-    "negativeSwapFee": "交易费为负数",
-    "highSwapFee": "交易费太高",
-    "invalidSwapFee": "交易费无效",
-    "invalidScalingFactorControllerAddress": "比例因子控制器地址无效",
-    "minAssetsCount": "最少需要 {num} 个资产",
-    "maxAssetsCount": "最多允许 {num} 个资产",
-    "negativePercentage": "百分比必须是正数",
-    "scalingFactorTooLow": "比例因子太低",
-    "percentageSum": "百分比总和不是 100",
+    "calculatingShareOutAmount": "计算金额溢出",
     "depositNoBalance": "您没有可以存入的资产",
-    "negativeSlippage": "滑点不能为负数",
-    "invalidSlippage": "滑点不可用",
-    "noSendCurrency": "未设置发送货币",
+    "emptyAmount": "数量为空",
+    "generic": "错误",
+    "highSwapFee": "交易费太高",
+    "insufficientAmount": "数量不足",
     "insufficientBal": "余额不足",
     "insufficientLiquidity": "流动性不足",
-    "noRoute": "此交易没有路线",
-    "notInitialized": "未初始化",
-    "calculatingShareOutAmount": "计算金额溢出",
+    "invalidNumberAmount": "无效的数字",
+    "invalidScalingFactorControllerAddress": "比例因子控制器地址无效",
+    "invalidSlippage": "滑点不可用",
+    "invalidSwapFee": "交易费无效",
+    "maxAssetsCount": "最多允许 {num} 个资产",
+    "minAssetsCount": "最少需要 {num} 个资产",
+    "negativeAmount": "数量为负数",
+    "negativePercentage": "百分比必须是正数",
+    "negativeSlippage": "滑点不能为负数",
+    "negativeSwapFee": "交易费为负数",
     "noAvailableShares": "没有可用 {denom} 份额",
-    "generic": "错误"
-  },
-  "connectWallet": "连接钱包",
-  "buyTokens": "购买代币",
-  "profile": {
-    "modalTitle": "轮廓",
-    "balance": "结余",
-    "wallet": "钱包",
-    "viewAllAssets": "查看所有资产"
+    "noRoute": "此交易没有路线",
+    "noSendCurrency": "未设置发送货币",
+    "notInitialized": "未初始化",
+    "percentageSum": "百分比总和不是 100",
+    "scalingFactorTooLow": "比例因子太低",
+    "zeroAmount": "数量为零"
   },
   "keplr": {
-    "install": "安装 Keplr",
-    "wallet": "Keplr 钱包",
     "extension": "Keplr 浏览器扩展",
-    "walletConnect": "WalletConnect",
-    "mobile": "Keplr 手机端"
+    "install": "安装 Keplr",
+    "mobile": "Keplr 手机端",
+    "wallet": "Keplr 钱包",
+    "walletConnect": "WalletConnect"
   },
-  "connectDisclaimer": "连接钱包即表示您已经阅读和理解 Osmosis 相关内容",
+  "lockToken": {
+    "amountToBond": "绑定数量",
+    "availableToken": "可用",
+    "bondingRequirement": "需要绑定{numDays}天",
+    "buttonBond": "绑定",
+    "buttonBondStake": "绑定 & 质押",
+    "buttonNext": "下一步",
+    "selectPeriod": "选择解绑周期",
+    "superfluidStake": "超流质押",
+    "title": "绑定LP份额",
+    "titleInPool": "将份额绑定在 #{poolId}号资金池"
+  },
+  "menu": {
+    "assets": "资产",
+    "help": "支持",
+    "info": "统计数据",
+    "pools": "资金池",
+    "signOut": "断开连接",
+    "stake": "质押",
+    "swap": "兑换",
+    "vote": "投票"
+  },
+  "pool": {
+    "24hrTradingVolume": "24时成交额",
+    "7davg": "(7日平均)",
+    "amountDaysUnbonding": "{numDays} 天解绑",
+    "amountDaysUnbonding_plural": "{numDays} 天解绑期",
+    "APR": "APR",
+    "available": "可用的",
+    "bonded": "绑定",
+    "bondLiquidity": "绑定流动性",
+    "bondLiquidityCaption": "将您的份额锁定更长时间以赚取更高的APRs.",
+    "bondLiquidityUnavailable": "绑定流动性（不可用）",
+    "bondShares": "绑定份额",
+    "bondSuperfluidLiquidityCaption": "去超流质押获得最大收益.",
+    "checkBackForBondingRewards": "查看绑定奖励",
+    "collapseDetails": "收起详情",
+    "commission": "佣金",
+    "currentDailyEarn": "您当前正在赚取",
+    "dailyEarnAmount": "{amount} / 天",
+    "day": "天",
+    "delegated": "委托",
+    "details": "详情",
+    "earnMore": "通过结合赚取 {amount}",
+    "earnSwapFees": "赚取交易费",
+    "earnSwapFeesCaption": "将您的代币转为份额并在每次兑换中赚取收益.",
+    "from": "来自",
+    "incentives": "奖励",
+    "learnMore": "了解更多",
+    "level": "等级 {level}",
+    "liquidity": "资金池流动性",
+    "numDaysRemaining": "还剩 {numDays} 天",
+    "putAssetsToWork": "让您的资产发挥作用.",
+    "putAssetsToWorkCaption": "将您的资产添加到此资金池中以解锁令人兴奋的 APR，解绑期越长您赚得越多.",
+    "rewardDistribution": "向所有流动性提供者发放奖励",
+    "sharesAmount": "{shares} 份额",
+    "sharesAvailableIn": "可用",
+    "showDetails": "显示详情",
+    "stableswapEnabled": "启用稳定交换",
+    "superfluidEarnMore": "赚取 {rate} 更多. 去超流质押",
+    "superfluidEnabled": "已启用超流质押",
+    "superfluidStaking": "超流质押",
+    "swap": "兑换代币",
+    "swapFee": "交易费",
+    "swapFees": "交易费",
+    "title": "资金池 #{id}",
+    "unbond": "解绑",
+    "unbonding": "解绑期",
+    "undelegating": "取消委托",
+    "yourStats": "您的资金池余额"
+  },
+  "pools": {
+    "all": "所有池",
+    "allPools": {
+      "APR": "APR",
+      "APRIncentivized": "7天成交量",
+      "displayLowLiquidity": "显示资金池 < {value}",
+      "myLiquidity": "我的流动性",
+      "search": "搜索资金池",
+      "sort": {
+        "APR": "我的流动性",
+        "APRIncentivized": "APR",
+        "fees": "交易费 (7天)",
+        "liquidity": "流动性",
+        "poolId": "资金池 ID",
+        "poolName": "池名称/编号",
+        "volume24h": "成交额 (24时)"
+      },
+      "title": "所有资金池",
+      "TVL": "TVL"
+    },
+    "allTab": "所有",
+    "APR": "APR",
+    "available": "可用",
+    "bonded": "已绑定",
+    "createPool": {
+      "amount": "总量",
+      "available": "可用",
+      "button": "创建新的资金池",
+      "buttonAddToken": "添加新的代币",
+      "buttonBack": "上一步",
+      "buttonCreate": "创建资金池",
+      "buttonNext": "下一步",
+      "infoCaption": "已发送到 Osmosis 社区池",
+      "infoMessage": "资金池创建费",
+      "interestedCreate": "对创建新的资金池感兴趣?",
+      "scalingFactorController": "设置比例因子控制器（可选）",
+      "stablePool": "稳定池",
+      "startProcess": "点击此处开始创建",
+      "step": {
+        "one": {
+          "stable": "步骤 {step} / {nbStep} - 设置比例因子",
+          "weighted": "步骤 {step} / {nbStep} - 设置代币比率"
+        },
+        "three": "步骤 {step} / {nbStep} - 确认资金池的代币比率和总量",
+        "two": "步骤 {step} / {nbStep} - 输入添加总量"
+      },
+      "swapFee": "设置交易费",
+      "title": "创建新的资金池",
+      "token": "代币",
+      "undersandCost": "我已理解创建资金池将会花费 {POOL_CREATION_FEE}.",
+      "weightedPool": "加权池"
+    },
+    "externalIncentivized": {
+      "APR": "APR",
+      "search": "搜索代币",
+      "sort": {
+        "APR": "APR",
+        "epochs": "剩余奖励周期",
+        "liquidity": "流动性",
+        "myLiquidity": "我的流动性",
+        "poolName": "池名称/编号"
+      },
+      "title": "外部激励矿池",
+      "TVL": "TVL"
+    },
+    "incentivized": "激励池",
+    "liquidity": "流动性",
+    "myLiquidity": "我的流动性",
+    "myPools": "我的资金池",
+    "poolId": "资金池 #{id}",
+    "priceOsmo": "OSMO 价格",
+    "rewardDistribution": "奖励分配",
+    "superfluid": {
+      "APR": "APR",
+      "fees7D": "交易费 (7天)",
+      "liquidity": "流动性",
+      "tab": "超流质押",
+      "title": "超流质押池"
+    },
+    "title": "活跃资金池"
+  },
+  "profile": {
+    "balance": "结余",
+    "modalTitle": "轮廓",
+    "viewAllAssets": "查看所有资产",
+    "wallet": "钱包"
+  },
   "protocolDisclaimer": "协议免责声明",
-  "transactionFailed": "交易失败",
-  "transactionSuccessful": "交易成功",
-  "transactionBroadcasting": "广播交易中",
-  "swapFailed": "交易失败，流动性不足，尝试调整允许的滑点.",
-  "waitingForTransaction": "等待交易打包进区块",
-  "viewExplorer": "浏览器查看",
-  "unknownError": "未知错误",
+  "removeLiquidity": {
+    "sharesAmount": "{shares} 份额",
+    "title": "移除流动性",
+    "titleInPool": "从#{poolId}号资金池移除流动性"
+  },
   "requestRejected": "请求拒绝",
+  "settings": {
+    "filterDust": "滤尘",
+    "selectLanguage": "选择语言",
+    "title": "全局设置",
+    "titleHideDust": "使用 < {fiatSymbol}0.01 隐藏矿池",
+    "titleLanguage": "语言"
+  },
   "stablecoinTypes": {
     "collateralized": "抵押的"
-  }
+  },
+  "superfluidValidator": {
+    "bondedAmount": "已绑定数量",
+    "buttonBond": "绑定 & 质押",
+    "choose": "选择您需要的超流验证节点",
+    "columns": {
+      "commission": "佣金",
+      "validator": "验证节点"
+    },
+    "estimation": "预估超流委派值",
+    "estimationInfo": "此委派值是会改变的，并且基于资金池中的 OSMO 数量预估",
+    "estimationMobile": "预估委派值",
+    "search": "通过名称查找",
+    "title": "选择超流验证节点",
+    "titleMobile": "选择验证节点"
+  },
+  "swap": {
+    "autoRouter": "路线",
+    "autoRouterToggle": {
+      "hide": "隐藏",
+      "show": "节目"
+    },
+    "available": "可用",
+    "button": "兑换",
+    "buttonError": "继续兑换",
+    "error": {
+      "findCurrency": "无法找到代币 {currency}"
+    },
+    "expectedOutput": "预期产出",
+    "fee": "交易费 ({fee})",
+    "HALF": "对半",
+    "MAX": "最大",
+    "minimumSlippage": "扣除滑点后最少获得 ({slippage})",
+    "pool": "资金池 #{id}",
+    "priceImpact": "价格影响",
+    "routerTooltipFee": "费用",
+    "settings": {
+      "slippage": "滑点上限",
+      "slippageInfo": "如果价格的不利变动超过此百分比，您的交易将被撤回.",
+      "title": "交易设置"
+    },
+    "title": "兑换"
+  },
+  "swapFailed": "交易失败，流动性不足，尝试调整允许的滑点.",
+  "transactionBroadcasting": "广播交易中",
+  "transactionFailed": "交易失败",
+  "transactionSuccessful": "交易成功",
+  "unknownError": "未知错误",
+  "viewExplorer": "浏览器查看",
+  "waitingForTransaction": "等待交易打包进区块"
 }

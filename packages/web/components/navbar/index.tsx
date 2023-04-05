@@ -62,7 +62,7 @@ export const NavBar: FunctionComponent<
 
     router.events.on("routeChangeComplete", handler);
     return () => router.events.off("routeChangeComplete", handler);
-  }, []);
+  }, [router.events]);
 
   const account = accountStore.getAccount(chainId);
   const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(

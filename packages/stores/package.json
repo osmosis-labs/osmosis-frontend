@@ -60,7 +60,6 @@
     "deepmerge": "^4.2.2",
     "long": "^5.2.0",
     "mobx": "^6.3.10",
-    "mobx-react-lite": "^3.2.2",
     "mobx-utils": "^6.0.4",
     "protobufjs": "^6.11.2",
     "utility-types": "^3.10.0"
