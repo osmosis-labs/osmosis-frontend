@@ -317,7 +317,7 @@ describe("OptimizedRoutes", () => {
   });
 
   describe("Many asset combos", () => {
-    test("finds a route through all pools between any two valid assets", () => {
+    test("finds a route through all pools between any two valid assets - low max pool", () => {
       const allDenoms = Array.from(
         new Set(
           allPools.flatMap((pool) =>
@@ -338,7 +338,6 @@ describe("OptimizedRoutes", () => {
 
         const router = new OptimizedRoutes(allPools, ["1", "2"], "uosmo");
 
-        // let tokenOut: Int | undefined;
         expect(() => {
           const routes = router.getOptimizedRoutesByTokenIn(
             { denom: tokenInDenom, amount: new Int("10") },
@@ -347,7 +346,37 @@ describe("OptimizedRoutes", () => {
           );
           router.calculateTokenOutByTokenIn(routes).amount;
         }).not.toThrow();
-        // expect(tokenOut?.gt(new Int("0")) ?? false).toBeTruthy();
+      });
+    });
+    test("finds a route through all pools between any two valid assets - high max pool", () => {
+      const allDenoms = Array.from(
+        new Set(
+          allPools.flatMap((pool) =>
+            pool.poolAssets.map((poolAsset) => poolAsset.denom)
+          )
+        )
+      );
+
+      allDenoms.forEach((denom, i) => {
+        const tokenInDenom = denom;
+        const tokenOutDenom = allDenoms[(i + 1) % allDenoms.length];
+
+        if (
+          tokenInDenom === tokenOutDenom ||
+          tokenInDenom.concat(tokenOutDenom).includes("gamm")
+        )
+          return;
+
+        const router = new OptimizedRoutes(allPools, ["1", "2"], "uosmo");
+
+        expect(() => {
+          const routes = router.getOptimizedRoutesByTokenIn(
+            { denom: tokenInDenom, amount: new Int("10") },
+            tokenOutDenom,
+            300
+          );
+          router.calculateTokenOutByTokenIn(routes).amount;
+        }).not.toThrow();
       });
     });
   });
