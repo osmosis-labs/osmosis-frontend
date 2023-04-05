@@ -18,8 +18,7 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
   let queryPool: ObservableQueryPool | undefined;
 
   beforeEach(async () => {
-    const account = accountStore.getAccount(chainId);
-    account.cosmos.broadcastMode = "block";
+    const account = accountStore.getWallet(chainId)!;
     await waitAccountLoaded(account);
 
     // And prepare the pool
@@ -77,7 +76,7 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
   });
 
   test("should fail with unregistered pool asset", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId)!;
 
     await expect(
       account.osmosis.sendSwapExactAmountInMsg(
@@ -100,7 +99,7 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
   });
 
   test("should fail with unregistered pool asset (2)", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId)!;
 
     await expect(
       account.osmosis.sendSwapExactAmountInMsg(
@@ -123,7 +122,7 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
   });
 
   test("with no max slippage", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId)!;
 
     const tokenIn = {
       currency: {
@@ -173,7 +172,7 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
           { key: "module", value: "gamm" },
           {
             key: "sender",
-            value: account.bech32Address,
+            value: account.address,
           },
         ],
       },
@@ -205,7 +204,7 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
   });
 
   test("with price impact", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId)!;
 
     const tokenIn = {
       currency: {
@@ -264,7 +263,7 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
           { key: "module", value: "gamm" },
           {
             key: "sender",
-            value: account.bech32Address,
+            value: account.address,
           },
         ],
       },
@@ -296,7 +295,7 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
   });
 
   test("with exactly matched slippage and max slippage", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId)!;
 
     const tokenIn = {
       currency: {
@@ -348,7 +347,7 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
           { key: "module", value: "gamm" },
           {
             key: "sender",
-            value: account.bech32Address,
+            value: account.address,
           },
         ],
       },
@@ -380,7 +379,7 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
   });
 
   test("should fail with more max price impact than calculated price impact", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId)!;
 
     const tokenIn = {
       currency: {

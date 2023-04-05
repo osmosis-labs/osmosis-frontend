@@ -1,3 +1,8 @@
+import { wallets as cosmosStationWallets } from "@cosmos-kit/cosmostation";
+import { wallets as keplrWallets } from "@cosmos-kit/keplr";
+import { wallets as leapWallets } from "@cosmos-kit/leap";
+import { wallets as trustWallets } from "@cosmos-kit/trust";
+import { wallets as xdefiWallets } from "@cosmos-kit/xdefi-extension";
 import {
   ChainInfoInner,
   CosmosQueries,
@@ -100,6 +105,13 @@ export class RootStore {
     this.accountStore = new AccountStore(
       ChainInfos,
       assets,
+      [
+        ...keplrWallets,
+        ...leapWallets,
+        ...cosmosStationWallets,
+        ...trustWallets,
+        ...xdefiWallets,
+      ],
       this.queriesStore,
       this.chainStore,
       {

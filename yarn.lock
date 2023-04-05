@@ -425,6 +425,17 @@
     "@keplr-wallet/crypto" "0.11.16"
     semver "^7.3.8"
 
+"@chain-registry/keplr@^1.14.0":
+  version "1.14.0"
+  resolved "https://registry.yarnpkg.com/@chain-registry/keplr/-/keplr-1.14.0.tgz#11f798c81409ee21b8f9c36941480cd23f27dc56"
+  integrity sha512-2EMuLlBCZXwREe7j4EX8qYxiy4zn5xU4jg6G2ccNOGTXjSRL10V+tjbtwToEs2LKgqm8Ku2Pxy3UARSEwRGw0Q==
+  dependencies:
+    "@babel/runtime" "^7.19.4"
+    "@chain-registry/types" "^0.14.0"
+    "@keplr-wallet/cosmos" "0.11.16"
+    "@keplr-wallet/crypto" "0.11.16"
+    semver "^7.3.8"
+
 "@chain-registry/types@0.13.0":
   version "0.13.0"
   resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.13.0.tgz#ab910f229579b33c152de468c3eead562f7aee4c"

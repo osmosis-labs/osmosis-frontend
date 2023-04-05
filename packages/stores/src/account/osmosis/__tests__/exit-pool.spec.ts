@@ -12,8 +12,7 @@ describe("Exit Pool Tx", () => {
   let poolId: string | undefined; // relies on `jest --runInBand` to work properly
 
   beforeEach(async () => {
-    const account = accountStore.getAccount(chainId);
-    account.cosmos.broadcastMode = "block";
+    const account = accountStore.getWallet(chainId)!;
     await waitAccountLoaded(account);
 
     // And prepare the pool
@@ -64,7 +63,7 @@ describe("Exit Pool Tx", () => {
   });
 
   test("should fail with 0 share in amount", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId)!;
 
     await expect(
       account.osmosis.sendExitPoolMsg(poolId!, "0")
@@ -72,7 +71,7 @@ describe("Exit Pool Tx", () => {
   });
 
   test("with 50 share in amount without slippage", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId)!;
 
     // Share는 최초로 100개가 발행된다 그러므로 여기서 50개를 exit하는 건 성공한다.
     await new Promise<any>((resolve, rejects) => {
@@ -85,7 +84,7 @@ describe("Exit Pool Tx", () => {
   });
 
   test("with 50 share in amount with slippage", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId)!;
 
     // Share는 최초로 100개가 발행된다 그러므로 여기서 50개를 exit하는 건 성공한다.
     await new Promise<any>((resolve, rejects) => {
@@ -98,7 +97,7 @@ describe("Exit Pool Tx", () => {
   });
 
   test("should fail with more max share in amount", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId)!;
 
     // Share는 최초로 100개가 발행된다 그러므로 여기서 100.01개를 exit하는 건 실패한다.
     await expect(

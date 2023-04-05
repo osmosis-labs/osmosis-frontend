@@ -15,8 +15,7 @@ describe("Unbond Token Tx", () => {
     // fresh account
     "index light average senior silent limit usual local involve delay update rack cause inmate wall render magnet common feature laundry exact casual resource hundred"
   );
-  const account = accountStore.getAccount(chainId);
-  account.cosmos.broadcastMode = "block";
+  const account = accountStore.getWallet(chainId)!;
 
   let userLockIds: string[] | undefined;
 
@@ -25,7 +24,7 @@ describe("Unbond Token Tx", () => {
     // LocalOsmosis has no configured durations
     const queriesOsmosis = queriesStore.get(chainId).osmosis!;
     const queriesAccountLocked = queriesOsmosis.queryAccountLocked.get(
-      account.bech32Address
+      account.address ?? ""
     );
 
     const durationSeconds = 1;

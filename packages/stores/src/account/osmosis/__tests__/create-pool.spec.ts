@@ -13,13 +13,12 @@ describe("Create Pool Tx", () => {
   const { accountStore } = new RootStore();
 
   beforeAll(async () => {
-    const account = accountStore.getAccount(chainId);
-    account.cosmos.broadcastMode = "block";
+    const account = accountStore.getWallet(chainId)!;
     await waitAccountLoaded(account);
   });
 
   test("should fail with 0 assets", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId)!;
 
     await expect(
       account.osmosis.sendCreateBalancerPoolMsg("0", [], "", (_) => {})
@@ -27,7 +26,7 @@ describe("Create Pool Tx", () => {
   });
 
   test("should fail with 1 assets", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId)!;
 
     await expect(
       account.osmosis.sendCreateBalancerPoolMsg(
@@ -52,7 +51,7 @@ describe("Create Pool Tx", () => {
   });
 
   test("should fail with duplicated assets", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId)!;
 
     await expect(
       account.osmosis.sendCreateBalancerPoolMsg(
@@ -88,7 +87,7 @@ describe("Create Pool Tx", () => {
   });
 
   test("with 0 swap fee", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId)!;
 
     const tx = await new Promise<any>((resolve) => {
       account.osmosis.sendCreateBalancerPoolMsg(
@@ -136,7 +135,7 @@ describe("Create Pool Tx", () => {
           { key: "module", value: "gamm" },
           {
             key: "sender",
-            value: account.bech32Address,
+            value: account.address,
           },
         ],
       },
@@ -153,7 +152,7 @@ describe("Create Pool Tx", () => {
   });
 
   test("with swap fee", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId)!;
 
     const tx = await new Promise<any>((resolve) => {
       account.osmosis.sendCreateBalancerPoolMsg(
@@ -201,7 +200,7 @@ describe("Create Pool Tx", () => {
           { key: "module", value: "gamm" },
           {
             key: "sender",
-            value: account.bech32Address,
+            value: account.address,
           },
         ],
       },

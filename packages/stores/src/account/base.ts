@@ -8,12 +8,12 @@ import {
   TimeoutError,
 } from "@cosmjs/stargate";
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
-import { ChainWalletBase, WalletManager, WalletStatus } from "@cosmos-kit/core";
-import { wallets as cosmosStationWallets } from "@cosmos-kit/cosmostation";
-import { wallets as keplrWallets } from "@cosmos-kit/keplr";
-import { wallets as leapWallets } from "@cosmos-kit/leap";
-import { wallets as trustWallets } from "@cosmos-kit/trust";
-import { wallets as xdefiWallets } from "@cosmos-kit/xdefi-extension";
+import {
+  ChainWalletBase,
+  MainWalletBase,
+  WalletManager,
+  WalletStatus,
+} from "@cosmos-kit/core";
 import {
   ChainedFunctionifyTuple,
   ChainGetter,
@@ -65,6 +65,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   constructor(
     protected readonly chains: Chain[],
     protected readonly assets: AssetList[],
+    protected readonly wallets: MainWalletBase[],
     protected readonly queriesStore: QueriesStore<
       [CosmosQueries, CosmwasmQueries, OsmosisQueries]
     >,
@@ -85,13 +86,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     this._walletManager = new WalletManager(
       this.chains,
       this.assets,
-      [
-        ...keplrWallets,
-        ...leapWallets,
-        ...cosmosStationWallets,
-        ...trustWallets,
-        ...xdefiWallets,
-      ],
+      this.wallets,
       logger,
       "icns",
       {

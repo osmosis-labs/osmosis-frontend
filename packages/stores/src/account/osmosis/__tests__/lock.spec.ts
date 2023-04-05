@@ -13,8 +13,8 @@ describe("Lock Token Tx", () => {
 
     "cream sport mango believe inhale text fish rely elegant below earth april wall rug ritual blossom cherry detail length blind digital proof identify ride"
   );
-  const account = accountStore.getAccount(chainId);
-  account.cosmos.broadcastMode = "block";
+  const account = accountStore.getWallet(chainId)!;
+  // account.cosmos.broadcastMode = "block";
 
   beforeEach(async () => {
     await waitAccountLoaded(account);
@@ -24,7 +24,7 @@ describe("Lock Token Tx", () => {
 
   it("locks tokens", async () => {
     const tx = await new Promise<any>(async (resolve, reject) => {
-      await account.osmosis
+      await account?.osmosis
         .sendLockTokensMsg(
           600,
           [
