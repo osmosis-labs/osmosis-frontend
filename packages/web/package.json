@@ -13,8 +13,8 @@
     "lint:fix": "prettier --write \"**/*\" && next lint --fix",
     "pre-commit": "lint-staged",
     "generate": "yarn generate:chain-info && yarn generate:wallet-assets",
-    "generate:chain-info": "ts-node --esm config/generate-chain-infos.ts",
-    "generate:wallet-assets": "ts-node --esm config/generate-wallet-assets.ts"
+    "generate:chain-info": "ts-node --esm config/generate-chain-infos/index.ts",
+    "generate:wallet-assets": "ts-node --esm config/generate-wallet-assets/index.ts"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^1.2.3",
