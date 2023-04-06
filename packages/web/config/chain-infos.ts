@@ -798,6 +798,17 @@ const chainInfos = (
           coinGeckoId: "pool:grdn",
           coinImageUrl: "/tokens/guardian.png",
         },
+         {
+          type: "cw20",
+          contractAddress:
+            "juno10gthz5ufgrpuk5cscve2f0hjp56wgp90psqxcrqlg4m9mcu9dh8q4864xy",
+          coinDenom: "KLEO",
+          coinMinimalDenom:
+            "cw20:juno10gthz5ufgrpuk5cscve2f0hjp56wgp90psqxcrqlg4m9mcu9dh8q4864xy:KLEO",
+          coinDecimals: 6,
+          coinGeckoId: "pool:kleo",
+          coinImageUrl: "/tokens/kleomedes.png",
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: IS_TESTNET
