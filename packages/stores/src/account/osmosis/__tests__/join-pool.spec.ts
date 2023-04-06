@@ -4,18 +4,18 @@ import {
   chainId,
   deepContained,
   getEventFromTx,
+  initAccount,
   RootStore,
   waitAccountLoaded,
 } from "../../../__tests__/test-env";
 import { estimateJoinSwap } from "@osmosis-labs/math";
-
-jest.setTimeout(100 * 1000);
 
 describe("Join Pool Tx", () => {
   let { accountStore, queriesStore } = new RootStore();
   let poolId: string | undefined; // relies on `jest --runInBand` to work properly
 
   beforeEach(async () => {
+    await initAccount(accountStore);
     // Init new localnet per test
     const account = accountStore.getWallet(chainId)!;
 

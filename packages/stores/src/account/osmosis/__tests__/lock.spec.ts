@@ -3,6 +3,7 @@ import {
   chainId,
   deepContained,
   getEventFromTx,
+  initAccount,
   RootStore,
   waitAccountLoaded,
 } from "../../../__tests__/test-env";
@@ -13,10 +14,11 @@ describe("Lock Token Tx", () => {
 
     "cream sport mango believe inhale text fish rely elegant below earth april wall rug ritual blossom cherry detail length blind digital proof identify ride"
   );
-  const account = accountStore.getWallet(chainId)!;
-  // account.cosmos.broadcastMode = "block";
+  let account: ReturnType<typeof accountStore.getWallet>;
 
   beforeEach(async () => {
+    await initAccount(accountStore);
+    account = accountStore.getWallet(chainId)!;
     await waitAccountLoaded(account);
 
     // LocalOsmosis has no configured durations

@@ -3,6 +3,7 @@ import {
   chainId,
   deepContained,
   getEventFromTx,
+  initAccount,
   RootStore,
   waitAccountLoaded,
 } from "../../../__tests__/test-env";
@@ -13,13 +14,12 @@ import { ObservableQueryPool } from "src/queries";
 
 // https://docs.osmosis.zone/developing/osmosis-core/modules/spec-gamm.html#swap-exact-amount-out
 
-jest.setTimeout(60000);
-
 describe("Test Osmosis Swap Exact Amount Out Tx", () => {
   const { accountStore, queriesStore } = new RootStore();
   let queryPool: ObservableQueryPool | undefined;
 
   beforeEach(async () => {
+    await initAccount(accountStore);
     const account = accountStore.getWallet(chainId)!;
     await waitAccountLoaded(account);
 

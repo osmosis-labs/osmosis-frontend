@@ -3,16 +3,16 @@ import {
   chainId,
   deepContained,
   getEventFromTx,
+  initAccount,
   RootStore,
   waitAccountLoaded,
 } from "../../../__tests__/test-env";
-
-jest.setTimeout(100000);
 
 describe("Create Pool Tx", () => {
   const { accountStore } = new RootStore();
 
   beforeAll(async () => {
+    await initAccount(accountStore);
     const account = accountStore.getWallet(chainId)!;
     await waitAccountLoaded(account);
   });

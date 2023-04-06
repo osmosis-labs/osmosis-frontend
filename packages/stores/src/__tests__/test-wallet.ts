@@ -1,13 +1,11 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { chainRegistryChainToKeplr } from "@chain-registry/keplr";
-import { StdSignDoc, StdTx } from "@cosmjs/amino";
+import { OfflineAminoSigner, StdSignDoc, StdTx } from "@cosmjs/amino";
 import { Algo, OfflineDirectSigner } from "@cosmjs/proto-signing";
 import {
   BroadcastMode,
   ChainRecord,
   ChainWalletBase,
   DirectSignDoc,
-  ExtendedHttpEndpoint,
   MainWalletBase,
   SignOptions,
   SignType,
@@ -20,7 +18,9 @@ import Axios from "axios";
 
 import { TestChainInfos } from "./test-env";
 
-function getMockKeplr(mnemonic: string) {
+function getMockKeplr(
+  mnemonic = "notice oak worry limit wrap speak medal online prefer cluster roof addict wrist behave treat actual wasp year salad speed social layer crew genius"
+) {
   return new MockKeplr(
     async (chainId: string, tx: StdTx | Uint8Array) => {
       const chainInfo = TestChainInfos.find((info) => info.chainId === chainId);
@@ -118,7 +118,10 @@ export class MockKeplrClient implements WalletClient {
     };
   }
 
-  getOfflineSigner(chainId: string, preferredSignType?: SignType) {
+  getOfflineSigner(
+    chainId: string,
+    preferredSignType?: SignType
+  ): OfflineAminoSigner | OfflineDirectSigner {
     switch (preferredSignType) {
       case "amino":
         return this.getOfflineSignerAmino(chainId);
@@ -127,10 +130,11 @@ export class MockKeplrClient implements WalletClient {
       default:
         return this.getOfflineSignerAmino(chainId);
     }
-    // return this.client.getOfflineSignerAuto(chainId);
   }
 
-  getOfflineSignerAmino(chainId: string) {
+  getOfflineSignerAmino(
+    chainId: string
+  ): ReturnType<MockKeplr["getOfflineSignerOnlyAmino"]> {
     return this.client.getOfflineSignerOnlyAmino(chainId);
   }
 
@@ -138,23 +142,12 @@ export class MockKeplrClient implements WalletClient {
     return this.client.getOfflineSigner(chainId) as OfflineDirectSigner;
   }
 
-  async addChain(chainInfo: ChainRecord) {
-    const suggestChain = chainRegistryChainToKeplr(
-      chainInfo.chain,
-      chainInfo.assetList ? [chainInfo.assetList] : []
-    );
-
-    if (chainInfo.preferredEndpoints?.rest?.[0]) {
-      (suggestChain.rest as string | ExtendedHttpEndpoint) =
-        chainInfo.preferredEndpoints?.rest?.[0];
-    }
-
-    if (chainInfo.preferredEndpoints?.rpc?.[0]) {
-      (suggestChain.rpc as string | ExtendedHttpEndpoint) =
-        chainInfo.preferredEndpoints?.rpc?.[0];
-    }
-
-    await this.client.experimentalSuggestChain();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async addChain(_chainInfo: ChainRecord) {
+    /**
+     * Not implemented in mock keplr
+     *  @see https://github.com/chainapsis/keplr-wallet/blob/master/packages/provider-mock/src/mock.ts#L89
+     */
   }
 
   async signAmino(
@@ -162,21 +155,17 @@ export class MockKeplrClient implements WalletClient {
     signer: string,
     signDoc: StdSignDoc,
     signOptions?: SignOptions
-  ) {
+  ): ReturnType<MockKeplr["signAmino"]> {
     return await this.client.signAmino(chainId, signer, signDoc, signOptions);
   }
 
   async signDirect(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _chainId: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _signer: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _signDoc: DirectSignDoc,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _signOptions?: SignOptions
-  ) {
-    return await this.client.signDirect();
+    chainId: string,
+    signer: string,
+    signDoc: DirectSignDoc,
+    signOptions?: SignOptions
+  ): ReturnType<MockKeplr["signDirect"]> {
+    return await this.client.signDirect(chainId, signer, signDoc, signOptions);
   }
 
   async sendTx(chainId: string, tx: Uint8Array, mode: BroadcastMode) {
@@ -191,10 +180,7 @@ export class ChainMockKeplrExtension extends ChainWalletBase {
 }
 
 export class TestWallet extends MainWalletBase {
-  constructor(
-    walletInfo: Wallet,
-    protected readonly mnemonic = "notice oak worry limit wrap speak medal online prefer cluster roof addict wrist behave treat actual wasp year salad speed social layer crew genius"
-  ) {
+  constructor(walletInfo: Wallet, protected readonly mnemonic?: string) {
     super(walletInfo, ChainMockKeplrExtension);
   }
 

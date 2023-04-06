@@ -1,6 +1,6 @@
 /* eslint-disable */
 import Axios from "axios";
-import { autorun } from "mobx";
+import { when } from "mobx";
 import { exec } from "child_process";
 import {
   QueriesStore,
@@ -18,7 +18,7 @@ import {
   CosmwasmAccount,
 } from "../account";
 import { OsmosisQueries } from "../queries";
-import { assets, chains } from "chain-registry";
+import { assets } from "chain-registry";
 import { WalletStatus } from "@cosmos-kit/core";
 import { TestWallet, testWalletInfo } from "./test-wallet";
 import { Chain } from "@chain-registry/types";
@@ -122,7 +122,7 @@ export class RootStore {
     const testWallet = new TestWallet(testWalletInfo, mnemonic);
 
     this.accountStore = new AccountStore(
-      chains,
+      TestChainInfos,
       assets,
       [testWallet],
       this.queriesStore,
@@ -135,13 +135,11 @@ export class RootStore {
       }),
       CosmwasmAccount.use({ queriesStore: this.queriesStore })
     );
-
-    this.accountStore.walletManager.getWalletRepo(TestChainInfos[0].chainId);
   }
 }
 
 export function getEventFromTx(tx: any, type: string): any {
-  return JSON.parse(tx.log)[0].events.find((e: any) => e.type === type);
+  return JSON.parse(tx.rawLog)[0].events.find((e: any) => e.type === type);
 }
 
 function deepContainedObj(obj1: any, obj2: any): boolean {
@@ -270,6 +268,11 @@ export async function initLocalnet(): Promise<void> {
   }
 }
 
+export async function initAccount(accountStore: AccountStore<any[]>) {
+  const walletRepo = accountStore.getWalletRepo(TestChainInfos[0].chainId);
+  await walletRepo.wallets[0].connect();
+}
+
 export async function removeLocalnet() {
   await new Promise<void>((resolve, reject) => {
     exec(`docker rm --force osmosis_localnet`, (error, _stdout, _stderr) => {
@@ -286,19 +289,10 @@ export async function removeLocalnet() {
 export async function waitAccountLoaded(
   account: ReturnType<AccountStore["getWallet"]>
 ) {
-  if (account!.isReadyToSendTx) {
-    return;
-  }
-
-  return new Promise<void>((resolve) => {
-    const disposer = autorun(() => {
-      if (
-        account!.isReadyToSendTx &&
-        account!.walletStatus === WalletStatus.Connected
-      ) {
-        resolve();
-        disposer();
-      }
-    });
+  await when(() => {
+    return (
+      account!.isReadyToSendTx &&
+      account!.walletStatus === WalletStatus.Connected
+    );
   });
 }

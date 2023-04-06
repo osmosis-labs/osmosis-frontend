@@ -3,6 +3,7 @@ import {
   chainId,
   deepContained,
   getEventFromTx,
+  initAccount,
   RootStore,
   waitAccountLoaded,
 } from "../../../__tests__/test-env";
@@ -15,12 +16,15 @@ describe("Unbond Token Tx", () => {
     // fresh account
     "index light average senior silent limit usual local involve delay update rack cause inmate wall render magnet common feature laundry exact casual resource hundred"
   );
-  const account = accountStore.getWallet(chainId)!;
+  let account: ReturnType<typeof accountStore.getWallet>;
 
   let userLockIds: string[] | undefined;
 
   beforeEach(async () => {
+    await initAccount(accountStore);
+    account = accountStore.getWallet(chainId)!;
     await waitAccountLoaded(account);
+
     // LocalOsmosis has no configured durations
     const queriesOsmosis = queriesStore.get(chainId).osmosis!;
     const queriesAccountLocked = queriesOsmosis.queryAccountLocked.get(
@@ -38,7 +42,7 @@ describe("Unbond Token Tx", () => {
     };
 
     await new Promise<any>(async (resolve, reject) => {
-      await account.osmosis
+      await account?.osmosis
         .sendLockTokensMsg(durationSeconds, [coin], undefined, (tx) => {
           resolve(tx);
         })
@@ -55,7 +59,7 @@ describe("Unbond Token Tx", () => {
 
   it("unlocks tokens", async () => {
     const tx = await new Promise<any>(async (resolve, reject) => {
-      await account.osmosis
+      await account?.osmosis
         .sendBeginUnlockingMsg(userLockIds!, undefined, (tx) => {
           resolve(tx);
         })

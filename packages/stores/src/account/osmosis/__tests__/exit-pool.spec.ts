@@ -1,17 +1,17 @@
 /* eslint-disable */
 import {
   chainId,
+  initAccount,
   RootStore,
   waitAccountLoaded,
 } from "../../../__tests__/test-env";
-
-jest.setTimeout(60000);
 
 describe("Exit Pool Tx", () => {
   let { accountStore, queriesStore } = new RootStore();
   let poolId: string | undefined; // relies on `jest --runInBand` to work properly
 
   beforeEach(async () => {
+    await initAccount(accountStore);
     const account = accountStore.getWallet(chainId)!;
     await waitAccountLoaded(account);
 

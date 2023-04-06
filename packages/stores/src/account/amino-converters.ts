@@ -73,6 +73,30 @@ const osmosisAminoConverters: Record<
         future_pool_governor: futurePoolGovernor,
       };
     },
+    fromAmino: ({
+      sender,
+      pool_params,
+      pool_assets,
+      future_pool_governor,
+    }: Parameters<
+      typeof osmojsOsmosisAminoConverters["/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool"]["fromAmino"]
+    >[0]): MsgCreateBalancerPool => {
+      return {
+        sender,
+        poolParams: {
+          swapFee: pool_params.swap_fee,
+          exitFee: pool_params.exit_fee,
+        },
+        poolAssets: pool_assets.map((el0) => ({
+          token: {
+            denom: el0.token.denom,
+            amount: el0.token.amount,
+          },
+          weight: el0.weight,
+        })),
+        futurePoolGovernor: future_pool_governor,
+      };
+    },
   },
 };
 

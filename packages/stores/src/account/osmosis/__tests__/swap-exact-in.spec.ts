@@ -3,6 +3,7 @@ import {
   chainId,
   deepContained,
   getEventFromTx,
+  initAccount,
   RootStore,
   waitAccountLoaded,
 } from "../../../__tests__/test-env";
@@ -11,13 +12,12 @@ import { Currency } from "@keplr-wallet/types";
 import { estimateSwapExactAmountIn } from "@osmosis-labs/math";
 import { ObservableQueryPool } from "src/queries";
 
-jest.setTimeout(60000);
-
 describe("Test Osmosis Swap Exact Amount In Tx", () => {
   let { accountStore, queriesStore } = new RootStore();
   let queryPool: ObservableQueryPool | undefined;
 
   beforeEach(async () => {
+    await initAccount(accountStore);
     const account = accountStore.getWallet(chainId)!;
     await waitAccountLoaded(account);
 
