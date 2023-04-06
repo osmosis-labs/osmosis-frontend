@@ -58,7 +58,7 @@ function getAssetLists(): AssetList[] {
   return newAssetLists;
 }
 
-async function generateChainInfo() {
+async function generateWalletAssets() {
   const assets = getAssetLists();
   const content = `
     import type { AssetList } from "@chain-registry/types";
@@ -87,7 +87,7 @@ async function generateChainInfo() {
   }
 }
 
-generateChainInfo().catch((e) => {
+generateWalletAssets().catch((e) => {
   console.error(e);
   process.exit(1);
 });
