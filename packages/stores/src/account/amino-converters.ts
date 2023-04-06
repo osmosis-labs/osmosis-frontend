@@ -21,13 +21,13 @@ const osmosisAminoConverters: Record<
   ...osmojsOsmosisAminoConverters,
   "/osmosis.lockup.MsgBeginUnlocking": {
     ...osmojsOsmosisAminoConverters["/osmosis.lockup.MsgBeginUnlocking"],
-    // Modifying `aminoType` because the amino type in telescope is not compatible with our nodes.
+    // The amino type in telescope is not compatible with our nodes.
     aminoType: "osmosis/lockup/begin-unlock-period-lock",
   },
   "/osmosis.lockup.MsgLockTokens": {
     ...osmojsOsmosisAminoConverters["/osmosis.lockup.MsgLockTokens"],
     /**
-     * Modifying because Duration type definition in telescope is wrong.
+     * Duration type definition in telescope crashes toAmino as it does a wrong conversion.
      * @see https://github.com/osmosis-labs/osmojs/issues/12
      * @see https://github.com/osmosis-labs/telescope/issues/211
      */
@@ -46,9 +46,9 @@ const osmosisAminoConverters: Record<
     ...osmojsOsmosisAminoConverters[
       "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool"
     ],
-    // Modifying because the amino type in telescope is not compatible with nodes.
+    // The amino type in telescope is not compatible with nodes.
     aminoType: "osmosis/gamm/create-balancer-pool",
-    // Modifying because our pools do not require the `smooth_weight_change_params`
+    // Our pools do not require the `smooth_weight_change_params`
     toAmino: ({
       sender,
       poolParams,
@@ -84,13 +84,13 @@ const osmosisAminoConverters: Record<
       return {
         sender,
         poolParams: {
-          swapFee: pool_params.swap_fee,
-          exitFee: pool_params.exit_fee,
+          swapFee: pool_params?.swap_fee ?? "",
+          exitFee: pool_params?.exit_fee ?? "",
         },
         poolAssets: pool_assets.map((el0) => ({
           token: {
-            denom: el0.token.denom,
-            amount: el0.token.amount,
+            denom: el0?.token?.denom ?? "",
+            amount: el0?.token?.amount ?? "",
           },
           weight: el0.weight,
         })),
@@ -111,6 +111,7 @@ const ibcAminoConverters: Record<
   ...osmojsIbcAminoConverters,
   "/ibc.applications.transfer.v1.MsgTransfer": {
     ...osmojsIbcAminoConverters["/ibc.applications.transfer.v1.MsgTransfer"],
+    // Remove timeout_timestamp as it is not used by our transactions.
     toAmino: ({
       sourcePort,
       sourceChannel,

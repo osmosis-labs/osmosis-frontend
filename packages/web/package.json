@@ -3,15 +3,17 @@
   "version": "4.0.0",
   "private": true,
   "scripts": {
-    "dev": "yarn generate:chain-info && next dev",
+    "dev": "yarn generate && next dev",
     "clean": "rm -rf node_modules; rm -rf .next; rm config/chain-infos.ts",
-    "build": "yarn generate:chain-info && next build",
+    "build": "yarn generate && next build",
     "analyze": "cross-env ANALYZE=true next build",
     "start": "next start",
     "lint": "prettier --check \"**/*\" && next lint",
     "lint:fix": "prettier --write \"**/*\" && next lint --fix",
     "pre-commit": "lint-staged",
-    "generate:chain-info": "ts-node --esm config/generate-chain-infos.ts"
+    "generate": "yarn generate:chain-info && yarn generate:wallet-assets",
+    "generate:chain-info": "ts-node --esm config/generate-chain-infos.ts",
+    "generate:wallet-assets": "ts-node --esm config/generate-wallet-assets.ts"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^1.2.3",
@@ -46,7 +48,6 @@
     "@walletconnect/client": "^1.7.0",
     "@walletconnect/types": "^1.7.0",
     "axios": "^0.27.2",
-    "chain-registry": "^1.10.0",
     "class-variance-authority": "^0.4.0",
     "classnames": "^2.3.1",
     "dayjs": "^1.10.7",
@@ -97,6 +98,7 @@
     "regenerator-runtime": "^0.13.11",
     "sass": "^1.49.9",
     "tailwindcss": "^3.2.4",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "chain-registry": "^1.10.0"
   }
 }

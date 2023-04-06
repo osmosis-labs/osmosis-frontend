@@ -26,7 +26,6 @@ import {
   PoolFallbackPriceStore,
   QueriesExternalStore,
 } from "@osmosis-labs/stores";
-import { assets } from "chain-registry";
 
 import {
   toastOnBroadcast,
@@ -38,6 +37,7 @@ import {
   IBCAssetInfos,
   IS_FRONTIER,
   PoolPriceRoutes,
+  WalletAssets,
 } from "~/config";
 import { AxelarTransferStatusSource } from "~/integrations/axelar";
 
@@ -104,7 +104,7 @@ export class RootStore {
 
     this.accountStore = new AccountStore(
       ChainInfos,
-      assets,
+      WalletAssets,
       [
         ...keplrWallets,
         ...leapWallets,

@@ -36,5 +36,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
-# files
+# config files
 config/chain-infos.ts
+config/wallet-assets.ts

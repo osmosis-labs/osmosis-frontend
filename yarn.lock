@@ -9820,7 +9820,7 @@ osenv@^0.1.4:
     os-homedir "^1.0.0"
     os-tmpdir "^1.0.0"
 
-osmojs@^15.0.5:
+osmojs@15.0.5:
   version "15.0.5"
   resolved "https://registry.yarnpkg.com/osmojs/-/osmojs-15.0.5.tgz#384363ad6bf7de17fc58895eed3275c0c6cd44b0"
   integrity sha512-BguDCH004JlMo4LGgpoHXUcthepWyrHz38R5jeicCDhjIO3sR6XRTRpFPOK2FMPAh32mGFMAXK/ElnPPCPRn/g==
