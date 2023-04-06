@@ -66,7 +66,7 @@ export const defaultMsgOpts: OsmosisMsgOpts = {
   },
   lockAndSuperfluidDelegate: {
     type: "osmosis/lock-and-superfluid-delegate",
-    gas: 500000,
+    gas: 502000,
   },
   beginUnlocking: {
     type: "osmosis/lockup/begin-unlock-period-lock",
