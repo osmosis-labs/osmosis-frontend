@@ -290,17 +290,13 @@
     "createPool": {
       "amount": "Montant",
       "available": "Disponible",
-      "button": "Créer un nouveau bassin",
       "buttonAddToken": "Ajouter un nouveau jeton",
-      "buttonBack": "Retour",
       "buttonCreate": "Créer le bassin",
       "buttonNext": "Suivant",
       "infoCaption": "Transféré au bassin communautaire d'Osmosis",
       "infoMessage": "Frais de création de bassin",
-      "interestedCreate": "Intéressé par la création d'un nouveau bassin ?",
       "scalingFactorController": "Définir le contrôleur de facteur d'échelle (facultatif)",
       "stablePool": "Piscine stable",
-      "startProcess": "Cliquez ici pour démarrer le processus",
       "step": {
         "one": {
           "stable": "Étape {step} / {nbStep} - Configurer les facteurs d'échelle",
@@ -316,33 +312,13 @@
       "weightedPool": "Piscine pondérée"
     },
     "externalIncentivized": {
-      "APR": "TAP",
-      "search": "Rechercher par devise",
-      "sort": {
-        "APR": "TAP",
-        "epochs": "Cycles restants",
-        "liquidity": "Liquidité",
-        "myLiquidity": "Ma liquidité",
-        "poolName": "Nom/Numéro du pool"
-      },
-      "title": "Pools incités à l'externe",
       "TVL": "VTB"
     },
-    "incentivized": "Bassins incités",
-    "liquidity": "Liquidité",
     "myLiquidity": "Ma liquidité",
     "myPools": "Mes Bassins",
     "poolId": "Pool n°{id}",
     "priceOsmo": "Prix de l'OSMO",
-    "rewardDistribution": "Distribution de la récompence dans",
-    "superfluid": {
-      "APR": "TAP",
-      "fees7D": "Frais (7J)",
-      "liquidity": "Liquidité",
-      "tab": "Superfluides",
-      "title": "Bassins superfluides"
-    },
-    "title": "Bassins actifs"
+    "rewardDistribution": "Distribution de la récompence dans"
   },
   "profile": {
     "balance": "Solde",
@@ -363,9 +339,6 @@
     "title": "Paramètres globaux",
     "titleHideDust": "Masquer les piscines avec < 0.01{fiatSymbol}",
     "titleLanguage": "Langue"
-  },
-  "stablecoinTypes": {
-    "collateralized": "garanti"
   },
   "superfluidValidator": {
     "bondedAmount": "Montant bloqué",

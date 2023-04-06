@@ -290,17 +290,13 @@
     "createPool": {
       "amount": "Miktar",
       "available": "Mevcut",
-      "button": "Yeni Havuz Oluştur",
       "buttonAddToken": "Yeni token ekle",
-      "buttonBack": "Önceki",
       "buttonCreate": "Havuz Oluştur",
       "buttonNext": "Sonraki",
       "infoCaption": "Osmosis topluluk havuzuna transfer edilir",
       "infoMessage": "Havuz Oluşturma Ücreti",
-      "interestedCreate": "Yeni bir havuz oluşturmak mı istiyorsunuz?",
       "scalingFactorController": "Ölçeklendirme faktörü denetleyicisini ayarla (isteğe bağlı)",
       "stablePool": "Ahır havuzu",
-      "startProcess": "İşlemi başlatmak için buraya tıklayın",
       "step": {
         "one": {
           "stable": "Adım {step} / {nbStep} - Ölçeklendirme faktörlerini ayarlayın",
@@ -316,33 +312,13 @@
       "weightedPool": "Ağırlıklı havuz"
     },
     "externalIncentivized": {
-      "APR": "APR",
-      "search": "Sembolle ara",
-      "sort": {
-        "APR": "APR",
-        "epochs": "Kalan Devir",
-        "liquidity": "Likidite",
-        "myLiquidity": "Likiditem",
-        "poolName": "Havuz Adı/Numarası"
-      },
-      "title": "Dışarıdan Teşvik Edilen Havuzlar",
       "TVL": "TVL"
     },
-    "incentivized": "Teşvikli",
-    "liquidity": "Likidite",
     "myLiquidity": "Likiditem",
     "myPools": "Havuzlarım",
     "poolId": "Havuz #{id}",
     "priceOsmo": "OSMO Fiyatı",
-    "rewardDistribution": "Ödül dağıtımına kalan süre",
-    "superfluid": {
-      "APR": "APR",
-      "fees7D": "Ücretler (7G)",
-      "liquidity": "Likidite",
-      "tab": "Superfluid",
-      "title": "Superfluid Havuzlar"
-    },
-    "title": "Aktif Havuzlar"
+    "rewardDistribution": "Ödül dağıtımına kalan süre"
   },
   "profile": {
     "balance": "denklemek",
@@ -363,9 +339,6 @@
     "title": "Genel Ayarlar",
     "titleHideDust": "olan havuzları gizle < {fiatSymbol}0.01",
     "titleLanguage": "Dil"
-  },
-  "stablecoinTypes": {
-    "collateralized": "teminatlandırılmış"
   },
   "superfluidValidator": {
     "bondedAmount": "Bağlı Miktar",

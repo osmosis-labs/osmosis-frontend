@@ -290,17 +290,13 @@
     "createPool": {
       "amount": "수량",
       "available": "사용 가능",
-      "button": "새로운 풀 만들기",
       "buttonAddToken": "새로운 토큰 추가히기",
-      "buttonBack": "이전",
       "buttonCreate": "풀 생성하기",
       "buttonNext": "다음",
       "infoCaption": "Osmosis 커뮤니티풀로 전송됩니다",
       "infoMessage": "풀 생성 수수료",
-      "interestedCreate": "새 풀을 만들어 볼까요?",
       "scalingFactorController": "단위조정인수 제어자 설정(선택 사항)",
       "stablePool": "스테이블 풀",
-      "startProcess": "여기를 클릭해서 시작하세요.",
       "step": {
         "one": {
           "stable": "{step} / {nbStep} 단계 - 단위조정인수 설정",
@@ -316,33 +312,13 @@
       "weightedPool": "가중비율 풀"
     },
     "externalIncentivized": {
-      "APR": "APR",
-      "search": "심볼로 검색하기",
-      "sort": {
-        "APR": "APR",
-        "epochs": "남은 기간",
-        "liquidity": "유동성",
-        "myLiquidity": "내 유동성",
-        "poolName": "풀 이름/번호"
-      },
-      "title": "외부 인센티브 풀",
       "TVL": "TVL"
     },
-    "incentivized": "인센티브",
-    "liquidity": "유동성",
     "myLiquidity": "내 유동성",
     "myPools": "내 풀",
     "poolId": "풀 #{id}",
     "priceOsmo": "OSMO 가격",
-    "rewardDistribution": "보상 지급까지 남은 시간",
-    "superfluid": {
-      "APR": "APR",
-      "fees7D": "수수료 (7D)",
-      "liquidity": "유동성",
-      "tab": "Superfluid",
-      "title": "Superfluid Pools"
-    },
-    "title": "활성화된 풀"
+    "rewardDistribution": "보상 지급까지 남은 시간"
   },
   "profile": {
     "balance": "잔액",
@@ -363,9 +339,6 @@
     "title": "설정",
     "titleHideDust": "< {fiatSymbol}0.01 미만인 풀 숨기기",
     "titleLanguage": "언어"
-  },
-  "stablecoinTypes": {
-    "collateralized": "담보"
   },
   "superfluidValidator": {
     "bondedAmount": "예치된 수량",

@@ -291,15 +291,12 @@
       "amount": "Amount",
       "available": "Available",
       "buttonAddToken": "Add new token",
-      "buttonBack": "Previous",
       "buttonCreate": "Create Pool",
       "buttonNext": "Next",
       "infoCaption": "Transferred to the Osmosis community pool",
       "infoMessage": "Pool Creation Fee",
-      "interestedCreate": "Interested in creating a new pool?",
       "scalingFactorController": "Set scaling factor controller (optional)",
       "stablePool": "Stable pool",
-      "startProcess": "Click here to start the process",
       "step": {
         "one": {
           "stable": "Step {step} / {nbStep} - Set scaling factors",
@@ -315,33 +312,13 @@
       "weightedPool": "Weighted pool"
     },
     "externalIncentivized": {
-      "APR": "APR",
-      "search": "Search by symbol",
-      "sort": {
-        "APR": "APR",
-        "epochs": "Epochs Remaining",
-        "liquidity": "Liquidity",
-        "myLiquidity": "My Liquidity",
-        "poolName": "Pool Name/Number"
-      },
-      "title": "Externally Incentivized Pools",
       "TVL": "TVL"
     },
-    "incentivized": "Incentivized",
-    "liquidity": "Liquidity",
     "myLiquidity": "My Liquidity",
     "myPools": "My Pools",
     "poolId": "Pool #{id}",
     "priceOsmo": "OSMO Price",
-    "rewardDistribution": "Reward distribution in",
-    "superfluid": {
-      "APR": "APR",
-      "fees7D": "Fees (7D)",
-      "liquidity": "Liquidity",
-      "tab": "Superfluid",
-      "title": "Superfluid Pools"
-    },
-    "title": "Active Pools"
+    "rewardDistribution": "Reward distribution in"
   },
   "profile": {
     "balance": "Balance",
@@ -362,9 +339,6 @@
     "title": "Global settings",
     "titleHideDust": "Hide pools with < {fiatSymbol}0.01",
     "titleLanguage": "Language"
-  },
-  "stablecoinTypes": {
-    "collateralized": "collateralized"
   },
   "superfluidValidator": {
     "bondedAmount": "Bonded Amount",
