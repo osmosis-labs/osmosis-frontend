@@ -1,6 +1,5 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { AmountConfig } from "@keplr-wallet/hooks";
-import { getKeplrFromWindow } from "@keplr-wallet/stores";
 import {
   AccountStore,
   basicIbcTransfer,
@@ -109,40 +108,6 @@ export function useIbcTransfer({
     counterpartyChainId,
     onOpenWalletSelect,
   ]);
-
-  useEffect(() => {
-    if (
-      account?.walletStatus === WalletStatus.Connected && // TODO: handle mobile web (it is always connected)
-      currency.originCurrency
-    ) {
-      if ("contractAddress" in currency.originCurrency) {
-        getKeplrFromWindow()
-          .then((keplr) => {
-            // If the keplr is from extension and the ibc token is from cw20,
-            // suggest the token to the keplr.
-            if (
-              keplr &&
-              keplr.mode === "extension" &&
-              currency.originChainId &&
-              currency.originCurrency &&
-              "contractAddress" in currency.originCurrency
-            ) {
-              keplr
-                .suggestToken(
-                  currency.originChainId,
-                  currency.originCurrency.contractAddress
-                )
-                .catch((e) => {
-                  console.error(e);
-                });
-            }
-          })
-          .catch((e: unknown) => {
-            console.error(e);
-          });
-      }
-    }
-  }, [account?.walletStatus, currency.originCurrency, currency.originChainId]);
 
   const transfer: (
     onFulfill?: (
