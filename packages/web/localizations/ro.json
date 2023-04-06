@@ -2,9 +2,6 @@
   "404": {
     "title": "Nu a fost gasit"
   },
-  "500": {
-    "title": "Eroare server"
-  },
   "addLiquidity": {
     "allAssets": "Toate activele",
     "autoswapCaption": "Utilizeaza schimbul automat pentru a adauga lichiditate cu un singur activ.",
@@ -26,9 +23,7 @@
       "externalLink": "Acum părăsiți aplicația Osmosis pentru a merge la",
       "externalLinkDisclaimer": "Prin apăsarea acestui link, recunoști că ai citit și înțeles că Osmosis nu garantează calitatea serviciului pentru pagini externe care pot avea Termeni de Serviciu diferiți.",
       "externalLinkModalTitle": "Părăsirea Osmosis",
-      "goToSite": "Du-te la site",
-      "linkText": "Click aici pentru a va intoarce la aplicatia principala",
-      "title": "Visualizati toate activele care nu necesita permisiuni."
+      "goToSite": "Du-te la site"
     }
   },
   "assets": {
@@ -54,25 +49,15 @@
       "title": "Istoric Transferuri"
     },
     "ibcTransfer": {
-      "amoutDeposit": "Suma de Depozitat",
-      "amoutWithdraw": "Suma de Retras",
-      "availableBalance": "Balanta disponibila:",
       "buttonEdit": "Modifica",
       "buttonEnter": "Intra",
-      "channelBlocked": "Canal blocat",
-      "channelCongested": "Canal congestionat",
       "channelCongestedDeposit": "Depoziteaza (Channel congested)",
       "channelCongestedWithdraw": "Retrage (Channel congested)",
       "checkboxVerify": "Am verificat. Nu trimit catre o adresa a unui exchange.",
-      "copied": "Copiat!",
       "estimatedTime": "Timp estimat",
-      "from": "de la",
-      "IBCTransfer": "Transfer IBC",
-      "MAX": "MAX",
       "selectAmount": "Selecteaza suma",
       "titleDeposit": "Depoziteaza {coinDenom}",
       "titleWithdraw": "Retrage {coinDenom}",
-      "to": "catre",
       "waitTime": "20 secunde",
       "warningLossFunds": "Atentie: Retragerea intr-un exchange centralizat duce la pierderea fondurilor."
     },
@@ -130,9 +115,6 @@
       "titleWithdraw": "Retrage {coinDenom}",
       "to": "Catre",
       "transferFee": "Taxa transfer",
-      "useWrappedDeposit": "Depuneți {wrapDenom} pe Satellite",
-      "useWrappedWithdraw": "Retrageți {wrapDenom} din Satellite",
-      "via": "via",
       "waitTime": "{minutes} minute",
       "warnDepositAddressDifferent": "Atentie: Adresa selectata {address} difera de adresa de unde ai depozitat ultima oara."
     },
@@ -237,7 +219,6 @@
     "help": "A sustine",
     "info": "Statistici",
     "pools": "Pool-uri",
-    "signOut": "Deconectare",
     "stake": "Actiuni",
     "swap": "Schimba",
     "vote": "Vot"
@@ -292,26 +273,17 @@
     "yourStats": "Statisticile tale"
   },
   "pools": {
-    "all": "Toate Pool-urile",
     "allPools": {
-      "APR": "APR",
-      "APRIncentivized": "7z Vol.",
-      "displayLowLiquidity": "Arata pool-uri < {value}",
-      "myLiquidity": "lichiditatea mea",
       "search": "Cauta pool-uri",
       "sort": {
-        "APR": "Lichiditatile mele",
         "APRIncentivized": "APR",
         "fees": "Taxe (7z)",
         "liquidity": "Lichiditate",
-        "poolId": "ID Pool",
         "poolName": "Nume Pool",
         "volume24h": "Volum (24H)"
       },
-      "title": "Toate pool-urile",
-      "TVL": "TVL"
+      "title": "Toate pool-urile"
     },
-    "allTab": "Toate",
     "APR": "APR",
     "available": "Disponibil",
     "bonded": "Blocate",

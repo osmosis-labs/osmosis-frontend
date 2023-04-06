@@ -2,9 +2,6 @@
   "404": {
     "title": "Not found"
   },
-  "500": {
-    "title": "Server error"
-  },
   "addLiquidity": {
     "allAssets": "All assets",
     "autoswapCaption": "Use autoswap to add liquidity with a single asset.",
@@ -26,9 +23,7 @@
       "externalLink": "You are now leaving the Osmosis app to go to",
       "externalLinkDisclaimer": "By clicking the link, you acknowledge that you have read and understand that Osmosis makes no guarantees of quality of service for external pages which may have a different ToS.",
       "externalLinkModalTitle": "Leaving Osmosis",
-      "goToSite": "Go to Site",
-      "linkText": "Click here to return to the main app",
-      "title": "You're viewing all permissionless assets."
+      "goToSite": "Go to Site"
     }
   },
   "assets": {
@@ -54,25 +49,15 @@
       "title": "Transfer History"
     },
     "ibcTransfer": {
-      "amoutDeposit": "Amount To Deposit",
-      "amoutWithdraw": "Amount To Withdraw",
-      "availableBalance": "Available balance:",
       "buttonEdit": "Edit",
       "buttonEnter": "Enter",
-      "channelBlocked": "Channel blocked",
-      "channelCongested": "Channel congested",
       "channelCongestedDeposit": "Deposit (Channel congested)",
       "channelCongestedWithdraw": "Withdraw (Channel congested)",
       "checkboxVerify": "I verify I am not sending to an exchange address.",
-      "copied": "Copied!",
       "estimatedTime": "Estimated Time",
-      "from": "from",
-      "IBCTransfer": "IBC Transfer",
-      "MAX": "MAX",
       "selectAmount": "Select Amount",
       "titleDeposit": "Deposit {coinDenom}",
       "titleWithdraw": "Withdraw {coinDenom}",
-      "to": "to",
       "waitTime": "20 seconds",
       "warningLossFunds": "Warning: Withdrawing to central exchange address will result in loss of funds."
     },
@@ -130,9 +115,6 @@
       "titleWithdraw": "Withdraw {coinDenom}",
       "to": "To",
       "transferFee": "Transfer Fee",
-      "useWrappedDeposit": "Deposit {wrapDenom} with Satellite",
-      "useWrappedWithdraw": "Withdraw {wrapDenom} with Satellite",
-      "via": "via",
       "waitTime": "{minutes} minutes",
       "warnDepositAddressDifferent": "Warning: the selected account in {address} differs from the account you last deposited with."
     },
@@ -237,7 +219,6 @@
     "help": "Support",
     "info": "Stats",
     "pools": "Pools",
-    "signOut": "Disconnect",
     "stake": "Stake",
     "swap": "Swap",
     "vote": "Vote"
@@ -292,33 +273,23 @@
     "yourStats": "Your pool balance"
   },
   "pools": {
-    "all": "All Pools",
     "allPools": {
-      "APR": "APR",
-      "APRIncentivized": "7d Vol.",
-      "displayLowLiquidity": "Show pools < {value}",
-      "myLiquidity": "my liquidity",
       "search": "Search pools",
       "sort": {
-        "APR": "My Liquidity",
         "APRIncentivized": "APR",
         "fees": "Fees (7D)",
         "liquidity": "Liquidity",
-        "poolId": "Pool ID",
         "poolName": "Pool Name/Number",
         "volume24h": "Volume (24H)"
       },
-      "title": "Discover Pools",
-      "TVL": "TVL"
+      "title": "Discover Pools"
     },
-    "allTab": "All",
     "APR": "APR",
     "available": "Available",
     "bonded": "Bonded",
     "createPool": {
       "amount": "Amount",
       "available": "Available",
-      "button": "Create New Pool",
       "buttonAddToken": "Add new token",
       "buttonBack": "Previous",
       "buttonCreate": "Create Pool",

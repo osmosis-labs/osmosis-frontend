@@ -2,9 +2,6 @@
   "404": {
     "title": "未找到"
   },
-  "500": {
-    "title": "服务器错误"
-  },
   "addLiquidity": {
     "allAssets": "全部资产",
     "autoswapCaption": "使用自动兑换为单边资产添加流动性.",
@@ -26,9 +23,7 @@
       "externalLink": "您现在正在离开Osmosis应用程序去",
       "externalLinkDisclaimer": "通过点击链接，您承认您已阅读并理解，Osmosis对可能具有不同ToS的外部页面的服务质量没有任何保证。",
       "externalLinkModalTitle": "离开Osmosis",
-      "goToSite": "前往网站",
-      "linkText": "点击此处返回主应用",
-      "title": "您正在查看所有无许可资产."
+      "goToSite": "前往网站"
     }
   },
   "assets": {
@@ -54,25 +49,15 @@
       "title": "转账记录"
     },
     "ibcTransfer": {
-      "amoutDeposit": "存入数量",
-      "amoutWithdraw": "提币数量",
-      "availableBalance": "可用余额：",
       "buttonEdit": "编辑",
       "buttonEnter": "确定",
-      "channelBlocked": "频道被封锁",
-      "channelCongested": "频道争抢",
       "channelCongestedDeposit": "存入 (频道争抢)",
       "channelCongestedWithdraw": "提币 (频道争抢)",
       "checkboxVerify": "我确认没有发送到一个交易所的地址.",
-      "copied": "已复制！",
       "estimatedTime": "预估时间",
-      "from": "从",
-      "IBCTransfer": "IBC 转账",
-      "MAX": "最大",
       "selectAmount": "选择数量",
       "titleDeposit": "存入 {coinDenom}",
       "titleWithdraw": "提币 {coinDenom}",
-      "to": "至",
       "waitTime": "20 秒",
       "warningLossFunds": "警告：提币到中心化交易所地址会导致资产损失"
     },
@@ -130,9 +115,6 @@
       "titleWithdraw": "提币 {coinDenom}",
       "to": "至",
       "transferFee": "转账费",
-      "useWrappedDeposit": "在 Satellite 上存入 {wrapDenom}",
-      "useWrappedWithdraw": "从 Satellite 中提取 {wrapDenom}",
-      "via": "经过",
       "waitTime": "{minutes} 分钟",
       "warnDepositAddressDifferent": "警告：{address}中选定的帐户与您上次存入的帐户不同."
     },
@@ -237,7 +219,6 @@
     "help": "支持",
     "info": "统计数据",
     "pools": "资金池",
-    "signOut": "断开连接",
     "stake": "质押",
     "swap": "兑换",
     "vote": "投票"
@@ -292,26 +273,17 @@
     "yourStats": "您的资金池余额"
   },
   "pools": {
-    "all": "所有池",
     "allPools": {
-      "APR": "APR",
-      "APRIncentivized": "7天成交量",
-      "displayLowLiquidity": "显示资金池 < {value}",
-      "myLiquidity": "我的流动性",
       "search": "搜索资金池",
       "sort": {
-        "APR": "我的流动性",
         "APRIncentivized": "APR",
         "fees": "交易费 (7天)",
         "liquidity": "流动性",
-        "poolId": "资金池 ID",
         "poolName": "池名称/编号",
         "volume24h": "成交额 (24时)"
       },
-      "title": "所有资金池",
-      "TVL": "TVL"
+      "title": "所有资金池"
     },
-    "allTab": "所有",
     "APR": "APR",
     "available": "可用",
     "bonded": "已绑定",

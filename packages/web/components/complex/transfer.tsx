@@ -2,7 +2,7 @@ import { Bech32Address } from "@keplr-wallet/cosmos";
 import { CoinPretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { useWindowSize } from "../../hooks";
@@ -76,16 +76,6 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
     const t = useTranslation();
 
     const [isEditingWithdrawAddr, setIsEditingWithdrawAddr] = useState(false);
-
-    // Mobile only - brief copy to clipboard notification
-    const [showCopied, setShowCopied] = useState(false);
-    useEffect(() => {
-      if (showCopied) {
-        setTimeout(() => {
-          setShowCopied(false);
-        }, 5000);
-      }
-    }, [showCopied, setShowCopied]);
 
     const maxFromChars = isEditingWithdrawAddr
       ? 13 // can't be on mobile

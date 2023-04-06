@@ -2,9 +2,6 @@
   "404": {
     "title": "No encontrado"
   },
-  "500": {
-    "title": "Error del Servidor"
-  },
   "addLiquidity": {
     "allAssets": "Todos los activos",
     "autoswapCaption": "Use el intercambio automático para agregar liquidez con un solo activo.",
@@ -26,9 +23,7 @@
       "externalLink": "Estás abandonando la aplicación de Osmosis para ir a",
       "externalLinkDisclaimer": "Al hacer clic en el enlace, reconoce que ha leído y comprende que Osmosis no garantiza la calidad del servicio para páginas externas que pueden tener un TdS diferente.",
       "externalLinkModalTitle": "Saliendo de Osmosis",
-      "goToSite": "Ir al sitio",
-      "linkText": "Haga clic aquí para volver a la aplicación principal",
-      "title": "Estás viendo todos los activos sin permiso."
+      "goToSite": "Ir al sitio"
     }
   },
   "assets": {
@@ -54,25 +49,15 @@
       "title": "Historial de transferencias"
     },
     "ibcTransfer": {
-      "amoutDeposit": "Cantidad a depositar",
-      "amoutWithdraw": "Cantidad a retirar",
-      "availableBalance": "Saldo disponible:",
       "buttonEdit": "Editar",
       "buttonEnter": "Ingresar",
-      "channelBlocked": "Canal bloqueado",
-      "channelCongested": "Canal impugnado",
       "channelCongestedDeposit": "Depositar (Canal impugnado)",
       "channelCongestedWithdraw": "Retirar (Canal impugnado)",
       "checkboxVerify": "Confirmo que no estoy enviando a la dirección de una casa de cambio centralizada.",
-      "copied": "¡Copiado!",
       "estimatedTime": "Tiempo estimado",
-      "from": "de",
-      "IBCTransfer": "Transferencia de IBC",
-      "MAX": "Máximo",
       "selectAmount": "Cantidad seleccionada",
       "titleDeposit": "Depositar {coinDenom}",
       "titleWithdraw": "Retirar {coinDenom}",
-      "to": "a",
       "waitTime": "20 segundos",
       "warningLossFunds": "ADVERTENCIA: Retirar a la dirección de una casa de cambio centralizada resultará en la pérdida de sus fondos."
     },
@@ -130,9 +115,6 @@
       "titleWithdraw": "Retirar {coinDenom}",
       "to": "A",
       "transferFee": "Cuota de transferencia",
-      "useWrappedDeposit": "Deposite {wrapDenom} con Satellite",
-      "useWrappedWithdraw": "Retirar {wrapDenom} con Satellite",
-      "via": "a través de",
       "waitTime": "{minutes} minutos",
       "warnDepositAddressDifferent": "Advertencia: la cuenta seleccionada en {address} difiere de la cuenta con la que se depositó por última vez."
     },
@@ -237,7 +219,6 @@
     "help": "Soporte",
     "info": "Estadísticas",
     "pools": "Piscinas",
-    "signOut": "Desconectar",
     "stake": "Abonar",
     "swap": "Intercambio",
     "vote": "Votar"
@@ -292,24 +273,16 @@
     "yourStats": "Su saldo de la piscina"
   },
   "pools": {
-    "all": "Todas las piscinas",
     "allPools": {
-      "APR": "TPA",
-      "APRIncentivized": "7d vol.",
-      "displayLowLiquidity": "Mostrar piscinas < {value}",
-      "myLiquidity": "Mi liquidez",
       "search": "Buscar piscinas",
       "sort": {
-        "APR": "Mi liquidez",
         "APRIncentivized": "TPA",
         "fees": "Tarifas (7d)",
         "liquidity": "Liquidez",
-        "poolId": "ID de Piscina",
         "poolName": "Nombre/Número de piscina",
         "volume24h": "Volumen (24h)"
       },
-      "title": "Todas las piscinas",
-      "TVL": "VTB"
+      "title": "Todas las piscinas"
     },
     "allTab": "Todas",
     "APR": "TPA",
