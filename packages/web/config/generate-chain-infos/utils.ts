@@ -3,10 +3,8 @@ import { Bech32Address } from "@keplr-wallet/cosmos";
 import { ChainInfoWithExplorer } from "@osmosis-labs/stores";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { chains } from "chain-registry";
-import * as fs from "fs";
-// eslint-disable-next-line import/no-extraneous-dependencies
-import * as prettier from "prettier";
 
+// eslint-disable-next-line import/no-extraneous-dependencies
 import {
   IS_TESTNET,
   OSMOSIS_CHAIN_ID_OVERWRITE,
@@ -14,8 +12,8 @@ import {
   OSMOSIS_EXPLORER_URL_OVERWRITE,
   OSMOSIS_REST_OVERWRITE,
   OSMOSIS_RPC_OVERWRITE,
-} from "./env";
-import { createKeplrChainInfos, SimplifiedChainInfo } from "./utils";
+} from "../env";
+import { createKeplrChainInfos, SimplifiedChainInfo } from "../utils";
 
 const chainInfos = (
   [
@@ -3190,7 +3188,7 @@ chainInfos.push({
     : "https://axelarscan.io/tx/{txHash}",
 });
 
-function getChainInfos(): (ChainInfoWithExplorer & Chain)[] {
+export function getChainInfos(): (ChainInfoWithExplorer & Chain)[] {
   return chainInfos.map((localChain) => {
     const registryChain = chains.find(
       ({ chain_id }) => chain_id === localChain.chainId
@@ -3220,44 +3218,3 @@ function getChainInfos(): (ChainInfoWithExplorer & Chain)[] {
     };
   });
 }
-
-/**
- * Generate a properly formatted TypeScript file chain-infos.ts containing an array of
- * ChainInfoWithExplorer & Chain objects. This array is derived from the combination of local
- * and registry chain information. This is used by comos-kit wallets and keplr to display chain
- * information hence meshing both types.
- */
-async function generateChainInfo() {
-  const chainInfos = getChainInfos();
-  const content = `
-    import type { Chain } from "@chain-registry/types";
-    import { ChainInfoWithExplorer } from "@osmosis-labs/stores";
-
-    export const ChainInfos = ${JSON.stringify(
-      chainInfos,
-      null,
-      2
-    )} as (ChainInfoWithExplorer & Chain)[];
-  `;
-
-  const prettierConfig = await prettier.resolveConfig("./");
-  const formatted = prettier.format(content, {
-    ...prettierConfig,
-    parser: "typescript",
-  });
-
-  try {
-    fs.writeFileSync("config/chain-infos.ts", formatted, {
-      encoding: "utf8",
-      flag: "w",
-    });
-    console.log("Successfully wrote chain-infos.ts");
-  } catch (e) {
-    console.log(`Error writing chain-infos.ts: ${e}`);
-  }
-}
-
-generateChainInfo().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
