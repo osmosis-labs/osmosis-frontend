@@ -8,12 +8,13 @@ import * as prettier from "prettier";
 import { IS_FRONTIER } from "./env";
 import IBCAssetInfos from "./ibc-assets";
 
-const AssetInfos: { isVerified?: boolean; coinMinimalDenom: string }[] = [
-  ...IBCAssetInfos,
-  // Native Osmosis Assets
-  { coinMinimalDenom: "uosmo", isVerified: true },
-  { coinMinimalDenom: "uion", isVerified: true },
-];
+const initialAssetInfos: { isVerified?: boolean; coinMinimalDenom: string }[] =
+  [
+    ...IBCAssetInfos,
+    // Native Osmosis Assets
+    { coinMinimalDenom: "uosmo", isVerified: true },
+    { coinMinimalDenom: "uion", isVerified: true },
+  ];
 
 const hasMatchingMinimalDenom = (
   { denom_units, traces }: Asset,
@@ -35,15 +36,15 @@ const hasMatchingMinimalDenom = (
   );
 };
 
-function getAssetLists(): AssetList[] {
+function getAssetLists(assetInfos = initialAssetInfos): AssetList[] {
   let newAssetLists: AssetList[] = [];
 
   for (const list of assetLists) {
-    // Filter out assets that are not IBC assets
+    // Filter out assets that are not in assetInfos
     list.assets = list.assets.filter((asset) =>
-      AssetInfos.some(({ coinMinimalDenom, isVerified }) => {
-        // If we are on frontier, only show verified assets
-        if (!IS_FRONTIER && !isVerified) return;
+      assetInfos.some(({ coinMinimalDenom, isVerified }) => {
+        // If we are not on frontier, only show verified assets
+        if (!IS_FRONTIER && !isVerified) return false;
         return hasMatchingMinimalDenom(asset, coinMinimalDenom);
       })
     );
