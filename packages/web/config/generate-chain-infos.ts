@@ -3221,6 +3221,12 @@ function getChainInfos(): (ChainInfoWithExplorer & Chain)[] {
   });
 }
 
+/**
+ * Generate a properly formatted TypeScript file chain-infos.ts containing an array of
+ * ChainInfoWithExplorer & Chain objects. This array is derived from the combination of local
+ * and registry chain information. This is used by comos-kit wallets and keplr to display chain
+ * information hence meshing both types.
+ */
 async function generateChainInfo() {
   const chainInfos = getChainInfos();
   const content = `

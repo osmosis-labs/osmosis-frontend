@@ -8,10 +8,11 @@ import * as prettier from "prettier";
 import { IS_FRONTIER } from "./env";
 import IBCAssetInfos from "./ibc-assets";
 
+// Assets to be included in the wallet-assets list.
 const initialAssetInfos: { isVerified?: boolean; coinMinimalDenom: string }[] =
   [
     ...IBCAssetInfos,
-    // Native Osmosis Assets
+    // Add native Osmosis Assets as they are not included in IBCAssetInfos but are needed in the app.
     { coinMinimalDenom: "uosmo", isVerified: true },
     { coinMinimalDenom: "uion", isVerified: true },
   ];
@@ -59,6 +60,10 @@ function getAssetLists(assetInfos = initialAssetInfos): AssetList[] {
   return newAssetLists;
 }
 
+/**
+ * Generate a TypeScript file called wallet-assets.ts containing
+ * a filtered list of wallet assets based on the approved list on our repo.
+ */
 async function generateWalletAssets() {
   const assets = getAssetLists();
   const content = `
