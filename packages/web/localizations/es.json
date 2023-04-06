@@ -177,6 +177,7 @@
       "poolId": "Grupo #{id}",
       "stable": "Stableswap",
       "weighted": "Weighted",
+      "concentrated": "Liquidez concentrada",
       "internal": "Incentivos internos",
       "external": "Incentivos externos",
       "superfluid": "Superfluid",

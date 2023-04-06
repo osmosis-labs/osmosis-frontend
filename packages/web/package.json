@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "clean": "rm -rf node_modules; rm -rf .next",
+    "test": "jest --passWithNoTests",
     "build": "next build",
     "analyze": "cross-env ANALYZE=true next build",
     "start": "next start",

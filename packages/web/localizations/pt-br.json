@@ -177,6 +177,7 @@
       "poolId": "Piscina #{id}",
       "stable": "Stableswap",
       "weighted": "Ponderado",
+      "concentrated": "Liquidez concentrada",
       "internal": "Incentivos internos",
       "external": "Incentivos externos",
       "superfluid": "Superfluid",

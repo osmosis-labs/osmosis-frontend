@@ -177,6 +177,7 @@
       "poolId": "풀 {id}",
       "stable": "스테이블스왑",
       "weighted": "가중치",
+      "concentrated": "집중된 유동성",
       "internal": "내부 인센티브",
       "external": "외부 인센티브",
       "superfluid": "슈퍼플루이드",

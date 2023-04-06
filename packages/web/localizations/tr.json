@@ -177,6 +177,7 @@
       "poolId": "Havuz #{id}",
       "stable": "Stableswap",
       "weighted": "Ağırlıklı",
+      "concentrated": "Konsantre likidite",
       "internal": "Dahili teşvikler",
       "external": "Harici teşvikler",
       "superfluid": "Superfluid",

@@ -176,6 +176,7 @@
       "poolId": "资金池 #{id}",
       "stable": "稳定兑换",
       "weighted": "加权",
+      "concentrated": "流动性集中",
       "internal": "内部激励",
       "external": "外部激励",
       "superfluid": "超流体",

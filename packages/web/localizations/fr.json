@@ -174,8 +174,10 @@
       "SORTMobile": "TRIER"
     },
     "table": {
+      "poolId": "Pool n°{id}",
       "stable": "Stableswap",
-      "weighted": "Weighted",
+      "weighted": "Pondéré",
+      "concentrated": "Liquidité concentrée",
       "internal": "Incitations internes",
       "external": "Incitations externes",
       "superfluid": "Superfluid",

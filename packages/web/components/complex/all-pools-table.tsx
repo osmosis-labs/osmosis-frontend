@@ -76,7 +76,7 @@ function getPoolFilters(
   return {
     stable: t("components.table.stable"),
     weighted: t("components.table.weighted"),
-    concentrated: "concentrated", // TODO: add translation
+    concentrated: t("components.table.concentrated"),
   };
 }
 

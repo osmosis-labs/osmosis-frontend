@@ -177,6 +177,7 @@
       "poolId": "Pool #{id}",
       "stable": "Stableswap",
       "weighted": "Weighted",
+      "concentrated": "Concentrated Liquidity",
       "internal": "Internal incentives",
       "external": "External incentives",
       "superfluid": "Superfluid",

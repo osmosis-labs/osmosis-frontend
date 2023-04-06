@@ -177,6 +177,7 @@
       "poolId": "Pula #{id}",
       "stable": "Stableswap",
       "weighted": "Ważone",
+      "concentrated": "Skoncentrowana płynność",
       "internal": "Wewnętrzne zachęty",
       "external": "Zewnętrzne zachęty",
       "superfluid": "Superfluid",
