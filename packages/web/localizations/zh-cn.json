@@ -290,17 +290,13 @@
     "createPool": {
       "amount": "总量",
       "available": "可用",
-      "button": "创建新的资金池",
       "buttonAddToken": "添加新的代币",
-      "buttonBack": "上一步",
       "buttonCreate": "创建资金池",
       "buttonNext": "下一步",
       "infoCaption": "已发送到 Osmosis 社区池",
       "infoMessage": "资金池创建费",
-      "interestedCreate": "对创建新的资金池感兴趣?",
       "scalingFactorController": "设置比例因子控制器（可选）",
       "stablePool": "稳定池",
-      "startProcess": "点击此处开始创建",
       "step": {
         "one": {
           "stable": "步骤 {step} / {nbStep} - 设置比例因子",
@@ -316,33 +312,13 @@
       "weightedPool": "加权池"
     },
     "externalIncentivized": {
-      "APR": "APR",
-      "search": "搜索代币",
-      "sort": {
-        "APR": "APR",
-        "epochs": "剩余奖励周期",
-        "liquidity": "流动性",
-        "myLiquidity": "我的流动性",
-        "poolName": "池名称/编号"
-      },
-      "title": "外部激励矿池",
       "TVL": "TVL"
     },
-    "incentivized": "激励池",
-    "liquidity": "流动性",
     "myLiquidity": "我的流动性",
     "myPools": "我的资金池",
     "poolId": "资金池 #{id}",
     "priceOsmo": "OSMO 价格",
-    "rewardDistribution": "奖励分配",
-    "superfluid": {
-      "APR": "APR",
-      "fees7D": "交易费 (7天)",
-      "liquidity": "流动性",
-      "tab": "超流质押",
-      "title": "超流质押池"
-    },
-    "title": "活跃资金池"
+    "rewardDistribution": "奖励分配"
   },
   "profile": {
     "balance": "结余",
@@ -363,9 +339,6 @@
     "title": "全局设置",
     "titleHideDust": "使用 < {fiatSymbol}0.01 隐藏矿池",
     "titleLanguage": "语言"
-  },
-  "stablecoinTypes": {
-    "collateralized": "抵押的"
   },
   "superfluidValidator": {
     "bondedAmount": "已绑定数量",

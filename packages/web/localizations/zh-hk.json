@@ -290,17 +290,13 @@
     "createPool": {
       "amount": "幣額",
       "available": "可用",
-      "button": "建立新流動性池",
       "buttonAddToken": "加入新代幣",
-      "buttonBack": "上一步",
       "buttonCreate": "建立新池",
       "buttonNext": "下一步",
       "infoCaption": "已被傳送到 Osmosis 社群資金池",
       "infoMessage": "流動性池建立費",
-      "interestedCreate": "想建立新流動性池嗎？",
       "scalingFactorController": "比例因子控制器（可選)",
       "stablePool": "穩定池",
-      "startProcess": "按此開始流程",
       "step": {
         "one": {
           "stable": "步驟 {step} / {nbStep} - 設定調整係數",
@@ -316,33 +312,13 @@
       "weightedPool": "加權流動性池"
     },
     "externalIncentivized": {
-      "APR": "年利率(APR)",
-      "search": "以符號搜尋",
-      "sort": {
-        "APR": "年利率(APR)",
-        "epochs": "剩餘日數",
-        "liquidity": "流動性",
-        "myLiquidity": "我嘅流動性",
-        "poolName": "池名稱/編號"
-      },
-      "title": "外部激勵礦池",
       "TVL": "總鎖定資產價值(TVL)"
     },
-    "incentivized": "有激勵嘅",
-    "liquidity": "流動性",
     "myLiquidity": "我嘅流動性",
     "myPools": "我嘅流動性池",
     "poolId": "流動性池 #{id}",
     "priceOsmo": "OSMO 價格",
-    "rewardDistribution": "距下次獎勵分發仲有",
-    "superfluid": {
-      "APR": "年利率(APR)",
-      "fees7D": "交易費(7日)",
-      "liquidity": "流動性",
-      "tab": "超流體",
-      "title": "超流體流動性池"
-    },
-    "title": "活躍流動性池"
+    "rewardDistribution": "距下次獎勵分發仲有"
   },
   "profile": {
     "balance": "结余",
@@ -363,9 +339,6 @@
     "title": "全局設置",
     "titleHideDust": "隱藏 < {fiatSymbol}0.01 嘅礦池",
     "titleLanguage": "語言"
-  },
-  "stablecoinTypes": {
-    "collateralized": "抵押"
   },
   "superfluidValidator": {
     "bondedAmount": "鎖定數量",

@@ -290,17 +290,13 @@
     "createPool": {
       "amount": "Quantidade",
       "available": "Disponível",
-      "button": "Criar Nova Piscina",
       "buttonAddToken": "Adicionar novo token",
-      "buttonBack": "Anterior",
       "buttonCreate": "Criar Piscina",
       "buttonNext": "Próximo",
       "infoCaption": "Transferido para a piscina comunitária da Osmosis",
       "infoMessage": "Criação da Taxa da Pool",
-      "interestedCreate": "Interessado em criar uma nova piscina?",
       "scalingFactorController": "Configurar controle de fator de escalonamento (opcional)",
       "stablePool": "Piscina estável",
-      "startProcess": "Clique aqui para iniciar o processo",
       "step": {
         "one": {
           "stable": "Etapa {step} / {nbStep} - Configurar fatores de escalamento",
@@ -316,33 +312,13 @@
       "weightedPool": "Piscina ponderada"
     },
     "externalIncentivized": {
-      "APR": "APR",
-      "search": "Procurar pelo símbolo",
-      "sort": {
-        "APR": "APR",
-        "epochs": "Épocas Restantes",
-        "liquidity": "Liquidez",
-        "myLiquidity": "Minha Liquidez",
-        "poolName": "Nome/Número da Piscina"
-      },
-      "title": "Piscinas Incentivadas Externamente",
       "TVL": "TVL"
     },
-    "incentivized": "Incentivada",
-    "liquidity": "Liquidez",
     "myLiquidity": "Minha Liquidez",
     "myPools": "Minhas Piscinas",
     "poolId": "Piscina #{id}",
     "priceOsmo": "Preço de OSMO",
-    "rewardDistribution": "Distribuição de Recompensa em",
-    "superfluid": {
-      "APR": "APR",
-      "fees7D": "Taxas (7D)",
-      "liquidity": "Liquidez",
-      "tab": "Superfluido",
-      "title": "Piscinas Superfluidas"
-    },
-    "title": "Piscinas Ativas"
+    "rewardDistribution": "Distribuição de Recompensa em"
   },
   "profile": {
     "balance": "Saldo",
@@ -363,9 +339,6 @@
     "title": "Configurações Globais",
     "titleHideDust": "Esconder piscinas com < {fiatSymbol}0.01",
     "titleLanguage": "Idioma"
-  },
-  "stablecoinTypes": {
-    "collateralized": "colateralizado"
   },
   "superfluidValidator": {
     "bondedAmount": "Quantia Travada",

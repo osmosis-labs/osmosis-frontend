@@ -290,17 +290,13 @@
     "createPool": {
       "amount": "مقدار",
       "available": "موجودی",
-      "button": "ایجاد استخر چدید",
       "buttonAddToken": "افزودن توکن جدید",
-      "buttonBack": "قبلی",
       "buttonCreate": "ایجاد استخر",
       "buttonNext": "بعدی",
       "infoCaption": "که به استخر شبکه Osmosis منتقل می شود.",
       "infoMessage": "هزینه ایجاد استخر",
-      "interestedCreate": "آیا می خواهید استخر جدید ایجاد کنید؟",
       "scalingFactorController": "تنظیم سیستم کنترل فاکتورهای اندازه گیری (اختیاری)",
       "stablePool": "استخر پایدار",
-      "startProcess": "برای انجام کار اینجا را بفشارید",
       "step": {
         "one": {
           "stable": "گام {step} / {nbStep} - تنظیم فاکتورها",
@@ -316,33 +312,13 @@
       "weightedPool": "وزن استخر"
     },
     "externalIncentivized": {
-      "APR": "نرخ بازده",
-      "search": "جسنجوی نماد",
-      "sort": {
-        "APR": "نرخ بازده",
-        "epochs": "تعداد مانده توزیع جایزه",
-        "liquidity": "نقدینگی من",
-        "myLiquidity": "نقدینگی من",
-        "poolName": "استخر شماره/نام"
-      },
-      "title": "مشوش های خارجی استخر",
       "TVL": "TVL"
     },
-    "incentivized": "مشوق ها - جایزه ها",
-    "liquidity": "نقدینگی",
     "myLiquidity": "نقدینگی های من",
     "myPools": "استخر های من",
     "poolId": "استخر #{id}",
     "priceOsmo": "قیمت OSMO",
-    "rewardDistribution": "زمان توزیع جوایز",
-    "superfluid": {
-      "APR": "نرخ بازده",
-      "fees7D": "کارمزد (هفت روزه)",
-      "liquidity": "نقدینگی",
-      "tab": "Superfluid",
-      "title": "استخر های Superfluid"
-    },
-    "title": "استخرهای فعال"
+    "rewardDistribution": "زمان توزیع جوایز"
   },
   "profile": {
     "balance": "موجودی",
@@ -363,9 +339,6 @@
     "title": "تنظیمات کلی",
     "titleHideDust": "مخفی سازی استخر با موجودی کمتر از < {fiatSymbol}0.01",
     "titleLanguage": "زبان"
-  },
-  "stablecoinTypes": {
-    "collateralized": "سپرده شده"
   },
   "superfluidValidator": {
     "bondedAmount": "میزان قفل کردن",

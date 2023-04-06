@@ -290,17 +290,13 @@
     "createPool": {
       "amount": "Ilość",
       "available": "Dostępne",
-      "button": "Stwórz nową pulę",
       "buttonAddToken": "Dodaj nowy token",
-      "buttonBack": "Cofnij",
       "buttonCreate": "Stwórz Pulę",
       "buttonNext": "Dalej",
       "infoCaption": "Przeniesione do Puli Społecznośći Osmosis",
       "infoMessage": "Prowizja Tworzenia Puli",
-      "interestedCreate": "Zainteresowany tworzeniem nowej puli?",
       "scalingFactorController": "Ustaw regulator współczynnika skalowania (opcjonalnie)",
       "stablePool": "Stabilny basen",
-      "startProcess": "Kliknij tutaj, żeby zacząć proces",
       "step": {
         "one": {
           "stable": "Krok {step} / {nbStep} - Ustaw współczynniki skalowania",
@@ -316,33 +312,13 @@
       "weightedPool": "Basen ważony"
     },
     "externalIncentivized": {
-      "APR": "APR",
-      "search": "Wyszukaj po symbolu",
-      "sort": {
-        "APR": "APR",
-        "epochs": "Pozostało Epok",
-        "liquidity": "Płynność",
-        "myLiquidity": "Moja Płynność",
-        "poolName": "Nazwa/numer puli"
-      },
-      "title": "Baseny motywowane zewnętrznie",
       "TVL": "TVL"
     },
-    "incentivized": "Premiowane",
-    "liquidity": "Płynność",
     "myLiquidity": "Moja płynność",
     "myPools": "Moje Pule",
     "poolId": "Pula #{id}",
     "priceOsmo": "Cena OSMO",
-    "rewardDistribution": "Dystrybucja nagród za",
-    "superfluid": {
-      "APR": "APR",
-      "fees7D": "Prowizje (7D)",
-      "liquidity": "Płynność",
-      "tab": "Superpłynne",
-      "title": "Superpłynne Pule"
-    },
-    "title": "Aktywne pule"
+    "rewardDistribution": "Dystrybucja nagród za"
   },
   "profile": {
     "balance": "Balansować",
@@ -363,9 +339,6 @@
     "title": "Ustawienia ogólne",
     "titleHideDust": "Ukryj pule z < {fiatSymbol}0.01",
     "titleLanguage": "Język"
-  },
-  "stablecoinTypes": {
-    "collateralized": "zabezpieczone"
   },
   "superfluidValidator": {
     "bondedAmount": "Związana ilość",

@@ -284,24 +284,19 @@
       },
       "title": "Todas las piscinas"
     },
-    "allTab": "Todas",
     "APR": "TPA",
     "available": "Disponible",
     "bonded": "Abonado",
     "createPool": {
       "amount": "Monto",
       "available": "Disponible",
-      "button": "Crear nueva Piscina",
       "buttonAddToken": "Agregar token nuevo",
-      "buttonBack": "Anterior",
       "buttonCreate": "Crear Piscina",
       "buttonNext": "Siguiente",
       "infoCaption": "Transferido a la piscina comunitaria de Osmosis",
       "infoMessage": "Tarifa de creación de piscina",
-      "interestedCreate": "¿Interesado en crear una nueva Piscina?",
       "scalingFactorController": "Establecer controlador de factor de escala (opcional)",
       "stablePool": "Piscina estable",
-      "startProcess": "Haga clic aquí para comenzar el proceso",
       "step": {
         "one": {
           "stable": "Paso {step} / {nbstep} - Establecer factores de escala",
@@ -317,33 +312,13 @@
       "weightedPool": "Grupo ponderado"
     },
     "externalIncentivized": {
-      "APR": "TPA",
-      "search": "Buscar por símbolo",
-      "sort": {
-        "APR": "TPA",
-        "epochs": "Épocas restantes",
-        "liquidity": "Liquidez",
-        "myLiquidity": "Mi liquidez",
-        "poolName": "Nombre/Número de piscina"
-      },
-      "title": "Fondos comunes con incentivos externos",
       "TVL": "VTB"
     },
-    "incentivized": "Incentivada",
-    "liquidity": "Liquidez",
     "myLiquidity": "Mi Liquidez",
     "myPools": "Mis Piscinas",
     "poolId": "Piscina #{id}",
     "priceOsmo": "Precio de OSMO",
-    "rewardDistribution": "Distribución de recompensas en",
-    "superfluid": {
-      "APR": "TPA",
-      "fees7D": "Tarifas (7d)",
-      "liquidity": "Liquidez",
-      "tab": "Superfluido",
-      "title": "Piscinas superfluidas"
-    },
-    "title": "Piscinas Activas"
+    "rewardDistribution": "Distribución de recompensas en"
   },
   "profile": {
     "balance": "Balance",
@@ -364,9 +339,6 @@
     "title": "Configuración global",
     "titleHideDust": "Ocultar piscinas con <{fiatSymbol} 0.01",
     "titleLanguage": "Idioma"
-  },
-  "stablecoinTypes": {
-    "collateralized": "colateralizado"
   },
   "superfluidValidator": {
     "bondedAmount": "Monto abonado",
