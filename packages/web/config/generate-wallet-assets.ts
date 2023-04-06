@@ -5,6 +5,7 @@ import * as fs from "fs";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as prettier from "prettier";
 
+import { IS_FRONTIER } from "./env";
 import IBCAssetInfos from "./ibc-assets";
 
 const AssetInfos: { isVerified?: boolean; coinMinimalDenom: string }[] = [
@@ -40,15 +41,17 @@ function getAssetLists(): AssetList[] {
   for (const list of assetLists) {
     // Filter out assets that are not IBC assets
     list.assets = list.assets.filter((asset) =>
-      AssetInfos.some(({ coinMinimalDenom }) =>
-        hasMatchingMinimalDenom(asset, coinMinimalDenom)
-      )
+      AssetInfos.some(({ coinMinimalDenom, isVerified }) => {
+        // If we are on frontier, only show verified assets
+        if (!IS_FRONTIER && !isVerified) return;
+        return hasMatchingMinimalDenom(asset, coinMinimalDenom);
+      })
     );
 
     if (list.assets.length > 0) {
       newAssetLists.push(list);
     } else {
-      console.log(`No IBC assets found for ${list.chain_name}`);
+      console.log(`No assets found for ${list.chain_name}`);
     }
   }
 
