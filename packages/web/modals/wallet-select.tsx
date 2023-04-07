@@ -21,6 +21,7 @@ import { useTranslation } from "react-multi-lang";
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import SkeletonLoader from "~/components/skeleton-loader";
+import { useWindowSize } from "~/hooks";
 
 import { ModalBase, ModalBaseProps } from "./base";
 
@@ -99,7 +100,18 @@ export const WalletSelectModal: FunctionComponent<
       isOpen={isOpen}
       onRequestClose={onClose}
       onRequestBack={
-        modalView !== "list" ? () => setModalView("list") : undefined
+        modalView !== "list"
+          ? () => {
+              if (
+                walletStatus === WalletStatus.Connecting ||
+                walletStatus === WalletStatus.Rejected
+              ) {
+                walletRepo?.disconnect();
+                walletRepo?.activate();
+              }
+              setModalView("list");
+            }
+          : undefined
       }
       className="max-h-screen max-w-[30.625rem] overflow-auto"
       title={t("connectWallet")}
@@ -122,6 +134,7 @@ const ModalContent: FunctionComponent<
   > & { modalView: ModalView }
 > = ({ walletRepo, onRequestClose, modalView, onConnect: onConnectProp }) => {
   const t = useTranslation();
+  const { isMobile } = useWindowSize();
 
   const currentWallet = walletRepo?.current;
   const walletInfo = currentWallet?.walletInfo;
@@ -276,16 +289,20 @@ const ModalContent: FunctionComponent<
     return <QRCodeView wallet={currentWallet!} />;
   }
 
-  const wallets = [...(walletRepo?.wallets ?? [])].sort((a, b) => {
-    if (a.walletInfo.mode === b.walletInfo.mode) {
-      return 0;
-    } else if (a.walletInfo.mode !== "wallet-connect") {
-      return -1;
-    } else {
-      // Move wallet-connect to the end
-      return 1;
-    }
-  });
+  const wallets = [...(walletRepo?.wallets ?? [])]
+    // If mobile, filter out browser wallets
+    .filter((w) => (isMobile ? !w.walletInfo.mobileDisabled : true))
+    // Wallet connect should be last
+    .sort((a, b) => {
+      if (a.walletInfo.mode === b.walletInfo.mode) {
+        return 0;
+      } else if (a.walletInfo.mode !== "wallet-connect") {
+        return -1;
+      } else {
+        // Move wallet-connect to the end
+        return 1;
+      }
+    });
 
   return (
     <div className="flex flex-col gap-2">

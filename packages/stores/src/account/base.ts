@@ -11,6 +11,7 @@ import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
 import {
   ChainWalletBase,
   MainWalletBase,
+  WalletConnectOptions,
   WalletManager,
   WalletStatus,
 } from "@cosmos-kit/core";
@@ -70,7 +71,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       [CosmosQueries, CosmwasmQueries, OsmosisQueries]
     >,
     protected readonly chainGetter: ChainGetter,
-    protected readonly txOpts: {
+    protected readonly options: {
+      walletConnectOptions?: WalletConnectOptions;
       preTxEvents?: {
         onBroadcastFailed?: (string: string, e?: Error) => void;
         onBroadcasted?: (string: string, txHash: Uint8Array) => void;
@@ -89,12 +91,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       this.wallets,
       logger,
       "icns",
-      {
-        signClient: {
-          projectId: "a8510432ebb71e6948cfd6cde54b70f7", // TODO: replace with our own
-          relayUrl: "wss://relay.walletconnect.org",
-        },
-      },
+      this.options.walletConnectOptions,
       {
         signingStargate: () => ({
           aminoTypes: new AminoTypes(aminoConverters),
@@ -329,8 +326,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         throw new BroadcastTxError(broadcasted.code, "", broadcasted.log);
       }
 
-      if (this.txOpts.preTxEvents?.onBroadcasted) {
-        this.txOpts.preTxEvents.onBroadcasted(chainNameOrId, broadcasted.hash);
+      if (this.options.preTxEvents?.onBroadcasted) {
+        this.options.preTxEvents.onBroadcasted(chainNameOrId, broadcasted.hash);
       }
 
       if (onBroadcasted) {
@@ -405,8 +402,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         }
       }
 
-      if (this.txOpts.preTxEvents?.onFulfill) {
-        this.txOpts.preTxEvents.onFulfill(chainNameOrId, tx);
+      if (this.options.preTxEvents?.onFulfill) {
+        this.options.preTxEvents.onFulfill(chainNameOrId, tx);
       }
 
       if (onFulfill) {
@@ -418,8 +415,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         this.txTypeInProgressByChain.set(chainNameOrId, "");
       });
 
-      if (this.txOpts.preTxEvents?.onBroadcastFailed) {
-        this.txOpts.preTxEvents.onBroadcastFailed(chainNameOrId, error);
+      if (this.options.preTxEvents?.onBroadcastFailed) {
+        this.options.preTxEvents.onBroadcastFailed(chainNameOrId, error);
       }
 
       if (

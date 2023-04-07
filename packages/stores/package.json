@@ -49,7 +49,7 @@
     "@cosmjs/proto-signing": "0.29.0",
     "@cosmjs/stargate": "0.29.0",
     "@cosmjs/tendermint-rpc": "^0.29.0",
-    "@cosmos-kit/core": "1.3.0",
+    "@cosmos-kit/core": "1.3.3",
     "@keplr-wallet/common": "^0.10.24",
     "@keplr-wallet/cosmos": "0.10.24",
     "@keplr-wallet/hooks": "^0.10.24",
@@ -71,10 +71,10 @@
     "utility-types": "^3.10.0"
   },
   "peerDependencies": {
-    "@cosmos-kit/cosmostation": "0.15.13",
-    "@cosmos-kit/keplr": "0.33.13",
-    "@cosmos-kit/leap": "0.14.12",
-    "@cosmos-kit/trust": "0.14.13",
-    "@cosmos-kit/xdefi-extension": "0.15.12"
+    "@cosmos-kit/cosmostation": "0.15.16",
+    "@cosmos-kit/keplr": "0.33.16",
+    "@cosmos-kit/leap": "0.14.15",
+    "@cosmos-kit/trust": "0.14.16",
+    "@cosmos-kit/xdefi-extension": "0.15.15"
   }
 }

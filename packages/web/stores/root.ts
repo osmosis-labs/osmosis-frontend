@@ -38,6 +38,8 @@ import {
   IS_FRONTIER,
   PoolPriceRoutes,
   WalletAssets,
+  WALLETCONNECT_PROJECT_KEY,
+  WALLETCONNECT_RELAY_URL,
 } from "~/config";
 import { AxelarTransferStatusSource } from "~/integrations/axelar";
 
@@ -115,6 +117,12 @@ export class RootStore {
       this.queriesStore,
       this.chainStore,
       {
+        walletConnectOptions: {
+          signClient: {
+            projectId: WALLETCONNECT_PROJECT_KEY ?? "",
+            relayUrl: WALLETCONNECT_RELAY_URL,
+          },
+        },
         preTxEvents: {
           onBroadcastFailed: toastOnBroadcastFailed((chainId) =>
             this.chainStore.getChain(chainId)
