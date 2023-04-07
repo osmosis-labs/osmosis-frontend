@@ -185,7 +185,6 @@ export class OsmosisQueriesImpl {
     this._queryGammPools = poolsQueryFallbacks.responsiveStore;
     // hot swap the pools query store any time the fallback store changes
     autorun(() => {
-      console.log("autorun pool query");
       this._queryGammPools = poolsQueryFallbacks.responsiveStore;
     });
 

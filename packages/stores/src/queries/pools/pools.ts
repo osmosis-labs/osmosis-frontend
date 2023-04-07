@@ -41,8 +41,6 @@ export class ObservableQueryPools
   protected setResponse(response: Readonly<QueryResponse<Pools>>) {
     super.setResponse(response);
 
-    console.log("set pools response");
-
     // update potentially existing references of ObservableQueryPool objects
     for (const poolRaw of response.data.pools) {
       const existingQueryPool = this._pools.get(poolRaw.id);

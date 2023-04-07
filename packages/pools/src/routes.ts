@@ -228,8 +228,6 @@ export class OptimizedRoutes {
       }
     }
 
-    console.log({ initialSwapAmounts });
-
     // No enough liquidity
     if (totalLimitAmount.lt(tokenIn.amount)) {
       throw new NotEnoughLiquidityError();
