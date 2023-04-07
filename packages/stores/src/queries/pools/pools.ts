@@ -7,6 +7,7 @@ import {
 import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
+import { ObservableQueryLiquiditiesNetInDirection } from "../concentrated-liquidity";
 import { ObservableQueryPool } from "./pool";
 import { PoolGetter, Pools } from "./types";
 
@@ -21,7 +22,12 @@ export class ObservableQueryPools
     ObservableQueryPool
   >();
 
-  constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
+  constructor(
+    kvStore: KVStore,
+    chainId: string,
+    chainGetter: ChainGetter,
+    readonly queryLiquiditiesInNetDirection: ObservableQueryLiquiditiesNetInDirection
+  ) {
     super(
       kvStore,
       chainId,
@@ -49,6 +55,7 @@ export class ObservableQueryPools
             this.kvStore,
             this.chainId,
             this.chainGetter,
+            this.queryLiquiditiesInNetDirection,
             poolRaw
           )
         );

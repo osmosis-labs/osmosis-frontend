@@ -53,6 +53,16 @@ export class ObservableQueryLiquidityNetInDirection extends ObservableChainQuery
       }) ?? []
     );
   }
+
+  @computed
+  get currentTick() {
+    return new Int(this.response?.data.current_tick ?? 0);
+  }
+
+  @computed
+  get currentLiquidity() {
+    return new Dec(this.response?.data.current_liquidity ?? 0);
+  }
 }
 
 export class ObservableQueryLiquiditiesNetInDirection extends ObservableChainQueryMap<LiquidityNetInDirection> {
@@ -77,7 +87,7 @@ export class ObservableQueryLiquiditiesNetInDirection extends ObservableChainQue
 
   getForPoolTokenIn(poolId: string, tokenInDenom: string) {
     const codedKey = encodeKey({ poolId, tokenInDenom });
-    return super.get(codedKey);
+    return super.get(codedKey) as ObservableQueryLiquidityNetInDirection;
   }
 }
 

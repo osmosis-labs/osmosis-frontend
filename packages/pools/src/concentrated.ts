@@ -20,6 +20,7 @@ export interface ConcentratedLiquidityPoolRaw {
 }
 
 export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
+  // transient data to be updatable outside of instance
   protected _token0Amount = new Int(0);
   set token0Amount(amount: Int) {
     this._token0Amount = amount;
@@ -29,14 +30,12 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     this._token1Amount = amount;
   }
 
-  protected _liquidityDepthsInGivenOut: LiquidityDepth[] = [];
-  set liquidityDepthsInGivenOut(liquidityDepths: LiquidityDepth[]) {
-    this._liquidityDepthsInGivenOut = liquidityDepths;
-  }
-  protected _liquidityDepthsOutGivenIn: LiquidityDepth[] = [];
-  set liquidityDepthsOutGivenIn(liquidityDepths: LiquidityDepth[]) {
-    this._liquidityDepthsOutGivenIn = liquidityDepths;
-  }
+  protected _liquidityDepths0For1: LiquidityDepth[] = [];
+  protected _liquidityDepths1For0: LiquidityDepth[] = [];
+
+  protected _currentTick: Int;
+  protected _currentTickLiquidity: Dec;
+  // end transient data
 
   get type(): "concentrated" {
     return "concentrated";
@@ -63,6 +62,10 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     ];
   }
 
+  get poolAssetDenoms() {
+    return [this.raw.token0, this.raw.token1];
+  }
+
   get swapFee(): Dec {
     return new Dec(this.raw.swap_fee);
   }
@@ -71,7 +74,11 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
   }
 
   get currentTick(): Int {
-    return new Int(this.raw.current_tick);
+    return this._currentTick;
+  }
+
+  set currentTick(tick: Int) {
+    this._currentTick = tick;
   }
 
   /** amountToken1/amountToken0 or token 1 per token 0 */
@@ -80,7 +87,11 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
   }
 
   get currentTickLiquidity(): Dec {
-    return new Dec(this.raw.current_tick_liquidity);
+    return this._currentTickLiquidity;
+  }
+
+  set currentTickLiquidity(liquidity: Dec) {
+    this._currentTickLiquidity = liquidity;
   }
 
   get tickSpacing(): number {
@@ -101,7 +112,18 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     return pf;
   }
 
-  constructor(public readonly raw: ConcentratedLiquidityPoolRaw) {}
+  constructor(public readonly raw: ConcentratedLiquidityPoolRaw) {
+    this._currentTick = new Int(raw.current_tick);
+    this._currentTickLiquidity = new Dec(raw.current_tick_liquidity);
+  }
+
+  setLiquidityDepths(tokenInDenom: string, depths: LiquidityDepth[]) {
+    if (tokenInDenom === this.raw.token0) {
+      this._liquidityDepths0For1 = depths;
+    } else {
+      this._liquidityDepths1For0 = depths;
+    }
+  }
 
   getPoolAsset(denom: string): { denom: string; amount: Int } {
     const poolAsset = this.poolAssets.find((asset) => asset.denom === denom);
@@ -150,7 +172,8 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       denom: string;
       amount: Int;
     },
-    tokenOutDenom: string
+    tokenOutDenom: string,
+    swapFee: Dec = this.swapFee
   ): {
     amount: Int;
     beforeSpotPriceInOverOut: Dec;
@@ -170,15 +193,20 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       ? this.getSpotPriceOutOverIn(tokenIn.denom, tokenOutDenom)
       : this.getSpotPriceInOverOut(tokenIn.denom, tokenOutDenom);
 
+    const inittedTicks =
+      tokenIn.denom === this.raw.token0
+        ? this._liquidityDepths0For1
+        : this._liquidityDepths1For0;
+
     const { amountOut, afterSqrtPrice } =
       ConcentratedLiquidityMath.calcOutGivenIn({
         tokenIn: new Coin(tokenIn.denom, tokenIn.amount),
         tokenDenom0: this.raw.token0,
         poolLiquidity: this.currentTickLiquidity,
-        inittedTicks: this.liquidityDepthsOutGivenIn,
+        inittedTicks,
         curSqrtPrice: this.currentSqrtPrice,
         precisionFactorAtPriceOne: this.precisionFactorAtPriceOne,
-        swapFee: this.swapFee,
+        swapFee,
       });
 
     if (amountOut.equals(new Int(0))) {
@@ -226,7 +254,8 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       denom: string;
       amount: Int;
     },
-    tokenInDenom: string
+    tokenInDenom: string,
+    swapFee: Dec = this.swapFee
   ): {
     amount: Int;
     beforeSpotPriceInOverOut: Dec;
@@ -246,15 +275,20 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       ? this.getSpotPriceOutOverIn(tokenInDenom, tokenOut.denom)
       : this.getSpotPriceInOverOut(tokenInDenom, tokenOut.denom);
 
+    const inittedTicks =
+      tokenInDenom === this.raw.token0
+        ? this._liquidityDepths0For1
+        : this._liquidityDepths1For0;
+
     const { amountIn, afterSqrtPrice } =
       ConcentratedLiquidityMath.calcInGivenOut({
         tokenOut: new Coin(tokenOut.denom, tokenOut.amount),
         tokenDenom0: this.raw.token0,
         poolLiquidity: this.currentTickLiquidity,
-        inittedTicks: this.liquidityDepthsOutGivenIn,
+        inittedTicks,
         curSqrtPrice: this.currentSqrtPrice,
         precisionFactorAtPriceOne: this.precisionFactorAtPriceOne,
-        swapFee: this.swapFee,
+        swapFee,
       });
 
     if (amountIn.equals(new Int(0))) {

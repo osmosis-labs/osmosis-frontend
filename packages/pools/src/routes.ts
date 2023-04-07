@@ -5,7 +5,6 @@ import {
 } from "@osmosis-labs/math";
 
 import { NoPoolsError, NotEnoughLiquidityError } from "./errors";
-import { BasePool } from "./interface";
 
 export interface Route {
   pools: RoutablePool[];
@@ -21,18 +20,40 @@ export interface RouteWithAmount extends Route {
   amount: Int;
 }
 
-export interface RoutablePool extends BasePool {
+export interface RoutablePool {
+  id: string;
+  poolAssetDenoms: string[];
+  swapFee: Dec;
+  hasPoolAsset(denom: string): boolean;
   getNormalizedLiquidity(tokenInDenom: string, tokenOutDenom: string): Dec;
   getLimitAmountByTokenIn(denom: string): Int;
+
+  getTokenOutByTokenIn(
+    tokenIn: {
+      denom: string;
+      amount: Int;
+    },
+    tokenOutDenom: string,
+    swapFee?: Dec
+  ): {
+    amount: Int;
+    beforeSpotPriceInOverOut: Dec;
+    beforeSpotPriceOutOverIn: Dec;
+    afterSpotPriceInOverOut: Dec;
+    afterSpotPriceOutOverIn: Dec;
+    effectivePriceInOverOut: Dec;
+    effectivePriceOutOverIn: Dec;
+    priceImpact: Dec;
+  };
 }
 
-export class OptimizedRoutes {
-  protected _pools: ReadonlyArray<RoutablePool>;
+export class OptimizedRoutes<TPool extends RoutablePool> {
+  protected _pools: ReadonlyArray<TPool>;
   protected _incentivizedPoolIds: string[];
   protected candidatePathsCache = new Map<string, Route[]>();
 
   constructor(
-    pools: ReadonlyArray<RoutablePool>,
+    pools: ReadonlyArray<TPool>,
     incventivizedPoolIds: string[],
     protected readonly stakeCurrencyMinDenom: string
   ) {
@@ -40,7 +61,7 @@ export class OptimizedRoutes {
     this._incentivizedPoolIds = incventivizedPoolIds;
   }
 
-  get pools(): ReadonlyArray<RoutablePool> {
+  get pools(): ReadonlyArray<TPool> {
     return this._pools;
   }
 
@@ -103,7 +124,7 @@ export class OptimizedRoutes {
         let prevPoolCurPoolTokenMatch: string | undefined;
         const curPoolContainsAssetOutOfLastPool =
           previousTokenOuts &&
-          curPool.poolAssets.some(({ denom }) =>
+          curPool.poolAssetDenoms.some((denom) =>
             previousTokenOuts.some((d) => {
               if (d === denom) {
                 prevPoolCurPoolTokenMatch = denom;
@@ -126,9 +147,9 @@ export class OptimizedRoutes {
           currentRoute,
           currentTokenOuts,
           poolsUsed,
-          curPool.poolAssets
-            .filter(({ denom }) => denom !== prevPoolCurPoolTokenMatch)
-            .map(({ denom }) => denom)
+          curPool.poolAssetDenoms.filter(
+            (denom) => denom !== prevPoolCurPoolTokenMatch
+          )
         );
         poolsUsed[i] = false;
         currentTokenOuts.pop();
@@ -216,6 +237,8 @@ export class OptimizedRoutes {
       }
     }
 
+    console.log({ initialSwapAmounts });
+
     // No enough liquidity
     if (totalLimitAmount.lt(tokenIn.amount)) {
       throw new NotEnoughLiquidityError();
@@ -268,7 +291,7 @@ export class OptimizedRoutes {
           `Invalid path: pools and tokenOutDenoms length mismatch, IDs:${route.pools.map(
             (p) => p.id
           )} ${route.pools
-            .flatMap((p) => p.poolAssets.map((pa) => pa.denom))
+            .flatMap((p) => p.poolAssetDenoms)
             .join(",")} !== ${route.tokenOutDenoms.join(",")}`
         );
       }

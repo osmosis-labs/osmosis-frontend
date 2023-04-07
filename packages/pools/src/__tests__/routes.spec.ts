@@ -318,11 +318,7 @@ describe("OptimizedRoutes", () => {
   describe("Many asset combos", () => {
     test("finds a route through all pools between any two valid assets - low max pool", () => {
       const allDenoms = Array.from(
-        new Set(
-          allPools.flatMap((pool) =>
-            pool.poolAssets.map((poolAsset) => poolAsset.denom)
-          )
-        )
+        new Set(allPools.flatMap((pool) => pool.poolAssetDenoms))
       );
 
       allDenoms.forEach((denom, i) => {
@@ -349,11 +345,7 @@ describe("OptimizedRoutes", () => {
     });
     test("finds a route through all pools between any two valid assets - high max pool", () => {
       const allDenoms = Array.from(
-        new Set(
-          allPools.flatMap((pool) =>
-            pool.poolAssets.map((poolAsset) => poolAsset.denom)
-          )
-        )
+        new Set(allPools.flatMap((pool) => pool.poolAssetDenoms))
       );
 
       allDenoms.forEach((denom, i) => {

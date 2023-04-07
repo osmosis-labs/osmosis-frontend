@@ -15,6 +15,7 @@ import {
   RatePretty,
 } from "@keplr-wallet/unit";
 import {
+  BasePool,
   ConcentratedLiquidityPool,
   ConcentratedLiquidityPoolRaw,
   RoutablePool,
@@ -30,6 +31,7 @@ import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { IPriceStore } from "src/price";
 
+import { ObservableQueryLiquiditiesNetInDirection } from "../concentrated-liquidity";
 import { Head } from "./types";
 
 export type PoolRaw =
@@ -46,122 +48,23 @@ const CONCENTRATED_LIQ_POOL_TYPE =
  *  Uses a few different concrete classes to represent the different types of pools.
  *  Converts the common fields of the raw pool data into more useful types, such as prettified types for display.
  */
-export class ObservableQueryPool extends ObservableChainQuery<{
-  pool: PoolRaw;
-}> {
+export class ObservableQueryPool
+  extends ObservableChainQuery<{
+    pool: PoolRaw;
+  }>
+  implements RoutablePool
+{
   /** Observe any new references resulting from pool or pools query. */
   @observable.ref
   protected raw: PoolRaw;
 
-  protected static makeEndpointUrl(poolId: string) {
-    return `/osmosis/poolmanager/v1beta1/pools/${poolId}`;
-  }
-
-  constructor(
-    readonly kvStore: KVStore,
-    chainId: string,
-    readonly chainGetter: ChainGetter,
-    raw: PoolRaw
-  ) {
-    super(
-      kvStore,
-      chainId,
-      chainGetter,
-      ObservableQueryPool.makeEndpointUrl(raw.id)
-    );
-
-    ObservableQueryPool.addUnknownCurrencies(raw, chainGetter, chainId);
-    this.raw = raw;
-
-    makeObservable(this);
-  }
-
-  static makeWithoutRaw(
-    poolId: string,
-    ...[kvStore, chainId, chainGetter]: Head<
-      ConstructorParameters<typeof ObservableQueryPool>
-    >
-  ): Promise<ObservableQueryPool> {
-    return new Promise((resolve, reject) => {
-      let lcdUrl = chainGetter.getChain(chainId).rest;
-      if (lcdUrl.endsWith("/")) lcdUrl = lcdUrl.slice(0, lcdUrl.length - 1);
-      const endpoint = ObservableQueryPool.makeEndpointUrl(poolId);
-      fetch(lcdUrl + endpoint)
-        .then((response) => {
-          response
-            .json()
-            .then((data) => {
-              if (response.ok) {
-                resolve(
-                  new ObservableQueryPool(
-                    kvStore,
-                    chainId,
-                    chainGetter,
-                    data.pool
-                  )
-                );
-              } else {
-                reject("not-found");
-              }
-            })
-            .catch(reject);
-        })
-        .catch(reject);
-    });
-  }
-
-  protected setResponse(
-    response: Readonly<
-      QueryResponse<{
-        pool: PoolRaw;
-      }>
-    >
-  ) {
-    super.setResponse(response);
-
-    this.setRaw(response.data.pool);
-  }
-
-  protected static addUnknownCurrencies(
-    raw: PoolRaw,
-    chainGetter: ChainGetter,
-    chainId: string
-  ) {
-    const chainInfo = chainGetter.getChain(chainId);
-    const denomsInPool: string[] = [];
-    // Try to register the Denom of Asset in the Pool in Response.(For IBC tokens)
-    if ("pool_assets" in raw) {
-      // weighted pool
-      for (const asset of raw.pool_assets) {
-        denomsInPool.push(asset.token.denom);
-      }
-    } else if ("pool_liquidity" in raw) {
-      // stable pool
-      for (const asset of raw.pool_liquidity) {
-        denomsInPool.push(asset.denom);
-      }
-    } else if ("token0" in raw && "token1" in raw) {
-      // concentrated liquidity pool
-      denomsInPool.push(raw.token0);
-      denomsInPool.push(raw.token1);
-    }
-
-    chainInfo.addUnknownCurrencies(...denomsInPool);
-  }
-
-  @action
-  setRaw(raw: PoolRaw) {
-    ObservableQueryPool.addUnknownCurrencies(
-      raw,
-      this.chainGetter,
-      this.chainId
-    );
-
-    this.raw = raw;
+  @computed
+  get poolAssetDenoms() {
+    return this.pool.poolAssetDenoms;
   }
 
   @computed
-  get pool(): RoutablePool {
+  get pool(): BasePool & RoutablePool {
     if (this.raw["@type"] === STABLE_POOL_TYPE) {
       return new StablePool(this.raw as StablePoolRaw);
     }
@@ -242,13 +145,13 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   }
 
   @computed
-  get swapFee(): RatePretty {
-    return new RatePretty(this.pool.swapFee);
+  get swapFee(): Dec {
+    return this.pool.swapFee;
   }
 
   @computed
-  get exitFee(): RatePretty {
-    return new RatePretty(this.pool.exitFee);
+  get exitFee(): Dec {
+    return this.pool.exitFee;
   }
 
   /** Only relevant to SharePool types. */
@@ -393,6 +296,26 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     });
   }
 
+  constructor(
+    readonly kvStore: KVStore,
+    chainId: string,
+    readonly chainGetter: ChainGetter,
+    readonly queryLiquiditiesInNetDirection: ObservableQueryLiquiditiesNetInDirection,
+    raw: PoolRaw
+  ) {
+    super(
+      kvStore,
+      chainId,
+      chainGetter,
+      ObservableQueryPool.makeEndpointUrl(raw.id)
+    );
+
+    ObservableQueryPool.addUnknownCurrencies(raw, chainGetter, chainId);
+    this.raw = raw;
+
+    makeObservable(this);
+  }
+
   readonly getPoolAsset: (denom: string) => {
     amount: CoinPretty;
   } = computedFn((denom: string) => {
@@ -408,6 +331,14 @@ export class ObservableQueryPool extends ObservableChainQuery<{
 
     return asset;
   });
+
+  readonly hasPoolAsset: (denom: string) => boolean = computedFn(
+    (denom: string) => {
+      return this.poolAssets.some(
+        (asset) => asset.amount.currency.coinMinimalDenom === denom
+      );
+    }
+  );
 
   readonly getSpotPriceOutOverIn: (
     tokenInDenom: string,
@@ -468,145 +399,66 @@ export class ObservableQueryPool extends ObservableChainQuery<{
       denom: string;
       amount: Int;
     },
-    tokenOutDenom: string
+    tokenOutDenom: string,
+    swapFee?: Dec
   ): {
-    amount: CoinPretty;
-    afterSpotPriceInOverOut: IntPretty;
-    afterSpotPriceOutOverIn: IntPretty;
-    effectivePriceInOverOut: IntPretty;
-    effectivePriceOutOverIn: IntPretty;
-    priceImpact: RatePretty;
+    amount: Int;
+    beforeSpotPriceInOverOut: Dec;
+    beforeSpotPriceOutOverIn: Dec;
+    afterSpotPriceInOverOut: Dec;
+    afterSpotPriceOutOverIn: Dec;
+    effectivePriceInOverOut: Dec;
+    effectivePriceOutOverIn: Dec;
+    priceImpact: Dec;
   } {
-    return this.getTokenOutByTokenInComputedFn(
+    return this.getTokenOutByTokenIn_Memoed(
       tokenIn.denom,
       tokenIn.amount.toString(),
-      tokenOutDenom
+      tokenOutDenom,
+      swapFee?.toString() ?? "undefined"
     );
   }
-
-  /*
-   Unfortunately, if reference is included in args,
-   there is no guarantee that computed will memorize the result well, so to reduce this problem,
-   create an internal function that accepts only primitive types as args.
-   */
-  protected readonly getTokenOutByTokenInComputedFn: (
-    tokenInDenom: string,
-    tokenInAmount: string,
-    tokenOutDenom: string
-  ) => {
-    amount: CoinPretty;
-    afterSpotPriceInOverOut: IntPretty;
-    afterSpotPriceOutOverIn: IntPretty;
-    effectivePriceInOverOut: IntPretty;
-    effectivePriceOutOverIn: IntPretty;
-    priceImpact: RatePretty;
-  } = computedFn(
-    (tokenInDenom: string, tokenInAmount: string, tokenOutDenom: string) => {
-      const result = this.pool.getTokenOutByTokenIn(
-        {
-          denom: tokenInDenom,
-          amount: new Int(tokenInAmount),
-        },
-        tokenOutDenom
-      );
-
-      const chainInfo = this.chainGetter.getChain(this.chainId);
-      const outCurrency = chainInfo.forceFindCurrency(tokenOutDenom);
-
-      const spotPriceInOverOutMul = DecUtils.getTenExponentN(
-        outCurrency.coinDecimals -
-          chainInfo.forceFindCurrency(tokenInDenom).coinDecimals
-      );
-
-      return {
-        amount: new CoinPretty(outCurrency, result.amount),
-        afterSpotPriceInOverOut: new IntPretty(
-          result.afterSpotPriceInOverOut.mulTruncate(spotPriceInOverOutMul)
-        ),
-        afterSpotPriceOutOverIn: new IntPretty(
-          result.afterSpotPriceOutOverIn.quoTruncate(spotPriceInOverOutMul)
-        ),
-        effectivePriceInOverOut: new IntPretty(
-          result.effectivePriceInOverOut.mulTruncate(spotPriceInOverOutMul)
-        ),
-        effectivePriceOutOverIn: new IntPretty(
-          result.effectivePriceOutOverIn.quoTruncate(spotPriceInOverOutMul)
-        ),
-        priceImpact: new RatePretty(result.priceImpact),
-      };
-    }
-  );
 
   getTokenInByTokenOut(
     tokenOut: {
       denom: string;
       amount: Int;
     },
-    tokenInDenom: string
+    tokenInDenom: string,
+    swapFee?: Dec
   ): {
-    amount: CoinPretty;
-    afterSpotPriceInOverOut: IntPretty;
-    afterSpotPriceOutOverIn: IntPretty;
-    effectivePriceInOverOut: IntPretty;
-    effectivePriceOutOverIn: IntPretty;
-    priceImpact: RatePretty;
+    amount: Int;
+    afterSpotPriceInOverOut: Dec;
+    afterSpotPriceOutOverIn: Dec;
+    effectivePriceInOverOut: Dec;
+    effectivePriceOutOverIn: Dec;
+    priceImpact: Dec;
   } {
-    return this.getTokenInByTokenOutComputedFn(
+    return this.getTokenInByTokenOut_Memoed(
       tokenOut.denom,
       tokenOut.amount.toString(),
-      tokenInDenom
+      tokenInDenom,
+      swapFee?.toString() ?? "undefined"
     );
   }
 
-  protected readonly getTokenInByTokenOutComputedFn: (
-    tokenOutDenom: string,
-    tokenOutAmount: string,
-    tokenInDenom: string
-  ) => {
-    amount: CoinPretty;
-    afterSpotPriceInOverOut: IntPretty;
-    afterSpotPriceOutOverIn: IntPretty;
-    effectivePriceInOverOut: IntPretty;
-    effectivePriceOutOverIn: IntPretty;
-    priceImpact: RatePretty;
-  } = computedFn(
-    (tokenOutDenom: string, tokenOutAmount: string, tokenInDenom: string) => {
-      const result = this.pool.getTokenOutByTokenIn(
-        {
-          denom: tokenOutDenom,
-          amount: new Int(tokenOutAmount),
-        },
-        tokenInDenom
-      );
+  getNormalizedLiquidity(tokenInDenom: string, tokenOutDenom: string): Dec {
+    return this.pool.getNormalizedLiquidity(tokenInDenom, tokenOutDenom);
+  }
+  getLimitAmountByTokenIn(denom: string): Int {
+    return this.pool.getLimitAmountByTokenIn(denom);
+  }
 
-      const chainInfo = this.chainGetter.getChain(this.chainId);
-      const inCurrency = this.chainGetter
-        .getChain(this.chainId)
-        .forceFindCurrency(tokenInDenom);
+  @action
+  setRaw(raw: PoolRaw) {
+    ObservableQueryPool.addUnknownCurrencies(
+      raw,
+      this.chainGetter,
+      this.chainId
+    );
 
-      const spotPriceInOverOutMul = DecUtils.getTenExponentN(
-        chainInfo.forceFindCurrency(tokenOutDenom).coinDecimals -
-          inCurrency.coinDecimals
-      );
-
-      return {
-        amount: new CoinPretty(inCurrency, result.amount),
-        afterSpotPriceInOverOut: new IntPretty(
-          result.afterSpotPriceInOverOut.mulTruncate(spotPriceInOverOutMul)
-        ),
-        afterSpotPriceOutOverIn: new IntPretty(
-          result.afterSpotPriceOutOverIn.quoTruncate(spotPriceInOverOutMul)
-        ),
-        effectivePriceInOverOut: new IntPretty(
-          result.effectivePriceInOverOut.mulTruncate(spotPriceInOverOutMul)
-        ),
-        effectivePriceOutOverIn: new IntPretty(
-          result.effectivePriceOutOverIn.quoTruncate(spotPriceInOverOutMul)
-        ),
-        priceImpact: new RatePretty(result.priceImpact),
-      };
-    }
-  );
+    this.raw = raw;
+  }
 
   readonly computeTotalValueLocked = computedFn((priceStore: IPriceStore) => {
     const fiatCurrency = priceStore.getFiatCurrency(
@@ -626,4 +478,194 @@ export class ObservableQueryPool extends ObservableChainQuery<{
 
     return price;
   });
+
+  /**
+   Unfortunately, if reference is included in args,
+   there is no guarantee that computed will memorize the result well, so to reduce this problem,
+   create an internal function that accepts only primitive types as args.
+   */
+  protected readonly getTokenOutByTokenIn_Memoed: (
+    tokenInDenom: string,
+    tokenInAmount: string,
+    tokenOutDenom: string,
+    swapFee: string
+  ) => ReturnType<typeof this.getTokenOutByTokenIn> = computedFn(
+    (
+      tokenInDenom: string,
+      tokenInAmount: string,
+      tokenOutDenom: string,
+      swapFee: string
+    ) => {
+      // set the CL net tick liquidities if this is a CL pool
+      if (this.pool instanceof ConcentratedLiquidityPool) {
+        const queryTicksInDirection =
+          this.queryLiquiditiesInNetDirection.getForPoolTokenIn(
+            this.pool.id,
+            tokenInDenom
+          );
+
+        if (!queryTicksInDirection.response) {
+          console.warn("No depths yet for concentrated pool", this.pool.id);
+
+          return zeroQuote;
+        }
+
+        this.pool.setLiquidityDepths(
+          tokenInDenom,
+          queryTicksInDirection.depths
+        );
+      }
+
+      const result = this.pool.getTokenOutByTokenIn(
+        {
+          denom: tokenInDenom,
+          amount: new Int(tokenInAmount),
+        },
+        tokenOutDenom,
+        swapFee !== "undefined" ? new Dec(swapFee) : undefined
+      );
+
+      return result;
+    }
+  );
+
+  /**
+   Unfortunately, if reference is included in args,
+   there is no guarantee that computed will memorize the result well, so to reduce this problem,
+   create an internal function that accepts only primitive types as args.
+   */
+  protected readonly getTokenInByTokenOut_Memoed: (
+    tokenOutDenom: string,
+    tokenOutAmount: string,
+    tokenInDenom: string,
+    swapFee: string
+  ) => ReturnType<typeof this.getTokenInByTokenOut> = computedFn(
+    (
+      tokenOutDenom: string,
+      tokenOutAmount: string,
+      tokenInDenom: string,
+      swapFee: string
+    ) => {
+      // set the CL net tick liquidities if this is a CL pool
+      if (this.pool instanceof ConcentratedLiquidityPool) {
+        const queryTicksInDirection =
+          this.queryLiquiditiesInNetDirection.getForPoolTokenIn(
+            this.pool.id,
+            tokenInDenom
+          );
+
+        if (!queryTicksInDirection.response) {
+          console.warn("No depths yet for concentrated pool", this.pool.id);
+
+          return zeroQuote;
+        }
+
+        // update instance to reflect the latest liquidity values
+        this.pool.setLiquidityDepths(
+          tokenInDenom,
+          queryTicksInDirection.depths
+        );
+      }
+
+      const result = this.pool.getTokenOutByTokenIn(
+        {
+          denom: tokenOutDenom,
+          amount: new Int(tokenOutAmount),
+        },
+        tokenInDenom,
+        swapFee !== "undefined" ? new Dec(swapFee) : undefined
+      );
+
+      return result;
+    }
+  );
+
+  protected setResponse(
+    response: Readonly<
+      QueryResponse<{
+        pool: PoolRaw;
+      }>
+    >
+  ) {
+    super.setResponse(response);
+
+    this.setRaw(response.data.pool);
+  }
+
+  static makeWithoutRaw(
+    poolId: string,
+    ...[kvStore, chainId, chainGetter, queryLiquiditiesInNetDirection]: Head<
+      ConstructorParameters<typeof ObservableQueryPool>
+    >
+  ): Promise<ObservableQueryPool> {
+    return new Promise((resolve, reject) => {
+      let lcdUrl = chainGetter.getChain(chainId).rest;
+      if (lcdUrl.endsWith("/")) lcdUrl = lcdUrl.slice(0, lcdUrl.length - 1);
+      const endpoint = ObservableQueryPool.makeEndpointUrl(poolId);
+      fetch(lcdUrl + endpoint)
+        .then((response) => {
+          response
+            .json()
+            .then((data) => {
+              if (response.ok) {
+                resolve(
+                  new ObservableQueryPool(
+                    kvStore,
+                    chainId,
+                    chainGetter,
+                    queryLiquiditiesInNetDirection,
+                    data.pool
+                  )
+                );
+              } else {
+                reject("not-found");
+              }
+            })
+            .catch(reject);
+        })
+        .catch(reject);
+    });
+  }
+
+  protected static makeEndpointUrl(poolId: string) {
+    return `/osmosis/poolmanager/v1beta1/pools/${poolId}`;
+  }
+
+  protected static addUnknownCurrencies(
+    raw: PoolRaw,
+    chainGetter: ChainGetter,
+    chainId: string
+  ) {
+    const chainInfo = chainGetter.getChain(chainId);
+    const denomsInPool: string[] = [];
+    // Try to register the Denom of Asset in the Pool in Response.(For IBC tokens)
+    if ("pool_assets" in raw) {
+      // weighted pool
+      for (const asset of raw.pool_assets) {
+        denomsInPool.push(asset.token.denom);
+      }
+    } else if ("pool_liquidity" in raw) {
+      // stable pool
+      for (const asset of raw.pool_liquidity) {
+        denomsInPool.push(asset.denom);
+      }
+    } else if ("token0" in raw && "token1" in raw) {
+      // concentrated liquidity pool
+      denomsInPool.push(raw.token0);
+      denomsInPool.push(raw.token1);
+    }
+
+    chainInfo.addUnknownCurrencies(...denomsInPool);
+  }
 }
+
+const zeroQuote = {
+  amount: new Int(0),
+  beforeSpotPriceInOverOut: new Dec(0),
+  beforeSpotPriceOutOverIn: new Dec(0),
+  afterSpotPriceInOverOut: new Dec(0),
+  afterSpotPriceOutOverIn: new Dec(0),
+  effectivePriceInOverOut: new Dec(0),
+  effectivePriceOutOverIn: new Dec(0),
+  priceImpact: new Dec(0),
+};
