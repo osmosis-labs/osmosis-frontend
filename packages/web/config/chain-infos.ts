@@ -807,7 +807,7 @@ const chainInfos = (
             "cw20:juno10gthz5ufgrpuk5cscve2f0hjp56wgp90psqxcrqlg4m9mcu9dh8q4864xy:KLEO",
           coinDecimals: 6,
           coinGeckoId: "pool:kleo",
-          coinImageUrl: "/tokens/kleomedes.png",
+          coinImageUrl: "/tokens/kleo.png",
         },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
