@@ -7,7 +7,7 @@ import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { TradeClipboard } from "~/components/trade-clipboard";
 import { useStore } from "~/stores";
 
-import { EventName, IS_FRONTIER } from "../config";
+import { EventName, IS_FRONTIER, IS_TESTNET } from "../config";
 import { useAmplitudeAnalytics } from "../hooks";
 
 const Home: NextPage = observer(function () {
@@ -26,6 +26,7 @@ const Home: NextPage = observer(function () {
       allPools
         .filter((pool) => {
           // TODO: If not on production environment, this logic should pass all pools (or other selection standard).
+          if (IS_TESTNET) return true;
 
           // Trim not useful pools.
 
@@ -165,8 +166,7 @@ const Home: NextPage = observer(function () {
           const bTVL = b.computeTotalValueLocked(priceStore);
 
           return Number(bTVL.sub(aTVL).toDec().toString());
-        })
-        .map((pool) => pool.pool),
+        }),
     [allPools, priceStore.response]
   );
 

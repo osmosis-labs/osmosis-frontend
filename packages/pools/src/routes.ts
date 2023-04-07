@@ -47,23 +47,14 @@ export interface RoutablePool {
   };
 }
 
-export class OptimizedRoutes<TPool extends RoutablePool> {
-  protected _pools: ReadonlyArray<TPool>;
-  protected _incentivizedPoolIds: string[];
+export class OptimizedRoutes {
   protected candidatePathsCache = new Map<string, Route[]>();
 
   constructor(
-    pools: ReadonlyArray<TPool>,
-    incventivizedPoolIds: string[],
+    protected readonly pools: ReadonlyArray<RoutablePool>,
+    protected readonly incventivizedPoolIds: string[],
     protected readonly stakeCurrencyMinDenom: string
-  ) {
-    this._pools = pools;
-    this._incentivizedPoolIds = incventivizedPoolIds;
-  }
-
-  get pools(): ReadonlyArray<TPool> {
-    return this._pools;
-  }
+  ) {}
 
   protected getCandidateRoutes(
     tokenInDenom: string,

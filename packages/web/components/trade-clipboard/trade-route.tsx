@@ -15,8 +15,8 @@ import { Tooltip } from "../tooltip";
 
 function getDenomsFromPool(chainStore: ChainStore, pool: RoutablePool) {
   const chainInfo = chainStore.getChain(chainStore.osmosis.chainId);
-  const firstDenom = chainInfo.forceFindCurrency(pool.poolAssets[0].denom);
-  const secondDenom = chainInfo.forceFindCurrency(pool.poolAssets[1].denom);
+  const firstDenom = chainInfo.forceFindCurrency(pool.poolAssetDenoms[0]);
+  const secondDenom = chainInfo.forceFindCurrency(pool.poolAssetDenoms[1]);
 
   return [firstDenom, secondDenom];
 }

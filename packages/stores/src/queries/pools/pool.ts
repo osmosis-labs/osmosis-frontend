@@ -428,6 +428,8 @@ export class ObservableQueryPool
     swapFee?: Dec
   ): {
     amount: Int;
+    beforeSpotPriceInOverOut: Dec;
+    beforeSpotPriceOutOverIn: Dec;
     afterSpotPriceInOverOut: Dec;
     afterSpotPriceOutOverIn: Dec;
     effectivePriceInOverOut: Dec;
@@ -484,7 +486,7 @@ export class ObservableQueryPool
    there is no guarantee that computed will memorize the result well, so to reduce this problem,
    create an internal function that accepts only primitive types as args.
    */
-  protected readonly getTokenOutByTokenIn_Memoed: (
+  private readonly getTokenOutByTokenIn_Memoed: (
     tokenInDenom: string,
     tokenInAmount: string,
     tokenOutDenom: string,
@@ -534,7 +536,7 @@ export class ObservableQueryPool
    there is no guarantee that computed will memorize the result well, so to reduce this problem,
    create an internal function that accepts only primitive types as args.
    */
-  protected readonly getTokenInByTokenOut_Memoed: (
+  private readonly getTokenInByTokenOut_Memoed: (
     tokenOutDenom: string,
     tokenOutAmount: string,
     tokenInDenom: string,

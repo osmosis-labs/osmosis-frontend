@@ -198,12 +198,9 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     const chainInfo = this.chainInfo;
 
     // Get all coin denom in the pools.
-    const coinDenomSet = new Set<string>();
-    for (const pool of this.pools) {
-      for (const poolAsset of pool.poolAssets) {
-        coinDenomSet.add(poolAsset.denom);
-      }
-    }
+    const coinDenomSet = new Set<string>(
+      this.pools.flatMap((pool) => pool.poolAssetDenoms)
+    );
 
     const coinDenoms = Array.from(coinDenomSet);
 
