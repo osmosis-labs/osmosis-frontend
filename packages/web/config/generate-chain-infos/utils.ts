@@ -19,7 +19,7 @@ const osmosisChainIdWithoutOverwrite = IS_TESTNET ? "osmo-test-4" : "osmosis-1";
 
 export function getChainInfos(): (ChainInfoWithExplorer & Chain)[] {
   const hasOveriddenOsmosisChainId = OSMOSIS_CHAIN_ID_OVERWRITE !== undefined;
-  return chainInfos.map((localChain, index) => {
+  return chainInfos.map((localChain) => {
     const registryChain = chains.find(({ chain_id }) => {
       if (
         hasOveriddenOsmosisChainId &&
