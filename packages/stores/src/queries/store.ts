@@ -4,6 +4,7 @@ import { autorun } from "mobx";
 import { DeepReadonly } from "utility-types";
 
 import { ObservableQueryFilteredPools } from "../queries-external/filtered-pools/filtered-pools";
+import { ObservableQueryLiquiditiesNetInDirection } from "./concentrated-liquidity";
 import { ObservableQueryEpochs } from "./epochs";
 import { FallbackStore } from "./fallback-query-store";
 import { ObservableQueryGauges } from "./incentives";
@@ -105,6 +106,9 @@ export class OsmosisQueriesImpl {
   public readonly querySuperfluidParams: DeepReadonly<ObservableQuerySuperfluidParams>;
   public readonly querySuperfluidAssetMultiplier: DeepReadonly<ObservableQuerySuperfluidAssetMultiplier>;
   public readonly querySuperfluidOsmoEquivalent: DeepReadonly<ObservableQuerySuperfluidOsmoEquivalent>;
+
+  // concentrated liquidity
+  public readonly queryLiquiditiesInNetDirection: DeepReadonly<ObservableQueryLiquiditiesNetInDirection>;
 
   get queryGammPools(): PoolGetter {
     return this._queryGammPools;
@@ -252,6 +256,13 @@ export class OsmosisQueriesImpl {
         this.querySuperfluidParams,
         this.querySuperfluidAssetMultiplier,
         this._queryGammPools
+      );
+
+    this.queryLiquiditiesInNetDirection =
+      new ObservableQueryLiquiditiesNetInDirection(
+        kvStore,
+        chainId,
+        chainGetter
       );
   }
 }
