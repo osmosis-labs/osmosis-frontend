@@ -69,12 +69,5 @@
     "osmojs": "15.0.5",
     "protobufjs": "^6.11.2",
     "utility-types": "^3.10.0"
-  },
-  "peerDependencies": {
-    "@cosmos-kit/cosmostation": "0.15.16",
-    "@cosmos-kit/keplr": "0.33.16",
-    "@cosmos-kit/leap": "0.14.15",
-    "@cosmos-kit/trust": "0.14.16",
-    "@cosmos-kit/xdefi-extension": "0.15.15"
   }
 }
