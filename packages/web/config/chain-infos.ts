@@ -3023,6 +3023,36 @@ const chainInfos = (
       ],
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://ping.pub/migaloo/tx/{txHash}",
+    },
+    {
+      rpc: IS_TESTNET ? "https://net-rila.nolus.io:26657" : "",
+      rest: IS_TESTNET ? "https://net-rila.nolus.io:1317" : "",
+      chainId: IS_TESTNET ? "nolus-rila" : "",
+      chainName: IS_TESTNET ? "Rila Testnet" : "",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("nolus"),
+      currencies: [
+        {
+          coinDenom: "NLS",
+          coinMinimalDenom: "unls",
+          coinDecimals: 6,
+          coinGeckoId: "pool:unls",
+          coinImageUrl: "/tokens/nolus.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0,
+            average: 0,
+            high: 0.025,
+          },
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx: IS_TESTNET
+        ? "https://explorer-rila.nolus.io/nolus-rila/tx/{txHash}"
+        : "",
     }
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
