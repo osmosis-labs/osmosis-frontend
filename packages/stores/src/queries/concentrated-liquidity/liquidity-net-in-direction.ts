@@ -4,7 +4,9 @@ import {
   ObservableChainQuery,
   ObservableChainQueryMap,
 } from "@keplr-wallet/stores";
-import { Int } from "@keplr-wallet/unit";
+import { Dec, Int } from "@keplr-wallet/unit";
+import { LiquidityDepth } from "@osmosis-labs/math";
+import { computed } from "mobx";
 
 import { LiquidityNetInDirection } from "./types";
 
@@ -37,6 +39,18 @@ export class ObservableQueryLiquidityNetInDirection extends ObservableChainQuery
     const { poolId, tokenInDenom } = this.params;
     this.setUrl(
       `/osmosis/concentratedliquidity/v1beta1/query_liquidity_net_in_direction?pool_id=${poolId}&token_in=${tokenInDenom}&use_cur_tick=true&use_no_bound=true`
+    );
+  }
+
+  @computed
+  get depths(): LiquidityDepth[] {
+    return (
+      this.response?.data.liquidity_depths.map((depth) => {
+        return {
+          tickIndex: new Int(depth.tick_index),
+          netLiquidity: new Dec(depth.liquidity_net),
+        };
+      }) ?? []
     );
   }
 }
