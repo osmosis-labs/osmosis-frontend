@@ -346,10 +346,8 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
                 <div className="mx-auto">
                   <CheckBox
                     isOn={editWithdrawAddrConfig.didAckWithdrawRisk}
-                    className="-top-0.5 after:h-6 after:w-6 after:rounded-[10px] after:!border-superfluid checked:after:bg-superfluid"
-                    checkClassName="-top-1 -left-0.5 h-6 w-6 bg-superfluid rounded-[10px]"
-                    checkMarkClassName="top-[1px] -left-[0.5px] h-6 w-6"
-                    checkMarkIconUrl="/icons/check-mark-dark.svg"
+                    className="after:h-6 after:w-6 after:rounded-[10px] after:!border-superfluid checked:after:bg-superfluid"
+                    checkClassName="rounded-[10px]"
                     onToggle={() =>
                       editWithdrawAddrConfig.setDidAckWithdrawRisk(
                         !editWithdrawAddrConfig.didAckWithdrawRisk

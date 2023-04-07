@@ -152,17 +152,17 @@
       "transakSubtitle": "支援OSMO"
     },
     "incentive": {
-      "mobileTitle": "奖励",
-      "title": "奖励类型"
+      "mobileTitle": "獎勵",
+      "title": "獎勵類型"
     },
     "MAX": "全部",
     "pool": {
-      "mobileTitle": "游泳池",
-      "title": "游泳池类型"
+      "mobileTitle": "流動性池",
+      "title": "流動性池類型"
     },
     "searchTokens": "搜尋代幣",
     "selectToken": {
-      "title": "選擇權杖"
+      "title": "選擇代幣"
     },
     "show": {
       "less": "查看較少",
@@ -174,7 +174,13 @@
       "SORTMobile": "排序"
     },
     "table": {
-      "poolId": "流動性池 #{id}"
+      "poolId": "流動性池 #{id}",
+      "stable": "穩定兌換",
+      "weighted": "加權",
+      "internal": "內部激勵",
+      "external": "外部激勵",
+      "superfluid": "超流體",
+      "noIncentives": "無激勵"
     }
   },
   "connectDisclaimer": "連接錢包即表示您已經閱讀和理解 Osmosis 的",

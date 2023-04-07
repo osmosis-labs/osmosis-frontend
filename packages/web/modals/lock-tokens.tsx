@@ -1,15 +1,16 @@
-import { FunctionComponent, useEffect, useState } from "react";
-import { observer } from "mobx-react-lite";
-import classNames from "classnames";
 import { AmountConfig } from "@keplr-wallet/hooks";
+import classNames from "classnames";
 import { Duration } from "dayjs/plugin/duration";
-import { useStore } from "../stores";
-import { InputBox } from "../components/input";
-import { CheckBox } from "../components/control";
-import { tError } from "../components/localization";
-import { ModalBase, ModalBaseProps } from "./base";
-import { useConnectWalletModalRedirect, useCurrentLanguage } from "../hooks";
+import { observer } from "mobx-react-lite";
+import { FunctionComponent, useEffect, useState } from "react";
 import { useTranslation } from "react-multi-lang";
+
+import { CheckBox } from "../components/control";
+import { InputBox } from "../components/input";
+import { tError } from "../components/localization";
+import { useConnectWalletModalRedirect, useCurrentLanguage } from "../hooks";
+import { useStore } from "../stores";
+import { ModalBase, ModalBaseProps } from "./base";
 
 export const LockTokensModal: FunctionComponent<
   {
@@ -160,11 +161,9 @@ export const LockTokensModal: FunctionComponent<
         </div>
         {superfluidPoolDetail?.isSuperfluid && (
           <CheckBox
-            className="-top-0.5 -left-0.5 transition-all after:!h-6 after:!w-6 after:!rounded-[10px] after:!border-2 after:!border-superfluid after:!bg-transparent checked:after:border-none checked:after:bg-superfluid"
+            className="transition-all after:!h-6 after:!w-6 after:!rounded-[10px] after:!border-2 after:!border-superfluid after:!bg-transparent checked:after:border-none checked:after:bg-superfluid"
             isOn={superfluidDurationSelected && electSuperfluid}
             onToggle={() => setElectSuperfluid(!electSuperfluid)}
-            checkMarkIconUrl="/icons/check-mark-dark.svg"
-            checkMarkClassName="left-0 h-6 w-6"
             disabled={!superfluidDurationSelected || hasSuperfluidValidator}
           >
             <div

@@ -36,14 +36,7 @@ export const Announcement:
         "Chain is halted, transactions are temporarily disabled",
       isWarning: true,
     }
-  : {
-      enTextOrLocalizationPath: "Osmosis Interchain Vaults have launched.",
-      link: {
-        enTextOrLocalizationKey: "Jump into Quasar",
-        url: "http://app.quasar.fi/",
-        isExternal: true,
-      },
-    };
+  : undefined;
 
 // Past localstorage keys:
 // * "feedback_wQ1KR7": "Help us shape the future of Osmosis." Give us feedback -> https://tally.so/r/wQ1KR7

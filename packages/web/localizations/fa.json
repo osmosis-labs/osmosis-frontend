@@ -1,0 +1,440 @@
+{
+  "404": {
+    "title": "پیدا نشد"
+  },
+  "500": {
+    "title": "خطای سرور"
+  },
+  "addLiquidity": {
+    "allAssets": "همه دارایی های شما",
+    "autoswapCaption": "استفاده از تبدیل خودکار برای تبدیل یک دارایی به سایر دارایی ها",
+    "available": "موجودی",
+    "scalingFactor": "ضریب",
+    "scalingFactorController": "کنترل کننده",
+    "scalingFactorControllerWarning_first": "کنترل کننده ضریب فعال است برای ",
+    "scalingFactorControllerWarning_second": "می تواند تنظیم کند ",
+    "scalingFactorControllerWarning_third": "برای کنترل وابستنگی کنترل کننده روی",
+    "scalingFactorInformation": "این فاکتور می تواند قیمت را برای شما مشخص نماید.",
+    "singleAsset": "یک توکن",
+    "stablecoinWarning": "شما در حال اضافه کردن {denom} نقدینگی به سیستم قیمت ثابت {mechanism} هستید.",
+    "title": "افزودن نقدینگی",
+    "titleInPool": "افزودن نقدینگی به  #{poolId}"
+  },
+  "app": {
+    "banner": {
+      "backToOsmosis": "بازگشت به Osmosis",
+      "externalLink": "شما Osmosis را ترک می کنید و به یک برنامه دیگر می روید",
+      "externalLinkDisclaimer": "با کلیک کرد بر روی لینک شما تمام شرایط را پذیرفته و با اطلاع خودتان Osmosis را ترک می کنید.",
+      "externalLinkModalTitle": "ترک Osmosis",
+      "goToSite": "بازگشت به سایت",
+      "linkText": "با کلیک بر روی این لینک به برنامه اصلی بازگردید.",
+      "title": "شما در حال مشاهده برنامه بدون کنترل هستید.."
+    }
+  },
+  "assets": {
+    "bondedAssets": "قفل شده",
+    "historyTable": {
+      "colums": {
+        "amount": "مقدار",
+        "deposit": "واریز وجه",
+        "status": "وضعیت",
+        "transactionHash": "کد رهگیری تراکنش",
+        "type": "نو",
+        "withdraw": "برداشت وجه"
+      },
+      "errors": {
+        "insufficientFee": "کارمزد کافی نیست"
+      },
+      "failed": "نا موفق",
+      "failedWithReason": "دلیل: {reason}",
+      "pending": "معلق",
+      "pendingRefunded": "دلیل: بازگشت وجه معلق",
+      "refunded": "بازگشت وجه",
+      "success": "موفق",
+      "title": "تاریخ چه انتقال"
+    },
+    "ibcTransfer": {
+      "amoutDeposit": "مقدار واریز وجه",
+      "amoutWithdraw": "مقدار برداشت وجه",
+      "availableBalance": "موجودی فعلی:",
+      "buttonEdit": "ویرایش",
+      "buttonEnter": "ورود",
+      "channelBlocked": "کانال مسدود",
+      "channelCongested": "کانال شلوغ",
+      "channelCongestedDeposit": "واریز وجه(کانال شلوغ)",
+      "channelCongestedWithdraw": "برداشت وجه(کانال شلوغ)",
+      "checkboxVerify": "من تایید می کنم که این آدرس من است.",
+      "copied": "کپی شد",
+      "estimatedTime": "زمان تقریبی انتقال",
+      "from": "از",
+      "IBCTransfer": "انتقال بین شبکه ای",
+      "MAX": "حداکثر",
+      "selectAmount": "انتخاب مقدار",
+      "titleDeposit": "واریز {coinDenom}",
+      "titleWithdraw": "برداشت {coinDenom}",
+      "to": "به",
+      "waitTime": "20 ثانیه",
+      "warningLossFunds": "اخطار:انتقال وجه به صرافی های متمرکز ممکن است باعث از دست رفتن پول شما شود."
+    },
+    "myPools": "استخرهای من",
+    "poolCards": {
+      "APR": "نرخ بازدهی",
+      "bonded": "قفل شده",
+      "FeeAPY": "کارمزذ سپرده گذاری",
+      "liquidity": "نقدینگی من"
+    },
+    "selectAssetSource": {
+      "installWallet": "نصب کیف پول {walletName}",
+      "next": "بعدی",
+      "titleDeposit": "برداشت از",
+      "titleWithdraw": "پرداخت به"
+    },
+    "stakedAssets": "سپرده گذاری شده OSMO",
+    "table": {
+      "columns": {
+        "assetChain": "دارایی/شبکه",
+        "balance": "موجودی",
+        "deposit": "واریزوجه",
+        "transfer": "انتقال",
+        "withdraw": "برداشت وجه"
+      },
+      "depositButton": "واریز",
+      "hideZero": "مخفی کردن موجودی های صفر",
+      "preTransfer": {
+        "currentBal": "موجودی فعلی",
+        "deposit": "واریز وجه",
+        "withdraw": "برداشت وجه"
+      },
+      "search": "جستجو",
+      "sort": {
+        "balance": "موجودی",
+        "network": "شبکه",
+        "symbol": "نماد"
+      },
+      "title": "همه دارایی ها",
+      "withdrawButton": "برداشت"
+    },
+    "totalAssets": "کل دارایی ها",
+    "transfer": {
+      "availableMobile": "دارایی قابل برداشت",
+      "availableOn": "دارایی در شبکه {network}",
+      "errors": {
+        "insufficientBal": "موجودی نا کافی",
+        "insufficientFee": "کارمزد ناکافی",
+        "reconnectWallet": "اتصال مجدد کیف پول {walletName}",
+        "wrongNetworkInWallet": "شبکه اشتباه در  {walletName}"
+      },
+      "from": "از",
+      "loading": "در حال بارگذاری",
+      "titleDeposit": "واریز {coinDenom}",
+      "titleWithdraw": "برداشت {coinDenom}",
+      "to": "به",
+      "transferFee": "کارمزد انتقال",
+      "useWrappedDeposit": "واریز  {wrapDenom} با Satellite ",
+      "useWrappedWithdraw": "برداشت {wrapDenom} با Satellite",
+      "via": "توسط",
+      "waitTime": "{minutes} دقیقه",
+      "warnDepositAddressDifferent": "هشدار: {address}  با آخرین آدرس برداشت و واریز شما متفاوت است."
+    },
+    "transferAssetSelect": {
+      "buttonNext": "بعدی",
+      "deposit": "واریز",
+      "network": "شبکه",
+      "withdraw": "برداشت"
+    },
+    "unbondedAssets": "بازکردن"
+  },
+  "buyTokens": "خرید توکن",
+  "components": {
+    "fiatOnrampSelection": {
+      "chooseOnramp": "انتخاب حساب بانکی Onramp",
+      "kadoSubtitle": "پشتیبانی USDC",
+      "transakSubtitle": "پشتیبانی OSMO"
+    },
+    "incentive": {
+      "mobileTitle": "جایزه",
+      "title": "نوع جوایز"
+    },
+    "MAX": "حداکثر",
+    "pool": {
+      "mobileTitle": "استخر",
+      "title": "استخرها"
+    },
+    "searchTokens": "جستجو",
+    "selectToken": {
+      "title": "انتخاب توکن"
+    },
+    "show": {
+      "less": "نمایش کمتر از",
+      "more": "نمایش بیشتر از"
+    },
+    "sort": {
+      "mobileMenu": "مرتب سازی",
+      "SORT": "مرتب سازی براساس",
+      "SORTMobile": "مرتب سازی"
+    },
+    "table": {
+      "poolId": "استخر #{id}"
+    }
+  },
+  "connectDisclaimer": "با اتصال کیف پول شما از کلیه قوانین Osmosis مطلح هستید.",
+  "connectWallet": "اتصال کیف پول",
+  "errors": {
+    "calculatingShareOutAmount": "مشکل محاسباتی در بدست آوردن مقدار خروجی",
+    "depositNoBalance": "شما هیچ دارایی برای واریز وجه انتخاب نکردید",
+    "emptyAmount": "مقدار خالی است",
+    "generic": "خطا",
+    "highSwapFee": "کارمزد تبدیل خیلی بالاست",
+    "insufficientAmount": "مقدار ناکافی است",
+    "insufficientBal": "موجودی نا کافی است",
+    "insufficientLiquidity": "نقدینگی ناکافی است",
+    "invalidNumberAmount": "عدد وارد شده اشتباه است",
+    "invalidScalingFactorControllerAddress": "فاکتور کنترل کننده اشتباه است",
+    "invalidSlippage": "میزان لغزش اشتباه است",
+    "invalidSwapFee": "کارمزد تبدیل نا کافی است",
+    "maxAssetsCount": "حداکثر تعداد دارای {num} می باشد",
+    "minAssetsCount": "حداقل تعداد دارای {num} می باشد",
+    "negativeAmount": "مقدار منفی است",
+    "negativePercentage": "درصد باید مثبت باشد",
+    "negativeSlippage": "لغزش نباید منفی باشد",
+    "negativeSwapFee": "کارمزد تبدیل منفی است",
+    "noAvailableShares": "شما موجودی برای {denom} ندارید",
+    "noRoute": "هیچ مسیر برای تبدیل پیدا نشد",
+    "noSendCurrency": "ارز خروجی مشخص نشده است",
+    "notInitialized": "ساخته نشده است",
+    "percentageSum": "جمع درصد ها 100 نیست",
+    "scalingFactorTooLow": "فاکتور تبدیل کوچک است",
+    "zeroAmount": "مقدار صفر است"
+  },
+  "keplr": {
+    "extension": "Keplr مرورگر",
+    "install": "نصب Keplr",
+    "mobile": "Keplr موبایل",
+    "wallet": "Keplr کیف پول",
+    "walletConnect": "WalletConnect"
+  },
+  "lockToken": {
+    "amountToBond": "مقدار قفل شده",
+    "availableToken": "مقدار قابل برداشت",
+    "bondingRequirement": "{numDays} روز مانده تا باز شدن",
+    "buttonBond": "قفل کردن",
+    "buttonBondStake": "قفل کردن و سپرده گذاری",
+    "buttonNext": "بعدی",
+    "selectPeriod": "مدت زمان قفل شدن را انتخاب کنید",
+    "superfluidStake": "Superfluid سپرده گذاری",
+    "title": "قفل کردن میزان نقدینگی",
+    "titleInPool": "قفل کردن در استخر #{poolId}"
+  },
+  "menu": {
+    "assets": "دارایی ها",
+    "help": "پشتیبانی",
+    "info": "آمار و اطلاعات",
+    "pools": "استخرها",
+    "signOut": "خروج از سیستم",
+    "stake": "سپرده گذاری",
+    "swap": "تبدیل",
+    "vote": "انتخابات"
+  },
+  "pool": {
+    "24hrTradingVolume": "حجم تبدل 24 ساعته",
+    "7davg": "(میانگین 7 روز)",
+    "amountDaysUnbonding": "{numDays} روز تا باز شدن",
+    "amountDaysUnbonding_plural": "{numDays} روز تا باز شدن",
+    "APR": "نرخ بازدهی",
+    "available": "موجودی",
+    "bonded": "قفل شده",
+    "bondLiquidity": "قفل کردن نقدینگی",
+    "bondLiquidityCaption": "قفل کنید سهم های خود را در دوره های زمانی مختلف تا دارای شما بازدهی داشته باشد.",
+    "bondLiquidityUnavailable": "نقدینگی قفل شده(غیر قابل دسترس)",
+    "bondShares": "قفل کردن سهم ها",
+    "bondSuperfluidLiquidityCaption": "از سپرده گذاری superfluid استفاده کنید تا بهیشترین بهره وری را داشته باشید.",
+    "checkBackForBondingRewards": "بررسی مجدد برای جوایز دریافتی",
+    "collapseDetails": "مخفی کردن جزئیات",
+    "commission": "کمسیون",
+    "currentDailyEarn": "درآمد فغلی شما",
+    "dailyEarnAmount": "{amount} / در روز",
+    "day": "روز",
+    "delegated": "مشارکت شده",
+    "details": "جزئیات",
+    "earnMore": "دریافت {amount} درصد بازدهی بیشتر با قفل کردن",
+    "earnSwapFees": "دریافت کارمزد تبدیل",
+    "earnSwapFeesCaption": "توکن ها را به سهم تبدیل کنید و کارمزد دریافت کنید.",
+    "from": "از",
+    "incentives": "جوایز",
+    "learnMore": "دریافت اطلاعات بیشتر",
+    "level": "سطح {level}",
+    "liquidity": "نقدینگی استخر",
+    "numDaysRemaining": "{numDays} روز مانده",
+    "putAssetsToWork": "دارای خود را به کار بگیرید.",
+    "putAssetsToWorkCaption": "دارای خود را در مدت زمان مشخص قفل کنید و جایزه دریافت کنید مدت زمان بیشتر سود بیشتر دارد.",
+    "rewardDistribution": "جوایز به همه تامین کنندگان نقدینگی تخصیص می یابد.",
+    "sharesAmount": "{shares} سهم",
+    "sharesAvailableIn": "قابل برداشت پس از ",
+    "showDetails": "نمایش جزئیات استخر",
+    "stableswapEnabled": "تبدیل پاید فعال",
+    "superfluidEarnMore": "بدست آوردن {rate} بازده بیشتر با فعال سازی Superfluid ممکن است",
+    "superfluidEnabled": "Superfluid فعال سازی",
+    "superfluidStaking": "Superfluid سپرده گداری",
+    "swap": "تبدیل جفت ارز",
+    "swapFee": "کارمزد تبدیل",
+    "swapFees": "کارمزد تبدیل",
+    "title": "استخر #{id}",
+    "unbond": "باز کردن",
+    "unbonding": "باز شدن",
+    "undelegating": "در حال خروج",
+    "yourStats": "موجودی استخر شما"
+  },
+  "pools": {
+    "all": "همه استخر ها",
+    "allPools": {
+      "APR": "نرخ بازدهی",
+      "APRIncentivized": "حجم  هفت روز",
+      "displayLowLiquidity": "نمایش نقدینگی کمتر از < {value}",
+      "myLiquidity": "نقدینگی من",
+      "search": "جستجوی استخرها",
+      "sort": {
+        "APR": "نقدینگی من",
+        "APRIncentivized": "نرخ بازدهی",
+        "fees": "کارمزد (7 روز)",
+        "liquidity": "نقدینگی",
+        "poolId": "شماره استخر",
+        "poolName": "نام یا شماره استخر",
+        "volume24h": "حجم (24 ساعت)"
+      },
+      "title": "جستجو در استخرها",
+      "TVL": "حجم کل قفل شده"
+    },
+    "allTab": "همه",
+    "APR": "نرخ بازدهی",
+    "available": "کوجود",
+    "bonded": "قفل شده",
+    "createPool": {
+      "amount": "مقدار",
+      "available": "موجودی",
+      "button": "ایجاد استخر چدید",
+      "buttonAddToken": "افزودن توکن جدید",
+      "buttonBack": "قبلی",
+      "buttonCreate": "ایجاد استخر",
+      "buttonNext": "بعدی",
+      "infoCaption": "که به استخر شبکه Osmosis منتقل می شود.",
+      "infoMessage": "هزینه ایجاد استخر",
+      "interestedCreate": "آیا می خواهید استخر جدید ایجاد کنید؟",
+      "scalingFactorController": "تنظیم سیستم کنترل فاکتورهای اندازه گیری (اختیاری)",
+      "stablePool": "استخر پایدار",
+      "startProcess": "برای انجام کار اینجا را بفشارید",
+      "step": {
+        "one": {
+          "stable": "گام {step} / {nbStep} - تنظیم فاکتورها",
+          "weighted": "پام {step} / {nbStep} - تنظیم نسبت های توکن ها"
+        },
+        "three": "گام {step} / {nbStep} - تایید نسبت توکن ها",
+        "two": "گام {step} / {nbStep} - تعداد ورودی"
+      },
+      "swapFee": "تنظیم نرخ تبدیل",
+      "title": "ایجاد استخر جدید",
+      "token": "توکن",
+      "undersandCost": "من می دانم هزینه ایجاد استخر {POOL_CREATION_FEE} می باشد.",
+      "weightedPool": "وزن استخر"
+    },
+    "externalIncentivized": {
+      "APR": "نرخ بازده",
+      "search": "جسنجوی نماد",
+      "sort": {
+        "APR": "نرخ بازده",
+        "epochs": "تعداد مانده توزیع جایزه",
+        "liquidity": "نقدینگی من",
+        "myLiquidity": "نقدینگی من",
+        "poolName": "استخر شماره/نام"
+      },
+      "title": "مشوش های خارجی استخر",
+      "TVL": "TVL"
+    },
+    "incentivized": "مشوق ها - جایزه ها",
+    "liquidity": "نقدینگی",
+    "myLiquidity": "نقدینگی های من",
+    "myPools": "استخر های من",
+    "poolId": "استخر #{id}",
+    "priceOsmo": "قیمت OSMO",
+    "rewardDistribution": "زمان توزیع جوایز",
+    "superfluid": {
+      "APR": "نرخ بازده",
+      "fees7D": "کارمزد (هفت روزه)",
+      "liquidity": "نقدینگی",
+      "tab": "Superfluid",
+      "title": "استخر های Superfluid"
+    },
+    "title": "استخرهای فعال"
+  },
+  "profile": {
+    "balance": "موجودی",
+    "modalTitle": "پروفایل",
+    "viewAllAssets": "نمایش همه دارایی ها",
+    "wallet": "کیف پول"
+  },
+  "protocolDisclaimer": "سلب مسئولیت",
+  "removeLiquidity": {
+    "sharesAmount": "{shares} مشارکت",
+    "title": "حذف نقدینگی",
+    "titleInPool": "حذف نقدینگی از استخر #{poolId}"
+  },
+  "requestRejected": "درخواست رد شد",
+  "settings": {
+    "filterDust": "فیلتر",
+    "selectLanguage": "انتخاب زبان",
+    "title": "تنظیمات کلی",
+    "titleHideDust": "مخفی سازی استخر با موجودی کمتر از < {fiatSymbol}0.01",
+    "titleLanguage": "زبان"
+  },
+  "stablecoinTypes": {
+    "collateralized": "سپرده شده"
+  },
+  "superfluidValidator": {
+    "bondedAmount": "میزان قفل کردن",
+    "buttonBond": "قفل کردن و سپرده گذاری",
+    "choose": "انتخاب تایید کننده superfluid",
+    "columns": {
+      "commission": "کمسیون",
+      "validator": "تایید کننده"
+    },
+    "estimation": "میزان مشارکت تقریبی",
+    "estimationInfo": "میزان مشارکت تقریبی شما با توجه به OSMO موجود در استخر بدست می آید.",
+    "estimationMobile": "مشارکت تقریبی",
+    "search": "جستجو با نام",
+    "title": "انتخاب تایید کننده Superfuild",
+    "titleMobile": "انتخاب تایید کننده"
+  },
+  "swap": {
+    "autoRouter": "مسیر",
+    "autoRouterToggle": {
+      "hide": "مخفی",
+      "show": "نماید"
+    },
+    "available": "موجود",
+    "button": "تبدیل کن",
+    "buttonError": "در هر شرایطی تبدیل کن",
+    "error": {
+      "findCurrency": "{currency} پیدا نشد."
+    },
+    "expectedOutput": "خروجی مورد انتظار",
+    "fee": "کارمزد تبدیل ({fee})",
+    "HALF": "نصف",
+    "MAX": "همه",
+    "minimumSlippage": "حداقل تغییرات قابل قبول ({slippage})",
+    "pool": "استخر #{id}",
+    "priceImpact": "تاثیر قیمت",
+    "routerTooltipFee": "کارمزد",
+    "settings": {
+      "slippage": "تغیرات قابل قبول",
+      "slippageInfo": "تراکنش در صورتی که تغییرات با درصد قابل قبول شما برابری کند انجام می شود.",
+      "title": "تنظیمات تراکنش"
+    },
+    "title": "تبدیل"
+  },
+  "swapFailed": "تبدیل موفق نبود باید میزان تغییرات قابل قبول شما بیشتر باشد. ",
+  "transactionBroadcasting": "در حال ارسال تراکنش",
+  "transactionFailed": "تراکنش با موفقیت انجام نشد",
+  "transactionSuccessful": "تراکنش با موفقیت انجام شد",
+  "unknownError": "خطای نا شناس",
+  "viewExplorer": "مشاهده جزئیات تراکنش",
+  "waitingForTransaction": "صبر کنید تا یک تراکنش در بلاک قرار بگیرد"
+}

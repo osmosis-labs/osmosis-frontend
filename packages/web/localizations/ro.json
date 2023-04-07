@@ -174,7 +174,13 @@
       "SORTMobile": "Sorteaza"
     },
     "table": {
-      "poolId": "Pool-ul #{id}"
+      "poolId": "Pool-ul #{id}",
+      "stable": "Stableswap",
+      "weighted": "Ponderat",
+      "internal": "Incentive interne",
+      "external": "Incentive externe",
+      "superfluid": "Superfluid",
+      "noIncentives": "Fără incentivi"
     }
   },
   "connectDisclaimer": "Conectand un portofel declari ca ai inteles cum functioneaza Osmosis.",

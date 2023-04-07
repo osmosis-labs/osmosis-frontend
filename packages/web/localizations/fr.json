@@ -174,7 +174,13 @@
       "SORTMobile": "TRIER"
     },
     "table": {
-      "poolId": "Bassin n°{id}"
+      "poolId": "Pool n°{id}",
+      "stable": "Stableswap",
+      "weighted": "Weighted",
+      "internal": "Incitations internes",
+      "external": "Incitations externes",
+      "superfluid": "Superfluid",
+      "noIncentives": "Pas d'incitations"
     }
   },
   "connectDisclaimer": "En connectant un portefeuille, vous reconnaissez avoir lu et compris la politique Osmosis",
