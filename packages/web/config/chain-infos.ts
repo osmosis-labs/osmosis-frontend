@@ -717,7 +717,7 @@ const chainInfos = (
           coinMinimalDenom:
             "cw20:juno1p8x807f6h222ur0vssqy3qk6mcpa40gw2pchquz5atl935t7kvyq894ne3:MUSE",
           coinDecimals: 6,
-          coinGeckoId: "pool:muse",
+          //coinGeckoId: "pool:muse",
           coinImageUrl: "/tokens/muse.svg",
         },
         {
@@ -1646,7 +1646,7 @@ const chainInfos = (
           coinMinimalDenom: "uctk",
           coinDecimals: 6,
           // coinGeckoId: "certik",
-          coinGeckoId: "pool:uctk",
+          //coinGeckoId: "pool:uctk",
           coinImageUrl: "/tokens/ctk.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
@@ -1999,7 +1999,7 @@ const chainInfos = (
           coinMinimalDenom: "hard",
           coinDecimals: 6,
           // coinGeckoId: "kava-lend",
-          coinGeckoId: "pool:hard",
+          //coinGeckoId: "pool:hard",
           coinImageUrl: "/tokens/hard.svg",
         },
         {
@@ -2007,7 +2007,7 @@ const chainInfos = (
           coinMinimalDenom: "swp",
           coinDecimals: 6,
           // coinGeckoId: "kava-swap",
-          coinGeckoId: "pool:swp",
+          //coinGeckoId: "pool:swp",
           coinImageUrl: "/tokens/swp.svg",
         },
         {
@@ -2015,7 +2015,7 @@ const chainInfos = (
           coinMinimalDenom: "usdx",
           coinDecimals: 6,
           // coinGeckoId: "usdx",
-          coinGeckoId: "pool:usdx",
+          //coinGeckoId: "pool:usdx",
           coinImageUrl: "/tokens/usdx.svg",
         },
       ],
