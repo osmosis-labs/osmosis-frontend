@@ -15,6 +15,48 @@ import {
 } from "../env";
 import { createKeplrChainInfos, SimplifiedChainInfo } from "../utils";
 
+const osmosisChainIdWithoutOverwrite = IS_TESTNET ? "osmo-test-4" : "osmosis-1";
+
+export function getChainInfos(): (ChainInfoWithExplorer & Chain)[] {
+  const hasOveriddenOsmosisChainId = OSMOSIS_CHAIN_ID_OVERWRITE !== undefined;
+  return chainInfos.map((localChain, index) => {
+    const registryChain = chains.find(({ chain_id }) => {
+      if (
+        hasOveriddenOsmosisChainId &&
+        localChain.chainId === OSMOSIS_CHAIN_ID_OVERWRITE
+      ) {
+        return chain_id === osmosisChainIdWithoutOverwrite;
+      }
+
+      return chain_id === localChain.chainId;
+    })!;
+
+    return {
+      ...localChain,
+      ...registryChain,
+      chain_name: localChain.chainName,
+      chain_id: localChain.chainId,
+      peers: undefined,
+      explorers: undefined,
+      codebase: undefined,
+      staking: undefined,
+      $schema: undefined,
+      apis: {
+        rpc: [
+          {
+            address: localChain.rpc,
+          },
+        ],
+        rest: [
+          {
+            address: localChain.rest,
+          },
+        ],
+      },
+    };
+  });
+}
+
 const chainInfos = (
   [
     {
@@ -3187,34 +3229,3 @@ chainInfos.push({
     ? "https://testnet.axelarscan.io/tx/{txHash}"
     : "https://axelarscan.io/tx/{txHash}",
 });
-
-export function getChainInfos(): (ChainInfoWithExplorer & Chain)[] {
-  return chainInfos.map((localChain) => {
-    const registryChain = chains.find(
-      ({ chain_id }) => chain_id === localChain.chainId
-    )!;
-
-    return {
-      ...localChain,
-      ...registryChain,
-      chain_name: localChain.chainName,
-      peers: undefined,
-      explorers: undefined,
-      codebase: undefined,
-      staking: undefined,
-      $schema: undefined,
-      apis: {
-        rpc: [
-          {
-            address: localChain.rpc,
-          },
-        ],
-        rest: [
-          {
-            address: localChain.rest,
-          },
-        ],
-      },
-    };
-  });
-}
