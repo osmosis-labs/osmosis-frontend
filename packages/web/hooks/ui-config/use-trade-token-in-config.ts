@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
   ChainGetter,
   CosmosQueries,
@@ -7,9 +6,10 @@ import {
 } from "@keplr-wallet/stores";
 import { Pool } from "@osmosis-labs/pools";
 import {
-  OsmosisQueries,
   ObservableTradeTokenInConfig,
+  OsmosisQueries,
 } from "@osmosis-labs/stores";
+import { useEffect, useState } from "react";
 
 /** Maintains a single instance of `ObservableTradeTokenInConfig` for React view lifecycle.
  *  Updates `osmosisChainId`, `bech32Address`, `pools` on render.

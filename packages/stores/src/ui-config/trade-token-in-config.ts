@@ -13,7 +13,7 @@ import {
   NotEnoughLiquidityError,
   OptimizedRoutes,
   Pool,
-  RoutePathWithAmount,
+  RouteWithAmount,
 } from "@osmosis-labs/pools";
 import {
   action,
@@ -24,6 +24,7 @@ import {
   runInAction,
 } from "mobx";
 
+import { OsmosisQueries } from "../queries";
 import {
   InsufficientBalanceError,
   NoRouteError,
@@ -47,7 +48,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
   constructor(
     chainGetter: ChainGetter,
-    queriesStore: IQueriesStore,
+    protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly initialChainId: string,
     sender: string,
     feeConfig: IFeeConfig | undefined,
@@ -236,7 +237,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   }
 
   @computed
-  get optimizedRoutePaths(): RoutePathWithAmount[] {
+  get optimizedRoutePaths(): RouteWithAmount[] {
     runInAction(() => {
       this._notEnoughLiquidity = false;
     });
@@ -245,7 +246,11 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     if (
       !amount.amount ||
       new Int(amount.amount).lte(new Int(0)) ||
-      this.sendableCurrencies.length === 0
+      this.sendableCurrencies.length === 0 ||
+      !Boolean(
+        this.queriesStore.get(this.initialChainId).osmosis?.queryGammPools
+          .response
+      )
     ) {
       return [];
     }
@@ -402,9 +407,10 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           amount: one,
         },
         this.outCurrency.coinMinimalDenom,
-        5
+        4
       );
-    } catch {
+    } catch (e: any) {
+      console.error("No route found", e.message);
       return new IntPretty(0).ready(false);
     }
 

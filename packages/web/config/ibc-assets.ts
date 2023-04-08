@@ -146,6 +146,13 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "ujunox",
         isVerified: true,
       },
+      {
+        counterpartyChainId: "nolus-rila",
+        sourceChannelId: "channel-1837",
+        destChannelId: "channel-0",
+        coinMinimalDenom: "unls",
+        isVerified: true,
+      }
     ]
   : [
       {
