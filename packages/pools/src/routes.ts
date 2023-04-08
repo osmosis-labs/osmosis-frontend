@@ -318,7 +318,7 @@ export class OptimizedRoutes {
           isOsmoRoutedMultihop(
             routes[0].pools.map((routePool) => ({
               id: routePool.id,
-              isIncentivized: this._incentivizedPoolIds.includes(routePool.id),
+              isIncentivized: this.incventivizedPoolIds.includes(routePool.id),
             })),
             route.tokenOutDenoms[0],
             this.stakeCurrencyMinDenom
