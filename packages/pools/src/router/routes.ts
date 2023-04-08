@@ -4,58 +4,32 @@ import {
   isOsmoRoutedMultihop,
 } from "@osmosis-labs/math";
 
-import { NoPoolsError, NotEnoughLiquidityError } from "./errors";
-import { SwapResult } from "./interface";
-
-export interface Route {
-  pools: RoutablePool[];
-  // tokenOutDenoms means the token to come out from each pool.
-  // This should the same length with the pools.
-  // Route consists of token in -> pool -> token out -> pool -> token out...
-  // But, currently, only 1 intermediate can be supported.
-  tokenOutDenoms: string[];
-  tokenInDenom: string;
-}
-
-export interface RouteWithAmount extends Route {
-  amount: Int;
-}
-
-export interface RoutablePool {
-  id: string;
-  poolAssetDenoms: string[];
-  swapFee: Dec;
-  hasPoolAsset(denom: string): boolean;
-  getNormalizedLiquidity(tokenInDenom: string, tokenOutDenom: string): Dec;
-  getLimitAmountByTokenIn(denom: string): Int;
-
-  getTokenOutByTokenIn(
-    tokenIn: {
-      denom: string;
-      amount: Int;
-    },
-    tokenOutDenom: string,
-    swapFee?: Dec
-  ): SwapResult;
-
-  getTokenInByTokenOut(
-    tokenOut: {
-      denom: string;
-      amount: Int;
-    },
-    tokenInDenom: string,
-    swapFee?: Dec
-  ): SwapResult;
-}
+import { NoPoolsError, NotEnoughLiquidityError } from "../errors";
+import {
+  MultihopSwapResult,
+  RoutablePool,
+  Route,
+  RouteWithAmount,
+} from "./types";
 
 export class OptimizedRoutes {
   protected candidatePathsCache = new Map<string, Route[]>();
 
+  protected _pools: ReadonlyArray<RoutablePool> = [];
+
   constructor(
     protected readonly pools: ReadonlyArray<RoutablePool>,
     protected readonly incventivizedPoolIds: string[],
-    protected readonly stakeCurrencyMinDenom: string
-  ) {}
+    protected readonly stakeCurrencyMinDenom: string,
+    protected readonly getPoolTotalValueLocked: (poolId: string) => Dec
+  ) {
+    // Sort by the total value locked.
+    this._pools = [...pools].sort((a, b) => {
+      const aTvl = this.getPoolTotalValueLocked(a.id);
+      const bTvl = this.getPoolTotalValueLocked(b.id);
+      return Number(aTvl.sub(bTvl).toString());
+    });
+  }
 
   protected getCandidateRoutes(
     tokenInDenom: string,
@@ -87,7 +61,9 @@ export class OptimizedRoutes {
 
       if (
         currentRoute.length > 0 &&
-        currentRoute[currentRoute.length - 1]!.hasPoolAsset(tokenOutDenom)
+        currentRoute[currentRoute.length - 1]!.poolAssetDenoms.includes(
+          tokenOutDenom
+        )
       ) {
         const foundRoute: Route = {
           pools: [...currentRoute],
@@ -152,6 +128,8 @@ export class OptimizedRoutes {
     computeRoutes(tokenInDenom, tokenOutDenom, [], [], poolsUsed);
     this.candidatePathsCache.set(cacheKey, routes);
 
+    // TODO: since we use a greedy algorithm, also find routes in reverse
+
     return routes.filter(({ pools }) => pools.length <= maxHops);
   }
 
@@ -190,6 +168,7 @@ export class OptimizedRoutes {
         return path1IsDirect ? -1 : 1;
       }
 
+      // TODO: use total value locked
       const path1NormalizedLiquidity = path1.pools[0].getNormalizedLiquidity(
         tokenIn.denom,
         path1.tokenOutDenoms[0]
@@ -239,24 +218,14 @@ export class OptimizedRoutes {
     return initialSwapAmounts.map((amount, i) => {
       return {
         ...routes[i],
-        amount,
+        initialAmount: amount,
       };
     });
   }
 
-  calculateTokenOutByTokenIn(routes: RouteWithAmount[]): {
-    amount: Int;
-    beforeSpotPriceInOverOut: Dec;
-    beforeSpotPriceOutOverIn: Dec;
-    afterSpotPriceInOverOut: Dec;
-    afterSpotPriceOutOverIn: Dec;
-    effectivePriceInOverOut: Dec;
-    effectivePriceOutOverIn: Dec;
-    tokenInFeeAmount: Int;
-    swapFee: Dec;
-    multiHopOsmoDiscount: boolean;
-    priceImpact: Dec;
-  } {
+  async calculateTokenOutByTokenIn(
+    routes: RouteWithAmount[]
+  ): Promise<MultihopSwapResult> {
     if (routes.length === 0) {
       throw new Error("Paths are empty");
     }
@@ -271,7 +240,7 @@ export class OptimizedRoutes {
 
     let sumAmount = new Int(0);
     for (const path of routes) {
-      sumAmount = sumAmount.add(path.amount);
+      sumAmount = sumAmount.add(path.initialAmount);
     }
 
     let outDenom: string | undefined;
@@ -297,12 +266,12 @@ export class OptimizedRoutes {
         throw new Error("Paths have different out denom");
       }
 
-      const amountFraction = route.amount
+      const amountFraction = route.initialAmount
         .toDec()
         .quoTruncate(sumAmount.toDec());
 
       let previousInDenom = route.tokenInDenom;
-      let previousInAmount = route.amount;
+      let previousInAmount = route.initialAmount;
 
       let beforeSpotPriceInOverOut: Dec = new Dec(1);
       let afterSpotPriceInOverOut: Dec = new Dec(1);
@@ -333,7 +302,7 @@ export class OptimizedRoutes {
         }
 
         // less fee
-        const tokenOut = pool.getTokenOutByTokenIn(
+        const tokenOut = await pool.getTokenOutByTokenIn(
           { denom: previousInDenom, amount: previousInAmount },
           outDenom,
           poolSwapFee

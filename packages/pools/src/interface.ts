@@ -29,23 +29,6 @@ export interface BasePool {
     tokenInDenom: string,
     tokenOutDenom: string
   ): Dec;
-
-  getTokenOutByTokenIn(
-    tokenIn: {
-      denom: string;
-      amount: Int;
-    },
-    tokenOutDenom: string,
-    swapFee?: Dec
-  ): SwapResult;
-  getTokenInByTokenOut(
-    tokenOut: {
-      denom: string;
-      amount: Int;
-    },
-    tokenInDenom: string,
-    swapFee?: Dec
-  ): SwapResult;
 }
 
 /** Pool with user ownership represented as pro-rata shares. */
@@ -53,14 +36,3 @@ export interface SharePool extends BasePool {
   get totalShare(): Int;
   get shareDenom(): string;
 }
-
-export type SwapResult = {
-  amount: Int;
-  beforeSpotPriceInOverOut: Dec;
-  beforeSpotPriceOutOverIn: Dec;
-  afterSpotPriceInOverOut: Dec;
-  afterSpotPriceOutOverIn: Dec;
-  effectivePriceInOverOut: Dec;
-  effectivePriceOutOverIn: Dec;
-  priceImpact: Dec;
-};

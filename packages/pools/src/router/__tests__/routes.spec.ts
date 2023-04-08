@@ -1,9 +1,9 @@
-import { Int } from "@keplr-wallet/unit";
+import { Dec, Int } from "@keplr-wallet/unit";
 import deepmerge from "deepmerge";
 
-import { OptimizedRoutes, RoutablePool } from "../routes";
-import { StablePool } from "../stable";
-import { WeightedPool } from "../weighted";
+import { StablePool } from "../../stable";
+import { WeightedPool } from "../../weighted";
+import { OptimizedRoutes, RoutablePool } from "../";
 
 describe("OptimizedRoutes", () => {
   describe("Simple: picks higher liquidity routes", () => {
@@ -17,7 +17,7 @@ describe("OptimizedRoutes", () => {
         makeWeightedPool(),
       ];
 
-      const router = new OptimizedRoutes(pools, [], "ufoo");
+      const router = new OptimizedRoutes(pools, [], "ufoo", () => new Dec(0));
 
       const routes = router.getOptimizedRoutesByTokenIn(
         {
@@ -42,7 +42,7 @@ describe("OptimizedRoutes", () => {
         }),
       ];
 
-      const router = new OptimizedRoutes(pools, [], "ufoo");
+      const router = new OptimizedRoutes(pools, [], "ufoo", () => new Dec(0));
 
       const routes = router.getOptimizedRoutesByTokenIn(
         {
@@ -70,7 +70,7 @@ describe("OptimizedRoutes", () => {
         }),
       ];
 
-      const router = new OptimizedRoutes(pools, [], "ufoo");
+      const router = new OptimizedRoutes(pools, [], "ufoo", () => new Dec(0));
 
       const routes = router.getOptimizedRoutesByTokenIn(
         {
@@ -96,7 +96,7 @@ describe("OptimizedRoutes", () => {
         }),
       ];
 
-      const router = new OptimizedRoutes(pools, [], "ufoo");
+      const router = new OptimizedRoutes(pools, [], "ufoo", () => new Dec(0));
 
       expect(() =>
         router.getOptimizedRoutesByTokenIn(
@@ -112,7 +112,7 @@ describe("OptimizedRoutes", () => {
   });
 
   describe("scaling factors with stable pools", () => {
-    test("scaling factors don't affect amounts", () => {
+    test("scaling factors don't affect amounts", async () => {
       const normalPools = [
         makeStablePool({
           firstPoolAsset: { denom: "uust" },
@@ -135,8 +135,18 @@ describe("OptimizedRoutes", () => {
           secondPoolAsset: { denom: "uusdt", scalingFactor: "10000" },
         }),
       ];
-      const normalRouter = new OptimizedRoutes(normalPools, [], "ufoo");
-      const scaledRouter = new OptimizedRoutes(scaledPools, [], "ufoo");
+      const normalRouter = new OptimizedRoutes(
+        normalPools,
+        [],
+        "ufoo",
+        () => new Dec(0)
+      );
+      const scaledRouter = new OptimizedRoutes(
+        scaledPools,
+        [],
+        "ufoo",
+        () => new Dec(0)
+      );
       const normalRoutes = normalRouter.getOptimizedRoutesByTokenIn(
         {
           denom: "uust",
@@ -153,14 +163,18 @@ describe("OptimizedRoutes", () => {
         "uusdt",
         10
       );
-      const normalOut = normalRouter.calculateTokenOutByTokenIn(normalRoutes);
-      const scaledOut = scaledRouter.calculateTokenOutByTokenIn(scaledRoutes);
+      const normalOut = await normalRouter.calculateTokenOutByTokenIn(
+        normalRoutes
+      );
+      const scaledOut = await scaledRouter.calculateTokenOutByTokenIn(
+        scaledRoutes
+      );
       expect(scaledOut.amount.toString()).toEqual(normalOut.amount.toString());
     });
   });
 
   describe("OSMO fee discount", () => {
-    test("2 pools with 1% fee", () => {
+    test("2 pools with 1% fee", async () => {
       const pools = [
         makeWeightedPool({
           firstPoolAsset: { amount: "100000000000000" },
@@ -173,9 +187,19 @@ describe("OptimizedRoutes", () => {
         }),
       ];
 
-      const discountedRouter = new OptimizedRoutes(pools, ["1", "2"], "uosmo");
+      const discountedRouter = new OptimizedRoutes(
+        pools,
+        ["1", "2"],
+        "uosmo",
+        () => new Dec(0)
+      );
       // no incentivized pool ids, and a random denom is given
-      const nondiscountedRouter = new OptimizedRoutes(pools, [], "ufoo");
+      const nondiscountedRouter = new OptimizedRoutes(
+        pools,
+        [],
+        "ufoo",
+        () => new Dec(0)
+      );
 
       const discountedRoutes = discountedRouter.getOptimizedRoutesByTokenIn(
         {
@@ -194,16 +218,19 @@ describe("OptimizedRoutes", () => {
           "ujuno",
           10
         );
-      const discoutedOut =
-        discountedRouter.calculateTokenOutByTokenIn(discountedRoutes);
+      const discoutedOut = await discountedRouter.calculateTokenOutByTokenIn(
+        discountedRoutes
+      );
       const nondiscountedOut =
-        nondiscountedRouter.calculateTokenOutByTokenIn(nondiscountedRoutes);
+        await nondiscountedRouter.calculateTokenOutByTokenIn(
+          nondiscountedRoutes
+        );
 
       const parsedDiscountAmt = parseInt(discoutedOut.amount.toString());
       const parsedNonDiscountAmt = parseInt(nondiscountedOut.amount.toString());
       expect(parsedDiscountAmt).toBeGreaterThan(parsedNonDiscountAmt); // user gets more out
     });
-    test("2 pools with different (small, large) fees", () => {
+    test("2 pools with different (small, large) fees", async () => {
       const poolsWithALargeFee = [
         makeWeightedPool({
           firstPoolAsset: { amount: "100000000000000" },
@@ -232,12 +259,14 @@ describe("OptimizedRoutes", () => {
       const largeFeeRouter = new OptimizedRoutes(
         poolsWithALargeFee,
         ["1", "2"],
-        "uosmo"
+        "uosmo",
+        () => new Dec(0)
       );
       const smallFeeRouter = new OptimizedRoutes(
         poolsWithSameOnePercFee,
         ["1", "2"],
-        "uosmo"
+        "uosmo",
+        () => new Dec(0)
       );
 
       const largeFeeRoutes = largeFeeRouter.getOptimizedRoutesByTokenIn(
@@ -256,16 +285,18 @@ describe("OptimizedRoutes", () => {
         "ujuno",
         10
       );
-      const largeFeeOut =
-        largeFeeRouter.calculateTokenOutByTokenIn(largeFeeRoutes);
-      const smallFeeOut =
-        smallFeeRouter.calculateTokenOutByTokenIn(smallFeeRoutes);
+      const largeFeeOut = await largeFeeRouter.calculateTokenOutByTokenIn(
+        largeFeeRoutes
+      );
+      const smallFeeOut = await smallFeeRouter.calculateTokenOutByTokenIn(
+        smallFeeRoutes
+      );
 
       const parsedLargeFeeOut = parseInt(largeFeeOut.amount.toString());
       const parsedSmallFeeOut = parseInt(smallFeeOut.amount.toString());
       expect(parsedLargeFeeOut).toBeLessThan(parsedSmallFeeOut); // user gets less out since fee is big
     });
-    test("no fee discount for route w/ 3 pools", () => {
+    test("no fee discount for route w/ 3 pools", async () => {
       const pools = [
         makeWeightedPool({
           firstPoolAsset: { amount: "100000000000000" },
@@ -283,9 +314,19 @@ describe("OptimizedRoutes", () => {
         }),
       ];
 
-      const discountedRouter = new OptimizedRoutes(pools, ["1", "2"], "uosmo");
+      const discountedRouter = new OptimizedRoutes(
+        pools,
+        ["1", "2"],
+        "uosmo",
+        () => new Dec(0)
+      );
       // no incentivized pool ids, and a random denom is given
-      const nondiscountedRouter = new OptimizedRoutes(pools, [], "ufoo");
+      const nondiscountedRouter = new OptimizedRoutes(
+        pools,
+        [],
+        "ufoo",
+        () => new Dec(0)
+      );
 
       const discountedRoutes = discountedRouter.getOptimizedRoutesByTokenIn(
         {
@@ -304,10 +345,13 @@ describe("OptimizedRoutes", () => {
           "uusdc",
           10
         );
-      const discoutedOut =
-        discountedRouter.calculateTokenOutByTokenIn(discountedRoutes);
+      const discoutedOut = await discountedRouter.calculateTokenOutByTokenIn(
+        discountedRoutes
+      );
       const nondiscountedOut =
-        nondiscountedRouter.calculateTokenOutByTokenIn(nondiscountedRoutes);
+        await nondiscountedRouter.calculateTokenOutByTokenIn(
+          nondiscountedRoutes
+        );
 
       const parsedDiscountAmt = parseInt(discoutedOut.amount.toString());
       const parsedNonDiscountAmt = parseInt(nondiscountedOut.amount.toString());
@@ -331,15 +375,20 @@ describe("OptimizedRoutes", () => {
         )
           return;
 
-        const router = new OptimizedRoutes(allPools, ["1", "2"], "uosmo");
+        const router = new OptimizedRoutes(
+          allPools,
+          ["1", "2"],
+          "uosmo",
+          () => new Dec(0)
+        );
 
-        expect(() => {
+        expect(async () => {
           const routes = router.getOptimizedRoutesByTokenIn(
             { denom: tokenInDenom, amount: new Int("10") },
             tokenOutDenom,
             3
           );
-          router.calculateTokenOutByTokenIn(routes).amount;
+          (await router.calculateTokenOutByTokenIn(routes)).amount;
         }).not.toThrow();
       });
     });
@@ -358,15 +407,20 @@ describe("OptimizedRoutes", () => {
         )
           return;
 
-        const router = new OptimizedRoutes(allPools, ["1", "2"], "uosmo");
+        const router = new OptimizedRoutes(
+          allPools,
+          ["1", "2"],
+          "uosmo",
+          () => new Dec(0)
+        );
 
-        expect(() => {
+        expect(async () => {
           const routes = router.getOptimizedRoutesByTokenIn(
             { denom: tokenInDenom, amount: new Int("10") },
             tokenOutDenom,
             300
           );
-          router.calculateTokenOutByTokenIn(routes).amount;
+          (await router.calculateTokenOutByTokenIn(routes)).amount;
         }).not.toThrow();
       });
     });
