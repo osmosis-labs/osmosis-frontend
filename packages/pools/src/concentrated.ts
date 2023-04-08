@@ -19,12 +19,15 @@ export interface ConcentratedLiquidityPoolRaw {
   last_liquidity_update: string;
 }
 
-/** There is more data associated with CL pools, so it needs to be fetched later. */
-export interface ConcentratedLiquidityDataProvider {
+/** There is more data associated with CL pools for quoting, so it needs to be fetched later. */
+export interface TickDataProvider {
   getTickDepths(
     pool: ConcentratedLiquidityPool,
     tokenInDenom: string
   ): Promise<LiquidityDepth[]>;
+}
+
+export interface AmountsDataProvider {
   getPoolAmounts(
     pool: ConcentratedLiquidityPool
   ): Promise<{ token0Amount: Int; token1Amount: Int }>;
@@ -112,12 +115,15 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
 
   constructor(
     public readonly raw: ConcentratedLiquidityPoolRaw,
-    protected readonly dataProvider: ConcentratedLiquidityDataProvider
+    protected readonly tickDataProvider: TickDataProvider,
+    protected readonly poolAmountsProvider: AmountsDataProvider
   ) {
-    dataProvider.getPoolAmounts(this).then(({ token0Amount, token1Amount }) => {
-      this.token0Amount = token0Amount;
-      this.token1Amount = token1Amount;
-    });
+    poolAmountsProvider
+      .getPoolAmounts(this)
+      .then(({ token0Amount, token1Amount }) => {
+        this.token0Amount = token0Amount;
+        this.token1Amount = token1Amount;
+      });
   }
 
   getPoolAsset(denom: string): { denom: string; amount: Int } {
@@ -179,7 +185,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       ? this.getSpotPriceOutOverIn(tokenIn.denom, tokenOutDenom)
       : this.getSpotPriceInOverOut(tokenIn.denom, tokenOutDenom);
 
-    const inittedTicks = await this.dataProvider.getTickDepths(
+    const inittedTicks = await this.tickDataProvider.getTickDepths(
       this,
       tokenIn.denom
     );
@@ -252,7 +258,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       ? this.getSpotPriceOutOverIn(tokenInDenom, tokenOut.denom)
       : this.getSpotPriceInOverOut(tokenInDenom, tokenOut.denom);
 
-    const inittedTicks = await this.dataProvider.getTickDepths(
+    const inittedTicks = await this.tickDataProvider.getTickDepths(
       this,
       tokenInDenom
     );

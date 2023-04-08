@@ -1,7 +1,29 @@
+import { Int } from "@keplr-wallet/unit";
+import { LiquidityDepth } from "@osmosis-labs/math";
+
 import {
+  AmountsDataProvider,
   ConcentratedLiquidityPool,
   ConcentratedLiquidityPoolRaw,
+  TickDataProvider,
 } from "../concentrated";
+
+class MockTickProvider implements TickDataProvider {
+  getTickDepths(
+    _pool: ConcentratedLiquidityPool,
+    _tokenInDenom: string
+  ): Promise<LiquidityDepth[]> {
+    throw new Error("Method not implemented.");
+  }
+}
+
+class MockAmountProvider implements AmountsDataProvider {
+  getPoolAmounts(
+    _pool: ConcentratedLiquidityPool
+  ): Promise<{ token0Amount: Int; token1Amount: Int }> {
+    throw new Error("Method not implemented.");
+  }
+}
 
 /** This is an extension simply to gain access to protected methods */
 class TestPool extends ConcentratedLiquidityPool {
@@ -23,7 +45,7 @@ const raw1: ConcentratedLiquidityPoolRaw = JSON.parse(
 describe("ConcentratedLiquidityPool", () => {
   let p: TestPool;
   beforeEach(() => {
-    p = new TestPool(raw1);
+    p = new TestPool(raw1, new MockTickProvider(), new MockAmountProvider());
   });
 
   it("validateDenoms: properly validates denoms", () => {
