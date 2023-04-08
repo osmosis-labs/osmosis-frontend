@@ -5,6 +5,7 @@ import {
 } from "@osmosis-labs/math";
 
 import { NoPoolsError, NotEnoughLiquidityError } from "./errors";
+import { SwapResult } from "./interface";
 
 export interface Route {
   pools: RoutablePool[];
@@ -35,16 +36,16 @@ export interface RoutablePool {
     },
     tokenOutDenom: string,
     swapFee?: Dec
-  ): {
-    amount: Int;
-    beforeSpotPriceInOverOut: Dec;
-    beforeSpotPriceOutOverIn: Dec;
-    afterSpotPriceInOverOut: Dec;
-    afterSpotPriceOutOverIn: Dec;
-    effectivePriceInOverOut: Dec;
-    effectivePriceOutOverIn: Dec;
-    priceImpact: Dec;
-  };
+  ): SwapResult;
+
+  getTokenInByTokenOut(
+    tokenOut: {
+      denom: string;
+      amount: Int;
+    },
+    tokenInDenom: string,
+    swapFee?: Dec
+  ): SwapResult;
 }
 
 export class OptimizedRoutes {

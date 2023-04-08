@@ -1,7 +1,7 @@
 import { Coin, Dec, Int } from "@keplr-wallet/unit";
 import { ConcentratedLiquidityMath, LiquidityDepth } from "@osmosis-labs/math";
 
-import { BasePool } from "./interface";
+import { BasePool, SwapResult } from "./interface";
 import { RoutablePool } from "./routes";
 
 export interface ConcentratedLiquidityPoolRaw {
@@ -174,16 +174,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     },
     tokenOutDenom: string,
     swapFee: Dec = this.swapFee
-  ): {
-    amount: Int;
-    beforeSpotPriceInOverOut: Dec;
-    beforeSpotPriceOutOverIn: Dec;
-    afterSpotPriceInOverOut: Dec;
-    afterSpotPriceOutOverIn: Dec;
-    effectivePriceInOverOut: Dec;
-    effectivePriceOutOverIn: Dec;
-    priceImpact: Dec;
-  } {
+  ): SwapResult {
     this.validateDenoms(tokenIn.denom, tokenOutDenom);
 
     /** Reminder: currentSqrtPrice: amountToken1/amountToken0 or token 1 per token 0  */
@@ -256,16 +247,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     },
     tokenInDenom: string,
     swapFee: Dec = this.swapFee
-  ): {
-    amount: Int;
-    beforeSpotPriceInOverOut: Dec;
-    beforeSpotPriceOutOverIn: Dec;
-    afterSpotPriceInOverOut: Dec;
-    afterSpotPriceOutOverIn: Dec;
-    effectivePriceInOverOut: Dec;
-    effectivePriceOutOverIn: Dec;
-    priceImpact: Dec;
-  } {
+  ): SwapResult {
     this.validateDenoms(tokenInDenom, tokenOut.denom);
 
     /** Reminder: currentSqrtPrice: amountToken1/amountToken0 or token 1 per token 0  */

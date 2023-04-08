@@ -22,6 +22,7 @@ import {
   SharePool,
   StablePool,
   StablePoolRaw,
+  SwapResult,
   WeightedPool,
   WeightedPoolRaw,
 } from "@osmosis-labs/pools";
@@ -401,16 +402,7 @@ export class ObservableQueryPool
     },
     tokenOutDenom: string,
     swapFee?: Dec
-  ): {
-    amount: Int;
-    beforeSpotPriceInOverOut: Dec;
-    beforeSpotPriceOutOverIn: Dec;
-    afterSpotPriceInOverOut: Dec;
-    afterSpotPriceOutOverIn: Dec;
-    effectivePriceInOverOut: Dec;
-    effectivePriceOutOverIn: Dec;
-    priceImpact: Dec;
-  } {
+  ): SwapResult {
     return this.getTokenOutByTokenIn_Memoed(
       tokenIn.denom,
       tokenIn.amount.toString(),
@@ -426,16 +418,7 @@ export class ObservableQueryPool
     },
     tokenInDenom: string,
     swapFee?: Dec
-  ): {
-    amount: Int;
-    beforeSpotPriceInOverOut: Dec;
-    beforeSpotPriceOutOverIn: Dec;
-    afterSpotPriceInOverOut: Dec;
-    afterSpotPriceOutOverIn: Dec;
-    effectivePriceInOverOut: Dec;
-    effectivePriceOutOverIn: Dec;
-    priceImpact: Dec;
-  } {
+  ): SwapResult {
     return this.getTokenInByTokenOut_Memoed(
       tokenOut.denom,
       tokenOut.amount.toString(),
@@ -491,7 +474,7 @@ export class ObservableQueryPool
     tokenInAmount: string,
     tokenOutDenom: string,
     swapFee: string
-  ) => ReturnType<typeof this.getTokenOutByTokenIn> = computedFn(
+  ) => SwapResult = computedFn(
     (
       tokenInDenom: string,
       tokenInAmount: string,
@@ -541,7 +524,7 @@ export class ObservableQueryPool
     tokenOutAmount: string,
     tokenInDenom: string,
     swapFee: string
-  ) => ReturnType<typeof this.getTokenInByTokenOut> = computedFn(
+  ) => SwapResult = computedFn(
     (
       tokenOutDenom: string,
       tokenOutAmount: string,
@@ -661,7 +644,7 @@ export class ObservableQueryPool
   }
 }
 
-const zeroQuote = {
+const zeroQuote: SwapResult = {
   amount: new Int(0),
   beforeSpotPriceInOverOut: new Dec(0),
   beforeSpotPriceOutOverIn: new Dec(0),
