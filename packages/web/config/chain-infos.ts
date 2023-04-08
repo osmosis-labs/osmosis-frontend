@@ -798,6 +798,17 @@ const chainInfos = (
           coinGeckoId: "pool:grdn",
           coinImageUrl: "/tokens/guardian.png",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno166heaxlyntd33a5euh4rrz26svhean4klzw594esmd02l4atan6sazy2my",
+          coinDenom: "MNPU",
+          coinMinimalDenom:
+            "cw20:juno166heaxlyntd33a5euh4rrz26svhean4klzw594esmd02l4atan6sazy2my:MNPU",
+          coinDecimals: 6,
+          coinGeckoId: "pool:mnpu",
+          coinImageUrl: "/tokens/mnpu.svg",
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: IS_TESTNET

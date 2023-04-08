@@ -1437,4 +1437,14 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     ),
     destCoinId: "usd-coin",
   },
+   {
+    alternativeCoinId: "pool:mnpu",
+    poolId: "961",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-169" }],
+      "cw20:juno166heaxlyntd33a5euh4rrz26svhean4klzw594esmd02l4atan6sazy2my"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
 ];
