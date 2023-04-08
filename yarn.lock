@@ -1179,6 +1179,20 @@
     "@cosmos-kit/cosmostation-extension" "^0.15.15"
     "@cosmos-kit/cosmostation-mobile" "^0.15.16"
 
+"@cosmos-kit/frontier-extension@^0.1.15":
+  version "0.1.15"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/frontier-extension/-/frontier-extension-0.1.15.tgz#98fab875eb5da1ce07a6c41579396ba4679ebde3"
+  integrity sha512-unonSSdVXS2/AnmdTVaBazWawuNU5uYz6Sa40GZRqWQWvc7GwOgLXQG2PZfY0C0zgHOlu82EK1vO/hi/cCUcdQ==
+  dependencies:
+    "@cosmos-kit/core" "^1.3.3"
+
+"@cosmos-kit/frontier@0.1.15":
+  version "0.1.15"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/frontier/-/frontier-0.1.15.tgz#7f8aa4eee6eed5dffd1f7902a10cb4aa92eb66bb"
+  integrity sha512-HZLnww0lrdtWGp5DD0VJ9qtJJSjl2NMpL1bpATT0OZ/mgnUbFK2sEPWZwqr5t0eTVrDkJ+WY+cUvMNEr7CbabQ==
+  dependencies:
+    "@cosmos-kit/frontier-extension" "^0.1.15"
+
 "@cosmos-kit/keplr-extension@^0.33.15":
   version "0.33.15"
   resolved "https://registry.yarnpkg.com/@cosmos-kit/keplr-extension/-/keplr-extension-0.33.15.tgz#563233bd244522acf1e0abd94a66f3dfe9c533f0"

@@ -1,4 +1,5 @@
 import { wallets as cosmosStationWallets } from "@cosmos-kit/cosmostation";
+import { wallets as frontierWallets } from "@cosmos-kit/frontier";
 import { wallets as keplrWallets } from "@cosmos-kit/keplr";
 import { wallets as leapWallets } from "@cosmos-kit/leap";
 import { wallets as terrastationWallets } from "@cosmos-kit/terrastation";
@@ -113,8 +114,9 @@ export class RootStore {
         ...leapWallets,
         ...cosmosStationWallets,
         ...trustWallets,
-        ...xdefiWallets,
         ...terrastationWallets,
+        ...frontierWallets,
+        ...xdefiWallets,
       ],
       this.queriesStore,
       this.chainStore,

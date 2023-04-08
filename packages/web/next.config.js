@@ -8,6 +8,7 @@ const config = {
       "user-images.githubusercontent.com",
       "trustwallet.com",
       "assets.terra.money",
+      "www.frontier.xyz",
     ],
   },
   webpack(config) {
