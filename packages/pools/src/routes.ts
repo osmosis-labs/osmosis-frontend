@@ -129,6 +129,7 @@ export class OptimizedRoutes {
             .map(({ denom }) => denom)
         );
         poolsUsed[i] = false;
+
         currentTokenOuts.pop();
         currentRoute.pop();
       }
@@ -157,8 +158,30 @@ export class OptimizedRoutes {
       tokenIn.denom,
       tokenOutDenom,
       maxPools,
-      maxRoutes
+      maxRoutes / 2
     );
+
+    // find routes with swapped in/out tokens since getCandidateRoutes is a greedy algorithm
+    const reverseRoutes = this.getCandidateRoutes(
+      tokenOutDenom,
+      tokenIn.denom,
+      maxPools,
+      maxRoutes / 21
+    );
+    const invertedRoutes: Route[] = [];
+    reverseRoutes.forEach((route) => {
+      invertedRoutes.push({
+        pools: [...route.pools].reverse(),
+        tokenOutDenoms: [
+          route.tokenInDenom,
+          ...route.tokenOutDenoms.slice(0, -1),
+        ].reverse(),
+        tokenInDenom: route.tokenOutDenoms[route.tokenOutDenoms.length - 1],
+      });
+    });
+    routes = [...routes, ...invertedRoutes];
+
+    // find best routes --
 
     // prioritize shorter routes
     routes = routes.sort((path1, path2) => {
