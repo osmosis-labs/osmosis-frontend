@@ -58,6 +58,7 @@
     "buffer": "^6.0.3",
     "dayjs": "^1.10.7",
     "deepmerge": "^4.2.2",
+    "debounce": "1.2.1",
     "long": "^5.2.0",
     "mobx": "^6.3.10",
     "mobx-utils": "^6.0.4",

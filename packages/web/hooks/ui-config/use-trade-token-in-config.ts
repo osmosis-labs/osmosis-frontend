@@ -4,8 +4,9 @@ import {
   CosmwasmQueries,
   IQueriesStore,
 } from "@keplr-wallet/stores";
-import { RoutablePool } from "@osmosis-labs/pools";
 import {
+  IPriceStore,
+  ObservableQueryPool,
   ObservableTradeTokenInConfig,
   OsmosisQueries,
 } from "@osmosis-labs/stores";
@@ -21,7 +22,8 @@ export function useTradeTokenInConfig(
   osmosisChainId: string,
   bech32Address: string,
   queriesStore: IQueriesStore<CosmosQueries & CosmwasmQueries & OsmosisQueries>,
-  pools: RoutablePool[],
+  priceStore: IPriceStore,
+  pools: ObservableQueryPool[],
   requeryIntervalMs = 8000
 ) {
   const queriesOsmosis = queriesStore.get(osmosisChainId).osmosis!;
@@ -31,11 +33,11 @@ export function useTradeTokenInConfig(
       new ObservableTradeTokenInConfig(
         chainGetter,
         queriesStore,
+        priceStore,
         osmosisChainId,
         bech32Address,
         undefined,
         pools,
-        undefined,
         {
           send: {
             coinDenom: "ATOM",

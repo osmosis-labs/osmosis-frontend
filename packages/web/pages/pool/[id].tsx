@@ -361,7 +361,7 @@ const Pool: FunctionComponent = observer(() => {
           hideCloseButton={isMobile}
           isOpen={showTradeTokenModal}
           onRequestClose={() => setShowTradeTokenModal(false)}
-          pools={[pool.pool]}
+          pools={[pool]}
         />
       )}
       {lockLPTokensConfig && showLockLPTokenModal && (

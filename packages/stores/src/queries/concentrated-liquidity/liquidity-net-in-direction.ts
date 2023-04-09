@@ -6,6 +6,10 @@ import {
 } from "@keplr-wallet/stores";
 import { Dec, Int } from "@keplr-wallet/unit";
 import { LiquidityDepth } from "@osmosis-labs/math";
+import {
+  ConcentratedLiquidityPool,
+  TickDataProvider,
+} from "@osmosis-labs/pools";
 import { computed } from "mobx";
 
 import { LiquidityNetInDirection } from "./types";
@@ -65,7 +69,10 @@ export class ObservableQueryLiquidityNetInDirection extends ObservableChainQuery
   }
 }
 
-export class ObservableQueryLiquiditiesNetInDirection extends ObservableChainQueryMap<LiquidityNetInDirection> {
+export class ObservableQueryLiquiditiesNetInDirection
+  extends ObservableChainQueryMap<LiquidityNetInDirection>
+  implements TickDataProvider
+{
   constructor(
     protected readonly kvStore: KVStore,
     protected readonly chainId: string,
@@ -88,6 +95,15 @@ export class ObservableQueryLiquiditiesNetInDirection extends ObservableChainQue
   getForPoolTokenIn(poolId: string, tokenInDenom: string) {
     const codedKey = encodeKey({ poolId, tokenInDenom });
     return super.get(codedKey) as ObservableQueryLiquidityNetInDirection;
+  }
+
+  async getTickDepths(
+    pool: ConcentratedLiquidityPool,
+    tokenInDenom: string
+  ): Promise<LiquidityDepth[]> {
+    const queryDepths = this.getForPoolTokenIn(pool.id, tokenInDenom);
+    await queryDepths.waitResponse();
+    return queryDepths.depths;
   }
 }
 

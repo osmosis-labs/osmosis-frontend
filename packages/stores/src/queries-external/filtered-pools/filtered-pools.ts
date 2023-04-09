@@ -1,5 +1,9 @@
 import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter, QueryResponse } from "@keplr-wallet/stores";
+import {
+  ChainGetter,
+  ObservableQueryBalances,
+  QueryResponse,
+} from "@keplr-wallet/stores";
 import { makeObservable, observable, runInAction } from "mobx";
 import { computedFn } from "mobx-utils";
 import { ObservableQueryLiquiditiesNetInDirection } from "src/queries/concentrated-liquidity";
@@ -48,6 +52,7 @@ export class ObservableQueryFilteredPools
     protected readonly chainGetter: ChainGetter,
     protected readonly queryNumPools: ObservableQueryNumPools,
     readonly queryLiquiditiesInNetDirection: ObservableQueryLiquiditiesNetInDirection,
+    readonly queryBalances: ObservableQueryBalances,
     protected readonly baseUrl = IMPERATOR_HISTORICAL_DATA_BASEURL,
     initialFilters: Filters = {
       min_liquidity: 10_000,
@@ -107,6 +112,7 @@ export class ObservableQueryFilteredPools
             this.chainId,
             this.chainGetter,
             this.queryLiquiditiesInNetDirection,
+            this.queryBalances,
             poolRaw
           )
         );
@@ -133,7 +139,8 @@ export class ObservableQueryFilteredPools
           this.kvStore,
           this.chainId,
           this.chainGetter,
-          this.queryLiquiditiesInNetDirection
+          this.queryLiquiditiesInNetDirection,
+          this.queryBalances
         )
           .then((pool) => runInAction(() => this._pools.set(id, pool)))
           .catch((e: any) => {

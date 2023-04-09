@@ -6,7 +6,3 @@ export type LiquidityNetInDirection = {
   current_tick: string;
   current_liquidity: string;
 };
-
-export type Head<T extends any[]> = T extends [...infer Head, any]
-  ? Head
-  : any[];

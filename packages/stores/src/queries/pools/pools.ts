@@ -2,6 +2,7 @@ import { KVStore } from "@keplr-wallet/common";
 import {
   ChainGetter,
   ObservableChainQuery,
+  ObservableQueryBalances,
   QueryResponse,
 } from "@keplr-wallet/stores";
 import { makeObservable } from "mobx";
@@ -26,14 +27,10 @@ export class ObservableQueryPools
     kvStore: KVStore,
     chainId: string,
     chainGetter: ChainGetter,
-    readonly queryLiquiditiesInNetDirection: ObservableQueryLiquiditiesNetInDirection
+    readonly queryLiquiditiesInNetDirection: ObservableQueryLiquiditiesNetInDirection,
+    readonly queryBalances: ObservableQueryBalances
   ) {
-    super(
-      kvStore,
-      chainId,
-      chainGetter,
-      "/osmosis/poolmanager/v1beta1/all-pools"
-    );
+    super(kvStore, chainId, chainGetter, "/osmosis/gamm/v1beta1/all-pools");
 
     makeObservable(this);
   }
@@ -54,6 +51,7 @@ export class ObservableQueryPools
             this.chainId,
             this.chainGetter,
             this.queryLiquiditiesInNetDirection,
+            this.queryBalances,
             poolRaw
           )
         );

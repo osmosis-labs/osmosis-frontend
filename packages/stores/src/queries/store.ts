@@ -163,7 +163,8 @@ export class OsmosisQueriesImpl {
               kvStore,
               chainId,
               chainGetter,
-              this.queryLiquiditiesInNetDirection
+              this.queryLiquiditiesInNetDirection,
+              queries.queryBalances
             ),
           ]
         : [
@@ -172,13 +173,15 @@ export class OsmosisQueriesImpl {
               chainId,
               chainGetter,
               this.queryGammNumPools,
-              this.queryLiquiditiesInNetDirection
+              this.queryLiquiditiesInNetDirection,
+              queries.queryBalances
             ),
             new ObservableQueryPools(
               kvStore,
               chainId,
               chainGetter,
-              this.queryLiquiditiesInNetDirection
+              this.queryLiquiditiesInNetDirection,
+              queries.queryBalances
             ),
           ]
     );

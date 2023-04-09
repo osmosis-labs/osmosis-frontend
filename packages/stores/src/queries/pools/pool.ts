@@ -2,6 +2,7 @@ import { KVStore } from "@keplr-wallet/common";
 import {
   ChainGetter,
   ObservableChainQuery,
+  ObservableQueryBalances,
   QueryResponse,
 } from "@keplr-wallet/stores";
 import { AppCurrency, Currency } from "@keplr-wallet/types";
@@ -9,7 +10,6 @@ import {
   CoinPretty,
   Dec,
   DecUtils,
-  Int,
   IntPretty,
   PricePretty,
   RatePretty,
@@ -22,7 +22,6 @@ import {
   SharePool,
   StablePool,
   StablePoolRaw,
-  SwapResult,
   WeightedPool,
   WeightedPoolRaw,
 } from "@osmosis-labs/pools";
@@ -32,8 +31,11 @@ import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { IPriceStore } from "src/price";
 
-import { ObservableQueryLiquiditiesNetInDirection } from "../concentrated-liquidity";
-import { Head } from "./types";
+import {
+  ConcentratedLiquidityPoolAmountProvider,
+  ObservableQueryLiquiditiesNetInDirection,
+} from "../concentrated-liquidity";
+import { Head } from "../utils";
 
 export type PoolRaw =
   | WeightedPoolRaw
@@ -49,12 +51,9 @@ const CONCENTRATED_LIQ_POOL_TYPE =
  *  Uses a few different concrete classes to represent the different types of pools.
  *  Converts the common fields of the raw pool data into more useful types, such as prettified types for display.
  */
-export class ObservableQueryPool
-  extends ObservableChainQuery<{
-    pool: PoolRaw;
-  }>
-  implements RoutablePool
-{
+export class ObservableQueryPool extends ObservableChainQuery<{
+  pool: PoolRaw;
+}> {
   /** Observe any new references resulting from pool or pools query. */
   @observable.ref
   protected raw: PoolRaw;
@@ -73,8 +72,12 @@ export class ObservableQueryPool
       return new WeightedPool(this.raw as WeightedPoolRaw);
     }
     if (this.raw["@type"] === CONCENTRATED_LIQ_POOL_TYPE) {
+      const clRaw = this.raw as ConcentratedLiquidityPoolRaw;
+
       return new ConcentratedLiquidityPool(
-        this.raw as ConcentratedLiquidityPoolRaw
+        clRaw,
+        this.queryLiquiditiesInNetDirection,
+        new ConcentratedLiquidityPoolAmountProvider(clRaw, this.queryBalances)
       );
     }
 
@@ -302,6 +305,7 @@ export class ObservableQueryPool
     chainId: string,
     readonly chainGetter: ChainGetter,
     readonly queryLiquiditiesInNetDirection: ObservableQueryLiquiditiesNetInDirection,
+    readonly queryBalances: ObservableQueryBalances,
     raw: PoolRaw
   ) {
     super(
@@ -395,45 +399,6 @@ export class ObservableQueryPool
     );
   });
 
-  getTokenOutByTokenIn(
-    tokenIn: {
-      denom: string;
-      amount: Int;
-    },
-    tokenOutDenom: string,
-    swapFee?: Dec
-  ): SwapResult {
-    return this.getTokenOutByTokenIn_Memoed(
-      tokenIn.denom,
-      tokenIn.amount.toString(),
-      tokenOutDenom,
-      swapFee?.toString() ?? "undefined"
-    );
-  }
-
-  getTokenInByTokenOut(
-    tokenOut: {
-      denom: string;
-      amount: Int;
-    },
-    tokenInDenom: string,
-    swapFee?: Dec
-  ): SwapResult {
-    return this.getTokenInByTokenOut_Memoed(
-      tokenOut.denom,
-      tokenOut.amount.toString(),
-      tokenInDenom,
-      swapFee?.toString() ?? "undefined"
-    );
-  }
-
-  getNormalizedLiquidity(tokenInDenom: string, tokenOutDenom: string): Dec {
-    return this.pool.getNormalizedLiquidity(tokenInDenom, tokenOutDenom);
-  }
-  getLimitAmountByTokenIn(denom: string): Int {
-    return this.pool.getLimitAmountByTokenIn(denom);
-  }
-
   @action
   setRaw(raw: PoolRaw) {
     ObservableQueryPool.addUnknownCurrencies(
@@ -464,107 +429,6 @@ export class ObservableQueryPool
     return price;
   });
 
-  /**
-   Unfortunately, if reference is included in args,
-   there is no guarantee that computed will memorize the result well, so to reduce this problem,
-   create an internal function that accepts only primitive types as args.
-   */
-  private readonly getTokenOutByTokenIn_Memoed: (
-    tokenInDenom: string,
-    tokenInAmount: string,
-    tokenOutDenom: string,
-    swapFee: string
-  ) => SwapResult = computedFn(
-    (
-      tokenInDenom: string,
-      tokenInAmount: string,
-      tokenOutDenom: string,
-      swapFee: string
-    ) => {
-      // set the CL net tick liquidities if this is a CL pool
-      if (this.pool instanceof ConcentratedLiquidityPool) {
-        const queryTicksInDirection =
-          this.queryLiquiditiesInNetDirection.getForPoolTokenIn(
-            this.pool.id,
-            tokenInDenom
-          );
-
-        if (!queryTicksInDirection.response) {
-          console.warn("No depths yet for concentrated pool", this.pool.id);
-
-          return zeroQuote;
-        }
-
-        this.pool.setLiquidityDepths(
-          tokenInDenom,
-          queryTicksInDirection.depths
-        );
-      }
-
-      const result = this.pool.getTokenOutByTokenIn(
-        {
-          denom: tokenInDenom,
-          amount: new Int(tokenInAmount),
-        },
-        tokenOutDenom,
-        swapFee !== "undefined" ? new Dec(swapFee) : undefined
-      );
-
-      return result;
-    }
-  );
-
-  /**
-   Unfortunately, if reference is included in args,
-   there is no guarantee that computed will memorize the result well, so to reduce this problem,
-   create an internal function that accepts only primitive types as args.
-   */
-  private readonly getTokenInByTokenOut_Memoed: (
-    tokenOutDenom: string,
-    tokenOutAmount: string,
-    tokenInDenom: string,
-    swapFee: string
-  ) => SwapResult = computedFn(
-    (
-      tokenOutDenom: string,
-      tokenOutAmount: string,
-      tokenInDenom: string,
-      swapFee: string
-    ) => {
-      // set the CL net tick liquidities if this is a CL pool
-      if (this.pool instanceof ConcentratedLiquidityPool) {
-        const queryTicksInDirection =
-          this.queryLiquiditiesInNetDirection.getForPoolTokenIn(
-            this.pool.id,
-            tokenInDenom
-          );
-
-        if (!queryTicksInDirection.response) {
-          console.warn("No depths yet for concentrated pool", this.pool.id);
-
-          return zeroQuote;
-        }
-
-        // update instance to reflect the latest liquidity values
-        this.pool.setLiquidityDepths(
-          tokenInDenom,
-          queryTicksInDirection.depths
-        );
-      }
-
-      const result = this.pool.getTokenOutByTokenIn(
-        {
-          denom: tokenOutDenom,
-          amount: new Int(tokenOutAmount),
-        },
-        tokenInDenom,
-        swapFee !== "undefined" ? new Dec(swapFee) : undefined
-      );
-
-      return result;
-    }
-  );
-
   protected setResponse(
     response: Readonly<
       QueryResponse<{
@@ -579,9 +443,13 @@ export class ObservableQueryPool
 
   static makeWithoutRaw(
     poolId: string,
-    ...[kvStore, chainId, chainGetter, queryLiquiditiesInNetDirection]: Head<
-      ConstructorParameters<typeof ObservableQueryPool>
-    >
+    ...[
+      kvStore,
+      chainId,
+      chainGetter,
+      queryLiquiditiesInNetDirection,
+      queryBalances,
+    ]: Head<ConstructorParameters<typeof ObservableQueryPool>>
   ): Promise<ObservableQueryPool> {
     return new Promise((resolve, reject) => {
       let lcdUrl = chainGetter.getChain(chainId).rest;
@@ -599,6 +467,7 @@ export class ObservableQueryPool
                     chainId,
                     chainGetter,
                     queryLiquiditiesInNetDirection,
+                    queryBalances,
                     data.pool
                   )
                 );
@@ -613,7 +482,7 @@ export class ObservableQueryPool
   }
 
   protected static makeEndpointUrl(poolId: string) {
-    return `/osmosis/poolmanager/v1beta1/pools/${poolId}`;
+    return `/osmosis/gamm/v1beta1/pools/${poolId}`;
   }
 
   protected static addUnknownCurrencies(
@@ -643,14 +512,3 @@ export class ObservableQueryPool
     chainInfo.addUnknownCurrencies(...denomsInPool);
   }
 }
-
-const zeroQuote: SwapResult = {
-  amount: new Int(0),
-  beforeSpotPriceInOverOut: new Dec(0),
-  beforeSpotPriceOutOverIn: new Dec(0),
-  afterSpotPriceInOverOut: new Dec(0),
-  afterSpotPriceOutOverIn: new Dec(0),
-  effectivePriceInOverOut: new Dec(0),
-  effectivePriceOutOverIn: new Dec(0),
-  priceImpact: new Dec(0),
-};

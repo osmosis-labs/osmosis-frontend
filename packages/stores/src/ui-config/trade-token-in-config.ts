@@ -10,21 +10,24 @@ import {
   RatePretty,
 } from "@keplr-wallet/unit";
 import {
+  MultihopSwapResult,
   NotEnoughLiquidityError,
   OptimizedRoutes,
-  RoutablePool,
   RouteWithAmount,
 } from "@osmosis-labs/pools";
+import { debounce } from "debounce";
 import {
   action,
+  autorun,
   computed,
   makeObservable,
   observable,
   override,
   runInAction,
 } from "mobx";
+import { IPriceStore } from "src/price";
 
-import { OsmosisQueries } from "../queries";
+import { ObservableQueryPool, OsmosisQueries } from "../queries";
 import {
   InsufficientBalanceError,
   NoRouteError,
@@ -33,9 +36,9 @@ import {
 
 export class ObservableTradeTokenInConfig extends AmountConfig {
   @observable.ref
-  protected _pools: RoutablePool[];
+  protected _pools: ObservableQueryPool[];
   @observable
-  protected _incentivizedPoolIds: string[];
+  protected _incentivizedPoolIds: string[] = [];
 
   @observable
   protected _sendCurrencyMinDenom: string | undefined = undefined;
@@ -46,81 +49,14 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   @observable
   protected _notEnoughLiquidity: boolean = false;
 
-  constructor(
-    chainGetter: ChainGetter,
-    protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
-    protected readonly initialChainId: string,
-    sender: string,
-    feeConfig: IFeeConfig | undefined,
-    pools: RoutablePool[],
-    incentivizedPoolIds: string[] = [],
-    protected readonly initialSelectCurrencies: {
-      send: AppCurrency;
-      out: AppCurrency;
-    }
-  ) {
-    super(chainGetter, queriesStore, initialChainId, sender, feeConfig);
+  @observable.ref
+  protected _latestSwapResult: MultihopSwapResult | undefined;
 
-    this._pools = pools;
-    this._incentivizedPoolIds = incentivizedPoolIds;
+  @observable.ref
+  protected _spotPriceResult: MultihopSwapResult | undefined;
 
-    makeObservable(this);
-  }
-
-  @action
-  setPools(pools: RoutablePool[]) {
-    this._pools = pools;
-  }
-
-  @action
-  setIncentivizedPoolIds(poolIds: string[]) {
-    this._incentivizedPoolIds = poolIds;
-  }
-
-  @override
-  setSendCurrency(currency: AppCurrency | undefined) {
-    if (currency) {
-      this._sendCurrencyMinDenom = currency.coinMinimalDenom;
-    } else {
-      this._sendCurrencyMinDenom = undefined;
-    }
-  }
-
-  @action
-  setOutCurrency(currency: AppCurrency | undefined) {
-    if (currency) {
-      this._outCurrencyMinDenom = currency.coinMinimalDenom;
-    } else {
-      this._outCurrencyMinDenom = undefined;
-    }
-  }
-
-  @action
-  switchInAndOut() {
-    // give back the swap fee amount
-    const outAmount = this.expectedSwapResult.amount;
-    if (outAmount.toDec().isZero()) {
-      this.setAmount("");
-    } else {
-      this.setAmount(
-        outAmount
-          .shrink(true)
-          .maxDecimals(6)
-          .trim(true)
-          .hideDenom(true)
-          .toString()
-      );
-    }
-
-    // Since changing in and out affects each other, it is important to use the stored value.
-    const prevInCurrency = this.sendCurrency.coinMinimalDenom;
-    const prevOutCurrency = this.outCurrency.coinMinimalDenom;
-
-    this._sendCurrencyMinDenom = prevOutCurrency;
-    this._outCurrencyMinDenom = prevInCurrency;
-  }
-
-  get pools(): RoutablePool[] {
+  @computed
+  get pools(): ObservableQueryPool[] {
     return this._pools;
   }
 
@@ -226,10 +162,21 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   protected get optimizedRoutes(): OptimizedRoutes {
     const stakeCurrencyMinDenom = this.chainGetter.getChain(this.initialChainId)
       .stakeCurrency.coinMinimalDenom;
+    const getTvl = (poolId: string) => {
+      const queryPool = this.pools.find((pool) => pool.id === poolId);
+      if (queryPool) {
+        return queryPool.computeTotalValueLocked(this.priceStore).toDec();
+      } else {
+        console.warn("Returning 0 TVL for poolId: " + poolId);
+        return new Dec(0);
+      }
+    };
+
     return new OptimizedRoutes(
-      this.pools,
+      this.pools.map((pool) => pool.pool),
       this._incentivizedPoolIds,
-      stakeCurrencyMinDenom
+      stakeCurrencyMinDenom,
+      getTvl
     );
   }
 
@@ -243,11 +190,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     if (
       !amount.amount ||
       new Int(amount.amount).lte(new Int(0)) ||
-      this.sendableCurrencies.length === 0 ||
-      !Boolean(
-        this.queriesStore.get(this.initialChainId).osmosis?.queryGammPools
-          .response
-      )
+      this.sendableCurrencies.length === 0
     ) {
       return [];
     }
@@ -272,6 +215,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     }
   }
 
+  /** Prettify swap result for display. */
   @computed
   get expectedSwapResult(): {
     amount: CoinPretty;
@@ -288,45 +232,12 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     priceImpact: RatePretty;
     isMultihopOsmoFeeDiscount: boolean;
   } {
-    const paths = this.optimizedRoutePaths;
-    this.setError(undefined);
-    const zero = {
-      amount: new CoinPretty(this.outCurrency, new Dec(0)).ready(false),
-      beforeSpotPriceWithoutSwapFeeInOverOut: new IntPretty(0).ready(false),
-      beforeSpotPriceWithoutSwapFeeOutOverIn: new IntPretty(0),
-      beforeSpotPriceInOverOut: new IntPretty(0).ready(false),
-      beforeSpotPriceOutOverIn: new IntPretty(0).ready(false),
-      afterSpotPriceInOverOut: new IntPretty(0).ready(false),
-      afterSpotPriceOutOverIn: new IntPretty(0).ready(false),
-      effectivePriceInOverOut: new IntPretty(0).ready(false),
-      effectivePriceOutOverIn: new IntPretty(0).ready(false),
-      tokenInFeeAmount: new CoinPretty(this.sendCurrency, new Dec(0)).ready(
-        false
-      ),
-      swapFee: new RatePretty(0).ready(false),
-      priceImpact: new RatePretty(0).ready(false),
-      isMultihopOsmoFeeDiscount: false,
-    };
-
-    if (paths.length === 0 && this.amount !== "" && this.amount !== "0") {
-      this.setError(new NoRouteError("No route found"));
-      return zero;
-    }
-
-    if (paths.length === 0 || this.amount === "" || this.amount === "0") {
-      return zero;
-    }
+    const result = this._latestSwapResult;
+    if (!result) return this.zeroSwapResult;
 
     const multiplicationInOverOut = DecUtils.getTenExponentN(
       this.outCurrency.coinDecimals - this.sendCurrency.coinDecimals
     );
-    const result = this.optimizedRoutes.calculateTokenOutByTokenIn(paths);
-
-    if (!result.amount.gt(new Int(0))) {
-      this.setError(new Error("Not enough liquidity"));
-      return zero;
-    }
-
     const beforeSpotPriceWithoutSwapFeeInOverOutDec =
       result.beforeSpotPriceInOverOut.mulTruncate(
         new Dec(1).sub(result.swapFee)
@@ -385,50 +296,20 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   /** Calculated spot price with amount of 1 token in. */
   @computed
   get beforeSpotPriceWithoutSwapFeeOutOverIn(): IntPretty {
-    let paths;
-    const one = new Int(
-      DecUtils.getTenExponentNInPrecisionRange(this.sendCurrency.coinDecimals)
-        .truncate()
-        .toString()
-    );
-    try {
-      paths = this.optimizedRoutes.getOptimizedRoutesByTokenIn(
-        {
-          denom: this.sendCurrency.coinMinimalDenom,
-          amount: one,
-        },
-        this.outCurrency.coinMinimalDenom,
-        5
-      );
-    } catch (e: any) {
-      console.error("No route found", e.message);
+    const result = this._spotPriceResult;
+
+    // low price vs in asset
+    if (!result || result.beforeSpotPriceInOverOut.isZero()) {
       return new IntPretty(0).ready(false);
     }
 
-    if (paths.length === 0) {
-      return new IntPretty(0).ready(false);
-    }
-
-    const estimate = this.optimizedRoutes.calculateTokenOutByTokenIn(paths);
     const multiplicationInOverOut = DecUtils.getTenExponentN(
       this.outCurrency.coinDecimals - this.sendCurrency.coinDecimals
     );
-    const beforeSpotPriceWithoutSwapFeeInOverOutDec =
-      estimate.beforeSpotPriceInOverOut.mulTruncate(
-        new Dec(1).sub(estimate.swapFee)
-      );
-
-    // low price vs in asset
-    if (
-      beforeSpotPriceWithoutSwapFeeInOverOutDec.isZero() ||
-      multiplicationInOverOut.isZero()
-    ) {
-      return new IntPretty(0).ready(false);
-    }
 
     return new IntPretty(
       new Dec(1)
-        .quoTruncate(beforeSpotPriceWithoutSwapFeeInOverOutDec)
+        .quoTruncate(result.beforeSpotPriceInOverOut)
         .quoTruncate(multiplicationInOverOut)
     );
   }
@@ -456,6 +337,175 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     }
 
     return this._error;
+  }
+
+  @computed
+  get zeroSwapResult() {
+    return {
+      amount: new CoinPretty(this.outCurrency, new Dec(0)).ready(false),
+      beforeSpotPriceWithoutSwapFeeInOverOut: new IntPretty(0).ready(false),
+      beforeSpotPriceWithoutSwapFeeOutOverIn: new IntPretty(0),
+      beforeSpotPriceInOverOut: new IntPretty(0).ready(false),
+      beforeSpotPriceOutOverIn: new IntPretty(0).ready(false),
+      afterSpotPriceInOverOut: new IntPretty(0).ready(false),
+      afterSpotPriceOutOverIn: new IntPretty(0).ready(false),
+      effectivePriceInOverOut: new IntPretty(0).ready(false),
+      effectivePriceOutOverIn: new IntPretty(0).ready(false),
+      tokenInFeeAmount: new CoinPretty(this.sendCurrency, new Dec(0)).ready(
+        false
+      ),
+      swapFee: new RatePretty(0).ready(false),
+      priceImpact: new RatePretty(0).ready(false),
+      isMultihopOsmoFeeDiscount: false,
+    };
+  }
+
+  constructor(
+    chainGetter: ChainGetter,
+    protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
+    protected readonly priceStore: IPriceStore,
+    protected readonly initialChainId: string,
+    sender: string,
+    feeConfig: IFeeConfig | undefined,
+    pools: ObservableQueryPool[],
+    protected readonly initialSelectCurrencies: {
+      send: AppCurrency;
+      out: AppCurrency;
+    }
+  ) {
+    super(chainGetter, queriesStore, initialChainId, sender, feeConfig);
+
+    this._pools = pools;
+
+    const debounceCalculateRoutes = debounce((paths: RouteWithAmount[]) => {
+      this.optimizedRoutes
+        .calculateTokenOutByTokenIn(paths)
+        .then((swapResult) => {
+          if (swapResult.amount.isZero()) {
+            this.setError(new Error("Not enough liquidity"));
+            return;
+          }
+
+          runInAction(() => {
+            this._latestSwapResult = swapResult;
+          });
+        });
+    }, 1000);
+
+    // React to user input and request a swap result. This is debounced to prevent spamming the server
+    autorun(() => {
+      const paths = this.optimizedRoutePaths;
+      this.setError(undefined);
+
+      if (paths.length === 0 && this.amount !== "" && this.amount !== "0") {
+        this.setError(new NoRouteError("No route found"));
+        return this.zeroSwapResult;
+      }
+
+      if (paths.length === 0 || this.amount === "" || this.amount === "0") {
+        return this.zeroSwapResult;
+      }
+
+      debounceCalculateRoutes.clear();
+      debounceCalculateRoutes(paths);
+    });
+
+    // react to changes in send/out currencies, then generate a spot price
+    // autorun(() => {
+    //   const sendCurrency = this.sendCurrency;
+    //   if (!sendCurrency) return;
+
+    //   if (!this._spotPriceResult) {
+    //     let paths;
+    //     const one = new Int(
+    //       DecUtils.getTenExponentNInPrecisionRange(
+    //         this.sendCurrency.coinDecimals
+    //       )
+    //         .truncate()
+    //         .toString()
+    //     );
+    //     try {
+    //       paths = this.optimizedRoutes.getOptimizedRoutesByTokenIn(
+    //         {
+    //           denom: this.sendCurrency.coinMinimalDenom,
+    //           amount: one,
+    //         },
+    //         this.outCurrency.coinMinimalDenom,
+    //         5
+    //       );
+    //     } catch (e: any) {
+    //       console.error("No route found", e.message);
+    //       return new IntPretty(0).ready(false);
+    //     }
+
+    //     if (paths.length === 0) {
+    //       return new IntPretty(0).ready(false);
+    //     }
+
+    //     this.optimizedRoutes
+    //       .calculateTokenOutByTokenIn(paths)
+    //       .then((result) => {
+    //         runInAction(() => {
+    //           this._spotPriceResult = result;
+    //         });
+    //       });
+    //   }
+    // });
+
+    makeObservable(this);
+  }
+
+  @action
+  setPools(pools: ObservableQueryPool[]) {
+    this._pools = pools;
+  }
+
+  @action
+  setIncentivizedPoolIds(poolIds: string[]) {
+    this._incentivizedPoolIds = poolIds;
+  }
+
+  @override
+  setSendCurrency(currency: AppCurrency | undefined) {
+    if (currency) {
+      this._sendCurrencyMinDenom = currency.coinMinimalDenom;
+    } else {
+      this._sendCurrencyMinDenom = undefined;
+    }
+  }
+
+  @action
+  setOutCurrency(currency: AppCurrency | undefined) {
+    if (currency) {
+      this._outCurrencyMinDenom = currency.coinMinimalDenom;
+    } else {
+      this._outCurrencyMinDenom = undefined;
+    }
+  }
+
+  @action
+  switchInAndOut() {
+    // give back the swap fee amount
+    const outAmount = this.expectedSwapResult.amount;
+    if (outAmount.toDec().isZero()) {
+      this.setAmount("");
+    } else {
+      this.setAmount(
+        outAmount
+          .shrink(true)
+          .maxDecimals(6)
+          .trim(true)
+          .hideDenom(true)
+          .toString()
+      );
+    }
+
+    // Since changing in and out affects each other, it is important to use the stored value.
+    const prevInCurrency = this.sendCurrency.coinMinimalDenom;
+    const prevOutCurrency = this.outCurrency.coinMinimalDenom;
+
+    this._sendCurrencyMinDenom = prevOutCurrency;
+    this._outCurrencyMinDenom = prevInCurrency;
   }
 
   @action
