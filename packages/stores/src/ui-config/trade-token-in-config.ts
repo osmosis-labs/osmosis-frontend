@@ -187,6 +187,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     });
     this.setError(undefined);
     const amount = this.getAmountPrimitive();
+
     if (
       !amount.amount ||
       new Int(amount.amount).lte(new Int(0)) ||
@@ -202,7 +203,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           amount: new Int(amount.amount),
         },
         this.outCurrency.coinMinimalDenom,
-        5
+        4
       );
     } catch (e: any) {
       if (e instanceof NotEnoughLiquidityError) {
@@ -411,46 +412,46 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     });
 
     // react to changes in send/out currencies, then generate a spot price
-    // autorun(() => {
-    //   const sendCurrency = this.sendCurrency;
-    //   if (!sendCurrency) return;
+    autorun(() => {
+      const sendCurrency = this.sendCurrency;
+      if (!sendCurrency) return;
 
-    //   if (!this._spotPriceResult) {
-    //     let paths;
-    //     const one = new Int(
-    //       DecUtils.getTenExponentNInPrecisionRange(
-    //         this.sendCurrency.coinDecimals
-    //       )
-    //         .truncate()
-    //         .toString()
-    //     );
-    //     try {
-    //       paths = this.optimizedRoutes.getOptimizedRoutesByTokenIn(
-    //         {
-    //           denom: this.sendCurrency.coinMinimalDenom,
-    //           amount: one,
-    //         },
-    //         this.outCurrency.coinMinimalDenom,
-    //         5
-    //       );
-    //     } catch (e: any) {
-    //       console.error("No route found", e.message);
-    //       return new IntPretty(0).ready(false);
-    //     }
+      if (!this._spotPriceResult) {
+        let paths;
+        const one = new Int(
+          DecUtils.getTenExponentNInPrecisionRange(
+            this.sendCurrency.coinDecimals
+          )
+            .truncate()
+            .toString()
+        );
+        try {
+          paths = this.optimizedRoutes.getOptimizedRoutesByTokenIn(
+            {
+              denom: this.sendCurrency.coinMinimalDenom,
+              amount: one,
+            },
+            this.outCurrency.coinMinimalDenom,
+            5
+          );
+        } catch (e: any) {
+          console.error("No route found", e.message);
+          return new IntPretty(0).ready(false);
+        }
 
-    //     if (paths.length === 0) {
-    //       return new IntPretty(0).ready(false);
-    //     }
+        if (paths.length === 0) {
+          return new IntPretty(0).ready(false);
+        }
 
-    //     this.optimizedRoutes
-    //       .calculateTokenOutByTokenIn(paths)
-    //       .then((result) => {
-    //         runInAction(() => {
-    //           this._spotPriceResult = result;
-    //         });
-    //       });
-    //   }
-    // });
+        this.optimizedRoutes
+          .calculateTokenOutByTokenIn(paths)
+          .then((result) => {
+            runInAction(() => {
+              this._spotPriceResult = result;
+            });
+          });
+      }
+    });
 
     makeObservable(this);
   }

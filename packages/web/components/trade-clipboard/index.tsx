@@ -45,8 +45,15 @@ export const TradeClipboard: FunctionComponent<{
   containerClassName?: string;
   isInModal?: boolean;
   onRequestModalClose?: () => void;
+  swapButton?: React.ReactElement;
 }> = observer(
-  ({ containerClassName, pools, isInModal, onRequestModalClose }) => {
+  ({
+    containerClassName,
+    pools,
+    isInModal,
+    onRequestModalClose,
+    swapButton,
+  }) => {
     const {
       chainStore,
       accountStore,
@@ -1098,41 +1105,43 @@ export const TradeClipboard: FunctionComponent<{
             </div>
           </div>
         </div>
-        <Button
-          mode={
-            showPriceImpactWarning &&
-            account.walletStatus === WalletStatus.Loaded
-              ? "primary-warning"
-              : "primary"
-          }
-          disabled={
-            account.walletStatus === WalletStatus.Loaded &&
-            (tradeTokenInConfig.error !== undefined ||
-              tradeTokenInConfig.optimizedRoutePaths.length === 0 ||
-              account.txTypeInProgress !== "")
-          }
-          onClick={swap}
-        >
-          {account.walletStatus === WalletStatus.Loaded ? (
-            tradeTokenInConfig.error ? (
-              t(...tError(tradeTokenInConfig.error))
-            ) : showPriceImpactWarning ? (
-              t("swap.buttonError")
+        {swapButton ?? (
+          <Button
+            mode={
+              showPriceImpactWarning &&
+              account.walletStatus === WalletStatus.Loaded
+                ? "primary-warning"
+                : "primary"
+            }
+            disabled={
+              account.walletStatus === WalletStatus.Loaded &&
+              (tradeTokenInConfig.error !== undefined ||
+                tradeTokenInConfig.optimizedRoutePaths.length === 0 ||
+                account.txTypeInProgress !== "")
+            }
+            onClick={swap}
+          >
+            {account.walletStatus === WalletStatus.Loaded ? (
+              tradeTokenInConfig.error ? (
+                t(...tError(tradeTokenInConfig.error))
+              ) : showPriceImpactWarning ? (
+                t("swap.buttonError")
+              ) : (
+                t("swap.button")
+              )
             ) : (
-              t("swap.button")
-            )
-          ) : (
-            <h6 className="flex items-center gap-3">
-              <Image
-                alt="wallet"
-                src="/icons/wallet.svg"
-                height={24}
-                width={24}
-              />
-              {t("connectWallet")}
-            </h6>
-          )}
-        </Button>
+              <h6 className="flex items-center gap-3">
+                <Image
+                  alt="wallet"
+                  src="/icons/wallet.svg"
+                  height={24}
+                  width={24}
+                />
+                {t("connectWallet")}
+              </h6>
+            )}
+          </Button>
+        )}
       </div>
     );
   }

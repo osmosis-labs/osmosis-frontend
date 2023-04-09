@@ -504,29 +504,39 @@ const chainInfos = (
       explorerUrlToTx: "https://emoney.bigdipper.live/transactions/{txHash}",
     },
     {
-      rpc: "https://rpc-juno.keplr.app",
-      rest: "https://lcd-juno.keplr.app",
-      chainId: "juno-1",
-      chainName: "Juno",
+      rpc: IS_TESTNET
+        ? "https://rpc.uni.junonetwork.io"
+        : "https://rpc-juno.keplr.app",
+      rest: IS_TESTNET
+        ? "https://api.uni.junonetwork.io"
+        : "https://lcd-juno.keplr.app",
+      chainId: IS_TESTNET ? "uni-6" : "juno-1",
+      chainName: IS_TESTNET ? "Juno Testnet" : "Juno",
       bip44: {
         coinType: 118,
       },
       bech32Config: Bech32Address.defaultBech32Config("juno"),
       currencies: [
         {
-          coinDenom: "JUNO",
-          coinMinimalDenom: "ujuno",
+          coinDenom: IS_TESTNET ? "JUNOX" : "JUNO",
+          coinMinimalDenom: IS_TESTNET ? "ujunox" : "ujuno",
           coinDecimals: 6,
           // coinGeckoId: "juno-network",
           coinGeckoId: "pool:ujuno",
           coinImageUrl: "/tokens/juno.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
-          gasPriceStep: {
-            low: 0.001,
-            average: 0.0025,
-            high: 0.004,
-          },
+          gasPriceStep: IS_TESTNET
+            ? {
+                low: 0.001,
+                average: 0.0025,
+                high: 0.004,
+              }
+            : {
+                low: 0.03,
+                average: 0.04,
+                high: 0.05,
+              },
         },
         {
           type: "cw20",
@@ -707,7 +717,7 @@ const chainInfos = (
           coinMinimalDenom:
             "cw20:juno1p8x807f6h222ur0vssqy3qk6mcpa40gw2pchquz5atl935t7kvyq894ne3:MUSE",
           coinDecimals: 6,
-          coinGeckoId: "pool:muse",
+          //coinGeckoId: "pool:muse",
           coinImageUrl: "/tokens/muse.svg",
         },
         {
@@ -777,9 +787,33 @@ const chainInfos = (
           coinGeckoId: "pool:fox",
           coinImageUrl: "/tokens/fox.svg",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1xekkh27punj0uxruv3gvuydyt856fax0nu750xns99t2qcxp7xmsqwhfma",
+          coinDenom: "GRDN",
+          coinMinimalDenom:
+            "cw20:juno1xekkh27punj0uxruv3gvuydyt856fax0nu750xns99t2qcxp7xmsqwhfma:GRDN",
+          coinDecimals: 6,
+          coinGeckoId: "pool:grdn",
+          coinImageUrl: "/tokens/guardian.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno166heaxlyntd33a5euh4rrz26svhean4klzw594esmd02l4atan6sazy2my",
+          coinDenom: "MNPU",
+          coinMinimalDenom:
+            "cw20:juno166heaxlyntd33a5euh4rrz26svhean4klzw594esmd02l4atan6sazy2my:MNPU",
+          coinDecimals: 6,
+          coinGeckoId: "pool:mnpu",
+          coinImageUrl: "/tokens/mnpu.svg",
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
-      explorerUrlToTx: "https://www.mintscan.io/juno/txs/{txHash}",
+      explorerUrlToTx: IS_TESTNET
+        ? "https://testnet.mintscan.io/juno-testnet/txs/{txHash}"
+        : "https://www.mintscan.io/juno/txs/{txHash}",
     },
     {
       rpc: "https://rpc-microtick.keplr.app",
@@ -1623,7 +1657,7 @@ const chainInfos = (
           coinMinimalDenom: "uctk",
           coinDecimals: 6,
           // coinGeckoId: "certik",
-          coinGeckoId: "pool:uctk",
+          //coinGeckoId: "pool:uctk",
           coinImageUrl: "/tokens/ctk.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
@@ -1976,7 +2010,7 @@ const chainInfos = (
           coinMinimalDenom: "hard",
           coinDecimals: 6,
           // coinGeckoId: "kava-lend",
-          coinGeckoId: "pool:hard",
+          //coinGeckoId: "pool:hard",
           coinImageUrl: "/tokens/hard.svg",
         },
         {
@@ -1984,7 +2018,7 @@ const chainInfos = (
           coinMinimalDenom: "swp",
           coinDecimals: 6,
           // coinGeckoId: "kava-swap",
-          coinGeckoId: "pool:swp",
+          //coinGeckoId: "pool:swp",
           coinImageUrl: "/tokens/swp.svg",
         },
         {
@@ -1992,7 +2026,7 @@ const chainInfos = (
           coinMinimalDenom: "usdx",
           coinDecimals: 6,
           // coinGeckoId: "usdx",
-          coinGeckoId: "pool:usdx",
+          //coinGeckoId: "pool:usdx",
           coinImageUrl: "/tokens/usdx.svg",
         },
       ],
@@ -2210,7 +2244,7 @@ const chainInfos = (
           coinMinimalDenom: "ulumen",
           coinDecimals: 6,
           coinGeckoId: "pool:ulumen",
-          coinImageUrl: "/tokens/lumen.png",
+          coinImageUrl: "/tokens/lumen.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
@@ -2930,6 +2964,106 @@ const chainInfos = (
       ],
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://explorer.kynraze.com/arkhadian/tx/{txHash}",
+    },
+    {
+      rpc: "https://rpc.mainnet.noble.strange.love",
+      rest: "https://noble-api.polkachu.com",
+      chainId: "noble-1",
+      chainName: "Noble",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("noble"),
+      currencies: [
+        {
+          coinDenom: "STAKE",
+          coinMinimalDenom: "ustake",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/stake.svg",
+          coinGeckoId: "pool:ustake",
+          isStakeCurrency: true,
+        },
+        {
+          coinDenom: "nUSDC",
+          coinMinimalDenom: "uusdc",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/usdc.svg",
+          coinGeckoId: "usd-coin",
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.01,
+            average: 0.025,
+            high: 0.03,
+          },
+        },
+        {
+          coinDenom: "FRNZ",
+          coinMinimalDenom: "ufrienzies",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/frnz.svg",
+          coinGeckoId: "pool:frnz",
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx: "https://www.mintscan.io/noble/txs/{txHash}",
+    },
+    {
+      rpc: "https://whitewhale-rpc.lavenderfive.com",
+      rest: "https://whitewhale-api.lavenderfive.com",
+      chainId: "migaloo-1",
+      chainName: "Migaloo",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("migaloo"),
+      currencies: [
+        {
+          coinDenom: "WHALE",
+          coinMinimalDenom: "uwhale",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/white-whale.svg",
+          coinGeckoId: "pool:uwhale",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0,
+            average: 0,
+            high: 0,
+          },
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx: "https://ping.pub/migaloo/tx/{txHash}",
+    },
+    {
+      rpc: IS_TESTNET ? "https://net-rila.nolus.io:26657" : "",
+      rest: IS_TESTNET ? "https://net-rila.nolus.io:1317" : "",
+      chainId: IS_TESTNET ? "nolus-rila" : "",
+      chainName: IS_TESTNET ? "Rila Testnet" : "",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("nolus"),
+      currencies: [
+        {
+          coinDenom: "NLS",
+          coinMinimalDenom: "unls",
+          coinDecimals: 6,
+          coinGeckoId: "pool:unls",
+          coinImageUrl: "/tokens/nolus.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0,
+            average: 0,
+            high: 0.025,
+          },
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx: IS_TESTNET
+        ? "https://explorer-rila.nolus.io/nolus-rila/tx/{txHash}"
+        : "",
     },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);

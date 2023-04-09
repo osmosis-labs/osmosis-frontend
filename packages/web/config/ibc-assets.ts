@@ -139,6 +139,20 @@ export const IBCAssetInfos: (IBCAsset & {
           sourceChainTokens: [AxelarSourceChainConfigs.wftm.fantom],
         },
       },
+      {
+        counterpartyChainId: "uni-6",
+        sourceChannelId: "channel-3316",
+        destChannelId: "channel-140",
+        coinMinimalDenom: "ujunox",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "nolus-rila",
+        sourceChannelId: "channel-1837",
+        destChannelId: "channel-0",
+        coinMinimalDenom: "unls",
+        isVerified: true,
+      },
     ]
   : [
       {
@@ -1509,6 +1523,37 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-522",
         destChannelId: "channel-2",
         coinMinimalDenom: "uqosmo",
+      },
+      {
+        counterpartyChainId: "noble-1",
+        sourceChannelId: "channel-750",
+        destChannelId: "channel-1",
+        coinMinimalDenom: "ufrienzies",
+      },
+      {
+        counterpartyChainId: "migaloo-1",
+        sourceChannelId: "channel-642",
+        destChannelId: "channel-5",
+        coinMinimalDenom: "uwhale",
+      },
+      {
+        //GRDN
+        counterpartyChainId: "juno-1",
+        sourceChannelId: "channel-169",
+        destChannelId: "channel-47",
+        coinMinimalDenom:
+          "cw20:juno1xekkh27punj0uxruv3gvuydyt856fax0nu750xns99t2qcxp7xmsqwhfma",
+        ics20ContractAddress:
+          "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+      },
+      {
+        counterpartyChainId: "juno-1",
+        sourceChannelId: "channel-169",
+        destChannelId: "channel-47",
+        coinMinimalDenom:
+          "cw20:juno166heaxlyntd33a5euh4rrz26svhean4klzw594esmd02l4atan6sazy2my",
+        ics20ContractAddress:
+          "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
       },
     ].filter((ibcAsset) => {
       // validate IBC asset config
