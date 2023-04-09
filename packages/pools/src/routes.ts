@@ -54,6 +54,9 @@ export class OptimizedRoutes {
       return cached;
     }
 
+    if (maxRouteCount > 10)
+      throw new Error("maxRouteCount should be less than 10");
+
     const poolsUsed = Array<boolean>(this.pools.length).fill(false);
     const routes: Route[] = [];
 
@@ -80,7 +83,7 @@ export class OptimizedRoutes {
         return;
       }
 
-      if (routes.length >= maxRouteCount) {
+      if (routes.length > Math.ceil(maxRouteCount)) {
         // only find top routes by iterating all pools by high liquidity first
         return;
       }
@@ -95,24 +98,24 @@ export class OptimizedRoutes {
           : [tokenInDenom]; // imaginary prev pool
 
         const curPool = this.pools[i];
+
         let prevPoolCurPoolTokenMatch: string | undefined;
-        const curPoolContainsAssetOutOfLastPool =
-          previousTokenOuts &&
-          curPool.poolAssets.some(({ denom }) =>
-            previousTokenOuts.some((d) => {
-              if (d === denom) {
-                prevPoolCurPoolTokenMatch = denom;
-                return true;
-              }
-              return false;
-            })
-          );
-        if (!curPoolContainsAssetOutOfLastPool || !prevPoolCurPoolTokenMatch) {
+        curPool.poolAssets.forEach(({ denom }) =>
+          previousTokenOuts.forEach((d) => {
+            if (d === denom) {
+              prevPoolCurPoolTokenMatch = denom;
+            }
+          })
+        );
+        if (!prevPoolCurPoolTokenMatch) {
           continue; // skip pool
         }
 
         currentRoute.push(curPool);
-        if (prevPoolCurPoolTokenMatch !== tokenInDenom)
+        if (
+          currentRoute.length > 1 ||
+          prevPoolCurPoolTokenMatch !== tokenInDenom
+        )
           currentTokenOuts.push(prevPoolCurPoolTokenMatch);
         poolsUsed[i] = true;
         computeRoutes(
