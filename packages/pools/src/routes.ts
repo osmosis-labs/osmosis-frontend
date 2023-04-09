@@ -83,7 +83,7 @@ export class OptimizedRoutes {
         return;
       }
 
-      if (routes.length > Math.ceil(maxRouteCount)) {
+      if (routes.length > maxRouteCount) {
         // only find top routes by iterating all pools by high liquidity first
         return;
       }
@@ -113,10 +113,12 @@ export class OptimizedRoutes {
 
         currentRoute.push(curPool);
         if (
-          currentRoute.length > 1 ||
-          prevPoolCurPoolTokenMatch !== tokenInDenom
-        )
+          currentRoute.length > 1 &&
+          prevPoolCurPoolTokenMatch !== tokenInDenom &&
+          prevPoolCurPoolTokenMatch !== tokenOutDenom
+        ) {
           currentTokenOuts.push(prevPoolCurPoolTokenMatch);
+        }
         poolsUsed[i] = true;
         computeRoutes(
           tokenInDenom,
@@ -129,7 +131,6 @@ export class OptimizedRoutes {
             .map(({ denom }) => denom)
         );
         poolsUsed[i] = false;
-
         currentTokenOuts.pop();
         currentRoute.pop();
       }
