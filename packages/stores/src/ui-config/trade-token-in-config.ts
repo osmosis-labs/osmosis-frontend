@@ -258,7 +258,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           amount: new Int(amount.amount),
         },
         this.outCurrency.coinMinimalDenom,
-        5
+        4
       );
     } catch (e: any) {
       if (e instanceof NotEnoughLiquidityError) {
