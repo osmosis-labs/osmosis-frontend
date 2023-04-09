@@ -414,13 +414,20 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       return new IntPretty(0).ready(false);
     }
 
-    const estimate = this.optimizedRoutes.calculateTokenOutByTokenIn(paths);
+    let result;
+    try {
+      result = this.optimizedRoutes.calculateTokenOutByTokenIn(paths);
+    } catch (e: any) {
+      console.error(e);
+      return new IntPretty(0).ready(false);
+    }
+
     const multiplicationInOverOut = DecUtils.getTenExponentN(
       this.outCurrency.coinDecimals - this.sendCurrency.coinDecimals
     );
     const beforeSpotPriceWithoutSwapFeeInOverOutDec =
-      estimate.beforeSpotPriceInOverOut.mulTruncate(
-        new Dec(1).sub(estimate.swapFee)
+      result.beforeSpotPriceInOverOut.mulTruncate(
+        new Dec(1).sub(result.swapFee)
       );
 
     // low price vs in asset
