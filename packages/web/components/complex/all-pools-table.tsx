@@ -357,7 +357,10 @@ export const AllPoolsTable: FunctionComponent<{
             ) => {
               const pool = props.getValue();
 
-              // if pool apr is 10 times bigger than swap fee apr, then warn user that pool may be subject to inflation
+              /**
+               * If pool APR is 10 times bigger than swap fee APR, then warn user
+               * that pool may be subject to inflation
+               */
               const isAPRTooHigh = pool.apr
                 .sub(pool.swapFeeApr)
                 .toDec()
