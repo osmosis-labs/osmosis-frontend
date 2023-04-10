@@ -4,7 +4,7 @@ import {
   isOsmoRoutedMultihop,
 } from "@osmosis-labs/math";
 
-import { NoPoolsError, NotEnoughLiquidityError } from "../errors";
+import { NoPoolsError, NotEnoughLiquidityError } from "./errors";
 import {
   MultihopSwapResult,
   RoutablePool,

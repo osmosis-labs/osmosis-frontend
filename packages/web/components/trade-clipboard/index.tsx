@@ -192,20 +192,13 @@ export const TradeClipboard: FunctionComponent<{
     };
 
     // trade metrics
-    const minOutAmountLessSlippage = useMemo(
-      () =>
-        tradeTokenInConfig.expectedSwapResult.amount
-          .toDec()
-          .mul(new Dec(1).sub(slippageConfig.slippage.toDec())),
-      [tradeTokenInConfig.expectedSwapResult.amount, slippageConfig.slippage]
-    );
-    const spotPrice = useMemo(
-      () =>
-        tradeTokenInConfig.beforeSpotPriceWithoutSwapFeeOutOverIn
-          .trim(true)
-          .maxDecimals(8),
-      [tradeTokenInConfig.beforeSpotPriceWithoutSwapFeeOutOverIn]
-    );
+    const minOutAmountLessSlippage =
+      tradeTokenInConfig.expectedSwapResult.amount
+        .toDec()
+        .mul(new Dec(1).sub(slippageConfig.slippage.toDec()));
+    const spotPrice = tradeTokenInConfig.beforeSpotPriceWithoutSwapFeeOutOverIn
+      .trim(true)
+      .maxDecimals(8);
 
     const [isHoveringSwitchButton, setHoveringSwitchButton] = useState(false);
 
@@ -661,10 +654,7 @@ export const TradeClipboard: FunctionComponent<{
                     .hideDenom(true)
                     .maxDecimals(8)
                     .toString()}{" "}
-                  {tradeTokenInConfig.sendCurrency.coinDenom.toLowerCase() ===
-                  "unknown"
-                    ? ""
-                    : tradeTokenInConfig.sendCurrency.coinDenom}
+                  {tradeTokenInConfig.sendCurrency.coinDenom}
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
@@ -921,12 +911,7 @@ export const TradeClipboard: FunctionComponent<{
                       ? "text-white-full"
                       : "text-white-disabled"
                   )}
-                >{`≈ ${
-                  tradeTokenInConfig.expectedSwapResult.amount.denom !==
-                  "UNKNOWN"
-                    ? swapResultAmount
-                    : "0"
-                }`}</h5>
+                >{`≈ ${swapResultAmount}`}</h5>
                 <div
                   className={classNames(
                     "subtitle1 md:caption text-osmoverse-300 transition-opacity",
@@ -970,19 +955,11 @@ export const TradeClipboard: FunctionComponent<{
                   "text-osmoverse-600": !isEstimateDetailRelevant,
                 })}
               >
-                {`1 ${
-                  tradeTokenInConfig.sendCurrency.coinDenom !== "UNKNOWN"
-                    ? tradeTokenInConfig.sendCurrency.coinDenom
-                    : ""
-                } ≈ ${
+                {`1 ${tradeTokenInConfig.sendCurrency.coinDenom} ≈ ${
                   spotPrice.toDec().lt(new Dec(1))
                     ? spotPrice.maxDecimals(12).toString()
                     : spotPrice.maxDecimals(6).toString()
-                } ${
-                  tradeTokenInConfig.outCurrency.coinDenom !== "UNKNOWN"
-                    ? tradeTokenInConfig.outCurrency.coinDenom
-                    : ""
-                }`}
+                } ${tradeTokenInConfig.outCurrency.coinDenom}`}
               </div>
               <div className="flex items-center gap-2">
                 <Image

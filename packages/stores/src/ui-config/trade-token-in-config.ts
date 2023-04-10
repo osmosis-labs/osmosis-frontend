@@ -34,6 +34,22 @@ import {
   NoSendCurrencyError,
 } from "./errors";
 
+type PrettyMultihopSwapResult = {
+  amount: CoinPretty;
+  beforeSpotPriceWithoutSwapFeeInOverOut: IntPretty;
+  beforeSpotPriceWithoutSwapFeeOutOverIn: IntPretty;
+  beforeSpotPriceInOverOut: IntPretty;
+  beforeSpotPriceOutOverIn: IntPretty;
+  afterSpotPriceInOverOut: IntPretty;
+  afterSpotPriceOutOverIn: IntPretty;
+  effectivePriceInOverOut: IntPretty;
+  effectivePriceOutOverIn: IntPretty;
+  tokenInFeeAmount: CoinPretty;
+  swapFee: RatePretty;
+  priceImpact: RatePretty;
+  isMultihopOsmoFeeDiscount: boolean;
+};
+
 export class ObservableTradeTokenInConfig extends AmountConfig {
   @observable.ref
   protected _pools: ObservableQueryPool[];
@@ -44,29 +60,18 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   protected _sendCurrencyMinDenom: string | undefined = undefined;
   @observable
   protected _outCurrencyMinDenom: string | undefined = undefined;
+
+  // must match AmountConfig.error
   @observable
   protected _error: Error | undefined = undefined;
   @observable
   protected _notEnoughLiquidity: boolean = false;
 
   @observable.ref
-  protected _latestSwapResult: MultihopSwapResult | undefined;
+  protected _latestSwapResult: MultihopSwapResult | undefined = undefined;
 
   @observable.ref
-  protected _spotPriceResult: MultihopSwapResult | undefined;
-
-  @computed
-  get pools(): ObservableQueryPool[] {
-    return this._pools;
-  }
-
-  @computed
-  protected get currencyMap(): Map<string, AppCurrency> {
-    return this.sendableCurrencies.reduce<Map<string, AppCurrency>>(
-      (previous, current) => previous.set(current.coinMinimalDenom, current),
-      new Map()
-    );
-  }
+  protected _spotPriceResult: MultihopSwapResult | undefined = undefined;
 
   @override
   get sendCurrency(): AppCurrency {
@@ -218,101 +223,20 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
   /** Prettify swap result for display. */
   @computed
-  get expectedSwapResult(): {
-    amount: CoinPretty;
-    beforeSpotPriceWithoutSwapFeeInOverOut: IntPretty;
-    beforeSpotPriceWithoutSwapFeeOutOverIn: IntPretty;
-    beforeSpotPriceInOverOut: IntPretty;
-    beforeSpotPriceOutOverIn: IntPretty;
-    afterSpotPriceInOverOut: IntPretty;
-    afterSpotPriceOutOverIn: IntPretty;
-    effectivePriceInOverOut: IntPretty;
-    effectivePriceOutOverIn: IntPretty;
-    tokenInFeeAmount: CoinPretty;
-    swapFee: RatePretty;
-    priceImpact: RatePretty;
-    isMultihopOsmoFeeDiscount: boolean;
-  } {
+  get expectedSwapResult(): PrettyMultihopSwapResult {
     const result = this._latestSwapResult;
     if (!result) return this.zeroSwapResult;
 
-    const multiplicationInOverOut = DecUtils.getTenExponentN(
-      this.outCurrency.coinDecimals - this.sendCurrency.coinDecimals
-    );
-    const beforeSpotPriceWithoutSwapFeeInOverOutDec =
-      result.beforeSpotPriceInOverOut.mulTruncate(
-        new Dec(1).sub(result.swapFee)
-      );
-
-    return {
-      amount: new CoinPretty(this.outCurrency, result.amount).locale(false),
-      beforeSpotPriceWithoutSwapFeeInOverOut: new IntPretty(
-        beforeSpotPriceWithoutSwapFeeInOverOutDec.mulTruncate(
-          multiplicationInOverOut
-        )
-      ),
-      beforeSpotPriceWithoutSwapFeeOutOverIn:
-        beforeSpotPriceWithoutSwapFeeInOverOutDec.gt(new Dec(0)) &&
-        multiplicationInOverOut.gt(new Dec(0))
-          ? new IntPretty(
-              new Dec(1)
-                .quoTruncate(beforeSpotPriceWithoutSwapFeeInOverOutDec)
-                .quoTruncate(multiplicationInOverOut)
-            )
-          : new IntPretty(0),
-      beforeSpotPriceInOverOut: new IntPretty(
-        result.beforeSpotPriceInOverOut.mulTruncate(multiplicationInOverOut)
-      ),
-      beforeSpotPriceOutOverIn: multiplicationInOverOut.gt(new Dec(0))
-        ? new IntPretty(
-            result.beforeSpotPriceOutOverIn.quoTruncate(multiplicationInOverOut)
-          )
-        : new IntPretty(0),
-      afterSpotPriceInOverOut: new IntPretty(
-        result.afterSpotPriceInOverOut.mulTruncate(multiplicationInOverOut)
-      ),
-      afterSpotPriceOutOverIn: multiplicationInOverOut.gt(new Dec(0))
-        ? new IntPretty(
-            result.afterSpotPriceOutOverIn.quoTruncate(multiplicationInOverOut)
-          )
-        : new IntPretty(0),
-      effectivePriceInOverOut: new IntPretty(
-        result.effectivePriceInOverOut.mulTruncate(multiplicationInOverOut)
-      ),
-      effectivePriceOutOverIn: multiplicationInOverOut.gt(new Dec(0))
-        ? new IntPretty(
-            result.effectivePriceOutOverIn.quoTruncate(multiplicationInOverOut)
-          )
-        : new IntPretty(0),
-      tokenInFeeAmount: new CoinPretty(
-        this.sendCurrency,
-        result.tokenInFeeAmount
-      ).locale(false),
-      swapFee: new RatePretty(result.swapFee),
-      priceImpact: new RatePretty(result.priceImpact),
-      isMultihopOsmoFeeDiscount: result.multiHopOsmoDiscount,
-    };
+    return this.makePrettyMultihopResult(result);
   }
 
   /** Calculated spot price with amount of 1 token in. */
   @computed
   get beforeSpotPriceWithoutSwapFeeOutOverIn(): IntPretty {
     const result = this._spotPriceResult;
-
-    // low price vs in asset
-    if (!result || result.beforeSpotPriceInOverOut.isZero()) {
-      return new IntPretty(0).ready(false);
-    }
-
-    const multiplicationInOverOut = DecUtils.getTenExponentN(
-      this.outCurrency.coinDecimals - this.sendCurrency.coinDecimals
-    );
-
-    return new IntPretty(
-      new Dec(1)
-        .quoTruncate(result.beforeSpotPriceInOverOut)
-        .quoTruncate(multiplicationInOverOut)
-    );
+    if (!result) return new IntPretty(0);
+    return this.makePrettyMultihopResult(result)
+      .beforeSpotPriceWithoutSwapFeeInOverOut;
   }
 
   @override
@@ -340,12 +264,23 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     return this._error;
   }
 
+  protected get pools(): ObservableQueryPool[] {
+    return this._pools;
+  }
+
   @computed
-  get zeroSwapResult() {
+  protected get currencyMap(): Map<string, AppCurrency> {
+    return this.sendableCurrencies.reduce<Map<string, AppCurrency>>(
+      (previous, current) => previous.set(current.coinMinimalDenom, current),
+      new Map()
+    );
+  }
+
+  protected get zeroSwapResult(): PrettyMultihopSwapResult {
     return {
       amount: new CoinPretty(this.outCurrency, new Dec(0)).ready(false),
       beforeSpotPriceWithoutSwapFeeInOverOut: new IntPretty(0).ready(false),
-      beforeSpotPriceWithoutSwapFeeOutOverIn: new IntPretty(0),
+      beforeSpotPriceWithoutSwapFeeOutOverIn: new IntPretty(0).ready(false),
       beforeSpotPriceInOverOut: new IntPretty(0).ready(false),
       beforeSpotPriceOutOverIn: new IntPretty(0).ready(false),
       afterSpotPriceInOverOut: new IntPretty(0).ready(false),
@@ -386,12 +321,9 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
             this.setError(new Error("Not enough liquidity"));
             return;
           }
-
-          runInAction(() => {
-            this._latestSwapResult = swapResult;
-          });
+          this.setSwapResult(swapResult);
         });
-    }, 1000);
+    }, 400);
 
     // React to user input and request a swap result. This is debounced to prevent spamming the server
     autorun(() => {
@@ -400,57 +332,46 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
       if (paths.length === 0 && this.amount !== "" && this.amount !== "0") {
         this.setError(new NoRouteError("No route found"));
-        return this.zeroSwapResult;
+        return this.setSwapResult(undefined);
       }
 
       if (paths.length === 0 || this.amount === "" || this.amount === "0") {
-        return this.zeroSwapResult;
+        return this.setSwapResult(undefined);
       }
 
+      // clear any previous user input debounce
       debounceCalculateRoutes.clear();
+      // debounce the new user input
       debounceCalculateRoutes(paths);
     });
 
     // react to changes in send/out currencies, then generate a spot price
     autorun(() => {
-      const sendCurrency = this.sendCurrency;
-      if (!sendCurrency) return;
-
-      if (!this._spotPriceResult) {
-        let paths;
-        const one = new Int(
-          DecUtils.getTenExponentNInPrecisionRange(
-            this.sendCurrency.coinDecimals
-          )
-            .truncate()
-            .toString()
+      let paths;
+      const one = new Int(
+        DecUtils.getTenExponentNInPrecisionRange(this.sendCurrency.coinDecimals)
+          .truncate()
+          .toString()
+      );
+      try {
+        paths = this.optimizedRoutes.getOptimizedRoutesByTokenIn(
+          {
+            denom: this.sendCurrency.coinMinimalDenom,
+            amount: one,
+          },
+          this.outCurrency.coinMinimalDenom,
+          5
         );
-        try {
-          paths = this.optimizedRoutes.getOptimizedRoutesByTokenIn(
-            {
-              denom: this.sendCurrency.coinMinimalDenom,
-              amount: one,
-            },
-            this.outCurrency.coinMinimalDenom,
-            5
-          );
-        } catch (e: any) {
-          console.error("No route found", e.message);
-          return new IntPretty(0).ready(false);
-        }
-
-        if (paths.length === 0) {
-          return new IntPretty(0).ready(false);
-        }
-
-        this.optimizedRoutes
-          .calculateTokenOutByTokenIn(paths)
-          .then((result) => {
-            runInAction(() => {
-              this._spotPriceResult = result;
-            });
-          });
+      } catch (e: any) {
+        console.error("No route found", e.message);
+        return this.setSpotPriceResult(undefined);
       }
+
+      if (paths.length === 0) return this.setSpotPriceResult(undefined);
+
+      this.optimizedRoutes.calculateTokenOutByTokenIn(paths).then((result) => {
+        this.setSpotPriceResult(result);
+      });
     });
 
     makeObservable(this);
@@ -512,5 +433,77 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   @action
   setError(error: Error | undefined) {
     this._error = error;
+  }
+
+  @action
+  protected setSwapResult(result: MultihopSwapResult | undefined) {
+    this._latestSwapResult = result;
+  }
+
+  @action
+  protected setSpotPriceResult(result: MultihopSwapResult | undefined) {
+    this._spotPriceResult = result;
+  }
+
+  /** Convert raw router type into a prettified form ready for display. */
+  protected makePrettyMultihopResult(
+    result: MultihopSwapResult
+  ): PrettyMultihopSwapResult {
+    const multiplicationInOverOut = DecUtils.getTenExponentN(
+      this.outCurrency.coinDecimals - this.sendCurrency.coinDecimals
+    );
+    const beforeSpotPriceWithoutSwapFeeInOverOutDec =
+      result.beforeSpotPriceInOverOut.mulTruncate(
+        new Dec(1).sub(result.swapFee)
+      );
+
+    return {
+      amount: new CoinPretty(this.outCurrency, result.amount).locale(false), // locale - remove commas
+      beforeSpotPriceWithoutSwapFeeInOverOut: new IntPretty(
+        beforeSpotPriceWithoutSwapFeeInOverOutDec.mulTruncate(
+          multiplicationInOverOut
+        )
+      ),
+      beforeSpotPriceWithoutSwapFeeOutOverIn:
+        beforeSpotPriceWithoutSwapFeeInOverOutDec.gt(new Dec(0)) &&
+        multiplicationInOverOut.gt(new Dec(0))
+          ? new IntPretty(
+              new Dec(1)
+                .quoTruncate(beforeSpotPriceWithoutSwapFeeInOverOutDec)
+                .quoTruncate(multiplicationInOverOut)
+            )
+          : new IntPretty(0),
+      beforeSpotPriceInOverOut: new IntPretty(
+        result.beforeSpotPriceInOverOut.mulTruncate(multiplicationInOverOut)
+      ),
+      beforeSpotPriceOutOverIn: multiplicationInOverOut.gt(new Dec(0))
+        ? new IntPretty(
+            result.beforeSpotPriceOutOverIn.quoTruncate(multiplicationInOverOut)
+          )
+        : new IntPretty(0),
+      afterSpotPriceInOverOut: new IntPretty(
+        result.afterSpotPriceInOverOut.mulTruncate(multiplicationInOverOut)
+      ),
+      afterSpotPriceOutOverIn: multiplicationInOverOut.gt(new Dec(0))
+        ? new IntPretty(
+            result.afterSpotPriceOutOverIn.quoTruncate(multiplicationInOverOut)
+          )
+        : new IntPretty(0),
+      effectivePriceInOverOut: new IntPretty(
+        result.effectivePriceInOverOut.mulTruncate(multiplicationInOverOut)
+      ),
+      effectivePriceOutOverIn: multiplicationInOverOut.gt(new Dec(0))
+        ? new IntPretty(
+            result.effectivePriceOutOverIn.quoTruncate(multiplicationInOverOut)
+          )
+        : new IntPretty(0),
+      tokenInFeeAmount: new CoinPretty(
+        this.sendCurrency,
+        result.tokenInFeeAmount
+      ).locale(false), // locale - remove commas
+      swapFee: new RatePretty(result.swapFee),
+      priceImpact: new RatePretty(result.priceImpact),
+      isMultihopOsmoFeeDiscount: result.multiHopOsmoDiscount,
+    };
   }
 }
