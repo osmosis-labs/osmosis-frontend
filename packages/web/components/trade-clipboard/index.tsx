@@ -781,7 +781,7 @@ export const TradeClipboard: FunctionComponent<{
 
           <button
             className={classNames(
-              "absolute left-[45%] top-[235px] z-30 flex items-center shadow-[0_4px_4px_rgba(0,0,0,0.25)] transition-all duration-500 ease-bounce md:top-[178px]",
+              "absolute left-[45%] top-[235px] z-30 flex items-center transition-all duration-500 ease-bounce md:top-[178px]",
               {
                 "h-10 w-10 md:h-8 md:w-8": !isHoveringSwitchButton,
                 "h-11 w-11 -translate-x-[2px] md:h-9 md:w-9":
