@@ -30,7 +30,12 @@ export class ObservableQueryPools
     readonly queryLiquiditiesInNetDirection: ObservableQueryLiquiditiesNetInDirection,
     readonly queryBalances: ObservableQueryBalances
   ) {
-    super(kvStore, chainId, chainGetter, "/osmosis/gamm/v1beta1/all-pools");
+    super(
+      kvStore,
+      chainId,
+      chainGetter,
+      "/osmosis/poolmanager/v1beta1/all-pools"
+    );
 
     makeObservable(this);
   }
