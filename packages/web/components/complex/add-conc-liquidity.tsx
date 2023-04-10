@@ -84,35 +84,18 @@ function getViewRangeFromData(data: number[], zoom = 1) {
 }
 
 async function getDepthFromRange(min: number, max: number) {
-  const minTick = findNearestTick(min);
-  const maxTick = findNearestTick(max);
-  const batchUnit = Math.max(1, Math.floor((maxTick - minTick) / 20));
-  return [];
   const returnData = await fetch(
-    `http://localhost:1317/osmosis/concentratedliquidity/v1beta1/tick_liquidity_in_batches?pool_id=1&lower_tick=${minTick}&upper_tick=${maxTick}&batch_unit=${batchUnit}`
+    `http://localhost:1317/osmosis/concentratedliquidity/v1beta1/total_liquidity_for_range?pool_id=1`
   )
     .then((resp) => resp.json())
     .then((json) => {
-      return (json?.liquidity_depths || []).map(
-        ({ liquidity_net, tick_index }: any) => ({
-          net: +liquidity_net,
-          price: getPriceAtTick(tick_index),
+      return (json?.liquidity || []).map(
+        ({ liquidity_amount, lower_tick, upper_tick }: any) => ({
+          amount: +liquidity_amount,
+          lower: getPriceAtTick(lower_tick),
+          upper: getPriceAtTick(upper_tick),
         })
       );
-    })
-    .then((data) => {
-      const depths: { tick: number; depth: number }[] = [];
-      let liq = 0;
-
-      data.forEach(({ net, price }: any) => {
-        liq = liq + net;
-        depths.push({
-          tick: price,
-          depth: liq,
-        });
-      });
-
-      return depths;
     })
     .then((data) => {
       const depths: { tick: number; depth: number }[] = [];
@@ -131,13 +114,13 @@ async function getDepthFromRange(min: number, max: number) {
 
   function getLiqFrom(
     target: number,
-    list: { depth: number; tick: number }[]
+    list: { amount: number; lower: number; upper: number }[]
   ): number {
     const price = target;
     let val = 0;
     for (let i = 0; i < list.length; i++) {
-      if (list[i].tick <= price) {
-        val = list[i].depth;
+      if (list[i].lower <= price && list[i].upper >= price) {
+        val = list[i].amount;
       }
     }
     return val;
