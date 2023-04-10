@@ -809,6 +809,17 @@ const chainInfos = (
           coinGeckoId: "pool:mnpu",
           coinImageUrl: "/tokens/mnpu.svg",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1x5qt47rw84c4k6xvvywtrd40p8gxjt8wnmlahlqg07qevah3f8lqwxfs7z",
+          coinDenom: "SHIBAC",
+          coinMinimalDenom:
+            "cw20:juno1x5qt47rw84c4k6xvvywtrd40p8gxjt8wnmlahlqg07qevah3f8lqwxfs7z:SHIBAC",
+          coinDecimals: 6,
+          coinGeckoId: "pool:shibac",
+          coinImageUrl: "/tokens/shibacosmos.png",
+        },        
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: IS_TESTNET
