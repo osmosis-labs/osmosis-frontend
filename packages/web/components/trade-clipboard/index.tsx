@@ -196,7 +196,7 @@ export const TradeClipboard: FunctionComponent<{
       tradeTokenInConfig.expectedSwapResult.amount
         .toDec()
         .mul(new Dec(1).sub(slippageConfig.slippage.toDec()));
-    const spotPrice = tradeTokenInConfig.beforeSpotPriceWithoutSwapFeeOutOverIn
+    const spotPrice = tradeTokenInConfig.expectedSpotPrice
       .trim(true)
       .maxDecimals(8);
 

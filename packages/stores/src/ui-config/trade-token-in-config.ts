@@ -25,6 +25,7 @@ import {
   override,
   runInAction,
 } from "mobx";
+import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
 import { IPriceStore } from "src/price";
 
 import { ObservableQueryPool, OsmosisQueries } from "../queries";
@@ -68,10 +69,13 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   protected _notEnoughLiquidity: boolean = false;
 
   @observable.ref
-  protected _latestSwapResult: MultihopSwapResult | undefined = undefined;
-
+  protected _latestSwapResult:
+    | IPromiseBasedObservable<MultihopSwapResult>
+    | undefined = undefined;
   @observable.ref
-  protected _spotPriceResult: MultihopSwapResult | undefined = undefined;
+  protected _spotPriceResult:
+    | IPromiseBasedObservable<MultihopSwapResult>
+    | undefined = undefined;
 
   @override
   get sendCurrency(): AppCurrency {
@@ -222,21 +226,31 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   }
 
   /** Prettify swap result for display. */
-  @computed
   get expectedSwapResult(): PrettyMultihopSwapResult {
-    const result = this._latestSwapResult;
-    if (!result) return this.zeroSwapResult;
+    return (
+      this._latestSwapResult?.case({
+        fulfilled: (result) => this.makePrettyMultihopResult(result),
+      }) ?? this.zeroSwapResult
+    );
+  }
 
-    return this.makePrettyMultihopResult(result);
+  get expectedSwapResultIsLoading(): boolean {
+    return this._latestSwapResult?.state === "pending";
   }
 
   /** Calculated spot price with amount of 1 token in. */
-  @computed
-  get beforeSpotPriceWithoutSwapFeeOutOverIn(): IntPretty {
-    const result = this._spotPriceResult;
-    if (!result) return new IntPretty(0);
-    return this.makePrettyMultihopResult(result)
-      .beforeSpotPriceWithoutSwapFeeInOverOut;
+  get expectedSpotPrice(): IntPretty {
+    return (
+      this._spotPriceResult?.case({
+        fulfilled: (result) =>
+          this.makePrettyMultihopResult(result)
+            .beforeSpotPriceWithoutSwapFeeInOverOut,
+      }) ?? new IntPretty(0)
+    );
+  }
+
+  get expectedSpotPriceIsLoading(): boolean {
+    return this._spotPriceResult?.state === "pending";
   }
 
   @override
@@ -310,16 +324,10 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     this._pools = pools;
 
     const debounceCalculateRoutes = debounce((paths: RouteWithAmount[]) => {
-      this.optimizedRoutes
-        .calculateTokenOutByTokenIn(paths)
-        .then((swapResult) => {
-          if (swapResult.amount.isZero()) {
-            this.setError(new Error("Not enough liquidity"));
-            return;
-          }
-          this.setSwapResult(swapResult);
-        });
-    }, 400);
+      const calcPromise =
+        this.optimizedRoutes.calculateTokenOutByTokenIn(paths);
+      this.setSwapResult(fromPromise(calcPromise));
+    }, 350);
 
     // React to user input and request a swap result. This is debounced to prevent spamming the server
     autorun(() => {
@@ -365,9 +373,9 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
       if (paths.length === 0) return this.setSpotPriceResult(undefined);
 
-      this.optimizedRoutes.calculateTokenOutByTokenIn(paths).then((result) => {
-        this.setSpotPriceResult(result);
-      });
+      const promiseCalc =
+        this.optimizedRoutes.calculateTokenOutByTokenIn(paths);
+      this.setSpotPriceResult(fromPromise(promiseCalc));
     });
 
     makeObservable(this);
@@ -404,10 +412,10 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   @action
   switchInAndOut() {
     // give back the swap fee amount
-    const outAmount = this.expectedSwapResult.amount;
-    if (outAmount.toDec().isZero()) {
+    const outAmount = this.expectedSwapResult?.amount;
+    if (outAmount && outAmount.toDec().isZero()) {
       this.setAmount("");
-    } else {
+    } else if (outAmount) {
       this.setAmount(
         outAmount
           .shrink(true)
@@ -432,12 +440,16 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   }
 
   @action
-  protected setSwapResult(result: MultihopSwapResult | undefined) {
+  protected setSwapResult(
+    result: IPromiseBasedObservable<MultihopSwapResult> | undefined
+  ) {
     this._latestSwapResult = result;
   }
 
   @action
-  protected setSpotPriceResult(result: MultihopSwapResult | undefined) {
+  protected setSpotPriceResult(
+    result: IPromiseBasedObservable<MultihopSwapResult> | undefined
+  ) {
     this._spotPriceResult = result;
   }
 
