@@ -37,6 +37,7 @@ import {
   PoolCompositionCell,
   PoolQuickActionCell,
 } from "../table/cells";
+import { Tooltip } from "../tooltip";
 import PaginatedTable from "./paginated-table";
 
 const TVL_FILTER_THRESHOLD = 1000;
@@ -354,8 +355,37 @@ export const AllPoolsTable: FunctionComponent<{
                 ObservablePoolWithMetric
               >
             ) => {
+              const pool = props.getValue();
+
+              // if pool apr is 10 times bigger than swap fee apr, then warn user that pool may be subject to inflation
+              const isAPRTooHigh = pool.apr
+                .sub(pool.swapFeeApr)
+                .toDec()
+                .gt(pool.swapFeeApr.toDec().mul(new Dec(10)));
+
               return (
-                <MetricLoaderCell value={props.getValue().apr.toString()} />
+                <MetricLoaderCell
+                  isLoading={
+                    queriesOsmosis.queryIncentivizedPools.isAprFetching
+                  }
+                  value={
+                    isAPRTooHigh ? (
+                      <Tooltip content="This pool is likely to be subject to high inflation resulting in a higher than normal chance of impermanent loss.">
+                        <p className="flex items-center gap-1">
+                          {pool.apr.toString()}
+                          <Icon
+                            id="alert-triangle"
+                            height={16}
+                            width={16}
+                            className="text-rust-300"
+                          />
+                        </p>
+                      </Tooltip>
+                    ) : (
+                      pool.apr.toString()
+                    )
+                  }
+                />
               );
             }
           ),
@@ -398,6 +428,7 @@ export const AllPoolsTable: FunctionComponent<{
       [
         cellGroupEventEmitter,
         columnHelper,
+        queriesOsmosis.queryIncentivizedPools.isAprFetching,
         quickAddLiquidity,
         quickLockTokens,
         quickRemoveLiquidity,
