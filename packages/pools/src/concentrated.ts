@@ -27,6 +27,7 @@ export interface TickDataProvider {
   ): Promise<LiquidityDepth[]>;
 }
 
+/** Provides balances of tokens in pool. */
 export interface AmountsDataProvider {
   getPoolAmounts(
     pool: ConcentratedLiquidityPool
@@ -34,17 +35,6 @@ export interface AmountsDataProvider {
 }
 
 export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
-  // transient data to be updatable outside of instance
-  protected _token0Amount = new Int(0);
-  protected set token0Amount(amount: Int) {
-    this._token0Amount = amount;
-  }
-  protected _token1Amount = new Int(0);
-  protected set token1Amount(amount: Int) {
-    this._token1Amount = amount;
-  }
-  // end transient data
-
   get type(): "concentrated" {
     return "concentrated";
   }
@@ -55,19 +45,6 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
 
   get address() {
     return this.raw.address;
-  }
-
-  get poolAssets(): { denom: string; amount: Int }[] {
-    return [
-      {
-        denom: this.raw.token0,
-        amount: this._token0Amount,
-      },
-      {
-        denom: this.raw.token1,
-        amount: this._token1Amount,
-      },
-    ];
   }
 
   get poolAssetDenoms() {
@@ -117,28 +94,10 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     public readonly raw: ConcentratedLiquidityPoolRaw,
     protected readonly tickDataProvider: TickDataProvider,
     protected readonly poolAmountsProvider: AmountsDataProvider
-  ) {
-    poolAmountsProvider
-      .getPoolAmounts(this)
-      .then(({ token0Amount, token1Amount }) => {
-        this.token0Amount = token0Amount;
-        this.token1Amount = token1Amount;
-      });
-  }
-
-  getPoolAsset(denom: string): { denom: string; amount: Int } {
-    const poolAsset = this.poolAssets.find((asset) => asset.denom === denom);
-    if (!poolAsset) {
-      throw new Error(
-        `Pool ${this.id} doesn't have the pool asset for ${denom}`
-      );
-    }
-
-    return poolAsset;
-  }
+  ) {}
 
   hasPoolAsset(denom: string): boolean {
-    return this.poolAssets.some((asset) => asset.denom === denom);
+    return this.poolAssetDenoms.includes(denom);
   }
 
   getSpotPriceInOverOut(tokenInDenom: string, tokenOutDenom: string): Dec {
@@ -263,6 +222,8 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       tokenInDenom
     );
 
+    console.log(inittedTicks);
+
     const { amountIn, afterSqrtPrice } =
       ConcentratedLiquidityMath.calcInGivenOut({
         tokenOut: new Coin(tokenOut.denom, tokenOut.amount),
@@ -315,18 +276,17 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     };
   }
 
-  getNormalizedLiquidity(tokenInDenom: string, tokenOutDenom: string): Dec {
-    this.validateDenoms(tokenInDenom, tokenOutDenom);
-    const tokenOut = this.getPoolAsset(tokenOutDenom);
-
-    return tokenOut.amount.toDec();
-  }
-  getLimitAmountByTokenIn(denom: string): Int {
+  async getLimitAmountByTokenIn(denom: string): Promise<Int> {
     this.validateDenoms(denom);
 
-    // TODO: not use limit amounts when routing
+    const { token0Amount, token1Amount } =
+      await this.poolAmountsProvider.getPoolAmounts(this);
 
-    throw new Error("Not implemented");
+    if (denom === this.raw.token0) {
+      return token0Amount;
+    } else {
+      return token1Amount;
+    }
   }
 
   // go SpotPrice(): https://github.com/osmosis-labs/osmosis/blob/b68141b856a806b813d86d80e89ac7a01f54a66d/x/concentrated-liquidity/model/pool.go#L106

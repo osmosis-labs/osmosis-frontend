@@ -293,17 +293,7 @@ export class StablePool implements SharePool, RoutablePool {
     };
   }
 
-  getNormalizedLiquidity(tokenInDenom: string, tokenOutDenom: string): Dec {
-    const tokenOut = this.getPoolAsset(tokenOutDenom);
-    const tokenIn = this.getPoolAsset(tokenInDenom);
-
-    return tokenOut.amount
-      .toDec()
-      .mul(new Dec(tokenIn.scalingFactor))
-      .quo(new Dec(tokenIn.scalingFactor).add(new Dec(tokenOut.scalingFactor)));
-  }
-
-  getLimitAmountByTokenIn(denom: string): Int {
+  async getLimitAmountByTokenIn(denom: string): Promise<Int> {
     return this.getPoolAsset(denom)
       .amount.toDec()
       .mul(new Dec("0.3"))

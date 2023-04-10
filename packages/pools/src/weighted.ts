@@ -329,17 +329,7 @@ export class WeightedPool implements SharePool, RoutablePool {
     };
   }
 
-  getNormalizedLiquidity(tokenInDenom: string, tokenOutDenom: string): Dec {
-    const tokenIn = this.getPoolAsset(tokenInDenom);
-    const tokenOut = this.getPoolAsset(tokenOutDenom);
-
-    return tokenOut.amount
-      .toDec()
-      .mul(tokenIn.weight.toDec())
-      .quo(tokenIn.weight.toDec().add(tokenOut.weight.toDec()));
-  }
-
-  getLimitAmountByTokenIn(denom: string): Int {
+  async getLimitAmountByTokenIn(denom: string): Promise<Int> {
     return this.getPoolAsset(denom)
       .amount.toDec()
       .mul(new Dec("0.3"))

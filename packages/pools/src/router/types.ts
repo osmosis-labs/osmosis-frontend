@@ -21,8 +21,8 @@ export interface RoutablePool {
   id: string;
   poolAssetDenoms: string[];
   swapFee: Dec;
-  getNormalizedLiquidity(tokenInDenom: string, tokenOutDenom: string): Dec;
-  getLimitAmountByTokenIn(denom: string): Int;
+
+  getLimitAmountByTokenIn(denom: string): Promise<Int>;
 
   getTokenOutByTokenIn(
     tokenIn: {

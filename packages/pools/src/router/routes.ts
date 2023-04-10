@@ -64,6 +64,7 @@ export class OptimizedRoutes {
 
       if (
         currentRoute.length > 0 &&
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         currentRoute[currentRoute.length - 1]!.poolAssetDenoms.includes(
           tokenOutDenom
         )
@@ -132,13 +133,10 @@ export class OptimizedRoutes {
 
     computeRoutes(tokenInDenom, tokenOutDenom, [], [], poolsUsed);
     this.candidatePathsCache.set(cacheKey, routes);
-
-    // TODO: since we use a greedy algorithm, also find routes in reverse
-
     return routes.filter(({ pools }) => pools.length <= maxHops);
   }
 
-  getOptimizedRoutesByTokenIn(
+  async getOptimizedRoutesByTokenIn(
     tokenIn: {
       denom: string;
       amount: Int;
@@ -146,7 +144,7 @@ export class OptimizedRoutes {
     tokenOutDenom: string,
     maxPools: number,
     maxRoutes = 3
-  ): RouteWithAmount[] {
+  ): Promise<RouteWithAmount[]> {
     if (!tokenIn.amount.isPositive()) {
       throw new Error("Token in amount is zero or negative");
     }
@@ -163,19 +161,16 @@ export class OptimizedRoutes {
       tokenOutDenom,
       tokenIn.denom,
       maxPools,
-      maxRoutes / 21
+      maxRoutes / 2
     );
-    const invertedRoutes: Route[] = [];
-    reverseRoutes.forEach((route) => {
-      invertedRoutes.push({
-        pools: [...route.pools].reverse(),
-        tokenOutDenoms: [
-          route.tokenInDenom,
-          ...route.tokenOutDenoms.slice(0, -1),
-        ].reverse(),
-        tokenInDenom: route.tokenOutDenoms[route.tokenOutDenoms.length - 1],
-      });
-    });
+    const invertedRoutes = reverseRoutes.map((route) => ({
+      pools: [...route.pools].reverse(),
+      tokenOutDenoms: [
+        route.tokenInDenom,
+        ...route.tokenOutDenoms.slice(0, -1),
+      ].reverse(),
+      tokenInDenom: route.tokenOutDenoms[route.tokenOutDenoms.length - 1],
+    }));
     routes = [...routes, ...invertedRoutes];
 
     // find best routes --
@@ -196,30 +191,36 @@ export class OptimizedRoutes {
       }
 
       // TODO: use total value locked
-      const path1NormalizedLiquidity = path1.pools[0].getNormalizedLiquidity(
-        tokenIn.denom,
-        path1.tokenOutDenoms[0]
+      const path1NormalizedLiquidity = this.getPoolTotalValueLocked(
+        path1.pools[0].id
       );
-      const path2NormalizedLiquidity = path2.pools[0].getNormalizedLiquidity(
-        tokenIn.denom,
-        path2.tokenOutDenoms[0]
-      );
+      const path2Tvl = this.getPoolTotalValueLocked(path2.pools[0].id);
 
-      return path1NormalizedLiquidity.gte(path2NormalizedLiquidity) ? -1 : 1;
+      return path1NormalizedLiquidity.gte(path2Tvl) ? -1 : 1;
     });
 
-    // TODO: if paths is single pool - confirm enough liquidity otherwise find different route
+    // determine if the routes have enough liquidity --
+
     if (routes.length === 0) {
       throw new NoPoolsError();
+    }
+    // Is direct swap, but not enough liquidity
+    if (routes.length > 1 && routes[0].pools.length === 1) {
+      const directSwapLimit = await routes[0].pools[0].getLimitAmountByTokenIn(
+        tokenIn.denom
+      );
+      if (directSwapLimit.lt(tokenIn.amount)) {
+        routes = routes.slice(1); // remove direct swap route
+      }
     }
 
     const initialSwapAmounts: Int[] = [];
     let totalLimitAmount = new Int(0);
     for (const route of routes) {
-      const limitAmount = route.pools[0].getLimitAmountByTokenIn(tokenIn.denom);
-
+      const limitAmount = await route.pools[0].getLimitAmountByTokenIn(
+        tokenIn.denom
+      );
       totalLimitAmount = totalLimitAmount.add(limitAmount);
-
       if (totalLimitAmount.lt(tokenIn.amount)) {
         initialSwapAmounts.push(limitAmount);
       } else {
@@ -227,21 +228,18 @@ export class OptimizedRoutes {
         for (const initialSwapAmount of initialSwapAmounts) {
           sumInitialSwapAmounts = sumInitialSwapAmounts.add(initialSwapAmount);
         }
-
         const diff = tokenIn.amount.sub(sumInitialSwapAmounts);
         initialSwapAmounts.push(diff);
-
         break;
       }
     }
 
-    // No enough liquidity
+    // Not enough liquidity
     if (totalLimitAmount.lt(tokenIn.amount)) {
       throw new NotEnoughLiquidityError();
     }
 
-    // TODO: ...
-
+    // only take routes with valid initialAmounts
     return initialSwapAmounts.map((amount, i) => {
       return {
         ...routes[i],
