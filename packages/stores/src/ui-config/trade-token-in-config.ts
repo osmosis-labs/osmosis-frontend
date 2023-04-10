@@ -132,7 +132,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
   @computed
   get sendableCurrencies(): AppCurrency[] {
-    if (this.pools.length === 0) {
+    if (this._pools.length === 0) {
       return [];
     }
 
@@ -140,7 +140,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
     // Get all coin denom in the pools.
     const coinDenomSet = new Set<string>(
-      this.pools.flatMap((pool) => pool.poolAssetDenoms)
+      this._pools.flatMap((pool) => pool.poolAssetDenoms)
     );
 
     const coinDenoms = Array.from(coinDenomSet);
@@ -168,7 +168,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     const stakeCurrencyMinDenom = this.chainGetter.getChain(this.initialChainId)
       .stakeCurrency.coinMinimalDenom;
     const getTvl = (poolId: string) => {
-      const queryPool = this.pools.find((pool) => pool.id === poolId);
+      const queryPool = this._pools.find((pool) => pool.id === poolId);
       if (queryPool) {
         return queryPool.computeTotalValueLocked(this.priceStore).toDec();
       } else {
@@ -178,7 +178,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     };
 
     return new OptimizedRoutes(
-      this.pools.map((pool) => pool.pool),
+      this._pools.map((pool) => pool.pool),
       this._incentivizedPoolIds,
       stakeCurrencyMinDenom,
       getTvl
@@ -262,10 +262,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     }
 
     return this._error;
-  }
-
-  protected get pools(): ObservableQueryPool[] {
-    return this._pools;
   }
 
   @computed
