@@ -78,6 +78,15 @@ export class ObservablePoolWithMetric {
     );
   }
 
+  get swapFeeApr() {
+    return (
+      this.poolsBonding
+        .get(this.pool.id)
+        ?.highestBondDuration?.swapFeeApr.maxDecimals(0) ??
+      this.poolDetail.swapFeeApr.maxDecimals(0)
+    );
+  }
+
   get feePoolMetrics() {
     return this.externalQueries.queryGammPoolFeeMetrics.getPoolFeesMetrics(
       this.pool.id,
