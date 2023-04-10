@@ -819,7 +819,18 @@ const chainInfos = (
           coinDecimals: 6,
           coinGeckoId: "pool:shibac",
           coinImageUrl: "/tokens/shibacosmos.png",
-        },        
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1qqwf3lkfjhp77yja7gmg3y95pda0e5xctqrdhf3wvwdd79flagvqfgrgxp",
+          coinDenom: "SKOJ",
+          coinMinimalDenom:
+            "cw20:juno1qqwf3lkfjhp77yja7gmg3y95pda0e5xctqrdhf3wvwdd79flagvqfgrgxp:SKOJ",
+          coinDecimals: 6,
+          coinGeckoId: "pool:skoj",
+          coinImageUrl: "/tokens/sikoba.svg",
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: IS_TESTNET
