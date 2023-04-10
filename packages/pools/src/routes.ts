@@ -167,7 +167,7 @@ export class OptimizedRoutes {
       tokenOutDenom,
       tokenIn.denom,
       maxPools,
-      maxRoutes / 21
+      maxRoutes / 2
     );
     const invertedRoutes: Route[] = [];
     reverseRoutes.forEach((route) => {
