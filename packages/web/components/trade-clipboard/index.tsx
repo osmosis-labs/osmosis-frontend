@@ -1003,7 +1003,9 @@ export const TradeClipboard: FunctionComponent<{
                     showPriceImpactWarning ? "text-error" : "text-osmoverse-200"
                   )}
                 >
-                  {`-${tradeTokenInConfig.expectedSwapResult.priceImpact.toString()}`}
+                  {`-${tradeTokenInConfig.expectedSwapResult.priceImpact
+                    .maxDecimals(2)
+                    .toString()}`}
                 </div>
               </div>
               <div className="flex justify-between">
