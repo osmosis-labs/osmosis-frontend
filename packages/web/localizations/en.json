@@ -442,5 +442,6 @@
   "transactionSuccessful": "Transaction Successful",
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",
-  "waitingForTransaction": "Waiting for transaction to be included in the block"
+  "waitingForTransaction": "Waiting for transaction to be included in the block",
+  "highPoolInflationWarning": "Abnormally high APRs may derive from high inflationary rewards leading to a greater chance of impermanent loss."
 }
