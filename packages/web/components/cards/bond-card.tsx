@@ -251,6 +251,7 @@ const Drawer: FunctionComponent<{
           )}
         >
           <div className="flex flex-col">
+            {/* Only display warning when APR is too high and is not in Frontier */}
             {isAPRTooHigh && !IS_FRONTIER ? (
               <Tooltip content={t("highPoolInflationWarning")}>
                 <span className="subtitle1 flex items-center gap-1.5 text-osmoverse-200">

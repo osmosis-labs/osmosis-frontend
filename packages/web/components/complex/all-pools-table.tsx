@@ -376,6 +376,7 @@ export const AllPoolsTable: FunctionComponent<{
                     inflation.isFetching
                   }
                   value={
+                    // Only display warning when APR is too high and is not in Frontier
                     isAPRTooHigh && !IS_FRONTIER ? (
                       <Tooltip content={t("highPoolInflationWarning")}>
                         <p className="flex items-center gap-1">
