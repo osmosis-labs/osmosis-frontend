@@ -17,3 +17,4 @@ export * from "./ibc-assets";
 export * from "./initial-assets-sort";
 export * from "./price";
 export * from "./user-analytics-v2";
+export * from "./wallet-registry";

@@ -1,10 +1,3 @@
-import { wallets as cosmosStationWallets } from "@cosmos-kit/cosmostation";
-import { wallets as frontierWallets } from "@cosmos-kit/frontier";
-import { wallets as keplrWallets } from "@cosmos-kit/keplr";
-import { wallets as leapWallets } from "@cosmos-kit/leap";
-import { wallets as terrastationWallets } from "@cosmos-kit/terrastation";
-import { wallets as trustWallets } from "@cosmos-kit/trust";
-import { wallets as xdefiWallets } from "@cosmos-kit/xdefi-extension";
 import {
   ChainInfoInner,
   CosmosQueries,
@@ -42,6 +35,7 @@ import {
   WalletAssets,
   WALLETCONNECT_PROJECT_KEY,
   WALLETCONNECT_RELAY_URL,
+  Wallets,
 } from "~/config";
 import { AxelarTransferStatusSource } from "~/integrations/axelar";
 
@@ -109,15 +103,7 @@ export class RootStore {
     this.accountStore = new AccountStore(
       ChainInfos,
       WalletAssets,
-      [
-        ...keplrWallets,
-        ...leapWallets,
-        ...cosmosStationWallets,
-        ...trustWallets,
-        ...terrastationWallets,
-        ...frontierWallets,
-        ...xdefiWallets,
-      ],
+      Wallets,
       this.queriesStore,
       this.chainStore,
       {
