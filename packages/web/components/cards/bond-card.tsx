@@ -16,7 +16,7 @@ import { useMeasure } from "react-use";
 
 import { useStore } from "~/stores";
 
-import { EventName, IS_FRONTIER } from "../../config";
+import { EventName } from "../../config";
 import { useAmplitudeAnalytics } from "../../hooks";
 import { formatPretty } from "../../utils/formatter";
 import { FallbackImg, Icon } from "../assets";
@@ -251,8 +251,8 @@ const Drawer: FunctionComponent<{
           )}
         >
           <div className="flex flex-col">
-            {/* Only display warning when APR is too high and is not in Frontier */}
-            {isAPRTooHigh && !IS_FRONTIER ? (
+            {/* Only display warning when APR is too high */}
+            {isAPRTooHigh ? (
               <Tooltip content={t("highPoolInflationWarning")}>
                 <span className="subtitle1 flex items-center gap-1.5 text-osmoverse-200">
                   {t("pool.incentives")}{" "}

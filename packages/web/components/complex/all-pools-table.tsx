@@ -23,7 +23,7 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { EventName, IS_FRONTIER } from "~/config";
+import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useFilteredData, useWindowSize } from "~/hooks";
 import { MenuOptionsModal } from "~/modals";
 import { noop, runIfFn } from "~/utils/function";
@@ -376,8 +376,8 @@ export const AllPoolsTable: FunctionComponent<{
                     inflation.isFetching
                   }
                   value={
-                    // Only display warning when APR is too high and is not in Frontier
-                    isAPRTooHigh && !IS_FRONTIER ? (
+                    // Only display warning when APR is too high
+                    isAPRTooHigh ? (
                       <Tooltip content={t("highPoolInflationWarning")}>
                         <p className="flex items-center gap-1">
                           {pool.apr.toString()}
