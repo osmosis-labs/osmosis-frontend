@@ -79,6 +79,14 @@ export class OptimizedRoutes {
       )
     );
     routes = routes.sort((path1, path2) => {
+      // prioritize direct routes
+      if (path1.pools.length === 1 && path2.pools.length > 1) {
+        return -1;
+      }
+      if (path1.pools.length > 1 && path2.pools.length === 1) {
+        return 1;
+      }
+
       const path1Index = routes.indexOf(path1);
       const path2Index = routes.indexOf(path2);
       const path1Weight = routeWeights[path1Index];
@@ -301,7 +309,6 @@ export class OptimizedRoutes {
           tokenOutDenoms: [...currentTokenOuts, tokenOutDenom],
           tokenInDenom,
         };
-        validateRoute(foundRoute);
         routes.push(foundRoute);
         return;
       }

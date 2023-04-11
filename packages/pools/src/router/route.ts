@@ -21,7 +21,7 @@ export function validateRoute(route: Route) {
       `Invalid path: pools and tokenOutDenoms length mismatch, IDs:${route.pools.map(
         (p) => p.id
       )} ${route.pools
-        .flatMap((p) => p.poolAssetDenoms)
+        .flatMap((p) => p.poolAssetDenoms.map((denom) => denom.slice(-6)))
         .join(",")} !== ${route.tokenOutDenoms.join(",")}`
     );
   }
