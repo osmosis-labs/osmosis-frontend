@@ -84,7 +84,7 @@ describe("Join Pool Tx", () => {
     await queryPool.waitFreshResponse();
     const estimated = estimateJoinSwap(
       sharePool,
-      queryPool.pool.poolAssets,
+      sharePool.poolAssets,
       (coin) =>
         new CoinPretty(
           queryPool.poolAssets.find(
@@ -169,7 +169,7 @@ describe("Join Pool Tx", () => {
 
     const estimated = estimateJoinSwap(
       sharePool,
-      queryPool.pool.poolAssets,
+      sharePool.poolAssets,
       (coin) =>
         new CoinPretty(
           // eslint-disable-next-line

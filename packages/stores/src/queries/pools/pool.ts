@@ -289,15 +289,18 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   get poolAssets(): {
     amount: CoinPretty;
   }[] {
-    return this.pool.poolAssets.map((asset) => {
-      const currency = this.chainGetter
-        .getChain(this.chainId)
-        .forceFindCurrency(asset.denom);
+    if (this.sharePool) {
+      return this.sharePool.poolAssets.map((asset) => {
+        const currency = this.chainGetter
+          .getChain(this.chainId)
+          .forceFindCurrency(asset.denom);
 
-      return {
-        amount: new CoinPretty(currency, asset.amount),
-      };
-    });
+        return {
+          amount: new CoinPretty(currency, asset.amount),
+        };
+      });
+    }
+    return [];
   }
 
   constructor(

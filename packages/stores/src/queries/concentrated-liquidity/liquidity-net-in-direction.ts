@@ -14,6 +14,8 @@ import { computed } from "mobx";
 
 import { LiquidityNetInDirection } from "./types";
 
+const BOUND_TICK = 3420;
+
 type QueryStoreParams = {
   poolId: string;
   tokenInDenom: string;
@@ -25,7 +27,7 @@ export class ObservableQueryLiquidityNetInDirection extends ObservableChainQuery
     chainId: string,
     chainGetter: ChainGetter,
     protected readonly params: QueryStoreParams,
-    protected readonly defaultBoundTick = new Int(500)
+    protected readonly defaultBoundTick = new Int(BOUND_TICK)
   ) {
     super(
       kvStore,
@@ -77,7 +79,7 @@ export class ObservableQueryLiquiditiesNetInDirection
     protected readonly kvStore: KVStore,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter,
-    protected readonly defaultBoundTick = new Int(500)
+    protected readonly defaultBoundTick = new Int(BOUND_TICK)
   ) {
     // callback to create a new ObservableQueryLiquidityNetInDirection object for a requested direction
     super(kvStore, chainId, chainGetter, (codedKey: string) => {

@@ -1,15 +1,6 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 
-/** Single path through pools. */
-export interface Route {
-  pools: RoutablePool[];
-  // tokenOutDenoms means the token to come out from each pool.
-  // This should the same length with the pools.
-  // Route consists of token in -> pool -> token out -> pool -> token out...
-  // But, currently, only 1 intermediate can be supported.
-  tokenOutDenoms: string[];
-  tokenInDenom: string;
-}
+import { Route } from "./route";
 
 /** Single path through pools,  */
 export interface RouteWithAmount extends Route {
@@ -22,8 +13,9 @@ export interface RoutablePool {
   poolAssetDenoms: string[];
   swapFee: Dec;
 
+  /** Get the maximum amount of token that can be swapped in this pool. */
   getLimitAmountByTokenIn(denom: string): Promise<Int>;
-
+  /** Get the swap result for swapping an amount of token in. */
   getTokenOutByTokenIn(
     tokenIn: {
       denom: string;
@@ -32,7 +24,7 @@ export interface RoutablePool {
     tokenOutDenom: string,
     swapFee?: Dec
   ): Promise<SwapResult>;
-
+  /** Get the amount of token in needed for swapping an amount of token out. */
   getTokenInByTokenOut(
     tokenOut: {
       denom: string;
