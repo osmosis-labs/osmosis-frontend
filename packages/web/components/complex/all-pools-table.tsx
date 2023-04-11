@@ -363,17 +363,21 @@ export const AllPoolsTable: FunctionComponent<{
                * If pool APR is 5 times bigger than staking APR, warn user
                * that pool may be subject to inflation
                */
-              const isAPRTooHigh = pool.apr
-                .toDec()
-                .gt(
-                  inflation.inflation.toDec().quo(new Dec(100)).mul(new Dec(5))
-                );
+              const isAPRTooHigh = inflation.inflation.toDec().gt(new Dec(0))
+                ? pool.apr
+                    .toDec()
+                    .gt(
+                      inflation.inflation
+                        .toDec()
+                        .quo(new Dec(100))
+                        .mul(new Dec(5))
+                    )
+                : false;
 
               return (
                 <MetricLoaderCell
                   isLoading={
-                    queriesOsmosis.queryIncentivizedPools.isAprFetching ||
-                    inflation.isFetching
+                    queriesOsmosis.queryIncentivizedPools.isAprFetching
                   }
                   value={
                     // Only display warning when APR is too high
