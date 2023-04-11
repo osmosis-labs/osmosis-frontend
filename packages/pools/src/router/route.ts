@@ -39,6 +39,8 @@ export async function calculateWeightForRoute(
 ): Promise<Dec> {
   const avgTvl = getAveragePoolValueLocked(route, getPoolTotalValueLocked);
 
+  if (route.pools.length === 1) return new Dec(1); // prioritize direct routes
+
   return new Dec(1).sub(avgTvl.quo(new Dec(1).add(avgTvl)));
 }
 
