@@ -23,7 +23,7 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { EventName } from "~/config";
+import { EventName, IS_FRONTIER } from "~/config";
 import { useAmplitudeAnalytics, useFilteredData, useWindowSize } from "~/hooks";
 import { MenuOptionsModal } from "~/modals";
 import { noop, runIfFn } from "~/utils/function";
@@ -150,6 +150,7 @@ export const AllPoolsTable: FunctionComponent<{
 
     const { chainId } = chainStore.osmosis;
     const queriesOsmosis = queriesStore.get(chainId).osmosis!;
+    const queriesCosmos = queriesStore.get(chainId).cosmos!;
     const queryActiveGauges = queriesExternalStore.queryActiveGauges;
 
     const [sorting, _setSorting] = useState<
@@ -357,30 +358,31 @@ export const AllPoolsTable: FunctionComponent<{
             ) => {
               const pool = props.getValue();
 
+              const inflation = queriesCosmos.queryInflation;
               /**
-               * If pool APR is 10 times bigger than swap fee APR, then warn user
+               * If pool APR is 5 times bigger than staking APR, warn user
                * that pool may be subject to inflation
                */
               const isAPRTooHigh = pool.apr
-                .sub(pool.swapFeeApr)
                 .toDec()
-                .gt(pool.swapFeeApr.toDec().mul(new Dec(10)));
+                .gt(
+                  inflation.inflation.toDec().quo(new Dec(100)).mul(new Dec(5))
+                );
 
               return (
                 <MetricLoaderCell
                   isLoading={
-                    queriesOsmosis.queryIncentivizedPools.isAprFetching
+                    queriesOsmosis.queryIncentivizedPools.isAprFetching ||
+                    inflation.isFetching
                   }
                   value={
-                    isAPRTooHigh ? (
-                      <Tooltip content="This pool is likely to be subject to high inflation resulting in a higher than normal chance of impermanent loss.">
+                    isAPRTooHigh && !IS_FRONTIER ? (
+                      <Tooltip content={t("highPoolInflationWarning")}>
                         <p className="flex items-center gap-1">
                           {pool.apr.toString()}
                           <Icon
                             id="alert-triangle"
-                            height={16}
-                            width={16}
-                            className="text-rust-300"
+                            className="h-4 w-4 text-rust-300"
                           />
                         </p>
                       </Tooltip>
