@@ -84,7 +84,7 @@
       "liquidity": "내 유동성"
     },
     "selectAssetSource": {
-      "installWallet": "Install {walletName}",
+      "installWallet": "{walletName} 설치",
       "next": "다음",
       "titleDeposit": "입금할 지갑",
       "titleWithdraw": "출금할 지갑"
@@ -114,7 +114,7 @@
       "title": "모든 자산",
       "withdrawButton": "출금"
     },
-    "totalAssets": "Total assets",
+    "totalAssets": "총 자산",
     "transfer": {
       "availableMobile": "잔고",
       "availableOn": "{network} 잔고",
