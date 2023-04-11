@@ -42,12 +42,6 @@ describe("route weight calculations", () => {
         routeHighLiq,
         makeTvlFunc(highLiqPools)
       );
-      console.log(
-        "lowLiqWeight",
-        lowLiqWeight.toString(),
-        "highLiqWeight",
-        highLiqWeight.toString()
-      );
       expect(lowLiqWeight.lt(highLiqWeight)).toBeTruthy();
     });
 

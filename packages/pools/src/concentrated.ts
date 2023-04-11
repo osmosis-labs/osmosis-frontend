@@ -19,7 +19,9 @@ export interface ConcentratedLiquidityPoolRaw {
   last_liquidity_update: string;
 }
 
-/** There is more data associated with CL pools for quoting, so it needs to be fetched later. */
+/** There is more data associated with CL pools for quoting, so it needs to be fetched later.
+ *  An instance will be maintained with the pool.
+ */
 export interface TickDataProvider {
   getTickDepths(
     pool: ConcentratedLiquidityPool,
@@ -27,7 +29,9 @@ export interface TickDataProvider {
   ): Promise<LiquidityDepth[]>;
 }
 
-/** Provides balances of tokens in pool. */
+/** Provides balances of tokens in pool.
+ *  An instance will be maintained with the pool.
+ */
 export interface AmountsDataProvider {
   getPoolAmounts(
     pool: ConcentratedLiquidityPool
@@ -221,8 +225,6 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       this,
       tokenInDenom
     );
-
-    console.log(inittedTicks);
 
     const { amountIn, afterSqrtPrice } =
       ConcentratedLiquidityMath.calcInGivenOut({

@@ -116,10 +116,15 @@ export const TradeClipboard: FunctionComponent<{
       },
       [tradeTokenInConfig.optimizedRoute, queries.osmosis?.queryGammPools]
     );
+    // auto collapse on input clear
     useEffect(() => {
-      // auto collapse on input clear
-      if (!isEstimateDetailRelevant) setShowEstimateDetails(false);
-    }, [isEstimateDetailRelevant, setShowEstimateDetails]);
+      if (!isEstimateDetailRelevant && !tradeTokenInConfig.tradeIsLoading)
+        setShowEstimateDetails(false);
+    }, [
+      isEstimateDetailRelevant,
+      tradeTokenInConfig.tradeIsLoading,
+      setShowEstimateDetails,
+    ]);
 
     // auto focus from amount on token switch
     const fromAmountInput = useRef<HTMLInputElement | null>(null);

@@ -4,7 +4,7 @@ import {
   isOsmoRoutedMultihop,
 } from "@osmosis-labs/math";
 
-import { NoPoolsError, NotEnoughLiquidityError } from "./errors";
+import { NoRouteError, NotEnoughLiquidityError } from "./errors";
 import { calculateWeightForRoute, Route, validateRoute } from "./route";
 import { MultihopSwapResult, RoutablePool, RouteWithAmount } from "./types";
 import { invertRoute } from "./utils";
@@ -53,7 +53,7 @@ export class OptimizedRoutes {
     this._maxRoutes = maxRoutes;
   }
 
-  /** Find optimal routes for a given amount of token in and out token. */
+  /** Find optimal routes for a given amount of token in and out token, best first. */
   async getOptimizedRoutesByTokenIn(
     tokenIn: {
       denom: string;
@@ -62,7 +62,7 @@ export class OptimizedRoutes {
     tokenOutDenom: string
   ): Promise<RouteWithAmount[]> {
     if (!tokenIn.amount.isPositive()) {
-      throw new Error("Token in amount is zero or negative");
+      return [];
     }
 
     let routes = this.getCandidateRoutes(tokenIn.denom, tokenOutDenom);
@@ -71,6 +71,10 @@ export class OptimizedRoutes {
     const reverseRoutes = this.getCandidateRoutes(tokenOutDenom, tokenIn.denom);
     const invertedRoutes = reverseRoutes.map(invertRoute);
     routes = [...routes, ...invertedRoutes];
+
+    if (routes.length === 0) {
+      throw new NoRouteError();
+    }
 
     // sort routes by weight
     const routeWeights = await Promise.all(
@@ -89,9 +93,6 @@ export class OptimizedRoutes {
 
     // determine if the routes have enough liquidity --
 
-    if (routes.length === 0) {
-      throw new NoPoolsError();
-    }
     // Is direct swap, but not enough liquidity
     if (routes.length > 1 && routes[0].pools.length === 1) {
       const directSwapLimit = await routes[0].pools[0].getLimitAmountByTokenIn(

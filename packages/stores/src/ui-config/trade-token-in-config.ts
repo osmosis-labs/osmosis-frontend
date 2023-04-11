@@ -23,17 +23,12 @@ import {
   makeObservable,
   observable,
   override,
-  runInAction,
 } from "mobx";
 import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
 import { IPriceStore } from "src/price";
 
 import { ObservableQueryPool, OsmosisQueries } from "../queries";
-import {
-  InsufficientBalanceError,
-  NoRouteError,
-  NoSendCurrencyError,
-} from "./errors";
+import { InsufficientBalanceError, NoSendCurrencyError } from "./errors";
 
 type PrettyMultihopSwapResult = {
   amount: CoinPretty;
@@ -65,8 +60,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   // must match AmountConfig.error
   @observable
   protected _error: Error | undefined = undefined;
-  @observable
-  protected _notEnoughLiquidity: boolean = false;
 
   @observable
   protected _latestOptimizedRoutes:
@@ -238,20 +231,32 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     return this._spotPriceResult?.state === "pending";
   }
 
+  /** Any error derived from state. */
   @override
   get error(): Error | undefined {
+    if (this.isSpotPriceLoading || this.isSpotPriceLoading) return;
+
     const sendCurrency = this.sendCurrency;
     if (!sendCurrency) {
       return new NoSendCurrencyError("Currency to send not set");
     }
 
-    // No route found, but user has input an amount. Display Error
-    if (!this.optimizedRoute && this.amount !== "" && this.amount !== "0") {
-      return new NoRouteError("No route found");
+    // If there's an error from the latest swap result, return it
+    if (this._latestOptimizedRoutes?.state === "rejected") {
+      return this._latestOptimizedRoutes.case({
+        rejected: (error) => error,
+      });
+    }
+
+    if (this._latestSwapResult?.state === "rejected") {
+      return this._latestSwapResult.case({
+        rejected: (error) => error,
+      });
     }
 
     if (this.amount !== "") {
-      if (this._notEnoughLiquidity) return new NotEnoughLiquidityError();
+      if (this._error instanceof NotEnoughLiquidityError)
+        return new NotEnoughLiquidityError();
 
       const dec = new Dec(this.amount);
       const balance = this.queriesStore
@@ -312,6 +317,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
     this._pools = pools;
 
+    // Recalculate optimized routes when send currency, it's amount, or out currency changes
     const debounceGenerateRoutes = debounce(
       (
         ...params: Parameters<typeof this.router.getOptimizedRoutesByTokenIn>
@@ -323,70 +329,52 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       },
       350
     );
-
-    const debounceCalculateRoutes = debounce((route: RouteWithAmount) => {
-      const calcPromise = this.router.calculateTokenOutByTokenIn(route);
-      this.setSwapResult(fromPromise(calcPromise));
-    }, 350);
-
-    // Recalculate optimized routes when send currency or out currency changes
     autorun(() => {
-      runInAction(() => {
-        this._notEnoughLiquidity = false;
-      });
-      this.setError(undefined);
       const amount = this.getAmountPrimitive();
 
-      if (
-        !amount.amount ||
-        new Int(amount.amount).lte(new Int(0)) ||
-        this.sendableCurrencies.length === 0
-      ) {
-        return [];
-      }
+      // Clear any previous user input debounce
+      debounceGenerateRoutes.clear();
 
-      try {
-        debounceGenerateRoutes(
-          {
-            denom: amount.denom,
-            amount: new Int(amount.amount),
-          },
-          this.outCurrency.coinMinimalDenom
-        );
-      } catch (e: any) {
-        if (e instanceof Error) {
-          this.setError(e);
-        }
-        this.setOptimizedRoutes(undefined);
-      }
+      debounceGenerateRoutes(
+        {
+          denom: amount.denom,
+          amount: new Int(amount.amount),
+        },
+        this.outCurrency.coinMinimalDenom
+      );
     });
 
     // React to user input and request a swap result. This is debounced to prevent spamming the server
+    const debounceCalculateTokenOut = debounce((route: RouteWithAmount) => {
+      const tokenOutPromise = this.router.calculateTokenOutByTokenIn(route);
+      this.setSwapResult(fromPromise(tokenOutPromise));
+    }, 350);
     autorun(() => {
-      this.setError(undefined);
       const route = this.optimizedRoute;
 
       // No route or amount input, so no need to calculate a swap result
-      if (!route || this.amount === "" || this.amount === "0") {
-        return this.setSwapResult(undefined);
+      if (!route) {
+        return;
       }
 
       // Clear any previous user input debounce
-      debounceCalculateRoutes.clear();
-      debounceCalculateRoutes(route);
+      debounceCalculateTokenOut.clear();
+
+      debounceCalculateTokenOut(route);
     });
 
-    // react to changes in send/out currencies, then generate a spot price
+    // react to changes in send/out currencies, then generate a spot price by directly calculating from the pools
     autorun(async () => {
       let bestRoute;
-      const one = new Int(
+      /** 1_000_000 uosmo vs 1 uosmo */
+      const oneWithDecimals = new Int(
         DecUtils.getTenExponentNInPrecisionRange(this.sendCurrency.coinDecimals)
           .truncate()
           .toString()
       );
       const tokenIn = {
         denom: this.sendCurrency.coinMinimalDenom,
-        amount: one,
+        amount: oneWithDecimals,
       };
       const outCurrencyDenom = this.outCurrency.coinMinimalDenom;
       const router = this.router;
@@ -400,8 +388,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         return this.setSpotPriceResult(undefined);
       }
 
-      const promiseCalc = router.calculateTokenOutByTokenIn(bestRoute);
-      this.setSpotPriceResult(fromPromise(promiseCalc));
+      const tokenOutPromise = router.calculateTokenOutByTokenIn(bestRoute);
+      this.setSpotPriceResult(fromPromise(tokenOutPromise));
     });
 
     makeObservable(this);
