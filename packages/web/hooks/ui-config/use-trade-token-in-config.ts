@@ -1,16 +1,12 @@
+import { Currency } from "@keplr-wallet/types";
 import {
-  ChainGetter,
-  CosmosQueries,
-  CosmwasmQueries,
-  IQueriesStore,
-} from "@keplr-wallet/stores";
-import {
-  IPriceStore,
   ObservableQueryPool,
   ObservableTradeTokenInConfig,
-  OsmosisQueries,
 } from "@osmosis-labs/stores";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-multi-lang";
+
+import { useStore } from "~/stores";
 
 /** Maintains a single instance of `ObservableTradeTokenInConfig` for React view lifecycle.
  *  Updates `osmosisChainId`, `bech32Address`, `pools` on render.
@@ -18,20 +14,25 @@ import { useEffect, useState } from "react";
  * `requeryIntervalMs` specifies how often to refetch pool data based on current tokens.
  */
 export function useTradeTokenInConfig(
-  chainGetter: ChainGetter,
   osmosisChainId: string,
-  bech32Address: string,
-  queriesStore: IQueriesStore<CosmosQueries & CosmwasmQueries & OsmosisQueries>,
-  priceStore: IPriceStore,
   pools: ObservableQueryPool[],
   requeryIntervalMs = 8000
-) {
+): {
+  tradeTokenInConfig: ObservableTradeTokenInConfig;
+  tradeTokenIn: (slippage: string) => Promise<"multihop" | "exact-in">;
+} {
+  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const t = useTranslation();
+
   const queriesOsmosis = queriesStore.get(osmosisChainId).osmosis!;
+  const account = accountStore.getAccount(osmosisChainId);
+
+  const bech32Address = account.bech32Address;
 
   const [config] = useState(
     () =>
       new ObservableTradeTokenInConfig(
-        chainGetter,
+        chainStore,
         queriesStore,
         priceStore,
         osmosisChainId,
@@ -52,13 +53,20 @@ export function useTradeTokenInConfig(
         }
       )
   );
+  // updates UI config on render to reflect latest values
+  config.setChain(osmosisChainId);
+  config.setSender(bech32Address);
+  config.setPools(pools);
+  useEffect(() => {
+    config.setIncentivizedPoolIds(
+      queriesOsmosis.queryIncentivizedPools.incentivizedPools
+    );
+  }, [queriesOsmosis.queryIncentivizedPools.response]);
 
   // refresh relevant pool data every `requeryIntervalMs` period
   useEffect(() => {
     const interval = setInterval(() => {
-      const poolIds = config.optimizedRoutePaths
-        .map((route) => route.pools.map((pool) => pool.id))
-        .flat();
+      const poolIds = config.optimizedRoute?.pools.map((pool) => pool.id) ?? [];
 
       poolIds.forEach((poolId) => {
         queriesStore
@@ -68,21 +76,120 @@ export function useTradeTokenInConfig(
       });
     }, requeryIntervalMs);
     return () => clearInterval(interval);
-  }, [
-    config.optimizedRoutePaths,
-    osmosisChainId,
-    queriesStore,
-    requeryIntervalMs,
-  ]);
+  }, [config.optimizedRoute, osmosisChainId, queriesStore, requeryIntervalMs]);
 
-  useEffect(() => {
-    config.setIncentivizedPoolIds(
-      queriesOsmosis.queryIncentivizedPools.incentivizedPools
-    );
-  }, [queriesOsmosis.queryIncentivizedPools.response]);
+  /** User trade token in from config values. */
+  const tradeTokenIn = useCallback(
+    async (maxSlippage: string): Promise<"multihop" | "exact-in"> => {
+      if (!config.optimizedRoute) {
+        return Promise.reject(
+          "User input should be disabled if no route is found or is being generated"
+        );
+      }
 
-  config.setChain(osmosisChainId);
-  config.setSender(bech32Address);
-  config.setPools(pools);
-  return config;
+      const routePools: {
+        poolId: string;
+        tokenOutCurrency: Currency;
+      }[] = [];
+
+      for (let i = 0; i < config.optimizedRoute.pools.length; i++) {
+        const pool = config.optimizedRoute.pools[i];
+        const tokenOutCurrency = chainStore.osmosis.currencies.find(
+          (cur) =>
+            cur.coinMinimalDenom === config.optimizedRoute?.tokenOutDenoms[i]
+        );
+
+        if (!tokenOutCurrency) {
+          config.setError(
+            new Error(
+              t("swap.error.findCurrency", {
+                currency:
+                  config.optimizedRoute?.tokenOutDenoms[i] ??
+                  "token out not found",
+              })
+            )
+          );
+          return Promise.reject();
+        }
+
+        routePools.push({
+          poolId: pool.id,
+          tokenOutCurrency,
+        });
+      }
+
+      const tokenInCurrency = chainStore.osmosis.currencies.find(
+        (cur) => cur.coinMinimalDenom === config.optimizedRoute?.tokenInDenom
+      );
+
+      if (!tokenInCurrency) {
+        config.setError(
+          new Error(
+            t("swap.error.findCurrency", {
+              currency: config.optimizedRoute.tokenInDenom,
+            })
+          )
+        );
+        return Promise.reject();
+      }
+
+      const tokenIn = {
+        currency: tokenInCurrency,
+        amount: config.amount,
+      };
+
+      const resetConfigUserInput = () => {
+        config.setAmount("");
+        config.setFraction(undefined);
+      };
+
+      if (routePools.length === 1) {
+        await account.osmosis.sendSwapExactAmountInMsg(
+          routePools[0].poolId,
+          tokenIn,
+          routePools[0].tokenOutCurrency,
+          maxSlippage,
+          "",
+          {
+            amount: [
+              {
+                denom: chainStore.osmosis.stakeCurrency.coinMinimalDenom,
+                amount: "0",
+              },
+            ],
+          },
+          undefined,
+          () => {
+            resetConfigUserInput();
+            return "exact-in";
+          }
+        );
+      } else {
+        await account.osmosis.sendMultihopSwapExactAmountInMsg(
+          routePools,
+          tokenIn,
+          maxSlippage,
+          "",
+          {
+            amount: [
+              {
+                denom: chainStore.osmosis.stakeCurrency.coinMinimalDenom,
+                amount: "0",
+              },
+            ],
+          },
+          undefined,
+          () => {
+            resetConfigUserInput();
+            return "multihop";
+          }
+        );
+      }
+
+      return Promise.reject();
+    },
+    [account.osmosis, chainStore.osmosis, config, t]
+  );
+
+  return { tradeTokenInConfig: config, tradeTokenIn };
 }

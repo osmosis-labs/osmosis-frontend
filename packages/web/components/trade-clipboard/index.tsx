@@ -1,5 +1,5 @@
 import { WalletStatus } from "@keplr-wallet/stores";
-import { AppCurrency, Currency } from "@keplr-wallet/types";
+import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import classNames from "classnames";
@@ -81,25 +81,13 @@ export const TradeClipboard: FunctionComponent<{
     ] = useMeasure<HTMLDivElement>();
 
     const slippageConfig = useSlippageConfig();
-    const tradeTokenInConfig = useTradeTokenInConfig(
-      chainStore,
+    const { tradeTokenInConfig, tradeTokenIn } = useTradeTokenInConfig(
       chainId,
-      account.bech32Address,
-      queriesStore,
-      priceStore,
       pools
     );
 
-    const gasForecasted = (() => {
-      if (
-        tradeTokenInConfig.optimizedRoutePaths.length === 0 ||
-        tradeTokenInConfig.optimizedRoutePaths[0].pools.length <= 1
-      ) {
-        return 250000;
-      }
-
-      return 250000 * tradeTokenInConfig.optimizedRoutePaths[0].pools.length;
-    })();
+    const gasForecasted =
+      250000 * (tradeTokenInConfig.optimizedRoute?.pools.length ?? 1);
 
     const feeConfig = useFakeFeeConfig(
       chainStore,
@@ -117,18 +105,16 @@ export const TradeClipboard: FunctionComponent<{
       (value: boolean) => {
         // refresh current route's pools
         if (value) {
-          tradeTokenInConfig.optimizedRoutePaths.forEach((route) => {
-            route.pools.forEach((pool) => {
-              queries.osmosis?.queryGammPools
-                .getPool(pool.id)
-                ?.waitFreshResponse();
-            });
+          tradeTokenInConfig.optimizedRoute?.pools.forEach((pool) => {
+            queries.osmosis?.queryGammPools
+              .getPool(pool.id)
+              ?.waitFreshResponse();
           });
         }
 
         _setShowEstimateDetails(value);
       },
-      [tradeTokenInConfig, queries.osmosis?.queryGammPools]
+      [tradeTokenInConfig.optimizedRoute, queries.osmosis?.queryGammPools]
     );
     useEffect(() => {
       // auto collapse on input clear
@@ -311,148 +297,38 @@ export const TradeClipboard: FunctionComponent<{
     );
 
     // user action
-    const swap = async () => {
+    const swap = () => {
       if (account.walletStatus !== WalletStatus.Loaded) {
         return account.init();
       }
-      if (tradeTokenInConfig.optimizedRoutePaths.length > 0) {
-        const routePools: {
-          poolId: string;
-          tokenOutCurrency: Currency;
-        }[] = [];
-
-        for (
-          let i = 0;
-          i < tradeTokenInConfig.optimizedRoutePaths[0].pools.length;
-          i++
-        ) {
-          const pool = tradeTokenInConfig.optimizedRoutePaths[0].pools[i];
-          const tokenOutCurrency = chainStore.osmosisObservable.currencies.find(
-            (cur) =>
-              cur.coinMinimalDenom ===
-              tradeTokenInConfig.optimizedRoutePaths[0].tokenOutDenoms[i]
-          );
-
-          if (!tokenOutCurrency) {
-            tradeTokenInConfig.setError(
-              new Error(
-                t("swap.error.findCurrency", {
-                  currency:
-                    tradeTokenInConfig.optimizedRoutePaths[0].tokenOutDenoms[i],
-                })
-              )
-            );
-            return;
-          }
-
-          routePools.push({
-            poolId: pool.id,
-            tokenOutCurrency,
-          });
-        }
-
-        const tokenInCurrency = chainStore.osmosisObservable.currencies.find(
-          (cur) =>
-            cur.coinMinimalDenom ===
-            tradeTokenInConfig.optimizedRoutePaths[0].tokenInDenom
-        );
-
-        if (!tokenInCurrency) {
-          tradeTokenInConfig.setError(
-            new Error(
-              t("swap.error.findCurrency", {
-                currency:
-                  tradeTokenInConfig.optimizedRoutePaths[0].tokenInDenom,
-              })
-            )
-          );
-          return;
-        }
-
-        const tokenIn = {
-          currency: tokenInCurrency,
-          amount: tradeTokenInConfig.amount,
-        };
-        const maxSlippage = slippageConfig.slippage.symbol("").toString();
-
-        try {
+      const baseEvent = {
+        fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
+        tokenAmount: Number(tradeTokenInConfig.amount),
+        toToken: tradeTokenInConfig.outCurrency.coinDenom,
+        isOnHome: !isInModal,
+        isMultiHop: tradeTokenInConfig.optimizedRoute?.pools.length !== 1,
+      };
+      logEvent([EventName.Swap.swapStarted, baseEvent]);
+      const userSlippageSetting = slippageConfig.slippage.symbol("").toString();
+      tradeTokenIn(userSlippageSetting)
+        .then((result) => {
+          // onFullfill
           logEvent([
-            EventName.Swap.swapStarted,
+            EventName.Swap.swapCompleted,
             {
-              fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
-              tokenAmount: Number(tokenIn.amount),
-              toToken: tradeTokenInConfig.outCurrency.coinDenom,
-              isOnHome: !isInModal,
-              isMultiHop: routePools.length !== 1,
+              ...baseEvent,
+              isMultiHop: result === "multihop",
             },
           ]);
-          if (routePools.length === 1) {
-            await account.osmosis.sendSwapExactAmountInMsg(
-              routePools[0].poolId,
-              tokenIn,
-              routePools[0].tokenOutCurrency,
-              maxSlippage,
-              "",
-              {
-                amount: [
-                  {
-                    denom: chainStore.osmosis.stakeCurrency.coinMinimalDenom,
-                    amount: "0",
-                  },
-                ],
-              },
-              undefined,
-              () => {
-                logEvent([
-                  EventName.Swap.swapCompleted,
-                  {
-                    fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
-                    tokenAmount: Number(tokenIn.amount),
-                    toToken: tradeTokenInConfig.outCurrency.coinDenom,
-                    isOnHome: !isInModal,
+        })
+        .catch((error) => {
+          // failed txs are handled elsewhere
+          console.error(error);
+        })
 
-                    isMultiHop: false,
-                  },
-                ]);
-              }
-            );
-          } else {
-            await account.osmosis.sendMultihopSwapExactAmountInMsg(
-              routePools,
-              tokenIn,
-              maxSlippage,
-              "",
-              {
-                amount: [
-                  {
-                    denom: chainStore.osmosis.stakeCurrency.coinMinimalDenom,
-                    amount: "0",
-                  },
-                ],
-              },
-              undefined,
-              () => {
-                logEvent([
-                  EventName.Swap.swapCompleted,
-                  {
-                    fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
-                    tokenAmount: Number(tokenIn.amount),
-                    toToken: tradeTokenInConfig.outCurrency.coinDenom,
-                    isOnHome: !isInModal,
-                    isMultiHop: true,
-                  },
-                ]);
-              }
-            );
-          }
-          tradeTokenInConfig.setAmount("");
-          tradeTokenInConfig.setFraction(undefined);
-        } catch (e) {
-          console.error(e);
-        } finally {
+        .finally(() => {
           onRequestModalClose?.();
-        }
-      }
+        });
     };
 
     return (
@@ -1066,21 +942,17 @@ export const TradeClipboard: FunctionComponent<{
                   </span>
                 </div>
               </div>
-              {!isInModal &&
-                tradeTokenInConfig.optimizedRoutePaths
-                  .slice(0, 1)
-                  .map((route, index) => (
-                    <TradeRoute
-                      key={index}
-                      sendCurrency={tradeTokenInConfig.sendCurrency}
-                      outCurrency={tradeTokenInConfig.outCurrency}
-                      route={route}
-                      isMultihopOsmoFeeDiscount={
-                        tradeTokenInConfig.expectedSwapResult
-                          .isMultihopOsmoFeeDiscount
-                      }
-                    />
-                  ))}
+              {!isInModal && tradeTokenInConfig.optimizedRoute && (
+                <TradeRoute
+                  sendCurrency={tradeTokenInConfig.sendCurrency}
+                  outCurrency={tradeTokenInConfig.outCurrency}
+                  route={tradeTokenInConfig.optimizedRoute}
+                  isMultihopOsmoFeeDiscount={
+                    tradeTokenInConfig.expectedSwapResult
+                      .isMultihopOsmoFeeDiscount
+                  }
+                />
+              )}
             </div>
           </div>
         </div>
@@ -1093,10 +965,11 @@ export const TradeClipboard: FunctionComponent<{
                 : "primary"
             }
             disabled={
-              account.walletStatus === WalletStatus.Loaded &&
-              (tradeTokenInConfig.error !== undefined ||
-                tradeTokenInConfig.optimizedRoutePaths.length === 0 ||
-                account.txTypeInProgress !== "")
+              (account.walletStatus === WalletStatus.Loaded &&
+                (tradeTokenInConfig.error !== undefined ||
+                  !Boolean(tradeTokenInConfig.optimizedRoute) ||
+                  account.txTypeInProgress !== "")) ||
+              tradeTokenInConfig.tradeIsLoading
             }
             onClick={swap}
           >
