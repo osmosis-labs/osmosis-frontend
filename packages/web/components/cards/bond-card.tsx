@@ -225,6 +225,10 @@ const Drawer: FunctionComponent<{
     const queriesCosmos = queriesStore.get(chainId).cosmos;
     const inflation = queriesCosmos.queryInflation;
 
+    /**
+     * If pool APR is 5 times bigger than staking APR, warn user
+     * that pool may be subject to inflation
+     */
     const isAPRTooHigh = aggregateApr
       .toDec()
       .gt(inflation.inflation.toDec().quo(new Dec(100)).mul(new Dec(5)));
