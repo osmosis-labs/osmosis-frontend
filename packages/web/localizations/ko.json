@@ -84,7 +84,7 @@
       "liquidity": "내 유동성"
     },
     "selectAssetSource": {
-      "installWallet": "Install {walletName}",
+      "installWallet": "{walletName} 설치",
       "next": "다음",
       "titleDeposit": "입금할 지갑",
       "titleWithdraw": "출금할 지갑"
