@@ -290,6 +290,8 @@ const ModalContent: FunctionComponent<
   }
 
   const wallets = [...(walletRepo?.wallets ?? [])]
+    // Do not display wallets that are not ready to be used
+    .filter((w) => w.clientMutable.state === State.Done)
     // If mobile, filter out browser wallets
     .filter((w) => (isMobile ? !w.walletInfo.mobileDisabled : true))
     // Wallet connect should be last
