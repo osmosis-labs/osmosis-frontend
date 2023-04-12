@@ -438,6 +438,7 @@ export const AllPoolsTable: FunctionComponent<{
       [
         cellGroupEventEmitter,
         columnHelper,
+        queriesCosmos.queryInflation,
         queriesOsmosis.queryIncentivizedPools.isAprFetching,
         quickAddLiquidity,
         quickLockTokens,
