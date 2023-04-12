@@ -10,7 +10,7 @@ import {
   ConcentratedLiquidityPool,
   TickDataProvider,
 } from "@osmosis-labs/pools";
-import { computed } from "mobx";
+import { computed, makeObservable } from "mobx";
 
 import { LiquidityNetInDirection } from "./types";
 
@@ -21,35 +21,10 @@ type QueryStoreParams = {
   tokenInDenom: string;
 };
 
+/** Stores tick data for a single pool swapping in a single direction by token in. */
 export class ObservableQueryLiquidityNetInDirection extends ObservableChainQuery<LiquidityNetInDirection> {
-  constructor(
-    kvStore: KVStore,
-    chainId: string,
-    chainGetter: ChainGetter,
-    protected readonly params: QueryStoreParams,
-    protected readonly defaultBoundTick = new Int(BOUND_TICK)
-  ) {
-    super(
-      kvStore,
-      chainId,
-      chainGetter,
-      `/osmosis/concentratedliquidity/v1beta1/query_liquidity_net_in_direction?pool_id=${
-        params.poolId
-      }&token_in=${
-        params.tokenInDenom
-      }&use_cur_tick=true&bound_tick=${defaultBoundTick.toString()}`
-    );
-  }
-
-  fetchRemaining() {
-    const { poolId, tokenInDenom } = this.params;
-    this.setUrl(
-      `/osmosis/concentratedliquidity/v1beta1/query_liquidity_net_in_direction?pool_id=${poolId}&token_in=${tokenInDenom}&use_cur_tick=true&use_no_bound=true`
-    );
-  }
-
   @computed
-  get depths(): LiquidityDepth[] {
+  get depthsInDirection(): LiquidityDepth[] {
     return (
       this.response?.data.liquidity_depths.map((depth) => {
         return {
@@ -68,6 +43,36 @@ export class ObservableQueryLiquidityNetInDirection extends ObservableChainQuery
   @computed
   get currentLiquidity() {
     return new Dec(this.response?.data.current_liquidity ?? 0);
+  }
+
+  constructor(
+    kvStore: KVStore,
+    chainId: string,
+    chainGetter: ChainGetter,
+    protected readonly params: QueryStoreParams,
+    protected readonly defaultBoundTick = new Int(BOUND_TICK)
+  ) {
+    super(
+      kvStore,
+      chainId,
+      chainGetter,
+      `/osmosis/concentratedliquidity/v1beta1/query_liquidity_net_in_direction?pool_id=${
+        params.poolId
+      }&token_in=${
+        params.tokenInDenom
+      }&use_cur_tick=true&bound_tick=${defaultBoundTick.toString()}`
+    );
+
+    makeObservable(this);
+  }
+
+  /** Fetches remaining ticks in this direction, which could be expensive, so should be done later. */
+  fetchRemaining() {
+    const { poolId, tokenInDenom } = this.params;
+    this.setUrl(
+      `/osmosis/concentratedliquidity/v1beta1/query_liquidity_net_in_direction?pool_id=${poolId}&token_in=${tokenInDenom}&use_cur_tick=true&use_no_bound=true`
+    );
+    return this.waitFreshResponse();
   }
 }
 
@@ -103,17 +108,26 @@ export class ObservableQueryLiquiditiesNetInDirection
     pool: ConcentratedLiquidityPool,
     tokenInDenom: string
   ): Promise<LiquidityDepth[]> {
-    const queryDepths = this.getForPoolTokenIn(pool.id, tokenInDenom);
+    const key = encodeKey({ poolId: pool.id, tokenInDenom });
+    // initial ticks have already been requested
+    let queryDepths;
+    if (this.has(key)) {
+      queryDepths = super.get(key) as ObservableQueryLiquidityNetInDirection;
+    } else {
+      queryDepths = this.getForPoolTokenIn(pool.id, tokenInDenom);
+    }
     await queryDepths.waitResponse();
-    return queryDepths.depths;
+    return queryDepths.depthsInDirection;
   }
 }
 
+const delimiter = "-";
+
 function encodeKey({ poolId, tokenInDenom }: QueryStoreParams) {
-  return `${poolId}-${tokenInDenom}`;
+  return `${poolId}${delimiter}${tokenInDenom}`;
 }
 
 function decodeKey(key: string): QueryStoreParams {
-  const [poolId, tokenInDenom] = key.split("-");
+  const [poolId, tokenInDenom] = key.split(delimiter);
   return { poolId, tokenInDenom };
 }
