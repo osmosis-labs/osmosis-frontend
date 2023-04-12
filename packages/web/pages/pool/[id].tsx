@@ -474,7 +474,7 @@ const Pool: FunctionComponent = observer(() => {
                     {t("pool.swapFee")}
                   </span>
                   <h4 className="text-osmoverse-100">
-                    {pool?.swapFee.toString()}
+                    {pool?.swapFee.toString() ?? ""}
                   </h4>
                 </div>
               </div>
