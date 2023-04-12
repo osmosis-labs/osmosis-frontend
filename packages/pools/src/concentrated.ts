@@ -14,7 +14,7 @@ export interface ConcentratedLiquidityPoolRaw {
   current_sqrt_price: string;
   current_tick: string;
   tick_spacing: string;
-  precision_factor_at_price_one: string;
+  exponent_at_price_one: string;
   swap_fee: string;
   last_liquidity_update: string;
 }
@@ -79,16 +79,19 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
   get tickSpacing(): number {
     const ts = parseInt(this.raw.tick_spacing);
     if (isNaN(ts)) {
-      throw new Error(`Invalid tick spacing in pool id: ${this.raw.id}`);
+      console.log("throw tick spacing");
+      throw new Error(
+        `Invalid tick spacing in pool id: ${this.raw.id}, tick spacing: ${this.raw.tick_spacing}`
+      );
     }
     return ts;
   }
 
   get precisionFactorAtPriceOne(): number {
-    const pf = parseInt(this.raw.precision_factor_at_price_one);
+    const pf = parseInt(this.raw.exponent_at_price_one);
     if (isNaN(pf)) {
       throw new Error(
-        `Invalid precision factor at price one in pool id: ${this.raw.id}`
+        `Invalid precision factor at price one in pool id: ${this.raw.id}, factor: ${this.raw.exponent_at_price_one}`
       );
     }
     return pf;
