@@ -330,7 +330,6 @@ export const TradeClipboard: FunctionComponent<{
           // failed txs are handled elsewhere
           console.error(error);
         })
-
         .finally(() => {
           onRequestModalClose?.();
         });
@@ -970,16 +969,14 @@ export const TradeClipboard: FunctionComponent<{
                 : "primary"
             }
             disabled={
-              (account.walletStatus === WalletStatus.Loaded &&
-                (tradeTokenInConfig.error !== undefined ||
-                  !Boolean(tradeTokenInConfig.optimizedRoute) ||
-                  account.txTypeInProgress !== "")) ||
+              Boolean(tradeTokenInConfig.error) ||
+              account.txTypeInProgress !== "" ||
               tradeTokenInConfig.tradeIsLoading
             }
             onClick={swap}
           >
             {account.walletStatus === WalletStatus.Loaded ? (
-              tradeTokenInConfig.error ? (
+              Boolean(tradeTokenInConfig.error) ? (
                 t(...tError(tradeTokenInConfig.error))
               ) : showPriceImpactWarning ? (
                 t("swap.buttonError")

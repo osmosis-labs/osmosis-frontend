@@ -79,7 +79,6 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
   get tickSpacing(): number {
     const ts = parseInt(this.raw.tick_spacing);
     if (isNaN(ts)) {
-      console.log("throw tick spacing");
       throw new Error(
         `Invalid tick spacing in pool id: ${this.raw.id}, tick spacing: ${this.raw.tick_spacing}`
       );

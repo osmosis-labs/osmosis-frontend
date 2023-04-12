@@ -195,6 +195,10 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   get optimizedRoute(): RouteWithAmount | undefined {
     return this._latestOptimizedRoutes?.case({
       fulfilled: (routes) => routes[0], // get best route
+      rejected: (e) => {
+        console.error("Route rejected", e);
+        return undefined;
+      },
     });
   }
 
@@ -203,6 +207,10 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     return (
       this._latestSwapResult?.case({
         fulfilled: (result) => this.makePrettyMultihopResult(result),
+        rejected: (e) => {
+          console.error("Swap result rejected", e);
+          return undefined;
+        },
       }) ?? this.zeroSwapResult
     );
   }
@@ -222,6 +230,10 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         fulfilled: (result) =>
           this.makePrettyMultihopResult(result)
             .beforeSpotPriceWithoutSwapFeeInOverOut,
+        rejected: (e) => {
+          console.error("Spot price rejected", e);
+          return undefined;
+        },
       }) ?? new IntPretty(0)
     );
   }
@@ -234,7 +246,13 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   /** Any error derived from state. */
   @override
   get error(): Error | undefined {
-    if (this.isSpotPriceLoading || this.isSpotPriceLoading) return;
+    if (
+      this.isSpotPriceLoading ||
+      this.isSpotPriceLoading ||
+      this.amount === "" ||
+      !new Dec(this.amount).isPositive()
+    )
+      return;
 
     const sendCurrency = this.sendCurrency;
     if (!sendCurrency) {
@@ -330,15 +348,17 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       350
     );
     autorun(() => {
-      const amount = this.getAmountPrimitive();
+      const { denom, amount } = this.getAmountPrimitive();
+
+      if (amount === "" || !new Int(amount).isPositive()) return;
 
       // Clear any previous user input debounce
       debounceGenerateRoutes.clear();
 
       debounceGenerateRoutes(
         {
-          denom: amount.denom,
-          amount: new Int(amount.amount),
+          denom,
+          amount: new Int(amount),
         },
         this.outCurrency.coinMinimalDenom
       );
