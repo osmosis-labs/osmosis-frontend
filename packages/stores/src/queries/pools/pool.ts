@@ -133,7 +133,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
         currentSqrtPrice: this.pool.currentSqrtPrice,
         currentTickLiquidity: this.pool.currentTickLiquidity,
         tickSpacing: this.pool.tickSpacing,
-        precisionFactorAtPriceOne: this.pool.precisionFactorAtPriceOne,
+        exponentAtPriceOne: this.pool.exponentAtPriceOne,
       };
     }
   }

@@ -460,7 +460,7 @@ async function estimateSwapExactOut(
           : undefined,
       },
       poolAssets,
-      swapFee: queryPool!.swapFee,
+      swapFee: queryPool!.swapFee.toDec(),
     },
     new Coin(
       tokenOut.currency.coinMinimalDenom,

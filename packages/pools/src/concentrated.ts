@@ -86,11 +86,11 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     return ts;
   }
 
-  get precisionFactorAtPriceOne(): number {
+  get exponentAtPriceOne(): number {
     const pf = parseInt(this.raw.exponent_at_price_one);
     if (isNaN(pf)) {
       throw new Error(
-        `Invalid precision factor at price one in pool id: ${this.raw.id}, factor: ${this.raw.exponent_at_price_one}`
+        `Invalid exponent at price one in pool id: ${this.raw.id}, factor: ${this.raw.exponent_at_price_one}`
       );
     }
     return pf;
@@ -162,7 +162,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
         poolLiquidity: this.currentTickLiquidity,
         inittedTicks,
         curSqrtPrice: this.currentSqrtPrice,
-        precisionFactorAtPriceOne: this.precisionFactorAtPriceOne,
+        precisionFactorAtPriceOne: this.exponentAtPriceOne,
         swapFee,
       });
 
@@ -235,7 +235,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
         poolLiquidity: this.currentTickLiquidity,
         inittedTicks,
         curSqrtPrice: this.currentSqrtPrice,
-        precisionFactorAtPriceOne: this.precisionFactorAtPriceOne,
+        precisionFactorAtPriceOne: this.exponentAtPriceOne,
         swapFee,
       });
 
