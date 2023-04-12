@@ -34,39 +34,39 @@ import {
 export const WalletRegistry: Record<string, Wallet> = {
   [cosmostationExtensionInfo.name]: {
     ...cosmostationExtensionInfo,
-    logo: "/images/wallets/cosmostation.svg",
+    logo: "/wallets/cosmostation.png",
   },
   [cosmostationMobileInfo.name]: {
     ...cosmostationMobileInfo,
-    logo: "/images/wallets/cosmostation.svg",
+    logo: "/wallets/cosmostation.png",
   },
   [keplrExtensionInfo.name]: {
     ...keplrExtensionInfo,
-    logo: "/images/wallets/keplr.svg",
+    logo: "/wallets/keplr.svg",
   },
   [keplrMobileInfo.name]: {
     ...keplrMobileInfo,
-    logo: "/images/wallets/keplr.svg",
+    logo: "/wallets/keplr.svg",
   },
   [frontierExtensionInfo.name]: {
     ...frontierExtensionInfo,
-    logo: "/images/wallets/frontier.svg",
+    logo: "/wallets/frontier.png",
   },
   [leapExtensionInfo.name]: {
     ...leapExtensionInfo,
-    logo: "/images/wallets/leap.svg",
+    logo: "/wallets/leap.png",
   },
   [terrastationExtensionInfo.name]: {
     ...terrastationExtensionInfo,
-    logo: "/images/wallets/terrastation.svg",
+    logo: "/wallets/terrastation.svg",
   },
   [trustMobileInfo.name]: {
     ...trustMobileInfo,
-    logo: "/images/wallets/trust.svg",
+    logo: "/wallets/trust.png",
   },
   [xdefiExtensionInfo.name]: {
     ...xdefiExtensionInfo,
-    logo: "/images/wallets/xdefi.svg",
+    logo: "/wallets/xdefi.png",
   },
 };
 
