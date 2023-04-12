@@ -12,6 +12,12 @@ const nine = new Dec(9);
 
 // Ref: https://github.com/osmosis-labs/osmosis/blob/main/x/concentrated-liquidity/README.md#tick-spacing-example-tick-to-price
 // chain: https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/internal/math/tick.go#L39
+/** TickToSqrtPrice returns the sqrtPrice given the following two arguments:
+    - tickIndex: the tick index to calculate the price for
+    - exponentAtPriceOne: the value of the exponent (and therefore the precision) at which the starting price of 1 is set
+
+    If tickIndex is zero, the function returns new Dec(1).
+ */
 export function tickToSqrtPrice(
   tickIndex: Int,
   exponentAtPriceOne: number
@@ -81,6 +87,7 @@ export function tickToSqrtPrice(
   return approxSqrt(price);
 }
 
+/** PriceToTick takes a price and returns the corresponding tick index */
 export function priceToTick(price: Dec, exponentAtPriceOne: number): Int {
   if (price.equals(new Dec(1))) {
     return new Int(0);
@@ -133,6 +140,10 @@ export function computeMinMaxTicksFromExponentAtPriceOne(
   };
 }
 
+/** The function uses the geometricExponentIncrementDistanceInTicks formula to determine the number of ticks passed and the current additive increment in ticks.
+    If the price is greater than 1, the function increments the exponentAtCurrentTick until the currentPrice is greater than the input price.
+    If the price is less than 1, the function decrements the exponentAtCurrentTick until the currentPrice is less than the input price.
+ */
 export function calculatePriceAndTicksPassed(
   price: Dec,
   exponentAtPriceOne: number
@@ -184,6 +195,48 @@ export function calculatePriceAndTicksPassed(
     }
   }
   return { currentPrice, ticksPassed, currentAdditiveIncrementInTicks };
+}
+
+/** Provides a method of estimating the initial first tick index bound for querying ticks efficiently (not requesting too many ticks).
+ *  Is positive or negative depending on which token is being swapped in.
+ */
+export function estimateInitialTickBounds({
+  tokenIn,
+  token0Denom,
+  currentSqrtPrice,
+  currentTickLiquidity,
+  exponentAtPriceOne,
+}: {
+  tokenIn: {
+    denom: string;
+    amount: Int;
+  };
+  token0Denom: string;
+  currentSqrtPrice: Dec;
+  currentTickLiquidity: Dec;
+  exponentAtPriceOne: number;
+}): { boundTickIndex: Int } {
+  const isZeroForOne = tokenIn.denom === token0Denom;
+
+  // get target sqrt price from amount in and tick liquidity
+  let sqrtPriceTarget: Dec;
+  if (isZeroForOne) {
+    const estimate = currentSqrtPrice.sub(
+      currentTickLiquidity.quo(new Dec(tokenIn.amount))
+    );
+    sqrtPriceTarget = estimate.gt(minSpotPrice) ? estimate : minSpotPrice;
+  } else {
+    const estimate = currentSqrtPrice.add(
+      new Dec(tokenIn.amount).quo(currentTickLiquidity)
+    );
+    sqrtPriceTarget = estimate.lt(maxSpotPrice) ? estimate : maxSpotPrice;
+  }
+
+  const price = sqrtPriceTarget.pow(new Int(2));
+
+  return {
+    boundTickIndex: priceToTick(price, exponentAtPriceOne),
+  };
 }
 
 // TODO: consider moving
