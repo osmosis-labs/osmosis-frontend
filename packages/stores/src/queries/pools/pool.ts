@@ -149,13 +149,13 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   }
 
   @computed
-  get swapFee(): Dec {
-    return this.pool.swapFee;
+  get swapFee(): RatePretty {
+    return new RatePretty(this.pool.swapFee);
   }
 
   @computed
-  get exitFee(): Dec {
-    return this.pool.exitFee;
+  get exitFee(): RatePretty {
+    return new RatePretty(this.pool.exitFee);
   }
 
   /** Only relevant to SharePool types. */
@@ -384,7 +384,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     );
   });
 
-  getSpotPriceOutOverInWithoutSwapFee: (
+  readonly getSpotPriceOutOverInWithoutSwapFee: (
     tokenInDenom: string,
     tokenOutDenom: string
   ) => IntPretty = computedFn((tokenInDenom: string, tokenOutDenom: string) => {
@@ -444,7 +444,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     this.setRaw(response.data.pool);
   }
 
-  static makeWithoutRaw(
+  static async makeWithoutRaw(
     poolId: string,
     ...[
       kvStore,
@@ -454,34 +454,27 @@ export class ObservableQueryPool extends ObservableChainQuery<{
       queryBalances,
     ]: Head<ConstructorParameters<typeof ObservableQueryPool>>
   ): Promise<ObservableQueryPool> {
-    return new Promise((resolve, reject) => {
-      let lcdUrl = chainGetter.getChain(chainId).rest;
-      if (lcdUrl.endsWith("/")) lcdUrl = lcdUrl.slice(0, lcdUrl.length - 1);
-      const endpoint = ObservableQueryPool.makeEndpointUrl(poolId);
-      fetch(lcdUrl + endpoint)
-        .then((response) => {
-          response
-            .json()
-            .then((data) => {
-              if (response.ok) {
-                resolve(
-                  new ObservableQueryPool(
-                    kvStore,
-                    chainId,
-                    chainGetter,
-                    queryLiquiditiesInNetDirection,
-                    queryBalances,
-                    data.pool
-                  )
-                );
-              } else {
-                reject("not-found");
-              }
-            })
-            .catch(reject);
-        })
-        .catch(reject);
-    });
+    let lcdUrl = chainGetter.getChain(chainId).rest;
+    if (lcdUrl.endsWith("/")) lcdUrl = lcdUrl.slice(0, lcdUrl.length - 1);
+    const endpoint = ObservableQueryPool.makeEndpointUrl(poolId);
+    try {
+      const response = await fetch(lcdUrl + endpoint);
+      const data = (await response.json()) as { pool: PoolRaw };
+      if (response.ok) {
+        throw new Error();
+      }
+
+      return new ObservableQueryPool(
+        kvStore,
+        chainId,
+        chainGetter,
+        queryLiquiditiesInNetDirection,
+        queryBalances,
+        data.pool
+      );
+    } catch {
+      throw new Error("not-found");
+    }
   }
 
   protected static makeEndpointUrl(poolId: string) {
