@@ -39,7 +39,8 @@ export class DerivedDataStore {
     protected readonly accountStore: IAccountStore,
     protected readonly priceStore: IPriceStore,
     protected readonly chainGetter: ChainStore,
-    protected readonly assetStore: ObservableAssets
+    protected readonly assetStore: ObservableAssets,
+    protected readonly isFrontier: boolean
   ) {
     this.poolDetails = new ObservablePoolDetails(
       this.osmosisChainId,
@@ -73,7 +74,8 @@ export class DerivedDataStore {
       this.chainGetter,
       this.externalQueries,
       this.priceStore,
-      this.assetStore
+      this.assetStore,
+      this.isFrontier
     );
   }
 

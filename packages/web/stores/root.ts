@@ -227,7 +227,8 @@ export class RootStore {
       this.accountStore,
       this.priceStore,
       this.chainStore,
-      this.assetsStore
+      this.assetsStore,
+      IS_FRONTIER
     );
 
     this.ibcTransferHistoryStore = new IBCTransferHistoryStore(

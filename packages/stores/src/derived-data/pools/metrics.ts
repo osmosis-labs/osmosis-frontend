@@ -110,7 +110,8 @@ export class ObservablePoolsWithMetric {
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly priceStore: IPriceStore,
-    protected readonly assetStore: ObservableAssets
+    protected readonly assetStore: ObservableAssets,
+    protected readonly isFrontier: boolean
   ) {}
 
   getAllPools = computedFn(
@@ -124,18 +125,29 @@ export class ObservablePoolsWithMetric {
 
       // Add all approved assets to a map for faster lookup.
       const approvedAssets = new Map<string, boolean>();
-      [
-        ...this.assetStore.ibcBalances,
-        ...this.assetStore.nativeBalances,
-      ].forEach((asset) => {
-        approvedAssets.set(asset.balance.denom, true);
-      });
+
+      /**
+       * Avoid unneeded calculation: skip adding approved assets if it's Frontier.
+       * Frontier will display all pools.
+       *  */
+      if (!this.isFrontier) {
+        [
+          ...this.assetStore.ibcBalances,
+          ...this.assetStore.nativeBalances,
+        ].forEach((asset) => {
+          approvedAssets.set(asset.balance.denom, true);
+        });
+      }
 
       for (const pool of allPools ?? []) {
         const existingPool = this._pools.get(pool.id);
 
-        // If the pool has any asset that is not approved, then skip it.
+        /**
+         * If the pool has any asset that is not approved, then skip it.
+         * This verification is only needed on the main site.
+         * */
         if (
+          !this.isFrontier &&
           !pool.poolAssets.every((asset) =>
             Boolean(approvedAssets.get(asset.amount.denom))
           )
@@ -217,7 +229,8 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly priceStore: IPriceStore,
-    protected readonly assetStore: ObservableAssets
+    protected readonly assetStore: ObservableAssets,
+    protected readonly isFrontier: boolean
   ) {
     super(
       (chainId: string) =>
@@ -229,7 +242,8 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
           chainStore,
           externalQueries,
           priceStore,
-          assetStore
+          assetStore,
+          isFrontier
         )
     );
   }
