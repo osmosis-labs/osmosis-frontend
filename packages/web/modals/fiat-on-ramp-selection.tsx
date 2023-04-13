@@ -1,3 +1,4 @@
+import { FiatRampKey } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -6,7 +7,7 @@ import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTransferConfig } from "~/hooks";
-import { FiatRampDisplayInfos, FiatRampKey } from "~/integrations";
+import { FiatRampDisplayInfos } from "~/integrations";
 
 import { ModalBase, ModalBaseProps } from "./base";
 import { FiatRampsModal } from "./fiat-ramps";

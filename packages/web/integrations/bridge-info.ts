@@ -1,3 +1,5 @@
+import { FiatRampKey } from "@osmosis-labs/stores";
+
 import { SpriteIconId } from "~/components/assets";
 
 import { AxelarBridgeConfig } from "./axelar/types";
@@ -55,7 +57,6 @@ export const EthClientChainIds_SourceChainMap: {
 
 // Fiat on/off ramps
 
-export type FiatRampKey = "kado" | "transak" | "layerswapcoinbase";
 export const FiatRampDisplayInfos: Record<
   FiatRampKey,
   {

@@ -1,4 +1,9 @@
 import { Dec } from "@keplr-wallet/unit";
+import {
+  CoinBalance,
+  IBCBalance,
+  IBCCW20ContractBalance,
+} from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
@@ -13,11 +18,6 @@ import {
 } from "../../hooks";
 import { useFilteredData, useSortedData } from "../../hooks/data";
 import { useStore } from "../../stores";
-import {
-  CoinBalance,
-  IBCBalance,
-  IBCCW20ContractBalance,
-} from "../../stores/assets";
 import { Icon } from "../assets";
 import { ShowMoreButton } from "../buttons/show-more";
 import { SortMenu, Switch } from "../control";
