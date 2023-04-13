@@ -21,6 +21,7 @@ import {
   leapExtensionInfo,
   LeapExtensionWallet,
 } from "@cosmos-kit/leap-extension";
+import { omniMobileInfo, OmniMobileWallet } from "@cosmos-kit/omni-mobile";
 import {
   terrastationExtensionInfo,
   TerrastationExtensionWallet,
@@ -68,6 +69,10 @@ export const WalletRegistry: Record<string, Wallet> = {
     ...xdefiExtensionInfo,
     logo: "/wallets/xdefi.png",
   },
+  [omniMobileInfo.name]: {
+    ...omniMobileInfo,
+    logo: "/wallets/omni.webp",
+  },
 };
 
 export const Wallets = [
@@ -84,4 +89,5 @@ export const Wallets = [
   new FrontierExtensionWallet(WalletRegistry[frontierExtensionInfo.name]),
   new TrustMobileWallet(WalletRegistry[trustMobileInfo.name]),
   new XDEFIExtensionWallet(WalletRegistry[xdefiExtensionInfo.name]),
+  new OmniMobileWallet(WalletRegistry[omniMobileInfo.name]),
 ];
