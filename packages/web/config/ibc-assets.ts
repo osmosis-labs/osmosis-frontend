@@ -1535,6 +1535,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-642",
         destChannelId: "channel-5",
         coinMinimalDenom: "uwhale",
+        isVerified: true,
       },
       {
         //GRDN
