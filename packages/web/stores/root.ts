@@ -17,6 +17,7 @@ import {
   IBCTransferHistoryStore,
   LPCurrencyRegistrar,
   NonIbcBridgeHistoryStore,
+  ObservableAssets,
   OsmosisAccount,
   OsmosisQueries,
   PoolFallbackPriceStore,
@@ -33,7 +34,6 @@ import { ChainInfos, IBCAssetInfos, IS_FRONTIER } from "../config";
 import { PoolPriceRoutes } from "../config";
 import { suggestChainFromWindow } from "../hooks/use-keplr/utils";
 import { AxelarTransferStatusSource } from "../integrations/axelar";
-import { ObservableAssets } from "./assets";
 import { makeIndexedKVStore, makeLocalStorageKVStore } from "./kv-store";
 import { NavBarStore } from "./nav-bar";
 import { OsmoPixelsQueries } from "./pixels";
@@ -210,13 +210,24 @@ export class RootStore {
       IS_TESTNET ? "https://api.testnet.osmosis.zone/" : undefined
     );
 
+    this.assetsStore = new ObservableAssets(
+      IBCAssetInfos,
+      this.chainStore,
+      this.accountStore,
+      this.queriesStore,
+      this.priceStore,
+      this.chainStore.osmosis.chainId,
+      IS_FRONTIER
+    );
+
     this.derivedDataStore = new DerivedDataStore(
       this.chainStore.osmosis.chainId,
       this.queriesStore,
       this.queriesExternalStore,
       this.accountStore,
       this.priceStore,
-      this.chainStore
+      this.chainStore,
+      this.assetsStore
     );
 
     this.ibcTransferHistoryStore = new IBCTransferHistoryStore(
@@ -233,15 +244,6 @@ export class RootStore {
           IS_TESTNET ? "https://testnet.api.axelarscan.io" : undefined
         ),
       ]
-    );
-
-    this.assetsStore = new ObservableAssets(
-      IBCAssetInfos,
-      this.chainStore,
-      this.accountStore,
-      this.queriesStore,
-      this.priceStore,
-      this.chainStore.osmosis.chainId
     );
 
     this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);

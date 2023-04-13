@@ -1,3 +1,4 @@
+import { FiatRampKey } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -6,7 +7,6 @@ import { AssetSourceCard } from "../components/cards";
 import { useConnectWalletModalRedirect } from "../hooks";
 import {
   FiatRampDisplayInfos,
-  FiatRampKey,
   ObservableWallet,
   SourceChainKey,
 } from "../integrations";

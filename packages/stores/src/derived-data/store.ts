@@ -3,6 +3,7 @@ import {
   IAccountStore,
   IQueriesStore,
 } from "@keplr-wallet/stores";
+import { ObservableAssets } from "src/assets";
 import { DeepReadonly } from "utility-types";
 
 import { ChainStore } from "../chain";
@@ -37,7 +38,8 @@ export class DerivedDataStore {
     },
     protected readonly accountStore: IAccountStore,
     protected readonly priceStore: IPriceStore,
-    protected readonly chainGetter: ChainStore
+    protected readonly chainGetter: ChainStore,
+    protected readonly assetStore: ObservableAssets
   ) {
     this.poolDetails = new ObservablePoolDetails(
       this.osmosisChainId,
@@ -70,7 +72,8 @@ export class DerivedDataStore {
       this.poolsBonding,
       this.chainGetter,
       this.externalQueries,
-      this.priceStore
+      this.priceStore,
+      this.assetStore
     );
   }
 

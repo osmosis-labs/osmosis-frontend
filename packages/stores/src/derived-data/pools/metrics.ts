@@ -2,6 +2,7 @@ import { HasMapStore, IQueriesStore } from "@keplr-wallet/stores";
 import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { action, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
+import { ObservableAssets } from "src/assets";
 
 import { ChainStore } from "../../chain";
 import { IPriceStore } from "../../price";
@@ -108,7 +109,8 @@ export class ObservablePoolsWithMetric {
       queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
-    protected readonly priceStore: IPriceStore
+    protected readonly priceStore: IPriceStore,
+    protected readonly assetStore: ObservableAssets
   ) {}
 
   getAllPools = computedFn(
@@ -120,8 +122,26 @@ export class ObservablePoolsWithMetric {
         .get(this.chainId)
         .osmosis?.queryGammPools.getAllPools();
 
+      // Add all approved assets to a map for faster lookup.
+      const approvedAssets = new Map<string, boolean>();
+      [
+        ...this.assetStore.ibcBalances,
+        ...this.assetStore.nativeBalances,
+      ].forEach((asset) => {
+        approvedAssets.set(asset.balance.denom, true);
+      });
+
       for (const pool of allPools ?? []) {
         const existingPool = this._pools.get(pool.id);
+
+        // If the pool has any asset that is not approved, then skip it.
+        if (
+          !pool.poolAssets.every((asset) =>
+            Boolean(approvedAssets.get(asset.amount.denom))
+          )
+        ) {
+          continue;
+        }
 
         if (existingPool) {
           existingPool.setPool(pool);
@@ -196,7 +216,8 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
       queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
-    protected readonly priceStore: IPriceStore
+    protected readonly priceStore: IPriceStore,
+    protected readonly assetStore: ObservableAssets
   ) {
     super(
       (chainId: string) =>
@@ -207,7 +228,8 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
           poolsBonding,
           chainStore,
           externalQueries,
-          priceStore
+          priceStore,
+          assetStore
         )
     );
   }

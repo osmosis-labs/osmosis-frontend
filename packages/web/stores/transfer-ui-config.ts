@@ -1,6 +1,11 @@
 import { KVStore } from "@keplr-wallet/common";
 import { IBCCurrency } from "@keplr-wallet/types";
 import {
+  FiatRampKey,
+  IBCBalance,
+  ObservableAssets,
+} from "@osmosis-labs/stores";
+import {
   action,
   computed,
   makeObservable,
@@ -9,25 +14,20 @@ import {
 } from "mobx";
 import { ComponentProps } from "react";
 
-import {
-  FiatRampKey,
-  ObservableWallet,
-  SourceChainKey,
-} from "../../integrations";
+import { ObservableWallet, SourceChainKey } from "../integrations";
 import {
   EthWallet,
   ObservableMetamask,
   ObservableWalletConnect,
-} from "../../integrations/ethereum";
+} from "../integrations/ethereum";
 import {
   BridgeTransferModal,
   FiatRampsModal,
   IbcTransferModal,
   SelectAssetSourceModal,
   TransferAssetSelectModal,
-} from "../../modals";
-import { makeLocalStorageKVStore } from "../../stores/kv-store";
-import { IBCBalance, ObservableAssets } from ".";
+} from "../modals";
+import { makeLocalStorageKVStore } from "./kv-store";
 
 type TransferDir = "withdraw" | "deposit";
 

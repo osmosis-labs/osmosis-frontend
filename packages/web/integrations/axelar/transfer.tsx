@@ -1,7 +1,7 @@
 import { Environment } from "@axelar-network/axelarjs-sdk";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
-import { basicIbcTransfer } from "@osmosis-labs/stores";
+import { basicIbcTransfer, IBCBalance } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import {
@@ -25,7 +25,6 @@ import {
 import { useAmplitudeAnalytics } from "../../hooks/use-amplitude-analytics";
 import { BridgeIntegrationProps } from "../../modals";
 import { useStore } from "../../stores";
-import { IBCBalance } from "../../stores/assets";
 import { getKeyByValue } from "../../utils/object";
 import { EthClientChainIds_SourceChainMap, SourceChain } from "../bridge-info";
 import {
