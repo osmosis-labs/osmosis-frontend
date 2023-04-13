@@ -151,6 +151,19 @@ const Home: NextPage = observer(function () {
                 break;
               }
             }
+            
+            // only pools with at least 100,000 REGEN
+            if (
+              "originChainId" in asset.amount.currency &&
+              asset.amount.currency.coinMinimalDenom ===
+                "ibc/1DCC8A6CB5689018431323953344A9F6CC4D0BFB261E88C9F7777372C10CD076"
+            ) {
+              if (asset.amount.toDec().gt(new Dec(100_000))) {
+                hasEnoughAssets = true;
+                break;
+              }
+            }
+            
           }
 
           if (hasEnoughAssets) {
