@@ -443,5 +443,5 @@
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",
   "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
-  "highPoolInflationWarning": "APR-uri anormal de ridicate pot fi cauzate de recompense inflaționiste ridicate, ceea ce crește șansa de pierdere impermanentă."
+  "highInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență."
 }

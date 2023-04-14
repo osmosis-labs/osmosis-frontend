@@ -443,5 +443,5 @@
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",
   "waitingForTransaction": "İşlemin bloğa eklenmesi bekleniyor",
-  "highPoolInflationWarning": "Anormal yüksek APR'ler, yüksek enflasyonist ödüllerden kaynaklanabilir ve bu da geçici kayıp olasılığını artırabilir."
+  "highInflationWarning": "Yüksek APR'ler enflasyonist ödüllerden kaynaklanabilir. Dikkatli ilerleyin."
 }
