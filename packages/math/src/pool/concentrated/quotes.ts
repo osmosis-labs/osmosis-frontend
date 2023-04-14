@@ -197,7 +197,7 @@ export function calcInGivenOut({
   }
 
   return {
-    amountIn: swapState.amountCalculated.truncate(),
+    amountIn: swapState.amountCalculated.roundUp(),
     afterSqrtPrice: swapState.sqrtPrice,
   };
 }
