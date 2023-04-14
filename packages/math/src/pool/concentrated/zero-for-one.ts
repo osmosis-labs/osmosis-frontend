@@ -15,16 +15,37 @@ export type ZeroForOne = {
   swapFee: Dec;
 };
 
+/**
+  Implements the swapStrategy interface assuming that we are swapping token 0 for token 1 and performs calculations accordingly.
+
+  With this strategy, we are moving to the left of the current tick index and square root price.
+
+  ZeroForOne details:
+  - zeroForOneStrategy assumes moving to the left of the current square root price.
+ */
 export class ZeroForOneStrategy implements SwapStrategy {
   constructor(private readonly zeroForOne: ZeroForOne) {}
 
-  getSqrtTargetPrice(nextTickSqrtPrice: Dec): Dec {
-    if (nextTickSqrtPrice.lt(this.zeroForOne.sqrtPriceLimit)) {
-      return this.zeroForOne.sqrtPriceLimit;
-    }
-    return nextTickSqrtPrice;
-  }
+  /**
+    Calculates the next sqrt price, the amount of token in consumed, the amount out to return to the user, and total fee charge on token in.
 
+    Parameters:
+    - sqrtPriceCurrent: The current sqrt price.
+    - sqrtPriceTarget: The target sqrt price computed with GetSqrtTargetPrice(). It must be one of:
+      - Next tick sqrt price.
+      - Sqrt price limit representing price impact protection.
+    - liquidity: The amount of liquidity between the sqrt price current and sqrt price target.
+    - amountZeroInRemaining: The amount of token zero in remaining to be swapped. This amount is fully consumed if sqrt price target is not reached. In that case, the returned amountZeroIn is the amount remaining given. Otherwise, the returned amountIn will be smaller than amountZeroInRemaining given.
+
+    Returns:
+    - sqrtPriceNext: The next sqrt price. It equals sqrt price target if target is reached. Otherwise, it is in-between sqrt price current and target.
+    - amountZeroIn: The amount of token zero in consumed. It equals amountZeroInRemaining if target is reached. Otherwise, it is less than amountZeroInRemaining.
+    - amountOutComputed: The amount of token out computed. It is the amount of token out to return to the user.
+    - feeChargeTotal: The total fee charge. The fee is charged on the amount of token in.
+
+    ZeroForOne details:
+    - zeroForOneStrategy assumes moving to the left of the current square root price.
+   */
   computeSwapStepOutGivenIn(
     curSqrtPrice: Dec,
     sqrtPriceTarget: Dec,
@@ -91,6 +112,26 @@ export class ZeroForOneStrategy implements SwapStrategy {
     };
   }
 
+  /**
+    Calculates the next sqrt price, the amount of token out consumed, the amount in to charge to the user for requested out, and total fee charge on token in.
+
+    Parameters:
+    - sqrtPriceCurrent: The current sqrt price.
+    - sqrtPriceTarget: The target sqrt price computed with GetSqrtTargetPrice(). It must be one of:
+      - Next tick sqrt price.
+      - Sqrt price limit representing price impact protection.
+    - liquidity: The amount of liquidity between the sqrt price current and sqrt price target.
+    - amountOneRemainingOut: The amount of token one out remaining to be swapped to estimate how much of token zero in is needed to be charged. This amount is fully consumed if sqrt price target is not reached. In that case, the returned amountOneOut is the amount remaining given. Otherwise, the returned amountOneOut will be smaller than amountOneRemainingOut given.
+
+    Returns:
+    - sqrtPriceNext: The next sqrt price. It equals sqrt price target if target is reached. Otherwise, it is in-between sqrt price current and target.
+    - amountOneOut: The amount of token one out consumed. It equals amountOneRemainingOut if target is reached. Otherwise, it is less than amountOneRemainingOut.
+    - amountZeroIn: The amount of token zero in computed. It is the amount of token in to charge to the user for the desired amount out.
+    - feeChargeTotal: The total fee charge. The fee is charged on the amount of token in.
+
+    ZeroForOne details:
+    - zeroForOneStrategy assumes moving to the left of the current square root price.
+   */
   computeSwapStepInGivenOut(
     curSqrtPrice: Dec,
     sqrtPriceTarget: Dec,
@@ -148,6 +189,18 @@ export class ZeroForOneStrategy implements SwapStrategy {
       amountInComputed: amountZeroIn,
       feeChargeTotal,
     };
+  }
+
+  /**
+    Returns the target square root price given the next tick square root price.
+
+    If the given nextTickSqrtPrice is less than the sqrt price limit, the sqrt price limit is returned. Otherwise, the input nextTickSqrtPrice is returned.
+   */
+  getSqrtTargetPrice(nextTickSqrtPrice: Dec): Dec {
+    if (nextTickSqrtPrice.lt(this.zeroForOne.sqrtPriceLimit)) {
+      return this.zeroForOne.sqrtPriceLimit;
+    }
+    return nextTickSqrtPrice;
   }
 
   validatePriceLimit(sqrtPriceLimit: Dec, curSqrtPrice: Dec): boolean {

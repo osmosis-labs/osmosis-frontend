@@ -186,7 +186,6 @@ export class OptimizedRoutes {
         poolSwapFee = maxSwapFee.mul(poolSwapFee.quo(swapFeeSum));
       }
 
-      // less fee
       const tokenOut = await pool.getTokenOutByTokenIn(
         { denom: previousInDenom, amount: previousInAmount },
         outDenom,
