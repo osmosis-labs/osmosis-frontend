@@ -1,18 +1,18 @@
-import { HasMapStore, IQueriesStore } from "@keplr-wallet/stores";
+import { HasMapStore } from "@keplr-wallet/stores";
 import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { action, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
-import { ObservableAssets } from "src/assets";
 
 import { ChainStore } from "../../chain";
 import { IPriceStore } from "../../price";
-import { ObservableQueryPool, OsmosisQueries } from "../../queries";
+import { ObservableQueryPool } from "../../queries";
 import {
   ObservableQueryActiveGauges,
   ObservableQueryPoolFeesMetrics,
 } from "../../queries-external";
 import { ObservablePoolsBonding } from "../pool/bonding";
 import { ObservablePoolDetails } from "../pool/details";
+import { ObservableAssetFilteredPoolsStore } from "./asset-filtered";
 
 export class ObservablePoolWithMetric {
   @observable
@@ -100,7 +100,7 @@ export class ObservablePoolsWithMetric {
   protected _pools = new Map<string, ObservablePoolWithMetric>();
 
   constructor(
-    protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
+    protected readonly assetFilteredPoolsStore: ObservableAssetFilteredPoolsStore,
     readonly chainId: string,
     protected readonly poolDetails: ObservablePoolDetails,
     protected readonly poolsBonding: ObservablePoolsBonding,
@@ -109,9 +109,7 @@ export class ObservablePoolsWithMetric {
       queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
-    protected readonly priceStore: IPriceStore,
-    protected readonly assetStore: ObservableAssets,
-    protected readonly isFrontier: boolean
+    protected readonly priceStore: IPriceStore
   ) {}
 
   getAllPools = computedFn(
@@ -119,41 +117,12 @@ export class ObservablePoolsWithMetric {
       sortingColumn?: keyof ObservablePoolWithMetric,
       isSortingDesc?: boolean
     ) => {
-      const allPools = this.queriesStore
+      const allPools = this.assetFilteredPoolsStore
         .get(this.chainId)
-        .osmosis?.queryGammPools.getAllPools();
-
-      // Add all approved assets to a map for faster lookup.
-      const approvedAssets = new Map<string, boolean>();
-
-      /**
-       * Avoid unneeded calculation: skip adding approved assets if it's Frontier.
-       * Frontier will display all pools.
-       *  */
-      if (!this.isFrontier) {
-        [
-          ...this.assetStore.ibcBalances,
-          ...this.assetStore.nativeBalances,
-        ].forEach((asset) => {
-          approvedAssets.set(asset.balance.denom, true);
-        });
-      }
+        .getAllPools();
 
       for (const pool of allPools ?? []) {
         const existingPool = this._pools.get(pool.id);
-
-        /**
-         * If the pool has any asset that is not approved, then skip it.
-         * This verification is only needed on the main site.
-         * */
-        if (
-          !this.isFrontier &&
-          !pool.poolAssets.every((asset) =>
-            Boolean(approvedAssets.get(asset.amount.denom))
-          )
-        ) {
-          continue;
-        }
 
         if (existingPool) {
           existingPool.setPool(pool);
@@ -220,7 +189,7 @@ export class ObservablePoolsWithMetric {
 export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithMetric> {
   constructor(
     protected readonly osmosisChainId: string,
-    protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
+    protected readonly assetFilteredPoolsStore: ObservableAssetFilteredPoolsStore,
     protected readonly poolDetails: ObservablePoolDetails,
     protected readonly poolsBonding: ObservablePoolsBonding,
     protected readonly chainStore: ChainStore,
@@ -228,22 +197,18 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
       queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
-    protected readonly priceStore: IPriceStore,
-    protected readonly assetStore: ObservableAssets,
-    protected readonly isFrontier: boolean
+    protected readonly priceStore: IPriceStore
   ) {
     super(
       (chainId: string) =>
         new ObservablePoolsWithMetric(
-          queriesStore,
+          assetFilteredPoolsStore,
           chainId,
           poolDetails,
           poolsBonding,
           chainStore,
           externalQueries,
-          priceStore,
-          assetStore,
-          isFrontier
+          priceStore
         )
     );
   }

@@ -18,7 +18,10 @@ import {
   ObservablePoolsBonding,
   ObservableSuperfluidPoolDetails,
 } from "./pool";
-import { ObservablePoolsWithMetrics } from "./pools";
+import {
+  ObservableAssetFilteredPoolsStore,
+  ObservablePoolsWithMetrics,
+} from "./pools";
 
 /** Contains stores that compute on the lower level . */
 export class DerivedDataStore {
@@ -26,6 +29,7 @@ export class DerivedDataStore {
   public readonly poolsWithMetrics: DeepReadonly<ObservablePoolsWithMetrics>;
   public readonly superfluidPoolDetails: DeepReadonly<ObservableSuperfluidPoolDetails>;
   public readonly poolsBonding: DeepReadonly<ObservablePoolsBonding>;
+  public readonly assetFilteredPoolsStore: DeepReadonly<ObservableAssetFilteredPoolsStore>;
 
   constructor(
     protected readonly osmosisChainId: string,
@@ -66,16 +70,20 @@ export class DerivedDataStore {
       this.accountStore,
       this.queriesStore
     );
-    this.poolsWithMetrics = new ObservablePoolsWithMetrics(
+    this.assetFilteredPoolsStore = new ObservableAssetFilteredPoolsStore(
       this.osmosisChainId,
       this.queriesStore,
+      this.assetStore,
+      this.isFrontier
+    );
+    this.poolsWithMetrics = new ObservablePoolsWithMetrics(
+      this.osmosisChainId,
+      this.assetFilteredPoolsStore,
       this.poolDetails,
       this.poolsBonding,
       this.chainGetter,
       this.externalQueries,
-      this.priceStore,
-      this.assetStore,
-      this.isFrontier
+      this.priceStore
     );
   }
 
