@@ -443,5 +443,5 @@
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",
   "waitingForTransaction": "Oczekiwanie na dołączenie transakcji do bloku",
-  "highPoolInflationWarning": "Nadmiernie wysokie APR-y mogą wynikać z wysokich nagród inflacyjnych, co zwiększa szansę na niestałość wartości."
+  "highInflationWarning": "Wysokie APR-y mogą wynikać z nagród inflacyjnych. Postępuj ostrożnie."
 }

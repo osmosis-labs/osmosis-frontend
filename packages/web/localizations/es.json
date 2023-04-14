@@ -443,5 +443,5 @@
   "unknownError": "Error desconocido",
   "viewExplorer": "Ver Explorador",
   "waitingForTransaction": "Esperando que la transacción se incluya en el bloque",
-  "highPoolInflationWarning": "APRs anormalmente altos pueden derivar de recompensas inflacionarias altas, lo que aumenta la posibilidad de pérdida impermanente."
+  "highInflationWarning": "Los APRs altos pueden ser resultado de recompensas inflacionarias. Proceda con precaución."
 }

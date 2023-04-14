@@ -256,7 +256,10 @@ const Drawer: FunctionComponent<{
               <Tooltip content={t("highPoolInflationWarning")}>
                 <span className="subtitle1 flex items-center gap-1.5 text-osmoverse-200">
                   {t("pool.incentives")}{" "}
-                  <Icon id="alert-triangle" className="h-4 w-4 text-rust-300" />
+                  <Icon
+                    id="alert-triangle"
+                    className="h-4 w-4 text-osmoverse-400"
+                  />
                 </span>
               </Tooltip>
             ) : (

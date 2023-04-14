@@ -383,12 +383,12 @@ export const AllPoolsTable: FunctionComponent<{
                     // Only display warning when APR is too high
                     isAPRTooHigh ? (
                       <Tooltip content={t("highPoolInflationWarning")}>
-                        <p className="flex items-center gap-1">
-                          {pool.apr.toString()}
+                        <p className="flex items-center gap-1.5">
                           <Icon
                             id="alert-triangle"
-                            className="h-4 w-4 text-rust-300"
+                            className="h-4 w-4 text-osmoverse-400"
                           />
+                          {pool.apr.toString()}
                         </p>
                       </Tooltip>
                     ) : (

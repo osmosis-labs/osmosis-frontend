@@ -442,5 +442,5 @@
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",
   "waitingForTransaction": "等待交易打包进区块",
-  "highPoolInflationWarning": "异常高的APR可能源自高通胀奖励，增加了临时损失的机会。"
+  "highInflationWarning": "高APR可能源自通胀性奖励。请谨慎操作。"
 }
