@@ -443,5 +443,5 @@
   "unknownError": "未知錯誤",
   "viewExplorer": "使用區塊瀏覽器查看",
   "waitingForTransaction": "正等待交易被加入到區塊中",
-  "highPoolInflationWarning": "異常高的APR可能源自高通脹獎勵, 增加了臨時損失的機會。"
+  "highInflationWarning": "高APR可能源自通脹性獎勵。請謹慎操作。"
 }
