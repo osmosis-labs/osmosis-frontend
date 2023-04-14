@@ -37,6 +37,7 @@ import {
   PoolCompositionCell,
   PoolQuickActionCell,
 } from "../table/cells";
+import { Tooltip } from "../tooltip";
 import PaginatedTable from "./paginated-table";
 
 const TVL_FILTER_THRESHOLD = 1000;
@@ -149,6 +150,7 @@ export const AllPoolsTable: FunctionComponent<{
 
     const { chainId } = chainStore.osmosis;
     const queriesOsmosis = queriesStore.get(chainId).osmosis!;
+    const queriesCosmos = queriesStore.get(chainId).cosmos!;
     const queryActiveGauges = queriesExternalStore.queryActiveGauges;
 
     const [sorting, _setSorting] = useState<
@@ -354,8 +356,46 @@ export const AllPoolsTable: FunctionComponent<{
                 ObservablePoolWithMetric
               >
             ) => {
+              const pool = props.getValue();
+
+              const inflation = queriesCosmos.queryInflation;
+              /**
+               * If pool APR is 5 times bigger than staking APR, warn user
+               * that pool may be subject to inflation
+               */
+              const isAPRTooHigh = inflation.inflation.toDec().gt(new Dec(0))
+                ? pool.apr
+                    .toDec()
+                    .gt(
+                      inflation.inflation
+                        .toDec()
+                        .quo(new Dec(100))
+                        .mul(new Dec(5))
+                    )
+                : false;
+
               return (
-                <MetricLoaderCell value={props.getValue().apr.toString()} />
+                <MetricLoaderCell
+                  isLoading={
+                    queriesOsmosis.queryIncentivizedPools.isAprFetching
+                  }
+                  value={
+                    // Only display warning when APR is too high
+                    isAPRTooHigh ? (
+                      <Tooltip content={t("highPoolInflationWarning")}>
+                        <p className="flex items-center gap-1.5">
+                          <Icon
+                            id="alert-triangle"
+                            className="h-4 w-4 text-osmoverse-400"
+                          />
+                          {pool.apr.toString()}
+                        </p>
+                      </Tooltip>
+                    ) : (
+                      pool.apr.toString()
+                    )
+                  }
+                />
               );
             }
           ),
@@ -398,6 +438,8 @@ export const AllPoolsTable: FunctionComponent<{
       [
         cellGroupEventEmitter,
         columnHelper,
+        queriesCosmos.queryInflation,
+        queriesOsmosis.queryIncentivizedPools.isAprFetching,
         quickAddLiquidity,
         quickLockTokens,
         quickRemoveLiquidity,

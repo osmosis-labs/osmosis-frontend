@@ -436,5 +436,6 @@
   "transactionSuccessful": "تراکنش با موفقیت انجام شد",
   "unknownError": "خطای نا شناس",
   "viewExplorer": "مشاهده جزئیات تراکنش",
-  "waitingForTransaction": "صبر کنید تا یک تراکنش در بلاک قرار بگیرد"
+  "waitingForTransaction": "صبر کنید تا یک تراکنش در بلاک قرار بگیرد",
+  "highInflationWarning": "نرخ سود سالانه بالا ممکن است ناشی از پاداش‌های تورمی باشد. با احتیاط ادامه دهید."
 }
