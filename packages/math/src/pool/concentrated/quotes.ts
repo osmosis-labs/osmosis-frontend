@@ -1,7 +1,6 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 
 import { maxSpotPrice, minSpotPrice, smallestDec } from "./const";
-import { TickOverflowError } from "./errors";
 import { addLiquidity, approxSqrt } from "./math";
 import { makeSwapStrategy } from "./swap-strategy";
 import { tickToSqrtPrice } from "./tick";
@@ -26,7 +25,9 @@ interface SwapState {
   feeGrowthGlobal: Dec;
 }
 
-/** Estimate the output amount and final price given user's desired input token. */
+/** Estimate the output amount and final price given user's desired input token.
+ *  If there aren't enough ticks to calculate the swap, returns "no-more-ticks".
+ */
 function calcOutGivenIn({
   tokenIn,
   tokenDenom0,
@@ -35,7 +36,9 @@ function calcOutGivenIn({
   curSqrtPrice,
   precisionFactorAtPriceOne,
   swapFee,
-}: QuoteOutGivenInParams): { amountOut: Int; afterSqrtPrice: Dec } {
+}: QuoteOutGivenInParams):
+  | { amountOut: Int; afterSqrtPrice: Dec }
+  | "no-more-ticks" {
   const isZeroForOne = tokenIn.denom === tokenDenom0;
   /** Max and min constraints on chain. */
   let priceLimit: Dec;
@@ -65,7 +68,7 @@ function calcOutGivenIn({
     const nextTick: LiquidityDepth | undefined =
       inittedTicks?.[swapState.inittedTickIndex];
     if (nextTick === undefined) {
-      throw new TickOverflowError("Not enough ticks to calculate swap");
+      return "no-more-ticks";
     }
 
     const nextTickSqrtPrice = tickToSqrtPrice(
@@ -114,7 +117,9 @@ function calcOutGivenIn({
   };
 }
 
-/** Estimate the necessary input amount and final price given user's desired output token. */
+/** Estimate the necessary input amount and final price given user's desired output token.
+ *  If there aren't enough ticks to calculate the swap, returns "no-more-ticks".
+ */
 export function calcInGivenOut({
   tokenOut,
   tokenDenom0,
@@ -123,7 +128,9 @@ export function calcInGivenOut({
   curSqrtPrice,
   precisionFactorAtPriceOne,
   swapFee,
-}: QuoteInGivenOutParams): { amountIn: Int; afterSqrtPrice: Dec } {
+}: QuoteInGivenOutParams):
+  | { amountIn: Int; afterSqrtPrice: Dec }
+  | "no-more-ticks" {
   const isZeroForOne = tokenOut.denom !== tokenDenom0;
   /** Max and min constraints on chain. */
   let priceLimit: Dec;
@@ -153,7 +160,7 @@ export function calcInGivenOut({
     const nextTick: LiquidityDepth | undefined =
       inittedTicks?.[swapState.inittedTickIndex];
     if (nextTick === undefined) {
-      throw new TickOverflowError("Not enough ticks to calculate swap");
+      return "no-more-ticks";
     }
 
     const nextTickSqrtPrice = tickToSqrtPrice(

@@ -1,6 +1,5 @@
 import { Coin, Dec, Int } from "@keplr-wallet/unit";
 
-import { TickOverflowError } from "../errors";
 import { calcInGivenOut, ConcentratedLiquidityMath } from "../quotes";
 const { calcOutGivenIn } = ConcentratedLiquidityMath;
 
@@ -31,7 +30,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
+      const result = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -40,6 +39,8 @@ describe("calcOutGivenIn matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountOut, afterSqrtPrice } = result;
       expect(amountOut.toString()).toEqual("8396");
       expect(afterSqrtPrice.toString()).toEqual("70.738348247484497717");
     });
@@ -66,7 +67,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
+      const result = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -75,6 +76,8 @@ describe("calcOutGivenIn matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountOut, afterSqrtPrice } = result;
       expect(amountOut.toString()).toEqual("66808388");
       expect(afterSqrtPrice.toString()).toEqual("70.666663910857144332");
     });
@@ -102,7 +105,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
+      const result = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -111,6 +114,8 @@ describe("calcOutGivenIn matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountOut, afterSqrtPrice } = result;
       expect(amountOut.toString()).toEqual("8398");
       expect(afterSqrtPrice.toString()).toEqual("70.724513183069625078");
     });
@@ -138,7 +143,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
+      const result = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -147,6 +152,8 @@ describe("calcOutGivenIn matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountOut, afterSqrtPrice } = result;
       expect(amountOut.toString()).toEqual("66829187");
       expect(afterSqrtPrice.toString()).toEqual("70.688664163408836320");
     });
@@ -173,7 +180,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
+      const result = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -182,6 +189,8 @@ describe("calcOutGivenIn matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountOut, afterSqrtPrice } = result;
       expect(amountOut.toString()).toEqual("1820630");
       expect(afterSqrtPrice.toString()).toEqual("78.137149196095607129");
     });
@@ -208,7 +217,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
+      const result = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -217,6 +226,8 @@ describe("calcOutGivenIn matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountOut, afterSqrtPrice } = result;
       expect(amountOut.toString()).toEqual("9103422788");
       expect(afterSqrtPrice.toString()).toEqual("63.993489023323078693");
     });
@@ -247,7 +258,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
+      const result = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -256,6 +267,8 @@ describe("calcOutGivenIn matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountOut, afterSqrtPrice } = result;
       expect(amountOut.toString()).toEqual("1864161");
       expect(afterSqrtPrice.toString()).toEqual("77.819789636800169392");
     });
@@ -282,7 +295,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
+      const result = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -291,6 +304,8 @@ describe("calcOutGivenIn matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountOut, afterSqrtPrice } = result;
       expect(amountOut.toString()).toEqual("1609138");
       expect(afterSqrtPrice.toString()).toEqual("75.582373164412551491");
     });
@@ -321,7 +336,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
+      const result = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -330,6 +345,8 @@ describe("calcOutGivenIn matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountOut, afterSqrtPrice } = result;
       expect(amountOut.toString()).toEqual("9321276930");
       expect(afterSqrtPrice.toString()).toEqual("64.257943794993248954");
     });
@@ -359,7 +376,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
+      const result = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -368,6 +385,8 @@ describe("calcOutGivenIn matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountOut, afterSqrtPrice } = result;
       expect(amountOut.toString()).toEqual("8479320318");
       expect(afterSqrtPrice.toString()).toEqual("65.513815285481060960");
     });
@@ -397,7 +416,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
+      const result = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -406,6 +425,8 @@ describe("calcOutGivenIn matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountOut, afterSqrtPrice } = result;
       expect(amountOut.toString()).toEqual("1820545");
       expect(afterSqrtPrice.toString()).toEqual("78.138055169663761658");
     });
@@ -434,7 +455,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0.01");
-      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
+      const result = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -443,6 +464,8 @@ describe("calcOutGivenIn matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountOut, afterSqrtPrice } = result;
       expect(amountOut.toString()).toEqual("8312");
       expect(afterSqrtPrice.toString()).toEqual("70.738071546196200264");
     });
@@ -470,7 +493,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0.03");
-      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
+      const result = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -479,6 +502,8 @@ describe("calcOutGivenIn matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountOut, afterSqrtPrice } = result;
       expect(amountOut.toString()).toEqual("64824917");
       expect(afterSqrtPrice.toString()).toEqual("70.689324382628080102");
     });
@@ -504,7 +529,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0.05");
-      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
+      const result = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -513,6 +538,8 @@ describe("calcOutGivenIn matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountOut, afterSqrtPrice } = result;
       expect(amountOut.toString()).toEqual("8691708221");
       expect(afterSqrtPrice.toString()).toEqual("64.336946417392457832");
     });
@@ -542,7 +569,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0.1");
-      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
+      const result = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -551,6 +578,8 @@ describe("calcOutGivenIn matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountOut, afterSqrtPrice } = result;
       expect(amountOut.toString()).toEqual("1695807");
       expect(afterSqrtPrice.toString()).toEqual("76.328178655208424124");
     });
@@ -581,7 +610,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0.005");
-      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
+      const result = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -590,6 +619,8 @@ describe("calcOutGivenIn matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountOut, afterSqrtPrice } = result;
       expect(amountOut.toString()).toEqual("8440657775");
       expect(afterSqrtPrice.toString()).toEqual("65.571484748647169032");
     });
@@ -619,7 +650,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0.03");
-      const { amountOut, afterSqrtPrice } = calcOutGivenIn({
+      const result = calcOutGivenIn({
         tokenIn,
         tokenDenom0,
         poolLiquidity,
@@ -628,6 +659,8 @@ describe("calcOutGivenIn matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountOut, afterSqrtPrice } = result;
       expect(amountOut.toString()).toEqual("1771252");
       expect(afterSqrtPrice.toString()).toEqual("77.887956882326389372");
     });
@@ -649,7 +682,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      expect(() =>
+      expect(
         calcOutGivenIn({
           tokenIn,
           tokenDenom0,
@@ -659,7 +692,7 @@ describe("calcOutGivenIn matches chain code", () => {
           precisionFactorAtPriceOne,
           swapFee,
         })
-      ).toThrowError(TickOverflowError);
+      ).toEqual("no-more-ticks");
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L594
     it("single position within one tick, trade does not complete due to lack of liquidity: eth -> usdc", () => {
@@ -676,7 +709,7 @@ describe("calcOutGivenIn matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      expect(() =>
+      expect(
         calcOutGivenIn({
           tokenIn,
           tokenDenom0,
@@ -686,7 +719,7 @@ describe("calcOutGivenIn matches chain code", () => {
           precisionFactorAtPriceOne,
           swapFee,
         })
-      ).toThrowError(TickOverflowError);
+      ).toEqual("no-more-ticks");
     });
   });
 });
@@ -717,7 +750,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountIn, afterSqrtPrice } = calcInGivenOut({
+      const result = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -726,6 +759,8 @@ describe("calcInGivenOut matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountIn, afterSqrtPrice } = result;
       expect(amountIn.toString()).toEqual("8404");
       expect(afterSqrtPrice.toString()).toEqual("70.683007989825007162");
     });
@@ -748,7 +783,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountIn, afterSqrtPrice } = calcInGivenOut({
+      const result = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -757,6 +792,8 @@ describe("calcInGivenOut matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountIn, afterSqrtPrice } = result;
       expect(amountIn.toString()).toEqual("66891663");
       expect(afterSqrtPrice.toString()).toEqual("70.754747188468900467");
     });
@@ -784,7 +821,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountIn, afterSqrtPrice } = calcInGivenOut({
+      const result = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -793,6 +830,8 @@ describe("calcInGivenOut matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountIn, afterSqrtPrice } = result;
       expect(amountIn.toString()).toEqual("13370");
       expect(afterSqrtPrice.toString()).toEqual("70.688664163727643650");
     });
@@ -820,7 +859,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountIn, afterSqrtPrice } = calcInGivenOut({
+      const result = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -829,6 +868,8 @@ describe("calcInGivenOut matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountIn, afterSqrtPrice } = result;
       expect(amountIn.toString()).toEqual("41998216");
       expect(afterSqrtPrice.toString()).toEqual("70.724512595179305566");
     });
@@ -860,7 +901,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountIn, afterSqrtPrice } = calcInGivenOut({
+      const result = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -869,6 +910,8 @@ describe("calcInGivenOut matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountIn, afterSqrtPrice } = result;
       expect(amountIn.toString()).toEqual("2000000");
       expect(afterSqrtPrice.toString()).toEqual("63.993489023888951975");
     });
@@ -899,7 +942,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountIn, afterSqrtPrice } = calcInGivenOut({
+      const result = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -908,6 +951,8 @@ describe("calcInGivenOut matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountIn, afterSqrtPrice } = result;
       expect(amountIn.toString()).toEqual("9999999570");
       expect(afterSqrtPrice.toString()).toEqual("78.137148837036751553");
     });
@@ -938,7 +983,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountIn, afterSqrtPrice } = calcInGivenOut({
+      const result = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -947,6 +992,8 @@ describe("calcInGivenOut matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountIn, afterSqrtPrice } = result;
       expect(amountIn.toString()).toEqual("2000000");
       expect(afterSqrtPrice.toString()).toEqual("64.257943796086567725");
     });
@@ -977,7 +1024,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountIn, afterSqrtPrice } = calcInGivenOut({
+      const result = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -986,6 +1033,8 @@ describe("calcInGivenOut matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountIn, afterSqrtPrice } = result;
       expect(amountIn.toString()).toEqual("1800000");
       expect(afterSqrtPrice.toString()).toEqual("65.513815286452064191");
     });
@@ -1016,7 +1065,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountIn, afterSqrtPrice } = calcInGivenOut({
+      const result = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -1025,6 +1074,8 @@ describe("calcInGivenOut matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountIn, afterSqrtPrice } = result;
       expect(amountIn.toString()).toEqual("9999994688");
       expect(afterSqrtPrice.toString()).toEqual("77.819781711876553576");
     });
@@ -1055,7 +1106,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountIn, afterSqrtPrice } = calcInGivenOut({
+      const result = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -1064,6 +1115,8 @@ describe("calcInGivenOut matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountIn, afterSqrtPrice } = result;
       expect(amountIn.toString()).toEqual("8499999458");
       expect(afterSqrtPrice.toString()).toEqual("75.582372355128594341");
     });
@@ -1094,7 +1147,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      const { amountIn, afterSqrtPrice } = calcInGivenOut({
+      const result = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -1103,6 +1156,8 @@ describe("calcInGivenOut matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountIn, afterSqrtPrice } = result;
       expect(amountIn.toString()).toEqual("9999994756");
       expect(afterSqrtPrice.toString()).toEqual("78.138050797173647031");
     });
@@ -1130,7 +1185,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0.01");
-      const { amountIn, afterSqrtPrice } = calcInGivenOut({
+      const result = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -1139,6 +1194,8 @@ describe("calcInGivenOut matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountIn, afterSqrtPrice } = result;
       expect(amountIn.toString()).toEqual("8489");
       expect(afterSqrtPrice.toString()).toEqual("70.683007989825007162");
     });
@@ -1161,7 +1218,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0.03");
-      const { amountIn, afterSqrtPrice } = calcInGivenOut({
+      const result = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -1170,6 +1227,8 @@ describe("calcInGivenOut matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountIn, afterSqrtPrice } = result;
       expect(amountIn.toString()).toEqual("43297130");
       expect(afterSqrtPrice.toString()).toEqual("70.724512595179305566");
     });
@@ -1196,7 +1255,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0.001");
-      const { amountIn, afterSqrtPrice } = calcInGivenOut({
+      const result = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -1205,6 +1264,8 @@ describe("calcInGivenOut matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountIn, afterSqrtPrice } = result;
       expect(amountIn.toString()).toEqual("10010009580");
       expect(afterSqrtPrice.toString()).toEqual("78.137148837036751553");
     });
@@ -1231,7 +1292,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0.1");
-      const { amountIn, afterSqrtPrice } = calcInGivenOut({
+      const result = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -1240,6 +1301,8 @@ describe("calcInGivenOut matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountIn, afterSqrtPrice } = result;
       expect(amountIn.toString()).toEqual("2222223");
       expect(afterSqrtPrice.toString()).toEqual("64.257943796086567725");
     });
@@ -1266,7 +1329,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0.05");
-      const { amountIn, afterSqrtPrice } = calcInGivenOut({
+      const result = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -1275,6 +1338,8 @@ describe("calcInGivenOut matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountIn, afterSqrtPrice } = result;
       expect(amountIn.toString()).toEqual("8947367851");
       expect(afterSqrtPrice.toString()).toEqual("75.582372355128594341");
     });
@@ -1301,7 +1366,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0.0003");
-      const { amountIn, afterSqrtPrice } = calcInGivenOut({
+      const result = calcInGivenOut({
         tokenOut,
         tokenDenom0,
         poolLiquidity,
@@ -1310,6 +1375,8 @@ describe("calcInGivenOut matches chain code", () => {
         precisionFactorAtPriceOne,
         swapFee,
       });
+      if (result === "no-more-ticks") throw new Error("no more ticks");
+      const { amountIn, afterSqrtPrice } = result;
       expect(amountIn.toString()).toEqual("10002995655");
       expect(afterSqrtPrice.toString()).toEqual("78.138050797173647031");
     });
@@ -1332,7 +1399,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      expect(() =>
+      expect(
         calcInGivenOut({
           tokenOut,
           tokenDenom0,
@@ -1342,7 +1409,7 @@ describe("calcInGivenOut matches chain code", () => {
           precisionFactorAtPriceOne,
           swapFee,
         })
-      ).toThrowError(TickOverflowError);
+      ).toEqual("no-more-ticks");
     });
     it("single position within one tick, trade does not complete due to lack of liquidity: eth -> usdc ", () => {
       const tokenOut = new Coin("eth", "1100000");
@@ -1358,7 +1425,7 @@ describe("calcInGivenOut matches chain code", () => {
       const curSqrtPrice = new Dec("70.710678118654752440");
       const precisionFactorAtPriceOne = -4;
       const swapFee = new Dec("0");
-      expect(() =>
+      expect(
         calcInGivenOut({
           tokenOut,
           tokenDenom0,
@@ -1368,7 +1435,7 @@ describe("calcInGivenOut matches chain code", () => {
           precisionFactorAtPriceOne,
           swapFee,
         })
-      ).toThrowError(TickOverflowError);
+      ).toEqual("no-more-ticks");
     });
   });
 });
