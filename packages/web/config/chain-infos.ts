@@ -838,6 +838,17 @@ const chainInfos = (
           coinGeckoId: "pool:skoj",
           coinImageUrl: "/tokens/sikoba.svg",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1ngww7zxak55fql42wmyqrr4rhzpne24hhs4p3w4cwhcdgqgr3hxsmzl9zg",
+          coinDenom: "CLST",
+          coinMinimalDenom:
+            "cw20:juno1ngww7zxak55fql42wmyqrr4rhzpne24hhs4p3w4cwhcdgqgr3hxsmzl9zg:CLST",
+          coinDecimals: 6,
+          coinGeckoId: "pool:clst",
+          coinImageUrl: "/tokens/celestims.png",
+        },        
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: IS_TESTNET
