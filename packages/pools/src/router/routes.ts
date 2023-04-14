@@ -4,7 +4,8 @@ import {
   isOsmoRoutedMultihop,
 } from "@osmosis-labs/math";
 
-import { NoRouteError, NotEnoughLiquidityError } from "./errors";
+import { NotEnoughLiquidityError } from "../errors";
+import { NoRouteError } from "./errors";
 import { calculateWeightForRoute, Route, validateRoute } from "./route";
 import { MultihopSwapResult, RoutablePool, RouteWithAmount } from "./types";
 import { invertRoute } from "./utils";
@@ -125,7 +126,9 @@ export class OptimizedRoutes {
 
     // Not enough liquidity
     if (totalLimitAmount.lt(tokenIn.amount)) {
-      throw new NotEnoughLiquidityError();
+      throw new NotEnoughLiquidityError(
+        `Limit amount ${totalLimitAmount.toString()} is less than ${tokenIn.amount.toString()}`
+      );
     }
 
     // only take routes with valid initialAmounts

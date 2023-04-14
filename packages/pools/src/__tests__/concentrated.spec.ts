@@ -5,23 +5,46 @@ import {
   AmountsDataProvider,
   ConcentratedLiquidityPool,
   ConcentratedLiquidityPoolRaw,
+  NextTickDepthsResponse,
   TickDataProvider,
 } from "../concentrated";
 
 export class MockTickProvider implements TickDataProvider {
-  async getTickDepths(
+  async getNextTickDepthsTokenOutGivenIn(
     pool: ConcentratedLiquidityPool,
-    tokenInDenom: string
-  ): Promise<LiquidityDepth[]> {
-    if (tokenInDenom === pool.raw.token1) {
-      return JSON.parse(
-        '[{"liquidity_net":"1063928513.516692280118630934","tick_index":"244"},{"liquidity_net":"12821176827.612857487321385327","tick_index":"507"},{"liquidity_net":"-19112293.184876715840844082","tick_index":"975"},{"liquidity_net":"-7042487.204272221556955330","tick_index":"1070"},{"liquidity_net":"119846363299223.491923667407418441","tick_index":"1176"},{"liquidity_net":"-12821176827.612857487321385327","tick_index":"1331"},{"liquidity_net":"25864763042758566.825780314141787151","tick_index":"1642"},{"liquidity_net":"789067578720062952.312030597659307660","tick_index":"1767"},{"liquidity_net":"5548573714963426149.345245435735691668","tick_index":"1918"},{"liquidity_net":"-789067578720062952.312030597659307660","tick_index":"1968"},{"liquidity_net":"-7533671.157383740445274322","tick_index":"2118"},{"liquidity_net":"-5548573714963426149.345245435735691668","tick_index":"2133"},{"liquidity_net":"-119846363299223.491923667407418441","tick_index":"2438"},{"liquidity_net":"-13690973.612258627731976066","tick_index":"2593"},{"liquidity_net":"75212224210553284471974.853997539381387792","tick_index":"2677"},{"liquidity_net":"-25864763042758566.825780314141787151","tick_index":"2798"},{"liquidity_net":"-991724173.842077641035110916","tick_index":"2841"},{"liquidity_net":"-1063928513.516692280118630934","tick_index":"2889"},{"liquidity_net":"-75212224210553284471974.853997539381387792","tick_index":"2954"},{"liquidity_net":"2300427651236616516001198205.268726763564344440","tick_index":"3361"},{"liquidity_net":"-2300427651236616516001198205.268726763564344440","tick_index":"3390"}]'
-      ) as LiquidityDepth[];
+    token: {
+      denom: string;
+      amount: Int;
+    }
+  ): Promise<NextTickDepthsResponse> {
+    if (token.denom === pool.token1) {
+      return {
+        allTicks: JSON.parse(
+          '[{"liquidity_net":"1063928513.516692280118630934","tick_index":"244"},{"liquidity_net":"12821176827.612857487321385327","tick_index":"507"},{"liquidity_net":"-19112293.184876715840844082","tick_index":"975"},{"liquidity_net":"-7042487.204272221556955330","tick_index":"1070"},{"liquidity_net":"119846363299223.491923667407418441","tick_index":"1176"},{"liquidity_net":"-12821176827.612857487321385327","tick_index":"1331"},{"liquidity_net":"25864763042758566.825780314141787151","tick_index":"1642"},{"liquidity_net":"789067578720062952.312030597659307660","tick_index":"1767"},{"liquidity_net":"5548573714963426149.345245435735691668","tick_index":"1918"},{"liquidity_net":"-789067578720062952.312030597659307660","tick_index":"1968"},{"liquidity_net":"-7533671.157383740445274322","tick_index":"2118"},{"liquidity_net":"-5548573714963426149.345245435735691668","tick_index":"2133"},{"liquidity_net":"-119846363299223.491923667407418441","tick_index":"2438"},{"liquidity_net":"-13690973.612258627731976066","tick_index":"2593"},{"liquidity_net":"75212224210553284471974.853997539381387792","tick_index":"2677"},{"liquidity_net":"-25864763042758566.825780314141787151","tick_index":"2798"},{"liquidity_net":"-991724173.842077641035110916","tick_index":"2841"},{"liquidity_net":"-1063928513.516692280118630934","tick_index":"2889"},{"liquidity_net":"-75212224210553284471974.853997539381387792","tick_index":"2954"},{"liquidity_net":"2300427651236616516001198205.268726763564344440","tick_index":"3361"},{"liquidity_net":"-2300427651236616516001198205.268726763564344440","tick_index":"3390"}]'
+        ) as LiquidityDepth[],
+        isMaxTicks: true,
+      };
     } else {
       // token0
-      return JSON.parse(
-        '[{"liquidity_net":"13690973.612258627731976066","tick_index":"-420"},{"liquidity_net":"7042487.204272221556955330","tick_index":"-770"},{"liquidity_net":"7533671.157383740445274322","tick_index":"-923"},{"liquidity_net":"991724173.842077641035110916","tick_index":"-1014"},{"liquidity_net":"19112293.184876715840844082","tick_index":"-1073"}]'
-      ) as LiquidityDepth[];
+      return {
+        allTicks: JSON.parse(
+          '[{"liquidity_net":"13690973.612258627731976066","tick_index":"-420"},{"liquidity_net":"7042487.204272221556955330","tick_index":"-770"},{"liquidity_net":"7533671.157383740445274322","tick_index":"-923"},{"liquidity_net":"991724173.842077641035110916","tick_index":"-1014"},{"liquidity_net":"19112293.184876715840844082","tick_index":"-1073"}]'
+        ) as LiquidityDepth[],
+        isMaxTicks: true,
+      };
+    }
+  }
+
+  async getNextTickDepthsTokenInGivenOut(
+    pool: ConcentratedLiquidityPool,
+    token: { denom: string; amount: Int }
+  ): Promise<NextTickDepthsResponse> {
+    // TODO: verify
+    if (token.denom === pool.token1) {
+      return { allTicks: [], isMaxTicks: false };
+    } else {
+      // token0
+      return { allTicks: [], isMaxTicks: false };
     }
   }
 }

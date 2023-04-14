@@ -33,6 +33,7 @@ import { IPriceStore } from "src/price";
 
 import {
   ConcentratedLiquidityPoolAmountProvider,
+  ConcentratedLiquidityPoolTickDataProvider,
   ObservableQueryLiquiditiesNetInDirection,
 } from "../concentrated-liquidity";
 import { Head } from "../utils";
@@ -76,7 +77,9 @@ export class ObservableQueryPool extends ObservableChainQuery<{
 
       return new ConcentratedLiquidityPool(
         clRaw,
-        this.queryLiquiditiesInNetDirection,
+        new ConcentratedLiquidityPoolTickDataProvider(
+          this.queryLiquiditiesInNetDirection
+        ),
         new ConcentratedLiquidityPoolAmountProvider(clRaw, this.queryBalances)
       );
     }

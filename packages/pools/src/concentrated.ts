@@ -1,6 +1,7 @@
 import { Coin, Dec, Int } from "@keplr-wallet/unit";
 import { ConcentratedLiquidityMath, LiquidityDepth } from "@osmosis-labs/math";
 
+import { NotEnoughLiquidityError } from "./errors";
 import { BasePool } from "./interface";
 import { RoutablePool, SwapResult } from "./router";
 
@@ -19,14 +20,30 @@ export interface ConcentratedLiquidityPoolRaw {
   last_liquidity_update: string;
 }
 
+export type NextTickDepthsResponse = {
+  allTicks: LiquidityDepth[];
+  isMaxTicks: boolean;
+};
+
 /** There is more data associated with CL pools for quoting, so it needs to be fetched later.
  *  An instance will be maintained with the pool.
  */
 export interface TickDataProvider {
-  getTickDepths(
+  /**  */
+  getNextTickDepthsTokenOutGivenIn(
     pool: ConcentratedLiquidityPool,
-    tokenInDenom: string
-  ): Promise<LiquidityDepth[]>;
+    token: {
+      denom: string;
+      amount: Int;
+    }
+  ): Promise<NextTickDepthsResponse>;
+  getNextTickDepthsTokenInGivenOut(
+    pool: ConcentratedLiquidityPool,
+    token: {
+      denom: string;
+      amount: Int;
+    }
+  ): Promise<NextTickDepthsResponse>;
 }
 
 /** Provides balances of tokens in pool.
@@ -53,6 +70,14 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
 
   get poolAssetDenoms() {
     return [this.raw.token0, this.raw.token1];
+  }
+
+  get token0() {
+    return this.raw.token0;
+  }
+
+  get token1() {
+    return this.raw.token1;
   }
 
   get swapFee(): Dec {
@@ -97,7 +122,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
   }
 
   constructor(
-    public readonly raw: ConcentratedLiquidityPoolRaw,
+    protected readonly raw: ConcentratedLiquidityPoolRaw,
     protected readonly tickDataProvider: TickDataProvider,
     protected readonly poolAmountsProvider: AmountsDataProvider
   ) {}
@@ -150,21 +175,33 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       ? this.getSpotPriceOutOverIn(tokenIn.denom, tokenOutDenom)
       : this.getSpotPriceInOverOut(tokenIn.denom, tokenOutDenom);
 
-    const inittedTicks = await this.tickDataProvider.getTickDepths(
-      this,
-      tokenIn.denom
-    );
+    const { allTicks: inittedTicks, isMaxTicks } =
+      await this.tickDataProvider.getNextTickDepthsTokenOutGivenIn(
+        this,
+        tokenIn
+      );
 
-    const { amountOut, afterSqrtPrice } =
-      ConcentratedLiquidityMath.calcOutGivenIn({
-        tokenIn: new Coin(tokenIn.denom, tokenIn.amount),
-        tokenDenom0: this.raw.token0,
-        poolLiquidity: this.currentTickLiquidity,
-        inittedTicks,
-        curSqrtPrice: this.currentSqrtPrice,
-        precisionFactorAtPriceOne: this.exponentAtPriceOne,
-        swapFee,
-      });
+    console.log({ inittedTicks, isMaxTicks });
+
+    const calcResult = ConcentratedLiquidityMath.calcOutGivenIn({
+      tokenIn: new Coin(tokenIn.denom, tokenIn.amount),
+      tokenDenom0: this.raw.token0,
+      poolLiquidity: this.currentTickLiquidity,
+      inittedTicks,
+      curSqrtPrice: this.currentSqrtPrice,
+      precisionFactorAtPriceOne: this.exponentAtPriceOne,
+      swapFee,
+    });
+
+    // handle not enough ticks
+    if (calcResult === "no-more-ticks" && isMaxTicks) {
+      throw new NotEnoughLiquidityError();
+    } else if (calcResult === "no-more-ticks") {
+      // retry with more ticks
+      return await this.getTokenOutByTokenIn(tokenIn, tokenOutDenom, swapFee);
+    }
+
+    const { amountOut, afterSqrtPrice } = calcResult;
 
     if (amountOut.equals(new Int(0))) {
       return {
@@ -206,6 +243,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       priceImpact,
     };
   }
+
   async getTokenInByTokenOut(
     tokenOut: {
       denom: string;
@@ -223,21 +261,31 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       ? this.getSpotPriceOutOverIn(tokenInDenom, tokenOut.denom)
       : this.getSpotPriceInOverOut(tokenInDenom, tokenOut.denom);
 
-    const inittedTicks = await this.tickDataProvider.getTickDepths(
-      this,
-      tokenInDenom
-    );
+    const { allTicks: inittedTicks, isMaxTicks } =
+      await this.tickDataProvider.getNextTickDepthsTokenInGivenOut(
+        this,
+        tokenOut
+      );
 
-    const { amountIn, afterSqrtPrice } =
-      ConcentratedLiquidityMath.calcInGivenOut({
-        tokenOut: new Coin(tokenOut.denom, tokenOut.amount),
-        tokenDenom0: this.raw.token0,
-        poolLiquidity: this.currentTickLiquidity,
-        inittedTicks,
-        curSqrtPrice: this.currentSqrtPrice,
-        precisionFactorAtPriceOne: this.exponentAtPriceOne,
-        swapFee,
-      });
+    const calcResult = ConcentratedLiquidityMath.calcInGivenOut({
+      tokenOut: new Coin(tokenOut.denom, tokenOut.amount),
+      tokenDenom0: this.raw.token0,
+      poolLiquidity: this.currentTickLiquidity,
+      inittedTicks,
+      curSqrtPrice: this.currentSqrtPrice,
+      precisionFactorAtPriceOne: this.exponentAtPriceOne,
+      swapFee,
+    });
+
+    // handle not enough ticks
+    if (calcResult === "no-more-ticks" && isMaxTicks) {
+      throw new NotEnoughLiquidityError();
+    } else if (calcResult === "no-more-ticks") {
+      // retry with more ticks
+      return await this.getTokenInByTokenOut(tokenOut, tokenInDenom, swapFee);
+    }
+
+    const { amountIn, afterSqrtPrice } = calcResult;
 
     if (amountIn.equals(new Int(0))) {
       return {
