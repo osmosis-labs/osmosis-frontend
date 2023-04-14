@@ -1,4 +1,4 @@
-import { Dec, Int } from "@keplr-wallet/unit";
+import { Coin, Dec, Int } from "@keplr-wallet/unit";
 
 import {
   exponentAtPriceOneMax,
@@ -9,6 +9,7 @@ import {
 import {
   calculatePriceAndTicksPassed,
   computeMinMaxTicksFromExponentAtPriceOne,
+  estimateInitialTickBound,
   priceToTick,
 } from "../tick";
 
@@ -170,4 +171,134 @@ describe("priceToTick", () => {
       });
     }
   );
+});
+
+describe("estimateInitialTickBounds", () => {
+  // src: https://github.com/osmosis-labs/osmosis/blob/0b199ee187fbff02f68c2dc503d60efe617a67b2/x/concentrated-liquidity/tick_test.go#L1865
+  const tokenOutGivenInTestCases = [
+    {
+      does: "eth -> usdc (one for zero)",
+      scenario: {
+        tokenIn: new Coin("eth", "2000000"),
+        token0: "eth",
+        token1: "usdc",
+        // these values taken from default CL pool in go tests
+        currentTickLiquidity: new Dec("1517882343.751510418088349649"),
+        currentSqrtPrice: new Dec("70.710678118654752440"),
+        exponentAtPriceOne: -4,
+
+        expectedBoundTickIndex: new Int("-1620000"),
+      },
+    },
+    {
+      does: "usdc -> eth (zero for one)",
+      scenario: {
+        tokenIn: new Coin("usdc", "10000000000"),
+        token0: "eth",
+        token1: "usdc",
+        // these values taken from default CL pool in go tests
+        currentTickLiquidity: new Dec("1517882343.751510418088349649"),
+        currentSqrtPrice: new Dec("70.710678118654752440"),
+        exponentAtPriceOne: -4,
+
+        expectedBoundTickIndex: new Int("319752"),
+      },
+    },
+  ];
+
+  describe("outGivenIn", () => {
+    tokenOutGivenInTestCases.forEach(
+      ({
+        does,
+        scenario: {
+          tokenIn,
+          token0,
+          token1,
+          currentTickLiquidity,
+          currentSqrtPrice,
+          exponentAtPriceOne,
+          expectedBoundTickIndex,
+        },
+      }) => {
+        it(does, () => {
+          const { boundTickIndex } = estimateInitialTickBound({
+            specifiedToken: tokenIn,
+            isOutGivenIn: true,
+            token0Denom: token0,
+            token1Denom: token1,
+            currentTickLiquidity,
+            currentSqrtPrice,
+            exponentAtPriceOne,
+          });
+
+          expect(boundTickIndex.toString()).toBe(
+            expectedBoundTickIndex.toString()
+          );
+        });
+      }
+    );
+  });
+
+  const tokenInGivenOut = [
+    {
+      does: "eth -> usdc (one for zero)",
+      scenario: {
+        tokenOut: new Coin("usdc", "10000000000"),
+        token0: "eth",
+        token1: "usdc",
+        // these values taken from default CL pool in go tests
+        currentTickLiquidity: new Dec("1517882343.751510418088349649"),
+        currentSqrtPrice: new Dec("70.710678118654752440"),
+        exponentAtPriceOne: -4,
+
+        expectedBoundTickIndex: new Int("-1620000"),
+      },
+    },
+    {
+      does: "usdc -> eth (zero for one)",
+      scenario: {
+        tokenOut: new Coin("eth", "2000000"),
+        token0: "eth",
+        token1: "usdc",
+        // these values taken from default CL pool in go tests
+        currentTickLiquidity: new Dec("1517882343.751510418088349649"),
+        currentSqrtPrice: new Dec("70.710678118654752440"),
+        exponentAtPriceOne: -4,
+
+        expectedBoundTickIndex: new Int("319752"),
+      },
+    },
+  ];
+  describe("inGivenOut", () => {
+    tokenInGivenOut.forEach(
+      ({
+        does,
+        scenario: {
+          tokenOut,
+          token0,
+          token1,
+          currentTickLiquidity,
+          currentSqrtPrice,
+          exponentAtPriceOne,
+          expectedBoundTickIndex,
+        },
+      }) => {
+        it(does, () => {
+          const { boundTickIndex } = estimateInitialTickBound({
+            specifiedToken: tokenOut,
+            isOutGivenIn: false,
+            token0Denom: token0,
+            token1Denom: token1,
+            currentTickLiquidity,
+            currentSqrtPrice,
+            exponentAtPriceOne,
+          });
+
+          expect(boundTickIndex.toString()).toBe(
+            expectedBoundTickIndex.toString()
+          );
+        });
+      }
+    );
+  });
 });

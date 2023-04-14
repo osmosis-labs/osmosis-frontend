@@ -223,3 +223,18 @@ export function addLiquidity(a: Dec, b: Dec): Dec {
   }
   return a.add(b);
 }
+
+/** Converts a token-in-given-out to token-out-given-in based on current price and swap direction.  */
+export function convertTokenInGivenOutToTokenOutGivenIn(
+  specifiedTokenOut: { denom: string; amount: Int },
+  token0Denom: string,
+  currentPrice: Dec
+) {
+  // spot price = token1 / token0 or token1 per token 0
+  if (specifiedTokenOut.denom === token0Denom) {
+    // is in given out -- token0 for token1
+    return new Dec(specifiedTokenOut.amount).mul(currentPrice).truncate();
+  }
+  // is in given out -- token1 for token0
+  return new Dec(specifiedTokenOut.amount).quo(currentPrice).truncate();
+}

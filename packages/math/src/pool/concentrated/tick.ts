@@ -7,7 +7,7 @@ import {
   maxSpotPrice,
   minSpotPrice,
 } from "./const";
-import { approxSqrt } from "./math";
+import { approxSqrt, convertTokenInGivenOutToTokenOutGivenIn } from "./math";
 const nine = new Dec(9);
 
 // Ref: https://github.com/osmosis-labs/osmosis/blob/main/x/concentrated-liquidity/README.md#tick-spacing-example-tick-to-price
@@ -94,7 +94,7 @@ export function priceToTick(price: Dec, exponentAtPriceOne: number): Int {
   }
   if (price.isNegative()) throw new Error("Price is negative");
   if (price.gt(maxSpotPrice) || price.lt(minSpotPrice))
-    throw new Error("Price not within bounds");
+    throw new Error("Price not within bounds: " + price.toString());
   if (
     new Int(exponentAtPriceOne).gt(exponentAtPriceOneMax) ||
     new Int(exponentAtPriceOne).lt(exponentAtPriceOneMin)
@@ -197,39 +197,96 @@ export function calculatePriceAndTicksPassed(
   return { currentPrice, ticksPassed, currentAdditiveIncrementInTicks };
 }
 
-/** Provides a method of estimating the initial first tick index bound for querying ticks efficiently (not requesting too many ticks).
+/** Estimates the initial first tick index bound for querying ticks efficiently (not requesting too many ticks).
  *  Is positive or negative depending on which token is being swapped in.
+ *
+ *  Provides ability to handle out given in or in given out using the current price, since this is just an estimate.
  */
-export function estimateInitialTickBounds({
-  tokenIn,
+export function estimateInitialTickBound({
+  specifiedToken,
+  isOutGivenIn,
   token0Denom,
+  token1Denom,
   currentSqrtPrice,
   currentTickLiquidity,
   exponentAtPriceOne,
 }: {
-  tokenIn: {
+  /** May be specified amount of token out, or token in. */
+  specifiedToken: {
     denom: string;
     amount: Int;
   };
+  isOutGivenIn: boolean;
   token0Denom: string;
+  token1Denom: string;
   currentSqrtPrice: Dec;
   currentTickLiquidity: Dec;
   exponentAtPriceOne: number;
 }): { boundTickIndex: Int } {
+  // modify the input amount based on out given in vs in given out and swap direction
+  const currentPrice = currentSqrtPrice.pow(new Int(2));
+
+  let tokenIn;
+  if (isOutGivenIn) {
+    tokenIn = specifiedToken;
+  } else {
+    // isInGivenOut, convert to input amount using spot price
+    tokenIn = {
+      amount: convertTokenInGivenOutToTokenOutGivenIn(
+        specifiedToken,
+        token0Denom,
+        currentPrice
+      ),
+      denom:
+        specifiedToken.denom === token0Denom // swap denoms, isInGivenOut >> isOutGivenIn
+          ? token1Denom
+          : token0Denom,
+    };
+  }
+
+  if (!isOutGivenIn) console.log({ tokenInAmount: tokenIn.amount.toString() });
+
   const isZeroForOne = tokenIn.denom === token0Denom;
 
   // get target sqrt price from amount in and tick liquidity
   let sqrtPriceTarget: Dec;
   if (isZeroForOne) {
+    // Swapping token 0 in for token 1 out.
+    // sqrt P_t = sqrt P_c + L / token_0
+    // Higher L -> higher tick estimate. This is good because we want to overestimate
+    // to grab enough ticks in one round trip query.
+    // Fee charge makes the target final tick smaller so drop it.
+
     const estimate = currentSqrtPrice.sub(
       currentTickLiquidity.quo(new Dec(tokenIn.amount))
     );
-    sqrtPriceTarget = estimate.gt(minSpotPrice) ? estimate : minSpotPrice;
+
+    // Note, that if we only have a few positions in the pool, the estimate will be quite off
+    // as current tick liquidity will vary from active range to the next range.
+    // Therefore, we take the max of the estimate and the minimum sqrt price.
+    // We expect the estimate to work much better assumming that the pool has a lot of positions.
+    // where there is little variation in liquidity between tick ranges.
+    const minSqrtPrice = approxSqrt(minSpotPrice);
+    sqrtPriceTarget = estimate.gt(minSqrtPrice) ? estimate : minSqrtPrice;
   } else {
+    // Swapping token 1 in for token 0 out
+    // sqrt P_t = sqrt P_c + token_1 / L
+    // Higher L -> Smaller target estimate. We want higher to have
+    // a buffer and get all ticks in 1 query. Therefore, take 50% of current
+    // To gurantee we get all data in single query. The value of 50% is chosen randomly and
+    // can be adjusted for better performance via config.
+    // Fee charge makes the target smaller. We want buffer to get all ticks
+    // Therefore, drop fee.
+
     const estimate = currentSqrtPrice.add(
       new Dec(tokenIn.amount).quo(currentTickLiquidity)
     );
-    sqrtPriceTarget = estimate.lt(maxSpotPrice) ? estimate : maxSpotPrice;
+
+    // Similarly to swapping to the left of the current sqrt price,
+    // estimating tick bound in the other direction, we take the max of the estimate and the maximum sqrt price.
+    // We expect the estimate to work much better assumming that the pool has a lot of positions.
+    const maxSqrtPrice = approxSqrt(maxSpotPrice);
+    sqrtPriceTarget = estimate.lt(maxSqrtPrice) ? estimate : maxSqrtPrice;
   }
 
   const price = sqrtPriceTarget.pow(new Int(2));
