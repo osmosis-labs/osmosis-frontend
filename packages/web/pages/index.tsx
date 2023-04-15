@@ -179,6 +179,7 @@ const Home: NextPage = observer(function () {
           return Number(bTVL.sub(aTVL).toDec().toString());
         })
         .map((pool) => pool.pool),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [allPools, priceStore.response]
   );
 
