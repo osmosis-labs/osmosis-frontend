@@ -11,7 +11,6 @@ import {
 } from "@keplr-wallet/unit";
 import {
   MultihopSwapResult,
-  NotEnoughLiquidityError,
   OptimizedRoutes,
   RouteWithAmount,
 } from "@osmosis-labs/pools";
@@ -56,10 +55,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   protected _sendCurrencyMinDenom: string | undefined = undefined;
   @observable
   protected _outCurrencyMinDenom: string | undefined = undefined;
-
-  // must match AmountConfig.error
-  @observable
-  protected _error: Error | undefined = undefined;
 
   @observable
   protected _latestOptimizedRoutes:
@@ -246,6 +241,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   /** Any error derived from state. */
   @override
   get error(): Error | undefined {
+    // If things are loading or there's no input, there can't be an error
     if (
       this.isSpotPriceLoading ||
       this.isSpotPriceLoading ||
@@ -259,22 +255,22 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       return new NoSendCurrencyError("Currency to send not set");
     }
 
-    // If there's an error from the latest swap result, return it
+    // If there's an error from the latest generated route result, return it
     if (this._latestOptimizedRoutes?.state === "rejected") {
       return this._latestOptimizedRoutes.case({
         rejected: (error) => error,
       });
     }
+
+    // If there's an error from the latest swap result, return it
     if (this._latestSwapResult?.state === "rejected") {
       return this._latestSwapResult.case({
         rejected: (error) => error,
       });
     }
 
+    // If the user doesn't have enough balance, return an error
     if (this.amount !== "") {
-      if (this._error instanceof NotEnoughLiquidityError)
-        return new NotEnoughLiquidityError();
-
       const dec = new Dec(this.amount);
       const balance = this.queriesStore
         .get(this.chainId)
@@ -286,7 +282,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       }
     }
 
-    return this._error;
+    // There's an error with the input
+    return super.error;
   }
 
   @computed
@@ -468,11 +465,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
     this._sendCurrencyMinDenom = prevOutCurrency;
     this._outCurrencyMinDenom = prevInCurrency;
-  }
-
-  @action
-  setError(error: Error | undefined) {
-    this._error = error;
   }
 
   @action
