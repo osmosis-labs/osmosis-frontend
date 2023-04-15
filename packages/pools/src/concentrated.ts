@@ -17,7 +17,6 @@ export interface ConcentratedLiquidityPoolRaw {
   tick_spacing: string;
   exponent_at_price_one: string;
   swap_fee: string;
-  last_liquidity_update: string;
 }
 
 export type TickDepths = {

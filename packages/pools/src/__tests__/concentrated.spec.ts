@@ -1,22 +1,23 @@
-import { Int } from "@keplr-wallet/unit";
+import { Dec, Int } from "@keplr-wallet/unit";
 import { LiquidityDepth } from "@osmosis-labs/math";
 
 import {
   AmountsDataProvider,
   ConcentratedLiquidityPool,
   ConcentratedLiquidityPoolRaw,
-  NextTickDepthsResponse,
   TickDataProvider,
+  TickDepths,
 } from "../concentrated";
+import { NotEnoughLiquidityError } from "../errors";
 
 export class MockTickProvider implements TickDataProvider {
-  async getNextTickDepthsTokenOutGivenIn(
+  async getTickDepthsTokenOutGivenIn(
     pool: ConcentratedLiquidityPool,
     token: {
       denom: string;
       amount: Int;
     }
-  ): Promise<NextTickDepthsResponse> {
+  ): Promise<TickDepths> {
     if (token.denom === pool.token1) {
       return {
         allTicks: JSON.parse(
@@ -35,10 +36,10 @@ export class MockTickProvider implements TickDataProvider {
     }
   }
 
-  async getNextTickDepthsTokenInGivenOut(
+  async getTickDepthsTokenInGivenOut(
     pool: ConcentratedLiquidityPool,
     token: { denom: string; amount: Int }
-  ): Promise<NextTickDepthsResponse> {
+  ): Promise<TickDepths> {
     // TODO: verify
     if (token.denom === pool.token1) {
       return { allTicks: [], isMaxTicks: false };
@@ -54,6 +55,27 @@ export class MockAmountProvider implements AmountsDataProvider {
     return { token0Amount: new Int(100), token1Amount: new Int(100) };
   }
 }
+
+// these are correlated
+// const mockCLRawIon0Osmo1: ConcentratedLiquidityPoolRaw = JSON.parse(
+//   '{"@type":"/osmosis.concentratedliquidity.v1beta1.Pool","address":"osmo19e2mf7cywkv7zaug6nk5f87d07fxrdgrladvymh2gwv5crvm3vnsuewhh7","incentives_address":"osmo156gncm3w2hdvuxxaejue8nejxgdgsrvdf7jftntuhxnaarhxcuas4ywjxf","id":"1","current_tick_liquidity":"1039103599.000868946610160716","token0":"uion","token1":"uosmo","current_sqrt_price":"1.581138830084189666","current_tick":"15","tick_spacing":"1","exponent_at_price_one":"-1","swap_fee":"0.000000000000000000","last_liquidity_update":"2023-04-07T17:41:50.880583631Z"}'
+// );
+// const mockTicksIonIn: LiquidityDepth[] = JSON.parse(
+//   '[{"liquidity_net":"599578525778.429541568695792228","tick_index":"300000"},{"liquidity_net":"741212151448.720111852782017796","tick_index":"305450"},{"liquidity_net":"-599578525778.429541568695792228","tick_index":"309990"},{"liquidity_net":"456555293506.788011370219119064","tick_index":"315000"},{"liquidity_net":"1045145512095.681633120327461377","tick_index":"320000"},{"liquidity_net":"-1197767444955.508123223001136860","tick_index":"322500"},{"liquidity_net":"-1045145512095.681633120327461377","tick_index":"329990"},{"liquidity_net":"-31622776.601683794000100000","tick_index":"3420000"}]'
+// ).map(
+//   ({
+//     liquidity_net,
+//     tick_index,
+//   }: {
+//     liquidity_net: string;
+//     tick_index: string;
+//   }) => {
+//     return {
+//       tickIndex: new Int(tick_index),
+//       netLiquidity: new Dec(liquidity_net),
+//     };
+//   }
+// );
 
 /** This is an extension simply to gain access to protected methods */
 class TestPool extends ConcentratedLiquidityPool {
@@ -84,5 +106,115 @@ describe("ConcentratedLiquidityPool", () => {
     expect(() => p.validateDenoms("uosmo", "uosmo")).toThrow();
     expect(() => p.validateDenoms("uion", "uion")).toThrow();
     expect(() => p.validateDenoms("uion", "someotherasset")).toThrow();
+  });
+});
+
+describe("ConcentratedLiquidityPool.getTokenOutByTokenIn", () => {
+  // data from this test case
+  // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L505
+  const mockClPool: ConcentratedLiquidityPoolRaw = {
+    "@type": "/osmosis.concentratedliquidity.v1beta1.Pool",
+    address: "osmo19e2mf7cywkv7zaug6nk5f87d07fxrdgrladvymh2gwv5crvm3vnsuewhh7",
+    id: "1",
+    current_tick_liquidity: "1517882343.751510418088349649",
+    token0: "uion",
+    token1: "uosmo",
+    current_sqrt_price: "70.710678118654752440",
+    current_tick: "0",
+    swap_fee: "0.002000000000000000",
+    tick_spacing: "1",
+    exponent_at_price_one: "-4",
+  };
+
+  const mockTicks = [
+    {
+      tickIndex: new Int(310010),
+      netLiquidity: new Dec("670416088.605668727039240782"),
+    },
+    {
+      tickIndex: new Int(315000),
+      netLiquidity: new Dec("-1517882343.751510418088349649"),
+    },
+    {
+      tickIndex: new Int(322500),
+      netLiquidity: new Dec("-670416088.605668727039240782"),
+    },
+  ];
+
+  let mockPool: any;
+  let tickDataProvider: any;
+
+  beforeEach(() => {
+    tickDataProvider = {
+      getTickDepthsTokenOutGivenIn: jest.fn(),
+    };
+
+    mockPool = new ConcentratedLiquidityPool(
+      mockClPool,
+      tickDataProvider as unknown as TickDataProvider,
+      new MockAmountProvider()
+    );
+  });
+
+  test("Making a request with enough ticks in the tickDataProvider", async () => {
+    tickDataProvider.getTickDepthsTokenOutGivenIn.mockResolvedValueOnce({
+      allTicks: mockTicks,
+      isMaxTicks: false,
+    });
+
+    const tokenIn = { denom: "uion", amount: new Int(1000) };
+    const tokenOutDenom = "uosmo";
+
+    const result = await mockPool.getTokenOutByTokenIn(tokenIn, tokenOutDenom);
+
+    expect(result.amount.isZero()).toBeFalsy();
+    expect(tickDataProvider.getTickDepthsTokenOutGivenIn).toHaveBeenCalledTimes(
+      1
+    );
+  });
+
+  test("Making a request while having to request more ticks from the tickDataProvider a few times, then completing the calculation", async () => {
+    tickDataProvider.getTickDepthsTokenOutGivenIn
+      .mockResolvedValueOnce({
+        allTicks: mockTicks.slice(0, 2),
+        isMaxTicks: false,
+      })
+      .mockResolvedValueOnce({
+        allTicks: mockTicks.slice(0, 5),
+        isMaxTicks: false,
+      })
+      .mockResolvedValueOnce({ allTicks: mockTicks, isMaxTicks: false });
+
+    const tokenIn = { denom: "uion", amount: new Int(1000) };
+    const tokenOutDenom = "uosmo";
+
+    const result = await mockPool.getTokenOutByTokenIn(tokenIn, tokenOutDenom);
+
+    expect(result.amount.isZero()).toBeFalsy();
+    expect(tickDataProvider.getTickDepthsTokenOutGivenIn).toHaveBeenCalledTimes(
+      3
+    );
+  });
+
+  test("Making a request while having to request more ticks from the tickDataProvider to the point where the provider runs out of ticks, and the NotEnoughLiquidityError exception is thrown", async () => {
+    tickDataProvider.getTickDepthsTokenOutGivenIn
+      .mockResolvedValueOnce({
+        allTicks: mockTicks.slice(0, 2),
+        isMaxTicks: false,
+      })
+      .mockResolvedValueOnce({
+        allTicks: mockTicks.slice(0, 5),
+        isMaxTicks: true,
+      });
+
+    const tokenIn = { denom: "uion", amount: new Int(1000) };
+    const tokenOutDenom = "uosmo";
+
+    await expect(
+      mockPool.getTokenOutByTokenIn(tokenIn, tokenOutDenom)
+    ).rejects.toThrow(NotEnoughLiquidityError);
+    expect(tickDataProvider.getTickDepthsTokenOutGivenIn).toHaveBeenCalledTimes(
+      2
+    );
   });
 });
