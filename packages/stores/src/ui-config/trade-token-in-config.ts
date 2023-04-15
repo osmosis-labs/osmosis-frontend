@@ -370,7 +370,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     // Clear any output if the input is cleared
     autorun(() => {
       const inputCleared =
-        this.amount === "" || !new Int(this.amount).isPositive();
+        this.amount === "" || !new Dec(this.amount).isPositive();
 
       // this also handles race conditions because if the user clears the input, then an prev request result arrives, the old result will be cleared
       if (this._latestSwapResult?.state === "fulfilled" && inputCleared) {
