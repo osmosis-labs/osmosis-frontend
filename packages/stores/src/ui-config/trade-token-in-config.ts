@@ -476,6 +476,13 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
     this._sendCurrencyMinDenom = prevOutCurrency;
     this._outCurrencyMinDenom = prevInCurrency;
+
+    // clear all results of prev input
+    this._latestOptimizedRoutes = undefined;
+    this._latestSwapResult = undefined;
+
+    this._latestSpotPriceRoutes = undefined;
+    this._spotPriceResult = undefined;
   }
 
   @action
