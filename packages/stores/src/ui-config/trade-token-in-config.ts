@@ -187,6 +187,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   }
 
   /** Latest and best route from most recent user input amounts and token selections. */
+  @computed
   get optimizedRoute(): RouteWithAmount | undefined {
     return this._latestOptimizedRoutes?.case({
       fulfilled: (routes) => routes[0], // get best route
@@ -198,6 +199,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   }
 
   /** Prettify swap result for display. */
+  @computed
   get expectedSwapResult(): PrettyMultihopSwapResult {
     if (this._latestOptimizedRoutes?.state === "rejected")
       return this.zeroSwapResult;
@@ -214,6 +216,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   }
 
   /** Quote is loading for user amount and token select inputs. */
+  @computed
   get tradeIsLoading(): boolean {
     return (
       this._latestOptimizedRoutes?.state === "pending" ||
@@ -222,6 +225,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   }
 
   /** Calculated spot price with amount of 1 token in for currently selected tokens. */
+  @computed
   get expectedSpotPrice(): IntPretty {
     return (
       this._spotPriceResult?.case({
@@ -237,6 +241,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   }
 
   /** Spot price for currently selected tokens is loading. */
+  @computed
   get isSpotPriceLoading(): boolean {
     return this._spotPriceResult?.state === "pending";
   }
@@ -297,6 +302,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     );
   }
 
+  @computed
   protected get zeroSwapResult(): PrettyMultihopSwapResult {
     return {
       amount: new CoinPretty(this.outCurrency, new Dec(0)).ready(false),
