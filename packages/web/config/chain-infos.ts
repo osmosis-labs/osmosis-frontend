@@ -848,7 +848,18 @@ const chainInfos = (
           coinDecimals: 6,
           coinGeckoId: "pool:clst",
           coinImageUrl: "/tokens/celestims.png",
-        },        
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1ytymtllllsp3hfmndvcp802p2xmy5s8m59ufel8xv9ahyxyfs4hs4kd4je",
+          coinDenom: "OSDOGE",
+          coinMinimalDenom:
+            "cw20:juno1ytymtllllsp3hfmndvcp802p2xmy5s8m59ufel8xv9ahyxyfs4hs4kd4je:OSDOGE",
+          coinDecimals: 6,
+          coinGeckoId: "pool:osdoge",
+          coinImageUrl: "/tokens/osdoge.svg",
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: IS_TESTNET
