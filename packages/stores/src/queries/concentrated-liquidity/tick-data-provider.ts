@@ -2,8 +2,8 @@ import { Int } from "@keplr-wallet/unit";
 import { estimateInitialTickBound } from "@osmosis-labs/math";
 import {
   ConcentratedLiquidityPool,
-  NextTickDepthsResponse,
   TickDataProvider,
+  TickDepths,
 } from "@osmosis-labs/pools";
 
 import { ObservableQueryLiquiditiesNetInDirection } from "./liquidity-net-in-direction";
@@ -27,13 +27,14 @@ export class ConcentratedLiquidityPoolTickDataProvider
     protected readonly maxNumRequeriesPerDenom = 6
   ) {}
 
-  async getNextTickDepthsTokenOutGivenIn(
+  async getTickDepthsTokenOutGivenIn(
     pool: ConcentratedLiquidityPool,
     tokenIn: {
       denom: string;
       amount: Int;
-    }
-  ): Promise<NextTickDepthsResponse> {
+    },
+    getMoreTicks = false
+  ): Promise<TickDepths> {
     const zeroForOne = pool.token0 === tokenIn.denom;
 
     // get the initial tick bound based on the input token
@@ -41,6 +42,7 @@ export class ConcentratedLiquidityPoolTickDataProvider
       specifiedToken: tokenIn,
       isOutGivenIn: true,
       token0Denom: pool.token0,
+      token1Denom: pool.token1,
       currentSqrtPrice: pool.currentSqrtPrice,
       currentTickLiquidity: pool.currentTickLiquidity,
       exponentAtPriceOne: pool.exponentAtPriceOne,
@@ -57,7 +59,8 @@ export class ConcentratedLiquidityPoolTickDataProvider
     const nextTicks = this.requestInDirectionWithInitialTickBound(
       pool,
       zeroForOne,
-      boundTickIndex
+      boundTickIndex,
+      getMoreTicks
     );
 
     if (
@@ -72,13 +75,14 @@ export class ConcentratedLiquidityPoolTickDataProvider
     return nextTicks;
   }
 
-  async getNextTickDepthsTokenInGivenOut(
+  async getTickDepthsTokenInGivenOut(
     pool: ConcentratedLiquidityPool,
     tokenOut: {
       denom: string;
       amount: Int;
-    }
-  ): Promise<NextTickDepthsResponse> {
+    },
+    getMoreTicks = false
+  ): Promise<TickDepths> {
     const zeroForOne = pool.token0 !== tokenOut.denom;
 
     // get the initial tick bound based on the input token
@@ -87,6 +91,7 @@ export class ConcentratedLiquidityPoolTickDataProvider
       specifiedToken: tokenOut,
       isOutGivenIn: false,
       token0Denom: pool.token0,
+      token1Denom: pool.token1,
       currentSqrtPrice: pool.currentSqrtPrice,
       currentTickLiquidity: pool.currentTickLiquidity,
       exponentAtPriceOne: pool.exponentAtPriceOne,
@@ -96,7 +101,8 @@ export class ConcentratedLiquidityPoolTickDataProvider
     const nextTicks = this.requestInDirectionWithInitialTickBound(
       pool,
       zeroForOne,
-      boundTickIndex
+      boundTickIndex,
+      getMoreTicks
     );
 
     if (
@@ -115,8 +121,9 @@ export class ConcentratedLiquidityPoolTickDataProvider
   protected async requestInDirectionWithInitialTickBound(
     pool: ConcentratedLiquidityPool,
     zeroForOne: boolean,
-    initialBoundTick: Int
-  ): Promise<NextTickDepthsResponse> {
+    initialBoundTick: Int,
+    fetchMoreTicks: boolean
+  ): Promise<TickDepths> {
     const queryDepths = this.queryLiquiditiesNetInDirection.getForPoolTokenIn(
       pool.id,
       pool.token0,
@@ -156,13 +163,14 @@ export class ConcentratedLiquidityPoolTickDataProvider
       console.log("fetching initial ticks");
       await queryDepths.waitResponse();
       setLatestBoundTickIndex(initialBoundTick);
-    } else {
-      // have fetched ticks, but should get more
+    } else if (fetchMoreTicks) {
+      // have fetched ticks, but requested to get more
       const nextBoundIndex = prevBoundIndex.mul(this.nextTicksRampMultiplier);
       await queryDepths.fetchUpToTickIndex(nextBoundIndex);
       console.log("setting new bound index to", nextBoundIndex.toString());
       setLatestBoundTickIndex(nextBoundIndex);
-    }
+    } // else have fetched ticks, but not requested to get more. do nothing
+
     return {
       allTicks: queryDepths.depthsInDirection,
       isMaxTicks: queryDepths.hasFetchedAllTicks,
