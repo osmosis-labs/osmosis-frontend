@@ -176,7 +176,7 @@ export class ObservableQueryLiquiditiesNetInDirection {
         this.chainId,
         this.chainGetter,
         { poolId, tokenInDenom },
-        zeroForOne ? maxTick : minTick,
+        zeroForOne ? minTick : maxTick,
         initialBoundTick
       );
       this._poolNetInDirQueries.set(codedKey, newQuery);

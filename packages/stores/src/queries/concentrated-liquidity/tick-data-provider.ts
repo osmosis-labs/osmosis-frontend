@@ -35,8 +35,6 @@ export class ConcentratedLiquidityPoolTickDataProvider
     },
     getMoreTicks = false
   ): Promise<TickDepths> {
-    const zeroForOne = pool.token0 === tokenIn.denom;
-
     // get the initial tick bound based on the input token
     const { boundTickIndex } = estimateInitialTickBound({
       specifiedToken: tokenIn,
@@ -48,25 +46,24 @@ export class ConcentratedLiquidityPoolTickDataProvider
       exponentAtPriceOne: pool.exponentAtPriceOne,
     });
 
-    // return the next ticks
-    const nextTicks = this.requestInDirectionWithInitialTickBound(
-      pool,
-      zeroForOne,
-      boundTickIndex,
-      getMoreTicks
-    );
-
     if (
       getMoreTicks &&
       incrementCounterMap(this._triesPerDenomOutGivenIn, tokenIn.denom) >
         this.maxNumRequeriesPerDenom
     ) {
+      // throw to prevent overwhelming the server
       throw new Error(
         "Max tries exceeded for denom out given in: " + tokenIn.denom
       );
     }
 
-    return nextTicks;
+    const zeroForOne = pool.token0 === tokenIn.denom;
+    return this.requestInDirectionWithInitialTickBound(
+      pool,
+      zeroForOne,
+      boundTickIndex,
+      getMoreTicks
+    );
   }
 
   async getTickDepthsTokenInGivenOut(
@@ -77,8 +74,6 @@ export class ConcentratedLiquidityPoolTickDataProvider
     },
     getMoreTicks = false
   ): Promise<TickDepths> {
-    const zeroForOne = pool.token0 !== tokenOut.denom;
-
     // get the initial tick bound based on the input token
     // convert token out to token in based on current price, since the bound tick is an estimate
     const { boundTickIndex } = estimateInitialTickBound({
@@ -91,25 +86,24 @@ export class ConcentratedLiquidityPoolTickDataProvider
       exponentAtPriceOne: pool.exponentAtPriceOne,
     });
 
-    // return the next ticks
-    const nextTicks = this.requestInDirectionWithInitialTickBound(
-      pool,
-      zeroForOne,
-      boundTickIndex,
-      getMoreTicks
-    );
-
     if (
       getMoreTicks &&
       incrementCounterMap(this._triesPerDenomInGivenOut, tokenOut.denom) >
         this.maxNumRequeriesPerDenom
     ) {
+      // throw to prevent overwhelming the server
       throw new Error(
         "Max tries exceeded for denom in given out: " + tokenOut.denom
       );
     }
 
-    return nextTicks;
+    const zeroForOne = pool.token0 !== tokenOut.denom;
+    return this.requestInDirectionWithInitialTickBound(
+      pool,
+      zeroForOne,
+      boundTickIndex,
+      getMoreTicks
+    );
   }
 
   /** Fetch and return **additional** ticks in the desired direction. Maintains state to determine which ticks have already been fetched. */
