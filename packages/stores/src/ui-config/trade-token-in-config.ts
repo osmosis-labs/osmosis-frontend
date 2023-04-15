@@ -392,7 +392,9 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     autorun(async () => {
       this.setSpotPriceResult(undefined);
 
-      let bestRoute;
+      let bestRoute:
+        | Awaited<ReturnType<typeof this.router.getOptimizedRoutesByTokenIn>>[0]
+        | undefined;
       /** 1_000_000 uosmo vs 1 uosmo */
       const oneWithDecimals = new Int(
         DecUtils.getTenExponentNInPrecisionRange(this.sendCurrency.coinDecimals)
@@ -408,12 +410,13 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       try {
         bestRoute = (
           await router.getOptimizedRoutesByTokenIn(tokenIn, outCurrencyDenom)
-        )[0];
+        )?.[0];
       } catch (e: any) {
         // Ignore errors from calculating spot price, as they aren't from user input
         console.error("Error calculating spot price: ", e.message);
         return this.setSpotPriceResult(undefined);
       }
+      if (!bestRoute) return;
 
       const tokenOutPromise = router.calculateTokenOutByTokenIn(bestRoute);
       this.setSpotPriceResult(fromPromise(tokenOutPromise));

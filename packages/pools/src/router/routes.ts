@@ -62,7 +62,7 @@ export class OptimizedRoutes {
     },
     tokenOutDenom: string
   ): Promise<RouteWithAmount[]> {
-    if (!tokenIn.amount.isPositive()) {
+    if (!tokenIn.amount.isPositive() || this._pools.length === 0) {
       return [];
     }
 
