@@ -199,6 +199,9 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
   /** Prettify swap result for display. */
   get expectedSwapResult(): PrettyMultihopSwapResult {
+    if (this._latestOptimizedRoutes?.state === "rejected")
+      return this.zeroSwapResult;
+
     return (
       this._latestSwapResult?.case({
         fulfilled: (result) => this.makePrettyMultihopResult(result),
