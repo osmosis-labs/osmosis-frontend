@@ -171,15 +171,6 @@ export class ObservableQueryLiquiditiesNetInDirection {
       const { minTick, maxTick } =
         computeMinMaxTicksFromExponentAtPriceOne(exponentAtPriceOne);
 
-      console.log(
-        "create first query store",
-        token0Denom,
-        token1Denom,
-        zeroForOne,
-        exponentAtPriceOne,
-        { minTick: minTick.toString(), maxTick: maxTick.toString() }
-      );
-
       const newQuery = new ObservableQueryLiquidityNetInDirection(
         this.kvStore,
         this.chainId,

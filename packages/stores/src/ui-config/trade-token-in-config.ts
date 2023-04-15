@@ -265,7 +265,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         rejected: (error) => error,
       });
     }
-
     if (this._latestSwapResult?.state === "rejected") {
       return this._latestSwapResult.case({
         rejected: (error) => error,
@@ -350,7 +349,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     autorun(() => {
       const { denom, amount } = this.getAmountPrimitive();
 
-      if (amount === "" || !new Int(amount).isPositive()) return;
+      if (amount === "" || !new Int(amount).isPositive())
+        return this.setOptimizedRoutes(undefined);
 
       // Clear any previous user input debounce
       debounceGenerateRoutes.clear();
@@ -385,6 +385,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
     // react to changes in send/out currencies, then generate a spot price by directly calculating from the pools
     autorun(async () => {
+      this.setSpotPriceResult(undefined);
+
       let bestRoute;
       /** 1_000_000 uosmo vs 1 uosmo */
       const oneWithDecimals = new Int(

@@ -48,13 +48,6 @@ export class ConcentratedLiquidityPoolTickDataProvider
       exponentAtPriceOne: pool.exponentAtPriceOne,
     });
 
-    console.log(
-      "swapping in",
-      tokenIn.denom,
-      "initial bound tick",
-      boundTickIndex.toString()
-    );
-
     // return the next ticks
     const nextTicks = this.requestInDirectionWithInitialTickBound(
       pool,
@@ -64,8 +57,9 @@ export class ConcentratedLiquidityPoolTickDataProvider
     );
 
     if (
+      getMoreTicks &&
       incrementCounterMap(this._triesPerDenomOutGivenIn, tokenIn.denom) >
-      this.maxNumRequeriesPerDenom
+        this.maxNumRequeriesPerDenom
     ) {
       throw new Error(
         "Max tries exceeded for denom out given in: " + tokenIn.denom
@@ -106,8 +100,9 @@ export class ConcentratedLiquidityPoolTickDataProvider
     );
 
     if (
+      getMoreTicks &&
       incrementCounterMap(this._triesPerDenomInGivenOut, tokenOut.denom) >
-      this.maxNumRequeriesPerDenom
+        this.maxNumRequeriesPerDenom
     ) {
       throw new Error(
         "Max tries exceeded for denom in given out: " + tokenOut.denom
@@ -160,14 +155,12 @@ export class ConcentratedLiquidityPoolTickDataProvider
 
     // haven't fetched ticks yet
     if (!prevBoundIndex) {
-      console.log("fetching initial ticks");
       await queryDepths.waitResponse();
       setLatestBoundTickIndex(initialBoundTick);
     } else if (fetchMoreTicks) {
       // have fetched ticks, but requested to get more
       const nextBoundIndex = prevBoundIndex.mul(this.nextTicksRampMultiplier);
       await queryDepths.fetchUpToTickIndex(nextBoundIndex);
-      console.log("setting new bound index to", nextBoundIndex.toString());
       setLatestBoundTickIndex(nextBoundIndex);
     } // else have fetched ticks, but not requested to get more. do nothing
 
