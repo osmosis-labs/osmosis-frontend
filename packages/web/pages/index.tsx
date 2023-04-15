@@ -151,7 +151,7 @@ const Home: NextPage = observer(function () {
                 break;
               }
             }
-            
+
             // only pools with at least 100,000 REGEN
             if (
               "originChainId" in asset.amount.currency &&
@@ -163,7 +163,6 @@ const Home: NextPage = observer(function () {
                 break;
               }
             }
-            
           }
 
           if (hasEnoughAssets) {

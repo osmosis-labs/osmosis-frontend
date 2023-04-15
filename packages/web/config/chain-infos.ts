@@ -848,7 +848,7 @@ const chainInfos = (
           coinDecimals: 6,
           coinGeckoId: "pool:clst",
           coinImageUrl: "/tokens/celestims.png",
-        },        
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: IS_TESTNET
@@ -3104,7 +3104,7 @@ const chainInfos = (
       explorerUrlToTx: IS_TESTNET
         ? "https://explorer-rila.nolus.io/nolus-rila/tx/{txHash}"
         : "",
-    }
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 

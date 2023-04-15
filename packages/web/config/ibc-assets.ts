@@ -152,7 +152,7 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-0",
         coinMinimalDenom: "unls",
         isVerified: true,
-      }
+      },
     ]
   : [
       {
@@ -1593,7 +1593,7 @@ export const IBCAssetInfos: (IBCAsset & {
           "cw20:juno1ngww7zxak55fql42wmyqrr4rhzpne24hhs4p3w4cwhcdgqgr3hxsmzl9zg",
         ics20ContractAddress:
           "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
-      },        
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (
