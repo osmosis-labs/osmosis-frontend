@@ -56,11 +56,11 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   @observable
   protected _outCurrencyMinDenom: string | undefined = undefined;
 
-  @observable
+  @observable.ref
   protected _latestOptimizedRoutes:
     | IPromiseBasedObservable<RouteWithAmount[]>
     | undefined = undefined;
-  @observable
+  @observable.ref
   protected _latestSpotPriceRoutes:
     | IPromiseBasedObservable<RouteWithAmount[]>
     | undefined = undefined;
@@ -331,7 +331,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
     this._pools = pools;
 
-    // Recalculate optimized routes when send currency, it's amount, or out currency changes
+    // Recalculate optimized routes when send currency, it's amount, or out currency changes. This is debounced to prevent spamming the server
     const debounceGenerateRoutes = debounce(
       (
         ...params: Parameters<typeof this.router.getOptimizedRoutesByTokenIn>
@@ -346,9 +346,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     autorun(() => {
       const { denom, amount } = this.getAmountPrimitive();
 
-      if (amount === "" || !new Int(amount).isPositive())
-        return this.setOptimizedRoutes(undefined);
-
       // Clear any previous user input debounce
       debounceGenerateRoutes.clear();
 
@@ -359,6 +356,17 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         },
         this.outCurrency.coinMinimalDenom
       );
+    });
+
+    // Clear any output if the input is cleared
+    autorun(() => {
+      const inputCleared =
+        this.amount === "" || !new Int(this.amount).isPositive();
+
+      // this also handles race conditions because if the user clears the input, then an prev request result arrives, the old result will be cleared
+      if (this._latestSwapResult?.state === "fulfilled" && inputCleared) {
+        this.setSwapResult(undefined);
+      }
     });
 
     // React to user input and request a swap result. This is debounced to prevent spamming the server
@@ -380,7 +388,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       debounceCalculateTokenOut(route);
     });
 
-    // react to changes in send/out currencies, then generate a spot price by directly calculating from the pools
+    // React to changes in send/out currencies, then generate a spot price by directly calculating from the pools
     autorun(async () => {
       this.setSpotPriceResult(undefined);
 
