@@ -24,7 +24,7 @@ export class ConcentratedLiquidityPoolTickDataProvider
   constructor(
     protected readonly queryLiquiditiesNetInDirection: ObservableQueryLiquiditiesNetInDirection,
     protected readonly nextTicksRampMultiplier = new Int(2),
-    protected readonly maxNumRequeriesPerDenom = 6
+    protected readonly maxNumRequeriesPerDenom = 9
   ) {}
 
   async getTickDepthsTokenOutGivenIn(
