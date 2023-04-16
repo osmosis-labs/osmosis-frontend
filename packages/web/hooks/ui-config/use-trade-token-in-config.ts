@@ -4,7 +4,6 @@ import {
   ObservableTradeTokenInConfig,
 } from "@osmosis-labs/stores";
 import { useCallback, useEffect, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { useStore } from "~/stores";
 
@@ -22,7 +21,6 @@ export function useTradeTokenInConfig(
   tradeTokenIn: (slippage: string) => Promise<"multihop" | "exact-in">;
 } {
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
-  const t = useTranslation();
 
   const queriesOsmosis = queriesStore.get(osmosisChainId).osmosis!;
   const account = accountStore.getAccount(osmosisChainId);
@@ -100,15 +98,6 @@ export function useTradeTokenInConfig(
         );
 
         if (!tokenOutCurrency) {
-          config.setError(
-            new Error(
-              t("swap.error.findCurrency", {
-                currency:
-                  config.optimizedRoute?.tokenOutDenoms[i] ??
-                  "token out not found",
-              })
-            )
-          );
           return Promise.reject();
         }
 
@@ -123,13 +112,6 @@ export function useTradeTokenInConfig(
       );
 
       if (!tokenInCurrency) {
-        config.setError(
-          new Error(
-            t("swap.error.findCurrency", {
-              currency: config.optimizedRoute.tokenInDenom,
-            })
-          )
-        );
         return Promise.reject();
       }
 
@@ -188,7 +170,7 @@ export function useTradeTokenInConfig(
 
       return Promise.reject();
     },
-    [account.osmosis, chainStore.osmosis, config, t]
+    [account.osmosis, chainStore.osmosis, config]
   );
 
   return { tradeTokenInConfig: config, tradeTokenIn };
