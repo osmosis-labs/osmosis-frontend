@@ -23,7 +23,7 @@ export class ConcentratedLiquidityPoolTickDataProvider
 
   constructor(
     protected readonly queryLiquiditiesNetInDirection: ObservableQueryLiquiditiesNetInDirection,
-    protected readonly nextTicksRampMultiplier = new Int(2),
+    protected readonly nextTicksRampMultiplier = new Int(8),
     protected readonly maxNumRequeriesPerDenom = 9
   ) {}
 
