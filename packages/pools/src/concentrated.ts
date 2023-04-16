@@ -220,7 +220,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
         afterSpotPriceOutOverIn: new Dec(0),
         effectivePriceInOverOut: new Dec(0),
         effectivePriceOutOverIn: new Dec(0),
-        priceImpact: new Dec(0),
+        priceImpactTokenOut: new Dec(0),
       };
     }
 
@@ -230,13 +230,26 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       afterSqrtPrice
     );
 
+    if (afterSpotPriceInOverOut.lt(beforeSpotPriceInOverOut)) {
+      throw new Error("Spot price can't be decreased after swap");
+    }
+
     const effectivePriceInOverOut = new Dec(tokenIn.amount).quoTruncate(
       new Dec(amountOut)
     );
 
-    const priceImpact = effectivePriceInOverOut
+    const priceImpactTokenOut = effectivePriceInOverOut
       .quo(beforeSpotPriceInOverOut)
       .sub(new Dec(1));
+
+    console.log(
+      "afterSqrtPrice",
+      afterSqrtPrice.toString(),
+      "effectivePriceInOverOut",
+      effectivePriceInOverOut.toString(),
+      "priceImpact",
+      priceImpactTokenOut.toString()
+    );
 
     return {
       amount: amountOut,
@@ -248,7 +261,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       afterSpotPriceOutOverIn: new Dec(1).quoTruncate(afterSpotPriceInOverOut),
       effectivePriceInOverOut,
       effectivePriceOutOverIn: new Dec(1).quoTruncate(effectivePriceInOverOut),
-      priceImpact,
+      priceImpactTokenOut,
     };
   }
 
@@ -263,7 +276,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     this.validateDenoms(tokenInDenom, tokenOut.denom);
 
     /** Reminder: currentSqrtPrice: amountToken1/amountToken0 or token 1 per token 0  */
-    const isTokenInSpotPriceDenominator = tokenOut.denom === this.raw.token0;
+    const isTokenInSpotPriceDenominator = tokenOut.denom !== this.raw.token0;
 
     const beforeSpotPriceInOverOut = isTokenInSpotPriceDenominator
       ? this.getSpotPriceOutOverIn(tokenInDenom, tokenOut.denom)
@@ -312,7 +325,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
         afterSpotPriceOutOverIn: new Dec(0),
         effectivePriceInOverOut: new Dec(0),
         effectivePriceOutOverIn: new Dec(0),
-        priceImpact: new Dec(0),
+        priceImpactTokenOut: new Dec(0),
       };
     }
 
@@ -326,7 +339,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       new Dec(tokenOut.amount)
     );
 
-    const priceImpact = effectivePriceInOverOut
+    const priceImpactTokenOut = effectivePriceInOverOut
       .quo(beforeSpotPriceInOverOut)
       .sub(new Dec(1));
 
@@ -340,7 +353,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       afterSpotPriceOutOverIn: new Dec(1).quoTruncate(afterSpotPriceInOverOut),
       effectivePriceInOverOut,
       effectivePriceOutOverIn: new Dec(1).quoTruncate(effectivePriceInOverOut),
-      priceImpact,
+      priceImpactTokenOut,
     };
   }
 

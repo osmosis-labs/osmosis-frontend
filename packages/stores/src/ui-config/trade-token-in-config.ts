@@ -572,7 +572,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         result.tokenInFeeAmount
       ).locale(false), // locale - remove commas
       swapFee: new RatePretty(result.swapFee),
-      priceImpact: new RatePretty(result.priceImpact),
+      priceImpact: new RatePretty(result.priceImpactTokenOut.neg()),
       isMultihopOsmoFeeDiscount: result.multiHopOsmoDiscount,
     };
   }

@@ -242,7 +242,7 @@ export class WeightedPool implements SharePool, RoutablePool {
     }
 
     const effectivePrice = new Dec(tokenInAmount).quo(new Dec(tokenOut.amount));
-    const priceImpact = effectivePrice
+    const priceImpactTokenOut = effectivePrice
       .quo(beforeSpotPriceInOverOut)
       .sub(new Dec("1"));
 
@@ -256,7 +256,7 @@ export class WeightedPool implements SharePool, RoutablePool {
       afterSpotPriceOutOverIn: new Dec(1).quoTruncate(afterSpotPriceInOverOut),
       effectivePriceInOverOut: effectivePrice,
       effectivePriceOutOverIn: new Dec(1).quoTruncate(effectivePrice),
-      priceImpact,
+      priceImpactTokenOut,
     };
   }
 
@@ -294,7 +294,7 @@ export class WeightedPool implements SharePool, RoutablePool {
         afterSpotPriceOutOverIn: new Dec(0),
         effectivePriceInOverOut: new Dec(0),
         effectivePriceOutOverIn: new Dec(0),
-        priceImpact: new Dec(0),
+        priceImpactTokenOut: new Dec(0),
       };
     }
 
@@ -311,7 +311,7 @@ export class WeightedPool implements SharePool, RoutablePool {
     }
 
     const effectivePrice = new Dec(tokenIn.amount).quo(new Dec(tokenOutAmount));
-    const priceImpact = effectivePrice
+    const priceImpactTokenOut = effectivePrice
       .quo(beforeSpotPriceInOverOut)
       .sub(new Dec("1"));
 
@@ -325,7 +325,7 @@ export class WeightedPool implements SharePool, RoutablePool {
       afterSpotPriceOutOverIn: new Dec(1).quoTruncate(afterSpotPriceInOverOut),
       effectivePriceInOverOut: effectivePrice,
       effectivePriceOutOverIn: new Dec(1).quoTruncate(effectivePrice),
-      priceImpact,
+      priceImpactTokenOut,
     };
   }
 

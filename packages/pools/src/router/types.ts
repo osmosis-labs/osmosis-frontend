@@ -44,7 +44,8 @@ export type SwapResult = {
   afterSpotPriceOutOverIn: Dec;
   effectivePriceInOverOut: Dec;
   effectivePriceOutOverIn: Dec;
-  priceImpact: Dec;
+  /** Generally a positive number. */
+  priceImpactTokenOut: Dec;
 };
 
 /** Result of swapping through multiple pools multihop. */

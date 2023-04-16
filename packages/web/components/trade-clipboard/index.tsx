@@ -138,6 +138,7 @@ export const TradeClipboard: FunctionComponent<{
       () =>
         tradeTokenInConfig.expectedSwapResult.priceImpact
           .toDec()
+          .abs()
           .gt(new Dec(0.1)),
       [tradeTokenInConfig.expectedSwapResult.priceImpact]
     );
@@ -883,7 +884,7 @@ export const TradeClipboard: FunctionComponent<{
                     showPriceImpactWarning ? "text-error" : "text-osmoverse-200"
                   )}
                 >
-                  {`-${tradeTokenInConfig.expectedSwapResult.priceImpact
+                  {`${tradeTokenInConfig.expectedSwapResult.priceImpact
                     .maxDecimals(2)
                     .toString()}`}
                 </div>

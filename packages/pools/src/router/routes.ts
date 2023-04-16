@@ -127,7 +127,7 @@ export class OptimizedRoutes {
     // Not enough liquidity
     if (totalLimitAmount.lt(tokenIn.amount)) {
       throw new NotEnoughLiquidityError(
-        `Limit amount ${totalLimitAmount.toString()} is less than ${tokenIn.amount.toString()}`
+        `Entry pools' limit amount ${totalLimitAmount.toString()} is less than in amount ${tokenIn.amount.toString()}`
       );
     }
 
@@ -261,7 +261,7 @@ export class OptimizedRoutes {
       ),
       swapFee: totalSwapFee,
       multiHopOsmoDiscount: isMultihopOsmoFeeDiscount,
-      priceImpact,
+      priceImpactTokenOut: priceImpact,
     };
   }
 
