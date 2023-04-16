@@ -860,6 +860,17 @@ const chainInfos = (
           coinGeckoId: "pool:osdoge",
           coinImageUrl: "/tokens/osdoge.svg",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1jrr0tuuzxrrwcg6hgeqhw5wqpck2y55734e7zcrp745aardlp0qqg8jz06",
+          coinDenom: "APEMOS",
+          coinMinimalDenom:
+            "cw20:juno1jrr0tuuzxrrwcg6hgeqhw5wqpck2y55734e7zcrp745aardlp0qqg8jz06:APEMOS",
+          coinDecimals: 6,
+          coinGeckoId: "pool:apemos",
+          coinImageUrl: "/tokens/apemos.png",
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: IS_TESTNET
