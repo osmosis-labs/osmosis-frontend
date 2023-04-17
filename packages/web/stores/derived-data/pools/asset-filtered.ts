@@ -39,19 +39,20 @@ export class AssetFilteredPoolsStore
       .osmosis?.queryGammPools.fetchRemainingPools();
   }
 
-  getAllPools = computedFn(() => {
+  getAllPools = computedFn((showUnverified?: boolean) => {
     const allPools = this.queriesStore
       .get(this.chainId)
       .osmosis?.queryGammPools.getAllPools();
 
     // Add all approved assets to a map for faster lookup.
     const approvedAssets = new Map<string, boolean>();
+    const filterByApprovedAssets = !IS_FRONTIER && !showUnverified;
 
     /**
-     * Avoid unneeded calculation: skip adding approved assets if it's Frontier.
+     * Avoid unneeded calculation: skip adding approved assets if it's Frontier or we want to force show unverified.
      * Frontier will display all pools.
      *  */
-    if (!IS_FRONTIER) {
+    if (filterByApprovedAssets) {
       [
         ...this.assetStore.ibcBalances,
         ...this.assetStore.nativeBalances,
@@ -68,7 +69,7 @@ export class AssetFilteredPoolsStore
        * This verification is only needed on the main site.
        * */
       if (
-        !IS_FRONTIER &&
+        filterByApprovedAssets &&
         !pool.poolAssets.every((asset) =>
           Boolean(approvedAssets.get(asset.amount.denom))
         )
