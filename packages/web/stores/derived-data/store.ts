@@ -54,6 +54,7 @@ export class DerivedDataStore extends BaseDerivedDataStore {
     );
     this.poolsWithMetrics = new ObservablePoolsWithMetrics(
       this.osmosisChainId,
+      this.queriesStore,
       this.assetFilteredPoolsStore,
       this.poolDetails,
       this.poolsBonding,

@@ -1,4 +1,4 @@
-import { HasMapStore } from "@keplr-wallet/stores";
+import { HasMapStore, IQueriesStore } from "@keplr-wallet/stores";
 import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import {
   ChainStore,
@@ -8,6 +8,7 @@ import {
   ObservableQueryActiveGauges,
   ObservableQueryPool,
   ObservableQueryPoolFeesMetrics,
+  OsmosisQueries,
 } from "@osmosis-labs/stores";
 import { action, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
@@ -97,9 +98,11 @@ export class ObservablePoolWithMetric {
 
 /** Fetches all pools directly from node in order of pool creation. */
 export class ObservablePoolsWithMetric {
-  protected _pools = new Map<string, ObservablePoolWithMetric>();
+  protected _verifiedPools = new Map<string, ObservablePoolWithMetric>();
+  protected _allPools = new Map<string, ObservablePoolWithMetric>();
 
   constructor(
+    protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly assetFilteredPoolsStore: ObservableAssetFilteredPoolsStore,
     readonly chainId: string,
     protected readonly poolDetails: ObservablePoolDetails,
@@ -115,19 +118,24 @@ export class ObservablePoolsWithMetric {
   getAllPools = computedFn(
     (
       sortingColumn?: keyof ObservablePoolWithMetric,
-      isSortingDesc?: boolean
+      isSortingDesc?: boolean,
+      showUnverified?: boolean
     ) => {
-      const allPools = this.assetFilteredPoolsStore
-        .get(this.chainId)
-        .getAllPools();
+      const allPools = showUnverified
+        ? this.queriesStore
+            .get(this.chainId)
+            .osmosis?.queryGammPools.getAllPools()
+        : this.assetFilteredPoolsStore.get(this.chainId).getAllPools();
+
+      const poolsMap = showUnverified ? this._allPools : this._verifiedPools;
 
       for (const pool of allPools ?? []) {
-        const existingPool = this._pools.get(pool.id);
+        const existingPool = poolsMap.get(pool.id);
 
         if (existingPool) {
           existingPool.setPool(pool);
         } else {
-          this._pools.set(
+          poolsMap.set(
             pool.id,
             new ObservablePoolWithMetric(
               pool,
@@ -141,7 +149,7 @@ export class ObservablePoolsWithMetric {
         }
       }
 
-      const pools = Array.from(this._pools.values());
+      const pools = Array.from(poolsMap.values());
       if (sortingColumn && isSortingDesc !== undefined) {
         // Clone the array to prevent the original array from being sorted, and triggering a re-render.
         const sortedPools = [...pools];
@@ -189,6 +197,7 @@ export class ObservablePoolsWithMetric {
 export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithMetric> {
   constructor(
     protected readonly osmosisChainId: string,
+    protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly assetFilteredPoolsStore: ObservableAssetFilteredPoolsStore,
     protected readonly poolDetails: ObservablePoolDetails,
     protected readonly poolsBonding: ObservablePoolsBonding,
@@ -202,6 +211,7 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
     super(
       (chainId: string) =>
         new ObservablePoolsWithMetric(
+          queriesStore,
           assetFilteredPoolsStore,
           chainId,
           poolDetails,

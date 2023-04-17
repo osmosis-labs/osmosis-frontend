@@ -25,7 +25,7 @@ import { useTranslation } from "react-multi-lang";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useFilteredData, useWindowSize } from "~/hooks";
 import { MenuOptionsModal } from "~/modals";
-import { ObservablePoolWithMetric } from "~/stores/derived-data/pools";
+import { ObservablePoolWithMetric } from "~/stores/derived-data";
 import { noop, runIfFn } from "~/utils/function";
 
 import { useStore } from "../../stores";
@@ -68,6 +68,13 @@ export type Pool = [
     onRemoveLiquidity?: () => void;
     onLockTokens?: () => void;
   }
+];
+
+const searchPoolsMemoedKeys = [
+  "pool.id",
+  "poolName",
+  "networkNames",
+  "pool.poolAssets.amount.currency.originCurrency.pegMechanism",
 ];
 
 function getPoolFilters(
@@ -180,9 +187,11 @@ export const AllPoolsTable: FunctionComponent<{
       [logEvent, isMobile]
     );
 
+    const [isSearching, setIsSearching] = useState(false);
+
     const allPoolsWithMetrics = derivedDataStore.poolsWithMetrics
       .get(chainId)
-      .getAllPools(sorting[0]?.id, sorting[0]?.desc);
+      .getAllPools(sorting[0]?.id, sorting[0]?.desc, isSearching);
 
     const initiallyFilteredPools = useMemo(
       () =>
@@ -243,21 +252,18 @@ export const AllPoolsTable: FunctionComponent<{
 
     const [query, _setQuery, filteredPools] = useFilteredData(
       initiallyFilteredPools,
-      useMemo(
-        () => [
-          "pool.id",
-          "poolName",
-          "networkNames",
-          "pool.poolAssets.amount.currency.originCurrency.pegMechanism",
-        ],
-        []
-      )
+      searchPoolsMemoedKeys
     );
     const setQuery = useCallback(
       (search: string) => {
         if (search !== "" && !fetchedRemainingPoolsRef.current) {
           queriesOsmosis.queryGammPools.fetchRemainingPools();
           fetchedRemainingPoolsRef.current = true;
+        }
+        if (search === "") {
+          setIsSearching(false);
+        } else {
+          setIsSearching(true);
         }
         setSorting([]);
         _setQuery(search);
