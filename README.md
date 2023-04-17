@@ -21,6 +21,8 @@ Start web server
 yarn && yarn build && yarn start
 ```
 
+If you'd like to build with caching with Turbo repo (4x faster, 10x+ faster cached), replace `yarn build` with `yarn build-lint-fast`. To leverage our shared/remote cache, follow [these](https://turbo.build/repo/docs/core-concepts/remote-caching#for-local-development) instructions.
+
 ### Contributing 👨‍💻
 
 We welcome and encourage contributions! We recommend looking for [issues labeled with "good-first-issue"](https://github.com/osmosis-labs/osmosis-frontend/contribute).
