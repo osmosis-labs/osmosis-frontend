@@ -871,6 +871,17 @@ const chainInfos = (
           coinGeckoId: "pool:apemos",
           coinImageUrl: "/tokens/apemos.png",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1jwdy7v4egw36pd84aeks3ww6n8k7zhsumd4ac8q5lts83ppxueus4626e8",
+          coinDenom: "INVDRS",
+          coinMinimalDenom:
+            "cw20:juno1jwdy7v4egw36pd84aeks3ww6n8k7zhsumd4ac8q5lts83ppxueus4626e8:INVDRS",
+          coinDecimals: 6,
+          coinGeckoId: "pool:invdrs",
+          coinImageUrl: "/tokens/invdrs.png",
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: IS_TESTNET
