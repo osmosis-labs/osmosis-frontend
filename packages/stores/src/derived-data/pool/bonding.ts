@@ -288,15 +288,6 @@ export class ObservablePoolBonding {
   get highestBondDuration(): BondDuration | undefined {
     return this.bondDurations[this.bondDurations.length - 1];
   }
-
-  @computed
-  get isAprLoading(): boolean {
-    return (
-      this.externalQueries.queryActiveGauges.isFetching ||
-      this.queries.queryAccountLocked.get(this.bech32Address).isFetching ||
-      this.queries.queryIncentivizedPools.isAprFetching
-    );
-  }
 }
 
 /** Map of current accounts bonding info for all pools by pool ID. */
