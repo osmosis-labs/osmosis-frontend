@@ -1,6 +1,5 @@
 import { Menu } from "@headlessui/react";
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { ObservablePoolWithMetric } from "@osmosis-labs/stores";
 import {
   CellContext,
   createColumnHelper,
@@ -26,6 +25,7 @@ import { useTranslation } from "react-multi-lang";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useFilteredData, useWindowSize } from "~/hooks";
 import { MenuOptionsModal } from "~/modals";
+import { ObservablePoolWithMetric } from "~/stores/derived-data/pools";
 import { noop, runIfFn } from "~/utils/function";
 
 import { useStore } from "../../stores";
