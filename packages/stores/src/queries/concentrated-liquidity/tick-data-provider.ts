@@ -156,7 +156,14 @@ export class ConcentratedLiquidityPoolTickDataProvider
       const nextBoundIndex = prevBoundIndex.mul(this.nextTicksRampMultiplier);
       await queryDepths.fetchUpToTickIndex(nextBoundIndex);
       setLatestBoundTickIndex(nextBoundIndex);
-    } // else have fetched ticks, but not requested to get more. do nothing
+    } // else have fetched ticks, but not requested to get more. do nothing and return existing ticks
+
+    if (Boolean(queryDepths.error)) {
+      return {
+        allTicks: queryDepths.depthsInDirection,
+        isMaxTicks: true,
+      };
+    }
 
     return {
       allTicks: queryDepths.depthsInDirection,
