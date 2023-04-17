@@ -382,9 +382,7 @@ export const AllPoolsTable: FunctionComponent<{
 
               return (
                 <MetricLoaderCell
-                  isLoading={
-                    queriesOsmosis.queryIncentivizedPools.isAprFetching
-                  }
+                  isLoading={pool.isAprLoading}
                   value={
                     // Only display warning when APR is too high
                     isAPRTooHigh ? (
@@ -445,7 +443,6 @@ export const AllPoolsTable: FunctionComponent<{
         cellGroupEventEmitter,
         columnHelper,
         queriesCosmos.queryInflation,
-        queriesOsmosis.queryIncentivizedPools.isAprFetching,
         quickAddLiquidity,
         quickLockTokens,
         quickRemoveLiquidity,
