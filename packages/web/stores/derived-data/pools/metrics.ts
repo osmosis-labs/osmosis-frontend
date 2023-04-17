@@ -80,10 +80,6 @@ export class ObservablePoolWithMetric {
     );
   }
 
-  get isAprLoading() {
-    return this.poolsBonding.get(this.pool.id)?.isAprLoading;
-  }
-
   get feePoolMetrics() {
     return this.externalQueries.queryGammPoolFeeMetrics.getPoolFeesMetrics(
       this.pool.id,
