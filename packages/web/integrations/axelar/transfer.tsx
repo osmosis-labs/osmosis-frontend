@@ -1,7 +1,7 @@
 import { Environment } from "@axelar-network/axelarjs-sdk";
 import { WalletStatus } from "@keplr-wallet/stores";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
-import { basicIbcTransfer, IBCBalance } from "@osmosis-labs/stores";
+import { basicIbcTransfer } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import {
@@ -12,6 +12,8 @@ import {
   useState,
 } from "react";
 import { useTranslation } from "react-multi-lang";
+
+import { IBCBalance } from "~/stores/assets";
 
 import { displayToast, ToastType } from "../../components/alert";
 import { Button } from "../../components/buttons";

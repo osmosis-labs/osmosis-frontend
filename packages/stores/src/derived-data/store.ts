@@ -3,7 +3,6 @@ import {
   IAccountStore,
   IQueriesStore,
 } from "@keplr-wallet/stores";
-import { ObservableAssets } from "src/assets";
 import { DeepReadonly } from "utility-types";
 
 import { ChainStore } from "../chain";
@@ -18,18 +17,12 @@ import {
   ObservablePoolsBonding,
   ObservableSuperfluidPoolDetails,
 } from "./pool";
-import {
-  ObservableAssetFilteredPoolsStore,
-  ObservablePoolsWithMetrics,
-} from "./pools";
 
-/** Contains stores that compute on the lower level . */
+/** Contains stores that compute on the lower level stores. */
 export class DerivedDataStore {
   public readonly poolDetails: DeepReadonly<ObservablePoolDetails>;
-  public readonly poolsWithMetrics: DeepReadonly<ObservablePoolsWithMetrics>;
   public readonly superfluidPoolDetails: DeepReadonly<ObservableSuperfluidPoolDetails>;
   public readonly poolsBonding: DeepReadonly<ObservablePoolsBonding>;
-  public readonly assetFilteredPoolsStore: DeepReadonly<ObservableAssetFilteredPoolsStore>;
 
   constructor(
     protected readonly osmosisChainId: string,
@@ -42,9 +35,7 @@ export class DerivedDataStore {
     },
     protected readonly accountStore: IAccountStore,
     protected readonly priceStore: IPriceStore,
-    protected readonly chainGetter: ChainStore,
-    protected readonly assetStore: ObservableAssets,
-    protected readonly isFrontier: boolean
+    protected readonly chainGetter: ChainStore
   ) {
     this.poolDetails = new ObservablePoolDetails(
       this.osmosisChainId,
@@ -69,21 +60,6 @@ export class DerivedDataStore {
       this.externalQueries,
       this.accountStore,
       this.queriesStore
-    );
-    this.assetFilteredPoolsStore = new ObservableAssetFilteredPoolsStore(
-      this.osmosisChainId,
-      this.queriesStore,
-      this.assetStore,
-      this.isFrontier
-    );
-    this.poolsWithMetrics = new ObservablePoolsWithMetrics(
-      this.osmosisChainId,
-      this.assetFilteredPoolsStore,
-      this.poolDetails,
-      this.poolsBonding,
-      this.chainGetter,
-      this.externalQueries,
-      this.priceStore
     );
   }
 

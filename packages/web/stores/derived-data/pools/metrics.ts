@@ -1,17 +1,17 @@
 import { HasMapStore } from "@keplr-wallet/stores";
 import { PricePretty, RatePretty } from "@keplr-wallet/unit";
+import {
+  ChainStore,
+  IPriceStore,
+  ObservablePoolDetails,
+  ObservablePoolsBonding,
+  ObservableQueryActiveGauges,
+  ObservableQueryPool,
+  ObservableQueryPoolFeesMetrics,
+} from "@osmosis-labs/stores";
 import { action, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 
-import { ChainStore } from "../../chain";
-import { IPriceStore } from "../../price";
-import { ObservableQueryPool } from "../../queries";
-import {
-  ObservableQueryActiveGauges,
-  ObservableQueryPoolFeesMetrics,
-} from "../../queries-external";
-import { ObservablePoolsBonding } from "../pool/bonding";
-import { ObservablePoolDetails } from "../pool/details";
 import { ObservableAssetFilteredPoolsStore } from "./asset-filtered";
 
 export class ObservablePoolWithMetric {

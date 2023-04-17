@@ -1,8 +1,8 @@
 import { useState } from "react";
 
 import { useStore } from "~/stores";
+import { ObservableTransferUIConfig } from "~/stores/assets";
 import { makeLocalStorageKVStore } from "~/stores/kv-store";
-import { ObservableTransferUIConfig } from "~/stores/transfer-ui-config";
 
 import { useWindowSize } from "../window";
 

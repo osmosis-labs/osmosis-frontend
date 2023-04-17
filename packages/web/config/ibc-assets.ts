@@ -1,4 +1,4 @@
-import { IBCAsset } from "@osmosis-labs/stores";
+import { IBCAsset } from "~/stores/assets";
 
 import { SourceChainTokenConfigs as AxelarSourceChainConfigs } from "../integrations/axelar";
 import { IS_TESTNET } from "./env";

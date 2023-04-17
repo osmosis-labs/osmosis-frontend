@@ -1,5 +1,6 @@
-import { FiatRampKey } from "@osmosis-labs/stores";
 import { FunctionComponent, useEffect } from "react";
+
+import { FiatRampKey } from "~/integrations";
 
 import { Kado } from "../integrations/kado";
 import { Layerswap } from "../integrations/layerswap";
