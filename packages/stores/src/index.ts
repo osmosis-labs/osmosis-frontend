@@ -1,5 +1,4 @@
 export * from "./account";
-export * from "./assets";
 export * from "./bridge-history";
 export * from "./chain";
 export * from "./currency-registrar";

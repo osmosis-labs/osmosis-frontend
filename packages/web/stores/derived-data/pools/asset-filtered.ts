@@ -1,22 +1,24 @@
 import { HasMapStore, IQueriesStore } from "@keplr-wallet/stores";
-import { computedFn } from "mobx-utils";
-import { ObservableAssets } from "src/assets";
-
 import {
   ObservableQueryPool,
   OsmosisQueries,
-  PoolGetterWithoutQuery,
-} from "../../queries";
+  PoolGetter,
+} from "@osmosis-labs/stores";
+import { computedFn } from "mobx-utils";
+
+import { IS_FRONTIER } from "~/config";
+import { ObservableAssets } from "~/stores/assets";
 
 /** Fetches all pools and filter by approved assets from the assets store */
-export class AssetFilteredPoolsStore implements PoolGetterWithoutQuery {
+export class AssetFilteredPoolsStore
+  implements PoolGetter<ObservableQueryPool>
+{
   protected _pools = new Map<string, ObservableQueryPool>();
 
   constructor(
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     readonly chainId: string,
-    protected readonly assetStore: ObservableAssets,
-    protected readonly isFrontier: boolean
+    protected readonly assetStore: ObservableAssets
   ) {}
 
   getPool(id: string): ObservableQueryPool | undefined {
@@ -49,7 +51,7 @@ export class AssetFilteredPoolsStore implements PoolGetterWithoutQuery {
      * Avoid unneeded calculation: skip adding approved assets if it's Frontier.
      * Frontier will display all pools.
      *  */
-    if (!this.isFrontier) {
+    if (!IS_FRONTIER) {
       [
         ...this.assetStore.ibcBalances,
         ...this.assetStore.nativeBalances,
@@ -66,7 +68,7 @@ export class AssetFilteredPoolsStore implements PoolGetterWithoutQuery {
        * This verification is only needed on the main site.
        * */
       if (
-        !this.isFrontier &&
+        !IS_FRONTIER &&
         !pool.poolAssets.every((asset) =>
           Boolean(approvedAssets.get(asset.amount.denom))
         )
@@ -87,17 +89,11 @@ export class ObservableAssetFilteredPoolsStore extends HasMapStore<AssetFiltered
   constructor(
     protected readonly osmosisChainId: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
-    protected readonly assetStore: ObservableAssets,
-    protected readonly isFrontier: boolean
+    protected readonly assetStore: ObservableAssets
   ) {
     super(
       (chainId: string) =>
-        new AssetFilteredPoolsStore(
-          queriesStore,
-          chainId,
-          assetStore,
-          isFrontier
-        )
+        new AssetFilteredPoolsStore(queriesStore, chainId, assetStore)
     );
   }
 

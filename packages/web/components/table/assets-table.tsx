@@ -1,13 +1,14 @@
 import { Dec } from "@keplr-wallet/unit";
-import {
-  CoinBalance,
-  IBCBalance,
-  IBCCW20ContractBalance,
-} from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
+
+import {
+  CoinBalance,
+  IBCBalance,
+  IBCCW20ContractBalance,
+} from "~/stores/assets";
 
 import { initialAssetsSort } from "../../config";
 import { EventName } from "../../config/user-analytics-v2";

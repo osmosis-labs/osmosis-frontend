@@ -4,12 +4,11 @@ import {
   IQueriesStore,
 } from "@keplr-wallet/stores";
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { ChainStore, IPriceStore, OsmosisQueries } from "@osmosis-labs/stores";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
-import { ChainStore } from "../chain";
-import { IPriceStore } from "../price";
-import { OsmosisQueries } from "../queries";
+import { IS_FRONTIER } from "../../config";
 import {
   CoinBalance,
   IBCAsset,
@@ -43,8 +42,7 @@ export class ObservableAssets {
       CosmosQueries & CosmwasmQueries & OsmosisQueries
     >,
     protected readonly priceStore: IPriceStore,
-    protected readonly chainId: string,
-    protected readonly isFrontier: boolean
+    protected readonly chainId: string
   ) {
     makeObservable(this);
   }
@@ -92,7 +90,7 @@ export class ObservableAssets {
     sourceChainNameOverride?: string;
   })[] {
     return this.ibcAssets
-      .filter((ibcAsset) => (this.isFrontier ? true : ibcAsset.isVerified))
+      .filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified))
       .map((ibcAsset) => {
         const chainInfo = this.chainStore.getChain(
           ibcAsset.counterpartyChainId
@@ -145,7 +143,7 @@ export class ObservableAssets {
             originCurrency,
           });
 
-        const ibcBalance: IBCBalance & {
+        let ibcBalance: IBCBalance & {
           depositingSrcMinDenom?: string;
           depositUrlOverride?: string;
           withdrawUrlOverride?: string;
@@ -245,5 +243,5 @@ export class ObservableAssets {
   });
 }
 
-export * from "./bridge-types";
+export * from "./transfer-ui-config";
 export * from "./types";

@@ -1,5 +1,7 @@
 import { AppCurrency } from "@keplr-wallet/types";
-import { ChainInfoWithExplorer, PeggedCurrency } from "@osmosis-labs/stores";
+import { ChainInfoWithExplorer } from "@osmosis-labs/stores";
+
+import { PeggedCurrency } from "~/stores/assets";
 
 /** All currency attributes (stake and fee) are defined once in the `currencies` list.
  *  Maintains the option to skip this conversion and keep the verbose `ChainInfo` type.

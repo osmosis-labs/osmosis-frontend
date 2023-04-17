@@ -13,11 +13,9 @@ import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
 import {
   ChainInfoWithExplorer,
   ChainStore,
-  DerivedDataStore,
   IBCTransferHistoryStore,
   LPCurrencyRegistrar,
   NonIbcBridgeHistoryStore,
-  ObservableAssets,
   OsmosisAccount,
   OsmosisQueries,
   PoolFallbackPriceStore,
@@ -34,6 +32,8 @@ import { ChainInfos, IBCAssetInfos, IS_FRONTIER } from "../config";
 import { PoolPriceRoutes } from "../config";
 import { suggestChainFromWindow } from "../hooks/use-keplr/utils";
 import { AxelarTransferStatusSource } from "../integrations/axelar";
+import { ObservableAssets } from "./assets";
+import { DerivedDataStore } from "./derived-data";
 import { makeIndexedKVStore, makeLocalStorageKVStore } from "./kv-store";
 import { NavBarStore } from "./nav-bar";
 import { OsmoPixelsQueries } from "./pixels";
@@ -216,8 +216,7 @@ export class RootStore {
       this.accountStore,
       this.queriesStore,
       this.priceStore,
-      this.chainStore.osmosis.chainId,
-      IS_FRONTIER
+      this.chainStore.osmosis.chainId
     );
 
     this.derivedDataStore = new DerivedDataStore(
@@ -227,8 +226,7 @@ export class RootStore {
       this.accountStore,
       this.priceStore,
       this.chainStore,
-      this.assetsStore,
-      IS_FRONTIER
+      this.assetsStore
     );
 
     this.ibcTransferHistoryStore = new IBCTransferHistoryStore(

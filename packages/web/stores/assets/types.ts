@@ -1,11 +1,7 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 
-import { OriginBridgeInfo } from "./bridge-types";
-
-export type WalletKey = "metamask" | "walletconnect";
-
-export type FiatRampKey = "kado" | "transak" | "layerswapcoinbase";
+import { FiatRampKey, OriginBridgeInfo } from "../../integrations/bridge-info";
 
 export interface IBCAsset {
   counterpartyChainId: string;
