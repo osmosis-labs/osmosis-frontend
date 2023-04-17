@@ -1,8 +1,9 @@
-import { IBCBalance } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
+
+import { IBCBalance } from "~/stores/assets";
 
 import { IS_TESTNET } from "../config";
 import { useConnectWalletModalRedirect } from "../hooks";
