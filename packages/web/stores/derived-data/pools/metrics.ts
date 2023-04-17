@@ -125,11 +125,9 @@ export class ObservablePoolsWithMetric {
       isSortingDesc?: boolean,
       showUnverified?: boolean
     ) => {
-      const allPools = showUnverified
-        ? this.queriesStore
-            .get(this.chainId)
-            .osmosis?.queryGammPools.getAllPools()
-        : this.assetFilteredPoolsStore.get(this.chainId).getAllPools();
+      const allPools = this.assetFilteredPoolsStore
+        .get(this.chainId)
+        .getAllPools(showUnverified);
 
       const poolsMap = showUnverified ? this._allPools : this._verifiedPools;
 
