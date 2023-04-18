@@ -3157,10 +3157,10 @@ const chainInfos = (
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
-            low: 0,
-            average: 0,
-            high: 0,
-          },
+            low: 0.001,
+            average: 0.0025,
+            high: 0.025
+          }
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
