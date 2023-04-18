@@ -1628,7 +1628,7 @@ export const IBCAssetInfos: (IBCAsset & {
         counterpartyChainId: "omniflixhub-1",
         sourceChannelId: "channel-199",
         destChannelId: "channel-1",
-        coinMinimalDenom: "flix",
+        coinMinimalDenom: "uflix",
         isVerified: true,
       },
     ].filter((ibcAsset) => {
