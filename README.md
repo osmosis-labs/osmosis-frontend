@@ -93,3 +93,5 @@ Release tags are for the published [npm packages](https://www.npmjs.com/org/osmo
 Have a change you want to make with our translations? We have a frontend for updating localizations in our app easily, all you need is a GitHub account. Coming soon: creating new language profiles from this frontend.
 
 https://inlang.com/editor/github.com/osmosis-labs/osmosis-frontend
+
+[![translation badge](https://inlang.com/badge?url=github.com/osmosis-labs/osmosis-frontend)](https://inlang.com/editor/github.com/osmosis-labs/osmosis-frontend?ref=badge)
