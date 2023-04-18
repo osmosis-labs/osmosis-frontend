@@ -892,18 +892,40 @@ const chainInfos = (
           coinDecimals: 6,
           coinGeckoId: "pool:doga",
           coinImageUrl: "/tokens/doga.png",
+         },
+         {
+          type: "cw20",
+          contractAddress:
+            "juno1zqrj3ta4u7ylv0wqzd8t8q3jrr9rdmn43zuzp9zemeunecnhy8fss778g7",
+          coinDenom: "PEPE",
+          coinMinimalDenom:
+            "cw20:juno1zqrj3ta4u7ylv0wqzd8t8q3jrr9rdmn43zuzp9zemeunecnhy8fss778g7:PEPE",
+          coinDecimals: 6,
+          coinGeckoId: "pool:pepe",
+          coinImageUrl: "/tokens/pepe.svg",
         },
         {
           type: "cw20",
           contractAddress:
-              "juno1j4ux0f6gt7e82z7jdpm25v4g2gts880ap64rdwa49989wzhd0dfqed6vqm",
+            "juno1f5datjdse3mdgrapwuzs3prl7pvxxht48ns6calnn0t77v2s9l8s0qu488",
+          coinDenom: "CATMOS",
+          coinMinimalDenom:
+            "cw20:juno1f5datjdse3mdgrapwuzs3prl7pvxxht48ns6calnn0t77v2s9l8s0qu488:CATMOS",
+          coinDecimals: 6,
+          coinGeckoId: "pool:catmos",
+          coinImageUrl: "/tokens/catmos.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1j4ux0f6gt7e82z7jdpm25v4g2gts880ap64rdwa49989wzhd0dfqed6vqm",
           coinDenom: "SUMMIT",
           coinMinimalDenom:
-              "cw20:juno1j4ux0f6gt7e82z7jdpm25v4g2gts880ap64rdwa49989wzhd0dfqed6vqm:SUMMIT",
+            "cw20:juno1j4ux0f6gt7e82z7jdpm25v4g2gts880ap64rdwa49989wzhd0dfqed6vqm:SUMMIT",
           coinDecimals: 6,
           coinGeckoId: "pool:summit",
           coinImageUrl: "/tokens/summit.png",
-        }
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: IS_TESTNET
