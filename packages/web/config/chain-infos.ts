@@ -885,6 +885,17 @@ const chainInfos = (
         {
           type: "cw20",
           contractAddress:
+            "juno1k2ruzzvvwwtwny6gq6kcwyfhkzahaunp685wmz4hafplduekj98q9hgs6d",
+          coinDenom: "DOGA",
+          coinMinimalDenom:
+            "cw20:juno1k2ruzzvvwwtwny6gq6kcwyfhkzahaunp685wmz4hafplduekj98q9hgs6d:DOGA",
+          coinDecimals: 6,
+          coinGeckoId: "pool:doga",
+          coinImageUrl: "/tokens/doga.png",
+         },
+         {
+          type: "cw20",
+          contractAddress:
             "juno1zqrj3ta4u7ylv0wqzd8t8q3jrr9rdmn43zuzp9zemeunecnhy8fss778g7",
           coinDenom: "PEPE",
           coinMinimalDenom:
