@@ -673,22 +673,13 @@ const AddConcLiqView: FunctionComponent<
       />
       <div className="flex flex-col">
         <div className="px-2 py-1 text-sm">Amount to deposit</div>
-        <div className="flex flex-row justify-center rounded-[20px] bg-osmoverse-700 p-[1.25rem]">
+        <div className="flex flex-row justify-center gap-3">
           <DepositAmountGroup
             getFiatValue={getFiatValue}
             coin={pool?.poolAssets[0]?.amount}
             onUpdate={setConliqBaseDepositAmountIn}
             currentValue={conliqBaseDepositAmountIn}
           />
-          <div className="mx-8 my-4">
-            <Image
-              alt=""
-              className="m-4"
-              src="/icons/link-2.svg"
-              width={35}
-              height={35}
-            />
-          </div>
           <DepositAmountGroup
             getFiatValue={getFiatValue}
             coin={pool?.poolAssets[1]?.amount}
@@ -844,8 +835,8 @@ const DepositAmountGroup: FunctionComponent<{
   );
 
   return (
-    <div className="flex-0 flex flex-shrink-0 flex-row items-center">
-      <div className="flex flex-row items-center">
+    <div className="flex flex-1 flex-shrink-0 flex-row items-center rounded-[20px] bg-osmoverse-700 p-[1.25rem]">
+      <div className="flex w-full flex-row items-center">
         {coin?.currency.coinImageUrl && (
           <Image
             alt=""
@@ -858,11 +849,11 @@ const DepositAmountGroup: FunctionComponent<{
           <h6>{coin?.denom.toUpperCase()}</h6>
           <div className="text-osmoverse-200">50%</div>
         </div>
-        <div>
+        <div className="flex flex-1 flex-col">
           <div className="text-right text-caption text-wosmongton-300">
             {walletBalance?.balance.toString()}
           </div>
-          <div className="flex h-16 w-[158px] flex-col items-end justify-center rounded-[12px] bg-osmoverse-800">
+          <div className="flex h-16 w-[158px] flex-col items-end justify-center self-end rounded-[12px] bg-osmoverse-800">
             <InputBox
               className="border-0 bg-transparent text-h5"
               inputClassName="!leading-4"
