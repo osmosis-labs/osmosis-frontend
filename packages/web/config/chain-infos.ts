@@ -882,6 +882,17 @@ const chainInfos = (
           coinGeckoId: "pool:invdrs",
           coinImageUrl: "/tokens/invdrs.png",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1k2ruzzvvwwtwny6gq6kcwyfhkzahaunp685wmz4hafplduekj98q9hgs6d",
+          coinDenom: "DOGA",
+          coinMinimalDenom:
+            "cw20:juno1k2ruzzvvwwtwny6gq6kcwyfhkzahaunp685wmz4hafplduekj98q9hgs6d:DOGA",
+          coinDecimals: 6,
+          coinGeckoId: "pool:doga",
+          coinImageUrl: "/tokens/doga.png",
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: IS_TESTNET
