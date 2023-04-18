@@ -2,8 +2,21 @@ import { Dec, Int } from "@keplr-wallet/unit";
 
 import { Route } from "./route";
 
-/** Single path through pools,  */
-export interface RouteWithAmount extends Route {
+export interface TokenOutGivenInRouter {
+  getOptimizedRoutesByTokenIn(
+    tokenIn: {
+      denom: string;
+      amount: Int;
+    },
+    tokenOutDenom: string
+  ): Promise<RouteWithInAmount[]>;
+  calculateTokenOutByTokenIn(
+    route: RouteWithInAmount
+  ): Promise<MultihopSwapResult>;
+}
+
+/** Single path through pools, with the initial amount calculated. */
+export interface RouteWithInAmount extends Route {
   initialAmount: Int;
 }
 

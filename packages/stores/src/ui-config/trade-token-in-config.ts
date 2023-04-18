@@ -10,9 +10,10 @@ import {
   RatePretty,
 } from "@keplr-wallet/unit";
 import {
-  MultihopSwapResult,
+  MultihopTokenOutSwapResult,
   OptimizedRoutes,
-  RouteWithAmount,
+  OptimizedRoutes as TokenOutGivenInRouter,
+  RouteWithInAmount,
 } from "@osmosis-labs/pools";
 import { debounce } from "debounce";
 import {
@@ -58,20 +59,20 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
   @observable.ref
   protected _latestOptimizedRoutes:
-    | IPromiseBasedObservable<RouteWithAmount[]>
+    | IPromiseBasedObservable<RouteWithInAmount[]>
     | undefined = undefined;
   @observable.ref
   protected _latestSpotPriceRoutes:
-    | IPromiseBasedObservable<RouteWithAmount[]>
+    | IPromiseBasedObservable<RouteWithInAmount[]>
     | undefined = undefined;
 
   @observable.ref
   protected _latestSwapResult:
-    | IPromiseBasedObservable<MultihopSwapResult>
+    | IPromiseBasedObservable<MultihopTokenOutSwapResult>
     | undefined = undefined;
   @observable.ref
   protected _spotPriceResult:
-    | IPromiseBasedObservable<MultihopSwapResult>
+    | IPromiseBasedObservable<MultihopTokenOutSwapResult>
     | undefined = undefined;
 
   @override
@@ -165,7 +166,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   }
 
   @computed
-  protected get router(): OptimizedRoutes {
+  protected get router(): TokenOutGivenInRouter {
     const stakeCurrencyMinDenom = this.chainGetter.getChain(this.initialChainId)
       .stakeCurrency.coinMinimalDenom;
     const getPoolTotalValueLocked = (poolId: string) => {
@@ -188,7 +189,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
   /** Latest and best route from most recent user input amounts and token selections. */
   @computed
-  get optimizedRoute(): RouteWithAmount | undefined {
+  get optimizedRoute(): RouteWithInAmount | undefined {
     return this._latestOptimizedRoutes?.case({
       fulfilled: (routes) => routes[0], // get best route
       rejected: (e) => {
@@ -379,7 +380,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     });
 
     // React to user input and request a swap result. This is debounced to prevent spamming the server
-    const debounceCalculateTokenOut = debounce((route: RouteWithAmount) => {
+    const debounceCalculateTokenOut = debounce((route: RouteWithInAmount) => {
       const tokenOutPromise = this.router.calculateTokenOutByTokenIn(route);
       this.setSwapResult(fromPromise(tokenOutPromise));
     }, 350);
@@ -496,28 +497,28 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
   @action
   protected setOptimizedRoutes(
-    optimizedRoutes: IPromiseBasedObservable<RouteWithAmount[]> | undefined
+    optimizedRoutes: IPromiseBasedObservable<RouteWithInAmount[]> | undefined
   ) {
     this._latestOptimizedRoutes = optimizedRoutes;
   }
 
   @action
   protected setSwapResult(
-    result: IPromiseBasedObservable<MultihopSwapResult> | undefined
+    result: IPromiseBasedObservable<MultihopTokenOutSwapResult> | undefined
   ) {
     this._latestSwapResult = result;
   }
 
   @action
   protected setSpotPriceResult(
-    result: IPromiseBasedObservable<MultihopSwapResult> | undefined
+    result: IPromiseBasedObservable<MultihopTokenOutSwapResult> | undefined
   ) {
     this._spotPriceResult = result;
   }
 
   /** Convert raw router type into a prettified form ready for display. */
   protected makePrettyMultihopResult(
-    result: MultihopSwapResult
+    result: MultihopTokenOutSwapResult
   ): PrettyMultihopSwapResult {
     const multiplicationInOverOut = DecUtils.getTenExponentN(
       this.outCurrency.coinDecimals - this.sendCurrency.coinDecimals

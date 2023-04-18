@@ -7,20 +7,25 @@ import {
 import { NotEnoughLiquidityError } from "../errors";
 import { NoRouteError } from "./errors";
 import { calculateWeightForRoute, Route, validateRoute } from "./route";
-import { MultihopSwapResult, RoutablePool, RouteWithAmount } from "./types";
+import {
+  MultihopSwapResult,
+  RoutablePool,
+  RouteWithInAmount,
+  TokenOutGivenInRouter,
+} from "./types";
 import { invertRoute } from "./utils";
 
 export type OptimizedRoutesParams = {
   pools: ReadonlyArray<RoutablePool>;
   incentivizedPoolIds: string[];
   stakeCurrencyMinDenom: string;
-  routeCache?: Map<string, RouteWithAmount[]>;
+  routeCache?: Map<string, RouteWithInAmount[]>;
   getPoolTotalValueLocked: (poolId: string) => Dec;
   maxHops?: number;
   maxRoutes?: number;
 };
 
-export class OptimizedRoutes {
+export class OptimizedRoutes implements TokenOutGivenInRouter {
   protected readonly _pools: ReadonlyArray<RoutablePool> = [];
   protected readonly _incentivizedPoolIds: string[];
   protected readonly _stakeCurrencyMinDenom: string;
@@ -61,7 +66,7 @@ export class OptimizedRoutes {
       amount: Int;
     },
     tokenOutDenom: string
-  ): Promise<RouteWithAmount[]> {
+  ): Promise<RouteWithInAmount[]> {
     if (!tokenIn.amount.isPositive() || this._pools.length === 0) {
       return [];
     }
@@ -142,7 +147,7 @@ export class OptimizedRoutes {
 
   /** Calculate the amount of token out by simulating a swap through a route. */
   async calculateTokenOutByTokenIn(
-    route: RouteWithAmount
+    route: RouteWithInAmount
   ): Promise<MultihopSwapResult> {
     validateRoute(route);
 

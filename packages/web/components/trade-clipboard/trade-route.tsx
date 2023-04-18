@@ -1,7 +1,7 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import { Dec } from "@keplr-wallet/unit";
 import { getOsmoRoutedMultihopTotalSwapFee } from "@osmosis-labs/math";
-import { RoutablePool, RouteWithAmount } from "@osmosis-labs/pools";
+import { RoutablePool, RouteWithInAmount } from "@osmosis-labs/pools";
 import { ChainStore } from "@osmosis-labs/stores";
 import { useSingleton } from "@tippyjs/react";
 import classNames from "classnames";
@@ -73,7 +73,7 @@ function reorderPathDenoms(
 const TradeRoute: FunctionComponent<{
   sendCurrency: AppCurrency;
   outCurrency: AppCurrency;
-  route: RouteWithAmount;
+  route: RouteWithInAmount;
   isMultihopOsmoFeeDiscount: boolean;
 }> = observer(
   ({ sendCurrency, outCurrency, route, isMultihopOsmoFeeDiscount }) => {
