@@ -893,6 +893,17 @@ const chainInfos = (
           coinGeckoId: "pool:doga",
           coinImageUrl: "/tokens/doga.png",
         },
+        {
+          type: "cw20",
+          contractAddress:
+              "juno1j4ux0f6gt7e82z7jdpm25v4g2gts880ap64rdwa49989wzhd0dfqed6vqm",
+          coinDenom: "SUMMIT",
+          coinMinimalDenom:
+              "cw20:juno1j4ux0f6gt7e82z7jdpm25v4g2gts880ap64rdwa49989wzhd0dfqed6vqm:SUMMIT",
+          coinDecimals: 6,
+          coinGeckoId: "pool:summit",
+          coinImageUrl: "/tokens/summit.png",
+        }
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: IS_TESTNET
