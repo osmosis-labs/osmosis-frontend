@@ -1,4 +1,6 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
+import { tickToSqrtPrice } from "@osmosis-labs/math";
+import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import {
   ObservableAddLiquidityConfig,
   ObservablePoolDetail,
@@ -11,6 +13,9 @@ import {
   AnimatedAxis, // any of these can be non-animated equivalents
   AnimatedGrid,
   AnimatedLineSeries,
+  Annotation,
+  AnnotationConnector,
+  AnnotationLineSubject,
   buildChartTheme,
   Tooltip,
   XYChart,
@@ -21,7 +26,7 @@ import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import {
+import React, {
   FunctionComponent,
   ReactNode,
   useCallback,
@@ -31,11 +36,12 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import IconButton from "~/components/buttons/icon-button";
 import { findNearestTick, getPriceAtTick } from "~/utils/math";
 
 import { useStore } from "../../stores";
 import { theme } from "../../tailwind.config";
-import { PoolAssetsIcon } from "../assets";
+import { Icon, PoolAssetsIcon } from "../assets";
 import { Button } from "../buttons";
 import { InputBox } from "../input";
 import { CustomClasses } from "../types";
@@ -83,43 +89,72 @@ function getViewRangeFromData(data: number[], zoom = 1) {
   };
 }
 
-async function getDepthFromRange(min: number, max: number) {
-  const returnData = await fetch(
-    `http://localhost:1317/osmosis/concentratedliquidity/v1beta1/total_liquidity_for_range?pool_id=1`
-  )
-    .then((resp) => resp.json())
-    .then((json) => {
-      return (json?.liquidity || []).map(
-        ({ liquidity_amount, lower_tick, upper_tick }: any) => ({
-          amount: +liquidity_amount,
-          lower: getPriceAtTick(lower_tick),
-          upper: getPriceAtTick(upper_tick),
-        })
-      );
-    })
-    .then((data) => {
-      const depths: { tick: number; depth: number }[] = [];
+// TODO: Hacky cache for dev; refactor to query store
 
-      for (let i = min; i <= max; i += (max - min) / 20) {
-        depths.push({
-          tick: i,
-          depth: getLiqFrom(i, data),
-        });
+let cached: any;
+async function getDepthFromRange(
+  min: number,
+  max: number,
+  exponentAtPriceOne: number
+) {
+  const returnData = new Promise(async (resolve) => {
+    if (cached) return resolve(cached);
+    const resp = await fetch(
+      `http://localhost:1317/osmosis/concentratedliquidity/v1beta1/total_liquidity_for_range?pool_id=1`
+    );
+    const json = await resp.json();
+    const data: { amount: number; lower: Dec; upper: Dec }[] = [];
+
+    if (json?.liquidity) {
+      for (let i = 0; i < json.liquidity.length; i++) {
+        try {
+          const { liquidity_amount, lower_tick, upper_tick } =
+            json.liquidity[i];
+          const amount = +liquidity_amount;
+          const lower = tickToSqrtPrice(
+            new Int(lower_tick),
+            exponentAtPriceOne
+          );
+          const upper = tickToSqrtPrice(
+            new Int(upper_tick),
+            exponentAtPriceOne
+          );
+          data.push({
+            amount,
+            lower: lower.mul(lower),
+            upper: upper.mul(upper),
+          });
+        } catch (e) {}
       }
+    }
 
-      return depths;
-    });
+    cached = data;
+    resolve(cached);
+  }).then((data: any) => {
+    const depths: { tick: number; depth: number }[] = [];
+    for (let i = min; i <= max; i += (max - min) / 20) {
+      depths.push({
+        tick: i,
+        depth: getLiqFrom(i, data),
+      });
+    }
+
+    return depths;
+  });
 
   return returnData;
 
   function getLiqFrom(
     target: number,
-    list: { amount: number; lower: number; upper: number }[]
+    list: { amount: number; lower: Dec; upper: Dec }[]
   ): number {
     const price = target;
     let val = 0;
     for (let i = 0; i < list.length; i++) {
-      if (list[i].lower <= price && list[i].upper >= price) {
+      if (
+        list[i].lower.lte(new Dec(price)) &&
+        list[i].upper.gte(new Dec(price))
+      ) {
         val = list[i].amount;
       }
     }
@@ -132,9 +167,16 @@ export const AddConcLiquidity: FunctionComponent<
     addLiquidityConfig: ObservableAddLiquidityConfig;
     actionButton: ReactNode;
     getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
+    onRequestClose: () => void;
   } & CustomClasses
 > = observer(
-  ({ className, addLiquidityConfig, actionButton, getFiatValue }) => {
+  ({
+    className,
+    addLiquidityConfig,
+    actionButton,
+    getFiatValue,
+    onRequestClose,
+  }) => {
     const router = useRouter();
     const { id: poolId } = router.query as { id: string };
     const { derivedDataStore } = useStore();
@@ -153,7 +195,7 @@ export const AddConcLiquidity: FunctionComponent<
     const { poolName } = useMemo(
       () => ({
         poolName: pool?.poolAssets
-          .map((poolAsset) => poolAsset.amount.denom)
+          .map(({ amount }) => amount.denom)
           .join(" / "),
         poolWeight: pool?.weightedPoolInfo?.assets
           .map((poolAsset) => poolAsset.weightFraction.toString())
@@ -174,6 +216,7 @@ export const AddConcLiquidity: FunctionComponent<
                   poolDetail={poolDetail}
                   superfluidPoolDetail={superfluidPoolDetail}
                   addLiquidityConfig={addLiquidityConfig}
+                  onRequestClose={onRequestClose}
                 />
               );
             case "add_manual":
@@ -201,6 +244,7 @@ const Overview: FunctionComponent<
     poolDetail?: ObservablePoolDetail;
     superfluidPoolDetail?: ObservableSuperfluidPoolDetail;
     addLiquidityConfig: ObservableAddLiquidityConfig;
+    onRequestClose: () => void;
   } & CustomClasses
 > = observer(
   ({
@@ -209,6 +253,7 @@ const Overview: FunctionComponent<
     poolName,
     superfluidPoolDetail,
     poolDetail,
+    onRequestClose,
   }) => {
     const { priceStore, queriesExternalStore } = useStore();
     const router = useRouter();
@@ -223,13 +268,29 @@ const Overview: FunctionComponent<
       <>
         <div className="align-center relative flex flex-row">
           <div className="absolute left-0 flex h-full items-center text-sm" />
-          <div className="flex-1 text-center text-lg">
+          <h6 className="flex-1 text-center">
             {t("addConcentratedLiquidity.step1Title")}
+          </h6>
+          <div className="absolute right-0">
+            <IconButton
+              aria-label="Close"
+              mode="unstyled"
+              size="unstyled"
+              className="!p-0"
+              icon={
+                <Icon
+                  id="close-thin"
+                  className="text-wosmongton-400 hover:text-wosmongton-100"
+                  height={24}
+                  width={24}
+                />
+              }
+              onClick={onRequestClose}
+            />
           </div>
-          <div className="absolute right-0 flex h-full items-center text-xs font-subtitle2 text-osmoverse-200" />
         </div>
-        <div className="flex flex-row rounded-[28px] bg-osmoverse-900/[.3] px-8 py-4">
-          <div className="flex flex-1 flex-col gap-2">
+        <div className="flex flex-row rounded-[1rem] bg-osmoverse-700/[.3] px-[28px] py-4">
+          <div className="flex flex-1 flex-col gap-1">
             <div className="flex flex-row flex-nowrap items-center gap-2">
               {pool && (
                 <PoolAssetsIcon
@@ -242,54 +303,43 @@ const Overview: FunctionComponent<
                   size="sm"
                 />
               )}
-              <h5 className="max-w-xs truncate">{poolName}</h5>
+              <h6 className="max-w-xs truncate">{poolName}</h6>
             </div>
-            {superfluidPoolDetail?.isSuperfluid && (
+            {!superfluidPoolDetail?.isSuperfluid && (
               <span className="body2 text-superfluid-gradient">
                 {t("pool.superfluidEnabled")}
               </span>
             )}
-            {pool?.type === "stable" && (
-              <div className="body2 text-gradient-positive flex items-center gap-1.5">
-                <Image
-                  alt=""
-                  src="/icons/stableswap-pool.svg"
-                  height={24}
-                  width={24}
-                />
-                <span>{t("pool.stableswapEnabled")}</span>
-              </div>
-            )}
           </div>
           <div className="flex items-center gap-10">
-            <div className="space-y-2">
-              <span className="body2 gap-2 text-osmoverse-400">
+            <div className="gap-[3px]">
+              <span className="body2 text-osmoverse-400">
+                {t("pool.liquidity")}
+              </span>
+              <h6 className="text-osmoverse-100">
+                {poolDetail?.totalValueLocked.toString()}
+              </h6>
+            </div>
+            <div className="gap-[3px]">
+              <span className="body2 text-osmoverse-400">
                 {t("pool.24hrTradingVolume")}
               </span>
-              <h5 className="text-osmoverse-100">
+              <h6 className="text-osmoverse-100">
                 {queryGammPoolFeeMetrics
                   .getPoolFeesMetrics(poolId, priceStore)
                   .volume24h.toString()}
-              </h5>
+              </h6>
             </div>
-            <div className="space-y-2">
-              <span className="body2 gap-2 text-osmoverse-400">
-                {t("pool.liquidity")}
-              </span>
-              <h5 className="text-osmoverse-100">
-                {poolDetail?.totalValueLocked.toString()}
-              </h5>
-            </div>
-            <div className="space-y-2">
-              <span className="body2 gap-2 text-osmoverse-400">
+            <div className="gap-[3px]">
+              <span className="body2 text-osmoverse-400">
                 {t("pool.swapFee")}
               </span>
-              <h5 className="text-osmoverse-100">{pool?.swapFee.toString()}</h5>
+              <h6 className="text-osmoverse-100">{pool?.swapFee.toString()}</h6>
             </div>
           </div>
         </div>
         <div className="flex flex-col">
-          <div className="flex flex-row justify-center gap-8">
+          <div className="flex flex-row justify-center gap-[12px]">
             <StrategySelector
               title={t("addConcentratedLiquidity.managed")}
               description={t("addConcentratedLiquidity.managedDescription")}
@@ -329,20 +379,28 @@ function StrategySelector(props: {
   return (
     <div
       className={classNames(
-        "flex flex-1 flex-col items-center justify-center gap-4 rounded-[20px]",
-        "border-2 border-osmoverse-700 py-6 px-8",
+        "flex flex-1 flex-col items-center justify-center gap-4 rounded-[20px] bg-osmoverse-700/[.6] p-[2px]",
         {
-          "border-osmoverse-100 bg-osmoverse-700": selected,
-          "cursor-pointer hover:border-osmoverse-100 hover:bg-osmoverse-700 ":
-            onClick,
+          "bg-supercharged-gradient": selected,
+          "hover:bg-supercharged-gradient cursor-pointer": onClick,
         }
       )}
       onClick={onClick}
     >
-      <div className="mb-16 text-h6 font-h6">{title}</div>
-      <Image alt="" src={imgSrc} width={255} height={145} />
-      <div className="text-center text-body2 font-body2 text-osmoverse-200">
-        {description}
+      <div
+        className={classNames(
+          "flex h-full w-full flex-col items-center justify-center gap-[20px] rounded-[20px] py-8 px-4",
+          {
+            "bg-osmoverse-700": selected,
+            "hover:bg-osmoverse-700": onClick,
+          }
+        )}
+      >
+        <div className="mb-16 text-h6 font-h6">{title}</div>
+        <Image alt="" src={imgSrc} width={255} height={145} />
+        <div className="text-center text-body2 font-body2 text-osmoverse-200">
+          {description}
+        </div>
       </div>
     </div>
   );
@@ -356,8 +414,8 @@ const AddConcLiqView: FunctionComponent<
     getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
   } & CustomClasses
 > = observer(({ addLiquidityConfig, actionButton, getFiatValue, pool }) => {
-  const baseDenom = pool?.poolAssets[0].amount.denom || "";
-  const quoteDenom = pool?.poolAssets[1].amount.denom || "";
+  const baseDenom = pool?.poolAssets[0]?.amount.denom || "";
+  const quoteDenom = pool?.poolAssets[1]?.amount.denom || "";
   const {
     conliqHistoricalRange,
     conliqRange,
@@ -397,13 +455,27 @@ const AddConcLiqView: FunctionComponent<
     quoteDenom
   );
 
+  const yRange = calculateRange(
+    viewRange.min,
+    viewRange.max,
+    rangeMin,
+    rangeMax,
+    viewRange.last
+  );
+
+  const clPool = pool?.pool as ConcentratedLiquidityPool;
+
   useEffect(() => {
     (async () => {
-      if (!viewRange.min && !viewRange.max) return;
-      const data = await getDepthFromRange(viewRange.min, viewRange.max);
+      if (!yRange[0] && !yRange[1]) return;
+      const data = await getDepthFromRange(
+        yRange[0],
+        yRange[1],
+        clPool?.exponentAtPriceOne
+      );
       setDepthData(data);
     })();
-  }, [viewRange.min, viewRange.max]);
+  }, [yRange[0], yRange[1], clPool?.exponentAtPriceOne]);
 
   const updateMin = useCallback(
     (val: string | number, shouldUpdateRange = false) => {
@@ -489,10 +561,10 @@ const AddConcLiqView: FunctionComponent<
         <div className="px-2 py-1 text-sm">
           {t("addConcentratedLiquidity.priceRange")}
         </div>
-        <div className="flex flex-row">
-          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col bg-osmoverse-700">
+        <div className="flex flex-row gap-1">
+          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col rounded-l-2xl bg-osmoverse-700 pl-6">
             <div className="flex flex-row">
-              <div className="flex flex-1 flex-row pt-4 pl-4">
+              <div className="flex flex-1 flex-row pt-4">
                 <h4 className="row-span-2 pr-1 font-caption">
                   {!!data.length && data[data.length - 1].price.toFixed(2)}
                 </h4>
@@ -526,9 +598,15 @@ const AddConcLiqView: FunctionComponent<
                 />
               </div>
             </div>
-            <LineChart min={rangeMin} max={rangeMax} data={data} zoom={zoom} />
+            <LineChart
+              min={rangeMin}
+              max={rangeMax}
+              data={data}
+              zoom={zoom}
+              annotations={conliqRange}
+            />
           </div>
-          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-row bg-osmoverse-700">
+          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-row rounded-r-2xl bg-osmoverse-700">
             <div className="flex flex-1 flex-col">
               <div className="mt-6 mr-6 flex h-6 flex-row justify-end gap-1">
                 <SelectorWrapper
@@ -598,7 +676,7 @@ const AddConcLiqView: FunctionComponent<
         <div className="flex flex-row justify-center rounded-[20px] bg-osmoverse-700 p-[1.25rem]">
           <DepositAmountGroup
             getFiatValue={getFiatValue}
-            coin={pool?.poolAssets[0].amount}
+            coin={pool?.poolAssets[0]?.amount}
             onUpdate={setConliqBaseDepositAmountIn}
             currentValue={conliqBaseDepositAmountIn}
           />
@@ -613,7 +691,7 @@ const AddConcLiqView: FunctionComponent<
           </div>
           <DepositAmountGroup
             getFiatValue={getFiatValue}
-            coin={pool?.poolAssets[1].amount}
+            coin={pool?.poolAssets[1]?.amount}
             onUpdate={setConliqQuoteDepositAmountIn}
             currentValue={conliqQuoteDepositAmountIn}
           />
@@ -652,12 +730,20 @@ const VolitilitySelectorGroup: FunctionComponent<
           <Image src="/icons/arrow-right.svg" height={12} width={12} />
         </a>
       </div>
-      <div className="flex flex-1 flex-row justify-end gap-4">
+      <div className="flex flex-1 flex-row justify-end gap-2">
         <PresetVolatilityCard
           src="/images/small-vial.svg"
           lastPrice={props.lastPrice}
           updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
           addLiquidityConfig={props.addLiquidityConfig}
+          label="Custom"
+        />
+        <PresetVolatilityCard
+          src="/images/small-vial.svg"
+          lastPrice={props.lastPrice}
+          updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
+          addLiquidityConfig={props.addLiquidityConfig}
+          label="Passive"
         />
         <PresetVolatilityCard
           src="/images/medium-vial.svg"
@@ -666,6 +752,7 @@ const VolitilitySelectorGroup: FunctionComponent<
           lastPrice={props.lastPrice}
           updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
           addLiquidityConfig={props.addLiquidityConfig}
+          label="Moderate"
         />
         <PresetVolatilityCard
           src="/images/large-vial.svg"
@@ -674,6 +761,7 @@ const VolitilitySelectorGroup: FunctionComponent<
           lastPrice={props.lastPrice}
           updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
           addLiquidityConfig={props.addLiquidityConfig}
+          label="Aggressive"
         />
       </div>
     </div>
@@ -799,6 +887,7 @@ const PresetVolatilityCard: FunctionComponent<
     updateInputAndRangeMinMax: (min: number, max: number) => void;
     addLiquidityConfig: ObservableAddLiquidityConfig;
     lastPrice: number;
+    label: string;
     width?: number;
     height?: number;
     upper?: number;
@@ -813,6 +902,7 @@ const PresetVolatilityCard: FunctionComponent<
     upper,
     lower,
     lastPrice,
+    label,
     addLiquidityConfig,
     updateInputAndRangeMinMax,
   }) => {
@@ -849,54 +939,25 @@ const PresetVolatilityCard: FunctionComponent<
     return (
       <div
         className={classNames(
-          "flex h-[5.625rem] w-[10.625rem] cursor-pointer flex-row",
-          "overflow-hidden rounded-[1.125rem] border-[1.5px] bg-osmoverse-700",
-          "border-transparent hover:border-wosmongton-200",
+          "flex w-[114px] cursor-pointer flex-row items-center justify-center gap-2 p-[2px]",
+          "rounded-2xl",
+          "hover:bg-supercharged-gradient",
           {
-            "border-osmoverse-200": isSelected,
+            "bg-supercharged-gradient": isSelected,
           }
         )}
         onClick={onClick}
       >
-        <div className="flex w-full flex-row items-end justify-end">
-          <div className="flex-shrink-1 flex h-full flex-1 flex-row items-end items-center justify-center">
-            <Image
-              alt=""
-              className="flex-0 ml-2"
-              src={src}
-              width={width || 64}
-              height={height || 64}
-            />
-          </div>
-          <div className="flex h-full flex-1 flex-col justify-center">
-            {!isFullRange ? (
-              <>
-                <div className="flex flex-row items-center">
-                  <Image
-                    alt=""
-                    src="/icons/green-up-tick.svg"
-                    width={16}
-                    height={16}
-                  />
-                  <div className="flex-1 pr-4 text-right text-subtitle1 text-osmoverse-200">
-                    +{(upper as number) * 100}%
-                  </div>
-                </div>
-                <div className="flex flex-row items-center">
-                  <Image
-                    alt=""
-                    src="/icons/red-down-tick.svg"
-                    width={16}
-                    height={16}
-                  />
-                  <div className="flex-1 pr-4 text-right text-subtitle1 text-osmoverse-200">
-                    {(lower as number) * 100}%
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div>Full Range</div>
-            )}
+        <div className="flex h-full w-full flex-col rounded-2xl bg-osmoverse-700 p-3">
+          <Image
+            alt=""
+            className="flex-0 ml-2"
+            src={src}
+            width={width || 64}
+            height={height || 64}
+          />
+          <div className="text-center text-body2 font-body2 text-osmoverse-200">
+            {label}
           </div>
         </div>
       </div>
@@ -953,6 +1014,7 @@ function LineChart(props: {
   max: number;
   zoom: number;
   data: { price: number; time: number }[];
+  annotations: Dec[];
 }) {
   const yRange = getViewRangeFromData(
     props.data.map(accessors.yAccessor),
@@ -1026,6 +1088,23 @@ function LineChart(props: {
               {...accessors}
               stroke={theme.colors.wosmongton["200"]}
             />
+            {props.annotations.map((dec, i) => (
+              <Annotation
+                key={i}
+                dataKey="depth"
+                xAccessor={(d: { price: number; time: number }) => d.time}
+                yAccessor={(d: { price: number; time: number }) => d.price}
+                datum={{ price: Number(dec.toString()), time: 0 }}
+              >
+                <AnnotationConnector />
+                <AnnotationLineSubject
+                  orientation="horizontal"
+                  stroke={theme.colors.wosmongton["200"]}
+                  strokeWidth={2}
+                  strokeDasharray={4}
+                />
+              </Annotation>
+            ))}
             <Tooltip
               // showVerticalCrosshair
               // showHorizontalCrosshair
@@ -1046,6 +1125,8 @@ function LineChart(props: {
                 stroke: "#ffffff",
               }}
               renderTooltip={({ tooltipData }: any) => {
+                console.log(tooltipData?.nearestDatum?.datum?.price.toFixed(4));
+                return null;
                 return (
                   <div className={`bg-osmoverse-800 p-2 text-xs leading-4`}>
                     <div className="text-white-full">

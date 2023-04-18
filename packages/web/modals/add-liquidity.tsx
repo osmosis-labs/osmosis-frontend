@@ -56,12 +56,13 @@ export const AddLiquidityModal: FunctionComponent<
       {...props}
       isOpen={props.isOpen && showModalBase}
       hideCloseButton
-      className="!max-w-[57.8125rem]"
+      className="!max-w-[57.5rem]"
     >
       <AddConcLiquidity
         addLiquidityConfig={config}
         actionButton={accountActionButton}
         getFiatValue={(coin) => priceStore.calculatePrice(coin)}
+        onRequestClose={props.onRequestClose}
       />
     </ModalBase>
   );
