@@ -303,6 +303,19 @@ export class ObservableQueryPool extends ObservableChainQuery<{
         };
       });
     }
+
+    if (this.pool instanceof ConcentratedLiquidityPool) {
+      return this.poolAssetDenoms.map((denom) => {
+        const currency = this.chainGetter
+          .getChain(this.chainId)
+          .forceFindCurrency(denom);
+
+        return {
+          amount: new CoinPretty(currency, new Dec(0)),
+        };
+      });
+    }
+
     return [];
   }
 
