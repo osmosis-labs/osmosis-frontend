@@ -3137,7 +3137,35 @@ const chainInfos = (
       explorerUrlToTx: IS_TESTNET
         ? "https://explorer-rila.nolus.io/nolus-rila/tx/{txHash}"
         : "",
-    }
+    },
+    {
+      rpc: "https://omniflix.kingnodes.com",
+      rest: "https://api.omniflix.nodestake.top",
+      chainId: "omniflixhub-1",
+      chainName: "OmniFlix",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("omniflix"),
+      currencies: [
+        {
+          coinDenom: "FLIX",
+          coinMinimalDenom: "uflix",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/flix.svg",
+          //coinGeckoId: "pool:uflix",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0,
+            average: 0,
+            high: 0,
+          },
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx: "https://www.mintscan.io/omniflix/txs/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
