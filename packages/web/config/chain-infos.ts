@@ -893,6 +893,17 @@ const chainInfos = (
           coinGeckoId: "pool:doga",
           coinImageUrl: "/tokens/doga.png",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1f5datjdse3mdgrapwuzs3prl7pvxxht48ns6calnn0t77v2s9l8s0qu488",
+          coinDenom: "CATMOS",
+          coinMinimalDenom:
+            "cw20:juno1f5datjdse3mdgrapwuzs3prl7pvxxht48ns6calnn0t77v2s9l8s0qu488:CATMOS",
+          coinDecimals: 6,
+          coinGeckoId: "pool:catmos",
+          coinImageUrl: "/tokens/catmos.png",
+        },               
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: IS_TESTNET
