@@ -3139,8 +3139,8 @@ const chainInfos = (
         : "",
     },
     {
-      rpc: "https://omniflix.kingnodes.com",
-      rest: "https://api.omniflix.nodestake.top",
+      rpc: "https://rpc.omniflix.network",
+      rest: "https://rest.omniflix.network",
       chainId: "omniflixhub-1",
       chainName: "OmniFlix",
       bip44: {
