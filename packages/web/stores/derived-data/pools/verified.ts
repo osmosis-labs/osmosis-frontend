@@ -10,7 +10,7 @@ import { IS_FRONTIER } from "~/config";
 import { ObservableAssets } from "~/stores/assets";
 
 /** Fetches all pools and filter by approved assets from the assets store */
-export class AssetFilteredPoolsStore
+export class ObservableVerifiedPoolsStore
   implements PoolGetter<ObservableQueryPool>
 {
   protected _pools = new Map<string, ObservableQueryPool>();
@@ -86,7 +86,7 @@ export class AssetFilteredPoolsStore
   });
 }
 
-export class ObservableAssetFilteredPoolsStore extends HasMapStore<AssetFilteredPoolsStore> {
+export class ObservableVerifiedPoolsStoreMap extends HasMapStore<ObservableVerifiedPoolsStore> {
   constructor(
     protected readonly osmosisChainId: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
@@ -94,11 +94,11 @@ export class ObservableAssetFilteredPoolsStore extends HasMapStore<AssetFiltered
   ) {
     super(
       (chainId: string) =>
-        new AssetFilteredPoolsStore(queriesStore, chainId, assetStore)
+        new ObservableVerifiedPoolsStore(queriesStore, chainId, assetStore)
     );
   }
 
-  get(chainId: string): AssetFilteredPoolsStore {
+  get(chainId: string): ObservableVerifiedPoolsStore {
     return super.get(chainId);
   }
 }

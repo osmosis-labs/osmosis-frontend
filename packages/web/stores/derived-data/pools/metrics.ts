@@ -13,7 +13,7 @@ import {
 import { action, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 
-import { ObservableAssetFilteredPoolsStore } from "./asset-filtered";
+import { ObservableVerifiedPoolsStoreMap } from "./verified";
 
 export class ObservablePoolWithMetric {
   @observable
@@ -103,7 +103,7 @@ export class ObservablePoolsWithMetric {
 
   constructor(
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
-    protected readonly assetFilteredPoolsStore: ObservableAssetFilteredPoolsStore,
+    protected readonly verifiedPoolsStore: ObservableVerifiedPoolsStoreMap,
     readonly chainId: string,
     protected readonly poolDetails: ObservablePoolDetails,
     protected readonly poolsBonding: ObservablePoolsBonding,
@@ -121,7 +121,7 @@ export class ObservablePoolsWithMetric {
       isSortingDesc?: boolean,
       showUnverified?: boolean
     ) => {
-      const allPools = this.assetFilteredPoolsStore
+      const allPools = this.verifiedPoolsStore
         .get(this.chainId)
         .getAllPools(showUnverified);
 
@@ -196,7 +196,7 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
   constructor(
     protected readonly osmosisChainId: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
-    protected readonly assetFilteredPoolsStore: ObservableAssetFilteredPoolsStore,
+    protected readonly verifiedPoolsStore: ObservableVerifiedPoolsStoreMap,
     protected readonly poolDetails: ObservablePoolDetails,
     protected readonly poolsBonding: ObservablePoolsBonding,
     protected readonly chainStore: ChainStore,
@@ -210,7 +210,7 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
       (chainId: string) =>
         new ObservablePoolsWithMetric(
           queriesStore,
-          assetFilteredPoolsStore,
+          verifiedPoolsStore,
           chainId,
           poolDetails,
           poolsBonding,
