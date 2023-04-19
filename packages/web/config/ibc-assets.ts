@@ -1545,6 +1545,13 @@ export const IBCAssetInfos: (IBCAsset & {
         isVerified: true,
       },
       {
+        counterpartyChainId: "omniflixhub-1",
+        sourceChannelId: "channel-199",
+        destChannelId: "channel-1",
+        coinMinimalDenom: "uflix",
+        isVerified: true,
+      },
+      {
         //GRDN
         counterpartyChainId: "juno-1",
         sourceChannelId: "channel-169",
