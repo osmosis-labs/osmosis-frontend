@@ -221,7 +221,7 @@ const chainInfos = (
             "cw20:secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d:SHD",
           coinDecimals: 8,
           //coinGeckoId: "shade-protocol",
-          coinGeckoId: "pool:shd",
+          coinGeckoId: "pool:shdold",
           coinImageUrl: "/tokens/shdold.svg",
         },
         {
