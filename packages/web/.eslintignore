@@ -1,0 +1,9 @@
+node_modules/
+.next
+
+.gitignore
+.eslintignore
+.prettierignore
+
+.turbo
+*.log
