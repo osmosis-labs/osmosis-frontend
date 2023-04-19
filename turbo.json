@@ -7,7 +7,6 @@
     },
     "lint": {},
     "lint:fix": {},
-    "pre-commit": {},
     "dev": { "dependsOn": ["build"] },
     "start": { "dependsOn": ["build"] },
     "clean": { "cache": false },
