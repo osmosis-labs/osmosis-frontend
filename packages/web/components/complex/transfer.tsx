@@ -43,6 +43,7 @@ export type TransferProps = {
     setIsUsingWrapped: (isUsingWrapped: boolean) => void;
     nativeDenom: string;
     wrapDenom: string;
+    disabled?: boolean;
   };
   /** Required, can be hardcoded estimate. */
   transferFee?: CoinPretty;
@@ -145,6 +146,7 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
                   ? toggleUseWrappedConfig.wrapDenom
                   : toggleUseWrappedConfig.nativeDenom
               }
+              disabled={toggleUseWrappedConfig.disabled}
             />
           </div>
         )}
