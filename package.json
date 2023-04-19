@@ -9,13 +9,13 @@
     ]
   },
   "scripts": {
-    "dev": "dotenv -- turbo dev",
+    "dev": "turbo dev",
     "dev:frontier": "dotenv -v NEXT_PUBLIC_IS_FRONTIER=true -- turbo dev",
     "dev:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- turbo dev",
-    "start": "dotenv -- turbo start",
+    "start": "turbo start",
     "start:frontier": "dotenv -v NEXT_PUBLIC_IS_FRONTIER=true -- turbo start",
     "start:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- turbo start",
-    "build": "dotenv -- turbo build",
+    "build": "turbo build",
     "build:frontier": "dotenv -v NEXT_PUBLIC_IS_FRONTIER=true -- turbo build",
     "build:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- turbo build",
     "build:libs": "turbo build --parallel --filter @osmosis-labs/math --filter @osmosis-labs/pools --filter @osmosis-labs/stores",
