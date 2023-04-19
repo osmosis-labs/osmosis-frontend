@@ -46,6 +46,7 @@ yarn
 npx turbo login
 ...login via browser...
 npx turbo link
+...press y (yes) and choose "OsmoLabs" as the Vercel build scope...
 ```
 
 2.  Run local server at [`localhost:3000`](localhost:3000)
