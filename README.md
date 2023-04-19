@@ -15,13 +15,17 @@ Our [frontend](https://app.osmosis.zone) is built with the following tools:
 
 ## Deployment 🚀
 
+Install deps:
+
+```bash
+yarn
+```
+
 Start web server
 
 ```bash
-yarn && yarn build && yarn start
+yarn start
 ```
-
-If you'd like to build with caching with Turbo repo (4x faster, 10x+ faster cached), replace `yarn build` with `yarn build-lint-fast`. To leverage our shared/remote cache, follow [these](https://turbo.build/repo/docs/core-concepts/remote-caching#for-local-development) instructions.
 
 ### Contributing 👨‍💻
 
@@ -35,13 +39,7 @@ Make sure [node](https://nodejs.org/en/) >= 16 and [yarn](https://yarnpkg.com/ge
 yarn
 ```
 
-2. Build app
-
-```bash
-yarn build
-```
-
-3.  Run local server at [`localhost:3000`](localhost:3000)
+2.  Run local server at [`localhost:3000`](localhost:3000)
 
 ```bash
 yarn dev
@@ -86,14 +84,22 @@ Deploy:
 yarn build:testnet && yarn start:testnet
 ```
 
+Note: our currency registrar checks IBC hashes to see if they can be found via the denom_trace query in the IBC module on chain. If it's not found, it won't add it to the chain's list of currencies. Make sure IBC assets on testnet can be found in the testnet's IBC module state for test IBC assets to be visible. Otherwise, test assets (i.e. made via tokenfactory) can be added as native assets to the Osmosis chain, simply by defining it's base denom in the Osmosis chain info for testnet.
+
 ## Releases
 
 Release tags are for the published [npm packages](https://www.npmjs.com/org/osmosis-labs), which are every package except for the web package. Updates to the app are released incrementally way via deployments from master branch.
+
+To start the release process:
+
+```bash
+yarn build:libs && npx lerna publish
+```
 
 ## Localization 🌎🗺
 
 Have a change you want to make with our translations? We have a frontend for updating localizations in our app easily, all you need is a GitHub account. Coming soon: creating new language profiles from this frontend.
 
-https://inlang.com/editor/github.com/osmosis-labs/osmosis-frontend
+Inlang editor & status:
 
 [![translation badge](https://inlang.com/badge?url=github.com/osmosis-labs/osmosis-frontend)](https://inlang.com/editor/github.com/osmosis-labs/osmosis-frontend?ref=badge)
