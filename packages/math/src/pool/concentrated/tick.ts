@@ -36,7 +36,7 @@ export function tickToSqrtPrice(
   }
 
   const geometricExponentIncrementDistanceInTicks = nine.mul(
-    DecUtils.getTenExponentN(-exponentAtPriceOne)
+    powTenBigDec(new Int(exponentAtPriceOne).neg()).toDec()
   );
 
   const { minTick, maxTick } =
@@ -58,9 +58,7 @@ export function tickToSqrtPrice(
     exponentAtCurTick = exponentAtCurTick.sub(new Int(1));
   }
 
-  const currentAdditiveIncrementInTicks = DecUtils.getTenExponentN(
-    Number(exponentAtCurTick.toString())
-  );
+  const currentAdditiveIncrementInTicks = powTenBigDec(exponentAtCurTick);
 
   const numAdditiveTicks = tickIndex.sub(
     geometricExponentDelta.mul(
@@ -68,14 +66,8 @@ export function tickToSqrtPrice(
     )
   );
 
-  const price = new BigDec(
-    DecUtils.getTenExponentN(Number(geometricExponentDelta.toString()))
-  )
-    .add(
-      new BigDec(numAdditiveTicks).mul(
-        new BigDec(currentAdditiveIncrementInTicks)
-      )
-    )
+  const price = powTenBigDec(geometricExponentDelta)
+    .add(new BigDec(numAdditiveTicks).mul(currentAdditiveIncrementInTicks))
     .toDec();
 
   if (price.gt(maxSpotPrice) || price.lt(minSpotPrice)) {
@@ -243,8 +235,6 @@ export function estimateInitialTickBound({
           : token0Denom,
     };
   }
-
-  if (!isOutGivenIn) console.log({ tokenInAmount: tokenIn.amount.toString() });
 
   const isZeroForOne = tokenIn.denom === token0Denom;
 

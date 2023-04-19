@@ -14,6 +14,9 @@ type QueryStoreParams = {
   tokenInDenom: string;
 };
 
+const URL_BASE =
+  "/osmosis/concentratedliquidity/v1beta1/liquidity_net_in_direction";
+
 /** Stores tick data for a single pool swapping in a single direction by token in. */
 export class ObservableQueryLiquidityNetInDirection extends ObservableChainQuery<LiquidityNetInDirection> {
   /** The limit upper and lower bound tick indexes for this pool and direction. */
@@ -91,9 +94,9 @@ export class ObservableQueryLiquidityNetInDirection extends ObservableChainQuery
       kvStore,
       chainId,
       chainGetter,
-      `/osmosis/concentratedliquidity/v1beta1/query_liquidity_net_in_direction?pool_id=${
-        params.poolId
-      }&token_in=${params.tokenInDenom}&use_cur_tick=true&bound_tick=${(
+      `${URL_BASE}?pool_id=${params.poolId}&token_in=${
+        params.tokenInDenom
+      }&use_cur_tick=true&bound_tick=${(
         initialBoundTickIndex ?? boundTickIndex
       ).toString()}`
     );
@@ -105,25 +108,26 @@ export class ObservableQueryLiquidityNetInDirection extends ObservableChainQuery
 
   /** Fetches remaining ticks in this direction, which could be expensive, so should be done later. */
   fetchRemaining() {
-    const { poolId, tokenInDenom } = this.params;
-    this.setUrl(
-      `/osmosis/concentratedliquidity/v1beta1/query_liquidity_net_in_direction?pool_id=${poolId}&token_in=${tokenInDenom}&use_cur_tick=true&bound_tick${this._limitTickIndex.toString()}}`
-    );
+    this.setUrlTickIndex(this._limitTickIndex);
     return this.waitFreshResponse();
   }
 
   /** Will rerun query up to given index or the max tick index. */
   fetchUpToTickIndex(tickIndex: Int) {
-    const { poolId, tokenInDenom } = this.params;
-
     if (tickIndex.gt(this._limitTickIndex)) {
       tickIndex = this._limitTickIndex;
     }
 
-    this.setUrl(
-      `/osmosis/concentratedliquidity/v1beta1/query_liquidity_net_in_direction?pool_id=${poolId}&token_in=${tokenInDenom}&use_cur_tick=true&bound_tick=${tickIndex.toString()}`
-    );
+    this.setUrlTickIndex(tickIndex);
     return this.waitFreshResponse();
+  }
+
+  protected setUrlTickIndex(tickIndex: Int) {
+    const { poolId, tokenInDenom } = this.params;
+
+    this.setUrl(
+      `${URL_BASE}?pool_id=${poolId}&token_in=${tokenInDenom}&use_cur_tick=true&bound_tick=${tickIndex.toString()}`
+    );
   }
 }
 

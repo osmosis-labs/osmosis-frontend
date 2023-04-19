@@ -10,10 +10,10 @@ import {
   RatePretty,
 } from "@keplr-wallet/unit";
 import {
-  MultihopTokenOutSwapResult,
+  MultihopSwapResult,
   OptimizedRoutes,
-  OptimizedRoutes as TokenOutGivenInRouter,
   RouteWithInAmount,
+  TokenOutGivenInRouter,
 } from "@osmosis-labs/pools";
 import { debounce } from "debounce";
 import {
@@ -68,11 +68,11 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
   @observable.ref
   protected _latestSwapResult:
-    | IPromiseBasedObservable<MultihopTokenOutSwapResult>
+    | IPromiseBasedObservable<MultihopSwapResult>
     | undefined = undefined;
   @observable.ref
   protected _spotPriceResult:
-    | IPromiseBasedObservable<MultihopTokenOutSwapResult>
+    | IPromiseBasedObservable<MultihopSwapResult>
     | undefined = undefined;
 
   @override
@@ -504,21 +504,21 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
   @action
   protected setSwapResult(
-    result: IPromiseBasedObservable<MultihopTokenOutSwapResult> | undefined
+    result: IPromiseBasedObservable<MultihopSwapResult> | undefined
   ) {
     this._latestSwapResult = result;
   }
 
   @action
   protected setSpotPriceResult(
-    result: IPromiseBasedObservable<MultihopTokenOutSwapResult> | undefined
+    result: IPromiseBasedObservable<MultihopSwapResult> | undefined
   ) {
     this._spotPriceResult = result;
   }
 
   /** Convert raw router type into a prettified form ready for display. */
   protected makePrettyMultihopResult(
-    result: MultihopTokenOutSwapResult
+    result: MultihopSwapResult
   ): PrettyMultihopSwapResult {
     const multiplicationInOverOut = DecUtils.getTenExponentN(
       this.outCurrency.coinDecimals - this.sendCurrency.coinDecimals

@@ -176,7 +176,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       ? this.getSpotPriceOutOverIn(tokenIn.denom, tokenOutDenom)
       : this.getSpotPriceInOverOut(tokenIn.denom, tokenOutDenom);
 
-    /** Fetch ticks and calculate the out */
+    /** Fetch ticks and calculate the out amount */
     let calcResult = undefined;
     do {
       const needMoreTicks = calcResult === "no-more-ticks";
@@ -241,15 +241,6 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     const priceImpactTokenOut = effectivePriceInOverOut
       .quo(beforeSpotPriceInOverOut)
       .sub(new Dec(1));
-
-    console.log(
-      "afterSqrtPrice",
-      afterSqrtPrice.toString(),
-      "effectivePriceInOverOut",
-      effectivePriceInOverOut.toString(),
-      "priceImpact",
-      priceImpactTokenOut.toString()
-    );
 
     return {
       amount: amountOut,

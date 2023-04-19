@@ -6,13 +6,219 @@ import {
   maxSpotPrice,
   minSpotPrice,
 } from "../const";
+import { approxSqrt } from "../math";
 import {
   calculatePriceAndTicksPassed,
   computeMinMaxTicksFromExponentAtPriceOne,
   estimateInitialTickBound,
   priceToTick,
+  tickToSqrtPrice,
 } from "../tick";
 
+// https://github.com/osmosis-labs/osmosis/blob/20b14217cee5db3f7356b83dbdf87fbc42db73ab/x/concentrated-liquidity/math/tick_test.go#L19
+describe("tickToSqrtPrice", () => {
+  const testCases = [
+    {
+      name: "One dollar increments at the ten thousands place: 1",
+      tickIndex: new Int(400000),
+      exponentAtPriceOne: -4,
+      expectedPrice: new Dec(50000),
+    },
+    {
+      name: "One dollar increments at the ten thousands place: 2",
+      tickIndex: new Int(400001),
+      exponentAtPriceOne: -4,
+      expectedPrice: new Dec(50001),
+    },
+    {
+      name: "Ten cent increments at the ten thousands place: 1",
+      tickIndex: new Int(4000000),
+      exponentAtPriceOne: -5,
+      expectedPrice: new Dec(50000),
+    },
+    {
+      name: "Ten cent increments at the ten thousands place: 2",
+      tickIndex: new Int(4000001),
+      exponentAtPriceOne: -5,
+      expectedPrice: new Dec("50000.1"),
+    },
+    {
+      name: "One cent increments at the ten thousands place: 1",
+      tickIndex: new Int(40000000),
+      exponentAtPriceOne: -6,
+      expectedPrice: new Dec(50000),
+    },
+    {
+      name: "One cent increments at the ten thousands place: 2",
+      tickIndex: new Int(40000001),
+      exponentAtPriceOne: -6,
+      expectedPrice: new Dec("50000.01"),
+    },
+    {
+      name: "One cent increments at the ones place: 1",
+      tickIndex: new Int(400),
+      exponentAtPriceOne: -2,
+      expectedPrice: new Dec(5),
+    },
+    {
+      name: "One cent increments at the ones place: 2",
+      tickIndex: new Int(401),
+      exponentAtPriceOne: -2,
+      expectedPrice: new Dec("5.01"),
+    },
+    {
+      name: "Ten cent increments at the tens place: 1",
+      tickIndex: new Int(1300),
+      exponentAtPriceOne: -2,
+      expectedPrice: new Dec(50),
+    },
+    {
+      name: "Ten cent increments at the ones place: 2",
+      tickIndex: new Int(1301),
+      exponentAtPriceOne: -2,
+      expectedPrice: new Dec("50.1"),
+    },
+    {
+      name: "One cent increments at the tenths place: 1",
+      tickIndex: new Int(-2),
+      exponentAtPriceOne: -1,
+      expectedPrice: new Dec("0.98"),
+    },
+    {
+      name: "One tenth of a cent increments at the hundredths place: 1",
+      tickIndex: new Int(-2),
+      exponentAtPriceOne: -2,
+      expectedPrice: new Dec("0.998"),
+    },
+    {
+      name: "One hundredths of a cent increments at the thousandths place: 1",
+      tickIndex: new Int(-2),
+      exponentAtPriceOne: -3,
+      expectedPrice: new Dec("0.9998"),
+    },
+    {
+      name: "One ten millionth of a cent increments at the hundred millionths place: 1",
+      tickIndex: new Int(-2),
+      exponentAtPriceOne: -7,
+      expectedPrice: new Dec("0.99999998"),
+    },
+    {
+      name: "One ten millionth of a cent increments at the hundred millionths place: 2",
+      tickIndex: new Int(-99999111),
+      exponentAtPriceOne: -7,
+      expectedPrice: new Dec("0.090000889"),
+    },
+    {
+      name: "More variety of numbers in each place",
+      tickIndex: new Int(4030301),
+      exponentAtPriceOne: -5,
+      expectedPrice: new Dec("53030.1"),
+    },
+    {
+      name: "Max tick and min k",
+      tickIndex: new Int(3420),
+      exponentAtPriceOne: -1,
+      expectedPrice: maxSpotPrice,
+    },
+    {
+      name: "Min tick and max k",
+      tickIndex: new Int("-162000000000000"),
+      exponentAtPriceOne: -12,
+      expectedPrice: minSpotPrice,
+    },
+    {
+      name: "error: tickIndex less than minimum",
+      tickIndex: computeMinMaxTicksFromExponentAtPriceOne(-4).minTick.sub(
+        new Int(1)
+      ),
+      exponentAtPriceOne: -4,
+      expectedError: true,
+    },
+    {
+      name: "error: tickIndex greater than maximum",
+      tickIndex: computeMinMaxTicksFromExponentAtPriceOne(-4).maxTick.add(
+        new Int(1)
+      ),
+      exponentAtPriceOne: -4,
+      expectedError: true,
+    },
+    {
+      name: "error: exponentAtPriceOne less than minimum",
+      tickIndex: new Int(100),
+      exponentAtPriceOne: -12 - 1,
+      expectedError: true,
+    },
+    {
+      name: "error: exponentAtPriceOne greater than maximum",
+      tickIndex: new Int(100),
+      exponentAtPriceOne: -1 + 1,
+      expectedError: true,
+    },
+    {
+      name: "random",
+      tickIndex: new Int(-9111000000),
+      exponentAtPriceOne: -8,
+      expectedPrice: new Dec("0.0000000000889"),
+    },
+    {
+      name: "Gyen <> USD",
+      tickIndex: new Int(-20594000),
+      exponentAtPriceOne: -6,
+      expectedPrice: new Dec("0.007406"),
+    },
+    {
+      name: "Spell <> USD",
+      tickIndex: new Int(-29204000),
+      exponentAtPriceOne: -6,
+      expectedPrice: new Dec("0.0007796"),
+    },
+    {
+      name: "Atom <> Osmo",
+      tickIndex: new Int(-12150000),
+      exponentAtPriceOne: -6,
+      expectedPrice: new Dec("0.0685"),
+    },
+    {
+      name: "Boot <> Osmo",
+      tickIndex: new Int(64576000),
+      exponentAtPriceOne: -6,
+      expectedPrice: new Dec("25760000"),
+    },
+    {
+      name: "BTC <> USD at exponent at price one of -6, tick spacing 100, tick 38035200 -> price 30352",
+      exponentAtPriceOne: -6,
+      tickIndex: new Int(38035200),
+      expectedPrice: new Dec("30352"),
+    },
+    {
+      name: "BTC <> USD at exponent at price one of -6, tick spacing 100, tick 38035200 + 100 -> price 30353",
+      exponentAtPriceOne: -6,
+      tickIndex: new Int(38035300),
+      expectedPrice: new Dec("30353"),
+    },
+  ];
+
+  testCases.forEach((testCase) => {
+    it(testCase.name, () => {
+      if (typeof testCase.expectedError !== "undefined") {
+        expect(() => {
+          tickToSqrtPrice(testCase.tickIndex, testCase.exponentAtPriceOne);
+        }).toThrow();
+      } else if (typeof testCase.expectedPrice !== "undefined") {
+        const sqrtPrice = tickToSqrtPrice(
+          testCase.tickIndex,
+          testCase.exponentAtPriceOne
+        );
+        const expectedSqrtPrice = approxSqrt(testCase.expectedPrice);
+        expect(sqrtPrice.toString()).toEqual(expectedSqrtPrice.toString());
+      } else {
+        throw new Error("Invalid test case");
+      }
+    });
+  });
+});
+
+// https://github.com/osmosis-labs/osmosis/blob/20b14217cee5db3f7356b83dbdf87fbc42db73ab/x/concentrated-liquidity/math/tick_test.go#L222
 describe("priceToTick", () => {
   interface TestCase {
     price: string;
