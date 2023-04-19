@@ -25,7 +25,8 @@
     "test": "turbo test",
     "lint": "turbo lint",
     "lint:fix": "turbo lint:fix",
-    "pre-commit": "turbo pre-commit"
+    "pre-commit": "turbo pre-commit",
+    "publish:libs": "lerna publish"
   },
   "pre-commit": [
     "pre-commit"
