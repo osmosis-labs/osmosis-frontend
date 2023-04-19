@@ -15,14 +15,14 @@ import { DeepReadonly } from "utility-types";
 
 import { ObservableAssets } from "../assets";
 import {
-  ObservableAssetFilteredPoolsStore,
   ObservablePoolsWithMetrics,
+  ObservableVerifiedPoolsStoreMap,
 } from "./pools";
 
 /** Contains stores that compute on the lower level stores. */
 export class DerivedDataStore extends BaseDerivedDataStore {
   public readonly poolsWithMetrics: DeepReadonly<ObservablePoolsWithMetrics>;
-  public readonly assetFilteredPoolsStore: DeepReadonly<ObservableAssetFilteredPoolsStore>;
+  public readonly verifiedPoolsStore: DeepReadonly<ObservableVerifiedPoolsStoreMap>;
 
   constructor(
     protected readonly osmosisChainId: string,
@@ -47,7 +47,7 @@ export class DerivedDataStore extends BaseDerivedDataStore {
       chainGetter
     );
 
-    this.assetFilteredPoolsStore = new ObservableAssetFilteredPoolsStore(
+    this.verifiedPoolsStore = new ObservableVerifiedPoolsStoreMap(
       this.osmosisChainId,
       this.queriesStore,
       this.assetStore
@@ -55,7 +55,7 @@ export class DerivedDataStore extends BaseDerivedDataStore {
     this.poolsWithMetrics = new ObservablePoolsWithMetrics(
       this.osmosisChainId,
       this.queriesStore,
-      this.assetFilteredPoolsStore,
+      this.verifiedPoolsStore,
       this.poolDetails,
       this.poolsBonding,
       this.chainGetter,
