@@ -417,6 +417,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   }
 
   readonly computeTotalValueLocked = computedFn((priceStore: IPriceStore) => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const fiatCurrency = priceStore.getFiatCurrency(
       priceStore.defaultVsCurrency
     )!;

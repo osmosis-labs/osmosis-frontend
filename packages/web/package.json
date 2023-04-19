@@ -7,7 +7,7 @@
     "clean": "rm -rf node_modules; rm -rf .next",
     "test": "jest --passWithNoTests",
     "build": "next build",
-    "analyze": "cross-env ANALYZE=true next build",
+    "analyze": "dotenv -v ANALYZE=true -- next build",
     "start": "next start",
     "lint": "prettier --check \"**/*\" && next lint",
     "lint:fix": "prettier --write \"**/*\" && next lint --fix",
