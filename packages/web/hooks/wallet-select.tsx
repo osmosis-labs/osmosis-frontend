@@ -1,5 +1,8 @@
 import { SimpleAccount } from "@cosmos-kit/core";
-import { CosmosKitLocalStorageKey } from "@osmosis-labs/stores";
+import {
+  CosmosKitAccountsLocalStorageKey,
+  CosmosKitWalletLocalStorageKey,
+} from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import {
   FunctionComponent,
@@ -9,6 +12,7 @@ import {
   useState,
 } from "react";
 
+import { WalletRegistry } from "~/config";
 import { WalletSelectModal } from "~/modals";
 import { useStore } from "~/stores";
 import { createContext } from "~/utils/react-context";
@@ -17,6 +21,7 @@ import { useAmplitudeAnalytics } from "./use-amplitude-analytics";
 
 const [WalletSelectInnerProvider, useWalletSelect] = createContext<{
   onOpenWalletSelect: (chainName: string) => void;
+  isLoading: boolean;
 }>({
   strict: true,
   name: "WalletSelectContext",
@@ -35,6 +40,7 @@ export const WalletSelectProvider: FunctionComponent = observer(
 
     const [chainName, setChainName] = useState<string | null>(null);
     const [isWalletSelectOpen, setIsWalletSelectOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const { setUserProperty } = useAmplitudeAnalytics();
 
@@ -42,7 +48,7 @@ export const WalletSelectProvider: FunctionComponent = observer(
       // Try to reconnect to wallet if user has changed account for current wallet
       const tryReconnectToWallet = () => {
         const accountsStr = window.localStorage.getItem(
-          CosmosKitLocalStorageKey
+          CosmosKitAccountsLocalStorageKey
         );
 
         if (accountsStr) {
@@ -69,13 +75,48 @@ export const WalletSelectProvider: FunctionComponent = observer(
     }, [setUserProperty, accountStore, chainId]);
 
     useEffect(() => {
-      accountStore.walletManager.onMounted().then(() => {
-        setUserAmplitudeProperties();
-      });
+      const installPrevSessionWallet = async () => {
+        const currentWallet = window.localStorage.getItem(
+          CosmosKitWalletLocalStorageKey
+        );
+
+        if (currentWallet) {
+          // If wallet is already installed, do nothing
+          if (
+            accountStore.walletManager.mainWallets.some(
+              (w) => w.walletInfo.name === currentWallet
+            )
+          ) {
+            return;
+          }
+
+          const walletInfo = WalletRegistry.find(
+            ({ name }) => name === currentWallet
+          );
+          const WalletClass = await walletInfo?.lazyInstall();
+          accountStore.addWallet(new WalletClass(walletInfo));
+        }
+      };
+
+      const init = async () => {
+        try {
+          await installPrevSessionWallet();
+
+          // On mounted will try to connect to wallet if user has connected to wallet before
+          accountStore.walletManager.onMounted().then(() => {
+            setUserAmplitudeProperties();
+          });
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      init();
+
       return () => {
         accountStore.walletManager.onUnmounted();
       };
-    }, [accountStore.walletManager, setUserAmplitudeProperties]);
+    }, [accountStore, accountStore.walletManager, setUserAmplitudeProperties]);
 
     const onOpenWalletSelect = useCallback((chainName: string) => {
       setIsWalletSelectOpen(true);
@@ -83,8 +124,8 @@ export const WalletSelectProvider: FunctionComponent = observer(
     }, []);
 
     const context = useMemo(
-      () => ({ onOpenWalletSelect }),
-      [onOpenWalletSelect]
+      () => ({ onOpenWalletSelect, isLoading }),
+      [isLoading, onOpenWalletSelect]
     );
 
     return (

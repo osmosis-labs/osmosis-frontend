@@ -30,4 +30,6 @@ export function getWalletEndpoints(chains: Chain[]) {
   }, {} as Record<ChainName, Endpoints>);
 }
 
-export const CosmosKitLocalStorageKey = "cosmos-kit@1:core//accounts";
+export const CosmosKitAccountsLocalStorageKey = "cosmos-kit@1:core//accounts";
+export const CosmosKitWalletLocalStorageKey =
+  "cosmos-kit@1:core//current-wallet";

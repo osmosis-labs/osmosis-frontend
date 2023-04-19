@@ -39,3 +39,4 @@ yarn-error.log*
 # config files
 config/chain-infos.ts
 config/wallet-assets.ts
+config/wallet-registry.ts

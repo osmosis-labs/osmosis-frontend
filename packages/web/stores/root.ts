@@ -35,7 +35,6 @@ import {
   WalletAssets,
   WALLETCONNECT_PROJECT_KEY,
   WALLETCONNECT_RELAY_URL,
-  Wallets,
 } from "~/config";
 import { AxelarTransferStatusSource } from "~/integrations/axelar";
 
@@ -103,7 +102,12 @@ export class RootStore {
     this.accountStore = new AccountStore(
       ChainInfos,
       WalletAssets,
-      Wallets,
+      /**
+       * No need to add default wallets as we'll lazily install them as needed.
+       * @see wallet-select.tsx
+       * @see wallet-registry.ts
+       */
+      [],
       this.queriesStore,
       this.chainStore,
       {

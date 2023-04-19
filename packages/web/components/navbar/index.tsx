@@ -24,6 +24,7 @@ import IconButton from "../buttons/icon-button";
 import ClientOnly from "../client-only";
 import { MainMenu } from "../main-menu";
 import { Popover } from "../popover";
+import SkeletonLoader from "../skeleton-loader";
 import { CustomClasses, MainLayoutMenu } from "../types";
 
 export const NavBar: FunctionComponent<
@@ -56,6 +57,7 @@ export const NavBar: FunctionComponent<
 
   const closeMobileMenuRef = useRef(noop);
   const router = useRouter();
+  const { isLoading: isWalletLoading } = useWalletSelect();
 
   useEffect(() => {
     const handler = () => {
@@ -132,7 +134,9 @@ export const NavBar: FunctionComponent<
                       })}
                     />
                     <ClientOnly>
-                      <WalletInfo onOpenProfile={onOpenProfile} />
+                      <SkeletonLoader isLoaded={!isWalletLoading}>
+                        <WalletInfo onOpenProfile={onOpenProfile} />
+                      </SkeletonLoader>
                     </ClientOnly>
                   </Popover.Panel>
                 </>
@@ -169,11 +173,13 @@ export const NavBar: FunctionComponent<
             onRequestClose={onCloseSettings}
           />
           <ClientOnly>
-            <WalletInfo
-              className="md:hidden"
-              icnsName={icnsQuery?.primaryName}
-              onOpenProfile={onOpenProfile}
-            />
+            <SkeletonLoader isLoaded={!isWalletLoading}>
+              <WalletInfo
+                className="md:hidden"
+                icnsName={icnsQuery?.primaryName}
+                onOpenProfile={onOpenProfile}
+              />
+            </SkeletonLoader>
           </ClientOnly>
         </div>
       </div>

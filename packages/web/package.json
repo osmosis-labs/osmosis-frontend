@@ -12,9 +12,10 @@
     "lint": "prettier --check \"**/*\" && next lint",
     "lint:fix": "prettier --write \"**/*\" && next lint --fix",
     "pre-commit": "lint-staged",
-    "generate": "yarn generate:chain-info && yarn generate:wallet-assets",
+    "generate": "yarn generate:chain-info && yarn generate:wallet-assets && yarn generate:wallet-registry",
     "generate:chain-info": "ts-node --esm config/generate-chain-infos/index.ts",
-    "generate:wallet-assets": "ts-node --esm config/generate-wallet-assets/index.ts"
+    "generate:wallet-assets": "ts-node --esm config/generate-wallet-assets/index.ts",
+    "generate:wallet-registry": "ts-node --esm config/generate-wallet-registry.ts"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^1.2.3",
