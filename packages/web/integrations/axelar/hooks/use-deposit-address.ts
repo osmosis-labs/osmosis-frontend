@@ -14,6 +14,7 @@ export function useDepositAddress(
   sourceChain: string,
   destChain: string,
   destinationAddress: string | undefined,
+  osmosisAddress: string,
   coinMinimalDenom: string,
   autoUnwrapIntoNative: boolean | undefined,
   environment = Environment.MAINNET,
@@ -49,12 +50,15 @@ export function useDepositAddress(
           options: autoUnwrapIntoNative
             ? {
                 shouldUnwrapIntoNative: autoUnwrapIntoNative,
+                refundAddress:
+                  osmosisAddress === "" ? undefined : osmosisAddress,
               }
             : undefined,
         })
         .then((generatedAddress) => {
-          if (latestGenCacheKey.current === cacheKey)
+          if (latestGenCacheKey.current === cacheKey) {
             setDepositAddress(generatedAddress);
+          }
           depositAddressCache.current.set(cacheKey, generatedAddress);
         })
         .catch((e: any) => {
@@ -70,6 +74,7 @@ export function useDepositAddress(
     destChain,
     coinMinimalDenom,
     autoUnwrapIntoNative,
+    osmosisAddress,
     setIsLoading,
   ]);
 
