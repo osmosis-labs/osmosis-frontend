@@ -5,12 +5,12 @@
       "outputs": ["build", ".next/**", "!.next/cache/**"],
       "dependsOn": ["^build"]
     },
-    "lint": { "dependsOn": ["build"] },
-    "lint:fix": { "dependsOn": ["build"] },
+    "lint": {},
+    "lint:fix": {},
     "pre-commit": {},
     "dev": { "dependsOn": ["build"] },
     "start": { "dependsOn": ["build"] },
-    "clean": {},
+    "clean": { "cache": false },
     "test": { "dependsOn": ["build"] },
     "analyze": {}
   }
