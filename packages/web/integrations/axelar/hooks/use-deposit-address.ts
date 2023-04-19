@@ -14,7 +14,6 @@ export function useDepositAddress(
   sourceChain: string,
   destChain: string,
   destinationAddress: string | undefined,
-  osmosisAddress: string,
   coinMinimalDenom: string,
   autoUnwrapIntoNative: boolean | undefined,
   environment = Environment.MAINNET,
@@ -51,8 +50,6 @@ export function useDepositAddress(
           options: autoUnwrapIntoNative
             ? {
                 shouldUnwrapIntoNative: autoUnwrapIntoNative,
-                refundAddress:
-                  osmosisAddress === "" ? undefined : osmosisAddress,
               }
             : undefined,
         })
@@ -75,30 +72,12 @@ export function useDepositAddress(
     destChain,
     coinMinimalDenom,
     autoUnwrapIntoNative,
-    osmosisAddress,
     setIsLoading,
   ]);
 
-  const doGen = useCallback(
-    () =>
-      new Promise<void>((resolve, reject) => {
-        generateAddress()
-          .then((address) => {
-            if (address) {
-              setDepositAddress(address);
-            }
-            resolve();
-          })
-          .catch((e) => {
-            reject(`useDepositAddress: ${e.message}`);
-          });
-      }),
-    [generateAddress, setDepositAddress]
-  );
   useEffect(() => {
     if (destinationAddress && shouldGenerate) {
-      setDepositAddress(null);
-      doGen().catch((e) => console.error(e));
+      generateAddress();
     }
   }, [
     destinationAddress,
@@ -106,7 +85,7 @@ export function useDepositAddress(
     sourceChain,
     destChain,
     shouldGenerate,
-    doGen,
+    generateAddress,
   ]);
 
   return {

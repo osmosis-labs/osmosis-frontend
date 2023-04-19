@@ -300,7 +300,6 @@ const AxelarTransfer: FunctionComponent<
         sourceChain,
         destChain,
         isWithdraw || correctChainSelected ? accountAddress : undefined,
-        bech32Address,
         !isWithdraw && useNativeToken
           ? sourceChainConfig!.nativeWrapEquivalent!.tokenMinDenom
           : originCurrency.coinMinimalDenom, // evm -> osmosis uses the native denom if native (autowrap) selected
