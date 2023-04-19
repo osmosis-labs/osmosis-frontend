@@ -1368,8 +1368,8 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     alternativeCoinId: "pool:uebl",
     poolId: "935",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
-        [{ portId: "transfer", channelId: "channel-641" }],
-        "uebl"
+      [{ portId: "transfer", channelId: "channel-641" }],
+      "uebl"
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
@@ -1398,8 +1398,8 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     alternativeCoinId: "pool:arkh",
     poolId: "954",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
-        [{ portId: "transfer", channelId: "channel-648" }],
-        "arkh"
+      [{ portId: "transfer", channelId: "channel-648" }],
+      "arkh"
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
@@ -1408,12 +1408,12 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     alternativeCoinId: "pool:frnz",
     poolId: "958",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
-        [{ portId: "transfer", channelId: "channel-750" }],
-        "ufrienzies"
+      [{ portId: "transfer", channelId: "channel-750" }],
+      "ufrienzies"
     ),
-    spotPriceDestDenom:  DenomHelper.ibcDenom(
-        [{ portId: "transfer", channelId: "channel-0" }],
-        "uatom"
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-0" }],
+      "uatom"
     ),
     destCoinId: "pool:uatom",
   },
@@ -1421,8 +1421,8 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     alternativeCoinId: "pool:uwhale",
     poolId: "960",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
-        [{ portId: "transfer", channelId: "channel-642" }],
-        "uwhale"
+      [{ portId: "transfer", channelId: "channel-642" }],
+      "uwhale"
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
@@ -1431,8 +1431,8 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     alternativeCoinId: "pool:grdn",
     poolId: "959",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
-        [{ portId: "transfer", channelId: "channel-169" }],
-        "cw20:juno1xekkh27punj0uxruv3gvuydyt856fax0nu750xns99t2qcxp7xmsqwhfma"
+      [{ portId: "transfer", channelId: "channel-169" }],
+      "cw20:juno1xekkh27punj0uxruv3gvuydyt856fax0nu750xns99t2qcxp7xmsqwhfma"
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",

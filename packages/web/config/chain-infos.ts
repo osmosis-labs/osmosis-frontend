@@ -892,8 +892,8 @@ const chainInfos = (
           coinDecimals: 6,
           coinGeckoId: "pool:doga",
           coinImageUrl: "/tokens/doga.png",
-         },
-         {
+        },
+        {
           type: "cw20",
           contractAddress:
             "juno1zqrj3ta4u7ylv0wqzd8t8q3jrr9rdmn43zuzp9zemeunecnhy8fss778g7",
@@ -3181,7 +3181,7 @@ const chainInfos = (
       explorerUrlToTx: IS_TESTNET
         ? "https://explorer-rila.nolus.io/nolus-rila/tx/{txHash}"
         : "",
-    }
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 

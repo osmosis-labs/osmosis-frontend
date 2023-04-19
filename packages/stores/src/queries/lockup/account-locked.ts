@@ -174,6 +174,7 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
             });
           }
 
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const value = map.get(key)!;
           value.amount = value.amount.add(
             new CoinPretty(currency, new Dec(coin.amount))
@@ -301,6 +302,7 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
               });
             }
 
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const value = map.get(
               time.toString() + "/" + currency.coinMinimalDenom
             )!;
@@ -380,6 +382,7 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
             });
           }
 
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const value = map.get(time)!;
           value.amount = value.amount.add(
             new CoinPretty(currency, new Dec(matchedCoin.amount))

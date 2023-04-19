@@ -65,6 +65,7 @@ export class ObservableQueryEpochs extends ObservableChainQuery<Epochs> {
       this.map.set(identifier, inner);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.map.get(identifier)!;
   }
 }
