@@ -40,6 +40,7 @@ export function useDepositAddress(
       setDepositAddress(cachedDepositAddress);
     } else if (destinationAddress) {
       setIsLoading(true);
+      // if the user changes the setting before the address populates, we don't want to set the address in useState
       latestGenCacheKey.current = cacheKey;
       new AxelarAssetTransfer({ environment })
         .getDepositAddress({

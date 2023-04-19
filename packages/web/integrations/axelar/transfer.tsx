@@ -582,6 +582,7 @@ const AxelarTransfer: FunctionComponent<
                   nativeDenom:
                     balanceOnOsmosis.balance.currency.originCurrency.coinDenom,
                   wrapDenom: sourceChainConfig.nativeWrapEquivalent.wrapDenom,
+                  disabled: isDepositAddressLoading,
                 }
               : undefined
           }
