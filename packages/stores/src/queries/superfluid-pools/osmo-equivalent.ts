@@ -3,7 +3,7 @@ import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { computedFn } from "mobx-utils";
 
-import { PoolGetter } from "../pools";
+import { ObservableQueryPoolGetter } from "../pools";
 import { ObservableQuerySuperfluidAssetMultiplier } from "../superfluid-pools/asset-multiplier";
 import { ObservableQuerySuperfluidParams } from "../superfluid-pools/params";
 
@@ -13,7 +13,7 @@ export class ObservableQuerySuperfluidOsmoEquivalent {
     protected readonly chainGetter: ChainGetter,
     protected readonly _querySuperfluidParams: ObservableQuerySuperfluidParams,
     protected readonly _querySuperfluidAssetMultiplier: ObservableQuerySuperfluidAssetMultiplier,
-    protected readonly _queryPools: PoolGetter
+    protected readonly _queryPools: ObservableQueryPoolGetter
   ) {}
 
   readonly calculateOsmoEquivalent = computedFn(

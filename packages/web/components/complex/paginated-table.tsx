@@ -1,4 +1,3 @@
-import { ObservablePoolWithMetric } from "@osmosis-labs/stores";
 import { flexRender, Row, Table } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
@@ -7,6 +6,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef } from "react";
 import { useIntersection } from "react-use";
+
+import { ObservablePoolWithMetric } from "~/stores/derived-data";
 
 import { IS_FRONTIER } from "../../config";
 import { useWindowSize } from "../../hooks";

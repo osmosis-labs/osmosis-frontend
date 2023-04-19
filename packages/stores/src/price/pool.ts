@@ -5,7 +5,7 @@ import { Dec } from "@keplr-wallet/unit";
 import { computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 
-import { PoolGetter } from "../queries";
+import { ObservableQueryPoolGetter } from "../queries";
 import { IntermediateRoute, IPriceStore } from "./types";
 
 /**
@@ -27,7 +27,7 @@ export class PoolFallbackPriceStore
       [vsCurrency: string]: FiatCurrency;
     },
     defaultVsCurrency: string,
-    protected readonly queryPool: PoolGetter,
+    protected readonly queryPool: ObservableQueryPoolGetter,
     intermidiateRoutes: IntermediateRoute[]
   ) {
     super(kvStore, supportedVsCurrencies, defaultVsCurrency, {
