@@ -20,7 +20,7 @@
     "build:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- yarn build",
     "build:libs": "turbo build --parallel --filter @osmosis-labs/math --filter @osmosis-labs/pools --filter @osmosis-labs/stores",
     "build:clean": "yarn clean && yarn install --frozen-lockfile && yarn build",
-    "clean": "turbo clean; rm -rf node_modules",
+    "clean": "turbo clean --parallel; rm -rf node_modules",
     "analyze": "turbo analyze",
     "test": "turbo test",
     "lint": "turbo lint",

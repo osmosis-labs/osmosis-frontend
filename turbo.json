@@ -13,5 +13,14 @@
     "clean": { "cache": false },
     "test": { "dependsOn": ["build"] },
     "analyze": {}
-  }
+  },
+  "globalEnv": [
+    "NEXT_PUBLIC_IS_FRONTIER",
+    "NEXT_PUBLIC_IS_TESTNET",
+    "NEXT_PUBLIC_OSMOSIS_RPC_OVERWRITE",
+    "NEXT_PUBLIC_OSMOSIS_REST_OVERWRITE",
+    "NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE",
+    "NEXT_PUBLIC_OSMOSIS_EXPLORER_URL_OVERWRITE",
+    "NEXT_PUBLIC_OSMOSIS_CHAIN_NAME_OVERWRITE"
+  ]
 }
