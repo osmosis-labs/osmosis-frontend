@@ -1550,7 +1550,7 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-1",
         coinMinimalDenom: "uflix",
         isVerified: true,
-      }
+      },
       {
         //GRDN
         counterpartyChainId: "juno-1",
