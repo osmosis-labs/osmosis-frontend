@@ -2,7 +2,7 @@
 
 ![osmosis-banner-1200w](https://user-images.githubusercontent.com/4606373/167008669-fb3cafa8-e66e-4cdf-8599-3308039cc58c.png)
 
-## Development 💻
+## Overview 💻
 
 Our [frontend](https://app.osmosis.zone) is built with the following tools:
 
@@ -10,8 +10,9 @@ Our [frontend](https://app.osmosis.zone) is built with the following tools:
 - [React](https://reactjs.org/): ui
 - [Tailwind CSS](https://tailwindcss.com/): styling, theming
 - [Next.js](https://nextjs.org/): scaffolding/SSR/CDN/SEO
-  - We deploy on [Vercel](https://vercel.com/solutions/nextjs?utm_source=next-site&utm_medium=banner&utm_campaign=next-website) for optimization (CDN, regions)
-- [lerna](https://lerna.js.org/): code organization; mono-repo management and libs release
+  - We deploy on [Vercel](https://vercel.com/solutions/nextjs?utm_source=next-site&utm_medium=banner&utm_campaign=next-website) for optimizations out of the box, behind [CloudFlare](https://www.cloudflare.com/)
+- [Turbo Repo](https://turbo.build/repo): mono repo management with package script execution, with heavy emphasis on build caching (including shared remote caching in Vercel)
+- [Lerna](https://lerna.js.org/): libs release
 
 ## Deployment 🚀
 
@@ -27,7 +28,7 @@ Start web server
 yarn start
 ```
 
-### Contributing 👨‍💻
+## Contributing 👨‍💻
 
 We welcome and encourage contributions! We recommend looking for [issues labeled with "good-first-issue"](https://github.com/osmosis-labs/osmosis-frontend/contribute).
 
@@ -70,7 +71,7 @@ Otherwise the non-frontier commands can be used with the env var set to true.
 
 ### Testnet
 
-Testnet version of the frontend uses `NEXT_PUBLIC_IS_TESTNET=true`.
+Testnet version of the frontend uses `NEXT_PUBLIC_IS_TESTNET=true`. By default, it points to the canonical testnet, but packages/web/.env can be changed to point to [localosmosis](https://github.com/osmosis-labs/osmosis/tree/main/tests/localosmosis).
 
 Dev:
 
