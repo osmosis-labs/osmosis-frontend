@@ -40,6 +40,14 @@ Make sure [node](https://nodejs.org/en/) >= 16 and [yarn](https://yarnpkg.com/ge
 yarn
 ```
 
+**First time setup** If you're on the Osmosis foundation team and have a Vercel account set up, optionally sign into turbo repo using your Vercel account, and link the repo. This could give you instant builds by sharing the remote cache on our Vercel project:
+
+```bash
+npx turbo login
+...login via browser...
+npx turbo link
+```
+
 2.  Run local server at [`localhost:3000`](localhost:3000)
 
 ```bash
