@@ -1562,7 +1562,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
   },
   {
     alternativeCoinId: "pool:uflix",
-    poolId: "991",
+    poolId: "992",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
       [{ portId: "transfer", channelId: "channel-199" }],
       "uflix"
