@@ -3197,7 +3197,7 @@ const chainInfos = (
           coinMinimalDenom: "uflix",
           coinDecimals: 6,
           coinImageUrl: "/tokens/flix.svg",
-          //coinGeckoId: "pool:uflix",
+          coinGeckoId: "pool:uflix",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
