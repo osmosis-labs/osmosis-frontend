@@ -15,7 +15,7 @@
     "start": "turbo start",
     "start:frontier": "dotenv -v NEXT_PUBLIC_IS_FRONTIER=true -- yarn start",
     "start:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- yarn start",
-    "build": "dotenv -- turbo build",
+    "build": "turbo build",
     "build:frontier": "dotenv -v NEXT_PUBLIC_IS_FRONTIER=true -- yarn build",
     "build:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- yarn build",
     "build:libs": "turbo build --parallel --filter @osmosis-labs/math --filter @osmosis-labs/pools --filter @osmosis-labs/stores",
