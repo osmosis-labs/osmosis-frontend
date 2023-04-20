@@ -442,5 +442,9 @@
   "transactionSuccessful": "Tranzactie Finalizata",
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",
-  "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc."
+  "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
+  "streamswap": {
+    "description": "Fiți primul care va lansa proiecte noi. Explorați",
+    "link": "platforma de lansare interchain"
+  }
 }

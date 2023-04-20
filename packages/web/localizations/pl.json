@@ -442,5 +442,9 @@
   "transactionSuccessful": "Transakcja Udana",
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",
-  "waitingForTransaction": "Oczekiwanie na dołączenie transakcji do bloku"
+  "waitingForTransaction": "Oczekiwanie na dołączenie transakcji do bloku",
+  "streamswap": {
+    "description": "Bądź pierwszy, który rozpocznie nowe projekty. Zbadaj",
+    "link": "interchain launchpad"
+  }
 }

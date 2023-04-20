@@ -442,5 +442,9 @@
   "transactionSuccessful": "전송 성공",
   "unknownError": "알 수 없는 에러",
   "viewExplorer": "블록 익스플로러 보기",
-  "waitingForTransaction": "트랜잭션이 블록에 담기는 중입니다"
+  "waitingForTransaction": "트랜잭션이 블록에 담기는 중입니다",
+  "streamswap": {
+    "description": "새로운 프로젝트를 부트스트랩하는 첫 번째 사람이 되어보세요. 탐색하세요",
+    "link": "인터체인 론칭패드"
+  }
 }

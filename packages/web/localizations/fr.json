@@ -442,5 +442,9 @@
   "transactionSuccessful": "Succès de la transaction",
   "unknownError": "Erreur inconnue",
   "viewExplorer": "Voir dans l'exploreur",
-  "waitingForTransaction": "Attente de l'inclusion de la transaction dans le bloc"
+  "waitingForTransaction": "Attente de l'inclusion de la transaction dans le bloc",
+  "streamswap": {
+    "description": "Soyez le premier à lancer de nouveaux projets. Explorez la",
+    "link": "plateforme de lancement interchaîne"
+  }
 }
