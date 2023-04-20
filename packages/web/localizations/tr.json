@@ -444,7 +444,7 @@
   "viewExplorer": "gezginde görüntüle",
   "waitingForTransaction": "İşlemin bloğa eklenmesi bekleniyor",
   "streamswap": {
-    "description": "Yeni projeleri ilk başlatan kişi olun. Keşfedin",
-    "link": "interchain başlatma rampası"
+    "description": "İnterchain başlatma rampası burada. Yeni projeleri ilk başlatan kişi olun. Keşfedin",
+    "link": "Streamswap."
   }
 }

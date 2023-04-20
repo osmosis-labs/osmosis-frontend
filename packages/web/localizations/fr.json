@@ -444,7 +444,7 @@
   "viewExplorer": "Voir dans l'exploreur",
   "waitingForTransaction": "Attente de l'inclusion de la transaction dans le bloc",
   "streamswap": {
-    "description": "Soyez le premier à lancer de nouveaux projets. Explorez la",
-    "link": "plateforme de lancement interchaîne"
+    "description": "La plateforme de lancement interchaîne est là. Soyez le premier à lancer de nouveaux projets. Explorez",
+    "link": "Streamswap."
   }
 }
