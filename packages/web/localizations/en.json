@@ -443,5 +443,9 @@
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",
   "waitingForTransaction": "Waiting for transaction to be included in the block",
-  "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution."
+  "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution.",
+  "streamswap": {
+    "description": "Be the first to bootstrap new projects. Explore the",
+    "link": "interchain launchpad"
+  }
 }
