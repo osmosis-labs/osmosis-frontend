@@ -107,6 +107,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
         return new RatePretty(new Dec(0));
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const fiatCurrency = priceStore.getFiatCurrency(
         priceStore.defaultVsCurrency
       )!;

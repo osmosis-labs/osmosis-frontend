@@ -151,7 +151,7 @@ const Home: NextPage = observer(function () {
                 break;
               }
             }
-            
+
             // only pools with at least 100,000 REGEN
             if (
               "originChainId" in asset.amount.currency &&
@@ -163,7 +163,6 @@ const Home: NextPage = observer(function () {
                 break;
               }
             }
-            
           }
 
           if (hasEnoughAssets) {
@@ -180,6 +179,7 @@ const Home: NextPage = observer(function () {
           return Number(bTVL.sub(aTVL).toDec().toString());
         })
         .map((pool) => pool.pool),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [allPools, priceStore.response]
   );
 

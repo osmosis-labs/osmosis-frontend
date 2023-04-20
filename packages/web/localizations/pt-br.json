@@ -444,4 +444,8 @@
   "viewExplorer": "Visualizar explorer",
   "waitingForTransaction": "Aguardando para que a transação seja incluida no bloco",
   "highInflationWarning": "APRs altos podem ser resultado de recompensas inflacionárias. Proceda com cautela."
+  "streamswap": {
+    "description": "O lançador interchain está aqui. Seja o primeiro a criar novos projetos. Explore",
+    "link": "Streamswap."
+  }
 }

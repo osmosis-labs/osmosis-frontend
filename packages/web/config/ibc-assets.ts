@@ -153,7 +153,7 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-0",
         coinMinimalDenom: "unls",
         isVerified: true,
-      }
+      },
     ]
   : [
       {
@@ -1543,6 +1543,13 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-642",
         destChannelId: "channel-5",
         coinMinimalDenom: "uwhale",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "omniflixhub-1",
+        sourceChannelId: "channel-199",
+        destChannelId: "channel-1",
+        coinMinimalDenom: "uflix",
         isVerified: true,
       },
       {
