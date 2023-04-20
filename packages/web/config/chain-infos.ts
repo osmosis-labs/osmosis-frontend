@@ -848,7 +848,84 @@ const chainInfos = (
           coinDecimals: 6,
           coinGeckoId: "pool:clst",
           coinImageUrl: "/tokens/celestims.png",
-        },        
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1ytymtllllsp3hfmndvcp802p2xmy5s8m59ufel8xv9ahyxyfs4hs4kd4je",
+          coinDenom: "OSDOGE",
+          coinMinimalDenom:
+            "cw20:juno1ytymtllllsp3hfmndvcp802p2xmy5s8m59ufel8xv9ahyxyfs4hs4kd4je:OSDOGE",
+          coinDecimals: 6,
+          coinGeckoId: "pool:osdoge",
+          coinImageUrl: "/tokens/osdoge.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1jrr0tuuzxrrwcg6hgeqhw5wqpck2y55734e7zcrp745aardlp0qqg8jz06",
+          coinDenom: "APEMOS",
+          coinMinimalDenom:
+            "cw20:juno1jrr0tuuzxrrwcg6hgeqhw5wqpck2y55734e7zcrp745aardlp0qqg8jz06:APEMOS",
+          coinDecimals: 6,
+          coinGeckoId: "pool:apemos",
+          coinImageUrl: "/tokens/apemos.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1jwdy7v4egw36pd84aeks3ww6n8k7zhsumd4ac8q5lts83ppxueus4626e8",
+          coinDenom: "INVDRS",
+          coinMinimalDenom:
+            "cw20:juno1jwdy7v4egw36pd84aeks3ww6n8k7zhsumd4ac8q5lts83ppxueus4626e8:INVDRS",
+          coinDecimals: 6,
+          coinGeckoId: "pool:invdrs",
+          coinImageUrl: "/tokens/invdrs.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1k2ruzzvvwwtwny6gq6kcwyfhkzahaunp685wmz4hafplduekj98q9hgs6d",
+          coinDenom: "DOGA",
+          coinMinimalDenom:
+            "cw20:juno1k2ruzzvvwwtwny6gq6kcwyfhkzahaunp685wmz4hafplduekj98q9hgs6d:DOGA",
+          coinDecimals: 6,
+          coinGeckoId: "pool:doga",
+          coinImageUrl: "/tokens/doga.png",
+         },
+         {
+          type: "cw20",
+          contractAddress:
+            "juno1zqrj3ta4u7ylv0wqzd8t8q3jrr9rdmn43zuzp9zemeunecnhy8fss778g7",
+          coinDenom: "PEPE",
+          coinMinimalDenom:
+            "cw20:juno1zqrj3ta4u7ylv0wqzd8t8q3jrr9rdmn43zuzp9zemeunecnhy8fss778g7:PEPE",
+          coinDecimals: 6,
+          coinGeckoId: "pool:pepe",
+          coinImageUrl: "/tokens/pepe.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1f5datjdse3mdgrapwuzs3prl7pvxxht48ns6calnn0t77v2s9l8s0qu488",
+          coinDenom: "CATMOS",
+          coinMinimalDenom:
+            "cw20:juno1f5datjdse3mdgrapwuzs3prl7pvxxht48ns6calnn0t77v2s9l8s0qu488:CATMOS",
+          coinDecimals: 6,
+          coinGeckoId: "pool:catmos",
+          coinImageUrl: "/tokens/catmos.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1j4ux0f6gt7e82z7jdpm25v4g2gts880ap64rdwa49989wzhd0dfqed6vqm",
+          coinDenom: "SUMMIT",
+          coinMinimalDenom:
+            "cw20:juno1j4ux0f6gt7e82z7jdpm25v4g2gts880ap64rdwa49989wzhd0dfqed6vqm:SUMMIT",
+          coinDecimals: 6,
+          coinGeckoId: "pool:summit",
+          coinImageUrl: "/tokens/summit.png",
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: IS_TESTNET
