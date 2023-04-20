@@ -442,5 +442,9 @@
   "transactionSuccessful": "Transaction Successful",
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",
-  "waitingForTransaction": "Waiting for transaction to be included in the block"
+  "waitingForTransaction": "Waiting for transaction to be included in the block",
+  "streamswap": {
+    "description": "The interchain launchpad is here. Be the first to bootstrap new projects. Explore ",
+    "link": "Streamswap."
+  }
 }

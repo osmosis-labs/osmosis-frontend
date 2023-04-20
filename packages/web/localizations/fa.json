@@ -436,5 +436,9 @@
   "transactionSuccessful": "تراکنش با موفقیت انجام شد",
   "unknownError": "خطای نا شناس",
   "viewExplorer": "مشاهده جزئیات تراکنش",
-  "waitingForTransaction": "صبر کنید تا یک تراکنش در بلاک قرار بگیرد"
+  "waitingForTransaction": "صبر کنید تا یک تراکنش در بلاک قرار بگیرد",
+  "streamswap": {
+    "description": "لانچر اینترچین در اینجاست. اولین کسی باشید که پروژه‌های جدید را بوت استرپ می‌کند. بررسی کنید",
+    "link": "Streamswap."
+  }
 }

@@ -442,5 +442,9 @@
   "transactionSuccessful": "交易成功",
   "unknownError": "未知錯誤",
   "viewExplorer": "使用區塊瀏覽器查看",
-  "waitingForTransaction": "正等待交易被加入到區塊中"
+  "waitingForTransaction": "正等待交易被加入到區塊中",
+  "streamswap": {
+    "description": "跨鏈啟動台已經來了。成為第一個引導新專案的人。探索",
+    "link": "Streamswap。"
+  }
 }
