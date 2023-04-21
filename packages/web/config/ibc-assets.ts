@@ -371,6 +371,19 @@ export const IBCAssetInfos: (IBCAsset & {
         },
       },
       {
+        counterpartyChainId: "axelar-dojo-1",
+        sourceChannelId: "channel-208",
+        destChannelId: "channel-3",
+        coinMinimalDenom: "wfil-wei",
+        sourceChainNameOverride: "Filecoin",
+        originBridgeInfo: {
+          bridge: "axelar" as const,
+          wallets: ["metamask" as const, "walletconnect" as const],
+          method: "deposit-address" as const,
+          sourceChainTokens: [AxelarSourceChainConfigs.fil.filecoin],
+        },
+      },
+      {
         counterpartyChainId: "crypto-org-chain-mainnet-1",
         sourceChannelId: "channel-5",
         destChannelId: "channel-10",
