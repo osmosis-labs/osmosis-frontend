@@ -71,6 +71,7 @@ export const WalletSelectModal: FunctionComponent<
   const { isOpen, onRequestClose, walletRepo } = props;
   const t = useTranslation();
   const [qrState, setQRState] = useState<State>(State.Init);
+  const [qrMessage, setQRMessage] = useState<string>("");
   const [modalView, setModalView] = useState<ModalView>("list");
 
   const current = walletRepo?.current;
@@ -80,11 +81,17 @@ export const WalletSelectModal: FunctionComponent<
     if (isOpen) {
       setModalView(getModalView(qrState, walletStatus));
     }
-  }, [qrState, walletStatus, isOpen]);
+  }, [qrState, walletStatus, isOpen, qrMessage]);
 
   (current?.client as any)?.setActions?.({
     qrUrl: {
       state: setQRState,
+      /**
+       * We need this function to avoid crashing the Cosmoskit library.
+       * A PR is open with a fix for this issue.
+       * @see https://github.com/cosmology-tech/cosmos-kit/pull/176
+       *  */
+      message: setQRMessage,
     },
   });
 
