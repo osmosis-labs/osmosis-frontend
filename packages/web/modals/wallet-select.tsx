@@ -159,9 +159,19 @@ const ModalContent: FunctionComponent<
       wallet?: ChainWalletBase | (typeof WalletRegistry)[number]
     ) => {
       if (!wallet) return;
+      if (!("lazyInstall" in wallet)) {
+        wallet.connect(sync).then(() => {
+          onConnectProp?.();
+        });
+        return;
+      }
 
-      // If lazyInstall is present then install the wallet, and connect
-      if ("lazyInstall" in wallet) {
+      const installedWallet = walletRepo?.wallets.find(
+        ({ walletName }) => walletName === wallet.name
+      );
+
+      // if wallet is not installed, install it
+      if (!installedWallet && "lazyInstall" in wallet) {
         setLazyWalletInfo(wallet);
         setModalView("connecting");
 
@@ -180,11 +190,11 @@ const ModalContent: FunctionComponent<
             setLazyWalletInfo(undefined);
             onConnectProp?.();
           });
+      } else {
+        installedWallet?.connect(sync).then(() => {
+          onConnectProp?.();
+        });
       }
-
-      wallet.connect(sync).then(() => {
-        onConnectProp?.();
-      });
     };
 
     if (modalView === "connected") {
