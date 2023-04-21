@@ -926,6 +926,17 @@ const chainInfos = (
           coinGeckoId: "pool:summit",
           coinImageUrl: "/tokens/summit.png",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1dyyf7pxeassxvftf570krv7fdf5r8e4r04mp99h0mllsqzp3rs4q7y8yqg",
+          coinDenom: "SPACER",
+          coinMinimalDenom:
+            "cw20:juno1dyyf7pxeassxvftf570krv7fdf5r8e4r04mp99h0mllsqzp3rs4q7y8yqg:SPACER",
+          coinDecimals: 6,
+          coinGeckoId: "pool:spacer",
+          coinImageUrl: "/tokens/spacer.png",
+        },        
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: IS_TESTNET
