@@ -23,13 +23,11 @@ const Home: NextPage = observer(function () {
   const pools = useMemo(
     () =>
       allPools
-        .filter(
-          (pool) =>
-            pool
-              .computeTotalValueLocked(priceStore)
-              .toDec()
-              .gte(new Dec(IS_FRONTIER ? 1_000 : 10_000))
-          // TVL > $10,000 on main
+        .filter((pool) =>
+          pool
+            .computeTotalValueLocked(priceStore)
+            .toDec()
+            .gte(new Dec(IS_FRONTIER ? 1_000 : 10_000))
         )
         .sort((a, b) => {
           // sort by TVL to find routes amongst most valuable pools

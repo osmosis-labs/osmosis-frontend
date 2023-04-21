@@ -191,13 +191,14 @@ export const TradeClipboard: FunctionComponent<{
     };
 
     // trade metrics
-    const minOutAmountLessSlippage = useMemo(
-      () =>
-        tradeTokenInConfig.expectedSwapResult.amount
-          .toDec()
-          .mul(new Dec(1).sub(slippageConfig.slippage.toDec())),
-      [tradeTokenInConfig.expectedSwapResult.amount, slippageConfig.slippage]
-    );
+    const minOutAmountLessSlippage = useMemo(() => {
+      const coinLessSlippage = tradeTokenInConfig.expectedSwapResult.amount.mul(
+        new Dec(1).sub(slippageConfig.slippage.toDec())
+      );
+      return coinLessSlippage.maxDecimals(
+        coinLessSlippage.toDec().gt(new Dec(1)) ? 8 : 12
+      );
+    }, [tradeTokenInConfig.expectedSwapResult.amount, slippageConfig.slippage]);
     const spotPrice = useMemo(
       () =>
         tradeTokenInConfig.beforeSpotPriceWithoutSwapFeeOutOverIn
@@ -1054,7 +1055,15 @@ export const TradeClipboard: FunctionComponent<{
               <div className="flex justify-between">
                 <div className="caption">{t("swap.expectedOutput")}</div>
                 <div className="caption whitespace-nowrap text-osmoverse-200">
-                  {`≈ ${tradeTokenInConfig.expectedSwapResult.amount.toString()} `}
+                  {`≈ ${tradeTokenInConfig.expectedSwapResult.amount
+                    .maxDecimals(
+                      tradeTokenInConfig.expectedSwapResult.amount
+                        .toDec()
+                        .gt(new Dec(1))
+                        ? 12
+                        : 8
+                    )
+                    .toString()} `}
                 </div>
               </div>
               <div className="flex justify-between">
@@ -1069,27 +1078,11 @@ export const TradeClipboard: FunctionComponent<{
                   )}
                 >
                   <span className="whitespace-nowrap">
-                    {new CoinPretty(
-                      tradeTokenInConfig.outCurrency,
-                      minOutAmountLessSlippage.mul(
-                        DecUtils.getTenExponentNInPrecisionRange(
-                          tradeTokenInConfig.outCurrency.coinDecimals
-                        )
-                      )
-                    ).toString()}
+                    {minOutAmountLessSlippage.toString()}
                   </span>
                   <span>
                     {`≈ ${
-                      priceStore.calculatePrice(
-                        new CoinPretty(
-                          tradeTokenInConfig.outCurrency,
-                          minOutAmountLessSlippage.mul(
-                            DecUtils.getTenExponentNInPrecisionRange(
-                              tradeTokenInConfig.outCurrency.coinDecimals
-                            )
-                          )
-                        )
-                      ) || "0"
+                      priceStore.calculatePrice(minOutAmountLessSlippage) || "0"
                     }`}
                   </span>
                 </div>
