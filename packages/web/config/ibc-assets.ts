@@ -380,7 +380,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.fil.filecoin],
+          sourceChainTokens: [AxelarSourceChainConfigs.wfil.filecoin],
         },
       },
       {
