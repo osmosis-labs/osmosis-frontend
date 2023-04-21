@@ -10,7 +10,7 @@ import { useAmplitudeAnalytics } from "~/hooks";
 import { useStore } from "~/stores";
 
 const Home: NextPage = observer(function () {
-  const { chainStore, queriesStore, priceStore } = useStore();
+  const { chainStore, queriesStore } = useStore();
   const { chainId } = chainStore.osmosis;
 
   const queries = queriesStore.get(chainId);
@@ -136,17 +136,17 @@ const Home: NextPage = observer(function () {
               hasEnoughAssets = true;
               break;
             }
+          }
 
-            // only pools with at least 100,000 REGEN
-            if (
-              "originChainId" in asset.amount.currency &&
-              asset.amount.currency.coinMinimalDenom ===
-                "ibc/1DCC8A6CB5689018431323953344A9F6CC4D0BFB261E88C9F7777372C10CD076"
-            ) {
-              if (asset.amount.toDec().gt(new Dec(100_000))) {
-                hasEnoughAssets = true;
-                break;
-              }
+          // only pools with at least 100,000 REGEN
+          if (
+            "originChainId" in asset.amount.currency &&
+            asset.amount.currency.coinMinimalDenom ===
+              "ibc/1DCC8A6CB5689018431323953344A9F6CC4D0BFB261E88C9F7777372C10CD076"
+          ) {
+            if (asset.amount.toDec().gt(new Dec(100_000))) {
+              hasEnoughAssets = true;
+              break;
             }
           }
 
@@ -169,7 +169,7 @@ const Home: NextPage = observer(function () {
 
         return hasEnoughAssets;
       }),
-    [allPools, priceStore.response]
+    [allPools]
   );
 
   const requestedRemaining = useRef(false);

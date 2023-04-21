@@ -2403,6 +2403,1939 @@ exports.osmosis = $root.osmosis = (() => {
     const gamm = {};
     gamm.v1beta1 = (function () {
       const v1beta1 = {};
+      v1beta1.Msg = (function () {
+        function Msg(rpcImpl, requestDelimited, responseDelimited) {
+          $protobuf.rpc.Service.call(
+            this,
+            rpcImpl,
+            requestDelimited,
+            responseDelimited
+          );
+        }
+        (Msg.prototype = Object.create(
+          $protobuf.rpc.Service.prototype
+        )).constructor = Msg;
+        Msg.create = function create(
+          rpcImpl,
+          requestDelimited,
+          responseDelimited
+        ) {
+          return new this(rpcImpl, requestDelimited, responseDelimited);
+        };
+        Object.defineProperty(
+          (Msg.prototype.joinPool = function joinPool(request, callback) {
+            return this.rpcCall(
+              joinPool,
+              $root.osmosis.gamm.v1beta1.MsgJoinPool,
+              $root.osmosis.gamm.v1beta1.MsgJoinPoolResponse,
+              request,
+              callback
+            );
+          }),
+          "name",
+          { value: "JoinPool" }
+        );
+        Object.defineProperty(
+          (Msg.prototype.exitPool = function exitPool(request, callback) {
+            return this.rpcCall(
+              exitPool,
+              $root.osmosis.gamm.v1beta1.MsgExitPool,
+              $root.osmosis.gamm.v1beta1.MsgExitPoolResponse,
+              request,
+              callback
+            );
+          }),
+          "name",
+          { value: "ExitPool" }
+        );
+        Object.defineProperty(
+          (Msg.prototype.swapExactAmountIn = function swapExactAmountIn(
+            request,
+            callback
+          ) {
+            return this.rpcCall(
+              swapExactAmountIn,
+              $root.osmosis.gamm.v1beta1.MsgSwapExactAmountIn,
+              $root.osmosis.gamm.v1beta1.MsgSwapExactAmountInResponse,
+              request,
+              callback
+            );
+          }),
+          "name",
+          { value: "SwapExactAmountIn" }
+        );
+        Object.defineProperty(
+          (Msg.prototype.swapExactAmountOut = function swapExactAmountOut(
+            request,
+            callback
+          ) {
+            return this.rpcCall(
+              swapExactAmountOut,
+              $root.osmosis.gamm.v1beta1.MsgSwapExactAmountOut,
+              $root.osmosis.gamm.v1beta1.MsgSwapExactAmountOutResponse,
+              request,
+              callback
+            );
+          }),
+          "name",
+          { value: "SwapExactAmountOut" }
+        );
+        Object.defineProperty(
+          (Msg.prototype.joinSwapExternAmountIn =
+            function joinSwapExternAmountIn(request, callback) {
+              return this.rpcCall(
+                joinSwapExternAmountIn,
+                $root.osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn,
+                $root.osmosis.gamm.v1beta1.MsgJoinSwapExternAmountInResponse,
+                request,
+                callback
+              );
+            }),
+          "name",
+          { value: "JoinSwapExternAmountIn" }
+        );
+        Object.defineProperty(
+          (Msg.prototype.joinSwapShareAmountOut =
+            function joinSwapShareAmountOut(request, callback) {
+              return this.rpcCall(
+                joinSwapShareAmountOut,
+                $root.osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOut,
+                $root.osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOutResponse,
+                request,
+                callback
+              );
+            }),
+          "name",
+          { value: "JoinSwapShareAmountOut" }
+        );
+        Object.defineProperty(
+          (Msg.prototype.exitSwapExternAmountOut =
+            function exitSwapExternAmountOut(request, callback) {
+              return this.rpcCall(
+                exitSwapExternAmountOut,
+                $root.osmosis.gamm.v1beta1.MsgExitSwapExternAmountOut,
+                $root.osmosis.gamm.v1beta1.MsgExitSwapExternAmountOutResponse,
+                request,
+                callback
+              );
+            }),
+          "name",
+          { value: "ExitSwapExternAmountOut" }
+        );
+        Object.defineProperty(
+          (Msg.prototype.exitSwapShareAmountIn = function exitSwapShareAmountIn(
+            request,
+            callback
+          ) {
+            return this.rpcCall(
+              exitSwapShareAmountIn,
+              $root.osmosis.gamm.v1beta1.MsgExitSwapShareAmountIn,
+              $root.osmosis.gamm.v1beta1.MsgExitSwapShareAmountInResponse,
+              request,
+              callback
+            );
+          }),
+          "name",
+          { value: "ExitSwapShareAmountIn" }
+        );
+        return Msg;
+      })();
+      v1beta1.MsgJoinPool = (function () {
+        function MsgJoinPool(p) {
+          this.tokenInMaxs = [];
+          if (p)
+            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+              if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+        }
+        MsgJoinPool.prototype.sender = "";
+        MsgJoinPool.prototype.poolId = $util.Long
+          ? $util.Long.fromBits(0, 0, true)
+          : 0;
+        MsgJoinPool.prototype.shareOutAmount = "";
+        MsgJoinPool.prototype.tokenInMaxs = $util.emptyArray;
+        MsgJoinPool.create = function create(properties) {
+          return new MsgJoinPool(properties);
+        };
+        MsgJoinPool.encode = function encode(m, w) {
+          if (!w) w = $Writer.create();
+          if (m.sender != null && Object.hasOwnProperty.call(m, "sender"))
+            w.uint32(10).string(m.sender);
+          if (m.poolId != null && Object.hasOwnProperty.call(m, "poolId"))
+            w.uint32(16).uint64(m.poolId);
+          if (
+            m.shareOutAmount != null &&
+            Object.hasOwnProperty.call(m, "shareOutAmount")
+          )
+            w.uint32(26).string(m.shareOutAmount);
+          if (m.tokenInMaxs != null && m.tokenInMaxs.length) {
+            for (var i = 0; i < m.tokenInMaxs.length; ++i)
+              $root.cosmos.base.v1beta1.Coin.encode(
+                m.tokenInMaxs[i],
+                w.uint32(34).fork()
+              ).ldelim();
+          }
+          return w;
+        };
+        MsgJoinPool.decode = function decode(r, l) {
+          if (!(r instanceof $Reader)) r = $Reader.create(r);
+          var c = l === undefined ? r.len : r.pos + l,
+            m = new $root.osmosis.gamm.v1beta1.MsgJoinPool();
+          while (r.pos < c) {
+            var t = r.uint32();
+            switch (t >>> 3) {
+              case 1:
+                m.sender = r.string();
+                break;
+              case 2:
+                m.poolId = r.uint64();
+                break;
+              case 3:
+                m.shareOutAmount = r.string();
+                break;
+              case 4:
+                if (!(m.tokenInMaxs && m.tokenInMaxs.length))
+                  m.tokenInMaxs = [];
+                m.tokenInMaxs.push(
+                  $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
+                );
+                break;
+              default:
+                r.skipType(t & 7);
+                break;
+            }
+          }
+          return m;
+        };
+        MsgJoinPool.fromObject = function fromObject(d) {
+          if (d instanceof $root.osmosis.gamm.v1beta1.MsgJoinPool) return d;
+          var m = new $root.osmosis.gamm.v1beta1.MsgJoinPool();
+          if (d.sender != null) {
+            m.sender = String(d.sender);
+          }
+          if (d.poolId != null) {
+            if ($util.Long)
+              (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
+            else if (typeof d.poolId === "string")
+              m.poolId = parseInt(d.poolId, 10);
+            else if (typeof d.poolId === "number") m.poolId = d.poolId;
+            else if (typeof d.poolId === "object")
+              m.poolId = new $util.LongBits(
+                d.poolId.low >>> 0,
+                d.poolId.high >>> 0
+              ).toNumber(true);
+          }
+          if (d.shareOutAmount != null) {
+            m.shareOutAmount = String(d.shareOutAmount);
+          }
+          if (d.tokenInMaxs) {
+            if (!Array.isArray(d.tokenInMaxs))
+              throw TypeError(
+                ".osmosis.gamm.v1beta1.MsgJoinPool.tokenInMaxs: array expected"
+              );
+            m.tokenInMaxs = [];
+            for (var i = 0; i < d.tokenInMaxs.length; ++i) {
+              if (typeof d.tokenInMaxs[i] !== "object")
+                throw TypeError(
+                  ".osmosis.gamm.v1beta1.MsgJoinPool.tokenInMaxs: object expected"
+                );
+              m.tokenInMaxs[i] = $root.cosmos.base.v1beta1.Coin.fromObject(
+                d.tokenInMaxs[i]
+              );
+            }
+          }
+          return m;
+        };
+        MsgJoinPool.toObject = function toObject(m, o) {
+          if (!o) o = {};
+          var d = {};
+          if (o.arrays || o.defaults) {
+            d.tokenInMaxs = [];
+          }
+          if (o.defaults) {
+            d.sender = "";
+            if ($util.Long) {
+              var n = new $util.Long(0, 0, true);
+              d.poolId =
+                o.longs === String
+                  ? n.toString()
+                  : o.longs === Number
+                  ? n.toNumber()
+                  : n;
+            } else d.poolId = o.longs === String ? "0" : 0;
+            d.shareOutAmount = "";
+          }
+          if (m.sender != null && m.hasOwnProperty("sender")) {
+            d.sender = m.sender;
+          }
+          if (m.poolId != null && m.hasOwnProperty("poolId")) {
+            if (typeof m.poolId === "number")
+              d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
+            else
+              d.poolId =
+                o.longs === String
+                  ? $util.Long.prototype.toString.call(m.poolId)
+                  : o.longs === Number
+                  ? new $util.LongBits(
+                      m.poolId.low >>> 0,
+                      m.poolId.high >>> 0
+                    ).toNumber(true)
+                  : m.poolId;
+          }
+          if (m.shareOutAmount != null && m.hasOwnProperty("shareOutAmount")) {
+            d.shareOutAmount = m.shareOutAmount;
+          }
+          if (m.tokenInMaxs && m.tokenInMaxs.length) {
+            d.tokenInMaxs = [];
+            for (var j = 0; j < m.tokenInMaxs.length; ++j) {
+              d.tokenInMaxs[j] = $root.cosmos.base.v1beta1.Coin.toObject(
+                m.tokenInMaxs[j],
+                o
+              );
+            }
+          }
+          return d;
+        };
+        MsgJoinPool.prototype.toJSON = function toJSON() {
+          return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+        return MsgJoinPool;
+      })();
+      v1beta1.MsgJoinPoolResponse = (function () {
+        function MsgJoinPoolResponse(p) {
+          this.tokenIn = [];
+          if (p)
+            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+              if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+        }
+        MsgJoinPoolResponse.prototype.shareOutAmount = "";
+        MsgJoinPoolResponse.prototype.tokenIn = $util.emptyArray;
+        MsgJoinPoolResponse.create = function create(properties) {
+          return new MsgJoinPoolResponse(properties);
+        };
+        MsgJoinPoolResponse.encode = function encode(m, w) {
+          if (!w) w = $Writer.create();
+          if (
+            m.shareOutAmount != null &&
+            Object.hasOwnProperty.call(m, "shareOutAmount")
+          )
+            w.uint32(10).string(m.shareOutAmount);
+          if (m.tokenIn != null && m.tokenIn.length) {
+            for (var i = 0; i < m.tokenIn.length; ++i)
+              $root.cosmos.base.v1beta1.Coin.encode(
+                m.tokenIn[i],
+                w.uint32(18).fork()
+              ).ldelim();
+          }
+          return w;
+        };
+        MsgJoinPoolResponse.decode = function decode(r, l) {
+          if (!(r instanceof $Reader)) r = $Reader.create(r);
+          var c = l === undefined ? r.len : r.pos + l,
+            m = new $root.osmosis.gamm.v1beta1.MsgJoinPoolResponse();
+          while (r.pos < c) {
+            var t = r.uint32();
+            switch (t >>> 3) {
+              case 1:
+                m.shareOutAmount = r.string();
+                break;
+              case 2:
+                if (!(m.tokenIn && m.tokenIn.length)) m.tokenIn = [];
+                m.tokenIn.push(
+                  $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
+                );
+                break;
+              default:
+                r.skipType(t & 7);
+                break;
+            }
+          }
+          return m;
+        };
+        MsgJoinPoolResponse.fromObject = function fromObject(d) {
+          if (d instanceof $root.osmosis.gamm.v1beta1.MsgJoinPoolResponse)
+            return d;
+          var m = new $root.osmosis.gamm.v1beta1.MsgJoinPoolResponse();
+          if (d.shareOutAmount != null) {
+            m.shareOutAmount = String(d.shareOutAmount);
+          }
+          if (d.tokenIn) {
+            if (!Array.isArray(d.tokenIn))
+              throw TypeError(
+                ".osmosis.gamm.v1beta1.MsgJoinPoolResponse.tokenIn: array expected"
+              );
+            m.tokenIn = [];
+            for (var i = 0; i < d.tokenIn.length; ++i) {
+              if (typeof d.tokenIn[i] !== "object")
+                throw TypeError(
+                  ".osmosis.gamm.v1beta1.MsgJoinPoolResponse.tokenIn: object expected"
+                );
+              m.tokenIn[i] = $root.cosmos.base.v1beta1.Coin.fromObject(
+                d.tokenIn[i]
+              );
+            }
+          }
+          return m;
+        };
+        MsgJoinPoolResponse.toObject = function toObject(m, o) {
+          if (!o) o = {};
+          var d = {};
+          if (o.arrays || o.defaults) {
+            d.tokenIn = [];
+          }
+          if (o.defaults) {
+            d.shareOutAmount = "";
+          }
+          if (m.shareOutAmount != null && m.hasOwnProperty("shareOutAmount")) {
+            d.shareOutAmount = m.shareOutAmount;
+          }
+          if (m.tokenIn && m.tokenIn.length) {
+            d.tokenIn = [];
+            for (var j = 0; j < m.tokenIn.length; ++j) {
+              d.tokenIn[j] = $root.cosmos.base.v1beta1.Coin.toObject(
+                m.tokenIn[j],
+                o
+              );
+            }
+          }
+          return d;
+        };
+        MsgJoinPoolResponse.prototype.toJSON = function toJSON() {
+          return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+        return MsgJoinPoolResponse;
+      })();
+      v1beta1.MsgExitPool = (function () {
+        function MsgExitPool(p) {
+          this.tokenOutMins = [];
+          if (p)
+            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+              if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+        }
+        MsgExitPool.prototype.sender = "";
+        MsgExitPool.prototype.poolId = $util.Long
+          ? $util.Long.fromBits(0, 0, true)
+          : 0;
+        MsgExitPool.prototype.shareInAmount = "";
+        MsgExitPool.prototype.tokenOutMins = $util.emptyArray;
+        MsgExitPool.create = function create(properties) {
+          return new MsgExitPool(properties);
+        };
+        MsgExitPool.encode = function encode(m, w) {
+          if (!w) w = $Writer.create();
+          if (m.sender != null && Object.hasOwnProperty.call(m, "sender"))
+            w.uint32(10).string(m.sender);
+          if (m.poolId != null && Object.hasOwnProperty.call(m, "poolId"))
+            w.uint32(16).uint64(m.poolId);
+          if (
+            m.shareInAmount != null &&
+            Object.hasOwnProperty.call(m, "shareInAmount")
+          )
+            w.uint32(26).string(m.shareInAmount);
+          if (m.tokenOutMins != null && m.tokenOutMins.length) {
+            for (var i = 0; i < m.tokenOutMins.length; ++i)
+              $root.cosmos.base.v1beta1.Coin.encode(
+                m.tokenOutMins[i],
+                w.uint32(34).fork()
+              ).ldelim();
+          }
+          return w;
+        };
+        MsgExitPool.decode = function decode(r, l) {
+          if (!(r instanceof $Reader)) r = $Reader.create(r);
+          var c = l === undefined ? r.len : r.pos + l,
+            m = new $root.osmosis.gamm.v1beta1.MsgExitPool();
+          while (r.pos < c) {
+            var t = r.uint32();
+            switch (t >>> 3) {
+              case 1:
+                m.sender = r.string();
+                break;
+              case 2:
+                m.poolId = r.uint64();
+                break;
+              case 3:
+                m.shareInAmount = r.string();
+                break;
+              case 4:
+                if (!(m.tokenOutMins && m.tokenOutMins.length))
+                  m.tokenOutMins = [];
+                m.tokenOutMins.push(
+                  $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
+                );
+                break;
+              default:
+                r.skipType(t & 7);
+                break;
+            }
+          }
+          return m;
+        };
+        MsgExitPool.fromObject = function fromObject(d) {
+          if (d instanceof $root.osmosis.gamm.v1beta1.MsgExitPool) return d;
+          var m = new $root.osmosis.gamm.v1beta1.MsgExitPool();
+          if (d.sender != null) {
+            m.sender = String(d.sender);
+          }
+          if (d.poolId != null) {
+            if ($util.Long)
+              (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
+            else if (typeof d.poolId === "string")
+              m.poolId = parseInt(d.poolId, 10);
+            else if (typeof d.poolId === "number") m.poolId = d.poolId;
+            else if (typeof d.poolId === "object")
+              m.poolId = new $util.LongBits(
+                d.poolId.low >>> 0,
+                d.poolId.high >>> 0
+              ).toNumber(true);
+          }
+          if (d.shareInAmount != null) {
+            m.shareInAmount = String(d.shareInAmount);
+          }
+          if (d.tokenOutMins) {
+            if (!Array.isArray(d.tokenOutMins))
+              throw TypeError(
+                ".osmosis.gamm.v1beta1.MsgExitPool.tokenOutMins: array expected"
+              );
+            m.tokenOutMins = [];
+            for (var i = 0; i < d.tokenOutMins.length; ++i) {
+              if (typeof d.tokenOutMins[i] !== "object")
+                throw TypeError(
+                  ".osmosis.gamm.v1beta1.MsgExitPool.tokenOutMins: object expected"
+                );
+              m.tokenOutMins[i] = $root.cosmos.base.v1beta1.Coin.fromObject(
+                d.tokenOutMins[i]
+              );
+            }
+          }
+          return m;
+        };
+        MsgExitPool.toObject = function toObject(m, o) {
+          if (!o) o = {};
+          var d = {};
+          if (o.arrays || o.defaults) {
+            d.tokenOutMins = [];
+          }
+          if (o.defaults) {
+            d.sender = "";
+            if ($util.Long) {
+              var n = new $util.Long(0, 0, true);
+              d.poolId =
+                o.longs === String
+                  ? n.toString()
+                  : o.longs === Number
+                  ? n.toNumber()
+                  : n;
+            } else d.poolId = o.longs === String ? "0" : 0;
+            d.shareInAmount = "";
+          }
+          if (m.sender != null && m.hasOwnProperty("sender")) {
+            d.sender = m.sender;
+          }
+          if (m.poolId != null && m.hasOwnProperty("poolId")) {
+            if (typeof m.poolId === "number")
+              d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
+            else
+              d.poolId =
+                o.longs === String
+                  ? $util.Long.prototype.toString.call(m.poolId)
+                  : o.longs === Number
+                  ? new $util.LongBits(
+                      m.poolId.low >>> 0,
+                      m.poolId.high >>> 0
+                    ).toNumber(true)
+                  : m.poolId;
+          }
+          if (m.shareInAmount != null && m.hasOwnProperty("shareInAmount")) {
+            d.shareInAmount = m.shareInAmount;
+          }
+          if (m.tokenOutMins && m.tokenOutMins.length) {
+            d.tokenOutMins = [];
+            for (var j = 0; j < m.tokenOutMins.length; ++j) {
+              d.tokenOutMins[j] = $root.cosmos.base.v1beta1.Coin.toObject(
+                m.tokenOutMins[j],
+                o
+              );
+            }
+          }
+          return d;
+        };
+        MsgExitPool.prototype.toJSON = function toJSON() {
+          return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+        return MsgExitPool;
+      })();
+      v1beta1.MsgExitPoolResponse = (function () {
+        function MsgExitPoolResponse(p) {
+          this.tokenOut = [];
+          if (p)
+            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+              if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+        }
+        MsgExitPoolResponse.prototype.tokenOut = $util.emptyArray;
+        MsgExitPoolResponse.create = function create(properties) {
+          return new MsgExitPoolResponse(properties);
+        };
+        MsgExitPoolResponse.encode = function encode(m, w) {
+          if (!w) w = $Writer.create();
+          if (m.tokenOut != null && m.tokenOut.length) {
+            for (var i = 0; i < m.tokenOut.length; ++i)
+              $root.cosmos.base.v1beta1.Coin.encode(
+                m.tokenOut[i],
+                w.uint32(10).fork()
+              ).ldelim();
+          }
+          return w;
+        };
+        MsgExitPoolResponse.decode = function decode(r, l) {
+          if (!(r instanceof $Reader)) r = $Reader.create(r);
+          var c = l === undefined ? r.len : r.pos + l,
+            m = new $root.osmosis.gamm.v1beta1.MsgExitPoolResponse();
+          while (r.pos < c) {
+            var t = r.uint32();
+            switch (t >>> 3) {
+              case 1:
+                if (!(m.tokenOut && m.tokenOut.length)) m.tokenOut = [];
+                m.tokenOut.push(
+                  $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
+                );
+                break;
+              default:
+                r.skipType(t & 7);
+                break;
+            }
+          }
+          return m;
+        };
+        MsgExitPoolResponse.fromObject = function fromObject(d) {
+          if (d instanceof $root.osmosis.gamm.v1beta1.MsgExitPoolResponse)
+            return d;
+          var m = new $root.osmosis.gamm.v1beta1.MsgExitPoolResponse();
+          if (d.tokenOut) {
+            if (!Array.isArray(d.tokenOut))
+              throw TypeError(
+                ".osmosis.gamm.v1beta1.MsgExitPoolResponse.tokenOut: array expected"
+              );
+            m.tokenOut = [];
+            for (var i = 0; i < d.tokenOut.length; ++i) {
+              if (typeof d.tokenOut[i] !== "object")
+                throw TypeError(
+                  ".osmosis.gamm.v1beta1.MsgExitPoolResponse.tokenOut: object expected"
+                );
+              m.tokenOut[i] = $root.cosmos.base.v1beta1.Coin.fromObject(
+                d.tokenOut[i]
+              );
+            }
+          }
+          return m;
+        };
+        MsgExitPoolResponse.toObject = function toObject(m, o) {
+          if (!o) o = {};
+          var d = {};
+          if (o.arrays || o.defaults) {
+            d.tokenOut = [];
+          }
+          if (m.tokenOut && m.tokenOut.length) {
+            d.tokenOut = [];
+            for (var j = 0; j < m.tokenOut.length; ++j) {
+              d.tokenOut[j] = $root.cosmos.base.v1beta1.Coin.toObject(
+                m.tokenOut[j],
+                o
+              );
+            }
+          }
+          return d;
+        };
+        MsgExitPoolResponse.prototype.toJSON = function toJSON() {
+          return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+        return MsgExitPoolResponse;
+      })();
+      v1beta1.MsgSwapExactAmountIn = (function () {
+        function MsgSwapExactAmountIn(p) {
+          this.routes = [];
+          if (p)
+            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+              if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+        }
+        MsgSwapExactAmountIn.prototype.sender = "";
+        MsgSwapExactAmountIn.prototype.routes = $util.emptyArray;
+        MsgSwapExactAmountIn.prototype.tokenIn = null;
+        MsgSwapExactAmountIn.prototype.tokenOutMinAmount = "";
+        MsgSwapExactAmountIn.create = function create(properties) {
+          return new MsgSwapExactAmountIn(properties);
+        };
+        MsgSwapExactAmountIn.encode = function encode(m, w) {
+          if (!w) w = $Writer.create();
+          if (m.sender != null && Object.hasOwnProperty.call(m, "sender"))
+            w.uint32(10).string(m.sender);
+          if (m.routes != null && m.routes.length) {
+            for (var i = 0; i < m.routes.length; ++i)
+              $root.osmosis.poolmanager.v1beta1.SwapAmountInRoute.encode(
+                m.routes[i],
+                w.uint32(18).fork()
+              ).ldelim();
+          }
+          if (m.tokenIn != null && Object.hasOwnProperty.call(m, "tokenIn"))
+            $root.cosmos.base.v1beta1.Coin.encode(
+              m.tokenIn,
+              w.uint32(26).fork()
+            ).ldelim();
+          if (
+            m.tokenOutMinAmount != null &&
+            Object.hasOwnProperty.call(m, "tokenOutMinAmount")
+          )
+            w.uint32(34).string(m.tokenOutMinAmount);
+          return w;
+        };
+        MsgSwapExactAmountIn.decode = function decode(r, l) {
+          if (!(r instanceof $Reader)) r = $Reader.create(r);
+          var c = l === undefined ? r.len : r.pos + l,
+            m = new $root.osmosis.gamm.v1beta1.MsgSwapExactAmountIn();
+          while (r.pos < c) {
+            var t = r.uint32();
+            switch (t >>> 3) {
+              case 1:
+                m.sender = r.string();
+                break;
+              case 2:
+                if (!(m.routes && m.routes.length)) m.routes = [];
+                m.routes.push(
+                  $root.osmosis.poolmanager.v1beta1.SwapAmountInRoute.decode(
+                    r,
+                    r.uint32()
+                  )
+                );
+                break;
+              case 3:
+                m.tokenIn = $root.cosmos.base.v1beta1.Coin.decode(
+                  r,
+                  r.uint32()
+                );
+                break;
+              case 4:
+                m.tokenOutMinAmount = r.string();
+                break;
+              default:
+                r.skipType(t & 7);
+                break;
+            }
+          }
+          return m;
+        };
+        MsgSwapExactAmountIn.fromObject = function fromObject(d) {
+          if (d instanceof $root.osmosis.gamm.v1beta1.MsgSwapExactAmountIn)
+            return d;
+          var m = new $root.osmosis.gamm.v1beta1.MsgSwapExactAmountIn();
+          if (d.sender != null) {
+            m.sender = String(d.sender);
+          }
+          if (d.routes) {
+            if (!Array.isArray(d.routes))
+              throw TypeError(
+                ".osmosis.gamm.v1beta1.MsgSwapExactAmountIn.routes: array expected"
+              );
+            m.routes = [];
+            for (var i = 0; i < d.routes.length; ++i) {
+              if (typeof d.routes[i] !== "object")
+                throw TypeError(
+                  ".osmosis.gamm.v1beta1.MsgSwapExactAmountIn.routes: object expected"
+                );
+              m.routes[i] =
+                $root.osmosis.poolmanager.v1beta1.SwapAmountInRoute.fromObject(
+                  d.routes[i]
+                );
+            }
+          }
+          if (d.tokenIn != null) {
+            if (typeof d.tokenIn !== "object")
+              throw TypeError(
+                ".osmosis.gamm.v1beta1.MsgSwapExactAmountIn.tokenIn: object expected"
+              );
+            m.tokenIn = $root.cosmos.base.v1beta1.Coin.fromObject(d.tokenIn);
+          }
+          if (d.tokenOutMinAmount != null) {
+            m.tokenOutMinAmount = String(d.tokenOutMinAmount);
+          }
+          return m;
+        };
+        MsgSwapExactAmountIn.toObject = function toObject(m, o) {
+          if (!o) o = {};
+          var d = {};
+          if (o.arrays || o.defaults) {
+            d.routes = [];
+          }
+          if (o.defaults) {
+            d.sender = "";
+            d.tokenIn = null;
+            d.tokenOutMinAmount = "";
+          }
+          if (m.sender != null && m.hasOwnProperty("sender")) {
+            d.sender = m.sender;
+          }
+          if (m.routes && m.routes.length) {
+            d.routes = [];
+            for (var j = 0; j < m.routes.length; ++j) {
+              d.routes[j] =
+                $root.osmosis.poolmanager.v1beta1.SwapAmountInRoute.toObject(
+                  m.routes[j],
+                  o
+                );
+            }
+          }
+          if (m.tokenIn != null && m.hasOwnProperty("tokenIn")) {
+            d.tokenIn = $root.cosmos.base.v1beta1.Coin.toObject(m.tokenIn, o);
+          }
+          if (
+            m.tokenOutMinAmount != null &&
+            m.hasOwnProperty("tokenOutMinAmount")
+          ) {
+            d.tokenOutMinAmount = m.tokenOutMinAmount;
+          }
+          return d;
+        };
+        MsgSwapExactAmountIn.prototype.toJSON = function toJSON() {
+          return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+        return MsgSwapExactAmountIn;
+      })();
+      v1beta1.MsgSwapExactAmountInResponse = (function () {
+        function MsgSwapExactAmountInResponse(p) {
+          if (p)
+            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+              if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+        }
+        MsgSwapExactAmountInResponse.prototype.tokenOutAmount = "";
+        MsgSwapExactAmountInResponse.create = function create(properties) {
+          return new MsgSwapExactAmountInResponse(properties);
+        };
+        MsgSwapExactAmountInResponse.encode = function encode(m, w) {
+          if (!w) w = $Writer.create();
+          if (
+            m.tokenOutAmount != null &&
+            Object.hasOwnProperty.call(m, "tokenOutAmount")
+          )
+            w.uint32(10).string(m.tokenOutAmount);
+          return w;
+        };
+        MsgSwapExactAmountInResponse.decode = function decode(r, l) {
+          if (!(r instanceof $Reader)) r = $Reader.create(r);
+          var c = l === undefined ? r.len : r.pos + l,
+            m = new $root.osmosis.gamm.v1beta1.MsgSwapExactAmountInResponse();
+          while (r.pos < c) {
+            var t = r.uint32();
+            switch (t >>> 3) {
+              case 1:
+                m.tokenOutAmount = r.string();
+                break;
+              default:
+                r.skipType(t & 7);
+                break;
+            }
+          }
+          return m;
+        };
+        MsgSwapExactAmountInResponse.fromObject = function fromObject(d) {
+          if (
+            d instanceof $root.osmosis.gamm.v1beta1.MsgSwapExactAmountInResponse
+          )
+            return d;
+          var m = new $root.osmosis.gamm.v1beta1.MsgSwapExactAmountInResponse();
+          if (d.tokenOutAmount != null) {
+            m.tokenOutAmount = String(d.tokenOutAmount);
+          }
+          return m;
+        };
+        MsgSwapExactAmountInResponse.toObject = function toObject(m, o) {
+          if (!o) o = {};
+          var d = {};
+          if (o.defaults) {
+            d.tokenOutAmount = "";
+          }
+          if (m.tokenOutAmount != null && m.hasOwnProperty("tokenOutAmount")) {
+            d.tokenOutAmount = m.tokenOutAmount;
+          }
+          return d;
+        };
+        MsgSwapExactAmountInResponse.prototype.toJSON = function toJSON() {
+          return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+        return MsgSwapExactAmountInResponse;
+      })();
+      v1beta1.MsgSwapExactAmountOut = (function () {
+        function MsgSwapExactAmountOut(p) {
+          this.routes = [];
+          if (p)
+            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+              if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+        }
+        MsgSwapExactAmountOut.prototype.sender = "";
+        MsgSwapExactAmountOut.prototype.routes = $util.emptyArray;
+        MsgSwapExactAmountOut.prototype.tokenInMaxAmount = "";
+        MsgSwapExactAmountOut.prototype.tokenOut = null;
+        MsgSwapExactAmountOut.create = function create(properties) {
+          return new MsgSwapExactAmountOut(properties);
+        };
+        MsgSwapExactAmountOut.encode = function encode(m, w) {
+          if (!w) w = $Writer.create();
+          if (m.sender != null && Object.hasOwnProperty.call(m, "sender"))
+            w.uint32(10).string(m.sender);
+          if (m.routes != null && m.routes.length) {
+            for (var i = 0; i < m.routes.length; ++i)
+              $root.osmosis.poolmanager.v1beta1.SwapAmountOutRoute.encode(
+                m.routes[i],
+                w.uint32(18).fork()
+              ).ldelim();
+          }
+          if (
+            m.tokenInMaxAmount != null &&
+            Object.hasOwnProperty.call(m, "tokenInMaxAmount")
+          )
+            w.uint32(26).string(m.tokenInMaxAmount);
+          if (m.tokenOut != null && Object.hasOwnProperty.call(m, "tokenOut"))
+            $root.cosmos.base.v1beta1.Coin.encode(
+              m.tokenOut,
+              w.uint32(34).fork()
+            ).ldelim();
+          return w;
+        };
+        MsgSwapExactAmountOut.decode = function decode(r, l) {
+          if (!(r instanceof $Reader)) r = $Reader.create(r);
+          var c = l === undefined ? r.len : r.pos + l,
+            m = new $root.osmosis.gamm.v1beta1.MsgSwapExactAmountOut();
+          while (r.pos < c) {
+            var t = r.uint32();
+            switch (t >>> 3) {
+              case 1:
+                m.sender = r.string();
+                break;
+              case 2:
+                if (!(m.routes && m.routes.length)) m.routes = [];
+                m.routes.push(
+                  $root.osmosis.poolmanager.v1beta1.SwapAmountOutRoute.decode(
+                    r,
+                    r.uint32()
+                  )
+                );
+                break;
+              case 3:
+                m.tokenInMaxAmount = r.string();
+                break;
+              case 4:
+                m.tokenOut = $root.cosmos.base.v1beta1.Coin.decode(
+                  r,
+                  r.uint32()
+                );
+                break;
+              default:
+                r.skipType(t & 7);
+                break;
+            }
+          }
+          return m;
+        };
+        MsgSwapExactAmountOut.fromObject = function fromObject(d) {
+          if (d instanceof $root.osmosis.gamm.v1beta1.MsgSwapExactAmountOut)
+            return d;
+          var m = new $root.osmosis.gamm.v1beta1.MsgSwapExactAmountOut();
+          if (d.sender != null) {
+            m.sender = String(d.sender);
+          }
+          if (d.routes) {
+            if (!Array.isArray(d.routes))
+              throw TypeError(
+                ".osmosis.gamm.v1beta1.MsgSwapExactAmountOut.routes: array expected"
+              );
+            m.routes = [];
+            for (var i = 0; i < d.routes.length; ++i) {
+              if (typeof d.routes[i] !== "object")
+                throw TypeError(
+                  ".osmosis.gamm.v1beta1.MsgSwapExactAmountOut.routes: object expected"
+                );
+              m.routes[i] =
+                $root.osmosis.poolmanager.v1beta1.SwapAmountOutRoute.fromObject(
+                  d.routes[i]
+                );
+            }
+          }
+          if (d.tokenInMaxAmount != null) {
+            m.tokenInMaxAmount = String(d.tokenInMaxAmount);
+          }
+          if (d.tokenOut != null) {
+            if (typeof d.tokenOut !== "object")
+              throw TypeError(
+                ".osmosis.gamm.v1beta1.MsgSwapExactAmountOut.tokenOut: object expected"
+              );
+            m.tokenOut = $root.cosmos.base.v1beta1.Coin.fromObject(d.tokenOut);
+          }
+          return m;
+        };
+        MsgSwapExactAmountOut.toObject = function toObject(m, o) {
+          if (!o) o = {};
+          var d = {};
+          if (o.arrays || o.defaults) {
+            d.routes = [];
+          }
+          if (o.defaults) {
+            d.sender = "";
+            d.tokenInMaxAmount = "";
+            d.tokenOut = null;
+          }
+          if (m.sender != null && m.hasOwnProperty("sender")) {
+            d.sender = m.sender;
+          }
+          if (m.routes && m.routes.length) {
+            d.routes = [];
+            for (var j = 0; j < m.routes.length; ++j) {
+              d.routes[j] =
+                $root.osmosis.poolmanager.v1beta1.SwapAmountOutRoute.toObject(
+                  m.routes[j],
+                  o
+                );
+            }
+          }
+          if (
+            m.tokenInMaxAmount != null &&
+            m.hasOwnProperty("tokenInMaxAmount")
+          ) {
+            d.tokenInMaxAmount = m.tokenInMaxAmount;
+          }
+          if (m.tokenOut != null && m.hasOwnProperty("tokenOut")) {
+            d.tokenOut = $root.cosmos.base.v1beta1.Coin.toObject(m.tokenOut, o);
+          }
+          return d;
+        };
+        MsgSwapExactAmountOut.prototype.toJSON = function toJSON() {
+          return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+        return MsgSwapExactAmountOut;
+      })();
+      v1beta1.MsgSwapExactAmountOutResponse = (function () {
+        function MsgSwapExactAmountOutResponse(p) {
+          if (p)
+            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+              if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+        }
+        MsgSwapExactAmountOutResponse.prototype.tokenInAmount = "";
+        MsgSwapExactAmountOutResponse.create = function create(properties) {
+          return new MsgSwapExactAmountOutResponse(properties);
+        };
+        MsgSwapExactAmountOutResponse.encode = function encode(m, w) {
+          if (!w) w = $Writer.create();
+          if (
+            m.tokenInAmount != null &&
+            Object.hasOwnProperty.call(m, "tokenInAmount")
+          )
+            w.uint32(10).string(m.tokenInAmount);
+          return w;
+        };
+        MsgSwapExactAmountOutResponse.decode = function decode(r, l) {
+          if (!(r instanceof $Reader)) r = $Reader.create(r);
+          var c = l === undefined ? r.len : r.pos + l,
+            m = new $root.osmosis.gamm.v1beta1.MsgSwapExactAmountOutResponse();
+          while (r.pos < c) {
+            var t = r.uint32();
+            switch (t >>> 3) {
+              case 1:
+                m.tokenInAmount = r.string();
+                break;
+              default:
+                r.skipType(t & 7);
+                break;
+            }
+          }
+          return m;
+        };
+        MsgSwapExactAmountOutResponse.fromObject = function fromObject(d) {
+          if (
+            d instanceof
+            $root.osmosis.gamm.v1beta1.MsgSwapExactAmountOutResponse
+          )
+            return d;
+          var m =
+            new $root.osmosis.gamm.v1beta1.MsgSwapExactAmountOutResponse();
+          if (d.tokenInAmount != null) {
+            m.tokenInAmount = String(d.tokenInAmount);
+          }
+          return m;
+        };
+        MsgSwapExactAmountOutResponse.toObject = function toObject(m, o) {
+          if (!o) o = {};
+          var d = {};
+          if (o.defaults) {
+            d.tokenInAmount = "";
+          }
+          if (m.tokenInAmount != null && m.hasOwnProperty("tokenInAmount")) {
+            d.tokenInAmount = m.tokenInAmount;
+          }
+          return d;
+        };
+        MsgSwapExactAmountOutResponse.prototype.toJSON = function toJSON() {
+          return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+        return MsgSwapExactAmountOutResponse;
+      })();
+      v1beta1.MsgJoinSwapExternAmountIn = (function () {
+        function MsgJoinSwapExternAmountIn(p) {
+          if (p)
+            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+              if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+        }
+        MsgJoinSwapExternAmountIn.prototype.sender = "";
+        MsgJoinSwapExternAmountIn.prototype.poolId = $util.Long
+          ? $util.Long.fromBits(0, 0, true)
+          : 0;
+        MsgJoinSwapExternAmountIn.prototype.tokenIn = null;
+        MsgJoinSwapExternAmountIn.prototype.shareOutMinAmount = "";
+        MsgJoinSwapExternAmountIn.create = function create(properties) {
+          return new MsgJoinSwapExternAmountIn(properties);
+        };
+        MsgJoinSwapExternAmountIn.encode = function encode(m, w) {
+          if (!w) w = $Writer.create();
+          if (m.sender != null && Object.hasOwnProperty.call(m, "sender"))
+            w.uint32(10).string(m.sender);
+          if (m.poolId != null && Object.hasOwnProperty.call(m, "poolId"))
+            w.uint32(16).uint64(m.poolId);
+          if (m.tokenIn != null && Object.hasOwnProperty.call(m, "tokenIn"))
+            $root.cosmos.base.v1beta1.Coin.encode(
+              m.tokenIn,
+              w.uint32(26).fork()
+            ).ldelim();
+          if (
+            m.shareOutMinAmount != null &&
+            Object.hasOwnProperty.call(m, "shareOutMinAmount")
+          )
+            w.uint32(34).string(m.shareOutMinAmount);
+          return w;
+        };
+        MsgJoinSwapExternAmountIn.decode = function decode(r, l) {
+          if (!(r instanceof $Reader)) r = $Reader.create(r);
+          var c = l === undefined ? r.len : r.pos + l,
+            m = new $root.osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn();
+          while (r.pos < c) {
+            var t = r.uint32();
+            switch (t >>> 3) {
+              case 1:
+                m.sender = r.string();
+                break;
+              case 2:
+                m.poolId = r.uint64();
+                break;
+              case 3:
+                m.tokenIn = $root.cosmos.base.v1beta1.Coin.decode(
+                  r,
+                  r.uint32()
+                );
+                break;
+              case 4:
+                m.shareOutMinAmount = r.string();
+                break;
+              default:
+                r.skipType(t & 7);
+                break;
+            }
+          }
+          return m;
+        };
+        MsgJoinSwapExternAmountIn.fromObject = function fromObject(d) {
+          if (d instanceof $root.osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn)
+            return d;
+          var m = new $root.osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn();
+          if (d.sender != null) {
+            m.sender = String(d.sender);
+          }
+          if (d.poolId != null) {
+            if ($util.Long)
+              (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
+            else if (typeof d.poolId === "string")
+              m.poolId = parseInt(d.poolId, 10);
+            else if (typeof d.poolId === "number") m.poolId = d.poolId;
+            else if (typeof d.poolId === "object")
+              m.poolId = new $util.LongBits(
+                d.poolId.low >>> 0,
+                d.poolId.high >>> 0
+              ).toNumber(true);
+          }
+          if (d.tokenIn != null) {
+            if (typeof d.tokenIn !== "object")
+              throw TypeError(
+                ".osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn.tokenIn: object expected"
+              );
+            m.tokenIn = $root.cosmos.base.v1beta1.Coin.fromObject(d.tokenIn);
+          }
+          if (d.shareOutMinAmount != null) {
+            m.shareOutMinAmount = String(d.shareOutMinAmount);
+          }
+          return m;
+        };
+        MsgJoinSwapExternAmountIn.toObject = function toObject(m, o) {
+          if (!o) o = {};
+          var d = {};
+          if (o.defaults) {
+            d.sender = "";
+            if ($util.Long) {
+              var n = new $util.Long(0, 0, true);
+              d.poolId =
+                o.longs === String
+                  ? n.toString()
+                  : o.longs === Number
+                  ? n.toNumber()
+                  : n;
+            } else d.poolId = o.longs === String ? "0" : 0;
+            d.tokenIn = null;
+            d.shareOutMinAmount = "";
+          }
+          if (m.sender != null && m.hasOwnProperty("sender")) {
+            d.sender = m.sender;
+          }
+          if (m.poolId != null && m.hasOwnProperty("poolId")) {
+            if (typeof m.poolId === "number")
+              d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
+            else
+              d.poolId =
+                o.longs === String
+                  ? $util.Long.prototype.toString.call(m.poolId)
+                  : o.longs === Number
+                  ? new $util.LongBits(
+                      m.poolId.low >>> 0,
+                      m.poolId.high >>> 0
+                    ).toNumber(true)
+                  : m.poolId;
+          }
+          if (m.tokenIn != null && m.hasOwnProperty("tokenIn")) {
+            d.tokenIn = $root.cosmos.base.v1beta1.Coin.toObject(m.tokenIn, o);
+          }
+          if (
+            m.shareOutMinAmount != null &&
+            m.hasOwnProperty("shareOutMinAmount")
+          ) {
+            d.shareOutMinAmount = m.shareOutMinAmount;
+          }
+          return d;
+        };
+        MsgJoinSwapExternAmountIn.prototype.toJSON = function toJSON() {
+          return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+        return MsgJoinSwapExternAmountIn;
+      })();
+      v1beta1.MsgJoinSwapExternAmountInResponse = (function () {
+        function MsgJoinSwapExternAmountInResponse(p) {
+          if (p)
+            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+              if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+        }
+        MsgJoinSwapExternAmountInResponse.prototype.shareOutAmount = "";
+        MsgJoinSwapExternAmountInResponse.create = function create(properties) {
+          return new MsgJoinSwapExternAmountInResponse(properties);
+        };
+        MsgJoinSwapExternAmountInResponse.encode = function encode(m, w) {
+          if (!w) w = $Writer.create();
+          if (
+            m.shareOutAmount != null &&
+            Object.hasOwnProperty.call(m, "shareOutAmount")
+          )
+            w.uint32(10).string(m.shareOutAmount);
+          return w;
+        };
+        MsgJoinSwapExternAmountInResponse.decode = function decode(r, l) {
+          if (!(r instanceof $Reader)) r = $Reader.create(r);
+          var c = l === undefined ? r.len : r.pos + l,
+            m =
+              new $root.osmosis.gamm.v1beta1.MsgJoinSwapExternAmountInResponse();
+          while (r.pos < c) {
+            var t = r.uint32();
+            switch (t >>> 3) {
+              case 1:
+                m.shareOutAmount = r.string();
+                break;
+              default:
+                r.skipType(t & 7);
+                break;
+            }
+          }
+          return m;
+        };
+        MsgJoinSwapExternAmountInResponse.fromObject = function fromObject(d) {
+          if (
+            d instanceof
+            $root.osmosis.gamm.v1beta1.MsgJoinSwapExternAmountInResponse
+          )
+            return d;
+          var m =
+            new $root.osmosis.gamm.v1beta1.MsgJoinSwapExternAmountInResponse();
+          if (d.shareOutAmount != null) {
+            m.shareOutAmount = String(d.shareOutAmount);
+          }
+          return m;
+        };
+        MsgJoinSwapExternAmountInResponse.toObject = function toObject(m, o) {
+          if (!o) o = {};
+          var d = {};
+          if (o.defaults) {
+            d.shareOutAmount = "";
+          }
+          if (m.shareOutAmount != null && m.hasOwnProperty("shareOutAmount")) {
+            d.shareOutAmount = m.shareOutAmount;
+          }
+          return d;
+        };
+        MsgJoinSwapExternAmountInResponse.prototype.toJSON = function toJSON() {
+          return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+        return MsgJoinSwapExternAmountInResponse;
+      })();
+      v1beta1.MsgJoinSwapShareAmountOut = (function () {
+        function MsgJoinSwapShareAmountOut(p) {
+          if (p)
+            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+              if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+        }
+        MsgJoinSwapShareAmountOut.prototype.sender = "";
+        MsgJoinSwapShareAmountOut.prototype.poolId = $util.Long
+          ? $util.Long.fromBits(0, 0, true)
+          : 0;
+        MsgJoinSwapShareAmountOut.prototype.tokenInDenom = "";
+        MsgJoinSwapShareAmountOut.prototype.shareOutAmount = "";
+        MsgJoinSwapShareAmountOut.prototype.tokenInMaxAmount = "";
+        MsgJoinSwapShareAmountOut.create = function create(properties) {
+          return new MsgJoinSwapShareAmountOut(properties);
+        };
+        MsgJoinSwapShareAmountOut.encode = function encode(m, w) {
+          if (!w) w = $Writer.create();
+          if (m.sender != null && Object.hasOwnProperty.call(m, "sender"))
+            w.uint32(10).string(m.sender);
+          if (m.poolId != null && Object.hasOwnProperty.call(m, "poolId"))
+            w.uint32(16).uint64(m.poolId);
+          if (
+            m.tokenInDenom != null &&
+            Object.hasOwnProperty.call(m, "tokenInDenom")
+          )
+            w.uint32(26).string(m.tokenInDenom);
+          if (
+            m.shareOutAmount != null &&
+            Object.hasOwnProperty.call(m, "shareOutAmount")
+          )
+            w.uint32(34).string(m.shareOutAmount);
+          if (
+            m.tokenInMaxAmount != null &&
+            Object.hasOwnProperty.call(m, "tokenInMaxAmount")
+          )
+            w.uint32(42).string(m.tokenInMaxAmount);
+          return w;
+        };
+        MsgJoinSwapShareAmountOut.decode = function decode(r, l) {
+          if (!(r instanceof $Reader)) r = $Reader.create(r);
+          var c = l === undefined ? r.len : r.pos + l,
+            m = new $root.osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOut();
+          while (r.pos < c) {
+            var t = r.uint32();
+            switch (t >>> 3) {
+              case 1:
+                m.sender = r.string();
+                break;
+              case 2:
+                m.poolId = r.uint64();
+                break;
+              case 3:
+                m.tokenInDenom = r.string();
+                break;
+              case 4:
+                m.shareOutAmount = r.string();
+                break;
+              case 5:
+                m.tokenInMaxAmount = r.string();
+                break;
+              default:
+                r.skipType(t & 7);
+                break;
+            }
+          }
+          return m;
+        };
+        MsgJoinSwapShareAmountOut.fromObject = function fromObject(d) {
+          if (d instanceof $root.osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOut)
+            return d;
+          var m = new $root.osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOut();
+          if (d.sender != null) {
+            m.sender = String(d.sender);
+          }
+          if (d.poolId != null) {
+            if ($util.Long)
+              (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
+            else if (typeof d.poolId === "string")
+              m.poolId = parseInt(d.poolId, 10);
+            else if (typeof d.poolId === "number") m.poolId = d.poolId;
+            else if (typeof d.poolId === "object")
+              m.poolId = new $util.LongBits(
+                d.poolId.low >>> 0,
+                d.poolId.high >>> 0
+              ).toNumber(true);
+          }
+          if (d.tokenInDenom != null) {
+            m.tokenInDenom = String(d.tokenInDenom);
+          }
+          if (d.shareOutAmount != null) {
+            m.shareOutAmount = String(d.shareOutAmount);
+          }
+          if (d.tokenInMaxAmount != null) {
+            m.tokenInMaxAmount = String(d.tokenInMaxAmount);
+          }
+          return m;
+        };
+        MsgJoinSwapShareAmountOut.toObject = function toObject(m, o) {
+          if (!o) o = {};
+          var d = {};
+          if (o.defaults) {
+            d.sender = "";
+            if ($util.Long) {
+              var n = new $util.Long(0, 0, true);
+              d.poolId =
+                o.longs === String
+                  ? n.toString()
+                  : o.longs === Number
+                  ? n.toNumber()
+                  : n;
+            } else d.poolId = o.longs === String ? "0" : 0;
+            d.tokenInDenom = "";
+            d.shareOutAmount = "";
+            d.tokenInMaxAmount = "";
+          }
+          if (m.sender != null && m.hasOwnProperty("sender")) {
+            d.sender = m.sender;
+          }
+          if (m.poolId != null && m.hasOwnProperty("poolId")) {
+            if (typeof m.poolId === "number")
+              d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
+            else
+              d.poolId =
+                o.longs === String
+                  ? $util.Long.prototype.toString.call(m.poolId)
+                  : o.longs === Number
+                  ? new $util.LongBits(
+                      m.poolId.low >>> 0,
+                      m.poolId.high >>> 0
+                    ).toNumber(true)
+                  : m.poolId;
+          }
+          if (m.tokenInDenom != null && m.hasOwnProperty("tokenInDenom")) {
+            d.tokenInDenom = m.tokenInDenom;
+          }
+          if (m.shareOutAmount != null && m.hasOwnProperty("shareOutAmount")) {
+            d.shareOutAmount = m.shareOutAmount;
+          }
+          if (
+            m.tokenInMaxAmount != null &&
+            m.hasOwnProperty("tokenInMaxAmount")
+          ) {
+            d.tokenInMaxAmount = m.tokenInMaxAmount;
+          }
+          return d;
+        };
+        MsgJoinSwapShareAmountOut.prototype.toJSON = function toJSON() {
+          return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+        return MsgJoinSwapShareAmountOut;
+      })();
+      v1beta1.MsgJoinSwapShareAmountOutResponse = (function () {
+        function MsgJoinSwapShareAmountOutResponse(p) {
+          if (p)
+            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+              if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+        }
+        MsgJoinSwapShareAmountOutResponse.prototype.tokenInAmount = "";
+        MsgJoinSwapShareAmountOutResponse.create = function create(properties) {
+          return new MsgJoinSwapShareAmountOutResponse(properties);
+        };
+        MsgJoinSwapShareAmountOutResponse.encode = function encode(m, w) {
+          if (!w) w = $Writer.create();
+          if (
+            m.tokenInAmount != null &&
+            Object.hasOwnProperty.call(m, "tokenInAmount")
+          )
+            w.uint32(10).string(m.tokenInAmount);
+          return w;
+        };
+        MsgJoinSwapShareAmountOutResponse.decode = function decode(r, l) {
+          if (!(r instanceof $Reader)) r = $Reader.create(r);
+          var c = l === undefined ? r.len : r.pos + l,
+            m =
+              new $root.osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOutResponse();
+          while (r.pos < c) {
+            var t = r.uint32();
+            switch (t >>> 3) {
+              case 1:
+                m.tokenInAmount = r.string();
+                break;
+              default:
+                r.skipType(t & 7);
+                break;
+            }
+          }
+          return m;
+        };
+        MsgJoinSwapShareAmountOutResponse.fromObject = function fromObject(d) {
+          if (
+            d instanceof
+            $root.osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOutResponse
+          )
+            return d;
+          var m =
+            new $root.osmosis.gamm.v1beta1.MsgJoinSwapShareAmountOutResponse();
+          if (d.tokenInAmount != null) {
+            m.tokenInAmount = String(d.tokenInAmount);
+          }
+          return m;
+        };
+        MsgJoinSwapShareAmountOutResponse.toObject = function toObject(m, o) {
+          if (!o) o = {};
+          var d = {};
+          if (o.defaults) {
+            d.tokenInAmount = "";
+          }
+          if (m.tokenInAmount != null && m.hasOwnProperty("tokenInAmount")) {
+            d.tokenInAmount = m.tokenInAmount;
+          }
+          return d;
+        };
+        MsgJoinSwapShareAmountOutResponse.prototype.toJSON = function toJSON() {
+          return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+        return MsgJoinSwapShareAmountOutResponse;
+      })();
+      v1beta1.MsgExitSwapShareAmountIn = (function () {
+        function MsgExitSwapShareAmountIn(p) {
+          if (p)
+            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+              if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+        }
+        MsgExitSwapShareAmountIn.prototype.sender = "";
+        MsgExitSwapShareAmountIn.prototype.poolId = $util.Long
+          ? $util.Long.fromBits(0, 0, true)
+          : 0;
+        MsgExitSwapShareAmountIn.prototype.tokenOutDenom = "";
+        MsgExitSwapShareAmountIn.prototype.shareInAmount = "";
+        MsgExitSwapShareAmountIn.prototype.tokenOutMinAmount = "";
+        MsgExitSwapShareAmountIn.create = function create(properties) {
+          return new MsgExitSwapShareAmountIn(properties);
+        };
+        MsgExitSwapShareAmountIn.encode = function encode(m, w) {
+          if (!w) w = $Writer.create();
+          if (m.sender != null && Object.hasOwnProperty.call(m, "sender"))
+            w.uint32(10).string(m.sender);
+          if (m.poolId != null && Object.hasOwnProperty.call(m, "poolId"))
+            w.uint32(16).uint64(m.poolId);
+          if (
+            m.tokenOutDenom != null &&
+            Object.hasOwnProperty.call(m, "tokenOutDenom")
+          )
+            w.uint32(26).string(m.tokenOutDenom);
+          if (
+            m.shareInAmount != null &&
+            Object.hasOwnProperty.call(m, "shareInAmount")
+          )
+            w.uint32(34).string(m.shareInAmount);
+          if (
+            m.tokenOutMinAmount != null &&
+            Object.hasOwnProperty.call(m, "tokenOutMinAmount")
+          )
+            w.uint32(42).string(m.tokenOutMinAmount);
+          return w;
+        };
+        MsgExitSwapShareAmountIn.decode = function decode(r, l) {
+          if (!(r instanceof $Reader)) r = $Reader.create(r);
+          var c = l === undefined ? r.len : r.pos + l,
+            m = new $root.osmosis.gamm.v1beta1.MsgExitSwapShareAmountIn();
+          while (r.pos < c) {
+            var t = r.uint32();
+            switch (t >>> 3) {
+              case 1:
+                m.sender = r.string();
+                break;
+              case 2:
+                m.poolId = r.uint64();
+                break;
+              case 3:
+                m.tokenOutDenom = r.string();
+                break;
+              case 4:
+                m.shareInAmount = r.string();
+                break;
+              case 5:
+                m.tokenOutMinAmount = r.string();
+                break;
+              default:
+                r.skipType(t & 7);
+                break;
+            }
+          }
+          return m;
+        };
+        MsgExitSwapShareAmountIn.fromObject = function fromObject(d) {
+          if (d instanceof $root.osmosis.gamm.v1beta1.MsgExitSwapShareAmountIn)
+            return d;
+          var m = new $root.osmosis.gamm.v1beta1.MsgExitSwapShareAmountIn();
+          if (d.sender != null) {
+            m.sender = String(d.sender);
+          }
+          if (d.poolId != null) {
+            if ($util.Long)
+              (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
+            else if (typeof d.poolId === "string")
+              m.poolId = parseInt(d.poolId, 10);
+            else if (typeof d.poolId === "number") m.poolId = d.poolId;
+            else if (typeof d.poolId === "object")
+              m.poolId = new $util.LongBits(
+                d.poolId.low >>> 0,
+                d.poolId.high >>> 0
+              ).toNumber(true);
+          }
+          if (d.tokenOutDenom != null) {
+            m.tokenOutDenom = String(d.tokenOutDenom);
+          }
+          if (d.shareInAmount != null) {
+            m.shareInAmount = String(d.shareInAmount);
+          }
+          if (d.tokenOutMinAmount != null) {
+            m.tokenOutMinAmount = String(d.tokenOutMinAmount);
+          }
+          return m;
+        };
+        MsgExitSwapShareAmountIn.toObject = function toObject(m, o) {
+          if (!o) o = {};
+          var d = {};
+          if (o.defaults) {
+            d.sender = "";
+            if ($util.Long) {
+              var n = new $util.Long(0, 0, true);
+              d.poolId =
+                o.longs === String
+                  ? n.toString()
+                  : o.longs === Number
+                  ? n.toNumber()
+                  : n;
+            } else d.poolId = o.longs === String ? "0" : 0;
+            d.tokenOutDenom = "";
+            d.shareInAmount = "";
+            d.tokenOutMinAmount = "";
+          }
+          if (m.sender != null && m.hasOwnProperty("sender")) {
+            d.sender = m.sender;
+          }
+          if (m.poolId != null && m.hasOwnProperty("poolId")) {
+            if (typeof m.poolId === "number")
+              d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
+            else
+              d.poolId =
+                o.longs === String
+                  ? $util.Long.prototype.toString.call(m.poolId)
+                  : o.longs === Number
+                  ? new $util.LongBits(
+                      m.poolId.low >>> 0,
+                      m.poolId.high >>> 0
+                    ).toNumber(true)
+                  : m.poolId;
+          }
+          if (m.tokenOutDenom != null && m.hasOwnProperty("tokenOutDenom")) {
+            d.tokenOutDenom = m.tokenOutDenom;
+          }
+          if (m.shareInAmount != null && m.hasOwnProperty("shareInAmount")) {
+            d.shareInAmount = m.shareInAmount;
+          }
+          if (
+            m.tokenOutMinAmount != null &&
+            m.hasOwnProperty("tokenOutMinAmount")
+          ) {
+            d.tokenOutMinAmount = m.tokenOutMinAmount;
+          }
+          return d;
+        };
+        MsgExitSwapShareAmountIn.prototype.toJSON = function toJSON() {
+          return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+        return MsgExitSwapShareAmountIn;
+      })();
+      v1beta1.MsgExitSwapShareAmountInResponse = (function () {
+        function MsgExitSwapShareAmountInResponse(p) {
+          if (p)
+            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+              if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+        }
+        MsgExitSwapShareAmountInResponse.prototype.tokenOutAmount = "";
+        MsgExitSwapShareAmountInResponse.create = function create(properties) {
+          return new MsgExitSwapShareAmountInResponse(properties);
+        };
+        MsgExitSwapShareAmountInResponse.encode = function encode(m, w) {
+          if (!w) w = $Writer.create();
+          if (
+            m.tokenOutAmount != null &&
+            Object.hasOwnProperty.call(m, "tokenOutAmount")
+          )
+            w.uint32(10).string(m.tokenOutAmount);
+          return w;
+        };
+        MsgExitSwapShareAmountInResponse.decode = function decode(r, l) {
+          if (!(r instanceof $Reader)) r = $Reader.create(r);
+          var c = l === undefined ? r.len : r.pos + l,
+            m =
+              new $root.osmosis.gamm.v1beta1.MsgExitSwapShareAmountInResponse();
+          while (r.pos < c) {
+            var t = r.uint32();
+            switch (t >>> 3) {
+              case 1:
+                m.tokenOutAmount = r.string();
+                break;
+              default:
+                r.skipType(t & 7);
+                break;
+            }
+          }
+          return m;
+        };
+        MsgExitSwapShareAmountInResponse.fromObject = function fromObject(d) {
+          if (
+            d instanceof
+            $root.osmosis.gamm.v1beta1.MsgExitSwapShareAmountInResponse
+          )
+            return d;
+          var m =
+            new $root.osmosis.gamm.v1beta1.MsgExitSwapShareAmountInResponse();
+          if (d.tokenOutAmount != null) {
+            m.tokenOutAmount = String(d.tokenOutAmount);
+          }
+          return m;
+        };
+        MsgExitSwapShareAmountInResponse.toObject = function toObject(m, o) {
+          if (!o) o = {};
+          var d = {};
+          if (o.defaults) {
+            d.tokenOutAmount = "";
+          }
+          if (m.tokenOutAmount != null && m.hasOwnProperty("tokenOutAmount")) {
+            d.tokenOutAmount = m.tokenOutAmount;
+          }
+          return d;
+        };
+        MsgExitSwapShareAmountInResponse.prototype.toJSON = function toJSON() {
+          return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+        return MsgExitSwapShareAmountInResponse;
+      })();
+      v1beta1.MsgExitSwapExternAmountOut = (function () {
+        function MsgExitSwapExternAmountOut(p) {
+          if (p)
+            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+              if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+        }
+        MsgExitSwapExternAmountOut.prototype.sender = "";
+        MsgExitSwapExternAmountOut.prototype.poolId = $util.Long
+          ? $util.Long.fromBits(0, 0, true)
+          : 0;
+        MsgExitSwapExternAmountOut.prototype.tokenOut = null;
+        MsgExitSwapExternAmountOut.prototype.shareInMaxAmount = "";
+        MsgExitSwapExternAmountOut.create = function create(properties) {
+          return new MsgExitSwapExternAmountOut(properties);
+        };
+        MsgExitSwapExternAmountOut.encode = function encode(m, w) {
+          if (!w) w = $Writer.create();
+          if (m.sender != null && Object.hasOwnProperty.call(m, "sender"))
+            w.uint32(10).string(m.sender);
+          if (m.poolId != null && Object.hasOwnProperty.call(m, "poolId"))
+            w.uint32(16).uint64(m.poolId);
+          if (m.tokenOut != null && Object.hasOwnProperty.call(m, "tokenOut"))
+            $root.cosmos.base.v1beta1.Coin.encode(
+              m.tokenOut,
+              w.uint32(26).fork()
+            ).ldelim();
+          if (
+            m.shareInMaxAmount != null &&
+            Object.hasOwnProperty.call(m, "shareInMaxAmount")
+          )
+            w.uint32(34).string(m.shareInMaxAmount);
+          return w;
+        };
+        MsgExitSwapExternAmountOut.decode = function decode(r, l) {
+          if (!(r instanceof $Reader)) r = $Reader.create(r);
+          var c = l === undefined ? r.len : r.pos + l,
+            m = new $root.osmosis.gamm.v1beta1.MsgExitSwapExternAmountOut();
+          while (r.pos < c) {
+            var t = r.uint32();
+            switch (t >>> 3) {
+              case 1:
+                m.sender = r.string();
+                break;
+              case 2:
+                m.poolId = r.uint64();
+                break;
+              case 3:
+                m.tokenOut = $root.cosmos.base.v1beta1.Coin.decode(
+                  r,
+                  r.uint32()
+                );
+                break;
+              case 4:
+                m.shareInMaxAmount = r.string();
+                break;
+              default:
+                r.skipType(t & 7);
+                break;
+            }
+          }
+          return m;
+        };
+        MsgExitSwapExternAmountOut.fromObject = function fromObject(d) {
+          if (
+            d instanceof $root.osmosis.gamm.v1beta1.MsgExitSwapExternAmountOut
+          )
+            return d;
+          var m = new $root.osmosis.gamm.v1beta1.MsgExitSwapExternAmountOut();
+          if (d.sender != null) {
+            m.sender = String(d.sender);
+          }
+          if (d.poolId != null) {
+            if ($util.Long)
+              (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
+            else if (typeof d.poolId === "string")
+              m.poolId = parseInt(d.poolId, 10);
+            else if (typeof d.poolId === "number") m.poolId = d.poolId;
+            else if (typeof d.poolId === "object")
+              m.poolId = new $util.LongBits(
+                d.poolId.low >>> 0,
+                d.poolId.high >>> 0
+              ).toNumber(true);
+          }
+          if (d.tokenOut != null) {
+            if (typeof d.tokenOut !== "object")
+              throw TypeError(
+                ".osmosis.gamm.v1beta1.MsgExitSwapExternAmountOut.tokenOut: object expected"
+              );
+            m.tokenOut = $root.cosmos.base.v1beta1.Coin.fromObject(d.tokenOut);
+          }
+          if (d.shareInMaxAmount != null) {
+            m.shareInMaxAmount = String(d.shareInMaxAmount);
+          }
+          return m;
+        };
+        MsgExitSwapExternAmountOut.toObject = function toObject(m, o) {
+          if (!o) o = {};
+          var d = {};
+          if (o.defaults) {
+            d.sender = "";
+            if ($util.Long) {
+              var n = new $util.Long(0, 0, true);
+              d.poolId =
+                o.longs === String
+                  ? n.toString()
+                  : o.longs === Number
+                  ? n.toNumber()
+                  : n;
+            } else d.poolId = o.longs === String ? "0" : 0;
+            d.tokenOut = null;
+            d.shareInMaxAmount = "";
+          }
+          if (m.sender != null && m.hasOwnProperty("sender")) {
+            d.sender = m.sender;
+          }
+          if (m.poolId != null && m.hasOwnProperty("poolId")) {
+            if (typeof m.poolId === "number")
+              d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
+            else
+              d.poolId =
+                o.longs === String
+                  ? $util.Long.prototype.toString.call(m.poolId)
+                  : o.longs === Number
+                  ? new $util.LongBits(
+                      m.poolId.low >>> 0,
+                      m.poolId.high >>> 0
+                    ).toNumber(true)
+                  : m.poolId;
+          }
+          if (m.tokenOut != null && m.hasOwnProperty("tokenOut")) {
+            d.tokenOut = $root.cosmos.base.v1beta1.Coin.toObject(m.tokenOut, o);
+          }
+          if (
+            m.shareInMaxAmount != null &&
+            m.hasOwnProperty("shareInMaxAmount")
+          ) {
+            d.shareInMaxAmount = m.shareInMaxAmount;
+          }
+          return d;
+        };
+        MsgExitSwapExternAmountOut.prototype.toJSON = function toJSON() {
+          return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+        return MsgExitSwapExternAmountOut;
+      })();
+      v1beta1.MsgExitSwapExternAmountOutResponse = (function () {
+        function MsgExitSwapExternAmountOutResponse(p) {
+          if (p)
+            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+              if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+        }
+        MsgExitSwapExternAmountOutResponse.prototype.shareInAmount = "";
+        MsgExitSwapExternAmountOutResponse.create = function create(
+          properties
+        ) {
+          return new MsgExitSwapExternAmountOutResponse(properties);
+        };
+        MsgExitSwapExternAmountOutResponse.encode = function encode(m, w) {
+          if (!w) w = $Writer.create();
+          if (
+            m.shareInAmount != null &&
+            Object.hasOwnProperty.call(m, "shareInAmount")
+          )
+            w.uint32(10).string(m.shareInAmount);
+          return w;
+        };
+        MsgExitSwapExternAmountOutResponse.decode = function decode(r, l) {
+          if (!(r instanceof $Reader)) r = $Reader.create(r);
+          var c = l === undefined ? r.len : r.pos + l,
+            m =
+              new $root.osmosis.gamm.v1beta1.MsgExitSwapExternAmountOutResponse();
+          while (r.pos < c) {
+            var t = r.uint32();
+            switch (t >>> 3) {
+              case 1:
+                m.shareInAmount = r.string();
+                break;
+              default:
+                r.skipType(t & 7);
+                break;
+            }
+          }
+          return m;
+        };
+        MsgExitSwapExternAmountOutResponse.fromObject = function fromObject(d) {
+          if (
+            d instanceof
+            $root.osmosis.gamm.v1beta1.MsgExitSwapExternAmountOutResponse
+          )
+            return d;
+          var m =
+            new $root.osmosis.gamm.v1beta1.MsgExitSwapExternAmountOutResponse();
+          if (d.shareInAmount != null) {
+            m.shareInAmount = String(d.shareInAmount);
+          }
+          return m;
+        };
+        MsgExitSwapExternAmountOutResponse.toObject = function toObject(m, o) {
+          if (!o) o = {};
+          var d = {};
+          if (o.defaults) {
+            d.shareInAmount = "";
+          }
+          if (m.shareInAmount != null && m.hasOwnProperty("shareInAmount")) {
+            d.shareInAmount = m.shareInAmount;
+          }
+          return d;
+        };
+        MsgExitSwapExternAmountOutResponse.prototype.toJSON =
+          function toJSON() {
+            return this.constructor.toObject(
+              this,
+              $protobuf.util.toJSONOptions
+            );
+          };
+        return MsgExitSwapExternAmountOutResponse;
+      })();
       v1beta1.SmoothWeightChangeParams = (function () {
         function SmoothWeightChangeParams(p) {
           this.initialPoolWeights = [];
