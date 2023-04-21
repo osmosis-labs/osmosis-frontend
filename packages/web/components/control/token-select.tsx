@@ -43,18 +43,17 @@ export const TokenSelect: FunctionComponent<{
       setDropdownState === undefined ? setIsSelectOpenLocal : setDropdownState;
 
     const inputRef = useRef<HTMLInputElement | null>(null);
-    const selectedToken = tokens.find((token) =>
-      (token instanceof CoinPretty ? token.denom : token.coinDenom).includes(
+    const selectedToken = tokens.find(
+      (token) =>
+        (token instanceof CoinPretty ? token.denom : token.coinDenom) ===
         selectedTokenDenom
-      )
     );
 
     const dropdownTokens = tokens
       .filter(
         (token) =>
-          !(
-            token instanceof CoinPretty ? token.denom : token.coinDenom
-          ).includes(selectedTokenDenom)
+          (token instanceof CoinPretty ? token.denom : token.coinDenom) !==
+          selectedTokenDenom
       )
       .map((token) => ({
         token,
