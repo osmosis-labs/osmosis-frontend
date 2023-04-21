@@ -278,7 +278,8 @@ export const TradeClipboard: FunctionComponent<{
       [tradeTokenInConfig.expectedSwapResult.amount]
     );
 
-    /** Filters tokens (by denom) on
+    // get selectable tokens in drawers
+    /** Filters out tokens (by denom) if
      * 1. not given token selected in other token select component
      * 2. not in sendable currencies
      */
@@ -294,10 +295,12 @@ export const TradeClipboard: FunctionComponent<{
             )
           )
           .map((currency) => {
-            // return balances or currencies if in modal
+            // return just currencies if in modal
             if (isInModal) {
               return currency;
             }
+
+            // respect filtering conditions in assets store (verified assets, etc.)
             const coins = nativeBalances.concat(ibcBalances);
             return coins.find(
               (coin) => coin.balance.denom === currency.coinDenom
@@ -314,6 +317,15 @@ export const TradeClipboard: FunctionComponent<{
         nativeBalances,
         ibcBalances,
       ]
+    );
+    // only filter/map when necessary
+    const tokenInTokens = useMemo(
+      () => getTokenSelectTokens(tradeTokenInConfig.outCurrency.coinDenom),
+      [getTokenSelectTokens, tradeTokenInConfig.outCurrency.coinDenom]
+    );
+    const tokenOutTokens = useMemo(
+      () => getTokenSelectTokens(tradeTokenInConfig.sendCurrency.coinDenom),
+      [getTokenSelectTokens, tradeTokenInConfig.sendCurrency.coinDenom]
     );
 
     // user action
@@ -732,9 +744,7 @@ export const TradeClipboard: FunctionComponent<{
                     closeTokenSelectDropdowns();
                   }
                 }}
-                tokens={getTokenSelectTokens(
-                  tradeTokenInConfig.outCurrency.coinDenom
-                )}
+                tokens={tokenInTokens}
                 selectedTokenDenom={tradeTokenInConfig.sendCurrency.coinDenom}
                 onSelect={(tokenDenom: string) => {
                   const tokenInCurrency = tradeableCurrenciesRef.current.find(
@@ -896,9 +906,7 @@ export const TradeClipboard: FunctionComponent<{
                   }
                 }}
                 sortByBalances
-                tokens={getTokenSelectTokens(
-                  tradeTokenInConfig.sendCurrency.coinDenom
-                )}
+                tokens={tokenOutTokens}
                 selectedTokenDenom={tradeTokenInConfig.outCurrency.coinDenom}
                 onSelect={(tokenDenom: string) => {
                   const tokenOutCurrency = tradeableCurrenciesRef.current.find(
