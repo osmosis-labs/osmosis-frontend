@@ -257,4 +257,17 @@ export const SourceChainTokenConfigs: {
       logoUrl: "/networks/avalanche.svg",
     },
   },
+  wfil: {
+    filecoin: {
+      id: IS_TESTNET ? ("Filecoin Hyperspace" as const) : ("Filecoin" as const),
+      erc20ContractAddress: IS_TESTNET
+        ? "0x60E1773636CF5E4A227d9AC24F20fEca034ee25A"
+        : "0x60E1773636CF5E4A227d9AC24F20fEca034ee25A",
+      logoUrl: "/networks/filecoin.svg",
+      nativeWrapEquivalent: {
+        wrapDenom: "WFIL",
+        tokenMinDenom: "fil",
+      },
+    },
+  },
 };
