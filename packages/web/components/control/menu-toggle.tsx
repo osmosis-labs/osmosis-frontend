@@ -2,10 +2,10 @@ import classNames from "classnames";
 import { FunctionComponent } from "react";
 
 import { IS_FRONTIER } from "../../config";
-import { CustomClasses } from "../types";
+import { CustomClasses, Disableable } from "../types";
 import { MenuOption } from "./types";
 
-interface Props extends CustomClasses {
+interface Props extends CustomClasses, Disableable {
   options: MenuOption[];
   selectedOptionId: string;
   onSelect: (optionId: string) => void;
@@ -16,8 +16,16 @@ export const MenuToggle: FunctionComponent<Props> = ({
   selectedOptionId,
   onSelect,
   className,
+  disabled,
 }) => (
-  <div className="flex h-fit rounded-full bg-osmoverse-700">
+  <div
+    className={classNames(
+      "flex h-fit rounded-full bg-osmoverse-700 transition-opacity",
+      {
+        "opacity-50": disabled,
+      }
+    )}
+  >
     {options.map(({ id, display }) => (
       <label
         key={id}
@@ -45,6 +53,7 @@ export const MenuToggle: FunctionComponent<Props> = ({
           radioGroup={options.reduce((ids, { id }) => ids + id, "")}
           checked={id === selectedOptionId}
           onChange={() => onSelect(id)}
+          disabled={disabled}
         ></input>
         <span
           className={classNames("subtitle2 relative z-10", {

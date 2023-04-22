@@ -72,6 +72,7 @@ export class OptimizedRoutes {
 
       if (
         currentRoute.length > 0 &&
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         currentRoute[currentRoute.length - 1]!.hasPoolAsset(tokenOutDenom)
       ) {
         const foundRoute: Route = {

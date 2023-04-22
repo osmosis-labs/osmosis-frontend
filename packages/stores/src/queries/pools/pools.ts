@@ -10,12 +10,12 @@ import { computedFn } from "mobx-utils";
 import { GET_POOLS_PAGINATION_LIMIT } from ".";
 import { ObservableQueryNumPools } from "./num-pools";
 import { ObservableQueryPool } from "./pool";
-import { PoolGetter, Pools } from "./types";
+import { ObservableQueryPoolGetter, Pools } from "./types";
 
 /** Fetches all pools directly from node in order of pool creation. */
 export class ObservableQueryPools
   extends ObservableChainQuery<Pools>
-  implements PoolGetter
+  implements ObservableQueryPoolGetter
 {
   /** Maintain references of ObservableQueryPool objects to prevent breaking observers. */
   protected _pools: Map<string, ObservableQueryPool> = new Map<
@@ -97,6 +97,7 @@ export class ObservableQueryPools
     }
 
     return this.response.data.pools.map((raw) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return this.getPool(raw.id)!;
     });
   });

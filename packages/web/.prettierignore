@@ -1,5 +1,7 @@
 .prettierignore
 .gitignore
+.eslintignore
+
 /.next
 
 *.ico
@@ -10,3 +12,6 @@
 
 yarn.lock
 .DS_Store
+
+.turbo
+*.log

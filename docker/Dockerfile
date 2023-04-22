@@ -2,7 +2,7 @@ FROM node:16.19.0 as build
 
 WORKDIR /app
 
-COPY lerna.json package.json tsconfig.json yarn.lock /app/
+COPY turbo.json lerna.json package.json tsconfig.json yarn.lock /app/
 COPY packages /app/packages/
 
 RUN yarn
