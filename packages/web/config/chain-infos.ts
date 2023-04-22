@@ -1716,7 +1716,7 @@ const chainInfos = (
         "https://explorer.decentr.net/transactions/{txHash}?networkId=mainnet",
     },
     {
-      rpc: "https://shenturpc.certikpowered.info",
+      rpc: "https://shenturpc.noopsbycertik.com/",
       rest: "https://rest.noopsbycertik.com",
       chainId: "shentu-2.2",
       chainName: "Shentu",
