@@ -92,11 +92,9 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
                 : "cursor-default opacity-30"
             )}
             onClick={() => {
-              const unusedAsset = config.remainingSelectableCurrencies.find(
-                () => true
-              );
-              if (unusedAsset) {
-                config.addAsset(unusedAsset);
+              const firstAsset = config.remainingSelectableCurrencies[0];
+              if (firstAsset) {
+                config.addAsset(firstAsset);
               }
             }}
           >

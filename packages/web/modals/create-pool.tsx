@@ -1,6 +1,7 @@
-import { FunctionComponent, useState } from "react";
-import { observer } from "mobx-react-lite";
 import { ObservableCreatePoolConfig } from "@osmosis-labs/stores";
+import { observer } from "mobx-react-lite";
+import { FunctionComponent, useState } from "react";
+
 import {
   SelectType,
   Step1SetRatios,
@@ -47,7 +48,7 @@ export const CreatePoolModal: FunctionComponent<
             config.setPoolType(type);
             setCurStep(1);
           }}
-        ></SelectType>
+        />
       )}
       {curStep === 1 && (
         <Step1SetRatios createPoolConfig={config} advanceStep={advanceStep} />

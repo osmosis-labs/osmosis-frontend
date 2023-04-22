@@ -14,7 +14,7 @@ import {
   ObservableQueryEpochProvisions,
   ObservableQueryMintParmas,
 } from "../mint";
-import { PoolGetter } from "../pools";
+import { ObservableQueryPoolGetter } from "../pools";
 import { ObservableQueryDistrInfo } from "./distr-info";
 import { ObservableQueryLockableDurations } from "./lockable-durations";
 import { IncentivizedPools } from "./types";
@@ -26,7 +26,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
     chainGetter: ChainGetter,
     protected readonly queryLockableDurations: ObservableQueryLockableDurations,
     protected readonly queryDistrInfo: ObservableQueryDistrInfo,
-    protected readonly queryPools: PoolGetter,
+    protected readonly queryPools: ObservableQueryPoolGetter,
     protected readonly queryMintParmas: ObservableQueryMintParmas,
     protected readonly queryEpochProvision: ObservableQueryEpochProvisions,
     protected readonly queryEpochs: ObservableQueryEpochs,
@@ -107,6 +107,7 @@ export class ObservableQueryIncentivizedPools extends ObservableChainQuery<Incen
         return new RatePretty(new Dec(0));
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const fiatCurrency = priceStore.getFiatCurrency(
         priceStore.defaultVsCurrency
       )!;

@@ -903,8 +903,8 @@ const chainInfos = (
           coinDecimals: 6,
           coinGeckoId: "pool:doga",
           coinImageUrl: "/tokens/doga.png",
-         },
-         {
+        },
+        {
           type: "cw20",
           contractAddress:
             "juno1zqrj3ta4u7ylv0wqzd8t8q3jrr9rdmn43zuzp9zemeunecnhy8fss778g7",
@@ -915,6 +915,39 @@ const chainInfos = (
           coinGeckoId: "pool:pepe",
           coinImageUrl: "/tokens/pepe.svg",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1f5datjdse3mdgrapwuzs3prl7pvxxht48ns6calnn0t77v2s9l8s0qu488",
+          coinDenom: "CATMOS",
+          coinMinimalDenom:
+            "cw20:juno1f5datjdse3mdgrapwuzs3prl7pvxxht48ns6calnn0t77v2s9l8s0qu488:CATMOS",
+          coinDecimals: 6,
+          coinGeckoId: "pool:catmos",
+          coinImageUrl: "/tokens/catmos.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1j4ux0f6gt7e82z7jdpm25v4g2gts880ap64rdwa49989wzhd0dfqed6vqm",
+          coinDenom: "SUMMIT",
+          coinMinimalDenom:
+            "cw20:juno1j4ux0f6gt7e82z7jdpm25v4g2gts880ap64rdwa49989wzhd0dfqed6vqm:SUMMIT",
+          coinDecimals: 6,
+          coinGeckoId: "pool:summit",
+          coinImageUrl: "/tokens/summit.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1dyyf7pxeassxvftf570krv7fdf5r8e4r04mp99h0mllsqzp3rs4q7y8yqg",
+          coinDenom: "SPACER",
+          coinMinimalDenom:
+            "cw20:juno1dyyf7pxeassxvftf570krv7fdf5r8e4r04mp99h0mllsqzp3rs4q7y8yqg:SPACER",
+          coinDecimals: 6,
+          coinGeckoId: "pool:spacer",
+          coinImageUrl: "/tokens/spacer.png",
+        },        
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: IS_TESTNET
@@ -3170,7 +3203,35 @@ const chainInfos = (
       explorerUrlToTx: IS_TESTNET
         ? "https://explorer-rila.nolus.io/nolus-rila/tx/{txHash}"
         : "",
-    }
+    },
+    {
+      rpc: "https://rpc.omniflix.network",
+      rest: "https://rest.omniflix.network",
+      chainId: "omniflixhub-1",
+      chainName: "OmniFlix",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("omniflix"),
+      currencies: [
+        {
+          coinDenom: "FLIX",
+          coinMinimalDenom: "uflix",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/flix.svg",
+          coinGeckoId: "pool:uflix",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.001,
+            average: 0.0025,
+            high: 0.025
+          }
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx: "https://www.mintscan.io/omniflix/txs/{txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
