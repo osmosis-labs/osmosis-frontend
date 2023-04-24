@@ -1771,10 +1771,10 @@ const chainInfos = (
         "https://explorer.decentr.net/transactions/{txHash}?networkId=mainnet",
     },
     {
-      rpc: "https://shenturpc.certikpowered.info",
-      rest: "https://azuredragon.noopsbycertik.com",
+      rpc: "https://shenturpc.noopsbycertik.com/",
+      rest: "https://rest.noopsbycertik.com",
       chainId: "shentu-2.2",
-      chainName: "Certik",
+      chainName: "Shentu",
       bip44: {
         coinType: 118,
       },
@@ -1784,7 +1784,7 @@ const chainInfos = (
           coinDenom: "CTK",
           coinMinimalDenom: "uctk",
           coinDecimals: 6,
-          // coinGeckoId: "certik",
+          // coinGeckoId: "shentu",
           //coinGeckoId: "pool:uctk",
           coinImageUrl: "/tokens/ctk.svg",
           isStakeCurrency: true,
@@ -1792,7 +1792,7 @@ const chainInfos = (
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
-      explorerUrlToTx: "https://www.mintscan.io/certik/txs/{txHash}",
+      explorerUrlToTx: "https://www.mintscan.io/shentu/txs/{txHash}",
     },
     {
       rpc: "https://tm-api.carbon.network",
