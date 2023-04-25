@@ -24,7 +24,13 @@ import {
   observable,
   override,
 } from "mobx";
-import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
+import {
+  fromPromise,
+  FULFILLED,
+  IPromiseBasedObservable,
+  PENDING,
+  REJECTED,
+} from "mobx-utils";
 import { IPriceStore } from "src/price";
 
 import { ObservableQueryPool, OsmosisQueries } from "../queries";
@@ -57,6 +63,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   @observable
   protected _outCurrencyMinDenom: string | undefined = undefined;
 
+  // routes
   @observable.ref
   protected _latestOptimizedRoutes:
     | IPromiseBasedObservable<RouteWithInAmount[]>
@@ -66,6 +73,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     | IPromiseBasedObservable<RouteWithInAmount[]>
     | undefined = undefined;
 
+  // swap result
   @observable.ref
   protected _latestSwapResult:
     | IPromiseBasedObservable<MultihopSwapResult>
@@ -202,7 +210,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   /** Prettify swap result for display. */
   @computed
   get expectedSwapResult(): PrettyMultihopSwapResult {
-    if (this._latestOptimizedRoutes?.state === "rejected")
+    if (this._latestOptimizedRoutes?.state === REJECTED)
       return this.zeroSwapResult;
 
     return (
@@ -220,8 +228,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   @computed
   get tradeIsLoading(): boolean {
     return (
-      this._latestOptimizedRoutes?.state === "pending" ||
-      this._latestSwapResult?.state === "pending"
+      this._latestOptimizedRoutes?.state === PENDING ||
+      this._latestSwapResult?.state === PENDING
     );
   }
 
@@ -244,7 +252,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   /** Spot price for currently selected tokens is loading. */
   @computed
   get isSpotPriceLoading(): boolean {
-    return this._spotPriceResult?.state === "pending";
+    return this._spotPriceResult?.state === PENDING;
   }
 
   /** Any error derived from state. */
@@ -265,14 +273,14 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     }
 
     // If there's an error from the latest generated route result, return it
-    if (this._latestOptimizedRoutes?.state === "rejected") {
+    if (this._latestOptimizedRoutes?.state === REJECTED) {
       return this._latestOptimizedRoutes.case({
         rejected: (error) => error,
       });
     }
 
     // If there's an error from the latest swap result, return it
-    if (this._latestSwapResult?.state === "rejected") {
+    if (this._latestSwapResult?.state === REJECTED) {
       return this._latestSwapResult.case({
         rejected: (error) => error,
       });
@@ -374,7 +382,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         this.amount === "" || !new Dec(this.amount).isPositive();
 
       // this also handles race conditions because if the user clears the input, then an prev request result arrives, the old result will be cleared
-      if (this._latestSwapResult?.state === "fulfilled" && inputCleared) {
+      if (this._latestSwapResult?.state === FULFILLED && inputCleared) {
         this.setSwapResult(undefined);
       }
     });
