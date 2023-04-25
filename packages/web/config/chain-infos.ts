@@ -226,6 +226,16 @@ const chainInfos = (
         },
         {
           type: "cw20",
+          contractAddress: "secret1fl449muk5yq8dlad7a22nje4p5d2pnsgymhjfd",
+          coinDenom: "SILK",
+          coinMinimalDenom:
+            "cw20:secret1fl449muk5yq8dlad7a22nje4p5d2pnsgymhjfd:SILK",
+          coinDecimals: 6,
+          coinGeckoId: "pool:silk",
+          coinImageUrl: "/tokens/silk.svg",
+        },
+        {
+          type: "cw20",
           contractAddress: "secret1k6u0cy4feepm6pehnz804zmwakuwdapm69tuc4",
           coinDenom: "stkd-SCRT",
           coinMinimalDenom:

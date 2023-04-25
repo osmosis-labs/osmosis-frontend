@@ -830,6 +830,15 @@ export const IBCAssetInfos: (IBCAsset & {
         ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
       },
       {
+        // SILK
+        counterpartyChainId: "secret-4",
+        sourceChannelId: "channel-476",
+        destChannelId: "channel-44",
+        coinMinimalDenom: "cw20:secret1fl449muk5yq8dlad7a22nje4p5d2pnsgymhjfd",
+        depositUrlOverride: "https://wrap.scrt.network",
+        ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
+      },
+      {
         counterpartyChainId: "bostrom",
         sourceChannelId: "channel-95",
         destChannelId: "channel-2",
