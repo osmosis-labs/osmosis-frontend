@@ -821,12 +821,21 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "swp",
       },
       {
-        // SHD
+        // SHD (old)
         counterpartyChainId: "secret-4",
         sourceChannelId: "channel-476",
         destChannelId: "channel-44",
         coinMinimalDenom: "cw20:secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d",
         depositUrlOverride: "https://wrap.scrt.network",
+        ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
+      },
+      {
+        // SHD
+        counterpartyChainId: "secret-4",
+        sourceChannelId: "channel-476",
+        destChannelId: "channel-44",
+        coinMinimalDenom: "cw20:secret153wu605vvp934xhd4k9dtd640zsep5jkesstdm",
+        depositUrlOverride: "https://dash.scrt.network/ibc",
         ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
       },
       {

@@ -216,7 +216,7 @@ const chainInfos = (
         {
           type: "cw20",
           contractAddress: "secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d",
-          coinDenom: "SHDold",
+          coinDenom: "SHD(old)",
           coinMinimalDenom:
             "cw20:secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d:SHD",
           coinDecimals: 8,
