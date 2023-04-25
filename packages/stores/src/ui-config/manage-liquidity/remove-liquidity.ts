@@ -4,7 +4,10 @@ import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 
 import { IPriceStore } from "../../price";
-import { ObservableQueryGammPoolShare, PoolGetter } from "../../queries";
+import {
+  ObservableQueryGammPoolShare,
+  ObservableQueryPoolGetter,
+} from "../../queries";
 import { ManageLiquidityConfigBase } from "./base";
 import { NoAvailableSharesError } from "./errors";
 
@@ -16,7 +19,7 @@ export class ObservableRemoveLiquidityConfig extends ManageLiquidityConfigBase {
   protected _percentage: string;
 
   @observable
-  protected _queryPools: PoolGetter;
+  protected _queryPools: ObservableQueryPoolGetter;
 
   constructor(
     chainGetter: ChainGetter,
@@ -25,7 +28,7 @@ export class ObservableRemoveLiquidityConfig extends ManageLiquidityConfigBase {
     sender: string,
     queriesStore: IQueriesStore,
     queryPoolShare: ObservableQueryGammPoolShare,
-    queryPools: PoolGetter,
+    queryPools: ObservableQueryPoolGetter,
     initialPercentage: string
   ) {
     super(
@@ -94,6 +97,7 @@ export class ObservableRemoveLiquidityConfig extends ManageLiquidityConfigBase {
   /** Calculate value of currently selected pool shares. */
   readonly computePoolShareValueWithPercentage = computedFn(
     (priceStore: IPriceStore) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;
       return this.poolShareAssetsWithPercentage.reduce(
         (accummulatedValue, asset) => {

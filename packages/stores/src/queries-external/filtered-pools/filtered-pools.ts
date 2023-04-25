@@ -5,7 +5,7 @@ import { computedFn } from "mobx-utils";
 
 import { ObservableQueryNumPools } from "../../queries/pools";
 import { ObservableQueryPool } from "../../queries/pools/pool";
-import { PoolGetter } from "../../queries/pools/types";
+import { ObservableQueryPoolGetter } from "../../queries/pools/types";
 import { IMPERATOR_HISTORICAL_DATA_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
 import { FilteredPools, Filters, objToQueryParams, Pagination } from "./types";
@@ -25,7 +25,7 @@ const ENDPOINT = "/stream/pool/v1/all";
  */
 export class ObservableQueryFilteredPools
   extends ObservableQueryExternalBase<FilteredPools>
-  implements PoolGetter
+  implements ObservableQueryPoolGetter
 {
   @observable
   protected _pools = new Map<string, ObservableQueryPool>();

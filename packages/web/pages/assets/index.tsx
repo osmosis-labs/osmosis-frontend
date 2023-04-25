@@ -216,6 +216,7 @@ const Assets: NextPage = observer(() => {
 
 const AssetsOverview: FunctionComponent = observer(() => {
   const { assetsStore } = useStore();
+  const { width } = useWindowSize();
   const t = useTranslation();
 
   const totalAssetsValue = assetsStore.calcValueOf([
@@ -260,23 +261,30 @@ const AssetsOverview: FunctionComponent = observer(() => {
     totalAssetsValue,
   ]);
 
+  const format = (price: PricePretty): string => {
+    if (width < 1100) {
+      return formatPretty(price);
+    }
+    return price.toString();
+  };
+
   return (
-    <div className="flex w-full items-center gap-[100px] rounded-[32px] bg-osmoverse-1000 px-8 py-9 lg:gap-5 lg:px-10 md:flex-col md:items-start md:gap-3 md:px-4 md:py-5">
+    <div className="flex w-full place-content-between items-center gap-8 overflow-x-auto rounded-[32px] bg-osmoverse-1000 px-8 py-9 2xl:gap-4 xl:gap-3 1.5lg:px-4 md:flex-col md:items-start md:gap-3 md:px-5 md:py-5">
       <Metric
         label={t("assets.totalAssets")}
-        value={totalAssetsValue.toString()}
+        value={format(totalAssetsValue)}
       />
       <Metric
         label={t("assets.bondedAssets")}
-        value={bondedAssetsValue.toString()}
+        value={format(bondedAssetsValue)}
       />
       <Metric
         label={t("assets.unbondedAssets")}
-        value={availableAssetsValue.toString()}
+        value={format(availableAssetsValue)}
       />
       <Metric
         label={t("assets.stakedAssets")}
-        value={stakedAssetsValue.toString()}
+        value={format(stakedAssetsValue)}
       />
     </div>
   );

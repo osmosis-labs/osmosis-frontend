@@ -51,7 +51,7 @@ export const osmosisMsgOpts = createMsgOpts({
       osmosis.superfluid.MessageComposer.withTypeUrl.superfluidDelegate,
   },
   lockAndSuperfluidDelegate: {
-    gas: 500000,
+    gas: 502000,
     messageComposer:
       osmosis.superfluid.MessageComposer.withTypeUrl.lockAndSuperfluidDelegate,
   },

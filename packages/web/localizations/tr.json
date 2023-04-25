@@ -462,5 +462,10 @@
   "transactionSuccessful": "İşlem Başarılı",
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",
-  "waitingForTransaction": "İşlemin bloğa eklenmesi bekleniyor"
+  "waitingForTransaction": "İşlemin bloğa eklenmesi bekleniyor",
+  "highInflationWarning": "Yüksek APR'ler enflasyonist ödüllerden kaynaklanabilir. Dikkatli ilerleyin.",
+  "streamswap": {
+    "description": "İnterchain başlatma rampası burada. Yeni projeleri ilk başlatan kişi olun. Keşfedin",
+    "link": "Streamswap."
+  }
 }

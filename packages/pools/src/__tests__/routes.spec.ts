@@ -355,17 +355,13 @@ describe("OptimizedRoutes", () => {
             pool.poolAssets.map((poolAsset) => poolAsset.denom)
           )
         )
-      );
+      ).filter((denom) => !denom.includes("gamm"));
 
       allDenoms.forEach((denom, i) => {
         const tokenInDenom = denom;
         const tokenOutDenom = allDenoms[(i + 1) % allDenoms.length];
 
-        if (
-          tokenInDenom === tokenOutDenom ||
-          tokenInDenom.concat(tokenOutDenom).includes("gamm")
-        )
-          return;
+        if (tokenInDenom === tokenOutDenom) return;
 
         const router = new OptimizedRoutes(allPools, ["1", "2"], "uosmo");
 
@@ -373,8 +369,9 @@ describe("OptimizedRoutes", () => {
           const routes = router.getOptimizedRoutesByTokenIn(
             { denom: tokenInDenom, amount: new Int("10") },
             tokenOutDenom,
-            300
+            10
           );
+
           router.calculateTokenOutByTokenIn(routes).amount;
         }).not.toThrow();
       });

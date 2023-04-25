@@ -1,7 +1,7 @@
 import { Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
-import { useMemo, useRef } from "react";
+import { useMemo } from "react";
 
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { TradeClipboard } from "~/components/trade-clipboard";
@@ -18,147 +18,17 @@ const Home: NextPage = observer(function () {
   const queryPools = queries.osmosis!.queryGammPools;
 
   // If pool has already passed once, it will be passed immediately without recalculation.
-  const poolsPassed = useRef<Map<string, boolean>>(new Map());
   const allPools = queryPools.getAllPools();
   // Pools should be memoized before passing to trade in config
   const pools = useMemo(
     () =>
       allPools
-        .filter((pool) => {
-          // TODO: If not on production environment, this logic should pass all pools (or other selection standard).
-
-          // Trim not useful pools.
-
-          const passed = poolsPassed.current.get(pool.id);
-          if (passed) {
-            return true;
-          }
-
-          // https://github.com/osmosis-labs/osmosis-frontend/issues/843
-          if (pool.id === "800") {
-            return false;
-          }
-
-          // There is currently no good way to pick a pool that is worthwhile.
-          // For now, based on the mainnet, only those pools with assets above a certain value are calculated for swap.
-
-          let hasEnoughAssets = false;
-
-          for (const asset of pool.poolAssets) {
-            // Probably, the pools that include gamm token may be created mistakenly by users.
-            if (
-              asset.amount.currency.coinMinimalDenom.startsWith("gamm/pool/")
-            ) {
-              return false;
-            }
-
-            // Only pools with at least 1000 osmo are dealt with.
-            if (asset.amount.currency.coinMinimalDenom === "uosmo") {
-              if (asset.amount.toDec().gt(new Dec(1000))) {
-                hasEnoughAssets = true;
-                break;
-              }
-            }
-
-            // Only pools with at least 10 ion are dealt with.
-            if (asset.amount.currency.coinMinimalDenom === "uion") {
-              if (asset.amount.toDec().gt(new Dec(10))) {
-                hasEnoughAssets = true;
-                break;
-              }
-            }
-
-            // Only pools with at least 1000 atom are dealt with.
-            if (
-              "originChainId" in asset.amount.currency &&
-              asset.amount.currency.coinMinimalDenom ===
-                "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2"
-            ) {
-              if (asset.amount.toDec().gt(new Dec(1000))) {
-                hasEnoughAssets = true;
-                break;
-              }
-            }
-
-            // only pools with at least 10,000 USDC
-            if (
-              "originChainId" in asset.amount.currency &&
-              asset.amount.currency.coinMinimalDenom ===
-                "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858"
-            ) {
-              if (asset.amount.toDec().gt(new Dec(10_000))) {
-                hasEnoughAssets = true;
-                break;
-              }
-            }
-
-            // only pools with at least 10,000 DAI
-            if (
-              "originChainId" in asset.amount.currency &&
-              asset.amount.currency.coinMinimalDenom ===
-                "ibc/0CD3A0285E1341859B5E86B6AB7682F023D03E97607CCC1DC95706411D866DF7"
-            ) {
-              if (asset.amount.toDec().gt(new Dec(10_000))) {
-                hasEnoughAssets = true;
-                break;
-              }
-            }
-
-            // only pools with at least 10,000 USDT
-            if (
-              "originChainId" in asset.amount.currency &&
-              asset.amount.currency.coinMinimalDenom ===
-                "ibc/8242AD24008032E457D2E12D46588FD39FB54FB29680C6C7663D296B383C37C4"
-            ) {
-              if (asset.amount.toDec().gt(new Dec(10_000))) {
-                hasEnoughAssets = true;
-                break;
-              }
-            }
-
-            // only pools with at least 1,000,000 STARS
-            if (
-              "originChainId" in asset.amount.currency &&
-              asset.amount.currency.coinMinimalDenom ===
-                "ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4"
-            ) {
-              if (asset.amount.toDec().gt(new Dec(1_000))) {
-                hasEnoughAssets = true;
-                break;
-              }
-            }
-
-            // only pools with at least 10,000 JUNO
-            if (
-              "originChainId" in asset.amount.currency &&
-              asset.amount.currency.coinMinimalDenom ===
-                "ibc/46B44899322F3CD854D2D46DEEF881958467CDD4B3B10086DA49296BBED94BED"
-            ) {
-              if (asset.amount.toDec().gt(new Dec(10_000))) {
-                hasEnoughAssets = true;
-                break;
-              }
-            }
-
-            // only pools with at least 35,000 EVMOS
-            if (
-              "originChainId" in asset.amount.currency &&
-              asset.amount.currency.coinMinimalDenom ===
-                "ibc/6AE98883D4D5D5FF9E50D7130F1305DA2FFA0C652D1DD9C123657C6B4EB2DF8A"
-            ) {
-              if (asset.amount.toDec().gt(new Dec(35_000))) {
-                hasEnoughAssets = true;
-                break;
-              }
-            }
-          }
-
-          if (hasEnoughAssets) {
-            poolsPassed.current.set(pool.id, true);
-          }
-
-          return hasEnoughAssets;
-        })
+        .filter((pool) =>
+          pool
+            .computeTotalValueLocked(priceStore)
+            .toDec()
+            .gte(new Dec(IS_FRONTIER ? 1_000 : 10_000))
+        )
         .sort((a, b) => {
           // sort by TVL to find routes amongst most valuable pools
           const aTVL = a.computeTotalValueLocked(priceStore);
@@ -167,6 +37,7 @@ const Home: NextPage = observer(function () {
           return Number(bTVL.sub(aTVL).toDec().toString());
         })
         .map((pool) => pool.pool),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [allPools, priceStore.response]
   );
 

@@ -210,26 +210,32 @@ export class ObservableMetamask implements EthWallet {
         }
 
         runInAction(() => (this._isSending = method));
-        const resp = await ethereum.request({
-          method,
-          params: Array.isArray(ethTx)
-            ? ethTx
-            : [
-                {
-                  from: this.accountAddress,
-                  ...ethTx,
-                  value: ethTx.value ? toHex(ethTx.value) : undefined,
-                },
-              ],
-        });
-        if (method === "eth_sendTransaction") {
-          this.txStatusEventEmitter.emit("pending");
-          const txHash = resp as string;
-          pollTransactionReceipt(this.send, txHash, (status) =>
-            this.txStatusEventEmitter.emit(status, txHash)
-          );
+        let resp: unknown;
+        try {
+          resp = await ethereum.request({
+            method,
+            params: Array.isArray(ethTx)
+              ? ethTx
+              : [
+                  {
+                    from: this.accountAddress,
+                    ...ethTx,
+                    value: ethTx.value ? toHex(ethTx.value) : undefined,
+                  },
+                ],
+          });
+          if (method === "eth_sendTransaction") {
+            this.txStatusEventEmitter.emit("pending");
+            const txHash = resp as string;
+            pollTransactionReceipt(this.send, txHash, (status) =>
+              this.txStatusEventEmitter.emit(status, txHash)
+            );
+          }
+        } catch (e: any) {
+          throw e;
+        } finally {
+          runInAction(() => (this._isSending = null));
         }
-        runInAction(() => (this._isSending = null));
         return resp;
       }) ||
       Promise.reject("MetaMask: failed to send message: ethereum not in window")

@@ -2,7 +2,7 @@
 
 ![osmosis-banner-1200w](https://user-images.githubusercontent.com/4606373/167008669-fb3cafa8-e66e-4cdf-8599-3308039cc58c.png)
 
-## Development 💻
+## Overview 💻
 
 Our [frontend](https://app.osmosis.zone) is built with the following tools:
 
@@ -10,18 +10,25 @@ Our [frontend](https://app.osmosis.zone) is built with the following tools:
 - [React](https://reactjs.org/): ui
 - [Tailwind CSS](https://tailwindcss.com/): styling, theming
 - [Next.js](https://nextjs.org/): scaffolding/SSR/CDN/SEO
-  - We deploy on [Vercel](https://vercel.com/solutions/nextjs?utm_source=next-site&utm_medium=banner&utm_campaign=next-website) for optimization (CDN, regions)
-- [lerna](https://lerna.js.org/): code organization; mono-repo management and libs release
+  - We deploy on [Vercel](https://vercel.com/solutions/nextjs?utm_source=next-site&utm_medium=banner&utm_campaign=next-website) for optimizations out of the box, behind [CloudFlare](https://www.cloudflare.com/)
+- [Turbo Repo](https://turbo.build/repo): mono repo management with package script execution, with heavy emphasis on build caching (including shared remote caching in Vercel)
+- [Lerna](https://lerna.js.org/): libs release
 
 ## Deployment 🚀
+
+Install deps:
+
+```bash
+yarn
+```
 
 Start web server
 
 ```bash
-yarn && yarn build && yarn start
+yarn start
 ```
 
-### Contributing 👨‍💻
+## Contributing 👨‍💻
 
 We welcome and encourage contributions! We recommend looking for [issues labeled with "good-first-issue"](https://github.com/osmosis-labs/osmosis-frontend/contribute).
 
@@ -33,13 +40,16 @@ Make sure [node](https://nodejs.org/en/) >= 16 and [yarn](https://yarnpkg.com/ge
 yarn
 ```
 
-2. Build app
+**First time setup** If you're on the Osmosis foundation team and have a Vercel account set up, optionally sign into turbo repo using your Vercel account, and link the repo. This could give you instant builds by sharing the remote cache on our Vercel project:
 
 ```bash
-yarn build
+npx turbo login
+...login via browser...
+npx turbo link
+...press y (yes) and choose "OsmoLabs" as the Vercel build scope...
 ```
 
-3.  Run local server at [`localhost:3000`](localhost:3000)
+2.  Run local server at [`localhost:3000`](localhost:3000)
 
 ```bash
 yarn dev
@@ -70,7 +80,7 @@ Otherwise the non-frontier commands can be used with the env var set to true.
 
 ### Testnet
 
-Testnet version of the frontend uses `NEXT_PUBLIC_IS_TESTNET=true`.
+Testnet version of the frontend uses `NEXT_PUBLIC_IS_TESTNET=true`. By default, it points to the canonical testnet, but packages/web/.env can be changed to point to [localosmosis](https://github.com/osmosis-labs/osmosis/tree/main/tests/localosmosis).
 
 Dev:
 
@@ -84,12 +94,22 @@ Deploy:
 yarn build:testnet && yarn start:testnet
 ```
 
+Note: our currency registrar checks IBC hashes to see if they can be found via the denom_trace query in the IBC module on chain. If it's not found, it won't add it to the chain's list of currencies. Make sure IBC assets on testnet can be found in the testnet's IBC module state for test IBC assets to be visible. Otherwise, test assets (i.e. made via tokenfactory) can be added as native assets to the Osmosis chain, simply by defining it's base denom in the Osmosis chain info for testnet.
+
 ## Releases
 
 Release tags are for the published [npm packages](https://www.npmjs.com/org/osmosis-labs), which are every package except for the web package. Updates to the app are released incrementally way via deployments from master branch.
+
+To start the release process:
+
+```bash
+yarn build:libs && npx lerna publish
+```
 
 ## Localization 🌎🗺
 
 Have a change you want to make with our translations? We have a frontend for updating localizations in our app easily, all you need is a GitHub account. Coming soon: creating new language profiles from this frontend.
 
-https://inlang.com/editor/github.com/osmosis-labs/osmosis-frontend
+Inlang editor & status:
+
+[![translation badge](https://inlang.com/badge?url=github.com/osmosis-labs/osmosis-frontend)](https://inlang.com/editor/github.com/osmosis-labs/osmosis-frontend?ref=badge)
