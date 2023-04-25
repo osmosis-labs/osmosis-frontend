@@ -1,6 +1,5 @@
 import { Menu } from "@headlessui/react";
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { ObservablePoolWithMetric } from "@osmosis-labs/stores";
 import {
   CellContext,
   createColumnHelper,
@@ -26,6 +25,7 @@ import { useTranslation } from "react-multi-lang";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useFilteredData, useWindowSize } from "~/hooks";
 import { MenuOptionsModal } from "~/modals";
+import { ObservablePoolWithMetric } from "~/stores/derived-data";
 import { noop, runIfFn } from "~/utils/function";
 
 import { useStore } from "../../stores";
@@ -37,6 +37,7 @@ import {
   PoolCompositionCell,
   PoolQuickActionCell,
 } from "../table/cells";
+import { Tooltip } from "../tooltip";
 import PaginatedTable from "./paginated-table";
 
 const TVL_FILTER_THRESHOLD = 1000;
@@ -67,6 +68,13 @@ export type Pool = [
     onRemoveLiquidity?: () => void;
     onLockTokens?: () => void;
   }
+];
+
+const searchPoolsMemoedKeys = [
+  "pool.id",
+  "poolName",
+  "networkNames",
+  "pool.poolAssets.amount.currency.originCurrency.pegMechanism",
 ];
 
 function getPoolFilters(
@@ -149,6 +157,7 @@ export const AllPoolsTable: FunctionComponent<{
 
     const { chainId } = chainStore.osmosis;
     const queriesOsmosis = queriesStore.get(chainId).osmosis!;
+    const queriesCosmos = queriesStore.get(chainId).cosmos!;
     const queryActiveGauges = queriesExternalStore.queryActiveGauges;
 
     const [sorting, _setSorting] = useState<
@@ -178,9 +187,11 @@ export const AllPoolsTable: FunctionComponent<{
       [logEvent, isMobile]
     );
 
+    const [isSearching, setIsSearching] = useState(false);
+
     const allPoolsWithMetrics = derivedDataStore.poolsWithMetrics
       .get(chainId)
-      .getAllPools(sorting[0]?.id, sorting[0]?.desc);
+      .getAllPools(sorting[0]?.id, sorting[0]?.desc, isSearching);
 
     const initiallyFilteredPools = useMemo(
       () =>
@@ -241,21 +252,18 @@ export const AllPoolsTable: FunctionComponent<{
 
     const [query, _setQuery, filteredPools] = useFilteredData(
       initiallyFilteredPools,
-      useMemo(
-        () => [
-          "pool.id",
-          "poolName",
-          "networkNames",
-          "pool.poolAssets.amount.currency.originCurrency.pegMechanism",
-        ],
-        []
-      )
+      searchPoolsMemoedKeys
     );
     const setQuery = useCallback(
       (search: string) => {
         if (search !== "" && !fetchedRemainingPoolsRef.current) {
           queriesOsmosis.queryGammPools.fetchRemainingPools();
           fetchedRemainingPoolsRef.current = true;
+        }
+        if (search === "") {
+          setIsSearching(false);
+        } else {
+          setIsSearching(true);
         }
         setSorting([]);
         _setQuery(search);
@@ -354,8 +362,46 @@ export const AllPoolsTable: FunctionComponent<{
                 ObservablePoolWithMetric
               >
             ) => {
+              const pool = props.getValue();
+
+              const inflation = queriesCosmos.queryInflation;
+              /**
+               * If pool APR is 5 times bigger than staking APR, warn user
+               * that pool may be subject to inflation
+               */
+              const isAPRTooHigh = inflation.inflation.toDec().gt(new Dec(0))
+                ? pool.apr
+                    .toDec()
+                    .gt(
+                      inflation.inflation
+                        .toDec()
+                        .quo(new Dec(100))
+                        .mul(new Dec(5))
+                    )
+                : false;
+
               return (
-                <MetricLoaderCell value={props.getValue().apr.toString()} />
+                <MetricLoaderCell
+                  isLoading={
+                    queriesOsmosis.queryIncentivizedPools.isAprFetching
+                  }
+                  value={
+                    // Only display warning when APR is too high
+                    isAPRTooHigh ? (
+                      <Tooltip content={t("highPoolInflationWarning")}>
+                        <p className="flex items-center gap-1.5">
+                          <Icon
+                            id="alert-triangle"
+                            className="h-4 w-4 text-osmoverse-400"
+                          />
+                          {pool.apr.toString()}
+                        </p>
+                      </Tooltip>
+                    ) : (
+                      pool.apr.toString()
+                    )
+                  }
+                />
               );
             }
           ),
@@ -398,6 +444,8 @@ export const AllPoolsTable: FunctionComponent<{
       [
         cellGroupEventEmitter,
         columnHelper,
+        queriesCosmos.queryInflation,
+        queriesOsmosis.queryIncentivizedPools.isAprFetching,
         quickAddLiquidity,
         quickLockTokens,
         quickRemoveLiquidity,

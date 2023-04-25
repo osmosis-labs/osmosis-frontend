@@ -112,18 +112,20 @@ export class FakeFeeConfig extends TxChainSetter implements IFeeConfig {
     };
   });
 
-  getFeeTypePretty(_feeType: FeeType): CoinPretty {
+  getFeeTypePretty(): CoinPretty {
     // noop
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return new CoinPretty(this.feeCurrency!, new Dec(0));
   }
 
-  setFeeType(_feeType: FeeType | undefined): void {
+  setFeeType(): void {
     // noop
   }
 
   toStdFee(): StdFee {
     return {
       gas: this.gas.toString(),
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       amount: [this.getFeePrimitive()!],
     };
   }

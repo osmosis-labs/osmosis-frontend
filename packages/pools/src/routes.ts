@@ -54,6 +54,9 @@ export class OptimizedRoutes {
       return cached;
     }
 
+    if (maxRouteCount > 10)
+      throw new Error("maxRouteCount should be less than 10");
+
     const poolsUsed = Array<boolean>(this.pools.length).fill(false);
     const routes: Route[] = [];
 
@@ -69,6 +72,7 @@ export class OptimizedRoutes {
 
       if (
         currentRoute.length > 0 &&
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         currentRoute[currentRoute.length - 1]!.hasPoolAsset(tokenOutDenom)
       ) {
         const foundRoute: Route = {
@@ -80,7 +84,7 @@ export class OptimizedRoutes {
         return;
       }
 
-      if (routes.length >= maxRouteCount) {
+      if (routes.length > maxRouteCount) {
         // only find top routes by iterating all pools by high liquidity first
         return;
       }
@@ -95,25 +99,27 @@ export class OptimizedRoutes {
           : [tokenInDenom]; // imaginary prev pool
 
         const curPool = this.pools[i];
+
         let prevPoolCurPoolTokenMatch: string | undefined;
-        const curPoolContainsAssetOutOfLastPool =
-          previousTokenOuts &&
-          curPool.poolAssets.some(({ denom }) =>
-            previousTokenOuts.some((d) => {
-              if (d === denom) {
-                prevPoolCurPoolTokenMatch = denom;
-                return true;
-              }
-              return false;
-            })
-          );
-        if (!curPoolContainsAssetOutOfLastPool || !prevPoolCurPoolTokenMatch) {
+        curPool.poolAssets.forEach(({ denom }) =>
+          previousTokenOuts.forEach((d) => {
+            if (d === denom) {
+              prevPoolCurPoolTokenMatch = denom;
+            }
+          })
+        );
+        if (!prevPoolCurPoolTokenMatch) {
           continue; // skip pool
         }
 
         currentRoute.push(curPool);
-        if (prevPoolCurPoolTokenMatch !== tokenInDenom)
+        if (
+          currentRoute.length > 1 &&
+          prevPoolCurPoolTokenMatch !== tokenInDenom &&
+          prevPoolCurPoolTokenMatch !== tokenOutDenom
+        ) {
           currentTokenOuts.push(prevPoolCurPoolTokenMatch);
+        }
         poolsUsed[i] = true;
         computeRoutes(
           tokenInDenom,
@@ -154,8 +160,30 @@ export class OptimizedRoutes {
       tokenIn.denom,
       tokenOutDenom,
       maxPools,
-      maxRoutes
+      maxRoutes / 2
     );
+
+    // find routes with swapped in/out tokens since getCandidateRoutes is a greedy algorithm
+    const reverseRoutes = this.getCandidateRoutes(
+      tokenOutDenom,
+      tokenIn.denom,
+      maxPools,
+      maxRoutes / 2
+    );
+    const invertedRoutes: Route[] = [];
+    reverseRoutes.forEach((route) => {
+      invertedRoutes.push({
+        pools: [...route.pools].reverse(),
+        tokenOutDenoms: [
+          route.tokenInDenom,
+          ...route.tokenOutDenoms.slice(0, -1),
+        ].reverse(),
+        tokenInDenom: route.tokenOutDenoms[route.tokenOutDenoms.length - 1],
+      });
+    });
+    routes = [...routes, ...invertedRoutes];
+
+    // find best routes --
 
     // prioritize shorter routes
     routes = routes.sort((path1, path2) => {

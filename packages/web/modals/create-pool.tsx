@@ -48,7 +48,7 @@ export const CreatePoolModal: FunctionComponent<
             config.setPoolType(type);
             setCurStep(1);
           }}
-        ></SelectType>
+        />
       )}
       {curStep === 1 && (
         <Step1SetRatios createPoolConfig={config} advanceStep={advanceStep} />

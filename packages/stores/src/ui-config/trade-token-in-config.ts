@@ -24,7 +24,6 @@ import {
   runInAction,
 } from "mobx";
 
-import { OsmosisQueries } from "../queries";
 import {
   InsufficientBalanceError,
   NoRouteError,
@@ -48,7 +47,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
   constructor(
     chainGetter: ChainGetter,
-    protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
+    protected readonly queriesStore: IQueriesStore,
     protected readonly initialChainId: string,
     sender: string,
     feeConfig: IFeeConfig | undefined,
@@ -243,14 +242,11 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     });
     this.setError(undefined);
     const amount = this.getAmountPrimitive();
+
     if (
       !amount.amount ||
       new Int(amount.amount).lte(new Int(0)) ||
-      this.sendableCurrencies.length === 0 ||
-      !Boolean(
-        this.queriesStore.get(this.initialChainId).osmosis?.queryGammPools
-          .response
-      )
+      this.sendableCurrencies.length === 0
     ) {
       return [];
     }
@@ -262,7 +258,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           amount: new Int(amount.amount),
         },
         this.outCurrency.coinMinimalDenom,
-        5
+        4
       );
     } catch (e: any) {
       if (e instanceof NotEnoughLiquidityError) {
@@ -323,8 +319,14 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     const multiplicationInOverOut = DecUtils.getTenExponentN(
       this.outCurrency.coinDecimals - this.sendCurrency.coinDecimals
     );
-    const result = this.optimizedRoutes.calculateTokenOutByTokenIn(paths);
-
+    let result;
+    try {
+      result = this.optimizedRoutes.calculateTokenOutByTokenIn(paths);
+    } catch (e: any) {
+      console.error(e);
+      this.setError(new NoRouteError("No route found"));
+      return zero;
+    }
     if (!result.amount.gt(new Int(0))) {
       this.setError(new Error("Not enough liquidity"));
       return zero;
@@ -401,7 +403,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           amount: one,
         },
         this.outCurrency.coinMinimalDenom,
-        5
+        4
       );
     } catch (e: any) {
       console.error("No route found", e.message);
@@ -412,13 +414,20 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       return new IntPretty(0).ready(false);
     }
 
-    const estimate = this.optimizedRoutes.calculateTokenOutByTokenIn(paths);
+    let result;
+    try {
+      result = this.optimizedRoutes.calculateTokenOutByTokenIn(paths);
+    } catch (e: any) {
+      console.error(e);
+      return new IntPretty(0).ready(false);
+    }
+
     const multiplicationInOverOut = DecUtils.getTenExponentN(
       this.outCurrency.coinDecimals - this.sendCurrency.coinDecimals
     );
     const beforeSpotPriceWithoutSwapFeeInOverOutDec =
-      estimate.beforeSpotPriceInOverOut.mulTruncate(
-        new Dec(1).sub(estimate.swapFee)
+      result.beforeSpotPriceInOverOut.mulTruncate(
+        new Dec(1).sub(result.swapFee)
       );
 
     // low price vs in asset

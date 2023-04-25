@@ -6,7 +6,7 @@
     "dev": "yarn generate && next dev",
     "clean": "rm -rf node_modules; rm -rf .next; rm config/chain-infos.ts",
     "build": "yarn generate && next build",
-    "analyze": "cross-env ANALYZE=true next build",
+    "analyze": "dotenv -v ANALYZE=true -- next build",
     "test": "jest --watch",
     "start": "next start",
     "lint": "prettier --check \"**/*\" && next lint",
@@ -77,6 +77,7 @@
     "semver": "^7.3.7",
     "sha.js": "^2.4.11",
     "sharp": "^0.30.4",
+    "utility-types": "^3.10.0",
     "web3-utils": "^1.7.4"
   },
   "devDependencies": {

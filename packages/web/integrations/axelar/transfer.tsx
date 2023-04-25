@@ -13,6 +13,8 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { IBCBalance } from "~/stores/assets";
+
 import { displayToast, ToastType } from "../../components/alert";
 import { Button } from "../../components/buttons";
 import { Transfer } from "../../components/complex/transfer";
@@ -25,7 +27,6 @@ import {
 import { useAmplitudeAnalytics } from "../../hooks/use-amplitude-analytics";
 import { BridgeIntegrationProps } from "../../modals";
 import { useStore } from "../../stores";
-import { IBCBalance } from "../../stores/assets";
 import { getKeyByValue } from "../../utils/object";
 import { EthClientChainIds_SourceChainMap, SourceChain } from "../bridge-info";
 import {
@@ -579,6 +580,7 @@ const AxelarTransfer: FunctionComponent<
                   nativeDenom:
                     balanceOnOsmosis.balance.currency.originCurrency.coinDenom,
                   wrapDenom: sourceChainConfig.nativeWrapEquivalent.wrapDenom,
+                  disabled: isDepositAddressLoading,
                 }
               : undefined
           }
