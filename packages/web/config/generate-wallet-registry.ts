@@ -1,15 +1,9 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import type { Wallet } from "@cosmos-kit/core";
 import { cosmostationExtensionInfo } from "@cosmos-kit/cosmostation-extension";
-import { cosmostationMobileInfo } from "@cosmos-kit/cosmostation-mobile";
-import { frontierExtensionInfo } from "@cosmos-kit/frontier-extension";
 import { keplrExtensionInfo } from "@cosmos-kit/keplr-extension";
 import { keplrMobileInfo } from "@cosmos-kit/keplr-mobile";
 import { leapExtensionInfo } from "@cosmos-kit/leap-extension";
-import { omniMobileInfo } from "@cosmos-kit/omni-mobile";
-import { terrastationExtensionInfo } from "@cosmos-kit/terrastation-extension";
-import { trustMobileInfo } from "@cosmos-kit/trust-mobile";
-import { xdefiExtensionInfo } from "@cosmos-kit/xdefi-extension";
 import * as fs from "fs";
 import * as prettier from "prettier";
 
@@ -41,43 +35,42 @@ const WalletRegistry: (Wallet & {
     lazyInstallUrl: "@cosmos-kit/cosmostation-extension",
     walletClassName: "CosmostationExtensionWallet",
   },
-  {
-    ...cosmostationMobileInfo,
-    logo: "/wallets/cosmostation.png",
-    lazyInstallUrl: "@cosmos-kit/cosmostation-mobile",
-    walletClassName: "CosmostationMobileWallet",
-  },
-  {
-    ...frontierExtensionInfo,
-    logo: "/wallets/frontier.png",
-    lazyInstallUrl: "@cosmos-kit/frontier-extension",
-    walletClassName: "FrontierExtensionWallet",
-  },
-
-  {
-    ...terrastationExtensionInfo,
-    logo: "/wallets/terrastation.svg",
-    lazyInstallUrl: "@cosmos-kit/terrastation-extension",
-    walletClassName: "TerrastationExtensionWallet",
-  },
-  {
-    ...trustMobileInfo,
-    logo: "/wallets/trust.png",
-    lazyInstallUrl: "@cosmos-kit/trust-mobile",
-    walletClassName: "TrustMobileWallet",
-  },
-  {
-    ...xdefiExtensionInfo,
-    logo: "/wallets/xdefi.png",
-    lazyInstallUrl: "@cosmos-kit/xdefi-extension",
-    walletClassName: "XDEFIExtensionWallet",
-  },
-  {
-    ...omniMobileInfo,
-    logo: "/wallets/omni.webp",
-    lazyInstallUrl: "@cosmos-kit/omni-mobile",
-    walletClassName: "OmniMobileWallet",
-  },
+  // {
+  //   ...cosmostationMobileInfo,
+  //   logo: "/wallets/cosmostation.png",
+  //   lazyInstallUrl: "@cosmos-kit/cosmostation-mobile",
+  //   walletClassName: "CosmostationMobileWallet",
+  // },
+  // {
+  //   ...frontierExtensionInfo,
+  //   logo: "/wallets/frontier.png",
+  //   lazyInstallUrl: "@cosmos-kit/frontier-extension",
+  //   walletClassName: "FrontierExtensionWallet",
+  // },
+  // {
+  //   ...terrastationExtensionInfo,
+  //   logo: "/wallets/terrastation.svg",
+  //   lazyInstallUrl: "@cosmos-kit/terrastation-extension",
+  //   walletClassName: "TerrastationExtensionWallet",
+  // },
+  // {
+  //   ...trustMobileInfo,
+  //   logo: "/wallets/trust.png",
+  //   lazyInstallUrl: "@cosmos-kit/trust-mobile",
+  //   walletClassName: "TrustMobileWallet",
+  // },
+  // {
+  //   ...xdefiExtensionInfo,
+  //   logo: "/wallets/xdefi.png",
+  //   lazyInstallUrl: "@cosmos-kit/xdefi-extension",
+  //   walletClassName: "XDEFIExtensionWallet",
+  // },
+  // {
+  //   ...omniMobileInfo,
+  //   logo: "/wallets/omni.webp",
+  //   lazyInstallUrl: "@cosmos-kit/omni-mobile",
+  //   walletClassName: "OmniMobileWallet",
+  // },
 ];
 
 /**

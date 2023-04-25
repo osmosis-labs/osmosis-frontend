@@ -189,6 +189,7 @@ const ModalContent: FunctionComponent<
         const walletManager = accountStore.addWallet(
           new WalletClass(walletInfo)
         );
+        walletManager.onMounted();
 
         return walletManager
           .getMainWallet(wallet.name)
