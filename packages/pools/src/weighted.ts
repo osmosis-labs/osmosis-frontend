@@ -2,7 +2,7 @@ import { Dec, Int } from "@keplr-wallet/unit";
 import { WeightedPoolMath } from "@osmosis-labs/math";
 
 import { SharePool } from "./interface";
-import { RoutablePool, SwapResult } from "./router";
+import { Quote, RoutablePool } from "./router";
 
 /** Raw query response representation of pool. */
 export interface WeightedPoolRaw {
@@ -208,7 +208,7 @@ export class WeightedPool implements SharePool, RoutablePool {
     tokenOut: { denom: string; amount: Int },
     tokenInDenom: string,
     swapFee?: Dec
-  ): Promise<SwapResult> {
+  ): Promise<Quote> {
     const inPoolAsset = this.getPoolAsset(tokenInDenom);
     const outPoolAsset = this.getPoolAsset(tokenOut.denom);
 
@@ -264,7 +264,7 @@ export class WeightedPool implements SharePool, RoutablePool {
     tokenIn: { denom: string; amount: Int },
     tokenOutDenom: string,
     swapFee?: Dec
-  ): Promise<SwapResult> {
+  ): Promise<Quote> {
     const inPoolAsset = this.getPoolAsset(tokenIn.denom);
     const outPoolAsset = this.getPoolAsset(tokenOutDenom);
 

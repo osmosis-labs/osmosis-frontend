@@ -1,4 +1,5 @@
 import { Dec, Int } from "@keplr-wallet/unit";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import deepmerge from "deepmerge";
 
 import { StablePool } from "../../stable";
@@ -6,8 +7,11 @@ import { WeightedPool } from "../../weighted";
 import {
   OptimizedRoutes,
   OptimizedRoutesParams,
+  Quote,
   RoutablePool,
-  SwapResult,
+  Route,
+  RouteWithInAmount,
+  TokenOutGivenInRouter,
 } from "..";
 
 // Mock RoutablePool for testing purposes
@@ -30,12 +34,12 @@ export class MockRoutablePool implements RoutablePool {
     // You can return a static value for testing purposes, or have different values for different tokens
     return this.limitAmount;
   }
-  getTokenOutByTokenIn(): Promise<SwapResult> {
+  getTokenOutByTokenIn(): Promise<Quote> {
     // Implement the function
 
     return Promise.reject("Needs impl");
   }
-  getTokenInByTokenOut(): Promise<SwapResult> {
+  getTokenInByTokenOut(): Promise<Quote> {
     // Implement the function
     return Promise.reject("Needs impl");
   }
@@ -76,6 +80,44 @@ export const makeMockRoutablePool = (
   };
   ```
  */
+
+// Mock OptimizedRoutes for testing purposes to get access to protected methods
+export class TestOptimizedRoutes
+  extends OptimizedRoutes
+  implements TokenOutGivenInRouter
+{
+  constructor(...args: ConstructorParameters<typeof OptimizedRoutes>) {
+    super(...args);
+  }
+
+  async getOptimizedRoutesByTokenIn(
+    ...args: Parameters<TokenOutGivenInRouter["getOptimizedRoutesByTokenIn"]>
+  ) {
+    return super.getOptimizedRoutesByTokenIn(...args);
+  }
+
+  async calculateTokenOutByTokenIn(
+    ...args: Parameters<TokenOutGivenInRouter["calculateTokenOutByTokenIn"]>
+  ) {
+    return super.calculateTokenOutByTokenIn(...args);
+  }
+
+  protected getCandidateRoutes(
+    tokenInDenom: string,
+    tokenOutDenom: string
+  ): Route[] {
+    return super.getCandidateRoutes(tokenInDenom, tokenOutDenom);
+  }
+
+  protected async findBestSplitTokenIn(
+    routes: RouteWithInAmount[],
+    tokenInAmount: Int,
+    maxIterations?: number
+  ): Promise<RouteWithInAmount[]> {
+    return super.findBestSplitTokenIn(routes, tokenInAmount, maxIterations);
+  }
+}
+
 export function makeDefaultTestRouterParams(
   overrideParams: Partial<OptimizedRoutesParams>
 ) {
@@ -94,7 +136,7 @@ export function makeDefaultTestRouterParams(
       new Dec(10_000_000).mul(new Dec(poolId)),
     ...overrideParams,
   };
-  return new OptimizedRoutes(params);
+  return new TestOptimizedRoutes(params);
 }
 
 /**

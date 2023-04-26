@@ -8,9 +8,9 @@ import { NotEnoughLiquidityError } from "../errors";
 import { NoRouteError } from "./errors";
 import { calculateWeightForRoute, Route, validateRoute } from "./route";
 import {
-  MultihopSwapResult,
   RoutablePool,
   RouteWithInAmount,
+  SplitTokenInQuote,
   TokenOutGivenInRouter,
 } from "./types";
 import { invertRoute } from "./utils";
@@ -26,7 +26,7 @@ export type OptimizedRoutesParams = {
 };
 
 export class OptimizedRoutes implements TokenOutGivenInRouter {
-  protected readonly _pools: ReadonlyArray<RoutablePool> = [];
+  protected readonly _pools: RoutablePool[];
   protected readonly _incentivizedPoolIds: string[];
   protected readonly _stakeCurrencyMinDenom: string;
   protected readonly _candidatePathsCache = new Map<string, Route[]>();
@@ -36,7 +36,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
   constructor({
     pools,
-    incentivizedPoolIds: incventivizedPoolIds,
+    incentivizedPoolIds,
     stakeCurrencyMinDenom,
     routeCache,
     getPoolTotalValueLocked,
@@ -44,12 +44,12 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     maxRoutes = 4,
   }: OptimizedRoutesParams) {
     // Sort by the total value locked.
-    this._pools = [...pools].sort((a, b) => {
+    this._pools = pools.slice().sort((a, b) => {
       const aTvl = getPoolTotalValueLocked(a.id);
       const bTvl = getPoolTotalValueLocked(b.id);
       return Number(aTvl.sub(bTvl).toString());
     });
-    this._incentivizedPoolIds = incventivizedPoolIds;
+    this._incentivizedPoolIds = incentivizedPoolIds;
     this._stakeCurrencyMinDenom = stakeCurrencyMinDenom;
     if (routeCache) this._candidatePathsCache = routeCache;
     this._getPoolTotalValueLocked = getPoolTotalValueLocked;
@@ -147,107 +147,149 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
   /** Calculate the amount of token out by simulating a swap through a route. */
   async calculateTokenOutByTokenIn(
-    route: RouteWithInAmount
-  ): Promise<MultihopSwapResult> {
-    validateRoute(route);
+    routes: RouteWithInAmount[]
+  ): Promise<SplitTokenInQuote> {
+    routes.forEach((route) => validateRoute(route));
+
+    /** Tracks special case when routing through _only_ 2 OSMO pools for a single route. */
+    const osmoFeeDiscountForRoute = new Array(routes.length).fill(false);
 
     let totalOutAmount: Int = new Int(0);
     let totalBeforeSpotPriceInOverOut: Dec = new Dec(0);
     let totalAfterSpotPriceInOverOut: Dec = new Dec(0);
     let totalEffectivePriceInOverOut: Dec = new Dec(0);
     let totalSwapFee: Dec = new Dec(0);
-    /** Special case when routing through _only_ 2 OSMO pools. */
-    let isMultihopOsmoFeeDiscount = false;
-    const sumAmount = route.initialAmount;
 
-    const amountFraction = route.initialAmount
-      .toDec()
-      .quoTruncate(sumAmount.toDec());
+    let sumAmount = new Int(0);
+    for (const path of routes) {
+      sumAmount = sumAmount.add(path.initialAmount);
+    }
 
-    let previousInDenom = route.tokenInDenom;
-    let previousInAmount = route.initialAmount;
+    let outDenom: string | undefined;
+    for (const route of routes) {
+      if (route.pools.length !== route.tokenOutDenoms.length) {
+        throw new Error(
+          `Invalid path: pools and tokenOutDenoms length mismatch, IDs:${route.pools.map(
+            (p) => p.id
+          )} ${route.pools
+            .flatMap((p) => p.poolAssetDenoms)
+            .join(",")} !== ${route.tokenOutDenoms.join(",")}`
+        );
+      }
+      if (route.pools.length === 0) {
+        throw new Error("Invalid path: pools length is 0");
+      }
 
-    let beforeSpotPriceInOverOut: Dec = new Dec(1);
-    let afterSpotPriceInOverOut: Dec = new Dec(1);
-    let effectivePriceInOverOut: Dec = new Dec(1);
-    let swapFee: Dec = new Dec(0);
-
-    for (let i = 0; i < route.pools.length; i++) {
-      const pool = route.pools[i];
-      const outDenom = route.tokenOutDenoms[i];
-
-      let poolSwapFee = pool.swapFee;
-      if (
-        isOsmoRoutedMultihop(
-          route.pools.map((routePool) => ({
-            id: routePool.id,
-            isIncentivized: this._incentivizedPoolIds.includes(routePool.id),
-          })),
-          route.tokenOutDenoms[0],
-          this._stakeCurrencyMinDenom
-        )
+      if (!outDenom) {
+        outDenom = route.tokenOutDenoms[route.tokenOutDenoms.length - 1];
+      } else if (
+        outDenom !== route.tokenOutDenoms[route.tokenOutDenoms.length - 1]
       ) {
-        isMultihopOsmoFeeDiscount = true;
-        const { maxSwapFee, swapFeeSum } = getOsmoRoutedMultihopTotalSwapFee(
-          route.pools
-        );
-        poolSwapFee = maxSwapFee.mul(poolSwapFee.quo(swapFeeSum));
+        throw new Error("Paths have different out denom");
       }
 
-      const tokenOut = await pool.getTokenOutByTokenIn(
-        { denom: previousInDenom, amount: previousInAmount },
-        outDenom,
-        poolSwapFee
-      );
+      const amountFraction = route.initialAmount
+        .toDec()
+        .quoTruncate(sumAmount.toDec());
 
-      if (!tokenOut.amount.gt(new Int(0))) {
-        // not enough liquidity
-        console.warn("Token out is 0 through pool:", pool.id);
+      let previousInDenom = route.tokenInDenom;
+      let previousInAmount = route.initialAmount;
 
-        return {
-          ...tokenOut,
-          tokenInFeeAmount: new Int(0),
-          swapFee,
-          multiHopOsmoDiscount: false,
-        };
-      }
+      let beforeSpotPriceInOverOut: Dec = new Dec(1);
+      let afterSpotPriceInOverOut: Dec = new Dec(1);
+      let effectivePriceInOverOut: Dec = new Dec(1);
+      let swapFee: Dec = new Dec(0);
 
-      beforeSpotPriceInOverOut = beforeSpotPriceInOverOut.mulTruncate(
-        tokenOut.beforeSpotPriceInOverOut
-      );
-      afterSpotPriceInOverOut = afterSpotPriceInOverOut.mulTruncate(
-        tokenOut.afterSpotPriceInOverOut
-      );
-      effectivePriceInOverOut = effectivePriceInOverOut.mulTruncate(
-        tokenOut.effectivePriceInOverOut
-      );
-      swapFee = swapFee.add(new Dec(1).sub(swapFee).mulTruncate(poolSwapFee));
+      for (let i = 0; i < route.pools.length; i++) {
+        const pool = route.pools[i];
+        const outDenom = route.tokenOutDenoms[i];
 
-      // is last pool
-      if (i === route.pools.length - 1) {
-        totalOutAmount = totalOutAmount.add(tokenOut.amount);
+        let poolSwapFee = pool.swapFee;
+        if (
+          routes.length === 1 &&
+          isOsmoRoutedMultihop(
+            routes[0].pools.map((routePool) => ({
+              id: routePool.id,
+              isIncentivized: this._incentivizedPoolIds.includes(routePool.id),
+            })),
+            route.tokenOutDenoms[0],
+            this._stakeCurrencyMinDenom
+          )
+        ) {
+          osmoFeeDiscountForRoute[routes.indexOf(route)] = true;
+          const { maxSwapFee, swapFeeSum } = getOsmoRoutedMultihopTotalSwapFee(
+            routes[0].pools
+          );
+          poolSwapFee = maxSwapFee.mul(poolSwapFee.quo(swapFeeSum));
+        }
 
-        totalBeforeSpotPriceInOverOut = totalBeforeSpotPriceInOverOut.add(
-          beforeSpotPriceInOverOut.mulTruncate(amountFraction)
+        // less fee
+        const tokenOut = await pool.getTokenOutByTokenIn(
+          { denom: previousInDenom, amount: previousInAmount },
+          outDenom,
+          poolSwapFee
         );
-        totalAfterSpotPriceInOverOut = totalAfterSpotPriceInOverOut.add(
-          afterSpotPriceInOverOut.mulTruncate(amountFraction)
+
+        if (!tokenOut.amount.gt(new Int(0))) {
+          // not enough liquidity
+          console.warn("Token out is 0 through pool:", pool.id);
+
+          return {
+            ...tokenOut,
+            tokenInFeeAmount: new Int(0),
+            swapFee,
+            split: routes.map((route) => ({
+              ...route,
+              multiHopOsmoDiscount: false,
+            })),
+          };
+        }
+
+        beforeSpotPriceInOverOut = beforeSpotPriceInOverOut.mulTruncate(
+          tokenOut.beforeSpotPriceInOverOut
         );
-        totalEffectivePriceInOverOut = totalEffectivePriceInOverOut.add(
-          effectivePriceInOverOut.mulTruncate(amountFraction)
+        afterSpotPriceInOverOut = afterSpotPriceInOverOut.mulTruncate(
+          tokenOut.afterSpotPriceInOverOut
         );
-        totalSwapFee = totalSwapFee.add(swapFee.mulTruncate(amountFraction));
-      } else {
-        previousInDenom = outDenom;
-        previousInAmount = tokenOut.amount;
+        effectivePriceInOverOut = effectivePriceInOverOut.mulTruncate(
+          tokenOut.effectivePriceInOverOut
+        );
+        swapFee = swapFee.add(new Dec(1).sub(swapFee).mulTruncate(poolSwapFee));
+
+        // is last pool
+        if (i === route.pools.length - 1) {
+          totalOutAmount = totalOutAmount.add(tokenOut.amount);
+
+          totalBeforeSpotPriceInOverOut = totalBeforeSpotPriceInOverOut.add(
+            beforeSpotPriceInOverOut.mulTruncate(amountFraction)
+          );
+          totalAfterSpotPriceInOverOut = totalAfterSpotPriceInOverOut.add(
+            afterSpotPriceInOverOut.mulTruncate(amountFraction)
+          );
+          totalEffectivePriceInOverOut = totalEffectivePriceInOverOut.add(
+            effectivePriceInOverOut.mulTruncate(amountFraction)
+          );
+          totalSwapFee = totalSwapFee.add(swapFee.mulTruncate(amountFraction));
+        } else {
+          previousInDenom = outDenom;
+          previousInAmount = tokenOut.amount;
+        }
       }
     }
 
-    const priceImpact = totalEffectivePriceInOverOut
+    const priceImpactTokenOut = totalEffectivePriceInOverOut
       .quo(totalBeforeSpotPriceInOverOut)
-      .sub(new Dec(1));
+      .sub(new Dec("1"));
 
     return {
+      split: routes
+        .map((route, i) => ({
+          ...route,
+          multiHopOsmoDiscount: osmoFeeDiscountForRoute[i],
+        }))
+        .sort((a, b) =>
+          Number(b.initialAmount.sub(a.initialAmount).toString())
+        ),
       amount: totalOutAmount,
       beforeSpotPriceInOverOut: totalBeforeSpotPriceInOverOut,
       beforeSpotPriceOutOverIn: new Dec(1).quoTruncate(
@@ -265,12 +307,11 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         new Dec(sumAmount).mulTruncate(new Dec(1).sub(totalSwapFee)).round()
       ),
       swapFee: totalSwapFee,
-      multiHopOsmoDiscount: isMultihopOsmoFeeDiscount,
-      priceImpactTokenOut: priceImpact,
+      priceImpactTokenOut,
     };
   }
 
-  /** Find routes through pools without optimization. */
+  /** Find potential routes through pools without optimization. */
   protected getCandidateRoutes(
     tokenInDenom: string,
     tokenOutDenom: string
@@ -305,7 +346,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         )
       ) {
         const foundRoute: Route = {
-          pools: [...currentRoute],
+          pools: currentRoute.slice(),
           tokenOutDenoms: [...currentTokenOuts, tokenOutDenom],
           tokenInDenom,
         };
@@ -369,5 +410,61 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     findRoutes(tokenInDenom, tokenOutDenom, [], [], poolsUsed);
     this._candidatePathsCache.set(cacheKey, routes);
     return routes.filter(({ pools }) => pools.length <= this._maxHops);
+  }
+
+  /** Binary searches for a subset of candidate routes for an optimal split trade. */
+  protected async findBestSplitTokenIn(
+    routes: RouteWithInAmount[],
+    tokenInAmount: Int,
+    maxIterations: number = 100
+  ): Promise<RouteWithInAmount[]> {
+    let bestSplit: RouteWithInAmount[] = [];
+    let bestOutAmount = new Int(0);
+
+    const calculateTokenOutByTokenIn = this.calculateTokenOutByTokenIn;
+
+    async function splitRecursive(
+      remainingInAmount: Int,
+      remainingRoutes: RouteWithInAmount[],
+      currentSplit: RouteWithInAmount[]
+    ): Promise<void> {
+      if (remainingRoutes.length === 0) {
+        const totalOutAmount = currentSplit.reduce(
+          (total, route) => total.add(route.initialAmount),
+          new Int(0)
+        );
+        if (totalOutAmount.gt(bestOutAmount)) {
+          bestOutAmount = totalOutAmount;
+          bestSplit = currentSplit;
+        }
+        return;
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const route = remainingRoutes.shift()!;
+      for (let i = 0; i <= maxIterations; i++) {
+        const fraction = new Dec(i).quo(new Dec(maxIterations));
+        const inAmount = new Dec(remainingInAmount).mul(fraction).truncate();
+        route.initialAmount = inAmount;
+
+        const swapResult = await calculateTokenOutByTokenIn([route]);
+        if (swapResult.amount.isZero()) {
+          continue;
+        }
+
+        currentSplit.push(route);
+        await splitRecursive(
+          remainingInAmount.sub(inAmount),
+          remainingRoutes,
+          currentSplit
+        );
+        currentSplit.pop();
+      }
+
+      remainingRoutes.unshift(route);
+    }
+
+    await splitRecursive(tokenInAmount, routes.slice(), []);
+    return bestSplit;
   }
 }

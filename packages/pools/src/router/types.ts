@@ -11,8 +11,8 @@ export interface TokenOutGivenInRouter {
     tokenOutDenom: string
   ): Promise<RouteWithInAmount[]>;
   calculateTokenOutByTokenIn(
-    route: RouteWithInAmount
-  ): Promise<MultihopSwapResult>;
+    routes: RouteWithInAmount[]
+  ): Promise<SplitTokenInQuote>;
 }
 
 /** Single path through pools, with the initial amount calculated. */
@@ -36,7 +36,7 @@ export interface RoutablePool {
     },
     tokenOutDenom: string,
     swapFee?: Dec
-  ): Promise<SwapResult>;
+  ): Promise<Quote>;
   /** Get the amount of token in needed for swapping an amount of token out. */
   getTokenInByTokenOut(
     tokenOut: {
@@ -45,11 +45,10 @@ export interface RoutablePool {
     },
     tokenInDenom: string,
     swapFee?: Dec
-  ): Promise<SwapResult>;
+  ): Promise<Quote>;
 }
 
-/** Result of swapping through a pool. */
-export type SwapResult = {
+export type Quote = {
   amount: Int;
   beforeSpotPriceInOverOut: Dec;
   beforeSpotPriceOutOverIn: Dec;
@@ -61,9 +60,10 @@ export type SwapResult = {
   priceImpactTokenOut: Dec;
 };
 
-/** Result of swapping through multiple pools multihop. */
-export type MultihopSwapResult = SwapResult & {
+/** Quote with potential split of in token amount across multiple routes. */
+export type SplitTokenInQuote = Quote & {
+  split: (RouteWithInAmount & { multiHopOsmoDiscount: boolean })[];
+  /** In amount after fees paid are subtracted. */
   tokenInFeeAmount: Int;
   swapFee: Dec;
-  multiHopOsmoDiscount: boolean;
 };

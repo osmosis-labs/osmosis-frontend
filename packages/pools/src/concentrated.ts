@@ -3,7 +3,7 @@ import { ConcentratedLiquidityMath, LiquidityDepth } from "@osmosis-labs/math";
 
 import { NotEnoughLiquidityError } from "./errors";
 import { BasePool } from "./interface";
-import { RoutablePool, SwapResult } from "./router";
+import { Quote, RoutablePool } from "./router";
 
 export interface ConcentratedLiquidityPoolRaw {
   "@type": string;
@@ -166,7 +166,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     },
     tokenOutDenom: string,
     swapFee: Dec = this.swapFee
-  ): Promise<SwapResult> {
+  ): Promise<Quote> {
     this.validateDenoms(tokenIn.denom, tokenOutDenom);
 
     /** Reminder: currentSqrtPrice: amountToken1/amountToken0 or token 1 per token 0  */
@@ -263,7 +263,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     },
     tokenInDenom: string,
     swapFee: Dec = this.swapFee
-  ): Promise<SwapResult> {
+  ): Promise<Quote> {
     this.validateDenoms(tokenInDenom, tokenOut.denom);
 
     /** Reminder: currentSqrtPrice: amountToken1/amountToken0 or token 1 per token 0  */
