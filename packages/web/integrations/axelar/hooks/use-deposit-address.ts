@@ -80,10 +80,11 @@ export function useDepositAddress(
       generateAddress();
     }
   }, [
-    destinationAddress,
-    coinMinimalDenom,
     sourceChain,
     destChain,
+    destinationAddress,
+    coinMinimalDenom,
+    autoUnwrapIntoNative,
     shouldGenerate,
     generateAddress,
   ]);
