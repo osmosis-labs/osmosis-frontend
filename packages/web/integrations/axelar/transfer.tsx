@@ -327,7 +327,7 @@ const AxelarTransfer: FunctionComponent<
 
     // start transfer
     const [transferInitiated, setTransferInitiated] = useState(false);
-    const doAxelarTransfer = useCallback(async () => {
+    const doAxelarTransfer = async () => {
       if (depositAddress) {
         logEvent([
           isWithdraw
@@ -457,26 +457,7 @@ const AxelarTransfer: FunctionComponent<
         }
         setTransferInitiated(true);
       }
-    }, [
-      axelarChainId,
-      chainId,
-      balanceOnOsmosis.sourceChannelId,
-      balanceOnOsmosis.destChannelId,
-      depositAddress,
-      erc20ContractAddress,
-      ethWalletClient,
-      isWithdraw,
-      useNativeToken,
-      originCurrency,
-      osmosisAccount,
-      trackTransferStatus,
-      withdrawAmountConfig,
-      inputAmount,
-      inputAmountRaw,
-      logEvent,
-      setLastDepositAccountAddress,
-      setDepositAmount,
-    ]);
+    };
     // close modal when initial eth transaction is committed
     const isSendTxPending = isWithdraw
       ? osmosisAccount.txTypeInProgress !== ""
