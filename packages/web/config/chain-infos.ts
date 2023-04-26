@@ -2574,7 +2574,7 @@ const chainInfos = (
           coinDenom: "stINJ",
           coinMinimalDenom: "stinj",
           coinDecimals: 18,
-          coinGeckoId: "pool:stinj",
+          coinGeckoId: "",
           coinImageUrl: "/tokens/stinj.svg",
         },
       ],
