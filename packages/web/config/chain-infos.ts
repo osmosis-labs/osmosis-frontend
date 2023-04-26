@@ -2570,6 +2570,13 @@ const chainInfos = (
           coinGeckoId: "pool:staevmos",
           coinImageUrl: "/tokens/stevmos.svg",
         },
+        {
+          coinDenom: "stINJ",
+          coinMinimalDenom: "stinj",
+          coinDecimals: 18,
+          coinGeckoId: "pool:stinj",
+          coinImageUrl: "/tokens/stinj.svg",
+        },
       ],
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://explorer.stride.zone/stride/tx/{txHash}",
