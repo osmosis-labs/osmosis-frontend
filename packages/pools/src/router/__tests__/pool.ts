@@ -102,34 +102,35 @@ export class TestOptimizedRoutes
     return super.calculateTokenOutByTokenIn(...args);
   }
 
-  protected getCandidateRoutes(
-    tokenInDenom: string,
-    tokenOutDenom: string
-  ): Route[] {
+  getCandidateRoutes(tokenInDenom: string, tokenOutDenom: string): Route[] {
     return super.getCandidateRoutes(tokenInDenom, tokenOutDenom);
   }
 
-  protected async findBestSplitTokenIn(
-    routes: RouteWithInAmount[],
+  async findBestSplitTokenIn(
+    candidateRoutes: Route[],
     tokenInAmount: Int,
     maxIterations?: number
   ): Promise<RouteWithInAmount[]> {
-    return super.findBestSplitTokenIn(routes, tokenInAmount, maxIterations);
+    return super.findBestSplitTokenIn(
+      candidateRoutes,
+      tokenInAmount,
+      maxIterations
+    );
   }
 }
 
 export function makeDefaultTestRouterParams(
   overrideParams: Partial<OptimizedRoutesParams>
 ) {
+  const pools = [
+    makeWeightedPool({
+      firstPoolAsset: { amount: "1000" },
+      secondPoolAsset: { amount: "1000" },
+    }),
+    makeWeightedPool({ id: "2" }),
+  ];
   const params: OptimizedRoutesParams = {
-    pools: [
-      makeWeightedPool({
-        id: "2",
-        firstPoolAsset: { amount: "1000" },
-        secondPoolAsset: { amount: "1000" },
-      }),
-      makeWeightedPool(),
-    ],
+    pools,
     incentivizedPoolIds: ["1", "2"],
     stakeCurrencyMinDenom: "uosmo",
     getPoolTotalValueLocked: (poolId: string) =>
@@ -140,6 +141,7 @@ export function makeDefaultTestRouterParams(
 }
 
 /**
+ * NOTE: Pool ID is used as TVL
  * ```
  * const {
     id,
@@ -216,6 +218,7 @@ export function makeWeightedPool(
 }
 
 /**
+ * NOTE: Pool ID is used as TVL
  * ```
  * const {
     id,

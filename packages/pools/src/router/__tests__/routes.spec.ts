@@ -35,7 +35,7 @@ describe("OptimizedRoutes", () => {
         );
 
         expect(routes.length).toBe(1);
-        expect(routes[0].pools[0].id).toBe("1");
+        expect(routes[0].pools[0].id).toBe("2"); // test pools return TVL as pool ID
       });
       test("routes through 2 pools", async () => {
         const pools = [
@@ -415,6 +415,30 @@ describe("OptimizedRoutes", () => {
 
         expect(threw).toBeFalsy();
       });
+    });
+  });
+
+  describe("findBestSplitTokenIn", () => {
+    it("handles a single route", async () => {
+      const router = makeDefaultTestRouterParams({
+        pools: [
+          makeWeightedPool({
+            firstPoolAsset: { amount: "1000" },
+            secondPoolAsset: { amount: "1000" },
+          }),
+          makeWeightedPool({ id: "2" }),
+        ],
+      });
+
+      const tokenIn = { denom: "uion", amount: new Int("100") };
+
+      const routes = await router.getCandidateRoutes(tokenIn.denom, "uosmo");
+
+      const bestSplit = await router.findBestSplitTokenIn(
+        routes,
+        tokenIn.amount
+      );
+      expect(bestSplit).toEqual(routes[0]);
     });
   });
 });
