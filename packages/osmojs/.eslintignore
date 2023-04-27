@@ -1,0 +1,10 @@
+build/*
+types/*
+
+**/generated/**
+localnet
+README.md
+
+chain-proto
+*.sh
+proto-dependencies
