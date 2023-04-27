@@ -216,9 +216,20 @@ const chainInfos = (
         {
           type: "cw20",
           contractAddress: "secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d",
-          coinDenom: "SHD",
+          coinDenom: "SHD(old)",
           coinMinimalDenom:
             "cw20:secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d:SHD",
+          coinDecimals: 8,
+          //coinGeckoId: "shade-protocol",
+          coinGeckoId: "pool:shdold",
+          coinImageUrl: "/tokens/shdold.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress: "secret153wu605vvp934xhd4k9dtd640zsep5jkesstdm",
+          coinDenom: "SHD",
+          coinMinimalDenom:
+            "cw20:secret153wu605vvp934xhd4k9dtd640zsep5jkesstdm:SHD",
           coinDecimals: 8,
           //coinGeckoId: "shade-protocol",
           coinGeckoId: "pool:shd",
