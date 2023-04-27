@@ -958,6 +958,17 @@ const chainInfos = (
           coinGeckoId: "pool:light",
           coinImageUrl: "/tokens/light.png",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1llg7q2d5dqlrqzh5dxv8c7kzzjszld34s5vktqmlmaaxqjssz43sxyhq0d",
+          coinDenom: "MILE",
+          coinMinimalDenom:
+            "cw20:juno1llg7q2d5dqlrqzh5dxv8c7kzzjszld34s5vktqmlmaaxqjssz43sxyhq0d:MILE",
+          coinDecimals: 6,
+          coinGeckoId: "pool:mile",
+          coinImageUrl: "/tokens/mille.png",
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: IS_TESTNET
