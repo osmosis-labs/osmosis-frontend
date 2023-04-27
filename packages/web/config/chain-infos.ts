@@ -3244,7 +3244,7 @@ const chainInfos = (
     },
     {
       rpc: "https://a.client.sentry.net.bluzelle.com:26657",
-      rest: "https://a.client.sentry.net.bluzelle.com:26657",
+      rest: "https://a.client.sentry.net.bluzelle.com:1317",
       chainId: "bluzelle-9",
       chainName: "Bluzelle",
       bip44: {
