@@ -87,7 +87,9 @@ export const TradeClipboard: FunctionComponent<{
     );
 
     const gasForecasted =
-      250000 * (tradeTokenInConfig.optimizedRoute?.pools.length ?? 1);
+      250000 *
+      (tradeTokenInConfig.optimizedRoutes?.flatMap(({ pools }) => pools)
+        .length ?? 1);
 
     const feeConfig = useFakeFeeConfig(
       chainStore,
@@ -105,16 +107,18 @@ export const TradeClipboard: FunctionComponent<{
       (value: boolean) => {
         // refresh current route's pools
         if (value) {
-          tradeTokenInConfig.optimizedRoute?.pools.forEach((pool) => {
-            queries.osmosis?.queryGammPools
-              .getPool(pool.id)
-              ?.waitFreshResponse();
-          });
+          tradeTokenInConfig.optimizedRoutes
+            ?.flatMap(({ pools }) => pools)
+            .forEach((pool) => {
+              queries.osmosis?.queryGammPools
+                .getPool(pool.id)
+                ?.waitFreshResponse();
+            });
         }
 
         _setShowEstimateDetails(value);
       },
-      [tradeTokenInConfig.optimizedRoute, queries.osmosis?.queryGammPools]
+      [tradeTokenInConfig.optimizedRoutes, queries.osmosis?.queryGammPools]
     );
     // auto collapse on input clear
     useEffect(() => {
@@ -312,7 +316,9 @@ export const TradeClipboard: FunctionComponent<{
         tokenAmount: Number(tradeTokenInConfig.amount),
         toToken: tradeTokenInConfig.outCurrency.coinDenom,
         isOnHome: !isInModal,
-        isMultiHop: tradeTokenInConfig.optimizedRoute?.pools.length !== 1,
+        isMultiHop: tradeTokenInConfig.optimizedRoutes?.some(
+          ({ pools }) => pools.length !== 1
+        ),
       };
       logEvent([EventName.Swap.swapStarted, baseEvent]);
       const userSlippageSetting = slippageConfig.slippage.symbol("").toString();
@@ -947,11 +953,11 @@ export const TradeClipboard: FunctionComponent<{
                   </span>
                 </div>
               </div>
-              {!isInModal && tradeTokenInConfig.optimizedRoute && (
+              {!isInModal && tradeTokenInConfig.optimizedRoutes && (
                 <TradeRoute
                   sendCurrency={tradeTokenInConfig.sendCurrency}
                   outCurrency={tradeTokenInConfig.outCurrency}
-                  route={tradeTokenInConfig.optimizedRoute}
+                  route={tradeTokenInConfig.optimizedRoutes[0]} // TODO: support multiple routes
                   isMultihopOsmoFeeDiscount={
                     tradeTokenInConfig.expectedSwapResult
                       .isMultihopOsmoFeeDiscount

@@ -10,9 +10,9 @@ import {
   RatePretty,
 } from "@keplr-wallet/unit";
 import {
-  MultihopSwapResult,
   OptimizedRoutes,
   RouteWithInAmount,
+  SplitTokenInQuote,
   TokenOutGivenInRouter,
 } from "@osmosis-labs/pools";
 import { debounce } from "debounce";
@@ -73,14 +73,14 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     | IPromiseBasedObservable<RouteWithInAmount[]>
     | undefined = undefined;
 
-  // swap result
+  // quotes
   @observable.ref
-  protected _latestSwapResult:
-    | IPromiseBasedObservable<MultihopSwapResult>
+  protected _latestQuote:
+    | IPromiseBasedObservable<SplitTokenInQuote>
     | undefined = undefined;
   @observable.ref
-  protected _spotPriceResult:
-    | IPromiseBasedObservable<MultihopSwapResult>
+  protected _spotPriceQuote:
+    | IPromiseBasedObservable<SplitTokenInQuote>
     | undefined = undefined;
 
   @override
@@ -197,9 +197,9 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
   /** Latest and best route from most recent user input amounts and token selections. */
   @computed
-  get optimizedRoute(): RouteWithInAmount | undefined {
+  get optimizedRoutes(): RouteWithInAmount[] | undefined {
     return this._latestOptimizedRoutes?.case({
-      fulfilled: (routes) => routes[0], // get best route
+      fulfilled: (routes) => routes,
       rejected: (e) => {
         console.error("Route rejected", e);
         return undefined;
@@ -214,7 +214,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       return this.zeroSwapResult;
 
     return (
-      this._latestSwapResult?.case({
+      this._latestQuote?.case({
         fulfilled: (result) => this.makePrettyMultihopResult(result),
         rejected: (e) => {
           console.error("Swap result rejected", e);
@@ -229,7 +229,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   get tradeIsLoading(): boolean {
     return (
       this._latestOptimizedRoutes?.state === PENDING ||
-      this._latestSwapResult?.state === PENDING
+      this._latestQuote?.state === PENDING
     );
   }
 
@@ -237,7 +237,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   @computed
   get expectedSpotPrice(): IntPretty {
     return (
-      this._spotPriceResult?.case({
+      this._spotPriceQuote?.case({
         fulfilled: (result) =>
           this.makePrettyMultihopResult(result)
             .beforeSpotPriceWithoutSwapFeeInOverOut,
@@ -252,7 +252,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   /** Spot price for currently selected tokens is loading. */
   @computed
   get isSpotPriceLoading(): boolean {
-    return this._spotPriceResult?.state === PENDING;
+    return this._spotPriceQuote?.state === PENDING;
   }
 
   /** Any error derived from state. */
@@ -280,8 +280,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     }
 
     // If there's an error from the latest swap result, return it
-    if (this._latestSwapResult?.state === REJECTED) {
-      return this._latestSwapResult.case({
+    if (this._latestQuote?.state === REJECTED) {
+      return this._latestQuote.case({
         rejected: (error) => error,
       });
     }
@@ -382,28 +382,31 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         this.amount === "" || !new Dec(this.amount).isPositive();
 
       // this also handles race conditions because if the user clears the input, then an prev request result arrives, the old result will be cleared
-      if (this._latestSwapResult?.state === FULFILLED && inputCleared) {
+      if (this._latestQuote?.state === FULFILLED && inputCleared) {
         this.setSwapResult(undefined);
       }
     });
 
     // React to user input and request a swap result. This is debounced to prevent spamming the server
-    const debounceCalculateTokenOut = debounce((route: RouteWithInAmount) => {
-      const tokenOutPromise = this.router.calculateTokenOutByTokenIn(route);
-      this.setSwapResult(fromPromise(tokenOutPromise));
-    }, 350);
+    const debounceCalculateTokenOut = debounce(
+      (routes: RouteWithInAmount[]) => {
+        const tokenOutPromise = this.router.calculateTokenOutByTokenIn(routes);
+        this.setSwapResult(fromPromise(tokenOutPromise));
+      },
+      350
+    );
     autorun(() => {
-      const route = this.optimizedRoute;
+      const routes = this.optimizedRoutes;
 
-      // No route or amount input, so no need to calculate a swap result
-      if (!route) {
+      // No routes or amount input, so no need to calculate a swap result
+      if (!routes) {
         return;
       }
 
       // Clear any previous user input debounce
       debounceCalculateTokenOut.clear();
 
-      debounceCalculateTokenOut(route);
+      debounceCalculateTokenOut(routes);
     });
 
     // React to changes in send/out currencies, then generate a spot price by directly calculating from the pools
@@ -436,7 +439,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       }
       if (!bestRoute) return;
 
-      const tokenOutPromise = router.calculateTokenOutByTokenIn(bestRoute);
+      const tokenOutPromise = router.calculateTokenOutByTokenIn([bestRoute]);
       this.setSpotPriceResult(fromPromise(tokenOutPromise));
     });
 
@@ -497,10 +500,10 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
     // clear all results of prev input
     this._latestOptimizedRoutes = undefined;
-    this._latestSwapResult = undefined;
+    this._latestQuote = undefined;
 
     this._latestSpotPriceRoutes = undefined;
-    this._spotPriceResult = undefined;
+    this._spotPriceQuote = undefined;
   }
 
   @action
@@ -512,21 +515,21 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
   @action
   protected setSwapResult(
-    result: IPromiseBasedObservable<MultihopSwapResult> | undefined
+    result: IPromiseBasedObservable<SplitTokenInQuote> | undefined
   ) {
-    this._latestSwapResult = result;
+    this._latestQuote = result;
   }
 
   @action
   protected setSpotPriceResult(
-    result: IPromiseBasedObservable<MultihopSwapResult> | undefined
+    result: IPromiseBasedObservable<SplitTokenInQuote> | undefined
   ) {
-    this._spotPriceResult = result;
+    this._spotPriceQuote = result;
   }
 
   /** Convert raw router type into a prettified form ready for display. */
   protected makePrettyMultihopResult(
-    result: MultihopSwapResult
+    result: SplitTokenInQuote
   ): PrettyMultihopSwapResult {
     const multiplicationInOverOut = DecUtils.getTenExponentN(
       this.outCurrency.coinDecimals - this.sendCurrency.coinDecimals
@@ -582,7 +585,9 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       ).locale(false), // locale - remove commas
       swapFee: new RatePretty(result.swapFee),
       priceImpact: new RatePretty(result.priceImpactTokenOut.neg()),
-      isMultihopOsmoFeeDiscount: result.multiHopOsmoDiscount,
+      isMultihopOsmoFeeDiscount: result.split.some(
+        ({ multiHopOsmoDiscount }) => multiHopOsmoDiscount
+      ),
     };
   }
 }
