@@ -937,7 +937,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-37",
         destChannelId: "channel-0",
         coinMinimalDenom: "eeur",
-        isVerified: true,
+        isVerified: false,
       },
       {
         // SIENNA
