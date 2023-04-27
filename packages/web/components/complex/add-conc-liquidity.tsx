@@ -1020,6 +1020,7 @@ function LineChart(props: {
     yRange.last
   );
 
+  // TODO: product-design-general tag Syed about adding custom mask is difficult
   return (
     <ParentSize className="flex-shrink-1 flex-1 overflow-hidden">
       {({ height, width }) => {

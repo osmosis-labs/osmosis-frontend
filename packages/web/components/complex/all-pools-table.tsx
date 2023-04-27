@@ -196,6 +196,7 @@ export const AllPoolsTable: FunctionComponent<{
       .getAllPools(sorting[0]?.id, sorting[0]?.desc, isSearching);
 
     console.log({ allPoolsWithMetrics });
+    // TODO: ignore liquidity check in testnet
     const initiallyFilteredPools = useMemo(
       () =>
         allPoolsWithMetrics.filter((p) => {
@@ -204,9 +205,9 @@ export const AllPoolsTable: FunctionComponent<{
             !p.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
           );
           // Filter out pools with low TVL.
-          if (!p.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))) {
-            return false;
-          }
+          // if (!p.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))) {
+          //   return false;
+          // }
 
           console.log(
             "pool type: ",

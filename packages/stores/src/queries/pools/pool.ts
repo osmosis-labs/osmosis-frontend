@@ -304,6 +304,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
       });
     }
 
+    // TODO: use queryBalances from constructor
     if (this.pool instanceof ConcentratedLiquidityPool) {
       return this.poolAssetDenoms.map((denom) => {
         const currency = this.chainGetter
