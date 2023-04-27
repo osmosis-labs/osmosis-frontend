@@ -1,4 +1,4 @@
-import { osmosis } from "osmojs";
+import { osmosis } from "@osmosis-labs/proto-encoder";
 
 import { createMsgOpts } from "../utils";
 

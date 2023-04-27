@@ -24,15 +24,15 @@ import {
   QueriesStore,
 } from "@keplr-wallet/stores";
 import { KeplrSignOptions } from "@keplr-wallet/types";
-import { Buffer } from "buffer";
-import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import { action, makeObservable, observable, runInAction } from "mobx";
 import {
   cosmosProtoRegistry,
   cosmwasmProtoRegistry,
   ibcProtoRegistry,
   osmosisProtoRegistry,
-} from "osmojs";
+} from "@osmosis-labs/proto-encoder";
+import { Buffer } from "buffer";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import { action, makeObservable, observable, runInAction } from "mobx";
 import { UnionToIntersection } from "utility-types";
 
 import { OsmosisQueries } from "../queries";

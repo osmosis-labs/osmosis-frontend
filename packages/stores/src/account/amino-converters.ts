@@ -1,14 +1,14 @@
 import { AminoMsgTransfer } from "@cosmjs/stargate";
-import Long from "long";
 import {
   cosmosAminoConverters,
   cosmwasmAminoConverters,
   ibcAminoConverters as osmojsIbcAminoConverters,
   osmosisAminoConverters as osmojsOsmosisAminoConverters,
-} from "osmojs";
-import { MsgTransfer } from "osmojs/types/codegen/ibc/applications/transfer/v1/tx";
-import { MsgCreateBalancerPool } from "osmojs/types/codegen/osmosis/gamm/pool-models/balancer/tx/tx";
-import { MsgLockTokens } from "osmojs/types/codegen/osmosis/lockup/tx";
+} from "@osmosis-labs/proto-encoder";
+import { MsgCreateBalancerPool } from "@osmosis-labs/proto-encoder/build/codegen/osmosis/gamm/pool-models/balancer/tx/tx";
+import { MsgLockTokens } from "@osmosis-labs/proto-encoder/build/codegen/osmosis/lockup/tx";
+import { MsgTransfer } from "cosmjs-types/ibc/applications/transfer/v1/tx";
+import Long from "long";
 
 const osmosisAminoConverters: Record<
   keyof typeof osmojsOsmosisAminoConverters,

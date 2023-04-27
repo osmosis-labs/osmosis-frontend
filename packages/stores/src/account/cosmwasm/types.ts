@@ -1,4 +1,4 @@
-import { cosmwasm } from "osmojs";
+import { cosmwasm } from "@osmosis-labs/proto-encoder";
 
 import { createMsgOpts } from "../utils";
 

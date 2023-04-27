@@ -1,0 +1,53 @@
+{
+  "name": "@osmosis-labs/proto-encoder",
+  "version": "0.0.1",
+  "main": "build/index.js",
+  "author": "osmosis-labs",
+  "homepage": "https://github.com/osmosis-labs/osmosis-frontend/tree/master/packages/telescope#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/osmosis-labs/osmosis-frontend"
+  },
+  "bugs": {
+    "url": "https://github.com/osmosis-labs/osmosis-frontend/issues"
+  },
+  "keywords": [
+    "osmosis",
+    "telescope",
+    "transpiler"
+  ],
+  "license": "Apache-2.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "rm -rf node_modules; rm -rf build",
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test:regression": "jest --passWithNoTests --runInBand",
+    "lint": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
+    "lint:fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\"",
+    "pre-commit": "lint-staged",
+    "prepare": "yarn build",
+    "get-proto": "./scripts/get-proto.sh",
+    "generate:telescope": "ts-node --esm scripts/codegen.ts"
+  },
+  "lint-staged": {
+    "*": [
+      "eslint",
+      "prettier --check"
+    ]
+  },
+  "devDependencies": {
+    "@osmonauts/telescope": "^0.94.0",
+    "@swc/core": "^1.3.55",
+    "@swc/helpers": "^0.5.1",
+    "regenerator-runtime": "^0.13.11",
+    "rimraf": "^5.0.0",
+    "ts-node": "^10.9.1"
+  },
+  "dependencies": {
+    "protobufjs": "^6.11.2"
+  }
+}

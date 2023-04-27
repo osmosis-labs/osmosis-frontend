@@ -1,0 +1,6 @@
+//@ts-nocheck
+/* eslint-disable */
+import * as _0 from "./amino";
+export const amino = {
+  ..._0,
+};
