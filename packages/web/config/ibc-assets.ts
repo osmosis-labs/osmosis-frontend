@@ -1332,6 +1332,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-412",
         destChannelId: "channel-0",
         coinMinimalDenom: "ujkl",
+        isVerified: true,
       },
       {
         // ALTER
