@@ -969,6 +969,17 @@ const chainInfos = (
           coinGeckoId: "pool:mile",
           coinImageUrl: "/tokens/mille.png",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno13ca2g36ng6etcfhr9qxx352uw2n5e92np54thfkm3w3nzlhsgvwsjaqlyq",
+          coinDenom: "MANNA",
+          coinMinimalDenom:
+            "cw20:juno13ca2g36ng6etcfhr9qxx352uw2n5e92np54thfkm3w3nzlhsgvwsjaqlyq:MANNA",
+          coinDecimals: 6,
+          coinGeckoId: "pool:manna",
+          coinImageUrl: "/tokens/manna.png",
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: IS_TESTNET
@@ -3246,8 +3257,8 @@ const chainInfos = (
           gasPriceStep: {
             low: 0.001,
             average: 0.0025,
-            high: 0.025
-          }
+            high: 0.025,
+          },
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
