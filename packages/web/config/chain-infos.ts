@@ -946,7 +946,18 @@ const chainInfos = (
           coinDecimals: 6,
           coinGeckoId: "pool:spacer",
           coinImageUrl: "/tokens/spacer.png",
-        },        
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1dpany8c0lj526lsa02sldv7shzvnw5dt5ues72rk35hd69rrydxqeraz8l",
+          coinDenom: "LIGHT",
+          coinMinimalDenom:
+            "cw20:juno1dpany8c0lj526lsa02sldv7shzvnw5dt5ues72rk35hd69rrydxqeraz8l:LIGHT",
+          coinDecimals: 6,
+          coinGeckoId: "pool:light",
+          coinImageUrl: "/tokens/light.png",
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: IS_TESTNET
