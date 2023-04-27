@@ -41,10 +41,7 @@ export async function calculateWeightForRoute(
 
   if (route.pools.length === 1) return new Dec(1); // prioritize direct routes
 
-  // Normalize the average TVL between 0 and 1, with a higher average TVL being closer to 1
-  const normalizedTvl = avgTvl.quo(avgTvl.add(new Dec(1)));
-
-  return normalizedTvl;
+  return new Dec(1).sub(avgTvl.quo(new Dec(1).add(avgTvl)));
 }
 
 export function getAveragePoolValueLocked(
