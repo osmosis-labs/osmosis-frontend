@@ -1,6 +1,6 @@
 # @osmosis-labs/osmojs
 
-Generated TypeScript libraries for interacting with the Osmosis blockchain. It converts Protobufs to TypeScript libraries.
+This package includes generated TypeScript libraries for encoding and decoding blockchain data, such as transactions. It facilitates the conversion of Protobufs into TypeScript libraries for seamless data handling.
 
 ## Getting Proto files
 
