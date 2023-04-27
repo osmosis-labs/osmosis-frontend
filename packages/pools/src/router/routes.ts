@@ -6,14 +6,14 @@ import {
 
 import { NotEnoughLiquidityError } from "../errors";
 import { NoRouteError } from "./errors";
-import { calculateWeightForRoute, Route, validateRoute } from "./route";
+import { calculateWeightForRoute, Route } from "./route";
 import {
   RoutablePool,
   RouteWithInAmount,
   SplitTokenInQuote,
   TokenOutGivenInRouter,
 } from "./types";
-import { invertRoute } from "./utils";
+import { invertRoute, validateRoutes } from "./utils";
 
 export type OptimizedRoutesParams = {
   pools: ReadonlyArray<RoutablePool>;
@@ -149,7 +149,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
   async calculateTokenOutByTokenIn(
     routes: RouteWithInAmount[]
   ): Promise<SplitTokenInQuote> {
-    routes.forEach((route) => validateRoute(route));
+    validateRoutes(routes);
 
     /** Tracks special case when routing through _only_ 2 OSMO pools for a single route. */
     const osmoFeeDiscountForRoute = new Array(routes.length).fill(false);
@@ -160,37 +160,18 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     let totalEffectivePriceInOverOut: Dec = new Dec(0);
     let totalSwapFee: Dec = new Dec(0);
 
-    let sumAmount = new Int(0);
-    for (const path of routes) {
-      sumAmount = sumAmount.add(path.initialAmount);
-    }
+    const sumInitialAmount = routes.reduce(
+      (sum, route) => sum.add(route.initialAmount),
+      new Int(0)
+    );
 
-    let outDenom: string | undefined;
+    if (sumInitialAmount.isZero())
+      throw new Error("All initial amounts are zero");
+
     for (const route of routes) {
-      if (route.pools.length !== route.tokenOutDenoms.length) {
-        throw new Error(
-          `Invalid path: pools and tokenOutDenoms length mismatch, IDs:${route.pools.map(
-            (p) => p.id
-          )} ${route.pools
-            .flatMap((p) => p.poolAssetDenoms)
-            .join(",")} !== ${route.tokenOutDenoms.join(",")}`
-        );
-      }
-      if (route.pools.length === 0) {
-        throw new Error("Invalid path: pools length is 0");
-      }
-
-      if (!outDenom) {
-        outDenom = route.tokenOutDenoms[route.tokenOutDenoms.length - 1];
-      } else if (
-        outDenom !== route.tokenOutDenoms[route.tokenOutDenoms.length - 1]
-      ) {
-        throw new Error("Paths have different out denom");
-      }
-
       const amountFraction = route.initialAmount
         .toDec()
-        .quoTruncate(sumAmount.toDec());
+        .quoTruncate(sumInitialAmount.toDec());
 
       let previousInDenom = route.tokenInDenom;
       let previousInAmount = route.initialAmount;
@@ -303,8 +284,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       effectivePriceOutOverIn: new Dec(1).quoTruncate(
         totalEffectivePriceInOverOut
       ),
-      tokenInFeeAmount: sumAmount.sub(
-        new Dec(sumAmount).mulTruncate(new Dec(1).sub(totalSwapFee)).round()
+      tokenInFeeAmount: sumInitialAmount.sub(
+        new Dec(sumInitialAmount)
+          .mulTruncate(new Dec(1).sub(totalSwapFee))
+          .round()
       ),
       swapFee: totalSwapFee,
       priceImpactTokenOut,
@@ -414,23 +397,25 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
   /** Binary searches for a subset of candidate routes for an optimal split trade. */
   protected async findBestSplitTokenIn(
-    routes: RouteWithInAmount[],
+    candidateRoutes: Route[],
     tokenInAmount: Int,
     maxIterations: number = 100
   ): Promise<RouteWithInAmount[]> {
     let bestSplit: RouteWithInAmount[] = [];
     let bestOutAmount = new Int(0);
 
+    type RouteWithInAndOutAmount = RouteWithInAmount & { outAmount: Int };
+
     const calculateTokenOutByTokenIn = this.calculateTokenOutByTokenIn;
 
     async function splitRecursive(
       remainingInAmount: Int,
-      remainingRoutes: RouteWithInAmount[],
-      currentSplit: RouteWithInAmount[]
+      remainingRoutes: RouteWithInAndOutAmount[],
+      currentSplit: RouteWithInAndOutAmount[]
     ): Promise<void> {
       if (remainingRoutes.length === 0) {
         const totalOutAmount = currentSplit.reduce(
-          (total, route) => total.add(route.initialAmount),
+          (total, route) => total.add(route.outAmount),
           new Int(0)
         );
         if (totalOutAmount.gt(bestOutAmount)) {
@@ -441,16 +426,19 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       }
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const route = remainingRoutes.shift()!;
+      const route = remainingRoutes.shift()! as RouteWithInAndOutAmount;
       for (let i = 0; i <= maxIterations; i++) {
         const fraction = new Dec(i).quo(new Dec(maxIterations));
         const inAmount = new Dec(remainingInAmount).mul(fraction).truncate();
+
         route.initialAmount = inAmount;
 
-        const swapResult = await calculateTokenOutByTokenIn([route]);
-        if (swapResult.amount.isZero()) {
+        const quote = await calculateTokenOutByTokenIn([route]);
+        if (quote.amount.isZero()) {
           continue;
         }
+
+        route.outAmount = quote.amount;
 
         currentSplit.push(route);
         await splitRecursive(
@@ -464,7 +452,12 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       remainingRoutes.unshift(route);
     }
 
-    await splitRecursive(tokenInAmount, routes.slice(), []);
+    const zeroAmountRoutes = candidateRoutes.map((route) => ({
+      ...route,
+      initialAmount: new Int(0),
+      outAmount: new Int(0),
+    }));
+    await splitRecursive(tokenInAmount, zeroAmountRoutes, []);
     return bestSplit;
   }
 }
