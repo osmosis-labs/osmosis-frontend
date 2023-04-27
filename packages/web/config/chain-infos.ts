@@ -980,6 +980,17 @@ const chainInfos = (
           coinGeckoId: "pool:manna",
           coinImageUrl: "/tokens/manna.png",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1lpvx3mv2a6ddzfjc7zzz2v2cm5gqgqf0hx67hc5p5qwn7hz4cdjsnznhu8",
+          coinDenom: "VOID",
+          coinMinimalDenom:
+            "cw20:juno1lpvx3mv2a6ddzfjc7zzz2v2cm5gqgqf0hx67hc5p5qwn7hz4cdjsnznhu8:VOID",
+          coinDecimals: 6,
+          coinGeckoId: "pool:void",
+          coinImageUrl: "/tokens/void.png",
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: IS_TESTNET
