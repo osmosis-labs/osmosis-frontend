@@ -3316,8 +3316,8 @@ chainInfos.push({
       coinDenom: "FIL",
       coinMinimalDenom: "wfil-wei",
       coinDecimals: 18,
-      coinGeckoId: "filecoin",
-      //coinGeckoId: "pool:wfil-wei",
+      //coinGeckoId: "filecoin",
+      coinGeckoId: "pool:wfil-wei",
       coinImageUrl: "/tokens/fil.svg",
     },
     {
