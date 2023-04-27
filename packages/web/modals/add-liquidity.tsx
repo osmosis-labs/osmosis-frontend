@@ -7,7 +7,11 @@ import { useTranslation } from "react-multi-lang";
 import { AddConcLiquidity } from "../components/complex/add-conc-liquidity";
 import { AddLiquidity } from "../components/complex/add-liquidity";
 import { tError } from "../components/localization";
-import { useAddLiquidityConfig, useConnectWalletModalRedirect } from "../hooks";
+import {
+  useAddConcentratedLiquidityConfig,
+  useAddLiquidityConfig,
+  useConnectWalletModalRedirect,
+} from "../hooks";
 import { useStore } from "../stores";
 import { ModalBase, ModalBaseProps } from "./base";
 
@@ -41,6 +45,14 @@ export const AddLiquidityModal: FunctionComponent<
     queriesStore
   );
 
+  const { config: addConliqConfig, addLiquidity: addConLiquidity } =
+    useAddConcentratedLiquidityConfig(
+      chainStore,
+      chainId,
+      poolId,
+      queriesStore
+    );
+
   // initialize pool data stores once root pool store is loaded
   const { poolDetail } = derivedDataStore.getForPool(poolId as string);
   const pool = poolDetail?.pool?.pool;
@@ -50,10 +62,16 @@ export const AddLiquidityModal: FunctionComponent<
     {
       disabled: config.error !== undefined || isSendingMsg,
       onClick: () => {
-        const addLiquidityResult = addLiquidity().finally(() =>
+        const addLiquidityPromise = isConcLiq
+          ? addConLiquidity()
+          : addLiquidity();
+        const addLiquidityResult = addLiquidityPromise.finally(() =>
           props.onRequestClose()
         );
-        props.onAddLiquidity?.(addLiquidityResult, config);
+
+        if (!isConcLiq) {
+          props.onAddLiquidity?.(addLiquidityResult, config);
+        }
       },
       children: config.error
         ? t(...tError(config.error))
@@ -71,7 +89,7 @@ export const AddLiquidityModal: FunctionComponent<
         className="!max-w-[57.5rem]"
       >
         <AddConcLiquidity
-          addLiquidityConfig={config}
+          addLiquidityConfig={addConliqConfig}
           actionButton={accountActionButton}
           getFiatValue={(coin) => priceStore.calculatePrice(coin)}
           onRequestClose={props.onRequestClose}

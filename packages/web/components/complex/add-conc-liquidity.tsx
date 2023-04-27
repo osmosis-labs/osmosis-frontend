@@ -7,7 +7,7 @@ import {
 } from "@osmosis-labs/math";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import {
-  ObservableAddLiquidityConfig,
+  ObservableAddConcentratedLiquidityConfig,
   ObservablePoolDetail,
   ObservableQueryPool,
   ObservableSuperfluidPoolDetail,
@@ -49,7 +49,7 @@ const TokenPairHistoricalChart = dynamic(
 
 export const AddConcLiquidity: FunctionComponent<
   {
-    addLiquidityConfig: ObservableAddLiquidityConfig;
+    addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     actionButton: ReactNode;
     getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
     onRequestClose: () => void;
@@ -128,7 +128,7 @@ const Overview: FunctionComponent<
     poolName?: string;
     poolDetail?: ObservablePoolDetail;
     superfluidPoolDetail?: ObservableSuperfluidPoolDetail;
-    addLiquidityConfig: ObservableAddLiquidityConfig;
+    addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     onRequestClose: () => void;
   } & CustomClasses
 > = observer(
@@ -294,7 +294,7 @@ function StrategySelector(props: {
 const AddConcLiqView: FunctionComponent<
   {
     pool?: ObservableQueryPool;
-    addLiquidityConfig: ObservableAddLiquidityConfig;
+    addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     actionButton: ReactNode;
     getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
   } & CustomClasses
@@ -582,7 +582,7 @@ const AddConcLiqView: FunctionComponent<
 
 const VolitilitySelectorGroup: FunctionComponent<
   {
-    addLiquidityConfig: ObservableAddLiquidityConfig;
+    addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     lastPrice: number;
     updateInputAndRangeMinMax: (min: number, max: number) => void;
   } & CustomClasses
@@ -610,6 +610,7 @@ const VolitilitySelectorGroup: FunctionComponent<
       </div>
       <div className="flex flex-1 flex-row justify-end gap-2">
         <PresetVolatilityCard
+          type="custom"
           src="/images/small-vial.svg"
           lastPrice={props.lastPrice}
           updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
@@ -617,6 +618,7 @@ const VolitilitySelectorGroup: FunctionComponent<
           label="Custom"
         />
         <PresetVolatilityCard
+          type="passive"
           src="/images/small-vial.svg"
           lastPrice={props.lastPrice}
           updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
@@ -624,18 +626,16 @@ const VolitilitySelectorGroup: FunctionComponent<
           label="Passive"
         />
         <PresetVolatilityCard
+          type="moderate"
           src="/images/medium-vial.svg"
-          upper={0.25}
-          lower={-0.25}
           lastPrice={props.lastPrice}
           updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
           addLiquidityConfig={props.addLiquidityConfig}
           label="Moderate"
         />
         <PresetVolatilityCard
+          type="aggressive"
           src="/images/large-vial.svg"
-          upper={0.5}
-          lower={-0.5}
           lastPrice={props.lastPrice}
           updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
           addLiquidityConfig={props.addLiquidityConfig}
@@ -761,58 +761,63 @@ const DepositAmountGroup: FunctionComponent<{
 
 const PresetVolatilityCard: FunctionComponent<
   {
+    type: "custom" | "passive" | "moderate" | "aggressive";
     src: string;
     updateInputAndRangeMinMax: (min: number, max: number) => void;
-    addLiquidityConfig: ObservableAddLiquidityConfig;
+    addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     lastPrice: number;
     label: string;
     width?: number;
     height?: number;
-    upper?: number;
-    lower?: number;
     selected?: boolean;
   } & CustomClasses
 > = observer(
   ({
+    type,
     src,
     width,
     height,
-    upper,
-    lower,
     lastPrice,
     label,
     addLiquidityConfig,
     updateInputAndRangeMinMax,
   }) => {
-    const isFullRange = !upper && !lower;
     const { conliqRange, conliqFullRange, setConliqFullRange } =
       addLiquidityConfig;
     const rangeMin = Number(conliqRange[0].toString());
     const rangeMax = Number(conliqRange[1].toString());
-    const isSelected = !isFullRange
-      ? lastPrice * (1 + (lower as number)) === rangeMin &&
-        lastPrice * (1 + (upper as number)) === rangeMax
-      : conliqFullRange;
+
+    const isRangeAggressive =
+      lastPrice * 0.5 === rangeMin && lastPrice * 1.5 === rangeMax;
+    const isRangeModerate =
+      lastPrice * 0.75 === rangeMin && lastPrice * 1.25 === rangeMax;
+    const isRangePassive = conliqFullRange;
+    const isRangeCustom =
+      !isRangeAggressive && !isRangeModerate && !isRangePassive;
+
+    let isSelected = false;
+
+    if (type === "moderate") isSelected = isRangeModerate;
+    if (type === "aggressive") isSelected = isRangeAggressive;
+    if (type === "passive") isSelected = isRangePassive;
+    if (type === "custom") isSelected = isRangeCustom;
 
     const onClick = useCallback(() => {
-      if (isFullRange) {
-        setConliqFullRange(true);
-        updateInputAndRangeMinMax(0, 0);
-      } else {
-        setConliqFullRange(false);
-        updateInputAndRangeMinMax(
-          lastPrice * (1 + (lower as number)),
-          lastPrice * (1 + (upper as number))
-        );
+      switch (type) {
+        case "passive":
+          setConliqFullRange(true);
+          updateInputAndRangeMinMax(0, 0);
+          return;
+        case "moderate":
+          setConliqFullRange(false);
+          updateInputAndRangeMinMax(lastPrice * 0.75, lastPrice * 1.25);
+          return;
+        case "aggressive":
+          setConliqFullRange(false);
+          updateInputAndRangeMinMax(lastPrice * 0.5, lastPrice * 1.5);
+          return;
       }
-    }, [
-      isFullRange,
-      setConliqFullRange,
-      updateInputAndRangeMinMax,
-      lastPrice,
-      upper,
-      lower,
-    ]);
+    }, [type, setConliqFullRange, updateInputAndRangeMinMax, lastPrice]);
 
     return (
       <div
