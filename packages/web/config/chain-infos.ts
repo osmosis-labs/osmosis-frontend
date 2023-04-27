@@ -216,9 +216,20 @@ const chainInfos = (
         {
           type: "cw20",
           contractAddress: "secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d",
-          coinDenom: "SHD",
+          coinDenom: "SHD(old)",
           coinMinimalDenom:
             "cw20:secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d:SHD",
+          coinDecimals: 8,
+          //coinGeckoId: "shade-protocol",
+          coinGeckoId: "pool:shdold",
+          coinImageUrl: "/tokens/shdold.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress: "secret153wu605vvp934xhd4k9dtd640zsep5jkesstdm",
+          coinDenom: "SHD",
+          coinMinimalDenom:
+            "cw20:secret153wu605vvp934xhd4k9dtd640zsep5jkesstdm:SHD",
           coinDecimals: 8,
           //coinGeckoId: "shade-protocol",
           coinGeckoId: "pool:shd",
@@ -957,6 +968,39 @@ const chainInfos = (
           coinDecimals: 6,
           coinGeckoId: "pool:light",
           coinImageUrl: "/tokens/light.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1llg7q2d5dqlrqzh5dxv8c7kzzjszld34s5vktqmlmaaxqjssz43sxyhq0d",
+          coinDenom: "MILE",
+          coinMinimalDenom:
+            "cw20:juno1llg7q2d5dqlrqzh5dxv8c7kzzjszld34s5vktqmlmaaxqjssz43sxyhq0d:MILE",
+          coinDecimals: 6,
+          coinGeckoId: "pool:mile",
+          coinImageUrl: "/tokens/mille.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno13ca2g36ng6etcfhr9qxx352uw2n5e92np54thfkm3w3nzlhsgvwsjaqlyq",
+          coinDenom: "MANNA",
+          coinMinimalDenom:
+            "cw20:juno13ca2g36ng6etcfhr9qxx352uw2n5e92np54thfkm3w3nzlhsgvwsjaqlyq:MANNA",
+          coinDecimals: 6,
+          coinGeckoId: "pool:manna",
+          coinImageUrl: "/tokens/manna.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1lpvx3mv2a6ddzfjc7zzz2v2cm5gqgqf0hx67hc5p5qwn7hz4cdjsnznhu8",
+          coinDenom: "VOID",
+          coinMinimalDenom:
+            "cw20:juno1lpvx3mv2a6ddzfjc7zzz2v2cm5gqgqf0hx67hc5p5qwn7hz4cdjsnznhu8:VOID",
+          coinDecimals: 6,
+          coinGeckoId: "pool:void",
+          coinImageUrl: "/tokens/void.png",
         },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
@@ -3235,8 +3279,8 @@ const chainInfos = (
           gasPriceStep: {
             low: 0.001,
             average: 0.0025,
-            high: 0.025
-          }
+            high: 0.025,
+          },
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
@@ -3360,6 +3404,14 @@ chainInfos.push({
       // coinGeckoId: "chainlink",
       coinGeckoId: "pool:link-wei",
       coinImageUrl: "/tokens/link.svg",
+    },
+    {
+      coinDenom: "FIL",
+      coinMinimalDenom: "wfil-wei",
+      coinDecimals: 18,
+      //coinGeckoId: "filecoin",
+      coinGeckoId: "pool:wfil-wei",
+      coinImageUrl: "/tokens/fil.svg",
     },
     {
       coinDenom: "AAVE",
