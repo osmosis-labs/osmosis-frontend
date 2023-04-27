@@ -3257,7 +3257,7 @@ const chainInfos = (
           coinMinimalDenom: "ubnt",
           coinDecimals: 6,
           coinImageUrl: "/tokens/bluzelle.svg",
-          coinGeckoId: "bluzelle",
+          coinGeckoId: "pool:ubnt",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
