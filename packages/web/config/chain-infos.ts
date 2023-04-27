@@ -3286,6 +3286,34 @@ const chainInfos = (
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://www.mintscan.io/omniflix/txs/{txHash}",
     },
+    {
+      rpc: "https://a.client.sentry.net.bluzelle.com:26657",
+      rest: "https://a.client.sentry.net.bluzelle.com:1317",
+      chainId: "bluzelle-9",
+      chainName: "Bluzelle",
+      bip44: {
+        coinType: 483,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("bluzelle"),
+      currencies: [
+        {
+          coinDenom: "BLZ",
+          coinMinimalDenom: "ubnt",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/bluzelle.svg",
+          coinGeckoId: "pool:ubnt",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.002,
+            average: 0.002,
+            high: 0.025
+          }
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx: "https://bd.explorer.net.bluzelle.com/transactions/${txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
