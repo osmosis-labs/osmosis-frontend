@@ -3345,6 +3345,14 @@ chainInfos.push({
       coinImageUrl: "/tokens/link.svg",
     },
     {
+      coinDenom: "FIL",
+      coinMinimalDenom: "wfil-wei",
+      coinDecimals: 18,
+      //coinGeckoId: "filecoin",
+      coinGeckoId: "pool:wfil-wei",
+      coinImageUrl: "/tokens/fil.svg",
+    },
+    {
       coinDenom: "AAVE",
       coinMinimalDenom: "aave-wei",
       coinDecimals: 18,
