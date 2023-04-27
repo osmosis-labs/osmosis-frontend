@@ -59,12 +59,15 @@ export function useTradeTokenInConfig(
     config.setIncentivizedPoolIds(
       queriesOsmosis.queryIncentivizedPools.incentivizedPools
     );
-  }, [queriesOsmosis.queryIncentivizedPools.response]);
+  }, [config, queriesOsmosis.queryIncentivizedPools.incentivizedPools]);
 
   // refresh relevant pool data every `requeryIntervalMs` period
   useEffect(() => {
     const interval = setInterval(() => {
-      const poolIds = config.optimizedRoute?.pools.map((pool) => pool.id) ?? [];
+      const poolIds =
+        config.optimizedRoutes
+          ?.flatMap(({ pools }) => pools)
+          .map((pool) => pool.id) ?? [];
 
       poolIds.forEach((poolId) => {
         queriesStore
@@ -74,12 +77,12 @@ export function useTradeTokenInConfig(
       });
     }, requeryIntervalMs);
     return () => clearInterval(interval);
-  }, [config.optimizedRoute, osmosisChainId, queriesStore, requeryIntervalMs]);
+  }, [config.optimizedRoutes, osmosisChainId, queriesStore, requeryIntervalMs]);
 
   /** User trade token in from config values. */
   const tradeTokenIn = useCallback(
     async (maxSlippage: string): Promise<"multihop" | "exact-in"> => {
-      if (!config.optimizedRoute) {
+      if (!config.optimizedRoutes) {
         return Promise.reject(
           "User input should be disabled if no route is found or is being generated"
         );
@@ -90,11 +93,13 @@ export function useTradeTokenInConfig(
         tokenOutCurrency: Currency;
       }[] = [];
 
-      for (let i = 0; i < config.optimizedRoute.pools.length; i++) {
-        const pool = config.optimizedRoute.pools[i];
+      // TODO: use new split route message if routes.length > 1
+      for (let i = 0; i < config.optimizedRoutes[0].pools.length; i++) {
+        const pool = config.optimizedRoutes[0].pools[i];
         const tokenOutCurrency = chainStore.osmosis.currencies.find(
           (cur) =>
-            cur.coinMinimalDenom === config.optimizedRoute?.tokenOutDenoms[i]
+            cur.coinMinimalDenom ===
+            config.optimizedRoutes?.[0]?.tokenOutDenoms[i]
         );
 
         if (!tokenOutCurrency) {
@@ -108,7 +113,8 @@ export function useTradeTokenInConfig(
       }
 
       const tokenInCurrency = chainStore.osmosis.currencies.find(
-        (cur) => cur.coinMinimalDenom === config.optimizedRoute?.tokenInDenom
+        (cur) =>
+          cur.coinMinimalDenom === config.optimizedRoutes?.[0]?.tokenInDenom
       );
 
       if (!tokenInCurrency) {
