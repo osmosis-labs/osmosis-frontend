@@ -4,7 +4,9 @@ import {
   IQueriesStore,
   ObservableQueryBalances,
 } from "@keplr-wallet/stores";
-import { Dec } from "@keplr-wallet/unit";
+import { Dec, Int } from "@keplr-wallet/unit";
+import { minSpotPrice, priceToTick, tickToSqrtPrice } from "@osmosis-labs/math";
+import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { action, makeObservable, observable } from "mobx";
 
 import { PriceRange } from "../../queries-external/token-pair-historical-chart/types";
@@ -17,6 +19,9 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   @observable
   protected _sender: string;
+
+  @observable
+  protected _pool: ConcentratedLiquidityPool;
 
   @observable.ref
   protected _queriesStore: IQueriesStore;
@@ -40,7 +45,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
    Used to get min and max range for adding concentrated liquidity
    */
   @observable
-  protected _conliqRange: [Dec, Dec] = [new Dec(0), new Dec(0)];
+  protected _conliqRange: [Dec, Dec] = [minSpotPrice, minSpotPrice];
 
   @observable
   protected _conliqFullRange: boolean = false;
@@ -60,11 +65,13 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     poolId: string,
     sender: string,
     queriesStore: IQueriesStore,
-    queryBalances: ObservableQueryBalances
+    queryBalances: ObservableQueryBalances,
+    pool: ConcentratedLiquidityPool
   ) {
     super(chainGetter, initialChainId);
 
     this._poolId = poolId;
+    this._pool = pool;
     this._queriesStore = queriesStore;
     this._queryBalances = queryBalances;
     this._sender = sender;
@@ -74,6 +81,10 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   get poolId(): string {
     return this._poolId;
+  }
+
+  get pool(): ConcentratedLiquidityPool {
+    return this._pool;
   }
 
   @action
@@ -112,22 +123,33 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   @action
   setConliqMinRange = (min: Dec | number) => {
-    this._conliqRange = [
+    const tick = priceToTick(
       typeof min === "number" ? new Dec(min) : min,
-      this._conliqRange[1],
-    ];
+      this.pool.exponentAtPriceOne
+    );
+    const derivedPrice = tickToSqrtPrice(tick, this.pool.exponentAtPriceOne);
+    this._conliqRange = [derivedPrice.mul(derivedPrice), this._conliqRange[1]];
   };
 
   @action
   setConliqMaxRange = (max: Dec | number) => {
-    this._conliqRange = [
-      this._conliqRange[0],
+    const tick = priceToTick(
       typeof max === "number" ? new Dec(max) : max,
-    ];
+      this.pool.exponentAtPriceOne
+    );
+    const derivedPrice = tickToSqrtPrice(tick, this.pool.exponentAtPriceOne);
+    this._conliqRange = [this._conliqRange[0], derivedPrice.mul(derivedPrice)];
   };
 
   get conliqRange(): [Dec, Dec] {
     return this._conliqRange;
+  }
+
+  get conliqTickRange(): [Int, Int] {
+    return [
+      priceToTick(this._conliqRange[0], this.pool.exponentAtPriceOne),
+      priceToTick(this._conliqRange[1], this.pool.exponentAtPriceOne),
+    ];
   }
 
   @action

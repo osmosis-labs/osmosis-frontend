@@ -4,6 +4,7 @@ import {
   CosmwasmQueries,
   IQueriesStore,
 } from "@keplr-wallet/stores";
+import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import {
   ObservableAddConcentratedLiquidityConfig,
   OsmosisQueries,
@@ -24,10 +25,13 @@ export function useAddConcentratedLiquidityConfig(
   config: ObservableAddConcentratedLiquidityConfig;
   addLiquidity: () => Promise<void>;
 } {
-  const { accountStore } = useStore();
+  const { accountStore, derivedDataStore } = useStore();
 
   const account = accountStore.getAccount(osmosisChainId);
   const { bech32Address } = account;
+
+  const { poolDetail } = derivedDataStore.getForPool(poolId);
+  const pool = poolDetail!.pool!.pool as ConcentratedLiquidityPool;
 
   const [config] = useState(
     () =>
@@ -37,12 +41,10 @@ export function useAddConcentratedLiquidityConfig(
         poolId,
         bech32Address,
         queriesStore,
-        queriesStore.get(osmosisChainId).queryBalances
+        queriesStore.get(osmosisChainId).queryBalances,
+        pool
       )
   );
-  config.setChain(osmosisChainId);
-  config.setSender(bech32Address);
-  config.setPoolId(poolId);
 
   const addLiquidity = useCallback(async () => {
     return new Promise<void>(async (resolve, reject) => {

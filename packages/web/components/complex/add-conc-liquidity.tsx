@@ -306,6 +306,7 @@ const AddConcLiqView: FunctionComponent<
     conliqRange,
     conliqQuoteDepositAmountIn,
     conliqBaseDepositAmountIn,
+    conliqFullRange,
     setConliqQuoteDepositAmountIn,
     setConliqBaseDepositAmountIn,
     setConliqModalView,
@@ -534,17 +535,22 @@ const AddConcLiqView: FunctionComponent<
                 onSubmitMax={(val) => updateMax(val, true)}
                 offset={{ top: 0, right: 36, bottom: 36, left: 0 }}
                 horizontal
+                fullRange={conliqFullRange}
               />
             </div>
             <div className="flex flex-col items-center justify-center gap-4 pr-8">
               <PriceInputBox
-                currentValue={inputMax}
+                currentValue={
+                  conliqFullRange ? "∞" : new Dec(inputMax).toString(4)
+                }
                 label="high"
                 onChange={(val) => setInputMax(val)}
                 onBlur={(e) => updateMax(+e.target.value, true)}
               />
               <PriceInputBox
-                currentValue={inputMin}
+                currentValue={
+                  conliqFullRange ? "0" : new Dec(inputMin).toString(4)
+                }
                 label="low"
                 onChange={(val) => setInputMin(val)}
                 onBlur={(e) => updateMin(+e.target.value, true)}
@@ -782,16 +788,38 @@ const PresetVolatilityCard: FunctionComponent<
     addLiquidityConfig,
     updateInputAndRangeMinMax,
   }) => {
-    const { conliqRange, conliqFullRange, setConliqFullRange } =
+    const { conliqTickRange, conliqFullRange, setConliqFullRange, pool } =
       addLiquidityConfig;
-    const rangeMin = Number(conliqRange[0].toString());
-    const rangeMax = Number(conliqRange[1].toString());
+    const moderateTicks = [
+      priceToTick(
+        new Dec(adjustPriceInRange(lastPrice * 0.75)),
+        pool.exponentAtPriceOne
+      ),
+      priceToTick(
+        new Dec(adjustPriceInRange(lastPrice * 1.25)),
+        pool.exponentAtPriceOne
+      ),
+    ];
+    const aggressiveTicks = [
+      priceToTick(
+        new Dec(adjustPriceInRange(lastPrice * 0.5)),
+        pool.exponentAtPriceOne
+      ),
+      priceToTick(
+        new Dec(adjustPriceInRange(lastPrice * 1.5)),
+        pool.exponentAtPriceOne
+      ),
+    ];
 
-    const isRangeAggressive =
-      lastPrice * 0.5 === rangeMin && lastPrice * 1.5 === rangeMax;
-    const isRangeModerate =
-      lastPrice * 0.75 === rangeMin && lastPrice * 1.25 === rangeMax;
     const isRangePassive = conliqFullRange;
+    const isRangeAggressive =
+      !isRangePassive &&
+      conliqTickRange[0].equals(aggressiveTicks[0]) &&
+      conliqTickRange[1].equals(aggressiveTicks[1]);
+    const isRangeModerate =
+      !isRangePassive &&
+      conliqTickRange[0].equals(moderateTicks[0]) &&
+      conliqTickRange[1].equals(moderateTicks[1]);
     const isRangeCustom =
       !isRangeAggressive && !isRangeModerate && !isRangePassive;
 
@@ -806,7 +834,6 @@ const PresetVolatilityCard: FunctionComponent<
       switch (type) {
         case "passive":
           setConliqFullRange(true);
-          updateInputAndRangeMinMax(0, 0);
           return;
         case "moderate":
           setConliqFullRange(false);
@@ -905,4 +932,11 @@ function getDepthFromRange(
     }
     return 0;
   }
+}
+
+function adjustPriceInRange(price: number): number {
+  return Math.min(
+    Math.max(Number(minSpotPrice.toString()), price),
+    Number(maxSpotPrice.toString())
+  );
 }
