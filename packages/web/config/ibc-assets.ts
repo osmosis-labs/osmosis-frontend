@@ -725,24 +725,28 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-326",
         destChannelId: "channel-5",
         coinMinimalDenom: "stujuno",
+        isVerified: true,
       },
       {
         counterpartyChainId: "stride-1",
         sourceChannelId: "channel-326",
         destChannelId: "channel-5",
         coinMinimalDenom: "stustars",
+        isVerified: true,
       },
       {
         counterpartyChainId: "stride-1",
         sourceChannelId: "channel-326",
         destChannelId: "channel-5",
         coinMinimalDenom: "stuluna",
+        isVerified: true,
       },
       {
         counterpartyChainId: "stride-1",
         sourceChannelId: "channel-326",
         destChannelId: "channel-5",
         coinMinimalDenom: "staevmos",
+        isVerified: true,
       },
       {
         counterpartyChainId: "kichain-2",
