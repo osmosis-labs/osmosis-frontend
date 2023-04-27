@@ -18,7 +18,7 @@ export function validateRoute(route: Route) {
   // Number of pools does not match number of tokenOutDenoms
   if (route.pools.length !== route.tokenOutDenoms.length) {
     throw new Error(
-      `Invalid path: pools and tokenOutDenoms length mismatch, IDs:${route.pools.map(
+      `Invalid route: pools and tokenOutDenoms length mismatch, IDs:${route.pools.map(
         (p) => p.id
       )} ${route.pools
         .flatMap((p) => p.poolAssetDenoms.map((denom) => denom.slice(-6)))
@@ -28,7 +28,7 @@ export function validateRoute(route: Route) {
 
   // There are no pools in the route
   if (route.pools.length === 0) {
-    throw new Error("Invalid path: pools length is 0");
+    throw new Error("Invalid route: pools length is 0");
   }
 }
 
