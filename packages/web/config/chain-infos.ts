@@ -237,6 +237,16 @@ const chainInfos = (
         },
         {
           type: "cw20",
+          contractAddress: "secret1fl449muk5yq8dlad7a22nje4p5d2pnsgymhjfd",
+          coinDenom: "SILK",
+          coinMinimalDenom:
+            "cw20:secret1fl449muk5yq8dlad7a22nje4p5d2pnsgymhjfd:SILK",
+          coinDecimals: 6,
+          coinGeckoId: "pool:silk",
+          coinImageUrl: "/tokens/silk.svg",
+        },
+        {
+          type: "cw20",
           contractAddress: "secret1k6u0cy4feepm6pehnz804zmwakuwdapm69tuc4",
           coinDenom: "stkd-SCRT",
           coinMinimalDenom:
@@ -947,7 +957,51 @@ const chainInfos = (
           coinDecimals: 6,
           coinGeckoId: "pool:spacer",
           coinImageUrl: "/tokens/spacer.png",
-        },        
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1dpany8c0lj526lsa02sldv7shzvnw5dt5ues72rk35hd69rrydxqeraz8l",
+          coinDenom: "LIGHT",
+          coinMinimalDenom:
+            "cw20:juno1dpany8c0lj526lsa02sldv7shzvnw5dt5ues72rk35hd69rrydxqeraz8l:LIGHT",
+          coinDecimals: 6,
+          coinGeckoId: "pool:light",
+          coinImageUrl: "/tokens/light.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1llg7q2d5dqlrqzh5dxv8c7kzzjszld34s5vktqmlmaaxqjssz43sxyhq0d",
+          coinDenom: "MILE",
+          coinMinimalDenom:
+            "cw20:juno1llg7q2d5dqlrqzh5dxv8c7kzzjszld34s5vktqmlmaaxqjssz43sxyhq0d:MILE",
+          coinDecimals: 6,
+          coinGeckoId: "pool:mile",
+          coinImageUrl: "/tokens/mille.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno13ca2g36ng6etcfhr9qxx352uw2n5e92np54thfkm3w3nzlhsgvwsjaqlyq",
+          coinDenom: "MANNA",
+          coinMinimalDenom:
+            "cw20:juno13ca2g36ng6etcfhr9qxx352uw2n5e92np54thfkm3w3nzlhsgvwsjaqlyq:MANNA",
+          coinDecimals: 6,
+          coinGeckoId: "pool:manna",
+          coinImageUrl: "/tokens/manna.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1lpvx3mv2a6ddzfjc7zzz2v2cm5gqgqf0hx67hc5p5qwn7hz4cdjsnznhu8",
+          coinDenom: "VOID",
+          coinMinimalDenom:
+            "cw20:juno1lpvx3mv2a6ddzfjc7zzz2v2cm5gqgqf0hx67hc5p5qwn7hz4cdjsnznhu8:VOID",
+          coinDecimals: 6,
+          coinGeckoId: "pool:void",
+          coinImageUrl: "/tokens/void.png",
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: IS_TESTNET
@@ -1782,10 +1836,10 @@ const chainInfos = (
         "https://explorer.decentr.net/transactions/{txHash}?networkId=mainnet",
     },
     {
-      rpc: "https://shenturpc.certikpowered.info",
-      rest: "https://azuredragon.noopsbycertik.com",
+      rpc: "https://shenturpc.noopsbycertik.com/",
+      rest: "https://rest.noopsbycertik.com",
       chainId: "shentu-2.2",
-      chainName: "Certik",
+      chainName: "Shentu",
       bip44: {
         coinType: 118,
       },
@@ -1795,7 +1849,7 @@ const chainInfos = (
           coinDenom: "CTK",
           coinMinimalDenom: "uctk",
           coinDecimals: 6,
-          // coinGeckoId: "certik",
+          // coinGeckoId: "shentu",
           //coinGeckoId: "pool:uctk",
           coinImageUrl: "/tokens/ctk.svg",
           isStakeCurrency: true,
@@ -1803,7 +1857,7 @@ const chainInfos = (
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
-      explorerUrlToTx: "https://www.mintscan.io/certik/txs/{txHash}",
+      explorerUrlToTx: "https://www.mintscan.io/shentu/txs/{txHash}",
     },
     {
       rpc: "https://tm-api.carbon.network",
@@ -3225,8 +3279,8 @@ const chainInfos = (
           gasPriceStep: {
             low: 0.001,
             average: 0.0025,
-            high: 0.025
-          }
+            high: 0.025,
+          },
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
@@ -3322,6 +3376,14 @@ chainInfos.push({
       // coinGeckoId: "chainlink",
       coinGeckoId: "pool:link-wei",
       coinImageUrl: "/tokens/link.svg",
+    },
+    {
+      coinDenom: "FIL",
+      coinMinimalDenom: "wfil-wei",
+      coinDecimals: 18,
+      //coinGeckoId: "filecoin",
+      coinGeckoId: "pool:wfil-wei",
+      coinImageUrl: "/tokens/fil.svg",
     },
     {
       coinDenom: "AAVE",
