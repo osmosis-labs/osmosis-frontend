@@ -364,9 +364,6 @@
     "available": "Disponibil",
     "button": "Schimba",
     "buttonError": "Schibma oricum",
-    "error": {
-      "findCurrency": "Moneda {currency} nu a fost gasita"
-    },
     "expectedOutput": "Rezultat asteptat",
     "fee": "Taxa schimb ({fee})",
     "HALF": "JUMATATE",

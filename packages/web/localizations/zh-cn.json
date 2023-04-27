@@ -364,9 +364,6 @@
     "available": "可用",
     "button": "兑换",
     "buttonError": "继续兑换",
-    "error": {
-      "findCurrency": "无法找到代币 {currency}"
-    },
     "expectedOutput": "预期产出",
     "fee": "交易费 ({fee})",
     "HALF": "对半",
