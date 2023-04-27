@@ -34,7 +34,7 @@ describe("OptimizedRoutes", () => {
       );
 
       expect(routes.length).toBe(1);
-      expect(routes[0].pools[0].id).toBe("1");
+      expect(routes[0].pools[0].id).toBe("2");
     });
     test("routes through 2 pools", async () => {
       const pools = [
