@@ -38,6 +38,7 @@ export const ChainNames: { [chainId: string]: string } = {
   "0x64": "Gnosis",
   "0x89": "Polygon Mainnet",
   "0x13881": "Mumbai",
+  "0x13a": "Filecoin - Mainnet",
   "0xfa": "Fantom Opera",
   "0xfa2": "Fantom Testnet",
   "0x504": "Moonbeam Mainnet",

@@ -371,6 +371,20 @@ export const IBCAssetInfos: (IBCAsset & {
         },
       },
       {
+        counterpartyChainId: "axelar-dojo-1",
+        sourceChannelId: "channel-208",
+        destChannelId: "channel-3",
+        coinMinimalDenom: "wfil-wei",
+        sourceChainNameOverride: "Filecoin",
+        isVerified: true,
+        originBridgeInfo: {
+          bridge: "axelar" as const,
+          wallets: ["metamask" as const, "walletconnect" as const],
+          method: "deposit-address" as const,
+          sourceChainTokens: [AxelarSourceChainConfigs.wfil.filecoin],
+        },
+      },
+      {
         counterpartyChainId: "crypto-org-chain-mainnet-1",
         sourceChannelId: "channel-5",
         destChannelId: "channel-10",
@@ -725,24 +739,28 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-326",
         destChannelId: "channel-5",
         coinMinimalDenom: "stujuno",
+        isVerified: true,
       },
       {
         counterpartyChainId: "stride-1",
         sourceChannelId: "channel-326",
         destChannelId: "channel-5",
         coinMinimalDenom: "stustars",
+        isVerified: true,
       },
       {
         counterpartyChainId: "stride-1",
         sourceChannelId: "channel-326",
         destChannelId: "channel-5",
         coinMinimalDenom: "stuluna",
+        isVerified: true,
       },
       {
         counterpartyChainId: "stride-1",
         sourceChannelId: "channel-326",
         destChannelId: "channel-5",
         coinMinimalDenom: "staevmos",
+        isVerified: true,
       },
       {
         counterpartyChainId: "kichain-2",
@@ -826,6 +844,15 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-476",
         destChannelId: "channel-44",
         coinMinimalDenom: "cw20:secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d",
+        depositUrlOverride: "https://wrap.scrt.network",
+        ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
+      },
+      {
+        // SILK
+        counterpartyChainId: "secret-4",
+        sourceChannelId: "channel-476",
+        destChannelId: "channel-44",
+        coinMinimalDenom: "cw20:secret1fl449muk5yq8dlad7a22nje4p5d2pnsgymhjfd",
         depositUrlOverride: "https://wrap.scrt.network",
         ics20ContractAddress: "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
       },
@@ -924,7 +951,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-37",
         destChannelId: "channel-0",
         coinMinimalDenom: "eeur",
-        isVerified: true,
+        isVerified: false,
       },
       {
         // SIENNA
@@ -1323,6 +1350,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-412",
         destChannelId: "channel-0",
         coinMinimalDenom: "ujkl",
+        isVerified: true,
       },
       {
         // ALTER
@@ -1679,6 +1707,26 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-47",
         coinMinimalDenom:
           "cw20:juno1dyyf7pxeassxvftf570krv7fdf5r8e4r04mp99h0mllsqzp3rs4q7y8yqg",
+        ics20ContractAddress:
+          "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+      },
+      {
+        //LIGHT
+        counterpartyChainId: "juno-1",
+        sourceChannelId: "channel-169",
+        destChannelId: "channel-47",
+        coinMinimalDenom:
+          "cw20:juno1dpany8c0lj526lsa02sldv7shzvnw5dt5ues72rk35hd69rrydxqeraz8l",
+        ics20ContractAddress:
+          "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+      },
+      {
+        //MILE
+        counterpartyChainId: "juno-1",
+        sourceChannelId: "channel-169",
+        destChannelId: "channel-47",
+        coinMinimalDenom:
+          "cw20:juno1llg7q2d5dqlrqzh5dxv8c7kzzjszld34s5vktqmlmaaxqjssz43sxyhq0d",
         ics20ContractAddress:
           "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
       },
