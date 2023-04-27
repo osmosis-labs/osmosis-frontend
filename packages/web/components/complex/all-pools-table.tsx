@@ -23,7 +23,7 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { EventName } from "~/config";
+import { EventName, IS_TESTNET } from "~/config";
 import { useAmplitudeAnalytics, useFilteredData, useWindowSize } from "~/hooks";
 import { MenuOptionsModal } from "~/modals";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
@@ -195,24 +195,17 @@ export const AllPoolsTable: FunctionComponent<{
       .get(chainId)
       .getAllPools(sorting[0]?.id, sorting[0]?.desc, isSearching);
 
-    console.log({ allPoolsWithMetrics });
-    // TODO: ignore liquidity check in testnet
     const initiallyFilteredPools = useMemo(
       () =>
         allPoolsWithMetrics.filter((p) => {
-          console.log(
-            "tvl: ",
-            !p.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
-          );
           // Filter out pools with low TVL.
-          // if (!p.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))) {
-          //   return false;
-          // }
+          if (
+            !IS_TESTNET &&
+            !p.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
+          ) {
+            return false;
+          }
 
-          console.log(
-            "pool type: ",
-            poolFilterQuery && !poolFilterQuery.includes(p.pool.type)
-          );
           // Filter out pools that do not match the pool filter.
           if (poolFilterQuery && !poolFilterQuery.includes(p.pool.type)) {
             return false;
@@ -262,7 +255,6 @@ export const AllPoolsTable: FunctionComponent<{
       ]
     );
 
-    console.log({ initiallyFilteredPools });
     const [query, _setQuery, filteredPools] = useFilteredData(
       initiallyFilteredPools,
       searchPoolsMemoedKeys
@@ -466,7 +458,6 @@ export const AllPoolsTable: FunctionComponent<{
       ]
     );
 
-    console.log({ filteredPools });
     const table = useReactTable({
       data: filteredPools,
       columns,

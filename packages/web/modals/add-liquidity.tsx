@@ -1,13 +1,14 @@
+import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { AddConcLiquidity } from "../components/complex/add-conc-liquidity";
+import { AddLiquidity } from "../components/complex/add-liquidity";
 import { tError } from "../components/localization";
 import { useAddLiquidityConfig, useConnectWalletModalRedirect } from "../hooks";
 import { useStore } from "../stores";
-// import { AddLiquidity } from "../components/complex/add-liquidity";
 import { ModalBase, ModalBaseProps } from "./base";
 
 export const AddLiquidityModal: FunctionComponent<
@@ -20,7 +21,13 @@ export const AddLiquidityModal: FunctionComponent<
   } & ModalBaseProps
 > = observer((props) => {
   const { poolId } = props;
-  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    priceStore,
+    derivedDataStore,
+  } = useStore();
   const t = useTranslation();
 
   const { chainId } = chainStore.osmosis;
@@ -33,6 +40,11 @@ export const AddLiquidityModal: FunctionComponent<
     poolId,
     queriesStore
   );
+
+  // initialize pool data stores once root pool store is loaded
+  const { poolDetail } = derivedDataStore.getForPool(poolId as string);
+  const pool = poolDetail?.pool?.pool;
+  const isConcLiq = pool instanceof ConcentratedLiquidityPool;
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
@@ -50,19 +62,35 @@ export const AddLiquidityModal: FunctionComponent<
     props.onRequestClose
   );
 
+  if (isConcLiq) {
+    return (
+      <ModalBase
+        {...props}
+        isOpen={props.isOpen && showModalBase}
+        hideCloseButton
+        className="!max-w-[57.5rem]"
+      >
+        <AddConcLiquidity
+          addLiquidityConfig={config}
+          actionButton={accountActionButton}
+          getFiatValue={(coin) => priceStore.calculatePrice(coin)}
+          onRequestClose={props.onRequestClose}
+        />
+      </ModalBase>
+    );
+  }
+
   return (
     <ModalBase
-      // title={t("addLiquidity.title")}
+      title={t("addLiquidity.title")}
       {...props}
       isOpen={props.isOpen && showModalBase}
-      hideCloseButton
-      className="!max-w-[57.5rem]"
     >
-      <AddConcLiquidity
+      <AddLiquidity
+        className="pt-4"
         addLiquidityConfig={config}
         actionButton={accountActionButton}
         getFiatValue={(coin) => priceStore.calculatePrice(coin)}
-        onRequestClose={props.onRequestClose}
       />
     </ModalBase>
   );

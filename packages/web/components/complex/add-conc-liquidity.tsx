@@ -37,10 +37,10 @@ import React, {
 import { useTranslation } from "react-multi-lang";
 
 import IconButton from "~/components/buttons/icon-button";
+import { useStore } from "~/stores";
+import { theme } from "~/tailwind.config";
 import { findNearestTick, getPriceAtTick } from "~/utils/math";
 
-import { useStore } from "../../stores";
-import { theme } from "../../tailwind.config";
 import { Icon, PoolAssetsIcon } from "../assets";
 import { Button } from "../buttons";
 import { InputBox } from "../input";
