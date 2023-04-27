@@ -15,7 +15,7 @@ import { FunctionComponent } from "react";
 import { theme } from "~/tailwind.config";
 
 export type DepthData = {
-  tick: number;
+  price: number;
   depth: number;
 };
 
@@ -122,14 +122,14 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
               dataKey="depth"
               data={data}
               xAccessor={(d: DepthData) => d?.depth}
-              yAccessor={(d: DepthData) => d?.tick}
+              yAccessor={(d: DepthData) => d?.price}
               colorAccessor={() => theme.colors.barFill}
             />
             {annotationDatum && (
               <Annotation
                 dataKey="depth"
                 xAccessor={(d: DepthData) => d.depth}
-                yAccessor={(d: DepthData) => d.tick}
+                yAccessor={(d: DepthData) => d.price}
                 datum={annotationDatum}
               >
                 <AnnotationConnector />

@@ -1,5 +1,10 @@
 import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
-import { tickToSqrtPrice } from "@osmosis-labs/math";
+import {
+  ActiveLiquidityPerTickRange,
+  maxSpotPrice,
+  minSpotPrice,
+  priceToTick,
+} from "@osmosis-labs/math";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import {
   ObservableAddLiquidityConfig,
@@ -7,19 +12,6 @@ import {
   ObservableQueryPool,
   ObservableSuperfluidPoolDetail,
 } from "@osmosis-labs/stores";
-import { curveNatural } from "@visx/curve";
-import { ParentSize } from "@visx/responsive";
-import {
-  AnimatedAxis, // any of these can be non-animated equivalents
-  AnimatedGrid,
-  AnimatedLineSeries,
-  Annotation,
-  AnnotationConnector,
-  AnnotationLineSubject,
-  buildChartTheme,
-  Tooltip,
-  XYChart,
-} from "@visx/xychart";
 import classNames from "classnames";
 import { debounce } from "debounce";
 import { observer } from "mobx-react-lite";
@@ -37,8 +29,8 @@ import React, {
 import { useTranslation } from "react-multi-lang";
 
 import IconButton from "~/components/buttons/icon-button";
+import { calculateRangeFromHistoricalData } from "~/components/chart/token-pair-historical";
 import { useStore } from "~/stores";
-import { theme } from "~/tailwind.config";
 import { findNearestTick, getPriceAtTick } from "~/utils/math";
 
 import { Icon, PoolAssetsIcon } from "../assets";
@@ -50,117 +42,10 @@ const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
   { ssr: false }
 );
-
-const accessors = {
-  xAccessor: (d: any) => {
-    return d?.time;
-  },
-  yAccessor: (d: any) => {
-    return d?.price;
-  },
-};
-
-function getViewRangeFromData(data: number[], zoom = 1) {
-  if (!data.length) {
-    return {
-      min: 0,
-      max: 0,
-      last: 0,
-    };
-  }
-  const max = Math.max(...data);
-  const min = Math.min(...data);
-  const last = data[data.length - 1];
-  const padding = Math.max(
-    Math.max(Math.abs(last - max), Math.abs(last - min)),
-    last * 0.25
-  );
-
-  const minWithPadding = Math.max(0, last - padding);
-  const maxWithPadding = last + padding;
-
-  const zoomMin = zoom > 1 ? minWithPadding / zoom : minWithPadding * zoom;
-  const zoomMax = maxWithPadding * zoom;
-
-  return {
-    min: zoomMin,
-    max: zoomMax,
-    last,
-  };
-}
-
-// TODO: Hacky cache for dev; refactor to query store
-
-let cached: any;
-async function getDepthFromRange(
-  min: number,
-  max: number,
-  exponentAtPriceOne: number
-) {
-  const returnData = new Promise(async (resolve) => {
-    if (cached) return resolve(cached);
-    const resp = await fetch(
-      `http://localhost:1317/osmosis/concentratedliquidity/v1beta1/total_liquidity_for_range?pool_id=1`
-    );
-    const json = await resp.json();
-    const data: { amount: number; lower: Dec; upper: Dec }[] = [];
-
-    if (json?.liquidity) {
-      for (let i = 0; i < json.liquidity.length; i++) {
-        try {
-          const { liquidity_amount, lower_tick, upper_tick } =
-            json.liquidity[i];
-          const amount = +liquidity_amount;
-          const lower = tickToSqrtPrice(
-            new Int(lower_tick),
-            exponentAtPriceOne
-          );
-          const upper = tickToSqrtPrice(
-            new Int(upper_tick),
-            exponentAtPriceOne
-          );
-          data.push({
-            amount,
-            lower: lower.mul(lower),
-            upper: upper.mul(upper),
-          });
-        } catch (e) {}
-      }
-    }
-
-    cached = data;
-    resolve(cached);
-  }).then((data: any) => {
-    const depths: { tick: number; depth: number }[] = [];
-    for (let i = min; i <= max; i += (max - min) / 20) {
-      depths.push({
-        tick: i,
-        depth: getLiqFrom(i, data),
-      });
-    }
-
-    return depths;
-  });
-
-  return returnData;
-
-  function getLiqFrom(
-    target: number,
-    list: { amount: number; lower: Dec; upper: Dec }[]
-  ): number {
-    const price = target;
-    let val = 0;
-    for (let i = 0; i < list.length; i++) {
-      if (
-        list[i].lower.lte(new Dec(price)) &&
-        list[i].upper.gte(new Dec(price))
-      ) {
-        val = list[i].amount;
-      }
-    }
-    return val;
-  }
-}
+const TokenPairHistoricalChart = dynamic(
+  () => import("~/components/chart/token-pair-historical"),
+  { ssr: false }
+);
 
 export const AddConcLiquidity: FunctionComponent<
   {
@@ -429,53 +314,46 @@ const AddConcLiqView: FunctionComponent<
     setConliqMinRange,
   } = addLiquidityConfig;
 
-  const { queriesExternalStore } = useStore();
+  const { queriesExternalStore, chainStore, queriesStore } = useStore();
   const router = useRouter();
   const t = useTranslation();
 
   const [data, setData] = useState<{ price: number; time: number }[]>([]);
-  const [depthData, setDepthData] = useState<{ tick: number; depth: number }[]>(
-    []
-  );
+  const [depthData, setDepthData] = useState<
+    { price: number; depth: number }[]
+  >([]);
   const [inputMin, setInputMin] = useState("0");
   const [inputMax, setInputMax] = useState("0");
   const [zoom, setZoom] = useState(1);
 
   const { id: poolId } = router.query as { id: string };
-  const viewRange = getViewRangeFromData(data.map(accessors.yAccessor), zoom);
+  const lastPrice = data[data.length - 1]?.price || 0;
   const rangeMin = Number(conliqRange[0].toString());
   const rangeMax = Number(conliqRange[1].toString());
 
   const xMax = Math.max(...depthData.map((d) => d.depth)) * 1.2;
 
-  const query = queriesExternalStore.queryTokenPairHistoricalChart.get(
-    poolId,
-    addLiquidityConfig.conliqHistoricalRange,
-    baseDenom,
-    quoteDenom
-  );
+  const queryHistorical =
+    queriesExternalStore.queryTokenPairHistoricalChart.get(
+      poolId,
+      addLiquidityConfig.conliqHistoricalRange,
+      baseDenom,
+      quoteDenom
+    );
 
-  const yRange = calculateRange(
-    viewRange.min,
-    viewRange.max,
-    rangeMin,
-    rangeMax,
-    viewRange.last
-  );
+  const { chainId } = chainStore.osmosis;
+  const queriesOsmosis = queriesStore.get(chainId).osmosis!;
+  const queryDepth =
+    queriesOsmosis.queryLiquiditiesPerTickRange.getForPoolId(poolId);
+
+  const yRange = calculateRangeFromHistoricalData({
+    data,
+    zoom,
+    min: rangeMin,
+    max: rangeMax,
+  });
 
   const clPool = pool?.pool as ConcentratedLiquidityPool;
-
-  useEffect(() => {
-    (async () => {
-      if (!yRange[0] && !yRange[1]) return;
-      const data = await getDepthFromRange(
-        yRange[0],
-        yRange[1],
-        clPool?.exponentAtPriceOne
-      );
-      setDepthData(data);
-    })();
-  }, [yRange[0], yRange[1], clPool?.exponentAtPriceOne]);
 
   const updateMin = useCallback(
     (val: string | number, shouldUpdateRange = false) => {
@@ -515,27 +393,42 @@ const AddConcLiqView: FunctionComponent<
     []
   );
 
-  const updateData = useCallback(
-    (data: { price: number; time: number }[]) => {
-      const last = data[data.length - 1];
-      setData(data);
-      updateInputAndRangeMinMax(last.price * 0.9, last.price * 1.15);
-    },
-    [updateInputAndRangeMinMax]
-  );
+  useEffect(() => {
+    if (!queryHistorical.isFetching && queryHistorical.getChartPrices) {
+      const newData = queryHistorical.getChartPrices.map(({ price, time }) => ({
+        time,
+        price: Number(price.toString()),
+      }));
+
+      setData(newData);
+    }
+  }, [queryHistorical.getChartPrices, queryHistorical.isFetching]);
 
   useEffect(() => {
-    (async () => {
-      if (!query.isFetching && query.getChartPrices) {
-        updateData(
-          query.getChartPrices.map(({ price, time }) => ({
-            time,
-            price: Number(price.toString()),
-          }))
-        );
-      }
-    })();
-  }, [updateData, query.getChartPrices, query.isFetching]);
+    if (!yRange[0] && !yRange[1]) return;
+    if (!queryDepth.isFetching && queryDepth.activeLiquidity) {
+      const data = getDepthFromRange(
+        queryDepth.activeLiquidity,
+        yRange[0],
+        yRange[1],
+        clPool?.exponentAtPriceOne
+      );
+      setDepthData(data);
+    }
+  }, [
+    yRange[0],
+    yRange[1],
+    clPool?.exponentAtPriceOne,
+    queryDepth.isFetching,
+    queryDepth.activeLiquidity,
+  ]);
+
+  useEffect(() => {
+    if (data.length && inputMin === "0" && inputMax === "0") {
+      const last = data[data.length - 1].price;
+      updateInputAndRangeMinMax(last * 0.75, last * 1.25);
+    }
+  }, [data, inputMax, inputMin]);
 
   return (
     <>
@@ -598,7 +491,7 @@ const AddConcLiqView: FunctionComponent<
                 />
               </div>
             </div>
-            <LineChart
+            <TokenPairHistoricalChart
               min={rangeMin}
               max={rangeMax}
               data={data}
@@ -608,7 +501,7 @@ const AddConcLiqView: FunctionComponent<
           </div>
           <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-row rounded-r-2xl bg-osmoverse-700">
             <div className="flex flex-1 flex-col">
-              <div className="mt-6 mr-6 flex h-6 flex-row justify-end gap-1">
+              <div className="mt-7 mr-6 flex h-6 flex-row justify-end gap-1">
                 <SelectorWrapper
                   alt="refresh"
                   src="/icons/refresh-ccw.svg"
@@ -631,21 +524,15 @@ const AddConcLiqView: FunctionComponent<
               <ConcentratedLiquidityDepthChart
                 min={rangeMin}
                 max={rangeMax}
-                yRange={calculateRange(
-                  viewRange.min,
-                  viewRange.max,
-                  rangeMin,
-                  rangeMax,
-                  viewRange.last
-                )}
+                yRange={yRange}
                 xRange={[0, xMax]}
                 data={depthData}
-                annotationDatum={{ tick: viewRange.last, depth: xMax }}
+                annotationDatum={{ price: lastPrice, depth: xMax }}
                 onMoveMax={debounce((val: number) => updateMax(val), 100)}
                 onMoveMin={debounce((val: number) => updateMin(val), 100)}
                 onSubmitMin={(val) => updateMin(val, true)}
                 onSubmitMax={(val) => updateMax(val, true)}
-                offset={{ top: 58 - 48, right: 36, bottom: 36, left: 0 }}
+                offset={{ top: 0, right: 36, bottom: 36, left: 0 }}
                 horizontal
               />
             </div>
@@ -667,7 +554,7 @@ const AddConcLiqView: FunctionComponent<
         </div>
       </div>
       <VolitilitySelectorGroup
-        lastPrice={viewRange.last}
+        lastPrice={lastPrice}
         updateInputAndRangeMinMax={updateInputAndRangeMinMax}
         addLiquidityConfig={addLiquidityConfig}
       />
@@ -979,168 +866,38 @@ function PriceInputBox(props: {
   );
 }
 
-function calculateRange(
+function getDepthFromRange(
+  data: ActiveLiquidityPerTickRange[],
   min: number,
   max: number,
-  inputMin: number,
-  inputMax: number,
-  last: number
-): [number, number] {
-  let outMin = min;
-  let outMax = max;
-
-  const delta =
-    Math.max(last - inputMin, inputMax - last, last - min, max - last) * 1.5;
-
-  if (inputMin < min * 1.2 || inputMax > max * 0.8) {
-    outMin = last - delta;
-    outMax = last + delta;
+  exponentAtPriceOne: number
+) {
+  const depths: { price: number; depth: number }[] = [];
+  for (let price = min; price <= max; price += (max - min) / 20) {
+    const spotPrice = Math.min(
+      Math.max(Number(minSpotPrice.toString()), price),
+      Number(maxSpotPrice.toString())
+    );
+    depths.push({
+      price,
+      depth: getLiqFrom(
+        priceToTick(new Dec(spotPrice), exponentAtPriceOne),
+        data
+      ),
+    });
   }
 
-  return [Math.max(0, Math.min(outMin, outMax)), Math.max(outMax, outMin)];
-}
+  return depths;
 
-function LineChart(props: {
-  min: number;
-  max: number;
-  zoom: number;
-  data: { price: number; time: number }[];
-  annotations: Dec[];
-}) {
-  const yRange = getViewRangeFromData(
-    props.data.map(accessors.yAccessor),
-    props.zoom
-  );
-
-  const domain = calculateRange(
-    yRange.min,
-    yRange.max,
-    props.min,
-    props.max,
-    yRange.last
-  );
-
-  // TODO: product-design-general tag Syed about adding custom mask is difficult
-  return (
-    <ParentSize className="flex-shrink-1 flex-1 overflow-hidden">
-      {({ height, width }) => {
-        return (
-          <XYChart
-            key="line-chart"
-            margin={{ top: 0, right: 0, bottom: 36, left: 50 }}
-            height={height}
-            width={width}
-            xScale={{
-              type: "utc",
-              paddingInner: 0.5,
-            }}
-            yScale={{
-              type: "linear",
-              domain: domain,
-              zero: false,
-            }}
-            theme={buildChartTheme({
-              backgroundColor: "transparent",
-              colors: ["white"],
-              gridColor: theme.colors.osmoverse["600"],
-              gridColorDark: theme.colors.osmoverse["300"],
-              svgLabelSmall: {
-                fill: theme.colors.osmoverse["300"],
-                fontSize: 12,
-                fontWeight: 500,
-              },
-              svgLabelBig: {
-                fill: theme.colors.osmoverse["300"],
-                fontSize: 12,
-                fontWeight: 500,
-              },
-              tickLength: 1,
-              xAxisLineStyles: {
-                strokeWidth: 0,
-              },
-              xTickLineStyles: {
-                strokeWidth: 0,
-              },
-              yAxisLineStyles: {
-                strokeWidth: 0,
-              },
-            })}
-          >
-            <AnimatedAxis orientation="bottom" numTicks={4} />
-            <AnimatedAxis orientation="left" numTicks={5} strokeWidth={0} />
-            <AnimatedGrid
-              columns={false}
-              // rows={false}
-              numTicks={5}
-            />
-            <AnimatedLineSeries
-              dataKey="price"
-              data={props.data}
-              curve={curveNatural}
-              {...accessors}
-              stroke={theme.colors.wosmongton["200"]}
-            />
-            {props.annotations.map((dec, i) => (
-              <Annotation
-                key={i}
-                dataKey="depth"
-                xAccessor={(d: { price: number; time: number }) => d.time}
-                yAccessor={(d: { price: number; time: number }) => d.price}
-                datum={{ price: Number(dec.toString()), time: 0 }}
-              >
-                <AnnotationConnector />
-                <AnnotationLineSubject
-                  orientation="horizontal"
-                  stroke={theme.colors.wosmongton["200"]}
-                  strokeWidth={2}
-                  strokeDasharray={4}
-                />
-              </Annotation>
-            ))}
-            <Tooltip
-              // showVerticalCrosshair
-              // showHorizontalCrosshair
-              snapTooltipToDatumX
-              snapTooltipToDatumY
-              detectBounds
-              showDatumGlyph
-              glyphStyle={{
-                strokeWidth: 0,
-                fill: theme.colors.wosmongton["200"],
-              }}
-              horizontalCrosshairStyle={{
-                strokeWidth: 1,
-                stroke: "#ffffff",
-              }}
-              verticalCrosshairStyle={{
-                strokeWidth: 1,
-                stroke: "#ffffff",
-              }}
-              renderTooltip={({ tooltipData }: any) => {
-                console.log(tooltipData?.nearestDatum?.datum?.price.toFixed(4));
-                return null;
-                return (
-                  <div className={`bg-osmoverse-800 p-2 text-xs leading-4`}>
-                    <div className="text-white-full">
-                      {tooltipData?.nearestDatum?.datum?.price.toFixed(4)}
-                    </div>
-                    <div className="text-osmoverse-300">
-                      {`High: ${Math.max(
-                        ...props.data.map(accessors.yAccessor)
-                      ).toFixed(4)}`}
-                    </div>
-                    <div className="text-osmoverse-300">
-                      {`Low: ${Math.min(
-                        ...props.data.map(accessors.yAccessor)
-                      ).toFixed(4)}`}
-                    </div>
-                  </div>
-                );
-              }}
-            />
-          </XYChart>
-        );
-      }}
-    </ParentSize>
-  );
+  function getLiqFrom(
+    target: Int,
+    list: ActiveLiquidityPerTickRange[]
+  ): number {
+    for (let i = 0; i < list.length; i++) {
+      if (list[i].lowerTick.lte(target) && list[i].upperTick.gte(target)) {
+        return Number(list[i].liquidityAmount.toString());
+      }
+    }
+    return 0;
+  }
 }
