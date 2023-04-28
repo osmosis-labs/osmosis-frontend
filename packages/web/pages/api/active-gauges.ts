@@ -8,10 +8,6 @@ type ExternalIncentiveGaugesResponse = {
   data: Gauge[];
 };
 
-type EpochInfosResponse = {
-  epoch_data: Epochs;
-};
-
 /** Filters for active external gauges from chain query.
  *
  *  See rationale here: https://github.com/osmosis-labs/osmosis-frontend/issues/1182
@@ -23,10 +19,10 @@ export default async function activeGauges(
   const endpoint = `${ChainInfos[0].rest}osmosis/incentives/v1beta1/gauges?pagination.limit=100000`;
   const resp = await fetch(endpoint);
   const { data } = (await resp.json()) as ExternalIncentiveGaugesResponse;
-  
+
   const epochs_endpoint = `${ChainInfos[0].rest}osmosis/epochs/v1beta1/epochs`;
   const epoch_resp = await fetch(epochs_endpoint);
-  const { epoch_data } = (await epoch_resp.json()) as EpochInfosResponse;
+  const { epochs } = (await epoch_resp.json()) as Epochs;
 
   res.setHeader("Cache-Control", "s-maxage=900, stale-while-revalidate"); // 15 minute cache
   res.status(200).json({
@@ -36,7 +32,7 @@ export default async function activeGauges(
         gauge.distribute_to.denom.match(/gamm\/pool\/[0-9]+/m) && // only gamm share incentives
         !gauge.coins.some((coin) => coin.denom.match(/gamm\/pool\/[0-9]+/m)) && // no gamm share rewards
         gauge.filled_epochs != gauge.num_epochs_paid_over && // no completed gauges
-        checkForStaleness(gauge, parseInt(data[data.length - 1].id), epoch_data)
+        checkForStaleness(gauge, parseInt(data[data.length - 1].id), epochs)
     ),
   });
 }
@@ -44,11 +40,17 @@ export default async function activeGauges(
 const DURATION_1_DAY = 86400000;
 const MAX_NEW_GAUGES_PER_DAY = 100;
 
-function checkForStaleness(gauge: Gauge, lastGaugeId: number, epochs: Epochs) {
+function checkForStaleness(
+  gauge: Gauge,
+  lastGaugeId: number,
+  epochs: Epochs["epochs"]
+) {
   let parsedGaugeStartTime = Date.parse(gauge.start_time);
 
   const NOW = Date.now();
-  const CURRENT_EPOCH_START_TIME = Date.parse(epochs.epochs[0].current_epoch_start_time);
+  const CURRENT_EPOCH_START_TIME = Date.parse(
+    epochs[0].current_epoch_start_time
+  );
 
   return (
     gauge.distributed_coins.length > 0 ||
