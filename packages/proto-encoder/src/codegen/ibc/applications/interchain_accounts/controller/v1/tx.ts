@@ -1,10 +1,12 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
+import { Long } from "../../../../../helpers";
 import {
   InterchainAccountPacketData,
   InterchainAccountPacketDataAmino,
   InterchainAccountPacketDataSDKType,
 } from "../../v1/packet";
-import { Long } from "../../../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /** MsgRegisterInterchainAccount defines the payload for Msg/RegisterAccount */
 export interface MsgRegisterInterchainAccount {
   owner: string;
@@ -141,7 +143,7 @@ export const MsgRegisterInterchainAccount = {
     length?: number
   ): MsgRegisterInterchainAccount {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgRegisterInterchainAccount();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -246,7 +248,7 @@ export const MsgRegisterInterchainAccountResponse = {
     length?: number
   ): MsgRegisterInterchainAccountResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgRegisterInterchainAccountResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -352,7 +354,7 @@ export const MsgSendTx = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgSendTx {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSendTx();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -456,7 +458,7 @@ export const MsgSendTxResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgSendTxResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSendTxResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

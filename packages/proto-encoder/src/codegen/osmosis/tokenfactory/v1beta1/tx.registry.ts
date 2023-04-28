@@ -1,13 +1,14 @@
 //@ts-nocheck
 import { GeneratedType, Registry } from "@cosmjs/proto-signing";
+
 import {
-  MsgCreateDenom,
-  MsgMint,
   MsgBurn,
   MsgChangeAdmin,
-  MsgSetDenomMetadata,
-  MsgSetBeforeSendHook,
+  MsgCreateDenom,
   MsgForceTransfer,
+  MsgMint,
+  MsgSetBeforeSendHook,
+  MsgSetDenomMetadata,
 } from "./tx";
 export const registry: ReadonlyArray<[string, GeneratedType]> = [
   ["/osmosis.tokenfactory.v1beta1.MsgCreateDenom", MsgCreateDenom],

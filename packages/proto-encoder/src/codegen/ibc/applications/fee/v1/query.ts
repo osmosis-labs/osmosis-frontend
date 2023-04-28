@@ -1,3 +1,6 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   PageRequest,
   PageRequestAmino,
@@ -6,6 +9,12 @@ import {
   PageResponseAmino,
   PageResponseSDKType,
 } from "../../../../cosmos/base/query/v1beta1/pagination";
+import {
+  Coin,
+  CoinAmino,
+  CoinSDKType,
+} from "../../../../cosmos/base/v1beta1/coin";
+import { Long } from "../../../../helpers";
 import {
   PacketId,
   PacketIdAmino,
@@ -17,17 +26,10 @@ import {
   IdentifiedPacketFeesSDKType,
 } from "./fee";
 import {
-  Coin,
-  CoinAmino,
-  CoinSDKType,
-} from "../../../../cosmos/base/v1beta1/coin";
-import {
   FeeEnabledChannel,
   FeeEnabledChannelAmino,
   FeeEnabledChannelSDKType,
 } from "./genesis";
-import { Long } from "../../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /** QueryIncentivizedPacketsRequest defines the request type for the IncentivizedPackets rpc */
 export interface QueryIncentivizedPacketsRequest {
   /** pagination defines an optional pagination for the request. */
@@ -558,7 +560,7 @@ export const QueryIncentivizedPacketsRequest = {
     length?: number
   ): QueryIncentivizedPacketsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryIncentivizedPacketsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -670,7 +672,7 @@ export const QueryIncentivizedPacketsResponse = {
     length?: number
   ): QueryIncentivizedPacketsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryIncentivizedPacketsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -789,7 +791,7 @@ export const QueryIncentivizedPacketRequest = {
     length?: number
   ): QueryIncentivizedPacketRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryIncentivizedPacketRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -897,7 +899,7 @@ export const QueryIncentivizedPacketResponse = {
     length?: number
   ): QueryIncentivizedPacketResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryIncentivizedPacketResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1007,7 +1009,7 @@ export const QueryIncentivizedPacketsForChannelRequest = {
     length?: number
   ): QueryIncentivizedPacketsForChannelRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryIncentivizedPacketsForChannelRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1133,7 +1135,7 @@ export const QueryIncentivizedPacketsForChannelResponse = {
     length?: number
   ): QueryIncentivizedPacketsForChannelResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryIncentivizedPacketsForChannelResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1250,7 +1252,7 @@ export const QueryTotalRecvFeesRequest = {
     length?: number
   ): QueryTotalRecvFeesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryTotalRecvFeesRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1340,7 +1342,7 @@ export const QueryTotalRecvFeesResponse = {
     length?: number
   ): QueryTotalRecvFeesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryTotalRecvFeesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1435,7 +1437,7 @@ export const QueryTotalAckFeesRequest = {
     length?: number
   ): QueryTotalAckFeesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryTotalAckFeesRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1525,7 +1527,7 @@ export const QueryTotalAckFeesResponse = {
     length?: number
   ): QueryTotalAckFeesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryTotalAckFeesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1616,7 +1618,7 @@ export const QueryTotalTimeoutFeesRequest = {
     length?: number
   ): QueryTotalTimeoutFeesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryTotalTimeoutFeesRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1710,7 +1712,7 @@ export const QueryTotalTimeoutFeesResponse = {
     length?: number
   ): QueryTotalTimeoutFeesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryTotalTimeoutFeesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1807,7 +1809,7 @@ export const QueryPayeeRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryPayeeRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryPayeeRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1883,7 +1885,7 @@ export const QueryPayeeResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryPayeeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryPayeeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1960,7 +1962,7 @@ export const QueryCounterpartyPayeeRequest = {
     length?: number
   ): QueryCounterpartyPayeeRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryCounterpartyPayeeRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2053,7 +2055,7 @@ export const QueryCounterpartyPayeeResponse = {
     length?: number
   ): QueryCounterpartyPayeeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryCounterpartyPayeeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2144,7 +2146,7 @@ export const QueryFeeEnabledChannelsRequest = {
     length?: number
   ): QueryFeeEnabledChannelsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryFeeEnabledChannelsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2256,7 +2258,7 @@ export const QueryFeeEnabledChannelsResponse = {
     length?: number
   ): QueryFeeEnabledChannelsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryFeeEnabledChannelsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2374,7 +2376,7 @@ export const QueryFeeEnabledChannelRequest = {
     length?: number
   ): QueryFeeEnabledChannelRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryFeeEnabledChannelRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2467,7 +2469,7 @@ export const QueryFeeEnabledChannelResponse = {
     length?: number
   ): QueryFeeEnabledChannelResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryFeeEnabledChannelResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

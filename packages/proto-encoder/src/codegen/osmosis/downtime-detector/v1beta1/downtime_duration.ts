@@ -1,3 +1,4 @@
+//@ts-nocheck
 export enum Downtime {
   DURATION_30S = 0,
   DURATION_1M = 1,

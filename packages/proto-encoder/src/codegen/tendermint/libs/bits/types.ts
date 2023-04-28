@@ -1,5 +1,7 @@
-import { Long } from "../../../helpers";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
+import { Long } from "../../../helpers";
 export interface BitArray {
   bits: Long;
   elems: Long[];
@@ -44,7 +46,7 @@ export const BitArray = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): BitArray {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseBitArray();
     while (reader.pos < end) {
       const tag = reader.uint32();

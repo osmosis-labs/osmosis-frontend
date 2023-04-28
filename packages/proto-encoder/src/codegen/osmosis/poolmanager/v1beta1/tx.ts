@@ -1,3 +1,11 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
+import {
+  Coin,
+  CoinAmino,
+  CoinSDKType,
+} from "../../../cosmos/base/v1beta1/coin";
 import {
   SwapAmountInRoute,
   SwapAmountInRouteAmino,
@@ -6,12 +14,6 @@ import {
   SwapAmountOutRouteAmino,
   SwapAmountOutRouteSDKType,
 } from "./swap_route";
-import {
-  Coin,
-  CoinAmino,
-  CoinSDKType,
-} from "../../../cosmos/base/v1beta1/coin";
-import * as _m0 from "protobufjs/minimal";
 /** ===================== MsgSwapExactAmountIn */
 export interface MsgSwapExactAmountIn {
   sender: string;
@@ -137,7 +139,7 @@ export const MsgSwapExactAmountIn = {
     length?: number
   ): MsgSwapExactAmountIn {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSwapExactAmountIn();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -242,7 +244,7 @@ export const MsgSwapExactAmountInResponse = {
     length?: number
   ): MsgSwapExactAmountInResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSwapExactAmountInResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -341,7 +343,7 @@ export const MsgSwapExactAmountOut = {
     length?: number
   ): MsgSwapExactAmountOut {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSwapExactAmountOut();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -450,7 +452,7 @@ export const MsgSwapExactAmountOutResponse = {
     length?: number
   ): MsgSwapExactAmountOutResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSwapExactAmountOutResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

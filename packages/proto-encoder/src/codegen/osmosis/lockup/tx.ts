@@ -1,12 +1,14 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
+import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
 import {
   Duration,
   DurationAmino,
   DurationSDKType,
 } from "../../google/protobuf/duration";
-import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
-import { PeriodLock, PeriodLockAmino, PeriodLockSDKType } from "./lock";
 import { Long } from "../../helpers";
-import * as _m0 from "protobufjs/minimal";
+import { PeriodLock, PeriodLockAmino, PeriodLockSDKType } from "./lock";
 export interface MsgLockTokens {
   owner: string;
   duration?: Duration;
@@ -266,7 +268,7 @@ export const MsgLockTokens = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgLockTokens {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgLockTokens();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -364,7 +366,7 @@ export const MsgLockTokensResponse = {
     length?: number
   ): MsgLockTokensResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgLockTokensResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -440,7 +442,7 @@ export const MsgBeginUnlockingAll = {
     length?: number
   ): MsgBeginUnlockingAll {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgBeginUnlockingAll();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -513,7 +515,7 @@ export const MsgBeginUnlockingAllResponse = {
     length?: number
   ): MsgBeginUnlockingAllResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgBeginUnlockingAllResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -614,7 +616,7 @@ export const MsgBeginUnlocking = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgBeginUnlocking {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgBeginUnlocking();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -712,7 +714,7 @@ export const MsgBeginUnlockingResponse = {
     length?: number
   ): MsgBeginUnlockingResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgBeginUnlockingResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -811,7 +813,7 @@ export const MsgExtendLockup = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgExtendLockup {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgExtendLockup();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -906,7 +908,7 @@ export const MsgExtendLockupResponse = {
     length?: number
   ): MsgExtendLockupResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgExtendLockupResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -994,7 +996,7 @@ export const MsgForceUnlock = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgForceUnlock {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgForceUnlock();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1088,7 +1090,7 @@ export const MsgForceUnlockResponse = {
     length?: number
   ): MsgForceUnlockResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgForceUnlockResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

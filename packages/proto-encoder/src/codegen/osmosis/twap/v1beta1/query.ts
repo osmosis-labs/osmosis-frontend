@@ -1,7 +1,9 @@
-import { Timestamp } from "../../../google/protobuf/timestamp";
-import { Params, ParamsAmino, ParamsSDKType } from "./genesis";
-import { Long, toTimestamp, fromTimestamp } from "../../../helpers";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
+import { Timestamp } from "../../../google/protobuf/timestamp";
+import { fromTimestamp, Long, toTimestamp } from "../../../helpers";
+import { Params, ParamsAmino, ParamsSDKType } from "./genesis";
 export interface ArithmeticTwapRequest {
   poolId: Long;
   baseAsset: string;
@@ -251,7 +253,7 @@ export const ArithmeticTwapRequest = {
     length?: number
   ): ArithmeticTwapRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseArithmeticTwapRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -363,7 +365,7 @@ export const ArithmeticTwapResponse = {
     length?: number
   ): ArithmeticTwapResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseArithmeticTwapResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -453,7 +455,7 @@ export const ArithmeticTwapToNowRequest = {
     length?: number
   ): ArithmeticTwapToNowRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseArithmeticTwapToNowRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -567,7 +569,7 @@ export const ArithmeticTwapToNowResponse = {
     length?: number
   ): ArithmeticTwapToNowResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseArithmeticTwapToNowResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -676,7 +678,7 @@ export const GeometricTwapRequest = {
     length?: number
   ): GeometricTwapRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGeometricTwapRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -788,7 +790,7 @@ export const GeometricTwapResponse = {
     length?: number
   ): GeometricTwapResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGeometricTwapResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -876,7 +878,7 @@ export const GeometricTwapToNowRequest = {
     length?: number
   ): GeometricTwapToNowRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGeometricTwapToNowRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -986,7 +988,7 @@ export const GeometricTwapToNowResponse = {
     length?: number
   ): GeometricTwapToNowResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGeometricTwapToNowResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1065,7 +1067,7 @@ export const ParamsRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ParamsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParamsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1128,7 +1130,7 @@ export const ParamsResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ParamsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParamsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

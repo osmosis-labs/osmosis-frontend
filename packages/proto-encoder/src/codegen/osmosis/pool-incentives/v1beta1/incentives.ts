@@ -1,10 +1,12 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Duration,
   DurationAmino,
   DurationSDKType,
 } from "../../../google/protobuf/duration";
 import { Long } from "../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 export interface Params {
   /**
    * minted_denom is the denomination of the coin expected to be minted by the
@@ -149,7 +151,7 @@ export const Params = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Params {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParams();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -222,7 +224,7 @@ export const LockableDurationsInfo = {
     length?: number
   ): LockableDurationsInfo {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLockableDurationsInfo();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -307,7 +309,7 @@ export const DistrInfo = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): DistrInfo {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDistrInfo();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -396,7 +398,7 @@ export const DistrRecord = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): DistrRecord {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDistrRecord();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -483,7 +485,7 @@ export const PoolToGauge = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): PoolToGauge {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePoolToGauge();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -578,7 +580,7 @@ export const PoolToGauges = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): PoolToGauges {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePoolToGauges();
     while (reader.pos < end) {
       const tag = reader.uint32();

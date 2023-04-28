@@ -1,10 +1,12 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
+import { isSet, Long } from "../../../../helpers";
 import {
   MerklePrefix,
   MerklePrefixAmino,
   MerklePrefixSDKType,
 } from "../../commitment/v1/commitment";
-import { Long, isSet } from "../../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /**
  * State defines if a connection is in one of the following states:
  * INIT, TRYOPEN, OPEN or UNINITIALIZED.
@@ -389,7 +391,7 @@ export const ConnectionEnd = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ConnectionEnd {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseConnectionEnd();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -530,7 +532,7 @@ export const IdentifiedConnection = {
     length?: number
   ): IdentifiedConnection {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseIdentifiedConnection();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -659,7 +661,7 @@ export const Counterparty = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Counterparty {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCounterparty();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -748,7 +750,7 @@ export const ClientPaths = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ClientPaths {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseClientPaths();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -828,7 +830,7 @@ export const ConnectionPaths = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ConnectionPaths {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseConnectionPaths();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -914,7 +916,7 @@ export const Version = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Version {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseVersion();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -996,7 +998,7 @@ export const Params = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Params {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParams();
     while (reader.pos < end) {
       const tag = reader.uint32();

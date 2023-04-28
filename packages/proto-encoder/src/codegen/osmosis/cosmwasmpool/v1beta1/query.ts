@@ -1,5 +1,7 @@
-import { Params, ParamsAmino, ParamsSDKType } from "./genesis";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
+import { Params, ParamsAmino, ParamsSDKType } from "./genesis";
 /** =============================== Params */
 export interface ParamsRequest {}
 export interface ParamsRequestProtoMsg {
@@ -44,7 +46,7 @@ export const ParamsRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ParamsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParamsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -107,7 +109,7 @@ export const ParamsResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ParamsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParamsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

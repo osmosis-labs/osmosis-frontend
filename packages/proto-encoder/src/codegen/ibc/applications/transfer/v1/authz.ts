@@ -1,9 +1,11 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Coin,
   CoinAmino,
   CoinSDKType,
 } from "../../../../cosmos/base/v1beta1/coin";
-import * as _m0 from "protobufjs/minimal";
 /** Allocation defines the spend limit for a particular port and channel */
 export interface Allocation {
   /** the port on which the packet will be sent */
@@ -104,7 +106,7 @@ export const Allocation = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Allocation {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAllocation();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -211,7 +213,7 @@ export const TransferAuthorization = {
     length?: number
   ): TransferAuthorization {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTransferAuthorization();
     while (reader.pos < end) {
       const tag = reader.uint32();

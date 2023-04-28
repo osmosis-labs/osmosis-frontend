@@ -1,12 +1,12 @@
 //@ts-nocheck
 import {
-  MsgSuperfluidDelegate,
-  MsgSuperfluidUndelegate,
-  MsgSuperfluidUnbondLock,
-  MsgSuperfluidUndelegateAndUnbondLock,
   MsgLockAndSuperfluidDelegate,
-  MsgUnPoolWhitelistedPool,
+  MsgSuperfluidDelegate,
+  MsgSuperfluidUnbondLock,
+  MsgSuperfluidUndelegate,
+  MsgSuperfluidUndelegateAndUnbondLock,
   MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition,
+  MsgUnPoolWhitelistedPool,
 } from "./tx";
 export const AminoConverter = {
   "/osmosis.superfluid.MsgSuperfluidDelegate": {

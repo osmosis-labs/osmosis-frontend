@@ -1,10 +1,14 @@
-import { Timestamp } from "../../google/protobuf/timestamp";
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
+import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
 import {
   Duration,
   DurationAmino,
   DurationSDKType,
 } from "../../google/protobuf/duration";
-import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
+import { Timestamp } from "../../google/protobuf/timestamp";
+import { fromTimestamp, Long, toTimestamp } from "../../helpers";
 import {
   PeriodLock,
   PeriodLockAmino,
@@ -14,8 +18,6 @@ import {
   SyntheticLockSDKType,
 } from "./lock";
 import { Params, ParamsAmino, ParamsSDKType } from "./params";
-import { Long, toTimestamp, fromTimestamp } from "../../helpers";
-import * as _m0 from "protobufjs/minimal";
 export interface ModuleBalanceRequest {}
 export interface ModuleBalanceRequestProtoMsg {
   typeUrl: "/osmosis.lockup.ModuleBalanceRequest";
@@ -653,7 +655,7 @@ export const ModuleBalanceRequest = {
     length?: number
   ): ModuleBalanceRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseModuleBalanceRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -719,7 +721,7 @@ export const ModuleBalanceResponse = {
     length?: number
   ): ModuleBalanceResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseModuleBalanceResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -793,7 +795,7 @@ export const ModuleLockedAmountRequest = {
     length?: number
   ): ModuleLockedAmountRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseModuleLockedAmountRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -869,7 +871,7 @@ export const ModuleLockedAmountResponse = {
     length?: number
   ): ModuleLockedAmountResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseModuleLockedAmountResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -962,7 +964,7 @@ export const AccountUnlockableCoinsRequest = {
     length?: number
   ): AccountUnlockableCoinsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountUnlockableCoinsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1049,7 +1051,7 @@ export const AccountUnlockableCoinsResponse = {
     length?: number
   ): AccountUnlockableCoinsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountUnlockableCoinsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1142,7 +1144,7 @@ export const AccountUnlockingCoinsRequest = {
     length?: number
   ): AccountUnlockingCoinsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountUnlockingCoinsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1229,7 +1231,7 @@ export const AccountUnlockingCoinsResponse = {
     length?: number
   ): AccountUnlockingCoinsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountUnlockingCoinsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1322,7 +1324,7 @@ export const AccountLockedCoinsRequest = {
     length?: number
   ): AccountLockedCoinsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedCoinsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1405,7 +1407,7 @@ export const AccountLockedCoinsResponse = {
     length?: number
   ): AccountLockedCoinsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedCoinsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1505,7 +1507,7 @@ export const AccountLockedPastTimeRequest = {
     length?: number
   ): AccountLockedPastTimeRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedPastTimeRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1604,7 +1606,7 @@ export const AccountLockedPastTimeResponse = {
     length?: number
   ): AccountLockedPastTimeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedPastTimeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1706,7 +1708,7 @@ export const AccountLockedPastTimeNotUnlockingOnlyRequest = {
     length?: number
   ): AccountLockedPastTimeNotUnlockingOnlyRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedPastTimeNotUnlockingOnlyRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1808,7 +1810,7 @@ export const AccountLockedPastTimeNotUnlockingOnlyResponse = {
     length?: number
   ): AccountLockedPastTimeNotUnlockingOnlyResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedPastTimeNotUnlockingOnlyResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1915,7 +1917,7 @@ export const AccountUnlockedBeforeTimeRequest = {
     length?: number
   ): AccountUnlockedBeforeTimeRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountUnlockedBeforeTimeRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2014,7 +2016,7 @@ export const AccountUnlockedBeforeTimeResponse = {
     length?: number
   ): AccountUnlockedBeforeTimeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountUnlockedBeforeTimeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2120,7 +2122,7 @@ export const AccountLockedPastTimeDenomRequest = {
     length?: number
   ): AccountLockedPastTimeDenomRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedPastTimeDenomRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2225,7 +2227,7 @@ export const AccountLockedPastTimeDenomResponse = {
     length?: number
   ): AccountLockedPastTimeDenomResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedPastTimeDenomResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2321,7 +2323,7 @@ export const LockedDenomRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): LockedDenomRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLockedDenomRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2404,7 +2406,7 @@ export const LockedDenomResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): LockedDenomResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLockedDenomResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2474,7 +2476,7 @@ export const LockedRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): LockedRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLockedRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2547,7 +2549,7 @@ export const LockedResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): LockedResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLockedResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2615,7 +2617,7 @@ export const NextLockIDRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): NextLockIDRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseNextLockIDRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2678,7 +2680,7 @@ export const NextLockIDResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): NextLockIDResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseNextLockIDResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2754,7 +2756,7 @@ export const SyntheticLockupsByLockupIDRequest = {
     length?: number
   ): SyntheticLockupsByLockupIDRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSyntheticLockupsByLockupIDRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2844,7 +2846,7 @@ export const SyntheticLockupsByLockupIDResponse = {
     length?: number
   ): SyntheticLockupsByLockupIDResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSyntheticLockupsByLockupIDResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2946,7 +2948,7 @@ export const AccountLockedLongerDurationRequest = {
     length?: number
   ): AccountLockedLongerDurationRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedLongerDurationRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3046,7 +3048,7 @@ export const AccountLockedLongerDurationResponse = {
     length?: number
   ): AccountLockedLongerDurationResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedLongerDurationResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3145,7 +3147,7 @@ export const AccountLockedDurationRequest = {
     length?: number
   ): AccountLockedDurationRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedDurationRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3245,7 +3247,7 @@ export const AccountLockedDurationResponse = {
     length?: number
   ): AccountLockedDurationResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedDurationResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3344,7 +3346,7 @@ export const AccountLockedLongerDurationNotUnlockingOnlyRequest = {
     length?: number
   ): AccountLockedLongerDurationNotUnlockingOnlyRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message =
       createBaseAccountLockedLongerDurationNotUnlockingOnlyRequest();
     while (reader.pos < end) {
@@ -3460,7 +3462,7 @@ export const AccountLockedLongerDurationNotUnlockingOnlyResponse = {
     length?: number
   ): AccountLockedLongerDurationNotUnlockingOnlyResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message =
       createBaseAccountLockedLongerDurationNotUnlockingOnlyResponse();
     while (reader.pos < end) {
@@ -3578,7 +3580,7 @@ export const AccountLockedLongerDurationDenomRequest = {
     length?: number
   ): AccountLockedLongerDurationDenomRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedLongerDurationDenomRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3684,7 +3686,7 @@ export const AccountLockedLongerDurationDenomResponse = {
     length?: number
   ): AccountLockedLongerDurationDenomResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedLongerDurationDenomResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3771,7 +3773,7 @@ export const QueryParamsRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryParamsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryParamsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3834,7 +3836,7 @@ export const QueryParamsResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryParamsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryParamsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

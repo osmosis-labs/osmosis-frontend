@@ -1,6 +1,8 @@
-import { FeeToken, FeeTokenAmino, FeeTokenSDKType } from "./feetoken";
-import { Long } from "../../../helpers";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
+import { Long } from "../../../helpers";
+import { FeeToken, FeeTokenAmino, FeeTokenSDKType } from "./feetoken";
 export interface QueryFeeTokensRequest {}
 export interface QueryFeeTokensRequestProtoMsg {
   typeUrl: "/osmosis.txfees.v1beta1.QueryFeeTokensRequest";
@@ -168,7 +170,7 @@ export const QueryFeeTokensRequest = {
     length?: number
   ): QueryFeeTokensRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryFeeTokensRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -234,7 +236,7 @@ export const QueryFeeTokensResponse = {
     length?: number
   ): QueryFeeTokensResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryFeeTokensResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -318,7 +320,7 @@ export const QueryDenomSpotPriceRequest = {
     length?: number
   ): QueryDenomSpotPriceRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryDenomSpotPriceRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -409,7 +411,7 @@ export const QueryDenomSpotPriceResponse = {
     length?: number
   ): QueryDenomSpotPriceResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryDenomSpotPriceResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -505,7 +507,7 @@ export const QueryDenomPoolIdRequest = {
     length?: number
   ): QueryDenomPoolIdRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryDenomPoolIdRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -588,7 +590,7 @@ export const QueryDenomPoolIdResponse = {
     length?: number
   ): QueryDenomPoolIdResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryDenomPoolIdResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -669,7 +671,7 @@ export const QueryBaseDenomRequest = {
     length?: number
   ): QueryBaseDenomRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryBaseDenomRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -735,7 +737,7 @@ export const QueryBaseDenomResponse = {
     length?: number
   ): QueryBaseDenomResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryBaseDenomResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

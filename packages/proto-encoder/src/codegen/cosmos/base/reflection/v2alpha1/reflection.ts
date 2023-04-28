@@ -1,3 +1,4 @@
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
 /** AppDescriptor describes a cosmos-sdk based application */
 export interface AppDescriptor {
@@ -743,7 +744,7 @@ export const AppDescriptor = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): AppDescriptor {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAppDescriptor();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -891,7 +892,7 @@ export const TxDescriptor = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): TxDescriptor {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTxDescriptor();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -975,7 +976,7 @@ export const AuthnDescriptor = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): AuthnDescriptor {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAuthnDescriptor();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1067,7 +1068,7 @@ export const SigningModeDescriptor = {
     length?: number
   ): SigningModeDescriptor {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSigningModeDescriptor();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1152,7 +1153,7 @@ export const ChainDescriptor = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ChainDescriptor {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseChainDescriptor();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1222,7 +1223,7 @@ export const CodecDescriptor = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): CodecDescriptor {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCodecDescriptor();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1317,7 +1318,7 @@ export const InterfaceDescriptor = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): InterfaceDescriptor {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseInterfaceDescriptor();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1438,7 +1439,7 @@ export const InterfaceImplementerDescriptor = {
     length?: number
   ): InterfaceImplementerDescriptor {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseInterfaceImplementerDescriptor();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1537,7 +1538,7 @@ export const InterfaceAcceptingMessageDescriptor = {
     length?: number
   ): InterfaceAcceptingMessageDescriptor {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseInterfaceAcceptingMessageDescriptor();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1638,7 +1639,7 @@ export const ConfigurationDescriptor = {
     length?: number
   ): ConfigurationDescriptor {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseConfigurationDescriptor();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1719,7 +1720,7 @@ export const MsgDescriptor = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgDescriptor {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgDescriptor();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1787,7 +1788,7 @@ export const GetAuthnDescriptorRequest = {
     length?: number
   ): GetAuthnDescriptorRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetAuthnDescriptorRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1863,7 +1864,7 @@ export const GetAuthnDescriptorResponse = {
     length?: number
   ): GetAuthnDescriptorResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetAuthnDescriptorResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1952,7 +1953,7 @@ export const GetChainDescriptorRequest = {
     length?: number
   ): GetChainDescriptorRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetChainDescriptorRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2028,7 +2029,7 @@ export const GetChainDescriptorResponse = {
     length?: number
   ): GetChainDescriptorResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetChainDescriptorResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2117,7 +2118,7 @@ export const GetCodecDescriptorRequest = {
     length?: number
   ): GetCodecDescriptorRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetCodecDescriptorRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2193,7 +2194,7 @@ export const GetCodecDescriptorResponse = {
     length?: number
   ): GetCodecDescriptorResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetCodecDescriptorResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2282,7 +2283,7 @@ export const GetConfigurationDescriptorRequest = {
     length?: number
   ): GetConfigurationDescriptorRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetConfigurationDescriptorRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2367,7 +2368,7 @@ export const GetConfigurationDescriptorResponse = {
     length?: number
   ): GetConfigurationDescriptorResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetConfigurationDescriptorResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2460,7 +2461,7 @@ export const GetQueryServicesDescriptorRequest = {
     length?: number
   ): GetQueryServicesDescriptorRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetQueryServicesDescriptorRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2545,7 +2546,7 @@ export const GetQueryServicesDescriptorResponse = {
     length?: number
   ): GetQueryServicesDescriptorResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetQueryServicesDescriptorResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2638,7 +2639,7 @@ export const GetTxDescriptorRequest = {
     length?: number
   ): GetTxDescriptorRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetTxDescriptorRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2706,7 +2707,7 @@ export const GetTxDescriptorResponse = {
     length?: number
   ): GetTxDescriptorResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetTxDescriptorResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2792,7 +2793,7 @@ export const QueryServicesDescriptor = {
     length?: number
   ): QueryServicesDescriptor {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryServicesDescriptor();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2897,7 +2898,7 @@ export const QueryServiceDescriptor = {
     length?: number
   ): QueryServiceDescriptor {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryServiceDescriptor();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2999,7 +3000,7 @@ export const QueryMethodDescriptor = {
     length?: number
   ): QueryMethodDescriptor {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryMethodDescriptor();
     while (reader.pos < end) {
       const tag = reader.uint32();

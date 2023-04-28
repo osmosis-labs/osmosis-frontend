@@ -1,9 +1,11 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   BalancerToConcentratedPoolLink,
   BalancerToConcentratedPoolLinkAmino,
   BalancerToConcentratedPoolLinkSDKType,
 } from "./genesis";
-import * as _m0 from "protobufjs/minimal";
 /**
  * ReplaceMigrationRecordsProposal is a gov Content type for updating the
  * migration records. If a ReplaceMigrationRecordsProposal passes, the
@@ -133,7 +135,7 @@ export const ReplaceMigrationRecordsProposal = {
     length?: number
   ): ReplaceMigrationRecordsProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseReplaceMigrationRecordsProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -258,7 +260,7 @@ export const UpdateMigrationRecordsProposal = {
     length?: number
   ): UpdateMigrationRecordsProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpdateMigrationRecordsProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();

@@ -1,25 +1,27 @@
-import { Params, ParamsAmino, ParamsSDKType } from "./params";
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Coin,
   CoinAmino,
   CoinSDKType,
 } from "../../../cosmos/base/v1beta1/coin";
+import { Long } from "../../../helpers";
+import { Params, ParamsAmino, ParamsSDKType } from "./params";
 import {
+  BaseDenom,
+  BaseDenomAmino,
+  BaseDenomSDKType,
+  PoolWeights,
+  PoolWeightsAmino,
+  PoolWeightsSDKType,
   RouteStatistics,
   RouteStatisticsAmino,
   RouteStatisticsSDKType,
   TokenPairArbRoutes,
   TokenPairArbRoutesAmino,
   TokenPairArbRoutesSDKType,
-  PoolWeights,
-  PoolWeightsAmino,
-  PoolWeightsSDKType,
-  BaseDenom,
-  BaseDenomAmino,
-  BaseDenomSDKType,
 } from "./protorev";
-import { Long } from "../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /** QueryParamsRequest is request type for the Query/Params RPC method. */
 export interface QueryParamsRequest {}
 export interface QueryParamsRequestProtoMsg {
@@ -817,7 +819,7 @@ export const QueryParamsRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryParamsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryParamsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -880,7 +882,7 @@ export const QueryParamsResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryParamsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryParamsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -951,7 +953,7 @@ export const QueryGetProtoRevNumberOfTradesRequest = {
     length?: number
   ): QueryGetProtoRevNumberOfTradesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevNumberOfTradesRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1032,7 +1034,7 @@ export const QueryGetProtoRevNumberOfTradesResponse = {
     length?: number
   ): QueryGetProtoRevNumberOfTradesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevNumberOfTradesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1120,7 +1122,7 @@ export const QueryGetProtoRevProfitsByDenomRequest = {
     length?: number
   ): QueryGetProtoRevProfitsByDenomRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevProfitsByDenomRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1208,7 +1210,7 @@ export const QueryGetProtoRevProfitsByDenomResponse = {
     length?: number
   ): QueryGetProtoRevProfitsByDenomResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevProfitsByDenomResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1294,7 +1296,7 @@ export const QueryGetProtoRevAllProfitsRequest = {
     length?: number
   ): QueryGetProtoRevAllProfitsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevAllProfitsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1374,7 +1376,7 @@ export const QueryGetProtoRevAllProfitsResponse = {
     length?: number
   ): QueryGetProtoRevAllProfitsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevAllProfitsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1471,7 +1473,7 @@ export const QueryGetProtoRevStatisticsByRouteRequest = {
     length?: number
   ): QueryGetProtoRevStatisticsByRouteRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevStatisticsByRouteRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1576,7 +1578,7 @@ export const QueryGetProtoRevStatisticsByRouteResponse = {
     length?: number
   ): QueryGetProtoRevStatisticsByRouteResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevStatisticsByRouteResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1667,7 +1669,7 @@ export const QueryGetProtoRevAllRouteStatisticsRequest = {
     length?: number
   ): QueryGetProtoRevAllRouteStatisticsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevAllRouteStatisticsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1749,7 +1751,7 @@ export const QueryGetProtoRevAllRouteStatisticsResponse = {
     length?: number
   ): QueryGetProtoRevAllRouteStatisticsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevAllRouteStatisticsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1845,7 +1847,7 @@ export const QueryGetProtoRevTokenPairArbRoutesRequest = {
     length?: number
   ): QueryGetProtoRevTokenPairArbRoutesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevTokenPairArbRoutesRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1927,7 +1929,7 @@ export const QueryGetProtoRevTokenPairArbRoutesResponse = {
     length?: number
   ): QueryGetProtoRevTokenPairArbRoutesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevTokenPairArbRoutesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2022,7 +2024,7 @@ export const QueryGetProtoRevAdminAccountRequest = {
     length?: number
   ): QueryGetProtoRevAdminAccountRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevAdminAccountRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2102,7 +2104,7 @@ export const QueryGetProtoRevAdminAccountResponse = {
     length?: number
   ): QueryGetProtoRevAdminAccountResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevAdminAccountResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2184,7 +2186,7 @@ export const QueryGetProtoRevDeveloperAccountRequest = {
     length?: number
   ): QueryGetProtoRevDeveloperAccountRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevDeveloperAccountRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2265,7 +2267,7 @@ export const QueryGetProtoRevDeveloperAccountResponse = {
     length?: number
   ): QueryGetProtoRevDeveloperAccountResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevDeveloperAccountResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2348,7 +2350,7 @@ export const QueryGetProtoRevPoolWeightsRequest = {
     length?: number
   ): QueryGetProtoRevPoolWeightsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevPoolWeightsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2431,7 +2433,7 @@ export const QueryGetProtoRevPoolWeightsResponse = {
     length?: number
   ): QueryGetProtoRevPoolWeightsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevPoolWeightsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2521,7 +2523,7 @@ export const QueryGetProtoRevMaxPoolPointsPerBlockRequest = {
     length?: number
   ): QueryGetProtoRevMaxPoolPointsPerBlockRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevMaxPoolPointsPerBlockRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2606,7 +2608,7 @@ export const QueryGetProtoRevMaxPoolPointsPerBlockResponse = {
     length?: number
   ): QueryGetProtoRevMaxPoolPointsPerBlockResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevMaxPoolPointsPerBlockResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2701,7 +2703,7 @@ export const QueryGetProtoRevMaxPoolPointsPerTxRequest = {
     length?: number
   ): QueryGetProtoRevMaxPoolPointsPerTxRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevMaxPoolPointsPerTxRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2783,7 +2785,7 @@ export const QueryGetProtoRevMaxPoolPointsPerTxResponse = {
     length?: number
   ): QueryGetProtoRevMaxPoolPointsPerTxResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevMaxPoolPointsPerTxResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2873,7 +2875,7 @@ export const QueryGetProtoRevBaseDenomsRequest = {
     length?: number
   ): QueryGetProtoRevBaseDenomsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevBaseDenomsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2953,7 +2955,7 @@ export const QueryGetProtoRevBaseDenomsResponse = {
     length?: number
   ): QueryGetProtoRevBaseDenomsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevBaseDenomsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3044,7 +3046,7 @@ export const QueryGetProtoRevEnabledRequest = {
     length?: number
   ): QueryGetProtoRevEnabledRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevEnabledRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3124,7 +3126,7 @@ export const QueryGetProtoRevEnabledResponse = {
     length?: number
   ): QueryGetProtoRevEnabledResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevEnabledResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

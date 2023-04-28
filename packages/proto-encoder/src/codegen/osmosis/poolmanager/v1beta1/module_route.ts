@@ -1,5 +1,7 @@
-import { Long, isSet } from "../../../helpers";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
+import { isSet, Long } from "../../../helpers";
 /** PoolType is an enumeration of all supported pool types. */
 export enum PoolType {
   /** Balancer - Balancer is the standard xy=k curve. Its pool model is defined in x/gamm. */
@@ -120,7 +122,7 @@ export const ModuleRoute = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ModuleRoute {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseModuleRoute();
     while (reader.pos < end) {
       const tag = reader.uint32();

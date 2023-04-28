@@ -1,6 +1,8 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import { Any, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
 import { Long } from "../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /**
  * BaseAccount defines a base account type. It contains all the necessary fields
  * for basic account functionality. Any custom account type should extend this
@@ -135,7 +137,7 @@ export const BaseAccount = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): BaseAccount {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseBaseAccount();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -246,7 +248,7 @@ export const ModuleAccount = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ModuleAccount {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseModuleAccount();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -357,7 +359,7 @@ export const Params = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Params {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParams();
     while (reader.pos < end) {
       const tag = reader.uint32();

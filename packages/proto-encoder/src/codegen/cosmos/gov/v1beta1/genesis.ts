@@ -1,25 +1,27 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
+import { Long } from "../../../helpers";
 import {
   Deposit,
   DepositAmino,
-  DepositSDKType,
-  Vote,
-  VoteAmino,
-  VoteSDKType,
-  Proposal,
-  ProposalAmino,
-  ProposalSDKType,
   DepositParams,
   DepositParamsAmino,
   DepositParamsSDKType,
-  VotingParams,
-  VotingParamsAmino,
-  VotingParamsSDKType,
+  DepositSDKType,
+  Proposal,
+  ProposalAmino,
+  ProposalSDKType,
   TallyParams,
   TallyParamsAmino,
   TallyParamsSDKType,
+  Vote,
+  VoteAmino,
+  VoteSDKType,
+  VotingParams,
+  VotingParamsAmino,
+  VotingParamsSDKType,
 } from "./gov";
-import { Long } from "../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /** GenesisState defines the gov module's genesis state. */
 export interface GenesisState {
   /** starting_proposal_id is the ID of the starting proposal. */
@@ -123,7 +125,7 @@ export const GenesisState = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): GenesisState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGenesisState();
     while (reader.pos < end) {
       const tag = reader.uint32();

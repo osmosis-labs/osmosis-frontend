@@ -1,11 +1,11 @@
 //@ts-nocheck
 import {
-  MsgSetValidatorSetPreference,
-  MsgDelegateToValidatorSet,
-  MsgUndelegateFromValidatorSet,
-  MsgRedelegateValidatorSet,
-  MsgWithdrawDelegationRewards,
   MsgDelegateBondedTokens,
+  MsgDelegateToValidatorSet,
+  MsgRedelegateValidatorSet,
+  MsgSetValidatorSetPreference,
+  MsgUndelegateFromValidatorSet,
+  MsgWithdrawDelegationRewards,
 } from "./tx";
 export const AminoConverter = {
   "/osmosis.valsetpref.v1beta1.MsgSetValidatorSetPreference": {

@@ -1,12 +1,14 @@
+//@ts-nocheck
+import { fromUtf8, toUtf8 } from "@cosmjs/encoding";
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Any,
-  AnyProtoMsg,
   AnyAmino,
+  AnyProtoMsg,
   AnySDKType,
 } from "../../../google/protobuf/any";
-import { Long, isSet } from "../../../helpers";
-import * as _m0 from "protobufjs/minimal";
-import { toUtf8, fromUtf8 } from "@cosmjs/encoding";
+import { isSet, Long } from "../../../helpers";
 /** AccessType permission types */
 export enum AccessType {
   /** ACCESS_TYPE_UNSPECIFIED - AccessTypeUnspecified placeholder for empty value */
@@ -413,7 +415,7 @@ export const AccessTypeParam = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): AccessTypeParam {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccessTypeParam();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -491,7 +493,7 @@ export const AccessConfig = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): AccessConfig {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccessConfig();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -588,7 +590,7 @@ export const Params = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Params {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParams();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -688,7 +690,7 @@ export const CodeInfo = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): CodeInfo {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCodeInfo();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -808,7 +810,7 @@ export const ContractInfo = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ContractInfo {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseContractInfo();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -952,7 +954,7 @@ export const ContractCodeHistoryEntry = {
     length?: number
   ): ContractCodeHistoryEntry {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseContractCodeHistoryEntry();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1066,7 +1068,7 @@ export const AbsoluteTxPosition = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): AbsoluteTxPosition {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAbsoluteTxPosition();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1151,7 +1153,7 @@ export const Model = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Model {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseModel();
     while (reader.pos < end) {
       const tag = reader.uint32();

@@ -1,14 +1,15 @@
 //@ts-nocheck
 import { GeneratedType, Registry } from "@cosmjs/proto-signing";
+
 import {
-  MsgJoinPool,
   MsgExitPool,
-  MsgSwapExactAmountIn,
-  MsgSwapExactAmountOut,
-  MsgJoinSwapExternAmountIn,
-  MsgJoinSwapShareAmountOut,
   MsgExitSwapExternAmountOut,
   MsgExitSwapShareAmountIn,
+  MsgJoinPool,
+  MsgJoinSwapExternAmountIn,
+  MsgJoinSwapShareAmountOut,
+  MsgSwapExactAmountIn,
+  MsgSwapExactAmountOut,
 } from "./tx";
 export const registry: ReadonlyArray<[string, GeneratedType]> = [
   ["/osmosis.gamm.v1beta1.MsgJoinPool", MsgJoinPool],

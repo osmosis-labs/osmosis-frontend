@@ -1,5 +1,7 @@
-import { Long } from "../../../helpers";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
+import { Long } from "../../../helpers";
 /**
  * FeeToken is a struct that specifies a coin denom, and pool ID pair.
  * This marks the token as eligible for use as a tx fee asset in Osmosis.
@@ -60,7 +62,7 @@ export const FeeToken = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): FeeToken {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFeeToken();
     while (reader.pos < end) {
       const tag = reader.uint32();

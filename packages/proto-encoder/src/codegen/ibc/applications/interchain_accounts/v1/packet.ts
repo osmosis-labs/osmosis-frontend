@@ -1,5 +1,7 @@
-import { Any, AnyAmino, AnySDKType } from "../../../../google/protobuf/any";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
+import { Any, AnyAmino, AnySDKType } from "../../../../google/protobuf/any";
 import { isSet } from "../../../../helpers";
 /**
  * Type defines a classification of message issued from a controller chain to its associated interchain accounts
@@ -115,7 +117,7 @@ export const InterchainAccountPacketData = {
     length?: number
   ): InterchainAccountPacketData {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseInterchainAccountPacketData();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -212,7 +214,7 @@ export const CosmosTx = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): CosmosTx {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCosmosTx();
     while (reader.pos < end) {
       const tag = reader.uint32();

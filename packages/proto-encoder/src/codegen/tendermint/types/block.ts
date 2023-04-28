@@ -1,20 +1,22 @@
-import {
-  Header,
-  HeaderAmino,
-  HeaderSDKType,
-  Data,
-  DataAmino,
-  DataSDKType,
-  Commit,
-  CommitAmino,
-  CommitSDKType,
-} from "./types";
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   EvidenceList,
   EvidenceListAmino,
   EvidenceListSDKType,
 } from "./evidence";
-import * as _m0 from "protobufjs/minimal";
+import {
+  Commit,
+  CommitAmino,
+  CommitSDKType,
+  Data,
+  DataAmino,
+  DataSDKType,
+  Header,
+  HeaderAmino,
+  HeaderSDKType,
+} from "./types";
 export interface Block {
   header?: Header;
   data?: Data;
@@ -68,7 +70,7 @@ export const Block = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Block {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseBlock();
     while (reader.pos < end) {
       const tag = reader.uint32();

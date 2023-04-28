@@ -1,10 +1,12 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import { Any, AnyAmino, AnySDKType } from "../../../../google/protobuf/any";
 import {
   BIP44Params,
   BIP44ParamsAmino,
   BIP44ParamsSDKType,
 } from "../../hd/v1/hd";
-import * as _m0 from "protobufjs/minimal";
 /** Record is used for representing a key in the keyring. */
 export interface Record {
   /** name represents a name of Record */
@@ -170,7 +172,7 @@ export const Record = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Record {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRecord();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -297,7 +299,7 @@ export const Record_Local = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Record_Local {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRecord_Local();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -376,7 +378,7 @@ export const Record_Ledger = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Record_Ledger {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRecord_Ledger();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -444,7 +446,7 @@ export const Record_Multi = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Record_Multi {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRecord_Multi();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -502,7 +504,7 @@ export const Record_Offline = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Record_Offline {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRecord_Offline();
     while (reader.pos < end) {
       const tag = reader.uint32();

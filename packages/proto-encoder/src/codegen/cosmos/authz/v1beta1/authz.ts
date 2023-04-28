@@ -1,10 +1,14 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Any,
-  AnyProtoMsg,
   AnyAmino,
+  AnyProtoMsg,
   AnySDKType,
 } from "../../../google/protobuf/any";
 import { Timestamp } from "../../../google/protobuf/timestamp";
+import { fromTimestamp, toTimestamp } from "../../../helpers";
 import {
   SendAuthorization,
   SendAuthorizationProtoMsg,
@@ -15,8 +19,6 @@ import {
   StakeAuthorizationProtoMsg,
   StakeAuthorizationSDKType,
 } from "../../staking/v1beta1/authz";
-import * as _m0 from "protobufjs/minimal";
-import { toTimestamp, fromTimestamp } from "../../../helpers";
 /**
  * GenericAuthorization gives the grantee unrestricted permissions to execute
  * the provided method on behalf of the granter's account.
@@ -207,7 +209,7 @@ export const GenericAuthorization = {
     length?: number
   ): GenericAuthorization {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGenericAuthorization();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -284,7 +286,7 @@ export const Grant = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Grant {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGrant();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -393,7 +395,7 @@ export const GrantAuthorization = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): GrantAuthorization {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGrantAuthorization();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -496,7 +498,7 @@ export const GrantQueueItem = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): GrantQueueItem {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGrantQueueItem();
     while (reader.pos < end) {
       const tag = reader.uint32();

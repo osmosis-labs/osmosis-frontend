@@ -1,13 +1,12 @@
-import {
-  Header,
-  HeaderAmino,
-  HeaderSDKType,
-} from "../../../tendermint/types/types";
-import { Timestamp } from "../../../google/protobuf/timestamp";
+//@ts-nocheck
+import { decodeBech32Pubkey, encodeBech32Pubkey } from "@cosmjs/amino";
+import { fromBase64, toBase64 } from "@cosmjs/encoding";
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Any,
-  AnyProtoMsg,
   AnyAmino,
+  AnyProtoMsg,
   AnySDKType,
 } from "../../../google/protobuf/any";
 import {
@@ -15,11 +14,14 @@ import {
   DurationAmino,
   DurationSDKType,
 } from "../../../google/protobuf/duration";
+import { Timestamp } from "../../../google/protobuf/timestamp";
+import { fromTimestamp, isSet, Long, toTimestamp } from "../../../helpers";
+import {
+  Header,
+  HeaderAmino,
+  HeaderSDKType,
+} from "../../../tendermint/types/types";
 import { Coin, CoinAmino, CoinSDKType } from "../../base/v1beta1/coin";
-import { Long, toTimestamp, fromTimestamp, isSet } from "../../../helpers";
-import * as _m0 from "protobufjs/minimal";
-import { toBase64, fromBase64 } from "@cosmjs/encoding";
-import { encodeBech32Pubkey, decodeBech32Pubkey } from "@cosmjs/amino";
 /** BondStatus is the status of a validator. */
 export enum BondStatus {
   /** BOND_STATUS_UNSPECIFIED - UNSPECIFIED defines an invalid validator status. */
@@ -865,7 +867,7 @@ export const HistoricalInfo = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): HistoricalInfo {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseHistoricalInfo();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -960,7 +962,7 @@ export const CommissionRates = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): CommissionRates {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCommissionRates();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1052,7 +1054,7 @@ export const Commission = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Commission {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCommission();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1160,7 +1162,7 @@ export const Description = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Description {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDescription();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1303,7 +1305,7 @@ export const Validator = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Validator {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseValidator();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1474,7 +1476,7 @@ export const ValAddresses = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ValAddresses {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseValAddresses();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1554,7 +1556,7 @@ export const DVPair = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): DVPair {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDVPair();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1630,7 +1632,7 @@ export const DVPairs = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): DVPairs {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDVPairs();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1714,7 +1716,7 @@ export const DVVTriplet = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): DVVTriplet {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDVVTriplet();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1796,7 +1798,7 @@ export const DVVTriplets = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): DVVTriplets {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDVVTriplets();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1883,7 +1885,7 @@ export const Delegation = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Delegation {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDelegation();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1973,7 +1975,7 @@ export const UnbondingDelegation = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): UnbondingDelegation {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUnbondingDelegation();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2084,7 +2086,7 @@ export const UnbondingDelegationEntry = {
     length?: number
   ): UnbondingDelegationEntry {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUnbondingDelegationEntry();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2208,7 +2210,7 @@ export const RedelegationEntry = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): RedelegationEntry {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRedelegationEntry();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2319,7 +2321,7 @@ export const Redelegation = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Redelegation {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRedelegation();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2438,7 +2440,7 @@ export const Params = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Params {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParams();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2549,7 +2551,7 @@ export const DelegationResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): DelegationResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDelegationResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2645,7 +2647,7 @@ export const RedelegationEntryResponse = {
     length?: number
   ): RedelegationEntryResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRedelegationEntryResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2752,7 +2754,7 @@ export const RedelegationResponse = {
     length?: number
   ): RedelegationResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRedelegationResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2848,7 +2850,7 @@ export const Pool = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Pool {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePool();
     while (reader.pos < end) {
       const tag = reader.uint32();

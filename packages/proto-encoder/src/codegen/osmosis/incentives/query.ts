@@ -1,3 +1,6 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   PageRequest,
   PageRequestAmino,
@@ -7,14 +10,13 @@ import {
   PageResponseSDKType,
 } from "../../cosmos/base/query/v1beta1/pagination";
 import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
-import { Gauge, GaugeAmino, GaugeSDKType } from "./gauge";
 import {
   Duration,
   DurationAmino,
   DurationSDKType,
 } from "../../google/protobuf/duration";
 import { Long } from "../../helpers";
-import * as _m0 from "protobufjs/minimal";
+import { Gauge, GaugeAmino, GaugeSDKType } from "./gauge";
 export interface ModuleToDistributeCoinsRequest {}
 export interface ModuleToDistributeCoinsRequestProtoMsg {
   typeUrl: "/osmosis.incentives.ModuleToDistributeCoinsRequest";
@@ -414,7 +416,7 @@ export const ModuleToDistributeCoinsRequest = {
     length?: number
   ): ModuleToDistributeCoinsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseModuleToDistributeCoinsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -494,7 +496,7 @@ export const ModuleToDistributeCoinsResponse = {
     length?: number
   ): ModuleToDistributeCoinsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseModuleToDistributeCoinsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -584,7 +586,7 @@ export const GaugeByIDRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): GaugeByIDRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGaugeByIDRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -657,7 +659,7 @@ export const GaugeByIDResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): GaugeByIDResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGaugeByIDResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -730,7 +732,7 @@ export const GaugesRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): GaugesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGaugesRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -814,7 +816,7 @@ export const GaugesResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): GaugesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGaugesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -903,7 +905,7 @@ export const ActiveGaugesRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ActiveGaugesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseActiveGaugesRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -990,7 +992,7 @@ export const ActiveGaugesResponse = {
     length?: number
   ): ActiveGaugesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseActiveGaugesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1086,7 +1088,7 @@ export const ActiveGaugesPerDenomRequest = {
     length?: number
   ): ActiveGaugesPerDenomRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseActiveGaugesPerDenomRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1193,7 +1195,7 @@ export const ActiveGaugesPerDenomResponse = {
     length?: number
   ): ActiveGaugesPerDenomResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseActiveGaugesPerDenomResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1299,7 +1301,7 @@ export const UpcomingGaugesRequest = {
     length?: number
   ): UpcomingGaugesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpcomingGaugesRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1386,7 +1388,7 @@ export const UpcomingGaugesResponse = {
     length?: number
   ): UpcomingGaugesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpcomingGaugesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1484,7 +1486,7 @@ export const UpcomingGaugesPerDenomRequest = {
     length?: number
   ): UpcomingGaugesPerDenomRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpcomingGaugesPerDenomRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1591,7 +1593,7 @@ export const UpcomingGaugesPerDenomResponse = {
     length?: number
   ): UpcomingGaugesPerDenomResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpcomingGaugesPerDenomResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1707,7 +1709,7 @@ export const RewardsEstRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): RewardsEstRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRewardsEstRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1805,7 +1807,7 @@ export const RewardsEstResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): RewardsEstResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRewardsEstResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1879,7 +1881,7 @@ export const QueryLockableDurationsRequest = {
     length?: number
   ): QueryLockableDurationsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryLockableDurationsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1959,7 +1961,7 @@ export const QueryLockableDurationsResponse = {
     length?: number
   ): QueryLockableDurationsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryLockableDurationsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

@@ -1,12 +1,13 @@
 //@ts-nocheck
 import { GeneratedType, Registry } from "@cosmjs/proto-signing";
+
 import {
-  MsgSetHotRoutes,
-  MsgSetDeveloperAccount,
-  MsgSetMaxPoolPointsPerTx,
-  MsgSetMaxPoolPointsPerBlock,
-  MsgSetPoolWeights,
   MsgSetBaseDenoms,
+  MsgSetDeveloperAccount,
+  MsgSetHotRoutes,
+  MsgSetMaxPoolPointsPerBlock,
+  MsgSetMaxPoolPointsPerTx,
+  MsgSetPoolWeights,
 } from "./tx";
 export const registry: ReadonlyArray<[string, GeneratedType]> = [
   ["/osmosis.protorev.v1beta1.MsgSetHotRoutes", MsgSetHotRoutes],

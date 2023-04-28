@@ -1,3 +1,4 @@
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
 export interface Node {
   children: Child[];
@@ -68,7 +69,7 @@ export const Node = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Node {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseNode();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -147,7 +148,7 @@ export const Child = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Child {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseChild();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -220,7 +221,7 @@ export const Leaf = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Leaf {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLeaf();
     while (reader.pos < end) {
       const tag = reader.uint32();

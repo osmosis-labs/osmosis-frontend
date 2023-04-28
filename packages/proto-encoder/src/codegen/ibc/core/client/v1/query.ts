@@ -1,3 +1,6 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   PageRequest,
   PageRequestAmino,
@@ -7,22 +10,21 @@ import {
   PageResponseSDKType,
 } from "../../../../cosmos/base/query/v1beta1/pagination";
 import { Any, AnyAmino, AnySDKType } from "../../../../google/protobuf/any";
+import { Long } from "../../../../helpers";
 import {
+  ConsensusStateWithHeight,
+  ConsensusStateWithHeightAmino,
+  ConsensusStateWithHeightSDKType,
   Height,
   HeightAmino,
   HeightSDKType,
   IdentifiedClientState,
   IdentifiedClientStateAmino,
   IdentifiedClientStateSDKType,
-  ConsensusStateWithHeight,
-  ConsensusStateWithHeightAmino,
-  ConsensusStateWithHeightSDKType,
   Params,
   ParamsAmino,
   ParamsSDKType,
 } from "./client";
-import { Long } from "../../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /**
  * QueryClientStateRequest is the request type for the Query/ClientState RPC
  * method
@@ -648,7 +650,7 @@ export const QueryClientStateRequest = {
     length?: number
   ): QueryClientStateRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryClientStateRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -739,7 +741,7 @@ export const QueryClientStateResponse = {
     length?: number
   ): QueryClientStateResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryClientStateResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -848,7 +850,7 @@ export const QueryClientStatesRequest = {
     length?: number
   ): QueryClientStatesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryClientStatesRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -945,7 +947,7 @@ export const QueryClientStatesResponse = {
     length?: number
   ): QueryClientStatesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryClientStatesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1067,7 +1069,7 @@ export const QueryConsensusStateRequest = {
     length?: number
   ): QueryConsensusStateRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryConsensusStateRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1190,7 +1192,7 @@ export const QueryConsensusStateResponse = {
     length?: number
   ): QueryConsensusStateResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryConsensusStateResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1307,7 +1309,7 @@ export const QueryConsensusStatesRequest = {
     length?: number
   ): QueryConsensusStatesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryConsensusStatesRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1414,7 +1416,7 @@ export const QueryConsensusStatesResponse = {
     length?: number
   ): QueryConsensusStatesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryConsensusStatesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1533,7 +1535,7 @@ export const QueryConsensusStateHeightsRequest = {
     length?: number
   ): QueryConsensusStateHeightsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryConsensusStateHeightsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1640,7 +1642,7 @@ export const QueryConsensusStateHeightsResponse = {
     length?: number
   ): QueryConsensusStateHeightsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryConsensusStateHeightsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1751,7 +1753,7 @@ export const QueryClientStatusRequest = {
     length?: number
   ): QueryClientStatusRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryClientStatusRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1834,7 +1836,7 @@ export const QueryClientStatusResponse = {
     length?: number
   ): QueryClientStatusResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryClientStatusResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1912,7 +1914,7 @@ export const QueryClientParamsRequest = {
     length?: number
   ): QueryClientParamsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryClientParamsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1986,7 +1988,7 @@ export const QueryClientParamsResponse = {
     length?: number
   ): QueryClientParamsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryClientParamsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2067,7 +2069,7 @@ export const QueryUpgradedClientStateRequest = {
     length?: number
   ): QueryUpgradedClientStateRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryUpgradedClientStateRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2150,7 +2152,7 @@ export const QueryUpgradedClientStateResponse = {
     length?: number
   ): QueryUpgradedClientStateResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryUpgradedClientStateResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2240,7 +2242,7 @@ export const QueryUpgradedConsensusStateRequest = {
     length?: number
   ): QueryUpgradedConsensusStateRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryUpgradedConsensusStateRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2323,7 +2325,7 @@ export const QueryUpgradedConsensusStateResponse = {
     length?: number
   ): QueryUpgradedConsensusStateResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryUpgradedConsensusStateResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

@@ -1,9 +1,11 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   DecCoin,
   DecCoinAmino,
   DecCoinSDKType,
 } from "../../../cosmos/base/v1beta1/coin";
-import * as _m0 from "protobufjs/minimal";
 export interface AccumulatorContent {
   accumValue: DecCoin[];
   totalShares: string;
@@ -83,7 +85,7 @@ export const AccumulatorContent = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): AccumulatorContent {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccumulatorContent();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -160,7 +162,7 @@ export const Options = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Options {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseOptions();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -235,7 +237,7 @@ export const Record = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Record {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRecord();
     while (reader.pos < end) {
       const tag = reader.uint32();

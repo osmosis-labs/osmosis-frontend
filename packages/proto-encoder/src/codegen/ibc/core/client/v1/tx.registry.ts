@@ -1,10 +1,11 @@
 //@ts-nocheck
 import { GeneratedType, Registry } from "@cosmjs/proto-signing";
+
 import {
   MsgCreateClient,
+  MsgSubmitMisbehaviour,
   MsgUpdateClient,
   MsgUpgradeClient,
-  MsgSubmitMisbehaviour,
 } from "./tx";
 export const registry: ReadonlyArray<[string, GeneratedType]> = [
   ["/ibc.core.client.v1.MsgCreateClient", MsgCreateClient],

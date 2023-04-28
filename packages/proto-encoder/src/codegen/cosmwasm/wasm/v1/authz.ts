@@ -1,16 +1,18 @@
-import {
-  Any,
-  AnyProtoMsg,
-  AnyAmino,
-  AnySDKType,
-} from "../../../google/protobuf/any";
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Coin,
   CoinAmino,
   CoinSDKType,
 } from "../../../cosmos/base/v1beta1/coin";
+import {
+  Any,
+  AnyAmino,
+  AnyProtoMsg,
+  AnySDKType,
+} from "../../../google/protobuf/any";
 import { Long } from "../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /**
  * ContractExecutionAuthorization defines authorization for wasm execute.
  * Since: wasmd 0.30
@@ -401,7 +403,7 @@ export const ContractExecutionAuthorization = {
     length?: number
   ): ContractExecutionAuthorization {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseContractExecutionAuthorization();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -498,7 +500,7 @@ export const ContractMigrationAuthorization = {
     length?: number
   ): ContractMigrationAuthorization {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseContractMigrationAuthorization();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -599,7 +601,7 @@ export const ContractGrant = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ContractGrant {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseContractGrant();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -700,7 +702,7 @@ export const MaxCallsLimit = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MaxCallsLimit {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMaxCallsLimit();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -776,7 +778,7 @@ export const MaxFundsLimit = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MaxFundsLimit {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMaxFundsLimit();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -859,7 +861,7 @@ export const CombinedLimit = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): CombinedLimit {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCombinedLimit();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -948,7 +950,7 @@ export const AllowAllMessagesFilter = {
     length?: number
   ): AllowAllMessagesFilter {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAllowAllMessagesFilter();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1017,7 +1019,7 @@ export const AcceptedMessageKeysFilter = {
     length?: number
   ): AcceptedMessageKeysFilter {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAcceptedMessageKeysFilter();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1105,7 +1107,7 @@ export const AcceptedMessagesFilter = {
     length?: number
   ): AcceptedMessagesFilter {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAcceptedMessagesFilter();
     while (reader.pos < end) {
       const tag = reader.uint32();

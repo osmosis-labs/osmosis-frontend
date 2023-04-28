@@ -1,3 +1,6 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   PageRequest,
   PageRequestAmino,
@@ -9,12 +12,11 @@ import {
 import {
   Grant,
   GrantAmino,
-  GrantSDKType,
   GrantAuthorization,
   GrantAuthorizationAmino,
   GrantAuthorizationSDKType,
+  GrantSDKType,
 } from "./authz";
-import * as _m0 from "protobufjs/minimal";
 /** QueryGrantsRequest is the request type for the Query/Grants RPC method. */
 export interface QueryGrantsRequest {
   granter: string;
@@ -209,7 +211,7 @@ export const QueryGrantsRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryGrantsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGrantsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -311,7 +313,7 @@ export const QueryGrantsResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryGrantsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGrantsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -409,7 +411,7 @@ export const QueryGranterGrantsRequest = {
     length?: number
   ): QueryGranterGrantsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGranterGrantsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -512,7 +514,7 @@ export const QueryGranterGrantsResponse = {
     length?: number
   ): QueryGranterGrantsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGranterGrantsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -627,7 +629,7 @@ export const QueryGranteeGrantsRequest = {
     length?: number
   ): QueryGranteeGrantsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGranteeGrantsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -730,7 +732,7 @@ export const QueryGranteeGrantsResponse = {
     length?: number
   ): QueryGranteeGrantsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGranteeGrantsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

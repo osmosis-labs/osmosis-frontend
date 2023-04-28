@@ -1,6 +1,8 @@
-import { EpochInfo, EpochInfoAmino, EpochInfoSDKType } from "./genesis";
-import { Long } from "../../helpers";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
+import { Long } from "../../helpers";
+import { EpochInfo, EpochInfoAmino, EpochInfoSDKType } from "./genesis";
 export interface QueryEpochsInfoRequest {}
 export interface QueryEpochsInfoRequestProtoMsg {
   typeUrl: "/osmosis.epochs.v1beta1.QueryEpochsInfoRequest";
@@ -79,7 +81,7 @@ export const QueryEpochsInfoRequest = {
     length?: number
   ): QueryEpochsInfoRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryEpochsInfoRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -147,7 +149,7 @@ export const QueryEpochsInfoResponse = {
     length?: number
   ): QueryEpochsInfoResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryEpochsInfoResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -238,7 +240,7 @@ export const QueryCurrentEpochRequest = {
     length?: number
   ): QueryCurrentEpochRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryCurrentEpochRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -321,7 +323,7 @@ export const QueryCurrentEpochResponse = {
     length?: number
   ): QueryCurrentEpochResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryCurrentEpochResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

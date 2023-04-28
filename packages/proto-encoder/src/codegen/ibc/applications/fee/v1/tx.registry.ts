@@ -1,10 +1,11 @@
 //@ts-nocheck
 import { GeneratedType, Registry } from "@cosmjs/proto-signing";
+
 import {
-  MsgRegisterPayee,
-  MsgRegisterCounterpartyPayee,
   MsgPayPacketFee,
   MsgPayPacketFeeAsync,
+  MsgRegisterCounterpartyPayee,
+  MsgRegisterPayee,
 } from "./tx";
 export const registry: ReadonlyArray<[string, GeneratedType]> = [
   ["/ibc.applications.fee.v1.MsgRegisterPayee", MsgRegisterPayee],

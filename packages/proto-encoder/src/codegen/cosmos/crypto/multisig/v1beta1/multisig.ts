@@ -1,3 +1,4 @@
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
 /**
  * MultiSignature wraps the signatures from a multisig.LegacyAminoPubKey.
@@ -87,7 +88,7 @@ export const MultiSignature = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MultiSignature {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMultiSignature();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -167,7 +168,7 @@ export const CompactBitArray = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): CompactBitArray {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCompactBitArray();
     while (reader.pos < end) {
       const tag = reader.uint32();

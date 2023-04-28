@@ -1,3 +1,4 @@
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
 /**
  * DenomAuthorityMetadata specifies metadata for addresses that have specific
@@ -54,7 +55,7 @@ export const DenomAuthorityMetadata = {
     length?: number
   ): DenomAuthorityMetadata {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDenomAuthorityMetadata();
     while (reader.pos < end) {
       const tag = reader.uint32();

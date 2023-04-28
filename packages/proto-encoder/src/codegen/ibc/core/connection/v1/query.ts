@@ -1,3 +1,6 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   PageRequest,
   PageRequestAmino,
@@ -6,14 +9,8 @@ import {
   PageResponseAmino,
   PageResponseSDKType,
 } from "../../../../cosmos/base/query/v1beta1/pagination";
-import {
-  ConnectionEnd,
-  ConnectionEndAmino,
-  ConnectionEndSDKType,
-  IdentifiedConnection,
-  IdentifiedConnectionAmino,
-  IdentifiedConnectionSDKType,
-} from "./connection";
+import { Any, AnyAmino, AnySDKType } from "../../../../google/protobuf/any";
+import { Long } from "../../../../helpers";
 import {
   Height,
   HeightAmino,
@@ -25,9 +22,14 @@ import {
   ParamsAmino,
   ParamsSDKType,
 } from "../../client/v1/client";
-import { Any, AnyAmino, AnySDKType } from "../../../../google/protobuf/any";
-import { Long } from "../../../../helpers";
-import * as _m0 from "protobufjs/minimal";
+import {
+  ConnectionEnd,
+  ConnectionEndAmino,
+  ConnectionEndSDKType,
+  IdentifiedConnection,
+  IdentifiedConnectionAmino,
+  IdentifiedConnectionSDKType,
+} from "./connection";
 /**
  * QueryConnectionRequest is the request type for the Query/Connection RPC
  * method
@@ -457,7 +459,7 @@ export const QueryConnectionRequest = {
     length?: number
   ): QueryConnectionRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryConnectionRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -543,7 +545,7 @@ export const QueryConnectionResponse = {
     length?: number
   ): QueryConnectionResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryConnectionResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -652,7 +654,7 @@ export const QueryConnectionsRequest = {
     length?: number
   ): QueryConnectionsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryConnectionsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -753,7 +755,7 @@ export const QueryConnectionsResponse = {
     length?: number
   ): QueryConnectionsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryConnectionsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -869,7 +871,7 @@ export const QueryClientConnectionsRequest = {
     length?: number
   ): QueryClientConnectionsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryClientConnectionsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -964,7 +966,7 @@ export const QueryClientConnectionsResponse = {
     length?: number
   ): QueryClientConnectionsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryClientConnectionsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1076,7 +1078,7 @@ export const QueryConnectionClientStateRequest = {
     length?: number
   ): QueryConnectionClientStateRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryConnectionClientStateRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1174,7 +1176,7 @@ export const QueryConnectionClientStateResponse = {
     length?: number
   ): QueryConnectionClientStateResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryConnectionClientStateResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1299,7 +1301,7 @@ export const QueryConnectionConsensusStateRequest = {
     length?: number
   ): QueryConnectionConsensusStateRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryConnectionConsensusStateRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1420,7 +1422,7 @@ export const QueryConnectionConsensusStateResponse = {
     length?: number
   ): QueryConnectionConsensusStateResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryConnectionConsensusStateResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1534,7 +1536,7 @@ export const QueryConnectionParamsRequest = {
     length?: number
   ): QueryConnectionParamsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryConnectionParamsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1612,7 +1614,7 @@ export const QueryConnectionParamsResponse = {
     length?: number
   ): QueryConnectionParamsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryConnectionParamsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

@@ -1,5 +1,7 @@
-import { Plan, PlanAmino, PlanSDKType } from "./upgrade";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
+import { Plan, PlanAmino, PlanSDKType } from "./upgrade";
 /**
  * MsgSoftwareUpgrade is the Msg/SoftwareUpgrade request type.
  *
@@ -147,7 +149,7 @@ export const MsgSoftwareUpgrade = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgSoftwareUpgrade {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSoftwareUpgrade();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -224,7 +226,7 @@ export const MsgSoftwareUpgradeResponse = {
     length?: number
   ): MsgSoftwareUpgradeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSoftwareUpgradeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -297,7 +299,7 @@ export const MsgCancelUpgrade = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCancelUpgrade {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCancelUpgrade();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -365,7 +367,7 @@ export const MsgCancelUpgradeResponse = {
     length?: number
   ): MsgCancelUpgradeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCancelUpgradeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

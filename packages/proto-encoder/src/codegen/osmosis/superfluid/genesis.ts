@@ -1,19 +1,21 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import { Params, ParamsAmino, ParamsSDKType } from "./params";
 import {
-  SuperfluidAsset,
-  SuperfluidAssetAmino,
-  SuperfluidAssetSDKType,
-  OsmoEquivalentMultiplierRecord,
-  OsmoEquivalentMultiplierRecordAmino,
-  OsmoEquivalentMultiplierRecordSDKType,
-  SuperfluidIntermediaryAccount,
-  SuperfluidIntermediaryAccountAmino,
-  SuperfluidIntermediaryAccountSDKType,
   LockIdIntermediaryAccountConnection,
   LockIdIntermediaryAccountConnectionAmino,
   LockIdIntermediaryAccountConnectionSDKType,
+  OsmoEquivalentMultiplierRecord,
+  OsmoEquivalentMultiplierRecordAmino,
+  OsmoEquivalentMultiplierRecordSDKType,
+  SuperfluidAsset,
+  SuperfluidAssetAmino,
+  SuperfluidAssetSDKType,
+  SuperfluidIntermediaryAccount,
+  SuperfluidIntermediaryAccountAmino,
+  SuperfluidIntermediaryAccountSDKType,
 } from "./superfluid";
-import * as _m0 from "protobufjs/minimal";
 /** GenesisState defines the module's genesis state. */
 export interface GenesisState {
   params?: Params;
@@ -113,7 +115,7 @@ export const GenesisState = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): GenesisState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGenesisState();
     while (reader.pos < end) {
       const tag = reader.uint32();

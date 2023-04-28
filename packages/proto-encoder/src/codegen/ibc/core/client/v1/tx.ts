@@ -1,5 +1,7 @@
-import { Any, AnyAmino, AnySDKType } from "../../../../google/protobuf/any";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
+import { Any, AnyAmino, AnySDKType } from "../../../../google/protobuf/any";
 /** MsgCreateClient defines a message to create an IBC client */
 export interface MsgCreateClient {
   /** light client state */
@@ -285,7 +287,7 @@ export const MsgCreateClient = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateClient {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateClient();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -379,7 +381,7 @@ export const MsgCreateClientResponse = {
     length?: number
   ): MsgCreateClientResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateClientResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -458,7 +460,7 @@ export const MsgUpdateClient = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateClient {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgUpdateClient();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -545,7 +547,7 @@ export const MsgUpdateClientResponse = {
     length?: number
   ): MsgUpdateClientResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgUpdateClientResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -636,7 +638,7 @@ export const MsgUpgradeClient = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpgradeClient {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgUpgradeClient();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -749,7 +751,7 @@ export const MsgUpgradeClientResponse = {
     length?: number
   ): MsgUpgradeClientResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgUpgradeClientResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -831,7 +833,7 @@ export const MsgSubmitMisbehaviour = {
     length?: number
   ): MsgSubmitMisbehaviour {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSubmitMisbehaviour();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -918,7 +920,7 @@ export const MsgSubmitMisbehaviourResponse = {
     length?: number
   ): MsgSubmitMisbehaviourResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSubmitMisbehaviourResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

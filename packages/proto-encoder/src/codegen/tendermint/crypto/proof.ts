@@ -1,5 +1,7 @@
-import { Long } from "../../helpers";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
+import { Long } from "../../helpers";
 export interface Proof {
   total: Long;
   index: Long;
@@ -158,7 +160,7 @@ export const Proof = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Proof {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseProof();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -256,7 +258,7 @@ export const ValueOp = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ValueOp {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseValueOp();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -337,7 +339,7 @@ export const DominoOp = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): DominoOp {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDominoOp();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -421,7 +423,7 @@ export const ProofOp = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ProofOp {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseProofOp();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -497,7 +499,7 @@ export const ProofOps = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ProofOps {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseProofOps();
     while (reader.pos < end) {
       const tag = reader.uint32();

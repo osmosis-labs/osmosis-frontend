@@ -1,11 +1,13 @@
-import { Downtime, downtimeFromJSON } from "./downtime_duration";
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Duration,
   DurationAmino,
   DurationSDKType,
 } from "../../../google/protobuf/duration";
-import * as _m0 from "protobufjs/minimal";
 import { isSet } from "../../../helpers";
+import { Downtime, downtimeFromJSON } from "./downtime_duration";
 /**
  * Query for has it been at least $RECOVERY_DURATION units of time,
  * since the chain has been down for $DOWNTIME_DURATION.
@@ -81,7 +83,7 @@ export const RecoveredSinceDowntimeOfLengthRequest = {
     length?: number
   ): RecoveredSinceDowntimeOfLengthRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRecoveredSinceDowntimeOfLengthRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -183,7 +185,7 @@ export const RecoveredSinceDowntimeOfLengthResponse = {
     length?: number
   ): RecoveredSinceDowntimeOfLengthResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRecoveredSinceDowntimeOfLengthResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

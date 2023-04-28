@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { MsgSubmitProposal, MsgVote, MsgVoteWeighted, MsgDeposit } from "./tx";
+import { MsgDeposit, MsgSubmitProposal, MsgVote, MsgVoteWeighted } from "./tx";
 export const AminoConverter = {
   "/cosmos.gov.v1beta1.MsgSubmitProposal": {
     aminoType: "cosmos-sdk/MsgSubmitProposal",

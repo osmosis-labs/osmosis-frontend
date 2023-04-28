@@ -1,3 +1,4 @@
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
 /** BIP44Params is used as path field in ledger item in Record. */
 export interface BIP44Params {
@@ -81,7 +82,7 @@ export const BIP44Params = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): BIP44Params {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseBIP44Params();
     while (reader.pos < end) {
       const tag = reader.uint32();

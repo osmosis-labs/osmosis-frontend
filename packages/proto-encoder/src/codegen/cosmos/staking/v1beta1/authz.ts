@@ -1,6 +1,8 @@
-import { Coin, CoinAmino, CoinSDKType } from "../../base/v1beta1/coin";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
 import { isSet } from "../../../helpers";
+import { Coin, CoinAmino, CoinSDKType } from "../../base/v1beta1/coin";
 /**
  * AuthorizationType defines the type of staking module authorization type
  *
@@ -174,7 +176,7 @@ export const StakeAuthorization = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): StakeAuthorization {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseStakeAuthorization();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -294,7 +296,7 @@ export const StakeAuthorization_Validators = {
     length?: number
   ): StakeAuthorization_Validators {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseStakeAuthorization_Validators();
     while (reader.pos < end) {
       const tag = reader.uint32();

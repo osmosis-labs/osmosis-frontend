@@ -1,13 +1,15 @@
-import { Coin, CoinAmino, CoinSDKType } from "../../base/v1beta1/coin";
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import { Any, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
-import { Timestamp } from "../../../google/protobuf/timestamp";
 import {
   Duration,
   DurationAmino,
   DurationSDKType,
 } from "../../../google/protobuf/duration";
-import { Long, isSet, toTimestamp, fromTimestamp } from "../../../helpers";
-import * as _m0 from "protobufjs/minimal";
+import { Timestamp } from "../../../google/protobuf/timestamp";
+import { fromTimestamp, isSet, Long, toTimestamp } from "../../../helpers";
+import { Coin, CoinAmino, CoinSDKType } from "../../base/v1beta1/coin";
 /** VoteOption enumerates the valid vote options for a given governance proposal. */
 export enum VoteOption {
   /** VOTE_OPTION_UNSPECIFIED - VOTE_OPTION_UNSPECIFIED defines a no-op vote option. */
@@ -449,7 +451,7 @@ export const WeightedVoteOption = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): WeightedVoteOption {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseWeightedVoteOption();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -533,7 +535,7 @@ export const Deposit = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Deposit {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDeposit();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -677,7 +679,7 @@ export const Proposal = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Proposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -867,7 +869,7 @@ export const TallyResult = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): TallyResult {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTallyResult();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -964,7 +966,7 @@ export const Vote = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Vote {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseVote();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1075,7 +1077,7 @@ export const DepositParams = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): DepositParams {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDepositParams();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1167,7 +1169,7 @@ export const VotingParams = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): VotingParams {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseVotingParams();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1252,7 +1254,7 @@ export const TallyParams = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): TallyParams {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTallyParams();
     while (reader.pos < end) {
       const tag = reader.uint32();

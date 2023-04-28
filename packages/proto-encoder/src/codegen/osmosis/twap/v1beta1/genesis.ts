@@ -1,10 +1,12 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Duration,
   DurationAmino,
   DurationSDKType,
 } from "../../../google/protobuf/duration";
 import { TwapRecord, TwapRecordAmino, TwapRecordSDKType } from "./twap_record";
-import * as _m0 from "protobufjs/minimal";
 /** Params holds parameters for the twap module */
 export interface Params {
   pruneEpochIdentifier: string;
@@ -80,7 +82,7 @@ export const Params = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Params {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParams();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -171,7 +173,7 @@ export const GenesisState = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): GenesisState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGenesisState();
     while (reader.pos < end) {
       const tag = reader.uint32();

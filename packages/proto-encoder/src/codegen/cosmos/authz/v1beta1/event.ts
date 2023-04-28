@@ -1,3 +1,4 @@
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
 /** EventGrant is emitted on Msg/Grant */
 export interface EventGrant {
@@ -89,7 +90,7 @@ export const EventGrant = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): EventGrant {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEventGrant();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -179,7 +180,7 @@ export const EventRevoke = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): EventRevoke {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEventRevoke();
     while (reader.pos < end) {
       const tag = reader.uint32();

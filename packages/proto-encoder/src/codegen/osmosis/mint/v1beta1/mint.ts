@@ -1,5 +1,7 @@
-import { Long } from "../../../helpers";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
+import { Long } from "../../../helpers";
 /** Minter represents the minting state. */
 export interface Minter {
   /** epoch_provisions represent rewards for the current epoch. */
@@ -241,7 +243,7 @@ export const Minter = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Minter {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMinter();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -315,7 +317,7 @@ export const WeightedAddress = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): WeightedAddress {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseWeightedAddress();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -406,7 +408,7 @@ export const DistributionProportions = {
     length?: number
   ): DistributionProportions {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDistributionProportions();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -535,7 +537,7 @@ export const Params = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Params {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParams();
     while (reader.pos < end) {
       const tag = reader.uint32();

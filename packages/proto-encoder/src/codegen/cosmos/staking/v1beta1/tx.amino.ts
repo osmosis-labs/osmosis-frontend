@@ -1,9 +1,9 @@
 //@ts-nocheck
 import {
-  MsgCreateValidator,
-  MsgEditValidator,
-  MsgDelegate,
   MsgBeginRedelegate,
+  MsgCreateValidator,
+  MsgDelegate,
+  MsgEditValidator,
   MsgUndelegate,
 } from "./tx";
 export const AminoConverter = {

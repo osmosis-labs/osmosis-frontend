@@ -1,22 +1,24 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
+import { Long } from "../../../helpers";
 import {
-  Params,
-  ParamsAmino,
-  ParamsSDKType,
-  Validator,
-  ValidatorAmino,
-  ValidatorSDKType,
   Delegation,
   DelegationAmino,
   DelegationSDKType,
-  UnbondingDelegation,
-  UnbondingDelegationAmino,
-  UnbondingDelegationSDKType,
+  Params,
+  ParamsAmino,
+  ParamsSDKType,
   Redelegation,
   RedelegationAmino,
   RedelegationSDKType,
+  UnbondingDelegation,
+  UnbondingDelegationAmino,
+  UnbondingDelegationSDKType,
+  Validator,
+  ValidatorAmino,
+  ValidatorSDKType,
 } from "./staking";
-import { Long } from "../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /** GenesisState defines the staking module's genesis state. */
 export interface GenesisState {
   /** params defines all the paramaters of related to deposit. */
@@ -157,7 +159,7 @@ export const GenesisState = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): GenesisState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGenesisState();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -335,7 +337,7 @@ export const LastValidatorPower = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): LastValidatorPower {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLastValidatorPower();
     while (reader.pos < end) {
       const tag = reader.uint32();

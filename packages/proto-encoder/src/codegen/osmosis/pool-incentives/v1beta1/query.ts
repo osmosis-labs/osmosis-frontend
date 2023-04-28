@@ -1,8 +1,13 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Duration,
   DurationAmino,
   DurationSDKType,
 } from "../../../google/protobuf/duration";
+import { Long } from "../../../helpers";
+import { Gauge, GaugeAmino, GaugeSDKType } from "../../incentives/gauge";
 import {
   DistrInfo,
   DistrInfoAmino,
@@ -11,9 +16,6 @@ import {
   ParamsAmino,
   ParamsSDKType,
 } from "./incentives";
-import { Gauge, GaugeAmino, GaugeSDKType } from "../../incentives/gauge";
-import { Long } from "../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 export interface QueryGaugeIdsRequest {
   poolId: Long;
 }
@@ -255,7 +257,7 @@ export const QueryGaugeIdsRequest = {
     length?: number
   ): QueryGaugeIdsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGaugeIdsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -334,7 +336,7 @@ export const QueryGaugeIdsResponse = {
     length?: number
   ): QueryGaugeIdsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGaugeIdsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -433,7 +435,7 @@ export const QueryGaugeIdsResponse_GaugeIdWithDuration = {
     length?: number
   ): QueryGaugeIdsResponse_GaugeIdWithDuration {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGaugeIdsResponse_GaugeIdWithDuration();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -537,7 +539,7 @@ export const QueryDistrInfoRequest = {
     length?: number
   ): QueryDistrInfoRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryDistrInfoRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -603,7 +605,7 @@ export const QueryDistrInfoResponse = {
     length?: number
   ): QueryDistrInfoResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryDistrInfoResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -677,7 +679,7 @@ export const QueryParamsRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryParamsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryParamsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -740,7 +742,7 @@ export const QueryParamsResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryParamsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryParamsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -811,7 +813,7 @@ export const QueryLockableDurationsRequest = {
     length?: number
   ): QueryLockableDurationsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryLockableDurationsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -891,7 +893,7 @@ export const QueryLockableDurationsResponse = {
     length?: number
   ): QueryLockableDurationsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryLockableDurationsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -984,7 +986,7 @@ export const QueryIncentivizedPoolsRequest = {
     length?: number
   ): QueryIncentivizedPoolsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryIncentivizedPoolsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1072,7 +1074,7 @@ export const IncentivizedPool = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): IncentivizedPool {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseIncentivizedPool();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1170,7 +1172,7 @@ export const QueryIncentivizedPoolsResponse = {
     length?: number
   ): QueryIncentivizedPoolsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryIncentivizedPoolsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1267,7 +1269,7 @@ export const QueryExternalIncentiveGaugesRequest = {
     length?: number
   ): QueryExternalIncentiveGaugesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryExternalIncentiveGaugesRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1349,7 +1351,7 @@ export const QueryExternalIncentiveGaugesResponse = {
     length?: number
   ): QueryExternalIncentiveGaugesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryExternalIncentiveGaugesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

@@ -1,5 +1,6 @@
 //@ts-nocheck
 import { GeneratedType, Registry } from "@cosmjs/proto-signing";
+
 import { MsgSwapExactAmountIn, MsgSwapExactAmountOut } from "./tx";
 export const registry: ReadonlyArray<[string, GeneratedType]> = [
   ["/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn", MsgSwapExactAmountIn],

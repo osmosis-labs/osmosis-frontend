@@ -1,3 +1,4 @@
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
 /** PublicKey defines the keys available for use with Tendermint Validators */
 export interface PublicKey {
@@ -44,7 +45,7 @@ export const PublicKey = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): PublicKey {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePublicKey();
     while (reader.pos < end) {
       const tag = reader.uint32();

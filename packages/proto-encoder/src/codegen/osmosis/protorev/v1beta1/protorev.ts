@@ -1,10 +1,12 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Coin,
   CoinAmino,
   CoinSDKType,
 } from "../../../cosmos/base/v1beta1/coin";
 import { Long } from "../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /** TokenPairArbRoutes tracks all of the hot routes for a given pair of tokens */
 export interface TokenPairArbRoutes {
   /** Stores all of the possible hot paths for a given pair of tokens */
@@ -276,7 +278,7 @@ export const TokenPairArbRoutes = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): TokenPairArbRoutes {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTokenPairArbRoutes();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -368,7 +370,7 @@ export const Route = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Route {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRoute();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -457,7 +459,7 @@ export const Trade = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Trade {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTrade();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -552,7 +554,7 @@ export const RouteStatistics = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): RouteStatistics {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRouteStatistics();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -663,7 +665,7 @@ export const PoolWeights = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): PoolWeights {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePoolWeights();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -765,7 +767,7 @@ export const BaseDenom = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): BaseDenom {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseBaseDenom();
     while (reader.pos < end) {
       const tag = reader.uint32();

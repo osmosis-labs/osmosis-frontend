@@ -1,3 +1,7 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
+import { Long } from "../../../../helpers";
 import {
   IdentifiedChannel,
   IdentifiedChannelAmino,
@@ -6,8 +10,6 @@ import {
   PacketStateAmino,
   PacketStateSDKType,
 } from "./channel";
-import { Long } from "../../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /** GenesisState defines the ibc channel submodule's genesis state. */
 export interface GenesisState {
   channels: IdentifiedChannel[];
@@ -132,7 +134,7 @@ export const GenesisState = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): GenesisState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGenesisState();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -331,7 +333,7 @@ export const PacketSequence = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): PacketSequence {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePacketSequence();
     while (reader.pos < end) {
       const tag = reader.uint32();

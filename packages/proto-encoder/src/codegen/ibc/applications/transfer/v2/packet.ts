@@ -1,3 +1,4 @@
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
 /**
  * FungibleTokenPacketData defines a struct for the packet payload
@@ -90,7 +91,7 @@ export const FungibleTokenPacketData = {
     length?: number
   ): FungibleTokenPacketData {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFungibleTokenPacketData();
     while (reader.pos < end) {
       const tag = reader.uint32();

@@ -1,3 +1,4 @@
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
 
 import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";

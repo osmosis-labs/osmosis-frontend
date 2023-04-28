@@ -1,12 +1,14 @@
-import { AccessConfig, AccessConfigAmino, AccessConfigSDKType } from "./types";
+//@ts-nocheck
+import { fromBase64, fromUtf8, toBase64, toUtf8 } from "@cosmjs/encoding";
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Coin,
   CoinAmino,
   CoinSDKType,
 } from "../../../cosmos/base/v1beta1/coin";
 import { Long } from "../../../helpers";
-import * as _m0 from "protobufjs/minimal";
-import { fromBase64, toBase64, toUtf8, fromUtf8 } from "@cosmjs/encoding";
+import { AccessConfig, AccessConfigAmino, AccessConfigSDKType } from "./types";
 /**
  * Deprecated: Do not use. Since wasmd v0.40, there is no longer a need for
  * an explicit StoreCodeProposal. To submit WASM code to the system,
@@ -932,7 +934,7 @@ export const StoreCodeProposal = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): StoreCodeProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseStoreCodeProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1095,7 +1097,7 @@ export const InstantiateContractProposal = {
     length?: number
   ): InstantiateContractProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseInstantiateContractProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1270,7 +1272,7 @@ export const InstantiateContract2Proposal = {
     length?: number
   ): InstantiateContract2Proposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseInstantiateContract2Proposal();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1437,7 +1439,7 @@ export const MigrateContractProposal = {
     length?: number
   ): MigrateContractProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMigrateContractProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1560,7 +1562,7 @@ export const SudoContractProposal = {
     length?: number
   ): SudoContractProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSudoContractProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1672,7 +1674,7 @@ export const ExecuteContractProposal = {
     length?: number
   ): ExecuteContractProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseExecuteContractProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1801,7 +1803,7 @@ export const UpdateAdminProposal = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): UpdateAdminProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpdateAdminProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1898,7 +1900,7 @@ export const ClearAdminProposal = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ClearAdminProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseClearAdminProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1991,7 +1993,7 @@ export const PinCodesProposal = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): PinCodesProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePinCodesProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2097,7 +2099,7 @@ export const UnpinCodesProposal = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): UnpinCodesProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUnpinCodesProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2199,7 +2201,7 @@ export const AccessConfigUpdate = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): AccessConfigUpdate {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccessConfigUpdate();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2301,7 +2303,7 @@ export const UpdateInstantiateConfigProposal = {
     length?: number
   ): UpdateInstantiateConfigProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpdateInstantiateConfigProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2467,7 +2469,7 @@ export const StoreAndInstantiateContractProposal = {
     length?: number
   ): StoreAndInstantiateContractProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseStoreAndInstantiateContractProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();

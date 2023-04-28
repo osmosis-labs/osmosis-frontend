@@ -1,3 +1,4 @@
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
 /**
  * PubKey is an ed25519 public key for handling Tendermint keys in SDK.
@@ -84,7 +85,7 @@ export const PubKey = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): PubKey {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePubKey();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -154,7 +155,7 @@ export const PrivKey = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): PrivKey {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePrivKey();
     while (reader.pos < end) {
       const tag = reader.uint32();

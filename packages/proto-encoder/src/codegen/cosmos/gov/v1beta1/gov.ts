@@ -1,16 +1,57 @@
-import { Coin, CoinAmino, CoinSDKType } from "../../base/v1beta1/coin";
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
+import {
+  ClearAdminProposal,
+  ClearAdminProposalProtoMsg,
+  ClearAdminProposalSDKType,
+  ExecuteContractProposal,
+  ExecuteContractProposalProtoMsg,
+  ExecuteContractProposalSDKType,
+  InstantiateContract2Proposal,
+  InstantiateContract2ProposalProtoMsg,
+  InstantiateContract2ProposalSDKType,
+  InstantiateContractProposal,
+  InstantiateContractProposalProtoMsg,
+  InstantiateContractProposalSDKType,
+  MigrateContractProposal,
+  MigrateContractProposalProtoMsg,
+  MigrateContractProposalSDKType,
+  PinCodesProposal,
+  PinCodesProposalProtoMsg,
+  PinCodesProposalSDKType,
+  StoreAndInstantiateContractProposal,
+  StoreAndInstantiateContractProposalProtoMsg,
+  StoreAndInstantiateContractProposalSDKType,
+  StoreCodeProposal,
+  StoreCodeProposalProtoMsg,
+  StoreCodeProposalSDKType,
+  SudoContractProposal,
+  SudoContractProposalProtoMsg,
+  SudoContractProposalSDKType,
+  UnpinCodesProposal,
+  UnpinCodesProposalProtoMsg,
+  UnpinCodesProposalSDKType,
+  UpdateAdminProposal,
+  UpdateAdminProposalProtoMsg,
+  UpdateAdminProposalSDKType,
+  UpdateInstantiateConfigProposal,
+  UpdateInstantiateConfigProposalProtoMsg,
+  UpdateInstantiateConfigProposalSDKType,
+} from "../../../cosmwasm/wasm/v1/proposal";
 import {
   Any,
-  AnyProtoMsg,
   AnyAmino,
+  AnyProtoMsg,
   AnySDKType,
 } from "../../../google/protobuf/any";
-import { Timestamp } from "../../../google/protobuf/timestamp";
 import {
   Duration,
   DurationAmino,
   DurationSDKType,
 } from "../../../google/protobuf/duration";
+import { Timestamp } from "../../../google/protobuf/timestamp";
+import { fromTimestamp, isSet, Long, toTimestamp } from "../../../helpers";
 import {
   ClientUpdateProposal,
   ClientUpdateProposalProtoMsg,
@@ -20,44 +61,6 @@ import {
   UpgradeProposalSDKType,
 } from "../../../ibc/core/client/v1/client";
 import {
-  StoreCodeProposal,
-  StoreCodeProposalProtoMsg,
-  StoreCodeProposalSDKType,
-  InstantiateContractProposal,
-  InstantiateContractProposalProtoMsg,
-  InstantiateContractProposalSDKType,
-  InstantiateContract2Proposal,
-  InstantiateContract2ProposalProtoMsg,
-  InstantiateContract2ProposalSDKType,
-  MigrateContractProposal,
-  MigrateContractProposalProtoMsg,
-  MigrateContractProposalSDKType,
-  SudoContractProposal,
-  SudoContractProposalProtoMsg,
-  SudoContractProposalSDKType,
-  ExecuteContractProposal,
-  ExecuteContractProposalProtoMsg,
-  ExecuteContractProposalSDKType,
-  UpdateAdminProposal,
-  UpdateAdminProposalProtoMsg,
-  UpdateAdminProposalSDKType,
-  ClearAdminProposal,
-  ClearAdminProposalProtoMsg,
-  ClearAdminProposalSDKType,
-  PinCodesProposal,
-  PinCodesProposalProtoMsg,
-  PinCodesProposalSDKType,
-  UnpinCodesProposal,
-  UnpinCodesProposalProtoMsg,
-  UnpinCodesProposalSDKType,
-  UpdateInstantiateConfigProposal,
-  UpdateInstantiateConfigProposalProtoMsg,
-  UpdateInstantiateConfigProposalSDKType,
-  StoreAndInstantiateContractProposal,
-  StoreAndInstantiateContractProposalProtoMsg,
-  StoreAndInstantiateContractProposalSDKType,
-} from "../../../cosmwasm/wasm/v1/proposal";
-import {
   ReplacePoolIncentivesProposal,
   ReplacePoolIncentivesProposalProtoMsg,
   ReplacePoolIncentivesProposalSDKType,
@@ -66,20 +69,20 @@ import {
   UpdatePoolIncentivesProposalSDKType,
 } from "../../../osmosis/pool-incentives/v1beta1/gov";
 import {
-  SetProtoRevEnabledProposal,
-  SetProtoRevEnabledProposalProtoMsg,
-  SetProtoRevEnabledProposalSDKType,
   SetProtoRevAdminAccountProposal,
   SetProtoRevAdminAccountProposalProtoMsg,
   SetProtoRevAdminAccountProposalSDKType,
+  SetProtoRevEnabledProposal,
+  SetProtoRevEnabledProposalProtoMsg,
+  SetProtoRevEnabledProposalSDKType,
 } from "../../../osmosis/protorev/v1beta1/gov";
 import {
-  SetSuperfluidAssetsProposal,
-  SetSuperfluidAssetsProposalProtoMsg,
-  SetSuperfluidAssetsProposalSDKType,
   RemoveSuperfluidAssetsProposal,
   RemoveSuperfluidAssetsProposalProtoMsg,
   RemoveSuperfluidAssetsProposalSDKType,
+  SetSuperfluidAssetsProposal,
+  SetSuperfluidAssetsProposalProtoMsg,
+  SetSuperfluidAssetsProposalSDKType,
   UpdateUnpoolWhiteListProposal,
   UpdateUnpoolWhiteListProposalProtoMsg,
   UpdateUnpoolWhiteListProposalSDKType,
@@ -89,6 +92,7 @@ import {
   UpdateFeeTokenProposalProtoMsg,
   UpdateFeeTokenProposalSDKType,
 } from "../../../osmosis/txfees/v1beta1/gov";
+import { Coin, CoinAmino, CoinSDKType } from "../../base/v1beta1/coin";
 import {
   CommunityPoolSpendProposal,
   CommunityPoolSpendProposalProtoMsg,
@@ -103,15 +107,13 @@ import {
   ParameterChangeProposalSDKType,
 } from "../../params/v1beta1/params";
 import {
-  SoftwareUpgradeProposal,
-  SoftwareUpgradeProposalProtoMsg,
-  SoftwareUpgradeProposalSDKType,
   CancelSoftwareUpgradeProposal,
   CancelSoftwareUpgradeProposalProtoMsg,
   CancelSoftwareUpgradeProposalSDKType,
+  SoftwareUpgradeProposal,
+  SoftwareUpgradeProposalProtoMsg,
+  SoftwareUpgradeProposalSDKType,
 } from "../../upgrade/v1beta1/upgrade";
-import { Long, isSet, toTimestamp, fromTimestamp } from "../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /** VoteOption enumerates the valid vote options for a given governance proposal. */
 export enum VoteOption {
   /** VOTE_OPTION_UNSPECIFIED - VOTE_OPTION_UNSPECIFIED defines a no-op vote option. */
@@ -700,7 +702,7 @@ export const WeightedVoteOption = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): WeightedVoteOption {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseWeightedVoteOption();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -781,7 +783,7 @@ export const TextProposal = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): TextProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTextProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -865,7 +867,7 @@ export const Deposit = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Deposit {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDeposit();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1005,7 +1007,7 @@ export const Proposal = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Proposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1192,7 +1194,7 @@ export const TallyResult = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): TallyResult {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTallyResult();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1289,7 +1291,7 @@ export const Vote = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Vote {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseVote();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1400,7 +1402,7 @@ export const DepositParams = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): DepositParams {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDepositParams();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1492,7 +1494,7 @@ export const VotingParams = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): VotingParams {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseVotingParams();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1577,7 +1579,7 @@ export const TallyParams = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): TallyParams {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTallyParams();
     while (reader.pos < end) {
       const tag = reader.uint32();

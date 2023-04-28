@@ -1,3 +1,6 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import { Coin, CoinAmino, CoinSDKType } from "../../base/v1beta1/coin";
 import {
   Input,
@@ -7,7 +10,6 @@ import {
   OutputAmino,
   OutputSDKType,
 } from "./bank";
-import * as _m0 from "protobufjs/minimal";
 /** MsgSend represents a message to send coins from one account to another. */
 export interface MsgSend {
   fromAddress: string;
@@ -111,7 +113,7 @@ export const MsgSend = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgSend {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSend();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -194,7 +196,7 @@ export const MsgSendResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgSendResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSendResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -261,7 +263,7 @@ export const MsgMultiSend = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgMultiSend {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgMultiSend();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -351,7 +353,7 @@ export const MsgMultiSendResponse = {
     length?: number
   ): MsgMultiSendResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgMultiSendResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

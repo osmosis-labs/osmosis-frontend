@@ -1,3 +1,11 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
+import {
+  PacketId,
+  PacketIdAmino,
+  PacketIdSDKType,
+} from "../../../core/channel/v1/channel";
 import {
   Fee,
   FeeAmino,
@@ -6,12 +14,6 @@ import {
   PacketFeeAmino,
   PacketFeeSDKType,
 } from "./fee";
-import {
-  PacketId,
-  PacketIdAmino,
-  PacketIdSDKType,
-} from "../../../core/channel/v1/channel";
-import * as _m0 from "protobufjs/minimal";
 /** MsgRegisterPayee defines the request type for the RegisterPayee rpc */
 export interface MsgRegisterPayee {
   /** unique port identifier */
@@ -262,7 +264,7 @@ export const MsgRegisterPayee = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgRegisterPayee {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgRegisterPayee();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -348,7 +350,7 @@ export const MsgRegisterPayeeResponse = {
     length?: number
   ): MsgRegisterPayeeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgRegisterPayeeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -434,7 +436,7 @@ export const MsgRegisterCounterpartyPayee = {
     length?: number
   ): MsgRegisterCounterpartyPayee {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgRegisterCounterpartyPayee();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -534,7 +536,7 @@ export const MsgRegisterCounterpartyPayeeResponse = {
     length?: number
   ): MsgRegisterCounterpartyPayeeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgRegisterCounterpartyPayeeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -627,7 +629,7 @@ export const MsgPayPacketFee = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgPayPacketFee {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgPayPacketFee();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -728,7 +730,7 @@ export const MsgPayPacketFeeResponse = {
     length?: number
   ): MsgPayPacketFeeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgPayPacketFeeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -806,7 +808,7 @@ export const MsgPayPacketFeeAsync = {
     length?: number
   ): MsgPayPacketFeeAsync {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgPayPacketFeeAsync();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -894,7 +896,7 @@ export const MsgPayPacketFeeAsyncResponse = {
     length?: number
   ): MsgPayPacketFeeAsyncResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgPayPacketFeeAsyncResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

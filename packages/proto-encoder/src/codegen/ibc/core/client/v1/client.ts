@@ -1,11 +1,13 @@
-import { Any, AnyAmino, AnySDKType } from "../../../../google/protobuf/any";
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Plan,
   PlanAmino,
   PlanSDKType,
 } from "../../../../cosmos/upgrade/v1beta1/upgrade";
+import { Any, AnyAmino, AnySDKType } from "../../../../google/protobuf/any";
 import { Long } from "../../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /**
  * IdentifiedClientState defines a client state with an additional client
  * identifier field.
@@ -345,7 +347,7 @@ export const IdentifiedClientState = {
     length?: number
   ): IdentifiedClientState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseIdentifiedClientState();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -435,7 +437,7 @@ export const ConsensusStateWithHeight = {
     length?: number
   ): ConsensusStateWithHeight {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseConsensusStateWithHeight();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -538,7 +540,7 @@ export const ClientConsensusStates = {
     length?: number
   ): ClientConsensusStates {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseClientConsensusStates();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -645,7 +647,7 @@ export const ClientUpdateProposal = {
     length?: number
   ): ClientUpdateProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseClientUpdateProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -749,7 +751,7 @@ export const UpgradeProposal = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): UpgradeProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpgradeProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -852,7 +854,7 @@ export const Height = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Height {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseHeight();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -938,7 +940,7 @@ export const Params = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Params {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParams();
     while (reader.pos < end) {
       const tag = reader.uint32();

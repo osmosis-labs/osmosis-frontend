@@ -1,3 +1,12 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
+import {
+  Any,
+  AnyAmino,
+  AnyProtoMsg,
+  AnySDKType,
+} from "../../../google/protobuf/any";
 import {
   PageRequest,
   PageRequestAmino,
@@ -7,23 +16,16 @@ import {
   PageResponseSDKType,
 } from "../../base/query/v1beta1/pagination";
 import {
-  Any,
-  AnyProtoMsg,
-  AnyAmino,
-  AnySDKType,
-} from "../../../google/protobuf/any";
-import {
-  Params,
-  ParamsAmino,
-  ParamsSDKType,
   BaseAccount,
   BaseAccountProtoMsg,
   BaseAccountSDKType,
   ModuleAccount,
   ModuleAccountProtoMsg,
   ModuleAccountSDKType,
+  Params,
+  ParamsAmino,
+  ParamsSDKType,
 } from "./auth";
-import * as _m0 from "protobufjs/minimal";
 /**
  * QueryAccountsRequest is the request type for the Query/Accounts RPC method.
  *
@@ -370,7 +372,7 @@ export const QueryAccountsRequest = {
     length?: number
   ): QueryAccountsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryAccountsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -457,7 +459,7 @@ export const QueryAccountsResponse = {
     length?: number
   ): QueryAccountsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryAccountsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -550,7 +552,7 @@ export const QueryAccountRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryAccountRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryAccountRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -618,7 +620,7 @@ export const QueryModuleAccountsRequest = {
     length?: number
   ): QueryModuleAccountsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryModuleAccountsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -691,7 +693,7 @@ export const QueryParamsResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryParamsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryParamsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -767,7 +769,7 @@ export const QueryAccountResponse = {
     length?: number
   ): QueryAccountResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryAccountResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -839,7 +841,7 @@ export const QueryParamsRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryParamsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryParamsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -905,7 +907,7 @@ export const QueryModuleAccountsResponse = {
     length?: number
   ): QueryModuleAccountsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryModuleAccountsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -996,7 +998,7 @@ export const Bech32PrefixRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Bech32PrefixRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseBech32PrefixRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1062,7 +1064,7 @@ export const Bech32PrefixResponse = {
     length?: number
   ): Bech32PrefixResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseBech32PrefixResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1135,7 +1137,7 @@ export const AddressBytesToStringRequest = {
     length?: number
   ): AddressBytesToStringRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAddressBytesToStringRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1222,7 +1224,7 @@ export const AddressBytesToStringResponse = {
     length?: number
   ): AddressBytesToStringResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAddressBytesToStringResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1309,7 +1311,7 @@ export const AddressStringToBytesRequest = {
     length?: number
   ): AddressStringToBytesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAddressStringToBytesRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1396,7 +1398,7 @@ export const AddressStringToBytesResponse = {
     length?: number
   ): AddressStringToBytesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAddressStringToBytesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

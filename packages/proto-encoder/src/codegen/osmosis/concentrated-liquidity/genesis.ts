@@ -1,25 +1,18 @@
-import { TickInfo, TickInfoAmino, TickInfoSDKType } from "./tickInfo";
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Any,
-  AnyProtoMsg,
   AnyAmino,
+  AnyProtoMsg,
   AnySDKType,
 } from "../../google/protobuf/any";
-import {
-  IncentiveRecord,
-  IncentiveRecordAmino,
-  IncentiveRecordSDKType,
-} from "./incentive_record";
-import { Params, ParamsAmino, ParamsSDKType } from "./params";
-import { Position, PositionAmino, PositionSDKType } from "./position";
+import { Long } from "../../helpers";
 import {
   AccumulatorContent,
   AccumulatorContentAmino,
   AccumulatorContentSDKType,
 } from "../accum/v1beta1/accum";
-import { Pool as Pool1 } from "./pool";
-import { PoolProtoMsg as Pool1ProtoMsg } from "./pool";
-import { PoolSDKType as Pool1SDKType } from "./pool";
 import {
   CosmWasmPool,
   CosmWasmPoolProtoMsg,
@@ -31,8 +24,17 @@ import { PoolSDKType as Pool2SDKType } from "../gamm/pool-models/balancer/balanc
 import { Pool as Pool3 } from "../gamm/pool-models/stableswap/stableswap_pool";
 import { PoolProtoMsg as Pool3ProtoMsg } from "../gamm/pool-models/stableswap/stableswap_pool";
 import { PoolSDKType as Pool3SDKType } from "../gamm/pool-models/stableswap/stableswap_pool";
-import { Long } from "../../helpers";
-import * as _m0 from "protobufjs/minimal";
+import {
+  IncentiveRecord,
+  IncentiveRecordAmino,
+  IncentiveRecordSDKType,
+} from "./incentive_record";
+import { Params, ParamsAmino, ParamsSDKType } from "./params";
+import { Pool as Pool1 } from "./pool";
+import { PoolProtoMsg as Pool1ProtoMsg } from "./pool";
+import { PoolSDKType as Pool1SDKType } from "./pool";
+import { Position, PositionAmino, PositionSDKType } from "./position";
+import { TickInfo, TickInfoAmino, TickInfoSDKType } from "./tickInfo";
 /**
  * FullTick contains tick index and pool id along with other tick model
  * information.
@@ -217,7 +219,7 @@ export const FullTick = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): FullTick {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFullTick();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -329,7 +331,7 @@ export const PoolData = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): PoolData {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePoolData();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -478,7 +480,7 @@ export const GenesisState = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): GenesisState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGenesisState();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -599,7 +601,7 @@ export const AccumObject = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): AccumObject {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccumObject();
     while (reader.pos < end) {
       const tag = reader.uint32();

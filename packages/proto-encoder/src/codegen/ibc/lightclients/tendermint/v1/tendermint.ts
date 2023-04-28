@@ -1,24 +1,18 @@
-import {
-  Duration,
-  DurationAmino,
-  DurationSDKType,
-} from "../../../../google/protobuf/duration";
-import {
-  Height,
-  HeightAmino,
-  HeightSDKType,
-} from "../../../core/client/v1/client";
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   ProofSpec,
   ProofSpecAmino,
   ProofSpecSDKType,
 } from "../../../../cosmos/ics23/v1/proofs";
-import { Timestamp } from "../../../../google/protobuf/timestamp";
 import {
-  MerkleRoot,
-  MerkleRootAmino,
-  MerkleRootSDKType,
-} from "../../../core/commitment/v1/commitment";
+  Duration,
+  DurationAmino,
+  DurationSDKType,
+} from "../../../../google/protobuf/duration";
+import { Timestamp } from "../../../../google/protobuf/timestamp";
+import { fromTimestamp, Long, toTimestamp } from "../../../../helpers";
 import {
   SignedHeader,
   SignedHeaderAmino,
@@ -29,8 +23,16 @@ import {
   ValidatorSetAmino,
   ValidatorSetSDKType,
 } from "../../../../tendermint/types/validator";
-import { Long, toTimestamp, fromTimestamp } from "../../../../helpers";
-import * as _m0 from "protobufjs/minimal";
+import {
+  Height,
+  HeightAmino,
+  HeightSDKType,
+} from "../../../core/client/v1/client";
+import {
+  MerkleRoot,
+  MerkleRootAmino,
+  MerkleRootSDKType,
+} from "../../../core/commitment/v1/commitment";
 /**
  * ClientState from Tendermint tracks the current validator set, latest height,
  * and a possible frozen height.
@@ -376,7 +378,7 @@ export const ClientState = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ClientState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseClientState();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -575,7 +577,7 @@ export const ConsensusState = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ConsensusState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseConsensusState();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -674,7 +676,7 @@ export const Misbehaviour = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Misbehaviour {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMisbehaviour();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -791,7 +793,7 @@ export const Header = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Header {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseHeader();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -915,7 +917,7 @@ export const Fraction = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Fraction {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFraction();
     while (reader.pos < end) {
       const tag = reader.uint32();

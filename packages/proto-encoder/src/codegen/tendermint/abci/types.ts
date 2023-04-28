@@ -1,5 +1,9 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import { Timestamp } from "../../google/protobuf/timestamp";
-import { Header, HeaderAmino, HeaderSDKType } from "../types/types";
+import { fromTimestamp, isSet, Long, toTimestamp } from "../../helpers";
+import { PublicKey, PublicKeyAmino, PublicKeySDKType } from "../crypto/keys";
 import { ProofOps, ProofOpsAmino, ProofOpsSDKType } from "../crypto/proof";
 import {
   EvidenceParams,
@@ -12,9 +16,7 @@ import {
   VersionParamsAmino,
   VersionParamsSDKType,
 } from "../types/params";
-import { PublicKey, PublicKeyAmino, PublicKeySDKType } from "../crypto/keys";
-import { Long, toTimestamp, fromTimestamp, isSet } from "../../helpers";
-import * as _m0 from "protobufjs/minimal";
+import { Header, HeaderAmino, HeaderSDKType } from "../types/types";
 export enum CheckTxType {
   NEW = 0,
   RECHECK = 1,
@@ -1506,7 +1508,7 @@ export const Request = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Request {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1760,7 +1762,7 @@ export const RequestEcho = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): RequestEcho {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestEcho();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1819,7 +1821,7 @@ export const RequestFlush = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): RequestFlush {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestFlush();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1884,7 +1886,7 @@ export const RequestInfo = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): RequestInfo {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestInfo();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1974,7 +1976,7 @@ export const RequestSetOption = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): RequestSetOption {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestSetOption();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2070,7 +2072,7 @@ export const RequestInitChain = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): RequestInitChain {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestInitChain();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2204,7 +2206,7 @@ export const RequestQuery = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): RequestQuery {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestQuery();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2304,7 +2306,7 @@ export const RequestBeginBlock = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): RequestBeginBlock {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestBeginBlock();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2414,7 +2416,7 @@ export const RequestCheckTx = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): RequestCheckTx {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestCheckTx();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2484,7 +2486,7 @@ export const RequestDeliverTx = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): RequestDeliverTx {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestDeliverTx();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2548,7 +2550,7 @@ export const RequestEndBlock = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): RequestEndBlock {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestEndBlock();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2610,7 +2612,7 @@ export const RequestCommit = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): RequestCommit {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestCommit();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2665,7 +2667,7 @@ export const RequestListSnapshots = {
     length?: number
   ): RequestListSnapshots {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestListSnapshots();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2729,7 +2731,7 @@ export const RequestOfferSnapshot = {
     length?: number
   ): RequestOfferSnapshot {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestOfferSnapshot();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2817,7 +2819,7 @@ export const RequestLoadSnapshotChunk = {
     length?: number
   ): RequestLoadSnapshotChunk {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestLoadSnapshotChunk();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2915,7 +2917,7 @@ export const RequestApplySnapshotChunk = {
     length?: number
   ): RequestApplySnapshotChunk {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestApplySnapshotChunk();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3092,7 +3094,7 @@ export const Response = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Response {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3363,7 +3365,7 @@ export const ResponseException = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ResponseException {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseException();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3427,7 +3429,7 @@ export const ResponseEcho = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ResponseEcho {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseEcho();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3486,7 +3488,7 @@ export const ResponseFlush = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ResponseFlush {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseFlush();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3559,7 +3561,7 @@ export const ResponseInfo = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ResponseInfo {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseInfo();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3665,7 +3667,7 @@ export const ResponseSetOption = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ResponseSetOption {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseSetOption();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3752,7 +3754,7 @@ export const ResponseInitChain = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ResponseInitChain {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseInitChain();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3881,7 +3883,7 @@ export const ResponseQuery = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ResponseQuery {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseQuery();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -4006,7 +4008,7 @@ export const ResponseBeginBlock = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ResponseBeginBlock {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseBeginBlock();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -4106,7 +4108,7 @@ export const ResponseCheckTx = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ResponseCheckTx {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseCheckTx();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -4256,7 +4258,7 @@ export const ResponseDeliverTx = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ResponseDeliverTx {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseDeliverTx();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -4389,7 +4391,7 @@ export const ResponseEndBlock = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ResponseEndBlock {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseEndBlock();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -4499,7 +4501,7 @@ export const ResponseCommit = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ResponseCommit {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseCommit();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -4577,7 +4579,7 @@ export const ResponseListSnapshots = {
     length?: number
   ): ResponseListSnapshots {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseListSnapshots();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -4653,7 +4655,7 @@ export const ResponseOfferSnapshot = {
     length?: number
   ): ResponseOfferSnapshot {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseOfferSnapshot();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -4722,7 +4724,7 @@ export const ResponseLoadSnapshotChunk = {
     length?: number
   ): ResponseLoadSnapshotChunk {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseLoadSnapshotChunk();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -4807,7 +4809,7 @@ export const ResponseApplySnapshotChunk = {
     length?: number
   ): ResponseApplySnapshotChunk {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseApplySnapshotChunk();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -4934,7 +4936,7 @@ export const ConsensusParams = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ConsensusParams {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseConsensusParams();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -5044,7 +5046,7 @@ export const BlockParams = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): BlockParams {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseBlockParams();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -5124,7 +5126,7 @@ export const LastCommitInfo = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): LastCommitInfo {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLastCommitInfo();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -5203,7 +5205,7 @@ export const Event = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Event {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEvent();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -5292,7 +5294,7 @@ export const EventAttribute = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): EventAttribute {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEventAttribute();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -5383,7 +5385,7 @@ export const TxResult = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): TxResult {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTxResult();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -5479,7 +5481,7 @@ export const Validator = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Validator {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseValidator();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -5556,7 +5558,7 @@ export const ValidatorUpdate = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ValidatorUpdate {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseValidatorUpdate();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -5638,7 +5640,7 @@ export const VoteInfo = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): VoteInfo {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseVoteInfo();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -5734,7 +5736,7 @@ export const Evidence = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Evidence {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEvidence();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -5855,7 +5857,7 @@ export const Snapshot = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Snapshot {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSnapshot();
     while (reader.pos < end) {
       const tag = reader.uint32();

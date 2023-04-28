@@ -1,15 +1,17 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
+import { Timestamp } from "../../google/protobuf/timestamp";
+import { fromTimestamp, Long, toTimestamp } from "../../helpers";
 import {
-  Vote,
-  VoteAmino,
-  VoteSDKType,
   LightBlock,
   LightBlockAmino,
   LightBlockSDKType,
+  Vote,
+  VoteAmino,
+  VoteSDKType,
 } from "./types";
-import { Timestamp } from "../../google/protobuf/timestamp";
 import { Validator, ValidatorAmino, ValidatorSDKType } from "./validator";
-import { Long, toTimestamp, fromTimestamp } from "../../helpers";
-import * as _m0 from "protobufjs/minimal";
 export interface Evidence {
   duplicateVoteEvidence?: DuplicateVoteEvidence;
   lightClientAttackEvidence?: LightClientAttackEvidence;
@@ -139,7 +141,7 @@ export const Evidence = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Evidence {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEvidence();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -257,7 +259,7 @@ export const DuplicateVoteEvidence = {
     length?: number
   ): DuplicateVoteEvidence {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDuplicateVoteEvidence();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -392,7 +394,7 @@ export const LightClientAttackEvidence = {
     length?: number
   ): LightClientAttackEvidence {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLightClientAttackEvidence();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -522,7 +524,7 @@ export const EvidenceList = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): EvidenceList {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEvidenceList();
     while (reader.pos < end) {
       const tag = reader.uint32();

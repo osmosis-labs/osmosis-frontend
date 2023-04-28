@@ -1,29 +1,31 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
+import { Long } from "../../../helpers";
 import { DecCoin, DecCoinAmino, DecCoinSDKType } from "../../base/v1beta1/coin";
 import {
-  ValidatorAccumulatedCommission,
-  ValidatorAccumulatedCommissionAmino,
-  ValidatorAccumulatedCommissionSDKType,
-  ValidatorHistoricalRewards,
-  ValidatorHistoricalRewardsAmino,
-  ValidatorHistoricalRewardsSDKType,
-  ValidatorCurrentRewards,
-  ValidatorCurrentRewardsAmino,
-  ValidatorCurrentRewardsSDKType,
   DelegatorStartingInfo,
   DelegatorStartingInfoAmino,
   DelegatorStartingInfoSDKType,
-  ValidatorSlashEvent,
-  ValidatorSlashEventAmino,
-  ValidatorSlashEventSDKType,
-  Params,
-  ParamsAmino,
-  ParamsSDKType,
   FeePool,
   FeePoolAmino,
   FeePoolSDKType,
+  Params,
+  ParamsAmino,
+  ParamsSDKType,
+  ValidatorAccumulatedCommission,
+  ValidatorAccumulatedCommissionAmino,
+  ValidatorAccumulatedCommissionSDKType,
+  ValidatorCurrentRewards,
+  ValidatorCurrentRewardsAmino,
+  ValidatorCurrentRewardsSDKType,
+  ValidatorHistoricalRewards,
+  ValidatorHistoricalRewardsAmino,
+  ValidatorHistoricalRewardsSDKType,
+  ValidatorSlashEvent,
+  ValidatorSlashEventAmino,
+  ValidatorSlashEventSDKType,
 } from "./distribution";
-import { Long } from "../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /**
  * DelegatorWithdrawInfo is the address for where distributions rewards are
  * withdrawn to by default this struct is only used at genesis to feed in
@@ -355,7 +357,7 @@ export const DelegatorWithdrawInfo = {
     length?: number
   ): DelegatorWithdrawInfo {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDelegatorWithdrawInfo();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -438,7 +440,7 @@ export const ValidatorOutstandingRewardsRecord = {
     length?: number
   ): ValidatorOutstandingRewardsRecord {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseValidatorOutstandingRewardsRecord();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -549,7 +551,7 @@ export const ValidatorAccumulatedCommissionRecord = {
     length?: number
   ): ValidatorAccumulatedCommissionRecord {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseValidatorAccumulatedCommissionRecord();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -664,7 +666,7 @@ export const ValidatorHistoricalRewardsRecord = {
     length?: number
   ): ValidatorHistoricalRewardsRecord {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseValidatorHistoricalRewardsRecord();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -783,7 +785,7 @@ export const ValidatorCurrentRewardsRecord = {
     length?: number
   ): ValidatorCurrentRewardsRecord {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseValidatorCurrentRewardsRecord();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -897,7 +899,7 @@ export const DelegatorStartingInfoRecord = {
     length?: number
   ): DelegatorStartingInfoRecord {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDelegatorStartingInfoRecord();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1021,7 +1023,7 @@ export const ValidatorSlashEventRecord = {
     length?: number
   ): ValidatorSlashEventRecord {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseValidatorSlashEventRecord();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1184,7 +1186,7 @@ export const GenesisState = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): GenesisState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGenesisState();
     while (reader.pos < end) {
       const tag = reader.uint32();

@@ -1,6 +1,8 @@
-import { Timestamp } from "../../google/protobuf/timestamp";
-import { Long, toTimestamp, fromTimestamp } from "../../helpers";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
+import { Timestamp } from "../../google/protobuf/timestamp";
+import { fromTimestamp, Long, toTimestamp } from "../../helpers";
 export interface ProtocolVersion {
   p2p: Long;
   block: Long;
@@ -157,7 +159,7 @@ export const ProtocolVersion = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ProtocolVersion {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseProtocolVersion();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -273,7 +275,7 @@ export const NodeInfo = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): NodeInfo {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseNodeInfo();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -398,7 +400,7 @@ export const NodeInfoOther = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): NodeInfoOther {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseNodeInfoOther();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -479,7 +481,7 @@ export const PeerInfo = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): PeerInfo {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePeerInfo();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -590,7 +592,7 @@ export const PeerAddressInfo = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): PeerAddressInfo {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePeerAddressInfo();
     while (reader.pos < end) {
       const tag = reader.uint32();

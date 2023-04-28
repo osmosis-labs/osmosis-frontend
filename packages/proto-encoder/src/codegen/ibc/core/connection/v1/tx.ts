@@ -1,3 +1,9 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
+import { Any, AnyAmino, AnySDKType } from "../../../../google/protobuf/any";
+import { Long } from "../../../../helpers";
+import { Height, HeightAmino, HeightSDKType } from "../../client/v1/client";
 import {
   Counterparty,
   CounterpartyAmino,
@@ -6,10 +12,6 @@ import {
   VersionAmino,
   VersionSDKType,
 } from "./connection";
-import { Any, AnyAmino, AnySDKType } from "../../../../google/protobuf/any";
-import { Height, HeightAmino, HeightSDKType } from "../../client/v1/client";
-import { Long } from "../../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /**
  * MsgConnectionOpenInit defines the msg sent by an account on Chain A to
  * initialize a connection with Chain B.
@@ -362,7 +364,7 @@ export const MsgConnectionOpenInit = {
     length?: number
   ): MsgConnectionOpenInit {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgConnectionOpenInit();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -471,7 +473,7 @@ export const MsgConnectionOpenInitResponse = {
     length?: number
   ): MsgConnectionOpenInitResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgConnectionOpenInitResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -602,7 +604,7 @@ export const MsgConnectionOpenTry = {
     length?: number
   ): MsgConnectionOpenTry {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgConnectionOpenTry();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -787,7 +789,7 @@ export const MsgConnectionOpenTryResponse = {
     length?: number
   ): MsgConnectionOpenTryResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgConnectionOpenTryResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -905,7 +907,7 @@ export const MsgConnectionOpenAck = {
     length?: number
   ): MsgConnectionOpenAck {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgConnectionOpenAck();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1060,7 +1062,7 @@ export const MsgConnectionOpenAckResponse = {
     length?: number
   ): MsgConnectionOpenAckResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgConnectionOpenAckResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1150,7 +1152,7 @@ export const MsgConnectionOpenConfirm = {
     length?: number
   ): MsgConnectionOpenConfirm {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgConnectionOpenConfirm();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1253,7 +1255,7 @@ export const MsgConnectionOpenConfirmResponse = {
     length?: number
   ): MsgConnectionOpenConfirmResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgConnectionOpenConfirmResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

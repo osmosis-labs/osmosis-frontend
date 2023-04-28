@@ -1,3 +1,4 @@
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
 /** IncentivizedAcknowledgement is the acknowledgement format to be used by applications wrapped in the fee middleware */
 export interface IncentivizedAcknowledgement {
@@ -60,7 +61,7 @@ export const IncentivizedAcknowledgement = {
     length?: number
   ): IncentivizedAcknowledgement {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseIncentivizedAcknowledgement();
     while (reader.pos < end) {
       const tag = reader.uint32();

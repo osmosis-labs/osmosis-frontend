@@ -1,16 +1,18 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import { Any, AnyAmino, AnySDKType } from "../../../../google/protobuf/any";
-import {
-  ConnectionEnd,
-  ConnectionEndAmino,
-  ConnectionEndSDKType,
-} from "../../../core/connection/v1/connection";
+import { isSet, Long } from "../../../../helpers";
 import {
   Channel,
   ChannelAmino,
   ChannelSDKType,
 } from "../../../core/channel/v1/channel";
-import { Long, isSet } from "../../../../helpers";
-import * as _m0 from "protobufjs/minimal";
+import {
+  ConnectionEnd,
+  ConnectionEndAmino,
+  ConnectionEndSDKType,
+} from "../../../core/connection/v1/connection";
 /**
  * DataType defines the type of solo machine proof being created. This is done
  * to preserve uniqueness of different data sign byte encodings.
@@ -687,7 +689,7 @@ export const ClientState = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ClientState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseClientState();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -796,7 +798,7 @@ export const ConsensusState = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ConsensusState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseConsensusState();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -906,7 +908,7 @@ export const Header = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Header {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseHeader();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1033,7 +1035,7 @@ export const Misbehaviour = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Misbehaviour {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMisbehaviour();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1156,7 +1158,7 @@ export const SignatureAndData = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): SignatureAndData {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSignatureAndData();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1258,7 +1260,7 @@ export const TimestampedSignatureData = {
     length?: number
   ): TimestampedSignatureData {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTimestampedSignatureData();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1365,7 +1367,7 @@ export const SignBytes = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): SignBytes {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSignBytes();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1473,7 +1475,7 @@ export const HeaderData = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): HeaderData {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseHeaderData();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1560,7 +1562,7 @@ export const ClientStateData = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ClientStateData {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseClientStateData();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1647,7 +1649,7 @@ export const ConsensusStateData = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ConsensusStateData {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseConsensusStateData();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1737,7 +1739,7 @@ export const ConnectionStateData = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ConnectionStateData {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseConnectionStateData();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1824,7 +1826,7 @@ export const ChannelStateData = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ChannelStateData {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseChannelStateData();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1912,7 +1914,7 @@ export const PacketCommitmentData = {
     length?: number
   ): PacketCommitmentData {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePacketCommitmentData();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1995,7 +1997,7 @@ export const PacketAcknowledgementData = {
     length?: number
   ): PacketAcknowledgementData {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePacketAcknowledgementData();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2084,7 +2086,7 @@ export const PacketReceiptAbsenceData = {
     length?: number
   ): PacketReceiptAbsenceData {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePacketReceiptAbsenceData();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2171,7 +2173,7 @@ export const NextSequenceRecvData = {
     length?: number
   ): NextSequenceRecvData {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseNextSequenceRecvData();
     while (reader.pos < end) {
       const tag = reader.uint32();

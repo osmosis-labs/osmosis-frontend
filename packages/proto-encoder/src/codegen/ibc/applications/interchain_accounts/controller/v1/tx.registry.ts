@@ -1,5 +1,6 @@
 //@ts-nocheck
 import { GeneratedType, Registry } from "@cosmjs/proto-signing";
+
 import { MsgRegisterInterchainAccount, MsgSendTx } from "./tx";
 export const registry: ReadonlyArray<[string, GeneratedType]> = [
   [

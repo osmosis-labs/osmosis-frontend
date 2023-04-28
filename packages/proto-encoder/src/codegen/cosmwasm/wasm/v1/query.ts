@@ -1,3 +1,7 @@
+//@ts-nocheck
+import { fromUtf8, toUtf8 } from "@cosmjs/encoding";
+import * as _m0 from "protobufjs/minimal";
+
 import {
   PageRequest,
   PageRequestAmino,
@@ -6,26 +10,24 @@ import {
   PageResponseAmino,
   PageResponseSDKType,
 } from "../../../cosmos/base/query/v1beta1/pagination";
+import { Long } from "../../../helpers";
 import {
-  ContractInfo,
-  ContractInfoAmino,
-  ContractInfoSDKType,
-  ContractCodeHistoryEntry,
-  ContractCodeHistoryEntryAmino,
-  ContractCodeHistoryEntrySDKType,
-  Model,
-  ModelAmino,
-  ModelSDKType,
   AccessConfig,
   AccessConfigAmino,
   AccessConfigSDKType,
+  ContractCodeHistoryEntry,
+  ContractCodeHistoryEntryAmino,
+  ContractCodeHistoryEntrySDKType,
+  ContractInfo,
+  ContractInfoAmino,
+  ContractInfoSDKType,
+  Model,
+  ModelAmino,
+  ModelSDKType,
   Params,
   ParamsAmino,
   ParamsSDKType,
 } from "./types";
-import { Long } from "../../../helpers";
-import * as _m0 from "protobufjs/minimal";
-import { toUtf8, fromUtf8 } from "@cosmjs/encoding";
 /**
  * QueryContractInfoRequest is the request type for the Query/ContractInfo RPC
  * method
@@ -754,7 +756,7 @@ export const QueryContractInfoRequest = {
     length?: number
   ): QueryContractInfoRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryContractInfoRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -844,7 +846,7 @@ export const QueryContractInfoResponse = {
     length?: number
   ): QueryContractInfoResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryContractInfoResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -944,7 +946,7 @@ export const QueryContractHistoryRequest = {
     length?: number
   ): QueryContractHistoryRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryContractHistoryRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1051,7 +1053,7 @@ export const QueryContractHistoryResponse = {
     length?: number
   ): QueryContractHistoryResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryContractHistoryResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1166,7 +1168,7 @@ export const QueryContractsByCodeRequest = {
     length?: number
   ): QueryContractsByCodeRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryContractsByCodeRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1276,7 +1278,7 @@ export const QueryContractsByCodeResponse = {
     length?: number
   ): QueryContractsByCodeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryContractsByCodeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1386,7 +1388,7 @@ export const QueryAllContractStateRequest = {
     length?: number
   ): QueryAllContractStateRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryAllContractStateRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1493,7 +1495,7 @@ export const QueryAllContractStateResponse = {
     length?: number
   ): QueryAllContractStateResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryAllContractStateResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1605,7 +1607,7 @@ export const QueryRawContractStateRequest = {
     length?: number
   ): QueryRawContractStateRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryRawContractStateRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1698,7 +1700,7 @@ export const QueryRawContractStateResponse = {
     length?: number
   ): QueryRawContractStateResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryRawContractStateResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1789,7 +1791,7 @@ export const QuerySmartContractStateRequest = {
     length?: number
   ): QuerySmartContractStateRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQuerySmartContractStateRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1884,7 +1886,7 @@ export const QuerySmartContractStateResponse = {
     length?: number
   ): QuerySmartContractStateResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQuerySmartContractStateResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1968,7 +1970,7 @@ export const QueryCodeRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryCodeRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryCodeRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2056,7 +2058,7 @@ export const CodeInfoResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): CodeInfoResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCodeInfoResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2165,7 +2167,7 @@ export const QueryCodeResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryCodeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryCodeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2248,7 +2250,7 @@ export const QueryCodesRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryCodesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryCodesRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2332,7 +2334,7 @@ export const QueryCodesResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryCodesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryCodesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2429,7 +2431,7 @@ export const QueryPinnedCodesRequest = {
     length?: number
   ): QueryPinnedCodesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryPinnedCodesRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2528,7 +2530,7 @@ export const QueryPinnedCodesResponse = {
     length?: number
   ): QueryPinnedCodesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryPinnedCodesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2629,7 +2631,7 @@ export const QueryParamsRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryParamsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryParamsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2692,7 +2694,7 @@ export const QueryParamsResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryParamsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryParamsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2772,7 +2774,7 @@ export const QueryContractsByCreatorRequest = {
     length?: number
   ): QueryContractsByCreatorRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryContractsByCreatorRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2879,7 +2881,7 @@ export const QueryContractsByCreatorResponse = {
     length?: number
   ): QueryContractsByCreatorResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryContractsByCreatorResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

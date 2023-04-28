@@ -1,6 +1,8 @@
-import { PublicKey, PublicKeyAmino, PublicKeySDKType } from "../crypto/keys";
-import { Long } from "../../helpers";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
+import { Long } from "../../helpers";
+import { PublicKey, PublicKeyAmino, PublicKeySDKType } from "../crypto/keys";
 export interface ValidatorSet {
   validators: Validator[];
   proposer?: Validator;
@@ -96,7 +98,7 @@ export const ValidatorSet = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ValidatorSet {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseValidatorSet();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -205,7 +207,7 @@ export const Validator = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Validator {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseValidator();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -306,7 +308,7 @@ export const SimpleValidator = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): SimpleValidator {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSimpleValidator();
     while (reader.pos < end) {
       const tag = reader.uint32();

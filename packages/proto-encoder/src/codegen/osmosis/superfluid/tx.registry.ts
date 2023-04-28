@@ -1,13 +1,14 @@
 //@ts-nocheck
 import { GeneratedType, Registry } from "@cosmjs/proto-signing";
+
 import {
-  MsgSuperfluidDelegate,
-  MsgSuperfluidUndelegate,
-  MsgSuperfluidUnbondLock,
-  MsgSuperfluidUndelegateAndUnbondLock,
   MsgLockAndSuperfluidDelegate,
-  MsgUnPoolWhitelistedPool,
+  MsgSuperfluidDelegate,
+  MsgSuperfluidUnbondLock,
+  MsgSuperfluidUndelegate,
+  MsgSuperfluidUndelegateAndUnbondLock,
   MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition,
+  MsgUnPoolWhitelistedPool,
 } from "./tx";
 export const registry: ReadonlyArray<[string, GeneratedType]> = [
   ["/osmosis.superfluid.MsgSuperfluidDelegate", MsgSuperfluidDelegate],

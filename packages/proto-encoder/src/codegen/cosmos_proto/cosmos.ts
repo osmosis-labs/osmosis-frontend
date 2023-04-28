@@ -1,3 +1,4 @@
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
 export enum ScalarType {
   SCALAR_TYPE_UNSPECIFIED = 0,
@@ -195,7 +196,7 @@ export const InterfaceDescriptor = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): InterfaceDescriptor {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseInterfaceDescriptor();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -275,7 +276,7 @@ export const ScalarDescriptor = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ScalarDescriptor {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseScalarDescriptor();
     while (reader.pos < end) {
       const tag = reader.uint32();

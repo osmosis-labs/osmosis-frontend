@@ -1,10 +1,12 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
+import { Long } from "../../../helpers";
 import {
   SuperfluidAsset,
   SuperfluidAssetAmino,
   SuperfluidAssetSDKType,
 } from "../superfluid";
-import { Long } from "../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /**
  * SetSuperfluidAssetsProposal is a gov Content type to update the superfluid
  * assets
@@ -149,7 +151,7 @@ export const SetSuperfluidAssetsProposal = {
     length?: number
   ): SetSuperfluidAssetsProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSetSuperfluidAssetsProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -266,7 +268,7 @@ export const RemoveSuperfluidAssetsProposal = {
     length?: number
   ): RemoveSuperfluidAssetsProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRemoveSuperfluidAssetsProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -387,7 +389,7 @@ export const UpdateUnpoolWhiteListProposal = {
     length?: number
   ): UpdateUnpoolWhiteListProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpdateUnpoolWhiteListProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();

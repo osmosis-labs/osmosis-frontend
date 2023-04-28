@@ -1,10 +1,10 @@
 //@ts-nocheck
 import {
-  MsgCreatePosition,
-  MsgWithdrawPosition,
   MsgCollectFees,
   MsgCollectIncentives,
+  MsgCreatePosition,
   MsgFungifyChargedPositions,
+  MsgWithdrawPosition,
 } from "./tx";
 export const AminoConverter = {
   "/osmosis.concentratedliquidity.v1beta1.MsgCreatePosition": {

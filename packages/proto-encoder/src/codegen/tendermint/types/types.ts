@@ -1,13 +1,15 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
+import { Timestamp } from "../../google/protobuf/timestamp";
+import { fromTimestamp, isSet, Long, toTimestamp } from "../../helpers";
 import { Proof, ProofAmino, ProofSDKType } from "../crypto/proof";
 import { Consensus, ConsensusAmino, ConsensusSDKType } from "../version/types";
-import { Timestamp } from "../../google/protobuf/timestamp";
 import {
   ValidatorSet,
   ValidatorSetAmino,
   ValidatorSetSDKType,
 } from "./validator";
-import { Long, toTimestamp, fromTimestamp, isSet } from "../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /** BlockIdFlag indicates which BlcokID the signature is for */
 export enum BlockIDFlag {
   BLOCK_ID_FLAG_UNKNOWN = 0,
@@ -535,7 +537,7 @@ export const PartSetHeader = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): PartSetHeader {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePartSetHeader();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -610,7 +612,7 @@ export const Part = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Part {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePart();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -696,7 +698,7 @@ export const BlockID = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): BlockID {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseBlockID();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -828,7 +830,7 @@ export const Header = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Header {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseHeader();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -986,7 +988,7 @@ export const Data = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Data {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseData();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1082,7 +1084,7 @@ export const Vote = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Vote {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseVote();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1216,7 +1218,7 @@ export const Commit = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Commit {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCommit();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1332,7 +1334,7 @@ export const CommitSig = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): CommitSig {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCommitSig();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1449,7 +1451,7 @@ export const Proposal = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Proposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1569,7 +1571,7 @@ export const SignedHeader = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): SignedHeader {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSignedHeader();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1655,7 +1657,7 @@ export const LightBlock = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): LightBlock {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLightBlock();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1751,7 +1753,7 @@ export const BlockMeta = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): BlockMeta {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseBlockMeta();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1859,7 +1861,7 @@ export const TxProof = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): TxProof {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTxProof();
     while (reader.pos < end) {
       const tag = reader.uint32();

@@ -1,16 +1,18 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
+import { Long } from "../../../helpers";
 import {
-  TokenPairArbRoutes,
-  TokenPairArbRoutesAmino,
-  TokenPairArbRoutesSDKType,
-  PoolWeights,
-  PoolWeightsAmino,
-  PoolWeightsSDKType,
   BaseDenom,
   BaseDenomAmino,
   BaseDenomSDKType,
+  PoolWeights,
+  PoolWeightsAmino,
+  PoolWeightsSDKType,
+  TokenPairArbRoutes,
+  TokenPairArbRoutesAmino,
+  TokenPairArbRoutesSDKType,
 } from "./protorev";
-import { Long } from "../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /** MsgSetHotRoutes defines the Msg/SetHotRoutes request type. */
 export interface MsgSetHotRoutes {
   /** admin is the account that is authorized to set the hot routes. */
@@ -339,7 +341,7 @@ export const MsgSetHotRoutes = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgSetHotRoutes {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetHotRoutes();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -424,7 +426,7 @@ export const MsgSetHotRoutesResponse = {
     length?: number
   ): MsgSetHotRoutesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetHotRoutesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -502,7 +504,7 @@ export const MsgSetDeveloperAccount = {
     length?: number
   ): MsgSetDeveloperAccount {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetDeveloperAccount();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -578,7 +580,7 @@ export const MsgSetDeveloperAccountResponse = {
     length?: number
   ): MsgSetDeveloperAccountResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetDeveloperAccountResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -662,7 +664,7 @@ export const MsgSetPoolWeights = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgSetPoolWeights {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetPoolWeights();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -743,7 +745,7 @@ export const MsgSetPoolWeightsResponse = {
     length?: number
   ): MsgSetPoolWeightsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetPoolWeightsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -823,7 +825,7 @@ export const MsgSetMaxPoolPointsPerTx = {
     length?: number
   ): MsgSetMaxPoolPointsPerTx {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetMaxPoolPointsPerTx();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -913,7 +915,7 @@ export const MsgSetMaxPoolPointsPerTxResponse = {
     length?: number
   ): MsgSetMaxPoolPointsPerTxResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetMaxPoolPointsPerTxResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -997,7 +999,7 @@ export const MsgSetMaxPoolPointsPerBlock = {
     length?: number
   ): MsgSetMaxPoolPointsPerBlock {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetMaxPoolPointsPerBlock();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1091,7 +1093,7 @@ export const MsgSetMaxPoolPointsPerBlockResponse = {
     length?: number
   ): MsgSetMaxPoolPointsPerBlockResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetMaxPoolPointsPerBlockResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1172,7 +1174,7 @@ export const MsgSetBaseDenoms = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgSetBaseDenoms {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetBaseDenoms();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1255,7 +1257,7 @@ export const MsgSetBaseDenomsResponse = {
     length?: number
   ): MsgSetBaseDenomsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetBaseDenomsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

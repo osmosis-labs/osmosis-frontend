@@ -1,10 +1,12 @@
-import { Params, ParamsAmino, ParamsSDKType } from "./params";
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   DenomAuthorityMetadata,
   DenomAuthorityMetadataAmino,
   DenomAuthorityMetadataSDKType,
 } from "./authorityMetadata";
-import * as _m0 from "protobufjs/minimal";
+import { Params, ParamsAmino, ParamsSDKType } from "./params";
 /** QueryParamsRequest is the request type for the Query/Params RPC method. */
 export interface QueryParamsRequest {}
 export interface QueryParamsRequestProtoMsg {
@@ -216,7 +218,7 @@ export const QueryParamsRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryParamsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryParamsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -279,7 +281,7 @@ export const QueryParamsResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryParamsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryParamsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -355,7 +357,7 @@ export const QueryDenomAuthorityMetadataRequest = {
     length?: number
   ): QueryDenomAuthorityMetadataRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryDenomAuthorityMetadataRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -446,7 +448,7 @@ export const QueryDenomAuthorityMetadataResponse = {
     length?: number
   ): QueryDenomAuthorityMetadataResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryDenomAuthorityMetadataResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -545,7 +547,7 @@ export const QueryDenomsFromCreatorRequest = {
     length?: number
   ): QueryDenomsFromCreatorRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryDenomsFromCreatorRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -632,7 +634,7 @@ export const QueryDenomsFromCreatorResponse = {
     length?: number
   ): QueryDenomsFromCreatorResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryDenomsFromCreatorResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -725,7 +727,7 @@ export const QueryBeforeSendHookAddressRequest = {
     length?: number
   ): QueryBeforeSendHookAddressRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryBeforeSendHookAddressRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -813,7 +815,7 @@ export const QueryBeforeSendHookAddressResponse = {
     length?: number
   ): QueryBeforeSendHookAddressResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryBeforeSendHookAddressResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

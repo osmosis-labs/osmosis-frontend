@@ -48,6 +48,12 @@
     "ts-node": "^10.9.1"
   },
   "dependencies": {
+    "@cosmjs/amino": "0.29.0",
+    "@cosmjs/encoding": "0.29.0",
+    "@cosmjs/proto-signing": "0.29.0",
+    "@cosmjs/stargate": "0.29.0",
+    "@cosmjs/tendermint-rpc": "0.29.0",
+    "long": "^5.2.0",
     "protobufjs": "^6.11.2"
   }
 }

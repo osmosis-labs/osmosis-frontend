@@ -1,10 +1,10 @@
 //@ts-nocheck
 import {
-  MsgLockTokens,
-  MsgBeginUnlockingAll,
   MsgBeginUnlocking,
+  MsgBeginUnlockingAll,
   MsgExtendLockup,
   MsgForceUnlock,
+  MsgLockTokens,
 } from "./tx";
 export const AminoConverter = {
   "/osmosis.lockup.MsgLockTokens": {

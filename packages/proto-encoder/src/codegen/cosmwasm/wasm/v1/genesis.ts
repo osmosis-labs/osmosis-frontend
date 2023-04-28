@@ -1,22 +1,24 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
+import { Long } from "../../../helpers";
 import {
-  Params,
-  ParamsAmino,
-  ParamsSDKType,
   CodeInfo,
   CodeInfoAmino,
   CodeInfoSDKType,
+  ContractCodeHistoryEntry,
+  ContractCodeHistoryEntryAmino,
+  ContractCodeHistoryEntrySDKType,
   ContractInfo,
   ContractInfoAmino,
   ContractInfoSDKType,
   Model,
   ModelAmino,
   ModelSDKType,
-  ContractCodeHistoryEntry,
-  ContractCodeHistoryEntryAmino,
-  ContractCodeHistoryEntrySDKType,
+  Params,
+  ParamsAmino,
+  ParamsSDKType,
 } from "./types";
-import { Long } from "../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /** GenesisState - genesis state of x/wasm */
 export interface GenesisState {
   params?: Params;
@@ -159,7 +161,7 @@ export const GenesisState = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): GenesisState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGenesisState();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -283,7 +285,7 @@ export const Code = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Code {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCode();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -396,7 +398,7 @@ export const Contract = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Contract {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseContract();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -519,7 +521,7 @@ export const Sequence = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Sequence {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSequence();
     while (reader.pos < end) {
       const tag = reader.uint32();

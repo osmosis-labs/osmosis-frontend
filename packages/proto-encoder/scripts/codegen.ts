@@ -19,7 +19,7 @@ telescope({
   options: {
     removeUnusedImports: true,
     tsDisable: {
-      patterns: ["**/*amino.ts", "**/*registry.ts"],
+      disableAll: true,
     },
     experimentalGlobalProtoNamespace: true, //  [ 'v1beta1' ] concentratedliquidity
     prototypes: {

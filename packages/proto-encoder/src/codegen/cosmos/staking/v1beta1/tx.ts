@@ -1,23 +1,25 @@
+//@ts-nocheck
+import { decodeBech32Pubkey, encodeBech32Pubkey } from "@cosmjs/amino";
+import { fromBase64, toBase64 } from "@cosmjs/encoding";
+import * as _m0 from "protobufjs/minimal";
+
 import {
-  Description,
-  DescriptionAmino,
-  DescriptionSDKType,
+  Any,
+  AnyAmino,
+  AnyProtoMsg,
+  AnySDKType,
+} from "../../../google/protobuf/any";
+import { Timestamp } from "../../../google/protobuf/timestamp";
+import { fromTimestamp, toTimestamp } from "../../../helpers";
+import { Coin, CoinAmino, CoinSDKType } from "../../base/v1beta1/coin";
+import {
   CommissionRates,
   CommissionRatesAmino,
   CommissionRatesSDKType,
+  Description,
+  DescriptionAmino,
+  DescriptionSDKType,
 } from "./staking";
-import {
-  Any,
-  AnyProtoMsg,
-  AnyAmino,
-  AnySDKType,
-} from "../../../google/protobuf/any";
-import { Coin, CoinAmino, CoinSDKType } from "../../base/v1beta1/coin";
-import { Timestamp } from "../../../google/protobuf/timestamp";
-import * as _m0 from "protobufjs/minimal";
-import { toBase64, fromBase64 } from "@cosmjs/encoding";
-import { encodeBech32Pubkey, decodeBech32Pubkey } from "@cosmjs/amino";
-import { toTimestamp, fromTimestamp } from "../../../helpers";
 /** MsgCreateValidator defines a SDK message for creating a new validator. */
 export interface MsgCreateValidator {
   description?: Description;
@@ -338,7 +340,7 @@ export const MsgCreateValidator = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateValidator {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateValidator();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -473,7 +475,7 @@ export const MsgCreateValidatorResponse = {
     length?: number
   ): MsgCreateValidatorResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateValidatorResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -561,7 +563,7 @@ export const MsgEditValidator = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgEditValidator {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgEditValidator();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -654,7 +656,7 @@ export const MsgEditValidatorResponse = {
     length?: number
   ): MsgEditValidatorResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgEditValidatorResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -733,7 +735,7 @@ export const MsgDelegate = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgDelegate {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgDelegate();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -813,7 +815,7 @@ export const MsgDelegateResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgDelegateResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgDelegateResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -888,7 +890,7 @@ export const MsgBeginRedelegate = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgBeginRedelegate {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgBeginRedelegate();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -985,7 +987,7 @@ export const MsgBeginRedelegateResponse = {
     length?: number
   ): MsgBeginRedelegateResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgBeginRedelegateResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1083,7 +1085,7 @@ export const MsgUndelegate = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgUndelegate {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgUndelegate();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1174,7 +1176,7 @@ export const MsgUndelegateResponse = {
     length?: number
   ): MsgUndelegateResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgUndelegateResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

@@ -1,9 +1,11 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   BaseAccount,
   BaseAccountAmino,
   BaseAccountSDKType,
 } from "../../../../cosmos/auth/v1beta1/auth";
-import * as _m0 from "protobufjs/minimal";
 /** An InterchainAccount is defined as a BaseAccount & the address of the account owner on the controller chain */
 export interface InterchainAccount {
   $typeUrl?: string;
@@ -55,7 +57,7 @@ export const InterchainAccount = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): InterchainAccount {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseInterchainAccount();
     while (reader.pos < end) {
       const tag = reader.uint32();

@@ -1,18 +1,13 @@
-import {
-  SwapAmountInRoute,
-  SwapAmountInRouteAmino,
-  SwapAmountInRouteSDKType,
-  SwapAmountOutRoute,
-  SwapAmountOutRouteAmino,
-  SwapAmountOutRouteSDKType,
-} from "./swap_route";
-import { Params, ParamsAmino, ParamsSDKType } from "./genesis";
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Any,
-  AnyProtoMsg,
   AnyAmino,
+  AnyProtoMsg,
   AnySDKType,
 } from "../../../google/protobuf/any";
+import { Long } from "../../../helpers";
 import { Pool as Pool1 } from "../../concentrated-liquidity/pool";
 import { PoolProtoMsg as Pool1ProtoMsg } from "../../concentrated-liquidity/pool";
 import { PoolSDKType as Pool1SDKType } from "../../concentrated-liquidity/pool";
@@ -27,8 +22,15 @@ import { PoolSDKType as Pool2SDKType } from "../../gamm/pool-models/balancer/bal
 import { Pool as Pool3 } from "../../gamm/pool-models/stableswap/stableswap_pool";
 import { PoolProtoMsg as Pool3ProtoMsg } from "../../gamm/pool-models/stableswap/stableswap_pool";
 import { PoolSDKType as Pool3SDKType } from "../../gamm/pool-models/stableswap/stableswap_pool";
-import { Long } from "../../../helpers";
-import * as _m0 from "protobufjs/minimal";
+import { Params, ParamsAmino, ParamsSDKType } from "./genesis";
+import {
+  SwapAmountInRoute,
+  SwapAmountInRouteAmino,
+  SwapAmountInRouteSDKType,
+  SwapAmountOutRoute,
+  SwapAmountOutRouteAmino,
+  SwapAmountOutRouteSDKType,
+} from "./swap_route";
 /** =============================== Params */
 export interface ParamsRequest {}
 export interface ParamsRequestProtoMsg {
@@ -406,7 +408,7 @@ export const ParamsRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ParamsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParamsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -469,7 +471,7 @@ export const ParamsResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ParamsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParamsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -553,7 +555,7 @@ export const EstimateSwapExactAmountInRequest = {
     length?: number
   ): EstimateSwapExactAmountInRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEstimateSwapExactAmountInRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -675,7 +677,7 @@ export const EstimateSinglePoolSwapExactAmountInRequest = {
     length?: number
   ): EstimateSinglePoolSwapExactAmountInRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEstimateSinglePoolSwapExactAmountInRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -779,7 +781,7 @@ export const EstimateSwapExactAmountInResponse = {
     length?: number
   ): EstimateSwapExactAmountInResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEstimateSwapExactAmountInResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -874,7 +876,7 @@ export const EstimateSwapExactAmountOutRequest = {
     length?: number
   ): EstimateSwapExactAmountOutRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEstimateSwapExactAmountOutRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -996,7 +998,7 @@ export const EstimateSinglePoolSwapExactAmountOutRequest = {
     length?: number
   ): EstimateSinglePoolSwapExactAmountOutRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEstimateSinglePoolSwapExactAmountOutRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1100,7 +1102,7 @@ export const EstimateSwapExactAmountOutResponse = {
     length?: number
   ): EstimateSwapExactAmountOutResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEstimateSwapExactAmountOutResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1180,7 +1182,7 @@ export const NumPoolsRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): NumPoolsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseNumPoolsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1243,7 +1245,7 @@ export const NumPoolsResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): NumPoolsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseNumPoolsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1316,7 +1318,7 @@ export const PoolRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): PoolRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePoolRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1389,7 +1391,7 @@ export const PoolResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): PoolResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePoolResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1462,7 +1464,7 @@ export const AllPoolsRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): AllPoolsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAllPoolsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1535,7 +1537,7 @@ export const AllPoolsResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): AllPoolsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAllPoolsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1621,7 +1623,7 @@ export const SpotPriceRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): SpotPriceRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSpotPriceRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1706,7 +1708,7 @@ export const SpotPriceResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): SpotPriceResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSpotPriceResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

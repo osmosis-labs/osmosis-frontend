@@ -1,3 +1,4 @@
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
 /**
  * Coin defines a token with a denomination and an amount.
@@ -134,7 +135,7 @@ export const Coin = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Coin {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCoin();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -214,7 +215,7 @@ export const DecCoin = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): DecCoin {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDecCoin();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -290,7 +291,7 @@ export const IntProto = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): IntProto {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseIntProto();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -360,7 +361,7 @@ export const DecProto = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): DecProto {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDecProto();
     while (reader.pos < end) {
       const tag = reader.uint32();

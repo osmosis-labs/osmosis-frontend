@@ -1,5 +1,7 @@
-import { Any, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
+import { Any, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
 /**
  * LegacyAminoPubKey specifies a public key type
  * which nests multiple public keys and a threshold,
@@ -57,7 +59,7 @@ export const LegacyAminoPubKey = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): LegacyAminoPubKey {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLegacyAminoPubKey();
     while (reader.pos < end) {
       const tag = reader.uint32();

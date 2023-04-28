@@ -1,3 +1,4 @@
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
 /**
  * SetProtoRevEnabledProposal is a gov Content type to update whether the
@@ -106,7 +107,7 @@ export const SetProtoRevEnabledProposal = {
     length?: number
   ): SetProtoRevEnabledProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSetProtoRevEnabledProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -214,7 +215,7 @@ export const SetProtoRevAdminAccountProposal = {
     length?: number
   ): SetProtoRevAdminAccountProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSetProtoRevAdminAccountProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();

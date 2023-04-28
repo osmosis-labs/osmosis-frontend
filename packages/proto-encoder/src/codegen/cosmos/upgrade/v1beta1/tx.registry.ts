@@ -1,6 +1,7 @@
 //@ts-nocheck
 import { GeneratedType, Registry } from "@cosmjs/proto-signing";
-import { MsgSoftwareUpgrade, MsgCancelUpgrade } from "./tx";
+
+import { MsgCancelUpgrade, MsgSoftwareUpgrade } from "./tx";
 export const registry: ReadonlyArray<[string, GeneratedType]> = [
   ["/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade", MsgSoftwareUpgrade],
   ["/cosmos.upgrade.v1beta1.MsgCancelUpgrade", MsgCancelUpgrade],

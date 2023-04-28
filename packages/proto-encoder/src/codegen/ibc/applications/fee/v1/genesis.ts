@@ -1,14 +1,16 @@
-import {
-  IdentifiedPacketFees,
-  IdentifiedPacketFeesAmino,
-  IdentifiedPacketFeesSDKType,
-} from "./fee";
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   PacketId,
   PacketIdAmino,
   PacketIdSDKType,
 } from "../../../core/channel/v1/channel";
-import * as _m0 from "protobufjs/minimal";
+import {
+  IdentifiedPacketFees,
+  IdentifiedPacketFeesAmino,
+  IdentifiedPacketFeesSDKType,
+} from "./fee";
 /** GenesisState defines the ICS29 fee middleware genesis state */
 export interface GenesisState {
   /** list of identified packet fees */
@@ -212,7 +214,7 @@ export const GenesisState = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): GenesisState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGenesisState();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -382,7 +384,7 @@ export const FeeEnabledChannel = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): FeeEnabledChannel {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFeeEnabledChannel();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -466,7 +468,7 @@ export const RegisteredPayee = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): RegisteredPayee {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRegisteredPayee();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -559,7 +561,7 @@ export const RegisteredCounterpartyPayee = {
     length?: number
   ): RegisteredCounterpartyPayee {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRegisteredCounterpartyPayee();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -662,7 +664,7 @@ export const ForwardRelayerAddress = {
     length?: number
   ): ForwardRelayerAddress {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseForwardRelayerAddress();
     while (reader.pos < end) {
       const tag = reader.uint32();

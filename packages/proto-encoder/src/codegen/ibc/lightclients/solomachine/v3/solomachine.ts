@@ -1,6 +1,8 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import { Any, AnyAmino, AnySDKType } from "../../../../google/protobuf/any";
 import { Long } from "../../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /**
  * ClientState defines a solo machine client that tracks the current consensus
  * state and if the client is frozen.
@@ -322,7 +324,7 @@ export const ClientState = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ClientState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseClientState();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -425,7 +427,7 @@ export const ConsensusState = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ConsensusState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseConsensusState();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -531,7 +533,7 @@ export const Header = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Header {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseHeader();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -645,7 +647,7 @@ export const Misbehaviour = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Misbehaviour {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMisbehaviour();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -762,7 +764,7 @@ export const SignatureAndData = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): SignatureAndData {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSignatureAndData();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -862,7 +864,7 @@ export const TimestampedSignatureData = {
     length?: number
   ): TimestampedSignatureData {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTimestampedSignatureData();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -969,7 +971,7 @@ export const SignBytes = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): SignBytes {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSignBytes();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1075,7 +1077,7 @@ export const HeaderData = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): HeaderData {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseHeaderData();
     while (reader.pos < end) {
       const tag = reader.uint32();

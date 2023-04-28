@@ -1,10 +1,11 @@
 //@ts-nocheck
 import { GeneratedType, Registry } from "@cosmjs/proto-signing";
+
 import {
-  MsgCreateValidator,
-  MsgEditValidator,
-  MsgDelegate,
   MsgBeginRedelegate,
+  MsgCreateValidator,
+  MsgDelegate,
+  MsgEditValidator,
   MsgUndelegate,
 } from "./tx";
 export const registry: ReadonlyArray<[string, GeneratedType]> = [

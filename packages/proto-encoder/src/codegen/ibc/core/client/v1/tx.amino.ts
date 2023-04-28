@@ -1,9 +1,9 @@
 //@ts-nocheck
 import {
   MsgCreateClient,
+  MsgSubmitMisbehaviour,
   MsgUpdateClient,
   MsgUpgradeClient,
-  MsgSubmitMisbehaviour,
 } from "./tx";
 export const AminoConverter = {
   "/ibc.core.client.v1.MsgCreateClient": {

@@ -1,8 +1,12 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Coin,
   CoinAmino,
   CoinSDKType,
 } from "../../../cosmos/base/v1beta1/coin";
+import { Long } from "../../../helpers";
 import {
   SwapAmountInRoute,
   SwapAmountInRouteAmino,
@@ -11,8 +15,6 @@ import {
   SwapAmountOutRouteAmino,
   SwapAmountOutRouteSDKType,
 } from "../../poolmanager/v1beta1/swap_route";
-import { Long } from "../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /**
  * ===================== MsgJoinPool
  * This is really MsgJoinPoolNoSwap
@@ -435,7 +437,7 @@ export const MsgJoinPool = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgJoinPool {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgJoinPool();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -539,7 +541,7 @@ export const MsgJoinPoolResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgJoinPoolResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgJoinPoolResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -635,7 +637,7 @@ export const MsgExitPool = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgExitPool {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgExitPool();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -735,7 +737,7 @@ export const MsgExitPoolResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgExitPoolResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgExitPoolResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -828,7 +830,7 @@ export const MsgSwapExactAmountIn = {
     length?: number
   ): MsgSwapExactAmountIn {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSwapExactAmountIn();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -933,7 +935,7 @@ export const MsgSwapExactAmountInResponse = {
     length?: number
   ): MsgSwapExactAmountInResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSwapExactAmountInResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1032,7 +1034,7 @@ export const MsgSwapExactAmountOut = {
     length?: number
   ): MsgSwapExactAmountOut {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSwapExactAmountOut();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1141,7 +1143,7 @@ export const MsgSwapExactAmountOutResponse = {
     length?: number
   ): MsgSwapExactAmountOutResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSwapExactAmountOutResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1240,7 +1242,7 @@ export const MsgJoinSwapExternAmountIn = {
     length?: number
   ): MsgJoinSwapExternAmountIn {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgJoinSwapExternAmountIn();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1347,7 +1349,7 @@ export const MsgJoinSwapExternAmountInResponse = {
     length?: number
   ): MsgJoinSwapExternAmountInResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgJoinSwapExternAmountInResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1450,7 +1452,7 @@ export const MsgJoinSwapShareAmountOut = {
     length?: number
   ): MsgJoinSwapShareAmountOut {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgJoinSwapShareAmountOut();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1560,7 +1562,7 @@ export const MsgJoinSwapShareAmountOutResponse = {
     length?: number
   ): MsgJoinSwapShareAmountOutResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgJoinSwapShareAmountOutResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1663,7 +1665,7 @@ export const MsgExitSwapShareAmountIn = {
     length?: number
   ): MsgExitSwapShareAmountIn {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgExitSwapShareAmountIn();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1773,7 +1775,7 @@ export const MsgExitSwapShareAmountInResponse = {
     length?: number
   ): MsgExitSwapShareAmountInResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgExitSwapShareAmountInResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1872,7 +1874,7 @@ export const MsgExitSwapExternAmountOut = {
     length?: number
   ): MsgExitSwapExternAmountOut {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgExitSwapExternAmountOut();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1987,7 +1989,7 @@ export const MsgExitSwapExternAmountOutResponse = {
     length?: number
   ): MsgExitSwapExternAmountOutResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgExitSwapExternAmountOutResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

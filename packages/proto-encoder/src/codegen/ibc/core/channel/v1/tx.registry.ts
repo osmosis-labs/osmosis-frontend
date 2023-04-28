@@ -1,16 +1,17 @@
 //@ts-nocheck
 import { GeneratedType, Registry } from "@cosmjs/proto-signing";
+
 import {
-  MsgChannelOpenInit,
-  MsgChannelOpenTry,
+  MsgAcknowledgement,
+  MsgChannelCloseConfirm,
+  MsgChannelCloseInit,
   MsgChannelOpenAck,
   MsgChannelOpenConfirm,
-  MsgChannelCloseInit,
-  MsgChannelCloseConfirm,
+  MsgChannelOpenInit,
+  MsgChannelOpenTry,
   MsgRecvPacket,
   MsgTimeout,
   MsgTimeoutOnClose,
-  MsgAcknowledgement,
 } from "./tx";
 export const registry: ReadonlyArray<[string, GeneratedType]> = [
   ["/ibc.core.channel.v1.MsgChannelOpenInit", MsgChannelOpenInit],

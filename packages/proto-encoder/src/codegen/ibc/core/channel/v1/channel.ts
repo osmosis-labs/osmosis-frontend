@@ -1,6 +1,8 @@
-import { Height, HeightAmino, HeightSDKType } from "../../client/v1/client";
-import { Long, isSet } from "../../../../helpers";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
+import { isSet, Long } from "../../../../helpers";
+import { Height, HeightAmino, HeightSDKType } from "../../client/v1/client";
 /**
  * State defines if a channel is in one of the following states:
  * CLOSED, INIT, TRYOPEN, OPEN or UNINITIALIZED.
@@ -510,7 +512,7 @@ export const Channel = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Channel {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseChannel();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -644,7 +646,7 @@ export const IdentifiedChannel = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): IdentifiedChannel {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseIdentifiedChannel();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -767,7 +769,7 @@ export const Counterparty = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Counterparty {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCounterparty();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -871,7 +873,7 @@ export const Packet = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Packet {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePacket();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1010,7 +1012,7 @@ export const PacketState = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): PacketState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePacketState();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1109,7 +1111,7 @@ export const PacketId = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): PacketId {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePacketId();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1198,7 +1200,7 @@ export const Acknowledgement = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Acknowledgement {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAcknowledgement();
     while (reader.pos < end) {
       const tag = reader.uint32();

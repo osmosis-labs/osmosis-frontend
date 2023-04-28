@@ -1,5 +1,6 @@
 //@ts-nocheck
 import { GeneratedType, Registry } from "@cosmjs/proto-signing";
+
 import {
   MsgCreateStableswapPool,
   MsgStableSwapAdjustScalingFactors,

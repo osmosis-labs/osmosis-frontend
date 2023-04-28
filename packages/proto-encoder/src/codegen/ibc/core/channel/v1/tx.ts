@@ -1,3 +1,8 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
+import { isSet, Long } from "../../../../helpers";
+import { Height, HeightAmino, HeightSDKType } from "../../client/v1/client";
 import {
   Channel,
   ChannelAmino,
@@ -6,9 +11,6 @@ import {
   PacketAmino,
   PacketSDKType,
 } from "./channel";
-import { Height, HeightAmino, HeightSDKType } from "../../client/v1/client";
-import { Long, isSet } from "../../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /** ResponseResultType defines the possible outcomes of the execution of a message */
 export enum ResponseResultType {
   /** RESPONSE_RESULT_TYPE_UNSPECIFIED - Default zero value enumeration */
@@ -661,7 +663,7 @@ export const MsgChannelOpenInit = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgChannelOpenInit {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgChannelOpenInit();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -755,7 +757,7 @@ export const MsgChannelOpenInitResponse = {
     length?: number
   ): MsgChannelOpenInitResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgChannelOpenInitResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -869,7 +871,7 @@ export const MsgChannelOpenTry = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgChannelOpenTry {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgChannelOpenTry();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -994,7 +996,7 @@ export const MsgChannelOpenTryResponse = {
     length?: number
   ): MsgChannelOpenTryResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgChannelOpenTryResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1104,7 +1106,7 @@ export const MsgChannelOpenAck = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgChannelOpenAck {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgChannelOpenAck();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1215,7 +1217,7 @@ export const MsgChannelOpenAckResponse = {
     length?: number
   ): MsgChannelOpenAckResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgChannelOpenAckResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1307,7 +1309,7 @@ export const MsgChannelOpenConfirm = {
     length?: number
   ): MsgChannelOpenConfirm {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgChannelOpenConfirm();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1406,7 +1408,7 @@ export const MsgChannelOpenConfirmResponse = {
     length?: number
   ): MsgChannelOpenConfirmResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgChannelOpenConfirmResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1491,7 +1493,7 @@ export const MsgChannelCloseInit = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgChannelCloseInit {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgChannelCloseInit();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1571,7 +1573,7 @@ export const MsgChannelCloseInitResponse = {
     length?: number
   ): MsgChannelCloseInitResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgChannelCloseInitResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1663,7 +1665,7 @@ export const MsgChannelCloseConfirm = {
     length?: number
   ): MsgChannelCloseConfirm {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgChannelCloseConfirm();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1764,7 +1766,7 @@ export const MsgChannelCloseConfirmResponse = {
     length?: number
   ): MsgChannelCloseConfirmResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgChannelCloseConfirmResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1853,7 +1855,7 @@ export const MsgRecvPacket = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgRecvPacket {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgRecvPacket();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1954,7 +1956,7 @@ export const MsgRecvPacketResponse = {
     length?: number
   ): MsgRecvPacketResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgRecvPacketResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2042,7 +2044,7 @@ export const MsgTimeout = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgTimeout {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgTimeout();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2151,7 +2153,7 @@ export const MsgTimeoutResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgTimeoutResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgTimeoutResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2243,7 +2245,7 @@ export const MsgTimeoutOnClose = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgTimeoutOnClose {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgTimeoutOnClose();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2361,7 +2363,7 @@ export const MsgTimeoutOnCloseResponse = {
     length?: number
   ): MsgTimeoutOnCloseResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgTimeoutOnCloseResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2459,7 +2461,7 @@ export const MsgAcknowledgement = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgAcknowledgement {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgAcknowledgement();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2566,7 +2568,7 @@ export const MsgAcknowledgementResponse = {
     length?: number
   ): MsgAcknowledgementResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgAcknowledgementResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

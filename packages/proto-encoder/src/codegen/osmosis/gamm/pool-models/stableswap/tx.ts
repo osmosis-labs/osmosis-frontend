@@ -1,15 +1,17 @@
-import {
-  PoolParams,
-  PoolParamsAmino,
-  PoolParamsSDKType,
-} from "./stableswap_pool";
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Coin,
   CoinAmino,
   CoinSDKType,
 } from "../../../../cosmos/base/v1beta1/coin";
 import { Long } from "../../../../helpers";
-import * as _m0 from "protobufjs/minimal";
+import {
+  PoolParams,
+  PoolParamsAmino,
+  PoolParamsSDKType,
+} from "./stableswap_pool";
 /** ===================== MsgCreatePool */
 export interface MsgCreateStableswapPool {
   sender: string;
@@ -155,7 +157,7 @@ export const MsgCreateStableswapPool = {
     length?: number
   ): MsgCreateStableswapPool {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateStableswapPool();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -302,7 +304,7 @@ export const MsgCreateStableswapPoolResponse = {
     length?: number
   ): MsgCreateStableswapPoolResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateStableswapPoolResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -404,7 +406,7 @@ export const MsgStableSwapAdjustScalingFactors = {
     length?: number
   ): MsgStableSwapAdjustScalingFactors {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgStableSwapAdjustScalingFactors();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -517,7 +519,7 @@ export const MsgStableSwapAdjustScalingFactorsResponse = {
     length?: number
   ): MsgStableSwapAdjustScalingFactorsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgStableSwapAdjustScalingFactorsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

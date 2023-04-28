@@ -1,5 +1,7 @@
-import { Long } from "../../../helpers";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
+import { Long } from "../../../helpers";
 /** ===================== MsgCreateConcentratedPool */
 export interface MsgCreateConcentratedPool {
   sender: string;
@@ -96,7 +98,7 @@ export const MsgCreateConcentratedPool = {
     length?: number
   ): MsgCreateConcentratedPool {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateConcentratedPool();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -216,7 +218,7 @@ export const MsgCreateConcentratedPoolResponse = {
     length?: number
   ): MsgCreateConcentratedPoolResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateConcentratedPoolResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

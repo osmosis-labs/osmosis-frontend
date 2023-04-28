@@ -1,4 +1,6 @@
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
 import { isSet } from "../helpers";
 export enum HashOp {
   /** NO_HASH - NO_HASH is the default if no data passed. Note this is an illegal argument some places. */
@@ -783,7 +785,7 @@ export const ExistenceProof = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ExistenceProof {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseExistenceProof();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -882,7 +884,7 @@ export const NonExistenceProof = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): NonExistenceProof {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseNonExistenceProof();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -984,7 +986,7 @@ export const CommitmentProof = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): CommitmentProof {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCommitmentProof();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1107,7 +1109,7 @@ export const LeafOp = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): LeafOp {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLeafOp();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1207,7 +1209,7 @@ export const InnerOp = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): InnerOp {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseInnerOp();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1295,7 +1297,7 @@ export const ProofSpec = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ProofSpec {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseProofSpec();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1413,7 +1415,7 @@ export const InnerSpec = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): InnerSpec {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseInnerSpec();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1520,7 +1522,7 @@ export const BatchProof = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): BatchProof {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseBatchProof();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1600,7 +1602,7 @@ export const BatchEntry = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): BatchEntry {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseBatchEntry();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1689,7 +1691,7 @@ export const CompressedBatchProof = {
     length?: number
   ): CompressedBatchProof {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCompressedBatchProof();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1792,7 +1794,7 @@ export const CompressedBatchEntry = {
     length?: number
   ): CompressedBatchEntry {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCompressedBatchEntry();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1899,7 +1901,7 @@ export const CompressedExistenceProof = {
     length?: number
   ): CompressedExistenceProof {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCompressedExistenceProof();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2020,7 +2022,7 @@ export const CompressedNonExistenceProof = {
     length?: number
   ): CompressedNonExistenceProof {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCompressedNonExistenceProof();
     while (reader.pos < end) {
       const tag = reader.uint32();

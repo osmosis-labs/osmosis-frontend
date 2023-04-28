@@ -1,9 +1,11 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   ValidatorPreference,
   ValidatorPreferenceAmino,
   ValidatorPreferenceSDKType,
 } from "./state";
-import * as _m0 from "protobufjs/minimal";
 /** Request type for UserValidatorPreferences. */
 export interface UserValidatorPreferencesRequest {
   /** user account address */
@@ -67,7 +69,7 @@ export const UserValidatorPreferencesRequest = {
     length?: number
   ): UserValidatorPreferencesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUserValidatorPreferencesRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -154,7 +156,7 @@ export const UserValidatorPreferencesResponse = {
     length?: number
   ): UserValidatorPreferencesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUserValidatorPreferencesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

@@ -1,5 +1,7 @@
-import { Long } from "../../../../helpers";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
+import { Long } from "../../../../helpers";
 /** ===================== MsgCreateCosmwasmPool */
 export interface MsgCreateCosmWasmPool {
   codeId: Long;
@@ -75,7 +77,7 @@ export const MsgCreateCosmWasmPool = {
     length?: number
   ): MsgCreateCosmWasmPool {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateCosmWasmPool();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -163,7 +165,7 @@ export const MsgCreateCosmWasmPoolResponse = {
     length?: number
   ): MsgCreateCosmWasmPoolResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateCosmWasmPoolResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

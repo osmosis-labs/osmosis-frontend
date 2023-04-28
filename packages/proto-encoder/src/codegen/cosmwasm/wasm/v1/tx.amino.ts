@@ -1,18 +1,18 @@
 //@ts-nocheck
 import {
-  MsgStoreCode,
+  MsgClearAdmin,
+  MsgExecuteContract,
   MsgInstantiateContract,
   MsgInstantiateContract2,
-  MsgExecuteContract,
   MsgMigrateContract,
+  MsgPinCodes,
+  MsgStoreAndInstantiateContract,
+  MsgStoreCode,
+  MsgSudoContract,
+  MsgUnpinCodes,
   MsgUpdateAdmin,
-  MsgClearAdmin,
   MsgUpdateInstantiateConfig,
   MsgUpdateParams,
-  MsgSudoContract,
-  MsgPinCodes,
-  MsgUnpinCodes,
-  MsgStoreAndInstantiateContract,
 } from "./tx";
 export const AminoConverter = {
   "/cosmwasm.wasm.v1.MsgStoreCode": {

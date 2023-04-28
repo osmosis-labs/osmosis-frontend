@@ -1,5 +1,7 @@
-import { Long } from "../../../helpers";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
+import { Long } from "../../../helpers";
 /** Deprecated: please use alternate in x/poolmanager */
 /** @deprecated */
 export interface QuerySpotPriceRequest {
@@ -83,7 +85,7 @@ export const QuerySpotPriceRequest = {
     length?: number
   ): QuerySpotPriceRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQuerySpotPriceRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -171,7 +173,7 @@ export const QuerySpotPriceResponse = {
     length?: number
   ): QuerySpotPriceResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQuerySpotPriceResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

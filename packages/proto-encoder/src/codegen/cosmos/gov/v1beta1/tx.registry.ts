@@ -1,6 +1,7 @@
 //@ts-nocheck
 import { GeneratedType, Registry } from "@cosmjs/proto-signing";
-import { MsgSubmitProposal, MsgVote, MsgVoteWeighted, MsgDeposit } from "./tx";
+
+import { MsgDeposit, MsgSubmitProposal, MsgVote, MsgVoteWeighted } from "./tx";
 export const registry: ReadonlyArray<[string, GeneratedType]> = [
   ["/cosmos.gov.v1beta1.MsgSubmitProposal", MsgSubmitProposal],
   ["/cosmos.gov.v1beta1.MsgVote", MsgVote],

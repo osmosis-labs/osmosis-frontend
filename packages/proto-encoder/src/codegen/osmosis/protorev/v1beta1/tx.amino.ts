@@ -1,11 +1,11 @@
 //@ts-nocheck
 import {
-  MsgSetHotRoutes,
-  MsgSetDeveloperAccount,
-  MsgSetMaxPoolPointsPerTx,
-  MsgSetMaxPoolPointsPerBlock,
-  MsgSetPoolWeights,
   MsgSetBaseDenoms,
+  MsgSetDeveloperAccount,
+  MsgSetHotRoutes,
+  MsgSetMaxPoolPointsPerBlock,
+  MsgSetMaxPoolPointsPerTx,
+  MsgSetPoolWeights,
 } from "./tx";
 export const AminoConverter = {
   "/osmosis.protorev.v1beta1.MsgSetHotRoutes": {

@@ -1,12 +1,14 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
+import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
+import { Timestamp } from "../../google/protobuf/timestamp";
+import { fromTimestamp, Long, toTimestamp } from "../../helpers";
 import {
   QueryCondition,
   QueryConditionAmino,
   QueryConditionSDKType,
 } from "../lockup/lock";
-import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
-import { Timestamp } from "../../google/protobuf/timestamp";
-import { Long, toTimestamp, fromTimestamp } from "../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /** MsgCreateGauge creates a gague to distribute rewards to users */
 export interface MsgCreateGauge {
   /**
@@ -176,7 +178,7 @@ export const MsgCreateGauge = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateGauge {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateGauge();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -299,7 +301,7 @@ export const MsgCreateGaugeResponse = {
     length?: number
   ): MsgCreateGaugeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateGaugeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -372,7 +374,7 @@ export const MsgAddToGauge = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgAddToGauge {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgAddToGauge();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -463,7 +465,7 @@ export const MsgAddToGaugeResponse = {
     length?: number
   ): MsgAddToGaugeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgAddToGaugeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

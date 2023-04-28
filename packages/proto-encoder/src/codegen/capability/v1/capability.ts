@@ -1,5 +1,7 @@
-import { Long } from "../../helpers";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
+import { Long } from "../../helpers";
 /**
  * Capability defines an implementation of an object capability. The index
  * provided to a Capability must be globally unique.
@@ -108,7 +110,7 @@ export const Capability = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Capability {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCapability();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -176,7 +178,7 @@ export const Owner = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Owner {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseOwner();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -246,7 +248,7 @@ export const CapabilityOwners = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): CapabilityOwners {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCapabilityOwners();
     while (reader.pos < end) {
       const tag = reader.uint32();

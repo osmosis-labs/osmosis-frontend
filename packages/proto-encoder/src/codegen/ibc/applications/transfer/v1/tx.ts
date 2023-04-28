@@ -1,15 +1,17 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Coin,
   CoinAmino,
   CoinSDKType,
 } from "../../../../cosmos/base/v1beta1/coin";
+import { Long } from "../../../../helpers";
 import {
   Height,
   HeightAmino,
   HeightSDKType,
 } from "../../../core/client/v1/client";
-import { Long } from "../../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /**
  * MsgTransfer defines a msg to transfer fungible tokens (i.e Coins) between
  * ICS20 enabled chains. See ICS Spec here:
@@ -159,7 +161,7 @@ export const MsgTransfer = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgTransfer {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgTransfer();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -286,7 +288,7 @@ export const MsgTransferResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgTransferResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgTransferResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

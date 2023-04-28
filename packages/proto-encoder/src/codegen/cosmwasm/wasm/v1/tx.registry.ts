@@ -1,19 +1,20 @@
 //@ts-nocheck
 import { GeneratedType, Registry } from "@cosmjs/proto-signing";
+
 import {
-  MsgStoreCode,
+  MsgClearAdmin,
+  MsgExecuteContract,
   MsgInstantiateContract,
   MsgInstantiateContract2,
-  MsgExecuteContract,
   MsgMigrateContract,
+  MsgPinCodes,
+  MsgStoreAndInstantiateContract,
+  MsgStoreCode,
+  MsgSudoContract,
+  MsgUnpinCodes,
   MsgUpdateAdmin,
-  MsgClearAdmin,
   MsgUpdateInstantiateConfig,
   MsgUpdateParams,
-  MsgSudoContract,
-  MsgPinCodes,
-  MsgUnpinCodes,
-  MsgStoreAndInstantiateContract,
 } from "./tx";
 export const registry: ReadonlyArray<[string, GeneratedType]> = [
   ["/cosmwasm.wasm.v1.MsgStoreCode", MsgStoreCode],

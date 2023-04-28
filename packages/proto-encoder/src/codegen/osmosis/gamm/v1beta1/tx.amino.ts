@@ -1,13 +1,13 @@
 //@ts-nocheck
 import {
-  MsgJoinPool,
   MsgExitPool,
-  MsgSwapExactAmountIn,
-  MsgSwapExactAmountOut,
-  MsgJoinSwapExternAmountIn,
-  MsgJoinSwapShareAmountOut,
   MsgExitSwapExternAmountOut,
   MsgExitSwapShareAmountIn,
+  MsgJoinPool,
+  MsgJoinSwapExternAmountIn,
+  MsgJoinSwapShareAmountOut,
+  MsgSwapExactAmountIn,
+  MsgSwapExactAmountOut,
 } from "./tx";
 export const AminoConverter = {
   "/osmosis.gamm.v1beta1.MsgJoinPool": {

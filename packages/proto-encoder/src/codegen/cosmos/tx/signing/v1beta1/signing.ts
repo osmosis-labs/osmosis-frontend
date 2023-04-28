@@ -1,11 +1,13 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
+import { Any, AnyAmino, AnySDKType } from "../../../../google/protobuf/any";
+import { isSet, Long } from "../../../../helpers";
 import {
   CompactBitArray,
   CompactBitArrayAmino,
   CompactBitArraySDKType,
 } from "../../../crypto/multisig/v1beta1/multisig";
-import { Any, AnyAmino, AnySDKType } from "../../../../google/protobuf/any";
-import { Long, isSet } from "../../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /**
  * SignMode represents a signing mode with its own security guarantees.
  *
@@ -268,7 +270,7 @@ export const SignatureDescriptors = {
     length?: number
   ): SignatureDescriptors {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSignatureDescriptors();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -360,7 +362,7 @@ export const SignatureDescriptor = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): SignatureDescriptor {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSignatureDescriptor();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -475,7 +477,7 @@ export const SignatureDescriptor_Data = {
     length?: number
   ): SignatureDescriptor_Data {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSignatureDescriptor_Data();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -588,7 +590,7 @@ export const SignatureDescriptor_Data_Single = {
     length?: number
   ): SignatureDescriptor_Data_Single {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSignatureDescriptor_Data_Single();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -688,7 +690,7 @@ export const SignatureDescriptor_Data_Multi = {
     length?: number
   ): SignatureDescriptor_Data_Multi {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSignatureDescriptor_Data_Multi();
     while (reader.pos < end) {
       const tag = reader.uint32();

@@ -1,11 +1,12 @@
 //@ts-nocheck
 import { GeneratedType, Registry } from "@cosmjs/proto-signing";
+
 import {
-  MsgLockTokens,
-  MsgBeginUnlockingAll,
   MsgBeginUnlocking,
+  MsgBeginUnlockingAll,
   MsgExtendLockup,
   MsgForceUnlock,
+  MsgLockTokens,
 } from "./tx";
 export const registry: ReadonlyArray<[string, GeneratedType]> = [
   ["/osmosis.lockup.MsgLockTokens", MsgLockTokens],

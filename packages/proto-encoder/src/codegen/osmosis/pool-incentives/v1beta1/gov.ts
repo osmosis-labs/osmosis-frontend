@@ -1,9 +1,11 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   DistrRecord,
   DistrRecordAmino,
   DistrRecordSDKType,
 } from "./incentives";
-import * as _m0 from "protobufjs/minimal";
 /**
  * ReplacePoolIncentivesProposal is a gov Content type for updating the pool
  * incentives. If a ReplacePoolIncentivesProposal passes, the proposal’s records
@@ -138,7 +140,7 @@ export const ReplacePoolIncentivesProposal = {
     length?: number
   ): ReplacePoolIncentivesProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseReplacePoolIncentivesProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -255,7 +257,7 @@ export const UpdatePoolIncentivesProposal = {
     length?: number
   ): UpdatePoolIncentivesProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpdatePoolIncentivesProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();

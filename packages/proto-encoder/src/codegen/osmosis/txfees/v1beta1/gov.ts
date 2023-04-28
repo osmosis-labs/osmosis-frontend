@@ -1,5 +1,7 @@
-import { FeeToken, FeeTokenAmino, FeeTokenSDKType } from "./feetoken";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
+import { FeeToken, FeeTokenAmino, FeeTokenSDKType } from "./feetoken";
 /**
  * UpdateFeeTokenProposal is a gov Content type for adding a new whitelisted fee
  * token. It must specify a denom along with gamm pool ID to use as a spot price
@@ -76,7 +78,7 @@ export const UpdateFeeTokenProposal = {
     length?: number
   ): UpdateFeeTokenProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpdateFeeTokenProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();

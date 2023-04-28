@@ -1,11 +1,13 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import { Any, AnyAmino, AnySDKType } from "../../../../google/protobuf/any";
+import { Long } from "../../../../helpers";
 import {
   Event,
   EventAmino,
   EventSDKType,
 } from "../../../../tendermint/abci/types";
-import { Long } from "../../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /**
  * TxResponse defines a structure containing relevant tx data and metadata. The
  * tags are stringified and the log is JSON decoded.
@@ -541,7 +543,7 @@ export const TxResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): TxResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTxResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -721,7 +723,7 @@ export const ABCIMessageLog = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ABCIMessageLog {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseABCIMessageLog();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -816,7 +818,7 @@ export const StringEvent = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): StringEvent {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseStringEvent();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -905,7 +907,7 @@ export const Attribute = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Attribute {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAttribute();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -985,7 +987,7 @@ export const GasInfo = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): GasInfo {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGasInfo();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1081,7 +1083,7 @@ export const Result = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Result {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResult();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1190,7 +1192,7 @@ export const SimulationResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): SimulationResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSimulationResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1280,7 +1282,7 @@ export const MsgData = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgData {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgData();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1360,7 +1362,7 @@ export const TxMsgData = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): TxMsgData {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTxMsgData();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1471,7 +1473,7 @@ export const SearchTxsResult = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): SearchTxsResult {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSearchTxsResult();
     while (reader.pos < end) {
       const tag = reader.uint32();

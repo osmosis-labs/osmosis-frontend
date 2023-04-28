@@ -1,7 +1,9 @@
-import { Timestamp } from "../../../google/protobuf/timestamp";
-import { Any, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
-import { Long, toTimestamp, fromTimestamp } from "../../../helpers";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
+import { Any, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
+import { Timestamp } from "../../../google/protobuf/timestamp";
+import { fromTimestamp, Long, toTimestamp } from "../../../helpers";
 /** Plan specifies information about a planned upgrade and when it should occur. */
 export interface Plan {
   /**
@@ -259,7 +261,7 @@ export const Plan = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Plan {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePlan();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -378,7 +380,7 @@ export const SoftwareUpgradeProposal = {
     length?: number
   ): SoftwareUpgradeProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSoftwareUpgradeProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -481,7 +483,7 @@ export const CancelSoftwareUpgradeProposal = {
     length?: number
   ): CancelSoftwareUpgradeProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCancelSoftwareUpgradeProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -575,7 +577,7 @@ export const ModuleVersion = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ModuleVersion {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseModuleVersion();
     while (reader.pos < end) {
       const tag = reader.uint32();

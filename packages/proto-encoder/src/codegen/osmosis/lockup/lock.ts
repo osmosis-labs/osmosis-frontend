@@ -1,12 +1,14 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
+import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
 import {
   Duration,
   DurationAmino,
   DurationSDKType,
 } from "../../google/protobuf/duration";
 import { Timestamp } from "../../google/protobuf/timestamp";
-import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
-import { Long, toTimestamp, fromTimestamp, isSet } from "../../helpers";
-import * as _m0 from "protobufjs/minimal";
+import { fromTimestamp, isSet, Long, toTimestamp } from "../../helpers";
 /**
  * LockQueryType defines the type of the lock query that can
  * either be by duration or start time of the lock.
@@ -309,7 +311,7 @@ export const PeriodLock = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): PeriodLock {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePeriodLock();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -440,7 +442,7 @@ export const QueryCondition = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryCondition {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryCondition();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -558,7 +560,7 @@ export const SyntheticLock = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): SyntheticLock {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSyntheticLock();
     while (reader.pos < end) {
       const tag = reader.uint32();

@@ -1,7 +1,9 @@
-import { Downtime, downtimeFromJSON } from "./downtime_duration";
-import { Timestamp } from "../../../google/protobuf/timestamp";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
-import { toTimestamp, fromTimestamp, isSet } from "../../../helpers";
+
+import { Timestamp } from "../../../google/protobuf/timestamp";
+import { fromTimestamp, isSet, toTimestamp } from "../../../helpers";
+import { Downtime, downtimeFromJSON } from "./downtime_duration";
 export interface GenesisDowntimeEntry {
   duration: Downtime;
   lastDowntime?: Date;
@@ -73,7 +75,7 @@ export const GenesisDowntimeEntry = {
     length?: number
   ): GenesisDowntimeEntry {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGenesisDowntimeEntry();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -162,7 +164,7 @@ export const GenesisState = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): GenesisState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGenesisState();
     while (reader.pos < end) {
       const tag = reader.uint32();

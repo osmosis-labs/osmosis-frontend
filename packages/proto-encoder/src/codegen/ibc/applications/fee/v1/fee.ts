@@ -1,3 +1,6 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Coin,
   CoinAmino,
@@ -8,7 +11,6 @@ import {
   PacketIdAmino,
   PacketIdSDKType,
 } from "../../../core/channel/v1/channel";
-import * as _m0 from "protobufjs/minimal";
 /** Fee defines the ICS29 receive, acknowledgement and timeout fees */
 export interface Fee {
   /** the packet receive fee */
@@ -145,7 +147,7 @@ export const Fee = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Fee {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFee();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -260,7 +262,7 @@ export const PacketFee = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): PacketFee {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePacketFee();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -351,7 +353,7 @@ export const PacketFees = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): PacketFees {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePacketFees();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -437,7 +439,7 @@ export const IdentifiedPacketFees = {
     length?: number
   ): IdentifiedPacketFees {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseIdentifiedPacketFees();
     while (reader.pos < end) {
       const tag = reader.uint32();

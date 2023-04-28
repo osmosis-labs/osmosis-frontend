@@ -1,13 +1,15 @@
-import { Grant, GrantAmino, GrantSDKType, GenericAuthorization } from "./authz";
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Any,
-  AnyProtoMsg,
   AnyAmino,
+  AnyProtoMsg,
   AnySDKType,
 } from "../../../google/protobuf/any";
 import { SendAuthorization } from "../../bank/v1beta1/authz";
 import { StakeAuthorization } from "../../staking/v1beta1/authz";
-import * as _m0 from "protobufjs/minimal";
+import { GenericAuthorization, Grant, GrantAmino, GrantSDKType } from "./authz";
 /**
  * MsgGrant is a request type for Grant method. It declares authorization to the grantee
  * on behalf of the granter with the provided expiration time.
@@ -205,7 +207,7 @@ export const MsgGrant = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgGrant {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgGrant();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -290,7 +292,7 @@ export const MsgExecResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgExecResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgExecResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -370,7 +372,7 @@ export const MsgExec = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgExec {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgExec();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -453,7 +455,7 @@ export const MsgGrantResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgGrantResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgGrantResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -524,7 +526,7 @@ export const MsgRevoke = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgRevoke {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgRevoke();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -601,7 +603,7 @@ export const MsgRevokeResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgRevokeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgRevokeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

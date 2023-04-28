@@ -1,5 +1,7 @@
-import { Long } from "../../../helpers";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
+import { Long } from "../../../helpers";
 export interface SwapAmountInRoute {
   poolId: Long;
   tokenOutDenom: string;
@@ -62,7 +64,7 @@ export const SwapAmountInRoute = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): SwapAmountInRoute {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSwapAmountInRoute();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -145,7 +147,7 @@ export const SwapAmountOutRoute = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): SwapAmountOutRoute {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSwapAmountOutRoute();
     while (reader.pos < end) {
       const tag = reader.uint32();

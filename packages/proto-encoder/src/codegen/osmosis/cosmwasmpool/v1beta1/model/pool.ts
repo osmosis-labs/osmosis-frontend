@@ -1,5 +1,7 @@
-import { Long } from "../../../../helpers";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
+import { Long } from "../../../../helpers";
 export interface CosmWasmPool {
   $typeUrl?: string;
   poolAddress: string;
@@ -59,7 +61,7 @@ export const CosmWasmPool = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): CosmWasmPool {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCosmWasmPool();
     while (reader.pos < end) {
       const tag = reader.uint32();

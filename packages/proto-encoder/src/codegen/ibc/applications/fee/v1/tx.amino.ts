@@ -1,9 +1,9 @@
 //@ts-nocheck
 import {
-  MsgRegisterPayee,
-  MsgRegisterCounterpartyPayee,
   MsgPayPacketFee,
   MsgPayPacketFeeAsync,
+  MsgRegisterCounterpartyPayee,
+  MsgRegisterPayee,
 } from "./tx";
 export const AminoConverter = {
   "/ibc.applications.fee.v1.MsgRegisterPayee": {

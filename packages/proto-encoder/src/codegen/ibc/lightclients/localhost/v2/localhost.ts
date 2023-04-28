@@ -1,9 +1,11 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Height,
   HeightAmino,
   HeightSDKType,
 } from "../../../core/client/v1/client";
-import * as _m0 from "protobufjs/minimal";
 /** ClientState defines the 09-localhost client state */
 export interface ClientState {
   /** the latest block height */
@@ -44,7 +46,7 @@ export const ClientState = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ClientState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseClientState();
     while (reader.pos < end) {
       const tag = reader.uint32();

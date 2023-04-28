@@ -1,3 +1,4 @@
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
 /**
  * ValidatorPreference defines the message structure for
@@ -109,7 +110,7 @@ export const ValidatorPreference = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ValidatorPreference {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseValidatorPreference();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -188,7 +189,7 @@ export const ValidatorSetPreferences = {
     length?: number
   ): ValidatorSetPreferences {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseValidatorSetPreferences();
     while (reader.pos < end) {
       const tag = reader.uint32();

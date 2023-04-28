@@ -1,16 +1,18 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
+import { Long } from "../../../../helpers";
 import {
-  IdentifiedClientState,
-  IdentifiedClientStateAmino,
-  IdentifiedClientStateSDKType,
   ClientConsensusStates,
   ClientConsensusStatesAmino,
   ClientConsensusStatesSDKType,
+  IdentifiedClientState,
+  IdentifiedClientStateAmino,
+  IdentifiedClientStateSDKType,
   Params,
   ParamsAmino,
   ParamsSDKType,
 } from "./client";
-import { Long } from "../../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /** GenesisState defines the ibc client submodule's genesis state. */
 export interface GenesisState {
   /** client states with their corresponding identifiers */
@@ -162,7 +164,7 @@ export const GenesisState = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): GenesisState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGenesisState();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -316,7 +318,7 @@ export const GenesisMetadata = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): GenesisMetadata {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGenesisMetadata();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -399,7 +401,7 @@ export const IdentifiedGenesisMetadata = {
     length?: number
   ): IdentifiedGenesisMetadata {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseIdentifiedGenesisMetadata();
     while (reader.pos < end) {
       const tag = reader.uint32();

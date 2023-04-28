@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { MsgCreateGauge, MsgAddToGauge } from "./tx";
+import { MsgAddToGauge, MsgCreateGauge } from "./tx";
 export const AminoConverter = {
   "/osmosis.incentives.MsgCreateGauge": {
     aminoType: "osmosis/incentives/create-gauge",

@@ -1,5 +1,7 @@
-import { Long } from "../../../helpers";
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
+
+import { Long } from "../../../helpers";
 /** MsgIBCSend */
 export interface MsgIBCSend {
   /** the channel by which the packet will be sent */
@@ -127,7 +129,7 @@ export const MsgIBCSend = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgIBCSend {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgIBCSend();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -225,7 +227,7 @@ export const MsgIBCSendResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgIBCSendResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgIBCSendResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -298,7 +300,7 @@ export const MsgIBCCloseChannel = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgIBCCloseChannel {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgIBCCloseChannel();
     while (reader.pos < end) {
       const tag = reader.uint32();

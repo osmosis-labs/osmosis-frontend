@@ -1,10 +1,12 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import { Params as Params1 } from "../../controller/v1/controller";
 import { ParamsAmino as Params1Amino } from "../../controller/v1/controller";
 import { ParamsSDKType as Params1SDKType } from "../../controller/v1/controller";
 import { Params as Params2 } from "../../host/v1/host";
 import { ParamsAmino as Params2Amino } from "../../host/v1/host";
 import { ParamsSDKType as Params2SDKType } from "../../host/v1/host";
-import * as _m0 from "protobufjs/minimal";
 /** GenesisState defines the interchain accounts genesis state */
 export interface GenesisState {
   controllerGenesisState?: ControllerGenesisState;
@@ -178,7 +180,7 @@ export const GenesisState = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): GenesisState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGenesisState();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -291,7 +293,7 @@ export const ControllerGenesisState = {
     length?: number
   ): ControllerGenesisState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseControllerGenesisState();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -429,7 +431,7 @@ export const HostGenesisState = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): HostGenesisState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseHostGenesisState();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -559,7 +561,7 @@ export const ActiveChannel = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): ActiveChannel {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseActiveChannel();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -659,7 +661,7 @@ export const RegisteredInterchainAccount = {
     length?: number
   ): RegisteredInterchainAccount {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRegisteredInterchainAccount();
     while (reader.pos < end) {
       const tag = reader.uint32();

@@ -1,11 +1,13 @@
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Duration,
   DurationAmino,
   DurationSDKType,
 } from "../../google/protobuf/duration";
 import { Timestamp } from "../../google/protobuf/timestamp";
-import { Long, toTimestamp, fromTimestamp } from "../../helpers";
-import * as _m0 from "protobufjs/minimal";
+import { fromTimestamp, Long, toTimestamp } from "../../helpers";
 /**
  * IncentiveRecord is the high-level struct we use to deal with an independent
  * incentive being distributed on a pool. Note that PoolId, Denom, and MinUptime
@@ -161,7 +163,7 @@ export const IncentiveRecord = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): IncentiveRecord {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseIncentiveRecord();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -287,7 +289,7 @@ export const IncentiveRecordBody = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): IncentiveRecordBody {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseIncentiveRecordBody();
     while (reader.pos < end) {
       const tag = reader.uint32();

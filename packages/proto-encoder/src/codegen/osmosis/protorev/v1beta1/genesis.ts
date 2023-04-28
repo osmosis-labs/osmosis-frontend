@@ -1,22 +1,24 @@
-import { Params, ParamsAmino, ParamsSDKType } from "./params";
-import {
-  TokenPairArbRoutes,
-  TokenPairArbRoutesAmino,
-  TokenPairArbRoutesSDKType,
-  BaseDenom,
-  BaseDenomAmino,
-  BaseDenomSDKType,
-  PoolWeights,
-  PoolWeightsAmino,
-  PoolWeightsSDKType,
-} from "./protorev";
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Coin,
   CoinAmino,
   CoinSDKType,
 } from "../../../cosmos/base/v1beta1/coin";
 import { Long } from "../../../helpers";
-import * as _m0 from "protobufjs/minimal";
+import { Params, ParamsAmino, ParamsSDKType } from "./params";
+import {
+  BaseDenom,
+  BaseDenomAmino,
+  BaseDenomSDKType,
+  PoolWeights,
+  PoolWeightsAmino,
+  PoolWeightsSDKType,
+  TokenPairArbRoutes,
+  TokenPairArbRoutesAmino,
+  TokenPairArbRoutesSDKType,
+} from "./protorev";
 /** GenesisState defines the protorev module's genesis state. */
 export interface GenesisState {
   /** Parameters for the protorev module. */
@@ -174,7 +176,7 @@ export const GenesisState = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): GenesisState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGenesisState();
     while (reader.pos < end) {
       const tag = reader.uint32();

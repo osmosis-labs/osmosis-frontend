@@ -1,20 +1,22 @@
-import {
-  Params,
-  ParamsAmino,
-  ParamsSDKType,
-  DistrInfo,
-  DistrInfoAmino,
-  DistrInfoSDKType,
-  PoolToGauges,
-  PoolToGaugesAmino,
-  PoolToGaugesSDKType,
-} from "./incentives";
+//@ts-nocheck
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Duration,
   DurationAmino,
   DurationSDKType,
 } from "../../../google/protobuf/duration";
-import * as _m0 from "protobufjs/minimal";
+import {
+  DistrInfo,
+  DistrInfoAmino,
+  DistrInfoSDKType,
+  Params,
+  ParamsAmino,
+  ParamsSDKType,
+  PoolToGauges,
+  PoolToGaugesAmino,
+  PoolToGaugesSDKType,
+} from "./incentives";
 /** GenesisState defines the pool incentives module's genesis state. */
 export interface GenesisState {
   /** params defines all the paramaters of the module. */
@@ -79,7 +81,7 @@ export const GenesisState = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): GenesisState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGenesisState();
     while (reader.pos < end) {
       const tag = reader.uint32();

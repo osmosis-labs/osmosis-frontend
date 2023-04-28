@@ -1,3 +1,4 @@
+//@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
 /**
  * `Any` contains an arbitrary serialized protocol buffer message along with a
@@ -344,7 +345,7 @@ export const Any = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Any {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAny();
     while (reader.pos < end) {
       const tag = reader.uint32();
