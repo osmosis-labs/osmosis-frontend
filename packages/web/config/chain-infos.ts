@@ -1610,7 +1610,7 @@ const chainInfos = (
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
-      explorerUrlToTx: "https://sommscan.io",
+      explorerUrlToTx: "https://www.mintscan.io/sommelier/txs/{txHash}",
     },
     {
       rpc: "https://rpc.sifchain.finance",
