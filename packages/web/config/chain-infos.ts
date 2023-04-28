@@ -1604,7 +1604,7 @@ const chainInfos = (
           coinDecimals: 6,
           // coinGeckoId: "sommelier",
           coinGeckoId: "pool:usomm",
-          coinImageUrl: "/tokens/somm.png",
+          coinImageUrl: "/tokens/somm.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
         },
@@ -2073,7 +2073,7 @@ const chainInfos = (
           coinMinimalDenom: "umeme",
           coinDecimals: 6,
           coinGeckoId: "pool:umeme",
-          coinImageUrl: "/tokens/meme.png",
+          coinImageUrl: "/tokens/meme.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
