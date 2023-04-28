@@ -29,11 +29,6 @@ else
   git -C .repos/cosmos-sdk sparse-checkout set proto
 fi
 
-
-# Move the protos folder to the desired destination
-cp -R .repos/cosmos-sdk/proto/cosmos "$PROTO_DIR/cosmos" || true
-
-
 # OSMOSIS PROTOS
 
 # If the osmosis repo is there, fetch, otherwise clone sparse
@@ -51,9 +46,6 @@ else
   git -C .repos/osmosis sparse-checkout set proto
 fi
 
-# Move the osmosis/proto/osmosis folder to the desired destination
-cp -R .repos/osmosis/proto/osmosis "$PROTO_DIR/osmosis" || true
-
 # IBC PROTOS
 
 # If the ibc-go repo is there, fetch, otherwise clone sparse
@@ -69,11 +61,6 @@ else
 
   git -C .repos/ibc-go sparse-checkout set proto
 fi
-
-
-# Move IBC Go proto files into the $PROTO_DIR/proto directory
-cp -R .repos/ibc-go/proto/ibc "$PROTO_DIR/ibc" || true
-
 
 # WASMD PROTOS
 
@@ -95,11 +82,6 @@ else
   git -C .repos/wasmd sparse-checkout set proto
 fi
 
-
-# Move Wasmd proto files into the $PROTO_DIR/proto directory
-mkdir -p $PROTO_DIR/cosmwasm/
-cp -R .repos/wasmd/proto/cosmwasm/wasm/v1/* "$PROTO_DIR/cosmwasm/" || true
-
 # ICS23 PROTOS
 
 # If the ibc-go repo is there, fetch, otherwise clone sparse
@@ -115,7 +97,3 @@ else
 
   git -C .repos/ics23 sparse-checkout set proto
 fi
-
-
-# Move IBC Go proto files into the $PROTO_DIR/proto directory
-cp -R .repos/ics23/proto/ibc "$PROTO_DIR/ics23" || true

@@ -9,5 +9,6 @@ module.exports = {
     "unicorn/filename-case": "off",
     "@typescript-eslint/ban-types": "off",
     "no-var": "off",
+    "import/no-unresolved": "error",
   },
 };

@@ -1,4 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
+import { ProtoStore } from "@osmonauts/proto-parser";
 import telescope from "@osmonauts/telescope";
 import { join } from "path";
 import { sync as rimraf } from "rimraf";
@@ -13,6 +14,39 @@ const protoDirs = [
 const outPath = join(__dirname, "/../src/codegen");
 rimraf(outPath);
 
+const packages = new ProtoStore(protoDirs).getPackages();
+
+const includedPackages = [
+  "cosmos.base.v1beta1",
+  "cosmos.auth.v1beta1",
+  "cosmos.bank.v1beta1",
+  "cosmos.base.query.v1beta1",
+  "cosmos.staking.v1beta1",
+  "cosmos.staking.v1beta1",
+  "cosmos.upgrade.v1beta1",
+  "osmosis.gamm.v1beta1",
+  "osmosis.gamm.poolmodels.stableswap.v1beta1",
+  "osmosis.gamm.poolmodels.balancer.v1beta1",
+  "osmosis.concentratedliquidity",
+  "osmosis.concentratedliquidity.v1beta1",
+  "osmosis.cosmwasmpool.v1beta1",
+  "osmosis.poolmanager.v1beta1",
+  "osmosis.superfluid.v1beta1",
+  "osmosis.superfluid",
+  "osmosis.accum.v1beta1",
+  "osmosis.lockup",
+  "ibc.core.client.v1",
+  "ibc.applications.transfer.v1",
+  "ibc.applications.transfer.v2",
+  "cosmwasm.wasm.v1",
+  "google.protobuf",
+  "google.api",
+  "gogoproto",
+  "tendermint.types",
+  "tendermint.crypto",
+  "tendermint.version",
+];
+
 telescope({
   protoDirs,
   outPath,
@@ -25,36 +59,8 @@ telescope({
     prototypes: {
       addTypeUrlToDecoders: true,
       addTypeUrlToObjects: true,
-
       excluded: {
-        packages: [
-          "cosmos.app.v1alpha1",
-          "cosmos.app.v1beta1",
-          "cosmos.autocli.v1",
-          "cosmos.base.kv.v1beta1",
-          "cosmos.base.reflection.v1beta1",
-          "cosmos.base.snapshots.v1beta1",
-          "cosmos.base.store.v1beta1",
-          "cosmos.base.tendermint.v1beta1",
-          "cosmos.capability.v1beta1",
-          "cosmos.crisis.v1beta1",
-          "cosmos.evidence.v1beta1",
-          "cosmos.feegrant.v1beta1",
-          "cosmos.genutil.v1beta1",
-          "cosmos.group.v1",
-          "cosmos.group.v1beta1",
-          "cosmos.mint.v1beta1",
-          "cosmos.msg.v1",
-          "cosmos.nft.v1beta1",
-          "cosmos.orm.v1",
-          "cosmos.orm.v1alpha1",
-          "cosmos.params.v1beta1",
-          "cosmos.slashing.v1beta1",
-          "cosmos.vesting.v1beta1",
-          "google.api",
-          "ibc.core.port.v1",
-          "ibc.core.types.v1",
-        ],
+        packages: packages.filter((val) => !includedPackages.includes(val)),
       },
       methods: {
         fromJSON: false,
