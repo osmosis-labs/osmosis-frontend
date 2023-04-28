@@ -442,5 +442,6 @@
   "transactionSuccessful": "Transaction Successful",
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",
-  "waitingForTransaction": "Waiting for transaction to be included in the block"
+  "waitingForTransaction": "Waiting for transaction to be included in the block",
+  "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution."
 }

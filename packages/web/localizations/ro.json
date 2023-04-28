@@ -442,5 +442,6 @@
   "transactionSuccessful": "Tranzactie Finalizata",
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",
-  "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc."
+  "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
+  "highInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență."
 }

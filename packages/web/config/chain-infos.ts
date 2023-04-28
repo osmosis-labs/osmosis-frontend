@@ -216,13 +216,34 @@ const chainInfos = (
         {
           type: "cw20",
           contractAddress: "secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d",
-          coinDenom: "SHD",
+          coinDenom: "SHD(old)",
           coinMinimalDenom:
             "cw20:secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d:SHD",
           coinDecimals: 8,
           //coinGeckoId: "shade-protocol",
+          coinGeckoId: "pool:shdold",
+          coinImageUrl: "/tokens/shdold.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress: "secret153wu605vvp934xhd4k9dtd640zsep5jkesstdm",
+          coinDenom: "SHD",
+          coinMinimalDenom:
+            "cw20:secret153wu605vvp934xhd4k9dtd640zsep5jkesstdm:SHD",
+          coinDecimals: 8,
+          //coinGeckoId: "shade-protocol",
           coinGeckoId: "pool:shd",
           coinImageUrl: "/tokens/shd.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress: "secret1fl449muk5yq8dlad7a22nje4p5d2pnsgymhjfd",
+          coinDenom: "SILK",
+          coinMinimalDenom:
+            "cw20:secret1fl449muk5yq8dlad7a22nje4p5d2pnsgymhjfd:SILK",
+          coinDecimals: 6,
+          coinGeckoId: "pool:silk",
+          coinImageUrl: "/tokens/silk.svg",
         },
         {
           type: "cw20",
@@ -295,6 +316,13 @@ const chainInfos = (
             average: 0.025,
             high: 0.04,
           },
+        },
+        {
+          coinDenom: "NCT",
+          coinMinimalDenom: "eco.uC.NCT",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/nct.svg",
+          coinGeckoId: "pool:nct",
         },
       ],
       features: ["ibc-transfer"],
@@ -504,29 +532,39 @@ const chainInfos = (
       explorerUrlToTx: "https://emoney.bigdipper.live/transactions/{txHash}",
     },
     {
-      rpc: "https://rpc-juno.keplr.app",
-      rest: "https://lcd-juno.keplr.app",
-      chainId: "juno-1",
-      chainName: "Juno",
+      rpc: IS_TESTNET
+        ? "https://rpc.uni.junonetwork.io"
+        : "https://rpc-juno.keplr.app",
+      rest: IS_TESTNET
+        ? "https://api.uni.junonetwork.io"
+        : "https://lcd-juno.keplr.app",
+      chainId: IS_TESTNET ? "uni-6" : "juno-1",
+      chainName: IS_TESTNET ? "Juno Testnet" : "Juno",
       bip44: {
         coinType: 118,
       },
       bech32Config: Bech32Address.defaultBech32Config("juno"),
       currencies: [
         {
-          coinDenom: "JUNO",
-          coinMinimalDenom: "ujuno",
+          coinDenom: IS_TESTNET ? "JUNOX" : "JUNO",
+          coinMinimalDenom: IS_TESTNET ? "ujunox" : "ujuno",
           coinDecimals: 6,
           // coinGeckoId: "juno-network",
           coinGeckoId: "pool:ujuno",
           coinImageUrl: "/tokens/juno.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
-          gasPriceStep: {
-            low: 0.001,
-            average: 0.0025,
-            high: 0.004,
-          },
+          gasPriceStep: IS_TESTNET
+            ? {
+                low: 0.001,
+                average: 0.0025,
+                high: 0.004,
+              }
+            : {
+                low: 0.03,
+                average: 0.04,
+                high: 0.05,
+              },
         },
         {
           type: "cw20",
@@ -707,7 +745,7 @@ const chainInfos = (
           coinMinimalDenom:
             "cw20:juno1p8x807f6h222ur0vssqy3qk6mcpa40gw2pchquz5atl935t7kvyq894ne3:MUSE",
           coinDecimals: 6,
-          coinGeckoId: "pool:muse",
+          //coinGeckoId: "pool:muse",
           coinImageUrl: "/tokens/muse.svg",
         },
         {
@@ -777,9 +815,198 @@ const chainInfos = (
           coinGeckoId: "pool:fox",
           coinImageUrl: "/tokens/fox.svg",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1xekkh27punj0uxruv3gvuydyt856fax0nu750xns99t2qcxp7xmsqwhfma",
+          coinDenom: "GRDN",
+          coinMinimalDenom:
+            "cw20:juno1xekkh27punj0uxruv3gvuydyt856fax0nu750xns99t2qcxp7xmsqwhfma:GRDN",
+          coinDecimals: 6,
+          coinGeckoId: "pool:grdn",
+          coinImageUrl: "/tokens/guardian.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno166heaxlyntd33a5euh4rrz26svhean4klzw594esmd02l4atan6sazy2my",
+          coinDenom: "MNPU",
+          coinMinimalDenom:
+            "cw20:juno166heaxlyntd33a5euh4rrz26svhean4klzw594esmd02l4atan6sazy2my:MNPU",
+          coinDecimals: 6,
+          coinGeckoId: "pool:mnpu",
+          coinImageUrl: "/tokens/mnpu.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1x5qt47rw84c4k6xvvywtrd40p8gxjt8wnmlahlqg07qevah3f8lqwxfs7z",
+          coinDenom: "SHIBAC",
+          coinMinimalDenom:
+            "cw20:juno1x5qt47rw84c4k6xvvywtrd40p8gxjt8wnmlahlqg07qevah3f8lqwxfs7z:SHIBAC",
+          coinDecimals: 6,
+          coinGeckoId: "pool:shibac",
+          coinImageUrl: "/tokens/shibacosmos.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1qqwf3lkfjhp77yja7gmg3y95pda0e5xctqrdhf3wvwdd79flagvqfgrgxp",
+          coinDenom: "SKOJ",
+          coinMinimalDenom:
+            "cw20:juno1qqwf3lkfjhp77yja7gmg3y95pda0e5xctqrdhf3wvwdd79flagvqfgrgxp:SKOJ",
+          coinDecimals: 6,
+          coinGeckoId: "pool:skoj",
+          coinImageUrl: "/tokens/sikoba.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1ngww7zxak55fql42wmyqrr4rhzpne24hhs4p3w4cwhcdgqgr3hxsmzl9zg",
+          coinDenom: "CLST",
+          coinMinimalDenom:
+            "cw20:juno1ngww7zxak55fql42wmyqrr4rhzpne24hhs4p3w4cwhcdgqgr3hxsmzl9zg:CLST",
+          coinDecimals: 6,
+          coinGeckoId: "pool:clst",
+          coinImageUrl: "/tokens/celestims.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1ytymtllllsp3hfmndvcp802p2xmy5s8m59ufel8xv9ahyxyfs4hs4kd4je",
+          coinDenom: "OSDOGE",
+          coinMinimalDenom:
+            "cw20:juno1ytymtllllsp3hfmndvcp802p2xmy5s8m59ufel8xv9ahyxyfs4hs4kd4je:OSDOGE",
+          coinDecimals: 6,
+          coinGeckoId: "pool:osdoge",
+          coinImageUrl: "/tokens/osdoge.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1jrr0tuuzxrrwcg6hgeqhw5wqpck2y55734e7zcrp745aardlp0qqg8jz06",
+          coinDenom: "APEMOS",
+          coinMinimalDenom:
+            "cw20:juno1jrr0tuuzxrrwcg6hgeqhw5wqpck2y55734e7zcrp745aardlp0qqg8jz06:APEMOS",
+          coinDecimals: 6,
+          coinGeckoId: "pool:apemos",
+          coinImageUrl: "/tokens/apemos.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1jwdy7v4egw36pd84aeks3ww6n8k7zhsumd4ac8q5lts83ppxueus4626e8",
+          coinDenom: "INVDRS",
+          coinMinimalDenom:
+            "cw20:juno1jwdy7v4egw36pd84aeks3ww6n8k7zhsumd4ac8q5lts83ppxueus4626e8:INVDRS",
+          coinDecimals: 6,
+          coinGeckoId: "pool:invdrs",
+          coinImageUrl: "/tokens/invdrs.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1k2ruzzvvwwtwny6gq6kcwyfhkzahaunp685wmz4hafplduekj98q9hgs6d",
+          coinDenom: "DOGA",
+          coinMinimalDenom:
+            "cw20:juno1k2ruzzvvwwtwny6gq6kcwyfhkzahaunp685wmz4hafplduekj98q9hgs6d:DOGA",
+          coinDecimals: 6,
+          coinGeckoId: "pool:doga",
+          coinImageUrl: "/tokens/doga.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1zqrj3ta4u7ylv0wqzd8t8q3jrr9rdmn43zuzp9zemeunecnhy8fss778g7",
+          coinDenom: "PEPE",
+          coinMinimalDenom:
+            "cw20:juno1zqrj3ta4u7ylv0wqzd8t8q3jrr9rdmn43zuzp9zemeunecnhy8fss778g7:PEPE",
+          coinDecimals: 6,
+          coinGeckoId: "pool:pepe",
+          coinImageUrl: "/tokens/pepe.svg",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1f5datjdse3mdgrapwuzs3prl7pvxxht48ns6calnn0t77v2s9l8s0qu488",
+          coinDenom: "CATMOS",
+          coinMinimalDenom:
+            "cw20:juno1f5datjdse3mdgrapwuzs3prl7pvxxht48ns6calnn0t77v2s9l8s0qu488:CATMOS",
+          coinDecimals: 6,
+          coinGeckoId: "pool:catmos",
+          coinImageUrl: "/tokens/catmos.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1j4ux0f6gt7e82z7jdpm25v4g2gts880ap64rdwa49989wzhd0dfqed6vqm",
+          coinDenom: "SUMMIT",
+          coinMinimalDenom:
+            "cw20:juno1j4ux0f6gt7e82z7jdpm25v4g2gts880ap64rdwa49989wzhd0dfqed6vqm:SUMMIT",
+          coinDecimals: 6,
+          coinGeckoId: "pool:summit",
+          coinImageUrl: "/tokens/summit.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1dyyf7pxeassxvftf570krv7fdf5r8e4r04mp99h0mllsqzp3rs4q7y8yqg",
+          coinDenom: "SPACER",
+          coinMinimalDenom:
+            "cw20:juno1dyyf7pxeassxvftf570krv7fdf5r8e4r04mp99h0mllsqzp3rs4q7y8yqg:SPACER",
+          coinDecimals: 6,
+          coinGeckoId: "pool:spacer",
+          coinImageUrl: "/tokens/spacer.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1dpany8c0lj526lsa02sldv7shzvnw5dt5ues72rk35hd69rrydxqeraz8l",
+          coinDenom: "LIGHT",
+          coinMinimalDenom:
+            "cw20:juno1dpany8c0lj526lsa02sldv7shzvnw5dt5ues72rk35hd69rrydxqeraz8l:LIGHT",
+          coinDecimals: 6,
+          coinGeckoId: "pool:light",
+          coinImageUrl: "/tokens/light.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1llg7q2d5dqlrqzh5dxv8c7kzzjszld34s5vktqmlmaaxqjssz43sxyhq0d",
+          coinDenom: "MILE",
+          coinMinimalDenom:
+            "cw20:juno1llg7q2d5dqlrqzh5dxv8c7kzzjszld34s5vktqmlmaaxqjssz43sxyhq0d:MILE",
+          coinDecimals: 6,
+          coinGeckoId: "pool:mile",
+          coinImageUrl: "/tokens/mille.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno13ca2g36ng6etcfhr9qxx352uw2n5e92np54thfkm3w3nzlhsgvwsjaqlyq",
+          coinDenom: "MANNA",
+          coinMinimalDenom:
+            "cw20:juno13ca2g36ng6etcfhr9qxx352uw2n5e92np54thfkm3w3nzlhsgvwsjaqlyq:MANNA",
+          coinDecimals: 6,
+          coinGeckoId: "pool:manna",
+          coinImageUrl: "/tokens/manna.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1lpvx3mv2a6ddzfjc7zzz2v2cm5gqgqf0hx67hc5p5qwn7hz4cdjsnznhu8",
+          coinDenom: "VOID",
+          coinMinimalDenom:
+            "cw20:juno1lpvx3mv2a6ddzfjc7zzz2v2cm5gqgqf0hx67hc5p5qwn7hz4cdjsnznhu8:VOID",
+          coinDecimals: 6,
+          coinGeckoId: "pool:void",
+          coinImageUrl: "/tokens/void.png",
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
-      explorerUrlToTx: "https://www.mintscan.io/juno/txs/{txHash}",
+      explorerUrlToTx: IS_TESTNET
+        ? "https://testnet.mintscan.io/juno-testnet/txs/{txHash}"
+        : "https://www.mintscan.io/juno/txs/{txHash}",
     },
     {
       rpc: "https://rpc-microtick.keplr.app",
@@ -1609,10 +1836,10 @@ const chainInfos = (
         "https://explorer.decentr.net/transactions/{txHash}?networkId=mainnet",
     },
     {
-      rpc: "https://shenturpc.certikpowered.info",
-      rest: "https://azuredragon.noopsbycertik.com",
+      rpc: "https://shenturpc.noopsbycertik.com/",
+      rest: "https://rest.noopsbycertik.com",
       chainId: "shentu-2.2",
-      chainName: "Certik",
+      chainName: "Shentu",
       bip44: {
         coinType: 118,
       },
@@ -1622,15 +1849,15 @@ const chainInfos = (
           coinDenom: "CTK",
           coinMinimalDenom: "uctk",
           coinDecimals: 6,
-          // coinGeckoId: "certik",
-          coinGeckoId: "pool:uctk",
+          // coinGeckoId: "shentu",
+          //coinGeckoId: "pool:uctk",
           coinImageUrl: "/tokens/ctk.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
-      explorerUrlToTx: "https://www.mintscan.io/certik/txs/{txHash}",
+      explorerUrlToTx: "https://www.mintscan.io/shentu/txs/{txHash}",
     },
     {
       rpc: "https://tm-api.carbon.network",
@@ -1976,7 +2203,7 @@ const chainInfos = (
           coinMinimalDenom: "hard",
           coinDecimals: 6,
           // coinGeckoId: "kava-lend",
-          coinGeckoId: "pool:hard",
+          //coinGeckoId: "pool:hard",
           coinImageUrl: "/tokens/hard.svg",
         },
         {
@@ -1984,7 +2211,7 @@ const chainInfos = (
           coinMinimalDenom: "swp",
           coinDecimals: 6,
           // coinGeckoId: "kava-swap",
-          coinGeckoId: "pool:swp",
+          //coinGeckoId: "pool:swp",
           coinImageUrl: "/tokens/swp.svg",
         },
         {
@@ -1992,7 +2219,7 @@ const chainInfos = (
           coinMinimalDenom: "usdx",
           coinDecimals: 6,
           // coinGeckoId: "usdx",
-          coinGeckoId: "pool:usdx",
+          //coinGeckoId: "pool:usdx",
           coinImageUrl: "/tokens/usdx.svg",
         },
       ],
@@ -2210,7 +2437,7 @@ const chainInfos = (
           coinMinimalDenom: "ulumen",
           coinDecimals: 6,
           coinGeckoId: "pool:ulumen",
-          coinImageUrl: "/tokens/lumen.png",
+          coinImageUrl: "/tokens/lumen.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
           gasPriceStep: {
@@ -2931,6 +3158,162 @@ const chainInfos = (
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://explorer.kynraze.com/arkhadian/tx/{txHash}",
     },
+    {
+      rpc: "https://rpc.mainnet.noble.strange.love",
+      rest: "https://noble-api.polkachu.com",
+      chainId: "noble-1",
+      chainName: "Noble",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("noble"),
+      currencies: [
+        {
+          coinDenom: "STAKE",
+          coinMinimalDenom: "ustake",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/stake.svg",
+          coinGeckoId: "pool:ustake",
+          isStakeCurrency: true,
+        },
+        {
+          coinDenom: "nUSDC",
+          coinMinimalDenom: "uusdc",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/usdc.svg",
+          coinGeckoId: "usd-coin",
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.01,
+            average: 0.025,
+            high: 0.03,
+          },
+        },
+        {
+          coinDenom: "FRNZ",
+          coinMinimalDenom: "ufrienzies",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/frnz.svg",
+          coinGeckoId: "pool:frnz",
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx: "https://www.mintscan.io/noble/txs/{txHash}",
+    },
+    {
+      rpc: "https://whitewhale-rpc.lavenderfive.com",
+      rest: "https://whitewhale-api.lavenderfive.com",
+      chainId: "migaloo-1",
+      chainName: "Migaloo",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("migaloo"),
+      currencies: [
+        {
+          coinDenom: "WHALE",
+          coinMinimalDenom: "uwhale",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/white-whale.svg",
+          coinGeckoId: "pool:uwhale",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0,
+            average: 0,
+            high: 0,
+          },
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx: "https://ping.pub/migaloo/tx/{txHash}",
+    },
+    {
+      rpc: IS_TESTNET ? "https://net-rila.nolus.io:26657" : "",
+      rest: IS_TESTNET ? "https://net-rila.nolus.io:1317" : "",
+      chainId: IS_TESTNET ? "nolus-rila" : "",
+      chainName: IS_TESTNET ? "Rila Testnet" : "",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("nolus"),
+      currencies: [
+        {
+          coinDenom: "NLS",
+          coinMinimalDenom: "unls",
+          coinDecimals: 6,
+          coinGeckoId: "pool:unls",
+          coinImageUrl: "/tokens/nolus.svg",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0,
+            average: 0,
+            high: 0.025,
+          },
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx: IS_TESTNET
+        ? "https://explorer-rila.nolus.io/nolus-rila/tx/{txHash}"
+        : "",
+    },
+    {
+      rpc: "https://rpc.omniflix.network",
+      rest: "https://rest.omniflix.network",
+      chainId: "omniflixhub-1",
+      chainName: "OmniFlix",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("omniflix"),
+      currencies: [
+        {
+          coinDenom: "FLIX",
+          coinMinimalDenom: "uflix",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/flix.svg",
+          coinGeckoId: "pool:uflix",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.001,
+            average: 0.0025,
+            high: 0.025,
+          },
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx: "https://www.mintscan.io/omniflix/txs/{txHash}",
+    },
+    {
+      rpc: "https://a.client.sentry.net.bluzelle.com:26657",
+      rest: "https://a.client.sentry.net.bluzelle.com:1317",
+      chainId: "bluzelle-9",
+      chainName: "Bluzelle",
+      bip44: {
+        coinType: 483,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("bluzelle"),
+      currencies: [
+        {
+          coinDenom: "BLZ",
+          coinMinimalDenom: "ubnt",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/bluzelle.svg",
+          coinGeckoId: "pool:ubnt",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+          gasPriceStep: {
+            low: 0.002,
+            average: 0.002,
+            high: 0.025
+          }
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx: "https://bd.explorer.net.bluzelle.com/transactions/${txHash}",
+    },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
 
@@ -3021,6 +3404,14 @@ chainInfos.push({
       // coinGeckoId: "chainlink",
       coinGeckoId: "pool:link-wei",
       coinImageUrl: "/tokens/link.svg",
+    },
+    {
+      coinDenom: "FIL",
+      coinMinimalDenom: "wfil-wei",
+      coinDecimals: 18,
+      //coinGeckoId: "filecoin",
+      coinGeckoId: "pool:wfil-wei",
+      coinImageUrl: "/tokens/fil.svg",
     },
     {
       coinDenom: "AAVE",

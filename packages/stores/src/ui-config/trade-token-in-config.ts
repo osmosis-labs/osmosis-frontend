@@ -13,7 +13,7 @@ import {
   NotEnoughLiquidityError,
   OptimizedRoutes,
   Pool,
-  RoutePathWithAmount,
+  RouteWithAmount,
 } from "@osmosis-labs/pools";
 import {
   action,
@@ -47,7 +47,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
   constructor(
     chainGetter: ChainGetter,
-    queriesStore: IQueriesStore,
+    protected readonly queriesStore: IQueriesStore,
     protected readonly initialChainId: string,
     sender: string,
     feeConfig: IFeeConfig | undefined,
@@ -236,12 +236,13 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   }
 
   @computed
-  get optimizedRoutePaths(): RoutePathWithAmount[] {
+  get optimizedRoutePaths(): RouteWithAmount[] {
     runInAction(() => {
       this._notEnoughLiquidity = false;
     });
     this.setError(undefined);
     const amount = this.getAmountPrimitive();
+
     if (
       !amount.amount ||
       new Int(amount.amount).lte(new Int(0)) ||
@@ -257,7 +258,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           amount: new Int(amount.amount),
         },
         this.outCurrency.coinMinimalDenom,
-        5
+        4
       );
     } catch (e: any) {
       if (e instanceof NotEnoughLiquidityError) {
@@ -402,9 +403,10 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           amount: one,
         },
         this.outCurrency.coinMinimalDenom,
-        5
+        4
       );
-    } catch {
+    } catch (e: any) {
+      console.error("No route found", e.message);
       return new IntPretty(0).ready(false);
     }
 
@@ -412,13 +414,20 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       return new IntPretty(0).ready(false);
     }
 
-    const estimate = this.optimizedRoutes.calculateTokenOutByTokenIn(paths);
+    let result;
+    try {
+      result = this.optimizedRoutes.calculateTokenOutByTokenIn(paths);
+    } catch (e: any) {
+      console.error(e);
+      return new IntPretty(0).ready(false);
+    }
+
     const multiplicationInOverOut = DecUtils.getTenExponentN(
       this.outCurrency.coinDecimals - this.sendCurrency.coinDecimals
     );
     const beforeSpotPriceWithoutSwapFeeInOverOutDec =
-      estimate.beforeSpotPriceInOverOut.mulTruncate(
-        new Dec(1).sub(estimate.swapFee)
+      result.beforeSpotPriceInOverOut.mulTruncate(
+        new Dec(1).sub(result.swapFee)
       );
 
     // low price vs in asset

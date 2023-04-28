@@ -442,5 +442,6 @@
   "transactionSuccessful": "Transakcja Udana",
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",
-  "waitingForTransaction": "Oczekiwanie na dołączenie transakcji do bloku"
+  "waitingForTransaction": "Oczekiwanie na dołączenie transakcji do bloku",
+  "highInflationWarning": "Wysokie APR-y mogą wynikać z nagród inflacyjnych. Postępuj ostrożnie."
 }

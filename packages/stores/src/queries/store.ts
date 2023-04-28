@@ -27,8 +27,8 @@ import { ObservableQueryDistrInfo } from "./pool-incentives/distr-info";
 import { ObservableQueryGammPoolShare } from "./pool-share";
 import {
   ObservableQueryNumPools,
+  ObservableQueryPoolGetter,
   ObservableQueryPools,
-  PoolGetter,
 } from "./pools";
 import {
   ObservableQuerySuperfluidAssetMultiplier,
@@ -77,7 +77,7 @@ export const OsmosisQueries = {
 
 /** Root queries store for all Osmosis queries. */
 export class OsmosisQueriesImpl {
-  protected _queryGammPools: DeepReadonly<PoolGetter>;
+  protected _queryGammPools: DeepReadonly<ObservableQueryPoolGetter>;
   public readonly queryGammNumPools: DeepReadonly<ObservableQueryNumPools>;
   public readonly queryGammPoolShare: DeepReadonly<ObservableQueryGammPoolShare>;
 
@@ -106,7 +106,7 @@ export class OsmosisQueriesImpl {
   public readonly querySuperfluidAssetMultiplier: DeepReadonly<ObservableQuerySuperfluidAssetMultiplier>;
   public readonly querySuperfluidOsmoEquivalent: DeepReadonly<ObservableQuerySuperfluidOsmoEquivalent>;
 
-  get queryGammPools(): PoolGetter {
+  get queryGammPools(): ObservableQueryPoolGetter {
     return this._queryGammPools;
   }
 
