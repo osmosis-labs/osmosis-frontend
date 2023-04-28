@@ -165,8 +165,9 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       new Int(0)
     );
 
-    if (sumInitialAmount.isZero())
+    if (sumInitialAmount.isZero()) {
       throw new Error("All initial amounts are zero");
+    }
 
     for (const route of routes) {
       const amountFraction = route.initialAmount
@@ -187,11 +188,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
         let poolSwapFee = pool.swapFee;
         if (
-          routes.length === 1 &&
           isOsmoRoutedMultihop(
-            routes[0].pools.map((routePool) => ({
-              id: routePool.id,
-              isIncentivized: this._incentivizedPoolIds.includes(routePool.id),
+            route.pools.map(({ id }) => ({
+              id,
+              isIncentivized: this._incentivizedPoolIds.includes(id),
             })),
             route.tokenOutDenoms[0],
             this._stakeCurrencyMinDenom
@@ -199,7 +199,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         ) {
           osmoFeeDiscountForRoute[routes.indexOf(route)] = true;
           const { maxSwapFee, swapFeeSum } = getOsmoRoutedMultihopTotalSwapFee(
-            routes[0].pools
+            route.pools
           );
           poolSwapFee = maxSwapFee.mul(poolSwapFee.quo(swapFeeSum));
         }
@@ -213,8 +213,6 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
         if (!tokenOut.amount.gt(new Int(0))) {
           // not enough liquidity
-          console.warn("Token out is 0 through pool:", pool.id);
-
           return {
             ...tokenOut,
             tokenInFeeAmount: new Int(0),
@@ -395,24 +393,52 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     return routes.filter(({ pools }) => pools.length <= this._maxHops);
   }
 
-  /** Binary searches for a subset of candidate routes for an optimal split trade. */
+  /**
+   * This function performs a binary search to find a subset of candidate routes that yield an optimal split trade.
+   * It takes into account the input token amount and the maximum number of iterations allowed.
+   *
+   * @function findBestSplitTokenIn
+   * @async
+   * @param sortedOptimalRoutes An array of optimal routes for the split trade. Optimal: will attempt to include all routes in same split. Sorted: routes should be sorted by weight, best first since this is a greedy search.
+   * @param tokenInAmount The amount of input tokens for the trade.
+   * @param [maxIterations=100] The maximum number of iterations allowed for the binary search. Determines the granularity of the split, so higher is slower but more thorough.
+   * @returns A promise that resolves to an array of routes with their corresponding input amounts, which form the optimal split trade.
+   * @throws Throws an error if maxIterations is not greater than 0.
+   */
   protected async findBestSplitTokenIn(
-    candidateRoutes: Route[],
+    sortedOptimalRoutes: Route[],
     tokenInAmount: Int,
-    maxIterations: number = 100
+    maxIterations: number = 10
   ): Promise<RouteWithInAmount[]> {
+    if (maxIterations === 0) {
+      throw new Error("maxIterations must be greater than 0");
+    }
+
+    if (sortedOptimalRoutes.length === 0) {
+      return [];
+    }
+    // nothing to split
+    if (sortedOptimalRoutes.length === 1) {
+      return [
+        {
+          ...sortedOptimalRoutes[0],
+          initialAmount: tokenInAmount,
+        },
+      ];
+    }
+
+    /** Only relevant to this search, track the out amount for this route of a certain in amount. */
+    type RouteWithInAndOutAmount = RouteWithInAmount & { outAmount: Int };
+
     let bestSplit: RouteWithInAmount[] = [];
     let bestOutAmount = new Int(0);
 
-    type RouteWithInAndOutAmount = RouteWithInAmount & { outAmount: Int };
-
-    const calculateTokenOutByTokenIn = this.calculateTokenOutByTokenIn;
-
-    async function splitRecursive(
+    const splitRecursive = async (
       remainingInAmount: Int,
       remainingRoutes: RouteWithInAndOutAmount[],
       currentSplit: RouteWithInAndOutAmount[]
-    ): Promise<void> {
+    ): Promise<void> => {
+      // base case: once all routes have been accounted for, check if maximal case
       if (remainingRoutes.length === 0) {
         const totalOutAmount = currentSplit.reduce(
           (total, route) => total.add(route.outAmount),
@@ -420,23 +446,25 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         );
         if (totalOutAmount.gt(bestOutAmount)) {
           bestOutAmount = totalOutAmount;
-          bestSplit = currentSplit;
+          bestSplit = currentSplit.slice();
         }
+
+        // unfurl recursion
         return;
       }
 
+      // test routes with various splits: 0%, 10%, 20%, ..., 100%
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const route = remainingRoutes.shift()! as RouteWithInAndOutAmount;
       for (let i = 0; i <= maxIterations; i++) {
         const fraction = new Dec(i).quo(new Dec(maxIterations));
         const inAmount = new Dec(remainingInAmount).mul(fraction).truncate();
+        if (inAmount.isZero()) continue; // skip this traversal (0 in not worth considering)
 
         route.initialAmount = inAmount;
 
-        const quote = await calculateTokenOutByTokenIn([route]);
-        if (quote.amount.isZero()) {
-          continue;
-        }
+        const quote = await this.calculateTokenOutByTokenIn([route]);
+        if (quote.amount.isZero()) continue; // skip this traversal (not enough liquidity)
 
         route.outAmount = quote.amount;
 
@@ -450,9 +478,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       }
 
       remainingRoutes.unshift(route);
-    }
+    };
 
-    const zeroAmountRoutes = candidateRoutes.map((route) => ({
+    // start with routes with 0 in and out amount, as we're looking for the sum max out amounts. also copy
+    const zeroAmountRoutes = sortedOptimalRoutes.map((route) => ({
       ...route,
       initialAmount: new Int(0),
       outAmount: new Int(0),
