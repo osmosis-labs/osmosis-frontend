@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
 /**
  * A generic empty message that you can re-use to avoid defining duplicated

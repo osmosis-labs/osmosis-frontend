@@ -1,16 +1,15 @@
-//@ts-nocheck
-/* eslint-disable */
-import {
-  Coin,
-  CoinAmino,
-  CoinSDKType,
-} from "../../../cosmos/base/v1beta1/coin";
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Metadata,
   MetadataAmino,
   MetadataSDKType,
 } from "../../../cosmos/bank/v1beta1/bank";
-import * as _m0 from "protobufjs/minimal";
+import {
+  Coin,
+  CoinAmino,
+  CoinSDKType,
+} from "../../../cosmos/base/v1beta1/coin";
 /**
  * MsgCreateDenom defines the message structure for the CreateDenom gRPC service
  * method. It allows an account to create a new denom. It requires a sender
@@ -417,7 +416,7 @@ export const MsgCreateDenom = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateDenom {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateDenom();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -496,7 +495,7 @@ export const MsgCreateDenomResponse = {
     length?: number
   ): MsgCreateDenomResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateDenomResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -576,7 +575,7 @@ export const MsgMint = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgMint {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgMint();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -656,7 +655,7 @@ export const MsgMintResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgMintResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgMintResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -727,7 +726,7 @@ export const MsgBurn = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgBurn {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgBurn();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -807,7 +806,7 @@ export const MsgBurnResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgBurnResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgBurnResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -878,7 +877,7 @@ export const MsgChangeAdmin = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgChangeAdmin {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgChangeAdmin();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -958,7 +957,7 @@ export const MsgChangeAdminResponse = {
     length?: number
   ): MsgChangeAdminResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgChangeAdminResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1034,7 +1033,7 @@ export const MsgSetBeforeSendHook = {
     length?: number
   ): MsgSetBeforeSendHook {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetBeforeSendHook();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1114,7 +1113,7 @@ export const MsgSetBeforeSendHookResponse = {
     length?: number
   ): MsgSetBeforeSendHookResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetBeforeSendHookResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1193,7 +1192,7 @@ export const MsgSetDenomMetadata = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgSetDenomMetadata {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetDenomMetadata();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1274,7 +1273,7 @@ export const MsgSetDenomMetadataResponse = {
     length?: number
   ): MsgSetDenomMetadataResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetDenomMetadataResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1359,7 +1358,7 @@ export const MsgForceTransfer = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgForceTransfer {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgForceTransfer();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1448,7 +1447,7 @@ export const MsgForceTransferResponse = {
     length?: number
   ): MsgForceTransferResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgForceTransferResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

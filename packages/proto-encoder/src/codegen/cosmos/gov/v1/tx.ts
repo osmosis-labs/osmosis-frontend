@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import {
   Any,
   AnyProtoMsg,
@@ -92,6 +90,32 @@ import {
   UpdateFeeTokenProposalProtoMsg,
   UpdateFeeTokenProposalSDKType,
 } from "../../../osmosis/txfees/v1beta1/gov";
+import {
+  CommunityPoolSpendProposal,
+  CommunityPoolSpendProposalProtoMsg,
+  CommunityPoolSpendProposalSDKType,
+  CommunityPoolSpendProposalWithDeposit,
+  CommunityPoolSpendProposalWithDepositProtoMsg,
+  CommunityPoolSpendProposalWithDepositSDKType,
+} from "../../distribution/v1beta1/distribution";
+import {
+  TextProposal,
+  TextProposalProtoMsg,
+  TextProposalSDKType,
+} from "../v1beta1/gov";
+import {
+  ParameterChangeProposal,
+  ParameterChangeProposalProtoMsg,
+  ParameterChangeProposalSDKType,
+} from "../../params/v1beta1/params";
+import {
+  SoftwareUpgradeProposal,
+  SoftwareUpgradeProposalProtoMsg,
+  SoftwareUpgradeProposalSDKType,
+  CancelSoftwareUpgradeProposal,
+  CancelSoftwareUpgradeProposalProtoMsg,
+  CancelSoftwareUpgradeProposalSDKType,
+} from "../../upgrade/v1beta1/upgrade";
 import { Long, isSet } from "../../../helpers";
 import * as _m0 from "protobufjs/minimal";
 /**
@@ -183,6 +207,12 @@ export interface MsgExecLegacyContent {
         RemoveSuperfluidAssetsProposal &
         UpdateUnpoolWhiteListProposal &
         UpdateFeeTokenProposal &
+        CommunityPoolSpendProposal &
+        CommunityPoolSpendProposalWithDeposit &
+        TextProposal &
+        ParameterChangeProposal &
+        SoftwareUpgradeProposal &
+        CancelSoftwareUpgradeProposal &
         Any)
     | undefined;
   /** authority must be the gov module address. */
@@ -219,6 +249,12 @@ export type MsgExecLegacyContentEncoded = Omit<
     | RemoveSuperfluidAssetsProposalProtoMsg
     | UpdateUnpoolWhiteListProposalProtoMsg
     | UpdateFeeTokenProposalProtoMsg
+    | CommunityPoolSpendProposalProtoMsg
+    | CommunityPoolSpendProposalWithDepositProtoMsg
+    | TextProposalProtoMsg
+    | ParameterChangeProposalProtoMsg
+    | SoftwareUpgradeProposalProtoMsg
+    | CancelSoftwareUpgradeProposalProtoMsg
     | AnyProtoMsg
     | undefined;
 };
@@ -264,6 +300,12 @@ export interface MsgExecLegacyContentSDKType {
     | RemoveSuperfluidAssetsProposalSDKType
     | UpdateUnpoolWhiteListProposalSDKType
     | UpdateFeeTokenProposalSDKType
+    | CommunityPoolSpendProposalSDKType
+    | CommunityPoolSpendProposalWithDepositSDKType
+    | TextProposalSDKType
+    | ParameterChangeProposalSDKType
+    | SoftwareUpgradeProposalSDKType
+    | CancelSoftwareUpgradeProposalSDKType
     | AnySDKType
     | undefined;
   authority: string;
@@ -1310,6 +1352,11 @@ export const Cosmos_govv1beta1Content_InterfaceDecoder = (
   | RemoveSuperfluidAssetsProposal
   | UpdateUnpoolWhiteListProposal
   | UpdateFeeTokenProposal
+  | CommunityPoolSpendProposal
+  | CommunityPoolSpendProposalWithDeposit
+  | TextProposal
+  | SoftwareUpgradeProposal
+  | CancelSoftwareUpgradeProposal
   | Any => {
   const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
   const data = Any.decode(reader, reader.uint32());
@@ -1358,6 +1405,16 @@ export const Cosmos_govv1beta1Content_InterfaceDecoder = (
       return UpdateUnpoolWhiteListProposal.decode(data.value);
     case "/osmosis.txfees.v1beta1.UpdateFeeTokenProposal":
       return UpdateFeeTokenProposal.decode(data.value);
+    case "/cosmos.distribution.v1beta1.CommunityPoolSpendProposal":
+      return CommunityPoolSpendProposal.decode(data.value);
+    case "/cosmos.distribution.v1beta1.CommunityPoolSpendProposalWithDeposit":
+      return CommunityPoolSpendProposalWithDeposit.decode(data.value);
+    case "/cosmos.gov.v1beta1.TextProposal":
+      return TextProposal.decode(data.value);
+    case "/cosmos.upgrade.v1beta1.SoftwareUpgradeProposal":
+      return SoftwareUpgradeProposal.decode(data.value);
+    case "/cosmos.upgrade.v1beta1.CancelSoftwareUpgradeProposal":
+      return CancelSoftwareUpgradeProposal.decode(data.value);
     default:
       return data;
   }
@@ -1561,6 +1618,50 @@ export const Cosmos_govv1beta1Content_FromAmino = (content: AnyAmino) => {
           )
         ).finish(),
       });
+    case "cosmos-sdk/v1/CommunityPoolSpendProposal":
+      return Any.fromPartial({
+        typeUrl: "/cosmos.distribution.v1beta1.CommunityPoolSpendProposal",
+        value: CommunityPoolSpendProposal.encode(
+          CommunityPoolSpendProposal.fromPartial(
+            CommunityPoolSpendProposal.fromAmino(content.value)
+          )
+        ).finish(),
+      });
+    case "cosmos-sdk/v1/CommunityPoolSpendProposalWithDeposit":
+      return Any.fromPartial({
+        typeUrl:
+          "/cosmos.distribution.v1beta1.CommunityPoolSpendProposalWithDeposit",
+        value: CommunityPoolSpendProposalWithDeposit.encode(
+          CommunityPoolSpendProposalWithDeposit.fromPartial(
+            CommunityPoolSpendProposalWithDeposit.fromAmino(content.value)
+          )
+        ).finish(),
+      });
+    case "cosmos-sdk/v1/TextProposal":
+      return Any.fromPartial({
+        typeUrl: "/cosmos.gov.v1beta1.TextProposal",
+        value: TextProposal.encode(
+          TextProposal.fromPartial(TextProposal.fromAmino(content.value))
+        ).finish(),
+      });
+    case "cosmos-sdk/v1/SoftwareUpgradeProposal":
+      return Any.fromPartial({
+        typeUrl: "/cosmos.upgrade.v1beta1.SoftwareUpgradeProposal",
+        value: SoftwareUpgradeProposal.encode(
+          SoftwareUpgradeProposal.fromPartial(
+            SoftwareUpgradeProposal.fromAmino(content.value)
+          )
+        ).finish(),
+      });
+    case "cosmos-sdk/v1/CancelSoftwareUpgradeProposal":
+      return Any.fromPartial({
+        typeUrl: "/cosmos.upgrade.v1beta1.CancelSoftwareUpgradeProposal",
+        value: CancelSoftwareUpgradeProposal.encode(
+          CancelSoftwareUpgradeProposal.fromPartial(
+            CancelSoftwareUpgradeProposal.fromAmino(content.value)
+          )
+        ).finish(),
+      });
     default:
       return Any.fromAmino(content);
   }
@@ -1715,6 +1816,39 @@ export const Cosmos_govv1beta1Content_ToAmino = (content: Any) => {
         type: "osmosis/UpdateFeeTokenProposal",
         value: UpdateFeeTokenProposal.toAmino(
           UpdateFeeTokenProposal.decode(content.value)
+        ),
+      };
+    case "/cosmos.distribution.v1beta1.CommunityPoolSpendProposal":
+      return {
+        type: "cosmos-sdk/v1/CommunityPoolSpendProposal",
+        value: CommunityPoolSpendProposal.toAmino(
+          CommunityPoolSpendProposal.decode(content.value)
+        ),
+      };
+    case "/cosmos.distribution.v1beta1.CommunityPoolSpendProposalWithDeposit":
+      return {
+        type: "cosmos-sdk/v1/CommunityPoolSpendProposalWithDeposit",
+        value: CommunityPoolSpendProposalWithDeposit.toAmino(
+          CommunityPoolSpendProposalWithDeposit.decode(content.value)
+        ),
+      };
+    case "/cosmos.gov.v1beta1.TextProposal":
+      return {
+        type: "cosmos-sdk/v1/TextProposal",
+        value: TextProposal.toAmino(TextProposal.decode(content.value)),
+      };
+    case "/cosmos.upgrade.v1beta1.SoftwareUpgradeProposal":
+      return {
+        type: "cosmos-sdk/v1/SoftwareUpgradeProposal",
+        value: SoftwareUpgradeProposal.toAmino(
+          SoftwareUpgradeProposal.decode(content.value)
+        ),
+      };
+    case "/cosmos.upgrade.v1beta1.CancelSoftwareUpgradeProposal":
+      return {
+        type: "cosmos-sdk/v1/CancelSoftwareUpgradeProposal",
+        value: CancelSoftwareUpgradeProposal.toAmino(
+          CancelSoftwareUpgradeProposal.decode(content.value)
         ),
       };
     default:

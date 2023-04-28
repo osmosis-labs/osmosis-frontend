@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { Coin, CoinAmino, CoinSDKType } from "../../base/v1beta1/coin";
 import * as _m0 from "protobufjs/minimal";
 /** Params defines the parameters for the bank module. */
@@ -17,7 +15,7 @@ export interface ParamsAmino {
   default_send_enabled: boolean;
 }
 export interface ParamsAminoMsg {
-  type: "cosmos-sdk/x/bank/Params";
+  type: "cosmos-sdk/Params";
   value: ParamsAmino;
 }
 /** Params defines the parameters for the bank module. */
@@ -150,7 +148,7 @@ export interface DenomUnit {
   /**
    * exponent represents power of 10 exponent that one must
    * raise the base_denom to in order to equal the given DenomUnit's denom
-   * 1 denom = 1^exponent base_denom
+   * 1 denom = 10^exponent base_denom
    * (e.g. with a base_denom of uatom, one can create a DenomUnit of 'atom' with
    * exponent = 6, thus: 1 atom = 10^6 uatom).
    */
@@ -172,7 +170,7 @@ export interface DenomUnitAmino {
   /**
    * exponent represents power of 10 exponent that one must
    * raise the base_denom to in order to equal the given DenomUnit's denom
-   * 1 denom = 1^exponent base_denom
+   * 1 denom = 10^exponent base_denom
    * (e.g. with a base_denom of uatom, one can create a DenomUnit of 'atom' with
    * exponent = 6, thus: 1 atom = 10^6 uatom).
    */
@@ -221,6 +219,19 @@ export interface Metadata {
    * Since: cosmos-sdk 0.43
    */
   symbol: string;
+  /**
+   * URI to a document (on or off-chain) that contains additional information. Optional.
+   *
+   * Since: cosmos-sdk 0.46
+   */
+  uri: string;
+  /**
+   * URIHash is a sha256 hash of a document pointed by URI. It's used to verify that
+   * the document didn't change. Optional.
+   *
+   * Since: cosmos-sdk 0.46
+   */
+  uriHash: string;
 }
 export interface MetadataProtoMsg {
   typeUrl: "/cosmos.bank.v1beta1.Metadata";
@@ -254,6 +265,19 @@ export interface MetadataAmino {
    * Since: cosmos-sdk 0.43
    */
   symbol: string;
+  /**
+   * URI to a document (on or off-chain) that contains additional information. Optional.
+   *
+   * Since: cosmos-sdk 0.46
+   */
+  uri: string;
+  /**
+   * URIHash is a sha256 hash of a document pointed by URI. It's used to verify that
+   * the document didn't change. Optional.
+   *
+   * Since: cosmos-sdk 0.46
+   */
+  uri_hash: string;
 }
 export interface MetadataAminoMsg {
   type: "cosmos-sdk/Metadata";
@@ -270,6 +294,8 @@ export interface MetadataSDKType {
   display: string;
   name: string;
   symbol: string;
+  uri: string;
+  uri_hash: string;
 }
 function createBaseParams(): Params {
   return {
@@ -343,7 +369,7 @@ export const Params = {
   },
   toAminoMsg(message: Params): ParamsAminoMsg {
     return {
-      type: "cosmos-sdk/x/bank/Params",
+      type: "cosmos-sdk/Params",
       value: Params.toAmino(message),
     };
   },
@@ -790,6 +816,8 @@ function createBaseMetadata(): Metadata {
     display: "",
     name: "",
     symbol: "",
+    uri: "",
+    uriHash: "",
   };
 }
 export const Metadata = {
@@ -815,6 +843,12 @@ export const Metadata = {
     }
     if (message.symbol !== "") {
       writer.uint32(50).string(message.symbol);
+    }
+    if (message.uri !== "") {
+      writer.uint32(58).string(message.uri);
+    }
+    if (message.uriHash !== "") {
+      writer.uint32(66).string(message.uriHash);
     }
     return writer;
   },
@@ -843,6 +877,12 @@ export const Metadata = {
         case 6:
           message.symbol = reader.string();
           break;
+        case 7:
+          message.uri = reader.string();
+          break;
+        case 8:
+          message.uriHash = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -859,6 +899,8 @@ export const Metadata = {
     message.display = object.display ?? "";
     message.name = object.name ?? "";
     message.symbol = object.symbol ?? "";
+    message.uri = object.uri ?? "";
+    message.uriHash = object.uriHash ?? "";
     return message;
   },
   fromAmino(object: MetadataAmino): Metadata {
@@ -871,6 +913,8 @@ export const Metadata = {
       display: object.display,
       name: object.name,
       symbol: object.symbol,
+      uri: object.uri,
+      uriHash: object.uri_hash,
     };
   },
   toAmino(message: Metadata): MetadataAmino {
@@ -887,6 +931,8 @@ export const Metadata = {
     obj.display = message.display;
     obj.name = message.name;
     obj.symbol = message.symbol;
+    obj.uri = message.uri;
+    obj.uri_hash = message.uriHash;
     return obj;
   },
   fromAminoMsg(object: MetadataAminoMsg): Metadata {

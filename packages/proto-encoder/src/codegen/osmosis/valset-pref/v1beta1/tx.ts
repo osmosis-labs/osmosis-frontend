@@ -1,17 +1,16 @@
-//@ts-nocheck
-/* eslint-disable */
-import {
-  ValidatorPreference,
-  ValidatorPreferenceAmino,
-  ValidatorPreferenceSDKType,
-} from "./state";
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Coin,
   CoinAmino,
   CoinSDKType,
 } from "../../../cosmos/base/v1beta1/coin";
 import { Long } from "../../../helpers";
-import * as _m0 from "protobufjs/minimal";
+import {
+  ValidatorPreference,
+  ValidatorPreferenceAmino,
+  ValidatorPreferenceSDKType,
+} from "./state";
 /** MsgCreateValidatorSetPreference is a list that holds validator-set. */
 export interface MsgSetValidatorSetPreference {
   /** delegator is the user who is trying to create a validator-set. */
@@ -306,7 +305,7 @@ export const MsgSetValidatorSetPreference = {
     length?: number
   ): MsgSetValidatorSetPreference {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetValidatorSetPreference();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -405,7 +404,7 @@ export const MsgSetValidatorSetPreferenceResponse = {
     length?: number
   ): MsgSetValidatorSetPreferenceResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetValidatorSetPreferenceResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -490,7 +489,7 @@ export const MsgDelegateToValidatorSet = {
     length?: number
   ): MsgDelegateToValidatorSet {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgDelegateToValidatorSet();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -577,7 +576,7 @@ export const MsgDelegateToValidatorSetResponse = {
     length?: number
   ): MsgDelegateToValidatorSetResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgDelegateToValidatorSetResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -661,7 +660,7 @@ export const MsgUndelegateFromValidatorSet = {
     length?: number
   ): MsgUndelegateFromValidatorSet {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgUndelegateFromValidatorSet();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -752,7 +751,7 @@ export const MsgUndelegateFromValidatorSetResponse = {
     length?: number
   ): MsgUndelegateFromValidatorSetResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgUndelegateFromValidatorSetResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -837,7 +836,7 @@ export const MsgRedelegateValidatorSet = {
     length?: number
   ): MsgRedelegateValidatorSet {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgRedelegateValidatorSet();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -932,7 +931,7 @@ export const MsgRedelegateValidatorSetResponse = {
     length?: number
   ): MsgRedelegateValidatorSetResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgRedelegateValidatorSetResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1012,7 +1011,7 @@ export const MsgWithdrawDelegationRewards = {
     length?: number
   ): MsgWithdrawDelegationRewards {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgWithdrawDelegationRewards();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1094,7 +1093,7 @@ export const MsgWithdrawDelegationRewardsResponse = {
     length?: number
   ): MsgWithdrawDelegationRewardsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgWithdrawDelegationRewardsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1179,7 +1178,7 @@ export const MsgDelegateBondedTokens = {
     length?: number
   ): MsgDelegateBondedTokens {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgDelegateBondedTokens();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1266,7 +1265,7 @@ export const MsgDelegateBondedTokensResponse = {
     length?: number
   ): MsgDelegateBondedTokensResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgDelegateBondedTokensResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

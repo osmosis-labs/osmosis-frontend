@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { PublicKey, PublicKeyAmino, PublicKeySDKType } from "../crypto/keys";
 import { Long } from "../../helpers";
 import * as _m0 from "protobufjs/minimal";

@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { Any, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
 import { SignMode, signModeFromJSON } from "../signing/v1beta1/signing";
 import {
@@ -183,6 +181,88 @@ export interface SignDocSDKType {
   chain_id: string;
   account_number: Long;
 }
+/**
+ * SignDocDirectAux is the type used for generating sign bytes for
+ * SIGN_MODE_DIRECT_AUX.
+ *
+ * Since: cosmos-sdk 0.46
+ */
+export interface SignDocDirectAux {
+  /**
+   * body_bytes is protobuf serialization of a TxBody that matches the
+   * representation in TxRaw.
+   */
+  bodyBytes: Uint8Array;
+  /** public_key is the public key of the signing account. */
+  publicKey?: Any;
+  /**
+   * chain_id is the identifier of the chain this transaction targets.
+   * It prevents signed transactions from being used on another chain by an
+   * attacker.
+   */
+  chainId: string;
+  /** account_number is the account number of the account in state. */
+  accountNumber: Long;
+  /** sequence is the sequence number of the signing account. */
+  sequence: Long;
+  /**
+   * Tip is the optional tip used for meta-transactions. It should be left
+   * empty if the signer is not the tipper for this transaction.
+   */
+  tip?: Tip;
+}
+export interface SignDocDirectAuxProtoMsg {
+  typeUrl: "/cosmos.tx.v1beta1.SignDocDirectAux";
+  value: Uint8Array;
+}
+/**
+ * SignDocDirectAux is the type used for generating sign bytes for
+ * SIGN_MODE_DIRECT_AUX.
+ *
+ * Since: cosmos-sdk 0.46
+ */
+export interface SignDocDirectAuxAmino {
+  /**
+   * body_bytes is protobuf serialization of a TxBody that matches the
+   * representation in TxRaw.
+   */
+  body_bytes: Uint8Array;
+  /** public_key is the public key of the signing account. */
+  public_key?: AnyAmino;
+  /**
+   * chain_id is the identifier of the chain this transaction targets.
+   * It prevents signed transactions from being used on another chain by an
+   * attacker.
+   */
+  chain_id: string;
+  /** account_number is the account number of the account in state. */
+  account_number: string;
+  /** sequence is the sequence number of the signing account. */
+  sequence: string;
+  /**
+   * Tip is the optional tip used for meta-transactions. It should be left
+   * empty if the signer is not the tipper for this transaction.
+   */
+  tip?: TipAmino;
+}
+export interface SignDocDirectAuxAminoMsg {
+  type: "cosmos-sdk/SignDocDirectAux";
+  value: SignDocDirectAuxAmino;
+}
+/**
+ * SignDocDirectAux is the type used for generating sign bytes for
+ * SIGN_MODE_DIRECT_AUX.
+ *
+ * Since: cosmos-sdk 0.46
+ */
+export interface SignDocDirectAuxSDKType {
+  body_bytes: Uint8Array;
+  public_key?: AnySDKType;
+  chain_id: string;
+  account_number: Long;
+  sequence: Long;
+  tip?: TipSDKType;
+}
 /** TxBody is the body of a transaction that all signers sign over. */
 export interface TxBody {
   /**
@@ -290,6 +370,12 @@ export interface AuthInfo {
    * of the signers. This can be estimated via simulation.
    */
   fee?: Fee;
+  /**
+   * Tip is the optional tip used for meta-transactions.
+   *
+   * Since: cosmos-sdk 0.46
+   */
+  tip?: Tip;
 }
 export interface AuthInfoProtoMsg {
   typeUrl: "/cosmos.tx.v1beta1.AuthInfo";
@@ -314,6 +400,12 @@ export interface AuthInfoAmino {
    * of the signers. This can be estimated via simulation.
    */
   fee?: FeeAmino;
+  /**
+   * Tip is the optional tip used for meta-transactions.
+   *
+   * Since: cosmos-sdk 0.46
+   */
+  tip?: TipAmino;
 }
 export interface AuthInfoAminoMsg {
   type: "cosmos-sdk/AuthInfo";
@@ -326,6 +418,7 @@ export interface AuthInfoAminoMsg {
 export interface AuthInfoSDKType {
   signer_infos: SignerInfoSDKType[];
   fee?: FeeSDKType;
+  tip?: TipSDKType;
 }
 /**
  * SignerInfo describes the public key and signing mode of a single top-level
@@ -554,6 +647,119 @@ export interface FeeSDKType {
   gas_limit: Long;
   payer: string;
   granter: string;
+}
+/**
+ * Tip is the tip used for meta-transactions.
+ *
+ * Since: cosmos-sdk 0.46
+ */
+export interface Tip {
+  /** amount is the amount of the tip */
+  amount: Coin[];
+  /** tipper is the address of the account paying for the tip */
+  tipper: string;
+}
+export interface TipProtoMsg {
+  typeUrl: "/cosmos.tx.v1beta1.Tip";
+  value: Uint8Array;
+}
+/**
+ * Tip is the tip used for meta-transactions.
+ *
+ * Since: cosmos-sdk 0.46
+ */
+export interface TipAmino {
+  /** amount is the amount of the tip */
+  amount: CoinAmino[];
+  /** tipper is the address of the account paying for the tip */
+  tipper: string;
+}
+export interface TipAminoMsg {
+  type: "cosmos-sdk/Tip";
+  value: TipAmino;
+}
+/**
+ * Tip is the tip used for meta-transactions.
+ *
+ * Since: cosmos-sdk 0.46
+ */
+export interface TipSDKType {
+  amount: CoinSDKType[];
+  tipper: string;
+}
+/**
+ * AuxSignerData is the intermediary format that an auxiliary signer (e.g. a
+ * tipper) builds and sends to the fee payer (who will build and broadcast the
+ * actual tx). AuxSignerData is not a valid tx in itself, and will be rejected
+ * by the node if sent directly as-is.
+ *
+ * Since: cosmos-sdk 0.46
+ */
+export interface AuxSignerData {
+  /**
+   * address is the bech32-encoded address of the auxiliary signer. If using
+   * AuxSignerData across different chains, the bech32 prefix of the target
+   * chain (where the final transaction is broadcasted) should be used.
+   */
+  address: string;
+  /**
+   * sign_doc is the SIGN_MOD_DIRECT_AUX sign doc that the auxiliary signer
+   * signs. Note: we use the same sign doc even if we're signing with
+   * LEGACY_AMINO_JSON.
+   */
+  signDoc?: SignDocDirectAux;
+  /** mode is the signing mode of the single signer */
+  mode: SignMode;
+  /** sig is the signature of the sign doc. */
+  sig: Uint8Array;
+}
+export interface AuxSignerDataProtoMsg {
+  typeUrl: "/cosmos.tx.v1beta1.AuxSignerData";
+  value: Uint8Array;
+}
+/**
+ * AuxSignerData is the intermediary format that an auxiliary signer (e.g. a
+ * tipper) builds and sends to the fee payer (who will build and broadcast the
+ * actual tx). AuxSignerData is not a valid tx in itself, and will be rejected
+ * by the node if sent directly as-is.
+ *
+ * Since: cosmos-sdk 0.46
+ */
+export interface AuxSignerDataAmino {
+  /**
+   * address is the bech32-encoded address of the auxiliary signer. If using
+   * AuxSignerData across different chains, the bech32 prefix of the target
+   * chain (where the final transaction is broadcasted) should be used.
+   */
+  address: string;
+  /**
+   * sign_doc is the SIGN_MOD_DIRECT_AUX sign doc that the auxiliary signer
+   * signs. Note: we use the same sign doc even if we're signing with
+   * LEGACY_AMINO_JSON.
+   */
+  sign_doc?: SignDocDirectAuxAmino;
+  /** mode is the signing mode of the single signer */
+  mode: SignMode;
+  /** sig is the signature of the sign doc. */
+  sig: Uint8Array;
+}
+export interface AuxSignerDataAminoMsg {
+  type: "cosmos-sdk/AuxSignerData";
+  value: AuxSignerDataAmino;
+}
+/**
+ * AuxSignerData is the intermediary format that an auxiliary signer (e.g. a
+ * tipper) builds and sends to the fee payer (who will build and broadcast the
+ * actual tx). AuxSignerData is not a valid tx in itself, and will be rejected
+ * by the node if sent directly as-is.
+ *
+ * Since: cosmos-sdk 0.46
+ */
+export interface AuxSignerDataSDKType {
+  address: string;
+  sign_doc?: SignDocDirectAuxSDKType;
+  mode: SignMode;
+  sig: Uint8Array;
 }
 function createBaseTx(): Tx {
   return {
@@ -856,6 +1062,144 @@ export const SignDoc = {
     };
   },
 };
+function createBaseSignDocDirectAux(): SignDocDirectAux {
+  return {
+    bodyBytes: new Uint8Array(),
+    publicKey: undefined,
+    chainId: "",
+    accountNumber: Long.UZERO,
+    sequence: Long.UZERO,
+    tip: undefined,
+  };
+}
+export const SignDocDirectAux = {
+  typeUrl: "/cosmos.tx.v1beta1.SignDocDirectAux",
+  encode(
+    message: SignDocDirectAux,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.bodyBytes.length !== 0) {
+      writer.uint32(10).bytes(message.bodyBytes);
+    }
+    if (message.publicKey !== undefined) {
+      Any.encode(message.publicKey, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.chainId !== "") {
+      writer.uint32(26).string(message.chainId);
+    }
+    if (!message.accountNumber.isZero()) {
+      writer.uint32(32).uint64(message.accountNumber);
+    }
+    if (!message.sequence.isZero()) {
+      writer.uint32(40).uint64(message.sequence);
+    }
+    if (message.tip !== undefined) {
+      Tip.encode(message.tip, writer.uint32(50).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: _m0.Reader | Uint8Array, length?: number): SignDocDirectAux {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSignDocDirectAux();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.bodyBytes = reader.bytes();
+          break;
+        case 2:
+          message.publicKey = Any.decode(reader, reader.uint32());
+          break;
+        case 3:
+          message.chainId = reader.string();
+          break;
+        case 4:
+          message.accountNumber = reader.uint64() as Long;
+          break;
+        case 5:
+          message.sequence = reader.uint64() as Long;
+          break;
+        case 6:
+          message.tip = Tip.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<SignDocDirectAux>): SignDocDirectAux {
+    const message = createBaseSignDocDirectAux();
+    message.bodyBytes = object.bodyBytes ?? new Uint8Array();
+    message.publicKey =
+      object.publicKey !== undefined && object.publicKey !== null
+        ? Any.fromPartial(object.publicKey)
+        : undefined;
+    message.chainId = object.chainId ?? "";
+    message.accountNumber =
+      object.accountNumber !== undefined && object.accountNumber !== null
+        ? Long.fromValue(object.accountNumber)
+        : Long.UZERO;
+    message.sequence =
+      object.sequence !== undefined && object.sequence !== null
+        ? Long.fromValue(object.sequence)
+        : Long.UZERO;
+    message.tip =
+      object.tip !== undefined && object.tip !== null
+        ? Tip.fromPartial(object.tip)
+        : undefined;
+    return message;
+  },
+  fromAmino(object: SignDocDirectAuxAmino): SignDocDirectAux {
+    return {
+      bodyBytes: object.body_bytes,
+      publicKey: object?.public_key
+        ? Any.fromAmino(object.public_key)
+        : undefined,
+      chainId: object.chain_id,
+      accountNumber: Long.fromString(object.account_number),
+      sequence: Long.fromString(object.sequence),
+      tip: object?.tip ? Tip.fromAmino(object.tip) : undefined,
+    };
+  },
+  toAmino(message: SignDocDirectAux): SignDocDirectAuxAmino {
+    const obj: any = {};
+    obj.body_bytes = message.bodyBytes;
+    obj.public_key = message.publicKey
+      ? Any.toAmino(message.publicKey)
+      : undefined;
+    obj.chain_id = message.chainId;
+    obj.account_number = message.accountNumber
+      ? message.accountNumber.toString()
+      : undefined;
+    obj.sequence = message.sequence ? message.sequence.toString() : undefined;
+    obj.tip = message.tip ? Tip.toAmino(message.tip) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: SignDocDirectAuxAminoMsg): SignDocDirectAux {
+    return SignDocDirectAux.fromAmino(object.value);
+  },
+  toAminoMsg(message: SignDocDirectAux): SignDocDirectAuxAminoMsg {
+    return {
+      type: "cosmos-sdk/SignDocDirectAux",
+      value: SignDocDirectAux.toAmino(message),
+    };
+  },
+  fromProtoMsg(message: SignDocDirectAuxProtoMsg): SignDocDirectAux {
+    return SignDocDirectAux.decode(message.value);
+  },
+  toProto(message: SignDocDirectAux): Uint8Array {
+    return SignDocDirectAux.encode(message).finish();
+  },
+  toProtoMsg(message: SignDocDirectAux): SignDocDirectAuxProtoMsg {
+    return {
+      typeUrl: "/cosmos.tx.v1beta1.SignDocDirectAux",
+      value: SignDocDirectAux.encode(message).finish(),
+    };
+  },
+};
 function createBaseTxBody(): TxBody {
   return {
     messages: [],
@@ -1008,6 +1352,7 @@ function createBaseAuthInfo(): AuthInfo {
   return {
     signerInfos: [],
     fee: undefined,
+    tip: undefined,
   };
 }
 export const AuthInfo = {
@@ -1021,6 +1366,9 @@ export const AuthInfo = {
     }
     if (message.fee !== undefined) {
       Fee.encode(message.fee, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.tip !== undefined) {
+      Tip.encode(message.tip, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
@@ -1037,6 +1385,9 @@ export const AuthInfo = {
         case 2:
           message.fee = Fee.decode(reader, reader.uint32());
           break;
+        case 3:
+          message.tip = Tip.decode(reader, reader.uint32());
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -1052,6 +1403,10 @@ export const AuthInfo = {
       object.fee !== undefined && object.fee !== null
         ? Fee.fromPartial(object.fee)
         : undefined;
+    message.tip =
+      object.tip !== undefined && object.tip !== null
+        ? Tip.fromPartial(object.tip)
+        : undefined;
     return message;
   },
   fromAmino(object: AuthInfoAmino): AuthInfo {
@@ -1060,6 +1415,7 @@ export const AuthInfo = {
         ? object.signer_infos.map((e: any) => SignerInfo.fromAmino(e))
         : [],
       fee: object?.fee ? Fee.fromAmino(object.fee) : undefined,
+      tip: object?.tip ? Tip.fromAmino(object.tip) : undefined,
     };
   },
   toAmino(message: AuthInfo): AuthInfoAmino {
@@ -1072,6 +1428,7 @@ export const AuthInfo = {
       obj.signer_infos = [];
     }
     obj.fee = message.fee ? Fee.toAmino(message.fee) : undefined;
+    obj.tip = message.tip ? Tip.toAmino(message.tip) : undefined;
     return obj;
   },
   fromAminoMsg(object: AuthInfoAminoMsg): AuthInfo {
@@ -1567,6 +1924,199 @@ export const Fee = {
     return {
       typeUrl: "/cosmos.tx.v1beta1.Fee",
       value: Fee.encode(message).finish(),
+    };
+  },
+};
+function createBaseTip(): Tip {
+  return {
+    amount: [],
+    tipper: "",
+  };
+}
+export const Tip = {
+  typeUrl: "/cosmos.tx.v1beta1.Tip",
+  encode(message: Tip, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.amount) {
+      Coin.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.tipper !== "") {
+      writer.uint32(18).string(message.tipper);
+    }
+    return writer;
+  },
+  decode(input: _m0.Reader | Uint8Array, length?: number): Tip {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTip();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.amount.push(Coin.decode(reader, reader.uint32()));
+          break;
+        case 2:
+          message.tipper = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<Tip>): Tip {
+    const message = createBaseTip();
+    message.amount = object.amount?.map((e) => Coin.fromPartial(e)) || [];
+    message.tipper = object.tipper ?? "";
+    return message;
+  },
+  fromAmino(object: TipAmino): Tip {
+    return {
+      amount: Array.isArray(object?.amount)
+        ? object.amount.map((e: any) => Coin.fromAmino(e))
+        : [],
+      tipper: object.tipper,
+    };
+  },
+  toAmino(message: Tip): TipAmino {
+    const obj: any = {};
+    if (message.amount) {
+      obj.amount = message.amount.map((e) => (e ? Coin.toAmino(e) : undefined));
+    } else {
+      obj.amount = [];
+    }
+    obj.tipper = message.tipper;
+    return obj;
+  },
+  fromAminoMsg(object: TipAminoMsg): Tip {
+    return Tip.fromAmino(object.value);
+  },
+  toAminoMsg(message: Tip): TipAminoMsg {
+    return {
+      type: "cosmos-sdk/Tip",
+      value: Tip.toAmino(message),
+    };
+  },
+  fromProtoMsg(message: TipProtoMsg): Tip {
+    return Tip.decode(message.value);
+  },
+  toProto(message: Tip): Uint8Array {
+    return Tip.encode(message).finish();
+  },
+  toProtoMsg(message: Tip): TipProtoMsg {
+    return {
+      typeUrl: "/cosmos.tx.v1beta1.Tip",
+      value: Tip.encode(message).finish(),
+    };
+  },
+};
+function createBaseAuxSignerData(): AuxSignerData {
+  return {
+    address: "",
+    signDoc: undefined,
+    mode: 0,
+    sig: new Uint8Array(),
+  };
+}
+export const AuxSignerData = {
+  typeUrl: "/cosmos.tx.v1beta1.AuxSignerData",
+  encode(
+    message: AuxSignerData,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.address !== "") {
+      writer.uint32(10).string(message.address);
+    }
+    if (message.signDoc !== undefined) {
+      SignDocDirectAux.encode(
+        message.signDoc,
+        writer.uint32(18).fork()
+      ).ldelim();
+    }
+    if (message.mode !== 0) {
+      writer.uint32(24).int32(message.mode);
+    }
+    if (message.sig.length !== 0) {
+      writer.uint32(34).bytes(message.sig);
+    }
+    return writer;
+  },
+  decode(input: _m0.Reader | Uint8Array, length?: number): AuxSignerData {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAuxSignerData();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.address = reader.string();
+          break;
+        case 2:
+          message.signDoc = SignDocDirectAux.decode(reader, reader.uint32());
+          break;
+        case 3:
+          message.mode = reader.int32() as any;
+          break;
+        case 4:
+          message.sig = reader.bytes();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<AuxSignerData>): AuxSignerData {
+    const message = createBaseAuxSignerData();
+    message.address = object.address ?? "";
+    message.signDoc =
+      object.signDoc !== undefined && object.signDoc !== null
+        ? SignDocDirectAux.fromPartial(object.signDoc)
+        : undefined;
+    message.mode = object.mode ?? 0;
+    message.sig = object.sig ?? new Uint8Array();
+    return message;
+  },
+  fromAmino(object: AuxSignerDataAmino): AuxSignerData {
+    return {
+      address: object.address,
+      signDoc: object?.sign_doc
+        ? SignDocDirectAux.fromAmino(object.sign_doc)
+        : undefined,
+      mode: isSet(object.mode) ? signModeFromJSON(object.mode) : 0,
+      sig: object.sig,
+    };
+  },
+  toAmino(message: AuxSignerData): AuxSignerDataAmino {
+    const obj: any = {};
+    obj.address = message.address;
+    obj.sign_doc = message.signDoc
+      ? SignDocDirectAux.toAmino(message.signDoc)
+      : undefined;
+    obj.mode = message.mode;
+    obj.sig = message.sig;
+    return obj;
+  },
+  fromAminoMsg(object: AuxSignerDataAminoMsg): AuxSignerData {
+    return AuxSignerData.fromAmino(object.value);
+  },
+  toAminoMsg(message: AuxSignerData): AuxSignerDataAminoMsg {
+    return {
+      type: "cosmos-sdk/AuxSignerData",
+      value: AuxSignerData.toAmino(message),
+    };
+  },
+  fromProtoMsg(message: AuxSignerDataProtoMsg): AuxSignerData {
+    return AuxSignerData.decode(message.value);
+  },
+  toProto(message: AuxSignerData): Uint8Array {
+    return AuxSignerData.encode(message).finish();
+  },
+  toProtoMsg(message: AuxSignerData): AuxSignerDataProtoMsg {
+    return {
+      typeUrl: "/cosmos.tx.v1beta1.AuxSignerData",
+      value: AuxSignerData.encode(message).finish(),
     };
   },
 };

@@ -1,5 +1,4 @@
 //@ts-nocheck
-/* eslint-disable */
 import { MsgGrant, MsgExec, MsgRevoke } from "./tx";
 export const AminoConverter = {
   "/cosmos.authz.v1beta1.MsgGrant": {

@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
 /**
  * Params defines the set of on-chain interchain accounts parameters.

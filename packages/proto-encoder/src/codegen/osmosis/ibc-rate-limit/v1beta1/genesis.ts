@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { Params, ParamsAmino, ParamsSDKType } from "./params";
 import * as _m0 from "protobufjs/minimal";
 /** GenesisState defines the ibc-rate-limit module's genesis state. */

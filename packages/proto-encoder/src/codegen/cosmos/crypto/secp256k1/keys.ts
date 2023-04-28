@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
 /**
  * PubKey defines a secp256k1 public key
@@ -26,7 +24,7 @@ export interface PubKeyAmino {
   key: Uint8Array;
 }
 export interface PubKeyAminoMsg {
-  type: "tendermint/PubKeySecp256k1";
+  type: "cosmos-sdk/PubKey";
   value: PubKeyAmino;
 }
 /**
@@ -52,7 +50,7 @@ export interface PrivKeyAmino {
   key: Uint8Array;
 }
 export interface PrivKeyAminoMsg {
-  type: "tendermint/PrivKeySecp256k1";
+  type: "cosmos-sdk/PrivKey";
   value: PrivKeyAmino;
 }
 /** PrivKey defines a secp256k1 private key. */
@@ -112,7 +110,7 @@ export const PubKey = {
   },
   toAminoMsg(message: PubKey): PubKeyAminoMsg {
     return {
-      type: "tendermint/PubKeySecp256k1",
+      type: "cosmos-sdk/PubKey",
       value: PubKey.toAmino(message),
     };
   },
@@ -182,7 +180,7 @@ export const PrivKey = {
   },
   toAminoMsg(message: PrivKey): PrivKeyAminoMsg {
     return {
-      type: "tendermint/PrivKeySecp256k1",
+      type: "cosmos-sdk/PrivKey",
       value: PrivKey.toAmino(message),
     };
   },

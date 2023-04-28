@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { Downtime, downtimeFromJSON } from "./downtime_duration";
 import { Timestamp } from "../../../google/protobuf/timestamp";
 import * as _m0 from "protobufjs/minimal";

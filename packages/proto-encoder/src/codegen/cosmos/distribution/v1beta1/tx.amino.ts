@@ -1,5 +1,4 @@
 //@ts-nocheck
-/* eslint-disable */
 import {
   MsgSetWithdrawAddress,
   MsgWithdrawDelegatorReward,
@@ -18,7 +17,7 @@ export const AminoConverter = {
     fromAmino: MsgWithdrawDelegatorReward.fromAmino,
   },
   "/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission": {
-    aminoType: "cosmos-sdk/MsgWithdrawValCommission",
+    aminoType: "cosmos-sdk/MsgWithdrawValidatorCommission",
     toAmino: MsgWithdrawValidatorCommission.toAmino,
     fromAmino: MsgWithdrawValidatorCommission.fromAmino,
   },

@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
 /**
  * Coin defines a token with a denomination and an amount.

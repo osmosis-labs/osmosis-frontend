@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
 /**
  * Metadata defines the ICS29 channel specific metadata encoded into the channel version bytestring

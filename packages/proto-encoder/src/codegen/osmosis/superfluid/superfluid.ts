@@ -1,8 +1,7 @@
-//@ts-nocheck
-/* eslint-disable */
-import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
-import { Long, isSet } from "../../helpers";
 import * as _m0 from "protobufjs/minimal";
+
+import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
+import { isSet, Long } from "../../helpers";
 /**
  * SuperfluidAssetType indicates whether the superfluid asset is
  * a native token itself or the lp share of a pool.
@@ -276,7 +275,7 @@ export const SuperfluidAsset = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): SuperfluidAsset {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSuperfluidAsset();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -365,7 +364,7 @@ export const SuperfluidIntermediaryAccount = {
     length?: number
   ): SuperfluidIntermediaryAccount {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSuperfluidIntermediaryAccount();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -475,7 +474,7 @@ export const OsmoEquivalentMultiplierRecord = {
     length?: number
   ): OsmoEquivalentMultiplierRecord {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseOsmoEquivalentMultiplierRecord();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -594,7 +593,7 @@ export const SuperfluidDelegationRecord = {
     length?: number
   ): SuperfluidDelegationRecord {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSuperfluidDelegationRecord();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -718,7 +717,7 @@ export const LockIdIntermediaryAccountConnection = {
     length?: number
   ): LockIdIntermediaryAccountConnection {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLockIdIntermediaryAccountConnection();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -816,7 +815,7 @@ export const UnpoolWhitelistedPools = {
     length?: number
   ): UnpoolWhitelistedPools {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUnpoolWhitelistedPools();
     while (reader.pos < end) {
       const tag = reader.uint32();

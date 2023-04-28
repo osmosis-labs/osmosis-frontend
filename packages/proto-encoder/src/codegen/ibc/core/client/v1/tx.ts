@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { Any, AnyAmino, AnySDKType } from "../../../../google/protobuf/any";
 import * as _m0 from "protobufjs/minimal";
 /** MsgCreateClient defines a message to create an IBC client */

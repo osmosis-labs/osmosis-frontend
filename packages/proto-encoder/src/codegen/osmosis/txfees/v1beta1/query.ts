@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { FeeToken, FeeTokenAmino, FeeTokenSDKType } from "./feetoken";
 import { Long } from "../../../helpers";
 import * as _m0 from "protobufjs/minimal";

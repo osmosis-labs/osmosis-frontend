@@ -1,5 +1,5 @@
-//@ts-nocheck
-/* eslint-disable */
+import * as _m0 from "protobufjs/minimal";
+
 import {
   PageRequest,
   PageRequestAmino,
@@ -14,19 +14,12 @@ import {
   CoinSDKType,
 } from "../../../cosmos/base/v1beta1/coin";
 import {
-  SwapAmountInRoute,
-  SwapAmountInRouteAmino,
-  SwapAmountInRouteSDKType,
-  SwapAmountOutRoute,
-  SwapAmountOutRouteAmino,
-  SwapAmountOutRouteSDKType,
-} from "../../poolmanager/v1beta1/swap_route";
-import {
   Any,
-  AnyProtoMsg,
   AnyAmino,
+  AnyProtoMsg,
   AnySDKType,
 } from "../../../google/protobuf/any";
+import { Long } from "../../../helpers";
 import { Pool as Pool1 } from "../../concentrated-liquidity/pool";
 import { PoolProtoMsg as Pool1ProtoMsg } from "../../concentrated-liquidity/pool";
 import { PoolSDKType as Pool1SDKType } from "../../concentrated-liquidity/pool";
@@ -35,14 +28,20 @@ import {
   CosmWasmPoolProtoMsg,
   CosmWasmPoolSDKType,
 } from "../../cosmwasmpool/v1beta1/model/pool";
+import {
+  SwapAmountInRoute,
+  SwapAmountInRouteAmino,
+  SwapAmountInRouteSDKType,
+  SwapAmountOutRoute,
+  SwapAmountOutRouteAmino,
+  SwapAmountOutRouteSDKType,
+} from "../../poolmanager/v1beta1/swap_route";
 import { Pool as Pool2 } from "../pool-models/balancer/balancerPool";
 import { PoolProtoMsg as Pool2ProtoMsg } from "../pool-models/balancer/balancerPool";
 import { PoolSDKType as Pool2SDKType } from "../pool-models/balancer/balancerPool";
 import { Pool as Pool3 } from "../pool-models/stableswap/stableswap_pool";
 import { PoolProtoMsg as Pool3ProtoMsg } from "../pool-models/stableswap/stableswap_pool";
 import { PoolSDKType as Pool3SDKType } from "../pool-models/stableswap/stableswap_pool";
-import { Long } from "../../../helpers";
-import * as _m0 from "protobufjs/minimal";
 /**
  * =============================== Pool
  * Deprecated: please use the alternative in x/poolmanager
@@ -776,7 +775,7 @@ export const QueryPoolRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryPoolRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryPoolRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -849,7 +848,7 @@ export const QueryPoolResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryPoolResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryPoolResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -922,7 +921,7 @@ export const QueryPoolsRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryPoolsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryPoolsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1006,7 +1005,7 @@ export const QueryPoolsResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryPoolsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryPoolsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1095,7 +1094,7 @@ export const QueryNumPoolsRequest = {
     length?: number
   ): QueryNumPoolsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryNumPoolsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1161,7 +1160,7 @@ export const QueryNumPoolsResponse = {
     length?: number
   ): QueryNumPoolsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryNumPoolsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1237,7 +1236,7 @@ export const QueryPoolTypeRequest = {
     length?: number
   ): QueryPoolTypeRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryPoolTypeRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1313,7 +1312,7 @@ export const QueryPoolTypeResponse = {
     length?: number
   ): QueryPoolTypeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryPoolTypeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1390,7 +1389,7 @@ export const QueryCalcJoinPoolSharesRequest = {
     length?: number
   ): QueryCalcJoinPoolSharesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryCalcJoinPoolSharesRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1498,7 +1497,7 @@ export const QueryCalcJoinPoolSharesResponse = {
     length?: number
   ): QueryCalcJoinPoolSharesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryCalcJoinPoolSharesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1603,7 +1602,7 @@ export const QueryCalcExitPoolCoinsFromSharesRequest = {
     length?: number
   ): QueryCalcExitPoolCoinsFromSharesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryCalcExitPoolCoinsFromSharesRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1699,7 +1698,7 @@ export const QueryCalcExitPoolCoinsFromSharesResponse = {
     length?: number
   ): QueryCalcExitPoolCoinsFromSharesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryCalcExitPoolCoinsFromSharesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1794,7 +1793,7 @@ export const QueryPoolParamsRequest = {
     length?: number
   ): QueryPoolParamsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryPoolParamsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1872,7 +1871,7 @@ export const QueryPoolParamsResponse = {
     length?: number
   ): QueryPoolParamsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryPoolParamsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1958,7 +1957,7 @@ export const QueryTotalPoolLiquidityRequest = {
     length?: number
   ): QueryTotalPoolLiquidityRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryTotalPoolLiquidityRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2048,7 +2047,7 @@ export const QueryTotalPoolLiquidityResponse = {
     length?: number
   ): QueryTotalPoolLiquidityResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryTotalPoolLiquidityResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2143,7 +2142,7 @@ export const QueryTotalSharesRequest = {
     length?: number
   ): QueryTotalSharesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryTotalSharesRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2229,7 +2228,7 @@ export const QueryTotalSharesResponse = {
     length?: number
   ): QueryTotalSharesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryTotalSharesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2323,7 +2322,7 @@ export const QueryCalcJoinPoolNoSwapSharesRequest = {
     length?: number
   ): QueryCalcJoinPoolNoSwapSharesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryCalcJoinPoolNoSwapSharesRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2431,7 +2430,7 @@ export const QueryCalcJoinPoolNoSwapSharesResponse = {
     length?: number
   ): QueryCalcJoinPoolNoSwapSharesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryCalcJoinPoolNoSwapSharesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2540,7 +2539,7 @@ export const QuerySpotPriceRequest = {
     length?: number
   ): QuerySpotPriceRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQuerySpotPriceRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2636,7 +2635,7 @@ export const QueryPoolsWithFilterRequest = {
     length?: number
   ): QueryPoolsWithFilterRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryPoolsWithFilterRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2749,7 +2748,7 @@ export const QueryPoolsWithFilterResponse = {
     length?: number
   ): QueryPoolsWithFilterResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryPoolsWithFilterResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2857,7 +2856,7 @@ export const QuerySpotPriceResponse = {
     length?: number
   ): QuerySpotPriceResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQuerySpotPriceResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2944,7 +2943,7 @@ export const QuerySwapExactAmountInRequest = {
     length?: number
   ): QuerySwapExactAmountInRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQuerySwapExactAmountInRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3063,7 +3062,7 @@ export const QuerySwapExactAmountInResponse = {
     length?: number
   ): QuerySwapExactAmountInResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQuerySwapExactAmountInResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3162,7 +3161,7 @@ export const QuerySwapExactAmountOutRequest = {
     length?: number
   ): QuerySwapExactAmountOutRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQuerySwapExactAmountOutRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3281,7 +3280,7 @@ export const QuerySwapExactAmountOutResponse = {
     length?: number
   ): QuerySwapExactAmountOutResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQuerySwapExactAmountOutResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3363,7 +3362,7 @@ export const QueryTotalLiquidityRequest = {
     length?: number
   ): QueryTotalLiquidityRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryTotalLiquidityRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3439,7 +3438,7 @@ export const QueryTotalLiquidityResponse = {
     length?: number
   ): QueryTotalLiquidityResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryTotalLiquidityResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

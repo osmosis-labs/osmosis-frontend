@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { Any, AnyAmino, AnySDKType } from "../../../../google/protobuf/any";
 import {
   ConnectionEnd,

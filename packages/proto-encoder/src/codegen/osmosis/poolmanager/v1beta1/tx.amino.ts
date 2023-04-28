@@ -1,5 +1,4 @@
 //@ts-nocheck
-/* eslint-disable */
 import { MsgSwapExactAmountIn, MsgSwapExactAmountOut } from "./tx";
 export const AminoConverter = {
   "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn": {

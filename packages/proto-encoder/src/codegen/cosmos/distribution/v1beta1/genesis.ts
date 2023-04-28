@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { DecCoin, DecCoinAmino, DecCoinSDKType } from "../../base/v1beta1/coin";
 import {
   ValidatorAccumulatedCommission,

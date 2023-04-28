@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
 /**
  * MultiSignature wraps the signatures from a multisig.LegacyAminoPubKey.

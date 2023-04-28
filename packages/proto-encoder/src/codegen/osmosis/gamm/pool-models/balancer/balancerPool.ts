@@ -1,18 +1,17 @@
-//@ts-nocheck
-/* eslint-disable */
-import { Timestamp } from "../../../../google/protobuf/timestamp";
-import {
-  Duration,
-  DurationAmino,
-  DurationSDKType,
-} from "../../../../google/protobuf/duration";
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Coin,
   CoinAmino,
   CoinSDKType,
 } from "../../../../cosmos/base/v1beta1/coin";
-import { Long, toTimestamp, fromTimestamp } from "../../../../helpers";
-import * as _m0 from "protobufjs/minimal";
+import {
+  Duration,
+  DurationAmino,
+  DurationSDKType,
+} from "../../../../google/protobuf/duration";
+import { Timestamp } from "../../../../google/protobuf/timestamp";
+import { fromTimestamp, Long, toTimestamp } from "../../../../helpers";
 /**
  * Parameters for changing the weights in a balancer pool smoothly from
  * a start weight and end weight over a period of time.
@@ -322,7 +321,7 @@ export const SmoothWeightChangeParams = {
     length?: number
   ): SmoothWeightChangeParams {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSmoothWeightChangeParams();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -466,7 +465,7 @@ export const PoolParams = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): PoolParams {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePoolParams();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -563,7 +562,7 @@ export const PoolAsset = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): PoolAsset {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePoolAsset();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -664,7 +663,7 @@ export const Pool = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Pool {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePool();
     while (reader.pos < end) {
       const tag = reader.uint32();

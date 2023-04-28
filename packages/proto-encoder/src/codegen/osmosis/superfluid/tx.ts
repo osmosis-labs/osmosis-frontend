@@ -1,9 +1,8 @@
-//@ts-nocheck
-/* eslint-disable */
+import * as _m0 from "protobufjs/minimal";
+
 import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
 import { Timestamp } from "../../google/protobuf/timestamp";
-import { Long, toTimestamp, fromTimestamp } from "../../helpers";
-import * as _m0 from "protobufjs/minimal";
+import { fromTimestamp, Long, toTimestamp } from "../../helpers";
 export interface MsgSuperfluidDelegate {
   sender: string;
   lockId: Long;
@@ -348,7 +347,7 @@ export const MsgSuperfluidDelegate = {
     length?: number
   ): MsgSuperfluidDelegate {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSuperfluidDelegate();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -431,7 +430,7 @@ export const MsgSuperfluidDelegateResponse = {
     length?: number
   ): MsgSuperfluidDelegateResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSuperfluidDelegateResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -515,7 +514,7 @@ export const MsgSuperfluidUndelegate = {
     length?: number
   ): MsgSuperfluidUndelegate {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSuperfluidUndelegate();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -602,7 +601,7 @@ export const MsgSuperfluidUndelegateResponse = {
     length?: number
   ): MsgSuperfluidUndelegateResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSuperfluidUndelegateResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -686,7 +685,7 @@ export const MsgSuperfluidUnbondLock = {
     length?: number
   ): MsgSuperfluidUnbondLock {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSuperfluidUnbondLock();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -773,7 +772,7 @@ export const MsgSuperfluidUnbondLockResponse = {
     length?: number
   ): MsgSuperfluidUnbondLockResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSuperfluidUnbondLockResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -861,7 +860,7 @@ export const MsgSuperfluidUndelegateAndUnbondLock = {
     length?: number
   ): MsgSuperfluidUndelegateAndUnbondLock {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSuperfluidUndelegateAndUnbondLock();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -961,7 +960,7 @@ export const MsgSuperfluidUndelegateAndUnbondLockResponse = {
     length?: number
   ): MsgSuperfluidUndelegateAndUnbondLockResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSuperfluidUndelegateAndUnbondLockResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1053,7 +1052,7 @@ export const MsgLockAndSuperfluidDelegate = {
     length?: number
   ): MsgLockAndSuperfluidDelegate {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgLockAndSuperfluidDelegate();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1158,7 +1157,7 @@ export const MsgLockAndSuperfluidDelegateResponse = {
     length?: number
   ): MsgLockAndSuperfluidDelegateResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgLockAndSuperfluidDelegateResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1252,7 +1251,7 @@ export const MsgUnPoolWhitelistedPool = {
     length?: number
   ): MsgUnPoolWhitelistedPool {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgUnPoolWhitelistedPool();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1346,7 +1345,7 @@ export const MsgUnPoolWhitelistedPoolResponse = {
     length?: number
   ): MsgUnPoolWhitelistedPoolResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgUnPoolWhitelistedPoolResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1456,7 +1455,7 @@ export const MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition = {
     length?: number
   ): MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message =
       createBaseMsgUnlockAndMigrateSharesToFullRangeConcentratedPosition();
     while (reader.pos < end) {
@@ -1600,7 +1599,7 @@ export const MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse =
     ): MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse {
       const reader =
         input instanceof _m0.Reader ? input : new _m0.Reader(input);
-      let end = length === undefined ? reader.len : reader.pos + length;
+      const end = length === undefined ? reader.len : reader.pos + length;
       const message =
         createBaseMsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse();
       while (reader.pos < end) {

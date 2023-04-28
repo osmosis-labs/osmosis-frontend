@@ -1,40 +1,38 @@
-//@ts-nocheck
-/* eslint-disable */
-import * as _50 from "./abci/types";
-import * as _51 from "./crypto/keys";
-import * as _52 from "./crypto/proof";
-import * as _53 from "./libs/bits/types";
-import * as _54 from "./p2p/types";
-import * as _55 from "./types/block";
-import * as _56 from "./types/evidence";
-import * as _57 from "./types/params";
-import * as _58 from "./types/types";
-import * as _59 from "./types/validator";
-import * as _60 from "./version/types";
+import * as _177 from "./abci/types";
+import * as _178 from "./crypto/keys";
+import * as _179 from "./crypto/proof";
+import * as _180 from "./libs/bits/types";
+import * as _181 from "./p2p/types";
+import * as _182 from "./types/block";
+import * as _183 from "./types/evidence";
+import * as _184 from "./types/params";
+import * as _185 from "./types/types";
+import * as _186 from "./types/validator";
+import * as _187 from "./version/types";
 export namespace tendermint {
   export const abci = {
-    ..._50,
+    ..._177,
   };
   export const crypto = {
-    ..._51,
-    ..._52,
+    ..._178,
+    ..._179,
   };
   export namespace libs {
     export const bits = {
-      ..._53,
+      ..._180,
     };
   }
   export const p2p = {
-    ..._54,
+    ..._181,
   };
   export const types = {
-    ..._55,
-    ..._56,
-    ..._57,
-    ..._58,
-    ..._59,
+    ..._182,
+    ..._183,
+    ..._184,
+    ..._185,
+    ..._186,
   };
   export const version = {
-    ..._60,
+    ..._187,
   };
 }

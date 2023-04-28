@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { Plan, PlanAmino, PlanSDKType } from "./upgrade";
 import * as _m0 from "protobufjs/minimal";
 /**

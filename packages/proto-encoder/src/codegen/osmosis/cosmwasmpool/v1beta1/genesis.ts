@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
 /** Params holds parameters for the cosmwasmpool module */
 export interface Params {}

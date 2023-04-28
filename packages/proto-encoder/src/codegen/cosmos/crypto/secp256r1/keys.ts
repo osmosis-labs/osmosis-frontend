@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
 /** PubKey defines a secp256r1 ECDSA public key. */
 export interface PubKey {

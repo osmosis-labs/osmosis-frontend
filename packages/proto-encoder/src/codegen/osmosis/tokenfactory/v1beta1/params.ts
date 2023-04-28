@@ -1,11 +1,10 @@
-//@ts-nocheck
-/* eslint-disable */
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Coin,
   CoinAmino,
   CoinSDKType,
 } from "../../../cosmos/base/v1beta1/coin";
-import * as _m0 from "protobufjs/minimal";
 /** Params defines the parameters for the tokenfactory module. */
 export interface Params {
   denomCreationFee: Coin[];
@@ -44,7 +43,7 @@ export const Params = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Params {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParams();
     while (reader.pos < end) {
       const tag = reader.uint32();

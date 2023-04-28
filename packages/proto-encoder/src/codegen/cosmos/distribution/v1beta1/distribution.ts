@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import {
   DecCoin,
   DecCoinAmino,
@@ -29,7 +27,7 @@ export interface ParamsAmino {
   withdraw_addr_enabled: boolean;
 }
 export interface ParamsAminoMsg {
-  type: "cosmos-sdk/x/distribution/Params";
+  type: "cosmos-sdk/Params";
   value: ParamsAmino;
 }
 /** Params defines the set of params for the distribution module. */
@@ -278,6 +276,7 @@ export interface FeePoolSDKType {
  * recipient account.
  */
 export interface CommunityPoolSpendProposal {
+  $typeUrl?: string;
   title: string;
   description: string;
   recipient: string;
@@ -308,6 +307,7 @@ export interface CommunityPoolSpendProposalAminoMsg {
  * recipient account.
  */
 export interface CommunityPoolSpendProposalSDKType {
+  $typeUrl?: string;
   title: string;
   description: string;
   recipient: string;
@@ -397,6 +397,7 @@ export interface DelegationDelegatorRewardSDKType {
  * with a deposit
  */
 export interface CommunityPoolSpendProposalWithDeposit {
+  $typeUrl?: string;
   title: string;
   description: string;
   recipient: string;
@@ -427,6 +428,7 @@ export interface CommunityPoolSpendProposalWithDepositAminoMsg {
  * with a deposit
  */
 export interface CommunityPoolSpendProposalWithDepositSDKType {
+  $typeUrl?: string;
   title: string;
   description: string;
   recipient: string;
@@ -516,7 +518,7 @@ export const Params = {
   },
   toAminoMsg(message: Params): ParamsAminoMsg {
     return {
-      type: "cosmos-sdk/x/distribution/Params",
+      type: "cosmos-sdk/Params",
       value: Params.toAmino(message),
     };
   },
@@ -1190,6 +1192,7 @@ export const FeePool = {
 };
 function createBaseCommunityPoolSpendProposal(): CommunityPoolSpendProposal {
   return {
+    $typeUrl: "/cosmos.distribution.v1beta1.CommunityPoolSpendProposal",
     title: "",
     description: "",
     recipient: "",
@@ -1515,6 +1518,8 @@ export const DelegationDelegatorReward = {
 };
 function createBaseCommunityPoolSpendProposalWithDeposit(): CommunityPoolSpendProposalWithDeposit {
   return {
+    $typeUrl:
+      "/cosmos.distribution.v1beta1.CommunityPoolSpendProposalWithDeposit",
     title: "",
     description: "",
     recipient: "",

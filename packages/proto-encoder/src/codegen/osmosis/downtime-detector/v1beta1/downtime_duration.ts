@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 export enum Downtime {
   DURATION_30S = 0,
   DURATION_1M = 1,

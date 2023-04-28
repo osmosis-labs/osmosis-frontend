@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { Params, ParamsAmino, ParamsSDKType } from "./controller";
 import * as _m0 from "protobufjs/minimal";
 /** QueryInterchainAccountRequest is the request type for the Query/InterchainAccount RPC method. */

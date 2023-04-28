@@ -1,5 +1,4 @@
 //@ts-nocheck
-/* eslint-disable */
 import {
   MsgLockTokens,
   MsgBeginUnlockingAll,

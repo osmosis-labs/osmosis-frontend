@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { AccessConfig, AccessConfigAmino, AccessConfigSDKType } from "./types";
 import {
   Coin,

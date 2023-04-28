@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { Params as Params1 } from "../../controller/v1/controller";
 import { ParamsAmino as Params1Amino } from "../../controller/v1/controller";
 import { ParamsSDKType as Params1SDKType } from "../../controller/v1/controller";

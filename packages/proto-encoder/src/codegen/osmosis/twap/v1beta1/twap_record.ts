@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { Timestamp } from "../../../google/protobuf/timestamp";
 import { Long, toTimestamp, fromTimestamp } from "../../../helpers";
 import * as _m0 from "protobufjs/minimal";

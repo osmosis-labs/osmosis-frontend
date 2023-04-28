@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { Params, ParamsAmino, ParamsSDKType } from "./genesis";
 import * as _m0 from "protobufjs/minimal";
 /** =============================== Params */

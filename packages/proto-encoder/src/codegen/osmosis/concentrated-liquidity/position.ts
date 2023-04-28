@@ -1,9 +1,8 @@
-//@ts-nocheck
-/* eslint-disable */
-import { Timestamp } from "../../google/protobuf/timestamp";
-import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
-import { Long, toTimestamp, fromTimestamp } from "../../helpers";
 import * as _m0 from "protobufjs/minimal";
+
+import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
+import { Timestamp } from "../../google/protobuf/timestamp";
+import { fromTimestamp, Long, toTimestamp } from "../../helpers";
 /**
  * Position contains position's id, address, pool id, lower tick, upper tick
  * join time, and liquidity.
@@ -119,7 +118,7 @@ export const Position = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Position {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePosition();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -261,7 +260,7 @@ export const PositionWithUnderlyingAssetBreakdown = {
     length?: number
   ): PositionWithUnderlyingAssetBreakdown {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePositionWithUnderlyingAssetBreakdown();
     while (reader.pos < end) {
       const tag = reader.uint32();

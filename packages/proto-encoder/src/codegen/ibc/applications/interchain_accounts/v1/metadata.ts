@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
 /**
  * Metadata defines a set of protocol specific data encoded into the ICS27 channel version bytestring

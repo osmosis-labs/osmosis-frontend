@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { Long, isSet } from "../../../helpers";
 import * as _m0 from "protobufjs/minimal";
 /** PoolType is an enumeration of all supported pool types. */

@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { Downtime, downtimeFromJSON } from "./downtime_duration";
 import {
   Duration,

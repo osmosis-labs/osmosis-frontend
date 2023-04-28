@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import {
   Duration,
   DurationAmino,

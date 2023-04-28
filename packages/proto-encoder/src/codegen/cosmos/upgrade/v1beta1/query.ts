@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import {
   Plan,
   PlanAmino,
@@ -281,6 +279,64 @@ export interface QueryModuleVersionsResponseAminoMsg {
  */
 export interface QueryModuleVersionsResponseSDKType {
   module_versions: ModuleVersionSDKType[];
+}
+/**
+ * QueryAuthorityRequest is the request type for Query/Authority
+ *
+ * Since: cosmos-sdk 0.46
+ */
+export interface QueryAuthorityRequest {}
+export interface QueryAuthorityRequestProtoMsg {
+  typeUrl: "/cosmos.upgrade.v1beta1.QueryAuthorityRequest";
+  value: Uint8Array;
+}
+/**
+ * QueryAuthorityRequest is the request type for Query/Authority
+ *
+ * Since: cosmos-sdk 0.46
+ */
+export interface QueryAuthorityRequestAmino {}
+export interface QueryAuthorityRequestAminoMsg {
+  type: "cosmos-sdk/QueryAuthorityRequest";
+  value: QueryAuthorityRequestAmino;
+}
+/**
+ * QueryAuthorityRequest is the request type for Query/Authority
+ *
+ * Since: cosmos-sdk 0.46
+ */
+export interface QueryAuthorityRequestSDKType {}
+/**
+ * QueryAuthorityResponse is the response type for Query/Authority
+ *
+ * Since: cosmos-sdk 0.46
+ */
+export interface QueryAuthorityResponse {
+  address: string;
+}
+export interface QueryAuthorityResponseProtoMsg {
+  typeUrl: "/cosmos.upgrade.v1beta1.QueryAuthorityResponse";
+  value: Uint8Array;
+}
+/**
+ * QueryAuthorityResponse is the response type for Query/Authority
+ *
+ * Since: cosmos-sdk 0.46
+ */
+export interface QueryAuthorityResponseAmino {
+  address: string;
+}
+export interface QueryAuthorityResponseAminoMsg {
+  type: "cosmos-sdk/QueryAuthorityResponse";
+  value: QueryAuthorityResponseAmino;
+}
+/**
+ * QueryAuthorityResponse is the response type for Query/Authority
+ *
+ * Since: cosmos-sdk 0.46
+ */
+export interface QueryAuthorityResponseSDKType {
+  address: string;
 }
 function createBaseQueryCurrentPlanRequest(): QueryCurrentPlanRequest {
   return {};
@@ -968,6 +1024,142 @@ export const QueryModuleVersionsResponse = {
     return {
       typeUrl: "/cosmos.upgrade.v1beta1.QueryModuleVersionsResponse",
       value: QueryModuleVersionsResponse.encode(message).finish(),
+    };
+  },
+};
+function createBaseQueryAuthorityRequest(): QueryAuthorityRequest {
+  return {};
+}
+export const QueryAuthorityRequest = {
+  typeUrl: "/cosmos.upgrade.v1beta1.QueryAuthorityRequest",
+  encode(
+    _: QueryAuthorityRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): QueryAuthorityRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryAuthorityRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(_: Partial<QueryAuthorityRequest>): QueryAuthorityRequest {
+    const message = createBaseQueryAuthorityRequest();
+    return message;
+  },
+  fromAmino(_: QueryAuthorityRequestAmino): QueryAuthorityRequest {
+    return {};
+  },
+  toAmino(_: QueryAuthorityRequest): QueryAuthorityRequestAmino {
+    const obj: any = {};
+    return obj;
+  },
+  fromAminoMsg(object: QueryAuthorityRequestAminoMsg): QueryAuthorityRequest {
+    return QueryAuthorityRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: QueryAuthorityRequest): QueryAuthorityRequestAminoMsg {
+    return {
+      type: "cosmos-sdk/QueryAuthorityRequest",
+      value: QueryAuthorityRequest.toAmino(message),
+    };
+  },
+  fromProtoMsg(message: QueryAuthorityRequestProtoMsg): QueryAuthorityRequest {
+    return QueryAuthorityRequest.decode(message.value);
+  },
+  toProto(message: QueryAuthorityRequest): Uint8Array {
+    return QueryAuthorityRequest.encode(message).finish();
+  },
+  toProtoMsg(message: QueryAuthorityRequest): QueryAuthorityRequestProtoMsg {
+    return {
+      typeUrl: "/cosmos.upgrade.v1beta1.QueryAuthorityRequest",
+      value: QueryAuthorityRequest.encode(message).finish(),
+    };
+  },
+};
+function createBaseQueryAuthorityResponse(): QueryAuthorityResponse {
+  return {
+    address: "",
+  };
+}
+export const QueryAuthorityResponse = {
+  typeUrl: "/cosmos.upgrade.v1beta1.QueryAuthorityResponse",
+  encode(
+    message: QueryAuthorityResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.address !== "") {
+      writer.uint32(10).string(message.address);
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): QueryAuthorityResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryAuthorityResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.address = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<QueryAuthorityResponse>): QueryAuthorityResponse {
+    const message = createBaseQueryAuthorityResponse();
+    message.address = object.address ?? "";
+    return message;
+  },
+  fromAmino(object: QueryAuthorityResponseAmino): QueryAuthorityResponse {
+    return {
+      address: object.address,
+    };
+  },
+  toAmino(message: QueryAuthorityResponse): QueryAuthorityResponseAmino {
+    const obj: any = {};
+    obj.address = message.address;
+    return obj;
+  },
+  fromAminoMsg(object: QueryAuthorityResponseAminoMsg): QueryAuthorityResponse {
+    return QueryAuthorityResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: QueryAuthorityResponse): QueryAuthorityResponseAminoMsg {
+    return {
+      type: "cosmos-sdk/QueryAuthorityResponse",
+      value: QueryAuthorityResponse.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: QueryAuthorityResponseProtoMsg
+  ): QueryAuthorityResponse {
+    return QueryAuthorityResponse.decode(message.value);
+  },
+  toProto(message: QueryAuthorityResponse): Uint8Array {
+    return QueryAuthorityResponse.encode(message).finish();
+  },
+  toProtoMsg(message: QueryAuthorityResponse): QueryAuthorityResponseProtoMsg {
+    return {
+      typeUrl: "/cosmos.upgrade.v1beta1.QueryAuthorityResponse",
+      value: QueryAuthorityResponse.encode(message).finish(),
     };
   },
 };

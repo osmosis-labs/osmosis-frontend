@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { Long } from "../../../helpers";
 import * as _m0 from "protobufjs/minimal";
 /** Minter represents the minting state. */

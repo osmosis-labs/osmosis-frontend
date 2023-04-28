@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { TickInfo, TickInfoAmino, TickInfoSDKType } from "./tickInfo";
 import {
   Any,

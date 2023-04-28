@@ -1,14 +1,13 @@
-//@ts-nocheck
-/* eslint-disable */
+import * as _m0 from "protobufjs/minimal";
+
 import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
-import { Timestamp } from "../../google/protobuf/timestamp";
 import {
   Duration,
   DurationAmino,
   DurationSDKType,
 } from "../../google/protobuf/duration";
-import { Long, toTimestamp, fromTimestamp } from "../../helpers";
-import * as _m0 from "protobufjs/minimal";
+import { Timestamp } from "../../google/protobuf/timestamp";
+import { fromTimestamp, Long, toTimestamp } from "../../helpers";
 /** ===================== MsgCreatePosition */
 export interface MsgCreatePosition {
   poolId: Long;
@@ -358,7 +357,7 @@ export const MsgCreatePosition = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreatePosition {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreatePosition();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -519,7 +518,7 @@ export const MsgCreatePositionResponse = {
     length?: number
   ): MsgCreatePositionResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreatePositionResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -643,7 +642,7 @@ export const MsgWithdrawPosition = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgWithdrawPosition {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgWithdrawPosition();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -737,7 +736,7 @@ export const MsgWithdrawPositionResponse = {
     length?: number
   ): MsgWithdrawPositionResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgWithdrawPositionResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -834,7 +833,7 @@ export const MsgCollectFees = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCollectFees {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCollectFees();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -927,7 +926,7 @@ export const MsgCollectFeesResponse = {
     length?: number
   ): MsgCollectFeesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCollectFeesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1017,7 +1016,7 @@ export const MsgCollectIncentives = {
     length?: number
   ): MsgCollectIncentives {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCollectIncentives();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1111,7 +1110,7 @@ export const MsgCollectIncentivesResponse = {
     length?: number
   ): MsgCollectIncentivesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCollectIncentivesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1234,7 +1233,7 @@ export const MsgCreateIncentive = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateIncentive {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateIncentive();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1378,7 +1377,7 @@ export const MsgCreateIncentiveResponse = {
     length?: number
   ): MsgCreateIncentiveResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateIncentiveResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1509,7 +1508,7 @@ export const MsgFungifyChargedPositions = {
     length?: number
   ): MsgFungifyChargedPositions {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgFungifyChargedPositions();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1618,7 +1617,7 @@ export const MsgFungifyChargedPositionsResponse = {
     length?: number
   ): MsgFungifyChargedPositionsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgFungifyChargedPositionsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

@@ -1,21 +1,20 @@
-//@ts-nocheck
-/* eslint-disable */
-import {
-  PoolParams,
-  PoolParamsAmino,
-  PoolParamsSDKType,
-  PoolAsset,
-  PoolAssetAmino,
-  PoolAssetSDKType,
-} from "../balancerPool";
+import * as _m0 from "protobufjs/minimal";
+
 import {
   Coin,
   CoinAmino,
   CoinSDKType,
 } from "../../../../../cosmos/base/v1beta1/coin";
 import { Timestamp } from "../../../../../google/protobuf/timestamp";
-import { Long, toTimestamp, fromTimestamp } from "../../../../../helpers";
-import * as _m0 from "protobufjs/minimal";
+import { fromTimestamp, Long, toTimestamp } from "../../../../../helpers";
+import {
+  PoolAsset,
+  PoolAssetAmino,
+  PoolAssetSDKType,
+  PoolParams,
+  PoolParamsAmino,
+  PoolParamsSDKType,
+} from "../balancerPool";
 /** ===================== MsgCreatePool */
 export interface MsgCreateBalancerPool {
   sender: string;
@@ -147,7 +146,7 @@ export const MsgCreateBalancerPool = {
     length?: number
   ): MsgCreateBalancerPool {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateBalancerPool();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -256,7 +255,7 @@ export const MsgCreateBalancerPoolResponse = {
     length?: number
   ): MsgCreateBalancerPoolResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateBalancerPoolResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -352,7 +351,7 @@ export const MsgMigrateSharesToFullRangeConcentratedPosition = {
     length?: number
   ): MsgMigrateSharesToFullRangeConcentratedPosition {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgMigrateSharesToFullRangeConcentratedPosition();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -480,7 +479,7 @@ export const MsgMigrateSharesToFullRangeConcentratedPositionResponse = {
     length?: number
   ): MsgMigrateSharesToFullRangeConcentratedPositionResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message =
       createBaseMsgMigrateSharesToFullRangeConcentratedPositionResponse();
     while (reader.pos < end) {

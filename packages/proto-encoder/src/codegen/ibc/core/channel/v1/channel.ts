@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { Height, HeightAmino, HeightSDKType } from "../../client/v1/client";
 import { Long, isSet } from "../../../../helpers";
 import * as _m0 from "protobufjs/minimal";

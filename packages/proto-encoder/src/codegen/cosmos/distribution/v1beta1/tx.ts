@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { Coin, CoinAmino, CoinSDKType } from "../../base/v1beta1/coin";
 import * as _m0 from "protobufjs/minimal";
 /**
@@ -81,19 +79,25 @@ export interface MsgWithdrawDelegatorRewardSDKType {
   validator_address: string;
 }
 /** MsgWithdrawDelegatorRewardResponse defines the Msg/WithdrawDelegatorReward response type. */
-export interface MsgWithdrawDelegatorRewardResponse {}
+export interface MsgWithdrawDelegatorRewardResponse {
+  amount: Coin[];
+}
 export interface MsgWithdrawDelegatorRewardResponseProtoMsg {
   typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorRewardResponse";
   value: Uint8Array;
 }
 /** MsgWithdrawDelegatorRewardResponse defines the Msg/WithdrawDelegatorReward response type. */
-export interface MsgWithdrawDelegatorRewardResponseAmino {}
+export interface MsgWithdrawDelegatorRewardResponseAmino {
+  amount: CoinAmino[];
+}
 export interface MsgWithdrawDelegatorRewardResponseAminoMsg {
   type: "cosmos-sdk/MsgWithdrawDelegatorRewardResponse";
   value: MsgWithdrawDelegatorRewardResponseAmino;
 }
 /** MsgWithdrawDelegatorRewardResponse defines the Msg/WithdrawDelegatorReward response type. */
-export interface MsgWithdrawDelegatorRewardResponseSDKType {}
+export interface MsgWithdrawDelegatorRewardResponseSDKType {
+  amount: CoinSDKType[];
+}
 /**
  * MsgWithdrawValidatorCommission withdraws the full commission to the validator
  * address.
@@ -113,7 +117,7 @@ export interface MsgWithdrawValidatorCommissionAmino {
   validator_address: string;
 }
 export interface MsgWithdrawValidatorCommissionAminoMsg {
-  type: "cosmos-sdk/MsgWithdrawValCommission";
+  type: "cosmos-sdk/MsgWithdrawValidatorCommission";
   value: MsgWithdrawValidatorCommissionAmino;
 }
 /**
@@ -124,19 +128,25 @@ export interface MsgWithdrawValidatorCommissionSDKType {
   validator_address: string;
 }
 /** MsgWithdrawValidatorCommissionResponse defines the Msg/WithdrawValidatorCommission response type. */
-export interface MsgWithdrawValidatorCommissionResponse {}
+export interface MsgWithdrawValidatorCommissionResponse {
+  amount: Coin[];
+}
 export interface MsgWithdrawValidatorCommissionResponseProtoMsg {
   typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommissionResponse";
   value: Uint8Array;
 }
 /** MsgWithdrawValidatorCommissionResponse defines the Msg/WithdrawValidatorCommission response type. */
-export interface MsgWithdrawValidatorCommissionResponseAmino {}
+export interface MsgWithdrawValidatorCommissionResponseAmino {
+  amount: CoinAmino[];
+}
 export interface MsgWithdrawValidatorCommissionResponseAminoMsg {
   type: "cosmos-sdk/MsgWithdrawValidatorCommissionResponse";
   value: MsgWithdrawValidatorCommissionResponseAmino;
 }
 /** MsgWithdrawValidatorCommissionResponse defines the Msg/WithdrawValidatorCommission response type. */
-export interface MsgWithdrawValidatorCommissionResponseSDKType {}
+export interface MsgWithdrawValidatorCommissionResponseSDKType {
+  amount: CoinSDKType[];
+}
 /**
  * MsgFundCommunityPool allows an account to directly
  * fund the community pool.
@@ -439,14 +449,19 @@ export const MsgWithdrawDelegatorReward = {
   },
 };
 function createBaseMsgWithdrawDelegatorRewardResponse(): MsgWithdrawDelegatorRewardResponse {
-  return {};
+  return {
+    amount: [],
+  };
 }
 export const MsgWithdrawDelegatorRewardResponse = {
   typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorRewardResponse",
   encode(
-    _: MsgWithdrawDelegatorRewardResponse,
+    message: MsgWithdrawDelegatorRewardResponse,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
+    for (const v of message.amount) {
+      Coin.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
     return writer;
   },
   decode(
@@ -459,6 +474,9 @@ export const MsgWithdrawDelegatorRewardResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.amount.push(Coin.decode(reader, reader.uint32()));
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -467,20 +485,30 @@ export const MsgWithdrawDelegatorRewardResponse = {
     return message;
   },
   fromPartial(
-    _: Partial<MsgWithdrawDelegatorRewardResponse>
+    object: Partial<MsgWithdrawDelegatorRewardResponse>
   ): MsgWithdrawDelegatorRewardResponse {
     const message = createBaseMsgWithdrawDelegatorRewardResponse();
+    message.amount = object.amount?.map((e) => Coin.fromPartial(e)) || [];
     return message;
   },
   fromAmino(
-    _: MsgWithdrawDelegatorRewardResponseAmino
+    object: MsgWithdrawDelegatorRewardResponseAmino
   ): MsgWithdrawDelegatorRewardResponse {
-    return {};
+    return {
+      amount: Array.isArray(object?.amount)
+        ? object.amount.map((e: any) => Coin.fromAmino(e))
+        : [],
+    };
   },
   toAmino(
-    _: MsgWithdrawDelegatorRewardResponse
+    message: MsgWithdrawDelegatorRewardResponse
   ): MsgWithdrawDelegatorRewardResponseAmino {
     const obj: any = {};
+    if (message.amount) {
+      obj.amount = message.amount.map((e) => (e ? Coin.toAmino(e) : undefined));
+    } else {
+      obj.amount = [];
+    }
     return obj;
   },
   fromAminoMsg(
@@ -580,7 +608,7 @@ export const MsgWithdrawValidatorCommission = {
     message: MsgWithdrawValidatorCommission
   ): MsgWithdrawValidatorCommissionAminoMsg {
     return {
-      type: "cosmos-sdk/MsgWithdrawValCommission",
+      type: "cosmos-sdk/MsgWithdrawValidatorCommission",
       value: MsgWithdrawValidatorCommission.toAmino(message),
     };
   },
@@ -602,15 +630,20 @@ export const MsgWithdrawValidatorCommission = {
   },
 };
 function createBaseMsgWithdrawValidatorCommissionResponse(): MsgWithdrawValidatorCommissionResponse {
-  return {};
+  return {
+    amount: [],
+  };
 }
 export const MsgWithdrawValidatorCommissionResponse = {
   typeUrl:
     "/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommissionResponse",
   encode(
-    _: MsgWithdrawValidatorCommissionResponse,
+    message: MsgWithdrawValidatorCommissionResponse,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
+    for (const v of message.amount) {
+      Coin.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
     return writer;
   },
   decode(
@@ -623,6 +656,9 @@ export const MsgWithdrawValidatorCommissionResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.amount.push(Coin.decode(reader, reader.uint32()));
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -631,20 +667,30 @@ export const MsgWithdrawValidatorCommissionResponse = {
     return message;
   },
   fromPartial(
-    _: Partial<MsgWithdrawValidatorCommissionResponse>
+    object: Partial<MsgWithdrawValidatorCommissionResponse>
   ): MsgWithdrawValidatorCommissionResponse {
     const message = createBaseMsgWithdrawValidatorCommissionResponse();
+    message.amount = object.amount?.map((e) => Coin.fromPartial(e)) || [];
     return message;
   },
   fromAmino(
-    _: MsgWithdrawValidatorCommissionResponseAmino
+    object: MsgWithdrawValidatorCommissionResponseAmino
   ): MsgWithdrawValidatorCommissionResponse {
-    return {};
+    return {
+      amount: Array.isArray(object?.amount)
+        ? object.amount.map((e: any) => Coin.fromAmino(e))
+        : [],
+    };
   },
   toAmino(
-    _: MsgWithdrawValidatorCommissionResponse
+    message: MsgWithdrawValidatorCommissionResponse
   ): MsgWithdrawValidatorCommissionResponseAmino {
     const obj: any = {};
+    if (message.amount) {
+      obj.amount = message.amount.map((e) => (e ? Coin.toAmino(e) : undefined));
+    } else {
+      obj.amount = [];
+    }
     return obj;
   },
   fromAminoMsg(

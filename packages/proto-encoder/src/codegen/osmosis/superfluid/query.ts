@@ -1,5 +1,5 @@
-//@ts-nocheck
-/* eslint-disable */
+import * as _m0 from "protobufjs/minimal";
+
 import {
   PageRequest,
   PageRequestAmino,
@@ -8,33 +8,32 @@ import {
   PageResponseAmino,
   PageResponseSDKType,
 } from "../../cosmos/base/query/v1beta1/pagination";
-import { Params, ParamsAmino, ParamsSDKType } from "./params";
-import {
-  SuperfluidAssetType,
-  SuperfluidAsset,
-  SuperfluidAssetAmino,
-  SuperfluidAssetSDKType,
-  OsmoEquivalentMultiplierRecord,
-  OsmoEquivalentMultiplierRecordAmino,
-  OsmoEquivalentMultiplierRecordSDKType,
-  SuperfluidDelegationRecord,
-  SuperfluidDelegationRecordAmino,
-  SuperfluidDelegationRecordSDKType,
-  superfluidAssetTypeFromJSON,
-} from "./superfluid";
 import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
-import {
-  SyntheticLock,
-  SyntheticLockAmino,
-  SyntheticLockSDKType,
-} from "../lockup/lock";
 import {
   DelegationResponse,
   DelegationResponseAmino,
   DelegationResponseSDKType,
 } from "../../cosmos/staking/v1beta1/staking";
-import { Long, isSet } from "../../helpers";
-import * as _m0 from "protobufjs/minimal";
+import { isSet, Long } from "../../helpers";
+import {
+  SyntheticLock,
+  SyntheticLockAmino,
+  SyntheticLockSDKType,
+} from "../lockup/lock";
+import { Params, ParamsAmino, ParamsSDKType } from "./params";
+import {
+  OsmoEquivalentMultiplierRecord,
+  OsmoEquivalentMultiplierRecordAmino,
+  OsmoEquivalentMultiplierRecordSDKType,
+  SuperfluidAsset,
+  SuperfluidAssetAmino,
+  SuperfluidAssetSDKType,
+  SuperfluidAssetType,
+  superfluidAssetTypeFromJSON,
+  SuperfluidDelegationRecord,
+  SuperfluidDelegationRecordAmino,
+  SuperfluidDelegationRecordSDKType,
+} from "./superfluid";
 export interface QueryParamsRequest {}
 export interface QueryParamsRequestProtoMsg {
   typeUrl: "/osmosis.superfluid.QueryParamsRequest";
@@ -624,7 +623,7 @@ export const QueryParamsRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryParamsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryParamsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -687,7 +686,7 @@ export const QueryParamsResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryParamsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryParamsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -760,7 +759,7 @@ export const AssetTypeRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): AssetTypeRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAssetTypeRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -830,7 +829,7 @@ export const AssetTypeResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): AssetTypeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAssetTypeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -897,7 +896,7 @@ export const AllAssetsRequest = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): AllAssetsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAllAssetsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -960,7 +959,7 @@ export const AllAssetsResponse = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): AllAssetsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAllAssetsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1042,7 +1041,7 @@ export const AssetMultiplierRequest = {
     length?: number
   ): AssetMultiplierRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAssetMultiplierRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1120,7 +1119,7 @@ export const AssetMultiplierResponse = {
     length?: number
   ): AssetMultiplierResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAssetMultiplierResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1228,7 +1227,7 @@ export const SuperfluidIntermediaryAccountInfo = {
     length?: number
   ): SuperfluidIntermediaryAccountInfo {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSuperfluidIntermediaryAccountInfo();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1336,7 +1335,7 @@ export const AllIntermediaryAccountsRequest = {
     length?: number
   ): AllIntermediaryAccountsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAllIntermediaryAccountsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1440,7 +1439,7 @@ export const AllIntermediaryAccountsResponse = {
     length?: number
   ): AllIntermediaryAccountsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAllIntermediaryAccountsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1555,7 +1554,7 @@ export const ConnectedIntermediaryAccountRequest = {
     length?: number
   ): ConnectedIntermediaryAccountRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseConnectedIntermediaryAccountRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1648,7 +1647,7 @@ export const ConnectedIntermediaryAccountResponse = {
     length?: number
   ): ConnectedIntermediaryAccountResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseConnectedIntermediaryAccountResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1745,7 +1744,7 @@ export const QueryTotalDelegationByValidatorForDenomRequest = {
     length?: number
   ): QueryTotalDelegationByValidatorForDenomRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryTotalDelegationByValidatorForDenomRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1839,7 +1838,7 @@ export const QueryTotalDelegationByValidatorForDenomResponse = {
     length?: number
   ): QueryTotalDelegationByValidatorForDenomResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryTotalDelegationByValidatorForDenomResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1952,7 +1951,7 @@ export const Delegations = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): Delegations {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDelegations();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2032,7 +2031,7 @@ export const TotalSuperfluidDelegationsRequest = {
     length?: number
   ): TotalSuperfluidDelegationsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTotalSuperfluidDelegationsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2112,7 +2111,7 @@ export const TotalSuperfluidDelegationsResponse = {
     length?: number
   ): TotalSuperfluidDelegationsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTotalSuperfluidDelegationsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2207,7 +2206,7 @@ export const SuperfluidDelegationAmountRequest = {
     length?: number
   ): SuperfluidDelegationAmountRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSuperfluidDelegationAmountRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2306,7 +2305,7 @@ export const SuperfluidDelegationAmountResponse = {
     length?: number
   ): SuperfluidDelegationAmountResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSuperfluidDelegationAmountResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2399,7 +2398,7 @@ export const SuperfluidDelegationsByDelegatorRequest = {
     length?: number
   ): SuperfluidDelegationsByDelegatorRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSuperfluidDelegationsByDelegatorRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2497,7 +2496,7 @@ export const SuperfluidDelegationsByDelegatorResponse = {
     length?: number
   ): SuperfluidDelegationsByDelegatorResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSuperfluidDelegationsByDelegatorResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2640,7 +2639,7 @@ export const SuperfluidUndelegationsByDelegatorRequest = {
     length?: number
   ): SuperfluidUndelegationsByDelegatorRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSuperfluidUndelegationsByDelegatorRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2741,7 +2740,7 @@ export const SuperfluidUndelegationsByDelegatorResponse = {
     length?: number
   ): SuperfluidUndelegationsByDelegatorResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSuperfluidUndelegationsByDelegatorResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2885,7 +2884,7 @@ export const SuperfluidDelegationsByValidatorDenomRequest = {
     length?: number
   ): SuperfluidDelegationsByValidatorDenomRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSuperfluidDelegationsByValidatorDenomRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -2982,7 +2981,7 @@ export const SuperfluidDelegationsByValidatorDenomResponse = {
     length?: number
   ): SuperfluidDelegationsByValidatorDenomResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSuperfluidDelegationsByValidatorDenomResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3098,7 +3097,7 @@ export const EstimateSuperfluidDelegatedAmountByValidatorDenomRequest = {
     length?: number
   ): EstimateSuperfluidDelegatedAmountByValidatorDenomRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message =
       createBaseEstimateSuperfluidDelegatedAmountByValidatorDenomRequest();
     while (reader.pos < end) {
@@ -3209,7 +3208,7 @@ export const EstimateSuperfluidDelegatedAmountByValidatorDenomResponse = {
     length?: number
   ): EstimateSuperfluidDelegatedAmountByValidatorDenomResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message =
       createBaseEstimateSuperfluidDelegatedAmountByValidatorDenomResponse();
     while (reader.pos < end) {
@@ -3324,7 +3323,7 @@ export const QueryTotalDelegationByDelegatorRequest = {
     length?: number
   ): QueryTotalDelegationByDelegatorRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryTotalDelegationByDelegatorRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3426,7 +3425,7 @@ export const QueryTotalDelegationByDelegatorResponse = {
     length?: number
   ): QueryTotalDelegationByDelegatorResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryTotalDelegationByDelegatorResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3581,7 +3580,7 @@ export const QueryUnpoolWhitelistRequest = {
     length?: number
   ): QueryUnpoolWhitelistRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryUnpoolWhitelistRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -3659,7 +3658,7 @@ export const QueryUnpoolWhitelistResponse = {
     length?: number
   ): QueryUnpoolWhitelistResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryUnpoolWhitelistResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();

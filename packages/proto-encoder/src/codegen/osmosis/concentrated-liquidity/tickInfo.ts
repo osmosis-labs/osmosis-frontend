@@ -1,11 +1,10 @@
-//@ts-nocheck
-/* eslint-disable */
+import * as _m0 from "protobufjs/minimal";
+
 import {
   DecCoin,
   DecCoinAmino,
   DecCoinSDKType,
 } from "../../cosmos/base/v1beta1/coin";
-import * as _m0 from "protobufjs/minimal";
 export interface TickInfo {
   liquidityGross: string;
   liquidityNet: string;
@@ -79,7 +78,7 @@ export const TickInfo = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): TickInfo {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTickInfo();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -189,7 +188,7 @@ export const UptimeTracker = {
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): UptimeTracker {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
+    const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUptimeTracker();
     while (reader.pos < end) {
       const tag = reader.uint32();

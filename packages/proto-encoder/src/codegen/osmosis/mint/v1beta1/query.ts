@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { Params, ParamsAmino, ParamsSDKType } from "./mint";
 import * as _m0 from "protobufjs/minimal";
 /** QueryParamsRequest is the request type for the Query/Params RPC method. */

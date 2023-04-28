@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { Any, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
 import { Long } from "../../../helpers";
 import * as _m0 from "protobufjs/minimal";
@@ -95,7 +93,7 @@ export interface ParamsAmino {
   sig_verify_cost_secp256k1: string;
 }
 export interface ParamsAminoMsg {
-  type: "cosmos-sdk/x/auth/Params";
+  type: "cosmos-sdk/Params";
   value: ParamsAmino;
 }
 /** Params defines the parameters for the auth module. */
@@ -447,7 +445,7 @@ export const Params = {
   },
   toAminoMsg(message: Params): ParamsAminoMsg {
     return {
-      type: "cosmos-sdk/x/auth/Params",
+      type: "cosmos-sdk/Params",
       value: Params.toAmino(message),
     };
   },

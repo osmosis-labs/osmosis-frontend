@@ -4,7 +4,6 @@ import { join } from "path";
 import { sync as rimraf } from "rimraf";
 
 const protoDirs = [
-  join(__dirname, "../.repos/cosmos-sdk/proto"),
   join(__dirname, "../.repos/ibc-go/proto"),
   join(__dirname, "../.repos/wasmd/proto"),
   join(__dirname, "../.repos/osmosis/proto"),
@@ -20,10 +19,7 @@ telescope({
   options: {
     removeUnusedImports: true,
     tsDisable: {
-      disableAll: true,
-    },
-    eslintDisable: {
-      disableAll: true,
+      patterns: ["**/*amino.ts", "**/*registry.ts"],
     },
     experimentalGlobalProtoNamespace: true, //  [ 'v1beta1' ] concentratedliquidity
     prototypes: {
@@ -32,8 +28,6 @@ telescope({
 
       excluded: {
         packages: [
-          // 'ibc.applications.fee.v1',
-
           "cosmos.app.v1alpha1",
           "cosmos.app.v1beta1",
           "cosmos.autocli.v1",

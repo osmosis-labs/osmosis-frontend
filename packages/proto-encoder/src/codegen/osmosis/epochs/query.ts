@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { EpochInfo, EpochInfoAmino, EpochInfoSDKType } from "./genesis";
 import { Long } from "../../helpers";
 import * as _m0 from "protobufjs/minimal";

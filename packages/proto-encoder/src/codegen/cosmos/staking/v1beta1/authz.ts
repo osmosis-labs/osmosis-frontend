@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { Coin, CoinAmino, CoinSDKType } from "../../base/v1beta1/coin";
 import * as _m0 from "protobufjs/minimal";
 import { isSet } from "../../../helpers";

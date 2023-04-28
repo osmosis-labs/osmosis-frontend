@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
 /** IncentivizedAcknowledgement is the acknowledgement format to be used by applications wrapped in the fee middleware */
 export interface IncentivizedAcknowledgement {

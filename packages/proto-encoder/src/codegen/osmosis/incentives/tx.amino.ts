@@ -1,5 +1,4 @@
 //@ts-nocheck
-/* eslint-disable */
 import { MsgCreateGauge, MsgAddToGauge } from "./tx";
 export const AminoConverter = {
   "/osmosis.incentives.MsgCreateGauge": {

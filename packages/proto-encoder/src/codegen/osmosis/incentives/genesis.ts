@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { Params, ParamsAmino, ParamsSDKType } from "./params";
 import { Gauge, GaugeAmino, GaugeSDKType } from "./gauge";
 import {

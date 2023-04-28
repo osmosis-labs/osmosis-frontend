@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { Timestamp } from "../../../google/protobuf/timestamp";
 import { Params, ParamsAmino, ParamsSDKType } from "./genesis";
 import { Long, toTimestamp, fromTimestamp } from "../../../helpers";

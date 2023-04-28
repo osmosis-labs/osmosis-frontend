@@ -1,6 +1,4 @@
-//@ts-nocheck
-/* eslint-disable */
-import * as _183 from "./gogo";
+import * as _171 from "./gogo";
 export const gogoproto = {
-  ..._183,
+  ..._171,
 };

@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { Params, ParamsAmino, ParamsSDKType } from "./auth";
 import { Any, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
 import * as _m0 from "protobufjs/minimal";

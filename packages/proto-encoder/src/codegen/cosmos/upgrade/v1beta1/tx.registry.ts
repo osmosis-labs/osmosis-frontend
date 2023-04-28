@@ -1,5 +1,4 @@
 //@ts-nocheck
-/* eslint-disable */
 import { GeneratedType, Registry } from "@cosmjs/proto-signing";
 import { MsgSoftwareUpgrade, MsgCancelUpgrade } from "./tx";
 export const registry: ReadonlyArray<[string, GeneratedType]> = [

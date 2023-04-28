@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import { Timestamp } from "../../../google/protobuf/timestamp";
 import { Any, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
 import { Long, toTimestamp, fromTimestamp } from "../../../helpers";
@@ -99,8 +97,12 @@ export interface PlanSDKType {
 /**
  * SoftwareUpgradeProposal is a gov Content type for initiating a software
  * upgrade.
+ * Deprecated: This legacy proposal is deprecated in favor of Msg-based gov
+ * proposals, see MsgSoftwareUpgrade.
  */
+/** @deprecated */
 export interface SoftwareUpgradeProposal {
+  $typeUrl?: string;
   title: string;
   description: string;
   plan?: Plan;
@@ -112,7 +114,10 @@ export interface SoftwareUpgradeProposalProtoMsg {
 /**
  * SoftwareUpgradeProposal is a gov Content type for initiating a software
  * upgrade.
+ * Deprecated: This legacy proposal is deprecated in favor of Msg-based gov
+ * proposals, see MsgSoftwareUpgrade.
  */
+/** @deprecated */
 export interface SoftwareUpgradeProposalAmino {
   title: string;
   description: string;
@@ -125,8 +130,12 @@ export interface SoftwareUpgradeProposalAminoMsg {
 /**
  * SoftwareUpgradeProposal is a gov Content type for initiating a software
  * upgrade.
+ * Deprecated: This legacy proposal is deprecated in favor of Msg-based gov
+ * proposals, see MsgSoftwareUpgrade.
  */
+/** @deprecated */
 export interface SoftwareUpgradeProposalSDKType {
+  $typeUrl?: string;
   title: string;
   description: string;
   plan?: PlanSDKType;
@@ -134,8 +143,12 @@ export interface SoftwareUpgradeProposalSDKType {
 /**
  * CancelSoftwareUpgradeProposal is a gov Content type for cancelling a software
  * upgrade.
+ * Deprecated: This legacy proposal is deprecated in favor of Msg-based gov
+ * proposals, see MsgCancelUpgrade.
  */
+/** @deprecated */
 export interface CancelSoftwareUpgradeProposal {
+  $typeUrl?: string;
   title: string;
   description: string;
 }
@@ -146,7 +159,10 @@ export interface CancelSoftwareUpgradeProposalProtoMsg {
 /**
  * CancelSoftwareUpgradeProposal is a gov Content type for cancelling a software
  * upgrade.
+ * Deprecated: This legacy proposal is deprecated in favor of Msg-based gov
+ * proposals, see MsgCancelUpgrade.
  */
+/** @deprecated */
 export interface CancelSoftwareUpgradeProposalAmino {
   title: string;
   description: string;
@@ -158,8 +174,12 @@ export interface CancelSoftwareUpgradeProposalAminoMsg {
 /**
  * CancelSoftwareUpgradeProposal is a gov Content type for cancelling a software
  * upgrade.
+ * Deprecated: This legacy proposal is deprecated in favor of Msg-based gov
+ * proposals, see MsgCancelUpgrade.
  */
+/** @deprecated */
 export interface CancelSoftwareUpgradeProposalSDKType {
+  $typeUrl?: string;
   title: string;
   description: string;
 }
@@ -330,6 +350,7 @@ export const Plan = {
 };
 function createBaseSoftwareUpgradeProposal(): SoftwareUpgradeProposal {
   return {
+    $typeUrl: "/cosmos.upgrade.v1beta1.SoftwareUpgradeProposal",
     title: "",
     description: "",
     plan: undefined,
@@ -436,6 +457,7 @@ export const SoftwareUpgradeProposal = {
 };
 function createBaseCancelSoftwareUpgradeProposal(): CancelSoftwareUpgradeProposal {
   return {
+    $typeUrl: "/cosmos.upgrade.v1beta1.CancelSoftwareUpgradeProposal",
     title: "",
     description: "",
   };

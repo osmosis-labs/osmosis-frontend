@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
 /**
  * PubKey is an ed25519 public key for handling Tendermint keys in SDK.
@@ -26,7 +24,7 @@ export interface PubKeyAmino {
   key: Uint8Array;
 }
 export interface PubKeyAminoMsg {
-  type: "tendermint/PubKeyEd25519";
+  type: "cosmos-sdk/PubKey";
   value: PubKeyAmino;
 }
 /**
@@ -58,7 +56,7 @@ export interface PrivKeyAmino {
   key: Uint8Array;
 }
 export interface PrivKeyAminoMsg {
-  type: "tendermint/PrivKeyEd25519";
+  type: "cosmos-sdk/PrivKey";
   value: PrivKeyAmino;
 }
 /**
@@ -121,7 +119,7 @@ export const PubKey = {
   },
   toAminoMsg(message: PubKey): PubKeyAminoMsg {
     return {
-      type: "tendermint/PubKeyEd25519",
+      type: "cosmos-sdk/PubKey",
       value: PubKey.toAmino(message),
     };
   },
@@ -191,7 +189,7 @@ export const PrivKey = {
   },
   toAminoMsg(message: PrivKey): PrivKeyAminoMsg {
     return {
-      type: "tendermint/PrivKeyEd25519",
+      type: "cosmos-sdk/PrivKey",
       value: PrivKey.toAmino(message),
     };
   },

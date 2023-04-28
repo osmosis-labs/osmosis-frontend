@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
 export enum ScalarType {
   SCALAR_TYPE_UNSPECIFIED = 0,

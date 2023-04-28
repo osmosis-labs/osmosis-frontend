@@ -1,5 +1,3 @@
-//@ts-nocheck
-/* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
 /** AppDescriptor describes a cosmos-sdk based application */
 export interface AppDescriptor {
