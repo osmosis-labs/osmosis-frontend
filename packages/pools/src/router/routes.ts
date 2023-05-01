@@ -445,7 +445,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     tokenInAmount: Int,
     maxIterations: number = 10
   ): Promise<RouteWithInAmount[]> {
-    if (maxIterations === 0) {
+    if (maxIterations <= 0) {
       throw new Error("maxIterations must be greater than 0");
     }
 
@@ -481,7 +481,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         );
         if (totalOutAmount.gt(bestOutAmount)) {
           bestOutAmount = totalOutAmount;
-          bestSplit = currentSplit.slice();
+          // deep copy to preserve optimal initial amounts and out amounts
+          bestSplit = JSON.parse(
+            JSON.stringify(currentSplit)
+          ) as RouteWithInAmount[];
         }
 
         // unfurl recursion
@@ -491,8 +494,8 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       // test routes with various splits: 0%, 10%, 20%, ..., 100%
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const route = remainingRoutes.shift()! as RouteWithInAndOutAmount;
-      for (let i = 0; i <= maxIterations; i++) {
-        const fraction = new Dec(i).quo(new Dec(maxIterations));
+      for (let i = 0; i <= maxIterations / 2; i++) {
+        const fraction = new Dec(i).quo(new Dec(maxIterations / 2));
         const inAmount = new Dec(remainingInAmount).mul(fraction).truncate();
         if (inAmount.isZero()) continue; // skip this traversal (0 in not worth considering)
 
@@ -500,14 +503,13 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
         const cacheKey = cacheKeyForRoute(route);
         const cacheHit = this._calcRouteOutAmtGivenInAmtCache.get(cacheKey);
-
         let outAmount;
         if (cacheHit) {
           outAmount = cacheHit;
         } else {
-          const quote = await this.calculateTokenOutByTokenIn([route]);
-          this._calcRouteOutAmtGivenInAmtCache.set(cacheKey, quote.amount);
-          outAmount = quote.amount;
+          const { amount } = await this.calculateTokenOutByTokenIn([route]);
+          this._calcRouteOutAmtGivenInAmtCache.set(cacheKey, amount);
+          outAmount = amount;
         }
 
         if (outAmount.isZero()) continue; // skip this traversal and similar future attempted traversals (not enough liquidity)

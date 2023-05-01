@@ -66,7 +66,7 @@ export function cacheKeyForRoute(route: Route | RouteWithInAmount): string {
   )}/poolIds:${route.pools.map(({ id }) => id).join("-")}`;
 
   if ("initialAmount" in route) {
-    key.concat(`/initialAmount:${route.initialAmount}`);
+    return key.concat(`/initialAmount:${route.initialAmount}`);
   }
 
   return key;
