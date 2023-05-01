@@ -965,7 +965,7 @@ const chainInfos = (
           coinDenom: "LIGHT",
           coinMinimalDenom:
             "cw20:juno1dpany8c0lj526lsa02sldv7shzvnw5dt5ues72rk35hd69rrydxqeraz8l:LIGHT",
-          coinDecimals: 6,
+          coinDecimals: 9,
           coinGeckoId: "pool:light",
           coinImageUrl: "/tokens/light.png",
         },
