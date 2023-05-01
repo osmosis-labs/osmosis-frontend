@@ -6,20 +6,24 @@ import {
 
 import { NotEnoughLiquidityError } from "../errors";
 import { NoRouteError } from "./errors";
-import { calculateWeightForRoute, Route } from "./route";
+import { cacheKeyForRoute, calculateWeightForRoute, Route } from "./route";
 import {
+  Quote,
   RoutablePool,
   RouteWithInAmount,
   SplitTokenInQuote,
   TokenOutGivenInRouter,
 } from "./types";
-import { invertRoute, validateRoutes } from "./utils";
+import {
+  cacheKeyForTokenOutGivenIn,
+  invertRoute,
+  validateRoutes,
+} from "./utils";
 
 export type OptimizedRoutesParams = {
   pools: ReadonlyArray<RoutablePool>;
   incentivizedPoolIds: string[];
   stakeCurrencyMinDenom: string;
-  routeCache?: Map<string, RouteWithInAmount[]>;
   getPoolTotalValueLocked: (poolId: string) => Dec;
   maxHops?: number;
   maxRoutes?: number;
@@ -29,16 +33,19 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
   protected readonly _pools: RoutablePool[];
   protected readonly _incentivizedPoolIds: string[];
   protected readonly _stakeCurrencyMinDenom: string;
-  protected readonly _candidatePathsCache = new Map<string, Route[]>();
   protected readonly _getPoolTotalValueLocked: (poolId: string) => Dec;
   protected readonly _maxHops: number;
   protected readonly _maxRoutes: number;
+
+  // caches
+  protected readonly _candidatePathsCache = new Map<string, Route[]>();
+  protected readonly _calcOutAmtGivenInAmtCache = new Map<string, Quote>();
+  protected readonly _calcRouteOutAmtGivenInAmtCache = new Map<string, Int>();
 
   constructor({
     pools,
     incentivizedPoolIds,
     stakeCurrencyMinDenom,
-    routeCache,
     getPoolTotalValueLocked,
     maxHops = 4,
     maxRoutes = 4,
@@ -51,7 +58,6 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     });
     this._incentivizedPoolIds = incentivizedPoolIds;
     this._stakeCurrencyMinDenom = stakeCurrencyMinDenom;
-    if (routeCache) this._candidatePathsCache = routeCache;
     this._getPoolTotalValueLocked = getPoolTotalValueLocked;
     if (maxHops > 5) throw new Error("maxHops must be less than 5");
     this._maxHops = maxHops;
@@ -204,12 +210,23 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
           poolSwapFee = maxSwapFee.mul(poolSwapFee.quo(swapFeeSum));
         }
 
-        // less fee
-        const tokenOut = await pool.getTokenOutByTokenIn(
+        // calc out given in through pool, cached
+        const calcOutGivenInParams = [
           { denom: previousInDenom, amount: previousInAmount },
           outDenom,
-          poolSwapFee
+          poolSwapFee, // fee may be lesser
+        ] as const;
+        const outByInCacheKey = cacheKeyForTokenOutGivenIn(
+          pool.id,
+          ...calcOutGivenInParams
         );
+        const cacheHit = this._calcOutAmtGivenInAmtCache.get(outByInCacheKey);
+        let tokenOut;
+        if (cacheHit) {
+          tokenOut = cacheHit;
+        } else {
+          tokenOut = await pool.getTokenOutByTokenIn(...calcOutGivenInParams);
+        }
 
         if (!tokenOut.amount.gt(new Int(0))) {
           // not enough liquidity
@@ -463,10 +480,20 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
         route.initialAmount = inAmount;
 
-        const quote = await this.calculateTokenOutByTokenIn([route]);
-        if (quote.amount.isZero()) continue; // skip this traversal (not enough liquidity)
+        const cacheKey = cacheKeyForRoute(route);
+        const cacheHit = this._calcRouteOutAmtGivenInAmtCache.get(cacheKey);
 
-        route.outAmount = quote.amount;
+        let outAmount;
+        if (cacheHit) {
+          outAmount = cacheHit;
+        } else {
+          const quote = await this.calculateTokenOutByTokenIn([route]);
+          this._calcRouteOutAmtGivenInAmtCache.set(cacheKey, quote.amount);
+          outAmount = quote.amount;
+        }
+
+        if (outAmount.isZero()) continue; // skip this traversal and similar future attempted traversals (not enough liquidity)
+        route.outAmount = outAmount;
 
         currentSplit.push(route);
         await splitRecursive(

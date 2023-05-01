@@ -504,6 +504,11 @@ describe("OptimizedRoutes", () => {
       console.timeEnd("findBestSplitTokenIn");
 
       expect(bestSplit[0].pools).toEqual(routes[0].pools);
+      expect(
+        bestSplit
+          .reduce((sum, route) => sum.add(route.initialAmount), new Int(0))
+          .gt(new Int(0))
+      ).toBeTruthy();
     });
     // weighted pools' calcOutAmountGivenIn is much faster than stableswap, which uses it's own binary search
     // this is to get an eye on the performance of searching for out amounts through stable pools
@@ -545,12 +550,10 @@ describe("OptimizedRoutes", () => {
 
       const tokenIn = { denom: "uion", amount: new Int("100") };
 
-      console.time("findBestSplitTokenIn");
       const bestSplit = await router.findBestSplitTokenIn(
         routes,
         tokenIn.amount
       );
-      console.timeEnd("findBestSplitTokenIn");
 
       expect(bestSplit[0].pools).toEqual(routes[0].pools);
     });

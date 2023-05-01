@@ -1,4 +1,5 @@
 import { Route, validateRoute } from "./route";
+import { RoutablePool } from "./types";
 
 export function invertRoute(route: Route) {
   return {
@@ -23,4 +24,11 @@ export function validateRoutes(routes: Route[]) {
   ) {
     throw new Error("Invalid routes: tokenOut for each route must be the same");
   }
+}
+
+export function cacheKeyForTokenOutGivenIn(
+  poolId: string,
+  ...params: Parameters<RoutablePool["getTokenOutByTokenIn"]>
+) {
+  return `poolId:${poolId}/tokenInDenom:${params[0].denom}/tokenInAmount:${params[0].amount}/tokenOutDenom:${params[1]}/${params[2]}`;
 }

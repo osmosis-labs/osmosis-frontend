@@ -1,6 +1,6 @@
 import { Dec } from "@keplr-wallet/unit";
 
-import { RoutablePool } from "./types";
+import { RoutablePool, RouteWithInAmount } from "./types";
 
 /** Single path through pools. */
 export interface Route {
@@ -52,4 +52,22 @@ export function getAveragePoolValueLocked(
   return poolsTvl
     .reduce((a, b) => a.add(b), new Dec(0))
     .quo(new Dec(route.pools.length));
+}
+
+/** Creates a serialized key of:
+* - route's:
+*    -- pool IDs
+*    -- token in denom
+*    -- token out denoms
+ - token in amount */
+export function cacheKeyForRoute(route: Route | RouteWithInAmount): string {
+  const key = `in:${route.tokenInDenom}/outs:${route.tokenOutDenoms.join(
+    "-"
+  )}/poolIds:${route.pools.map(({ id }) => id).join("-")}`;
+
+  if ("initialAmount" in route) {
+    key.concat(`/initialAmount:${route.initialAmount}`);
+  }
+
+  return key;
 }
