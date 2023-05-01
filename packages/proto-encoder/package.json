@@ -30,8 +30,10 @@
     "lint:fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\"",
     "pre-commit": "lint-staged",
     "prepare": "yarn build",
-    "get-proto": "./scripts/get-proto.sh",
-    "generate:telescope": "ts-node --esm scripts/codegen.ts && yarn lint:fix"
+    "generate": "yarn generate:proto && yarn generate:packages && yarn generate:telescope",
+    "generate:proto": "./scripts/get-proto.sh",
+    "generate:packages": "ts-node --esm scripts/gen-package-types.ts",
+    "generate:telescope": "tsc scripts/codegen.ts --noEmit --skipLibCheck && ts-node --esm scripts/codegen.ts && yarn lint:fix"
   },
   "lint-staged": {
     "*": [

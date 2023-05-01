@@ -4,19 +4,15 @@ import telescope from "@osmonauts/telescope";
 import { join } from "path";
 import { sync as rimraf } from "rimraf";
 
-const protoDirs = [
-  join(__dirname, "../.repos/ibc-go/proto"),
-  join(__dirname, "../.repos/wasmd/proto"),
-  join(__dirname, "../.repos/osmosis/proto"),
-  join(__dirname, "../.repos/ics23/proto"),
-  join(__dirname, "../proto-dependencies"),
-];
+import { AvailablePackages } from "./package-types";
+import { protoDirs } from "./utils";
+
 const outPath = join(__dirname, "/../src/codegen");
 rimraf(outPath);
 
-const packages = new ProtoStore(protoDirs).getPackages();
+const packages = new ProtoStore(protoDirs).getPackages() as AvailablePackages[];
 
-const includedPackages = [
+const includedPackages: AvailablePackages[] = [
   "cosmos.base.v1beta1",
   "cosmos.auth.v1beta1",
   "cosmos.bank.v1beta1",
