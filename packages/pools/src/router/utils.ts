@@ -1,5 +1,3 @@
-import { Dec, Int } from "@keplr-wallet/unit";
-
 import { Route, validateRoute } from "./route";
 import { RoutablePool } from "./types";
 
@@ -33,29 +31,4 @@ export function cacheKeyForTokenOutGivenIn(
   ...params: Parameters<RoutablePool["getTokenOutByTokenIn"]>
 ) {
   return `poolId:${poolId}/tokenInDenom:${params[0].denom}/tokenInAmount:${params[0].amount}/tokenOutDenom:${params[1]}/${params[2]}`;
-}
-
-/** Performs a deep copy of values, with special accommodation for Keplr unit types `Int`, and `Dec`. */
-export function deepUnitCopy<T extends object>(object: T): T {
-  const copy: any = Array.isArray(object) ? [] : {};
-  for (const key in object) {
-    // special handle Int and Dec types
-    const child = object[key];
-    if (child instanceof Int) {
-      copy[key] = new Int(child.toString());
-      continue;
-    }
-    if (child instanceof Dec) {
-      copy[key] = new Dec((child as Dec).toString());
-      continue;
-    }
-
-    if (typeof child === "object") {
-      copy[key] = deepUnitCopy(child as any);
-    } else {
-      // value, not reference type
-      copy[key] = child;
-    }
-  }
-  return copy;
 }
