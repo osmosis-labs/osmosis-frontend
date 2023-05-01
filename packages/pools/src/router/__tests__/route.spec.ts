@@ -22,7 +22,7 @@ describe("route weight calculations", () => {
       makeMockRoutablePool("800", ["tokenC", "tokenD"]),
     ];
 
-    it("should return a higher weight for a route with higher liquidity", async () => {
+    it("should return a lower weight for a route with higher liquidity (lower is better)", async () => {
       const tokenInDenom = "tokenA";
       const routeLowLiq: Route = {
         pools: lowLiqPools,
@@ -42,7 +42,7 @@ describe("route weight calculations", () => {
         routeHighLiq,
         makeTvlFunc(highLiqPools)
       );
-      expect(lowLiqWeight.lt(highLiqWeight)).toBeTruthy();
+      expect(lowLiqWeight.gt(highLiqWeight)).toBeTruthy();
     });
 
     it("should return a lower weight for a route with higher liquidity at the end of the route but less depth", async () => {
@@ -65,7 +65,7 @@ describe("route weight calculations", () => {
         lowDepth,
         makeTvlFunc(lowDepthPools)
       );
-      expect(lowLiqWeight.lt(lowDepthWeight)).toBeTruthy();
+      expect(lowLiqWeight.gt(lowDepthWeight)).toBeTruthy();
     });
   });
 });

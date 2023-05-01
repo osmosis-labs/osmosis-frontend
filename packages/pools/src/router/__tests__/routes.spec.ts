@@ -496,12 +496,10 @@ describe("OptimizedRoutes", () => {
 
       const tokenIn = { denom: "uion", amount: new Int("100") };
 
-      console.time("findBestSplitTokenIn");
       const bestSplit = await router.findBestSplitTokenIn(
         routes,
         tokenIn.amount
       );
-      console.timeEnd("findBestSplitTokenIn");
 
       expect(bestSplit[0].pools).toEqual(routes[0].pools);
       expect(
