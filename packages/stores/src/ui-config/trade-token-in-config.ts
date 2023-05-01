@@ -191,7 +191,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       pools: this._pools.map((pool) => pool.pool),
       preferredPoolIds: this._pools.reduce((preferredIds, pool) => {
         // prefer concentrated & stable pools with some min amount of liquidity
-        console.log({ pool });
         if (
           (pool.type === "concentrated" &&
             pool
