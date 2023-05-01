@@ -26,7 +26,7 @@ const chainInfos = (
           : "https://lcd-osmosis.keplr.app/"),
       chainId:
         OSMOSIS_CHAIN_ID_OVERWRITE ??
-        (IS_TESTNET ? "osmo-test-4" : "osmosis-1"),
+        (IS_TESTNET ? "osmo-test-5" : "osmosis-1"),
       chainName: OSMOSIS_CHAIN_NAME_OVERWRITE ?? "Osmosis",
       bip44: {
         coinType: 118,
