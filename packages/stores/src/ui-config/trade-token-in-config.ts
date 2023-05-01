@@ -189,6 +189,25 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
     return new OptimizedRoutes({
       pools: this._pools.map((pool) => pool.pool),
+      preferredPoolIds: this._pools.reduce((preferredIds, pool) => {
+        // prefer concentrated & stable pools with some min amount of liquidity
+        console.log({ pool });
+        if (
+          (pool.type === "concentrated" &&
+            pool
+              .computeTotalValueLocked(this.priceStore)
+              .toDec()
+              .gt(new Dec(4_000))) ||
+          (pool.type === "stable" &&
+            pool
+              .computeTotalValueLocked(this.priceStore)
+              .toDec()
+              .gt(new Dec(4_000)))
+        ) {
+          preferredIds.push(pool.id);
+        }
+        return preferredIds;
+      }, [] as string[]),
       incentivizedPoolIds: this._incentivizedPoolIds,
       stakeCurrencyMinDenom,
       getPoolTotalValueLocked,

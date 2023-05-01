@@ -30,6 +30,11 @@ export type OptimizedRoutesParams = {
   maxRoutes?: number;
 };
 
+/** Use to find routes and simulate swaps through routes.
+ *
+ *  Maintains a cache for routes and swaps for the lifetime of the instance.
+ *  No filtering assumptions are made on provided pools, pools are routed as given.
+ */
 export class OptimizedRoutes implements TokenOutGivenInRouter {
   protected readonly _sortedPools: RoutablePool[];
   protected readonly _incentivizedPoolIds: string[];
@@ -62,7 +67,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       })
       // lift preferred pools to the front
       .reduce((pools, pool) => {
-        if (preferredPoolIds?.includes(pool.id)) {
+        if (preferredPoolIds && preferredPoolIds.includes(pool.id)) {
           pools.unshift(pool);
         } else {
           pools.push(pool);
