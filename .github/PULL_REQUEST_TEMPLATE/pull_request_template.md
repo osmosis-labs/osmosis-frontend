@@ -20,8 +20,6 @@ Please provide a link to the ClickUp task for this pull request:
 
 [ClickUp Task URL](PASTE_CLICKUP_TASK_URL_HERE)
 
-
-
 ## Brief Changelog
 
 *(for example:)*
@@ -30,6 +28,10 @@ Please provide a link to the ClickUp task for this pull request:
   - *Adds a new button for ...*
   - *Removes the ...*
 
+
+## Key Workflows to test
+
+\*(Enter here)
 
 ## Testing and Verifying
 
