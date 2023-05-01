@@ -196,7 +196,10 @@ export const TradeClipboard: FunctionComponent<{
         new Dec(1).sub(slippageConfig.slippage.toDec())
       );
       return coinLessSlippage.maxDecimals(
-        coinLessSlippage.toDec().gt(new Dec(1)) ? 8 : 12
+        Math.min(
+          coinLessSlippage.toDec().gt(new Dec(1)) ? 8 : 12,
+          coinLessSlippage.currency.coinDecimals
+        )
       );
     }, [tradeTokenInConfig.expectedSwapResult.amount, slippageConfig.slippage]);
     const spotPrice = useMemo(
