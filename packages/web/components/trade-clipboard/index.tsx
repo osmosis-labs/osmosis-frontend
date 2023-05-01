@@ -206,8 +206,13 @@ export const TradeClipboard: FunctionComponent<{
       () =>
         tradeTokenInConfig.beforeSpotPriceWithoutSwapFeeOutOverIn
           .trim(true)
-          .maxDecimals(8),
-      [tradeTokenInConfig.beforeSpotPriceWithoutSwapFeeOutOverIn]
+          .maxDecimals(
+            Math.min(tradeTokenInConfig.outCurrency.coinDecimals, 8)
+          ),
+      [
+        tradeTokenInConfig.beforeSpotPriceWithoutSwapFeeOutOverIn,
+        tradeTokenInConfig.outCurrency.coinDecimals,
+      ]
     );
 
     const [isHoveringSwitchButton, setHoveringSwitchButton] = useState(false);
@@ -985,11 +990,7 @@ export const TradeClipboard: FunctionComponent<{
                   tradeTokenInConfig.sendCurrency.coinDenom !== "UNKNOWN"
                     ? tradeTokenInConfig.sendCurrency.coinDenom
                     : ""
-                } ≈ ${
-                  spotPrice.toDec().lt(new Dec(1))
-                    ? spotPrice.maxDecimals(12).toString()
-                    : spotPrice.maxDecimals(6).toString()
-                } ${
+                } ≈ ${spotPrice} ${
                   tradeTokenInConfig.outCurrency.coinDenom !== "UNKNOWN"
                     ? tradeTokenInConfig.outCurrency.coinDenom
                     : ""
@@ -1063,9 +1064,16 @@ export const TradeClipboard: FunctionComponent<{
                       tradeTokenInConfig.expectedSwapResult.amount
                         .toDec()
                         .gt(new Dec(1))
-                        ? 12
-                        : 8
+                        ? Math.min(
+                            tradeTokenInConfig.outCurrency.coinDecimals,
+                            12
+                          )
+                        : Math.min(
+                            tradeTokenInConfig.outCurrency.coinDecimals,
+                            8
+                          )
                     )
+                    .trim(true)
                     .toString()} `}
                 </div>
               </div>
