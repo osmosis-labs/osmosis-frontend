@@ -4834,7 +4834,7 @@
     case "1.6.3"
     dotty "0.1.2"
 
-"@osmonauts/proto-parser@^0.42.0":
+"@osmonauts/proto-parser@0.42.0", "@osmonauts/proto-parser@^0.42.0":
   version "0.42.0"
   resolved "https://registry.yarnpkg.com/@osmonauts/proto-parser/-/proto-parser-0.42.0.tgz#f6128f8d60cdc164ec062ff54f5ed42fff32ea4d"
   integrity sha512-NbAipJ6Nor9QIgWTRDB0JoH9mJ8LkXdCX7zESD1CGyet9RdqPVHzgiaGyQML6Trh298+8HjofRWrsAznhWgdRA==
@@ -4847,7 +4847,7 @@
     minimatch "5.1.0"
     mkdirp "3.0.0"
 
-"@osmonauts/telescope@^0.94.0":
+"@osmonauts/telescope@0.94.0":
   version "0.94.0"
   resolved "https://registry.yarnpkg.com/@osmonauts/telescope/-/telescope-0.94.0.tgz#773ede82a621a32b2a6bfc1644c567914d7afaba"
   integrity sha512-8mRJ0G9UvY+9Iod163XM67rjHmwzW2ujaqeutK0noP624Wnhg+rarGOuIm11+jQVIDupgRuMwKqxki3je8BP4w==
