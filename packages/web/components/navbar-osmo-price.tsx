@@ -162,19 +162,17 @@ const NavbarOsmoPrice = observer(() => {
           const tokenName = "OSMO";
 
           const cryptoBalance = nativeBalances.find(
-                (coin) =>
-                  coin.balance.denom.toLowerCase() === tokenName.toLowerCase()
-              );
+            (coin) =>
+              coin.balance.denom.toLowerCase() === tokenName.toLowerCase()
+          );
 
-              logEvent([
-                EventName.Sidebar.buyOsmoClicked,
-                {
-                  tokenName,
-                  tokenAmount: Number(
-                    cryptoBalance?.balance?.toDec().toString(4)
-                  ),
-                },
-              ]);
+          logEvent([
+            EventName.Sidebar.buyOsmoClicked,
+            {
+              tokenName,
+              tokenAmount: Number(cryptoBalance?.balance?.toDec().toString(4)),
+            },
+          ]);
         }}
       />
     </div>
