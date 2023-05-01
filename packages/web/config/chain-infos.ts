@@ -17,12 +17,12 @@ const chainInfos = (
       rpc:
         OSMOSIS_RPC_OVERWRITE ??
         (IS_TESTNET
-          ? "https://rpc.testnet.osmosis.zone/"
+          ? "https://rpc.osmotest5.osmosis.zone/"
           : "https://rpc-osmosis.keplr.app/"),
       rest:
         OSMOSIS_REST_OVERWRITE ??
         (IS_TESTNET
-          ? "https://lcd.testnet.osmosis.zone/"
+          ? "https://lcd.osmotest5.osmosis.zone/"
           : "https://lcd-osmosis.keplr.app/"),
       chainId:
         OSMOSIS_CHAIN_ID_OVERWRITE ??
@@ -72,7 +72,7 @@ const chainInfos = (
       explorerUrlToTx:
         OSMOSIS_EXPLORER_URL_OVERWRITE ??
         (IS_TESTNET
-          ? "https://testnet.mintscan.io/osmosis-testnet/txs/{txHash}"
+          ? "https://explorer.osmotest5.osmosis.zone/osmo-test-5/tx/{txHash}"
           : "https://www.mintscan.io/osmosis/txs/{txHash}"),
     },
     {
