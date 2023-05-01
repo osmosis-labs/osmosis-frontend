@@ -83,7 +83,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     this._maxRoutes = maxRoutes;
   }
 
-  /** Find optimal routes for a given amount of token in and out token, best first. */
+  /** Find optimal routes to split through for a given amount of token in and out token. */
   async getOptimizedRoutesByTokenIn(
     tokenIn: {
       denom: string;
@@ -121,8 +121,6 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       return path1Weight.gte(path2Weight) ? -1 : 1;
     });
 
-    // determine if the routes have enough liquidity --
-
     // Is direct swap, but not enough liquidity
     if (routes.length > 1 && routes[0].pools.length === 1) {
       const directSwapLimit = await routes[0].pools[0].getLimitAmountByTokenIn(
@@ -133,40 +131,8 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       }
     }
 
-    const initialSwapAmounts: Int[] = [];
-    let totalLimitAmount = new Int(0);
-    for (const route of routes) {
-      const limitAmount = await route.pools[0].getLimitAmountByTokenIn(
-        tokenIn.denom
-      );
-      totalLimitAmount = totalLimitAmount.add(limitAmount);
-      if (totalLimitAmount.lt(tokenIn.amount)) {
-        initialSwapAmounts.push(limitAmount);
-      } else {
-        let sumInitialSwapAmounts = new Int(0);
-        for (const initialSwapAmount of initialSwapAmounts) {
-          sumInitialSwapAmounts = sumInitialSwapAmounts.add(initialSwapAmount);
-        }
-        const diff = tokenIn.amount.sub(sumInitialSwapAmounts);
-        initialSwapAmounts.push(diff);
-        break;
-      }
-    }
-
-    // Not enough liquidity
-    if (totalLimitAmount.lt(tokenIn.amount)) {
-      throw new NotEnoughLiquidityError(
-        `Entry pools' limit amount ${totalLimitAmount.toString()} is less than in amount ${tokenIn.amount.toString()}`
-      );
-    }
-
-    // only take routes with valid initialAmounts
-    return initialSwapAmounts.map((amount, i) => {
-      return {
-        ...routes[i],
-        initialAmount: amount,
-      };
-    });
+    const top2Routes = routes.slice(0, 2);
+    return await this.findBestSplitTokenIn(top2Routes, tokenIn.amount);
   }
 
   /** Calculate the amount of token out by simulating a swap through a route. */
@@ -293,7 +259,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
     const priceImpactTokenOut = totalEffectivePriceInOverOut
       .quo(totalBeforeSpotPriceInOverOut)
-      .sub(new Dec("1"));
+      .sub(new Dec(1));
 
     return {
       split: routes
@@ -432,13 +398,17 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
    * This function performs a binary search to find a subset of candidate routes that yield an optimal split trade.
    * It takes into account the input token amount and the maximum number of iterations allowed.
    *
+   * The time complexity of the splitRecursive function can be expressed as O(n * m), where:
+   *   - n is the number of elements in sortedOptimalRoutes
+   *   - m is the value of maxIterations
+   *
    * @function findBestSplitTokenIn
    * @async
    * @param sortedOptimalRoutes An array of optimal routes for the split trade. Optimal: will attempt to include all routes in same split. Sorted: routes should be sorted by weight, best first since this is a greedy search.
    * @param tokenInAmount The amount of input tokens for the trade.
    * @param [maxIterations=100] The maximum number of iterations allowed for the binary search. Determines the granularity of the split, so higher is slower but more thorough.
    * @returns A promise that resolves to an array of routes with their corresponding input amounts, which form the optimal split trade.
-   * @throws Throws an error if maxIterations is not greater than 0.
+   * @throws Throws an error if maxIterations is not greater than 0. Throws an error if there is not enough liquidity for the split trade.
    */
   protected async findBestSplitTokenIn(
     sortedOptimalRoutes: Route[],
@@ -481,10 +451,12 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         );
         if (totalOutAmount.gt(bestOutAmount)) {
           bestOutAmount = totalOutAmount;
-          // deep copy to preserve optimal initial amounts and out amounts
-          bestSplit = JSON.parse(
-            JSON.stringify(currentSplit)
-          ) as RouteWithInAmount[];
+          // deep copy to preserve optimal initial amounts and out amounts that would get mutated
+          bestSplit = currentSplit.map((route) => ({
+            ...route,
+            initialAmount: new Int(route.initialAmount.toString()),
+            outAmount: new Int(route.outAmount.toString()),
+          }));
         }
 
         // unfurl recursion
@@ -494,8 +466,8 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       // test routes with various splits: 0%, 10%, 20%, ..., 100%
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const route = remainingRoutes.shift()! as RouteWithInAndOutAmount;
-      for (let i = 0; i <= maxIterations / 2; i++) {
-        const fraction = new Dec(i).quo(new Dec(maxIterations / 2));
+      for (let i = 0; i <= maxIterations; i++) {
+        const fraction = new Dec(i).quo(new Dec(maxIterations));
         const inAmount = new Dec(remainingInAmount).mul(fraction).truncate();
         if (inAmount.isZero()) continue; // skip this traversal (0 in not worth considering)
 
@@ -527,13 +499,25 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       remainingRoutes.unshift(route);
     };
 
-    // start with routes with 0 in and out amount, as we're looking for the sum max out amounts. also copy
+    // start with routes with 0 in and out amount, as we're looking for the sum max out amounts
     const zeroAmountRoutes = sortedOptimalRoutes.map((route) => ({
       ...route,
       initialAmount: new Int(0),
       outAmount: new Int(0),
     }));
     await splitRecursive(tokenInAmount, zeroAmountRoutes, []);
+
+    // Not enough liquidity
+    const totalLimitAmount = bestSplit.reduce(
+      (acc, route) => acc.add(route.initialAmount),
+      new Int(0)
+    );
+    if (totalLimitAmount.lt(tokenInAmount)) {
+      throw new NotEnoughLiquidityError(
+        `Entry pools' limit amount ${totalLimitAmount.toString()} is less than in amount ${tokenInAmount.toString()}`
+      );
+    }
+
     return bestSplit;
   }
 }
