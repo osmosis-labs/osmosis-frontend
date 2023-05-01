@@ -22,6 +22,7 @@ import {
 
 export type OptimizedRoutesParams = {
   pools: ReadonlyArray<RoutablePool>;
+  preferredPoolIds?: string[];
   incentivizedPoolIds: string[];
   stakeCurrencyMinDenom: string;
   getPoolTotalValueLocked: (poolId: string) => Dec;
@@ -30,7 +31,7 @@ export type OptimizedRoutesParams = {
 };
 
 export class OptimizedRoutes implements TokenOutGivenInRouter {
-  protected readonly _pools: RoutablePool[];
+  protected readonly _sortedPools: RoutablePool[];
   protected readonly _incentivizedPoolIds: string[];
   protected readonly _stakeCurrencyMinDenom: string;
   protected readonly _getPoolTotalValueLocked: (poolId: string) => Dec;
@@ -44,18 +45,30 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
   constructor({
     pools,
+    preferredPoolIds,
     incentivizedPoolIds,
     stakeCurrencyMinDenom,
     getPoolTotalValueLocked,
     maxHops = 4,
     maxRoutes = 4,
   }: OptimizedRoutesParams) {
-    // Sort by the total value locked.
-    this._pools = pools.slice().sort((a, b) => {
-      const aTvl = getPoolTotalValueLocked(a.id);
-      const bTvl = getPoolTotalValueLocked(b.id);
-      return Number(aTvl.sub(bTvl).toString());
-    });
+    this._sortedPools = pools
+      .slice()
+      // Sort by the total value locked.
+      .sort((a, b) => {
+        const aTvl = getPoolTotalValueLocked(a.id);
+        const bTvl = getPoolTotalValueLocked(b.id);
+        return Number(aTvl.sub(bTvl).toString());
+      })
+      // lift preferred pools to the front
+      .reduce((pools, pool) => {
+        if (preferredPoolIds?.includes(pool.id)) {
+          pools.unshift(pool);
+        } else {
+          pools.push(pool);
+        }
+        return pools;
+      }, [] as RoutablePool[]);
     this._incentivizedPoolIds = incentivizedPoolIds;
     this._stakeCurrencyMinDenom = stakeCurrencyMinDenom;
     this._getPoolTotalValueLocked = getPoolTotalValueLocked;
@@ -73,7 +86,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     },
     tokenOutDenom: string
   ): Promise<RouteWithInAmount[]> {
-    if (!tokenIn.amount.isPositive() || this._pools.length === 0) {
+    if (!tokenIn.amount.isPositive() || this._sortedPools.length === 0) {
       return [];
     }
 
@@ -309,12 +322,12 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     };
   }
 
-  /** Find potential routes through pools without optimization. */
+  /** Greedily find potential routes through pools without optimization. */
   protected getCandidateRoutes(
     tokenInDenom: string,
     tokenOutDenom: string
   ): Route[] {
-    if (this._pools.length === 0) {
+    if (this._sortedPools.length === 0) {
       return [];
     }
     const cacheKey = `${tokenInDenom}/${tokenOutDenom}`;
@@ -323,7 +336,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       return cached;
     }
 
-    const poolsUsed = Array<boolean>(this._pools.length).fill(false);
+    const poolsUsed = Array<boolean>(this._sortedPools.length).fill(false);
     const routes: Route[] = [];
 
     const findRoutes = (
@@ -357,7 +370,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         return;
       }
 
-      for (let i = 0; i < this._pools.length; i++) {
+      for (let i = 0; i < this._sortedPools.length; i++) {
         if (poolsUsed[i]) {
           continue; // skip pool
         }
@@ -366,7 +379,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
           ? _previousTokenOuts
           : [tokenInDenom]; // imaginary prev pool
 
-        const curPool = this._pools[i];
+        const curPool = this._sortedPools[i];
 
         let prevPoolCurPoolTokenMatch: string | undefined;
         curPool.poolAssetDenoms.forEach((denom) =>
