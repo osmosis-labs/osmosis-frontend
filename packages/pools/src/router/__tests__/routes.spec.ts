@@ -437,6 +437,19 @@ describe("OptimizedRoutes", () => {
       expect(bestSplit.length).toEqual(0);
     });
 
+    it("maxIterations less than or equal to zero should throw an error", async () => {
+      const pools: RoutablePool[] = [];
+      const router = makeDefaultTestRouterParams({ pools });
+
+      const tokenIn = { denom: "uion", amount: new Int("100") };
+
+      const routes = router.getCandidateRoutes(tokenIn.denom, "uusdc");
+
+      await expect(
+        router.findBestSplitTokenIn(routes, tokenIn.amount, -1)
+      ).rejects.toThrow();
+    });
+
     it("handles a single given route - uion -> uusdc", async () => {
       const pools = [
         makeWeightedPool(),
@@ -505,12 +518,12 @@ describe("OptimizedRoutes", () => {
       expect(
         bestSplit
           .reduce((sum, route) => sum.add(route.initialAmount), new Int(0))
-          .gt(new Int(0))
+          .equals(tokenIn.amount)
       ).toBeTruthy();
     });
     // weighted pools' calcOutAmountGivenIn is much faster than stableswap, which uses it's own binary search
     // this is to get an eye on the performance of searching for out amounts through stable pools
-    it("performance using stable pools: handles splitting between choice of 2 routes - uion -> uusdc", async () => {
+    it("performance using stable pools: 2 routes - uion -> uusdc", async () => {
       const baseRouteInfo = {
         tokenOutDenoms: ["uosmo", "uusdc"],
         tokenInDenom: "uion",
@@ -554,6 +567,78 @@ describe("OptimizedRoutes", () => {
       );
 
       expect(bestSplit[0].pools).toEqual(routes[0].pools);
+      expect(
+        bestSplit
+          .reduce((sum, route) => sum.add(route.initialAmount), new Int(0))
+          .equals(tokenIn.amount)
+      ).toBeTruthy();
+    });
+
+    it("handles splitting between choice of 3 routes - uion -> uosmo -> uusdc", async () => {
+      const baseRouteInfo = {
+        tokenOutDenoms: ["uosmo", "uusdc"],
+        tokenInDenom: "uion",
+      };
+
+      const highestLiqRoute: Route = {
+        ...baseRouteInfo,
+        pools: [
+          makeWeightedPool(),
+          makeWeightedPool({
+            id: "2",
+            firstPoolAsset: { denom: "uusdc" },
+          }),
+        ],
+      };
+
+      const mediumLiqRoute: Route = {
+        ...baseRouteInfo,
+        pools: [
+          makeWeightedPool({
+            id: "3",
+            firstPoolAsset: { amount: "500" },
+            secondPoolAsset: { amount: "500" },
+          }),
+          makeWeightedPool({
+            id: "4",
+            firstPoolAsset: { denom: "uusdc", amount: "500" },
+            secondPoolAsset: { amount: "500" },
+          }),
+        ],
+      };
+
+      const lowerLiqRoute: Route = {
+        ...baseRouteInfo,
+        pools: [
+          makeWeightedPool({
+            id: "5",
+            firstPoolAsset: { amount: "100" },
+            secondPoolAsset: { amount: "100" },
+          }),
+          makeWeightedPool({
+            id: "6",
+            firstPoolAsset: { denom: "uusdc", amount: "100" },
+            secondPoolAsset: { amount: "100" },
+          }),
+        ],
+      };
+
+      const routes = [lowerLiqRoute, mediumLiqRoute, highestLiqRoute];
+      const router = makeRouterWithForceRoutes(routes);
+
+      const tokenIn = { denom: "uion", amount: new Int("100") };
+
+      const bestSplit = await router.findBestSplitTokenIn(
+        routes,
+        tokenIn.amount
+      );
+
+      expect(bestSplit[0].pools).toEqual(routes[0].pools);
+      expect(
+        bestSplit
+          .reduce((sum, route) => sum.add(route.initialAmount), new Int(0))
+          .equals(tokenIn.amount)
+      ).toBeTruthy();
     });
   });
 });
