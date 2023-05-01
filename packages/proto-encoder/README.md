@@ -5,7 +5,7 @@ This package exports generated TypeScript libraries for encoding and decoding bl
 Generation consists of three steps:
 
 1. Getting the proto files. Handled in `./scripts/get-proto.sh`
-2. Generating the Available packages to avoid outdated proto packages in the build. Handled in `./scripts/generate-package-types.ts`
+2. Generating the available packages to avoid outdated proto packages in the build. Handled in `./scripts/generate-package-types.ts`
 3. Generate the TypeScript libraries using telescope. Handled in `./scripts/codegen.ts`
 
 ## Generation
