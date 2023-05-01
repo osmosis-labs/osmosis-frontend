@@ -953,17 +953,19 @@ export const TradeClipboard: FunctionComponent<{
                   </span>
                 </div>
               </div>
-              {!isInModal && tradeTokenInConfig.optimizedRoutes && (
-                <TradeRoute
-                  sendCurrency={tradeTokenInConfig.sendCurrency}
-                  outCurrency={tradeTokenInConfig.outCurrency}
-                  route={tradeTokenInConfig.optimizedRoutes[0]} // TODO: support multiple routes
-                  isMultihopOsmoFeeDiscount={
-                    tradeTokenInConfig.expectedSwapResult
-                      .isMultihopOsmoFeeDiscount
-                  }
-                />
-              )}
+              {!isInModal &&
+                tradeTokenInConfig.optimizedRoutes &&
+                tradeTokenInConfig.optimizedRoutes.length > 0 && (
+                  <TradeRoute
+                    sendCurrency={tradeTokenInConfig.sendCurrency}
+                    outCurrency={tradeTokenInConfig.outCurrency}
+                    route={tradeTokenInConfig.optimizedRoutes[0]} // TODO: support multiple routes
+                    isMultihopOsmoFeeDiscount={
+                      tradeTokenInConfig.expectedSwapResult
+                        .isMultihopOsmoFeeDiscount
+                    }
+                  />
+                )}
             </div>
           </div>
         </div>
