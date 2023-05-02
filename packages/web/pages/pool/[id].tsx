@@ -87,6 +87,8 @@ const Pool: FunctionComponent = observer(() => {
     }
   }, [poolExists, router]);
 
+  console.log(queryOsmosis.queryGammPools.response);
+
   // initialize pool data stores once root pool store is loaded
   const { poolDetail, superfluidPoolDetail, poolBonding } =
     typeof poolId === "string"

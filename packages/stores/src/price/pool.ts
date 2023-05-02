@@ -50,6 +50,18 @@ export class PoolFallbackPriceStore
     return result;
   }
 
+  /**
+   * This function calculates the price of a specified coin in a specified vsCurrency or the default currency,
+   * by considering Osmosis chain pool information and intermediate routes. If the pool price route is not found,
+   * it falls back to the base class getPrice method which simply queries the coinID from a price API.
+   *
+   * This version is dependent on a `ObservableQueryPoolGetter` to get the pool information, so it's performance is dependent on the ability to fetch queryable pools.
+   *
+   * @param coinId - The coin ID to calculate the price for.
+   * @param vsCurrency - The currency to display the price in. If not provided, the default currency will be used.
+   * @returns The calculated price of the coin in the specified vsCurrency or default currency. If calculation fails, returns undefined.
+   * @throws Will throw an error if the price calculation fails.
+   */
   readonly getPrice = computedFn(
     (coinId: string, vsCurrency?: string): number | undefined => {
       if (!vsCurrency) {

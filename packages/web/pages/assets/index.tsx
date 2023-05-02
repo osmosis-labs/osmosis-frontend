@@ -300,7 +300,13 @@ const Metric: FunctionComponent<Metric> = ({ label, value }) => (
 );
 
 const PoolAssets: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    priceStore,
+    derivedDataStore,
+  } = useStore();
   const { setUserProperty } = useAmplitudeAnalytics();
   const t = useTranslation();
 
@@ -318,10 +324,9 @@ const PoolAssets: FunctionComponent = observer(() => {
   }, [ownedPoolIds.length, setUserProperty]);
 
   const dustedPoolIds = useHideDustUserSetting(ownedPoolIds, (poolId) =>
-    queryOsmosis.queryGammPools
-      .getPool(poolId)
-      ?.computeTotalValueLocked(priceStore)
-      .mul(
+    derivedDataStore.poolDetails
+      .get(poolId)
+      .totalValueLocked.mul(
         queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
           bech32Address,
           poolId

@@ -13,6 +13,7 @@ import { IPriceStore } from "../../price";
 import { OsmosisQueries } from "../../queries/store";
 import {
   ObservableQueryActiveGauges,
+  ObservableQueryFilteredPools,
   ObservableQueryPoolFeesMetrics,
 } from "../../queries-external";
 import { ExternalGauge } from "./types";
@@ -69,10 +70,23 @@ export class ObservablePoolDetail {
 
   @computed
   get totalValueLocked(): PricePretty {
-    return (
-      this.pool?.computeTotalValueLocked(this.priceStore) ??
-      new PricePretty(this._fiatCurrency, 0)
-    );
+    // try to get TVL data from filtered pools query (Imperator) to save on client performance
+    // since using `computeTotalValueLocked` is relatively expensive
+    if (
+      this.queries.queryGammPools instanceof ObservableQueryFilteredPools &&
+      this.pool &&
+      Boolean(this.queries.queryGammPools.response)
+    ) {
+      const poolMetrics = this.queries.queryGammPools.getPoolMetrics(
+        this.poolId
+      );
+      if (!poolMetrics) return new PricePretty(this._fiatCurrency, 0);
+
+      return new PricePretty(this._fiatCurrency, poolMetrics.liquidityUsd);
+    }
+
+    const tvl = this.pool?.computeTotalValueLocked(this.priceStore);
+    return tvl ?? new PricePretty(this._fiatCurrency, 0);
   }
 
   get lockableDurations(): Duration[] {

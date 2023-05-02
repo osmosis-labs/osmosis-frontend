@@ -11,7 +11,12 @@ import { EventName, IS_FRONTIER } from "../config";
 import { useAmplitudeAnalytics } from "../hooks";
 
 const Home: NextPage = observer(function () {
-  const { chainStore, queriesStore, priceStore } = useStore();
+  const {
+    chainStore,
+    queriesStore,
+    priceStore,
+    derivedDataStore: { poolDetails },
+  } = useStore();
   const { chainId } = chainStore.osmosis;
 
   const queries = queriesStore.get(chainId);
@@ -23,16 +28,17 @@ const Home: NextPage = observer(function () {
   const pools = useMemo(
     () =>
       allPools
-        .filter((pool) =>
-          pool
-            .computeTotalValueLocked(priceStore)
-            .toDec()
+        .filter(({ id }) =>
+          poolDetails
+            .get(id)
+            .totalValueLocked.toDec()
             .gte(new Dec(IS_FRONTIER ? 1_000 : 10_000))
         )
         .sort((a, b) => {
           // sort by TVL to find routes amongst most valuable pools
-          const aTVL = a.computeTotalValueLocked(priceStore);
-          const bTVL = b.computeTotalValueLocked(priceStore);
+
+          const aTVL = poolDetails.get(a.id).totalValueLocked;
+          const bTVL = poolDetails.get(b.id).totalValueLocked;
 
           return Number(bTVL.sub(aTVL).toDec().toString());
         })

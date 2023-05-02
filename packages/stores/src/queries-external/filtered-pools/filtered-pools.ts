@@ -173,6 +173,40 @@ export class ObservableQueryFilteredPools
     return Array.from(this._pools.values());
   });
 
+  /** Imperator returns additional metrics associated with each pool, let's
+   *  expose them here, mainly for performance reasons.
+   *
+   *  Many of these metrics may need to be calculated on the client, but we can just return them
+   *  here already calculated.
+   */
+  readonly getPoolMetrics = computedFn(
+    (
+      poolId: string
+    ):
+      | {
+          liquidityUsd: number;
+          liquidity24hChangeUsd: number;
+          volume24hUsd: number;
+          volume24hChangeUsd: number;
+          volume7dUsd: number;
+        }
+      | undefined => {
+      const poolRaw = this.response?.data.pools.find(
+        (p) => p.pool_id.toString() === poolId
+      );
+
+      if (!poolRaw) return;
+
+      return {
+        liquidityUsd: poolRaw.liquidity,
+        liquidity24hChangeUsd: poolRaw.liquidity_24h_change,
+        volume24hUsd: poolRaw.volume_24h,
+        volume24hChangeUsd: poolRaw.volume_24h_change,
+        volume7dUsd: poolRaw.volume_7d,
+      };
+    }
+  );
+
   paginate() {
     this.queryNumPools.waitResponse().then(() => {
       if (this._queryParams.limit < this.queryNumPools.numPools) {
