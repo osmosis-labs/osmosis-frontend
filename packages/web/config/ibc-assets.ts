@@ -26,7 +26,7 @@ export const IBCAssetInfos: (IBCAsset & {
 })[] = IS_TESTNET
   ? [
       {
-        counterpartyChainId: "cosmoshub-4",
+        counterpartyChainId: "theta-testnet-001",
         sourceChannelId: "channel-12",
         destChannelId: "channel-2500",
         coinMinimalDenom: "uatom",
