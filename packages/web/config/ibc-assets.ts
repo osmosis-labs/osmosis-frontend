@@ -69,7 +69,30 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-190",
         coinMinimalDenom: "ujunox",
         isVerified: true,
-      },/*
+      },
+      {
+        counterpartyChainId: "grand-1",
+        sourceChannelId: "channel-6",
+        destChannelId: "channel-6",
+        coinMinimalDenom: "uusdc",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "sandbox",
+        sourceChannelId: "channel-4",
+        destChannelId: "channel-2",
+        coinMinimalDenom: "uakt",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "kaon-1",
+        sourceChannelId: "channel-10",
+        destChannelId: "channel-2",
+        coinMinimalDenom: "tkyve",
+        isVerified: true,
+      },
+        
+        /*
       {
         counterpartyChainId: "nolus-rila",
         sourceChannelId: "channel-1837",
