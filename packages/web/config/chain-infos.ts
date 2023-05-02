@@ -11,8 +11,8 @@ import {
 } from "./env";
 import { createKeplrChainInfos, SimplifiedChainInfo } from "./utils";
 
-const chainInfo = IS_TESTNET
-  ? [
+const chainInfos = IS_TESTNET
+  ? ([
       {
         rpc:
           OSMOSIS_RPC_OVERWRITE ??
@@ -265,8 +265,8 @@ const chainInfo = IS_TESTNET
         features: ["ibc-transfer", "ibc-go"],
         explorerUrlToTx: "https://testnet.mintscan.io/kyve-testnet/txs/{txHash}",
       },
-    ]
-  : [
+    ] as SimplifiedChainInfo[]).map(createKeplrChainInfos)
+  : ([
     {
       rpc:
         OSMOSIS_RPC_OVERWRITE ??
@@ -3508,8 +3508,7 @@ const chainInfo = IS_TESTNET
       features: ["ibc-transfer", "ibc-go"],
       explorerUrlToTx: "https://bd.explorer.net.bluzelle.com/transactions/{txHash}",
     },
-  ] as SimplifiedChainInfo[];
-let chainInfos = chainInfo.map(createKeplrChainInfos);
+  ] as SimplifiedChainInfo[]).map(createKeplrChainInfos);
 
 // Add normal chain infos in case of `currencies` not containing the stake or fee currency.
 chainInfos.push({
