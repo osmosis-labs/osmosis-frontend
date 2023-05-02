@@ -304,17 +304,18 @@ export class ObservableQueryPool extends ObservableChainQuery<{
       });
     }
 
-    // TODO: use queryBalances from constructor
     if (this.pool instanceof ConcentratedLiquidityPool) {
-      return this.poolAssetDenoms.map((denom) => {
-        const currency = this.chainGetter
-          .getChain(this.chainId)
-          .forceFindCurrency(denom);
-
-        return {
-          amount: new CoinPretty(currency, new Dec(0)),
-        };
-      });
+      const { balances } = this.queryBalances.getQueryBech32Address(
+        this.pool.address
+      );
+      return this.poolAssetDenoms
+        .map((denom) => {
+          const amount = balances.find(
+            (balance) => balance.currency.coinMinimalDenom === denom
+          )?.balance;
+          return amount ? { amount } : undefined;
+        })
+        .filter((amount) => !!amount) as { amount: CoinPretty }[];
     }
 
     return [];

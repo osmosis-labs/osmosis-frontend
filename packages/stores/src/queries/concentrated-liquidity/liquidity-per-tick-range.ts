@@ -1,8 +1,12 @@
 import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter, ObservableChainQuery } from "@keplr-wallet/stores";
+import {
+  ChainGetter,
+  ObservableChainQuery,
+  ObservableChainQueryMap,
+} from "@keplr-wallet/stores";
 import { Dec, Int } from "@keplr-wallet/unit";
 import { ActiveLiquidityPerTickRange } from "@osmosis-labs/math";
-import { computed, makeObservable, observable } from "mobx";
+import { computed, makeObservable } from "mobx";
 
 import { LiquidityPerTickRange } from "./types";
 
@@ -47,19 +51,24 @@ export class ObservableQueryLiquidityPerTickRange extends ObservableChainQuery<L
   }
 }
 
-export class ObservableQueryLiquiditiesPerTickRange {
-  /** "poolId" => `ObservableQueryLiquidityPerTickRange` */
-  @observable
-  protected readonly _poolLiquidityPerTickrangeQueries: Map<
-    string,
-    ObservableQueryLiquidityPerTickRange
-  > = new Map();
+export class ObservableQueryLiquiditiesPerTickRange extends ObservableChainQueryMap<LiquidityPerTickRange> {
+  // /** "poolId" => `ObservableQueryLiquidityPerTickRange` */
+  // @observable
+  // protected readonly _poolLiquidityPerTickrangeQueries: Map<
+  //   string,
+  //   ObservableQueryLiquidityPerTickRange
+  // > = new Map();
 
-  constructor(
-    protected readonly kvStore: KVStore,
-    protected readonly chainId: string,
-    protected readonly chainGetter: ChainGetter
-  ) {}
+  constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
+    super(kvStore, chainId, chainGetter, (poolId: string) => {
+      return new ObservableQueryLiquidityPerTickRange(
+        this.kvStore,
+        this.chainId,
+        this.chainGetter,
+        { poolId }
+      );
+    });
+  }
 
   /**
    * getForPoolId function retrieves or creates an ObservableQueryLiquidityPerTickRange instance for a given pool and token
@@ -67,19 +76,6 @@ export class ObservableQueryLiquiditiesPerTickRange {
    * @returns An instance of ObservableQueryLiquidityPerTickRange associated with the specified pool id.
    */
   getForPoolId(poolId: string) {
-    if (!this._poolLiquidityPerTickrangeQueries.has(poolId)) {
-      const newQuery = new ObservableQueryLiquidityPerTickRange(
-        this.kvStore,
-        this.chainId,
-        this.chainGetter,
-        { poolId }
-      );
-      this._poolLiquidityPerTickrangeQueries.set(poolId, newQuery);
-      return newQuery;
-    }
-
-    return this._poolLiquidityPerTickrangeQueries.get(
-      poolId
-    ) as ObservableQueryLiquidityPerTickRange;
+    return super.get(poolId) as ObservableQueryLiquidityPerTickRange;
   }
 }
