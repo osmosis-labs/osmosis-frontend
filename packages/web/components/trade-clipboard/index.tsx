@@ -1,6 +1,7 @@
 import { WalletStatus } from "@keplr-wallet/stores";
 import { AppCurrency, Currency } from "@keplr-wallet/types";
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
+import { calcPriceImpactWithAmount } from "@osmosis-labs/math";
 import { Pool } from "@osmosis-labs/pools";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -192,8 +193,36 @@ export const TradeClipboard: FunctionComponent<{
 
     // trade metrics
     const minOutAmountLessSlippage = useMemo(() => {
-      const coinLessSlippage = tradeTokenInConfig.expectedSwapResult.amount.mul(
-        new Dec(1).sub(slippageConfig.slippage.toDec())
+      let amountLessSlippage;
+      try {
+        const beforeSpotPrice =
+          tradeTokenInConfig.expectedSwapResult.beforeSpotPriceInOverOut.toDec();
+        const inAmount =
+          tradeTokenInConfig.amount === ""
+            ? new Int(1)
+            : new Int(
+                new Dec(tradeTokenInConfig.amount)
+                  .mul(
+                    DecUtils.getTenExponentN(
+                      tradeTokenInConfig.sendCurrency.coinDecimals
+                    )
+                  )
+                  .truncate()
+                  .toString()
+              );
+        amountLessSlippage = calcPriceImpactWithAmount(
+          beforeSpotPrice.gt(new Dec(0)) ? beforeSpotPrice : new Dec(1),
+          inAmount,
+          slippageConfig.slippage.toDec()
+        );
+      } catch {
+        // address any /0 errors
+        amountLessSlippage = new Dec(0);
+      }
+
+      const coinLessSlippage = new CoinPretty(
+        tradeTokenInConfig.outCurrency,
+        amountLessSlippage
       );
       return coinLessSlippage.maxDecimals(
         Math.min(
@@ -201,7 +230,13 @@ export const TradeClipboard: FunctionComponent<{
           coinLessSlippage.currency.coinDecimals
         )
       );
-    }, [tradeTokenInConfig.expectedSwapResult.amount, slippageConfig.slippage]);
+    }, [
+      tradeTokenInConfig.outCurrency,
+      tradeTokenInConfig.sendCurrency.coinDecimals,
+      tradeTokenInConfig.expectedSwapResult.beforeSpotPriceInOverOut,
+      tradeTokenInConfig.amount,
+      slippageConfig.slippage,
+    ]);
     const spotPrice = useMemo(
       () =>
         tradeTokenInConfig.beforeSpotPriceWithoutSwapFeeOutOverIn
