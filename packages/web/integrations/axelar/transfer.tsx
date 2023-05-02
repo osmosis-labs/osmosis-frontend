@@ -314,7 +314,7 @@ const AxelarTransfer: FunctionComponent<
       originCurrency.coinMinimalDenom,
       false,
       axelarApiEnv,
-      shouldGenAddress
+      !useNativeToken && shouldGenAddress
     );
     const baseDenom = isWithdraw
       ? originCurrency.coinMinimalDenom // withdraw uses wrapped denom
