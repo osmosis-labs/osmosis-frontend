@@ -100,14 +100,11 @@ const chainInfos = (
           coinImageUrl: "/tokens/atom.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
-          gasPriceStep: IS_TESTNET
-            ? {
-              },
-            : {
-                low: 0.01,
-                average: 0.025,
-                high: 0.03,
-              },
+          gasPriceStep: {
+            low: 0.01,
+            average: 0.025,
+            high: 0.03,
+          },
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
