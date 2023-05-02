@@ -19,7 +19,6 @@ export type DepthData = {
   depth: number;
 };
 
-// TODO: Update component to support horizontal=false
 const ConcentratedLiquidityDepthChart: FunctionComponent<{
   min: number;
   max: number;

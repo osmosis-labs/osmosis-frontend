@@ -267,7 +267,7 @@ function StrategySelector(props: {
     >
       <div
         className={classNames(
-          "flex h-full w-full flex-col items-center justify-center gap-[20px] rounded-[20px] py-8 px-4",
+          "flex h-full w-full flex-col items-center justify-center gap-[20px] rounded-[19px] py-8 px-4",
           {
             "bg-osmoverse-700": selected,
             "hover:bg-osmoverse-700": onClick,
