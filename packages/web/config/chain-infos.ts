@@ -17,12 +17,12 @@ const chainInfos = (
       rpc:
         OSMOSIS_RPC_OVERWRITE ??
         (IS_TESTNET
-          ? "https://rpc.testnet.osmosis.zone/"
+          ? "https://rpc.osmotest5.osmosis.zone/"
           : "https://rpc-osmosis.keplr.app/"),
       rest:
         OSMOSIS_REST_OVERWRITE ??
         (IS_TESTNET
-          ? "https://lcd.testnet.osmosis.zone/"
+          ? "https://lcd.osmotest5.osmosis.zone/"
           : "https://lcd-osmosis.keplr.app/"),
       chainId:
         OSMOSIS_CHAIN_ID_OVERWRITE ??
@@ -38,7 +38,7 @@ const chainInfos = (
           coinMinimalDenom: "uosmo",
           coinDecimals: 6,
           // coinGeckoId: "osmosis",
-          coinGeckoId: "pool:uosmo",
+          coinGeckoId: IS_TESTNET ? "" : "pool:uosmo",
           coinImageUrl: "/tokens/osmo.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
@@ -53,9 +53,9 @@ const chainInfos = (
           coinMinimalDenom: "uion",
           coinDecimals: 6,
           // coinGeckoId: "ion",
-          coinGeckoId: "pool:uion",
+          coinGeckoId: IS_TESTNET ? "" : "pool:uion",
           coinImageUrl: "/tokens/ion.svg",
-        },
+        },/*
         ...(IS_TESTNET
           ? [
               {
@@ -66,20 +66,26 @@ const chainInfos = (
                 coinImageUrl: "/tokens/ibcx.svg",
               },
             ]
-          : []),
+          : []),*/
       ],
       features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
       explorerUrlToTx:
         OSMOSIS_EXPLORER_URL_OVERWRITE ??
         (IS_TESTNET
-          ? "https://testnet.mintscan.io/osmosis-testnet/txs/{txHash}"
+          ? "https://explorer.osmotest5.osmosis.zone/osmo-test-5/tx/{txHash}"
           : "https://www.mintscan.io/osmosis/txs/{txHash}"),
     },
     {
-      rpc: "https://rpc-cosmoshub.keplr.app",
-      rest: "https://lcd-cosmoshub.keplr.app",
-      chainId: "cosmoshub-4",
-      chainName: "Cosmos Hub",
+      rpc: IS_TESTNET
+        ? "https://rest.sentry-01.theta-testnet.polypore.xyz"
+        : "https://rpc-cosmoshub.keplr.app",
+      rest: IS_TESTNET
+        ? "https://rpc.sentry-01.theta-testnet.polypore.xyz"
+        : "https://lcd-cosmoshub.keplr.app",
+      chainId: IS_TESTNET ? "theta-testnet-001" : "cosmoshub-4",
+      chainName: IS_TESTNET
+        ? "Cosmos Hub Public Testnet"
+        : "Cosmos Hub",
       bip44: {
         coinType: 118,
       },
@@ -90,7 +96,7 @@ const chainInfos = (
           coinMinimalDenom: "uatom",
           coinDecimals: 6,
           // coinGeckoId: "cosmos",
-          coinGeckoId: "pool:uatom",
+          coinGeckoId: IS_TESTNET ? "" : "pool:uatom",
           coinImageUrl: "/tokens/atom.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
@@ -102,7 +108,9 @@ const chainInfos = (
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
-      explorerUrlToTx: "https://www.mintscan.io/cosmos/txs/{txHash}",
+      explorerUrlToTx: IS_TESTNET
+        ? "https://explorer.theta-testnet.polypore.xyz/transactions/{txHash}"
+        : "https://www.mintscan.io/cosmos/txs/{txHash}",
     },
     {
       rpc: "https://rpc-terra-ia.cosmosia.notional.ventures/",
@@ -271,10 +279,14 @@ const chainInfos = (
         "https://secretnodes.com/secret/chains/secret-4/transactions/{txHash}",
     },
     {
-      rpc: "https://rpc-akash.keplr.app",
-      rest: "https://lcd-akash.keplr.app",
-      chainId: "akashnet-2",
-      chainName: "Akash",
+      rpc: IS_TESTNET
+        ? "http://rpc.sandbox.ny.aksh.pw:26657"
+        : "https://rpc-akash.keplr.app",
+      rest: IS_TESTNET
+        ? "http://api.sandbox.ny.aksh.pw:1317"
+        : "https://lcd-akash.keplr.app",
+      chainId: IS_TESTNET ? "sandbox" : "akashnet-2",
+      chainName: IS_TESTNET ? "Sandbox" : "Akash",
       bip44: {
         coinType: 118,
       },
@@ -285,14 +297,16 @@ const chainInfos = (
           coinMinimalDenom: "uakt",
           coinDecimals: 6,
           // coinGeckoId: "akash-network",
-          coinGeckoId: "pool:uakt",
+          coinGeckoId: IS_TESTNET ? "" : "pool:uakt",
           coinImageUrl: "/tokens/akt.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
-      explorerUrlToTx: "https://www.mintscan.io/akash/txs/{txHash}",
+      explorerUrlToTx: IS_TESTNET
+        ? "https://explorer.testnet-02.aksh.pw/akash/tx/{txHash}"
+        : "https://www.mintscan.io/akash/txs/{txHash}",
     },
     {
       rpc: "https://rpc-regen.keplr.app",
@@ -550,7 +564,7 @@ const chainInfos = (
           coinMinimalDenom: IS_TESTNET ? "ujunox" : "ujuno",
           coinDecimals: 6,
           // coinGeckoId: "juno-network",
-          coinGeckoId: "pool:ujuno",
+          coinGeckoId: IS_TESTNET ? "" : "pool:ujuno",
           coinImageUrl: "/tokens/juno.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
@@ -2996,7 +3010,7 @@ const chainInfos = (
           coinDenom: "MARS",
           coinMinimalDenom: "umars",
           coinDecimals: 6,
-          coinGeckoId: "pool:mars",
+          coinGeckoId: IS_TESTNET ? "" : "pool:mars",
           coinImageUrl: "/tokens/mars.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
@@ -3159,9 +3173,13 @@ const chainInfos = (
       explorerUrlToTx: "https://explorer.kynraze.com/arkhadian/tx/{txHash}",
     },
     {
-      rpc: "https://rpc.mainnet.noble.strange.love",
-      rest: "https://noble-api.polkachu.com",
-      chainId: "noble-1",
+      rpc: IS_TESTNET
+        ? "https://api.testnet.noble.strange.love:443"
+        : "https://rpc.mainnet.noble.strange.love",
+      rest: IS_TESTNET
+        ? "https://rpc.testnet.noble.strange.love:443"
+        : "https://noble-api.polkachu.com",
+      chainId: IS_TESTNET ? "grand-1" : "noble-1",
       chainName: "Noble",
       bip44: {
         coinType: 118,
@@ -3181,7 +3199,7 @@ const chainInfos = (
           coinMinimalDenom: "uusdc",
           coinDecimals: 6,
           coinImageUrl: "/tokens/usdc.svg",
-          coinGeckoId: "usd-coin",
+          coinGeckoId: IS_TESTNET ? "" : "usd-coin",
           isFeeCurrency: true,
           gasPriceStep: {
             low: 0.01,
@@ -3198,7 +3216,9 @@ const chainInfos = (
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
-      explorerUrlToTx: "https://www.mintscan.io/noble/txs/{txHash}",
+      explorerUrlToTx: IS_TESTNET
+        ? "https://testnet.mintscan.io/noble-testnet/txs/{txHash}"
+        : "https://www.mintscan.io/noble/txs/{txHash}",
     },
     {
       rpc: "https://whitewhale-rpc.lavenderfive.com",
@@ -3242,7 +3262,7 @@ const chainInfos = (
           coinDenom: "NLS",
           coinMinimalDenom: "unls",
           coinDecimals: 6,
-          coinGeckoId: "pool:unls",
+          coinGeckoId: IS_TESTNET ? "" : "pool:unls",
           coinImageUrl: "/tokens/nolus.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
@@ -3312,7 +3332,36 @@ const chainInfos = (
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
-      explorerUrlToTx: "https://bd.explorer.net.bluzelle.com/transactions/${txHash}",
+      explorerUrlToTx: "https://bd.explorer.net.bluzelle.com/transactions/{txHash}",
+    },
+    {
+      rpc: IS_TESTNET
+        ? "https://rpc-eu-1.kaon.kyve.network"
+        : "",
+      rest: IS_TESTNET
+        ? "https://api-eu-1.kaon.kyve.network"
+        : "",
+      chainId: IS_TESTNET ? "kaon-1" : "",
+      chainName: IS_TESTNET ? "KYVE Kaon" : "",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: Bech32Address.defaultBech32Config("kyve"),
+      currencies: [
+        {
+          coinDenom: "KYVE",
+          coinMinimalDenom: "tkyve",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/kyve.svg",
+          coinGeckoId: IS_TESTNET ? "" : "",
+          isStakeCurrency: true,
+          isFeeCurrency: true,
+        },
+      ],
+      features: ["ibc-transfer", "ibc-go"],
+      explorerUrlToTx: IS_TESTNET
+        ? "https://testnet.mintscan.io/kyve-testnet/txs/{txHash}"
+        : "",
     },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);
@@ -3326,7 +3375,7 @@ chainInfos.push({
     ? "https://axelartest-lcd.quickapi.com/"
     : "https://lcd-axelar.keplr.app",
   chainId: IS_TESTNET ? "axelar-testnet-lisbon-3" : "axelar-dojo-1",
-  chainName: "Axelar",
+  chainName:  IS_TESTNET ? "Axelar Testnet" : "Axelar",
   stakeCurrency: {
     coinDenom: "AXL",
     coinMinimalDenom: "uaxl",
@@ -3351,7 +3400,7 @@ chainInfos.push({
       coinDenom: IS_TESTNET ? "aUSDC" : "USDC",
       coinMinimalDenom: IS_TESTNET ? "uausdc" : "uusdc",
       coinDecimals: 6,
-      coinGeckoId: "usd-coin",
+      coinGeckoId: IS_TESTNET ? "" : "usd-coin",
       coinImageUrl: "/tokens/usdc.svg",
       pegMechanism: "collateralized",
     },
