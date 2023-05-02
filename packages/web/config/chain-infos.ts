@@ -3509,7 +3509,7 @@ const chainInfo = IS_TESTNET
       explorerUrlToTx: "https://bd.explorer.net.bluzelle.com/transactions/{txHash}",
     },
   ] as SimplifiedChainInfo[];
-const chainInfos = chainInfo.map(createKeplrChainInfos);
+let chainInfos = chainInfo.map(createKeplrChainInfos);
 
 // Add normal chain infos in case of `currencies` not containing the stake or fee currency.
 chainInfos.push({
