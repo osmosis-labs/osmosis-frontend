@@ -1,6 +1,5 @@
 import { KVStore } from "@keplr-wallet/common";
 import { HasMapStore } from "@keplr-wallet/stores";
-import { Dec } from "@keplr-wallet/unit";
 import { computed, makeObservable } from "mobx";
 import { IPriceStore } from "src/price";
 
@@ -50,13 +49,13 @@ export class ObservableQueryTokenPairHistoricalChart extends ObservableQueryExte
   }
 
   @computed
-  get getChartPrices(): { price: Dec; time: number }[] | undefined {
+  get getChartPrices(): TokenPairHistoricalPrice[] | undefined {
     if (!this.response) return undefined;
 
     try {
-      return this.response.data.map(({ time, close }) => ({
-        time: time * 1000,
-        price: new Dec(close),
+      return this.response.data.map((data) => ({
+        ...data,
+        time: data.time * 1000,
       }));
     } catch {
       return undefined;

@@ -1,10 +1,5 @@
-import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
-import {
-  ActiveLiquidityPerTickRange,
-  maxSpotPrice,
-  minSpotPrice,
-  priceToTick,
-} from "@osmosis-labs/math";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { priceToTick, roundPriceToNearestTick } from "@osmosis-labs/math";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import {
   ObservableAddConcentratedLiquidityConfig,
@@ -13,7 +8,7 @@ import {
   ObservableSuperfluidPoolDetail,
 } from "@osmosis-labs/stores";
 import classNames from "classnames";
-import { debounce } from "debounce";
+import debounce from "debounce";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -29,9 +24,7 @@ import React, {
 import { useTranslation } from "react-multi-lang";
 
 import IconButton from "~/components/buttons/icon-button";
-import { calculateRangeFromHistoricalData } from "~/components/chart/token-pair-historical";
 import { useStore } from "~/stores";
-import { findNearestTick, getPriceAtTick } from "~/utils/math";
 
 import { Icon, PoolAssetsIcon } from "../assets";
 import { Button } from "../buttons";
@@ -92,7 +85,7 @@ export const AddConcLiquidity: FunctionComponent<
     return (
       <div className={classNames("flex flex-col gap-8", className)}>
         {(() => {
-          switch (addLiquidityConfig.conliqModalView) {
+          switch (addLiquidityConfig.modalView) {
             case "overview":
               return (
                 <Overview
@@ -145,7 +138,7 @@ const Overview: FunctionComponent<
     const { id: poolId } = router.query as { id: string };
     const t = useTranslation();
     const [selected, selectView] =
-      useState<typeof addLiquidityConfig.conliqModalView>("add_manual");
+      useState<typeof addLiquidityConfig.modalView>("add_manual");
     const queryGammPoolFeeMetrics =
       queriesExternalStore.queryGammPoolFeeMetrics;
 
@@ -243,7 +236,7 @@ const Overview: FunctionComponent<
         <div className="flex w-full items-center justify-center">
           <Button
             className="w-[25rem]"
-            onClick={() => addLiquidityConfig.setConliqModalView(selected)}
+            onClick={() => addLiquidityConfig.setModalView(selected)}
           >
             Next
           </Button>
@@ -302,119 +295,69 @@ const AddConcLiqView: FunctionComponent<
   const baseDenom = pool?.poolAssets[0]?.amount.denom || "";
   const quoteDenom = pool?.poolAssets[1]?.amount.denom || "";
   const {
-    conliqHistoricalRange,
-    conliqRange,
-    conliqQuoteDepositAmountIn,
-    conliqBaseDepositAmountIn,
-    conliqFullRange,
-    setConliqQuoteDepositAmountIn,
-    setConliqBaseDepositAmountIn,
-    setConliqModalView,
-    setConliqHistoricalRange,
-    setConliqMaxRange,
-    setConliqMinRange,
+    historicalRange,
+    range,
+    quoteDepositAmountIn,
+    baseDepositAmountIn,
+    fullRange,
+    historicalChartData,
+    lastChartData,
+    setQuoteDepositAmountIn,
+    setBaseDepositAmountIn,
+    setModalView,
+    setHistoricalRange,
+    setMaxRange,
+    setMinRange,
+    setHistoricalChartData,
   } = addLiquidityConfig;
 
   const { queriesExternalStore, chainStore, queriesStore } = useStore();
   const router = useRouter();
   const t = useTranslation();
+  const { id: poolId } = router.query as { id: string };
 
-  const [data, setData] = useState<{ price: number; time: number }[]>([]);
-  const [depthData, setDepthData] = useState<
-    { price: number; depth: number }[]
-  >([]);
   const [inputMin, setInputMin] = useState("0");
   const [inputMax, setInputMax] = useState("0");
-  const [zoom, setZoom] = useState(1);
-
-  const { id: poolId } = router.query as { id: string };
-  const lastPrice = data[data.length - 1]?.price || 0;
-  const rangeMin = Number(conliqRange[0].toString());
-  const rangeMax = Number(conliqRange[1].toString());
-
-  const xMax = Math.max(...depthData.map((d) => d.depth)) * 1.2;
-
-  const queryHistorical =
-    queriesExternalStore.queryTokenPairHistoricalChart.get(
-      poolId,
-      addLiquidityConfig.conliqHistoricalRange,
-      baseDenom,
-      quoteDenom
-    );
+  const rangeMin = Number(range[0].toString());
+  const rangeMax = Number(range[1].toString());
 
   const { chainId } = chainStore.osmosis;
   const queriesOsmosis = queriesStore.get(chainId).osmosis!;
   const queryDepth =
     queriesOsmosis.queryLiquiditiesPerTickRange.getForPoolId(poolId);
+  const queryHistorical =
+    queriesExternalStore.queryTokenPairHistoricalChart.get(
+      poolId,
+      addLiquidityConfig.historicalRange,
+      baseDenom,
+      quoteDenom
+    );
 
-  const yRange = calculateRangeFromHistoricalData({
-    data,
-    zoom,
-    min: rangeMin,
-    max: rangeMax,
-  });
+  const yRange = addLiquidityConfig.yRange;
 
   const clPool = pool?.pool as ConcentratedLiquidityPool;
-
-  const updateMin = useCallback(
-    (val: string | number, shouldUpdateRange = false) => {
-      const out = Math.min(Math.max(Number(val), 0), Number(inputMax));
-      const price = getPriceAtTick(findNearestTick(out));
-      if (shouldUpdateRange) setConliqMinRange(new Dec(price));
-      if (Number(val) !== price) {
-        setInputMin("" + price);
-      } else {
-        setInputMin("" + val);
-      }
-    },
-    [inputMax, conliqRange]
-  );
-
-  const updateMax = useCallback(
-    (val: string | number, shouldUpdateRange = false) => {
-      const out = Math.max(Number(val), Number(inputMin));
-      const price = getPriceAtTick(findNearestTick(out));
-      if (shouldUpdateRange) setConliqMaxRange(new Dec(price));
-      if (Number(val) !== price) {
-        setInputMax("" + price);
-      } else {
-        setInputMax("" + val);
-      }
-    },
-    [inputMin]
-  );
 
   const updateInputAndRangeMinMax = useCallback(
     (_min: number, _max: number) => {
       setInputMin("" + _min);
       setInputMax("" + _max);
-      setConliqMinRange(new Dec(_min));
-      setConliqMaxRange(new Dec(_max));
+      setMinRange(new Dec(_min));
+      setMaxRange(new Dec(_max));
     },
     []
   );
 
   useEffect(() => {
     if (!queryHistorical.isFetching && queryHistorical.getChartPrices) {
-      const newData = queryHistorical.getChartPrices.map(({ price, time }) => ({
-        time,
-        price: Number(price.toString()),
-      }));
-
-      setData(newData);
+      const newData = queryHistorical.getChartPrices;
+      setHistoricalChartData(newData);
     }
   }, [queryHistorical.getChartPrices, queryHistorical.isFetching]);
 
   useEffect(() => {
     if (!yRange[0] && !yRange[1]) return;
     if (!queryDepth.isFetching && queryDepth.activeLiquidity) {
-      const data = getDepthFromRange(
-        queryDepth.activeLiquidity,
-        yRange[0],
-        yRange[1],
-        clPool?.exponentAtPriceOne
-      );
-      setDepthData(data);
+      addLiquidityConfig.setActiveLiquidity(queryDepth.activeLiquidity);
     }
   }, [
     yRange[0],
@@ -425,18 +368,18 @@ const AddConcLiqView: FunctionComponent<
   ]);
 
   useEffect(() => {
-    if (data.length && inputMin === "0" && inputMax === "0") {
-      const last = data[data.length - 1].price;
+    if (lastChartData && inputMin === "0" && inputMax === "0") {
+      const last = lastChartData.close;
       updateInputAndRangeMinMax(last * 0.75, last * 1.25);
     }
-  }, [data, inputMax, inputMin]);
+  }, [lastChartData, inputMax, inputMin]);
 
   return (
     <>
       <div className="align-center relative flex flex-row">
         <div
           className="absolute left-0 flex flex h-full cursor-pointer flex-row items-center text-sm"
-          onClick={() => setConliqModalView("overview")}
+          onClick={() => setModalView("overview")}
         >
           <Image src="/icons/arrow-left.svg" width={24} height={24} />
           <span className="pl-1">{t("addConcentratedLiquidity.back")}</span>
@@ -460,7 +403,7 @@ const AddConcLiqView: FunctionComponent<
             <div className="flex flex-row">
               <div className="flex flex-1 flex-row pt-4">
                 <h4 className="row-span-2 pr-1 font-caption">
-                  {!!data.length && data[data.length - 1].price.toFixed(2)}
+                  {lastChartData?.close.toFixed(2) || ""}
                 </h4>
                 <div className="flex flex-col justify-center font-caption">
                   <div className="text-caption text-osmoverse-300">
@@ -477,27 +420,28 @@ const AddConcLiqView: FunctionComponent<
               <div className="flex flex-1 flex-row justify-end gap-1 pt-2 pr-2">
                 <RangeSelector
                   label="7 day"
-                  onClick={() => setConliqHistoricalRange("7d")}
-                  selected={conliqHistoricalRange === "7d"}
+                  onClick={() => setHistoricalRange("7d")}
+                  selected={historicalRange === "7d"}
                 />
                 <RangeSelector
                   label="30 days"
-                  onClick={() => setConliqHistoricalRange("1mo")}
-                  selected={conliqHistoricalRange === "1mo"}
+                  onClick={() => setHistoricalRange("1mo")}
+                  selected={historicalRange === "1mo"}
                 />
                 <RangeSelector
                   label="1 year"
-                  onClick={() => setConliqHistoricalRange("1y")}
-                  selected={conliqHistoricalRange === "1y"}
+                  onClick={() => setHistoricalRange("1y")}
+                  selected={historicalRange === "1y"}
                 />
               </div>
             </div>
             <TokenPairHistoricalChart
-              min={rangeMin}
-              max={rangeMax}
-              data={data}
-              zoom={zoom}
-              annotations={conliqRange}
+              data={historicalChartData.map(({ time, close }) => ({
+                time,
+                price: close,
+              }))}
+              annotations={range}
+              domain={yRange}
             />
           </div>
           <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-row rounded-r-2xl bg-osmoverse-700">
@@ -507,60 +451,64 @@ const AddConcLiqView: FunctionComponent<
                   alt="refresh"
                   src="/icons/refresh-ccw.svg"
                   selected={false}
-                  onClick={() => setZoom(1)}
+                  onClick={() => addLiquidityConfig.setZoom(1)}
                 />
                 <SelectorWrapper
                   alt="zoom in"
                   src="/icons/zoom-in.svg"
                   selected={false}
-                  onClick={() => setZoom(Math.max(1, zoom - 0.2))}
+                  onClick={addLiquidityConfig.zoomIn}
                 />
                 <SelectorWrapper
                   alt="zoom out"
                   src="/icons/zoom-out.svg"
                   selected={false}
-                  onClick={() => setZoom(zoom + 0.2)}
+                  onClick={addLiquidityConfig.zoomOut}
                 />
               </div>
               <ConcentratedLiquidityDepthChart
                 min={rangeMin}
                 max={rangeMax}
                 yRange={yRange}
-                xRange={[0, xMax]}
-                data={depthData}
-                annotationDatum={{ price: lastPrice, depth: xMax }}
-                onMoveMax={debounce((val: number) => updateMax(val), 100)}
-                onMoveMin={debounce((val: number) => updateMin(val), 100)}
-                onSubmitMin={(val) => updateMin(val, true)}
-                onSubmitMax={(val) => updateMax(val, true)}
+                xRange={addLiquidityConfig.xRange}
+                data={addLiquidityConfig.depthChartData}
+                annotationDatum={{
+                  price: lastChartData?.close || 0,
+                  depth: addLiquidityConfig.xRange[1],
+                }}
+                onMoveMax={debounce(
+                  (val: number) => setInputMax("" + val),
+                  500
+                )}
+                onMoveMin={debounce(
+                  (val: number) => setInputMin("" + val),
+                  500
+                )}
+                onSubmitMin={setMinRange}
+                onSubmitMax={setMaxRange}
                 offset={{ top: 0, right: 36, bottom: 36, left: 0 }}
                 horizontal
-                fullRange={conliqFullRange}
+                fullRange={fullRange}
               />
             </div>
             <div className="flex flex-col items-center justify-center gap-4 pr-8">
               <PriceInputBox
-                currentValue={
-                  conliqFullRange ? "∞" : new Dec(inputMax).toString(4)
-                }
+                currentValue={fullRange ? "∞" : new Dec(inputMax).toString(4)}
                 label="high"
-                onChange={(val) => setInputMax(val)}
-                onBlur={(e) => updateMax(+e.target.value, true)}
+                onChange={setInputMax}
+                onBlur={(e) => setMaxRange(+e.target.value)}
               />
               <PriceInputBox
-                currentValue={
-                  conliqFullRange ? "0" : new Dec(inputMin).toString(4)
-                }
+                currentValue={fullRange ? "0" : new Dec(inputMin).toString(4)}
                 label="low"
-                onChange={(val) => setInputMin(val)}
-                onBlur={(e) => updateMin(+e.target.value, true)}
+                onChange={setInputMin}
+                onBlur={(e) => setMinRange(+e.target.value)}
               />
             </div>
           </div>
         </div>
       </div>
       <VolitilitySelectorGroup
-        lastPrice={lastPrice}
         updateInputAndRangeMinMax={updateInputAndRangeMinMax}
         addLiquidityConfig={addLiquidityConfig}
       />
@@ -570,14 +518,14 @@ const AddConcLiqView: FunctionComponent<
           <DepositAmountGroup
             getFiatValue={getFiatValue}
             coin={pool?.poolAssets[0]?.amount}
-            onUpdate={setConliqBaseDepositAmountIn}
-            currentValue={conliqBaseDepositAmountIn}
+            onUpdate={setBaseDepositAmountIn}
+            currentValue={baseDepositAmountIn}
           />
           <DepositAmountGroup
             getFiatValue={getFiatValue}
             coin={pool?.poolAssets[1]?.amount}
-            onUpdate={setConliqQuoteDepositAmountIn}
-            currentValue={conliqQuoteDepositAmountIn}
+            onUpdate={setQuoteDepositAmountIn}
+            currentValue={quoteDepositAmountIn}
           />
         </div>
       </div>
@@ -589,7 +537,6 @@ const AddConcLiqView: FunctionComponent<
 const VolitilitySelectorGroup: FunctionComponent<
   {
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-    lastPrice: number;
     updateInputAndRangeMinMax: (min: number, max: number) => void;
   } & CustomClasses
 > = observer((props) => {
@@ -618,7 +565,6 @@ const VolitilitySelectorGroup: FunctionComponent<
         <PresetVolatilityCard
           type="custom"
           src="/images/small-vial.svg"
-          lastPrice={props.lastPrice}
           updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
           addLiquidityConfig={props.addLiquidityConfig}
           label="Custom"
@@ -626,7 +572,6 @@ const VolitilitySelectorGroup: FunctionComponent<
         <PresetVolatilityCard
           type="passive"
           src="/images/small-vial.svg"
-          lastPrice={props.lastPrice}
           updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
           addLiquidityConfig={props.addLiquidityConfig}
           label="Passive"
@@ -634,7 +579,6 @@ const VolitilitySelectorGroup: FunctionComponent<
         <PresetVolatilityCard
           type="moderate"
           src="/images/medium-vial.svg"
-          lastPrice={props.lastPrice}
           updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
           addLiquidityConfig={props.addLiquidityConfig}
           label="Moderate"
@@ -642,7 +586,6 @@ const VolitilitySelectorGroup: FunctionComponent<
         <PresetVolatilityCard
           type="aggressive"
           src="/images/large-vial.svg"
-          lastPrice={props.lastPrice}
           updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
           addLiquidityConfig={props.addLiquidityConfig}
           label="Aggressive"
@@ -771,7 +714,6 @@ const PresetVolatilityCard: FunctionComponent<
     src: string;
     updateInputAndRangeMinMax: (min: number, max: number) => void;
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-    lastPrice: number;
     label: string;
     width?: number;
     height?: number;
@@ -783,43 +725,56 @@ const PresetVolatilityCard: FunctionComponent<
     src,
     width,
     height,
-    lastPrice,
     label,
     addLiquidityConfig,
     updateInputAndRangeMinMax,
   }) => {
-    const { conliqTickRange, conliqFullRange, setConliqFullRange, pool } =
+    const { tickRange, fullRange, setFullRange, pool, lastChartData } =
       addLiquidityConfig;
+    const lastPrice = lastChartData?.close || 0;
+
     const moderateTicks = [
       priceToTick(
-        new Dec(adjustPriceInRange(lastPrice * 0.75)),
+        roundPriceToNearestTick(
+          new Dec(lastPrice * 0.75),
+          pool.exponentAtPriceOne
+        ),
         pool.exponentAtPriceOne
       ),
       priceToTick(
-        new Dec(adjustPriceInRange(lastPrice * 1.25)),
+        roundPriceToNearestTick(
+          new Dec(lastPrice * 1.25),
+          pool.exponentAtPriceOne
+        ),
         pool.exponentAtPriceOne
       ),
     ];
     const aggressiveTicks = [
       priceToTick(
-        new Dec(adjustPriceInRange(lastPrice * 0.5)),
+        roundPriceToNearestTick(
+          new Dec(lastPrice * 0.5),
+          pool.exponentAtPriceOne
+        ),
         pool.exponentAtPriceOne
       ),
       priceToTick(
-        new Dec(adjustPriceInRange(lastPrice * 1.5)),
+        roundPriceToNearestTick(
+          new Dec(lastPrice * 1.5),
+          pool.exponentAtPriceOne
+        ),
         pool.exponentAtPriceOne
       ),
     ];
 
-    const isRangePassive = conliqFullRange;
+    const isRangePassive = fullRange;
     const isRangeAggressive =
       !isRangePassive &&
-      conliqTickRange[0].equals(aggressiveTicks[0]) &&
-      conliqTickRange[1].equals(aggressiveTicks[1]);
+      tickRange[0].equals(aggressiveTicks[0]) &&
+      tickRange[1].equals(aggressiveTicks[1]);
     const isRangeModerate =
       !isRangePassive &&
-      conliqTickRange[0].equals(moderateTicks[0]) &&
-      conliqTickRange[1].equals(moderateTicks[1]);
+      tickRange[0].equals(moderateTicks[0]) &&
+      tickRange[1].equals(moderateTicks[1]);
     const isRangeCustom =
       !isRangeAggressive && !isRangeModerate && !isRangePassive;
 
@@ -833,18 +788,18 @@ const PresetVolatilityCard: FunctionComponent<
     const onClick = useCallback(() => {
       switch (type) {
         case "passive":
-          setConliqFullRange(true);
+          setFullRange(true);
           return;
         case "moderate":
-          setConliqFullRange(false);
+          setFullRange(false);
           updateInputAndRangeMinMax(lastPrice * 0.75, lastPrice * 1.25);
           return;
         case "aggressive":
-          setConliqFullRange(false);
+          setFullRange(false);
           updateInputAndRangeMinMax(lastPrice * 0.5, lastPrice * 1.5);
           return;
       }
-    }, [type, setConliqFullRange, updateInputAndRangeMinMax, lastPrice]);
+    }, [type, setFullRange, updateInputAndRangeMinMax, lastPrice]);
 
     return (
       <div
@@ -895,48 +850,5 @@ function PriceInputBox(props: {
         onBlur={props.onBlur}
       />
     </div>
-  );
-}
-
-function getDepthFromRange(
-  data: ActiveLiquidityPerTickRange[],
-  min: number,
-  max: number,
-  exponentAtPriceOne: number
-) {
-  const depths: { price: number; depth: number }[] = [];
-  for (let price = min; price <= max; price += (max - min) / 20) {
-    const spotPrice = Math.min(
-      Math.max(Number(minSpotPrice.toString()), price),
-      Number(maxSpotPrice.toString())
-    );
-    depths.push({
-      price,
-      depth: getLiqFrom(
-        priceToTick(new Dec(spotPrice), exponentAtPriceOne),
-        data
-      ),
-    });
-  }
-
-  return depths;
-
-  function getLiqFrom(
-    target: Int,
-    list: ActiveLiquidityPerTickRange[]
-  ): number {
-    for (let i = 0; i < list.length; i++) {
-      if (list[i].lowerTick.lte(target) && list[i].upperTick.gte(target)) {
-        return Number(list[i].liquidityAmount.toString());
-      }
-    }
-    return 0;
-  }
-}
-
-function adjustPriceInRange(price: number): number {
-  return Math.min(
-    Math.max(Number(minSpotPrice.toString()), price),
-    Number(maxSpotPrice.toString())
   );
 }

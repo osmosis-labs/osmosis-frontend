@@ -7,10 +7,3 @@ export function normalize(
 ) {
   return a + ((val - min) * (b - a)) / (max - min);
 }
-
-export function getPriceAtTick(tick: number): number {
-  return 1.0001 ** tick;
-}
-export function findNearestTick(price: number): number {
-  return Math.round(Math.log(Math.max(price, 0.000000001)) / Math.log(1.0001));
-}

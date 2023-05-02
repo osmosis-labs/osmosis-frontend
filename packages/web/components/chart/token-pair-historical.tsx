@@ -17,19 +17,10 @@ import React, { FunctionComponent } from "react";
 import { theme } from "~/tailwind.config";
 
 const TokenPairHistoricalChart: FunctionComponent<{
-  min: number;
-  max: number;
-  zoom: number;
   data: { price: number; time: number }[];
   annotations: Dec[];
-}> = ({ min, max, zoom, data, annotations }) => {
-  const domain = calculateRangeFromHistoricalData({
-    data,
-    zoom,
-    min,
-    max,
-  });
-
+  domain: [number, number];
+}> = ({ data, annotations, domain }) => {
   // TODO: product-design-general tag Syed about adding custom mask is difficult
   return (
     <ParentSize className="flex-shrink-1 flex-1 overflow-hidden">

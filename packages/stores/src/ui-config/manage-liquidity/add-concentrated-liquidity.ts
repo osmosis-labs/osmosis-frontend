@@ -5,11 +5,21 @@ import {
   ObservableQueryBalances,
 } from "@keplr-wallet/stores";
 import { Dec, Int } from "@keplr-wallet/unit";
-import { minSpotPrice, priceToTick, tickToSqrtPrice } from "@osmosis-labs/math";
+import {
+  ActiveLiquidityPerTickRange,
+  maxSpotPrice,
+  // calcualteLiquidityForY,
+  minSpotPrice,
+  priceToTick,
+  roundPriceToNearestTick,
+} from "@osmosis-labs/math";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { action, makeObservable, observable } from "mobx";
 
-import { PriceRange } from "../../queries-external/token-pair-historical-chart/types";
+import {
+  PriceRange,
+  TokenPairHistoricalPrice,
+} from "../../queries-external/token-pair-historical-chart/types";
 
 /** Use to config user input UI for eventually sending a valid add concentrated liquidity msg.
  */
@@ -32,32 +42,45 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 	 Used to get current view type of AddConcLiquidity modal
 	 */
   @observable
-  protected _conliqModalView: "overview" | "add_manual" | "add_managed" =
-    "overview";
+  protected _modalView: "overview" | "add_manual" | "add_managed" = "overview";
 
   /*
    Used to get historical range for price chart
    */
   @observable
-  protected _conliqHistoricalRange: PriceRange = "7d";
+  protected _historicalRange: PriceRange = "7d";
+
+  /*
+    Used to get historical data for price chart
+  */
+  @observable
+  protected _historicalChartData: TokenPairHistoricalPrice[] = [];
+
+  /*
+    Used to get active liquidity data
+  */
+  @observable
+  protected _activeLiquidity: ActiveLiquidityPerTickRange[] = [];
 
   /*
    Used to get min and max range for adding concentrated liquidity
    */
   @observable
-  protected _conliqRange: [Dec, Dec] = [minSpotPrice, minSpotPrice];
+  protected _range: [Dec, Dec] = [minSpotPrice, minSpotPrice];
 
   @observable
-  protected _conliqFullRange: boolean = false;
+  protected _fullRange: boolean = false;
 
+  @observable
+  protected _zoom: number = 1;
   /*
    Used to get base and quote asset deposit for adding concentrated liquidity
    */
   @observable
-  protected _conliqBaseDepositAmountIn: Dec = new Dec(0);
+  protected _baseDepositAmountIn: Dec = new Dec(0);
 
   @observable
-  protected _conliqQuoteDepositAmountIn: Dec = new Dec(0);
+  protected _quoteDepositAmountIn: Dec = new Dec(0);
 
   constructor(
     chainGetter: ChainGetter,
@@ -102,82 +125,197 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   }
 
   @action
-  setConliqModalView = (
-    viewType: "overview" | "add_manual" | "add_managed"
-  ) => {
-    this._conliqModalView = viewType;
+  setModalView = (viewType: "overview" | "add_manual" | "add_managed") => {
+    this._modalView = viewType;
   };
 
-  get conliqModalView(): "overview" | "add_manual" | "add_managed" {
-    return this._conliqModalView;
+  get modalView(): "overview" | "add_manual" | "add_managed" {
+    return this._modalView;
   }
 
   @action
-  setConliqHistoricalRange = (range: PriceRange) => {
-    this._conliqHistoricalRange = range;
+  setHistoricalRange = (range: PriceRange) => {
+    this._historicalRange = range;
   };
 
-  get conliqHistoricalRange(): PriceRange {
-    return this._conliqHistoricalRange;
+  get historicalRange(): PriceRange {
+    return this._historicalRange;
   }
 
   @action
-  setConliqMinRange = (min: Dec | number) => {
-    const tick = priceToTick(
-      typeof min === "number" ? new Dec(min) : min,
-      this.pool.exponentAtPriceOne
-    );
-    const derivedPrice = tickToSqrtPrice(tick, this.pool.exponentAtPriceOne);
-    this._conliqRange = [derivedPrice.mul(derivedPrice), this._conliqRange[1]];
+  setMinRange = (min: Dec | number) => {
+    this._range = [
+      roundPriceToNearestTick(
+        typeof min === "number" ? new Dec(min) : min,
+        this.pool.exponentAtPriceOne
+      ),
+      this._range[1],
+    ];
   };
 
   @action
-  setConliqMaxRange = (max: Dec | number) => {
-    const tick = priceToTick(
-      typeof max === "number" ? new Dec(max) : max,
-      this.pool.exponentAtPriceOne
-    );
-    const derivedPrice = tickToSqrtPrice(tick, this.pool.exponentAtPriceOne);
-    this._conliqRange = [this._conliqRange[0], derivedPrice.mul(derivedPrice)];
+  setMaxRange = (max: Dec | number) => {
+    this._range = [
+      this._range[0],
+      roundPriceToNearestTick(
+        typeof max === "number" ? new Dec(max) : max,
+        this.pool.exponentAtPriceOne
+      ),
+    ];
   };
 
-  get conliqRange(): [Dec, Dec] {
-    return this._conliqRange;
+  get range(): [Dec, Dec] {
+    return this._range;
   }
 
-  get conliqTickRange(): [Int, Int] {
+  get tickRange(): [Int, Int] {
     return [
-      priceToTick(this._conliqRange[0], this.pool.exponentAtPriceOne),
-      priceToTick(this._conliqRange[1], this.pool.exponentAtPriceOne),
+      priceToTick(this._range[0], this.pool.exponentAtPriceOne),
+      priceToTick(this._range[1], this.pool.exponentAtPriceOne),
     ];
   }
 
   @action
-  setConliqFullRange = (isFullRange: boolean) => {
-    this._conliqFullRange = isFullRange;
+  setFullRange = (isFullRange: boolean) => {
+    this._fullRange = isFullRange;
   };
 
-  get conliqFullRange(): boolean {
-    return this._conliqFullRange;
+  get fullRange(): boolean {
+    return this._fullRange;
   }
 
   @action
-  setConliqBaseDepositAmountIn = (amount: Dec | number) => {
-    this._conliqBaseDepositAmountIn =
+  setBaseDepositAmountIn = (amount: Dec | number) => {
+    this._baseDepositAmountIn =
       typeof amount === "number" ? new Dec(amount) : amount;
   };
 
   @action
-  setConliqQuoteDepositAmountIn = (amount: Dec | number) => {
-    this._conliqQuoteDepositAmountIn =
+  setQuoteDepositAmountIn = (amount: Dec | number) => {
+    this._quoteDepositAmountIn =
       typeof amount === "number" ? new Dec(amount) : amount;
   };
 
-  get conliqBaseDepositAmountIn(): Dec {
-    return this._conliqBaseDepositAmountIn;
+  get baseDepositAmountIn(): Dec {
+    return this._baseDepositAmountIn;
   }
 
-  get conliqQuoteDepositAmountIn(): Dec {
-    return this._conliqQuoteDepositAmountIn;
+  get quoteDepositAmountIn(): Dec {
+    return this._quoteDepositAmountIn;
   }
+
+  get zoom(): number {
+    return this._zoom;
+  }
+
+  @action
+  setZoom = (zoom: number) => {
+    this._zoom = zoom;
+  };
+
+  @action
+  zoomIn = () => {
+    this._zoom = Math.max(1, this._zoom - 0.2);
+  };
+
+  @action
+  zoomOut = () => {
+    this._zoom = this._zoom + 0.2;
+  };
+
+  get historicalChartData(): TokenPairHistoricalPrice[] {
+    return this._historicalChartData;
+  }
+
+  get lastChartData(): TokenPairHistoricalPrice | null {
+    return (
+      this._historicalChartData[this._historicalChartData.length - 1] || null
+    );
+  }
+
+  @action
+  setHistoricalChartData = (historicalData: TokenPairHistoricalPrice[]) => {
+    this._historicalChartData = historicalData;
+  };
+
+  @action
+  setActiveLiquidity = (activeliquidity: ActiveLiquidityPerTickRange[]) => {
+    this._activeLiquidity = activeliquidity;
+  };
+
+  get activeLiquidity(): ActiveLiquidityPerTickRange[] {
+    return this._activeLiquidity;
+  }
+
+  get yRange(): [number, number] {
+    const data = this.historicalChartData.map(({ time, close }) => ({
+      time,
+      price: close,
+    }));
+    const zoom = this.zoom;
+    const min = Number(this.range[0].toString());
+    const max = Number(this.range[1].toString());
+    const padding = 0.2;
+    const prices = data.map((d) => d.price);
+
+    const chartMin = Math.max(0, Math.min(...prices));
+    const chartMax = Math.max(...prices);
+    const delta = Math.abs(chartMax - chartMin);
+
+    const minWithPadding = Math.max(
+      0,
+      Math.min(chartMin - delta * padding, min - delta * padding)
+    );
+    const maxWithPadding = Math.max(
+      chartMax + delta * padding,
+      max + delta * padding
+    );
+
+    const zoomAdjustedMin = zoom > 1 ? chartMin / zoom : chartMin * zoom;
+    const zoomAdjustedMax = chartMax * zoom;
+
+    let finalMin = minWithPadding;
+    let finalMax = maxWithPadding;
+
+    if (zoomAdjustedMin < minWithPadding) finalMin = zoomAdjustedMin;
+    if (zoomAdjustedMax > maxWithPadding) finalMax = zoomAdjustedMax;
+
+    return [finalMin, finalMax];
+  }
+
+  get depthChartData(): { price: number; depth: number }[] {
+    const data = this.activeLiquidity;
+    const [min, max] = this.yRange;
+    const exponentAtPriceOne = this.pool.exponentAtPriceOne;
+
+    const depths: { price: number; depth: number }[] = [];
+    for (let price = min; price <= max; price += (max - min) / 20) {
+      const spotPrice = Math.min(
+        Math.max(Number(minSpotPrice.toString()), price),
+        Number(maxSpotPrice.toString())
+      );
+      depths.push({
+        price,
+        depth: getLiqFrom(
+          priceToTick(new Dec(spotPrice), exponentAtPriceOne),
+          data
+        ),
+      });
+    }
+
+    return depths;
+  }
+
+  get xRange(): [number, number] {
+    return [0, Math.max(...this.depthChartData.map((d) => d.depth)) * 1.2];
+  }
+}
+
+function getLiqFrom(target: Int, list: ActiveLiquidityPerTickRange[]): number {
+  for (let i = 0; i < list.length; i++) {
+    if (list[i].lowerTick.lte(target) && list[i].upperTick.gte(target)) {
+      return Number(list[i].liquidityAmount.toString());
+    }
+  }
+  return 0;
 }
