@@ -11,8 +11,8 @@ import {
 } from "./env";
 import { createKeplrChainInfos, SimplifiedChainInfo } from "./utils";
 
-const chainInfos = ( IS_TESTNET
-  ? [
+const chainInfos = IS_TESTNET
+  ? ([
       {
         rpc:
           OSMOSIS_RPC_OVERWRITE ??
@@ -265,8 +265,8 @@ const chainInfos = ( IS_TESTNET
         features: ["ibc-transfer", "ibc-go"],
         explorerUrlToTx: "https://testnet.mintscan.io/kyve-testnet/txs/{txHash}",
       },
-    ]
-  : [
+    ])
+  : ([
     {
       rpc:
         OSMOSIS_RPC_OVERWRITE ??
