@@ -613,7 +613,6 @@ export class OsmosisAccountImpl {
       "swapExactAmountIn",
       async () => {
         // refresh data and get pools
-        await queries.queryIncentivizedPools.waitFreshResponse();
         const pools: Pool[] = [];
         for (const route of routes) {
           const queryPool = queries.queryGammPools.getPool(route.poolId);
@@ -624,14 +623,7 @@ export class OsmosisAccountImpl {
             );
           }
 
-          await queryPool.waitFreshResponse();
-
-          const pool = queryPool.pool;
-          if (!pool) {
-            throw new Error("Unknown pool");
-          }
-
-          pools.push(pool);
+          pools.push(queryPool.pool);
         }
 
         // make message with estimated min out amounts
@@ -794,11 +786,7 @@ export class OsmosisAccountImpl {
         if (!queryPool) {
           throw new Error(`Pool #${poolId} not found`);
         }
-        await queryPool.waitFreshResponse();
         const pool = queryPool.pool;
-        if (!pool) {
-          throw new Error("Unknown pool");
-        }
 
         // reconcile weighted and stable pool asset data
         const inPoolAsset = queryPool.getPoolAsset(
@@ -926,8 +914,6 @@ export class OsmosisAccountImpl {
         if (!queryPool) {
           throw new Error(`Pool #${poolId} not found`);
         }
-
-        await queryPool.waitFreshResponse();
 
         const pool = queryPool.pool;
         if (!pool) {

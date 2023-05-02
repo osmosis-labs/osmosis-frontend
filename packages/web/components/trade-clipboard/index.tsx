@@ -1,6 +1,7 @@
 import { WalletStatus } from "@keplr-wallet/stores";
 import { AppCurrency, Currency } from "@keplr-wallet/types";
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
+import { calcPriceImpactWithAmount } from "@osmosis-labs/math";
 import { Pool } from "@osmosis-labs/pools";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -192,19 +193,61 @@ export const TradeClipboard: FunctionComponent<{
 
     // trade metrics
     const minOutAmountLessSlippage = useMemo(() => {
-      const coinLessSlippage = tradeTokenInConfig.expectedSwapResult.amount.mul(
-        new Dec(1).sub(slippageConfig.slippage.toDec())
+      let amountLessSlippage;
+      try {
+        const beforeSpotPrice =
+          tradeTokenInConfig.expectedSwapResult.beforeSpotPriceInOverOut.toDec();
+        const inAmount =
+          tradeTokenInConfig.amount === ""
+            ? new Int(1)
+            : new Int(
+                new Dec(tradeTokenInConfig.amount)
+                  .mul(
+                    DecUtils.getTenExponentN(
+                      tradeTokenInConfig.sendCurrency.coinDecimals
+                    )
+                  )
+                  .truncate()
+                  .toString()
+              );
+        amountLessSlippage = calcPriceImpactWithAmount(
+          beforeSpotPrice.gt(new Dec(0)) ? beforeSpotPrice : new Dec(1),
+          inAmount,
+          slippageConfig.slippage.toDec()
+        );
+      } catch {
+        // address any /0 errors
+        amountLessSlippage = new Dec(0);
+      }
+
+      const coinLessSlippage = new CoinPretty(
+        tradeTokenInConfig.outCurrency,
+        amountLessSlippage
       );
       return coinLessSlippage.maxDecimals(
-        coinLessSlippage.toDec().gt(new Dec(1)) ? 8 : 12
+        Math.min(
+          coinLessSlippage.toDec().gt(new Dec(1)) ? 8 : 12,
+          coinLessSlippage.currency.coinDecimals
+        )
       );
-    }, [tradeTokenInConfig.expectedSwapResult.amount, slippageConfig.slippage]);
+    }, [
+      tradeTokenInConfig.outCurrency,
+      tradeTokenInConfig.sendCurrency.coinDecimals,
+      tradeTokenInConfig.expectedSwapResult.beforeSpotPriceInOverOut,
+      tradeTokenInConfig.amount,
+      slippageConfig.slippage,
+    ]);
     const spotPrice = useMemo(
       () =>
         tradeTokenInConfig.beforeSpotPriceWithoutSwapFeeOutOverIn
           .trim(true)
-          .maxDecimals(8),
-      [tradeTokenInConfig.beforeSpotPriceWithoutSwapFeeOutOverIn]
+          .maxDecimals(
+            Math.min(tradeTokenInConfig.outCurrency.coinDecimals, 8)
+          ),
+      [
+        tradeTokenInConfig.beforeSpotPriceWithoutSwapFeeOutOverIn,
+        tradeTokenInConfig.outCurrency.coinDecimals,
+      ]
     );
 
     const [isHoveringSwitchButton, setHoveringSwitchButton] = useState(false);
@@ -982,11 +1025,7 @@ export const TradeClipboard: FunctionComponent<{
                   tradeTokenInConfig.sendCurrency.coinDenom !== "UNKNOWN"
                     ? tradeTokenInConfig.sendCurrency.coinDenom
                     : ""
-                } ≈ ${
-                  spotPrice.toDec().lt(new Dec(1))
-                    ? spotPrice.maxDecimals(12).toString()
-                    : spotPrice.maxDecimals(6).toString()
-                } ${
+                } ≈ ${spotPrice} ${
                   tradeTokenInConfig.outCurrency.coinDenom !== "UNKNOWN"
                     ? tradeTokenInConfig.outCurrency.coinDenom
                     : ""
@@ -1060,9 +1099,16 @@ export const TradeClipboard: FunctionComponent<{
                       tradeTokenInConfig.expectedSwapResult.amount
                         .toDec()
                         .gt(new Dec(1))
-                        ? 12
-                        : 8
+                        ? Math.min(
+                            tradeTokenInConfig.outCurrency.coinDecimals,
+                            12
+                          )
+                        : Math.min(
+                            tradeTokenInConfig.outCurrency.coinDecimals,
+                            8
+                          )
                     )
+                    .trim(true)
                     .toString()} `}
                 </div>
               </div>
