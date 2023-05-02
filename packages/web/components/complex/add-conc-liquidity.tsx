@@ -691,7 +691,7 @@ const DepositAmountGroup: FunctionComponent<{
   currentValue: Dec;
 }> = observer(({ coin, onUpdate, currentValue }) => {
   const { priceStore, assetsStore } = useStore();
-  const [value, setValue] = useState(0);
+  // const [value, setValue] = useState(0);
 
   const { nativeBalances, ibcBalances } = assetsStore;
 
@@ -706,7 +706,7 @@ const DepositAmountGroup: FunctionComponent<{
   const updateValue = useCallback(
     (val: string) => {
       const newVal = Number(val);
-      setValue(newVal);
+      // setValue(newVal);
       onUpdate(newVal);
     },
     [onUpdate]
