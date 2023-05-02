@@ -1,13 +1,14 @@
 import { HasMapStore, IQueriesStore } from "@keplr-wallet/stores";
+import { FiatCurrency } from "@keplr-wallet/types";
 import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import {
   ChainStore,
   IPriceStore,
   ObservablePoolDetails,
   ObservablePoolsBonding,
+  ObservablePoolsMetrics,
   ObservableQueryActiveGauges,
   ObservableQueryPool,
-  ObservableQueryPoolFeesMetrics,
   OsmosisQueries,
 } from "@osmosis-labs/stores";
 import { action, makeObservable, observable } from "mobx";
@@ -19,18 +20,22 @@ export class ObservablePoolWithMetric {
   @observable
   pool: ObservableQueryPool;
 
+  protected readonly _fiatCurrency: FiatCurrency;
+
   constructor(
     pool: ObservableQueryPool,
     protected readonly poolDetails: ObservablePoolDetails,
     protected readonly poolsBonding: ObservablePoolsBonding,
     protected readonly chainStore: ChainStore,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolsMetrics: ObservablePoolsMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly priceStore: IPriceStore
   ) {
     this.pool = pool;
+    this._fiatCurrency = this.priceStore.getFiatCurrency("usd")!;
+
     makeObservable(this);
   }
 
@@ -72,27 +77,22 @@ export class ObservablePoolWithMetric {
   }
 
   get apr() {
-    return (
-      this.poolsBonding
-        .get(this.pool.id)
-        ?.highestBondDuration?.aggregateApr.maxDecimals(0) ??
-      this.poolDetail.swapFeeApr.maxDecimals(0)
-    );
+    return new RatePretty(this.poolMetrics?.maxApr ?? 0);
   }
 
-  get feePoolMetrics() {
-    return this.externalQueries.queryGammPoolFeeMetrics.getPoolFeesMetrics(
-      this.pool.id,
-      this.priceStore
-    );
+  protected get poolMetrics() {
+    return this.externalQueries.queryPoolsMetrics.get(this.pool.id).metrics;
   }
 
   get volume24h() {
-    return this.feePoolMetrics.volume24h;
+    return new PricePretty(
+      this._fiatCurrency,
+      this.poolMetrics?.volume24hUsd ?? 0
+    );
   }
 
   get feesSpent7d() {
-    return this.feePoolMetrics.feesSpent7d;
+    return new PricePretty(this._fiatCurrency, this.poolMetrics?.fees7d ?? 0);
   }
 }
 
@@ -109,7 +109,7 @@ export class ObservablePoolsWithMetric {
     protected readonly poolsBonding: ObservablePoolsBonding,
     protected readonly chainStore: ChainStore,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolsMetrics: ObservablePoolsMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly priceStore: IPriceStore
@@ -201,7 +201,7 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
     protected readonly poolsBonding: ObservablePoolsBonding,
     protected readonly chainStore: ChainStore,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolsMetrics: ObservablePoolsMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly priceStore: IPriceStore

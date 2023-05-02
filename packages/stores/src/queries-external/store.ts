@@ -13,6 +13,7 @@ import { ObservableQueryActiveGauges } from "./active-gauges";
 import { ObservableQueryIbcChainsStatus } from "./ibc";
 import { ObservableQueryICNSNames } from "./icns";
 import { ObservableQueryPoolFeesMetrics } from "./pool-fees";
+import { ObservablePoolsMetrics } from "./pool-metrics";
 import { ObservableQueryAccountsPoolRewards } from "./pool-rewards";
 import { ObservableQueryTokensData } from "./token-data";
 import { ObservableQueryTokensHistoricalChart } from "./token-historical-chart";
@@ -25,6 +26,7 @@ export class QueriesExternalStore {
   public readonly queryTokenHistoricalChart: DeepReadonly<ObservableQueryTokensHistoricalChart>;
   public readonly queryTokenData: DeepReadonly<ObservableQueryTokensData>;
   public readonly queryActiveGauges: DeepReadonly<ObservableQueryActiveGauges>;
+  public readonly queryPoolsMetrics: DeepReadonly<ObservablePoolsMetrics>;
   public readonly queryICNSNames: DeepReadonly<ObservableQueryICNSNames>;
 
   constructor(
@@ -67,6 +69,7 @@ export class QueriesExternalStore {
       observableQueryGuage,
       incentivizedPools
     );
+    this.queryPoolsMetrics = new ObservablePoolsMetrics(kvStore, webApiBaseUrl);
     this.queryICNSNames = new ObservableQueryICNSNames(
       kvStore,
       chainId,

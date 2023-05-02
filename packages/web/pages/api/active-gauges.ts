@@ -12,12 +12,18 @@ type ExternalIncentiveGaugesResponse = {
  *  See rationale here: https://github.com/osmosis-labs/osmosis-frontend/issues/1182
  */
 export default async function activeGauges(
-  _req: NextApiRequest,
+  req: NextApiRequest,
   res: NextApiResponse<ExternalIncentiveGaugesResponse>
 ) {
   const endpoint = `${ChainInfos[0].rest}osmosis/incentives/v1beta1/gauges?pagination.limit=100000`;
   const resp = await fetch(endpoint);
   const { data } = (await resp.json()) as ExternalIncentiveGaugesResponse;
+
+  if (!req.method || req.method !== "GET") {
+    res.setHeader("Allow", ["GET"]);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
+    return;
+  }
 
   res.setHeader("Cache-Control", "s-maxage=900, stale-while-revalidate"); // 15 minute cache
   res.status(200).json({

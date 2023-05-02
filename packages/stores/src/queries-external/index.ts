@@ -2,6 +2,7 @@ export * from "./active-gauges";
 export * from "./filtered-pools";
 export * from "./ibc";
 export * from "./pool-fees";
+export * from "./pool-metrics";
 export * from "./pool-rewards";
 export * from "./store";
 
