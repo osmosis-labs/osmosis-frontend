@@ -14,7 +14,7 @@ import { FiatRampsModal } from "./fiat-ramps";
 const Options = (
   t: ReturnType<typeof useTranslation>
 ): Array<
-  typeof FiatRampDisplayInfos[keyof typeof FiatRampDisplayInfos] & {
+  (typeof FiatRampDisplayInfos)[keyof typeof FiatRampDisplayInfos] & {
     initialAsset: "OSMO" | "USDC";
     subtitle: string;
   }

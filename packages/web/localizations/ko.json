@@ -385,5 +385,6 @@
   "transactionSuccessful": "전송 성공",
   "unknownError": "알 수 없는 에러",
   "viewExplorer": "블록 익스플로러 보기",
-  "waitingForTransaction": "트랜잭션이 블록에 담기는 중입니다"
+  "waitingForTransaction": "트랜잭션이 블록에 담기는 중입니다",
+  "highInflationWarning": "높은 APR은 인플레이션 보상에서 비롯될 수 있습니다. 주의해서 진행하십시오."
 }

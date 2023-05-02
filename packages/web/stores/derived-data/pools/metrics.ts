@@ -1,17 +1,19 @@
 import { HasMapStore, IQueriesStore } from "@keplr-wallet/stores";
 import { PricePretty, RatePretty } from "@keplr-wallet/unit";
+import {
+  ChainStore,
+  IPriceStore,
+  ObservablePoolDetails,
+  ObservablePoolsBonding,
+  ObservableQueryActiveGauges,
+  ObservableQueryPool,
+  ObservableQueryPoolFeesMetrics,
+  OsmosisQueries,
+} from "@osmosis-labs/stores";
 import { action, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 
-import { ChainStore } from "../../chain";
-import { IPriceStore } from "../../price";
-import { ObservableQueryPool, OsmosisQueries } from "../../queries";
-import {
-  ObservableQueryActiveGauges,
-  ObservableQueryPoolFeesMetrics,
-} from "../../queries-external";
-import { ObservablePoolsBonding } from "../pool/bonding";
-import { ObservablePoolDetails } from "../pool/details";
+import { ObservableVerifiedPoolsStoreMap } from "./verified";
 
 export class ObservablePoolWithMetric {
   @observable
@@ -96,10 +98,12 @@ export class ObservablePoolWithMetric {
 
 /** Fetches all pools directly from node in order of pool creation. */
 export class ObservablePoolsWithMetric {
-  protected _pools = new Map<string, ObservablePoolWithMetric>();
+  protected _verifiedPools = new Map<string, ObservablePoolWithMetric>();
+  protected _allPools = new Map<string, ObservablePoolWithMetric>();
 
   constructor(
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
+    protected readonly verifiedPoolsStore: ObservableVerifiedPoolsStoreMap,
     readonly chainId: string,
     protected readonly poolDetails: ObservablePoolDetails,
     protected readonly poolsBonding: ObservablePoolsBonding,
@@ -114,19 +118,22 @@ export class ObservablePoolsWithMetric {
   getAllPools = computedFn(
     (
       sortingColumn?: keyof ObservablePoolWithMetric,
-      isSortingDesc?: boolean
+      isSortingDesc?: boolean,
+      showUnverified?: boolean
     ) => {
-      const allPools = this.queriesStore
+      const allPools = this.verifiedPoolsStore
         .get(this.chainId)
-        .osmosis?.queryGammPools.getAllPools();
+        .getAllPools(showUnverified);
+
+      const poolsMap = showUnverified ? this._allPools : this._verifiedPools;
 
       for (const pool of allPools ?? []) {
-        const existingPool = this._pools.get(pool.id);
+        const existingPool = poolsMap.get(pool.id);
 
         if (existingPool) {
           existingPool.setPool(pool);
         } else {
-          this._pools.set(
+          poolsMap.set(
             pool.id,
             new ObservablePoolWithMetric(
               pool,
@@ -140,14 +147,14 @@ export class ObservablePoolsWithMetric {
         }
       }
 
-      const pools = Array.from(this._pools.values());
+      const pools = Array.from(poolsMap.values());
       if (sortingColumn && isSortingDesc !== undefined) {
         // Clone the array to prevent the original array from being sorted, and triggering a re-render.
         const sortedPools = [...pools];
         return sortedPools.sort((a, b) => {
-          let valueToCompareA: typeof a[keyof typeof a] | number =
+          let valueToCompareA: (typeof a)[keyof typeof a] | number =
             a[sortingColumn];
-          let valueToCompareB: typeof b[keyof typeof b] | number =
+          let valueToCompareB: (typeof b)[keyof typeof b] | number =
             b[sortingColumn];
 
           // If user is sorting by pool, then sort by pool id
@@ -189,6 +196,7 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
   constructor(
     protected readonly osmosisChainId: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
+    protected readonly verifiedPoolsStore: ObservableVerifiedPoolsStoreMap,
     protected readonly poolDetails: ObservablePoolDetails,
     protected readonly poolsBonding: ObservablePoolsBonding,
     protected readonly chainStore: ChainStore,
@@ -202,6 +210,7 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
       (chainId: string) =>
         new ObservablePoolsWithMetric(
           queriesStore,
+          verifiedPoolsStore,
           chainId,
           poolDetails,
           poolsBonding,

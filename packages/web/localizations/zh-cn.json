@@ -385,5 +385,6 @@
   "transactionSuccessful": "交易成功",
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",
-  "waitingForTransaction": "等待交易打包进区块"
+  "waitingForTransaction": "等待交易打包进区块",
+  "highInflationWarning": "高APR可能源自通胀性奖励。请谨慎操作。"
 }

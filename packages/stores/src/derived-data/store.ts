@@ -17,12 +17,10 @@ import {
   ObservablePoolsBonding,
   ObservableSuperfluidPoolDetails,
 } from "./pool";
-import { ObservablePoolsWithMetrics } from "./pools";
 
-/** Contains stores that compute on the lower level . */
+/** Contains stores that compute on the lower level stores. */
 export class DerivedDataStore {
   public readonly poolDetails: DeepReadonly<ObservablePoolDetails>;
-  public readonly poolsWithMetrics: DeepReadonly<ObservablePoolsWithMetrics>;
   public readonly superfluidPoolDetails: DeepReadonly<ObservableSuperfluidPoolDetails>;
   public readonly poolsBonding: DeepReadonly<ObservablePoolsBonding>;
 
@@ -62,15 +60,6 @@ export class DerivedDataStore {
       this.externalQueries,
       this.accountStore,
       this.queriesStore
-    );
-    this.poolsWithMetrics = new ObservablePoolsWithMetrics(
-      this.osmosisChainId,
-      this.queriesStore,
-      this.poolDetails,
-      this.poolsBonding,
-      this.chainGetter,
-      this.externalQueries,
-      this.priceStore
     );
   }
 

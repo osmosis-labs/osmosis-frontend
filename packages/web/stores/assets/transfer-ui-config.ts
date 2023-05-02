@@ -223,7 +223,7 @@ export class ObservableTransferUIConfig {
   @action
   protected launchIbcTransferModal(
     direction: TransferDir,
-    balance: typeof this.assetsStore.ibcBalances[0]
+    balance: (typeof this.assetsStore.ibcBalances)[0]
   ) {
     const currency = balance.balance.currency;
     // IBC multihop currency

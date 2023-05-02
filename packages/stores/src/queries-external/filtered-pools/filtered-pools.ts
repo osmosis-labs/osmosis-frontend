@@ -11,8 +11,8 @@ import { ObservableQueryLiquiditiesNetInDirection } from "src/queries/concentrat
 import {
   ObservableQueryNumPools,
   ObservableQueryPool,
+  ObservableQueryPoolGetter,
 } from "../../queries/pools";
-import { PoolGetter } from "../../queries/pools/types";
 import { IMPERATOR_HISTORICAL_DATA_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
 import { FilteredPools, Filters, objToQueryParams, Pagination } from "./types";
@@ -32,7 +32,7 @@ const ENDPOINT = "/stream/pool/v1/all";
  */
 export class ObservableQueryFilteredPools
   extends ObservableQueryExternalBase<FilteredPools>
-  implements PoolGetter
+  implements ObservableQueryPoolGetter
 {
   @observable
   protected _pools = new Map<string, ObservableQueryPool>();
