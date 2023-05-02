@@ -6,7 +6,7 @@ import {
   getEventFromTx,
   RootStore,
   waitAccountLoaded,
-} from "../../__tests__/test-env";
+} from "../../__tests_e2e__/test-env";
 import { estimateJoinSwap } from "@osmosis-labs/math";
 
 jest.setTimeout(100 * 1000);
@@ -78,10 +78,13 @@ describe("Join Pool Tx", () => {
     const maxSlippage = "0";
 
     const queryPool = queriesOsmosis.queryGammPools.getPool(poolId!)!;
+    const sharePool = queryPool.sharePool;
+    if (!sharePool) throw new Error("Not share pool");
+
     await queryPool.waitFreshResponse();
     const estimated = estimateJoinSwap(
-      queryPool.pool,
-      queryPool.pool.poolAssets,
+      sharePool,
+      sharePool.poolAssets,
       (coin) =>
         new CoinPretty(
           queryPool.poolAssets.find(
@@ -161,9 +164,12 @@ describe("Join Pool Tx", () => {
       .get(chainId)
       .osmosis!.queryGammPools.getPool(poolId!)!;
     await queryPool.waitFreshResponse();
+    const sharePool = queryPool.sharePool;
+    if (!sharePool) throw new Error("Not share pool");
+
     const estimated = estimateJoinSwap(
-      queryPool.pool,
-      queryPool.pool.poolAssets,
+      sharePool,
+      sharePool.poolAssets,
       (coin) =>
         new CoinPretty(
           // eslint-disable-next-line

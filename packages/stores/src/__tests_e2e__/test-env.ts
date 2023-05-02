@@ -1,26 +1,26 @@
-/* eslint-disable */
-import Axios from "axios";
-import { autorun } from "mobx";
-import { exec } from "child_process";
-import { Buffer } from "buffer";
 import { StdTx } from "@cosmjs/launchpad";
-import WebSocket from "ws";
+import { MemoryKVStore } from "@keplr-wallet/common";
+import { Bech32Address } from "@keplr-wallet/cosmos";
+import { MockKeplr } from "@keplr-wallet/provider-mock";
 import {
   AccountSetBase,
   AccountStore,
-  QueriesStore,
-  CosmosQueries,
-  CosmwasmQueries,
-  CosmosAccount,
-  CosmwasmAccount,
   ChainStore,
+  CosmosAccount,
+  CosmosQueries,
+  CosmwasmAccount,
+  CosmwasmQueries,
+  QueriesStore,
   WalletStatus,
 } from "@keplr-wallet/stores";
 import { ChainInfo } from "@keplr-wallet/types";
-import { MemoryKVStore } from "@keplr-wallet/common";
-import { MockKeplr } from "@keplr-wallet/provider-mock";
-import { Bech32Address } from "@keplr-wallet/cosmos";
-import { OsmosisQueries, OsmosisAccount } from "..";
+import Axios from "axios";
+import { Buffer } from "buffer";
+import { exec } from "child_process";
+import { autorun } from "mobx";
+import WebSocket from "ws";
+
+import { OsmosisAccount, OsmosisQueries } from "..";
 
 export const chainId = "localosmosis";
 

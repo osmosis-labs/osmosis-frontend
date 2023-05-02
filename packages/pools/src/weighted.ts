@@ -1,7 +1,8 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 import { WeightedPoolMath } from "@osmosis-labs/math";
 
-import { Pool } from "./interface";
+import { SharePool } from "./interface";
+import { RoutablePool, SwapResult } from "./router";
 
 /** Raw query response representation of pool. */
 export interface WeightedPoolRaw {
@@ -83,9 +84,7 @@ export type SmoothWeightChangeParams = {
 };
 
 /** Implementation of Pool interface w/ related weighted/balancer calculations & metadata. */
-export class WeightedPool implements Pool {
-  constructor(public readonly raw: WeightedPoolRaw) {}
-
+export class WeightedPool implements SharePool, RoutablePool {
   get type(): "weighted" {
     return "weighted";
   }
@@ -144,6 +143,8 @@ export class WeightedPool implements Pool {
     }
   }
 
+  constructor(public readonly raw: WeightedPoolRaw) {}
+
   getPoolAsset(denom: string): { denom: string; amount: Int; weight: Int } {
     const poolAsset = this.poolAssets.find((asset) => asset.denom === denom);
     if (!poolAsset) {
@@ -156,8 +157,7 @@ export class WeightedPool implements Pool {
   }
 
   hasPoolAsset(denom: string): boolean {
-    const poolAsset = this.poolAssets.find((asset) => asset.denom === denom);
-    return poolAsset !== undefined;
+    return this.poolAssets.some((asset) => asset.denom === denom);
   }
 
   getSpotPriceInOverOut(tokenInDenom: string, tokenOutDenom: string): Dec {
@@ -204,20 +204,11 @@ export class WeightedPool implements Pool {
     );
   }
 
-  getTokenInByTokenOut(
+  async getTokenInByTokenOut(
     tokenOut: { denom: string; amount: Int },
     tokenInDenom: string,
     swapFee?: Dec
-  ): {
-    amount: Int;
-    beforeSpotPriceInOverOut: Dec;
-    beforeSpotPriceOutOverIn: Dec;
-    afterSpotPriceInOverOut: Dec;
-    afterSpotPriceOutOverIn: Dec;
-    effectivePriceInOverOut: Dec;
-    effectivePriceOutOverIn: Dec;
-    priceImpact: Dec;
-  } {
+  ): Promise<SwapResult> {
     const inPoolAsset = this.getPoolAsset(tokenInDenom);
     const outPoolAsset = this.getPoolAsset(tokenOut.denom);
 
@@ -251,7 +242,7 @@ export class WeightedPool implements Pool {
     }
 
     const effectivePrice = new Dec(tokenInAmount).quo(new Dec(tokenOut.amount));
-    const priceImpact = effectivePrice
+    const priceImpactTokenOut = effectivePrice
       .quo(beforeSpotPriceInOverOut)
       .sub(new Dec("1"));
 
@@ -265,24 +256,15 @@ export class WeightedPool implements Pool {
       afterSpotPriceOutOverIn: new Dec(1).quoTruncate(afterSpotPriceInOverOut),
       effectivePriceInOverOut: effectivePrice,
       effectivePriceOutOverIn: new Dec(1).quoTruncate(effectivePrice),
-      priceImpact,
+      priceImpactTokenOut,
     };
   }
 
-  getTokenOutByTokenIn(
+  async getTokenOutByTokenIn(
     tokenIn: { denom: string; amount: Int },
     tokenOutDenom: string,
     swapFee?: Dec
-  ): {
-    amount: Int;
-    beforeSpotPriceInOverOut: Dec;
-    beforeSpotPriceOutOverIn: Dec;
-    afterSpotPriceInOverOut: Dec;
-    afterSpotPriceOutOverIn: Dec;
-    effectivePriceInOverOut: Dec;
-    effectivePriceOutOverIn: Dec;
-    priceImpact: Dec;
-  } {
+  ): Promise<SwapResult> {
     const inPoolAsset = this.getPoolAsset(tokenIn.denom);
     const outPoolAsset = this.getPoolAsset(tokenOutDenom);
 
@@ -312,7 +294,7 @@ export class WeightedPool implements Pool {
         afterSpotPriceOutOverIn: new Dec(0),
         effectivePriceInOverOut: new Dec(0),
         effectivePriceOutOverIn: new Dec(0),
-        priceImpact: new Dec(0),
+        priceImpactTokenOut: new Dec(0),
       };
     }
 
@@ -329,7 +311,7 @@ export class WeightedPool implements Pool {
     }
 
     const effectivePrice = new Dec(tokenIn.amount).quo(new Dec(tokenOutAmount));
-    const priceImpact = effectivePrice
+    const priceImpactTokenOut = effectivePrice
       .quo(beforeSpotPriceInOverOut)
       .sub(new Dec("1"));
 
@@ -343,21 +325,11 @@ export class WeightedPool implements Pool {
       afterSpotPriceOutOverIn: new Dec(1).quoTruncate(afterSpotPriceInOverOut),
       effectivePriceInOverOut: effectivePrice,
       effectivePriceOutOverIn: new Dec(1).quoTruncate(effectivePrice),
-      priceImpact,
+      priceImpactTokenOut,
     };
   }
 
-  getNormalizedLiquidity(tokenInDenom: string, tokenOutDenom: string): Dec {
-    const tokenIn = this.getPoolAsset(tokenInDenom);
-    const tokenOut = this.getPoolAsset(tokenOutDenom);
-
-    return tokenOut.amount
-      .toDec()
-      .mul(tokenIn.weight.toDec())
-      .quo(tokenIn.weight.toDec().add(tokenOut.weight.toDec()));
-  }
-
-  getLimitAmountByTokenIn(denom: string): Int {
+  async getLimitAmountByTokenIn(denom: string): Promise<Int> {
     return this.getPoolAsset(denom)
       .amount.toDec()
       .mul(new Dec("0.3"))

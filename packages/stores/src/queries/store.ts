@@ -4,6 +4,7 @@ import { autorun } from "mobx";
 import { DeepReadonly } from "utility-types";
 
 import { ObservableQueryFilteredPools } from "../queries-external/filtered-pools/filtered-pools";
+import { ObservableQueryLiquiditiesNetInDirection } from "./concentrated-liquidity";
 import { ObservableQueryEpochs } from "./epochs";
 import { FallbackStore } from "./fallback-query-store";
 import { ObservableQueryGauges } from "./incentives";
@@ -77,6 +78,9 @@ export const OsmosisQueries = {
 
 /** Root queries store for all Osmosis queries. */
 export class OsmosisQueriesImpl {
+  // concentrated liquidity
+  public readonly queryLiquiditiesInNetDirection: DeepReadonly<ObservableQueryLiquiditiesNetInDirection>;
+
   protected _queryGammPools: DeepReadonly<PoolGetter>;
   public readonly queryGammNumPools: DeepReadonly<ObservableQueryNumPools>;
   public readonly queryGammPoolShare: DeepReadonly<ObservableQueryGammPoolShare>;
@@ -144,6 +148,13 @@ export class OsmosisQueriesImpl {
       chainGetter
     );
 
+    this.queryLiquiditiesInNetDirection =
+      new ObservableQueryLiquiditiesNetInDirection(
+        kvStore,
+        chainId,
+        chainGetter
+      );
+
     /** Contains a reference to the currently responsive pool store. */
     const poolsQueryFallbacks = new FallbackStore(
       isTestnet
@@ -152,7 +163,8 @@ export class OsmosisQueriesImpl {
               kvStore,
               chainId,
               chainGetter,
-              this.queryGammNumPools
+              this.queryLiquiditiesInNetDirection,
+              queries.queryBalances
             ),
           ]
         : [
@@ -160,13 +172,16 @@ export class OsmosisQueriesImpl {
               kvStore,
               chainId,
               chainGetter,
-              this.queryGammNumPools
+              this.queryGammNumPools,
+              this.queryLiquiditiesInNetDirection,
+              queries.queryBalances
             ),
             new ObservableQueryPools(
               kvStore,
               chainId,
               chainGetter,
-              this.queryGammNumPools
+              this.queryLiquiditiesInNetDirection,
+              queries.queryBalances
             ),
           ]
     );

@@ -2,7 +2,7 @@ import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter, CoinGeckoPriceStore } from "@keplr-wallet/stores";
 import { FiatCurrency } from "@keplr-wallet/types";
 import { Dec } from "@keplr-wallet/unit";
-import { computed, makeObservable, observable } from "mobx";
+import { observable } from "mobx";
 import { computedFn } from "mobx-utils";
 
 import { PoolGetter } from "../queries";
@@ -16,8 +16,9 @@ export class PoolFallbackPriceStore
   extends CoinGeckoPriceStore
   implements IPriceStore
 {
+  /** Coin ID => `IntermediateRoute` */
   @observable.shallow
-  protected _intermidiateRoutes: IntermediateRoute[] = [];
+  protected _intermediateRoutesMap: Map<string, IntermediateRoute>;
 
   constructor(
     protected readonly osmosisChainId: string,
@@ -28,26 +29,19 @@ export class PoolFallbackPriceStore
     },
     defaultVsCurrency: string,
     protected readonly queryPool: PoolGetter,
-    intermidiateRoutes: IntermediateRoute[]
+    intermediateRoutes: IntermediateRoute[]
   ) {
     super(kvStore, supportedVsCurrencies, defaultVsCurrency, {
       baseURL: "https://prices.osmosis.zone/api/v3",
     });
 
-    this._intermidiateRoutes = intermidiateRoutes;
-
-    makeObservable(this);
-  }
-
-  @computed
-  get intermediateRoutesMap(): Map<string, IntermediateRoute> {
     const result: Map<string, IntermediateRoute> = new Map();
 
-    for (const route of this._intermidiateRoutes) {
+    for (const route of intermediateRoutes) {
       result.set(route.alternativeCoinId, route);
     }
 
-    return result;
+    this._intermediateRoutesMap = result;
   }
 
   readonly getPrice = computedFn(
@@ -57,7 +51,7 @@ export class PoolFallbackPriceStore
       }
 
       try {
-        const routes = this.intermediateRoutesMap;
+        const routes = this._intermediateRoutesMap;
         const route = routes.get(coinId);
         if (route) {
           const pool = this.queryPool.getPool(route.poolId);

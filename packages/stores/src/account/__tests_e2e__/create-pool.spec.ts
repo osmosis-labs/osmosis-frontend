@@ -5,7 +5,7 @@ import {
   getEventFromTx,
   RootStore,
   waitAccountLoaded,
-} from "../../__tests__/test-env";
+} from "../../__tests_e2e__/test-env";
 
 jest.setTimeout(100000);
 

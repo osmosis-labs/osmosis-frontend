@@ -1,5 +1,6 @@
 import { Menu } from "@headlessui/react";
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import type { BasePool } from "@osmosis-labs/pools";
 import { ObservablePoolWithMetric } from "@osmosis-labs/stores";
 import {
   CellContext,
@@ -71,10 +72,11 @@ export type Pool = [
 
 function getPoolFilters(
   t: ReturnType<typeof useTranslation>
-): Record<"stable" | "weighted", string> {
+): Record<BasePool["type"], string> {
   return {
     stable: t("components.table.stable"),
     weighted: t("components.table.weighted"),
+    concentrated: t("components.table.concentrated"),
   };
 }
 

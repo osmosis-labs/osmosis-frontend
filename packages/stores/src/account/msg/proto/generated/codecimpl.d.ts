@@ -848,6 +848,12 @@ export namespace cosmos {
 
         /** Metadata symbol */
         symbol?: string | null;
+
+        /** Metadata uri */
+        uri?: string | null;
+
+        /** Metadata uriHash */
+        uriHash?: string | null;
       }
 
       /** Represents a Metadata. */
@@ -875,6 +881,12 @@ export namespace cosmos {
 
         /** Metadata symbol. */
         public symbol: string;
+
+        /** Metadata uri. */
+        public uri: string;
+
+        /** Metadata uriHash. */
+        public uriHash: string;
 
         /**
          * Creates a new Metadata instance using the specified properties.
@@ -941,6 +953,1144 @@ export namespace cosmos {
 
 /** Namespace osmosis. */
 export namespace osmosis {
+  /** Namespace poolmanager. */
+  namespace poolmanager {
+    /** Namespace v1beta1. */
+    namespace v1beta1 {
+      /** Represents a Msg */
+      class Msg extends $protobuf.rpc.Service {
+        /**
+         * Constructs a new Msg service.
+         * @param rpcImpl RPC implementation
+         * @param [requestDelimited=false] Whether requests are length-delimited
+         * @param [responseDelimited=false] Whether responses are length-delimited
+         */
+        constructor(
+          rpcImpl: $protobuf.RPCImpl,
+          requestDelimited?: boolean,
+          responseDelimited?: boolean
+        );
+
+        /**
+         * Creates new Msg service using the specified rpc implementation.
+         * @param rpcImpl RPC implementation
+         * @param [requestDelimited=false] Whether requests are length-delimited
+         * @param [responseDelimited=false] Whether responses are length-delimited
+         * @returns RPC service. Useful where requests and/or responses are streamed.
+         */
+        public static create(
+          rpcImpl: $protobuf.RPCImpl,
+          requestDelimited?: boolean,
+          responseDelimited?: boolean
+        ): Msg;
+
+        /**
+         * Calls SwapExactAmountIn.
+         * @param request MsgSwapExactAmountIn message or plain object
+         * @param callback Node-style callback called with the error, if any, and MsgSwapExactAmountInResponse
+         */
+        public swapExactAmountIn(
+          request: osmosis.poolmanager.v1beta1.IMsgSwapExactAmountIn,
+          callback: osmosis.poolmanager.v1beta1.Msg.SwapExactAmountInCallback
+        ): void;
+
+        /**
+         * Calls SwapExactAmountIn.
+         * @param request MsgSwapExactAmountIn message or plain object
+         * @returns Promise
+         */
+        public swapExactAmountIn(
+          request: osmosis.poolmanager.v1beta1.IMsgSwapExactAmountIn
+        ): Promise<osmosis.poolmanager.v1beta1.MsgSwapExactAmountInResponse>;
+
+        /**
+         * Calls SwapExactAmountOut.
+         * @param request MsgSwapExactAmountOut message or plain object
+         * @param callback Node-style callback called with the error, if any, and MsgSwapExactAmountOutResponse
+         */
+        public swapExactAmountOut(
+          request: osmosis.poolmanager.v1beta1.IMsgSwapExactAmountOut,
+          callback: osmosis.poolmanager.v1beta1.Msg.SwapExactAmountOutCallback
+        ): void;
+
+        /**
+         * Calls SwapExactAmountOut.
+         * @param request MsgSwapExactAmountOut message or plain object
+         * @returns Promise
+         */
+        public swapExactAmountOut(
+          request: osmosis.poolmanager.v1beta1.IMsgSwapExactAmountOut
+        ): Promise<osmosis.poolmanager.v1beta1.MsgSwapExactAmountOutResponse>;
+      }
+
+      namespace Msg {
+        /**
+         * Callback as used by {@link osmosis.poolmanager.v1beta1.Msg#swapExactAmountIn}.
+         * @param error Error, if any
+         * @param [response] MsgSwapExactAmountInResponse
+         */
+        type SwapExactAmountInCallback = (
+          error: Error | null,
+          response?: osmosis.poolmanager.v1beta1.MsgSwapExactAmountInResponse
+        ) => void;
+
+        /**
+         * Callback as used by {@link osmosis.poolmanager.v1beta1.Msg#swapExactAmountOut}.
+         * @param error Error, if any
+         * @param [response] MsgSwapExactAmountOutResponse
+         */
+        type SwapExactAmountOutCallback = (
+          error: Error | null,
+          response?: osmosis.poolmanager.v1beta1.MsgSwapExactAmountOutResponse
+        ) => void;
+      }
+
+      /** Properties of a MsgSwapExactAmountIn. */
+      interface IMsgSwapExactAmountIn {
+        /** MsgSwapExactAmountIn sender */
+        sender?: string | null;
+
+        /** MsgSwapExactAmountIn routes */
+        routes?: osmosis.poolmanager.v1beta1.ISwapAmountInRoute[] | null;
+
+        /** MsgSwapExactAmountIn tokenIn */
+        tokenIn?: cosmos.base.v1beta1.ICoin | null;
+
+        /** MsgSwapExactAmountIn tokenOutMinAmount */
+        tokenOutMinAmount?: string | null;
+      }
+
+      /** Represents a MsgSwapExactAmountIn. */
+      class MsgSwapExactAmountIn implements IMsgSwapExactAmountIn {
+        /**
+         * Constructs a new MsgSwapExactAmountIn.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.poolmanager.v1beta1.IMsgSwapExactAmountIn);
+
+        /** MsgSwapExactAmountIn sender. */
+        public sender: string;
+
+        /** MsgSwapExactAmountIn routes. */
+        public routes: osmosis.poolmanager.v1beta1.ISwapAmountInRoute[];
+
+        /** MsgSwapExactAmountIn tokenIn. */
+        public tokenIn?: cosmos.base.v1beta1.ICoin | null;
+
+        /** MsgSwapExactAmountIn tokenOutMinAmount. */
+        public tokenOutMinAmount: string;
+
+        /**
+         * Creates a new MsgSwapExactAmountIn instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgSwapExactAmountIn instance
+         */
+        public static create(
+          properties?: osmosis.poolmanager.v1beta1.IMsgSwapExactAmountIn
+        ): osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn;
+
+        /**
+         * Encodes the specified MsgSwapExactAmountIn message. Does not implicitly {@link osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn.verify|verify} messages.
+         * @param m MsgSwapExactAmountIn message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.poolmanager.v1beta1.IMsgSwapExactAmountIn,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgSwapExactAmountIn message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgSwapExactAmountIn
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn;
+
+        /**
+         * Creates a MsgSwapExactAmountIn message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgSwapExactAmountIn
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn;
+
+        /**
+         * Creates a plain object from a MsgSwapExactAmountIn message. Also converts values to other types if specified.
+         * @param m MsgSwapExactAmountIn
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgSwapExactAmountIn to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgSwapExactAmountInResponse. */
+      interface IMsgSwapExactAmountInResponse {
+        /** MsgSwapExactAmountInResponse tokenOutAmount */
+        tokenOutAmount?: string | null;
+      }
+
+      /** Represents a MsgSwapExactAmountInResponse. */
+      class MsgSwapExactAmountInResponse
+        implements IMsgSwapExactAmountInResponse
+      {
+        /**
+         * Constructs a new MsgSwapExactAmountInResponse.
+         * @param [p] Properties to set
+         */
+        constructor(
+          p?: osmosis.poolmanager.v1beta1.IMsgSwapExactAmountInResponse
+        );
+
+        /** MsgSwapExactAmountInResponse tokenOutAmount. */
+        public tokenOutAmount: string;
+
+        /**
+         * Creates a new MsgSwapExactAmountInResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgSwapExactAmountInResponse instance
+         */
+        public static create(
+          properties?: osmosis.poolmanager.v1beta1.IMsgSwapExactAmountInResponse
+        ): osmosis.poolmanager.v1beta1.MsgSwapExactAmountInResponse;
+
+        /**
+         * Encodes the specified MsgSwapExactAmountInResponse message. Does not implicitly {@link osmosis.poolmanager.v1beta1.MsgSwapExactAmountInResponse.verify|verify} messages.
+         * @param m MsgSwapExactAmountInResponse message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.poolmanager.v1beta1.IMsgSwapExactAmountInResponse,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgSwapExactAmountInResponse message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgSwapExactAmountInResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.poolmanager.v1beta1.MsgSwapExactAmountInResponse;
+
+        /**
+         * Creates a MsgSwapExactAmountInResponse message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgSwapExactAmountInResponse
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.poolmanager.v1beta1.MsgSwapExactAmountInResponse;
+
+        /**
+         * Creates a plain object from a MsgSwapExactAmountInResponse message. Also converts values to other types if specified.
+         * @param m MsgSwapExactAmountInResponse
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.poolmanager.v1beta1.MsgSwapExactAmountInResponse,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgSwapExactAmountInResponse to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgSplitRouteSwapExactAmountIn. */
+      interface IMsgSplitRouteSwapExactAmountIn {
+        /** MsgSplitRouteSwapExactAmountIn sender */
+        sender?: string | null;
+
+        /** MsgSplitRouteSwapExactAmountIn routes */
+        routes?: osmosis.poolmanager.v1beta1.ISwapAmountInSplitRoute[] | null;
+
+        /** MsgSplitRouteSwapExactAmountIn tokenInDenom */
+        tokenInDenom?: string | null;
+
+        /** MsgSplitRouteSwapExactAmountIn tokenOutMinAmount */
+        tokenOutMinAmount?: string | null;
+      }
+
+      /** Represents a MsgSplitRouteSwapExactAmountIn. */
+      class MsgSplitRouteSwapExactAmountIn
+        implements IMsgSplitRouteSwapExactAmountIn
+      {
+        /**
+         * Constructs a new MsgSplitRouteSwapExactAmountIn.
+         * @param [p] Properties to set
+         */
+        constructor(
+          p?: osmosis.poolmanager.v1beta1.IMsgSplitRouteSwapExactAmountIn
+        );
+
+        /** MsgSplitRouteSwapExactAmountIn sender. */
+        public sender: string;
+
+        /** MsgSplitRouteSwapExactAmountIn routes. */
+        public routes: osmosis.poolmanager.v1beta1.ISwapAmountInSplitRoute[];
+
+        /** MsgSplitRouteSwapExactAmountIn tokenInDenom. */
+        public tokenInDenom: string;
+
+        /** MsgSplitRouteSwapExactAmountIn tokenOutMinAmount. */
+        public tokenOutMinAmount: string;
+
+        /**
+         * Creates a new MsgSplitRouteSwapExactAmountIn instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgSplitRouteSwapExactAmountIn instance
+         */
+        public static create(
+          properties?: osmosis.poolmanager.v1beta1.IMsgSplitRouteSwapExactAmountIn
+        ): osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn;
+
+        /**
+         * Encodes the specified MsgSplitRouteSwapExactAmountIn message. Does not implicitly {@link osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn.verify|verify} messages.
+         * @param m MsgSplitRouteSwapExactAmountIn message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.poolmanager.v1beta1.IMsgSplitRouteSwapExactAmountIn,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgSplitRouteSwapExactAmountIn message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgSplitRouteSwapExactAmountIn
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn;
+
+        /**
+         * Creates a MsgSplitRouteSwapExactAmountIn message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgSplitRouteSwapExactAmountIn
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn;
+
+        /**
+         * Creates a plain object from a MsgSplitRouteSwapExactAmountIn message. Also converts values to other types if specified.
+         * @param m MsgSplitRouteSwapExactAmountIn
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgSplitRouteSwapExactAmountIn to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgSplitRouteSwapExactAmountInResponse. */
+      interface IMsgSplitRouteSwapExactAmountInResponse {
+        /** MsgSplitRouteSwapExactAmountInResponse tokenOutAmount */
+        tokenOutAmount?: string | null;
+      }
+
+      /** Represents a MsgSplitRouteSwapExactAmountInResponse. */
+      class MsgSplitRouteSwapExactAmountInResponse
+        implements IMsgSplitRouteSwapExactAmountInResponse
+      {
+        /**
+         * Constructs a new MsgSplitRouteSwapExactAmountInResponse.
+         * @param [p] Properties to set
+         */
+        constructor(
+          p?: osmosis.poolmanager.v1beta1.IMsgSplitRouteSwapExactAmountInResponse
+        );
+
+        /** MsgSplitRouteSwapExactAmountInResponse tokenOutAmount. */
+        public tokenOutAmount: string;
+
+        /**
+         * Creates a new MsgSplitRouteSwapExactAmountInResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgSplitRouteSwapExactAmountInResponse instance
+         */
+        public static create(
+          properties?: osmosis.poolmanager.v1beta1.IMsgSplitRouteSwapExactAmountInResponse
+        ): osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountInResponse;
+
+        /**
+         * Encodes the specified MsgSplitRouteSwapExactAmountInResponse message. Does not implicitly {@link osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountInResponse.verify|verify} messages.
+         * @param m MsgSplitRouteSwapExactAmountInResponse message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.poolmanager.v1beta1.IMsgSplitRouteSwapExactAmountInResponse,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgSplitRouteSwapExactAmountInResponse message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgSplitRouteSwapExactAmountInResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountInResponse;
+
+        /**
+         * Creates a MsgSplitRouteSwapExactAmountInResponse message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgSplitRouteSwapExactAmountInResponse
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountInResponse;
+
+        /**
+         * Creates a plain object from a MsgSplitRouteSwapExactAmountInResponse message. Also converts values to other types if specified.
+         * @param m MsgSplitRouteSwapExactAmountInResponse
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountInResponse,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgSplitRouteSwapExactAmountInResponse to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgSwapExactAmountOut. */
+      interface IMsgSwapExactAmountOut {
+        /** MsgSwapExactAmountOut sender */
+        sender?: string | null;
+
+        /** MsgSwapExactAmountOut routes */
+        routes?: osmosis.poolmanager.v1beta1.ISwapAmountOutRoute[] | null;
+
+        /** MsgSwapExactAmountOut tokenInMaxAmount */
+        tokenInMaxAmount?: string | null;
+
+        /** MsgSwapExactAmountOut tokenOut */
+        tokenOut?: cosmos.base.v1beta1.ICoin | null;
+      }
+
+      /** Represents a MsgSwapExactAmountOut. */
+      class MsgSwapExactAmountOut implements IMsgSwapExactAmountOut {
+        /**
+         * Constructs a new MsgSwapExactAmountOut.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.poolmanager.v1beta1.IMsgSwapExactAmountOut);
+
+        /** MsgSwapExactAmountOut sender. */
+        public sender: string;
+
+        /** MsgSwapExactAmountOut routes. */
+        public routes: osmosis.poolmanager.v1beta1.ISwapAmountOutRoute[];
+
+        /** MsgSwapExactAmountOut tokenInMaxAmount. */
+        public tokenInMaxAmount: string;
+
+        /** MsgSwapExactAmountOut tokenOut. */
+        public tokenOut?: cosmos.base.v1beta1.ICoin | null;
+
+        /**
+         * Creates a new MsgSwapExactAmountOut instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgSwapExactAmountOut instance
+         */
+        public static create(
+          properties?: osmosis.poolmanager.v1beta1.IMsgSwapExactAmountOut
+        ): osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut;
+
+        /**
+         * Encodes the specified MsgSwapExactAmountOut message. Does not implicitly {@link osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut.verify|verify} messages.
+         * @param m MsgSwapExactAmountOut message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.poolmanager.v1beta1.IMsgSwapExactAmountOut,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgSwapExactAmountOut message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgSwapExactAmountOut
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut;
+
+        /**
+         * Creates a MsgSwapExactAmountOut message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgSwapExactAmountOut
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut;
+
+        /**
+         * Creates a plain object from a MsgSwapExactAmountOut message. Also converts values to other types if specified.
+         * @param m MsgSwapExactAmountOut
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgSwapExactAmountOut to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgSwapExactAmountOutResponse. */
+      interface IMsgSwapExactAmountOutResponse {
+        /** MsgSwapExactAmountOutResponse tokenInAmount */
+        tokenInAmount?: string | null;
+      }
+
+      /** Represents a MsgSwapExactAmountOutResponse. */
+      class MsgSwapExactAmountOutResponse
+        implements IMsgSwapExactAmountOutResponse
+      {
+        /**
+         * Constructs a new MsgSwapExactAmountOutResponse.
+         * @param [p] Properties to set
+         */
+        constructor(
+          p?: osmosis.poolmanager.v1beta1.IMsgSwapExactAmountOutResponse
+        );
+
+        /** MsgSwapExactAmountOutResponse tokenInAmount. */
+        public tokenInAmount: string;
+
+        /**
+         * Creates a new MsgSwapExactAmountOutResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgSwapExactAmountOutResponse instance
+         */
+        public static create(
+          properties?: osmosis.poolmanager.v1beta1.IMsgSwapExactAmountOutResponse
+        ): osmosis.poolmanager.v1beta1.MsgSwapExactAmountOutResponse;
+
+        /**
+         * Encodes the specified MsgSwapExactAmountOutResponse message. Does not implicitly {@link osmosis.poolmanager.v1beta1.MsgSwapExactAmountOutResponse.verify|verify} messages.
+         * @param m MsgSwapExactAmountOutResponse message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.poolmanager.v1beta1.IMsgSwapExactAmountOutResponse,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgSwapExactAmountOutResponse message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgSwapExactAmountOutResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.poolmanager.v1beta1.MsgSwapExactAmountOutResponse;
+
+        /**
+         * Creates a MsgSwapExactAmountOutResponse message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgSwapExactAmountOutResponse
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.poolmanager.v1beta1.MsgSwapExactAmountOutResponse;
+
+        /**
+         * Creates a plain object from a MsgSwapExactAmountOutResponse message. Also converts values to other types if specified.
+         * @param m MsgSwapExactAmountOutResponse
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.poolmanager.v1beta1.MsgSwapExactAmountOutResponse,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgSwapExactAmountOutResponse to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgSplitRouteSwapExactAmountOut. */
+      interface IMsgSplitRouteSwapExactAmountOut {
+        /** MsgSplitRouteSwapExactAmountOut sender */
+        sender?: string | null;
+
+        /** MsgSplitRouteSwapExactAmountOut routes */
+        routes?: osmosis.poolmanager.v1beta1.ISwapAmountOutSplitRoute[] | null;
+
+        /** MsgSplitRouteSwapExactAmountOut tokenOutDenom */
+        tokenOutDenom?: string | null;
+
+        /** MsgSplitRouteSwapExactAmountOut tokenInMaxAmount */
+        tokenInMaxAmount?: string | null;
+      }
+
+      /** Represents a MsgSplitRouteSwapExactAmountOut. */
+      class MsgSplitRouteSwapExactAmountOut
+        implements IMsgSplitRouteSwapExactAmountOut
+      {
+        /**
+         * Constructs a new MsgSplitRouteSwapExactAmountOut.
+         * @param [p] Properties to set
+         */
+        constructor(
+          p?: osmosis.poolmanager.v1beta1.IMsgSplitRouteSwapExactAmountOut
+        );
+
+        /** MsgSplitRouteSwapExactAmountOut sender. */
+        public sender: string;
+
+        /** MsgSplitRouteSwapExactAmountOut routes. */
+        public routes: osmosis.poolmanager.v1beta1.ISwapAmountOutSplitRoute[];
+
+        /** MsgSplitRouteSwapExactAmountOut tokenOutDenom. */
+        public tokenOutDenom: string;
+
+        /** MsgSplitRouteSwapExactAmountOut tokenInMaxAmount. */
+        public tokenInMaxAmount: string;
+
+        /**
+         * Creates a new MsgSplitRouteSwapExactAmountOut instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgSplitRouteSwapExactAmountOut instance
+         */
+        public static create(
+          properties?: osmosis.poolmanager.v1beta1.IMsgSplitRouteSwapExactAmountOut
+        ): osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOut;
+
+        /**
+         * Encodes the specified MsgSplitRouteSwapExactAmountOut message. Does not implicitly {@link osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOut.verify|verify} messages.
+         * @param m MsgSplitRouteSwapExactAmountOut message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.poolmanager.v1beta1.IMsgSplitRouteSwapExactAmountOut,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgSplitRouteSwapExactAmountOut message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgSplitRouteSwapExactAmountOut
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOut;
+
+        /**
+         * Creates a MsgSplitRouteSwapExactAmountOut message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgSplitRouteSwapExactAmountOut
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOut;
+
+        /**
+         * Creates a plain object from a MsgSplitRouteSwapExactAmountOut message. Also converts values to other types if specified.
+         * @param m MsgSplitRouteSwapExactAmountOut
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOut,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgSplitRouteSwapExactAmountOut to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgSplitRouteSwapExactAmountOutResponse. */
+      interface IMsgSplitRouteSwapExactAmountOutResponse {
+        /** MsgSplitRouteSwapExactAmountOutResponse tokenInAmount */
+        tokenInAmount?: string | null;
+      }
+
+      /** Represents a MsgSplitRouteSwapExactAmountOutResponse. */
+      class MsgSplitRouteSwapExactAmountOutResponse
+        implements IMsgSplitRouteSwapExactAmountOutResponse
+      {
+        /**
+         * Constructs a new MsgSplitRouteSwapExactAmountOutResponse.
+         * @param [p] Properties to set
+         */
+        constructor(
+          p?: osmosis.poolmanager.v1beta1.IMsgSplitRouteSwapExactAmountOutResponse
+        );
+
+        /** MsgSplitRouteSwapExactAmountOutResponse tokenInAmount. */
+        public tokenInAmount: string;
+
+        /**
+         * Creates a new MsgSplitRouteSwapExactAmountOutResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgSplitRouteSwapExactAmountOutResponse instance
+         */
+        public static create(
+          properties?: osmosis.poolmanager.v1beta1.IMsgSplitRouteSwapExactAmountOutResponse
+        ): osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOutResponse;
+
+        /**
+         * Encodes the specified MsgSplitRouteSwapExactAmountOutResponse message. Does not implicitly {@link osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOutResponse.verify|verify} messages.
+         * @param m MsgSplitRouteSwapExactAmountOutResponse message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.poolmanager.v1beta1.IMsgSplitRouteSwapExactAmountOutResponse,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgSplitRouteSwapExactAmountOutResponse message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgSplitRouteSwapExactAmountOutResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOutResponse;
+
+        /**
+         * Creates a MsgSplitRouteSwapExactAmountOutResponse message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgSplitRouteSwapExactAmountOutResponse
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOutResponse;
+
+        /**
+         * Creates a plain object from a MsgSplitRouteSwapExactAmountOutResponse message. Also converts values to other types if specified.
+         * @param m MsgSplitRouteSwapExactAmountOutResponse
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOutResponse,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgSplitRouteSwapExactAmountOutResponse to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a SwapAmountInRoute. */
+      interface ISwapAmountInRoute {
+        /** SwapAmountInRoute poolId */
+        poolId?: Long | null;
+
+        /** SwapAmountInRoute tokenOutDenom */
+        tokenOutDenom?: string | null;
+      }
+
+      /** Represents a SwapAmountInRoute. */
+      class SwapAmountInRoute implements ISwapAmountInRoute {
+        /**
+         * Constructs a new SwapAmountInRoute.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.poolmanager.v1beta1.ISwapAmountInRoute);
+
+        /** SwapAmountInRoute poolId. */
+        public poolId: Long;
+
+        /** SwapAmountInRoute tokenOutDenom. */
+        public tokenOutDenom: string;
+
+        /**
+         * Creates a new SwapAmountInRoute instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns SwapAmountInRoute instance
+         */
+        public static create(
+          properties?: osmosis.poolmanager.v1beta1.ISwapAmountInRoute
+        ): osmosis.poolmanager.v1beta1.SwapAmountInRoute;
+
+        /**
+         * Encodes the specified SwapAmountInRoute message. Does not implicitly {@link osmosis.poolmanager.v1beta1.SwapAmountInRoute.verify|verify} messages.
+         * @param m SwapAmountInRoute message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.poolmanager.v1beta1.ISwapAmountInRoute,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a SwapAmountInRoute message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns SwapAmountInRoute
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.poolmanager.v1beta1.SwapAmountInRoute;
+
+        /**
+         * Creates a SwapAmountInRoute message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns SwapAmountInRoute
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.poolmanager.v1beta1.SwapAmountInRoute;
+
+        /**
+         * Creates a plain object from a SwapAmountInRoute message. Also converts values to other types if specified.
+         * @param m SwapAmountInRoute
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.poolmanager.v1beta1.SwapAmountInRoute,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this SwapAmountInRoute to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a SwapAmountOutRoute. */
+      interface ISwapAmountOutRoute {
+        /** SwapAmountOutRoute poolId */
+        poolId?: Long | null;
+
+        /** SwapAmountOutRoute tokenInDenom */
+        tokenInDenom?: string | null;
+      }
+
+      /** Represents a SwapAmountOutRoute. */
+      class SwapAmountOutRoute implements ISwapAmountOutRoute {
+        /**
+         * Constructs a new SwapAmountOutRoute.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.poolmanager.v1beta1.ISwapAmountOutRoute);
+
+        /** SwapAmountOutRoute poolId. */
+        public poolId: Long;
+
+        /** SwapAmountOutRoute tokenInDenom. */
+        public tokenInDenom: string;
+
+        /**
+         * Creates a new SwapAmountOutRoute instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns SwapAmountOutRoute instance
+         */
+        public static create(
+          properties?: osmosis.poolmanager.v1beta1.ISwapAmountOutRoute
+        ): osmosis.poolmanager.v1beta1.SwapAmountOutRoute;
+
+        /**
+         * Encodes the specified SwapAmountOutRoute message. Does not implicitly {@link osmosis.poolmanager.v1beta1.SwapAmountOutRoute.verify|verify} messages.
+         * @param m SwapAmountOutRoute message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.poolmanager.v1beta1.ISwapAmountOutRoute,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a SwapAmountOutRoute message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns SwapAmountOutRoute
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.poolmanager.v1beta1.SwapAmountOutRoute;
+
+        /**
+         * Creates a SwapAmountOutRoute message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns SwapAmountOutRoute
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.poolmanager.v1beta1.SwapAmountOutRoute;
+
+        /**
+         * Creates a plain object from a SwapAmountOutRoute message. Also converts values to other types if specified.
+         * @param m SwapAmountOutRoute
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.poolmanager.v1beta1.SwapAmountOutRoute,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this SwapAmountOutRoute to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a SwapAmountInSplitRoute. */
+      interface ISwapAmountInSplitRoute {
+        /** SwapAmountInSplitRoute pools */
+        pools?: osmosis.poolmanager.v1beta1.ISwapAmountInRoute[] | null;
+
+        /** SwapAmountInSplitRoute tokenInAmount */
+        tokenInAmount?: string | null;
+      }
+
+      /** Represents a SwapAmountInSplitRoute. */
+      class SwapAmountInSplitRoute implements ISwapAmountInSplitRoute {
+        /**
+         * Constructs a new SwapAmountInSplitRoute.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.poolmanager.v1beta1.ISwapAmountInSplitRoute);
+
+        /** SwapAmountInSplitRoute pools. */
+        public pools: osmosis.poolmanager.v1beta1.ISwapAmountInRoute[];
+
+        /** SwapAmountInSplitRoute tokenInAmount. */
+        public tokenInAmount: string;
+
+        /**
+         * Creates a new SwapAmountInSplitRoute instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns SwapAmountInSplitRoute instance
+         */
+        public static create(
+          properties?: osmosis.poolmanager.v1beta1.ISwapAmountInSplitRoute
+        ): osmosis.poolmanager.v1beta1.SwapAmountInSplitRoute;
+
+        /**
+         * Encodes the specified SwapAmountInSplitRoute message. Does not implicitly {@link osmosis.poolmanager.v1beta1.SwapAmountInSplitRoute.verify|verify} messages.
+         * @param m SwapAmountInSplitRoute message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.poolmanager.v1beta1.ISwapAmountInSplitRoute,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a SwapAmountInSplitRoute message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns SwapAmountInSplitRoute
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.poolmanager.v1beta1.SwapAmountInSplitRoute;
+
+        /**
+         * Creates a SwapAmountInSplitRoute message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns SwapAmountInSplitRoute
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.poolmanager.v1beta1.SwapAmountInSplitRoute;
+
+        /**
+         * Creates a plain object from a SwapAmountInSplitRoute message. Also converts values to other types if specified.
+         * @param m SwapAmountInSplitRoute
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.poolmanager.v1beta1.SwapAmountInSplitRoute,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this SwapAmountInSplitRoute to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a SwapAmountOutSplitRoute. */
+      interface ISwapAmountOutSplitRoute {
+        /** SwapAmountOutSplitRoute pools */
+        pools?: osmosis.poolmanager.v1beta1.ISwapAmountOutRoute[] | null;
+
+        /** SwapAmountOutSplitRoute tokenOutAmount */
+        tokenOutAmount?: string | null;
+      }
+
+      /** Represents a SwapAmountOutSplitRoute. */
+      class SwapAmountOutSplitRoute implements ISwapAmountOutSplitRoute {
+        /**
+         * Constructs a new SwapAmountOutSplitRoute.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.poolmanager.v1beta1.ISwapAmountOutSplitRoute);
+
+        /** SwapAmountOutSplitRoute pools. */
+        public pools: osmosis.poolmanager.v1beta1.ISwapAmountOutRoute[];
+
+        /** SwapAmountOutSplitRoute tokenOutAmount. */
+        public tokenOutAmount: string;
+
+        /**
+         * Creates a new SwapAmountOutSplitRoute instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns SwapAmountOutSplitRoute instance
+         */
+        public static create(
+          properties?: osmosis.poolmanager.v1beta1.ISwapAmountOutSplitRoute
+        ): osmosis.poolmanager.v1beta1.SwapAmountOutSplitRoute;
+
+        /**
+         * Encodes the specified SwapAmountOutSplitRoute message. Does not implicitly {@link osmosis.poolmanager.v1beta1.SwapAmountOutSplitRoute.verify|verify} messages.
+         * @param m SwapAmountOutSplitRoute message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.poolmanager.v1beta1.ISwapAmountOutSplitRoute,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a SwapAmountOutSplitRoute message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns SwapAmountOutSplitRoute
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.poolmanager.v1beta1.SwapAmountOutSplitRoute;
+
+        /**
+         * Creates a SwapAmountOutSplitRoute message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns SwapAmountOutSplitRoute
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.poolmanager.v1beta1.SwapAmountOutSplitRoute;
+
+        /**
+         * Creates a plain object from a SwapAmountOutSplitRoute message. Also converts values to other types if specified.
+         * @param m SwapAmountOutSplitRoute
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.poolmanager.v1beta1.SwapAmountOutSplitRoute,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this SwapAmountOutSplitRoute to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+    }
+  }
+
   /** Namespace gamm. */
   namespace gamm {
     /** Namespace v1beta1. */
@@ -1557,96 +2707,13 @@ export namespace osmosis {
         public toJSON(): { [k: string]: any };
       }
 
-      /** Properties of a SwapAmountInRoute. */
-      interface ISwapAmountInRoute {
-        /** SwapAmountInRoute poolId */
-        poolId?: Long | null;
-
-        /** SwapAmountInRoute tokenOutDenom */
-        tokenOutDenom?: string | null;
-      }
-
-      /** Represents a SwapAmountInRoute. */
-      class SwapAmountInRoute implements ISwapAmountInRoute {
-        /**
-         * Constructs a new SwapAmountInRoute.
-         * @param [p] Properties to set
-         */
-        constructor(p?: osmosis.gamm.v1beta1.ISwapAmountInRoute);
-
-        /** SwapAmountInRoute poolId. */
-        public poolId: Long;
-
-        /** SwapAmountInRoute tokenOutDenom. */
-        public tokenOutDenom: string;
-
-        /**
-         * Creates a new SwapAmountInRoute instance using the specified properties.
-         * @param [properties] Properties to set
-         * @returns SwapAmountInRoute instance
-         */
-        public static create(
-          properties?: osmosis.gamm.v1beta1.ISwapAmountInRoute
-        ): osmosis.gamm.v1beta1.SwapAmountInRoute;
-
-        /**
-         * Encodes the specified SwapAmountInRoute message. Does not implicitly {@link osmosis.gamm.v1beta1.SwapAmountInRoute.verify|verify} messages.
-         * @param m SwapAmountInRoute message or plain object to encode
-         * @param [w] Writer to encode to
-         * @returns Writer
-         */
-        public static encode(
-          m: osmosis.gamm.v1beta1.ISwapAmountInRoute,
-          w?: $protobuf.Writer
-        ): $protobuf.Writer;
-
-        /**
-         * Decodes a SwapAmountInRoute message from the specified reader or buffer.
-         * @param r Reader or buffer to decode from
-         * @param [l] Message length if known beforehand
-         * @returns SwapAmountInRoute
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decode(
-          r: $protobuf.Reader | Uint8Array,
-          l?: number
-        ): osmosis.gamm.v1beta1.SwapAmountInRoute;
-
-        /**
-         * Creates a SwapAmountInRoute message from a plain object. Also converts values to their respective internal types.
-         * @param d Plain object
-         * @returns SwapAmountInRoute
-         */
-        public static fromObject(d: {
-          [k: string]: any;
-        }): osmosis.gamm.v1beta1.SwapAmountInRoute;
-
-        /**
-         * Creates a plain object from a SwapAmountInRoute message. Also converts values to other types if specified.
-         * @param m SwapAmountInRoute
-         * @param [o] Conversion options
-         * @returns Plain object
-         */
-        public static toObject(
-          m: osmosis.gamm.v1beta1.SwapAmountInRoute,
-          o?: $protobuf.IConversionOptions
-        ): { [k: string]: any };
-
-        /**
-         * Converts this SwapAmountInRoute to JSON.
-         * @returns JSON object
-         */
-        public toJSON(): { [k: string]: any };
-      }
-
       /** Properties of a MsgSwapExactAmountIn. */
       interface IMsgSwapExactAmountIn {
         /** MsgSwapExactAmountIn sender */
         sender?: string | null;
 
         /** MsgSwapExactAmountIn routes */
-        routes?: osmosis.gamm.v1beta1.ISwapAmountInRoute[] | null;
+        routes?: osmosis.poolmanager.v1beta1.ISwapAmountInRoute[] | null;
 
         /** MsgSwapExactAmountIn tokenIn */
         tokenIn?: cosmos.base.v1beta1.ICoin | null;
@@ -1667,7 +2734,7 @@ export namespace osmosis {
         public sender: string;
 
         /** MsgSwapExactAmountIn routes. */
-        public routes: osmosis.gamm.v1beta1.ISwapAmountInRoute[];
+        public routes: osmosis.poolmanager.v1beta1.ISwapAmountInRoute[];
 
         /** MsgSwapExactAmountIn tokenIn. */
         public tokenIn?: cosmos.base.v1beta1.ICoin | null;
@@ -1814,96 +2881,13 @@ export namespace osmosis {
         public toJSON(): { [k: string]: any };
       }
 
-      /** Properties of a SwapAmountOutRoute. */
-      interface ISwapAmountOutRoute {
-        /** SwapAmountOutRoute poolId */
-        poolId?: Long | null;
-
-        /** SwapAmountOutRoute tokenInDenom */
-        tokenInDenom?: string | null;
-      }
-
-      /** Represents a SwapAmountOutRoute. */
-      class SwapAmountOutRoute implements ISwapAmountOutRoute {
-        /**
-         * Constructs a new SwapAmountOutRoute.
-         * @param [p] Properties to set
-         */
-        constructor(p?: osmosis.gamm.v1beta1.ISwapAmountOutRoute);
-
-        /** SwapAmountOutRoute poolId. */
-        public poolId: Long;
-
-        /** SwapAmountOutRoute tokenInDenom. */
-        public tokenInDenom: string;
-
-        /**
-         * Creates a new SwapAmountOutRoute instance using the specified properties.
-         * @param [properties] Properties to set
-         * @returns SwapAmountOutRoute instance
-         */
-        public static create(
-          properties?: osmosis.gamm.v1beta1.ISwapAmountOutRoute
-        ): osmosis.gamm.v1beta1.SwapAmountOutRoute;
-
-        /**
-         * Encodes the specified SwapAmountOutRoute message. Does not implicitly {@link osmosis.gamm.v1beta1.SwapAmountOutRoute.verify|verify} messages.
-         * @param m SwapAmountOutRoute message or plain object to encode
-         * @param [w] Writer to encode to
-         * @returns Writer
-         */
-        public static encode(
-          m: osmosis.gamm.v1beta1.ISwapAmountOutRoute,
-          w?: $protobuf.Writer
-        ): $protobuf.Writer;
-
-        /**
-         * Decodes a SwapAmountOutRoute message from the specified reader or buffer.
-         * @param r Reader or buffer to decode from
-         * @param [l] Message length if known beforehand
-         * @returns SwapAmountOutRoute
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decode(
-          r: $protobuf.Reader | Uint8Array,
-          l?: number
-        ): osmosis.gamm.v1beta1.SwapAmountOutRoute;
-
-        /**
-         * Creates a SwapAmountOutRoute message from a plain object. Also converts values to their respective internal types.
-         * @param d Plain object
-         * @returns SwapAmountOutRoute
-         */
-        public static fromObject(d: {
-          [k: string]: any;
-        }): osmosis.gamm.v1beta1.SwapAmountOutRoute;
-
-        /**
-         * Creates a plain object from a SwapAmountOutRoute message. Also converts values to other types if specified.
-         * @param m SwapAmountOutRoute
-         * @param [o] Conversion options
-         * @returns Plain object
-         */
-        public static toObject(
-          m: osmosis.gamm.v1beta1.SwapAmountOutRoute,
-          o?: $protobuf.IConversionOptions
-        ): { [k: string]: any };
-
-        /**
-         * Converts this SwapAmountOutRoute to JSON.
-         * @returns JSON object
-         */
-        public toJSON(): { [k: string]: any };
-      }
-
       /** Properties of a MsgSwapExactAmountOut. */
       interface IMsgSwapExactAmountOut {
         /** MsgSwapExactAmountOut sender */
         sender?: string | null;
 
         /** MsgSwapExactAmountOut routes */
-        routes?: osmosis.gamm.v1beta1.ISwapAmountOutRoute[] | null;
+        routes?: osmosis.poolmanager.v1beta1.ISwapAmountOutRoute[] | null;
 
         /** MsgSwapExactAmountOut tokenInMaxAmount */
         tokenInMaxAmount?: string | null;
@@ -1924,7 +2908,7 @@ export namespace osmosis {
         public sender: string;
 
         /** MsgSwapExactAmountOut routes. */
-        public routes: osmosis.gamm.v1beta1.ISwapAmountOutRoute[];
+        public routes: osmosis.poolmanager.v1beta1.ISwapAmountOutRoute[];
 
         /** MsgSwapExactAmountOut tokenInMaxAmount. */
         public tokenInMaxAmount: string;
@@ -3217,6 +4201,25 @@ export namespace osmosis {
             public createBalancerPool(
               request: osmosis.gamm.poolmodels.balancer.v1beta1.IMsgCreateBalancerPool
             ): Promise<osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPoolResponse>;
+
+            /**
+             * Calls MigrateSharesToFullRangeConcentratedPosition.
+             * @param request MsgMigrateSharesToFullRangeConcentratedPosition message or plain object
+             * @param callback Node-style callback called with the error, if any, and MsgMigrateSharesToFullRangeConcentratedPositionResponse
+             */
+            public migrateSharesToFullRangeConcentratedPosition(
+              request: osmosis.gamm.poolmodels.balancer.v1beta1.IMsgMigrateSharesToFullRangeConcentratedPosition,
+              callback: osmosis.gamm.poolmodels.balancer.v1beta1.Msg.MigrateSharesToFullRangeConcentratedPositionCallback
+            ): void;
+
+            /**
+             * Calls MigrateSharesToFullRangeConcentratedPosition.
+             * @param request MsgMigrateSharesToFullRangeConcentratedPosition message or plain object
+             * @returns Promise
+             */
+            public migrateSharesToFullRangeConcentratedPosition(
+              request: osmosis.gamm.poolmodels.balancer.v1beta1.IMsgMigrateSharesToFullRangeConcentratedPosition
+            ): Promise<osmosis.gamm.poolmodels.balancer.v1beta1.MsgMigrateSharesToFullRangeConcentratedPositionResponse>;
           }
 
           namespace Msg {
@@ -3228,6 +4231,16 @@ export namespace osmosis {
             type CreateBalancerPoolCallback = (
               error: Error | null,
               response?: osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPoolResponse
+            ) => void;
+
+            /**
+             * Callback as used by {@link osmosis.gamm.poolmodels.balancer.v1beta1.Msg#migrateSharesToFullRangeConcentratedPosition}.
+             * @param error Error, if any
+             * @param [response] MsgMigrateSharesToFullRangeConcentratedPositionResponse
+             */
+            type MigrateSharesToFullRangeConcentratedPositionCallback = (
+              error: Error | null,
+              response?: osmosis.gamm.poolmodels.balancer.v1beta1.MsgMigrateSharesToFullRangeConcentratedPositionResponse
             ) => void;
           }
 
@@ -3404,6 +4417,192 @@ export namespace osmosis {
 
             /**
              * Converts this MsgCreateBalancerPoolResponse to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+          }
+
+          /** Properties of a MsgMigrateSharesToFullRangeConcentratedPosition. */
+          interface IMsgMigrateSharesToFullRangeConcentratedPosition {
+            /** MsgMigrateSharesToFullRangeConcentratedPosition sender */
+            sender?: string | null;
+
+            /** MsgMigrateSharesToFullRangeConcentratedPosition sharesToMigrate */
+            sharesToMigrate?: cosmos.base.v1beta1.ICoin | null;
+          }
+
+          /** Represents a MsgMigrateSharesToFullRangeConcentratedPosition. */
+          class MsgMigrateSharesToFullRangeConcentratedPosition
+            implements IMsgMigrateSharesToFullRangeConcentratedPosition
+          {
+            /**
+             * Constructs a new MsgMigrateSharesToFullRangeConcentratedPosition.
+             * @param [p] Properties to set
+             */
+            constructor(
+              p?: osmosis.gamm.poolmodels.balancer.v1beta1.IMsgMigrateSharesToFullRangeConcentratedPosition
+            );
+
+            /** MsgMigrateSharesToFullRangeConcentratedPosition sender. */
+            public sender: string;
+
+            /** MsgMigrateSharesToFullRangeConcentratedPosition sharesToMigrate. */
+            public sharesToMigrate?: cosmos.base.v1beta1.ICoin | null;
+
+            /**
+             * Creates a new MsgMigrateSharesToFullRangeConcentratedPosition instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns MsgMigrateSharesToFullRangeConcentratedPosition instance
+             */
+            public static create(
+              properties?: osmosis.gamm.poolmodels.balancer.v1beta1.IMsgMigrateSharesToFullRangeConcentratedPosition
+            ): osmosis.gamm.poolmodels.balancer.v1beta1.MsgMigrateSharesToFullRangeConcentratedPosition;
+
+            /**
+             * Encodes the specified MsgMigrateSharesToFullRangeConcentratedPosition message. Does not implicitly {@link osmosis.gamm.poolmodels.balancer.v1beta1.MsgMigrateSharesToFullRangeConcentratedPosition.verify|verify} messages.
+             * @param m MsgMigrateSharesToFullRangeConcentratedPosition message or plain object to encode
+             * @param [w] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(
+              m: osmosis.gamm.poolmodels.balancer.v1beta1.IMsgMigrateSharesToFullRangeConcentratedPosition,
+              w?: $protobuf.Writer
+            ): $protobuf.Writer;
+
+            /**
+             * Decodes a MsgMigrateSharesToFullRangeConcentratedPosition message from the specified reader or buffer.
+             * @param r Reader or buffer to decode from
+             * @param [l] Message length if known beforehand
+             * @returns MsgMigrateSharesToFullRangeConcentratedPosition
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(
+              r: $protobuf.Reader | Uint8Array,
+              l?: number
+            ): osmosis.gamm.poolmodels.balancer.v1beta1.MsgMigrateSharesToFullRangeConcentratedPosition;
+
+            /**
+             * Creates a MsgMigrateSharesToFullRangeConcentratedPosition message from a plain object. Also converts values to their respective internal types.
+             * @param d Plain object
+             * @returns MsgMigrateSharesToFullRangeConcentratedPosition
+             */
+            public static fromObject(d: {
+              [k: string]: any;
+            }): osmosis.gamm.poolmodels.balancer.v1beta1.MsgMigrateSharesToFullRangeConcentratedPosition;
+
+            /**
+             * Creates a plain object from a MsgMigrateSharesToFullRangeConcentratedPosition message. Also converts values to other types if specified.
+             * @param m MsgMigrateSharesToFullRangeConcentratedPosition
+             * @param [o] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(
+              m: osmosis.gamm.poolmodels.balancer.v1beta1.MsgMigrateSharesToFullRangeConcentratedPosition,
+              o?: $protobuf.IConversionOptions
+            ): { [k: string]: any };
+
+            /**
+             * Converts this MsgMigrateSharesToFullRangeConcentratedPosition to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+          }
+
+          /** Properties of a MsgMigrateSharesToFullRangeConcentratedPositionResponse. */
+          interface IMsgMigrateSharesToFullRangeConcentratedPositionResponse {
+            /** MsgMigrateSharesToFullRangeConcentratedPositionResponse amount0 */
+            amount0?: string | null;
+
+            /** MsgMigrateSharesToFullRangeConcentratedPositionResponse amount1 */
+            amount1?: string | null;
+
+            /** MsgMigrateSharesToFullRangeConcentratedPositionResponse liquidityCreated */
+            liquidityCreated?: string | null;
+
+            /** MsgMigrateSharesToFullRangeConcentratedPositionResponse joinTime */
+            joinTime?: google.protobuf.ITimestamp | null;
+          }
+
+          /** Represents a MsgMigrateSharesToFullRangeConcentratedPositionResponse. */
+          class MsgMigrateSharesToFullRangeConcentratedPositionResponse
+            implements IMsgMigrateSharesToFullRangeConcentratedPositionResponse
+          {
+            /**
+             * Constructs a new MsgMigrateSharesToFullRangeConcentratedPositionResponse.
+             * @param [p] Properties to set
+             */
+            constructor(
+              p?: osmosis.gamm.poolmodels.balancer.v1beta1.IMsgMigrateSharesToFullRangeConcentratedPositionResponse
+            );
+
+            /** MsgMigrateSharesToFullRangeConcentratedPositionResponse amount0. */
+            public amount0: string;
+
+            /** MsgMigrateSharesToFullRangeConcentratedPositionResponse amount1. */
+            public amount1: string;
+
+            /** MsgMigrateSharesToFullRangeConcentratedPositionResponse liquidityCreated. */
+            public liquidityCreated: string;
+
+            /** MsgMigrateSharesToFullRangeConcentratedPositionResponse joinTime. */
+            public joinTime?: google.protobuf.ITimestamp | null;
+
+            /**
+             * Creates a new MsgMigrateSharesToFullRangeConcentratedPositionResponse instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns MsgMigrateSharesToFullRangeConcentratedPositionResponse instance
+             */
+            public static create(
+              properties?: osmosis.gamm.poolmodels.balancer.v1beta1.IMsgMigrateSharesToFullRangeConcentratedPositionResponse
+            ): osmosis.gamm.poolmodels.balancer.v1beta1.MsgMigrateSharesToFullRangeConcentratedPositionResponse;
+
+            /**
+             * Encodes the specified MsgMigrateSharesToFullRangeConcentratedPositionResponse message. Does not implicitly {@link osmosis.gamm.poolmodels.balancer.v1beta1.MsgMigrateSharesToFullRangeConcentratedPositionResponse.verify|verify} messages.
+             * @param m MsgMigrateSharesToFullRangeConcentratedPositionResponse message or plain object to encode
+             * @param [w] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(
+              m: osmosis.gamm.poolmodels.balancer.v1beta1.IMsgMigrateSharesToFullRangeConcentratedPositionResponse,
+              w?: $protobuf.Writer
+            ): $protobuf.Writer;
+
+            /**
+             * Decodes a MsgMigrateSharesToFullRangeConcentratedPositionResponse message from the specified reader or buffer.
+             * @param r Reader or buffer to decode from
+             * @param [l] Message length if known beforehand
+             * @returns MsgMigrateSharesToFullRangeConcentratedPositionResponse
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(
+              r: $protobuf.Reader | Uint8Array,
+              l?: number
+            ): osmosis.gamm.poolmodels.balancer.v1beta1.MsgMigrateSharesToFullRangeConcentratedPositionResponse;
+
+            /**
+             * Creates a MsgMigrateSharesToFullRangeConcentratedPositionResponse message from a plain object. Also converts values to their respective internal types.
+             * @param d Plain object
+             * @returns MsgMigrateSharesToFullRangeConcentratedPositionResponse
+             */
+            public static fromObject(d: {
+              [k: string]: any;
+            }): osmosis.gamm.poolmodels.balancer.v1beta1.MsgMigrateSharesToFullRangeConcentratedPositionResponse;
+
+            /**
+             * Creates a plain object from a MsgMigrateSharesToFullRangeConcentratedPositionResponse message. Also converts values to other types if specified.
+             * @param m MsgMigrateSharesToFullRangeConcentratedPositionResponse
+             * @param [o] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(
+              m: osmosis.gamm.poolmodels.balancer.v1beta1.MsgMigrateSharesToFullRangeConcentratedPositionResponse,
+              o?: $protobuf.IConversionOptions
+            ): { [k: string]: any };
+
+            /**
+             * Converts this MsgMigrateSharesToFullRangeConcentratedPositionResponse to JSON.
              * @returns JSON object
              */
             public toJSON(): { [k: string]: any };
@@ -4069,6 +5268,2265 @@ export namespace osmosis {
     }
   }
 
+  /** Namespace concentratedliquidity. */
+  namespace concentratedliquidity {
+    /** Namespace v1beta1. */
+    namespace v1beta1 {
+      /** Represents a MsgCreator */
+      class MsgCreator extends $protobuf.rpc.Service {
+        /**
+         * Constructs a new MsgCreator service.
+         * @param rpcImpl RPC implementation
+         * @param [requestDelimited=false] Whether requests are length-delimited
+         * @param [responseDelimited=false] Whether responses are length-delimited
+         */
+        constructor(
+          rpcImpl: $protobuf.RPCImpl,
+          requestDelimited?: boolean,
+          responseDelimited?: boolean
+        );
+
+        /**
+         * Creates new MsgCreator service using the specified rpc implementation.
+         * @param rpcImpl RPC implementation
+         * @param [requestDelimited=false] Whether requests are length-delimited
+         * @param [responseDelimited=false] Whether responses are length-delimited
+         * @returns RPC service. Useful where requests and/or responses are streamed.
+         */
+        public static create(
+          rpcImpl: $protobuf.RPCImpl,
+          requestDelimited?: boolean,
+          responseDelimited?: boolean
+        ): MsgCreator;
+
+        /**
+         * Calls CreateConcentratedPool.
+         * @param request MsgCreateConcentratedPool message or plain object
+         * @param callback Node-style callback called with the error, if any, and MsgCreateConcentratedPoolResponse
+         */
+        public createConcentratedPool(
+          request: osmosis.concentratedliquidity.v1beta1.IMsgCreateConcentratedPool,
+          callback: osmosis.concentratedliquidity.v1beta1.MsgCreator.CreateConcentratedPoolCallback
+        ): void;
+
+        /**
+         * Calls CreateConcentratedPool.
+         * @param request MsgCreateConcentratedPool message or plain object
+         * @returns Promise
+         */
+        public createConcentratedPool(
+          request: osmosis.concentratedliquidity.v1beta1.IMsgCreateConcentratedPool
+        ): Promise<osmosis.concentratedliquidity.v1beta1.MsgCreateConcentratedPoolResponse>;
+      }
+
+      namespace MsgCreator {
+        /**
+         * Callback as used by {@link osmosis.concentratedliquidity.v1beta1.MsgCreator#createConcentratedPool}.
+         * @param error Error, if any
+         * @param [response] MsgCreateConcentratedPoolResponse
+         */
+        type CreateConcentratedPoolCallback = (
+          error: Error | null,
+          response?: osmosis.concentratedliquidity.v1beta1.MsgCreateConcentratedPoolResponse
+        ) => void;
+      }
+
+      /** Properties of a MsgCreateConcentratedPool. */
+      interface IMsgCreateConcentratedPool {
+        /** MsgCreateConcentratedPool sender */
+        sender?: string | null;
+
+        /** MsgCreateConcentratedPool denom0 */
+        denom0?: string | null;
+
+        /** MsgCreateConcentratedPool denom1 */
+        denom1?: string | null;
+
+        /** MsgCreateConcentratedPool tickSpacing */
+        tickSpacing?: Long | null;
+
+        /** MsgCreateConcentratedPool exponentAtPriceOne */
+        exponentAtPriceOne?: string | null;
+
+        /** MsgCreateConcentratedPool swapFee */
+        swapFee?: string | null;
+      }
+
+      /** Represents a MsgCreateConcentratedPool. */
+      class MsgCreateConcentratedPool implements IMsgCreateConcentratedPool {
+        /**
+         * Constructs a new MsgCreateConcentratedPool.
+         * @param [p] Properties to set
+         */
+        constructor(
+          p?: osmosis.concentratedliquidity.v1beta1.IMsgCreateConcentratedPool
+        );
+
+        /** MsgCreateConcentratedPool sender. */
+        public sender: string;
+
+        /** MsgCreateConcentratedPool denom0. */
+        public denom0: string;
+
+        /** MsgCreateConcentratedPool denom1. */
+        public denom1: string;
+
+        /** MsgCreateConcentratedPool tickSpacing. */
+        public tickSpacing: Long;
+
+        /** MsgCreateConcentratedPool exponentAtPriceOne. */
+        public exponentAtPriceOne: string;
+
+        /** MsgCreateConcentratedPool swapFee. */
+        public swapFee: string;
+
+        /**
+         * Creates a new MsgCreateConcentratedPool instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgCreateConcentratedPool instance
+         */
+        public static create(
+          properties?: osmosis.concentratedliquidity.v1beta1.IMsgCreateConcentratedPool
+        ): osmosis.concentratedliquidity.v1beta1.MsgCreateConcentratedPool;
+
+        /**
+         * Encodes the specified MsgCreateConcentratedPool message. Does not implicitly {@link osmosis.concentratedliquidity.v1beta1.MsgCreateConcentratedPool.verify|verify} messages.
+         * @param m MsgCreateConcentratedPool message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.concentratedliquidity.v1beta1.IMsgCreateConcentratedPool,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgCreateConcentratedPool message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgCreateConcentratedPool
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.concentratedliquidity.v1beta1.MsgCreateConcentratedPool;
+
+        /**
+         * Creates a MsgCreateConcentratedPool message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgCreateConcentratedPool
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.concentratedliquidity.v1beta1.MsgCreateConcentratedPool;
+
+        /**
+         * Creates a plain object from a MsgCreateConcentratedPool message. Also converts values to other types if specified.
+         * @param m MsgCreateConcentratedPool
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.concentratedliquidity.v1beta1.MsgCreateConcentratedPool,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgCreateConcentratedPool to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgCreateConcentratedPoolResponse. */
+      interface IMsgCreateConcentratedPoolResponse {
+        /** MsgCreateConcentratedPoolResponse poolId */
+        poolId?: Long | null;
+      }
+
+      /** Represents a MsgCreateConcentratedPoolResponse. */
+      class MsgCreateConcentratedPoolResponse
+        implements IMsgCreateConcentratedPoolResponse
+      {
+        /**
+         * Constructs a new MsgCreateConcentratedPoolResponse.
+         * @param [p] Properties to set
+         */
+        constructor(
+          p?: osmosis.concentratedliquidity.v1beta1.IMsgCreateConcentratedPoolResponse
+        );
+
+        /** MsgCreateConcentratedPoolResponse poolId. */
+        public poolId: Long;
+
+        /**
+         * Creates a new MsgCreateConcentratedPoolResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgCreateConcentratedPoolResponse instance
+         */
+        public static create(
+          properties?: osmosis.concentratedliquidity.v1beta1.IMsgCreateConcentratedPoolResponse
+        ): osmosis.concentratedliquidity.v1beta1.MsgCreateConcentratedPoolResponse;
+
+        /**
+         * Encodes the specified MsgCreateConcentratedPoolResponse message. Does not implicitly {@link osmosis.concentratedliquidity.v1beta1.MsgCreateConcentratedPoolResponse.verify|verify} messages.
+         * @param m MsgCreateConcentratedPoolResponse message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.concentratedliquidity.v1beta1.IMsgCreateConcentratedPoolResponse,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgCreateConcentratedPoolResponse message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgCreateConcentratedPoolResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.concentratedliquidity.v1beta1.MsgCreateConcentratedPoolResponse;
+
+        /**
+         * Creates a MsgCreateConcentratedPoolResponse message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgCreateConcentratedPoolResponse
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.concentratedliquidity.v1beta1.MsgCreateConcentratedPoolResponse;
+
+        /**
+         * Creates a plain object from a MsgCreateConcentratedPoolResponse message. Also converts values to other types if specified.
+         * @param m MsgCreateConcentratedPoolResponse
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.concentratedliquidity.v1beta1.MsgCreateConcentratedPoolResponse,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgCreateConcentratedPoolResponse to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of an IncentiveRecord. */
+      interface IIncentiveRecord {
+        /** IncentiveRecord poolId */
+        poolId?: Long | null;
+
+        /** IncentiveRecord incentiveDenom */
+        incentiveDenom?: string | null;
+
+        /** IncentiveRecord incentiveCreatorAddr */
+        incentiveCreatorAddr?: string | null;
+
+        /** IncentiveRecord incentiveRecordBody */
+        incentiveRecordBody?: osmosis.concentratedliquidity.v1beta1.IIncentiveRecordBody | null;
+
+        /** IncentiveRecord minUptime */
+        minUptime?: google.protobuf.IDuration | null;
+      }
+
+      /** Represents an IncentiveRecord. */
+      class IncentiveRecord implements IIncentiveRecord {
+        /**
+         * Constructs a new IncentiveRecord.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.concentratedliquidity.v1beta1.IIncentiveRecord);
+
+        /** IncentiveRecord poolId. */
+        public poolId: Long;
+
+        /** IncentiveRecord incentiveDenom. */
+        public incentiveDenom: string;
+
+        /** IncentiveRecord incentiveCreatorAddr. */
+        public incentiveCreatorAddr: string;
+
+        /** IncentiveRecord incentiveRecordBody. */
+        public incentiveRecordBody?: osmosis.concentratedliquidity.v1beta1.IIncentiveRecordBody | null;
+
+        /** IncentiveRecord minUptime. */
+        public minUptime?: google.protobuf.IDuration | null;
+
+        /**
+         * Creates a new IncentiveRecord instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns IncentiveRecord instance
+         */
+        public static create(
+          properties?: osmosis.concentratedliquidity.v1beta1.IIncentiveRecord
+        ): osmosis.concentratedliquidity.v1beta1.IncentiveRecord;
+
+        /**
+         * Encodes the specified IncentiveRecord message. Does not implicitly {@link osmosis.concentratedliquidity.v1beta1.IncentiveRecord.verify|verify} messages.
+         * @param m IncentiveRecord message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.concentratedliquidity.v1beta1.IIncentiveRecord,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes an IncentiveRecord message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns IncentiveRecord
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.concentratedliquidity.v1beta1.IncentiveRecord;
+
+        /**
+         * Creates an IncentiveRecord message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns IncentiveRecord
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.concentratedliquidity.v1beta1.IncentiveRecord;
+
+        /**
+         * Creates a plain object from an IncentiveRecord message. Also converts values to other types if specified.
+         * @param m IncentiveRecord
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.concentratedliquidity.v1beta1.IncentiveRecord,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this IncentiveRecord to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of an IncentiveRecordBody. */
+      interface IIncentiveRecordBody {
+        /** IncentiveRecordBody remainingAmount */
+        remainingAmount?: string | null;
+
+        /** IncentiveRecordBody emissionRate */
+        emissionRate?: string | null;
+
+        /** IncentiveRecordBody startTime */
+        startTime?: google.protobuf.ITimestamp | null;
+      }
+
+      /** Represents an IncentiveRecordBody. */
+      class IncentiveRecordBody implements IIncentiveRecordBody {
+        /**
+         * Constructs a new IncentiveRecordBody.
+         * @param [p] Properties to set
+         */
+        constructor(
+          p?: osmosis.concentratedliquidity.v1beta1.IIncentiveRecordBody
+        );
+
+        /** IncentiveRecordBody remainingAmount. */
+        public remainingAmount: string;
+
+        /** IncentiveRecordBody emissionRate. */
+        public emissionRate: string;
+
+        /** IncentiveRecordBody startTime. */
+        public startTime?: google.protobuf.ITimestamp | null;
+
+        /**
+         * Creates a new IncentiveRecordBody instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns IncentiveRecordBody instance
+         */
+        public static create(
+          properties?: osmosis.concentratedliquidity.v1beta1.IIncentiveRecordBody
+        ): osmosis.concentratedliquidity.v1beta1.IncentiveRecordBody;
+
+        /**
+         * Encodes the specified IncentiveRecordBody message. Does not implicitly {@link osmosis.concentratedliquidity.v1beta1.IncentiveRecordBody.verify|verify} messages.
+         * @param m IncentiveRecordBody message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.concentratedliquidity.v1beta1.IIncentiveRecordBody,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes an IncentiveRecordBody message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns IncentiveRecordBody
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.concentratedliquidity.v1beta1.IncentiveRecordBody;
+
+        /**
+         * Creates an IncentiveRecordBody message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns IncentiveRecordBody
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.concentratedliquidity.v1beta1.IncentiveRecordBody;
+
+        /**
+         * Creates a plain object from an IncentiveRecordBody message. Also converts values to other types if specified.
+         * @param m IncentiveRecordBody
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.concentratedliquidity.v1beta1.IncentiveRecordBody,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this IncentiveRecordBody to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a Pool. */
+      interface IPool {
+        /** Pool address */
+        address?: string | null;
+
+        /** Pool incentivesAddress */
+        incentivesAddress?: string | null;
+
+        /** Pool id */
+        id?: Long | null;
+
+        /** Pool currentTickLiquidity */
+        currentTickLiquidity?: string | null;
+
+        /** Pool token0 */
+        token0?: string | null;
+
+        /** Pool token1 */
+        token1?: string | null;
+
+        /** Pool currentSqrtPrice */
+        currentSqrtPrice?: string | null;
+
+        /** Pool currentTick */
+        currentTick?: string | null;
+
+        /** Pool tickSpacing */
+        tickSpacing?: Long | null;
+
+        /** Pool exponentAtPriceOne */
+        exponentAtPriceOne?: string | null;
+
+        /** Pool swapFee */
+        swapFee?: string | null;
+
+        /** Pool lastLiquidityUpdate */
+        lastLiquidityUpdate?: google.protobuf.ITimestamp | null;
+      }
+
+      /** Represents a Pool. */
+      class Pool implements IPool {
+        /**
+         * Constructs a new Pool.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.concentratedliquidity.v1beta1.IPool);
+
+        /** Pool address. */
+        public address: string;
+
+        /** Pool incentivesAddress. */
+        public incentivesAddress: string;
+
+        /** Pool id. */
+        public id: Long;
+
+        /** Pool currentTickLiquidity. */
+        public currentTickLiquidity: string;
+
+        /** Pool token0. */
+        public token0: string;
+
+        /** Pool token1. */
+        public token1: string;
+
+        /** Pool currentSqrtPrice. */
+        public currentSqrtPrice: string;
+
+        /** Pool currentTick. */
+        public currentTick: string;
+
+        /** Pool tickSpacing. */
+        public tickSpacing: Long;
+
+        /** Pool exponentAtPriceOne. */
+        public exponentAtPriceOne: string;
+
+        /** Pool swapFee. */
+        public swapFee: string;
+
+        /** Pool lastLiquidityUpdate. */
+        public lastLiquidityUpdate?: google.protobuf.ITimestamp | null;
+
+        /**
+         * Creates a new Pool instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns Pool instance
+         */
+        public static create(
+          properties?: osmosis.concentratedliquidity.v1beta1.IPool
+        ): osmosis.concentratedliquidity.v1beta1.Pool;
+
+        /**
+         * Encodes the specified Pool message. Does not implicitly {@link osmosis.concentratedliquidity.v1beta1.Pool.verify|verify} messages.
+         * @param m Pool message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.concentratedliquidity.v1beta1.IPool,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a Pool message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns Pool
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.concentratedliquidity.v1beta1.Pool;
+
+        /**
+         * Creates a Pool message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns Pool
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.concentratedliquidity.v1beta1.Pool;
+
+        /**
+         * Creates a plain object from a Pool message. Also converts values to other types if specified.
+         * @param m Pool
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.concentratedliquidity.v1beta1.Pool,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this Pool to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a Position. */
+      interface IPosition {
+        /** Position positionId */
+        positionId?: Long | null;
+
+        /** Position address */
+        address?: string | null;
+
+        /** Position poolId */
+        poolId?: Long | null;
+
+        /** Position lowerTick */
+        lowerTick?: Long | null;
+
+        /** Position upperTick */
+        upperTick?: Long | null;
+
+        /** Position joinTime */
+        joinTime?: google.protobuf.ITimestamp | null;
+
+        /** Position liquidity */
+        liquidity?: string | null;
+      }
+
+      /** Represents a Position. */
+      class Position implements IPosition {
+        /**
+         * Constructs a new Position.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.concentratedliquidity.v1beta1.IPosition);
+
+        /** Position positionId. */
+        public positionId: Long;
+
+        /** Position address. */
+        public address: string;
+
+        /** Position poolId. */
+        public poolId: Long;
+
+        /** Position lowerTick. */
+        public lowerTick: Long;
+
+        /** Position upperTick. */
+        public upperTick: Long;
+
+        /** Position joinTime. */
+        public joinTime?: google.protobuf.ITimestamp | null;
+
+        /** Position liquidity. */
+        public liquidity: string;
+
+        /**
+         * Creates a new Position instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns Position instance
+         */
+        public static create(
+          properties?: osmosis.concentratedliquidity.v1beta1.IPosition
+        ): osmosis.concentratedliquidity.v1beta1.Position;
+
+        /**
+         * Encodes the specified Position message. Does not implicitly {@link osmosis.concentratedliquidity.v1beta1.Position.verify|verify} messages.
+         * @param m Position message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.concentratedliquidity.v1beta1.IPosition,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a Position message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns Position
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.concentratedliquidity.v1beta1.Position;
+
+        /**
+         * Creates a Position message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns Position
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.concentratedliquidity.v1beta1.Position;
+
+        /**
+         * Creates a plain object from a Position message. Also converts values to other types if specified.
+         * @param m Position
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.concentratedliquidity.v1beta1.Position,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this Position to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a PositionWithUnderlyingAssetBreakdown. */
+      interface IPositionWithUnderlyingAssetBreakdown {
+        /** PositionWithUnderlyingAssetBreakdown position */
+        position?: osmosis.concentratedliquidity.v1beta1.IPosition | null;
+
+        /** PositionWithUnderlyingAssetBreakdown asset0 */
+        asset0?: cosmos.base.v1beta1.ICoin | null;
+
+        /** PositionWithUnderlyingAssetBreakdown asset1 */
+        asset1?: cosmos.base.v1beta1.ICoin | null;
+      }
+
+      /** Represents a PositionWithUnderlyingAssetBreakdown. */
+      class PositionWithUnderlyingAssetBreakdown
+        implements IPositionWithUnderlyingAssetBreakdown
+      {
+        /**
+         * Constructs a new PositionWithUnderlyingAssetBreakdown.
+         * @param [p] Properties to set
+         */
+        constructor(
+          p?: osmosis.concentratedliquidity.v1beta1.IPositionWithUnderlyingAssetBreakdown
+        );
+
+        /** PositionWithUnderlyingAssetBreakdown position. */
+        public position?: osmosis.concentratedliquidity.v1beta1.IPosition | null;
+
+        /** PositionWithUnderlyingAssetBreakdown asset0. */
+        public asset0?: cosmos.base.v1beta1.ICoin | null;
+
+        /** PositionWithUnderlyingAssetBreakdown asset1. */
+        public asset1?: cosmos.base.v1beta1.ICoin | null;
+
+        /**
+         * Creates a new PositionWithUnderlyingAssetBreakdown instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns PositionWithUnderlyingAssetBreakdown instance
+         */
+        public static create(
+          properties?: osmosis.concentratedliquidity.v1beta1.IPositionWithUnderlyingAssetBreakdown
+        ): osmosis.concentratedliquidity.v1beta1.PositionWithUnderlyingAssetBreakdown;
+
+        /**
+         * Encodes the specified PositionWithUnderlyingAssetBreakdown message. Does not implicitly {@link osmosis.concentratedliquidity.v1beta1.PositionWithUnderlyingAssetBreakdown.verify|verify} messages.
+         * @param m PositionWithUnderlyingAssetBreakdown message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.concentratedliquidity.v1beta1.IPositionWithUnderlyingAssetBreakdown,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a PositionWithUnderlyingAssetBreakdown message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns PositionWithUnderlyingAssetBreakdown
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.concentratedliquidity.v1beta1.PositionWithUnderlyingAssetBreakdown;
+
+        /**
+         * Creates a PositionWithUnderlyingAssetBreakdown message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns PositionWithUnderlyingAssetBreakdown
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.concentratedliquidity.v1beta1.PositionWithUnderlyingAssetBreakdown;
+
+        /**
+         * Creates a plain object from a PositionWithUnderlyingAssetBreakdown message. Also converts values to other types if specified.
+         * @param m PositionWithUnderlyingAssetBreakdown
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.concentratedliquidity.v1beta1.PositionWithUnderlyingAssetBreakdown,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this PositionWithUnderlyingAssetBreakdown to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a TickInfo. */
+      interface ITickInfo {
+        /** TickInfo liquidityGross */
+        liquidityGross?: string | null;
+
+        /** TickInfo liquidityNet */
+        liquidityNet?: string | null;
+
+        /** TickInfo feeGrowthOutside */
+        feeGrowthOutside?: cosmos.base.v1beta1.IDecCoin[] | null;
+
+        /** TickInfo uptimeTrackers */
+        uptimeTrackers?:
+          | osmosis.concentratedliquidity.v1beta1.IUptimeTracker[]
+          | null;
+      }
+
+      /** Represents a TickInfo. */
+      class TickInfo implements ITickInfo {
+        /**
+         * Constructs a new TickInfo.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.concentratedliquidity.v1beta1.ITickInfo);
+
+        /** TickInfo liquidityGross. */
+        public liquidityGross: string;
+
+        /** TickInfo liquidityNet. */
+        public liquidityNet: string;
+
+        /** TickInfo feeGrowthOutside. */
+        public feeGrowthOutside: cosmos.base.v1beta1.IDecCoin[];
+
+        /** TickInfo uptimeTrackers. */
+        public uptimeTrackers: osmosis.concentratedliquidity.v1beta1.IUptimeTracker[];
+
+        /**
+         * Creates a new TickInfo instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns TickInfo instance
+         */
+        public static create(
+          properties?: osmosis.concentratedliquidity.v1beta1.ITickInfo
+        ): osmosis.concentratedliquidity.v1beta1.TickInfo;
+
+        /**
+         * Encodes the specified TickInfo message. Does not implicitly {@link osmosis.concentratedliquidity.v1beta1.TickInfo.verify|verify} messages.
+         * @param m TickInfo message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.concentratedliquidity.v1beta1.ITickInfo,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a TickInfo message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns TickInfo
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.concentratedliquidity.v1beta1.TickInfo;
+
+        /**
+         * Creates a TickInfo message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns TickInfo
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.concentratedliquidity.v1beta1.TickInfo;
+
+        /**
+         * Creates a plain object from a TickInfo message. Also converts values to other types if specified.
+         * @param m TickInfo
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.concentratedliquidity.v1beta1.TickInfo,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this TickInfo to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of an UptimeTracker. */
+      interface IUptimeTracker {
+        /** UptimeTracker uptimeGrowthOutside */
+        uptimeGrowthOutside?: cosmos.base.v1beta1.IDecCoin[] | null;
+      }
+
+      /** Represents an UptimeTracker. */
+      class UptimeTracker implements IUptimeTracker {
+        /**
+         * Constructs a new UptimeTracker.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.concentratedliquidity.v1beta1.IUptimeTracker);
+
+        /** UptimeTracker uptimeGrowthOutside. */
+        public uptimeGrowthOutside: cosmos.base.v1beta1.IDecCoin[];
+
+        /**
+         * Creates a new UptimeTracker instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns UptimeTracker instance
+         */
+        public static create(
+          properties?: osmosis.concentratedliquidity.v1beta1.IUptimeTracker
+        ): osmosis.concentratedliquidity.v1beta1.UptimeTracker;
+
+        /**
+         * Encodes the specified UptimeTracker message. Does not implicitly {@link osmosis.concentratedliquidity.v1beta1.UptimeTracker.verify|verify} messages.
+         * @param m UptimeTracker message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.concentratedliquidity.v1beta1.IUptimeTracker,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes an UptimeTracker message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns UptimeTracker
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.concentratedliquidity.v1beta1.UptimeTracker;
+
+        /**
+         * Creates an UptimeTracker message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns UptimeTracker
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.concentratedliquidity.v1beta1.UptimeTracker;
+
+        /**
+         * Creates a plain object from an UptimeTracker message. Also converts values to other types if specified.
+         * @param m UptimeTracker
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.concentratedliquidity.v1beta1.UptimeTracker,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this UptimeTracker to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Represents a Msg */
+      class Msg extends $protobuf.rpc.Service {
+        /**
+         * Constructs a new Msg service.
+         * @param rpcImpl RPC implementation
+         * @param [requestDelimited=false] Whether requests are length-delimited
+         * @param [responseDelimited=false] Whether responses are length-delimited
+         */
+        constructor(
+          rpcImpl: $protobuf.RPCImpl,
+          requestDelimited?: boolean,
+          responseDelimited?: boolean
+        );
+
+        /**
+         * Creates new Msg service using the specified rpc implementation.
+         * @param rpcImpl RPC implementation
+         * @param [requestDelimited=false] Whether requests are length-delimited
+         * @param [responseDelimited=false] Whether responses are length-delimited
+         * @returns RPC service. Useful where requests and/or responses are streamed.
+         */
+        public static create(
+          rpcImpl: $protobuf.RPCImpl,
+          requestDelimited?: boolean,
+          responseDelimited?: boolean
+        ): Msg;
+
+        /**
+         * Calls CreatePosition.
+         * @param request MsgCreatePosition message or plain object
+         * @param callback Node-style callback called with the error, if any, and MsgCreatePositionResponse
+         */
+        public createPosition(
+          request: osmosis.concentratedliquidity.v1beta1.IMsgCreatePosition,
+          callback: osmosis.concentratedliquidity.v1beta1.Msg.CreatePositionCallback
+        ): void;
+
+        /**
+         * Calls CreatePosition.
+         * @param request MsgCreatePosition message or plain object
+         * @returns Promise
+         */
+        public createPosition(
+          request: osmosis.concentratedliquidity.v1beta1.IMsgCreatePosition
+        ): Promise<osmosis.concentratedliquidity.v1beta1.MsgCreatePositionResponse>;
+
+        /**
+         * Calls WithdrawPosition.
+         * @param request MsgWithdrawPosition message or plain object
+         * @param callback Node-style callback called with the error, if any, and MsgWithdrawPositionResponse
+         */
+        public withdrawPosition(
+          request: osmosis.concentratedliquidity.v1beta1.IMsgWithdrawPosition,
+          callback: osmosis.concentratedliquidity.v1beta1.Msg.WithdrawPositionCallback
+        ): void;
+
+        /**
+         * Calls WithdrawPosition.
+         * @param request MsgWithdrawPosition message or plain object
+         * @returns Promise
+         */
+        public withdrawPosition(
+          request: osmosis.concentratedliquidity.v1beta1.IMsgWithdrawPosition
+        ): Promise<osmosis.concentratedliquidity.v1beta1.MsgWithdrawPositionResponse>;
+
+        /**
+         * Calls CollectFees.
+         * @param request MsgCollectFees message or plain object
+         * @param callback Node-style callback called with the error, if any, and MsgCollectFeesResponse
+         */
+        public collectFees(
+          request: osmosis.concentratedliquidity.v1beta1.IMsgCollectFees,
+          callback: osmosis.concentratedliquidity.v1beta1.Msg.CollectFeesCallback
+        ): void;
+
+        /**
+         * Calls CollectFees.
+         * @param request MsgCollectFees message or plain object
+         * @returns Promise
+         */
+        public collectFees(
+          request: osmosis.concentratedliquidity.v1beta1.IMsgCollectFees
+        ): Promise<osmosis.concentratedliquidity.v1beta1.MsgCollectFeesResponse>;
+
+        /**
+         * Calls CollectIncentives.
+         * @param request MsgCollectIncentives message or plain object
+         * @param callback Node-style callback called with the error, if any, and MsgCollectIncentivesResponse
+         */
+        public collectIncentives(
+          request: osmosis.concentratedliquidity.v1beta1.IMsgCollectIncentives,
+          callback: osmosis.concentratedliquidity.v1beta1.Msg.CollectIncentivesCallback
+        ): void;
+
+        /**
+         * Calls CollectIncentives.
+         * @param request MsgCollectIncentives message or plain object
+         * @returns Promise
+         */
+        public collectIncentives(
+          request: osmosis.concentratedliquidity.v1beta1.IMsgCollectIncentives
+        ): Promise<osmosis.concentratedliquidity.v1beta1.MsgCollectIncentivesResponse>;
+
+        /**
+         * Calls FungifyChargedPositions.
+         * @param request MsgFungifyChargedPositions message or plain object
+         * @param callback Node-style callback called with the error, if any, and MsgFungifyChargedPositionsResponse
+         */
+        public fungifyChargedPositions(
+          request: osmosis.concentratedliquidity.v1beta1.IMsgFungifyChargedPositions,
+          callback: osmosis.concentratedliquidity.v1beta1.Msg.FungifyChargedPositionsCallback
+        ): void;
+
+        /**
+         * Calls FungifyChargedPositions.
+         * @param request MsgFungifyChargedPositions message or plain object
+         * @returns Promise
+         */
+        public fungifyChargedPositions(
+          request: osmosis.concentratedliquidity.v1beta1.IMsgFungifyChargedPositions
+        ): Promise<osmosis.concentratedliquidity.v1beta1.MsgFungifyChargedPositionsResponse>;
+      }
+
+      namespace Msg {
+        /**
+         * Callback as used by {@link osmosis.concentratedliquidity.v1beta1.Msg#createPosition}.
+         * @param error Error, if any
+         * @param [response] MsgCreatePositionResponse
+         */
+        type CreatePositionCallback = (
+          error: Error | null,
+          response?: osmosis.concentratedliquidity.v1beta1.MsgCreatePositionResponse
+        ) => void;
+
+        /**
+         * Callback as used by {@link osmosis.concentratedliquidity.v1beta1.Msg#withdrawPosition}.
+         * @param error Error, if any
+         * @param [response] MsgWithdrawPositionResponse
+         */
+        type WithdrawPositionCallback = (
+          error: Error | null,
+          response?: osmosis.concentratedliquidity.v1beta1.MsgWithdrawPositionResponse
+        ) => void;
+
+        /**
+         * Callback as used by {@link osmosis.concentratedliquidity.v1beta1.Msg#collectFees}.
+         * @param error Error, if any
+         * @param [response] MsgCollectFeesResponse
+         */
+        type CollectFeesCallback = (
+          error: Error | null,
+          response?: osmosis.concentratedliquidity.v1beta1.MsgCollectFeesResponse
+        ) => void;
+
+        /**
+         * Callback as used by {@link osmosis.concentratedliquidity.v1beta1.Msg#collectIncentives}.
+         * @param error Error, if any
+         * @param [response] MsgCollectIncentivesResponse
+         */
+        type CollectIncentivesCallback = (
+          error: Error | null,
+          response?: osmosis.concentratedliquidity.v1beta1.MsgCollectIncentivesResponse
+        ) => void;
+
+        /**
+         * Callback as used by {@link osmosis.concentratedliquidity.v1beta1.Msg#fungifyChargedPositions}.
+         * @param error Error, if any
+         * @param [response] MsgFungifyChargedPositionsResponse
+         */
+        type FungifyChargedPositionsCallback = (
+          error: Error | null,
+          response?: osmosis.concentratedliquidity.v1beta1.MsgFungifyChargedPositionsResponse
+        ) => void;
+      }
+
+      /** Properties of a MsgCreatePosition. */
+      interface IMsgCreatePosition {
+        /** MsgCreatePosition poolId */
+        poolId?: Long | null;
+
+        /** MsgCreatePosition sender */
+        sender?: string | null;
+
+        /** MsgCreatePosition lowerTick */
+        lowerTick?: Long | null;
+
+        /** MsgCreatePosition upperTick */
+        upperTick?: Long | null;
+
+        /** MsgCreatePosition tokenDesired0 */
+        tokenDesired0?: cosmos.base.v1beta1.ICoin | null;
+
+        /** MsgCreatePosition tokenDesired1 */
+        tokenDesired1?: cosmos.base.v1beta1.ICoin | null;
+
+        /** MsgCreatePosition tokenMinAmount0 */
+        tokenMinAmount0?: string | null;
+
+        /** MsgCreatePosition tokenMinAmount1 */
+        tokenMinAmount1?: string | null;
+      }
+
+      /** Represents a MsgCreatePosition. */
+      class MsgCreatePosition implements IMsgCreatePosition {
+        /**
+         * Constructs a new MsgCreatePosition.
+         * @param [p] Properties to set
+         */
+        constructor(
+          p?: osmosis.concentratedliquidity.v1beta1.IMsgCreatePosition
+        );
+
+        /** MsgCreatePosition poolId. */
+        public poolId: Long;
+
+        /** MsgCreatePosition sender. */
+        public sender: string;
+
+        /** MsgCreatePosition lowerTick. */
+        public lowerTick: Long;
+
+        /** MsgCreatePosition upperTick. */
+        public upperTick: Long;
+
+        /** MsgCreatePosition tokenDesired0. */
+        public tokenDesired0?: cosmos.base.v1beta1.ICoin | null;
+
+        /** MsgCreatePosition tokenDesired1. */
+        public tokenDesired1?: cosmos.base.v1beta1.ICoin | null;
+
+        /** MsgCreatePosition tokenMinAmount0. */
+        public tokenMinAmount0: string;
+
+        /** MsgCreatePosition tokenMinAmount1. */
+        public tokenMinAmount1: string;
+
+        /**
+         * Creates a new MsgCreatePosition instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgCreatePosition instance
+         */
+        public static create(
+          properties?: osmosis.concentratedliquidity.v1beta1.IMsgCreatePosition
+        ): osmosis.concentratedliquidity.v1beta1.MsgCreatePosition;
+
+        /**
+         * Encodes the specified MsgCreatePosition message. Does not implicitly {@link osmosis.concentratedliquidity.v1beta1.MsgCreatePosition.verify|verify} messages.
+         * @param m MsgCreatePosition message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.concentratedliquidity.v1beta1.IMsgCreatePosition,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgCreatePosition message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgCreatePosition
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.concentratedliquidity.v1beta1.MsgCreatePosition;
+
+        /**
+         * Creates a MsgCreatePosition message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgCreatePosition
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.concentratedliquidity.v1beta1.MsgCreatePosition;
+
+        /**
+         * Creates a plain object from a MsgCreatePosition message. Also converts values to other types if specified.
+         * @param m MsgCreatePosition
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.concentratedliquidity.v1beta1.MsgCreatePosition,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgCreatePosition to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgCreatePositionResponse. */
+      interface IMsgCreatePositionResponse {
+        /** MsgCreatePositionResponse positionId */
+        positionId?: Long | null;
+
+        /** MsgCreatePositionResponse amount0 */
+        amount0?: string | null;
+
+        /** MsgCreatePositionResponse amount1 */
+        amount1?: string | null;
+
+        /** MsgCreatePositionResponse joinTime */
+        joinTime?: google.protobuf.ITimestamp | null;
+
+        /** MsgCreatePositionResponse liquidityCreated */
+        liquidityCreated?: string | null;
+      }
+
+      /** Represents a MsgCreatePositionResponse. */
+      class MsgCreatePositionResponse implements IMsgCreatePositionResponse {
+        /**
+         * Constructs a new MsgCreatePositionResponse.
+         * @param [p] Properties to set
+         */
+        constructor(
+          p?: osmosis.concentratedliquidity.v1beta1.IMsgCreatePositionResponse
+        );
+
+        /** MsgCreatePositionResponse positionId. */
+        public positionId: Long;
+
+        /** MsgCreatePositionResponse amount0. */
+        public amount0: string;
+
+        /** MsgCreatePositionResponse amount1. */
+        public amount1: string;
+
+        /** MsgCreatePositionResponse joinTime. */
+        public joinTime?: google.protobuf.ITimestamp | null;
+
+        /** MsgCreatePositionResponse liquidityCreated. */
+        public liquidityCreated: string;
+
+        /**
+         * Creates a new MsgCreatePositionResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgCreatePositionResponse instance
+         */
+        public static create(
+          properties?: osmosis.concentratedliquidity.v1beta1.IMsgCreatePositionResponse
+        ): osmosis.concentratedliquidity.v1beta1.MsgCreatePositionResponse;
+
+        /**
+         * Encodes the specified MsgCreatePositionResponse message. Does not implicitly {@link osmosis.concentratedliquidity.v1beta1.MsgCreatePositionResponse.verify|verify} messages.
+         * @param m MsgCreatePositionResponse message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.concentratedliquidity.v1beta1.IMsgCreatePositionResponse,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgCreatePositionResponse message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgCreatePositionResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.concentratedliquidity.v1beta1.MsgCreatePositionResponse;
+
+        /**
+         * Creates a MsgCreatePositionResponse message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgCreatePositionResponse
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.concentratedliquidity.v1beta1.MsgCreatePositionResponse;
+
+        /**
+         * Creates a plain object from a MsgCreatePositionResponse message. Also converts values to other types if specified.
+         * @param m MsgCreatePositionResponse
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.concentratedliquidity.v1beta1.MsgCreatePositionResponse,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgCreatePositionResponse to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgWithdrawPosition. */
+      interface IMsgWithdrawPosition {
+        /** MsgWithdrawPosition positionId */
+        positionId?: Long | null;
+
+        /** MsgWithdrawPosition sender */
+        sender?: string | null;
+
+        /** MsgWithdrawPosition liquidityAmount */
+        liquidityAmount?: string | null;
+      }
+
+      /** Represents a MsgWithdrawPosition. */
+      class MsgWithdrawPosition implements IMsgWithdrawPosition {
+        /**
+         * Constructs a new MsgWithdrawPosition.
+         * @param [p] Properties to set
+         */
+        constructor(
+          p?: osmosis.concentratedliquidity.v1beta1.IMsgWithdrawPosition
+        );
+
+        /** MsgWithdrawPosition positionId. */
+        public positionId: Long;
+
+        /** MsgWithdrawPosition sender. */
+        public sender: string;
+
+        /** MsgWithdrawPosition liquidityAmount. */
+        public liquidityAmount: string;
+
+        /**
+         * Creates a new MsgWithdrawPosition instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgWithdrawPosition instance
+         */
+        public static create(
+          properties?: osmosis.concentratedliquidity.v1beta1.IMsgWithdrawPosition
+        ): osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition;
+
+        /**
+         * Encodes the specified MsgWithdrawPosition message. Does not implicitly {@link osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition.verify|verify} messages.
+         * @param m MsgWithdrawPosition message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.concentratedliquidity.v1beta1.IMsgWithdrawPosition,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgWithdrawPosition message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgWithdrawPosition
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition;
+
+        /**
+         * Creates a MsgWithdrawPosition message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgWithdrawPosition
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition;
+
+        /**
+         * Creates a plain object from a MsgWithdrawPosition message. Also converts values to other types if specified.
+         * @param m MsgWithdrawPosition
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgWithdrawPosition to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgWithdrawPositionResponse. */
+      interface IMsgWithdrawPositionResponse {
+        /** MsgWithdrawPositionResponse amount0 */
+        amount0?: string | null;
+
+        /** MsgWithdrawPositionResponse amount1 */
+        amount1?: string | null;
+      }
+
+      /** Represents a MsgWithdrawPositionResponse. */
+      class MsgWithdrawPositionResponse
+        implements IMsgWithdrawPositionResponse
+      {
+        /**
+         * Constructs a new MsgWithdrawPositionResponse.
+         * @param [p] Properties to set
+         */
+        constructor(
+          p?: osmosis.concentratedliquidity.v1beta1.IMsgWithdrawPositionResponse
+        );
+
+        /** MsgWithdrawPositionResponse amount0. */
+        public amount0: string;
+
+        /** MsgWithdrawPositionResponse amount1. */
+        public amount1: string;
+
+        /**
+         * Creates a new MsgWithdrawPositionResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgWithdrawPositionResponse instance
+         */
+        public static create(
+          properties?: osmosis.concentratedliquidity.v1beta1.IMsgWithdrawPositionResponse
+        ): osmosis.concentratedliquidity.v1beta1.MsgWithdrawPositionResponse;
+
+        /**
+         * Encodes the specified MsgWithdrawPositionResponse message. Does not implicitly {@link osmosis.concentratedliquidity.v1beta1.MsgWithdrawPositionResponse.verify|verify} messages.
+         * @param m MsgWithdrawPositionResponse message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.concentratedliquidity.v1beta1.IMsgWithdrawPositionResponse,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgWithdrawPositionResponse message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgWithdrawPositionResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.concentratedliquidity.v1beta1.MsgWithdrawPositionResponse;
+
+        /**
+         * Creates a MsgWithdrawPositionResponse message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgWithdrawPositionResponse
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.concentratedliquidity.v1beta1.MsgWithdrawPositionResponse;
+
+        /**
+         * Creates a plain object from a MsgWithdrawPositionResponse message. Also converts values to other types if specified.
+         * @param m MsgWithdrawPositionResponse
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.concentratedliquidity.v1beta1.MsgWithdrawPositionResponse,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgWithdrawPositionResponse to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgCollectFees. */
+      interface IMsgCollectFees {
+        /** MsgCollectFees positionIds */
+        positionIds?: Long[] | null;
+
+        /** MsgCollectFees sender */
+        sender?: string | null;
+      }
+
+      /** Represents a MsgCollectFees. */
+      class MsgCollectFees implements IMsgCollectFees {
+        /**
+         * Constructs a new MsgCollectFees.
+         * @param [p] Properties to set
+         */
+        constructor(p?: osmosis.concentratedliquidity.v1beta1.IMsgCollectFees);
+
+        /** MsgCollectFees positionIds. */
+        public positionIds: Long[];
+
+        /** MsgCollectFees sender. */
+        public sender: string;
+
+        /**
+         * Creates a new MsgCollectFees instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgCollectFees instance
+         */
+        public static create(
+          properties?: osmosis.concentratedliquidity.v1beta1.IMsgCollectFees
+        ): osmosis.concentratedliquidity.v1beta1.MsgCollectFees;
+
+        /**
+         * Encodes the specified MsgCollectFees message. Does not implicitly {@link osmosis.concentratedliquidity.v1beta1.MsgCollectFees.verify|verify} messages.
+         * @param m MsgCollectFees message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.concentratedliquidity.v1beta1.IMsgCollectFees,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgCollectFees message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgCollectFees
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.concentratedliquidity.v1beta1.MsgCollectFees;
+
+        /**
+         * Creates a MsgCollectFees message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgCollectFees
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.concentratedliquidity.v1beta1.MsgCollectFees;
+
+        /**
+         * Creates a plain object from a MsgCollectFees message. Also converts values to other types if specified.
+         * @param m MsgCollectFees
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.concentratedliquidity.v1beta1.MsgCollectFees,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgCollectFees to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgCollectFeesResponse. */
+      interface IMsgCollectFeesResponse {
+        /** MsgCollectFeesResponse collectedFees */
+        collectedFees?: cosmos.base.v1beta1.ICoin[] | null;
+      }
+
+      /** Represents a MsgCollectFeesResponse. */
+      class MsgCollectFeesResponse implements IMsgCollectFeesResponse {
+        /**
+         * Constructs a new MsgCollectFeesResponse.
+         * @param [p] Properties to set
+         */
+        constructor(
+          p?: osmosis.concentratedliquidity.v1beta1.IMsgCollectFeesResponse
+        );
+
+        /** MsgCollectFeesResponse collectedFees. */
+        public collectedFees: cosmos.base.v1beta1.ICoin[];
+
+        /**
+         * Creates a new MsgCollectFeesResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgCollectFeesResponse instance
+         */
+        public static create(
+          properties?: osmosis.concentratedliquidity.v1beta1.IMsgCollectFeesResponse
+        ): osmosis.concentratedliquidity.v1beta1.MsgCollectFeesResponse;
+
+        /**
+         * Encodes the specified MsgCollectFeesResponse message. Does not implicitly {@link osmosis.concentratedliquidity.v1beta1.MsgCollectFeesResponse.verify|verify} messages.
+         * @param m MsgCollectFeesResponse message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.concentratedliquidity.v1beta1.IMsgCollectFeesResponse,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgCollectFeesResponse message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgCollectFeesResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.concentratedliquidity.v1beta1.MsgCollectFeesResponse;
+
+        /**
+         * Creates a MsgCollectFeesResponse message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgCollectFeesResponse
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.concentratedliquidity.v1beta1.MsgCollectFeesResponse;
+
+        /**
+         * Creates a plain object from a MsgCollectFeesResponse message. Also converts values to other types if specified.
+         * @param m MsgCollectFeesResponse
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.concentratedliquidity.v1beta1.MsgCollectFeesResponse,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgCollectFeesResponse to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgCollectIncentives. */
+      interface IMsgCollectIncentives {
+        /** MsgCollectIncentives positionIds */
+        positionIds?: Long[] | null;
+
+        /** MsgCollectIncentives sender */
+        sender?: string | null;
+      }
+
+      /** Represents a MsgCollectIncentives. */
+      class MsgCollectIncentives implements IMsgCollectIncentives {
+        /**
+         * Constructs a new MsgCollectIncentives.
+         * @param [p] Properties to set
+         */
+        constructor(
+          p?: osmosis.concentratedliquidity.v1beta1.IMsgCollectIncentives
+        );
+
+        /** MsgCollectIncentives positionIds. */
+        public positionIds: Long[];
+
+        /** MsgCollectIncentives sender. */
+        public sender: string;
+
+        /**
+         * Creates a new MsgCollectIncentives instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgCollectIncentives instance
+         */
+        public static create(
+          properties?: osmosis.concentratedliquidity.v1beta1.IMsgCollectIncentives
+        ): osmosis.concentratedliquidity.v1beta1.MsgCollectIncentives;
+
+        /**
+         * Encodes the specified MsgCollectIncentives message. Does not implicitly {@link osmosis.concentratedliquidity.v1beta1.MsgCollectIncentives.verify|verify} messages.
+         * @param m MsgCollectIncentives message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.concentratedliquidity.v1beta1.IMsgCollectIncentives,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgCollectIncentives message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgCollectIncentives
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.concentratedliquidity.v1beta1.MsgCollectIncentives;
+
+        /**
+         * Creates a MsgCollectIncentives message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgCollectIncentives
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.concentratedliquidity.v1beta1.MsgCollectIncentives;
+
+        /**
+         * Creates a plain object from a MsgCollectIncentives message. Also converts values to other types if specified.
+         * @param m MsgCollectIncentives
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.concentratedliquidity.v1beta1.MsgCollectIncentives,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgCollectIncentives to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgCollectIncentivesResponse. */
+      interface IMsgCollectIncentivesResponse {
+        /** MsgCollectIncentivesResponse collectedIncentives */
+        collectedIncentives?: cosmos.base.v1beta1.ICoin[] | null;
+      }
+
+      /** Represents a MsgCollectIncentivesResponse. */
+      class MsgCollectIncentivesResponse
+        implements IMsgCollectIncentivesResponse
+      {
+        /**
+         * Constructs a new MsgCollectIncentivesResponse.
+         * @param [p] Properties to set
+         */
+        constructor(
+          p?: osmosis.concentratedliquidity.v1beta1.IMsgCollectIncentivesResponse
+        );
+
+        /** MsgCollectIncentivesResponse collectedIncentives. */
+        public collectedIncentives: cosmos.base.v1beta1.ICoin[];
+
+        /**
+         * Creates a new MsgCollectIncentivesResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgCollectIncentivesResponse instance
+         */
+        public static create(
+          properties?: osmosis.concentratedliquidity.v1beta1.IMsgCollectIncentivesResponse
+        ): osmosis.concentratedliquidity.v1beta1.MsgCollectIncentivesResponse;
+
+        /**
+         * Encodes the specified MsgCollectIncentivesResponse message. Does not implicitly {@link osmosis.concentratedliquidity.v1beta1.MsgCollectIncentivesResponse.verify|verify} messages.
+         * @param m MsgCollectIncentivesResponse message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.concentratedliquidity.v1beta1.IMsgCollectIncentivesResponse,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgCollectIncentivesResponse message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgCollectIncentivesResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.concentratedliquidity.v1beta1.MsgCollectIncentivesResponse;
+
+        /**
+         * Creates a MsgCollectIncentivesResponse message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgCollectIncentivesResponse
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.concentratedliquidity.v1beta1.MsgCollectIncentivesResponse;
+
+        /**
+         * Creates a plain object from a MsgCollectIncentivesResponse message. Also converts values to other types if specified.
+         * @param m MsgCollectIncentivesResponse
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.concentratedliquidity.v1beta1.MsgCollectIncentivesResponse,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgCollectIncentivesResponse to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgCreateIncentive. */
+      interface IMsgCreateIncentive {
+        /** MsgCreateIncentive poolId */
+        poolId?: Long | null;
+
+        /** MsgCreateIncentive sender */
+        sender?: string | null;
+
+        /** MsgCreateIncentive incentiveDenom */
+        incentiveDenom?: string | null;
+
+        /** MsgCreateIncentive incentiveAmount */
+        incentiveAmount?: string | null;
+
+        /** MsgCreateIncentive emissionRate */
+        emissionRate?: string | null;
+
+        /** MsgCreateIncentive startTime */
+        startTime?: google.protobuf.ITimestamp | null;
+
+        /** MsgCreateIncentive minUptime */
+        minUptime?: google.protobuf.IDuration | null;
+      }
+
+      /** Represents a MsgCreateIncentive. */
+      class MsgCreateIncentive implements IMsgCreateIncentive {
+        /**
+         * Constructs a new MsgCreateIncentive.
+         * @param [p] Properties to set
+         */
+        constructor(
+          p?: osmosis.concentratedliquidity.v1beta1.IMsgCreateIncentive
+        );
+
+        /** MsgCreateIncentive poolId. */
+        public poolId: Long;
+
+        /** MsgCreateIncentive sender. */
+        public sender: string;
+
+        /** MsgCreateIncentive incentiveDenom. */
+        public incentiveDenom: string;
+
+        /** MsgCreateIncentive incentiveAmount. */
+        public incentiveAmount: string;
+
+        /** MsgCreateIncentive emissionRate. */
+        public emissionRate: string;
+
+        /** MsgCreateIncentive startTime. */
+        public startTime?: google.protobuf.ITimestamp | null;
+
+        /** MsgCreateIncentive minUptime. */
+        public minUptime?: google.protobuf.IDuration | null;
+
+        /**
+         * Creates a new MsgCreateIncentive instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgCreateIncentive instance
+         */
+        public static create(
+          properties?: osmosis.concentratedliquidity.v1beta1.IMsgCreateIncentive
+        ): osmosis.concentratedliquidity.v1beta1.MsgCreateIncentive;
+
+        /**
+         * Encodes the specified MsgCreateIncentive message. Does not implicitly {@link osmosis.concentratedliquidity.v1beta1.MsgCreateIncentive.verify|verify} messages.
+         * @param m MsgCreateIncentive message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.concentratedliquidity.v1beta1.IMsgCreateIncentive,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgCreateIncentive message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgCreateIncentive
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.concentratedliquidity.v1beta1.MsgCreateIncentive;
+
+        /**
+         * Creates a MsgCreateIncentive message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgCreateIncentive
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.concentratedliquidity.v1beta1.MsgCreateIncentive;
+
+        /**
+         * Creates a plain object from a MsgCreateIncentive message. Also converts values to other types if specified.
+         * @param m MsgCreateIncentive
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.concentratedliquidity.v1beta1.MsgCreateIncentive,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgCreateIncentive to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgCreateIncentiveResponse. */
+      interface IMsgCreateIncentiveResponse {
+        /** MsgCreateIncentiveResponse incentiveDenom */
+        incentiveDenom?: string | null;
+
+        /** MsgCreateIncentiveResponse incentiveAmount */
+        incentiveAmount?: string | null;
+
+        /** MsgCreateIncentiveResponse emissionRate */
+        emissionRate?: string | null;
+
+        /** MsgCreateIncentiveResponse startTime */
+        startTime?: google.protobuf.ITimestamp | null;
+
+        /** MsgCreateIncentiveResponse minUptime */
+        minUptime?: google.protobuf.IDuration | null;
+      }
+
+      /** Represents a MsgCreateIncentiveResponse. */
+      class MsgCreateIncentiveResponse implements IMsgCreateIncentiveResponse {
+        /**
+         * Constructs a new MsgCreateIncentiveResponse.
+         * @param [p] Properties to set
+         */
+        constructor(
+          p?: osmosis.concentratedliquidity.v1beta1.IMsgCreateIncentiveResponse
+        );
+
+        /** MsgCreateIncentiveResponse incentiveDenom. */
+        public incentiveDenom: string;
+
+        /** MsgCreateIncentiveResponse incentiveAmount. */
+        public incentiveAmount: string;
+
+        /** MsgCreateIncentiveResponse emissionRate. */
+        public emissionRate: string;
+
+        /** MsgCreateIncentiveResponse startTime. */
+        public startTime?: google.protobuf.ITimestamp | null;
+
+        /** MsgCreateIncentiveResponse minUptime. */
+        public minUptime?: google.protobuf.IDuration | null;
+
+        /**
+         * Creates a new MsgCreateIncentiveResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgCreateIncentiveResponse instance
+         */
+        public static create(
+          properties?: osmosis.concentratedliquidity.v1beta1.IMsgCreateIncentiveResponse
+        ): osmosis.concentratedliquidity.v1beta1.MsgCreateIncentiveResponse;
+
+        /**
+         * Encodes the specified MsgCreateIncentiveResponse message. Does not implicitly {@link osmosis.concentratedliquidity.v1beta1.MsgCreateIncentiveResponse.verify|verify} messages.
+         * @param m MsgCreateIncentiveResponse message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.concentratedliquidity.v1beta1.IMsgCreateIncentiveResponse,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgCreateIncentiveResponse message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgCreateIncentiveResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.concentratedliquidity.v1beta1.MsgCreateIncentiveResponse;
+
+        /**
+         * Creates a MsgCreateIncentiveResponse message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgCreateIncentiveResponse
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.concentratedliquidity.v1beta1.MsgCreateIncentiveResponse;
+
+        /**
+         * Creates a plain object from a MsgCreateIncentiveResponse message. Also converts values to other types if specified.
+         * @param m MsgCreateIncentiveResponse
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.concentratedliquidity.v1beta1.MsgCreateIncentiveResponse,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgCreateIncentiveResponse to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgFungifyChargedPositions. */
+      interface IMsgFungifyChargedPositions {
+        /** MsgFungifyChargedPositions positionIds */
+        positionIds?: Long[] | null;
+
+        /** MsgFungifyChargedPositions sender */
+        sender?: string | null;
+      }
+
+      /** Represents a MsgFungifyChargedPositions. */
+      class MsgFungifyChargedPositions implements IMsgFungifyChargedPositions {
+        /**
+         * Constructs a new MsgFungifyChargedPositions.
+         * @param [p] Properties to set
+         */
+        constructor(
+          p?: osmosis.concentratedliquidity.v1beta1.IMsgFungifyChargedPositions
+        );
+
+        /** MsgFungifyChargedPositions positionIds. */
+        public positionIds: Long[];
+
+        /** MsgFungifyChargedPositions sender. */
+        public sender: string;
+
+        /**
+         * Creates a new MsgFungifyChargedPositions instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgFungifyChargedPositions instance
+         */
+        public static create(
+          properties?: osmosis.concentratedliquidity.v1beta1.IMsgFungifyChargedPositions
+        ): osmosis.concentratedliquidity.v1beta1.MsgFungifyChargedPositions;
+
+        /**
+         * Encodes the specified MsgFungifyChargedPositions message. Does not implicitly {@link osmosis.concentratedliquidity.v1beta1.MsgFungifyChargedPositions.verify|verify} messages.
+         * @param m MsgFungifyChargedPositions message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.concentratedliquidity.v1beta1.IMsgFungifyChargedPositions,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgFungifyChargedPositions message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgFungifyChargedPositions
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.concentratedliquidity.v1beta1.MsgFungifyChargedPositions;
+
+        /**
+         * Creates a MsgFungifyChargedPositions message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgFungifyChargedPositions
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.concentratedliquidity.v1beta1.MsgFungifyChargedPositions;
+
+        /**
+         * Creates a plain object from a MsgFungifyChargedPositions message. Also converts values to other types if specified.
+         * @param m MsgFungifyChargedPositions
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.concentratedliquidity.v1beta1.MsgFungifyChargedPositions,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgFungifyChargedPositions to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+
+      /** Properties of a MsgFungifyChargedPositionsResponse. */
+      interface IMsgFungifyChargedPositionsResponse {
+        /** MsgFungifyChargedPositionsResponse newPositionId */
+        newPositionId?: Long | null;
+      }
+
+      /** Represents a MsgFungifyChargedPositionsResponse. */
+      class MsgFungifyChargedPositionsResponse
+        implements IMsgFungifyChargedPositionsResponse
+      {
+        /**
+         * Constructs a new MsgFungifyChargedPositionsResponse.
+         * @param [p] Properties to set
+         */
+        constructor(
+          p?: osmosis.concentratedliquidity.v1beta1.IMsgFungifyChargedPositionsResponse
+        );
+
+        /** MsgFungifyChargedPositionsResponse newPositionId. */
+        public newPositionId: Long;
+
+        /**
+         * Creates a new MsgFungifyChargedPositionsResponse instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns MsgFungifyChargedPositionsResponse instance
+         */
+        public static create(
+          properties?: osmosis.concentratedliquidity.v1beta1.IMsgFungifyChargedPositionsResponse
+        ): osmosis.concentratedliquidity.v1beta1.MsgFungifyChargedPositionsResponse;
+
+        /**
+         * Encodes the specified MsgFungifyChargedPositionsResponse message. Does not implicitly {@link osmosis.concentratedliquidity.v1beta1.MsgFungifyChargedPositionsResponse.verify|verify} messages.
+         * @param m MsgFungifyChargedPositionsResponse message or plain object to encode
+         * @param [w] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(
+          m: osmosis.concentratedliquidity.v1beta1.IMsgFungifyChargedPositionsResponse,
+          w?: $protobuf.Writer
+        ): $protobuf.Writer;
+
+        /**
+         * Decodes a MsgFungifyChargedPositionsResponse message from the specified reader or buffer.
+         * @param r Reader or buffer to decode from
+         * @param [l] Message length if known beforehand
+         * @returns MsgFungifyChargedPositionsResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(
+          r: $protobuf.Reader | Uint8Array,
+          l?: number
+        ): osmosis.concentratedliquidity.v1beta1.MsgFungifyChargedPositionsResponse;
+
+        /**
+         * Creates a MsgFungifyChargedPositionsResponse message from a plain object. Also converts values to their respective internal types.
+         * @param d Plain object
+         * @returns MsgFungifyChargedPositionsResponse
+         */
+        public static fromObject(d: {
+          [k: string]: any;
+        }): osmosis.concentratedliquidity.v1beta1.MsgFungifyChargedPositionsResponse;
+
+        /**
+         * Creates a plain object from a MsgFungifyChargedPositionsResponse message. Also converts values to other types if specified.
+         * @param m MsgFungifyChargedPositionsResponse
+         * @param [o] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(
+          m: osmosis.concentratedliquidity.v1beta1.MsgFungifyChargedPositionsResponse,
+          o?: $protobuf.IConversionOptions
+        ): { [k: string]: any };
+
+        /**
+         * Converts this MsgFungifyChargedPositionsResponse to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+      }
+    }
+  }
+
   /** Namespace superfluid. */
   namespace superfluid {
     /** Represents a Msg */
@@ -4156,6 +7614,25 @@ export namespace osmosis {
       ): Promise<osmosis.superfluid.MsgSuperfluidUnbondLockResponse>;
 
       /**
+       * Calls SuperfluidUndelegateAndUnbondLock.
+       * @param request MsgSuperfluidUndelegateAndUnbondLock message or plain object
+       * @param callback Node-style callback called with the error, if any, and MsgSuperfluidUndelegateAndUnbondLockResponse
+       */
+      public superfluidUndelegateAndUnbondLock(
+        request: osmosis.superfluid.IMsgSuperfluidUndelegateAndUnbondLock,
+        callback: osmosis.superfluid.Msg.SuperfluidUndelegateAndUnbondLockCallback
+      ): void;
+
+      /**
+       * Calls SuperfluidUndelegateAndUnbondLock.
+       * @param request MsgSuperfluidUndelegateAndUnbondLock message or plain object
+       * @returns Promise
+       */
+      public superfluidUndelegateAndUnbondLock(
+        request: osmosis.superfluid.IMsgSuperfluidUndelegateAndUnbondLock
+      ): Promise<osmosis.superfluid.MsgSuperfluidUndelegateAndUnbondLockResponse>;
+
+      /**
        * Calls LockAndSuperfluidDelegate.
        * @param request MsgLockAndSuperfluidDelegate message or plain object
        * @param callback Node-style callback called with the error, if any, and MsgLockAndSuperfluidDelegateResponse
@@ -4192,6 +7669,25 @@ export namespace osmosis {
       public unPoolWhitelistedPool(
         request: osmosis.superfluid.IMsgUnPoolWhitelistedPool
       ): Promise<osmosis.superfluid.MsgUnPoolWhitelistedPoolResponse>;
+
+      /**
+       * Calls UnlockAndMigrateSharesToFullRangeConcentratedPosition.
+       * @param request MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition message or plain object
+       * @param callback Node-style callback called with the error, if any, and MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse
+       */
+      public unlockAndMigrateSharesToFullRangeConcentratedPosition(
+        request: osmosis.superfluid.IMsgUnlockAndMigrateSharesToFullRangeConcentratedPosition,
+        callback: osmosis.superfluid.Msg.UnlockAndMigrateSharesToFullRangeConcentratedPositionCallback
+      ): void;
+
+      /**
+       * Calls UnlockAndMigrateSharesToFullRangeConcentratedPosition.
+       * @param request MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition message or plain object
+       * @returns Promise
+       */
+      public unlockAndMigrateSharesToFullRangeConcentratedPosition(
+        request: osmosis.superfluid.IMsgUnlockAndMigrateSharesToFullRangeConcentratedPosition
+      ): Promise<osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse>;
     }
 
     namespace Msg {
@@ -4226,6 +7722,16 @@ export namespace osmosis {
       ) => void;
 
       /**
+       * Callback as used by {@link osmosis.superfluid.Msg#superfluidUndelegateAndUnbondLock}.
+       * @param error Error, if any
+       * @param [response] MsgSuperfluidUndelegateAndUnbondLockResponse
+       */
+      type SuperfluidUndelegateAndUnbondLockCallback = (
+        error: Error | null,
+        response?: osmosis.superfluid.MsgSuperfluidUndelegateAndUnbondLockResponse
+      ) => void;
+
+      /**
        * Callback as used by {@link osmosis.superfluid.Msg#lockAndSuperfluidDelegate}.
        * @param error Error, if any
        * @param [response] MsgLockAndSuperfluidDelegateResponse
@@ -4243,6 +7749,16 @@ export namespace osmosis {
       type UnPoolWhitelistedPoolCallback = (
         error: Error | null,
         response?: osmosis.superfluid.MsgUnPoolWhitelistedPoolResponse
+      ) => void;
+
+      /**
+       * Callback as used by {@link osmosis.superfluid.Msg#unlockAndMigrateSharesToFullRangeConcentratedPosition}.
+       * @param error Error, if any
+       * @param [response] MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse
+       */
+      type UnlockAndMigrateSharesToFullRangeConcentratedPositionCallback = (
+        error: Error | null,
+        response?: osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse
       ) => void;
     }
 
@@ -4720,6 +8236,172 @@ export namespace osmosis {
       public toJSON(): { [k: string]: any };
     }
 
+    /** Properties of a MsgSuperfluidUndelegateAndUnbondLock. */
+    interface IMsgSuperfluidUndelegateAndUnbondLock {
+      /** MsgSuperfluidUndelegateAndUnbondLock sender */
+      sender?: string | null;
+
+      /** MsgSuperfluidUndelegateAndUnbondLock lockId */
+      lockId?: Long | null;
+
+      /** MsgSuperfluidUndelegateAndUnbondLock coin */
+      coin?: cosmos.base.v1beta1.ICoin | null;
+    }
+
+    /** Represents a MsgSuperfluidUndelegateAndUnbondLock. */
+    class MsgSuperfluidUndelegateAndUnbondLock
+      implements IMsgSuperfluidUndelegateAndUnbondLock
+    {
+      /**
+       * Constructs a new MsgSuperfluidUndelegateAndUnbondLock.
+       * @param [p] Properties to set
+       */
+      constructor(p?: osmosis.superfluid.IMsgSuperfluidUndelegateAndUnbondLock);
+
+      /** MsgSuperfluidUndelegateAndUnbondLock sender. */
+      public sender: string;
+
+      /** MsgSuperfluidUndelegateAndUnbondLock lockId. */
+      public lockId: Long;
+
+      /** MsgSuperfluidUndelegateAndUnbondLock coin. */
+      public coin?: cosmos.base.v1beta1.ICoin | null;
+
+      /**
+       * Creates a new MsgSuperfluidUndelegateAndUnbondLock instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgSuperfluidUndelegateAndUnbondLock instance
+       */
+      public static create(
+        properties?: osmosis.superfluid.IMsgSuperfluidUndelegateAndUnbondLock
+      ): osmosis.superfluid.MsgSuperfluidUndelegateAndUnbondLock;
+
+      /**
+       * Encodes the specified MsgSuperfluidUndelegateAndUnbondLock message. Does not implicitly {@link osmosis.superfluid.MsgSuperfluidUndelegateAndUnbondLock.verify|verify} messages.
+       * @param m MsgSuperfluidUndelegateAndUnbondLock message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.superfluid.IMsgSuperfluidUndelegateAndUnbondLock,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgSuperfluidUndelegateAndUnbondLock message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgSuperfluidUndelegateAndUnbondLock
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.superfluid.MsgSuperfluidUndelegateAndUnbondLock;
+
+      /**
+       * Creates a MsgSuperfluidUndelegateAndUnbondLock message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgSuperfluidUndelegateAndUnbondLock
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.superfluid.MsgSuperfluidUndelegateAndUnbondLock;
+
+      /**
+       * Creates a plain object from a MsgSuperfluidUndelegateAndUnbondLock message. Also converts values to other types if specified.
+       * @param m MsgSuperfluidUndelegateAndUnbondLock
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.superfluid.MsgSuperfluidUndelegateAndUnbondLock,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgSuperfluidUndelegateAndUnbondLock to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a MsgSuperfluidUndelegateAndUnbondLockResponse. */
+    interface IMsgSuperfluidUndelegateAndUnbondLockResponse {}
+
+    /** Represents a MsgSuperfluidUndelegateAndUnbondLockResponse. */
+    class MsgSuperfluidUndelegateAndUnbondLockResponse
+      implements IMsgSuperfluidUndelegateAndUnbondLockResponse
+    {
+      /**
+       * Constructs a new MsgSuperfluidUndelegateAndUnbondLockResponse.
+       * @param [p] Properties to set
+       */
+      constructor(
+        p?: osmosis.superfluid.IMsgSuperfluidUndelegateAndUnbondLockResponse
+      );
+
+      /**
+       * Creates a new MsgSuperfluidUndelegateAndUnbondLockResponse instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgSuperfluidUndelegateAndUnbondLockResponse instance
+       */
+      public static create(
+        properties?: osmosis.superfluid.IMsgSuperfluidUndelegateAndUnbondLockResponse
+      ): osmosis.superfluid.MsgSuperfluidUndelegateAndUnbondLockResponse;
+
+      /**
+       * Encodes the specified MsgSuperfluidUndelegateAndUnbondLockResponse message. Does not implicitly {@link osmosis.superfluid.MsgSuperfluidUndelegateAndUnbondLockResponse.verify|verify} messages.
+       * @param m MsgSuperfluidUndelegateAndUnbondLockResponse message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.superfluid.IMsgSuperfluidUndelegateAndUnbondLockResponse,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgSuperfluidUndelegateAndUnbondLockResponse message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgSuperfluidUndelegateAndUnbondLockResponse
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.superfluid.MsgSuperfluidUndelegateAndUnbondLockResponse;
+
+      /**
+       * Creates a MsgSuperfluidUndelegateAndUnbondLockResponse message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgSuperfluidUndelegateAndUnbondLockResponse
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.superfluid.MsgSuperfluidUndelegateAndUnbondLockResponse;
+
+      /**
+       * Creates a plain object from a MsgSuperfluidUndelegateAndUnbondLockResponse message. Also converts values to other types if specified.
+       * @param m MsgSuperfluidUndelegateAndUnbondLockResponse
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.superfluid.MsgSuperfluidUndelegateAndUnbondLockResponse,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgSuperfluidUndelegateAndUnbondLockResponse to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
     /** Properties of a MsgLockAndSuperfluidDelegate. */
     interface IMsgLockAndSuperfluidDelegate {
       /** MsgLockAndSuperfluidDelegate sender */
@@ -5047,6 +8729,199 @@ export namespace osmosis {
 
       /**
        * Converts this MsgUnPoolWhitelistedPoolResponse to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition. */
+    interface IMsgUnlockAndMigrateSharesToFullRangeConcentratedPosition {
+      /** MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition sender */
+      sender?: string | null;
+
+      /** MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition lockId */
+      lockId?: Long | null;
+
+      /** MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition sharesToMigrate */
+      sharesToMigrate?: cosmos.base.v1beta1.ICoin | null;
+    }
+
+    /** Represents a MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition. */
+    class MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition
+      implements IMsgUnlockAndMigrateSharesToFullRangeConcentratedPosition
+    {
+      /**
+       * Constructs a new MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition.
+       * @param [p] Properties to set
+       */
+      constructor(
+        p?: osmosis.superfluid.IMsgUnlockAndMigrateSharesToFullRangeConcentratedPosition
+      );
+
+      /** MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition sender. */
+      public sender: string;
+
+      /** MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition lockId. */
+      public lockId: Long;
+
+      /** MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition sharesToMigrate. */
+      public sharesToMigrate?: cosmos.base.v1beta1.ICoin | null;
+
+      /**
+       * Creates a new MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition instance
+       */
+      public static create(
+        properties?: osmosis.superfluid.IMsgUnlockAndMigrateSharesToFullRangeConcentratedPosition
+      ): osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition;
+
+      /**
+       * Encodes the specified MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition message. Does not implicitly {@link osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition.verify|verify} messages.
+       * @param m MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.superfluid.IMsgUnlockAndMigrateSharesToFullRangeConcentratedPosition,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition;
+
+      /**
+       * Creates a MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition;
+
+      /**
+       * Creates a plain object from a MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition message. Also converts values to other types if specified.
+       * @param m MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition to JSON.
+       * @returns JSON object
+       */
+      public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse. */
+    interface IMsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse {
+      /** MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse amount0 */
+      amount0?: string | null;
+
+      /** MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse amount1 */
+      amount1?: string | null;
+
+      /** MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse liquidityCreated */
+      liquidityCreated?: string | null;
+
+      /** MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse joinTime */
+      joinTime?: google.protobuf.ITimestamp | null;
+    }
+
+    /** Represents a MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse. */
+    class MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse
+      implements
+        IMsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse
+    {
+      /**
+       * Constructs a new MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse.
+       * @param [p] Properties to set
+       */
+      constructor(
+        p?: osmosis.superfluid.IMsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse
+      );
+
+      /** MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse amount0. */
+      public amount0: string;
+
+      /** MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse amount1. */
+      public amount1: string;
+
+      /** MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse liquidityCreated. */
+      public liquidityCreated: string;
+
+      /** MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse joinTime. */
+      public joinTime?: google.protobuf.ITimestamp | null;
+
+      /**
+       * Creates a new MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse instance using the specified properties.
+       * @param [properties] Properties to set
+       * @returns MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse instance
+       */
+      public static create(
+        properties?: osmosis.superfluid.IMsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse
+      ): osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse;
+
+      /**
+       * Encodes the specified MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse message. Does not implicitly {@link osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse.verify|verify} messages.
+       * @param m MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse message or plain object to encode
+       * @param [w] Writer to encode to
+       * @returns Writer
+       */
+      public static encode(
+        m: osmosis.superfluid.IMsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse,
+        w?: $protobuf.Writer
+      ): $protobuf.Writer;
+
+      /**
+       * Decodes a MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse message from the specified reader or buffer.
+       * @param r Reader or buffer to decode from
+       * @param [l] Message length if known beforehand
+       * @returns MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse
+       * @throws {Error} If the payload is not a reader or valid buffer
+       * @throws {$protobuf.util.ProtocolError} If required fields are missing
+       */
+      public static decode(
+        r: $protobuf.Reader | Uint8Array,
+        l?: number
+      ): osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse;
+
+      /**
+       * Creates a MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse message from a plain object. Also converts values to their respective internal types.
+       * @param d Plain object
+       * @returns MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse
+       */
+      public static fromObject(d: {
+        [k: string]: any;
+      }): osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse;
+
+      /**
+       * Creates a plain object from a MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse message. Also converts values to other types if specified.
+       * @param m MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse
+       * @param [o] Conversion options
+       * @returns Plain object
+       */
+      public static toObject(
+        m: osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse,
+        o?: $protobuf.IConversionOptions
+      ): { [k: string]: any };
+
+      /**
+       * Converts this MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse to JSON.
        * @returns JSON object
        */
       public toJSON(): { [k: string]: any };
@@ -5942,6 +9817,9 @@ export namespace osmosis {
     interface IMsgBeginUnlockingResponse {
       /** MsgBeginUnlockingResponse success */
       success?: boolean | null;
+
+      /** MsgBeginUnlockingResponse unlockingLockID */
+      unlockingLockID?: Long | null;
     }
 
     /** Represents a MsgBeginUnlockingResponse. */
@@ -5954,6 +9832,9 @@ export namespace osmosis {
 
       /** MsgBeginUnlockingResponse success. */
       public success: boolean;
+
+      /** MsgBeginUnlockingResponse unlockingLockID. */
+      public unlockingLockID: Long;
 
       /**
        * Creates a new MsgBeginUnlockingResponse instance using the specified properties.

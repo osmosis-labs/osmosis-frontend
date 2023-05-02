@@ -10,127 +10,78 @@ import {
   RatePretty,
 } from "@keplr-wallet/unit";
 import {
-  NotEnoughLiquidityError,
+  MultihopSwapResult,
   OptimizedRoutes,
-  Pool,
-  RouteWithAmount,
+  RouteWithInAmount,
+  TokenOutGivenInRouter,
 } from "@osmosis-labs/pools";
+import { debounce } from "debounce";
 import {
   action,
+  autorun,
   computed,
   makeObservable,
   observable,
   override,
-  runInAction,
 } from "mobx";
-
-import { OsmosisQueries } from "../queries";
 import {
-  InsufficientBalanceError,
-  NoRouteError,
-  NoSendCurrencyError,
-} from "./errors";
+  fromPromise,
+  FULFILLED,
+  IPromiseBasedObservable,
+  PENDING,
+  REJECTED,
+} from "mobx-utils";
+import { IPriceStore } from "src/price";
+
+import { ObservableQueryPool, OsmosisQueries } from "../queries";
+import { InsufficientBalanceError, NoSendCurrencyError } from "./errors";
+
+type PrettyMultihopSwapResult = {
+  amount: CoinPretty;
+  beforeSpotPriceWithoutSwapFeeInOverOut: IntPretty;
+  beforeSpotPriceWithoutSwapFeeOutOverIn: IntPretty;
+  beforeSpotPriceInOverOut: IntPretty;
+  beforeSpotPriceOutOverIn: IntPretty;
+  afterSpotPriceInOverOut: IntPretty;
+  afterSpotPriceOutOverIn: IntPretty;
+  effectivePriceInOverOut: IntPretty;
+  effectivePriceOutOverIn: IntPretty;
+  tokenInFeeAmount: CoinPretty;
+  swapFee: RatePretty;
+  priceImpact: RatePretty;
+  isMultihopOsmoFeeDiscount: boolean;
+};
 
 export class ObservableTradeTokenInConfig extends AmountConfig {
   @observable.ref
-  protected _pools: Pool[];
+  protected _pools: ObservableQueryPool[];
   @observable
-  protected _incentivizedPoolIds: string[];
+  protected _incentivizedPoolIds: string[] = [];
 
   @observable
   protected _sendCurrencyMinDenom: string | undefined = undefined;
   @observable
   protected _outCurrencyMinDenom: string | undefined = undefined;
-  @observable
-  protected _error: Error | undefined = undefined;
-  @observable
-  protected _notEnoughLiquidity: boolean = false;
 
-  constructor(
-    chainGetter: ChainGetter,
-    protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
-    protected readonly initialChainId: string,
-    sender: string,
-    feeConfig: IFeeConfig | undefined,
-    pools: Pool[],
-    incentivizedPoolIds: string[] = [],
-    protected readonly initialSelectCurrencies: {
-      send: AppCurrency;
-      out: AppCurrency;
-    }
-  ) {
-    super(chainGetter, queriesStore, initialChainId, sender, feeConfig);
+  // routes
+  @observable.ref
+  protected _latestOptimizedRoutes:
+    | IPromiseBasedObservable<RouteWithInAmount[]>
+    | undefined = undefined;
+  @observable.ref
+  protected _latestSpotPriceRoutes:
+    | IPromiseBasedObservable<RouteWithInAmount[]>
+    | undefined = undefined;
 
-    this._pools = pools;
-    this._incentivizedPoolIds = incentivizedPoolIds;
-
-    makeObservable(this);
-  }
-
-  @action
-  setPools(pools: Pool[]) {
-    this._pools = pools;
-  }
-
-  @action
-  setIncentivizedPoolIds(poolIds: string[]) {
-    this._incentivizedPoolIds = poolIds;
-  }
-
-  @override
-  setSendCurrency(currency: AppCurrency | undefined) {
-    if (currency) {
-      this._sendCurrencyMinDenom = currency.coinMinimalDenom;
-    } else {
-      this._sendCurrencyMinDenom = undefined;
-    }
-  }
-
-  @action
-  setOutCurrency(currency: AppCurrency | undefined) {
-    if (currency) {
-      this._outCurrencyMinDenom = currency.coinMinimalDenom;
-    } else {
-      this._outCurrencyMinDenom = undefined;
-    }
-  }
-
-  @action
-  switchInAndOut() {
-    // give back the swap fee amount
-    const outAmount = this.expectedSwapResult.amount;
-    if (outAmount.toDec().isZero()) {
-      this.setAmount("");
-    } else {
-      this.setAmount(
-        outAmount
-          .shrink(true)
-          .maxDecimals(6)
-          .trim(true)
-          .hideDenom(true)
-          .toString()
-      );
-    }
-
-    // Since changing in and out affects each other, it is important to use the stored value.
-    const prevInCurrency = this.sendCurrency.coinMinimalDenom;
-    const prevOutCurrency = this.outCurrency.coinMinimalDenom;
-
-    this._sendCurrencyMinDenom = prevOutCurrency;
-    this._outCurrencyMinDenom = prevInCurrency;
-  }
-
-  get pools(): Pool[] {
-    return this._pools;
-  }
-
-  @computed
-  protected get currencyMap(): Map<string, AppCurrency> {
-    return this.sendableCurrencies.reduce<Map<string, AppCurrency>>(
-      (previous, current) => previous.set(current.coinMinimalDenom, current),
-      new Map()
-    );
-  }
+  // swap result
+  @observable.ref
+  protected _latestSwapResult:
+    | IPromiseBasedObservable<MultihopSwapResult>
+    | undefined = undefined;
+  @observable.ref
+  protected _spotPriceResult:
+    | IPromiseBasedObservable<MultihopSwapResult>
+    | undefined = undefined;
 
   @override
   get sendCurrency(): AppCurrency {
@@ -191,19 +142,16 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
   @computed
   get sendableCurrencies(): AppCurrency[] {
-    if (this.pools.length === 0) {
+    if (this._pools.length === 0) {
       return [];
     }
 
     const chainInfo = this.chainInfo;
 
     // Get all coin denom in the pools.
-    const coinDenomSet = new Set<string>();
-    for (const pool of this.pools) {
-      for (const poolAsset of pool.poolAssets) {
-        coinDenomSet.add(poolAsset.denom);
-      }
-    }
+    const coinDenomSet = new Set<string>(
+      this._pools.flatMap((pool) => pool.poolAssetDenoms)
+    );
 
     const coinDenoms = Array.from(coinDenomSet);
 
@@ -226,77 +174,149 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   }
 
   @computed
-  protected get optimizedRoutes(): OptimizedRoutes {
+  protected get router(): TokenOutGivenInRouter {
     const stakeCurrencyMinDenom = this.chainGetter.getChain(this.initialChainId)
       .stakeCurrency.coinMinimalDenom;
-    return new OptimizedRoutes(
-      this.pools,
-      this._incentivizedPoolIds,
-      stakeCurrencyMinDenom
+    const getPoolTotalValueLocked = (poolId: string) => {
+      const queryPool = this._pools.find((pool) => pool.id === poolId);
+      if (queryPool) {
+        return queryPool.computeTotalValueLocked(this.priceStore).toDec();
+      } else {
+        console.warn("Returning 0 TVL for poolId: " + poolId);
+        return new Dec(0);
+      }
+    };
+
+    return new OptimizedRoutes({
+      pools: this._pools.map((pool) => pool.pool),
+      incentivizedPoolIds: this._incentivizedPoolIds,
+      stakeCurrencyMinDenom,
+      getPoolTotalValueLocked,
+    });
+  }
+
+  /** Latest and best route from most recent user input amounts and token selections. */
+  @computed
+  get optimizedRoute(): RouteWithInAmount | undefined {
+    return this._latestOptimizedRoutes?.case({
+      fulfilled: (routes) => routes[0], // get best route
+      rejected: (e) => {
+        console.error("Route rejected", e);
+        return undefined;
+      },
+    });
+  }
+
+  /** Prettify swap result for display. */
+  @computed
+  get expectedSwapResult(): PrettyMultihopSwapResult {
+    if (this._latestOptimizedRoutes?.state === REJECTED)
+      return this.zeroSwapResult;
+
+    return (
+      this._latestSwapResult?.case({
+        fulfilled: (result) => this.makePrettyMultihopResult(result),
+        rejected: (e) => {
+          console.error("Swap result rejected", e);
+          return undefined;
+        },
+      }) ?? this.zeroSwapResult
+    );
+  }
+
+  /** Quote is loading for user amount and token select inputs. */
+  @computed
+  get tradeIsLoading(): boolean {
+    return (
+      this._latestOptimizedRoutes?.state === PENDING ||
+      this._latestSwapResult?.state === PENDING
+    );
+  }
+
+  /** Calculated spot price with amount of 1 token in for currently selected tokens. */
+  @computed
+  get expectedSpotPrice(): IntPretty {
+    return (
+      this._spotPriceResult?.case({
+        fulfilled: (result) =>
+          this.makePrettyMultihopResult(result)
+            .beforeSpotPriceWithoutSwapFeeInOverOut,
+        rejected: (e) => {
+          console.error("Spot price rejected", e);
+          return undefined;
+        },
+      }) ?? new IntPretty(0)
+    );
+  }
+
+  /** Spot price for currently selected tokens is loading. */
+  @computed
+  get isSpotPriceLoading(): boolean {
+    return this._spotPriceResult?.state === PENDING;
+  }
+
+  /** Any error derived from state. */
+  @override
+  get error(): Error | undefined {
+    // If things are loading or there's no input, there can't be an error
+    if (
+      this.isSpotPriceLoading ||
+      this.isSpotPriceLoading ||
+      this.amount === "" ||
+      !new Dec(this.amount).isPositive()
+    )
+      return;
+
+    const sendCurrency = this.sendCurrency;
+    if (!sendCurrency) {
+      return new NoSendCurrencyError("Currency to send not set");
+    }
+
+    // If there's an error from the latest generated route result, return it
+    if (this._latestOptimizedRoutes?.state === REJECTED) {
+      return this._latestOptimizedRoutes.case({
+        rejected: (error) => error,
+      });
+    }
+
+    // If there's an error from the latest swap result, return it
+    if (this._latestSwapResult?.state === REJECTED) {
+      return this._latestSwapResult.case({
+        rejected: (error) => error,
+      });
+    }
+
+    // If the user doesn't have enough balance, return an error
+    if (this.amount !== "") {
+      const dec = new Dec(this.amount);
+      const balance = this.queriesStore
+        .get(this.chainId)
+        .queryBalances.getQueryBech32Address(this.sender)
+        .getBalanceFromCurrency(this.sendCurrency);
+      const balanceDec = balance.toDec();
+      if (dec.gt(balanceDec)) {
+        return new InsufficientBalanceError("Insufficient balance");
+      }
+    }
+
+    // There's an error with the input
+    return super.error;
+  }
+
+  @computed
+  protected get currencyMap(): Map<string, AppCurrency> {
+    return this.sendableCurrencies.reduce<Map<string, AppCurrency>>(
+      (previous, current) => previous.set(current.coinMinimalDenom, current),
+      new Map()
     );
   }
 
   @computed
-  get optimizedRoutePaths(): RouteWithAmount[] {
-    runInAction(() => {
-      this._notEnoughLiquidity = false;
-    });
-    this.setError(undefined);
-    const amount = this.getAmountPrimitive();
-    if (
-      !amount.amount ||
-      new Int(amount.amount).lte(new Int(0)) ||
-      this.sendableCurrencies.length === 0 ||
-      !Boolean(
-        this.queriesStore.get(this.initialChainId).osmosis?.queryGammPools
-          .response
-      )
-    ) {
-      return [];
-    }
-
-    try {
-      return this.optimizedRoutes.getOptimizedRoutesByTokenIn(
-        {
-          denom: amount.denom,
-          amount: new Int(amount.amount),
-        },
-        this.outCurrency.coinMinimalDenom,
-        5
-      );
-    } catch (e: any) {
-      if (e instanceof NotEnoughLiquidityError) {
-        runInAction(() => {
-          this._notEnoughLiquidity = true;
-        });
-      }
-      this.setError(e);
-      return [];
-    }
-  }
-
-  @computed
-  get expectedSwapResult(): {
-    amount: CoinPretty;
-    beforeSpotPriceWithoutSwapFeeInOverOut: IntPretty;
-    beforeSpotPriceWithoutSwapFeeOutOverIn: IntPretty;
-    beforeSpotPriceInOverOut: IntPretty;
-    beforeSpotPriceOutOverIn: IntPretty;
-    afterSpotPriceInOverOut: IntPretty;
-    afterSpotPriceOutOverIn: IntPretty;
-    effectivePriceInOverOut: IntPretty;
-    effectivePriceOutOverIn: IntPretty;
-    tokenInFeeAmount: CoinPretty;
-    swapFee: RatePretty;
-    priceImpact: RatePretty;
-    isMultihopOsmoFeeDiscount: boolean;
-  } {
-    const paths = this.optimizedRoutePaths;
-    this.setError(undefined);
-    const zero = {
+  protected get zeroSwapResult(): PrettyMultihopSwapResult {
+    return {
       amount: new CoinPretty(this.outCurrency, new Dec(0)).ready(false),
       beforeSpotPriceWithoutSwapFeeInOverOut: new IntPretty(0).ready(false),
-      beforeSpotPriceWithoutSwapFeeOutOverIn: new IntPretty(0),
+      beforeSpotPriceWithoutSwapFeeOutOverIn: new IntPretty(0).ready(false),
       beforeSpotPriceInOverOut: new IntPretty(0).ready(false),
       beforeSpotPriceOutOverIn: new IntPretty(0).ready(false),
       afterSpotPriceInOverOut: new IntPretty(0).ready(false),
@@ -310,33 +330,214 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       priceImpact: new RatePretty(0).ready(false),
       isMultihopOsmoFeeDiscount: false,
     };
+  }
 
-    if (paths.length === 0 && this.amount !== "" && this.amount !== "0") {
-      this.setError(new NoRouteError("No route found"));
-      return zero;
+  constructor(
+    chainGetter: ChainGetter,
+    protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
+    protected readonly priceStore: IPriceStore,
+    protected readonly initialChainId: string,
+    sender: string,
+    feeConfig: IFeeConfig | undefined,
+    pools: ObservableQueryPool[],
+    protected readonly initialSelectCurrencies: {
+      send: AppCurrency;
+      out: AppCurrency;
+    }
+  ) {
+    super(chainGetter, queriesStore, initialChainId, sender, feeConfig);
+
+    this._pools = pools;
+
+    // Recalculate optimized routes when send currency, it's amount, or out currency changes. This is debounced to prevent spamming the server
+    const debounceGenerateRoutes = debounce(
+      (
+        ...params: Parameters<typeof this.router.getOptimizedRoutesByTokenIn>
+      ) => {
+        const routesPromise = this.router.getOptimizedRoutesByTokenIn(
+          ...params
+        );
+        this.setOptimizedRoutes(fromPromise(routesPromise));
+      },
+      350
+    );
+    autorun(() => {
+      const { denom, amount } = this.getAmountPrimitive();
+
+      // Clear any previous user input debounce
+      debounceGenerateRoutes.clear();
+
+      debounceGenerateRoutes(
+        {
+          denom,
+          amount: new Int(amount),
+        },
+        this.outCurrency.coinMinimalDenom
+      );
+    });
+
+    // Clear any output if the input is cleared
+    autorun(() => {
+      const inputCleared =
+        this.amount === "" || !new Dec(this.amount).isPositive();
+
+      // this also handles race conditions because if the user clears the input, then an prev request result arrives, the old result will be cleared
+      if (this._latestSwapResult?.state === FULFILLED && inputCleared) {
+        this.setSwapResult(undefined);
+      }
+    });
+
+    // React to user input and request a swap result. This is debounced to prevent spamming the server
+    const debounceCalculateTokenOut = debounce((route: RouteWithInAmount) => {
+      const tokenOutPromise = this.router.calculateTokenOutByTokenIn(route);
+      this.setSwapResult(fromPromise(tokenOutPromise));
+    }, 350);
+    autorun(() => {
+      const route = this.optimizedRoute;
+
+      // No route or amount input, so no need to calculate a swap result
+      if (!route) {
+        return;
+      }
+
+      // Clear any previous user input debounce
+      debounceCalculateTokenOut.clear();
+
+      debounceCalculateTokenOut(route);
+    });
+
+    // React to changes in send/out currencies, then generate a spot price by directly calculating from the pools
+    autorun(async () => {
+      this.setSpotPriceResult(undefined);
+
+      let bestRoute:
+        | Awaited<ReturnType<typeof this.router.getOptimizedRoutesByTokenIn>>[0]
+        | undefined;
+      /** 1_000_000 uosmo vs 1 uosmo */
+      const oneWithDecimals = new Int(
+        DecUtils.getTenExponentNInPrecisionRange(this.sendCurrency.coinDecimals)
+          .truncate()
+          .toString()
+      );
+      const tokenIn = {
+        denom: this.sendCurrency.coinMinimalDenom,
+        amount: oneWithDecimals,
+      };
+      const outCurrencyDenom = this.outCurrency.coinMinimalDenom;
+      const router = this.router;
+      try {
+        bestRoute = (
+          await router.getOptimizedRoutesByTokenIn(tokenIn, outCurrencyDenom)
+        )?.[0];
+      } catch (e: any) {
+        // Ignore errors from calculating spot price, as they aren't from user input
+        console.error("Error calculating spot price: ", e.message);
+        return this.setSpotPriceResult(undefined);
+      }
+      if (!bestRoute) return;
+
+      const tokenOutPromise = router.calculateTokenOutByTokenIn(bestRoute);
+      this.setSpotPriceResult(fromPromise(tokenOutPromise));
+    });
+
+    makeObservable(this);
+  }
+
+  @action
+  setPools(pools: ObservableQueryPool[]) {
+    this._pools = pools;
+  }
+
+  @action
+  setIncentivizedPoolIds(poolIds: string[]) {
+    this._incentivizedPoolIds = poolIds;
+  }
+
+  @override
+  setSendCurrency(currency: AppCurrency | undefined) {
+    if (currency) {
+      this._sendCurrencyMinDenom = currency.coinMinimalDenom;
+    } else {
+      this._sendCurrencyMinDenom = undefined;
+    }
+  }
+
+  @action
+  setOutCurrency(currency: AppCurrency | undefined) {
+    if (currency) {
+      this._outCurrencyMinDenom = currency.coinMinimalDenom;
+    } else {
+      this._outCurrencyMinDenom = undefined;
+    }
+  }
+
+  @action
+  switchInAndOut() {
+    // give back the swap fee amount
+    const outAmount = this.expectedSwapResult?.amount;
+    if (outAmount && outAmount.toDec().isZero()) {
+      this.setAmount("");
+    } else if (outAmount) {
+      this.setAmount(
+        outAmount
+          .shrink(true)
+          .maxDecimals(6)
+          .trim(true)
+          .hideDenom(true)
+          .toString()
+      );
     }
 
-    if (paths.length === 0 || this.amount === "" || this.amount === "0") {
-      return zero;
-    }
+    // Since changing in and out affects each other, it is important to use the stored value.
+    const prevInCurrency = this.sendCurrency.coinMinimalDenom;
+    const prevOutCurrency = this.outCurrency.coinMinimalDenom;
 
+    this._sendCurrencyMinDenom = prevOutCurrency;
+    this._outCurrencyMinDenom = prevInCurrency;
+
+    // clear all results of prev input
+    this._latestOptimizedRoutes = undefined;
+    this._latestSwapResult = undefined;
+
+    this._latestSpotPriceRoutes = undefined;
+    this._spotPriceResult = undefined;
+  }
+
+  @action
+  protected setOptimizedRoutes(
+    optimizedRoutes: IPromiseBasedObservable<RouteWithInAmount[]> | undefined
+  ) {
+    this._latestOptimizedRoutes = optimizedRoutes;
+  }
+
+  @action
+  protected setSwapResult(
+    result: IPromiseBasedObservable<MultihopSwapResult> | undefined
+  ) {
+    this._latestSwapResult = result;
+  }
+
+  @action
+  protected setSpotPriceResult(
+    result: IPromiseBasedObservable<MultihopSwapResult> | undefined
+  ) {
+    this._spotPriceResult = result;
+  }
+
+  /** Convert raw router type into a prettified form ready for display. */
+  protected makePrettyMultihopResult(
+    result: MultihopSwapResult
+  ): PrettyMultihopSwapResult {
     const multiplicationInOverOut = DecUtils.getTenExponentN(
       this.outCurrency.coinDecimals - this.sendCurrency.coinDecimals
     );
-    const result = this.optimizedRoutes.calculateTokenOutByTokenIn(paths);
-
-    if (!result.amount.gt(new Int(0))) {
-      this.setError(new Error("Not enough liquidity"));
-      return zero;
-    }
-
     const beforeSpotPriceWithoutSwapFeeInOverOutDec =
       result.beforeSpotPriceInOverOut.mulTruncate(
         new Dec(1).sub(result.swapFee)
       );
 
     return {
-      amount: new CoinPretty(this.outCurrency, result.amount).locale(false),
+      amount: new CoinPretty(this.outCurrency, result.amount).locale(false), // locale - remove commas
       beforeSpotPriceWithoutSwapFeeInOverOut: new IntPretty(
         beforeSpotPriceWithoutSwapFeeInOverOutDec.mulTruncate(
           multiplicationInOverOut
@@ -378,91 +579,10 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       tokenInFeeAmount: new CoinPretty(
         this.sendCurrency,
         result.tokenInFeeAmount
-      ).locale(false),
+      ).locale(false), // locale - remove commas
       swapFee: new RatePretty(result.swapFee),
-      priceImpact: new RatePretty(result.priceImpact),
+      priceImpact: new RatePretty(result.priceImpactTokenOut.neg()),
       isMultihopOsmoFeeDiscount: result.multiHopOsmoDiscount,
     };
-  }
-
-  /** Calculated spot price with amount of 1 token in. */
-  @computed
-  get beforeSpotPriceWithoutSwapFeeOutOverIn(): IntPretty {
-    let paths;
-    const one = new Int(
-      DecUtils.getTenExponentNInPrecisionRange(this.sendCurrency.coinDecimals)
-        .truncate()
-        .toString()
-    );
-    try {
-      paths = this.optimizedRoutes.getOptimizedRoutesByTokenIn(
-        {
-          denom: this.sendCurrency.coinMinimalDenom,
-          amount: one,
-        },
-        this.outCurrency.coinMinimalDenom,
-        5
-      );
-    } catch (e: any) {
-      console.error("No route found", e.message);
-      return new IntPretty(0).ready(false);
-    }
-
-    if (paths.length === 0) {
-      return new IntPretty(0).ready(false);
-    }
-
-    const estimate = this.optimizedRoutes.calculateTokenOutByTokenIn(paths);
-    const multiplicationInOverOut = DecUtils.getTenExponentN(
-      this.outCurrency.coinDecimals - this.sendCurrency.coinDecimals
-    );
-    const beforeSpotPriceWithoutSwapFeeInOverOutDec =
-      estimate.beforeSpotPriceInOverOut.mulTruncate(
-        new Dec(1).sub(estimate.swapFee)
-      );
-
-    // low price vs in asset
-    if (
-      beforeSpotPriceWithoutSwapFeeInOverOutDec.isZero() ||
-      multiplicationInOverOut.isZero()
-    ) {
-      return new IntPretty(0).ready(false);
-    }
-
-    return new IntPretty(
-      new Dec(1)
-        .quoTruncate(beforeSpotPriceWithoutSwapFeeInOverOutDec)
-        .quoTruncate(multiplicationInOverOut)
-    );
-  }
-
-  @override
-  get error(): Error | undefined {
-    const sendCurrency = this.sendCurrency;
-    if (!sendCurrency) {
-      return new NoSendCurrencyError("Currency to send not set");
-    }
-
-    if (this.amount) {
-      if (this._error instanceof NoRouteError) return this._error;
-      if (this._notEnoughLiquidity) return new NotEnoughLiquidityError();
-
-      const dec = new Dec(this.amount);
-      const balance = this.queriesStore
-        .get(this.chainId)
-        .queryBalances.getQueryBech32Address(this.sender)
-        .getBalanceFromCurrency(this.sendCurrency);
-      const balanceDec = balance.toDec();
-      if (dec.gt(balanceDec)) {
-        return new InsufficientBalanceError("Insufficient balance");
-      }
-    }
-
-    return this._error;
-  }
-
-  @action
-  setError(error: Error | undefined) {
-    this._error = error;
   }
 }

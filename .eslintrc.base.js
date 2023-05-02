@@ -41,5 +41,11 @@ module.exports = {
     "simple-import-sort/exports": "error",
     "import/no-default-export": "error",
     "unused-imports/no-unused-imports": "error",
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        devDependencies: true,
+      },
+    ],
   },
 };

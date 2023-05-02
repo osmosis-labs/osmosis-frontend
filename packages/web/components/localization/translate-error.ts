@@ -5,7 +5,7 @@ import {
   NegativeAmountError,
   ZeroAmountError,
 } from "@keplr-wallet/hooks";
-import { NotEnoughLiquidityError } from "@osmosis-labs/pools";
+import { NoRouteError, NotEnoughLiquidityError } from "@osmosis-labs/pools";
 import {
   CalculatingShareOutAmountError,
   DepositNoBalanceError,
@@ -20,7 +20,6 @@ import {
   NegativeSlippageError,
   NegativeSwapFeeError,
   NoAvailableSharesError,
-  NoRouteError,
   NoSendCurrencyError,
   NotInitializedError,
   PercentageSumError,

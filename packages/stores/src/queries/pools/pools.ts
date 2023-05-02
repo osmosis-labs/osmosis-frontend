@@ -2,13 +2,13 @@ import { KVStore } from "@keplr-wallet/common";
 import {
   ChainGetter,
   ObservableChainQuery,
+  ObservableQueryBalances,
   QueryResponse,
 } from "@keplr-wallet/stores";
-import { autorun, makeObservable } from "mobx";
+import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
-import { GET_POOLS_PAGINATION_LIMIT } from ".";
-import { ObservableQueryNumPools } from "./num-pools";
+import { ObservableQueryLiquiditiesNetInDirection } from "../concentrated-liquidity";
 import { ObservableQueryPool } from "./pool";
 import { PoolGetter, Pools } from "./types";
 
@@ -27,25 +27,17 @@ export class ObservableQueryPools
     kvStore: KVStore,
     chainId: string,
     chainGetter: ChainGetter,
-    queryNumPools: ObservableQueryNumPools,
-    limit = GET_POOLS_PAGINATION_LIMIT
+    readonly queryLiquiditiesInNetDirection: ObservableQueryLiquiditiesNetInDirection,
+    readonly queryBalances: ObservableQueryBalances
   ) {
     super(
       kvStore,
       chainId,
       chainGetter,
-      `/osmosis/gamm/v1beta1/pools?pagination.limit=${limit}`
+      "/osmosis/poolmanager/v1beta1/all-pools"
     );
 
     makeObservable(this);
-
-    autorun(() => {
-      const numPools = queryNumPools.numPools;
-      if (numPools > limit) {
-        limit = numPools;
-        this.setUrl(`/osmosis/gamm/v1beta1/pools?pagination.limit=${limit}`);
-      }
-    });
   }
 
   protected setResponse(response: Readonly<QueryResponse<Pools>>) {
@@ -63,6 +55,8 @@ export class ObservableQueryPools
             this.kvStore,
             this.chainId,
             this.chainGetter,
+            this.queryLiquiditiesInNetDirection,
+            this.queryBalances,
             poolRaw
           )
         );
@@ -97,6 +91,7 @@ export class ObservableQueryPools
     }
 
     return this.response.data.pools.map((raw) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return this.getPool(raw.id)!;
     });
   });

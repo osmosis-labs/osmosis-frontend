@@ -361,7 +361,7 @@ const Pool: FunctionComponent = observer(() => {
           hideCloseButton={isMobile}
           isOpen={showTradeTokenModal}
           onRequestClose={() => setShowTradeTokenModal(false)}
-          pools={[pool.pool]}
+          pools={[pool]}
         />
       )}
       {lockLPTokensConfig && showLockLPTokenModal && (
@@ -474,7 +474,7 @@ const Pool: FunctionComponent = observer(() => {
                     {t("pool.swapFee")}
                   </span>
                   <h4 className="text-osmoverse-100">
-                    {pool?.swapFee.toString()}
+                    {pool?.swapFee.toString() ?? ""}
                   </h4>
                 </div>
               </div>

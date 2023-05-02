@@ -2,9 +2,6 @@
   "404": {
     "title": "페이지를 찾을 수 없습니다"
   },
-  "500": {
-    "title": "서버 에러"
-  },
   "addLiquidity": {
     "allAssets": "모든 자산",
     "autoswapCaption": "오토스왑을 통해 단일 자산의 유동성을 추가합니다",
@@ -26,9 +23,7 @@
       "externalLink": "Osmosis 앱을 떠나 외부 링크로 이동합니다.",
       "externalLinkDisclaimer": "링크를 클릭함으로써, 당신은 Osmosis가 다른 ToS를 가질 수 있는 외부 페이지에 대한 서비스 품질을 보장하지 않음을 읽었고 이해한 것을 인정하는 것입니다.",
       "externalLinkModalTitle": "Osmosis 떠나기",
-      "goToSite": "사이트로 가기",
-      "linkText": "클릭해서 메인 앱으로 돌아가기",
-      "title": "권한이 없는 모든 자산이 보여집니다."
+      "goToSite": "사이트로 가기"
     }
   },
   "assets": {
@@ -54,25 +49,15 @@
       "title": "전송 내역"
     },
     "ibcTransfer": {
-      "amoutDeposit": "입금할 수량",
-      "amoutWithdraw": "출금할 수량",
-      "availableBalance": "사용 가능한 수량:",
       "buttonEdit": "수정",
       "buttonEnter": "입력",
-      "channelBlocked": "채널이 차단됨",
-      "channelCongested": "채널 혼잡",
       "channelCongestedDeposit": "입금 (채널 혼잡)",
       "channelCongestedWithdraw": "출금 (채널 혼잡)",
       "checkboxVerify": "중앙화 거래소 주소로 전송하지 않겠습니다.",
-      "copied": "복사완료!",
       "estimatedTime": "Estimated Time",
-      "from": "발신 체인",
-      "IBCTransfer": "IBC 전송",
-      "MAX": "최대",
       "selectAmount": "수량 선택",
       "titleDeposit": "{coinDenom} 입금",
       "titleWithdraw": "{coinDenom} 출금",
-      "to": "수신 체인",
       "waitTime": "20초",
       "warningLossFunds": "주의: 중앙화 거래소로 출금하면 자산을 잃어버릴 수 있습니다."
     },
@@ -84,7 +69,7 @@
       "liquidity": "내 유동성"
     },
     "selectAssetSource": {
-      "installWallet": "Install {walletName}",
+      "installWallet": "{walletName} 설치",
       "next": "다음",
       "titleDeposit": "입금할 지갑",
       "titleWithdraw": "출금할 지갑"
@@ -114,7 +99,7 @@
       "title": "모든 자산",
       "withdrawButton": "출금"
     },
-    "totalAssets": "Total assets",
+    "totalAssets": "총 자산",
     "transfer": {
       "availableMobile": "잔고",
       "availableOn": "{network} 잔고",
@@ -130,9 +115,6 @@
       "titleWithdraw": "{coinDenom} 출금",
       "to": "수신 체인",
       "transferFee": "전송 수수료",
-      "useWrappedDeposit": "Satellite로 {wrapDenom} 입금하기",
-      "useWrappedWithdraw": "Satellite로 {wrapDenom} 출금하기",
-      "via": "경유",
       "waitTime": "{minutes}분",
       "warnDepositAddressDifferent": "주의: {address}에서 선택한 계정이 마지막으로 입금한 주소와 다릅니다."
     },
@@ -177,6 +159,7 @@
       "poolId": "풀 {id}",
       "stable": "스테이블스왑",
       "weighted": "가중치",
+      "concentrated": "집중된 유동성",
       "internal": "내부 인센티브",
       "external": "외부 인센티브",
       "superfluid": "슈퍼플루이드",
@@ -236,7 +219,6 @@
     "help": "헬프데스크",
     "info": "정보",
     "pools": "풀",
-    "signOut": "로그아웃",
     "stake": "스테이킹",
     "swap": "교환",
     "vote": "투표"
@@ -291,43 +273,30 @@
     "yourStats": "내 잔액"
   },
   "pools": {
-    "all": "전체 풀",
     "allPools": {
-      "APR": "APR",
-      "APRIncentivized": "7일 Vol.",
-      "displayLowLiquidity": "풀 보기 < {value}",
-      "myLiquidity": "내 유동성",
       "search": "풀 검색하기",
       "sort": {
-        "APR": "APR",
         "APRIncentivized": "APR",
         "fees": "수수료 (7D)",
         "liquidity": "유동성",
-        "poolId": "풀 ID",
         "poolName": "풀 이름/번호",
         "volume24h": "거래량 (24H)"
       },
-      "title": "전체 풀",
-      "TVL": "TVL"
+      "title": "전체 풀"
     },
-    "allTab": "전체",
     "APR": "APR",
     "available": "사용 가능 수량",
     "bonded": "예치된 자산",
     "createPool": {
       "amount": "수량",
       "available": "사용 가능",
-      "button": "새로운 풀 만들기",
       "buttonAddToken": "새로운 토큰 추가히기",
-      "buttonBack": "이전",
       "buttonCreate": "풀 생성하기",
       "buttonNext": "다음",
       "infoCaption": "Osmosis 커뮤니티풀로 전송됩니다",
       "infoMessage": "풀 생성 수수료",
-      "interestedCreate": "새 풀을 만들어 볼까요?",
       "scalingFactorController": "단위조정인수 제어자 설정(선택 사항)",
       "stablePool": "스테이블 풀",
-      "startProcess": "여기를 클릭해서 시작하세요.",
       "step": {
         "one": {
           "stable": "{step} / {nbStep} 단계 - 단위조정인수 설정",
@@ -343,33 +312,13 @@
       "weightedPool": "가중비율 풀"
     },
     "externalIncentivized": {
-      "APR": "APR",
-      "search": "심볼로 검색하기",
-      "sort": {
-        "APR": "APR",
-        "epochs": "남은 기간",
-        "liquidity": "유동성",
-        "myLiquidity": "내 유동성",
-        "poolName": "풀 이름/번호"
-      },
-      "title": "외부 인센티브 풀",
       "TVL": "TVL"
     },
-    "incentivized": "인센티브",
-    "liquidity": "유동성",
     "myLiquidity": "내 유동성",
     "myPools": "내 풀",
     "poolId": "풀 #{id}",
     "priceOsmo": "OSMO 가격",
-    "rewardDistribution": "보상 지급까지 남은 시간",
-    "superfluid": {
-      "APR": "APR",
-      "fees7D": "수수료 (7D)",
-      "liquidity": "유동성",
-      "tab": "Superfluid",
-      "title": "Superfluid Pools"
-    },
-    "title": "활성화된 풀"
+    "rewardDistribution": "보상 지급까지 남은 시간"
   },
   "profile": {
     "balance": "잔액",
@@ -390,9 +339,6 @@
     "title": "설정",
     "titleHideDust": "< {fiatSymbol}0.01 미만인 풀 숨기기",
     "titleLanguage": "언어"
-  },
-  "stablecoinTypes": {
-    "collateralized": "담보"
   },
   "superfluidValidator": {
     "bondedAmount": "예치된 수량",
@@ -418,9 +364,6 @@
     "available": "거래 가능수량",
     "button": "거래",
     "buttonError": "무시하고 교환하기",
-    "error": {
-      "findCurrency": "토큰 {currency}를 찾을 수 없습니다"
-    },
     "expectedOutput": "예상 교환치",
     "fee": "교환 수수료 ({fee})",
     "HALF": "절반",
