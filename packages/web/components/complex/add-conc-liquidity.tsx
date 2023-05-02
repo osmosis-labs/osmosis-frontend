@@ -1,5 +1,10 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
-import { priceToTick, roundPriceToNearestTick } from "@osmosis-labs/math";
+import {
+  calculateDepositAmountForBase,
+  calculateDepositAmountForQuote,
+  priceToTick,
+  roundPriceToNearestTick,
+} from "@osmosis-labs/math";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import {
   ObservableAddConcentratedLiquidityConfig,
@@ -529,13 +534,39 @@ const AddConcLiqView: FunctionComponent<
           <DepositAmountGroup
             getFiatValue={getFiatValue}
             coin={pool?.poolAssets[0]?.amount}
-            onUpdate={setBaseDepositAmountIn}
+            onUpdate={(amount) => {
+              setBaseDepositAmountIn(amount);
+              if (clPool) {
+                const [lowerTick, upperTick] = addLiquidityConfig.tickRange;
+                const quoteDeposit = calculateDepositAmountForQuote(
+                  clPool.currentSqrtPrice.mul(clPool.currentSqrtPrice),
+                  lowerTick,
+                  upperTick,
+                  new Dec(amount),
+                  clPool.exponentAtPriceOne
+                );
+                setQuoteDepositAmountIn(quoteDeposit);
+              }
+            }}
             currentValue={baseDepositAmountIn}
           />
           <DepositAmountGroup
             getFiatValue={getFiatValue}
             coin={pool?.poolAssets[1]?.amount}
-            onUpdate={setQuoteDepositAmountIn}
+            onUpdate={(amount) => {
+              setQuoteDepositAmountIn(amount);
+              if (clPool) {
+                const [lowerTick, upperTick] = addLiquidityConfig.tickRange;
+                const quoteDeposit = calculateDepositAmountForBase(
+                  clPool.currentSqrtPrice.mul(clPool.currentSqrtPrice),
+                  lowerTick,
+                  upperTick,
+                  new Dec(amount),
+                  clPool.exponentAtPriceOne
+                );
+                setBaseDepositAmountIn(quoteDeposit);
+              }
+            }}
             currentValue={quoteDepositAmountIn}
           />
         </div>
@@ -705,7 +736,7 @@ const DepositAmountGroup: FunctionComponent<{
               className="border-0 bg-transparent text-h5"
               inputClassName="!leading-4"
               type="number"
-              currentValue={String(value)}
+              currentValue={currentValue.toString(4).trim()}
               onInput={updateValue}
               rightEntry
             />

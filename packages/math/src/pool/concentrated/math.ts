@@ -293,21 +293,36 @@ export function convertTokenInGivenOutToTokenOutGivenIn(
   return new Dec(specifiedTokenOut.amount).quo(currentPrice).truncate();
 }
 
-export function calcualteLiquidityForY(
+export function calculateDepositAmountForQuote(
   curPrice: Dec,
   lowerTick: Int,
   upperTick: Int,
-  depositX: Dec,
+  baseDeposit: Dec,
   exponentAtPriceOne: number
 ): Dec {
   const lowerPriceSqrt = tickToSqrtPrice(lowerTick, exponentAtPriceOne);
   const upperPriceSqrt = tickToSqrtPrice(upperTick, exponentAtPriceOne);
   const curPriceSqrt = approxSqrt(curPrice);
-  const liquidity = depositX
+  const liquidity = baseDeposit
     .mul(curPriceSqrt)
     .mul(upperPriceSqrt)
     .quo(upperPriceSqrt.sub(curPriceSqrt));
   return liquidity.mul(curPriceSqrt.sub(lowerPriceSqrt));
-  // const liquidity = (depositX * Math.sqrt(curPrice) * Math.sqrt(upperPrice)) / (Math.sqrt(upperPrice) - Math.sqrt(curPrice));
-  // return liquidity * (Math.sqrt(curPrice) - Math.sqrt(lowerPrice));
+}
+
+export function calculateDepositAmountForBase(
+  curPrice: Dec,
+  lowerTick: Int,
+  upperTick: Int,
+  quoteDeposit: Dec,
+  exponentAtPriceOne: number
+): Dec {
+  const lowerPriceSqrt = tickToSqrtPrice(lowerTick, exponentAtPriceOne);
+  const upperPriceSqrt = tickToSqrtPrice(upperTick, exponentAtPriceOne);
+  const curPriceSqrt = approxSqrt(curPrice);
+  const liquidityY = quoteDeposit.quo(curPriceSqrt.sub(lowerPriceSqrt));
+  return liquidityY
+    .mul(upperPriceSqrt.sub(curPriceSqrt))
+    .quo(upperPriceSqrt)
+    .quo(curPriceSqrt);
 }

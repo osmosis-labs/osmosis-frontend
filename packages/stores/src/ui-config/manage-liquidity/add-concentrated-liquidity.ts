@@ -8,7 +8,6 @@ import { Dec, Int } from "@keplr-wallet/unit";
 import {
   ActiveLiquidityPerTickRange,
   maxSpotPrice,
-  // calcualteLiquidityForY,
   minSpotPrice,
   priceToTick,
   roundPriceToNearestTick,
