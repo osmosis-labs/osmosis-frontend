@@ -102,6 +102,12 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     const invertedRoutes = reverseRoutes.map(invertRoute);
     routes = [...routes, ...invertedRoutes];
 
+    // dedupe, maintain order (best first)
+    const id = (route: Route) => route.pools.map(({ id }) => id).join("-");
+    routes = routes.filter((route, index, self) => {
+      return index === self.findIndex((r) => id(r) === id(route));
+    });
+
     if (routes.length === 0) {
       throw new NoRouteError();
     }
@@ -417,6 +423,11 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
   ): Promise<RouteWithInAmount[]> {
     if (maxIterations <= 0) {
       throw new Error("maxIterations must be greater than 0");
+    }
+    if (sortedOptimalRoutes.length > maxIterations) {
+      throw new Error(
+        "maxIterations must be greater than or equal to the number of routes"
+      );
     }
 
     if (sortedOptimalRoutes.length === 0) {
