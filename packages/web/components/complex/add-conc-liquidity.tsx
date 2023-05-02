@@ -440,7 +440,11 @@ const AddConcLiqView: FunctionComponent<
                 time,
                 price: close,
               }))}
-              annotations={range}
+              annotations={
+                fullRange
+                  ? [new Dec(yRange[0] * 1.05), new Dec(yRange[1] * 0.95)]
+                  : range
+              }
               domain={yRange}
             />
           </div>
@@ -484,8 +488,14 @@ const AddConcLiqView: FunctionComponent<
                   (val: number) => setInputMin("" + val),
                   500
                 )}
-                onSubmitMin={setMinRange}
-                onSubmitMax={setMaxRange}
+                onSubmitMin={(val) => {
+                  setMinRange(val);
+                  addLiquidityConfig.setFullRange(false);
+                }}
+                onSubmitMax={(val) => {
+                  setMaxRange(val);
+                  addLiquidityConfig.setFullRange(false);
+                }}
                 offset={{ top: 0, right: 36, bottom: 36, left: 0 }}
                 horizontal
                 fullRange={fullRange}
@@ -493,10 +503,11 @@ const AddConcLiqView: FunctionComponent<
             </div>
             <div className="flex flex-col items-center justify-center gap-4 pr-8">
               <PriceInputBox
-                currentValue={fullRange ? "∞" : new Dec(inputMax).toString(4)}
+                currentValue={fullRange ? "" : new Dec(inputMax).toString(4)}
                 label="high"
                 onChange={setInputMax}
                 onBlur={(e) => setMaxRange(+e.target.value)}
+                infinity={fullRange}
               />
               <PriceInputBox
                 currentValue={fullRange ? "0" : new Dec(inputMin).toString(4)}
@@ -835,20 +846,32 @@ function PriceInputBox(props: {
   currentValue: string;
   onChange: (val: string) => void;
   onBlur: (e: any) => void;
+  infinity?: boolean;
 }) {
   return (
-    <div className="flex max-w-[9.75rem] flex-col items-end rounded-xl bg-osmoverse-800 px-2">
+    <div className="flex w-full max-w-[9.75rem] flex-col items-end rounded-xl bg-osmoverse-800 px-2">
       <span className="px-2 pt-2 text-caption text-osmoverse-400">
         {props.label}
       </span>
-      <InputBox
-        className="border-0 bg-transparent text-subtitle1 leading-tight"
-        type="number"
-        rightEntry
-        currentValue={props.currentValue}
-        onInput={(val) => props.onChange(val)}
-        onBlur={props.onBlur}
-      />
+      {props.infinity ? (
+        <div className="flex h-16 flex-row items-center px-2">
+          <Image
+            alt="infinity"
+            src="/icons/infinity.svg"
+            width={16}
+            height={16}
+          />
+        </div>
+      ) : (
+        <InputBox
+          className="border-0 bg-transparent text-subtitle1 leading-tight"
+          type="number"
+          rightEntry
+          currentValue={props.currentValue}
+          onInput={(val) => props.onChange(val)}
+          onBlur={props.onBlur}
+        />
+      )}
     </div>
   );
 }

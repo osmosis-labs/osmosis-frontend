@@ -149,7 +149,7 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
             )}
             {showMaxDragHandler && (
               <DragContainer
-                defaultValue={fullRange ? yRange[1] * 0.99 : max}
+                defaultValue={fullRange ? yRange[1] * 0.95 : max}
                 length={xMax}
                 scale={yScale}
                 stroke={theme.colors.wosmongton["500"]}
@@ -159,7 +159,7 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
             )}
             {showMinDragHandler && (
               <DragContainer
-                defaultValue={fullRange ? yRange[0] * 1.01 : min}
+                defaultValue={fullRange ? yRange[0] * 1.05 : min}
                 length={xMax}
                 scale={yScale}
                 stroke={theme.colors.bullish["500"]}

@@ -30,6 +30,9 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   @observable
   protected _sender: string;
 
+  @observable
+  protected _pool: ConcentratedLiquidityPool;
+
   /*
 	 Used to get current view type of AddConcLiquidity modal
 	 */
@@ -81,11 +84,12 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     sender: string,
     protected readonly queriesStore: IQueriesStore,
     protected readonly queryBalances: ObservableQueryBalances,
-    protected readonly pool: ConcentratedLiquidityPool
+    pool: ConcentratedLiquidityPool
   ) {
     super(chainGetter, initialChainId);
 
     this._poolId = poolId;
+    this._pool = pool;
     this._sender = sender;
 
     makeObservable(this);
@@ -93,6 +97,10 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   get poolId(): string {
     return this._poolId;
+  }
+
+  get pool(): ConcentratedLiquidityPool {
+    return this._pool;
   }
 
   @action
