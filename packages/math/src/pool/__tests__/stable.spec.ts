@@ -1,10 +1,10 @@
 import { Coin, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 
 import { BigDec } from "../../big-dec";
+import { compareDec_checkMultErrorTolerance } from "../../rounding";
 import {
   calcWSumSquares,
   cfmmConstantMultiNoV,
-  compareDec_checkMultErrorTolerance,
   solveCfmm,
   StableSwapMath,
   StableSwapToken,

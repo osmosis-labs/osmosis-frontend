@@ -2,6 +2,22 @@ import { Dec, Int } from "@keplr-wallet/unit";
 
 import { smallestDec } from "./const";
 
+/** The `@keplr-wallet/unit` `Dec` object doesn't have the `mulRoundUp()` function
+ *  as seen in Cosmos SDK `Dec` object. To adapt, we extend Dec and add the function.
+ *
+ *  Create a custom Dec object if it's needed in more places than `calcAmount0Delta`.
+ *  TODO:  If we manage to update `@keplr-wallet/unit` to have `mulRoundUp()` function, we can remove this.
+ *  Proposed in PR: https://github.com/chainapsis/keplr-wallet/pull/721
+ */
+class DecWithMulRoundUp extends Dec {
+  mulRoundUp(d2: DecWithMulRoundUp): Dec {
+    return new Dec(
+      (this.mulRaw(d2) as DecWithMulRoundUp).chopPrecisionAndRoundUp(),
+      Dec.precision
+    );
+  }
+}
+
 /**
   Calculates the amount of asset 0 given the asset with the smaller liquidity in the pool, sqrtpCur, and nextPrice.
 
@@ -9,7 +25,7 @@ import { smallestDec } from "./const";
   - sqrtPriceB is the larger of sqrtpCur and the nextPrice.
   - CalcAmount0Delta = (liquidity * (sqrtPriceB - sqrtPriceA)) / (sqrtPriceB * sqrtPriceA)
  */
-// https://github.com/osmosis-labs/osmosis/blob/1c5f166d180ca6ffdd0a4068b97422c5c169240c/x/concentrated-liquidity/math/math.go#L56
+// https://github.com/osmosis-labs/osmosis/blob/0f9eb3c1259078035445b3e3269659469b95fd9f/x/concentrated-liquidity/math/math.go#L56
 export function calcAmount0Delta(
   liquidity: Dec,
   sqrtPriceA: Dec,
@@ -20,12 +36,32 @@ export function calcAmount0Delta(
     [sqrtPriceA, sqrtPriceB] = [sqrtPriceB, sqrtPriceA];
   }
   const diff = sqrtPriceB.sub(sqrtPriceA);
-  const denom = sqrtPriceA.mul(sqrtPriceB);
 
+  // if calculating for amountIn, we round up
+  // if calculating for amountOut, we round down at precision end
+  // this is to prevent removing more from the pool than expected due to rounding
+  // example: we calculate 1000000.9999999 uusdc (~$1) amountIn and 2000000.999999 uosmo amountOut
+  // we would want the user to put in 1000001 uusdc rather than 1000000 uusdc to ensure we are charging enough for the amount they are removing
+  // additionally, without rounding, there exists cases where the swapState.amountSpecifiedRemaining.GT(sdk.ZeroDec()) for loop within
+  // the CalcOut/In functions never actually reach zero due to dust that would have never gotten counted towards the amount (numbers after the 10^6 place)
   if (roundUp) {
+    // Note that we do MulTruncate so that the denominator is smaller as this is
+    // the case where we want to round up to favor the pool.
+    // Examples include:
+    // - calculating amountIn during swap
+    // - adding liquidity (request user to provide more tokens in in favor of the pool)
+    // The denominator is truncated to get a higher final amount.
+    const denom = sqrtPriceA.mulTruncate(sqrtPriceB);
     return liquidity.mul(diff).quo(denom).roundUpDec();
   }
-  return liquidity.mul(diff).quo(denom);
+  // These are truncated at precision end to round in favor of the pool when:
+  // - calculating amount out during swap
+  // - withdrawing liquidity
+  // The denominator is rounded up to get a smaller final amount.
+  const _sqrtPriceA = new DecWithMulRoundUp(sqrtPriceA.toString());
+  const _sqrtPriceB = new DecWithMulRoundUp(sqrtPriceB.toString());
+  const denom = _sqrtPriceA.mulRoundUp(_sqrtPriceB);
+  return liquidity.mulTruncate(diff).quoTruncate(denom);
 }
 
 /**
@@ -35,7 +71,7 @@ export function calcAmount0Delta(
   - sqrtPriceB is the larger of sqrtpCur and the nextPrice.
   - CalcAmount1Delta = liq * (sqrtPriceB - sqrtPriceA)
  */
-// https://github.com/osmosis-labs/osmosis/blob/1c5f166d180ca6ffdd0a4068b97422c5c169240c/x/concentrated-liquidity/math/math.go#L80
+// https://github.com/osmosis-labs/osmosis/blob/0f9eb3c1259078035445b3e3269659469b95fd9f/x/concentrated-liquidity/math/math.go#L90
 export function calcAmount1Delta(
   liquidity: Dec,
   sqrtPriceA: Dec,
@@ -46,11 +82,28 @@ export function calcAmount1Delta(
     [sqrtPriceA, sqrtPriceB] = [sqrtPriceB, sqrtPriceA];
   }
   const diff = sqrtPriceB.sub(sqrtPriceA);
-
+  // if calculating for amountIn, we round up
+  // if calculating for amountOut, we don't round at all
+  // this is to prevent removing more from the pool than expected due to rounding
+  // example: we calculate 1000000.9999999 uusdc (~$1) amountIn and 2000000.999999 uosmo amountOut
+  // we would want the used to put in 1000001 uusdc rather than 1000000 uusdc to ensure we are charging enough for the amount they are removing
+  // additionally, without rounding, there exists cases where the swapState.amountSpecifiedRemaining.GT(sdk.ZeroDec()) for loop within
+  // the CalcOut/In functions never actually reach zero due to dust that would have never gotten counted towards the amount (numbers after the 10^6 place)
   if (roundUp) {
-    return liquidity.mul(diff).roundUpDec();
+    // Note that we do MulRoundUp so that the end result is larger as this is
+    // the case where we want to round up to favor the pool.
+    // Examples include:
+    // - calculating amountIn during swap
+    // - adding liquidity (request user to provide more tokens in in favor of the pool)
+    const _liquidity = new DecWithMulRoundUp(liquidity.toString());
+    const _diff = new DecWithMulRoundUp(diff.toString());
+    return _liquidity.mulRoundUp(_diff).roundUpDec();
   }
-  return liquidity.mul(diff);
+  // This is truncated at precision end to round in favor of the pool when:
+  // - calculating amount out during swap
+  // - withdrawing liquidity
+  // The denominator is rounded up to get a higher final amount.
+  return liquidity.mulTruncate(diff);
 }
 
 /**
