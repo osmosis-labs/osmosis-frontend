@@ -1,4 +1,5 @@
 import { WalletStatus } from "@keplr-wallet/stores";
+import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 
 import { ModalBaseProps } from "../../modals";
@@ -7,7 +8,7 @@ import { useStore } from "../../stores";
 /** Assumed wallet connected */
 export const Kado: FunctionComponent<
   { assetKey: string } & Pick<ModalBaseProps, "isOpen" | "onRequestClose">
-> = ({ assetKey }) => {
+> = observer(({ assetKey }) => {
   const { chainStore, accountStore } = useStore();
 
   const account = accountStore.getAccount(chainStore.osmosis.chainId);
@@ -21,4 +22,4 @@ export const Kado: FunctionComponent<
       height="700"
     />
   );
-};
+});
