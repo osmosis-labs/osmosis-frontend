@@ -43,7 +43,6 @@ export class ConcentratedLiquidityPoolTickDataProvider
       token1Denom: pool.token1,
       currentSqrtPrice: pool.currentSqrtPrice,
       currentTickLiquidity: pool.currentTickLiquidity,
-      exponentAtPriceOne: pool.exponentAtPriceOne,
     });
 
     if (
@@ -83,7 +82,6 @@ export class ConcentratedLiquidityPoolTickDataProvider
       token1Denom: pool.token1,
       currentSqrtPrice: pool.currentSqrtPrice,
       currentTickLiquidity: pool.currentTickLiquidity,
-      exponentAtPriceOne: pool.exponentAtPriceOne,
     });
 
     if (
@@ -118,7 +116,6 @@ export class ConcentratedLiquidityPoolTickDataProvider
       pool.token0,
       pool.token1,
       zeroForOne,
-      pool.exponentAtPriceOne,
       initialBoundTick // this is the initial bound tick index
     );
 

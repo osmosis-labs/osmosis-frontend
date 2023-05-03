@@ -193,7 +193,6 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
         poolLiquidity: this.currentTickLiquidity,
         inittedTicks: allTicks,
         curSqrtPrice: this.currentSqrtPrice,
-        exponentAtPriceOne: this.exponentAtPriceOne,
         swapFee,
       });
 
@@ -289,7 +288,6 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
         poolLiquidity: this.currentTickLiquidity,
         inittedTicks,
         curSqrtPrice: this.currentSqrtPrice,
-        exponentAtPriceOne: this.exponentAtPriceOne,
         swapFee,
       });
 

@@ -11,8 +11,6 @@ export interface QuoteParams {
   inittedTicks: LiquidityDepth[];
   /** Current tick as price. */
   curSqrtPrice: Dec;
-  /** Exponent factor of pool. */
-  exponentAtPriceOne: number;
   /** Swap fee. i.e. `0.01` */
   swapFee: Dec;
 }

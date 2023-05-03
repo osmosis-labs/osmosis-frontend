@@ -34,7 +34,6 @@ function calcOutGivenIn({
   poolLiquidity,
   inittedTicks,
   curSqrtPrice,
-  exponentAtPriceOne,
   swapFee,
 }: QuoteOutGivenInParams):
   | { amountOut: Int; afterSqrtPrice: Dec }
@@ -71,10 +70,7 @@ function calcOutGivenIn({
       return "no-more-ticks";
     }
 
-    const nextTickSqrtPrice = tickToSqrtPrice(
-      nextTick.tickIndex,
-      exponentAtPriceOne
-    );
+    const nextTickSqrtPrice = tickToSqrtPrice(nextTick.tickIndex);
 
     const sqrtPriceTarget = swapStrategy.getSqrtTargetPrice(nextTickSqrtPrice);
 
@@ -126,7 +122,6 @@ export function calcInGivenOut({
   poolLiquidity,
   inittedTicks,
   curSqrtPrice,
-  exponentAtPriceOne,
   swapFee,
 }: QuoteInGivenOutParams):
   | { amountIn: Int; afterSqrtPrice: Dec }
@@ -163,10 +158,7 @@ export function calcInGivenOut({
       return "no-more-ticks";
     }
 
-    const nextTickSqrtPrice = tickToSqrtPrice(
-      nextTick.tickIndex,
-      exponentAtPriceOne
-    );
+    const nextTickSqrtPrice = tickToSqrtPrice(nextTick.tickIndex);
 
     const sqrtPriceTarget = swapStrategy.getSqrtTargetPrice(nextTickSqrtPrice);
 

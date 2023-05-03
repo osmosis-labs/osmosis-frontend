@@ -1,10 +1,7 @@
 import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter, ObservableChainQuery } from "@keplr-wallet/stores";
 import { Dec, Int } from "@keplr-wallet/unit";
-import {
-  computeMinMaxTicksFromExponentAtPriceOne,
-  LiquidityDepth,
-} from "@osmosis-labs/math";
+import { LiquidityDepth, maxTick, minTick } from "@osmosis-labs/math";
 import { computed, makeObservable, observable } from "mobx";
 
 import { LiquidityNetInDirection } from "./types";
@@ -161,7 +158,6 @@ export class ObservableQueryLiquiditiesNetInDirection {
     token0Denom: string,
     token1Denom: string,
     zeroForOne: boolean,
-    exponentAtPriceOne: number,
     initialBoundTick?: Int
   ) {
     // endpoint is on a per-pool and direction basis, so we need to store a query per pool
@@ -172,9 +168,6 @@ export class ObservableQueryLiquiditiesNetInDirection {
     });
 
     if (!this._poolNetInDirQueries.has(codedKey)) {
-      const { minTick, maxTick } =
-        computeMinMaxTicksFromExponentAtPriceOne(exponentAtPriceOne);
-
       const newQuery = new ObservableQueryLiquidityNetInDirection(
         this.kvStore,
         this.chainId,

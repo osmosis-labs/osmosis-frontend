@@ -28,7 +28,6 @@ describe("calcOutGivenIn matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcOutGivenIn({
         tokenIn,
@@ -36,7 +35,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -65,7 +63,6 @@ describe("calcOutGivenIn matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcOutGivenIn({
         tokenIn,
@@ -73,7 +70,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -103,7 +99,6 @@ describe("calcOutGivenIn matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcOutGivenIn({
         tokenIn,
@@ -111,7 +106,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -141,7 +135,6 @@ describe("calcOutGivenIn matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcOutGivenIn({
         tokenIn,
@@ -149,7 +142,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -178,7 +170,6 @@ describe("calcOutGivenIn matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcOutGivenIn({
         tokenIn,
@@ -186,7 +177,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -215,7 +205,6 @@ describe("calcOutGivenIn matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcOutGivenIn({
         tokenIn,
@@ -223,7 +212,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -256,7 +244,6 @@ describe("calcOutGivenIn matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcOutGivenIn({
         tokenIn,
@@ -264,7 +251,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -293,7 +279,6 @@ describe("calcOutGivenIn matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcOutGivenIn({
         tokenIn,
@@ -301,7 +286,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -334,7 +318,6 @@ describe("calcOutGivenIn matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcOutGivenIn({
         tokenIn,
@@ -342,7 +325,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -374,7 +356,6 @@ describe("calcOutGivenIn matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcOutGivenIn({
         tokenIn,
@@ -382,7 +363,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -414,7 +394,6 @@ describe("calcOutGivenIn matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcOutGivenIn({
         tokenIn,
@@ -422,7 +401,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -453,7 +431,6 @@ describe("calcOutGivenIn matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0.01");
       const result = calcOutGivenIn({
         tokenIn,
@@ -461,7 +438,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -491,7 +467,6 @@ describe("calcOutGivenIn matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0.03");
       const result = calcOutGivenIn({
         tokenIn,
@@ -499,7 +474,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -527,7 +501,6 @@ describe("calcOutGivenIn matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0.05");
       const result = calcOutGivenIn({
         tokenIn,
@@ -535,7 +508,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -567,7 +539,6 @@ describe("calcOutGivenIn matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0.1");
       const result = calcOutGivenIn({
         tokenIn,
@@ -575,7 +546,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -608,7 +578,6 @@ describe("calcOutGivenIn matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0.005");
       const result = calcOutGivenIn({
         tokenIn,
@@ -616,7 +585,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -648,7 +616,6 @@ describe("calcOutGivenIn matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0.03");
       const result = calcOutGivenIn({
         tokenIn,
@@ -656,7 +623,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -680,7 +646,6 @@ describe("calcOutGivenIn matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       expect(
         calcOutGivenIn({
@@ -689,7 +654,6 @@ describe("calcOutGivenIn matches chain code", () => {
           poolLiquidity,
           inittedTicks,
           curSqrtPrice,
-          exponentAtPriceOne,
           swapFee,
         })
       ).toEqual("no-more-ticks");
@@ -707,7 +671,6 @@ describe("calcOutGivenIn matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       expect(
         calcOutGivenIn({
@@ -716,7 +679,6 @@ describe("calcOutGivenIn matches chain code", () => {
           poolLiquidity,
           inittedTicks,
           curSqrtPrice,
-          exponentAtPriceOne,
           swapFee,
         })
       ).toEqual("no-more-ticks");
@@ -748,7 +710,6 @@ describe("calcInGivenOut matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcInGivenOut({
         tokenOut,
@@ -756,7 +717,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -781,7 +741,6 @@ describe("calcInGivenOut matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcInGivenOut({
         tokenOut,
@@ -789,7 +748,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -819,7 +777,6 @@ describe("calcInGivenOut matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcInGivenOut({
         tokenOut,
@@ -827,7 +784,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -857,7 +813,6 @@ describe("calcInGivenOut matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcInGivenOut({
         tokenOut,
@@ -865,7 +820,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -899,7 +853,6 @@ describe("calcInGivenOut matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcInGivenOut({
         tokenOut,
@@ -907,7 +860,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -940,7 +892,6 @@ describe("calcInGivenOut matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcInGivenOut({
         tokenOut,
@@ -948,7 +899,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -981,7 +931,6 @@ describe("calcInGivenOut matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcInGivenOut({
         tokenOut,
@@ -989,7 +938,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -1022,7 +970,6 @@ describe("calcInGivenOut matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcInGivenOut({
         tokenOut,
@@ -1030,7 +977,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -1063,7 +1009,6 @@ describe("calcInGivenOut matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcInGivenOut({
         tokenOut,
@@ -1071,7 +1016,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -1104,7 +1048,6 @@ describe("calcInGivenOut matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcInGivenOut({
         tokenOut,
@@ -1112,7 +1055,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -1145,7 +1087,6 @@ describe("calcInGivenOut matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcInGivenOut({
         tokenOut,
@@ -1153,7 +1094,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -1183,7 +1123,6 @@ describe("calcInGivenOut matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0.01");
       const result = calcInGivenOut({
         tokenOut,
@@ -1191,7 +1130,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -1216,7 +1154,6 @@ describe("calcInGivenOut matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0.03");
       const result = calcInGivenOut({
         tokenOut,
@@ -1224,7 +1161,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -1253,7 +1189,6 @@ describe("calcInGivenOut matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0.001");
       const result = calcInGivenOut({
         tokenOut,
@@ -1261,7 +1196,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -1290,7 +1224,6 @@ describe("calcInGivenOut matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0.1");
       const result = calcInGivenOut({
         tokenOut,
@@ -1298,7 +1231,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -1327,7 +1259,6 @@ describe("calcInGivenOut matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0.05");
       const result = calcInGivenOut({
         tokenOut,
@@ -1335,7 +1266,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -1364,7 +1294,6 @@ describe("calcInGivenOut matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0.0003");
       const result = calcInGivenOut({
         tokenOut,
@@ -1372,7 +1301,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -1397,7 +1325,6 @@ describe("calcInGivenOut matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       expect(
         calcInGivenOut({
@@ -1406,7 +1333,6 @@ describe("calcInGivenOut matches chain code", () => {
           poolLiquidity,
           inittedTicks,
           curSqrtPrice,
-          exponentAtPriceOne,
           swapFee,
         })
       ).toEqual("no-more-ticks");
@@ -1423,7 +1349,6 @@ describe("calcInGivenOut matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       expect(
         calcInGivenOut({
@@ -1432,7 +1357,6 @@ describe("calcInGivenOut matches chain code", () => {
           poolLiquidity,
           inittedTicks,
           curSqrtPrice,
-          exponentAtPriceOne,
           swapFee,
         })
       ).toEqual("no-more-ticks");
