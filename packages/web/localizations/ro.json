@@ -148,7 +148,7 @@
   "components": {
     "fiatOnrampSelection": {
       "chooseOnramp": "Alegeți rampa fiat",
-      "kadoSubtitle": "Acceptă USDC",
+      "kadoSubtitle": "Acceptă OSMO, USDC",
       "transakSubtitle": "Acceptă OSMO"
     },
     "incentive": {

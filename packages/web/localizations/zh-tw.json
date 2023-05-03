@@ -148,7 +148,7 @@
   "components": {
     "fiatOnrampSelection": {
       "chooseOnramp": "選擇法幣入口",
-      "kadoSubtitle": "支援USDC",
+      "kadoSubtitle": "支援OSMO, USDC",
       "transakSubtitle": "支援OSMO"
     },
     "incentive": {

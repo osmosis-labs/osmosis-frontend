@@ -148,7 +148,7 @@
   "components": {
     "fiatOnrampSelection": {
       "chooseOnramp": "Choisir une rampe de paiement en Fiat",
-      "kadoSubtitle": "Prend en charge USDC",
+      "kadoSubtitle": "Prend en charge OSMO, USDC",
       "transakSubtitle": "Prend en charge OSMO"
     },
     "incentive": {

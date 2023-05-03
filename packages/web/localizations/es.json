@@ -148,7 +148,7 @@
   "components": {
     "fiatOnrampSelection": {
       "chooseOnramp": "Seleccionar acceso de Fiat",
-      "kadoSubtitle": "Soporta USDC",
+      "kadoSubtitle": "Soporta OSMO, USDC",
       "transakSubtitle": "Soporta OSMO"
     },
     "incentive": {

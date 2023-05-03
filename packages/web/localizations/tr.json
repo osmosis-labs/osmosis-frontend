@@ -148,7 +148,7 @@
   "components": {
     "fiatOnrampSelection": {
       "chooseOnramp": "Fiat Onramp Seçin",
-      "kadoSubtitle": "USDC'yi destekler",
+      "kadoSubtitle": "OSMO, USDC'yi destekler",
       "transakSubtitle": "OSMO'yu destekler"
     },
     "incentive": {
