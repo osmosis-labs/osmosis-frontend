@@ -5,7 +5,7 @@ import { smallestDec } from "./const";
 /** The `@keplr-wallet/unit` `Dec` object doesn't have the `mulRoundUp()` function
  *  as seen in Cosmos SDK `Dec` object. To adapt, we extend Dec and add the function.
  *
- *  Create a custom Dec object if it's needed in more places than `calcAmount0Delta`.
+ *  Create a custom Dec object if it's needed in more places than below.
  *  TODO:  If we manage to update `@keplr-wallet/unit` to have `mulRoundUp()` function, we can remove this.
  *  Proposed in PR: https://github.com/chainapsis/keplr-wallet/pull/721
  */
