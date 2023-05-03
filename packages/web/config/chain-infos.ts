@@ -3549,7 +3549,7 @@ chainInfos.push({
       pegMechanism: "collateralized",
     },
     {
-      coinDenom: "arb",
+      coinDenom: "ARB",
       coinMinimalDenom: "arb-wei",
       coinDecimals: 18,
       coinGeckoId: "pool:arb",
