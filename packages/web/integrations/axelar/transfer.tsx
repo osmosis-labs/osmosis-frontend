@@ -329,7 +329,7 @@ const AxelarTransfer: FunctionComponent<
       destChain,
       destinationAddress,
       baseDenom,
-      true,
+      isWithdraw,
       axelarApiEnv,
       useNativeToken && shouldGenAddress // should generate
     );
