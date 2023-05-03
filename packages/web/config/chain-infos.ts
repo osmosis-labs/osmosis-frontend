@@ -3513,10 +3513,10 @@ const chainInfos = IS_TESTNET
 // Add normal chain infos in case of `currencies` not containing the stake or fee currency.
 chainInfos.push({
   rpc: IS_TESTNET
-    ? "https://axelartest-rpc.quickapi.com/"
+    ? "https://rpc-axelar-testnet.imperator.co:443"
     : "https://rpc-axelar.keplr.app", // source: https://docs.axelar.dev/resources
   rest: IS_TESTNET
-    ? "https://axelartest-lcd.quickapi.com/"
+    ? "https://lcd-axelar.imperator.co"
     : "https://lcd-axelar.keplr.app",
   chainId: IS_TESTNET ? "axelar-testnet-lisbon-3" : "axelar-dojo-1",
   chainName:  IS_TESTNET ? "Axelar Testnet" : "Axelar",
