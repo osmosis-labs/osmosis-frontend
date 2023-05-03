@@ -270,4 +270,11 @@ export const SourceChainTokenConfigs: {
       },
     },
   },
+  arb: {
+    arbitrum: {
+      id: "Arbitrum" as const,
+      erc20ContractAddress: "0x912CE59144191C1204E64559FE8253a0e49E6548",
+      logoUrl: "/networks/arbitrum.svg",
+    },
+  },
 };
