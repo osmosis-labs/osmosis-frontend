@@ -1,6 +1,6 @@
 import { Dec } from "@keplr-wallet/unit";
 
-import { compareDec_checkMultErrorTolerance } from "../../../rounding";
+import { checkMultiplicativeErrorTolerance } from "../../../rounding";
 import { smallestDec } from "../const";
 import {
   approxRoot,
@@ -39,7 +39,7 @@ describe("calcAmount0Delta: matches chain code tests", () => {
       "6098022989717817431593106314408.888128101590393209"
     ).truncateDec();
 
-    const tolerance = compareDec_checkMultErrorTolerance(
+    const tolerance = checkMultiplicativeErrorTolerance(
       expected,
       res,
       smallestDec,
@@ -62,7 +62,7 @@ describe("calcAmount0Delta: matches chain code tests", () => {
       "6098022989717817431593106314408.888128101590393209"
     ).roundUpDec();
 
-    const tolerance = compareDec_checkMultErrorTolerance(
+    const tolerance = checkMultiplicativeErrorTolerance(
       expected,
       res,
       smallestDec,
@@ -95,7 +95,6 @@ describe("calcAmount1Delta: matches chain code test", () => {
 
     const res = calcAmount1Delta(liquidity, sqrtPriceA, sqrtPriceB, roundUp);
 
-    // with tolerance
     const expected = new Dec(
       "28742157707995443393876876754535992.801567623738751734"
     );
@@ -111,7 +110,6 @@ describe("calcAmount1Delta: matches chain code test", () => {
 
     const res = calcAmount1Delta(liquidity, sqrtPriceA, sqrtPriceB, roundUp);
 
-    // with tolerance
     const expected = new Dec(
       "28742157707995443393876876754535992.801567623738751734"
     ).roundUpDec();

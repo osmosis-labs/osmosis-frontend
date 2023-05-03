@@ -1,7 +1,7 @@
 import { Coin, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 
 import { BigDec } from "../big-dec";
-import { compareBigDec_checkMultErrorTolerance } from "../rounding";
+import { checkMultiplicativeErrorTolerance } from "../rounding";
 
 export const StableSwapMath = {
   calcOutGivenIn,
@@ -312,7 +312,7 @@ export function binarySearch(
   // only need multiplicative error tolerance
 
   for (let curIteration = 0; curIteration < maxIterations; curIteration++) {
-    const compare = compareBigDec_checkMultErrorTolerance(
+    const compare = checkMultiplicativeErrorTolerance(
       targetOutput,
       curOutput,
       errorTolerance,
