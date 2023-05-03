@@ -296,21 +296,52 @@ const AxelarTransfer: FunctionComponent<
       (AxelarChainIds_SourceChainMap[selectedSourceChainAxelarKey] ??
         selectedSourceChainAxelarKey);
 
-    const { depositAddress, isLoading: isDepositAddressLoading } =
-      useDepositAddress(
-        sourceChain,
-        destChain,
-        isWithdraw || correctChainSelected ? accountAddress : undefined,
-        !isWithdraw && useNativeToken
-          ? sourceChainConfig!.nativeWrapEquivalent!.tokenMinDenom
-          : originCurrency.coinMinimalDenom, // evm -> osmosis uses the native denom if native (autowrap) selected
-        isWithdraw ? useNativeToken : undefined,
-        isTestNet ? Environment.TESTNET : Environment.MAINNET,
-        isWithdraw ? balanceOnOsmosis.balance.toDec().gt(new Dec(0)) : true
-      );
+    // get deposit address
+    const destinationAddress =
+      isWithdraw || correctChainSelected ? accountAddress : undefined;
+    const axelarApiEnv = isTestNet ? Environment.TESTNET : Environment.MAINNET;
+    const shouldGenAddress = isWithdraw
+      ? balanceOnOsmosis.balance.toDec().gt(new Dec(0)) // if there's nothing to withdraw from, don't generate an address
+      : true;
+    // normal case, address with wrapped source token (WETH)
+    const {
+      depositAddress: wrapDepositAddress,
+      isLoading: isWrapDepositAddressLoading,
+    } = useDepositAddress(
+      sourceChain,
+      destChain,
+      destinationAddress,
+      originCurrency.coinMinimalDenom,
+      false,
+      axelarApiEnv,
+      !useNativeToken && shouldGenAddress
+    );
+    const baseDenom = isWithdraw
+      ? originCurrency.coinMinimalDenom // withdraw uses wrapped denom
+      : sourceChainConfig?.nativeWrapEquivalent?.tokenMinDenom ?? // deposit uses native/gas token denom
+        originCurrency.coinMinimalDenom;
+    // address that auto un/wraps our wrapped representation (ETH)
+    const {
+      depositAddress: autowrapDepositAddress,
+      isLoading: isAutowrapAddressLoading,
+    } = useDepositAddress(
+      sourceChain,
+      destChain,
+      destinationAddress,
+      baseDenom,
+      true,
+      axelarApiEnv,
+      useNativeToken && shouldGenAddress // should generate
+    );
+    const isDepositAddressLoading = useNativeToken
+      ? isAutowrapAddressLoading
+      : isWrapDepositAddressLoading;
+    const depositAddress = useNativeToken
+      ? autowrapDepositAddress
+      : wrapDepositAddress;
 
     // notify user they are withdrawing into a different account then they last deposited to
-    const [lastDepositAccountAddress, setLastDepositAccountAddress] =
+    const [lastDepositAccountEvmAddress, setLastDepositAccountEvmAddress] =
       useLocalStorageState<string | null>(
         isWithdraw
           ? ""
@@ -320,14 +351,14 @@ const AxelarTransfer: FunctionComponent<
     const warnOfDifferentDepositAddress =
       isWithdraw &&
       ethWalletClient.isConnected &&
-      lastDepositAccountAddress &&
+      lastDepositAccountEvmAddress &&
       ethWalletClient.accountAddress
-        ? ethWalletClient.accountAddress !== lastDepositAccountAddress
+        ? ethWalletClient.accountAddress !== lastDepositAccountEvmAddress
         : false;
 
     // start transfer
     const [transferInitiated, setTransferInitiated] = useState(false);
-    const doAxelarTransfer = useCallback(async () => {
+    const doAxelarTransfer = async () => {
       if (depositAddress) {
         logEvent([
           isWithdraw
@@ -383,7 +414,7 @@ const AxelarTransfer: FunctionComponent<
                 depositAddress
               );
               trackTransferStatus(txHash as string);
-              setLastDepositAccountAddress(ethWalletClient.accountAddress!);
+              setLastDepositAccountEvmAddress(ethWalletClient.accountAddress!);
               logEvent([
                 EventName.Assets.depositAssetCompleted,
                 {
@@ -419,7 +450,7 @@ const AxelarTransfer: FunctionComponent<
                 depositAddress
               );
               trackTransferStatus(txHash as string);
-              setLastDepositAccountAddress(ethWalletClient.accountAddress!);
+              setLastDepositAccountEvmAddress(ethWalletClient.accountAddress!);
               logEvent([
                 EventName.Assets.depositAssetCompleted,
                 {
@@ -457,26 +488,8 @@ const AxelarTransfer: FunctionComponent<
         }
         setTransferInitiated(true);
       }
-    }, [
-      axelarChainId,
-      chainId,
-      balanceOnOsmosis.sourceChannelId,
-      balanceOnOsmosis.destChannelId,
-      depositAddress,
-      erc20ContractAddress,
-      ethWalletClient,
-      isWithdraw,
-      useNativeToken,
-      originCurrency,
-      osmosisAccount,
-      trackTransferStatus,
-      withdrawAmountConfig,
-      inputAmount,
-      inputAmountRaw,
-      logEvent,
-      setLastDepositAccountAddress,
-      setDepositAmount,
-    ]);
+    };
+
     // close modal when initial eth transaction is committed
     const isSendTxPending = isWithdraw
       ? osmosisAccount.txTypeInProgress !== ""
@@ -582,7 +595,6 @@ const AxelarTransfer: FunctionComponent<
                   nativeDenom:
                     balanceOnOsmosis.balance.currency.originCurrency.coinDenom,
                   wrapDenom: sourceChainConfig.nativeWrapEquivalent.wrapDenom,
-                  disabled: isDepositAddressLoading,
                 }
               : undefined
           }
