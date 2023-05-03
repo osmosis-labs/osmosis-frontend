@@ -3307,12 +3307,13 @@ const chainInfos = (
           gasPriceStep: {
             low: 0.002,
             average: 0.002,
-            high: 0.025
-          }
+            high: 0.025,
+          },
         },
       ],
       features: ["ibc-transfer", "ibc-go"],
-      explorerUrlToTx: "https://bd.explorer.net.bluzelle.com/transactions/${txHash}",
+      explorerUrlToTx:
+        "https://bd.explorer.net.bluzelle.com/transactions/${txHash}",
     },
   ] as SimplifiedChainInfo[]
 ).map(createKeplrChainInfos);

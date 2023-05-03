@@ -6,10 +6,11 @@ import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
 import updateLocale from "dayjs/plugin/updateLocale";
 import utc from "dayjs/plugin/utc";
+import { withLDProvider } from "launchdarkly-react-client-sdk";
 import { enableStaticRendering } from "mobx-react-lite";
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import { useMemo } from "react";
+import { ComponentType, useMemo } from "react";
 import {
   setDefaultLanguage,
   setTranslations,
@@ -138,11 +139,19 @@ function MyApp({ Component, pageProps }: AppProps) {
           transition={Bounce}
         />
         <MainLayout menus={menus}>
-          <Component {...pageProps} />
+          {Component && <Component {...pageProps} />}
         </MainLayout>
       </StoreProvider>
     </GetKeplrProvider>
   );
 }
 
-export default MyApp;
+export default withLDProvider({
+  clientSideID: "ADD_CLIENT_SIDE_ID_HERE",
+  user: {
+    anonymous: true,
+  },
+  options: {
+    bootstrap: "localStorage",
+  },
+})(MyApp as ComponentType<{}>);
