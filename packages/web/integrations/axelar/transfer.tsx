@@ -13,6 +13,7 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { Icon } from "~/components/assets";
 import { IBCBalance } from "~/stores/assets";
 
 import { displayToast, ToastType } from "../../components/alert";
@@ -528,6 +529,11 @@ const AxelarTransfer: FunctionComponent<
       ? t("assets.transfer.errors.insufficientBal")
       : undefined;
 
+    const shouldDisplayWrappedAsset = Boolean(
+      sourceChainConfig?.nativeWrapEquivalent &&
+        balanceOnOsmosis.balance.currency.originCurrency
+    );
+
     return (
       <>
         <Transfer
@@ -567,8 +573,7 @@ const AxelarTransfer: FunctionComponent<
             }
           }}
           toggleUseWrappedConfig={
-            sourceChainConfig?.nativeWrapEquivalent &&
-            balanceOnOsmosis.balance.currency.originCurrency
+            shouldDisplayWrappedAsset
               ? {
                   isUsingWrapped: useWrappedToken,
                   setIsUsingWrapped: (isUsingWrapped) => {
@@ -580,8 +585,8 @@ const AxelarTransfer: FunctionComponent<
                     setUseWrappedToken(isUsingWrapped);
                   },
                   nativeDenom:
-                    balanceOnOsmosis.balance.currency.originCurrency.coinDenom,
-                  wrapDenom: sourceChainConfig.nativeWrapEquivalent.wrapDenom,
+                    balanceOnOsmosis.balance.currency.originCurrency!.coinDenom,
+                  wrapDenom: sourceChainConfig!.nativeWrapEquivalent!.wrapDenom,
                   disabled: isDepositAddressLoading,
                 }
               : undefined
@@ -603,6 +608,7 @@ const AxelarTransfer: FunctionComponent<
                 { "opacity-30": isDepositAddressLoading }
               )}
               disabled={
+                shouldDisplayWrappedAsset ||
                 !userCanInteract ||
                 (!isWithdraw &&
                   !userDisconnectedEthWallet &&
@@ -619,17 +625,24 @@ const AxelarTransfer: FunctionComponent<
                 else doAxelarTransfer();
               }}
             >
-              {buttonErrorMessage
-                ? buttonErrorMessage
-                : isDepositAddressLoading
-                ? `${t("assets.transfer.loading")}...`
-                : isWithdraw
-                ? t("assets.transfer.titleWithdraw", {
-                    coinDenom: originCurrency.coinDenom,
-                  })
-                : t("assets.transfer.titleDeposit", {
-                    coinDenom: originCurrency.coinDenom,
-                  })}
+              {shouldDisplayWrappedAsset ? (
+                <>
+                  <Icon id="alert-triangle" className="mr-2" />
+                  <span>{t("temporarilyDisabled")}</span>
+                </>
+              ) : buttonErrorMessage ? (
+                buttonErrorMessage
+              ) : isDepositAddressLoading ? (
+                `${t("assets.transfer.loading")}...`
+              ) : isWithdraw ? (
+                t("assets.transfer.titleWithdraw", {
+                  coinDenom: originCurrency.coinDenom,
+                })
+              ) : (
+                t("assets.transfer.titleDeposit", {
+                  coinDenom: originCurrency.coinDenom,
+                })
+              )}
             </Button>
           )}
         </div>

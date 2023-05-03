@@ -5,7 +5,7 @@ import { IS_FRONTIER } from "../../config";
 import { CustomClasses } from "../types";
 
 export const buttonCVA = cva(
-  "flex w-full place-content-center items-center py-2 text-center transition-colors disabled:cursor-default",
+  "flex w-full place-content-center items-center py-2 text-center transition-colors disabled:cursor-not-allowed",
   {
     variants: {
       /**
