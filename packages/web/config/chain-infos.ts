@@ -1002,6 +1002,17 @@ const chainInfos = (
           coinGeckoId: "pool:void",
           coinImageUrl: "/tokens/void.png",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1zln4p372y059y42vmgda37h9syvqpw899z35hwf0m40n5jmhzc8shjuzck",
+          coinDenom: "DIGIT",
+          coinMinimalDenom:
+            "cw20:juno1zln4p372y059y42vmgda37h9syvqpw899z35hwf0m40n5jmhzc8shjuzck:DIGIT",
+          coinDecimals: 6,
+          coinGeckoId: "pool:digit",
+          coinImageUrl: "/tokens/digit.png",
+        },        
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: IS_TESTNET
