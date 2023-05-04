@@ -180,8 +180,8 @@ const chainInfos = IS_TESTNET
         explorerUrlToTx: "https://testnet-explorer.marsprotocol.io/transactions/{txHash}",
       },
       {
-        rpc: "https://api.testnet.noble.strange.love:443",
-        rest: "https://rpc.testnet.noble.strange.love:443",
+        rpc: "https://rpc.testnet.noble.strange.love:443",
+        rest: "https://api.testnet.noble.strange.love:443",
         chainId: "grand-1",
         chainName: "Noble",
         bip44: {
