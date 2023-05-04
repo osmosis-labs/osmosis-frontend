@@ -3548,6 +3548,13 @@ chainInfos.push({
       coinImageUrl: "/tokens/avalanche.usdc.svg",
       pegMechanism: "collateralized",
     },
+    {
+      coinDenom: "ARB",
+      coinMinimalDenom: "arb-wei",
+      coinDecimals: 18,
+      coinGeckoId: "pool:arb",
+      coinImageUrl: "/tokens/arb.svg",
+    },
   ],
   feeCurrencies: [
     {
