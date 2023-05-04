@@ -199,17 +199,18 @@ export const TradeClipboard: FunctionComponent<{
           tradeTokenInConfig.expectedSwapResult.beforeSpotPriceInOverOut.toDec();
         const inAmount =
           tradeTokenInConfig.amount === ""
-            ? new Int(1)
+            ? new Int(0)
             : new Int(
                 new Dec(tradeTokenInConfig.amount)
                   .mul(
-                    DecUtils.getTenExponentN(
-                      tradeTokenInConfig.sendCurrency.coinDecimals
+                    DecUtils.getTenExponentNInPrecisionRange(
+                      tradeTokenInConfig.outCurrency.coinDecimals
                     )
                   )
                   .truncate()
                   .toString()
               );
+
         amountLessSlippage = calcPriceImpactWithAmount(
           beforeSpotPrice.gt(new Dec(0)) ? beforeSpotPrice : new Dec(1),
           inAmount,
@@ -217,7 +218,7 @@ export const TradeClipboard: FunctionComponent<{
         );
       } catch {
         // address any /0 errors
-        amountLessSlippage = new Dec(0);
+        amountLessSlippage = new Int(0);
       }
 
       const coinLessSlippage = new CoinPretty(
@@ -232,7 +233,6 @@ export const TradeClipboard: FunctionComponent<{
       );
     }, [
       tradeTokenInConfig.outCurrency,
-      tradeTokenInConfig.sendCurrency.coinDecimals,
       tradeTokenInConfig.expectedSwapResult.beforeSpotPriceInOverOut,
       tradeTokenInConfig.amount,
       slippageConfig.slippage,
