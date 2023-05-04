@@ -34,7 +34,7 @@ export const IBCAssetInfos: (IBCAsset & {
       },  
       {
         counterpartyChainId: "ares-1",
-        sourceChannelId: "channel-17",
+        sourceChannelId: "channel-23",
         destChannelId: "channel-13",
         coinMinimalDenom: "umars",
         isVerified: true,
