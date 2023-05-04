@@ -27,20 +27,16 @@ export function useDepositAddress(
 
   /** Key: sourceChain/destChain/address/coinMinimalDenom/autoUnwrap */
   const depositAddressCache = useRef(new Map<string, string>());
-  /** Remembers most recent generating address. */
-  const latestGenCacheKey = useRef("");
 
   const generateAddress = useCallback(async () => {
     const cacheKey = `${sourceChain}/${destChain}/${destinationAddress}/${coinMinimalDenom}/${Boolean(
       autoUnwrapIntoNative
     )}`;
-    const cachedDepositAddress = depositAddressCache.current.get(cacheKey);
-    if (cachedDepositAddress) {
-      setDepositAddress(cachedDepositAddress);
+    const cacheHit = depositAddressCache.current.get(cacheKey);
+    if (cacheHit) {
+      setDepositAddress(cacheHit);
     } else if (destinationAddress) {
       setIsLoading(true);
-      // if the user changes the setting before the address populates, we don't want to set the address in useState
-      latestGenCacheKey.current = cacheKey;
       new AxelarAssetTransfer({ environment })
         .getDepositAddress({
           fromChain: sourceChain,
@@ -54,9 +50,7 @@ export function useDepositAddress(
             : undefined,
         })
         .then((generatedAddress) => {
-          if (latestGenCacheKey.current === cacheKey) {
-            setDepositAddress(generatedAddress);
-          }
+          setDepositAddress(generatedAddress);
           depositAddressCache.current.set(cacheKey, generatedAddress);
         })
         .catch((e: any) => {
@@ -76,7 +70,7 @@ export function useDepositAddress(
   ]);
 
   useEffect(() => {
-    if (destinationAddress && shouldGenerate) {
+    if (destinationAddress && shouldGenerate && !isLoading) {
       generateAddress();
     }
   }, [
@@ -85,6 +79,7 @@ export function useDepositAddress(
     sourceChain,
     destChain,
     shouldGenerate,
+    isLoading,
     generateAddress,
   ]);
 

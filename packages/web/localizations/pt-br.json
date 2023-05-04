@@ -130,7 +130,7 @@
   "components": {
     "fiatOnrampSelection": {
       "chooseOnramp": "Escolher rampa Fiat",
-      "kadoSubtitle": "Suporta USDC",
+      "kadoSubtitle": "Suporta OSMO, USDC",
       "transakSubtitle": "Suporta OSMO"
     },
     "incentive": {
@@ -386,5 +386,5 @@
   "unknownError": "Erro desconhecido",
   "viewExplorer": "Visualizar explorer",
   "waitingForTransaction": "Aguardando para que a transação seja incluida no bloco",
-  "highInflationWarning": "APRs altos podem ser resultado de recompensas inflacionárias. Proceda com cautela."
+  "highPoolInflationWarning": "APRs altos podem ser resultado de recompensas inflacionárias. Proceda com cautela."
 }
