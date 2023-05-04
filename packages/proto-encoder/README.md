@@ -59,5 +59,5 @@ yarn generate:packages
 To generate the proto encoders, you can run the following command:
 
 ```bash
-yarn generate:proto-encoders
+yarn generate:telescope
 ```
