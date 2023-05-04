@@ -21,13 +21,25 @@ import {
 } from "./utils";
 
 export type OptimizedRoutesParams = {
+  /** All pools to be routed through. */
   pools: ReadonlyArray<RoutablePool>;
+  /** IDs of pools to be prioritized in route selection. */
   preferredPoolIds?: string[];
+  /** IDs of pools receiving OSMO incentives. */
   incentivizedPoolIds: string[];
+  /** Min/base denom of stake currency of chain (OSMO) */
   stakeCurrencyMinDenom: string;
+  /** Fetch pool total value locked (liquidity) by pool ID. */
   getPoolTotalValueLocked: (poolId: string) => Dec;
+
+  // LIMITS
+  /** Max number of pools to hop through. */
   maxHops?: number;
+  /** Max number of routes to find and split through. */
   maxRoutes?: number;
+  /** Max number of iterations to test for route splits.
+   *  i.e. 10 means 0%, 10%, 20%, ..., 100% of the in amount. */
+  maxIterations?: number;
 };
 
 /** Use to find routes and simulate swaps through routes.
@@ -40,8 +52,11 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
   protected readonly _incentivizedPoolIds: string[];
   protected readonly _stakeCurrencyMinDenom: string;
   protected readonly _getPoolTotalValueLocked: (poolId: string) => Dec;
+
+  // limits
   protected readonly _maxHops: number;
   protected readonly _maxRoutes: number;
+  protected readonly _maxIterations: number;
 
   // caches
   protected readonly _candidatePathsCache = new Map<string, Route[]>();
@@ -55,7 +70,8 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     stakeCurrencyMinDenom,
     getPoolTotalValueLocked,
     maxHops = 4,
-    maxRoutes = 4,
+    maxRoutes = 2,
+    maxIterations = 10,
   }: OptimizedRoutesParams) {
     this._sortedPools = pools
       .slice()
@@ -77,10 +93,15 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     this._incentivizedPoolIds = incentivizedPoolIds;
     this._stakeCurrencyMinDenom = stakeCurrencyMinDenom;
     this._getPoolTotalValueLocked = getPoolTotalValueLocked;
-    if (maxHops > 5) throw new Error("maxHops must be less than 5");
+    if (maxHops > 5) throw new Error("maxHops must be less than 6");
     this._maxHops = maxHops;
-    if (maxRoutes > 10) throw new Error("maxRoutes must be less than 10");
+    if (maxRoutes > 3) throw new Error("maxRoutes must be less than 4");
     this._maxRoutes = maxRoutes;
+    if (maxIterations >= 100)
+      throw new Error("maxIterations must be less than 100");
+    if (maxIterations <= 0)
+      throw new Error("maxIterations must be greater than 0");
+    this._maxIterations = maxIterations;
   }
 
   /** Find optimal routes to split through for a given amount of token in and out token. */
@@ -137,8 +158,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       }
     }
 
-    const top2Routes = routes.slice(0, 2);
-    return await this.findBestSplitTokenIn(top2Routes, tokenIn.amount);
+    // TODO: consider using preferred pool ids to not split amongst
+
+    const topRoutesToSplit = routes.slice(0, this._maxRoutes);
+    return await this.findBestSplitTokenIn(topRoutesToSplit, tokenIn.amount);
   }
 
   /** Calculate the amount of token out by simulating a swap through a route. */
@@ -418,13 +441,9 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
    */
   protected async findBestSplitTokenIn(
     sortedOptimalRoutes: Route[],
-    tokenInAmount: Int,
-    maxIterations: number = 10
+    tokenInAmount: Int
   ): Promise<RouteWithInAmount[]> {
-    if (maxIterations <= 0) {
-      throw new Error("maxIterations must be greater than 0");
-    }
-    if (sortedOptimalRoutes.length > maxIterations) {
+    if (sortedOptimalRoutes.length > this._maxIterations) {
       throw new Error(
         "maxIterations must be greater than or equal to the number of routes"
       );
@@ -477,8 +496,8 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       // test routes with various splits: 0%, 10%, 20%, ..., 100%
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const route = remainingRoutes.shift()! as RouteWithInAndOutAmount;
-      for (let i = 0; i <= maxIterations; i++) {
-        const fraction = new Dec(i).quo(new Dec(maxIterations));
+      for (let i = 0; i <= this._maxIterations; i++) {
+        const fraction = new Dec(i).quo(new Dec(this._maxIterations));
         const inAmount = new Dec(remainingInAmount).mul(fraction).truncate();
         if (inAmount.isZero()) continue; // skip this traversal (0 in not worth considering)
 
