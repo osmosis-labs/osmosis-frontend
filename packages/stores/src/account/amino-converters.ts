@@ -4,9 +4,9 @@ import {
   cosmwasmAminoConverters,
   ibcAminoConverters as originalIbcAminoConverters,
   osmosisAminoConverters as originalOsmosisAminoConverters,
-} from "@osmosis-labs/proto-encoder";
-import { MsgCreateBalancerPool } from "@osmosis-labs/proto-encoder/build/codegen/osmosis/gamm/pool-models/balancer/tx/tx";
-import { MsgLockTokens } from "@osmosis-labs/proto-encoder/build/codegen/osmosis/lockup/tx";
+} from "@osmosis-labs/proto-codecs";
+import { MsgCreateBalancerPool } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/gamm/pool-models/balancer/tx/tx";
+import { MsgLockTokens } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/lockup/tx";
 import { MsgTransfer } from "cosmjs-types/ibc/applications/transfer/v1/tx";
 import Long from "long";
 

@@ -29,7 +29,7 @@ import {
   cosmwasmProtoRegistry,
   ibcProtoRegistry,
   osmosisProtoRegistry,
-} from "@osmosis-labs/proto-encoder";
+} from "@osmosis-labs/proto-codecs";
 import { Buffer } from "buffer";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { action, makeObservable, observable, runInAction } from "mobx";

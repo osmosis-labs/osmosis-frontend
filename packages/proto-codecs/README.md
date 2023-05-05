@@ -1,4 +1,4 @@
-# @osmosis-labs/proto-encoder
+# @osmosis-labs/proto-codecs
 
 This package exports generated TypeScript libraries for encoding and decoding blockchain data, such as transactions. It also facilitates the conversion of Protobufs into TypeScript libraries for seamless data handling.
 
