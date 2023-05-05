@@ -1,0 +1,16 @@
+{
+  "folders": [
+    {
+      "path": "./packages/math/"
+    },
+    {
+      "path": "./packages/pools/"
+    },
+    {
+      "path": "./packages/stores/"
+    },
+    {
+      "path": "./packages/web/"
+    }
+  ]
+}
