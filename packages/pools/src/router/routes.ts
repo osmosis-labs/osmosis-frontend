@@ -37,20 +37,25 @@ export type OptimizedRoutesParams = {
   // LIMITS
   /** Max number of pools to hop through. */
   maxHops?: number;
-  /** Max number of routes to find and split through. */
+  /** Max number of routes to find. */
   maxRoutes?: number;
+  /** Max number of routes a swap should be split through. */
+  maxSplit?: number;
   /** Max number of iterations to test for route splits.
    *  i.e. 10 means 0%, 10%, 20%, ..., 100% of the in amount. */
-  maxIterations?: number;
+  maxSplitIterations?: number;
 };
 
 /** Use to find routes and simulate swaps through routes.
  *
  *  Maintains a cache for routes and swaps for the lifetime of the instance.
  *  No filtering assumptions are made on provided pools, pools are routed as given.
+ *  @throws NotEnoughLiquidityError if there is not enough liquidity in a route.
+ *  @throws NoRouteError if there is no route between the tokens.
  */
 export class OptimizedRoutes implements TokenOutGivenInRouter {
   protected readonly _sortedPools: RoutablePool[];
+  protected readonly _preferredPoolIds?: string[];
   protected readonly _incentivizedPoolIds: string[];
   protected readonly _stakeCurrencyMinDenom: string;
   protected readonly _getPoolTotalValueLocked: (poolId: string) => Dec;
@@ -58,7 +63,8 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
   // limits
   protected readonly _maxHops: number;
   protected readonly _maxRoutes: number;
-  protected readonly _maxIterations: number;
+  protected readonly _maxSplit: number;
+  protected readonly _maxSplitIterations: number;
 
   // caches
   protected readonly _candidatePathsCache = new Map<string, Route[]>();
@@ -72,8 +78,9 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     stakeCurrencyMinDenom,
     getPoolTotalValueLocked,
     maxHops = 4,
-    maxRoutes = 2,
-    maxIterations = 10,
+    maxRoutes = 4,
+    maxSplit = 2,
+    maxSplitIterations = 10,
   }: OptimizedRoutesParams) {
     this._sortedPools = pools
       .slice()
@@ -92,29 +99,33 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         }
         return pools;
       }, [] as RoutablePool[]);
+    this._preferredPoolIds = preferredPoolIds;
     this._incentivizedPoolIds = incentivizedPoolIds;
     this._stakeCurrencyMinDenom = stakeCurrencyMinDenom;
     this._getPoolTotalValueLocked = getPoolTotalValueLocked;
     if (maxHops > 5) throw new Error("maxHops must be less than 6");
     this._maxHops = maxHops;
-    if (maxRoutes > 3) throw new Error("maxRoutes must be less than 4");
+    if (maxRoutes > 6) throw new Error("maxRoutes must be less than 7");
     this._maxRoutes = maxRoutes;
-    if (maxIterations >= 100)
+    if (maxSplitIterations >= 100)
       throw new Error("maxIterations must be less than 100");
-    if (maxIterations <= 0)
+    if (maxSplit > this._maxRoutes)
+      console.warn("maxRoutes is less than max split, will be used instead");
+    this._maxSplit = maxSplit;
+    if (maxSplitIterations <= 0)
       throw new Error("maxIterations must be greater than 0");
-    this._maxIterations = maxIterations;
+    this._maxSplitIterations = maxSplitIterations;
   }
 
   async routeByTokenIn(
     tokenIn: Token,
     tokenOutDenom: string
   ): Promise<SplitTokenInQuote> {
-    const routes = await this.getOptimizedRoutesByTokenIn(
+    const split = await this.getOptimizedRoutesByTokenIn(
       tokenIn,
       tokenOutDenom
     );
-    return await this.calculateTokenOutByTokenIn(routes);
+    return await this.calculateTokenOutByTokenIn(split);
   }
 
   async getOptimizedRoutesByTokenIn(
@@ -126,37 +137,59 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     }
     validateTokenIn(tokenIn, tokenOutDenom);
 
-    const candidates = this.getCandidateRoutes(tokenIn.denom, tokenOutDenom);
+    ///////
+    // find candidate routes
+
+    const findCandidateOpts = {
+      recyclePools: false, // since we're splitting across routes and can't simulate pool state updates, we need routes with fully unique pools
+    };
+    const candidates = this.getCandidateRoutes(
+      tokenIn.denom,
+      tokenOutDenom,
+      findCandidateOpts
+    );
     let routes = candidates.routes;
 
     // find routes with swapped in/out tokens since getCandidateRoutes is a greedy algorithm
-    const { routes: reverseRoutes } = this.getCandidateRoutes(
+    const { routes: tokenOutToInRoutes } = this.getCandidateRoutes(
       tokenOutDenom,
       tokenIn.denom,
-      candidates.poolsUsed // since we're splitting across routes and can't simulate pool state updates, we need routes with fully unique pools
+      {
+        ...findCandidateOpts,
+        poolsUsed: candidates.poolsUsed, // don't use any pools from the normal token in search
+      }
     );
-    const invertedRoutes = reverseRoutes.map(invertRoute);
+    const invertedRoutes = tokenOutToInRoutes.map(invertRoute);
     routes = [...routes, ...invertedRoutes];
 
-    // TODO: why poolsUsed is not working on second call
-
-    // print pool ids
-    // console.log(routes.map(({ pools }) => pools.map(({ id }) => id)));
-
-    // dedupe, maintain order (best first)
-    const id = (route: Route) =>
-      route.pools
-        .slice()
-        .sort((a, b) => Number(a.id) - Number(b.id))
-        .map(({ id }) => id)
-        .join("-");
-    routes = routes.filter((route, index, self) => {
-      return index === self.findIndex((r) => id(r) === id(route));
-    });
+    // filter routes by unique pools, in order
+    const uniquePoolIds = new Set<string>();
+    routes = routes.filter(({ pools }) =>
+      pools.every(({ id }) => {
+        if (uniquePoolIds.has(id)) {
+          return false;
+        }
+        uniquePoolIds.add(id);
+        return true;
+      })
+    );
 
     if (routes.length === 0) {
       throw new NoRouteError();
     }
+
+    ///////
+    // get top X routes to split through
+
+    // filter routes by enough entry liquidity
+    const routesInitialLimitAmounts = await Promise.all(
+      routes.map((route) =>
+        route.pools[0].getLimitAmountByTokenIn(tokenIn.denom)
+      )
+    );
+    routes = routes.filter((_, i) =>
+      routesInitialLimitAmounts[i].gte(tokenIn.amount)
+    );
 
     // sort routes by weight
     const routeWeights = await Promise.all(
@@ -165,6 +198,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       )
     );
     routes = routes.sort((path1, path2) => {
+      // prioritize preferred pool routes
+      if (path2.pools.some(({ id }) => this._preferredPoolIds?.includes(id)))
+        return 1;
+
       const path1Index = routes.indexOf(path1);
       const path2Index = routes.indexOf(path2);
       const path1Weight = routeWeights[path1Index];
@@ -173,20 +210,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       return path1Weight.gte(path2Weight) ? -1 : 1;
     });
 
-    // Is direct swap, but not enough liquidity
-    if (routes.length > 1 && routes[0].pools.length === 1) {
-      const directSwapLimit = await routes[0].pools[0].getLimitAmountByTokenIn(
-        tokenIn.denom
-      );
-      if (directSwapLimit.lt(tokenIn.amount)) {
-        routes = routes.slice(1); // remove direct swap route
-      }
-    }
-
-    // TODO: consider using preferred pool ids to not split amongst
-
-    const topRoutesToSplit = routes.slice(0, this._maxRoutes);
-    return await this.findBestSplitTokenIn(topRoutesToSplit, tokenIn.amount);
+    const topRoutesToSplit = routes.slice(0, this._maxSplit);
+    return (
+      await this.findBestSplitTokenIn(topRoutesToSplit, tokenIn.amount)
+    ).sort((a, b) => Number(b.initialAmount.sub(a.initialAmount))); // descending by initial amount
   }
 
   async calculateTokenOutByTokenIn(
@@ -253,30 +280,21 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
           outDenom,
           poolSwapFee, // fee may be lesser
         ] as const;
-        const outByInCacheKey = cacheKeyForTokenOutGivenIn(
+        const cacheKey = cacheKeyForTokenOutGivenIn(
           pool.id,
           ...calcOutGivenInParams
         );
-        const cacheHit = this._calcOutAmtGivenInAmtCache.get(outByInCacheKey);
+        const cacheHit = this._calcOutAmtGivenInAmtCache.get(cacheKey);
         let tokenOut;
         if (cacheHit) {
           tokenOut = cacheHit;
         } else {
           tokenOut = await pool.getTokenOutByTokenIn(...calcOutGivenInParams);
+          this._calcOutAmtGivenInAmtCache.set(cacheKey, tokenOut);
         }
 
-        if (!tokenOut.amount.gt(new Int(0))) {
-          // not enough liquidity
-          return {
-            ...tokenOut,
-            tokenInFeeAmount: new Int(0),
-            swapFee,
-            split: routes.map((route) => ({
-              ...route,
-              multiHopOsmoDiscount: false,
-            })),
-          };
-        }
+        if (tokenOut.amount.lte(new Int(0)))
+          throw new NotEnoughLiquidityError();
 
         beforeSpotPriceInOverOut = beforeSpotPriceInOverOut.mulTruncate(
           tokenOut.beforeSpotPriceInOverOut
@@ -346,12 +364,21 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     };
   }
 
-  /** Greedily find potential fully unique (no duplicate pools) routes through pools without optimization. */
+  /** Greedily find potential fully unique (no duplicate pools) routes through pools without optimization.
+   *
+   *  @param tokenInDenom The input token denom.
+   *  @param tokenOutDenom The output token denom.
+   *  @param opts Options for the search.
+   */
   protected getCandidateRoutes(
     tokenInDenom: string,
     tokenOutDenom: string,
-    poolsUsed = Array<boolean>(this._sortedPools.length).fill(false)
+    opts?: Partial<{ poolsUsed: boolean[]; recyclePools: boolean }>
   ): { routes: Route[]; poolsUsed: boolean[] } {
+    const poolsUsed =
+      opts?.poolsUsed ?? Array<boolean>(this._sortedPools.length).fill(false);
+    const recyclePools = opts?.recyclePools ?? false;
+
     if (this._sortedPools.length === 0) {
       return { routes: [], poolsUsed };
     }
@@ -436,7 +463,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
             (denom) => denom !== prevPoolCurPoolTokenMatch
           )
         );
-        // poolsUsed[i] = false; cannot swap through same pool twice when splitting in routes
+        poolsUsed[i] = !recyclePools;
         currentTokenOuts.pop();
         currentRoute.pop();
       }
@@ -462,15 +489,14 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
    * @async
    * @param sortedOptimalRoutes An array of optimal routes for the split trade. Optimal: will attempt to include all routes in same split. Sorted: routes should be sorted by weight, best first since this is a greedy search.
    * @param tokenInAmount The amount of input tokens for the trade.
-   * @param [maxIterations=100] The maximum number of iterations allowed for the binary search. Determines the granularity of the split, so higher is slower but more thorough.
    * @returns A promise that resolves to an array of routes with their corresponding input amounts, which form the optimal split trade.
-   * @throws Throws an error if maxIterations is not greater than 0. Throws an error if there is not enough liquidity for the split trade.
+   * @throws Throws an error if maxIterations is not greater than 0. Throws an error if there is not enough liquidity for the split trade or in a route.
    */
   protected async findBestSplitTokenIn(
     sortedOptimalRoutes: Route[],
     tokenInAmount: Int
   ): Promise<RouteWithInAmount[]> {
-    if (sortedOptimalRoutes.length > this._maxIterations) {
+    if (sortedOptimalRoutes.length > this._maxSplitIterations) {
       throw new Error(
         "maxIterations must be greater than or equal to the number of routes"
       );
@@ -521,11 +547,11 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         return;
       }
 
-      // test routes with various splits: 0%, 10%, 20%, ..., 100%
+      // test routes with various splits: 0%, 10%, 20%, ..., 100% @ maxIterations = 10
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const route = remainingRoutes.shift()! as RouteWithInAndOutAmount;
-      for (let i = 0; i <= this._maxIterations; i++) {
-        const fraction = new Dec(i).quo(new Dec(this._maxIterations));
+      for (let i = 0; i <= this._maxSplitIterations; i++) {
+        const fraction = new Dec(i).quo(new Dec(this._maxSplitIterations));
         const inAmount = new Dec(remainingInAmount).mul(fraction).truncate();
         if (inAmount.isZero()) continue; // skip this traversal (0 in not worth considering)
 
@@ -537,12 +563,23 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         if (cacheHit) {
           outAmount = cacheHit;
         } else {
-          const { amount } = await this.calculateTokenOutByTokenIn([route]);
-          this._calcRouteOutAmtGivenInAmtCache.set(cacheKey, amount);
-          outAmount = amount;
+          try {
+            const { amount } = await this.calculateTokenOutByTokenIn([route]);
+            this._calcRouteOutAmtGivenInAmtCache.set(cacheKey, amount);
+            outAmount = amount;
+          } catch (e) {
+            if (e instanceof NotEnoughLiquidityError) {
+              continue; // skip this traversal and similar future attempted traversals (not enough liquidity)
+            } else {
+              console.warn(
+                "Unexpected error when simulating potential split",
+                e
+              );
+              continue;
+            }
+          }
         }
 
-        if (outAmount.isZero()) continue; // skip this traversal and similar future attempted traversals (not enough liquidity)
         route.outAmount = outAmount;
 
         currentSplit.push(route);

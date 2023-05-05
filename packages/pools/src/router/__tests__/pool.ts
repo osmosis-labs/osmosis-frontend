@@ -180,6 +180,14 @@ export class RoutesTestOptimizedRoutes
   }
 }
 
+export function routeToString(route: Route | RouteWithInAmount) {
+  const pools = route.pools.map((pool) => pool.id).join(" -> ");
+  if ("initialAmount" in route) {
+    return `${pools} in:(${route.initialAmount.toString()})`;
+  }
+  return pools;
+}
+
 /** Create a router that always returns the given `forcedRoutes` from `getCandidateRoutes`
  *
  *  Pools irrelevant.
