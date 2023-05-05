@@ -214,6 +214,9 @@ module.exports = {
         content: "calc(100vh - 72px)",
         "content-mobile": "calc(100vh - 58px)",
       },
+      flex: {
+        "basis-50": "0 1 50%",
+      },
       width: {
         loader: {
           1: "3.75rem",
@@ -223,6 +226,7 @@ module.exports = {
           5: "4.75rem",
           6: "5rem",
         },
+        "300px": "300px",
       },
       spacing: {
         sidebar: "13.75rem",
@@ -233,6 +237,7 @@ module.exports = {
         container: "70rem",
         clipboard: "32.5rem",
         modal: "42rem",
+        35: "35%",
       },
       maxHeight: {
         terms: "28rem",
