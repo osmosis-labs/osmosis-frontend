@@ -1002,6 +1002,28 @@ const chainInfos = (
           coinGeckoId: "pool:void",
           coinImageUrl: "/tokens/void.png",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno10vgf2u03ufcf25tspgn05l7j3tfg0j63ljgpffy98t697m5r5hmqaw95ux",
+          coinDenom: "SLCA",
+          coinMinimalDenom:
+            "cw20:juno10vgf2u03ufcf25tspgn05l7j3tfg0j63ljgpffy98t697m5r5hmqaw95ux:SLCA",
+          coinDecimals: 6,
+          coinGeckoId: "pool:slca",
+          coinImageUrl: "/tokens/silica.png",
+        },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno1epxnvge53c4hkcmqzlxryw5fp7eae2utyk6ehjcfpwajwp48km3sgxsh9k",
+          coinDenom: "PEPEC",
+          coinMinimalDenom:
+            "cw20:juno1epxnvge53c4hkcmqzlxryw5fp7eae2utyk6ehjcfpwajwp48km3sgxsh9k:PEPE",
+          coinDecimals: 6,
+          coinGeckoId: "pool:pepec",
+          coinImageUrl: "/tokens/pepec.png",
+        },
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: IS_TESTNET
