@@ -1,4 +1,4 @@
-# @osmosis-labs/proto-encoder
+# @osmosis-labs/proto-codecs
 
 This package exports generated TypeScript libraries for encoding and decoding blockchain data, such as transactions. It also facilitates the conversion of Protobufs into TypeScript libraries for seamless data handling.
 
@@ -59,5 +59,5 @@ yarn generate:packages
 To generate the proto encoders, you can run the following command:
 
 ```bash
-yarn generate:proto-encoders
+yarn generate:telescope
 ```
