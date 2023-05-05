@@ -6,7 +6,12 @@ import {
 
 import { NotEnoughLiquidityError } from "../errors";
 import { NoRouteError } from "./errors";
-import { cacheKeyForRoute, calculateWeightForRoute, Route } from "./route";
+import {
+  cacheKeyForRoute,
+  calculateWeightForRoute,
+  Route,
+  validateRoute,
+} from "./route";
 import {
   Quote,
   RoutablePool,
@@ -235,7 +240,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       new Int(0)
     );
 
-    if (sumInitialAmount.isZero()) {
+    if (routes.length > 0 && sumInitialAmount.isZero()) {
       throw new Error("All initial amounts are zero");
     }
 
@@ -472,7 +477,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     findRoutes(tokenInDenom, tokenOutDenom, [], [], poolsUsed);
     this._candidatePathsCache.set(cacheKey, routes);
     return {
-      routes: routes.filter(({ pools }) => pools.length <= this._maxHops),
+      routes: routes.filter(
+        (route) =>
+          validateRoute(route, false) && route.pools.length <= this._maxHops
+      ),
       poolsUsed,
     };
   }

@@ -13,23 +13,43 @@ export interface Route {
   tokenInDenom: string;
 }
 
-/** Throws if route is invalid */
-export function validateRoute(route: Route) {
+export function validateRoute(
+  route: Route,
+  throwOnError: boolean = true
+): boolean {
   // Number of pools does not match number of tokenOutDenoms
   if (route.pools.length !== route.tokenOutDenoms.length) {
-    throw new Error(
-      `Invalid route: pools and tokenOutDenoms length mismatch, IDs:${route.pools.map(
-        (p) => p.id
-      )} ${route.pools
-        .flatMap((p) => p.poolAssetDenoms.map((denom) => denom.slice(-6)))
-        .join(",")} !== ${route.tokenOutDenoms.join(",")}`
-    );
+    if (throwOnError) {
+      throw new Error(
+        `Invalid route: pools and tokenOutDenoms length mismatch, ${routeToString(
+          route
+        )}`
+      );
+    } else {
+      return false;
+    }
   }
 
   // There are no pools in the route
   if (route.pools.length === 0) {
-    throw new Error("Invalid route: pools length is 0");
+    if (throwOnError) {
+      throw new Error("Invalid route: pools length is 0");
+    } else {
+      return false;
+    }
   }
+
+  return true;
+}
+
+export function routeToString(route: Route | RouteWithInAmount) {
+  const pools = route.pools
+    .map((pool, i) => `${pool.id} out:${route.tokenOutDenoms[i]}`)
+    .join(" -> ");
+  if ("initialAmount" in route) {
+    return `in:(${route.initialAmount.toString()}) ${pools}`;
+  }
+  return pools;
 }
 
 /** Calculate a standard weight for a given route. **Lower is better.** */

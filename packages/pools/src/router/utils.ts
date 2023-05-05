@@ -12,8 +12,18 @@ export function invertRoute(route: Route) {
   };
 }
 
-export function validateRoutes(routes: Route[]) {
-  routes.forEach((route) => validateRoute(route));
+export function validateRoutes(routes: Route[], throwOnError: boolean = true) {
+  if (routes.length === 0) return;
+
+  const validationResult = routes.every((route) => validateRoute(route, false));
+
+  if (!validationResult) {
+    if (throwOnError) {
+      throw new Error("Invalid routes: some routes failed validation");
+    } else {
+      return false;
+    }
+  }
 
   if (
     new Set(
@@ -22,8 +32,16 @@ export function validateRoutes(routes: Route[]) {
       )
     ).size !== 1
   ) {
-    throw new Error("Invalid routes: tokenOut for each route must be the same");
+    if (throwOnError) {
+      throw new Error(
+        "Invalid routes: tokenOut for each route must be the same"
+      );
+    } else {
+      return false;
+    }
   }
+
+  return true;
 }
 
 export function validateTokenIn(tokenIn: Token, tokenOutDenom: string) {
