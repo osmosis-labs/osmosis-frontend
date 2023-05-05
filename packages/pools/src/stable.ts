@@ -1,6 +1,7 @@
 import { Coin, Dec, Int } from "@keplr-wallet/unit";
 import { StableSwapMath, StableSwapToken } from "@osmosis-labs/math";
 
+import { NotEnoughLiquidityError } from "./errors";
 import { SharePool } from "./interface";
 import { Quote, RoutablePool } from "./router";
 
@@ -168,6 +169,8 @@ export class StablePool implements SharePool, RoutablePool {
       swapFee ?? this.swapFee
     );
 
+    if (tokenInAmount.lte(new Int(0))) throw new NotEnoughLiquidityError();
+
     const movedStableTokens: StableSwapToken[] = this.stableSwapTokens.map(
       (token) => {
         if (token.denom === tokenInDenom) {
@@ -234,18 +237,7 @@ export class StablePool implements SharePool, RoutablePool {
       swapFee ?? this.swapFee
     );
 
-    if (tokenOutAmount.equals(new Int(0))) {
-      return {
-        amount: new Int(0),
-        beforeSpotPriceInOverOut: new Dec(0),
-        beforeSpotPriceOutOverIn: new Dec(0),
-        afterSpotPriceInOverOut: new Dec(0),
-        afterSpotPriceOutOverIn: new Dec(0),
-        effectivePriceInOverOut: new Dec(0),
-        effectivePriceOutOverIn: new Dec(0),
-        priceImpactTokenOut: new Dec(0),
-      };
-    }
+    if (tokenOutAmount.lte(new Int(0))) throw new NotEnoughLiquidityError();
 
     const movedStableTokens: StableSwapToken[] = this.stableSwapTokens.map(
       (token) => {

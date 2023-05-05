@@ -211,18 +211,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
 
     const { amountOut, afterSqrtPrice } = calcResult;
 
-    if (amountOut.equals(new Int(0))) {
-      return {
-        amount: new Int(0),
-        beforeSpotPriceInOverOut: new Dec(0),
-        beforeSpotPriceOutOverIn: new Dec(0),
-        afterSpotPriceInOverOut: new Dec(0),
-        afterSpotPriceOutOverIn: new Dec(0),
-        effectivePriceInOverOut: new Dec(0),
-        effectivePriceOutOverIn: new Dec(0),
-        priceImpactTokenOut: new Dec(0),
-      };
-    }
+    if (amountOut.lte(new Int(0))) throw new NotEnoughLiquidityError();
 
     /** final price token1/token0 */
     const afterSpotPriceInOverOut = this.spotPrice(
@@ -307,18 +296,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
 
     const { amountIn, afterSqrtPrice } = calcResult;
 
-    if (amountIn.equals(new Int(0))) {
-      return {
-        amount: new Int(0),
-        beforeSpotPriceInOverOut: new Dec(0),
-        beforeSpotPriceOutOverIn: new Dec(0),
-        afterSpotPriceInOverOut: new Dec(0),
-        afterSpotPriceOutOverIn: new Dec(0),
-        effectivePriceInOverOut: new Dec(0),
-        effectivePriceOutOverIn: new Dec(0),
-        priceImpactTokenOut: new Dec(0),
-      };
-    }
+    if (amountIn.lte(new Int(0))) throw new NotEnoughLiquidityError();
 
     /** final price token1/token0 */
     const afterSpotPriceInOverOut = this.spotPrice(

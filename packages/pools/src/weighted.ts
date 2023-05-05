@@ -1,6 +1,7 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 import { WeightedPoolMath } from "@osmosis-labs/math";
 
+import { NotEnoughLiquidityError } from "./errors";
 import { SharePool } from "./interface";
 import { Quote, RoutablePool } from "./router";
 
@@ -229,6 +230,8 @@ export class WeightedPool implements SharePool, RoutablePool {
       swapFee ?? this.swapFee
     ).truncate();
 
+    if (tokenInAmount.lte(new Int(0))) throw new NotEnoughLiquidityError();
+
     const afterSpotPriceInOverOut = WeightedPoolMath.calcSpotPrice(
       new Dec(inPoolAsset.amount).add(new Dec(tokenInAmount)),
       new Dec(inPoolAsset.weight),
@@ -285,18 +288,7 @@ export class WeightedPool implements SharePool, RoutablePool {
       swapFee ?? this.swapFee
     ).truncate();
 
-    if (tokenOutAmount.equals(new Int(0))) {
-      return {
-        amount: new Int(0),
-        beforeSpotPriceInOverOut: new Dec(0),
-        beforeSpotPriceOutOverIn: new Dec(0),
-        afterSpotPriceInOverOut: new Dec(0),
-        afterSpotPriceOutOverIn: new Dec(0),
-        effectivePriceInOverOut: new Dec(0),
-        effectivePriceOutOverIn: new Dec(0),
-        priceImpactTokenOut: new Dec(0),
-      };
-    }
+    if (tokenOutAmount.lte(new Int(0))) throw new NotEnoughLiquidityError();
 
     const afterSpotPriceInOverOut = WeightedPoolMath.calcSpotPrice(
       new Dec(inPoolAsset.amount).add(new Dec(tokenIn.amount)),
