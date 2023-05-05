@@ -1024,6 +1024,17 @@ const chainInfos = (
           coinGeckoId: "pool:pepec",
           coinImageUrl: "/tokens/pepec.png",
         },
+        {
+          type: "cw20",
+          contractAddress:
+            "juno15au4k2jgwd0jnchy0fkg3lm00fpt7jt0j2duuzradn2q7sega2dszyn5pp",
+          coinDenom: "PLTN",
+          coinMinimalDenom:
+            "cw20:juno15au4k2jgwd0jnchy0fkg3lm00fpt7jt0j2duuzradn2q7sega2dszyn5pp:PLTN",
+          coinDecimals: 6,
+          coinGeckoId: "pool:pltn",
+          coinImageUrl: "/tokens/pltn.png",
+        },        
       ],
       features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
       explorerUrlToTx: IS_TESTNET
