@@ -12,12 +12,14 @@ import {
   RoutablePool,
   RouteWithInAmount,
   SplitTokenInQuote,
+  Token,
   TokenOutGivenInRouter,
 } from "./types";
 import {
   cacheKeyForTokenOutGivenIn,
   invertRoute,
   validateRoutes,
+  validateTokenIn,
 } from "./utils";
 
 export type OptimizedRoutesParams = {
@@ -104,27 +106,50 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     this._maxIterations = maxIterations;
   }
 
-  /** Find optimal routes to split through for a given amount of token in and out token. */
+  async routeByTokenIn(
+    tokenIn: Token,
+    tokenOutDenom: string
+  ): Promise<SplitTokenInQuote> {
+    const routes = await this.getOptimizedRoutesByTokenIn(
+      tokenIn,
+      tokenOutDenom
+    );
+    return await this.calculateTokenOutByTokenIn(routes);
+  }
+
   async getOptimizedRoutesByTokenIn(
-    tokenIn: {
-      denom: string;
-      amount: Int;
-    },
+    tokenIn: Token,
     tokenOutDenom: string
   ): Promise<RouteWithInAmount[]> {
-    if (!tokenIn.amount.isPositive() || this._sortedPools.length === 0) {
+    if (this._sortedPools.length === 0) {
       return [];
     }
+    validateTokenIn(tokenIn, tokenOutDenom);
 
-    let routes = this.getCandidateRoutes(tokenIn.denom, tokenOutDenom);
+    const candidates = this.getCandidateRoutes(tokenIn.denom, tokenOutDenom);
+    let routes = candidates.routes;
 
     // find routes with swapped in/out tokens since getCandidateRoutes is a greedy algorithm
-    const reverseRoutes = this.getCandidateRoutes(tokenOutDenom, tokenIn.denom);
+    const { routes: reverseRoutes } = this.getCandidateRoutes(
+      tokenOutDenom,
+      tokenIn.denom,
+      candidates.poolsUsed // since we're splitting across routes and can't simulate pool state updates, we need routes with fully unique pools
+    );
     const invertedRoutes = reverseRoutes.map(invertRoute);
     routes = [...routes, ...invertedRoutes];
 
+    // TODO: why poolsUsed is not working on second call
+
+    // print pool ids
+    // console.log(routes.map(({ pools }) => pools.map(({ id }) => id)));
+
     // dedupe, maintain order (best first)
-    const id = (route: Route) => route.pools.map(({ id }) => id).join("-");
+    const id = (route: Route) =>
+      route.pools
+        .slice()
+        .sort((a, b) => Number(a.id) - Number(b.id))
+        .map(({ id }) => id)
+        .join("-");
     routes = routes.filter((route, index, self) => {
       return index === self.findIndex((r) => id(r) === id(route));
     });
@@ -164,7 +189,6 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     return await this.findBestSplitTokenIn(topRoutesToSplit, tokenIn.amount);
   }
 
-  /** Calculate the amount of token out by simulating a swap through a route. */
   async calculateTokenOutByTokenIn(
     routes: RouteWithInAmount[]
   ): Promise<SplitTokenInQuote> {
@@ -322,21 +346,21 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     };
   }
 
-  /** Greedily find potential routes through pools without optimization. */
+  /** Greedily find potential fully unique (no duplicate pools) routes through pools without optimization. */
   protected getCandidateRoutes(
     tokenInDenom: string,
-    tokenOutDenom: string
-  ): Route[] {
+    tokenOutDenom: string,
+    poolsUsed = Array<boolean>(this._sortedPools.length).fill(false)
+  ): { routes: Route[]; poolsUsed: boolean[] } {
     if (this._sortedPools.length === 0) {
-      return [];
+      return { routes: [], poolsUsed };
     }
     const cacheKey = `${tokenInDenom}/${tokenOutDenom}`;
     const cached = this._candidatePathsCache.get(cacheKey);
     if (cached) {
-      return cached;
+      return { routes: cached, poolsUsed };
     }
 
-    const poolsUsed = Array<boolean>(this._sortedPools.length).fill(false);
     const routes: Route[] = [];
 
     const findRoutes = (
@@ -412,7 +436,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
             (denom) => denom !== prevPoolCurPoolTokenMatch
           )
         );
-        poolsUsed[i] = false;
+        // poolsUsed[i] = false; cannot swap through same pool twice when splitting in routes
         currentTokenOuts.pop();
         currentRoute.pop();
       }
@@ -420,7 +444,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
     findRoutes(tokenInDenom, tokenOutDenom, [], [], poolsUsed);
     this._candidatePathsCache.set(cacheKey, routes);
-    return routes.filter(({ pools }) => pools.length <= this._maxHops);
+    return {
+      routes: routes.filter(({ pools }) => pools.length <= this._maxHops),
+      poolsUsed,
+    };
   }
 
   /**
@@ -468,6 +495,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     let bestSplit: RouteWithInAmount[] = [];
     let bestOutAmount = new Int(0);
 
+    // DFS on the % then the route
     const splitRecursive = async (
       remainingInAmount: Int,
       remainingRoutes: RouteWithInAndOutAmount[],

@@ -1,5 +1,5 @@
 import { Route, validateRoute } from "./route";
-import { RoutablePool } from "./types";
+import { RoutablePool, Token } from "./types";
 
 export function invertRoute(route: Route) {
   return {
@@ -23,6 +23,21 @@ export function validateRoutes(routes: Route[]) {
     ).size !== 1
   ) {
     throw new Error("Invalid routes: tokenOut for each route must be the same");
+  }
+}
+
+export function validateTokenIn(tokenIn: Token, tokenOutDenom: string) {
+  if (tokenIn.denom === tokenOutDenom) {
+    throw new Error("Invalid tokens: tokenIn and tokenOut must be different");
+  }
+  if (!tokenIn.amount.isPositive()) {
+    throw new Error("Invalid token: tokenIn amount must be positive");
+  }
+  if (tokenIn.denom === "") {
+    throw new Error("Invalid token: tokenIn denom must not be empty");
+  }
+  if (tokenOutDenom === "") {
+    throw new Error("Invalid token: tokenOut denom must not be empty");
   }
 }
 

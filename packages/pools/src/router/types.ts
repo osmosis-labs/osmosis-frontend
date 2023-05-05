@@ -2,14 +2,26 @@ import { Dec, Int } from "@keplr-wallet/unit";
 
 import { Route } from "./route";
 
+export type Token = {
+  /** Denom of the token. */
+  denom: string;
+  /** Base/min amount of the token. */
+  amount: Int;
+};
+
 export interface TokenOutGivenInRouter {
+  /** Route, with splits, given an in token and out denom. */
+  routeByTokenIn(
+    tokenIn: Token,
+    tokenOutDenom: string
+  ): Promise<SplitTokenInQuote>;
+
+  /** Converges on an optimal set of routes to split through for a given amount of token in and out token. */
   getOptimizedRoutesByTokenIn(
-    tokenIn: {
-      denom: string;
-      amount: Int;
-    },
+    tokenIn: Token,
     tokenOutDenom: string
   ): Promise<RouteWithInAmount[]>;
+  /** Calculate the amount of token out by simulating a swap through a set of routes (split). */
   calculateTokenOutByTokenIn(
     routes: RouteWithInAmount[]
   ): Promise<SplitTokenInQuote>;
@@ -30,19 +42,13 @@ export interface RoutablePool {
   getLimitAmountByTokenIn(denom: string): Promise<Int>;
   /** Get the swap result for swapping an amount of token in. */
   getTokenOutByTokenIn(
-    tokenIn: {
-      denom: string;
-      amount: Int;
-    },
+    tokenIn: Token,
     tokenOutDenom: string,
     swapFee?: Dec
   ): Promise<Quote>;
   /** Get the amount of token in needed for swapping an amount of token out. */
   getTokenInByTokenOut(
-    tokenOut: {
-      denom: string;
-      amount: Int;
-    },
+    tokenOut: Token,
     tokenInDenom: string,
     swapFee?: Dec
   ): Promise<Quote>;

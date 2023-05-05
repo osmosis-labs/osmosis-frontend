@@ -102,20 +102,18 @@ export class TestOptimizedRoutes
     return super.calculateTokenOutByTokenIn(...args);
   }
 
-  getCandidateRoutes(tokenInDenom: string, tokenOutDenom: string): Route[] {
+  getCandidateRoutes(
+    tokenInDenom: string,
+    tokenOutDenom: string
+  ): { routes: Route[]; poolsUsed: boolean[] } {
     return super.getCandidateRoutes(tokenInDenom, tokenOutDenom);
   }
 
   findBestSplitTokenIn(
     candidateRoutes: Route[],
-    tokenInAmount: Int,
-    maxIterations?: number
+    tokenInAmount: Int
   ): Promise<RouteWithInAmount[]> {
-    return super.findBestSplitTokenIn(
-      candidateRoutes,
-      tokenInAmount,
-      maxIterations
-    );
+    return super.findBestSplitTokenIn(candidateRoutes, tokenInAmount);
   }
 }
 
@@ -170,20 +168,15 @@ export class RoutesTestOptimizedRoutes
     return super.calculateTokenOutByTokenIn(...args);
   }
 
-  getCandidateRoutes(): Route[] {
-    return this.testRoutes;
+  getCandidateRoutes(): { routes: Route[]; poolsUsed: boolean[] } {
+    return { routes: this.testRoutes, poolsUsed: [] };
   }
 
   findBestSplitTokenIn(
     candidateRoutes: Route[],
-    tokenInAmount: Int,
-    maxIterations?: number
+    tokenInAmount: Int
   ): Promise<RouteWithInAmount[]> {
-    return super.findBestSplitTokenIn(
-      candidateRoutes,
-      tokenInAmount,
-      maxIterations
-    );
+    return super.findBestSplitTokenIn(candidateRoutes, tokenInAmount);
   }
 }
 
