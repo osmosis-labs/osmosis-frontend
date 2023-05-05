@@ -2,6 +2,8 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { useWalletSelect } from "~/hooks/wallet-select";
+
 import { Transfer } from "../components/complex/transfer";
 import { EventName } from "../config";
 import {
@@ -24,6 +26,9 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
       queriesExternalStore,
     } = useStore();
     const { chainId: osmosisChainId } = chainStore.osmosis;
+
+    const { onOpenWalletSelect, isLoading: isWalletSelectLoading } =
+      useWalletSelect();
 
     const { logEvent } = useAmplitudeAnalytics();
 
@@ -192,6 +197,23 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
           currentValue={amountConfig.amount}
           onInput={(value) => amountConfig.setAmount(value)}
           waitTime={t("assets.ibcTransfer.waitTime")}
+          onRequestSwitchWallet={() => {
+            counterpartyAccount?.disconnect(false);
+            onOpenWalletSelect(props.counterpartyChainId);
+          }}
+          selectedWalletDisplay={
+            isWalletSelectLoading
+              ? undefined
+              : {
+                  iconUrl: counterpartyAccount?.walletInfo?.logo ?? "",
+                  displayName:
+                    counterpartyAccount?.walletInfo?.prettyName ?? "",
+                }
+          }
+          onRequestConnectToWallet={() => {
+            counterpartyAccount?.disconnect(false);
+            onOpenWalletSelect(props.counterpartyChainId);
+          }}
         />
         {accountActionButton}
       </ModalBase>

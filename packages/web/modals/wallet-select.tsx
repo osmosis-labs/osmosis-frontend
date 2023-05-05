@@ -99,7 +99,8 @@ export const WalletSelectModal: FunctionComponent<
     onRequestClose();
     if (
       walletStatus === WalletStatus.Connecting ||
-      walletStatus === WalletStatus.Rejected
+      walletStatus === WalletStatus.Rejected ||
+      walletStatus === WalletStatus.Error
     ) {
       walletRepo?.disconnect();
     }
@@ -114,7 +115,8 @@ export const WalletSelectModal: FunctionComponent<
           ? () => {
               if (
                 walletStatus === WalletStatus.Connecting ||
-                walletStatus === WalletStatus.Rejected
+                walletStatus === WalletStatus.Rejected ||
+                walletStatus === WalletStatus.Error
               ) {
                 walletRepo?.disconnect();
                 walletRepo?.activate();

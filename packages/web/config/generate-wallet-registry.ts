@@ -4,7 +4,6 @@ import { cosmostationExtensionInfo } from "@cosmos-kit/cosmostation-extension";
 import { keplrExtensionInfo } from "@cosmos-kit/keplr-extension";
 import { keplrMobileInfo } from "@cosmos-kit/keplr-mobile";
 import { leapExtensionInfo } from "@cosmos-kit/leap-extension";
-import { stationExtensionInfo } from "@cosmos-kit/station-extension";
 import * as fs from "fs";
 import * as prettier from "prettier";
 
@@ -48,12 +47,12 @@ const WalletRegistry: (Wallet & {
   //   lazyInstallUrl: "@cosmos-kit/frontier-extension",
   //   walletClassName: "FrontierExtensionWallet",
   // },
-  {
-    ...stationExtensionInfo,
-    logo: "/wallets/station.svg",
-    lazyInstallUrl: "@cosmos-kit/station-extension",
-    walletClassName: "StationExtensionWallet",
-  },
+  // {
+  //   ...stationExtensionInfo,
+  //   logo: "/wallets/station.svg",
+  //   lazyInstallUrl: "@cosmos-kit/station-extension",
+  //   walletClassName: "StationExtensionWallet",
+  // },
   // {
   //   ...trustMobileInfo,
   //   logo: "/wallets/trust.png",
