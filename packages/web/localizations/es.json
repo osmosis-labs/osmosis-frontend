@@ -31,6 +31,16 @@
       "title": "Estás viendo todos los activos sin permiso."
     }
   },
+  "store": {
+    "headerTitle": "Potencia tu experiencia",
+    "headerSubtitle": "Operar es solo el primer paso. Pon tus activos a trabajar y logra mucho más con apalancamiento, bóvedas y más allá.",
+    "featured": "Destacado",
+    "searchPlaceholder": "Buscar",
+    "getFeatured": "Ser destacado",
+    "featuredDescription": "Lanza en la tienda de aplicaciones y obtén acceso a miles de usuarios. Si quieres aparecer en la lista o ser destacado, ponte en contacto y nos pondremos en contacto contigo.",
+    "applyButton": "Aplicar",
+    "storeDisclaimer": "Ciertos contenidos han sido preparados por terceros no afiliados a Osmosis Labs ni a ninguna de sus filiales, y Osmosis Labs no se hace responsable de dicho contenido. Osmosis Labs no es responsable de ningún error o retraso en el contenido, ni de ninguna acción tomada en función de dicho contenido. La información se proporciona únicamente con fines informativos y no constituye asesoramiento de inversión. Esto no es una recomendación para comprar o vender un activo digital en particular o emplear una estrategia de inversión en particular. Osmosis Labs no se hace responsable de la exactitud, idoneidad o validez de ninguna información proporcionada o de un activo en particular. Los precios mostrados son solo con fines ilustrativos. Los precios reales de las criptomonedas y las estadísticas asociadas pueden variar. Los datos presentados pueden reflejar los activos negociados en el intercambio de Osmosis Labs y en otros intercambios de criptomonedas seleccionados."
+  },
   "assets": {
     "bondedAssets": "Abonado",
     "historyTable": {
@@ -238,6 +248,7 @@
     "pools": "Piscinas",
     "signOut": "Desconectar",
     "stake": "Abonar",
+    "store": "Tienda de aplicaciones",
     "swap": "Intercambio",
     "vote": "Votar"
   },

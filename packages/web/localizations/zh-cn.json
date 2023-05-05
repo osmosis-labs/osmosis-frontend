@@ -30,6 +30,16 @@
       "title": "您正在查看所有无许可资产."
     }
   },
+  "store": {
+    "headerTitle": "提升您的体验",
+    "headerSubtitle": "交易仅仅是第一步。利用杠杆、金库等手段投入您的资产，实现更多目标。",
+    "featured": "特色",
+    "searchPlaceholder": "搜索",
+    "getFeatured": "获得特色",
+    "featuredDescription": "在应用商店上架并接触成千上万的用户。如果您想上榜或被推荐，请联系我们，我们将保持沟通。",
+    "applyButton": "申请",
+    "storeDisclaimer": "部分内容由与 Osmosis Labs 或其任何附属公司无关的第三方准备，Osmosis Labs 对此类内容不承担责任。Osmosis Labs 不对内容中的任何错误或延迟，或因依赖任何内容而采取的任何行动承担责任。信息仅供参考，不构成投资建议。这不是购买或出售特定数字资产或采用特定投资策略的建议。 Osmosis Labs 不对所提供的任何信息的准确性、适当性或有效性，或针对特定资产作出任何陈述。显示的价格仅用于说明目的。实际加密货币价格及相关统计数据可能有所不同。所呈现的数据可能反映在 Osmosis Labs 交易所及选定的其他加密货币交易所上交易的资产。"
+  },
   "assets": {
     "bondedAssets": "已绑定资产",
     "historyTable": {
@@ -237,6 +247,7 @@
     "pools": "资金池",
     "signOut": "断开连接",
     "stake": "质押",
+    "store": "应用商店",
     "swap": "兑换",
     "vote": "投票"
   },
