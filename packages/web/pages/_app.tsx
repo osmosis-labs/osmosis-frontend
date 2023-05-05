@@ -76,10 +76,10 @@ function MyApp({ Component, pageProps }: AppProps) {
       },
       {
         label: t("menu.store"),
-        link: "/store",
-        icon: "/icons/asset-white.svg",
-        iconSelected: "/icons/asset-white.svg",
-        selectionTest: /\/store/,
+        link: "/apps",
+        icon: "/icons/app-icon.svg",
+        iconSelected: "/icons/app-icon.svg",
+        selectionTest: /\/apps/,
       },
     ];
 
