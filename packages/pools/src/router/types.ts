@@ -14,7 +14,7 @@ export interface TokenOutGivenInRouter {
   routeByTokenIn(
     tokenIn: Token,
     tokenOutDenom: string
-  ): Promise<SplitTokenInQuote>;
+  ): Promise<{ split: RouteWithInAmount[]; quote: SplitTokenInQuote }>;
 
   /** Converges on an optimal set of routes to split through for a given amount of token in and out token. */
   getOptimizedRoutesByTokenIn(

@@ -1,7 +1,6 @@
 import { WalletStatus } from "@keplr-wallet/stores";
 import { AppCurrency } from "@keplr-wallet/types";
-import { CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
-import { calcPriceImpactWithAmount } from "@osmosis-labs/math";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -139,14 +138,11 @@ export const TradeClipboard: FunctionComponent<{
 
     useTokenSwapQueryParams(tradeTokenInConfig, tradeableCurrencies, isInModal);
 
-    const showPriceImpactWarning = useMemo(
-      () =>
-        tradeTokenInConfig.expectedSwapResult.priceImpact
-          .toDec()
-          .abs()
-          .gt(new Dec(0.1)),
-      [tradeTokenInConfig.expectedSwapResult.priceImpact]
-    );
+    const showPriceImpactWarning =
+      tradeTokenInConfig.expectedSwapResult.priceImpact
+        .toDec()
+        .abs()
+        .gt(new Dec(0.1));
 
     // token select dropdown
     const fetchedRemainingPoolsRef = useRef(false);
@@ -188,59 +184,8 @@ export const TradeClipboard: FunctionComponent<{
       setToTokenSelectDropdownLocal(false);
     };
 
-    // trade metrics
-    const minOutAmountLessSlippage = useMemo(() => {
-      let amountLessSlippage;
-      try {
-        const beforeSpotPrice =
-          tradeTokenInConfig.expectedSwapResult.beforeSpotPriceInOverOut.toDec();
-        const inAmount =
-          tradeTokenInConfig.amount === ""
-            ? new Int(0)
-            : new Int(
-                new Dec(tradeTokenInConfig.amount)
-                  .mul(
-                    DecUtils.getTenExponentNInPrecisionRange(
-                      tradeTokenInConfig.outCurrency.coinDecimals
-                    )
-                  )
-                  .truncate()
-                  .toString()
-              );
-
-        amountLessSlippage = calcPriceImpactWithAmount(
-          beforeSpotPrice.gt(new Dec(0)) ? beforeSpotPrice : new Dec(1),
-          inAmount,
-          slippageConfig.slippage.toDec()
-        );
-      } catch {
-        // address any /0 errors
-        amountLessSlippage = new Int(0);
-      }
-
-      const coinLessSlippage = new CoinPretty(
-        tradeTokenInConfig.outCurrency,
-        amountLessSlippage
-      );
-      return coinLessSlippage.maxDecimals(
-        Math.min(
-          coinLessSlippage.toDec().gt(new Dec(1)) ? 8 : 12,
-          coinLessSlippage.currency.coinDecimals
-        )
-      );
-    }, [
-      tradeTokenInConfig.outCurrency,
-      tradeTokenInConfig.expectedSwapResult.beforeSpotPriceInOverOut,
-      tradeTokenInConfig.amount,
-      slippageConfig.slippage,
-    ]);
-    const spotPrice = tradeTokenInConfig.expectedSpotPrice
-      .trim(true)
-      .maxDecimals(Math.min(tradeTokenInConfig.outCurrency.coinDecimals, 8));
-
-    const [isHoveringSwitchButton, setHoveringSwitchButton] = useState(false);
-
     // to & from box switch animation
+    const [isHoveringSwitchButton, setHoveringSwitchButton] = useState(false);
     const [isAnimatingSwitch, setIsAnimatingSwitch] = useState(false);
     const [switchOutBack, setSwitchOutBack] = useState(false);
     useEffect(() => {
@@ -264,51 +209,6 @@ export const TradeClipboard: FunctionComponent<{
         if (timeout2) clearTimeout(timeout2);
       };
     }, [isAnimatingSwitch, tradeTokenInConfig]);
-
-    // amount fiat value
-    const inAmountValue = useMemo(
-      () =>
-        tradeTokenInConfig.amount !== "" &&
-        new Dec(tradeTokenInConfig.amount).gt(new Dec(0))
-          ? priceStore.calculatePrice(
-              new CoinPretty(
-                tradeTokenInConfig.sendCurrency,
-                new Dec(tradeTokenInConfig.amount).mul(
-                  DecUtils.getTenExponentNInPrecisionRange(
-                    tradeTokenInConfig.sendCurrency.coinDecimals
-                  )
-                )
-              )
-            )
-          : undefined,
-      [priceStore, tradeTokenInConfig.amount, tradeTokenInConfig.sendCurrency]
-    );
-    const outAmountValue = useMemo(
-      () =>
-        (!tradeTokenInConfig.expectedSwapResult.amount.toDec().isZero() &&
-          priceStore.calculatePrice(
-            tradeTokenInConfig.expectedSwapResult.amount
-          )) ||
-        undefined,
-      [priceStore, tradeTokenInConfig.expectedSwapResult.amount]
-    );
-
-    const swapResultAmount = useMemo(
-      () =>
-        tradeTokenInConfig.expectedSwapResult.amount
-          .trim(true)
-          .shrink(true)
-          .maxDecimals(
-            Math.min(
-              tradeTokenInConfig.expectedSwapResult.amount.currency
-                .coinDecimals,
-              8
-            )
-          )
-          .hideDenom(true)
-          .toString(),
-      [tradeTokenInConfig.expectedSwapResult.amount]
-    );
 
     // get selectable tokens in drawers
     /** Filters out tokens (by denom) if
@@ -711,9 +611,11 @@ export const TradeClipboard: FunctionComponent<{
                 <div
                   className={classNames(
                     "subtitle1 md:caption text-osmoverse-300 transition-opacity",
-                    inAmountValue ? "opacity-100" : "opacity-0"
+                    tradeTokenInConfig.sendValue.toDec().isZero()
+                      ? "opacity-0"
+                      : "opacity-100"
                   )}
-                >{`≈ ${inAmountValue || "0"}`}</div>
+                >{`≈ ${tradeTokenInConfig.sendValue}`}</div>
               </div>
             </div>
           </div>
@@ -848,14 +750,26 @@ export const TradeClipboard: FunctionComponent<{
                       ? "text-white-full"
                       : "text-white-disabled"
                   )}
-                >{`≈ ${swapResultAmount}`}</h5>
+                >{`≈ ${tradeTokenInConfig.expectedSwapResult.amount
+                  .trim(true)
+                  .shrink(true)
+                  .maxDecimals(
+                    Math.min(
+                      tradeTokenInConfig.expectedSwapResult.amount.currency
+                        .coinDecimals,
+                      8
+                    )
+                  )
+                  .hideDenom(true)}`}</h5>
                 <div
                   className={classNames(
                     "subtitle1 md:caption text-osmoverse-300 transition-opacity",
-                    outAmountValue ? "opacity-100" : "opacity-0"
+                    tradeTokenInConfig.outValue.toDec().isZero()
+                      ? "opacity-0"
+                      : "opacity-100"
                   )}
                 >
-                  {`≈ ${outAmountValue || "0"}`}
+                  {`≈ ${tradeTokenInConfig.outValue}`}
                 </div>
               </div>
             </div>
@@ -892,7 +806,13 @@ export const TradeClipboard: FunctionComponent<{
                   "text-osmoverse-600": !isEstimateDetailRelevant,
                 })}
               >
-                {`1 ${tradeTokenInConfig.sendCurrency.coinDenom} ≈ ${spotPrice} ${tradeTokenInConfig.outCurrency.coinDenom}`}
+                {`1 ${
+                  tradeTokenInConfig.sendCurrency.coinDenom
+                } ≈ ${tradeTokenInConfig.expectedSpotPrice
+                  .trim(true)
+                  .maxDecimals(
+                    Math.min(tradeTokenInConfig.outCurrency.coinDecimals, 8)
+                  )} ${tradeTokenInConfig.outCurrency.coinDenom}`}
               </div>
               <div className="flex items-center gap-2">
                 <Image
@@ -989,11 +909,17 @@ export const TradeClipboard: FunctionComponent<{
                   )}
                 >
                   <span className="whitespace-nowrap">
-                    {minOutAmountLessSlippage.toString()}
+                    {tradeTokenInConfig
+                      .outAmountLessSlippage(slippageConfig.slippage.toDec())
+                      .toString()}
                   </span>
                   <span>
                     {`≈ ${
-                      priceStore.calculatePrice(minOutAmountLessSlippage) || "0"
+                      priceStore.calculatePrice(
+                        tradeTokenInConfig.outAmountLessSlippage(
+                          slippageConfig.slippage.toDec()
+                        )
+                      ) || "0"
                     }`}
                   </span>
                 </div>

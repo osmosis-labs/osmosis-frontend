@@ -125,12 +125,13 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
   async routeByTokenIn(
     tokenIn: Token,
     tokenOutDenom: string
-  ): Promise<SplitTokenInQuote> {
+  ): Promise<{ split: RouteWithInAmount[]; quote: SplitTokenInQuote }> {
     const split = await this.getOptimizedRoutesByTokenIn(
       tokenIn,
       tokenOutDenom
     );
-    return await this.calculateTokenOutByTokenIn(split);
+    const quote = await this.calculateTokenOutByTokenIn(split);
+    return { split, quote };
   }
 
   async getOptimizedRoutesByTokenIn(

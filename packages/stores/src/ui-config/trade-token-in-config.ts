@@ -7,11 +7,14 @@ import {
   DecUtils,
   Int,
   IntPretty,
+  PricePretty,
   RatePretty,
 } from "@keplr-wallet/unit";
+import { calcPriceImpactWithAmount } from "@osmosis-labs/math";
 import {
   NoRouteError,
   OptimizedRoutes,
+  RouteWithInAmount,
   SplitTokenInQuote,
   Token,
   TokenOutGivenInRouter,
@@ -27,6 +30,7 @@ import {
   runInAction,
 } from "mobx";
 import {
+  computedFn,
   fromPromise,
   FULFILLED,
   IPromiseBasedObservable,
@@ -38,7 +42,7 @@ import { IPriceStore } from "src/price";
 import { ObservableQueryPool, OsmosisQueries } from "../queries";
 import { InsufficientBalanceError, NoSendCurrencyError } from "./errors";
 
-type PrettyMultihopSwapResult = {
+type PrettyQuote = {
   amount: CoinPretty;
   beforeSpotPriceWithoutSwapFeeInOverOut: IntPretty;
   beforeSpotPriceWithoutSwapFeeOutOverIn: IntPretty;
@@ -68,11 +72,18 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   // quotes
   @observable.ref
   protected _latestQuote:
-    | IPromiseBasedObservable<SplitTokenInQuote>
+    | IPromiseBasedObservable<
+        Awaited<ReturnType<TokenOutGivenInRouter["routeByTokenIn"]>>
+      >
     | undefined = undefined;
   @observable.ref
   protected _spotPriceQuote:
-    | IPromiseBasedObservable<SplitTokenInQuote>
+    | IPromiseBasedObservable<
+        Pick<
+          Awaited<ReturnType<TokenOutGivenInRouter["routeByTokenIn"]>>,
+          "quote"
+        >
+      >
     | undefined = undefined;
 
   @override
@@ -105,6 +116,23 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   }
 
   @computed
+  get sendValue(): PricePretty {
+    return (
+      this.priceStore.calculatePrice(
+        new CoinPretty(
+          this.sendCurrency,
+          this.amount === "" ? "0" : this.amount
+        )
+      ) ??
+      new PricePretty(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)!,
+        0
+      )
+    );
+  }
+
+  @computed
   get outCurrency(): AppCurrency {
     if (this.sendableCurrencies.length <= 1) {
       // For the case before pools are initially fetched,
@@ -130,6 +158,20 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         : undefined;
 
     return initialCurrency ?? this.sendableCurrencies[1];
+  }
+
+  @computed
+  get outValue(): PricePretty {
+    return (
+      this.priceStore.calculatePrice(
+        new CoinPretty(this.outCurrency, this.expectedSwapResult.amount)
+      ) ??
+      new PricePretty(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)!,
+        0
+      )
+    );
   }
 
   @computed
@@ -167,10 +209,10 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
   /** Prettify swap result for display. */
   @computed
-  get expectedSwapResult(): PrettyMultihopSwapResult {
+  get expectedSwapResult(): PrettyQuote {
     return (
       this._latestQuote?.case({
-        fulfilled: (result) => this.makePrettyMultihopResult(result),
+        fulfilled: ({ quote }) => this.makePrettyQuote(quote),
         rejected: (e) => {
           // this may happen a lot, so don't log to console
           if (e instanceof NoRouteError) return undefined;
@@ -179,6 +221,33 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           return undefined;
         },
       }) ?? this.zeroSwapResult
+    );
+  }
+
+  readonly quoteAmountLessSlippage = computedFn((slippage: Dec) => {
+    const expectedSwapResult = this.expectedSwapResult;
+    if (!expectedSwapResult) return undefined;
+
+    return expectedSwapResult.amount
+      .toDec()
+      .mul(new Dec(1).sub(slippage))
+      .truncate();
+  });
+
+  /** Routes for current quote */
+  @computed
+  get optimizedRoutes(): RouteWithInAmount[] {
+    return (
+      this._latestQuote?.case({
+        fulfilled: ({ split }) => split,
+        rejected: (e) => {
+          // this may happen a lot, so don't log to console
+          if (e instanceof NoRouteError) return [];
+
+          console.error("Optimized routes rejected", e);
+          return [];
+        },
+      }) ?? []
     );
   }
 
@@ -193,9 +262,10 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   get expectedSpotPrice(): IntPretty {
     return (
       this._spotPriceQuote?.case({
-        fulfilled: (result) =>
-          this.makePrettyMultihopResult(result)
-            .beforeSpotPriceWithoutSwapFeeInOverOut,
+        fulfilled: ({ quote }) => {
+          return this.makePrettyQuote(quote)
+            .beforeSpotPriceWithoutSwapFeeOutOverIn;
+        },
         rejected: (e) => {
           // this may happen a lot, so don't log to console
           if (e instanceof NoRouteError) return undefined;
@@ -263,7 +333,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   }
 
   @computed
-  protected get zeroSwapResult(): PrettyMultihopSwapResult {
+  protected get zeroSwapResult(): PrettyQuote {
     return {
       amount: new CoinPretty(this.outCurrency, new Dec(0)).ready(false),
       beforeSpotPriceWithoutSwapFeeInOverOut: new IntPretty(0).ready(false),
@@ -345,17 +415,20 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
     this._pools = pools;
 
-    // Clear any output if the input is cleared
+    ////////
+    // QUOTE
+    // Clear quote output if the input is cleared
     autorun(() => {
       const inputCleared =
         this.amount === "" || !new Dec(this.amount).isPositive();
 
       // this also handles race conditions because if the user clears the input, then an prev request result arrives, the old result will be cleared
       if (this._latestQuote?.state === FULFILLED && inputCleared) {
-        this.setSwapResult(undefined);
+        runInAction(() => {
+          this._latestQuote = undefined;
+        });
       }
     });
-
     // React to user input and request a swap result. This is debounced to prevent spamming the server
     const debounceRouteByTokenIn = debounce(
       (
@@ -363,8 +436,10 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         tokenIn: Token,
         tokenOutDenom: string
       ) => {
-        const tokenOutPromise = router.routeByTokenIn(tokenIn, tokenOutDenom);
-        this.setSwapResult(fromPromise(tokenOutPromise));
+        const futureQuote = router.routeByTokenIn(tokenIn, tokenOutDenom);
+        runInAction(() => {
+          fromPromise(futureQuote);
+        });
       },
       350
     );
@@ -385,6 +460,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       );
     });
 
+    ////////
+    // SPOT PRICE
     // React to changes in send/out currencies, then generate a spot price by directly calculating from the pools
     autorun(() => {
       /** Use 1_000_000 uosmo (6 decimals) vs 1 uosmo */
@@ -468,17 +545,27 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     this._spotPriceQuote = undefined;
   }
 
-  @action
-  protected setSwapResult(
-    result: IPromiseBasedObservable<SplitTokenInQuote> | undefined
-  ) {
-    this._latestQuote = result;
-  }
+  /** Calculate the out amount less a given slippage tolerance. */
+  readonly outAmountLessSlippage = computedFn((slippage: Dec) => {
+    const spotPriceBefore =
+      this.expectedSwapResult?.beforeSpotPriceWithoutSwapFeeInOverOut.toDec();
+    const inAmount =
+      this.amount === ""
+        ? new Int(0)
+        : new Int(this.getAmountPrimitive().amount);
+
+    return new CoinPretty(
+      this.outCurrency,
+      calcPriceImpactWithAmount(
+        spotPriceBefore.isZero() ? new Dec(1) : spotPriceBefore,
+        inAmount,
+        slippage
+      )
+    );
+  });
 
   /** Convert raw router type into a prettified form ready for display. */
-  protected makePrettyMultihopResult(
-    result: SplitTokenInQuote
-  ): PrettyMultihopSwapResult {
+  protected makePrettyQuote(result: SplitTokenInQuote): PrettyQuote {
     const multiplicationInOverOut = DecUtils.getTenExponentN(
       this.outCurrency.coinDecimals - this.sendCurrency.coinDecimals
     );
