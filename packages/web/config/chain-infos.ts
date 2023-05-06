@@ -917,17 +917,6 @@ const chainInfos = (
         {
           type: "cw20",
           contractAddress:
-            "juno1zqrj3ta4u7ylv0wqzd8t8q3jrr9rdmn43zuzp9zemeunecnhy8fss778g7",
-          coinDenom: "PEPE",
-          coinMinimalDenom:
-            "cw20:juno1zqrj3ta4u7ylv0wqzd8t8q3jrr9rdmn43zuzp9zemeunecnhy8fss778g7:PEPE",
-          coinDecimals: 6,
-          coinGeckoId: "pool:pepe",
-          coinImageUrl: "/tokens/pepe.svg",
-        },
-        {
-          type: "cw20",
-          contractAddress:
             "juno1f5datjdse3mdgrapwuzs3prl7pvxxht48ns6calnn0t77v2s9l8s0qu488",
           coinDenom: "CATMOS",
           coinMinimalDenom:
