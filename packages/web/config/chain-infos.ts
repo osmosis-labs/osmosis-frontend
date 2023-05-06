@@ -3577,6 +3577,13 @@ chainInfos.push({
       coinGeckoId: "pool:arb",
       coinImageUrl: "/tokens/arb.svg",
     },
+    {
+      coinDenom: "PEPE",
+      coinMinimalDenom: "pepe-wei",
+      coinDecimals: 18,
+      coinGeckoId: "pepe",
+      coinImageUrl: "/tokens/pepe.svg",
+    },
   ],
   feeCurrencies: [
     {
