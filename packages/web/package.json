@@ -66,6 +66,7 @@
     "semver": "^7.3.7",
     "sha.js": "^2.4.11",
     "sharp": "^0.30.4",
+    "utility-types": "^3.10.0",
     "web3-utils": "^1.7.4"
   },
   "devDependencies": {

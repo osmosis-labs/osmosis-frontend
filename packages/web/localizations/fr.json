@@ -130,7 +130,7 @@
   "components": {
     "fiatOnrampSelection": {
       "chooseOnramp": "Choisir une rampe de paiement en Fiat",
-      "kadoSubtitle": "Prend en charge USDC",
+      "kadoSubtitle": "Prend en charge OSMO, USDC",
       "transakSubtitle": "Prend en charge OSMO"
     },
     "incentive": {
@@ -388,5 +388,6 @@
   "transactionSuccessful": "Succès de la transaction",
   "unknownError": "Erreur inconnue",
   "viewExplorer": "Voir dans l'exploreur",
-  "waitingForTransaction": "Attente de l'inclusion de la transaction dans le bloc"
+  "waitingForTransaction": "Attente de l'inclusion de la transaction dans le bloc",
+  "highPoolInflationWarning": "Des APR élevés peuvent être le résultat de récompenses inflationnistes. Procédez avec prudence."
 }

@@ -15,7 +15,10 @@ import {
 } from "@keplr-wallet/unit";
 import { action, computed, makeObservable, observable } from "mobx";
 
-import { ObservableQueryGammPoolShare, PoolGetter } from "../../queries";
+import {
+  ObservableQueryGammPoolShare,
+  ObservableQueryPoolGetter,
+} from "../../queries";
 import { OSMO_MEDIUM_TX_FEE } from ".";
 import { ManageLiquidityConfigBase } from "./base";
 import { CalculatingShareOutAmountError, NotInitializedError } from "./errors";
@@ -28,7 +31,7 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
   protected _queryBalances: ObservableQueryBalances;
 
   @observable.ref
-  protected _queryPools: PoolGetter;
+  protected _queryPools: ObservableQueryPoolGetter;
 
   @observable.ref
   protected _shareOutAmount: IntPretty | undefined = undefined;
@@ -55,7 +58,7 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     sender: string,
     queriesStore: IQueriesStore,
     queryPoolShare: ObservableQueryGammPoolShare,
-    queryPools: PoolGetter,
+    queryPools: ObservableQueryPoolGetter,
     queryBalances: ObservableQueryBalances
   ) {
     super(

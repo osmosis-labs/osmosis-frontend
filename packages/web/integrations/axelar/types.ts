@@ -44,6 +44,7 @@ export const AxelarChainIds_SourceChainMap: {
       Fantom: "Fantom Testnet",
       Moonbeam: "Moonbase Alpha",
       Polygon: "Mumbai",
+      filecoin: "Filecoin Hyperspace",
     }
   : {
       Avalanche: "Avalanche",
@@ -52,6 +53,8 @@ export const AxelarChainIds_SourceChainMap: {
       Fantom: "Fantom",
       Moonbeam: "Moonbeam",
       Polygon: "Polygon",
+      filecoin: "Filecoin",
+      arbitrum: "Arbitrum",
     };
 
 export type SourceChainTokenConfig = {

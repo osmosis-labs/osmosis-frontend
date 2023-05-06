@@ -130,7 +130,7 @@
   "components": {
     "fiatOnrampSelection": {
       "chooseOnramp": "Fiat Onramp Seçin",
-      "kadoSubtitle": "USDC'yi destekler",
+      "kadoSubtitle": "OSMO, USDC'yi destekler",
       "transakSubtitle": "OSMO'yu destekler"
     },
     "incentive": {
@@ -388,5 +388,6 @@
   "transactionSuccessful": "İşlem Başarılı",
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",
-  "waitingForTransaction": "İşlemin bloğa eklenmesi bekleniyor"
+  "waitingForTransaction": "İşlemin bloğa eklenmesi bekleniyor",
+  "highPoolInflationWarning": "Yüksek APR'ler enflasyonist ödüllerden kaynaklanabilir. Dikkatli ilerleyin."
 }

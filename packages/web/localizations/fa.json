@@ -130,7 +130,7 @@
   "components": {
     "fiatOnrampSelection": {
       "chooseOnramp": "انتخاب حساب بانکی Onramp",
-      "kadoSubtitle": "پشتیبانی USDC",
+      "kadoSubtitle": "پشتیبانی OSMO, USDC",
       "transakSubtitle": "پشتیبانی OSMO"
     },
     "incentive": {
@@ -388,5 +388,6 @@
   "transactionSuccessful": "تراکنش با موفقیت انجام شد",
   "unknownError": "خطای نا شناس",
   "viewExplorer": "مشاهده جزئیات تراکنش",
-  "waitingForTransaction": "صبر کنید تا یک تراکنش در بلاک قرار بگیرد"
+  "waitingForTransaction": "صبر کنید تا یک تراکنش در بلاک قرار بگیرد",
+  "highPoolInflationWarning": "نرخ سود سالانه بالا ممکن است ناشی از پاداش‌های تورمی باشد. با احتیاط ادامه دهید."
 }

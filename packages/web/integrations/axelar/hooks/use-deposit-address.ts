@@ -27,19 +27,16 @@ export function useDepositAddress(
 
   /** Key: sourceChain/destChain/address/coinMinimalDenom/autoUnwrap */
   const depositAddressCache = useRef(new Map<string, string>());
-  /** Remembers most recent generating address. */
-  const latestGenCacheKey = useRef("");
 
   const generateAddress = useCallback(async () => {
     const cacheKey = `${sourceChain}/${destChain}/${destinationAddress}/${coinMinimalDenom}/${Boolean(
       autoUnwrapIntoNative
     )}`;
-    const cachedDepositAddress = depositAddressCache.current.get(cacheKey);
-    if (cachedDepositAddress) {
-      setDepositAddress(cachedDepositAddress);
+    const cacheHit = depositAddressCache.current.get(cacheKey);
+    if (cacheHit) {
+      setDepositAddress(cacheHit);
     } else if (destinationAddress) {
       setIsLoading(true);
-      latestGenCacheKey.current = cacheKey;
       new AxelarAssetTransfer({ environment })
         .getDepositAddress({
           fromChain: sourceChain,
@@ -53,8 +50,7 @@ export function useDepositAddress(
             : undefined,
         })
         .then((generatedAddress) => {
-          if (latestGenCacheKey.current === cacheKey)
-            setDepositAddress(generatedAddress);
+          setDepositAddress(generatedAddress);
           depositAddressCache.current.set(cacheKey, generatedAddress);
         })
         .catch((e: any) => {
@@ -73,26 +69,9 @@ export function useDepositAddress(
     setIsLoading,
   ]);
 
-  const doGen = useCallback(
-    () =>
-      new Promise<void>((resolve, reject) => {
-        generateAddress()
-          .then((address) => {
-            if (address) {
-              setDepositAddress(address);
-            }
-            resolve();
-          })
-          .catch((e) => {
-            reject(`useDepositAddress: ${e.message}`);
-          });
-      }),
-    [generateAddress, setDepositAddress]
-  );
   useEffect(() => {
-    if (destinationAddress && shouldGenerate) {
-      setDepositAddress(null);
-      doGen().catch((e) => console.error(e));
+    if (destinationAddress && shouldGenerate && !isLoading) {
+      generateAddress();
     }
   }, [
     destinationAddress,
@@ -100,7 +79,8 @@ export function useDepositAddress(
     sourceChain,
     destChain,
     shouldGenerate,
-    doGen,
+    isLoading,
+    generateAddress,
   ]);
 
   return {

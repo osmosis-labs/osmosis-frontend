@@ -8,11 +8,9 @@ import { makeObservable, observable, runInAction } from "mobx";
 import { computedFn } from "mobx-utils";
 import { ObservableQueryLiquiditiesNetInDirection } from "src/queries/concentrated-liquidity";
 
-import {
-  ObservableQueryNumPools,
-  ObservableQueryPool,
-} from "../../queries/pools";
-import { PoolGetter } from "../../queries/pools/types";
+import { ObservableQueryNumPools } from "../../queries/pools";
+import { ObservableQueryPool } from "../../queries/pools/pool";
+import { ObservableQueryPoolGetter } from "../../queries/pools/types";
 import { IMPERATOR_HISTORICAL_DATA_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
 import { FilteredPools, Filters, objToQueryParams, Pagination } from "./types";
@@ -32,7 +30,7 @@ const ENDPOINT = "/stream/pool/v1/all";
  */
 export class ObservableQueryFilteredPools
   extends ObservableQueryExternalBase<FilteredPools>
-  implements PoolGetter
+  implements ObservableQueryPoolGetter
 {
   @observable
   protected _pools = new Map<string, ObservableQueryPool>();

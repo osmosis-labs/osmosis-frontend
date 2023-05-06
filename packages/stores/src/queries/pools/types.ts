@@ -3,10 +3,15 @@ import { StablePoolRaw, WeightedPoolRaw } from "@osmosis-labs/pools";
 
 import { ObservableQueryPool } from "./pool";
 
-export interface PoolGetter extends ObservableQuery {
-  getPool(id: string): ObservableQueryPool | undefined;
+export interface PoolGetter<PoolType> {
+  getPool(id: string): PoolType | undefined;
   poolExists(id: string): boolean | undefined;
-  getAllPools(): ObservableQueryPool[];
+  getAllPools(): PoolType[];
+}
+
+export interface ObservableQueryPoolGetter
+  extends PoolGetter<ObservableQueryPool>,
+    ObservableQuery {
   paginate(): void;
   fetchRemainingPools(): void;
 }

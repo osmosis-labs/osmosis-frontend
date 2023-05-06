@@ -4,10 +4,11 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { RootStore } from "./root";
+
 import { useKeplr } from "../hooks";
-import { AccountInitManagement } from "./account-init-management";
 import { useVisibilityState } from "../hooks/use-visibility-state";
+import { AccountInitManagement } from "./account-init-management";
+import { RootStore } from "./root";
 
 const storeContext = React.createContext<RootStore | null>(null);
 

@@ -130,7 +130,7 @@
   "components": {
     "fiatOnrampSelection": {
       "chooseOnramp": "選擇法幣入口",
-      "kadoSubtitle": "支援USDC",
+      "kadoSubtitle": "支援OSMO, USDC",
       "transakSubtitle": "支援OSMO"
     },
     "incentive": {
@@ -388,5 +388,6 @@
   "transactionSuccessful": "交易成功",
   "unknownError": "未知錯誤",
   "viewExplorer": "使用區塊瀏覽器查看",
-  "waitingForTransaction": "正等待交易被加入到區塊中"
+  "waitingForTransaction": "正等待交易被加入到區塊中",
+  "highPoolInflationWarning": "高APR可能源自通脹性獎勵。請謹慎操作。"
 }
