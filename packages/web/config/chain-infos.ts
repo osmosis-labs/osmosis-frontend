@@ -3581,7 +3581,7 @@ chainInfos.push({
       coinDenom: "PEPE",
       coinMinimalDenom: "pepe-wei",
       coinDecimals: 18,
-      coinGeckoId: "pool:pepe",
+      coinGeckoId: "pepe",
       coinImageUrl: "/tokens/pepe.svg",
     },
   ],
