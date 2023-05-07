@@ -226,20 +226,28 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       ])
     ).amount;
 
-    // TODO: if top 2 routes include prefererd pools, split through them
+    const splitIncludesPreferredPool =
+      routes.length > 1
+        ? routes[1].pools.some(({ id }) =>
+            this._preferredPoolIds?.includes(id)
+          ) ||
+          routes[0].pools.some(({ id }) => this._preferredPoolIds?.includes(id))
+        : false;
 
     const topRoutesToSplit = routes.slice(0, this._maxSplit);
-    const split = await this.findBestSplitTokenIn(
-      topRoutesToSplit,
-      tokenIn.amount
-    );
+    const split = (
+      await this.findBestSplitTokenIn(topRoutesToSplit, tokenIn.amount)
+    ).sort((a, b) => Number(b.initialAmount.sub(a.initialAmount)));
+
+    if (splitIncludesPreferredPool) return split;
+
     const splitOutAmount = (await this.calculateTokenOutByTokenIn(split))
       .amount;
 
     if (directOutAmount.gte(splitOutAmount)) {
       return [{ ...routes[0], initialAmount: tokenIn.amount }];
     } else {
-      return split.sort((a, b) => Number(b.initialAmount.sub(a.initialAmount)));
+      return split;
     }
   }
 
