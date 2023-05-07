@@ -121,7 +121,11 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       this.priceStore.calculatePrice(
         new CoinPretty(
           this.sendCurrency,
-          this.amount === "" ? "0" : this.amount
+          this.amount === ""
+            ? "0"
+            : new Dec(this.amount).mul(
+                DecUtils.getTenExponentN(this.sendCurrency.coinDecimals)
+              )
         )
       ) ??
       new PricePretty(
@@ -163,9 +167,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   @computed
   get outValue(): PricePretty {
     return (
-      this.priceStore.calculatePrice(
-        new CoinPretty(this.outCurrency, this.expectedSwapResult.amount)
-      ) ??
+      this.priceStore.calculatePrice(this.expectedSwapResult.amount) ??
       new PricePretty(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)!,
