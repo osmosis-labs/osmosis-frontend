@@ -213,13 +213,34 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       const path1Weight = routeWeights[path1Index];
       const path2Weight = routeWeights[path2Index];
 
-      return path1Weight.gte(path2Weight) ? -1 : 1;
+      return path1Weight.gte(path2Weight) ? -1 : 1; // lower is better
     });
 
+    if (routes.length === 0) {
+      throw new NoRouteError();
+    }
+
+    const directOutAmount = (
+      await this.calculateTokenOutByTokenIn([
+        { ...routes[0], initialAmount: tokenIn.amount },
+      ])
+    ).amount;
+
+    // TODO: if top 2 routes include prefererd pools, split through them
+
     const topRoutesToSplit = routes.slice(0, this._maxSplit);
-    return (
-      await this.findBestSplitTokenIn(topRoutesToSplit, tokenIn.amount)
-    ).sort((a, b) => Number(b.initialAmount.sub(a.initialAmount))); // descending by initial amount
+    const split = await this.findBestSplitTokenIn(
+      topRoutesToSplit,
+      tokenIn.amount
+    );
+    const splitOutAmount = (await this.calculateTokenOutByTokenIn(split))
+      .amount;
+
+    if (directOutAmount.gte(splitOutAmount)) {
+      return [{ ...routes[0], initialAmount: tokenIn.amount }];
+    } else {
+      return split.sort((a, b) => Number(b.initialAmount.sub(a.initialAmount)));
+    }
   }
 
   async calculateTokenOutByTokenIn(
