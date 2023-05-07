@@ -224,16 +224,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     );
   }
 
-  readonly quoteAmountLessSlippage = computedFn((slippage: Dec) => {
-    const expectedSwapResult = this.expectedSwapResult;
-    if (!expectedSwapResult) return undefined;
-
-    return expectedSwapResult.amount
-      .toDec()
-      .mul(new Dec(1).sub(slippage))
-      .truncate();
-  });
-
   /** Routes for current quote */
   @computed
   get optimizedRoutes(): RouteWithInAmount[] {
@@ -438,7 +428,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       ) => {
         const futureQuote = router.routeByTokenIn(tokenIn, tokenOutDenom);
         runInAction(() => {
-          fromPromise(futureQuote);
+          this._latestQuote = fromPromise(futureQuote);
         });
       },
       350
