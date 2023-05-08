@@ -168,6 +168,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     );
   }
 
+  /** A map of the valid tradable currencies found on Osmosis chain store. */
   @computed
   get sendableCurrencies(): AppCurrency[] {
     if (this._pools.length === 0) {
@@ -270,25 +271,33 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   /** Any error derived from state. */
   @override
   get error(): Error | undefined {
-    // If things are loading or there's no input, there can't be an error
+    // If things are loading or there's no input
     if (
       this.isSpotPriceLoading ||
       this.isSpotPriceLoading ||
       this.amount === "" ||
       !new Dec(this.amount).isPositive()
-    )
+    ) {
+      // if there's no user input, check if the spot price has an error
+      const spotPriceError = this._spotPriceQuote?.value;
+      if (spotPriceError instanceof Error) {
+        return spotPriceError;
+      }
+
       return;
+    }
 
     const sendCurrency = this.sendCurrency;
     if (!sendCurrency) {
       return new NoSendCurrencyError("Currency to send not set");
     }
 
-    // If there's an error from the latest swap result, return it
-    if (this._latestQuote?.state === REJECTED) {
-      return this._latestQuote.case({
-        rejected: (e) => e,
-      });
+    // If there's an error from the latest swap quote, return it
+    if (
+      this._latestQuote?.state === REJECTED &&
+      this._latestQuote.value instanceof Error
+    ) {
+      return this._latestQuote.value;
     }
 
     // If the user doesn't have enough balance, return an error
@@ -344,8 +353,11 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
     // cache lives for the lifetime of the router instance
     // any time pools are updated (or any observed value), a new router instance is created (with new cache)
-    const stakeCurrencyMinDenom = this.chainGetter.getChain(this.initialChainId)
-      .stakeCurrency.coinMinimalDenom;
+    const stakeCurrencyMinDenom: string | undefined = this.chainGetter.getChain(
+      this.initialChainId
+    ).stakeCurrency.coinMinimalDenom;
+    if (!stakeCurrencyMinDenom) return;
+
     const getPoolTotalValueLocked = (poolId: string) => {
       const queryPool = this._pools.find((pool) => pool.id === poolId);
       if (queryPool) {
@@ -425,28 +437,45 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           this._latestQuote = fromPromise(futureQuote);
         });
       },
-      350
+      350,
+      true
     );
     autorun(() => {
       const { denom, amount } = this.getAmountPrimitive();
+      const outCurrencyMinDenom = this.outCurrency.coinMinimalDenom;
+      const router = this.router;
+
       if (denom === "" || !new Dec(amount).isPositive()) return;
-      if (!this.router) return;
+      if (!router) return;
 
       // Clear any previous user input debounce, then call the debounce function
       debounceRouteByTokenIn.clear();
       debounceRouteByTokenIn(
-        this.router,
+        router,
         {
           denom,
           amount: new Int(amount),
         },
-        this.outCurrency.coinMinimalDenom
+        outCurrencyMinDenom
       );
     });
 
     ////////
     // SPOT PRICE
     // React to changes in send/out currencies, then generate a spot price by directly calculating from the pools
+    const debounceGetSpotPrice = debounce(
+      (
+        router: TokenOutGivenInRouter,
+        tokenIn: Token,
+        tokenOutDenom: string
+      ) => {
+        const futureQuote = router.routeByTokenIn(tokenIn, tokenOutDenom);
+        runInAction(() => {
+          this._spotPriceQuote = fromPromise(futureQuote);
+        });
+      },
+      500
+    );
     autorun(() => {
       /** Use 1_000_000 uosmo (6 decimals) vs 1 uosmo */
       const oneWithDecimals = new Int(
@@ -455,18 +484,21 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           .toString()
       );
 
+      const sendCurrencyMinDenom = this.sendCurrency.coinMinimalDenom;
+      const outCurrencyMinDenom = this.outCurrency.coinMinimalDenom;
+
       if (!this.router) return;
 
-      const futureQuote = this.router.routeByTokenIn(
+      // clear any prior reactions
+      debounceGetSpotPrice.clear();
+      debounceGetSpotPrice(
+        this.router,
         {
-          denom: this.sendCurrency.coinMinimalDenom,
+          denom: sendCurrencyMinDenom,
           amount: oneWithDecimals,
         },
-        this.outCurrency.coinMinimalDenom
+        outCurrencyMinDenom
       );
-      runInAction(() => {
-        this._spotPriceQuote = fromPromise(futureQuote);
-      });
     });
 
     makeObservable(this);
