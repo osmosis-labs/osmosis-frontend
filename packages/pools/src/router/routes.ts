@@ -8,6 +8,7 @@ import { NotEnoughLiquidityError } from "../errors";
 import { NoRouteError } from "./errors";
 import {
   cacheKeyForRoute,
+  cacheKeyForRouteDenoms,
   calculateWeightForRoute,
   Route,
   validateRoute,
@@ -26,6 +27,12 @@ import {
   validateRoutes,
   validateTokenIn,
 } from "./utils";
+
+export type Cache = {
+  readonly routes: Map<string, Route[]>;
+  readonly outAmtGivenIn: Map<string, Quote>;
+  readonly routeOutAmtGivenOut: Map<string, Int>;
+};
 
 export type OptimizedRoutesParams = {
   /** All pools to be routed through. */
@@ -49,6 +56,8 @@ export type OptimizedRoutesParams = {
   /** Max number of iterations to test for route splits.
    *  i.e. 10 means 0%, 10%, 20%, ..., 100% of the in amount. */
   maxSplitIterations?: number;
+  /** Override any instances of the cache to extend the default lifetimes. */
+  cache?: Partial<Cache>;
 };
 
 /** Use to find routes and simulate swaps through routes.
@@ -72,9 +81,9 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
   protected readonly _maxSplitIterations: number;
 
   // caches
-  protected readonly _candidatePathsCache = new Map<string, Route[]>();
-  protected readonly _calcOutAmtGivenInAmtCache = new Map<string, Quote>();
-  protected readonly _calcRouteOutAmtGivenInAmtCache = new Map<string, Int>();
+  protected readonly _candidateRoutesCache: Map<string, Route[]>;
+  protected readonly _calcOutAmtGivenInAmtCache: Map<string, Quote>;
+  protected readonly _calcRouteOutAmtGivenInAmtCache: Map<string, Int>;
 
   constructor({
     pools,
@@ -86,6 +95,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     maxRoutes = 4,
     maxSplit = 2,
     maxSplitIterations = 10,
+    cache = {},
   }: OptimizedRoutesParams) {
     this._sortedPools = pools
       .slice()
@@ -120,6 +130,11 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     if (maxSplitIterations <= 0)
       throw new Error("maxIterations must be greater than 0");
     this._maxSplitIterations = maxSplitIterations;
+    // option to use maintained caches from previous instance
+    this._candidateRoutesCache = cache?.routes ?? new Map();
+    this._calcOutAmtGivenInAmtCache = cache?.outAmtGivenIn ?? new Map();
+    this._calcRouteOutAmtGivenInAmtCache =
+      cache?.routeOutAmtGivenOut ?? new Map();
   }
 
   async routeByTokenIn(
@@ -159,6 +174,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       )
     );
     const invertedRoutes = tokenOutToInRoutes.map(invertRoute);
+    this._candidateRoutesCache.set(
+      cacheKeyForRouteDenoms(tokenIn.denom, tokenOutDenom),
+      invertedRoutes
+    );
     routes = [...routes, ...invertedRoutes];
 
     // filter routes by unique pools, in order
@@ -408,13 +427,12 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       return [];
     }
 
-    const cacheKey = `${tokenInDenom}/${tokenOutDenom}`;
-    const cached = this._candidatePathsCache.get(cacheKey);
+    const cacheKey = cacheKeyForRouteDenoms(tokenInDenom, tokenOutDenom);
+    const cached = this._candidateRoutesCache.get(cacheKey);
     if (cached) {
       return cached;
     }
 
-    const poolsUsed = Array<boolean>(pools.length).fill(false);
     const routes: Route[] = [];
 
     const findRoutes = (
@@ -496,8 +514,14 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       }
     };
 
-    findRoutes(tokenInDenom, tokenOutDenom, [], [], poolsUsed);
-    this._candidatePathsCache.set(cacheKey, routes);
+    findRoutes(
+      tokenInDenom,
+      tokenOutDenom,
+      [],
+      [],
+      Array<boolean>(pools.length).fill(false)
+    );
+    this._candidateRoutesCache.set(cacheKey, routes);
     return routes.filter(
       (route) =>
         validateRoute(route, false) && route.pools.length <= this._maxHops

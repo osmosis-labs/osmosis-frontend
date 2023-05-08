@@ -91,3 +91,10 @@ export function cacheKeyForRoute(route: Route | RouteWithInAmount): string {
 
   return key;
 }
+
+export function cacheKeyForRouteDenoms(
+  tokenInDenom: string,
+  tokenOutDenom: string
+): string {
+  return `${tokenInDenom}/${tokenOutDenom}`;
+}
