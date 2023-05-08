@@ -1,24 +1,30 @@
 import { AppCurrency } from "@keplr-wallet/types";
-import { Dec } from "@keplr-wallet/unit";
+import { Dec, RatePretty } from "@keplr-wallet/unit";
 import { getOsmoRoutedMultihopTotalSwapFee } from "@osmosis-labs/math";
-import { RoutablePool, RouteWithInAmount } from "@osmosis-labs/pools";
+import {
+  RoutablePool,
+  RouteWithInAmount,
+  SplitTokenInQuote,
+} from "@osmosis-labs/pools";
 import { ChainStore } from "@osmosis-labs/stores";
 import { useSingleton } from "@tippyjs/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { useStore } from "../../stores";
 import { DenomImage } from "../assets";
 import { Tooltip } from "../tooltip";
+import { CustomClasses } from "../types";
 
-function getDenomsFromPool(chainStore: ChainStore, pool: RoutablePool) {
+function getCurrenciesFromPool(chainStore: ChainStore, pool: RoutablePool) {
   const chainInfo = chainStore.getChain(chainStore.osmosis.chainId);
-  const firstDenom = chainInfo.forceFindCurrency(pool.poolAssetDenoms[0]);
-  const secondDenom = chainInfo.forceFindCurrency(pool.poolAssetDenoms[1]);
 
-  return [firstDenom, secondDenom];
+  return [
+    chainInfo.forceFindCurrency(pool.poolAssetDenoms[0]),
+    chainInfo.forceFindCurrency(pool.poolAssetDenoms[1]),
+  ];
 }
 
 function getPoolsWithDenomAndFee(
@@ -30,7 +36,7 @@ function getPoolsWithDenomAndFee(
 ) {
   return {
     id: pool.id,
-    denoms: getDenomsFromPool(chainStore, pool),
+    currencies: getCurrenciesFromPool(chainStore, pool),
     fee: isMultihopDiscount
       ? Number(
           maxSwapFee
@@ -49,16 +55,16 @@ function reorderPathDenoms(
   let previousDenom = startCurrency.coinDenom;
 
   return poolWithDenomAndFee.map((pool) => {
-    const previousDenomIndex = pool.denoms.findIndex(
+    const previousDenomIndex = pool.currencies.findIndex(
       (denom) => denom.coinDenom.toLowerCase() === previousDenom.toLowerCase()
     );
 
     const nextDenoms =
       previousDenomIndex === -1
-        ? pool.denoms
+        ? pool.currencies
         : [
-            pool.denoms[previousDenomIndex],
-            pool.denoms[1 - previousDenomIndex],
+            pool.currencies[previousDenomIndex],
+            pool.currencies[1 - previousDenomIndex],
           ];
 
     previousDenom = nextDenoms[1].coinDenom;
@@ -70,19 +76,74 @@ function reorderPathDenoms(
   });
 }
 
+export const SplitTrade: FunctionComponent<{
+  sendCurrency: AppCurrency;
+  outCurrency: AppCurrency;
+  split: SplitTokenInQuote["split"];
+}> = ({ sendCurrency, outCurrency, split }) => {
+  const t = useTranslation();
+
+  const [showRouter, setShowRouter] = useState(false);
+  const tokenInTotal = useMemo(() => {
+    return split.reduce(
+      (sum, { initialAmount }) => sum.add(new Dec(initialAmount)),
+      new Dec(0)
+    );
+  }, [split]);
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <h6 className="text-xs font-normal">{t("swap.autoRouter")}</h6>
+        <button
+          onClick={() => setShowRouter(!showRouter)}
+          className="text-xs text-wosmongton-300"
+        >
+          {showRouter
+            ? t("swap.autoRouterToggle.hide")
+            : t("swap.autoRouterToggle.show")}
+        </button>
+      </div>
+
+      {showRouter && (
+        <div className="flex flex-col gap-2">
+          {split.map((route) => (
+            <TradeRoute
+              key={route.pools.map(({ id }) => id).join()} // pool IDs are unique
+              sendCurrency={sendCurrency}
+              outCurrency={outCurrency}
+              percentage={
+                split.length > 1
+                  ? new Dec(route.initialAmount)
+                      .quoTruncate(tokenInTotal)
+                      .toString()
+                  : undefined
+              }
+              route={route}
+              isMultihopOsmoFeeDiscount={route.multiHopOsmoDiscount}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const TradeRoute: FunctionComponent<{
   sendCurrency: AppCurrency;
   outCurrency: AppCurrency;
+  percentage?: string;
   route: RouteWithInAmount;
   isMultihopOsmoFeeDiscount: boolean;
 }> = observer(
-  ({ sendCurrency, outCurrency, route, isMultihopOsmoFeeDiscount }) => {
+  ({
+    sendCurrency,
+    outCurrency,
+    percentage,
+    route,
+    isMultihopOsmoFeeDiscount,
+  }) => {
     const { chainStore } = useStore();
-
-    const [showRouter, setShowRouter] = useState(false);
-
-    const t = useTranslation();
-
     const { maxSwapFee, swapFeeSum } = getOsmoRoutedMultihopTotalSwapFee(
       route.pools
     );
@@ -103,53 +164,44 @@ const TradeRoute: FunctionComponent<{
     );
 
     return (
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h6 className="text-xs font-normal">{t("swap.autoRouter")}</h6>
-          <button
-            onClick={() => setShowRouter(!showRouter)}
-            className="text-xs text-wosmongton-300"
-          >
-            {showRouter
-              ? t("swap.autoRouterToggle.hide")
-              : t("swap.autoRouterToggle.show")}
-          </button>
+      <div className="flex items-center justify-between space-x-2 rounded-full bg-osmoverse-1000 px-1 py-1.5">
+        <div className="flex gap-0.5 px-1">
+          {percentage && (
+            <span className="subtitle1 text-osmoverse-200">
+              {new RatePretty(percentage).maxDecimals(0).toString()}
+            </span>
+          )}
+          <div className="h-[24px] shrink-0">
+            <DenomImage denom={sendCurrency} size={24} />
+          </div>
         </div>
 
-        {showRouter && (
-          <div className="flex items-center justify-between space-x-2 rounded-full bg-osmoverse-1000 px-1 py-1.5">
-            <div className="h-[24px] shrink-0">
-              <DenomImage denom={sendCurrency} size={24} />
-            </div>
-
-            <div className="relative flex w-full items-center justify-center">
-              <div className="relative flex w-full items-center gap-0.5">
-                <Dots className="animate-[pulse_3s_ease-in-out_0s_infinite]" />
-                <Dots className="animate-[pulse_3s_ease-in-out_0.5s_infinite]" />
-                <Dots className="animate-[pulse_3s_ease-in-out_0.7s_infinite]" />
-                <Dots className="animate-[pulse_3s_ease-in-out_1s_infinite]" />
-              </div>
-
-              {poolsWithReorderedDenoms && (
-                <Routes pools={poolsWithReorderedDenoms} />
-              )}
-            </div>
-
-            <div className="h-[24px] shrink-0">
-              <DenomImage denom={outCurrency} size={24} />
-            </div>
+        <div
+          className={classNames("flex w-full items-center justify-center", {
+            "pl-3.5": Boolean(percentage),
+          })}
+        >
+          <div className="relative flex w-full items-center gap-0.5">
+            <Dots className="animate-[pulse_3s_ease-in-out_0s_infinite]" />
+            <Dots className="animate-[pulse_3s_ease-in-out_0.5s_infinite]" />
+            <Dots className="animate-[pulse_3s_ease-in-out_0.7s_infinite]" />
+            <Dots className="animate-[pulse_3s_ease-in-out_1s_infinite]" />
           </div>
-        )}
+
+          {poolsWithReorderedDenoms && (
+            <Routes pools={poolsWithReorderedDenoms} />
+          )}
+        </div>
+
+        <div className="h-[24px] shrink-0">
+          <DenomImage denom={outCurrency} size={24} />
+        </div>
       </div>
     );
   }
 );
 
-interface DotsProps {
-  className?: string;
-}
-
-const Dots: FunctionComponent<DotsProps> = ({ className }) => (
+const Dots: FunctionComponent<CustomClasses> = ({ className }) => (
   <hr
     className={classNames(
       "h-[1px] w-1/4 border-t-2 border-dashed border-t-wosmongton-400",
@@ -162,6 +214,7 @@ const Routes: FunctionComponent<{
   pools: ReturnType<typeof reorderPathDenoms>;
 }> = ({ pools }) => {
   const t = useTranslation();
+
   /** Share same tippy instance to handle animation */
   const [source, target] = useSingleton();
 
@@ -225,5 +278,3 @@ const Routes: FunctionComponent<{
     </>
   );
 };
-
-export default TradeRoute;
