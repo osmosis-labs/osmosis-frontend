@@ -80,8 +80,15 @@ export class KeplrWCClient implements WalletClient {
   }
 
   async init() {
+    this.restoreSession();
     if (this.isMobile) {
       await this.initAppUrl();
+    }
+  }
+
+  restoreSession() {
+    if (this.connector.connected) {
+      this.client = new KeplrWalletConnectV1(this.connector);
     }
   }
 
@@ -138,7 +145,7 @@ export class KeplrWCClient implements WalletClient {
   }
 
   get displayQRCode() {
-    if (this.redirect) {
+    if (this.redirect || this.connector.connected) {
       return false;
     } else {
       return true;
@@ -168,6 +175,9 @@ export class KeplrWCClient implements WalletClient {
       // Check if connection is already established
       if (!this.connector.connected) {
         await this.connector.createSession();
+      } else {
+        this.restoreSession();
+        return;
       }
 
       this.qrUrl.data = this.connector.uri;
@@ -184,9 +194,7 @@ export class KeplrWCClient implements WalletClient {
 
     try {
       await new Promise((resolve, reject) => {
-        console.log(this.connector);
         this.connector.on("connect", (error) => {
-          console.log(error);
           if (error) {
             reject(error);
           } else {
@@ -214,7 +222,9 @@ export class KeplrWCClient implements WalletClient {
 
   async disconnect() {
     if (!this.client || !this.connector.connected) return;
+    if (this.connector.connected) await this.connector.killSession();
     this.client = undefined;
+    localStorage.removeItem("walletconnect");
     this.emitter?.emit("sync_disconnect");
     this.logger?.debug("[WALLET EVENT] Emit `sync_disconnect`");
   }
