@@ -93,7 +93,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       .sort((a, b) => {
         const aTvl = getPoolTotalValueLocked(a.id);
         const bTvl = getPoolTotalValueLocked(b.id);
-        return Number(aTvl.sub(bTvl).toString());
+        return Number(bTvl.sub(aTvl).toString());
       })
       // lift preferred pools to the front
       .reduce((pools, pool) => {
@@ -408,11 +408,12 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
   protected getCandidateRoutes(
     tokenInDenom: string,
     tokenOutDenom: string,
-    opts?: Partial<{ poolsUsed: boolean[]; recyclePools: boolean }>
+    opts: Partial<{ poolsUsed: boolean[]; recyclePools: boolean }> = {}
   ): { routes: Route[]; poolsUsed: boolean[] } {
-    const poolsUsed =
-      opts?.poolsUsed ?? Array<boolean>(this._sortedPools.length).fill(false);
-    const recyclePools = opts?.recyclePools ?? false;
+    const allUnused = new Array<boolean>(this._sortedPools.length).fill(false);
+    const poolsUsed = opts?.poolsUsed ?? allUnused;
+
+    const recyclePools = opts?.recyclePools ?? true;
 
     if (this._sortedPools.length === 0) {
       return { routes: [], poolsUsed };
