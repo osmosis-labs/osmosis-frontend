@@ -36,7 +36,7 @@ import { InputBox } from "../input";
 import { tError } from "../localization";
 import { Popover } from "../popover";
 import { InfoTooltip } from "../tooltip";
-import TradeRoute from "./trade-route";
+import { SplitTrade } from "./trade-route";
 
 export const TradeClipboard: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!
@@ -924,19 +924,13 @@ export const TradeClipboard: FunctionComponent<{
                   </span>
                 </div>
               </div>
-              {!isInModal &&
-                tradeTokenInConfig.optimizedRoutes &&
-                tradeTokenInConfig.optimizedRoutes.length > 0 && (
-                  <TradeRoute
-                    sendCurrency={tradeTokenInConfig.sendCurrency}
-                    outCurrency={tradeTokenInConfig.outCurrency}
-                    route={tradeTokenInConfig.optimizedRoutes[0]} // TODO: support multiple routes
-                    isMultihopOsmoFeeDiscount={
-                      tradeTokenInConfig.expectedSwapResult
-                        .isMultihopOsmoFeeDiscount
-                    }
-                  />
-                )}
+              {!isInModal && tradeTokenInConfig.optimizedRoutes.length > 0 && (
+                <SplitTrade
+                  sendCurrency={tradeTokenInConfig.sendCurrency}
+                  outCurrency={tradeTokenInConfig.outCurrency}
+                  split={tradeTokenInConfig.optimizedRoutes}
+                />
+              )}
             </div>
           </div>
         </div>
