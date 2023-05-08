@@ -274,13 +274,13 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     // If things are loading or there's no input
     if (
       this.isSpotPriceLoading ||
-      this.isSpotPriceLoading ||
+      this.tradeIsLoading ||
       this.amount === "" ||
       !new Dec(this.amount).isPositive()
     ) {
       // if there's no user input, check if the spot price has an error
       const spotPriceError = this._spotPriceQuote?.value;
-      if (spotPriceError instanceof Error) {
+      if (!this.isSpotPriceLoading && spotPriceError instanceof Error) {
         return spotPriceError;
       }
 
