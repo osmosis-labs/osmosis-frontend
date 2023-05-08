@@ -20,6 +20,7 @@ import {
   WalletClientActions,
 } from "@cosmos-kit/core";
 import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
+import { saveMobileLinkInfo } from "@walletconnect/browser-utils";
 import { IConnector } from "@walletconnect/types";
 import EventEmitter from "events";
 
@@ -86,9 +87,13 @@ export class KeplrWCClient implements WalletClient {
     }
   }
 
+  createKeplrClient() {
+    return new KeplrWalletConnectV1(this.connector);
+  }
+
   restoreSession() {
     if (this.connector.connected) {
-      this.client = new KeplrWalletConnectV1(this.connector);
+      this.client = this.createKeplrClient();
     }
   }
 
@@ -126,6 +131,18 @@ export class KeplrWCClient implements WalletClient {
   get redirectHrefWithWCUri(): string | undefined {
     let href: string | undefined;
     if (this.nativeUrl) {
+      if (this.env?.os === "ios") {
+        saveMobileLinkInfo({
+          name: "Keplr",
+          href: "keplrwallet://wcV1",
+        });
+      } else if (this.env?.os === "android") {
+        saveMobileLinkInfo({
+          name: "Keplr",
+          href: "intent://wcV1#Intent;package=com.chainapsis.keplr;scheme=keplrwallet;end;",
+        });
+      }
+
       href = (
         this.walletInfo.walletconnect?.formatNativeUrl ||
         CoreUtil.formatNativeUrl
@@ -135,11 +152,6 @@ export class KeplrWCClient implements WalletClient {
         this.env?.os ?? "android",
         this.walletName
       );
-    } else if (this.universalUrl) {
-      href = (
-        this.walletInfo.walletconnect?.formatUniversalUrl ||
-        CoreUtil.formatUniversalUrl
-      )(this.universalUrl, this.qrUrl.data ?? "", this.walletName);
     }
     return href;
   }
@@ -198,7 +210,7 @@ export class KeplrWCClient implements WalletClient {
           if (error) {
             reject(error);
           } else {
-            this.client = new KeplrWalletConnectV1(this.connector);
+            this.client = this.createKeplrClient();
             resolve(undefined);
           }
         });
@@ -256,7 +268,8 @@ export class KeplrWCClient implements WalletClient {
   }
 
   async getAccount(chainId: string): Promise<WalletAccount> {
-    if (!this.client) throw new Error("WalletConnect not connected");
+    if (!this.client)
+      throw new Error("Failed to get account. Please try again.");
     const key = await this.client.getKey(chainId);
     return {
       username: key.name,
