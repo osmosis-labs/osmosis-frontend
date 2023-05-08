@@ -177,9 +177,12 @@ const TradeRoute: FunctionComponent<{
         </div>
 
         <div
-          className={classNames("flex w-full items-center justify-center", {
-            "pl-3.5": Boolean(percentage),
-          })}
+          className={classNames(
+            "relative flex w-full items-center justify-center",
+            {
+              "pl-3.5": Boolean(percentage),
+            }
+          )}
         >
           <div className="relative flex w-full items-center gap-0.5">
             <Dots className="animate-[pulse_3s_ease-in-out_0.1s_infinite]" />
