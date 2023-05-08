@@ -74,6 +74,10 @@ const WalletRegistry: (Wallet & {
   // },
 ];
 
+function isObject(value: any): value is Record<any, any> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 /**
  * Convert a wallet object to a stringified version. It replaces the lazyInstallUrl with a function
  * to lazy load the wallet. We avoid JSON.stringify because it can't serialize functions.
@@ -85,12 +89,28 @@ const WalletRegistry: (Wallet & {
  * }
  */
 const getStringifiedWallet = (wallet: (typeof WalletRegistry)[number]) => {
+  const stringifyObject = (obj: any) => {
+    let val: any[] = [];
+    Object.entries(obj).forEach(([key, value]) => {
+      if (typeof value === "function") {
+        val.push(`${key}: ${value.toString()},`);
+      } else if (isObject(value)) {
+        val.push(`${key}: { ${stringifyObject(value)} },`);
+      } else {
+        val.push(`${key}: ${JSON.stringify(value)},`);
+      }
+    });
+    return val.join("");
+  };
+
   const body = Object.entries(wallet).reduce((acc, [key, value]) => {
     if (key === "walletClassName") return acc;
     if (key === "lazyInstallUrl") {
       return `${acc}lazyInstall: () => import("${value}").then(m => m.${wallet.walletClassName}),`;
     }
-    return `${acc}${key}: ${JSON.stringify(value)},`;
+    return isObject(value)
+      ? `${acc}${key}: { ${stringifyObject(value)} },`
+      : `${acc}${key}: ${JSON.stringify(value)},`;
   }, "");
   return "{" + body + "}";
 };
