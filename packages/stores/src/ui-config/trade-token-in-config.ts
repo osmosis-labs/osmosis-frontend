@@ -14,7 +14,6 @@ import { calcPriceImpactWithAmount } from "@osmosis-labs/math";
 import {
   NoRouteError,
   OptimizedRoutes,
-  RouteWithInAmount,
   SplitTokenInQuote,
   Token,
   TokenOutGivenInRouter,
@@ -72,18 +71,11 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   // quotes
   @observable.ref
   protected _latestQuote:
-    | IPromiseBasedObservable<
-        Awaited<ReturnType<TokenOutGivenInRouter["routeByTokenIn"]>>
-      >
+    | IPromiseBasedObservable<SplitTokenInQuote>
     | undefined = undefined;
   @observable.ref
   protected _spotPriceQuote:
-    | IPromiseBasedObservable<
-        Pick<
-          Awaited<ReturnType<TokenOutGivenInRouter["routeByTokenIn"]>>,
-          "quote"
-        >
-      >
+    | IPromiseBasedObservable<SplitTokenInQuote>
     | undefined = undefined;
 
   @override
@@ -214,7 +206,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   get expectedSwapResult(): PrettyQuote {
     return (
       this._latestQuote?.case({
-        fulfilled: ({ quote }) => this.makePrettyQuote(quote),
+        fulfilled: (quote) => this.makePrettyQuote(quote),
         rejected: (e) => {
           // this may happen a lot, so don't log to console
           if (e instanceof NoRouteError) return undefined;
@@ -228,7 +220,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
   /** Routes for current quote */
   @computed
-  get optimizedRoutes(): RouteWithInAmount[] {
+  get optimizedRoutes(): SplitTokenInQuote["split"] {
     return (
       this._latestQuote?.case({
         fulfilled: ({ split }) => split,
@@ -254,7 +246,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   get expectedSpotPrice(): IntPretty {
     return (
       this._spotPriceQuote?.case({
-        fulfilled: ({ quote }) => {
+        fulfilled: (quote) => {
           return this.makePrettyQuote(quote)
             .beforeSpotPriceWithoutSwapFeeOutOverIn;
         },
