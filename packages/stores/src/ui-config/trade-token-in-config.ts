@@ -130,7 +130,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
   @computed
   get outCurrency(): AppCurrency {
-    if (this.sendableCurrencies.length <= 1) {
+    if (this.sendableCurrencies.length === 0) {
       // For the case before pools are initially fetched,
       return this.initialSelectCurrencies.out;
     }
@@ -473,7 +473,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           this._spotPriceQuote = fromPromise(futureQuote);
         });
       },
-      400
+      500
     );
     // React to changes in send/out currencies, then generate a spot price by directly calculating from the pools
     autorun(() => {

@@ -146,24 +146,17 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     ///////
     // find candidate routes
 
-    const findCandidateOpts = {
-      recyclePools: false, // since we're splitting across routes and can't simulate pool state updates, we need routes with fully unique pools
-    };
-    const candidates = this.getCandidateRoutes(
-      tokenIn.denom,
-      tokenOutDenom,
-      findCandidateOpts
-    );
-    let routes = candidates.routes;
+    let routes = this.getCandidateRoutes(tokenIn.denom, tokenOutDenom);
 
     // find routes with swapped in/out tokens since getCandidateRoutes is a greedy algorithm
-    const { routes: tokenOutToInRoutes } = this.getCandidateRoutes(
+    const tokenOutToInRoutes = this.getCandidateRoutes(
       tokenOutDenom,
       tokenIn.denom,
-      {
-        ...findCandidateOpts,
-        poolsUsed: candidates.poolsUsed, // don't use any pools from the normal token in search
-      }
+      this._sortedPools.filter(
+        (
+          { id } // remove pools found in tokenInToOutRoutes
+        ) => routes.some(({ pools }) => pools[0].id === id)
+      )
     );
     const invertedRoutes = tokenOutToInRoutes.map(invertRoute);
     routes = [...routes, ...invertedRoutes];
@@ -408,22 +401,19 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
   protected getCandidateRoutes(
     tokenInDenom: string,
     tokenOutDenom: string,
-    opts: Partial<{ poolsUsed: boolean[]; recyclePools: boolean }> = {}
-  ): { routes: Route[]; poolsUsed: boolean[] } {
-    const allUnused = new Array<boolean>(this._sortedPools.length).fill(false);
-    const poolsUsed = opts?.poolsUsed ?? allUnused;
-
-    const recyclePools = opts?.recyclePools ?? true;
-
-    if (this._sortedPools.length === 0) {
-      return { routes: [], poolsUsed };
+    pools = this._sortedPools
+  ): Route[] {
+    if (pools.length === 0) {
+      return [];
     }
+
     const cacheKey = `${tokenInDenom}/${tokenOutDenom}`;
     const cached = this._candidatePathsCache.get(cacheKey);
     if (cached) {
-      return { routes: cached, poolsUsed };
+      return cached;
     }
 
+    const poolsUsed = Array<boolean>(pools.length).fill(false);
     const routes: Route[] = [];
 
     const findRoutes = (
@@ -457,7 +447,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         return;
       }
 
-      for (let i = 0; i < this._sortedPools.length; i++) {
+      for (let i = 0; i < pools.length; i++) {
         if (poolsUsed[i]) {
           continue; // skip pool
         }
@@ -466,7 +456,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
           ? _previousTokenOuts
           : [tokenInDenom]; // imaginary prev pool
 
-        const curPool = this._sortedPools[i];
+        const curPool = pools[i];
 
         let prevPoolCurPoolTokenMatch: string | undefined;
         curPool.poolAssetDenoms.forEach((denom) =>
@@ -499,7 +489,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
             (denom) => denom !== prevPoolCurPoolTokenMatch
           )
         );
-        poolsUsed[i] = !recyclePools;
+        poolsUsed[i] = false;
         currentTokenOuts.pop();
         currentRoute.pop();
       }
@@ -507,13 +497,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
     findRoutes(tokenInDenom, tokenOutDenom, [], [], poolsUsed);
     this._candidatePathsCache.set(cacheKey, routes);
-    return {
-      routes: routes.filter(
-        (route) =>
-          validateRoute(route, false) && route.pools.length <= this._maxHops
-      ),
-      poolsUsed,
-    };
+    return routes.filter(
+      (route) =>
+        validateRoute(route, false) && route.pools.length <= this._maxHops
+    );
   }
 
   /**
