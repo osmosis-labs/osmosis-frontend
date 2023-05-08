@@ -70,26 +70,6 @@ describe("route weight calculations", () => {
   });
 });
 
-// Mock pools
-// const pool1 = new MockRoutablePool(
-//   "pool1",
-//   ["tokenA", "tokenB"],
-//   new Dec(0.01),
-//   new Int(100)
-// );
-// const pool2 = new MockRoutablePool(
-//   "pool2",
-//   ["tokenC", "tokenD"],
-//   new Dec(0.02),
-//   new Int(50)
-// );
-// const pool3 = new MockPool(
-//   "pool3",
-//   ["tokenD", "tokenE"],
-//   new Dec(0.005),
-//   new Int(20)
-// );
-
 function getTokenOuts(pools: MockRoutablePool[], tokenIn: string) {
   const tokenOuts = [];
   for (const pool of pools) {

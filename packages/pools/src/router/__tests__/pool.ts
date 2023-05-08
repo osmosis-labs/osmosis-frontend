@@ -102,10 +102,7 @@ export class TestOptimizedRoutes
     return super.calculateTokenOutByTokenIn(...args);
   }
 
-  getCandidateRoutes(
-    tokenInDenom: string,
-    tokenOutDenom: string
-  ): { routes: Route[]; poolsUsed: boolean[] } {
+  getCandidateRoutes(tokenInDenom: string, tokenOutDenom: string): Route[] {
     return super.getCandidateRoutes(tokenInDenom, tokenOutDenom);
   }
 
@@ -168,8 +165,8 @@ export class RoutesTestOptimizedRoutes
     return super.calculateTokenOutByTokenIn(...args);
   }
 
-  getCandidateRoutes(): { routes: Route[]; poolsUsed: boolean[] } {
-    return { routes: this.testRoutes, poolsUsed: [] };
+  getCandidateRoutes(): Route[] {
+    return this.testRoutes;
   }
 
   findBestSplitTokenIn(

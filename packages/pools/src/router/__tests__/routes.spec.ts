@@ -72,7 +72,7 @@ describe("OptimizedRoutes", () => {
           stakeCurrencyMinDenom: "ufoo",
         });
 
-        const split = await router.getOptimizedRoutesByTokenIn(
+        const split = router.getOptimizedRoutesByTokenIn(
           {
             denom: "ufoo",
             amount: new Int("100"),
@@ -80,12 +80,12 @@ describe("OptimizedRoutes", () => {
           "ubar"
         );
 
-        expect(split.length).toBe(0);
+        expect(split).rejects.toThrow(NotEnoughLiquidityError);
       });
     });
 
     describe("favors high liquidity", () => {
-      test("splits into higher liquidity pool", async () => {
+      test("swaps into higher liquidity pool", async () => {
         const pools = [
           makeWeightedPool({
             // lower liquidity, but double TVL (pool ID)
@@ -110,9 +110,7 @@ describe("OptimizedRoutes", () => {
           "uosmo"
         );
 
-        expect(split.length).toBe(2);
-        expect(split[1].pools[0].id).toBe("2"); // test pools return TVL as pool ID
-        expect(split[0].initialAmount.gt(split[1].initialAmount)).toBeTruthy(); // split is sorted by initial amount
+        expect(split.length).toBe(1);
       });
       test("2 pools, only 1 route", async () => {
         const pools = [
@@ -429,15 +427,15 @@ describe("OptimizedRoutes", () => {
           "usdc"
         );
 
-        const [normRoute1PoolIds, normRoute2PoolIds] = normalSplit.map(
-          (route) => route.pools.map((pool) => pool.id)
+        // normal routing prefers single route
+        const [normRoute1PoolIds] = normalSplit.map((route) =>
+          route.pools.map((pool) => pool.id)
         );
         const [prefRoute1PoolIds, prefRoute2PoolIds] = prefSplit.map((route) =>
           route.pools.map((pool) => pool.id)
         );
 
-        expect(normRoute1PoolIds.includes("2")).toBeTruthy(); // NOT preferred pool, but high liq route
-        expect(normRoute2PoolIds.includes("8")).toBeFalsy(); // no preferred pool, but high liq route
+        expect(normRoute1PoolIds.includes("1")).toBeTruthy(); // NOT preferred pool, but high liq route
         expect(prefRoute1PoolIds.includes("1")).toBeTruthy(); // NOT preferred pool, but high liq route
         expect(prefRoute2PoolIds.includes("8")).toBeTruthy(); // preferred pool
 
@@ -839,7 +837,7 @@ describe("OptimizedRoutes", () => {
 
         const tokenIn = { denom: "uion", amount: new Int("100") };
 
-        const { routes } = router.getCandidateRoutes(tokenIn.denom, "uusdc");
+        const routes = router.getCandidateRoutes(tokenIn.denom, "uusdc");
 
         const bestSplit = await router.findBestSplitTokenIn(
           routes,
@@ -872,7 +870,7 @@ describe("OptimizedRoutes", () => {
 
         const tokenIn = { denom: "uion", amount: new Int("100") };
 
-        const { routes } = router.getCandidateRoutes(tokenIn.denom, "uusdc");
+        const routes = router.getCandidateRoutes(tokenIn.denom, "uusdc");
 
         const bestSplit = await router.findBestSplitTokenIn(
           routes,

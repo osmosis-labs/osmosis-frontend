@@ -190,6 +190,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       routesInitialLimitAmounts[i].gte(tokenIn.amount)
     );
 
+    if (routes.length === 0) {
+      throw new NotEnoughLiquidityError();
+    }
+
     // sort routes by weight
     const routeWeights = await Promise.all(
       routes.map((route) =>
@@ -209,16 +213,13 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       return path1Weight.gte(path2Weight) ? -1 : 1; // lower is better
     });
 
-    if (routes.length === 0) {
-      throw new NoRouteError();
-    }
-
     const directOutAmount = (
       await this.calculateTokenOutByTokenIn([
         { ...routes[0], initialAmount: tokenIn.amount },
       ])
     ).amount;
 
+    // if any of top 2 routes include a preferred pool, split through them
     const splitIncludesPreferredPool =
       routes.length > 1
         ? routes[1].pools.some(({ id }) =>
