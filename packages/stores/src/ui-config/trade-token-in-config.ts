@@ -426,7 +426,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       }
     });
     // React to user input and request a swap result. This is debounced to prevent spamming the server
-    const debounceRouteByTokenIn = debounce(
+    const debounceGetQuote = debounce(
       (
         router: TokenOutGivenInRouter,
         tokenIn: Token,
@@ -449,8 +449,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       if (!router) return;
 
       // Clear any previous user input debounce, then call the debounce function
-      debounceRouteByTokenIn.clear();
-      debounceRouteByTokenIn(
+      debounceGetQuote.clear();
+      debounceGetQuote(
         router,
         {
           denom,
@@ -462,7 +462,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
     ////////
     // SPOT PRICE
-    // React to changes in send/out currencies, then generate a spot price by directly calculating from the pools
     const debounceGetSpotPrice = debounce(
       (
         router: TokenOutGivenInRouter,
@@ -474,8 +473,9 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           this._spotPriceQuote = fromPromise(futureQuote);
         });
       },
-      500
+      400
     );
+    // React to changes in send/out currencies, then generate a spot price by directly calculating from the pools
     autorun(() => {
       /** Use 1_000_000 uosmo (6 decimals) vs 1 uosmo */
       const oneWithDecimals = new Int(
