@@ -122,11 +122,11 @@ export const TradeClipboard: FunctionComponent<{
     );
     // auto collapse on input clear
     useEffect(() => {
-      if (!isEstimateDetailRelevant && !tradeTokenInConfig.tradeIsLoading)
+      if (!isEstimateDetailRelevant && !tradeTokenInConfig.isQuoteLoading)
         setShowEstimateDetails(false);
     }, [
       isEstimateDetailRelevant,
-      tradeTokenInConfig.tradeIsLoading,
+      tradeTokenInConfig.isQuoteLoading,
       setShowEstimateDetails,
     ]);
 
@@ -945,7 +945,7 @@ export const TradeClipboard: FunctionComponent<{
             disabled={
               Boolean(tradeTokenInConfig.error) ||
               account.txTypeInProgress !== "" ||
-              tradeTokenInConfig.tradeIsLoading
+              tradeTokenInConfig.isQuoteLoading
             }
             onClick={swap}
           >
