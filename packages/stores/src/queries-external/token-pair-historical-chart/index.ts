@@ -49,8 +49,8 @@ export class ObservableQueryTokenPairHistoricalChart extends ObservableQueryExte
   }
 
   @computed
-  get getChartPrices(): TokenPairHistoricalPrice[] | undefined {
-    if (!this.response) return undefined;
+  get getChartPrices(): TokenPairHistoricalPrice[] {
+    if (!this.response) return [];
 
     try {
       return this.response.data.map((data) => ({
@@ -58,7 +58,7 @@ export class ObservableQueryTokenPairHistoricalChart extends ObservableQueryExte
         time: data.time * 1000,
       }));
     } catch {
-      return undefined;
+      return [];
     }
   }
 }

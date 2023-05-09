@@ -353,7 +353,7 @@ const AddConcLiqView: FunctionComponent<
   );
 
   useEffect(() => {
-    if (!queryHistorical.isFetching && queryHistorical.getChartPrices) {
+    if (!queryHistorical.isFetching && queryHistorical.getChartPrices.length) {
       const newData = queryHistorical.getChartPrices;
       setHistoricalChartData(newData);
     }
