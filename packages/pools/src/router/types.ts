@@ -72,7 +72,11 @@ export type Quote = {
 
 /** Quote with potential split of in token amount across multiple routes. */
 export type SplitTokenInQuote = Quote & {
-  split: (RouteWithInAmount & { multiHopOsmoDiscount: boolean })[];
+  split: (RouteWithInAmount & {
+    /** Orderered array of the effective swap fees possibly including OSMO discount. */
+    effectiveSwapFees: Dec[];
+    multiHopOsmoDiscount: boolean;
+  })[];
   /** In amount after fees paid are subtracted. */
   tokenInFeeAmount: Int;
   swapFee: Dec;

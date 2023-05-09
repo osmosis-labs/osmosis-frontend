@@ -21,6 +21,7 @@ import { useLatest, useMeasure } from "react-use";
 import { EventName } from "../../config";
 import {
   useAmplitudeAnalytics,
+  useDisclosure,
   useFakeFeeConfig,
   useSlippageConfig,
   useTokenSwapQueryParams,
@@ -97,6 +98,8 @@ export const TradeClipboard: FunctionComponent<{
       gasForecasted
     );
     tradeTokenInConfig.setFeeConfig(feeConfig);
+
+    const routesVisDisclosure = useDisclosure();
 
     // show details
     const [showEstimateDetails, _setShowEstimateDetails] = useState(false);
@@ -926,8 +929,7 @@ export const TradeClipboard: FunctionComponent<{
               </div>
               {!isInModal && tradeTokenInConfig.optimizedRoutes.length > 0 && (
                 <SplitTrade
-                  sendCurrency={tradeTokenInConfig.sendCurrency}
-                  outCurrency={tradeTokenInConfig.outCurrency}
+                  {...routesVisDisclosure}
                   split={tradeTokenInConfig.optimizedRoutes}
                 />
               )}
