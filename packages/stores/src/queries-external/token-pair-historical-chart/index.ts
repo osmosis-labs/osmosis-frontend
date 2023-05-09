@@ -1,8 +1,8 @@
 import { KVStore } from "@keplr-wallet/common";
 import { HasMapStore } from "@keplr-wallet/stores";
 import { computed, makeObservable } from "mobx";
-import { IPriceStore } from "src/price";
 
+import { IPriceStore } from "../../price";
 import { IMPERATOR_HISTORICAL_DATA_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
 import { PriceRange, TokenPairHistoricalPrice } from "./types";
