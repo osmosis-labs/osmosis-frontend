@@ -382,7 +382,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
             pool
               .computeTotalValueLocked(this.priceStore)
               .toDec()
-              .gt(new Dec(4_000)))
+              .gt(new Dec(4_000_000)))
         ) {
           preferredIds.push(pool.id);
         }

@@ -57,21 +57,11 @@ export async function calculateWeightForRoute(
   route: Route,
   getPoolTotalValueLocked: (poolId: string) => Dec
 ): Promise<Dec> {
-  const avgTvl = getAveragePoolValueLocked(route, getPoolTotalValueLocked);
-
   if (route.pools.length === 1) return new Dec(1); // prioritize direct routes
 
-  return new Dec(1).sub(avgTvl.quo(new Dec(1).add(avgTvl)));
-}
+  const firstPoolTvl = getPoolTotalValueLocked(route.pools[0].id);
 
-export function getAveragePoolValueLocked(
-  route: Route,
-  getPoolTotalValueLocked: (poolId: string) => Dec
-) {
-  const poolsTvl = route.pools.map(({ id }) => getPoolTotalValueLocked(id));
-  return poolsTvl
-    .reduce((a, b) => a.add(b), new Dec(0))
-    .quo(new Dec(route.pools.length));
+  return new Dec(1).sub(firstPoolTvl.quo(new Dec(1).add(firstPoolTvl)));
 }
 
 /** Creates a serialized key of:

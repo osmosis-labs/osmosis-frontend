@@ -302,7 +302,7 @@ export const TradeClipboard: FunctionComponent<{
     return (
       <div
         className={classNames(
-          "relative flex flex-col gap-8 overflow-hidden rounded-[24px] bg-osmoverse-800 px-6 pt-12 pb-8 md:gap-6 md:px-3 md:pt-4 md:pb-4",
+          "relative flex flex-col gap-8 overflow-hidden rounded-[24px] bg-osmoverse-800 px-6 py-8 md:gap-6 md:px-3 md:pt-4 md:pb-4",
           containerClassName
         )}
       >
@@ -625,7 +625,7 @@ export const TradeClipboard: FunctionComponent<{
 
           <button
             className={classNames(
-              "absolute left-[45%] top-[235px] z-30 flex items-center transition-all duration-500 ease-bounce md:top-[178px]",
+              "absolute left-[45%] top-[220px] z-30 flex items-center transition-all duration-500 ease-bounce md:top-[174px]",
               {
                 "h-10 w-10 md:h-8 md:w-8": !isHoveringSwitchButton,
                 "h-11 w-11 -translate-x-[2px] md:h-9 md:w-9":

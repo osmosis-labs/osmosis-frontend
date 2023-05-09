@@ -148,24 +148,59 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     ///////
     // find candidate routes
 
-    let routes = this.getCandidateRoutes(tokenIn.denom, tokenOutDenom);
+    let candidateRoutes = this.getCandidateRoutes(tokenIn.denom, tokenOutDenom);
 
     // find routes with swapped in/out tokens since getCandidateRoutes is a greedy algorithm
     const tokenOutToInRoutes = this.getCandidateRoutes(
       tokenOutDenom,
-      tokenIn.denom,
-      this._sortedPools.filter(
-        (
-          { id } // remove pools found in tokenInToOutRoutes
-        ) => !routes.some(({ pools }) => pools.some((pool) => pool.id === id))
-      )
+      tokenIn.denom
     );
     const invertedRoutes = tokenOutToInRoutes.map(invertRoute);
-    routes = [...routes, ...invertedRoutes];
+    candidateRoutes = [...candidateRoutes, ...invertedRoutes];
 
-    // filter routes by unique pools, in order
+    if (candidateRoutes.length === 0) {
+      throw new NoRouteError();
+    }
+
+    ///////
+    // get top X routes to split through
+
+    // filter routes by enough entry liquidity
+    const routesInitialLimitAmounts = await Promise.all(
+      candidateRoutes.map((route) =>
+        route.pools[0].getLimitAmountByTokenIn(tokenIn.denom)
+      )
+    );
+    candidateRoutes = candidateRoutes.filter((_, i) =>
+      routesInitialLimitAmounts[i].gte(tokenIn.amount)
+    );
+
+    if (candidateRoutes.length === 0) {
+      throw new NotEnoughLiquidityError();
+    }
+
+    // sort routes by weight
+    const routeWeights = await Promise.all(
+      candidateRoutes.map((route) =>
+        calculateWeightForRoute(route, this._getPoolTotalValueLocked)
+      )
+    );
+    let sortedRoutes = candidateRoutes.sort((path1, path2) => {
+      // prioritize preferred pool routes
+      if (path2.pools.some(({ id }) => this._preferredPoolIds?.includes(id)))
+        return -1;
+
+      const path1Index = candidateRoutes.indexOf(path1);
+      const path2Index = candidateRoutes.indexOf(path2);
+      const path1Weight = routeWeights[path1Index];
+      const path2Weight = routeWeights[path2Index];
+
+      return path1Weight.lte(path2Weight) ? -1 : 1; // lower is better
+    });
+
+    // filter routes by unique pools, maintaining sort order
     const uniquePoolIds = new Set<string>();
-    routes = routes.filter(({ pools }) =>
+    sortedRoutes = sortedRoutes.filter(({ pools }) =>
       pools.every(({ id }) => {
         if (uniquePoolIds.has(id)) {
           return false;
@@ -175,64 +210,26 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       })
     );
 
-    if (routes.length === 0) {
-      throw new NoRouteError();
-    }
-
-    ///////
-    // get top X routes to split through
-
-    // filter routes by enough entry liquidity
-    const routesInitialLimitAmounts = await Promise.all(
-      routes.map((route) =>
-        route.pools[0].getLimitAmountByTokenIn(tokenIn.denom)
-      )
-    );
-    routes = routes.filter((_, i) =>
-      routesInitialLimitAmounts[i].gte(tokenIn.amount)
-    );
-
-    if (routes.length === 0) {
-      throw new NotEnoughLiquidityError();
-    }
-
-    // sort routes by weight
-    const routeWeights = await Promise.all(
-      routes.map((route) =>
-        calculateWeightForRoute(route, this._getPoolTotalValueLocked)
-      )
-    );
-    routes = routes.sort((path1, path2) => {
-      // prioritize preferred pool routes
-      if (path2.pools.some(({ id }) => this._preferredPoolIds?.includes(id)))
-        return 1;
-
-      const path1Index = routes.indexOf(path1);
-      const path2Index = routes.indexOf(path2);
-      const path1Weight = routeWeights[path1Index];
-      const path2Weight = routeWeights[path2Index];
-
-      return path1Weight.gte(path2Weight) ? -1 : 1; // lower is better
-    });
-
     const directOutAmount = (
       await this.calculateTokenOutByTokenIn([
-        { ...routes[0], initialAmount: tokenIn.amount },
+        { ...sortedRoutes[0], initialAmount: tokenIn.amount },
       ])
     ).amount;
 
     // if any of top 2 routes include a preferred pool, split through them
     const splitIncludesPreferredPool =
-      routes.length > 1
-        ? routes[1].pools.some(({ id }) =>
+      sortedRoutes.length > 1
+        ? sortedRoutes[1].pools.some(({ id }) =>
             this._preferredPoolIds?.includes(id)
           ) ||
-          routes[0].pools.some(({ id }) => this._preferredPoolIds?.includes(id))
+          sortedRoutes[0].pools.some(({ id }) =>
+            this._preferredPoolIds?.includes(id)
+          )
         : false;
 
-    const topRoutesToSplit = routes.slice(0, this._maxSplit);
+    const selectedSplit = sortedRoutes.slice(0, this._maxSplit);
     const split = (
-      await this.findBestSplitTokenIn(topRoutesToSplit, tokenIn.amount)
+      await this.findBestSplitTokenIn(selectedSplit, tokenIn.amount)
     ).sort((a, b) => Number(b.initialAmount.sub(a.initialAmount)));
 
     if (splitIncludesPreferredPool) return split;
@@ -241,7 +238,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       .amount;
 
     if (directOutAmount.gte(splitOutAmount)) {
-      return [{ ...routes[0], initialAmount: tokenIn.amount }];
+      return [{ ...sortedRoutes[0], initialAmount: tokenIn.amount }];
     } else {
       return split;
     }
