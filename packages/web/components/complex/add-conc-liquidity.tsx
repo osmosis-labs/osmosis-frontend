@@ -542,8 +542,7 @@ const AddConcLiqView: FunctionComponent<
                   clPool.currentSqrtPrice.mul(clPool.currentSqrtPrice),
                   lowerTick,
                   upperTick,
-                  new Dec(amount),
-                  clPool.exponentAtPriceOne
+                  new Dec(amount)
                 );
                 setQuoteDepositAmountIn(quoteDeposit);
               }
@@ -561,8 +560,7 @@ const AddConcLiqView: FunctionComponent<
                   clPool.currentSqrtPrice.mul(clPool.currentSqrtPrice),
                   lowerTick,
                   upperTick,
-                  new Dec(amount),
-                  clPool.exponentAtPriceOne
+                  new Dec(amount)
                 );
                 setBaseDepositAmountIn(quoteDeposit);
               }
@@ -771,41 +769,17 @@ const PresetVolatilityCard: FunctionComponent<
     addLiquidityConfig,
     updateInputAndRangeMinMax,
   }) => {
-    const { tickRange, fullRange, setFullRange, pool, lastChartData } =
+    const { tickRange, fullRange, setFullRange, lastChartData } =
       addLiquidityConfig;
     const lastPrice = lastChartData?.close || 0;
 
     const moderateTicks = [
-      priceToTick(
-        roundPriceToNearestTick(
-          new Dec(lastPrice * 0.75),
-          pool.exponentAtPriceOne
-        ),
-        pool.exponentAtPriceOne
-      ),
-      priceToTick(
-        roundPriceToNearestTick(
-          new Dec(lastPrice * 1.25),
-          pool.exponentAtPriceOne
-        ),
-        pool.exponentAtPriceOne
-      ),
+      priceToTick(roundPriceToNearestTick(new Dec(lastPrice * 0.75))),
+      priceToTick(roundPriceToNearestTick(new Dec(lastPrice * 1.25))),
     ];
     const aggressiveTicks = [
-      priceToTick(
-        roundPriceToNearestTick(
-          new Dec(lastPrice * 0.5),
-          pool.exponentAtPriceOne
-        ),
-        pool.exponentAtPriceOne
-      ),
-      priceToTick(
-        roundPriceToNearestTick(
-          new Dec(lastPrice * 1.5),
-          pool.exponentAtPriceOne
-        ),
-        pool.exponentAtPriceOne
-      ),
+      priceToTick(roundPriceToNearestTick(new Dec(lastPrice * 0.5))),
+      priceToTick(roundPriceToNearestTick(new Dec(lastPrice * 1.5))),
     ];
 
     const isRangePassive = fullRange;
@@ -885,7 +859,7 @@ function PriceInputBox(props: {
         {props.label}
       </span>
       {props.infinity ? (
-        <div className="flex h-16 flex-row items-center px-2">
+        <div className="flex h-[41px] flex-row items-center px-2">
           <Image
             alt="infinity"
             src="/icons/infinity.svg"

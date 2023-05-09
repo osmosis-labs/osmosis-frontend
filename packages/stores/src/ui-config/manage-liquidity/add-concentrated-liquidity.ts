@@ -137,10 +137,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   @action
   setMinRange = (min: Dec | number) => {
     this._range = [
-      roundPriceToNearestTick(
-        typeof min === "number" ? new Dec(min) : min,
-        this.pool.exponentAtPriceOne
-      ),
+      roundPriceToNearestTick(typeof min === "number" ? new Dec(min) : min),
       this._range[1],
     ];
   };
@@ -149,10 +146,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   setMaxRange = (max: Dec | number) => {
     this._range = [
       this._range[0],
-      roundPriceToNearestTick(
-        typeof max === "number" ? new Dec(max) : max,
-        this.pool.exponentAtPriceOne
-      ),
+      roundPriceToNearestTick(typeof max === "number" ? new Dec(max) : max),
     ];
   };
 
@@ -161,10 +155,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   }
 
   get tickRange(): [Int, Int] {
-    return [
-      priceToTick(this._range[0], this.pool.exponentAtPriceOne),
-      priceToTick(this._range[1], this.pool.exponentAtPriceOne),
-    ];
+    return [priceToTick(this._range[0]), priceToTick(this._range[1])];
   }
 
   @action
@@ -278,7 +269,6 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   get depthChartData(): { price: number; depth: number }[] {
     const data = this.activeLiquidity;
     const [min, max] = this.yRange;
-    const exponentAtPriceOne = this.pool.exponentAtPriceOne;
 
     const depths: { price: number; depth: number }[] = [];
     for (let price = min; price <= max; price += (max - min) / 20) {
@@ -288,10 +278,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
       );
       depths.push({
         price,
-        depth: getLiqFrom(
-          priceToTick(new Dec(spotPrice), exponentAtPriceOne),
-          data
-        ),
+        depth: getLiqFrom(priceToTick(new Dec(spotPrice)), data),
       });
     }
 
