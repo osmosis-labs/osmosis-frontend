@@ -112,12 +112,6 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
             })}
             horizontal={horizontal}
           >
-            {/* Uncomment when testing alignment */}
-            {/*<AnimatedAxis*/}
-            {/*  orientation="right"*/}
-            {/*  numTicks={5}*/}
-            {/*  strokeWidth={0}*/}
-            {/*/>*/}
             <AnimatedGrid columns={false} rows={false} numTicks={5} />
             <BarSeries
               dataKey="depth"

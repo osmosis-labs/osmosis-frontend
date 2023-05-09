@@ -76,7 +76,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   constructor(
     protected readonly chainGetter: ChainGetter,
     initialChainId: string,
-    protected readonly poolId: string,
+    readonly poolId: string,
     sender: string,
     protected readonly queriesStore: IQueriesStore,
     protected readonly queryBalances: ObservableQueryBalances,

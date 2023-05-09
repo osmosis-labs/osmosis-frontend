@@ -525,7 +525,9 @@ const AddConcLiqView: FunctionComponent<
         addLiquidityConfig={addLiquidityConfig}
       />
       <div className="flex flex-col">
-        <div className="px-2 py-1 text-sm">Amount to deposit</div>
+        <div className="px-2 py-1 text-sm">
+          {t("addConcentratedLiquidity.amountToDeposit")}
+        </div>
         <div className="flex flex-row justify-center gap-3">
           <DepositAmountGroup
             getFiatValue={getFiatValue}
@@ -594,7 +596,12 @@ const VolitilitySelectorGroup: FunctionComponent<
           rel="noopener noreferrer"
         >
           {t("addConcentratedLiquidity.superchargedLearnMore")}
-          <Image src="/icons/arrow-right.svg" height={12} width={12} />
+          <Image
+            alt="learn more"
+            src="/icons/arrow-right.svg"
+            height={12}
+            width={12}
+          />
         </a>
       </div>
       <div className="flex flex-1 flex-row justify-end gap-2">
@@ -684,23 +691,26 @@ const DepositAmountGroup: FunctionComponent<{
   onUpdate: (amount: number) => void;
   currentValue: Dec;
 }> = observer(({ coin, onUpdate, currentValue }) => {
-  const { priceStore, assetsStore } = useStore();
-  // const [value, setValue] = useState(0);
+  const { priceStore, chainStore, queriesStore, accountStore } = useStore();
 
-  const { nativeBalances, ibcBalances } = assetsStore;
+  const { chainId } = chainStore.osmosis;
+  // const { nativeBalances, ibcBalances } = assetsStore;
+  const { bech32Address } = accountStore.getAccount(chainId);
 
   const fiatPer = coin?.currency.coinGeckoId
     ? priceStore.getPrice(coin.currency.coinGeckoId, undefined)
     : 0;
 
-  const [walletBalance] = nativeBalances
-    .concat(ibcBalances)
-    .filter((balance) => balance.balance.denom === coin?.denom);
+  const walletBalance = coin?.currency
+    ? queriesStore
+        .get(chainId)
+        .queryBalances.getQueryBech32Address(bech32Address)
+        .getBalanceFromCurrency(coin.currency)
+    : null;
 
   const updateValue = useCallback(
     (val: string) => {
       const newVal = Number(val);
-      // setValue(newVal);
       onUpdate(newVal);
     },
     [onUpdate]
@@ -723,7 +733,7 @@ const DepositAmountGroup: FunctionComponent<{
         </div>
         <div className="flex flex-1 flex-col">
           <div className="text-right text-caption text-wosmongton-300">
-            {walletBalance?.balance.toString()}
+            {walletBalance ? walletBalance.toString() : ""}
           </div>
           <div className="flex h-16 w-[158px] flex-col items-end justify-center self-end rounded-[12px] bg-osmoverse-800">
             <InputBox

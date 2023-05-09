@@ -1,4 +1,3 @@
-import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
@@ -56,7 +55,7 @@ export const AddLiquidityModal: FunctionComponent<
   // initialize pool data stores once root pool store is loaded
   const { poolDetail } = derivedDataStore.getForPool(poolId as string);
   const pool = poolDetail?.pool?.pool;
-  const isConcLiq = pool instanceof ConcentratedLiquidityPool;
+  const isConcLiq = pool?.type === "concentrated";
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
