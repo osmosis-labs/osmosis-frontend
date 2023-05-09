@@ -13,7 +13,7 @@ import {
   roundPriceToNearestTick,
 } from "@osmosis-labs/math";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
-import { action, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 
 import {
   PriceRange,
@@ -154,6 +154,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     return this._range;
   }
 
+  @computed
   get tickRange(): [Int, Int] {
     return [priceToTick(this._range[0]), priceToTick(this._range[1])];
   }
@@ -230,6 +231,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     return this._activeLiquidity;
   }
 
+  @computed
   get yRange(): [number, number] {
     const data = this.historicalChartData.map(({ time, close }) => ({
       time,
@@ -266,6 +268,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     return [finalMin, finalMax];
   }
 
+  @computed
   get depthChartData(): { price: number; depth: number }[] {
     const data = this.activeLiquidity;
     const [min, max] = this.yRange;
@@ -285,6 +288,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     return depths;
   }
 
+  @computed
   get xRange(): [number, number] {
     return [0, Math.max(...this.depthChartData.map((d) => d.depth)) * 1.2];
   }
