@@ -14,7 +14,6 @@ import { calcPriceImpactWithAmount } from "@osmosis-labs/math";
 import {
   NoRouteError,
   OptimizedRoutes,
-  Route,
   SplitTokenInQuote,
   Token,
   TokenOutGivenInRouter,
@@ -78,12 +77,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   protected _spotPriceQuote:
     | IPromiseBasedObservable<SplitTokenInQuote>
     | undefined = undefined;
-
-  /** Since the order of found routes is not likely to change, store them
-   *  cache routes for the lifetime of the component. The pools data
-   *  should be updatable by the query pool object.
-   */
-  protected readonly routesCache: Map<string, Route[]> = new Map();
 
   @override
   get sendCurrency(): AppCurrency {
@@ -245,7 +238,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
   /** Quote is loading for user amount and token select inputs. */
   @computed
-  get tradeIsLoading(): boolean {
+  get isQuoteLoading(): boolean {
     return this._latestQuote?.state === PENDING;
   }
 
@@ -281,7 +274,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     // If things are loading or there's no input
     if (
       this.isSpotPriceLoading ||
-      this.tradeIsLoading ||
+      this.isQuoteLoading ||
       this.amount === "" ||
       !new Dec(this.amount).isPositive()
     ) {
@@ -398,7 +391,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       incentivizedPoolIds: this._incentivizedPoolIds,
       stakeCurrencyMinDenom,
       getPoolTotalValueLocked,
-      cache: { routes: this.routesCache },
     });
   }
 

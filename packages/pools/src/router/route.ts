@@ -96,5 +96,5 @@ export function cacheKeyForRouteDenoms(
   tokenInDenom: string,
   tokenOutDenom: string
 ): string {
-  return `${tokenInDenom}/${tokenOutDenom}`;
+  return `${tokenInDenom}-${tokenOutDenom}`;
 }
