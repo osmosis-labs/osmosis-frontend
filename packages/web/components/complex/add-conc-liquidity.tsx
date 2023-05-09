@@ -17,7 +17,6 @@ import debounce from "debounce";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useRouter } from "next/router";
 import React, {
   FunctionComponent,
   ReactNode,
@@ -60,8 +59,7 @@ export const AddConcLiquidity: FunctionComponent<
     getFiatValue,
     onRequestClose,
   }) => {
-    const router = useRouter();
-    const { id: poolId } = router.query as { id: string };
+    const { poolId } = addLiquidityConfig;
     const { derivedDataStore } = useStore();
 
     // initialize pool data stores once root pool store is loaded
@@ -139,8 +137,7 @@ const Overview: FunctionComponent<
     onRequestClose,
   }) => {
     const { priceStore, queriesExternalStore } = useStore();
-    const router = useRouter();
-    const { id: poolId } = router.query as { id: string };
+    const { poolId } = addLiquidityConfig;
     const t = useTranslation();
     const [selected, selectView] =
       useState<typeof addLiquidityConfig.modalView>("add_manual");
@@ -300,6 +297,7 @@ const AddConcLiqView: FunctionComponent<
   const baseDenom = pool?.poolAssets[0]?.amount.denom || "";
   const quoteDenom = pool?.poolAssets[1]?.amount.denom || "";
   const {
+    poolId,
     historicalRange,
     range,
     quoteDepositAmountIn,
@@ -317,9 +315,7 @@ const AddConcLiqView: FunctionComponent<
   } = addLiquidityConfig;
 
   const { queriesExternalStore, chainStore, queriesStore } = useStore();
-  const router = useRouter();
   const t = useTranslation();
-  const { id: poolId } = router.query as { id: string };
 
   const [inputMin, setInputMin] = useState("0");
   const [inputMax, setInputMax] = useState("0");
