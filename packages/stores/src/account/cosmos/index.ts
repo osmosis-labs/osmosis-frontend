@@ -136,6 +136,7 @@ export class CosmosAccountImpl {
         ),
       },
       timeoutTimestamp: Long.fromNumber(0),
+      memo: "",
     });
 
     await this.base.sign(

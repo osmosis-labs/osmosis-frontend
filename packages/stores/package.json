@@ -68,7 +68,7 @@
     "long": "^5.2.0",
     "mobx": "^6.3.10",
     "mobx-utils": "^6.0.4",
-    "osmojs": "15.0.5",
+    "@osmosis-labs/proto-codecs": "0.0.1",
     "protobufjs": "^6.11.2",
     "utility-types": "^3.10.0"
   }

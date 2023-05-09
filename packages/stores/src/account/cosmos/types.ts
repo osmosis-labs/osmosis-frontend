@@ -1,4 +1,4 @@
-import { ibc } from "osmojs";
+import { ibc } from "@osmosis-labs/proto-codecs";
 
 import { createMsgOpts } from "../utils";
 

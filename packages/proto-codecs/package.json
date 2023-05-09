@@ -1,0 +1,63 @@
+{
+  "name": "@osmosis-labs/proto-codecs",
+  "version": "0.0.1",
+  "main": "build/index.js",
+  "author": "osmosis-labs",
+  "homepage": "https://github.com/osmosis-labs/osmosis-frontend/tree/master/packages/telescope#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/osmosis-labs/osmosis-frontend"
+  },
+  "bugs": {
+    "url": "https://github.com/osmosis-labs/osmosis-frontend/issues"
+  },
+  "keywords": [
+    "osmosis",
+    "telescope",
+    "transpiler"
+  ],
+  "license": "Apache-2.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "rm -rf node_modules; rm -rf build",
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test:regression": "jest --passWithNoTests --runInBand",
+    "lint": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
+    "lint:fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\"",
+    "pre-commit": "lint-staged",
+    "prepare": "yarn build",
+    "generate": "yarn generate:proto && yarn generate:packages && yarn generate:telescope",
+    "generate:proto": "./scripts/get-proto.sh",
+    "generate:packages": "ts-node --esm scripts/gen-package-types.ts",
+    "generate:telescope": "tsc scripts/codegen.ts --noEmit --skipLibCheck && ts-node --esm scripts/codegen.ts && yarn lint:fix"
+  },
+  "lint-staged": {
+    "*": [
+      "eslint",
+      "prettier --check"
+    ]
+  },
+  "devDependencies": {
+    "@osmonauts/proto-parser": "0.42.0",
+    "@osmonauts/telescope": "0.94.0",
+    "@swc/core": "^1.3.55",
+    "@swc/helpers": "^0.5.1",
+    "@types/node": "^18.16.3",
+    "regenerator-runtime": "^0.13.11",
+    "rimraf": "^5.0.0",
+    "ts-node": "^10.9.1"
+  },
+  "dependencies": {
+    "@cosmjs/amino": "0.29.0",
+    "@cosmjs/encoding": "0.29.0",
+    "@cosmjs/proto-signing": "0.29.0",
+    "@cosmjs/stargate": "0.29.0",
+    "@cosmjs/tendermint-rpc": "0.29.0",
+    "long": "^5.2.0",
+    "protobufjs": "^6.11.2"
+  }
+}
