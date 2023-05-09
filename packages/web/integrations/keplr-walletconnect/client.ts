@@ -323,6 +323,7 @@ export class KeplrWCClient implements WalletClient {
     signDoc: StdSignDoc,
     signOptions?: SignOptions
   ) {
+    if (this.redirect) this.openApp();
     return await this.client!.signAmino(chainId, signer, signDoc, signOptions);
   }
 
@@ -332,6 +333,7 @@ export class KeplrWCClient implements WalletClient {
     signDoc: DirectSignDoc,
     signOptions?: SignOptions
   ) {
+    if (this.redirect) this.openApp();
     return await this.client!.signDirect(chainId, signer, signDoc, signOptions);
   }
 
