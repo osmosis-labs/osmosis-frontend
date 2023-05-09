@@ -4,7 +4,7 @@
 
 @osmosis-labs/stores - contains Mobx stores for accounts and queries, price data, historical data (imperator), common UI config (creating pool, swapping, managing liquidity) and the GAMM currency registrar
 
-@osmosis-labs/proto-codecss - This package includes generated TypeScript libraries for encoding and decoding blockchain data, such as transactions. It facilitates the conversion of Protobufs into TypeScript libraries for seamless data handling.
+@osmosis-labs/proto-codecs - This package includes generated TypeScript libraries for encoding and decoding blockchain data, such as transactions. It facilitates the conversion of Protobufs into TypeScript libraries for seamless data handling.
 
 @osmosis-labs/web - largest package, not published to NPM. Organized into folders:
 
