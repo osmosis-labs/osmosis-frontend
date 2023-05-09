@@ -240,7 +240,7 @@ const Overview: FunctionComponent<
             className="w-[25rem]"
             onClick={() => addLiquidityConfig.setModalView(selected)}
           >
-            Next
+            {t("pools.createPool.buttonNext")}
           </Button>
         </div>
       </>
