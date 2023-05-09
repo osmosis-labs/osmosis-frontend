@@ -24,9 +24,6 @@ import {
  */
 export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   @observable
-  protected _poolId: string;
-
-  @observable
   protected _sender: string;
 
   @observable
@@ -77,9 +74,9 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   protected _quoteDepositAmountIn: Dec = new Dec(0);
 
   constructor(
-    chainGetter: ChainGetter,
+    protected readonly chainGetter: ChainGetter,
     initialChainId: string,
-    poolId: string,
+    protected readonly poolId: string,
     sender: string,
     protected readonly queriesStore: IQueriesStore,
     protected readonly queryBalances: ObservableQueryBalances,
@@ -87,24 +84,14 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   ) {
     super(chainGetter, initialChainId);
 
-    this._poolId = poolId;
     this._pool = pool;
     this._sender = sender;
 
     makeObservable(this);
   }
 
-  get poolId(): string {
-    return this._poolId;
-  }
-
   get pool(): ConcentratedLiquidityPool {
     return this._pool;
-  }
-
-  @action
-  setPoolId(poolId: string) {
-    this._poolId = poolId;
   }
 
   @action
