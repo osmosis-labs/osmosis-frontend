@@ -5,14 +5,16 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useVisibilityState } from "./use-visibility-state";
 
 // When the page is visible, refresh more often.
-const defaultActiveRefresh = 30 * 1000;
+const defaultActiveRefresh = 60 * 1000;
 // When the page is hidden, it refreshes less frequently.
 // Users may be looking at other tabs for a long time.
 // In this case, it is not necessary to refresh frequently, and if refresh frequently, it may burden the node.
 const defaultBackgroundRefresh = 5 * 60 * 1000;
 
 export type RefreshIntervalMs = Partial<{
+  /** When this app is the current tab in browser. */
   active: number;
+  /** When this app is not the current tab. */
   background: number;
   debounce: number;
 }>;
@@ -25,7 +27,7 @@ export type RefreshIntervalMs = Partial<{
  *
  * @function useBackgroundRefresh
  * @param memoedQueriesOrFn - An array of ObservableQuery instances, or a function to be executed on each refresh. **IMPORTANT** Must be memoed to prevent unnecessary refresh spam.
- * @param [intervals] - An optional & partial object with 'active' and 'background' properties, representing the refresh intervals in milliseconds for visible and hidden page states, respectively. Defaults to 30 seconds for active, and 5 minutes for background, respectively.
+ * @param [intervals] - An optional & partial object with 'active' and 'background' properties, representing the refresh intervals in milliseconds for visible and hidden page states, respectively. Defaults to a minute for active, and 5 minutes for background, respectively.
  * @returns {void}
  *
  * @example
@@ -43,29 +45,28 @@ export function useBackgroundRefresh(
 ): void {
   const intervals_ = useMemo(() => {
     return {
-      active: defaultActiveRefresh,
-      background: defaultBackgroundRefresh,
+      active: intervals?.active ?? defaultActiveRefresh,
+      background: intervals?.background ?? defaultBackgroundRefresh,
       debounce: 500,
-      ...intervals,
     };
-  }, [intervals]);
+  }, [intervals?.active, intervals?.background]);
   const windowActive = useVisibilityState() === "visible";
   const [refreshInterval, setRefreshInterval] = useState(intervals_.active);
 
   // debounce the refresh function
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const refresh = useCallback(
-    () =>
-      debounce(() => {
-        if (typeof memoedQueriesOrFn === "function") {
-          memoedQueriesOrFn();
-        } else {
-          memoedQueriesOrFn.forEach((query) => {
-            if (!query.isFetching) {
-              query.fetch();
-            }
-          });
-        }
-      }, intervals_.debounce),
+    debounce(() => {
+      if (typeof memoedQueriesOrFn === "function") {
+        memoedQueriesOrFn();
+      } else {
+        memoedQueriesOrFn.forEach((query) => {
+          if (!query.isFetching) {
+            query.fetch();
+          }
+        });
+      }
+    }, intervals_.debounce),
     [memoedQueriesOrFn, intervals_.debounce]
   );
 
@@ -77,7 +78,13 @@ export function useBackgroundRefresh(
     } else {
       setRefreshInterval(intervals_.background);
     }
-  }, [refresh, setRefreshInterval, intervals_, windowActive]);
+  }, [
+    refresh,
+    setRefreshInterval,
+    intervals_.active,
+    intervals_.background,
+    windowActive,
+  ]);
 
   // refresh on an interval
   useEffect(() => {

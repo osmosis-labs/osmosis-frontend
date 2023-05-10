@@ -18,7 +18,7 @@ import {
 import { useTranslation } from "react-multi-lang";
 import { useLatest, useMeasure } from "react-use";
 
-import { EventName } from "../../config";
+import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -27,8 +27,9 @@ import {
   useTokenSwapQueryParams,
   useTradeTokenInConfig,
   useWindowSize,
-} from "../../hooks";
-import { useStore } from "../../stores";
+} from "~/hooks";
+import { useStore } from "~/stores";
+
 import { Icon } from "../assets";
 import { Button } from "../buttons";
 import IconButton from "../buttons/icon-button";
@@ -38,6 +39,7 @@ import { tError } from "../localization";
 import { Popover } from "../popover";
 import { InfoTooltip } from "../tooltip";
 import { SplitRoute } from "./split-route";
+import { useFreshSwapData } from "./use-fresh-swap-data";
 
 export const SwapTool: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!
@@ -102,26 +104,10 @@ export const SwapTool: FunctionComponent<{
     const routesVisDisclosure = useDisclosure();
 
     // show details
-    const [showEstimateDetails, _setShowEstimateDetails] = useState(false);
+    const [showEstimateDetails, setShowEstimateDetails] = useState(false);
     const isEstimateDetailRelevant = !(
-      tradeTokenInConfig.amount === "" || tradeTokenInConfig.amount === "0"
-    );
-    const setShowEstimateDetails = useCallback(
-      (value: boolean) => {
-        // refresh current route's pools
-        if (value) {
-          tradeTokenInConfig.optimizedRoutes
-            ?.flatMap(({ pools }) => pools)
-            .forEach((pool) => {
-              queries.osmosis?.queryGammPools
-                .getPool(pool.id)
-                ?.waitFreshResponse();
-            });
-        }
-
-        _setShowEstimateDetails(value);
-      },
-      [tradeTokenInConfig.optimizedRoutes, queries.osmosis?.queryGammPools]
+      tradeTokenInConfig.amount === "" ||
+      new Dec(tradeTokenInConfig.amount).isZero()
     );
     // auto collapse on input clear
     useEffect(() => {
@@ -138,8 +124,6 @@ export const SwapTool: FunctionComponent<{
     useEffect(() => {
       fromAmountInput.current?.focus();
     }, [tradeTokenInConfig.sendCurrency]);
-
-    useTokenSwapQueryParams(tradeTokenInConfig, tradeableCurrencies, isInModal);
 
     const showPriceImpactWarning =
       tradeTokenInConfig.expectedSwapResult.priceImpact
@@ -298,6 +282,9 @@ export const SwapTool: FunctionComponent<{
           onRequestModalClose?.();
         });
     };
+
+    useTokenSwapQueryParams(tradeTokenInConfig, tradeableCurrencies, isInModal);
+    useFreshSwapData(tradeTokenInConfig);
 
     const outAmountLessSlippage = tradeTokenInConfig.outAmountLessSlippage(
       slippageConfig.slippage.toDec()
