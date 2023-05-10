@@ -125,7 +125,7 @@ const chainInfos = IS_TESTNET
           },
         ],
         features: ["ibc-transfer", "ibc-go"],
-        explorerUrlToTx: "https://explorer.testnet-02.aksh.pw/akash/tx/{txHash}",
+        explorerUrlToTx: "https://explorer.sandbox.aksh.pw/akash/tx/{txHash}",
       },
       {
         rpc: "https://rpc.uni.junonetwork.io",
@@ -147,7 +147,7 @@ const chainInfos = IS_TESTNET
             isStakeCurrency: true,
             isFeeCurrency: true,
             gasPriceStep: {
-              low: 0.001,
+              low: 0.0025,
               average: 0.0025,
               high: 0.004,
             },
@@ -265,6 +265,11 @@ const chainInfos = IS_TESTNET
             coinGeckoId: "usd-coin",
             isStakeCurrency: true,
             isFeeCurrency: true,
+            gasPriceStep: {
+              low: 0.01,
+              average: 0.015,
+              high: 0.03,
+            },
           },
         ],
         features: ["ibc-transfer", "ibc-go"],
@@ -3759,8 +3764,8 @@ chainInfos.push({
   gasPriceStep: IS_TESTNET
     ? {
         low: 0.007,
-        average: 0.125,
-        high: 0.2,
+        average: 0.007,
+        high: 0.01,
       }
     : {
         low: 0.007,
