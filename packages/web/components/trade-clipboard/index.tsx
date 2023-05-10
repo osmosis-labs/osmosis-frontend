@@ -1,7 +1,6 @@
 import { WalletStatus } from "@keplr-wallet/stores";
 import { AppCurrency, Currency } from "@keplr-wallet/types";
-import { CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
-import { calcPriceImpactWithAmount } from "@osmosis-labs/math";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { Pool } from "@osmosis-labs/pools";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -193,38 +192,18 @@ export const TradeClipboard: FunctionComponent<{
 
     // trade metrics
     const minOutAmountLessSlippage = useMemo(() => {
-      let amountLessSlippage;
-      try {
-        const beforeSpotPrice =
-          tradeTokenInConfig.expectedSwapResult.beforeSpotPriceInOverOut.toDec();
-        const inAmount =
-          tradeTokenInConfig.amount === ""
-            ? new Int(0)
-            : new Int(
-                new Dec(tradeTokenInConfig.amount)
-                  .mul(
-                    DecUtils.getTenExponentNInPrecisionRange(
-                      tradeTokenInConfig.outCurrency.coinDecimals
-                    )
-                  )
-                  .truncate()
-                  .toString()
-              );
-
-        amountLessSlippage = calcPriceImpactWithAmount(
-          beforeSpotPrice.gt(new Dec(0)) ? beforeSpotPrice : new Dec(1),
-          inAmount,
-          slippageConfig.slippage.toDec()
-        );
-      } catch {
-        // address any /0 errors
-        amountLessSlippage = new Int(0);
-      }
-
       const coinLessSlippage = new CoinPretty(
         tradeTokenInConfig.outCurrency,
-        amountLessSlippage
+        tradeTokenInConfig.expectedSwapResult.amount
+          .toDec()
+          .mul(new Dec(1).sub(slippageConfig.slippage.toDec()))
+          .mulTruncate(
+            DecUtils.getTenExponentNInPrecisionRange(
+              tradeTokenInConfig.outCurrency.coinDecimals
+            )
+          )
       );
+
       return coinLessSlippage.maxDecimals(
         Math.min(
           coinLessSlippage.toDec().gt(new Dec(1)) ? 8 : 12,
@@ -233,8 +212,7 @@ export const TradeClipboard: FunctionComponent<{
       );
     }, [
       tradeTokenInConfig.outCurrency,
-      tradeTokenInConfig.expectedSwapResult.beforeSpotPriceInOverOut,
-      tradeTokenInConfig.amount,
+      tradeTokenInConfig.expectedSwapResult.amount,
       slippageConfig.slippage,
     ]);
     const spotPrice = useMemo(
