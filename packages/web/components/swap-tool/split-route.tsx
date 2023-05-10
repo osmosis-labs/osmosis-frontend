@@ -16,7 +16,7 @@ import { CustomClasses } from "../types";
 
 type Route = SplitTokenInQuote["split"][0];
 
-export const SplitTrade: FunctionComponent<
+export const SplitRoute: FunctionComponent<
   { split: SplitTokenInQuote["split"] } & Pick<
     UseDisclosureReturn,
     "isOpen" | "onToggle"

@@ -37,9 +37,9 @@ import { InputBox } from "../input";
 import { tError } from "../localization";
 import { Popover } from "../popover";
 import { InfoTooltip } from "../tooltip";
-import { SplitTrade } from "./trade-route";
+import { SplitRoute } from "./split-route";
 
-export const TradeClipboard: FunctionComponent<{
+export const SwapTool: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!
   pools: ObservableQueryPool[];
 
@@ -928,7 +928,7 @@ export const TradeClipboard: FunctionComponent<{
                 </div>
               </div>
               {!isInModal && tradeTokenInConfig.optimizedRoutes.length > 0 && (
-                <SplitTrade
+                <SplitRoute
                   {...routesVisDisclosure}
                   split={tradeTokenInConfig.optimizedRoutes}
                 />
