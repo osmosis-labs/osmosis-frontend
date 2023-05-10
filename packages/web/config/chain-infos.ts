@@ -3526,7 +3526,7 @@ chainInfos.push({
     ? "https://rpc-axelar-testnet.imperator.co:443"
     : "https://rpc-axelar.keplr.app", // source: https://docs.axelar.dev/resources
   rest: IS_TESTNET
-    ? "https://lcd-axelar.imperator.co"
+    ? "https://lcd-axelar-testnet.imperator.co:443"
     : "https://lcd-axelar.keplr.app",
   chainId: IS_TESTNET ? "axelar-testnet-lisbon-3" : "axelar-dojo-1",
   chainName:  IS_TESTNET ? "Axelar Testnet" : "Axelar",
