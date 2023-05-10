@@ -38,7 +38,6 @@ export type TransferProps = {
     }
   ];
   selectedWalletDisplay?: WalletDisplay;
-  onRequestConnectToWallet?: (source: PathSource) => void;
   isOsmosisAccountLoaded: boolean;
   onRequestSwitchWallet?: (source: PathSource) => void;
   availableBalance?: CoinPretty;
@@ -83,7 +82,6 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
     transferFee,
     gasCost,
     waitTime,
-    onRequestConnectToWallet,
     disabled = false,
   }) => {
     const { queriesExternalStore } = useStore();

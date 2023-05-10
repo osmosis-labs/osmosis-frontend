@@ -597,14 +597,6 @@ const AxelarTransfer: FunctionComponent<
           disabled={
             (!isWithdraw && !!isEthTxPending) || userDisconnectedEthWallet
           }
-          onRequestConnectToWallet={(source) => {
-            if (source === "account") {
-              osmosisAccount?.disconnect(false);
-              onOpenWalletSelect(chainId);
-            } else if (source === "counterpartyAccount") {
-              ethWalletClient.enable();
-            }
-          }}
         />
         <div className="mt-6 flex w-full items-center justify-center md:mt-4">
           {connectCosmosWalletButtonOverride ?? (

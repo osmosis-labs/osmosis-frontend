@@ -224,15 +224,6 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               onOpenWalletSelect(props.counterpartyChainId);
             }
           }}
-          onRequestConnectToWallet={(source) => {
-            if (source === "account") {
-              account?.disconnect(false);
-              onOpenWalletSelect(osmosisChainId);
-            } else if (source === "counterpartyAccount") {
-              counterpartyAccount?.disconnect(false);
-              onOpenWalletSelect(props.counterpartyChainId);
-            }
-          }}
         />
         {accountActionButton}
       </ModalBase>
