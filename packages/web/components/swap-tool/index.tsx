@@ -602,14 +602,14 @@ export const SwapTool: FunctionComponent<{
                   }}
                   value={tradeTokenInConfig.amount}
                 />
-                <div
+                <span
                   className={classNames(
                     "subtitle1 md:caption text-osmoverse-300 transition-opacity",
                     tradeTokenInConfig.sendValue.toDec().isZero()
                       ? "opacity-0"
                       : "opacity-100"
                   )}
-                >{`≈ ${tradeTokenInConfig.sendValue}`}</div>
+                >{`≈ ${tradeTokenInConfig.sendValue}`}</span>
               </div>
             </div>
           </div>
@@ -755,7 +755,7 @@ export const SwapTool: FunctionComponent<{
                     )
                   )
                   .hideDenom(true)}`}</h5>
-                <div
+                <span
                   className={classNames(
                     "subtitle1 md:caption text-osmoverse-300 transition-opacity",
                     tradeTokenInConfig.outValue.toDec().isZero()
@@ -764,7 +764,7 @@ export const SwapTool: FunctionComponent<{
                   )}
                 >
                   {`≈ ${tradeTokenInConfig.outValue}`}
-                </div>
+                </span>
               </div>
             </div>
           </div>
@@ -795,7 +795,7 @@ export const SwapTool: FunctionComponent<{
                   setShowEstimateDetails(!showEstimateDetails);
               }}
             >
-              <div
+              <span
                 className={classNames("subtitle2 transition-all", {
                   "text-osmoverse-600": !isEstimateDetailRelevant,
                 })}
@@ -807,7 +807,7 @@ export const SwapTool: FunctionComponent<{
                   .maxDecimals(
                     Math.min(tradeTokenInConfig.outCurrency.coinDecimals, 8)
                   )} ${tradeTokenInConfig.outCurrency.coinDenom}`}
-              </div>
+              </span>
               <div className="flex items-center gap-2">
                 <Image
                   className={classNames(
