@@ -13,7 +13,6 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { useWalletSelect } from "~/hooks/wallet-select";
 import { IBCBalance } from "~/stores/assets";
 
 import { displayToast, ToastType } from "../../components/alert";
@@ -87,8 +86,6 @@ const AxelarTransfer: FunctionComponent<
     const address = osmosisAccount?.address ?? "";
     const osmoIcnsName =
       queriesExternalStore.queryICNSNames.getQueryContract(address).primaryName;
-
-    const { onOpenWalletSelect } = useWalletSelect();
 
     useTxEventToasts(ethWalletClient);
 
