@@ -266,9 +266,9 @@ const chainInfos = IS_TESTNET
             isStakeCurrency: true,
             isFeeCurrency: true,
             gasPriceStep: {
-              low: 0.01,
-              average: 0.015,
-              high: 0.03,
+              low: 0.02,
+              average: 0.03,
+              high: 0.06,
             },
           },
         ],
