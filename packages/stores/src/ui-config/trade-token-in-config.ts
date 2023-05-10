@@ -563,19 +563,28 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   /** Calculate the out amount less a given slippage tolerance. */
   readonly outAmountLessSlippage = computedFn((slippage: Dec) => {
     const spotPriceBefore =
-      this.expectedSwapResult?.beforeSpotPriceWithoutSwapFeeInOverOut.toDec();
-    const inAmount =
+      this.expectedSwapResult.beforeSpotPriceInOverOut.toDec();
+
+    if (spotPriceBefore.isZero()) return new CoinPretty(this.outCurrency, 0);
+
+    const multiplicationInOverOut = DecUtils.getTenExponentN(
+      this.outCurrency.coinDecimals - this.sendCurrency.coinDecimals
+    );
+
+    const sendAmount =
       this.amount === ""
         ? new Int(0)
-        : new Int(this.getAmountPrimitive().amount);
+        : new Int(
+            new Dec(this.amount)
+              .mul(DecUtils.getTenExponentN(this.sendCurrency.coinDecimals))
+              .mulTruncate(multiplicationInOverOut)
+              .truncate()
+              .toString()
+          );
 
     return new CoinPretty(
       this.outCurrency,
-      calcPriceImpactWithAmount(
-        spotPriceBefore.isZero() ? new Dec(1) : spotPriceBefore,
-        inAmount,
-        slippage
-      )
+      calcPriceImpactWithAmount(spotPriceBefore, sendAmount, slippage)
     );
   });
 
@@ -634,7 +643,9 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         result.tokenInFeeAmount
       ).locale(false), // locale - remove commas
       swapFee: new RatePretty(result.swapFee),
-      priceImpact: new RatePretty(result.priceImpactTokenOut.neg()),
+      priceImpact: new RatePretty(
+        result.priceImpactTokenOut.neg()
+      ).inequalitySymbol(false),
       isMultihopOsmoFeeDiscount: result.split.some(
         ({ multiHopOsmoDiscount }) => multiHopOsmoDiscount
       ),
