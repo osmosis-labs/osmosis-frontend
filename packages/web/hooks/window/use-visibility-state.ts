@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
  * In this case, it unconditionally returns "visible".
  */
 export const useVisibilityState = () => {
-  const [state, setState] = useState<VisibilityState>(() => {
+  const [state, setState] = useState<DocumentVisibilityState>(() => {
     if (typeof document === "undefined") {
       return "visible";
     }
