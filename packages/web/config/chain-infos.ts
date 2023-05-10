@@ -117,6 +117,11 @@ const chainInfos = IS_TESTNET
             coinImageUrl: "/tokens/akt.svg",
             isStakeCurrency: true,
             isFeeCurrency: true,
+            gasPriceStep: {
+              low: 0.015,
+              average: 0.025,
+              high: 0.04,
+            },
           },
         ],
         features: ["ibc-transfer", "ibc-go"],
