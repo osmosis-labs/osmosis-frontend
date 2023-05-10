@@ -11,7 +11,6 @@ import { WalletDisplay } from "../../integrations/wallets";
 import { useStore } from "../../stores";
 import { formatICNSName } from "../../utils/string";
 import { BridgeAnimation } from "../animation/bridge";
-import { Icon } from "../assets";
 import { GradientView } from "../assets/gradient-view";
 import { Button } from "../buttons";
 import { SwitchWalletButton } from "../buttons/switch-wallet";
@@ -19,17 +18,29 @@ import { CheckBox, MenuToggle } from "../control";
 import { InputBox } from "../input";
 import { Disableable, InputProps } from "../types";
 
+type PathSource = "counterpartyAccount" | "account";
+
 export type TransferProps = {
   isWithdraw: boolean;
   /** If there is a bridge it is assumed there is a nonKeplr wallet and the switch button will be shown. */
   transferPath: [
-    { address: string; networkName: string; iconUrl?: string },
-    { address: string; networkName: string; iconUrl?: string }
+    {
+      address: string;
+      networkName: string;
+      source: PathSource;
+      iconUrl?: string;
+    },
+    {
+      address: string;
+      networkName: string;
+      source: PathSource;
+      iconUrl?: string;
+    }
   ];
   selectedWalletDisplay?: WalletDisplay;
-  onRequestConnectToWallet?: () => void;
+  onRequestConnectToWallet?: (source: PathSource) => void;
   isOsmosisAccountLoaded: boolean;
-  onRequestSwitchWallet?: () => void;
+  onRequestSwitchWallet?: (source: PathSource) => void;
   availableBalance?: CoinPretty;
   editWithdrawAddrConfig?: {
     customAddress: string;
@@ -161,8 +172,7 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
         />
         <div
           className={classNames(
-            "body1 flex gap-4 text-osmoverse-400 transition-opacity duration-300 md:gap-2",
-            { "opacity-30": disabled }
+            "body1 flex gap-4 text-osmoverse-400 transition-opacity duration-300 md:gap-2"
           )}
         >
           <div
@@ -174,45 +184,31 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
               }
             )}
           >
-            {from.address.length === 0 ? (
-              <Button
-                mode="primary"
-                size="sm"
-                className="flex gap-2 text-white-full"
-                onClick={onRequestConnectToWallet}
+            {!(isMobile && isEditingWithdrawAddr) && !disabled && (
+              <div
+                className="md:caption mx-auto flex flex-wrap items-center justify-center gap-2"
+                title={from.address}
               >
-                <Icon id="wallet" /> {t("connectWallet")}
-              </Button>
-            ) : (
-              <>
-                {!(isMobile && isEditingWithdrawAddr) && !disabled && (
-                  <div
-                    className="md:caption mx-auto flex flex-wrap items-center justify-center gap-2"
-                    title={from.address}
-                  >
-                    {!from.address.startsWith("0x") ||
-                    from.address.length === 0 ? (
-                      isOsmosisAccountLoaded ? (
-                        fromAddressIcnsName ??
-                        Bech32Address.shortenAddress(from.address, maxFromChars)
-                      ) : (
-                        <i>{t("connectWallet")}</i>
-                      )
-                    ) : (
-                      truncateEthAddress(from.address)
-                    )}
-                    {from.address.length > 0 &&
-                      !from.address.includes("osmo") &&
-                      selectedWalletDisplay && (
-                        <SwitchWalletButton
-                          selectedWalletIconUrl={selectedWalletDisplay.iconUrl}
-                          onClick={() => onRequestSwitchWallet?.()}
-                          disabled={disabled}
-                        />
-                      )}
-                  </div>
+                {!from.address.startsWith("0x") || from.address.length === 0 ? (
+                  isOsmosisAccountLoaded ? (
+                    fromAddressIcnsName ??
+                    Bech32Address.shortenAddress(from.address, maxFromChars)
+                  ) : (
+                    <i>{t("connectWallet")}</i>
+                  )
+                ) : (
+                  truncateEthAddress(from.address)
                 )}
-              </>
+                {from.address.length > 0 &&
+                  !from.address.startsWith("osmo") &&
+                  selectedWalletDisplay && (
+                    <SwitchWalletButton
+                      selectedWalletIconUrl={selectedWalletDisplay.iconUrl}
+                      onClick={() => onRequestSwitchWallet?.(from.source)}
+                      disabled={disabled}
+                    />
+                  )}
+              </div>
             )}
           </div>
           <div
@@ -224,87 +220,76 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
               }
             )}
           >
-            {to.address.length === 0 ? (
-              <Button
-                mode="primary"
-                size="sm"
-                className="flex gap-2 text-white-full"
-                onClick={onRequestConnectToWallet}
-              >
-                <Icon id="wallet" /> {t("connectWallet")}
-              </Button>
-            ) : (
-              <div className="md:caption mx-auto flex flex-wrap items-center justify-center gap-2">
-                {!isEditingWithdrawAddr &&
-                  !disabled &&
-                  (!to.address.startsWith("0x") || to.address.length === 0 ? (
-                    isOsmosisAccountLoaded ? (
-                      <span title={toAddressToDisplay}>
-                        {toAddressIcnsName ??
-                          Bech32Address.shortenAddress(
-                            toAddressToDisplay,
-                            maxToChars
-                          )}
-                      </span>
-                    ) : (
-                      <i>{t("connectWallet")}</i>
-                    )
+            <div className="md:caption mx-auto flex flex-wrap items-center justify-center gap-2">
+              {!isEditingWithdrawAddr &&
+                !disabled &&
+                (!to.address.startsWith("0x") || to.address.length === 0 ? (
+                  isOsmosisAccountLoaded ? (
+                    <span title={toAddressToDisplay}>
+                      {toAddressIcnsName ??
+                        Bech32Address.shortenAddress(
+                          toAddressToDisplay,
+                          maxToChars
+                        )}
+                    </span>
                   ) : (
-                    truncateEthAddress(to.address)
-                  ))}
-                <div
-                  className={classNames(
-                    "flex  items-center gap-2",
-                    isEditingWithdrawAddr && "w-full flex-col"
-                  )}
-                >
-                  {to.address.length > 0 &&
-                  !to.address.startsWith("osmo") &&
-                  selectedWalletDisplay ? (
-                    <SwitchWalletButton
-                      selectedWalletIconUrl={selectedWalletDisplay!.iconUrl}
-                      onClick={() => onRequestSwitchWallet?.()}
-                      disabled={disabled}
-                    />
-                  ) : undefined}
-                  {isWithdraw &&
-                    editWithdrawAddrConfig &&
-                    !disabled &&
-                    !isEditingWithdrawAddr && (
-                      <Button
-                        mode="amount"
-                        onClick={() => {
-                          setIsEditingWithdrawAddr(true);
-                          editWithdrawAddrConfig.setCustomAddress(to.address);
-                        }}
-                      >
-                        {t("assets.ibcTransfer.buttonEdit")}
-                      </Button>
-                    )}
-                  {isEditingWithdrawAddr && editWithdrawAddrConfig && (
-                    <InputBox
-                      className="w-full"
-                      style="no-border"
-                      currentValue={editWithdrawAddrConfig.customAddress}
-                      disabled={disabled}
-                      onInput={(value) => {
-                        editWithdrawAddrConfig.setDidAckWithdrawRisk(false);
-                        editWithdrawAddrConfig.setCustomAddress(value);
+                    <i>{t("connectWallet")}</i>
+                  )
+                ) : (
+                  truncateEthAddress(to.address)
+                ))}
+              <div
+                className={classNames(
+                  "flex  items-center gap-2",
+                  isEditingWithdrawAddr && "w-full flex-col"
+                )}
+              >
+                {to.address.length > 0 &&
+                !to.address.startsWith("osmo") &&
+                selectedWalletDisplay ? (
+                  <SwitchWalletButton
+                    selectedWalletIconUrl={selectedWalletDisplay!.iconUrl}
+                    onClick={() => onRequestSwitchWallet?.(to.source)}
+                    disabled={disabled}
+                  />
+                ) : undefined}
+                {isWithdraw &&
+                  editWithdrawAddrConfig &&
+                  !disabled &&
+                  !isEditingWithdrawAddr && (
+                    <Button
+                      mode="amount"
+                      onClick={() => {
+                        setIsEditingWithdrawAddr(true);
+                        editWithdrawAddrConfig.setCustomAddress(to.address);
                       }}
-                      labelButtons={[
-                        {
-                          label: t("assets.ibcTransfer.buttonEnter"),
-                          className:
-                            "bg-wosmongton-100 hover:bg-wosmongton-100 border-0 rounded-md",
-                          onClick: () => setIsEditingWithdrawAddr(false),
-                          disabled: !editWithdrawAddrConfig.isValid,
-                        },
-                      ]}
-                    />
+                    >
+                      {t("assets.ibcTransfer.buttonEdit")}
+                    </Button>
                   )}
-                </div>
+                {isEditingWithdrawAddr && editWithdrawAddrConfig && (
+                  <InputBox
+                    className="w-full"
+                    style="no-border"
+                    currentValue={editWithdrawAddrConfig.customAddress}
+                    disabled={disabled}
+                    onInput={(value) => {
+                      editWithdrawAddrConfig.setDidAckWithdrawRisk(false);
+                      editWithdrawAddrConfig.setCustomAddress(value);
+                    }}
+                    labelButtons={[
+                      {
+                        label: t("assets.ibcTransfer.buttonEnter"),
+                        className:
+                          "bg-wosmongton-100 hover:bg-wosmongton-100 border-0 rounded-md",
+                        onClick: () => setIsEditingWithdrawAddr(false),
+                        disabled: !editWithdrawAddrConfig.isValid,
+                      },
+                    ]}
+                  />
+                )}
               </div>
-            )}
+            </div>
           </div>
         </div>
         <div

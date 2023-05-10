@@ -13,6 +13,7 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { useWalletSelect } from "~/hooks/wallet-select";
 import { IBCBalance } from "~/stores/assets";
 
 import { displayToast, ToastType } from "../../components/alert";
@@ -86,6 +87,8 @@ const AxelarTransfer: FunctionComponent<
     const address = osmosisAccount?.address ?? "";
     const osmoIcnsName =
       queriesExternalStore.queryICNSNames.getQueryContract(address).primaryName;
+
+    const { onOpenWalletSelect } = useWalletSelect();
 
     useTxEventToasts(ethWalletClient);
 
@@ -216,11 +219,13 @@ const AxelarTransfer: FunctionComponent<
       address: osmoIcnsName === "" ? address : osmoIcnsName,
       networkName: chainStore.osmosis.chainName,
       iconUrl: "/tokens/osmo.svg",
+      source: "account" as const,
     };
     const counterpartyPath = {
       address: ethWalletClient.accountAddress || "",
       networkName: selectedSourceChainKey,
       iconUrl: originCurrency.coinImageUrl,
+      source: "counterpartyAccount" as const,
     };
 
     /** Osmosis chain ID accepted by Axelar APIs. */
@@ -592,6 +597,14 @@ const AxelarTransfer: FunctionComponent<
           disabled={
             (!isWithdraw && !!isEthTxPending) || userDisconnectedEthWallet
           }
+          onRequestConnectToWallet={(source) => {
+            if (source === "account") {
+              osmosisAccount?.disconnect(false);
+              onOpenWalletSelect(chainId);
+            } else if (source === "counterpartyAccount") {
+              ethWalletClient.enable();
+            }
+          }}
         />
         <div className="mt-6 flex w-full items-center justify-center md:mt-4">
           {connectCosmosWalletButtonOverride ?? (
@@ -601,7 +614,7 @@ const AxelarTransfer: FunctionComponent<
                 { "opacity-30": isDepositAddressLoading }
               )}
               disabled={
-                !userCanInteract ||
+                (!userCanInteract && !userDisconnectedEthWallet) ||
                 (!isWithdraw &&
                   !userDisconnectedEthWallet &&
                   inputAmountRaw === "") ||

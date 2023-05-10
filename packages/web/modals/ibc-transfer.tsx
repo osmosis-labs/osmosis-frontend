@@ -1,3 +1,4 @@
+import { WalletStatus } from "@cosmos-kit/core";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -122,6 +123,10 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
         props.onRequestClose
       );
 
+    const areWalletsConnected =
+      walletConnected &&
+      counterpartyAccount?.walletStatus === WalletStatus.Connected;
+
     return (
       <ModalBase
         {...props}
@@ -145,12 +150,14 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                     address: account?.address ?? "",
                     networkName: chainStore.getChain(osmosisChainId).chainName,
                     iconUrl: "/tokens/osmo.svg",
+                    source: "account" as const,
                   },
                   {
                     address: counterpartyAccount?.address ?? "",
                     networkName:
                       chainStore.getChain(counterpartyChainId).chainName,
                     iconUrl: currency.coinImageUrl,
+                    source: "counterpartyAccount" as const,
                   },
                 ]
               : [
@@ -159,11 +166,13 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                     networkName:
                       chainStore.getChain(counterpartyChainId).chainName,
                     iconUrl: currency.coinImageUrl,
+                    source: "counterpartyAccount" as const,
                   },
                   {
                     address: account?.address ?? "",
                     networkName: chainStore.getChain(osmosisChainId).chainName,
                     iconUrl: "/tokens/osmo.svg",
+                    source: "account" as const,
                   },
                 ]
           }
@@ -192,15 +201,11 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                 }
               : undefined
           }
-          disabled={!walletConnected}
+          disabled={!areWalletsConnected}
           toggleIsMax={() => amountConfig.toggleIsMax()}
           currentValue={amountConfig.amount}
           onInput={(value) => amountConfig.setAmount(value)}
           waitTime={t("assets.ibcTransfer.waitTime")}
-          onRequestSwitchWallet={() => {
-            counterpartyAccount?.disconnect(false);
-            onOpenWalletSelect(props.counterpartyChainId);
-          }}
           selectedWalletDisplay={
             isWalletSelectLoading
               ? undefined
@@ -210,9 +215,23 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                     counterpartyAccount?.walletInfo?.prettyName ?? "",
                 }
           }
-          onRequestConnectToWallet={() => {
-            counterpartyAccount?.disconnect(false);
-            onOpenWalletSelect(props.counterpartyChainId);
+          onRequestSwitchWallet={(source) => {
+            if (source === "account") {
+              account?.disconnect(false);
+              onOpenWalletSelect(osmosisChainId);
+            } else if (source === "counterpartyAccount") {
+              counterpartyAccount?.disconnect(false);
+              onOpenWalletSelect(props.counterpartyChainId);
+            }
+          }}
+          onRequestConnectToWallet={(source) => {
+            if (source === "account") {
+              account?.disconnect(false);
+              onOpenWalletSelect(osmosisChainId);
+            } else if (source === "counterpartyAccount") {
+              counterpartyAccount?.disconnect(false);
+              onOpenWalletSelect(props.counterpartyChainId);
+            }
           }}
         />
         {accountActionButton}
