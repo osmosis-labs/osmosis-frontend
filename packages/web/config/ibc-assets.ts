@@ -1768,16 +1768,6 @@ export const IBCAssetInfos: (IBCAsset & {
           "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
       },
       {
-        //VOID
-        counterpartyChainId: "juno-1",
-        sourceChannelId: "channel-169",
-        destChannelId: "channel-47",
-        coinMinimalDenom:
-          "cw20:juno1lpvx3mv2a6ddzfjc7zzz2v2cm5gqgqf0hx67hc5p5qwn7hz4cdjsnznhu8",
-        ics20ContractAddress:
-          "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
-      },
-      {
         //BLZ
         counterpartyChainId: "bluzelle-9",
         sourceChannelId: "channel-763",
