@@ -87,9 +87,9 @@ const Route: FunctionComponent<{
 
   return (
     <div className="flex items-center justify-between space-x-2 rounded-full bg-osmoverse-1000 p-1">
-      <div className="flex shrink-0 gap-1">
+      <div className="flex shrink-0 items-center text-center">
         {percentage && (
-          <span className="subtitle1 pl-1 text-osmoverse-200">
+          <span className="subtitle1 px-2 text-osmoverse-200">
             {percentage.maxDecimals(2).toString()}
           </span>
         )}
@@ -150,7 +150,7 @@ const Pools: FunctionComponent<Route> = observer(
         />
         <div className="absolute mx-4 flex w-full justify-evenly">
           {pools.map(({ id }, index) => {
-            const fee = new RatePretty(effectiveSwapFees[index]).toString();
+            const fee = new RatePretty(effectiveSwapFees[index]);
             const inCurrency =
               index === 0
                 ? osmosisChain.findCurrency(tokenInDenom)
@@ -190,7 +190,8 @@ const Pools: FunctionComponent<Route> = observer(
                         {t("swap.pool", { id })}
                       </p>
                       <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 py-0.5 px-1.5">
-                        {t("swap.routerTooltipFee")} {fee}
+                        {t("swap.routerTooltipFee")}{" "}
+                        {fee.maxDecimals(2).toString()}
                       </p>
                     </div>
                   </div>
@@ -206,7 +207,11 @@ const Pools: FunctionComponent<Route> = observer(
                     </div>
                   </div>
 
-                  {pools.length < 4 && <p className="text-caption">{fee}</p>}
+                  {pools.length < 4 && (
+                    <p className="text-caption">
+                      {fee.maxDecimals(1).toString()}
+                    </p>
+                  )}
                 </div>
               </Tooltip>
             );

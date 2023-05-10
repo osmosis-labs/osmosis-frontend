@@ -868,7 +868,7 @@ export const SwapTool: FunctionComponent<{
                     .toString()}`}
                 </span>
               </div>
-              <div className="gap-1/4 flex justify-between">
+              <div className="flex justify-between">
                 <span className="caption">
                   {t("swap.fee", {
                     fee: tradeTokenInConfig.expectedSwapResult.swapFee.toString(),
@@ -906,8 +906,8 @@ export const SwapTool: FunctionComponent<{
                     .toString()}`}
                 </span>
               </div>
-              <div className="flex justify-between gap-8">
-                <span className="caption">
+              <div className="flex justify-between gap-1">
+                <span className="caption max-w-[140px]">
                   {t("swap.minimumSlippage", {
                     slippage: slippageConfig.slippage.trim(true).toString(),
                   })}
