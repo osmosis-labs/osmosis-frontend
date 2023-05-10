@@ -10,9 +10,9 @@ import {
   useState,
 } from "react";
 
-import { useControllableState } from "../../hooks/use-controllable-state";
-import { runIfFn } from "../../utils/function";
-import { createContext } from "../../utils/react-context";
+import { useOverridableState } from "~/hooks/use-overridable-state";
+import { runIfFn } from "~/utils/function";
+import { createContext } from "~/utils/react-context";
 
 interface DrawerContext {
   isOpen: boolean;
@@ -33,7 +33,7 @@ export const Drawer: FunctionComponent<{
   onOpen?: () => void;
   children: React.ReactNode | ((props: DrawerContext) => React.ReactNode);
 }> = ({ onClose, onOpen, ...props }) => {
-  const [isOpen, setIsOpen] = useControllableState({
+  const [isOpen, setIsOpen] = useOverridableState({
     defaultValue: false,
     value: props.isOpen,
   });
