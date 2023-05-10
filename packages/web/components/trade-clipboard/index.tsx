@@ -860,7 +860,8 @@ export const TradeClipboard: FunctionComponent<{
                   )}
                 >
                   {`${tradeTokenInConfig.expectedSwapResult.priceImpact
-                    .maxDecimals(2)
+                    .maxDecimals(4)
+                    .inequalitySymbol(false)
                     .toString()}`}
                 </div>
               </div>
