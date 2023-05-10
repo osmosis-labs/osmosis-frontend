@@ -10,7 +10,6 @@ import {
   PricePretty,
   RatePretty,
 } from "@keplr-wallet/unit";
-import { calcPriceImpactWithAmount } from "@osmosis-labs/math";
 import {
   NoRouteError,
   OptimizedRoutes,
@@ -562,29 +561,16 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
   /** Calculate the out amount less a given slippage tolerance. */
   readonly outAmountLessSlippage = computedFn((slippage: Dec) => {
-    const spotPriceBefore =
-      this.expectedSwapResult.beforeSpotPriceInOverOut.toDec();
-
-    if (spotPriceBefore.isZero()) return new CoinPretty(this.outCurrency, 0);
-
-    const multiplicationInOverOut = DecUtils.getTenExponentN(
-      this.outCurrency.coinDecimals - this.sendCurrency.coinDecimals
-    );
-
-    const sendAmount =
-      this.amount === ""
-        ? new Int(0)
-        : new Int(
-            new Dec(this.amount)
-              .mul(DecUtils.getTenExponentN(this.sendCurrency.coinDecimals))
-              .mulTruncate(multiplicationInOverOut)
-              .truncate()
-              .toString()
-          );
-
     return new CoinPretty(
       this.outCurrency,
-      calcPriceImpactWithAmount(spotPriceBefore, sendAmount, slippage)
+      this.expectedSwapResult.amount
+        .toDec()
+        .mul(new Dec(1).sub(slippage))
+        .mulTruncate(
+          DecUtils.getTenExponentNInPrecisionRange(
+            this.outCurrency.coinDecimals
+          )
+        )
     );
   });
 

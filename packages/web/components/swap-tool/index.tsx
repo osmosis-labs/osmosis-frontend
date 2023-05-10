@@ -299,6 +299,10 @@ export const SwapTool: FunctionComponent<{
         });
     };
 
+    const outAmountLessSlippage = tradeTokenInConfig.outAmountLessSlippage(
+      slippageConfig.slippage.toDec()
+    );
+
     return (
       <div
         className={classNames(
@@ -746,7 +750,7 @@ export const SwapTool: FunctionComponent<{
               <div className="flex w-full flex-col items-end">
                 <h5
                   className={classNames(
-                    "md:subtitle1 text-right",
+                    "md:subtitle1 whitespace-nowrap text-right",
                     tradeTokenInConfig.expectedSwapResult.amount
                       .toDec()
                       .isPositive()
@@ -848,12 +852,12 @@ export const SwapTool: FunctionComponent<{
               )}
             >
               <div
-                className={classNames("flex justify-between", {
+                className={classNames("flex justify-between gap-1", {
                   "text-error": showPriceImpactWarning,
                 })}
               >
-                <div className="caption">{t("swap.priceImpact")}</div>
-                <div
+                <span className="caption">{t("swap.priceImpact")}</span>
+                <span
                   className={classNames(
                     "caption",
                     showPriceImpactWarning ? "text-error" : "text-osmoverse-200"
@@ -862,26 +866,28 @@ export const SwapTool: FunctionComponent<{
                   {`${tradeTokenInConfig.expectedSwapResult.priceImpact
                     .maxDecimals(4)
                     .toString()}`}
-                </div>
+                </span>
               </div>
-              <div className="flex justify-between">
-                <div className="caption">
+              <div className="gap-1/4 flex justify-between">
+                <span className="caption">
                   {t("swap.fee", {
                     fee: tradeTokenInConfig.expectedSwapResult.swapFee.toString(),
                   })}
-                </div>
-                <div className="caption text-osmoverse-200">
+                </span>
+                <span className="caption text-osmoverse-200">
                   {`≈ ${
                     priceStore.calculatePrice(
                       tradeTokenInConfig.expectedSwapResult.tokenInFeeAmount
                     ) ?? "0"
                   } `}
-                </div>
+                </span>
               </div>
               <hr className="text-white-faint" />
-              <div className="flex justify-between">
-                <div className="caption">{t("swap.expectedOutput")}</div>
-                <div className="caption whitespace-nowrap text-osmoverse-200">
+              <div className="flex justify-between gap-1">
+                <span className="caption max-w-[140px]">
+                  {t("swap.expectedOutput")}
+                </span>
+                <span className="caption whitespace-nowrap text-osmoverse-200">
                   {`≈ ${tradeTokenInConfig.expectedSwapResult.amount
                     .maxDecimals(
                       tradeTokenInConfig.expectedSwapResult.amount
@@ -889,42 +895,46 @@ export const SwapTool: FunctionComponent<{
                         .gt(new Dec(1))
                         ? Math.min(
                             tradeTokenInConfig.outCurrency.coinDecimals,
-                            12
+                            8
                           )
                         : Math.min(
                             tradeTokenInConfig.outCurrency.coinDecimals,
-                            8
+                            12
                           )
                     )
                     .trim(true)
-                    .toString()} `}
-                </div>
+                    .toString()}`}
+                </span>
               </div>
-              <div className="flex justify-between">
-                <div className="caption">
+              <div className="flex justify-between gap-8">
+                <span className="caption">
                   {t("swap.minimumSlippage", {
                     slippage: slippageConfig.slippage.trim(true).toString(),
                   })}
-                </div>
+                </span>
                 <div
                   className={classNames(
                     "caption flex flex-col gap-0.5 text-right text-osmoverse-200"
                   )}
                 >
                   <span className="whitespace-nowrap">
-                    {tradeTokenInConfig
-                      .outAmountLessSlippage(slippageConfig.slippage.toDec())
+                    {outAmountLessSlippage
+                      .maxDecimals(
+                        outAmountLessSlippage.toDec().gt(new Dec(1))
+                          ? Math.min(
+                              tradeTokenInConfig.outCurrency.coinDecimals,
+                              8
+                            )
+                          : Math.min(
+                              tradeTokenInConfig.outCurrency.coinDecimals,
+                              12
+                            )
+                      )
                       .toString()}
                   </span>
-                  <span>
-                    {`≈ ${
-                      priceStore.calculatePrice(
-                        tradeTokenInConfig.outAmountLessSlippage(
-                          slippageConfig.slippage.toDec()
-                        )
-                      ) || "0"
-                    }`}
-                  </span>
+                  <span>{`≈ ${
+                    priceStore.calculatePrice(outAmountLessSlippage) || "0"
+                  }`}</span>
                 </div>
               </div>
               {!isInModal && tradeTokenInConfig.optimizedRoutes.length > 0 && (
