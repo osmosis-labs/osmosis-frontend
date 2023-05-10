@@ -1,6 +1,6 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Int } from "@keplr-wallet/unit";
 
-import { RoutablePool, RouteWithInAmount } from "./types";
+import { RoutablePool } from "./types";
 
 /** Single path through pools. */
 export interface Route {
@@ -11,6 +11,11 @@ export interface Route {
   // But, currently, only 1 intermediate can be supported.
   tokenOutDenoms: string[];
   tokenInDenom: string;
+}
+
+/** Single path through pools, with the initial amount calculated. */
+export interface RouteWithInAmount extends Route {
+  initialAmount: Int;
 }
 
 export function validateRoute(
@@ -50,18 +55,6 @@ export function routeToString(route: Route | RouteWithInAmount) {
     return `in:(${route.initialAmount.toString()}) ${pools}`;
   }
   return pools;
-}
-
-/** Calculate a standard weight for a given route. **Lower is better.** */
-export async function calculateWeightForRoute(
-  route: Route,
-  getPoolTotalValueLocked: (poolId: string) => Dec
-): Promise<Dec> {
-  if (route.pools.length === 1) return new Dec(1); // prioritize direct routes
-
-  const firstPoolTvl = getPoolTotalValueLocked(route.pools[0].id);
-
-  return new Dec(1).sub(firstPoolTvl.quo(new Dec(1).add(firstPoolTvl)));
 }
 
 /** Creates a serialized key of:

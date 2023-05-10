@@ -1,8 +1,8 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 
 import { NotEnoughLiquidityError } from "../../errors";
-import { Route } from "../route";
-import { RoutablePool, RouteWithInAmount } from "../types";
+import { Route, RouteWithInAmount } from "../route";
+import { RoutablePool } from "../types";
 import {
   allPools,
   makeDefaultTestRouterParams,
@@ -85,7 +85,7 @@ describe("OptimizedRoutes", () => {
     });
 
     describe("favors high liquidity", () => {
-      test("swaps into higher liquidity pool", async () => {
+      test("splits into similar liquidity pools", async () => {
         const pools = [
           makeWeightedPool({
             // lower liquidity, but double TVL (pool ID)
@@ -110,6 +110,35 @@ describe("OptimizedRoutes", () => {
           "uosmo"
         );
 
+        // price impact can be slightly reduced with split
+        expect(split.length).toBe(2);
+      });
+      test("swaps full amount into much higher liquidity pools", async () => {
+        const pools = [
+          makeWeightedPool({
+            // lower liquidity, but double TVL (pool ID)
+            id: "2",
+            firstPoolAsset: { amount: "100000000" },
+            secondPoolAsset: { amount: "100000000" },
+          }),
+          makeWeightedPool(), // higher liquidity
+        ];
+
+        const router = makeDefaultTestRouterParams({
+          pools,
+          incentivizedPoolIds: [],
+          stakeCurrencyMinDenom: "ufoo",
+        });
+
+        const split = await router.getOptimizedRoutesByTokenIn(
+          {
+            denom: "uion",
+            amount: new Int("100"),
+          },
+          "uosmo"
+        );
+
+        // super high liquidity is unbeatable
         expect(split.length).toBe(1);
       });
       test("2 pools, only 1 route", async () => {
@@ -320,7 +349,7 @@ describe("OptimizedRoutes", () => {
         ];
 
         // route : osmo - 1 > juno - 3 > stars - 4 > usdc
-        // route : osmo - 2 > foo - 5 > bar - 6 > baz - 7 > usdc
+        // route : osmo - 2 > foo - 5 > bar - 6 > baz - 7 > usdc (2 IS PREFERRED)
 
         const router = makeDefaultTestRouterParams({
           pools,
@@ -404,7 +433,7 @@ describe("OptimizedRoutes", () => {
         ];
 
         // route : osmo - 1 > juno - 3 > stars - 4 > usdc
-        // route : osmo - 2 > foo - 5 > bar - 6 > baz - 7 > usdc
+        // route : osmo - 2 > foo - 5 > bar - 6 > baz - 7 > usdc (6 IS PREFERRED)
         // route : osmo - 8 > bbb - 9 > usdc
 
         const normalRouter = makeDefaultTestRouterParams({
@@ -413,7 +442,7 @@ describe("OptimizedRoutes", () => {
 
         const preferredRouter = makeDefaultTestRouterParams({
           pools,
-          preferredPoolIds: ["8"],
+          preferredPoolIds: ["6"],
         });
 
         const tokenIn = { denom: "uosmo", amount: new Int("100") };
@@ -427,7 +456,7 @@ describe("OptimizedRoutes", () => {
           "usdc"
         );
 
-        // normal routing prefers single route
+        // normal routing prefers single, short route
         const [normRoute1PoolIds] = normalSplit.map((route) =>
           route.pools.map((pool) => pool.id)
         );
@@ -435,9 +464,9 @@ describe("OptimizedRoutes", () => {
           route.pools.map((pool) => pool.id)
         );
 
-        expect(normRoute1PoolIds.includes("1")).toBeTruthy(); // NOT preferred pool, but high liq route
-        expect(prefRoute1PoolIds.includes("1")).toBeTruthy(); // NOT preferred pool, but high liq route
-        expect(prefRoute2PoolIds.includes("8")).toBeTruthy(); // preferred pool
+        expect(normRoute1PoolIds.includes("8")).toBeTruthy(); // includes preferred pool, shortest route
+        expect(prefRoute1PoolIds.includes("8")).toBeTruthy(); // NOT preferred pool, but high liq route
+        expect(prefRoute2PoolIds.includes("6")).toBeTruthy(); // preferred pool
 
         expect(
           prefSplit[0].initialAmount.gt(prefSplit[1].initialAmount)

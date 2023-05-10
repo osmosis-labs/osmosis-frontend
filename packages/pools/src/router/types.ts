@@ -1,6 +1,6 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 
-import { Route } from "./route";
+import { RouteWithInAmount } from "./route";
 
 export type Token = {
   /** Denom of the token. */
@@ -25,11 +25,6 @@ export interface TokenOutGivenInRouter {
   calculateTokenOutByTokenIn(
     routes: RouteWithInAmount[]
   ): Promise<SplitTokenInQuote>;
-}
-
-/** Single path through pools, with the initial amount calculated. */
-export interface RouteWithInAmount extends Route {
-  initialAmount: Int;
 }
 
 export interface RoutablePool {
