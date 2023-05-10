@@ -364,9 +364,6 @@
     "available": "Disponible",
     "button": "Intercambio",
     "buttonError": "Intercambio de todos modos",
-    "error": {
-      "findCurrency": "No se pudo encontrar la moneda {currency}"
-    },
     "expectedOutput": "Rendimiento esperado",
     "fee": "Tarifa de intercambio ({fee})",
     "HALF": "Mitad",

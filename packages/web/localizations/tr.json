@@ -364,9 +364,6 @@
     "available": "Mevcut",
     "button": "Takas",
     "buttonError": "Yine de takası gerçekleştir",
-    "error": {
-      "findCurrency": "Para birimi bulunamadı {currency}"
-    },
     "expectedOutput": "Elde Edilmesi Beklenen Miktar",
     "fee": "Takas Ücreti ({fee})",
     "HALF": "YARISI",

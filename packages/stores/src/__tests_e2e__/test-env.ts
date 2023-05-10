@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { StdTx } from "@cosmjs/launchpad";
 import { MemoryKVStore } from "@keplr-wallet/common";
 import { Bech32Address } from "@keplr-wallet/cosmos";
@@ -280,7 +281,7 @@ export async function initLocalnet(): Promise<void> {
       `docker build --tag osmosis/localnet ./localnet &&
        docker rm --force osmosis_localnet && 
        docker run -d -p 1317:1317 -p 26657:26657 -p 9090:9090 --user root --name osmosis_localnet osmosis/localnet`,
-      (error, _stdout, _stderr) => {
+      (error) => {
         if (error) {
           reject(new Error(`run localnet error: ${error.message}`));
           return;

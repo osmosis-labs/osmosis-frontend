@@ -364,9 +364,6 @@
     "available": "Disponível",
     "button": "Trocar",
     "buttonError": "Trocar mesmo assim",
-    "error": {
-      "findCurrency": "Não foi possível encontrar a moeda {currency}"
-    },
     "expectedOutput": "Resultado Esperado",
     "fee": "Taxa de Troca ({fee})",
     "HALF": "METADE",

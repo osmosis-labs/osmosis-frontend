@@ -364,9 +364,6 @@
     "available": "Available",
     "button": "Swap",
     "buttonError": "Swap anyway",
-    "error": {
-      "findCurrency": "Failed to find currency {currency}"
-    },
     "expectedOutput": "Expected Output",
     "fee": "Swap Fee ({fee})",
     "HALF": "HALF",

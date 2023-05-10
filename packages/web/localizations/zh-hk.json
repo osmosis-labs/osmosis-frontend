@@ -364,9 +364,6 @@
     "available": "可用",
     "button": "交易",
     "buttonError": "照樣交易",
-    "error": {
-      "findCurrency": "搵唔到貨幣 {currency}"
-    },
     "expectedOutput": "預期產出",
     "fee": "交易費 ({fee})",
     "HALF": "一半",

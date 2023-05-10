@@ -364,9 +364,6 @@
     "available": "Disponible",
     "button": "Échanger",
     "buttonError": "Échanger quand même",
-    "error": {
-      "findCurrency": "Impossible de trouver la devise {currency}"
-    },
     "expectedOutput": "Résultat attendu",
     "fee": "Frais d'échange ({fee})",
     "HALF": "MOITIÉ",

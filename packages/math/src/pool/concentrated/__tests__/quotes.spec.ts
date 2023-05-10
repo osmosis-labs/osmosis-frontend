@@ -28,7 +28,6 @@ describe("calcOutGivenIn matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcOutGivenIn({
         tokenIn,
@@ -36,7 +35,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -65,7 +63,6 @@ describe("calcOutGivenIn matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcOutGivenIn({
         tokenIn,
@@ -73,7 +70,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -94,16 +90,11 @@ describe("calcOutGivenIn matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(305450),
-          netLiquidity: new Dec("1517882343.751510418088349649"),
-        },
-        {
           tickIndex: new Int(315000),
-          netLiquidity: new Dec("-1517882343.751510418088349649"),
+          netLiquidity: new Dec("-3035764687.503020836176699298"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcOutGivenIn({
         tokenIn,
@@ -111,7 +102,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -141,7 +131,6 @@ describe("calcOutGivenIn matches chain code", () => {
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcOutGivenIn({
         tokenIn,
@@ -149,7 +138,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -169,16 +157,15 @@ describe("calcOutGivenIn matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(315000),
+          tickIndex: new Int(31500000),
           netLiquidity: new Dec("-320114898.796002294865348513"),
         },
         {
-          tickIndex: new Int(322500),
+          tickIndex: new Int(32250000),
           netLiquidity: new Dec("-1197767444.955508123223001136"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcOutGivenIn({
         tokenIn,
@@ -186,7 +173,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -206,16 +192,15 @@ describe("calcOutGivenIn matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(305450),
-          netLiquidity: new Dec("319146854.1542601224183902529"),
+          tickIndex: new Int(30545000),
+          netLiquidity: new Dec("319146854.154260122418390252"),
         },
         {
-          tickIndex: new Int(300000),
+          tickIndex: new Int(30000000),
           netLiquidity: new Dec("1198735489.597250295669959397"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcOutGivenIn({
         tokenIn,
@@ -223,7 +208,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -243,20 +227,19 @@ describe("calcOutGivenIn matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(310010),
+          tickIndex: new Int(31001000),
           netLiquidity: new Dec("670416088.605668727039240782"),
         },
         {
-          tickIndex: new Int(315000),
+          tickIndex: new Int(31500000),
           netLiquidity: new Dec("-1517882343.751510418088349649"),
         },
         {
-          tickIndex: new Int(322500),
+          tickIndex: new Int(32250000),
           netLiquidity: new Dec("-670416088.605668727039240782"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcOutGivenIn({
         tokenIn,
@@ -264,7 +247,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -280,20 +262,19 @@ describe("calcOutGivenIn matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(310010),
+          tickIndex: new Int(31001000),
           netLiquidity: new Dec("670416088.605668727039240782"),
         },
         {
-          tickIndex: new Int(315000),
+          tickIndex: new Int(31500000),
           netLiquidity: new Dec("-1517882343.751510418088349649"),
         },
         {
-          tickIndex: new Int(322500),
+          tickIndex: new Int(32250000),
           netLiquidity: new Dec("-670416088.605668727039240782"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcOutGivenIn({
         tokenIn,
@@ -301,7 +282,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -321,20 +301,19 @@ describe("calcOutGivenIn matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(309990),
+          tickIndex: new Int(30999000),
           netLiquidity: new Dec("-670416215.718827443660400593"),
         },
         {
-          tickIndex: new Int(305450),
+          tickIndex: new Int(30545000),
           netLiquidity: new Dec("1517882343.751510418088349649"),
         },
         {
-          tickIndex: new Int(300000),
+          tickIndex: new Int(30000000),
           netLiquidity: new Dec("670416215.718827443660400593"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcOutGivenIn({
         tokenIn,
@@ -342,7 +321,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -361,20 +339,19 @@ describe("calcOutGivenIn matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(309990),
+          tickIndex: new Int(30999000),
           netLiquidity: new Dec("-670416215.718827443660400593"),
         },
         {
-          tickIndex: new Int(305450),
+          tickIndex: new Int(30545000),
           netLiquidity: new Dec("1517882343.751510418088349649"),
         },
         {
-          tickIndex: new Int(300000),
+          tickIndex: new Int(30000000),
           netLiquidity: new Dec("670416215.718827443660400593"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcOutGivenIn({
         tokenIn,
@@ -382,7 +359,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -401,20 +377,19 @@ describe("calcOutGivenIn matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(315000),
+          tickIndex: new Int(31500000),
           netLiquidity: new Dec("-1517882343.751510418088349649"),
         },
         {
-          tickIndex: new Int(315010),
+          tickIndex: new Int(31501000),
           netLiquidity: new Dec("1199528406.187413669220031452"),
         },
         {
-          tickIndex: new Int(322500),
+          tickIndex: new Int(32250000),
           netLiquidity: new Dec("670416215.718827443660400593"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcOutGivenIn({
         tokenIn,
@@ -422,7 +397,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -444,16 +418,15 @@ describe("calcOutGivenIn matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(305450),
+          tickIndex: new Int(30545000),
           netLiquidity: new Dec("1517882343.751510418088349649"),
         },
         {
-          tickIndex: new Int(315000),
+          tickIndex: new Int(31500000),
           netLiquidity: new Dec("-1517882343.751510418088349649"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0.01");
       const result = calcOutGivenIn({
         tokenIn,
@@ -461,7 +434,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -482,16 +454,15 @@ describe("calcOutGivenIn matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(305450),
+          tickIndex: new Int(30545000),
           netLiquidity: new Dec("1517882343.751510418088349649"),
         },
         {
-          tickIndex: new Int(315000),
+          tickIndex: new Int(31500000),
           netLiquidity: new Dec("-1517882343.751510418088349649"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0.03");
       const result = calcOutGivenIn({
         tokenIn,
@@ -499,7 +470,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -518,16 +488,15 @@ describe("calcOutGivenIn matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(305450),
+          tickIndex: new Int(30545000),
           netLiquidity: new Dec("319146854.1542601224183902529"),
         },
         {
-          tickIndex: new Int(300000),
+          tickIndex: new Int(30000000),
           netLiquidity: new Dec("1198735489.597250295669959397"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0.05");
       const result = calcOutGivenIn({
         tokenIn,
@@ -535,7 +504,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -554,20 +522,19 @@ describe("calcOutGivenIn matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(310010),
+          tickIndex: new Int(31001000),
           netLiquidity: new Dec("670416088.605668727039240782"),
         },
         {
-          tickIndex: new Int(315000),
+          tickIndex: new Int(31500000),
           netLiquidity: new Dec("-1517882343.751510418088349649"),
         },
         {
-          tickIndex: new Int(322500),
+          tickIndex: new Int(32250000),
           netLiquidity: new Dec("-670416088.605668727039240782"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0.1");
       const result = calcOutGivenIn({
         tokenIn,
@@ -575,7 +542,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -595,20 +561,19 @@ describe("calcOutGivenIn matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(309990),
+          tickIndex: new Int(30999000),
           netLiquidity: new Dec("-670416215.718827443660400593"),
         },
         {
-          tickIndex: new Int(305450),
+          tickIndex: new Int(30545000),
           netLiquidity: new Dec("1517882343.751510418088349649"),
         },
         {
-          tickIndex: new Int(300000),
+          tickIndex: new Int(30000000),
           netLiquidity: new Dec("670416215.718827443660400593"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0.005");
       const result = calcOutGivenIn({
         tokenIn,
@@ -616,7 +581,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -635,20 +599,19 @@ describe("calcOutGivenIn matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(315000),
+          tickIndex: new Int(31500000),
           netLiquidity: new Dec("-1517882343.751510418088349649"),
         },
         {
-          tickIndex: new Int(315010),
+          tickIndex: new Int(31501000),
           netLiquidity: new Dec("1199528406.187413669220031452"),
         },
         {
-          tickIndex: new Int(322500),
+          tickIndex: new Int(32250000),
           netLiquidity: new Dec("670416215.718827443660400593"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0.03");
       const result = calcOutGivenIn({
         tokenIn,
@@ -656,7 +619,6 @@ describe("calcOutGivenIn matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -675,12 +637,11 @@ describe("calcOutGivenIn matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(315000),
+          tickIndex: new Int(31500000),
           netLiquidity: new Dec("-1517882343.751510418088349649"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       expect(
         calcOutGivenIn({
@@ -689,7 +650,6 @@ describe("calcOutGivenIn matches chain code", () => {
           poolLiquidity,
           inittedTicks,
           curSqrtPrice,
-          exponentAtPriceOne,
           swapFee,
         })
       ).toEqual("no-more-ticks");
@@ -702,12 +662,11 @@ describe("calcOutGivenIn matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(315000),
+          tickIndex: new Int(31500000),
           netLiquidity: new Dec("-1517882343.751510418088349649"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       expect(
         calcOutGivenIn({
@@ -716,7 +675,6 @@ describe("calcOutGivenIn matches chain code", () => {
           poolLiquidity,
           inittedTicks,
           curSqrtPrice,
-          exponentAtPriceOne,
           swapFee,
         })
       ).toEqual("no-more-ticks");
@@ -739,16 +697,15 @@ describe("calcInGivenOut matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(305450),
+          tickIndex: new Int(30545000),
           netLiquidity: new Dec("1517882343.751510418088349649"),
         },
         {
-          tickIndex: new Int(315000),
+          tickIndex: new Int(31500000),
           netLiquidity: new Dec("-1517882343.751510418088349649"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcInGivenOut({
         tokenOut,
@@ -756,7 +713,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -772,16 +728,15 @@ describe("calcInGivenOut matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(305450),
+          tickIndex: new Int(30545000),
           netLiquidity: new Dec("1517882343.751510418088349649"),
         },
         {
-          tickIndex: new Int(315000),
+          tickIndex: new Int(31500000),
           netLiquidity: new Dec("-1517882343.751510418088349649"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcInGivenOut({
         tokenOut,
@@ -789,7 +744,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -810,16 +764,15 @@ describe("calcInGivenOut matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(305450),
+          tickIndex: new Int(30545000),
           netLiquidity: new Dec("3035764687.503020836176699298"),
         },
         {
-          tickIndex: new Int(315000),
+          tickIndex: new Int(31500000),
           netLiquidity: new Dec("-3035764687.503020836176699298"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcInGivenOut({
         tokenOut,
@@ -827,7 +780,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -848,16 +800,15 @@ describe("calcInGivenOut matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(305450),
+          tickIndex: new Int(30545000),
           netLiquidity: new Dec("3035764687.503020836176699298"),
         },
         {
-          tickIndex: new Int(315000),
+          tickIndex: new Int(31500000),
           netLiquidity: new Dec("-3035764687.503020836176699298"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcInGivenOut({
         tokenOut,
@@ -865,7 +816,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -886,20 +836,19 @@ describe("calcInGivenOut matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(305450),
+          tickIndex: new Int(30545000),
           netLiquidity: new Dec("319146854.154260122418390252"),
         },
         {
-          tickIndex: new Int(300000),
+          tickIndex: new Int(30000000),
           netLiquidity: new Dec("1198735489.597250295669959397"),
         },
         {
-          tickIndex: new Int(315000),
+          tickIndex: new Int(31500000),
           netLiquidity: new Dec("-1517882343.751510418088349649"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcInGivenOut({
         tokenOut,
@@ -907,7 +856,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -927,20 +875,19 @@ describe("calcInGivenOut matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(315000),
+          tickIndex: new Int(31500000),
           netLiquidity: new Dec("-320114898.796002294865348513"),
         },
         {
-          tickIndex: new Int(322500),
+          tickIndex: new Int(32250000),
           netLiquidity: new Dec("-1197767444.955508123223001136"),
         },
         {
-          tickIndex: new Int(315010),
+          tickIndex: new Int(31501000),
           netLiquidity: new Dec("1199528406.187413669220031452"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcInGivenOut({
         tokenOut,
@@ -948,7 +895,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -968,20 +914,19 @@ describe("calcInGivenOut matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(309990),
+          tickIndex: new Int(30999000),
           netLiquidity: new Dec("-670416215.718827443660400593"),
         },
         {
-          tickIndex: new Int(305450),
+          tickIndex: new Int(30545000),
           netLiquidity: new Dec("1517882343.751510418088349649"),
         },
         {
-          tickIndex: new Int(300000),
+          tickIndex: new Int(30000000),
           netLiquidity: new Dec("670416215.718827443660400593"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcInGivenOut({
         tokenOut,
@@ -989,7 +934,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -1009,20 +953,19 @@ describe("calcInGivenOut matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(309990),
+          tickIndex: new Int(30999000),
           netLiquidity: new Dec("-670416215.718827443660400593"),
         },
         {
-          tickIndex: new Int(305450),
+          tickIndex: new Int(30545000),
           netLiquidity: new Dec("1517882343.751510418088349649"),
         },
         {
-          tickIndex: new Int(300000),
+          tickIndex: new Int(30000000),
           netLiquidity: new Dec("670416215.718827443660400593"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcInGivenOut({
         tokenOut,
@@ -1030,7 +973,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -1050,20 +992,19 @@ describe("calcInGivenOut matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(310010),
+          tickIndex: new Int(31001000),
           netLiquidity: new Dec("670416088.605668727039240782"),
         },
         {
-          tickIndex: new Int(315000),
+          tickIndex: new Int(31500000),
           netLiquidity: new Dec("-1517882343.751510418088349649"),
         },
         {
-          tickIndex: new Int(322500),
+          tickIndex: new Int(32250000),
           netLiquidity: new Dec("-670416088.605668727039240782"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcInGivenOut({
         tokenOut,
@@ -1071,7 +1012,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -1091,20 +1031,19 @@ describe("calcInGivenOut matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(310010),
+          tickIndex: new Int(31001000),
           netLiquidity: new Dec("670416088.605668727039240782"),
         },
         {
-          tickIndex: new Int(315000),
+          tickIndex: new Int(31500000),
           netLiquidity: new Dec("-1517882343.751510418088349649"),
         },
         {
-          tickIndex: new Int(322500),
+          tickIndex: new Int(32250000),
           netLiquidity: new Dec("-670416088.605668727039240782"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcInGivenOut({
         tokenOut,
@@ -1112,7 +1051,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -1132,20 +1070,19 @@ describe("calcInGivenOut matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(315000),
+          tickIndex: new Int(31500000),
           netLiquidity: new Dec("-1517882343.751510418088349649"),
         },
         {
-          tickIndex: new Int(315010),
+          tickIndex: new Int(31501000),
           netLiquidity: new Dec("1199528406.187413669220031452"),
         },
         {
-          tickIndex: new Int(322500),
+          tickIndex: new Int(32250000),
           netLiquidity: new Dec("670416215.718827443660400593"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       const result = calcInGivenOut({
         tokenOut,
@@ -1153,7 +1090,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -1174,16 +1110,15 @@ describe("calcInGivenOut matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(305450),
+          tickIndex: new Int(30545000),
           netLiquidity: new Dec("1517882343.751510418088349649"),
         },
         {
-          tickIndex: new Int(315000),
+          tickIndex: new Int(31500000),
           netLiquidity: new Dec("-1517882343.751510418088349649"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0.01");
       const result = calcInGivenOut({
         tokenOut,
@@ -1191,7 +1126,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -1207,16 +1141,15 @@ describe("calcInGivenOut matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(305450),
+          tickIndex: new Int(30545000),
           netLiquidity: new Dec("3035764687.503020836176699298"),
         },
         {
-          tickIndex: new Int(315000),
+          tickIndex: new Int(31500000),
           netLiquidity: new Dec("-3035764687.503020836176699298"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0.03");
       const result = calcInGivenOut({
         tokenOut,
@@ -1224,7 +1157,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -1240,20 +1172,19 @@ describe("calcInGivenOut matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(315000),
+          tickIndex: new Int(31500000),
           netLiquidity: new Dec("-320114898.796002294865348513"),
         },
         {
-          tickIndex: new Int(322500),
+          tickIndex: new Int(32250000),
           netLiquidity: new Dec("-1197767444.955508123223001136"),
         },
         {
-          tickIndex: new Int(315010),
+          tickIndex: new Int(31501000),
           netLiquidity: new Dec("1199528406.187413669220031452"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0.001");
       const result = calcInGivenOut({
         tokenOut,
@@ -1261,7 +1192,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -1277,20 +1207,19 @@ describe("calcInGivenOut matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(309990),
+          tickIndex: new Int(30999000),
           netLiquidity: new Dec("-670416215.718827443660400593"),
         },
         {
-          tickIndex: new Int(305450),
+          tickIndex: new Int(30545000),
           netLiquidity: new Dec("1517882343.751510418088349649"),
         },
         {
-          tickIndex: new Int(300000),
+          tickIndex: new Int(30000000),
           netLiquidity: new Dec("670416215.718827443660400593"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0.1");
       const result = calcInGivenOut({
         tokenOut,
@@ -1298,7 +1227,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -1314,20 +1242,19 @@ describe("calcInGivenOut matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(310010),
+          tickIndex: new Int(31001000),
           netLiquidity: new Dec("670416088.605668727039240782"),
         },
         {
-          tickIndex: new Int(315000),
+          tickIndex: new Int(31500000),
           netLiquidity: new Dec("-1517882343.751510418088349649"),
         },
         {
-          tickIndex: new Int(322500),
+          tickIndex: new Int(32250000),
           netLiquidity: new Dec("-670416088.605668727039240782"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0.05");
       const result = calcInGivenOut({
         tokenOut,
@@ -1335,7 +1262,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -1351,20 +1277,19 @@ describe("calcInGivenOut matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(315000),
+          tickIndex: new Int(31500000),
           netLiquidity: new Dec("-1517882343.751510418088349649"),
         },
         {
-          tickIndex: new Int(315010),
+          tickIndex: new Int(31501000),
           netLiquidity: new Dec("1199528406.187413669220031452"),
         },
         {
-          tickIndex: new Int(322500),
+          tickIndex: new Int(32250000),
           netLiquidity: new Dec("670416215.718827443660400593"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0.0003");
       const result = calcInGivenOut({
         tokenOut,
@@ -1372,7 +1297,6 @@ describe("calcInGivenOut matches chain code", () => {
         poolLiquidity,
         inittedTicks,
         curSqrtPrice,
-        exponentAtPriceOne,
         swapFee,
       });
       if (result === "no-more-ticks") throw new Error("no more ticks");
@@ -1382,6 +1306,23 @@ describe("calcInGivenOut matches chain code", () => {
     });
     // https://github.com/osmosis-labs/osmosis/blob/e7b5c4a6f88004fe8a6976fd7e4cb5e90339d629/x/concentrated-liquidity/swaps_test.go#L1383
     // won't do slippage protection test since we are generating estimates to protect against slippage on chain from frontends
+
+    it("returns not-enough-ticks if there's not enough ticks to calculate", () => {
+      const tokenOut = new Coin("eth", "1820545");
+      const tokenDenom0 = "eth";
+      const poolLiquidity = new Dec("1517882343.751510418088349649");
+      const curSqrtPrice = new Dec("70.710678118654752440");
+      const swapFee = new Dec("0.0003");
+      const result = calcInGivenOut({
+        tokenOut,
+        tokenDenom0,
+        poolLiquidity,
+        inittedTicks: [],
+        curSqrtPrice,
+        swapFee,
+      });
+      expect(result).toEqual("no-more-ticks");
+    });
   });
 
   describe("failure cases", () => {
@@ -1392,12 +1333,11 @@ describe("calcInGivenOut matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(315000),
+          tickIndex: new Int(31500000),
           netLiquidity: new Dec("-1517882343.751510418088349649"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       expect(
         calcInGivenOut({
@@ -1406,7 +1346,6 @@ describe("calcInGivenOut matches chain code", () => {
           poolLiquidity,
           inittedTicks,
           curSqrtPrice,
-          exponentAtPriceOne,
           swapFee,
         })
       ).toEqual("no-more-ticks");
@@ -1418,12 +1357,11 @@ describe("calcInGivenOut matches chain code", () => {
       // found by printing liquidity net values to console with go test
       const inittedTicks = [
         {
-          tickIndex: new Int(315000),
+          tickIndex: new Int(31500000),
           netLiquidity: new Dec("-1517882343.751510418088349649"),
         },
       ];
       const curSqrtPrice = new Dec("70.710678118654752440");
-      const exponentAtPriceOne = -4;
       const swapFee = new Dec("0");
       expect(
         calcInGivenOut({
@@ -1432,7 +1370,6 @@ describe("calcInGivenOut matches chain code", () => {
           poolLiquidity,
           inittedTicks,
           curSqrtPrice,
-          exponentAtPriceOne,
           swapFee,
         })
       ).toEqual("no-more-ticks");

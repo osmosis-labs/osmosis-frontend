@@ -1,5 +1,6 @@
 import { Dec } from "@keplr-wallet/unit";
 
+import { checkMultiplicativeErrorTolerance } from "../../../rounding";
 import { smallestDec } from "../const";
 import {
   approxRoot,
@@ -12,29 +13,108 @@ import {
   getNextSqrtPriceFromAmount1OutRoundingDown,
 } from "../math";
 
-describe("calcAmount0Delta", () => {
-  // https://github.com/osmosis-labs/osmosis/blob/fffe3a2ad32a8c51d654212e70dfa1e8eff5f323/x/concentrated-liquidity/internal/math/math_test.go#L156
-  it("matches chain code test", () => {
+describe("calcAmount0Delta: matches chain code tests", () => {
+  // https://github.com/osmosis-labs/osmosis/blob/0f9eb3c1259078035445b3e3269659469b95fd9f/x/concentrated-liquidity/math/math_test.go#L160
+  it("normal case", () => {
     const sqrtPriceA = new Dec("70.710678118654752440");
     const sqrtPriceB = new Dec("74.161984870956629487");
     const liquidity = new Dec("1517882343.751510418088349649");
+    const roundUp = false;
 
-    const res = calcAmount0Delta(liquidity, sqrtPriceA, sqrtPriceB, false);
+    const res = calcAmount0Delta(liquidity, sqrtPriceA, sqrtPriceB, roundUp);
 
-    expect(res.toString()).toBe("998976.618347426388356620");
+    expect(res.toString()).toBe("998976.618347426388356619");
+  });
+  // https://github.com/osmosis-labs/osmosis/blob/0f9eb3c1259078035445b3e3269659469b95fd9f/x/concentrated-liquidity/math/math_test.go#L169
+  it("round down: large liquidity amount in wide price range", () => {
+    const sqrtPriceA = new Dec("0.000000152731791058");
+    const sqrtPriceB = new Dec("30860351331.852813530648276680");
+    const liquidity = new Dec("931361973132462178951297");
+    const roundUp = false;
+
+    const res = calcAmount0Delta(liquidity, sqrtPriceA, sqrtPriceB, roundUp);
+
+    // with tolerance
+    const expected = new Dec(
+      "6098022989717817431593106314408.888128101590393209"
+    ).truncateDec();
+
+    const tolerance = checkMultiplicativeErrorTolerance(
+      expected,
+      res,
+      smallestDec,
+      "roundDown"
+    );
+
+    expect(tolerance).toBe(0);
+  });
+  // https://github.com/osmosis-labs/osmosis/blob/0f9eb3c1259078035445b3e3269659469b95fd9f/x/concentrated-liquidity/math/math_test.go#L189
+  it("round up: large liquidity amount in wide price range", () => {
+    const sqrtPriceA = new Dec("0.000000152731791058");
+    const sqrtPriceB = new Dec("30860351331.852813530648276680");
+    const liquidity = new Dec("931361973132462178951297");
+    const roundUp = true;
+
+    const res = calcAmount0Delta(liquidity, sqrtPriceA, sqrtPriceB, roundUp);
+
+    // with tolerance
+    const expected = new Dec(
+      "6098022989717817431593106314408.888128101590393209"
+    ).roundUpDec();
+
+    const tolerance = checkMultiplicativeErrorTolerance(
+      expected,
+      res,
+      smallestDec,
+      "roundUp"
+    );
+
+    expect(tolerance).toBe(0);
   });
 });
 
-describe("calcAmount1Delta", () => {
-  // https://github.com/osmosis-labs/osmosis/blob/fffe3a2ad32a8c51d654212e70dfa1e8eff5f323/x/concentrated-liquidity/internal/math/math_test.go#L186
-  it("matches chain code test", () => {
+describe("calcAmount1Delta: matches chain code test", () => {
+  // https://github.com/osmosis-labs/osmosis/blob/0f9eb3c1259078035445b3e3269659469b95fd9f/x/concentrated-liquidity/math/math_test.go#L252
+  it("normal case", () => {
     const sqrtPriceA = new Dec("70.710678118654752440");
     const sqrtPriceB = new Dec("67.416615162732695594");
     const liquidity = new Dec("1517882343.751510418088349649");
 
     const res = calcAmount1Delta(liquidity, sqrtPriceA, sqrtPriceB, false);
 
-    expect(res.toString()).toBe("5000000000.000000000000000000");
+    expect(res.toString()).toBe(
+      new Dec("5000000000.000000000000000000").sub(smallestDec).toString()
+    );
+  });
+  // https://github.com/osmosis-labs/osmosis/blob/0f9eb3c1259078035445b3e3269659469b95fd9f/x/concentrated-liquidity/math/math_test.go#L260
+  it("round down: large liquidity amount in wide price range", () => {
+    const sqrtPriceA = new Dec("0.000000152731791058");
+    const sqrtPriceB = new Dec("30860351331.852813530648276680");
+    const liquidity = new Dec("931361973132462178951297");
+    const roundUp = false;
+
+    const res = calcAmount1Delta(liquidity, sqrtPriceA, sqrtPriceB, roundUp);
+
+    const expected = new Dec(
+      "28742157707995443393876876754535992.801567623738751734"
+    );
+
+    expect(res.toString()).toBe(expected.toString());
+  });
+  // https://github.com/osmosis-labs/osmosis/blob/77c0aa5a5572dc09d6d43ddf75f3bf47683f53d7/x/concentrated-liquidity/math/math_test.go#L278
+  it("round up: large liquidity amount in wide price range", () => {
+    const sqrtPriceA = new Dec("0.000000152731791058");
+    const sqrtPriceB = new Dec("30860351331.852813530648276680");
+    const liquidity = new Dec("931361973132462178951297");
+    const roundUp = true;
+
+    const res = calcAmount1Delta(liquidity, sqrtPriceA, sqrtPriceB, roundUp);
+
+    const expected = new Dec(
+      "28742157707995443393876876754535992.801567623738751734"
+    ).roundUpDec();
+
+    expect(res.toString()).toBe(expected.toString());
   });
 });
 

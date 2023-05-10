@@ -2,6 +2,9 @@ import * as fs from "fs";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { glob } from "glob";
 
+// use to silence warnings
+const warn = (..._args: Parameters<typeof console.log>) => null; // console.warn(...args);
+
 describe("Localization JSON files", () => {
   const localizationObjs = getJSONsAsObjs();
 
@@ -51,7 +54,7 @@ describe("Localization JSON files", () => {
         } else if (
           !fileContents.some((content) => content.includes(`t("${key}"`))
         ) {
-          console.warn(
+          warn(
             `Localization key ${key} IS found but not within a t() function in ${jsonFileName}`
           );
         }

@@ -364,9 +364,6 @@
     "available": "Dostępne",
     "button": "Wymień",
     "buttonError": "Wymień mimo to",
-    "error": {
-      "findCurrency": "Nie udało się znaleźć waluty {currency}"
-    },
     "expectedOutput": "Spodziewana wartość",
     "fee": "Prowizja ({fee})",
     "HALF": "POŁOWA",

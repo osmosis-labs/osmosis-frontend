@@ -1,10 +1,10 @@
 import { Coin, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 
 import { BigDec } from "../../big-dec";
+import { checkMultiplicativeErrorTolerance } from "../../rounding";
 import {
   calcWSumSquares,
   cfmmConstantMultiNoV,
-  compareDec_checkMultErrorTolerance,
   solveCfmm,
   StableSwapMath,
   StableSwapToken,
@@ -227,7 +227,7 @@ describe("Test stableswap math", () => {
       const tolerance = new Dec(1).quo(
         DecUtils.getTenExponentNInPrecisionRange(3)
       );
-      const comparison = compareDec_checkMultErrorTolerance(
+      const comparison = checkMultiplicativeErrorTolerance(
         expectedSpotPrice,
         actualSpotPrice,
         tolerance,
@@ -270,7 +270,7 @@ describe("Test stableswap math", () => {
       const tolerance = new Dec(1).quo(
         DecUtils.getTenExponentNInPrecisionRange(3)
       );
-      const comparison = compareDec_checkMultErrorTolerance(
+      const comparison = checkMultiplicativeErrorTolerance(
         expectedSpotPrice,
         actualSpotPrice,
         tolerance,

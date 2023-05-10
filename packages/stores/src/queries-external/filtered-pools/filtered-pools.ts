@@ -8,9 +8,11 @@ import { makeObservable, observable, runInAction } from "mobx";
 import { computedFn } from "mobx-utils";
 import { ObservableQueryLiquiditiesNetInDirection } from "src/queries/concentrated-liquidity";
 
-import { ObservableQueryNumPools } from "../../queries/pools";
-import { ObservableQueryPool } from "../../queries/pools/pool";
-import { ObservableQueryPoolGetter } from "../../queries/pools/types";
+import {
+  ObservableQueryNumPools,
+  ObservableQueryPool,
+  ObservableQueryPoolGetter,
+} from "../../queries/pools";
 import { IMPERATOR_HISTORICAL_DATA_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
 import { FilteredPools, Filters, objToQueryParams, Pagination } from "./types";
