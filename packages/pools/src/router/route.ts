@@ -47,9 +47,14 @@ export function validateRoute(
   return true;
 }
 
-export function routeToString(route: Route | RouteWithInAmount) {
+export function routeToString(
+  route: Route | RouteWithInAmount,
+  showDenoms = true
+) {
   const pools = route.pools
-    .map((pool, i) => `${pool.id} out:${route.tokenOutDenoms[i]}`)
+    .map((pool, i) =>
+      showDenoms ? `${pool.id} out:${route.tokenOutDenoms[i]}` : pool.id
+    )
     .join(" -> ");
   if ("initialAmount" in route) {
     return `in:(${route.initialAmount.toString()}) ${pools}`;

@@ -177,15 +177,15 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
     // filter routes by unique pools, maintaining sort order
     const uniquePoolIds = new Set<string>();
-    routes = routes.filter(({ pools }) =>
-      pools.every(({ id }) => {
-        if (uniquePoolIds.has(id)) {
-          return false;
-        }
-        uniquePoolIds.add(id);
-        return true;
-      })
-    );
+    routes = routes.reduce((includedRoutes, route) => {
+      if (route.pools.some(({ id }) => uniquePoolIds.has(id))) {
+        return includedRoutes;
+      } else {
+        route.pools.forEach(({ id }) => uniquePoolIds.add(id));
+        includedRoutes.push(route);
+        return includedRoutes;
+      }
+    }, [] as Route[]);
 
     // prioritize (pick) routes by preference
     if (this._preferredPoolIds && this._preferredPoolIds.length > 0) {
@@ -216,7 +216,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       await this.findBestSplitTokenIn(selectedSplit, tokenIn.amount)
     ).sort((a, b) => Number(b.initialAmount.sub(a.initialAmount)));
 
-    if (splitIncludesPreferredPool) return split;
+    if (splitIncludesPreferredPool || selectedSplit.length === 1) return split;
 
     const directOutAmount = (
       await this.calculateTokenOutByTokenIn([

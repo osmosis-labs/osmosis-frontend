@@ -28,8 +28,6 @@ export function useFreshSwapData(
     tradeTokenInConfig.isQuoteLoading ||
     !tradeTokenInConfig.expectedSwapResult.amount.toDec().isZero();
 
-  console.log({ isLookingAtQuote });
-
   useBackgroundRefresh(stores, {
     active: isLookingAtQuote ? 30 * 1000 : undefined,
   });
