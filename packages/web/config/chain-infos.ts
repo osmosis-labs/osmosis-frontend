@@ -67,7 +67,7 @@ const chainInfos = IS_TESTNET
         features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
         explorerUrlToTx:
           OSMOSIS_EXPLORER_URL_OVERWRITE ??
-          ("https://explorer.osmotest5.osmosis.zone/osmo-test-5/tx/{txHash}"),
+          ("https://testnet.mintscan.io/osmosis-testnet/tx/{txHash}"),
       },
       {
         rpc: "https://rest.sentry-01.theta-testnet.polypore.xyz",
