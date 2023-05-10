@@ -3,7 +3,7 @@
   "pipeline": {
     "build": {
       "outputs": ["build/**", ".next/**", "!.next/cache/**"],
-      "dependsOn": ["^build"]
+      "dependsOn": ["^generate", "^build"]
     },
     "lint": {},
     "lint:fix": {},
@@ -11,6 +11,15 @@
     "start": { "dependsOn": ["build"] },
     "clean": { "cache": false },
     "test": { "dependsOn": ["build"] },
-    "analyze": {}
+    "analyze": {},
+    "generate": {
+      "outputs": [
+        "src/codegen/**",
+        "config/wallet-registry.ts",
+        "config/wallet-assets.ts",
+        "config/chain-infos.ts"
+      ],
+      "dependsOn": ["^generate"]
+    }
   }
 }

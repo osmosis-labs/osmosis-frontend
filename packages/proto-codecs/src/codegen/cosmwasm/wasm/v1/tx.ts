@@ -8,14 +8,7 @@ import {
   CoinSDKType,
 } from "../../../cosmos/base/v1beta1/coin";
 import { Long } from "../../../helpers";
-import {
-  AccessConfig,
-  AccessConfigAmino,
-  AccessConfigSDKType,
-  Params,
-  ParamsAmino,
-  ParamsSDKType,
-} from "./types";
+import { AccessConfig, AccessConfigAmino, AccessConfigSDKType } from "./types";
 /** MsgStoreCode submit Wasm code to the system */
 export interface MsgStoreCode {
   /** Sender is the actor that signed the messages */
@@ -137,33 +130,6 @@ export interface MsgInstantiateContractSDKType {
   msg: Uint8Array;
   funds: CoinSDKType[];
 }
-/** MsgInstantiateContractResponse return instantiation result data */
-export interface MsgInstantiateContractResponse {
-  /** Address is the bech32 address of the new contract instance. */
-  address: string;
-  /** Data contains bytes to returned from the contract */
-  data: Uint8Array;
-}
-export interface MsgInstantiateContractResponseProtoMsg {
-  typeUrl: "/cosmwasm.wasm.v1.MsgInstantiateContractResponse";
-  value: Uint8Array;
-}
-/** MsgInstantiateContractResponse return instantiation result data */
-export interface MsgInstantiateContractResponseAmino {
-  /** Address is the bech32 address of the new contract instance. */
-  address: string;
-  /** Data contains bytes to returned from the contract */
-  data: Uint8Array;
-}
-export interface MsgInstantiateContractResponseAminoMsg {
-  type: "wasm/MsgInstantiateContractResponse";
-  value: MsgInstantiateContractResponseAmino;
-}
-/** MsgInstantiateContractResponse return instantiation result data */
-export interface MsgInstantiateContractResponseSDKType {
-  address: string;
-  data: Uint8Array;
-}
 /**
  * MsgInstantiateContract2 create a new smart contract instance for the given
  * code id with a predicable address.
@@ -235,6 +201,33 @@ export interface MsgInstantiateContract2SDKType {
   funds: CoinSDKType[];
   salt: Uint8Array;
   fix_msg: boolean;
+}
+/** MsgInstantiateContractResponse return instantiation result data */
+export interface MsgInstantiateContractResponse {
+  /** Address is the bech32 address of the new contract instance. */
+  address: string;
+  /** Data contains bytes to returned from the contract */
+  data: Uint8Array;
+}
+export interface MsgInstantiateContractResponseProtoMsg {
+  typeUrl: "/cosmwasm.wasm.v1.MsgInstantiateContractResponse";
+  value: Uint8Array;
+}
+/** MsgInstantiateContractResponse return instantiation result data */
+export interface MsgInstantiateContractResponseAmino {
+  /** Address is the bech32 address of the new contract instance. */
+  address: string;
+  /** Data contains bytes to returned from the contract */
+  data: Uint8Array;
+}
+export interface MsgInstantiateContractResponseAminoMsg {
+  type: "wasm/MsgInstantiateContractResponse";
+  value: MsgInstantiateContractResponseAmino;
+}
+/** MsgInstantiateContractResponse return instantiation result data */
+export interface MsgInstantiateContractResponseSDKType {
+  address: string;
+  data: Uint8Array;
 }
 /** MsgInstantiateContract2Response return instantiation result data */
 export interface MsgInstantiateContract2Response {
@@ -520,452 +513,6 @@ export interface MsgUpdateInstantiateConfigResponseAminoMsg {
 }
 /** MsgUpdateInstantiateConfigResponse returns empty data */
 export interface MsgUpdateInstantiateConfigResponseSDKType {}
-/**
- * MsgUpdateParams is the MsgUpdateParams request type.
- *
- * Since: 0.40
- */
-export interface MsgUpdateParams {
-  /** Authority is the address of the governance account. */
-  authority: string;
-  /**
-   * params defines the x/wasm parameters to update.
-   *
-   * NOTE: All parameters must be supplied.
-   */
-  params?: Params;
-}
-export interface MsgUpdateParamsProtoMsg {
-  typeUrl: "/cosmwasm.wasm.v1.MsgUpdateParams";
-  value: Uint8Array;
-}
-/**
- * MsgUpdateParams is the MsgUpdateParams request type.
- *
- * Since: 0.40
- */
-export interface MsgUpdateParamsAmino {
-  /** Authority is the address of the governance account. */
-  authority: string;
-  /**
-   * params defines the x/wasm parameters to update.
-   *
-   * NOTE: All parameters must be supplied.
-   */
-  params?: ParamsAmino;
-}
-export interface MsgUpdateParamsAminoMsg {
-  type: "wasm/MsgUpdateParams";
-  value: MsgUpdateParamsAmino;
-}
-/**
- * MsgUpdateParams is the MsgUpdateParams request type.
- *
- * Since: 0.40
- */
-export interface MsgUpdateParamsSDKType {
-  authority: string;
-  params?: ParamsSDKType;
-}
-/**
- * MsgUpdateParamsResponse defines the response structure for executing a
- * MsgUpdateParams message.
- *
- * Since: 0.40
- */
-export interface MsgUpdateParamsResponse {}
-export interface MsgUpdateParamsResponseProtoMsg {
-  typeUrl: "/cosmwasm.wasm.v1.MsgUpdateParamsResponse";
-  value: Uint8Array;
-}
-/**
- * MsgUpdateParamsResponse defines the response structure for executing a
- * MsgUpdateParams message.
- *
- * Since: 0.40
- */
-export interface MsgUpdateParamsResponseAmino {}
-export interface MsgUpdateParamsResponseAminoMsg {
-  type: "wasm/MsgUpdateParamsResponse";
-  value: MsgUpdateParamsResponseAmino;
-}
-/**
- * MsgUpdateParamsResponse defines the response structure for executing a
- * MsgUpdateParams message.
- *
- * Since: 0.40
- */
-export interface MsgUpdateParamsResponseSDKType {}
-/**
- * MsgSudoContract is the MsgSudoContract request type.
- *
- * Since: 0.40
- */
-export interface MsgSudoContract {
-  /** Authority is the address of the governance account. */
-  authority: string;
-  /** Contract is the address of the smart contract */
-  contract: string;
-  /** Msg json encoded message to be passed to the contract as sudo */
-  msg: Uint8Array;
-}
-export interface MsgSudoContractProtoMsg {
-  typeUrl: "/cosmwasm.wasm.v1.MsgSudoContract";
-  value: Uint8Array;
-}
-/**
- * MsgSudoContract is the MsgSudoContract request type.
- *
- * Since: 0.40
- */
-export interface MsgSudoContractAmino {
-  /** Authority is the address of the governance account. */
-  authority: string;
-  /** Contract is the address of the smart contract */
-  contract: string;
-  /** Msg json encoded message to be passed to the contract as sudo */
-  msg: Uint8Array;
-}
-export interface MsgSudoContractAminoMsg {
-  type: "wasm/MsgSudoContract";
-  value: MsgSudoContractAmino;
-}
-/**
- * MsgSudoContract is the MsgSudoContract request type.
- *
- * Since: 0.40
- */
-export interface MsgSudoContractSDKType {
-  authority: string;
-  contract: string;
-  msg: Uint8Array;
-}
-/**
- * MsgSudoContractResponse defines the response structure for executing a
- * MsgSudoContract message.
- *
- * Since: 0.40
- */
-export interface MsgSudoContractResponse {
-  /** Data contains bytes to returned from the contract */
-  data: Uint8Array;
-}
-export interface MsgSudoContractResponseProtoMsg {
-  typeUrl: "/cosmwasm.wasm.v1.MsgSudoContractResponse";
-  value: Uint8Array;
-}
-/**
- * MsgSudoContractResponse defines the response structure for executing a
- * MsgSudoContract message.
- *
- * Since: 0.40
- */
-export interface MsgSudoContractResponseAmino {
-  /** Data contains bytes to returned from the contract */
-  data: Uint8Array;
-}
-export interface MsgSudoContractResponseAminoMsg {
-  type: "wasm/MsgSudoContractResponse";
-  value: MsgSudoContractResponseAmino;
-}
-/**
- * MsgSudoContractResponse defines the response structure for executing a
- * MsgSudoContract message.
- *
- * Since: 0.40
- */
-export interface MsgSudoContractResponseSDKType {
-  data: Uint8Array;
-}
-/**
- * MsgPinCodes is the MsgPinCodes request type.
- *
- * Since: 0.40
- */
-export interface MsgPinCodes {
-  /** Authority is the address of the governance account. */
-  authority: string;
-  /** CodeIDs references the new WASM codes */
-  codeIds: Long[];
-}
-export interface MsgPinCodesProtoMsg {
-  typeUrl: "/cosmwasm.wasm.v1.MsgPinCodes";
-  value: Uint8Array;
-}
-/**
- * MsgPinCodes is the MsgPinCodes request type.
- *
- * Since: 0.40
- */
-export interface MsgPinCodesAmino {
-  /** Authority is the address of the governance account. */
-  authority: string;
-  /** CodeIDs references the new WASM codes */
-  code_ids: string[];
-}
-export interface MsgPinCodesAminoMsg {
-  type: "wasm/MsgPinCodes";
-  value: MsgPinCodesAmino;
-}
-/**
- * MsgPinCodes is the MsgPinCodes request type.
- *
- * Since: 0.40
- */
-export interface MsgPinCodesSDKType {
-  authority: string;
-  code_ids: Long[];
-}
-/**
- * MsgPinCodesResponse defines the response structure for executing a
- * MsgPinCodes message.
- *
- * Since: 0.40
- */
-export interface MsgPinCodesResponse {}
-export interface MsgPinCodesResponseProtoMsg {
-  typeUrl: "/cosmwasm.wasm.v1.MsgPinCodesResponse";
-  value: Uint8Array;
-}
-/**
- * MsgPinCodesResponse defines the response structure for executing a
- * MsgPinCodes message.
- *
- * Since: 0.40
- */
-export interface MsgPinCodesResponseAmino {}
-export interface MsgPinCodesResponseAminoMsg {
-  type: "wasm/MsgPinCodesResponse";
-  value: MsgPinCodesResponseAmino;
-}
-/**
- * MsgPinCodesResponse defines the response structure for executing a
- * MsgPinCodes message.
- *
- * Since: 0.40
- */
-export interface MsgPinCodesResponseSDKType {}
-/**
- * MsgUnpinCodes is the MsgUnpinCodes request type.
- *
- * Since: 0.40
- */
-export interface MsgUnpinCodes {
-  /** Authority is the address of the governance account. */
-  authority: string;
-  /** CodeIDs references the WASM codes */
-  codeIds: Long[];
-}
-export interface MsgUnpinCodesProtoMsg {
-  typeUrl: "/cosmwasm.wasm.v1.MsgUnpinCodes";
-  value: Uint8Array;
-}
-/**
- * MsgUnpinCodes is the MsgUnpinCodes request type.
- *
- * Since: 0.40
- */
-export interface MsgUnpinCodesAmino {
-  /** Authority is the address of the governance account. */
-  authority: string;
-  /** CodeIDs references the WASM codes */
-  code_ids: string[];
-}
-export interface MsgUnpinCodesAminoMsg {
-  type: "wasm/MsgUnpinCodes";
-  value: MsgUnpinCodesAmino;
-}
-/**
- * MsgUnpinCodes is the MsgUnpinCodes request type.
- *
- * Since: 0.40
- */
-export interface MsgUnpinCodesSDKType {
-  authority: string;
-  code_ids: Long[];
-}
-/**
- * MsgUnpinCodesResponse defines the response structure for executing a
- * MsgUnpinCodes message.
- *
- * Since: 0.40
- */
-export interface MsgUnpinCodesResponse {}
-export interface MsgUnpinCodesResponseProtoMsg {
-  typeUrl: "/cosmwasm.wasm.v1.MsgUnpinCodesResponse";
-  value: Uint8Array;
-}
-/**
- * MsgUnpinCodesResponse defines the response structure for executing a
- * MsgUnpinCodes message.
- *
- * Since: 0.40
- */
-export interface MsgUnpinCodesResponseAmino {}
-export interface MsgUnpinCodesResponseAminoMsg {
-  type: "wasm/MsgUnpinCodesResponse";
-  value: MsgUnpinCodesResponseAmino;
-}
-/**
- * MsgUnpinCodesResponse defines the response structure for executing a
- * MsgUnpinCodes message.
- *
- * Since: 0.40
- */
-export interface MsgUnpinCodesResponseSDKType {}
-/**
- * MsgStoreAndInstantiateContract is the MsgStoreAndInstantiateContract
- * request type.
- *
- * Since: 0.40
- */
-export interface MsgStoreAndInstantiateContract {
-  /** Authority is the address of the governance account. */
-  authority: string;
-  /** WASMByteCode can be raw or gzip compressed */
-  wasmByteCode: Uint8Array;
-  /** InstantiatePermission to apply on contract creation, optional */
-  instantiatePermission?: AccessConfig;
-  /**
-   * UnpinCode code on upload, optional. As default the uploaded contract is
-   * pinned to cache.
-   */
-  unpinCode: boolean;
-  /** Admin is an optional address that can execute migrations */
-  admin: string;
-  /** Label is optional metadata to be stored with a constract instance. */
-  label: string;
-  /** Msg json encoded message to be passed to the contract on instantiation */
-  msg: Uint8Array;
-  /**
-   * Funds coins that are transferred from the authority account to the contract
-   * on instantiation
-   */
-  funds: Coin[];
-  /** Source is the URL where the code is hosted */
-  source: string;
-  /**
-   * Builder is the docker image used to build the code deterministically, used
-   * for smart contract verification
-   */
-  builder: string;
-  /**
-   * CodeHash is the SHA256 sum of the code outputted by builder, used for smart
-   * contract verification
-   */
-  codeHash: Uint8Array;
-}
-export interface MsgStoreAndInstantiateContractProtoMsg {
-  typeUrl: "/cosmwasm.wasm.v1.MsgStoreAndInstantiateContract";
-  value: Uint8Array;
-}
-/**
- * MsgStoreAndInstantiateContract is the MsgStoreAndInstantiateContract
- * request type.
- *
- * Since: 0.40
- */
-export interface MsgStoreAndInstantiateContractAmino {
-  /** Authority is the address of the governance account. */
-  authority: string;
-  /** WASMByteCode can be raw or gzip compressed */
-  wasm_byte_code: string;
-  /** InstantiatePermission to apply on contract creation, optional */
-  instantiate_permission?: AccessConfigAmino;
-  /**
-   * UnpinCode code on upload, optional. As default the uploaded contract is
-   * pinned to cache.
-   */
-  unpin_code: boolean;
-  /** Admin is an optional address that can execute migrations */
-  admin: string;
-  /** Label is optional metadata to be stored with a constract instance. */
-  label: string;
-  /** Msg json encoded message to be passed to the contract on instantiation */
-  msg: Uint8Array;
-  /**
-   * Funds coins that are transferred from the authority account to the contract
-   * on instantiation
-   */
-  funds: CoinAmino[];
-  /** Source is the URL where the code is hosted */
-  source: string;
-  /**
-   * Builder is the docker image used to build the code deterministically, used
-   * for smart contract verification
-   */
-  builder: string;
-  /**
-   * CodeHash is the SHA256 sum of the code outputted by builder, used for smart
-   * contract verification
-   */
-  code_hash: Uint8Array;
-}
-export interface MsgStoreAndInstantiateContractAminoMsg {
-  type: "wasm/MsgStoreAndInstantiateContract";
-  value: MsgStoreAndInstantiateContractAmino;
-}
-/**
- * MsgStoreAndInstantiateContract is the MsgStoreAndInstantiateContract
- * request type.
- *
- * Since: 0.40
- */
-export interface MsgStoreAndInstantiateContractSDKType {
-  authority: string;
-  wasm_byte_code: Uint8Array;
-  instantiate_permission?: AccessConfigSDKType;
-  unpin_code: boolean;
-  admin: string;
-  label: string;
-  msg: Uint8Array;
-  funds: CoinSDKType[];
-  source: string;
-  builder: string;
-  code_hash: Uint8Array;
-}
-/**
- * MsgStoreAndInstantiateContractResponse defines the response structure
- * for executing a MsgStoreAndInstantiateContract message.
- *
- * Since: 0.40
- */
-export interface MsgStoreAndInstantiateContractResponse {
-  /** Address is the bech32 address of the new contract instance. */
-  address: string;
-  /** Data contains bytes to returned from the contract */
-  data: Uint8Array;
-}
-export interface MsgStoreAndInstantiateContractResponseProtoMsg {
-  typeUrl: "/cosmwasm.wasm.v1.MsgStoreAndInstantiateContractResponse";
-  value: Uint8Array;
-}
-/**
- * MsgStoreAndInstantiateContractResponse defines the response structure
- * for executing a MsgStoreAndInstantiateContract message.
- *
- * Since: 0.40
- */
-export interface MsgStoreAndInstantiateContractResponseAmino {
-  /** Address is the bech32 address of the new contract instance. */
-  address: string;
-  /** Data contains bytes to returned from the contract */
-  data: Uint8Array;
-}
-export interface MsgStoreAndInstantiateContractResponseAminoMsg {
-  type: "wasm/MsgStoreAndInstantiateContractResponse";
-  value: MsgStoreAndInstantiateContractResponseAmino;
-}
-/**
- * MsgStoreAndInstantiateContractResponse defines the response structure
- * for executing a MsgStoreAndInstantiateContract message.
- *
- * Since: 0.40
- */
-export interface MsgStoreAndInstantiateContractResponseSDKType {
-  address: string;
-  data: Uint8Array;
-}
 function createBaseMsgStoreCode(): MsgStoreCode {
   return {
     sender: "",
@@ -1292,103 +839,6 @@ export const MsgInstantiateContract = {
     };
   },
 };
-function createBaseMsgInstantiateContractResponse(): MsgInstantiateContractResponse {
-  return {
-    address: "",
-    data: new Uint8Array(),
-  };
-}
-export const MsgInstantiateContractResponse = {
-  typeUrl: "/cosmwasm.wasm.v1.MsgInstantiateContractResponse",
-  encode(
-    message: MsgInstantiateContractResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (message.address !== "") {
-      writer.uint32(10).string(message.address);
-    }
-    if (message.data.length !== 0) {
-      writer.uint32(18).bytes(message.data);
-    }
-    return writer;
-  },
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number
-  ): MsgInstantiateContractResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgInstantiateContractResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.address = reader.string();
-          break;
-        case 2:
-          message.data = reader.bytes();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromPartial(
-    object: Partial<MsgInstantiateContractResponse>
-  ): MsgInstantiateContractResponse {
-    const message = createBaseMsgInstantiateContractResponse();
-    message.address = object.address ?? "";
-    message.data = object.data ?? new Uint8Array();
-    return message;
-  },
-  fromAmino(
-    object: MsgInstantiateContractResponseAmino
-  ): MsgInstantiateContractResponse {
-    return {
-      address: object.address,
-      data: object.data,
-    };
-  },
-  toAmino(
-    message: MsgInstantiateContractResponse
-  ): MsgInstantiateContractResponseAmino {
-    const obj: any = {};
-    obj.address = message.address;
-    obj.data = message.data;
-    return obj;
-  },
-  fromAminoMsg(
-    object: MsgInstantiateContractResponseAminoMsg
-  ): MsgInstantiateContractResponse {
-    return MsgInstantiateContractResponse.fromAmino(object.value);
-  },
-  toAminoMsg(
-    message: MsgInstantiateContractResponse
-  ): MsgInstantiateContractResponseAminoMsg {
-    return {
-      type: "wasm/MsgInstantiateContractResponse",
-      value: MsgInstantiateContractResponse.toAmino(message),
-    };
-  },
-  fromProtoMsg(
-    message: MsgInstantiateContractResponseProtoMsg
-  ): MsgInstantiateContractResponse {
-    return MsgInstantiateContractResponse.decode(message.value);
-  },
-  toProto(message: MsgInstantiateContractResponse): Uint8Array {
-    return MsgInstantiateContractResponse.encode(message).finish();
-  },
-  toProtoMsg(
-    message: MsgInstantiateContractResponse
-  ): MsgInstantiateContractResponseProtoMsg {
-    return {
-      typeUrl: "/cosmwasm.wasm.v1.MsgInstantiateContractResponse",
-      value: MsgInstantiateContractResponse.encode(message).finish(),
-    };
-  },
-};
 function createBaseMsgInstantiateContract2(): MsgInstantiateContract2 {
   return {
     sender: "",
@@ -1548,6 +998,103 @@ export const MsgInstantiateContract2 = {
     return {
       typeUrl: "/cosmwasm.wasm.v1.MsgInstantiateContract2",
       value: MsgInstantiateContract2.encode(message).finish(),
+    };
+  },
+};
+function createBaseMsgInstantiateContractResponse(): MsgInstantiateContractResponse {
+  return {
+    address: "",
+    data: new Uint8Array(),
+  };
+}
+export const MsgInstantiateContractResponse = {
+  typeUrl: "/cosmwasm.wasm.v1.MsgInstantiateContractResponse",
+  encode(
+    message: MsgInstantiateContractResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.address !== "") {
+      writer.uint32(10).string(message.address);
+    }
+    if (message.data.length !== 0) {
+      writer.uint32(18).bytes(message.data);
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): MsgInstantiateContractResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgInstantiateContractResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.address = reader.string();
+          break;
+        case 2:
+          message.data = reader.bytes();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<MsgInstantiateContractResponse>
+  ): MsgInstantiateContractResponse {
+    const message = createBaseMsgInstantiateContractResponse();
+    message.address = object.address ?? "";
+    message.data = object.data ?? new Uint8Array();
+    return message;
+  },
+  fromAmino(
+    object: MsgInstantiateContractResponseAmino
+  ): MsgInstantiateContractResponse {
+    return {
+      address: object.address,
+      data: object.data,
+    };
+  },
+  toAmino(
+    message: MsgInstantiateContractResponse
+  ): MsgInstantiateContractResponseAmino {
+    const obj: any = {};
+    obj.address = message.address;
+    obj.data = message.data;
+    return obj;
+  },
+  fromAminoMsg(
+    object: MsgInstantiateContractResponseAminoMsg
+  ): MsgInstantiateContractResponse {
+    return MsgInstantiateContractResponse.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: MsgInstantiateContractResponse
+  ): MsgInstantiateContractResponseAminoMsg {
+    return {
+      type: "wasm/MsgInstantiateContractResponse",
+      value: MsgInstantiateContractResponse.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: MsgInstantiateContractResponseProtoMsg
+  ): MsgInstantiateContractResponse {
+    return MsgInstantiateContractResponse.decode(message.value);
+  },
+  toProto(message: MsgInstantiateContractResponse): Uint8Array {
+    return MsgInstantiateContractResponse.encode(message).finish();
+  },
+  toProtoMsg(
+    message: MsgInstantiateContractResponse
+  ): MsgInstantiateContractResponseProtoMsg {
+    return {
+      typeUrl: "/cosmwasm.wasm.v1.MsgInstantiateContractResponse",
+      value: MsgInstantiateContractResponse.encode(message).finish(),
     };
   },
 };
@@ -2521,946 +2068,6 @@ export const MsgUpdateInstantiateConfigResponse = {
     return {
       typeUrl: "/cosmwasm.wasm.v1.MsgUpdateInstantiateConfigResponse",
       value: MsgUpdateInstantiateConfigResponse.encode(message).finish(),
-    };
-  },
-};
-function createBaseMsgUpdateParams(): MsgUpdateParams {
-  return {
-    authority: "",
-    params: undefined,
-  };
-}
-export const MsgUpdateParams = {
-  typeUrl: "/cosmwasm.wasm.v1.MsgUpdateParams",
-  encode(
-    message: MsgUpdateParams,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (message.authority !== "") {
-      writer.uint32(10).string(message.authority);
-    }
-    if (message.params !== undefined) {
-      Params.encode(message.params, writer.uint32(18).fork()).ldelim();
-    }
-    return writer;
-  },
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateParams {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgUpdateParams();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.authority = reader.string();
-          break;
-        case 2:
-          message.params = Params.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromPartial(object: Partial<MsgUpdateParams>): MsgUpdateParams {
-    const message = createBaseMsgUpdateParams();
-    message.authority = object.authority ?? "";
-    message.params =
-      object.params !== undefined && object.params !== null
-        ? Params.fromPartial(object.params)
-        : undefined;
-    return message;
-  },
-  fromAmino(object: MsgUpdateParamsAmino): MsgUpdateParams {
-    return {
-      authority: object.authority,
-      params: object?.params ? Params.fromAmino(object.params) : undefined,
-    };
-  },
-  toAmino(message: MsgUpdateParams): MsgUpdateParamsAmino {
-    const obj: any = {};
-    obj.authority = message.authority;
-    obj.params = message.params ? Params.toAmino(message.params) : undefined;
-    return obj;
-  },
-  fromAminoMsg(object: MsgUpdateParamsAminoMsg): MsgUpdateParams {
-    return MsgUpdateParams.fromAmino(object.value);
-  },
-  toAminoMsg(message: MsgUpdateParams): MsgUpdateParamsAminoMsg {
-    return {
-      type: "wasm/MsgUpdateParams",
-      value: MsgUpdateParams.toAmino(message),
-    };
-  },
-  fromProtoMsg(message: MsgUpdateParamsProtoMsg): MsgUpdateParams {
-    return MsgUpdateParams.decode(message.value);
-  },
-  toProto(message: MsgUpdateParams): Uint8Array {
-    return MsgUpdateParams.encode(message).finish();
-  },
-  toProtoMsg(message: MsgUpdateParams): MsgUpdateParamsProtoMsg {
-    return {
-      typeUrl: "/cosmwasm.wasm.v1.MsgUpdateParams",
-      value: MsgUpdateParams.encode(message).finish(),
-    };
-  },
-};
-function createBaseMsgUpdateParamsResponse(): MsgUpdateParamsResponse {
-  return {};
-}
-export const MsgUpdateParamsResponse = {
-  typeUrl: "/cosmwasm.wasm.v1.MsgUpdateParamsResponse",
-  encode(
-    _: MsgUpdateParamsResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    return writer;
-  },
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number
-  ): MsgUpdateParamsResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgUpdateParamsResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromPartial(_: Partial<MsgUpdateParamsResponse>): MsgUpdateParamsResponse {
-    const message = createBaseMsgUpdateParamsResponse();
-    return message;
-  },
-  fromAmino(_: MsgUpdateParamsResponseAmino): MsgUpdateParamsResponse {
-    return {};
-  },
-  toAmino(_: MsgUpdateParamsResponse): MsgUpdateParamsResponseAmino {
-    const obj: any = {};
-    return obj;
-  },
-  fromAminoMsg(
-    object: MsgUpdateParamsResponseAminoMsg
-  ): MsgUpdateParamsResponse {
-    return MsgUpdateParamsResponse.fromAmino(object.value);
-  },
-  toAminoMsg(
-    message: MsgUpdateParamsResponse
-  ): MsgUpdateParamsResponseAminoMsg {
-    return {
-      type: "wasm/MsgUpdateParamsResponse",
-      value: MsgUpdateParamsResponse.toAmino(message),
-    };
-  },
-  fromProtoMsg(
-    message: MsgUpdateParamsResponseProtoMsg
-  ): MsgUpdateParamsResponse {
-    return MsgUpdateParamsResponse.decode(message.value);
-  },
-  toProto(message: MsgUpdateParamsResponse): Uint8Array {
-    return MsgUpdateParamsResponse.encode(message).finish();
-  },
-  toProtoMsg(
-    message: MsgUpdateParamsResponse
-  ): MsgUpdateParamsResponseProtoMsg {
-    return {
-      typeUrl: "/cosmwasm.wasm.v1.MsgUpdateParamsResponse",
-      value: MsgUpdateParamsResponse.encode(message).finish(),
-    };
-  },
-};
-function createBaseMsgSudoContract(): MsgSudoContract {
-  return {
-    authority: "",
-    contract: "",
-    msg: new Uint8Array(),
-  };
-}
-export const MsgSudoContract = {
-  typeUrl: "/cosmwasm.wasm.v1.MsgSudoContract",
-  encode(
-    message: MsgSudoContract,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (message.authority !== "") {
-      writer.uint32(10).string(message.authority);
-    }
-    if (message.contract !== "") {
-      writer.uint32(18).string(message.contract);
-    }
-    if (message.msg.length !== 0) {
-      writer.uint32(26).bytes(message.msg);
-    }
-    return writer;
-  },
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgSudoContract {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgSudoContract();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.authority = reader.string();
-          break;
-        case 2:
-          message.contract = reader.string();
-          break;
-        case 3:
-          message.msg = reader.bytes();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromPartial(object: Partial<MsgSudoContract>): MsgSudoContract {
-    const message = createBaseMsgSudoContract();
-    message.authority = object.authority ?? "";
-    message.contract = object.contract ?? "";
-    message.msg = object.msg ?? new Uint8Array();
-    return message;
-  },
-  fromAmino(object: MsgSudoContractAmino): MsgSudoContract {
-    return {
-      authority: object.authority,
-      contract: object.contract,
-      msg: toUtf8(JSON.stringify(object.msg)),
-    };
-  },
-  toAmino(message: MsgSudoContract): MsgSudoContractAmino {
-    const obj: any = {};
-    obj.authority = message.authority;
-    obj.contract = message.contract;
-    obj.msg = message.msg ? JSON.parse(fromUtf8(message.msg)) : undefined;
-    return obj;
-  },
-  fromAminoMsg(object: MsgSudoContractAminoMsg): MsgSudoContract {
-    return MsgSudoContract.fromAmino(object.value);
-  },
-  toAminoMsg(message: MsgSudoContract): MsgSudoContractAminoMsg {
-    return {
-      type: "wasm/MsgSudoContract",
-      value: MsgSudoContract.toAmino(message),
-    };
-  },
-  fromProtoMsg(message: MsgSudoContractProtoMsg): MsgSudoContract {
-    return MsgSudoContract.decode(message.value);
-  },
-  toProto(message: MsgSudoContract): Uint8Array {
-    return MsgSudoContract.encode(message).finish();
-  },
-  toProtoMsg(message: MsgSudoContract): MsgSudoContractProtoMsg {
-    return {
-      typeUrl: "/cosmwasm.wasm.v1.MsgSudoContract",
-      value: MsgSudoContract.encode(message).finish(),
-    };
-  },
-};
-function createBaseMsgSudoContractResponse(): MsgSudoContractResponse {
-  return {
-    data: new Uint8Array(),
-  };
-}
-export const MsgSudoContractResponse = {
-  typeUrl: "/cosmwasm.wasm.v1.MsgSudoContractResponse",
-  encode(
-    message: MsgSudoContractResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (message.data.length !== 0) {
-      writer.uint32(10).bytes(message.data);
-    }
-    return writer;
-  },
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number
-  ): MsgSudoContractResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgSudoContractResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.data = reader.bytes();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromPartial(
-    object: Partial<MsgSudoContractResponse>
-  ): MsgSudoContractResponse {
-    const message = createBaseMsgSudoContractResponse();
-    message.data = object.data ?? new Uint8Array();
-    return message;
-  },
-  fromAmino(object: MsgSudoContractResponseAmino): MsgSudoContractResponse {
-    return {
-      data: object.data,
-    };
-  },
-  toAmino(message: MsgSudoContractResponse): MsgSudoContractResponseAmino {
-    const obj: any = {};
-    obj.data = message.data;
-    return obj;
-  },
-  fromAminoMsg(
-    object: MsgSudoContractResponseAminoMsg
-  ): MsgSudoContractResponse {
-    return MsgSudoContractResponse.fromAmino(object.value);
-  },
-  toAminoMsg(
-    message: MsgSudoContractResponse
-  ): MsgSudoContractResponseAminoMsg {
-    return {
-      type: "wasm/MsgSudoContractResponse",
-      value: MsgSudoContractResponse.toAmino(message),
-    };
-  },
-  fromProtoMsg(
-    message: MsgSudoContractResponseProtoMsg
-  ): MsgSudoContractResponse {
-    return MsgSudoContractResponse.decode(message.value);
-  },
-  toProto(message: MsgSudoContractResponse): Uint8Array {
-    return MsgSudoContractResponse.encode(message).finish();
-  },
-  toProtoMsg(
-    message: MsgSudoContractResponse
-  ): MsgSudoContractResponseProtoMsg {
-    return {
-      typeUrl: "/cosmwasm.wasm.v1.MsgSudoContractResponse",
-      value: MsgSudoContractResponse.encode(message).finish(),
-    };
-  },
-};
-function createBaseMsgPinCodes(): MsgPinCodes {
-  return {
-    authority: "",
-    codeIds: [],
-  };
-}
-export const MsgPinCodes = {
-  typeUrl: "/cosmwasm.wasm.v1.MsgPinCodes",
-  encode(
-    message: MsgPinCodes,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (message.authority !== "") {
-      writer.uint32(10).string(message.authority);
-    }
-    writer.uint32(18).fork();
-    for (const v of message.codeIds) {
-      writer.uint64(v);
-    }
-    writer.ldelim();
-    return writer;
-  },
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgPinCodes {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgPinCodes();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.authority = reader.string();
-          break;
-        case 2:
-          if ((tag & 7) === 2) {
-            const end2 = reader.uint32() + reader.pos;
-            while (reader.pos < end2) {
-              message.codeIds.push(reader.uint64() as Long);
-            }
-          } else {
-            message.codeIds.push(reader.uint64() as Long);
-          }
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromPartial(object: Partial<MsgPinCodes>): MsgPinCodes {
-    const message = createBaseMsgPinCodes();
-    message.authority = object.authority ?? "";
-    message.codeIds = object.codeIds?.map((e) => Long.fromValue(e)) || [];
-    return message;
-  },
-  fromAmino(object: MsgPinCodesAmino): MsgPinCodes {
-    return {
-      authority: object.authority,
-      codeIds: Array.isArray(object?.code_ids)
-        ? object.code_ids.map((e: any) => e)
-        : [],
-    };
-  },
-  toAmino(message: MsgPinCodes): MsgPinCodesAmino {
-    const obj: any = {};
-    obj.authority = message.authority;
-    if (message.codeIds) {
-      obj.code_ids = message.codeIds.map((e) => e);
-    } else {
-      obj.code_ids = [];
-    }
-    return obj;
-  },
-  fromAminoMsg(object: MsgPinCodesAminoMsg): MsgPinCodes {
-    return MsgPinCodes.fromAmino(object.value);
-  },
-  toAminoMsg(message: MsgPinCodes): MsgPinCodesAminoMsg {
-    return {
-      type: "wasm/MsgPinCodes",
-      value: MsgPinCodes.toAmino(message),
-    };
-  },
-  fromProtoMsg(message: MsgPinCodesProtoMsg): MsgPinCodes {
-    return MsgPinCodes.decode(message.value);
-  },
-  toProto(message: MsgPinCodes): Uint8Array {
-    return MsgPinCodes.encode(message).finish();
-  },
-  toProtoMsg(message: MsgPinCodes): MsgPinCodesProtoMsg {
-    return {
-      typeUrl: "/cosmwasm.wasm.v1.MsgPinCodes",
-      value: MsgPinCodes.encode(message).finish(),
-    };
-  },
-};
-function createBaseMsgPinCodesResponse(): MsgPinCodesResponse {
-  return {};
-}
-export const MsgPinCodesResponse = {
-  typeUrl: "/cosmwasm.wasm.v1.MsgPinCodesResponse",
-  encode(
-    _: MsgPinCodesResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    return writer;
-  },
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgPinCodesResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgPinCodesResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromPartial(_: Partial<MsgPinCodesResponse>): MsgPinCodesResponse {
-    const message = createBaseMsgPinCodesResponse();
-    return message;
-  },
-  fromAmino(_: MsgPinCodesResponseAmino): MsgPinCodesResponse {
-    return {};
-  },
-  toAmino(_: MsgPinCodesResponse): MsgPinCodesResponseAmino {
-    const obj: any = {};
-    return obj;
-  },
-  fromAminoMsg(object: MsgPinCodesResponseAminoMsg): MsgPinCodesResponse {
-    return MsgPinCodesResponse.fromAmino(object.value);
-  },
-  toAminoMsg(message: MsgPinCodesResponse): MsgPinCodesResponseAminoMsg {
-    return {
-      type: "wasm/MsgPinCodesResponse",
-      value: MsgPinCodesResponse.toAmino(message),
-    };
-  },
-  fromProtoMsg(message: MsgPinCodesResponseProtoMsg): MsgPinCodesResponse {
-    return MsgPinCodesResponse.decode(message.value);
-  },
-  toProto(message: MsgPinCodesResponse): Uint8Array {
-    return MsgPinCodesResponse.encode(message).finish();
-  },
-  toProtoMsg(message: MsgPinCodesResponse): MsgPinCodesResponseProtoMsg {
-    return {
-      typeUrl: "/cosmwasm.wasm.v1.MsgPinCodesResponse",
-      value: MsgPinCodesResponse.encode(message).finish(),
-    };
-  },
-};
-function createBaseMsgUnpinCodes(): MsgUnpinCodes {
-  return {
-    authority: "",
-    codeIds: [],
-  };
-}
-export const MsgUnpinCodes = {
-  typeUrl: "/cosmwasm.wasm.v1.MsgUnpinCodes",
-  encode(
-    message: MsgUnpinCodes,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (message.authority !== "") {
-      writer.uint32(10).string(message.authority);
-    }
-    writer.uint32(18).fork();
-    for (const v of message.codeIds) {
-      writer.uint64(v);
-    }
-    writer.ldelim();
-    return writer;
-  },
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUnpinCodes {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgUnpinCodes();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.authority = reader.string();
-          break;
-        case 2:
-          if ((tag & 7) === 2) {
-            const end2 = reader.uint32() + reader.pos;
-            while (reader.pos < end2) {
-              message.codeIds.push(reader.uint64() as Long);
-            }
-          } else {
-            message.codeIds.push(reader.uint64() as Long);
-          }
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromPartial(object: Partial<MsgUnpinCodes>): MsgUnpinCodes {
-    const message = createBaseMsgUnpinCodes();
-    message.authority = object.authority ?? "";
-    message.codeIds = object.codeIds?.map((e) => Long.fromValue(e)) || [];
-    return message;
-  },
-  fromAmino(object: MsgUnpinCodesAmino): MsgUnpinCodes {
-    return {
-      authority: object.authority,
-      codeIds: Array.isArray(object?.code_ids)
-        ? object.code_ids.map((e: any) => e)
-        : [],
-    };
-  },
-  toAmino(message: MsgUnpinCodes): MsgUnpinCodesAmino {
-    const obj: any = {};
-    obj.authority = message.authority;
-    if (message.codeIds) {
-      obj.code_ids = message.codeIds.map((e) => e);
-    } else {
-      obj.code_ids = [];
-    }
-    return obj;
-  },
-  fromAminoMsg(object: MsgUnpinCodesAminoMsg): MsgUnpinCodes {
-    return MsgUnpinCodes.fromAmino(object.value);
-  },
-  toAminoMsg(message: MsgUnpinCodes): MsgUnpinCodesAminoMsg {
-    return {
-      type: "wasm/MsgUnpinCodes",
-      value: MsgUnpinCodes.toAmino(message),
-    };
-  },
-  fromProtoMsg(message: MsgUnpinCodesProtoMsg): MsgUnpinCodes {
-    return MsgUnpinCodes.decode(message.value);
-  },
-  toProto(message: MsgUnpinCodes): Uint8Array {
-    return MsgUnpinCodes.encode(message).finish();
-  },
-  toProtoMsg(message: MsgUnpinCodes): MsgUnpinCodesProtoMsg {
-    return {
-      typeUrl: "/cosmwasm.wasm.v1.MsgUnpinCodes",
-      value: MsgUnpinCodes.encode(message).finish(),
-    };
-  },
-};
-function createBaseMsgUnpinCodesResponse(): MsgUnpinCodesResponse {
-  return {};
-}
-export const MsgUnpinCodesResponse = {
-  typeUrl: "/cosmwasm.wasm.v1.MsgUnpinCodesResponse",
-  encode(
-    _: MsgUnpinCodesResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    return writer;
-  },
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number
-  ): MsgUnpinCodesResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgUnpinCodesResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromPartial(_: Partial<MsgUnpinCodesResponse>): MsgUnpinCodesResponse {
-    const message = createBaseMsgUnpinCodesResponse();
-    return message;
-  },
-  fromAmino(_: MsgUnpinCodesResponseAmino): MsgUnpinCodesResponse {
-    return {};
-  },
-  toAmino(_: MsgUnpinCodesResponse): MsgUnpinCodesResponseAmino {
-    const obj: any = {};
-    return obj;
-  },
-  fromAminoMsg(object: MsgUnpinCodesResponseAminoMsg): MsgUnpinCodesResponse {
-    return MsgUnpinCodesResponse.fromAmino(object.value);
-  },
-  toAminoMsg(message: MsgUnpinCodesResponse): MsgUnpinCodesResponseAminoMsg {
-    return {
-      type: "wasm/MsgUnpinCodesResponse",
-      value: MsgUnpinCodesResponse.toAmino(message),
-    };
-  },
-  fromProtoMsg(message: MsgUnpinCodesResponseProtoMsg): MsgUnpinCodesResponse {
-    return MsgUnpinCodesResponse.decode(message.value);
-  },
-  toProto(message: MsgUnpinCodesResponse): Uint8Array {
-    return MsgUnpinCodesResponse.encode(message).finish();
-  },
-  toProtoMsg(message: MsgUnpinCodesResponse): MsgUnpinCodesResponseProtoMsg {
-    return {
-      typeUrl: "/cosmwasm.wasm.v1.MsgUnpinCodesResponse",
-      value: MsgUnpinCodesResponse.encode(message).finish(),
-    };
-  },
-};
-function createBaseMsgStoreAndInstantiateContract(): MsgStoreAndInstantiateContract {
-  return {
-    authority: "",
-    wasmByteCode: new Uint8Array(),
-    instantiatePermission: undefined,
-    unpinCode: false,
-    admin: "",
-    label: "",
-    msg: new Uint8Array(),
-    funds: [],
-    source: "",
-    builder: "",
-    codeHash: new Uint8Array(),
-  };
-}
-export const MsgStoreAndInstantiateContract = {
-  typeUrl: "/cosmwasm.wasm.v1.MsgStoreAndInstantiateContract",
-  encode(
-    message: MsgStoreAndInstantiateContract,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (message.authority !== "") {
-      writer.uint32(10).string(message.authority);
-    }
-    if (message.wasmByteCode.length !== 0) {
-      writer.uint32(26).bytes(message.wasmByteCode);
-    }
-    if (message.instantiatePermission !== undefined) {
-      AccessConfig.encode(
-        message.instantiatePermission,
-        writer.uint32(34).fork()
-      ).ldelim();
-    }
-    if (message.unpinCode === true) {
-      writer.uint32(40).bool(message.unpinCode);
-    }
-    if (message.admin !== "") {
-      writer.uint32(50).string(message.admin);
-    }
-    if (message.label !== "") {
-      writer.uint32(58).string(message.label);
-    }
-    if (message.msg.length !== 0) {
-      writer.uint32(66).bytes(message.msg);
-    }
-    for (const v of message.funds) {
-      Coin.encode(v!, writer.uint32(74).fork()).ldelim();
-    }
-    if (message.source !== "") {
-      writer.uint32(82).string(message.source);
-    }
-    if (message.builder !== "") {
-      writer.uint32(90).string(message.builder);
-    }
-    if (message.codeHash.length !== 0) {
-      writer.uint32(98).bytes(message.codeHash);
-    }
-    return writer;
-  },
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number
-  ): MsgStoreAndInstantiateContract {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgStoreAndInstantiateContract();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.authority = reader.string();
-          break;
-        case 3:
-          message.wasmByteCode = reader.bytes();
-          break;
-        case 4:
-          message.instantiatePermission = AccessConfig.decode(
-            reader,
-            reader.uint32()
-          );
-          break;
-        case 5:
-          message.unpinCode = reader.bool();
-          break;
-        case 6:
-          message.admin = reader.string();
-          break;
-        case 7:
-          message.label = reader.string();
-          break;
-        case 8:
-          message.msg = reader.bytes();
-          break;
-        case 9:
-          message.funds.push(Coin.decode(reader, reader.uint32()));
-          break;
-        case 10:
-          message.source = reader.string();
-          break;
-        case 11:
-          message.builder = reader.string();
-          break;
-        case 12:
-          message.codeHash = reader.bytes();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromPartial(
-    object: Partial<MsgStoreAndInstantiateContract>
-  ): MsgStoreAndInstantiateContract {
-    const message = createBaseMsgStoreAndInstantiateContract();
-    message.authority = object.authority ?? "";
-    message.wasmByteCode = object.wasmByteCode ?? new Uint8Array();
-    message.instantiatePermission =
-      object.instantiatePermission !== undefined &&
-      object.instantiatePermission !== null
-        ? AccessConfig.fromPartial(object.instantiatePermission)
-        : undefined;
-    message.unpinCode = object.unpinCode ?? false;
-    message.admin = object.admin ?? "";
-    message.label = object.label ?? "";
-    message.msg = object.msg ?? new Uint8Array();
-    message.funds = object.funds?.map((e) => Coin.fromPartial(e)) || [];
-    message.source = object.source ?? "";
-    message.builder = object.builder ?? "";
-    message.codeHash = object.codeHash ?? new Uint8Array();
-    return message;
-  },
-  fromAmino(
-    object: MsgStoreAndInstantiateContractAmino
-  ): MsgStoreAndInstantiateContract {
-    return {
-      authority: object.authority,
-      wasmByteCode: fromBase64(object.wasm_byte_code),
-      instantiatePermission: object?.instantiate_permission
-        ? AccessConfig.fromAmino(object.instantiate_permission)
-        : undefined,
-      unpinCode: object.unpin_code,
-      admin: object.admin,
-      label: object.label,
-      msg: toUtf8(JSON.stringify(object.msg)),
-      funds: Array.isArray(object?.funds)
-        ? object.funds.map((e: any) => Coin.fromAmino(e))
-        : [],
-      source: object.source,
-      builder: object.builder,
-      codeHash: object.code_hash,
-    };
-  },
-  toAmino(
-    message: MsgStoreAndInstantiateContract
-  ): MsgStoreAndInstantiateContractAmino {
-    const obj: any = {};
-    obj.authority = message.authority;
-    obj.wasm_byte_code = message.wasmByteCode
-      ? toBase64(message.wasmByteCode)
-      : undefined;
-    obj.instantiate_permission = message.instantiatePermission
-      ? AccessConfig.toAmino(message.instantiatePermission)
-      : undefined;
-    obj.unpin_code = message.unpinCode;
-    obj.admin = message.admin;
-    obj.label = message.label;
-    obj.msg = message.msg ? JSON.parse(fromUtf8(message.msg)) : undefined;
-    if (message.funds) {
-      obj.funds = message.funds.map((e) => (e ? Coin.toAmino(e) : undefined));
-    } else {
-      obj.funds = [];
-    }
-    obj.source = message.source;
-    obj.builder = message.builder;
-    obj.code_hash = message.codeHash;
-    return obj;
-  },
-  fromAminoMsg(
-    object: MsgStoreAndInstantiateContractAminoMsg
-  ): MsgStoreAndInstantiateContract {
-    return MsgStoreAndInstantiateContract.fromAmino(object.value);
-  },
-  toAminoMsg(
-    message: MsgStoreAndInstantiateContract
-  ): MsgStoreAndInstantiateContractAminoMsg {
-    return {
-      type: "wasm/MsgStoreAndInstantiateContract",
-      value: MsgStoreAndInstantiateContract.toAmino(message),
-    };
-  },
-  fromProtoMsg(
-    message: MsgStoreAndInstantiateContractProtoMsg
-  ): MsgStoreAndInstantiateContract {
-    return MsgStoreAndInstantiateContract.decode(message.value);
-  },
-  toProto(message: MsgStoreAndInstantiateContract): Uint8Array {
-    return MsgStoreAndInstantiateContract.encode(message).finish();
-  },
-  toProtoMsg(
-    message: MsgStoreAndInstantiateContract
-  ): MsgStoreAndInstantiateContractProtoMsg {
-    return {
-      typeUrl: "/cosmwasm.wasm.v1.MsgStoreAndInstantiateContract",
-      value: MsgStoreAndInstantiateContract.encode(message).finish(),
-    };
-  },
-};
-function createBaseMsgStoreAndInstantiateContractResponse(): MsgStoreAndInstantiateContractResponse {
-  return {
-    address: "",
-    data: new Uint8Array(),
-  };
-}
-export const MsgStoreAndInstantiateContractResponse = {
-  typeUrl: "/cosmwasm.wasm.v1.MsgStoreAndInstantiateContractResponse",
-  encode(
-    message: MsgStoreAndInstantiateContractResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (message.address !== "") {
-      writer.uint32(10).string(message.address);
-    }
-    if (message.data.length !== 0) {
-      writer.uint32(18).bytes(message.data);
-    }
-    return writer;
-  },
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number
-  ): MsgStoreAndInstantiateContractResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgStoreAndInstantiateContractResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.address = reader.string();
-          break;
-        case 2:
-          message.data = reader.bytes();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromPartial(
-    object: Partial<MsgStoreAndInstantiateContractResponse>
-  ): MsgStoreAndInstantiateContractResponse {
-    const message = createBaseMsgStoreAndInstantiateContractResponse();
-    message.address = object.address ?? "";
-    message.data = object.data ?? new Uint8Array();
-    return message;
-  },
-  fromAmino(
-    object: MsgStoreAndInstantiateContractResponseAmino
-  ): MsgStoreAndInstantiateContractResponse {
-    return {
-      address: object.address,
-      data: object.data,
-    };
-  },
-  toAmino(
-    message: MsgStoreAndInstantiateContractResponse
-  ): MsgStoreAndInstantiateContractResponseAmino {
-    const obj: any = {};
-    obj.address = message.address;
-    obj.data = message.data;
-    return obj;
-  },
-  fromAminoMsg(
-    object: MsgStoreAndInstantiateContractResponseAminoMsg
-  ): MsgStoreAndInstantiateContractResponse {
-    return MsgStoreAndInstantiateContractResponse.fromAmino(object.value);
-  },
-  toAminoMsg(
-    message: MsgStoreAndInstantiateContractResponse
-  ): MsgStoreAndInstantiateContractResponseAminoMsg {
-    return {
-      type: "wasm/MsgStoreAndInstantiateContractResponse",
-      value: MsgStoreAndInstantiateContractResponse.toAmino(message),
-    };
-  },
-  fromProtoMsg(
-    message: MsgStoreAndInstantiateContractResponseProtoMsg
-  ): MsgStoreAndInstantiateContractResponse {
-    return MsgStoreAndInstantiateContractResponse.decode(message.value);
-  },
-  toProto(message: MsgStoreAndInstantiateContractResponse): Uint8Array {
-    return MsgStoreAndInstantiateContractResponse.encode(message).finish();
-  },
-  toProtoMsg(
-    message: MsgStoreAndInstantiateContractResponse
-  ): MsgStoreAndInstantiateContractResponseProtoMsg {
-    return {
-      typeUrl: "/cosmwasm.wasm.v1.MsgStoreAndInstantiateContractResponse",
-      value: MsgStoreAndInstantiateContractResponse.encode(message).finish(),
     };
   },
 };

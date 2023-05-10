@@ -5,14 +5,9 @@ import {
   MsgInstantiateContract,
   MsgInstantiateContract2,
   MsgMigrateContract,
-  MsgPinCodes,
-  MsgStoreAndInstantiateContract,
   MsgStoreCode,
-  MsgSudoContract,
-  MsgUnpinCodes,
   MsgUpdateAdmin,
   MsgUpdateInstantiateConfig,
-  MsgUpdateParams,
 } from "./tx";
 export const AminoConverter = {
   "/cosmwasm.wasm.v1.MsgStoreCode": {
@@ -54,30 +49,5 @@ export const AminoConverter = {
     aminoType: "wasm/MsgUpdateInstantiateConfig",
     toAmino: MsgUpdateInstantiateConfig.toAmino,
     fromAmino: MsgUpdateInstantiateConfig.fromAmino,
-  },
-  "/cosmwasm.wasm.v1.MsgUpdateParams": {
-    aminoType: "wasm/MsgUpdateParams",
-    toAmino: MsgUpdateParams.toAmino,
-    fromAmino: MsgUpdateParams.fromAmino,
-  },
-  "/cosmwasm.wasm.v1.MsgSudoContract": {
-    aminoType: "wasm/MsgSudoContract",
-    toAmino: MsgSudoContract.toAmino,
-    fromAmino: MsgSudoContract.fromAmino,
-  },
-  "/cosmwasm.wasm.v1.MsgPinCodes": {
-    aminoType: "wasm/MsgPinCodes",
-    toAmino: MsgPinCodes.toAmino,
-    fromAmino: MsgPinCodes.fromAmino,
-  },
-  "/cosmwasm.wasm.v1.MsgUnpinCodes": {
-    aminoType: "wasm/MsgUnpinCodes",
-    toAmino: MsgUnpinCodes.toAmino,
-    fromAmino: MsgUnpinCodes.fromAmino,
-  },
-  "/cosmwasm.wasm.v1.MsgStoreAndInstantiateContract": {
-    aminoType: "wasm/MsgStoreAndInstantiateContract",
-    toAmino: MsgStoreAndInstantiateContract.toAmino,
-    fromAmino: MsgStoreAndInstantiateContract.fromAmino,
   },
 };
