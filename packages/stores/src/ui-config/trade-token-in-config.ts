@@ -244,8 +244,14 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   /** Calculated spot price with amount of 1 token in for currently selected tokens. */
   @computed
   get expectedSpotPrice(): IntPretty {
+    // Use the spot price from the same quote based on the input amount
+    // as the spot price may change based on the input amount and it's routes
+    const quoteFromInputAmount = this._latestQuote;
+    const quoteFromSpotPrice = this._spotPriceQuote;
+    const quote = quoteFromInputAmount ?? quoteFromSpotPrice;
+
     return (
-      this._spotPriceQuote?.case({
+      quote?.case({
         fulfilled: (quote) => {
           return this.makePrettyQuote(quote)
             .beforeSpotPriceWithoutSwapFeeOutOverIn;
@@ -485,13 +491,21 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
       const sendCurrencyMinDenom = this.sendCurrency.coinMinimalDenom;
       const outCurrencyMinDenom = this.outCurrency.coinMinimalDenom;
+      const router = this.router;
 
-      if (!this.router) return;
+      // don't request a spot price if there's already a quote given an amount
+      const isQuoteLoading = this.isQuoteLoading;
+      const expectedSwapResult = this.expectedSwapResult;
+      const isQuoteFromAmount =
+        isQuoteLoading ||
+        (expectedSwapResult && !expectedSwapResult.amount.toDec().isZero());
+
+      if (isQuoteFromAmount || !router) return;
 
       // clear any prior reactions
       debounceGetSpotPrice.clear();
       debounceGetSpotPrice(
-        this.router,
+        router,
         {
           denom: sendCurrencyMinDenom,
           amount: oneWithDecimals,
