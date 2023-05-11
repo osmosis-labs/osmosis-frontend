@@ -36,6 +36,8 @@ export function getChainInfos(): (ChainInfoWithExplorer & Chain)[] {
       return {
         ...localChain,
         ...registryChain,
+        chain_name: registryChain?.chain_name ?? localChain.chainName,
+        chain_id: registryChain?.chain_id ?? localChain.chainId,
         peers: undefined,
         explorers: undefined,
         codebase: undefined,
