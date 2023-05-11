@@ -1,18 +1,18 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
-    "generate": {
+    "build": {
       "outputs": [
+        "build/**",
+        ".next/**",
+        "!.next/cache/**",
         "src/codegen/**",
+        "scripts/generated/**",
         "config/wallet-registry.ts",
         "config/wallet-assets.ts",
         "config/chain-infos.ts"
       ],
-      "dependsOn": ["^generate"]
-    },
-    "build": {
-      "outputs": ["build/**", ".next/**", "!.next/cache/**"],
-      "dependsOn": ["generate", "^build"]
+      "dependsOn": ["^build"]
     },
     "lint": {},
     "lint:fix": {},

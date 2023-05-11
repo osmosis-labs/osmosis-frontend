@@ -3,10 +3,9 @@
   "version": "4.0.0",
   "private": true,
   "scripts": {
-    "predev": "turbo generate",
-    "dev": "next dev",
+    "dev": "yarn generate && next dev",
     "clean": "rm -rf node_modules; rm -rf .next; rm config/chain-infos.ts",
-    "build": "next build",
+    "build": "yarn generate && next build",
     "analyze": "dotenv -v ANALYZE=true -- next build",
     "test": "jest --watch",
     "start": "next start",
