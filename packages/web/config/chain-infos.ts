@@ -99,8 +99,8 @@ const chainInfos = IS_TESTNET
         explorerUrlToTx: "https://explorer.theta-testnet.polypore.xyz/transactions/{txHash}",
       },
       {
-        rpc: "https://rpc.sandbox.ny.aksh.pw",
-        rest: "https://api.sandbox.ny.aksh.pw",
+        rpc: "https://rpc.sandbox-01.aksh.pw",
+        rest: "https://api.sandbox-01.aksh.pw",
         chainId: "sandbox",
         chainName: "Sandbox",
         bip44: {
@@ -125,7 +125,7 @@ const chainInfos = IS_TESTNET
           },
         ],
         features: ["ibc-transfer", "ibc-go"],
-        explorerUrlToTx: "https://explorer.sandbox.aksh.pw/akash/tx/{txHash}",
+        explorerUrlToTx: "https://explorer.sandbox-01.aksh.pw/akash/tx/{txHash}",
       },
       {
         rpc: "https://rpc.uni.junonetwork.io",
