@@ -21,7 +21,7 @@ async function generateChainInfo() {
       chainInfos,
       null,
       2
-    )} as (ChainInfoWithExplorer & Chain)[];
+    )} as (ChainInfoWithExplorer & Chain & { chainRegistryChainName: string })[];
   `;
 
   const prettierConfig = await prettier.resolveConfig("./");
