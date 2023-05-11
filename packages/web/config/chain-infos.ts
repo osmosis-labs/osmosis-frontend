@@ -1861,7 +1861,7 @@ const chainInfos = (
           coinMinimalDenom: "uctk",
           coinDecimals: 6,
           // coinGeckoId: "shentu",
-          //coinGeckoId: "pool:uctk",
+          coinGeckoId: "pool:uctk",
           coinImageUrl: "/tokens/ctk.svg",
           isStakeCurrency: true,
           isFeeCurrency: true,
