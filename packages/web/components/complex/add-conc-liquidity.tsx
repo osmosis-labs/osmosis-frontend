@@ -414,7 +414,7 @@ const AddConcLiqView: FunctionComponent<
 
   useEffect(() => {
     if (anchorAsset === "base") {
-      calculateQuoteDeposit(+baseDepositAmountIn.toString());
+      calculateQuoteDeposit(+baseDepositAmountIn.amount);
     }
   }, [
     rangeMin,
@@ -426,7 +426,7 @@ const AddConcLiqView: FunctionComponent<
 
   useEffect(() => {
     if (anchorAsset === "quote") {
-      calculateBaseDeposit(+quoteDepositAmountIn.toString());
+      calculateBaseDeposit(+quoteDepositAmountIn.amount);
     }
   }, [
     rangeMin,

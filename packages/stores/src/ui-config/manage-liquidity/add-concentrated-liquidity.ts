@@ -1,4 +1,4 @@
-import { TxChainSetter } from "@keplr-wallet/hooks";
+import { AmountConfig, TxChainSetter } from "@keplr-wallet/hooks";
 import {
   ChainGetter,
   IQueriesStore,
@@ -72,10 +72,10 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
    Used to get base and quote asset deposit for adding concentrated liquidity
    */
   @observable
-  protected _baseDepositAmountIn: Dec = new Dec(0);
+  protected _baseDepositAmountIn: AmountConfig;
 
   @observable
-  protected _quoteDepositAmountIn: Dec = new Dec(0);
+  protected _quoteDepositAmountIn: AmountConfig;
 
   constructor(
     protected readonly chainGetter: ChainGetter,
@@ -91,7 +91,48 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     this._pool = pool;
     this._sender = sender;
 
+    this._baseDepositAmountIn = new AmountConfig(
+      chainGetter,
+      queriesStore,
+      this.chainId,
+      this.sender,
+      undefined
+    );
+
+    this._quoteDepositAmountIn = new AmountConfig(
+      chainGetter,
+      queriesStore,
+      this.chainId,
+      this.sender,
+      undefined
+    );
+
+    const [baseDenom, quoteDenom] = pool.poolAssetDenoms;
+    const baseCurrency = chainGetter
+      .getChain(this.chainId)
+      .findCurrency(baseDenom);
+    const quoteCurrency = chainGetter
+      .getChain(this.chainId)
+      .findCurrency(quoteDenom);
+
+    this._baseDepositAmountIn.setSendCurrency(baseCurrency);
+    this._quoteDepositAmountIn.setSendCurrency(quoteCurrency);
+
     makeObservable(this);
+  }
+
+  setChain(chainId: string) {
+    super.setChain(chainId);
+    const [baseDenom, quoteDenom] = this.pool.poolAssetDenoms;
+    const baseCurrency = this.chainGetter
+      .getChain(this.chainId)
+      .findCurrency(baseDenom);
+    const quoteCurrency = this.chainGetter
+      .getChain(this.chainId)
+      .findCurrency(quoteDenom);
+
+    this._baseDepositAmountIn.setSendCurrency(baseCurrency);
+    this._quoteDepositAmountIn.setSendCurrency(quoteCurrency);
   }
 
   get pool(): ConcentratedLiquidityPool {
@@ -169,21 +210,21 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   @action
   setBaseDepositAmountIn = (amount: Dec | number) => {
-    this._baseDepositAmountIn =
-      typeof amount === "number" ? new Dec(amount) : amount;
+    const amountDec = typeof amount === "number" ? new Dec(amount) : amount;
+    this._baseDepositAmountIn.setAmount(amountDec.toString());
   };
 
   @action
   setQuoteDepositAmountIn = (amount: Dec | number) => {
-    this._quoteDepositAmountIn =
-      typeof amount === "number" ? new Dec(amount) : amount;
+    const amountDec = typeof amount === "number" ? new Dec(amount) : amount;
+    this._quoteDepositAmountIn.setAmount(amountDec.toString());
   };
 
-  get baseDepositAmountIn(): Dec {
+  get baseDepositAmountIn(): AmountConfig {
     return this._baseDepositAmountIn;
   }
 
-  get quoteDepositAmountIn(): Dec {
+  get quoteDepositAmountIn(): AmountConfig {
     return this._quoteDepositAmountIn;
   }
 
