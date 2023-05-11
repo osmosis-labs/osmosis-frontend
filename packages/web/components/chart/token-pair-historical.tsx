@@ -17,18 +17,19 @@ import React, { FunctionComponent } from "react";
 import { theme } from "~/tailwind.config";
 
 const TokenPairHistoricalChart: FunctionComponent<{
-  data: { price: number; time: number }[];
+  data: { close: number; time: number }[];
   annotations: Dec[];
   domain: [number, number];
-}> = ({ data, annotations, domain }) => {
-  // TODO: product-design-general tag Syed about adding custom mask is difficult
+  onPointerHover?: (price: number) => void;
+  onPointerOut?: () => void;
+}> = ({ data, annotations, domain, onPointerHover, onPointerOut }) => {
   return (
     <ParentSize className="flex-shrink-1 flex-1 overflow-hidden">
       {({ height, width }) => {
         return (
           <XYChart
             key="line-chart"
-            margin={{ top: 0, right: 0, bottom: 36, left: 50 }}
+            margin={{ top: 0, right: 0, bottom: 36, left: 48 }}
             height={height}
             width={width}
             xScale={{
@@ -40,6 +41,7 @@ const TokenPairHistoricalChart: FunctionComponent<{
               domain,
               zero: false,
             }}
+            onPointerOut={onPointerOut}
             theme={buildChartTheme({
               backgroundColor: "transparent",
               colors: ["white"],
@@ -69,26 +71,23 @@ const TokenPairHistoricalChart: FunctionComponent<{
           >
             <AnimatedAxis orientation="bottom" numTicks={4} />
             <AnimatedAxis orientation="left" numTicks={5} strokeWidth={0} />
-            <AnimatedGrid
-              columns={false}
-              // rows={false}
-              numTicks={5}
-            />
+            <AnimatedGrid columns={false} numTicks={5} />
             <AnimatedLineSeries
-              dataKey="price"
+              key={data.length}
+              dataKey="close"
               data={data}
               curve={curveNatural}
-              xAccessor={(d: { time: number; price: number }) => d?.time}
-              yAccessor={(d: { time: number; price: number }) => d?.price}
+              xAccessor={(d: { time: number; close: number }) => d?.time}
+              yAccessor={(d: { time: number; close: number }) => d?.close}
               stroke={theme.colors.wosmongton["200"]}
             />
             {annotations.map((dec, i) => (
               <Annotation
                 key={i}
                 dataKey="depth"
-                xAccessor={(d: { price: number; time: number }) => d.time}
-                yAccessor={(d: { price: number; time: number }) => d.price}
-                datum={{ price: Number(dec.toString()), time: 0 }}
+                xAccessor={(d: { close: number; time: number }) => d.time}
+                yAccessor={(d: { close: number; time: number }) => d.close}
+                datum={{ close: Number(dec.toString()), time: 0 }}
               >
                 <AnnotationConnector />
                 <AnnotationLineSubject
@@ -100,8 +99,6 @@ const TokenPairHistoricalChart: FunctionComponent<{
               </Annotation>
             ))}
             <Tooltip
-              // showVerticalCrosshair
-              // showHorizontalCrosshair
               snapTooltipToDatumX
               snapTooltipToDatumY
               detectBounds
@@ -119,25 +116,11 @@ const TokenPairHistoricalChart: FunctionComponent<{
                 stroke: "#ffffff",
               }}
               renderTooltip={({ tooltipData }: any) => {
-                console.log(tooltipData?.nearestDatum?.datum?.price.toFixed(4));
-                return null;
-                return (
-                  <div className={`bg-osmoverse-800 p-2 text-xs leading-4`}>
-                    <div className="text-white-full">
-                      {tooltipData?.nearestDatum?.datum?.price.toFixed(4)}
-                    </div>
-                    <div className="text-osmoverse-300">
-                      {`High: ${Math.max(...data.map((d) => d?.price)).toFixed(
-                        4
-                      )}`}
-                    </div>
-                    <div className="text-osmoverse-300">
-                      {`Low: ${Math.min(...data.map((d) => d?.price)).toFixed(
-                        4
-                      )}`}
-                    </div>
-                  </div>
-                );
+                const close = tooltipData?.nearestDatum?.datum?.close;
+                if (close && onPointerHover) {
+                  onPointerHover(close);
+                }
+                return <div></div>;
               }}
             />
           </XYChart>
@@ -146,35 +129,5 @@ const TokenPairHistoricalChart: FunctionComponent<{
     </ParentSize>
   );
 };
-
-export function calculateRangeFromHistoricalData(options: {
-  data: { price: number; time: number }[];
-  zoom?: number;
-  min?: number;
-  max?: number;
-  padding?: number;
-}): [number, number] {
-  const { data, zoom = 1, min = Infinity, max = 0, padding = 0.2 } = options;
-  const prices = data.map((d) => d.price);
-
-  const chartMin = Math.max(0, Math.min(...prices));
-  const chartMax = Math.max(...prices);
-  const delta = Math.abs(chartMax - chartMin);
-
-  const minWithPadding = Math.max(
-    0,
-    Math.min(chartMin - delta * padding, min - delta * padding)
-  );
-  const maxWithPadding = Math.max(
-    chartMax + delta * padding,
-    max + delta * padding
-  );
-
-  const zoomAdjustedMin =
-    zoom > 1 ? minWithPadding / zoom : minWithPadding * zoom;
-  const zoomAdjustedMax = maxWithPadding * zoom;
-
-  return [zoomAdjustedMin, zoomAdjustedMax];
-}
 
 export default TokenPairHistoricalChart;

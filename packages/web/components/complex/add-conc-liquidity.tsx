@@ -298,27 +298,29 @@ const AddConcLiqView: FunctionComponent<
   const quoteDenom = pool?.poolAssets[1]?.amount.denom || "";
   const {
     poolId,
-    historicalRange,
     range,
-    quoteDepositAmountIn,
-    baseDepositAmountIn,
     fullRange,
     historicalChartData,
     lastChartData,
+    priceDecimal,
+    baseDepositAmountIn,
+    quoteDepositAmountIn,
     setQuoteDepositAmountIn,
     setBaseDepositAmountIn,
     setModalView,
-    setHistoricalRange,
     setMaxRange,
     setMinRange,
     setHistoricalChartData,
+    setHoverPrice,
   } = addLiquidityConfig;
 
   const { queriesExternalStore, chainStore, queriesStore } = useStore();
   const t = useTranslation();
-
   const [inputMin, setInputMin] = useState("0");
   const [inputMax, setInputMax] = useState("0");
+  const [baseDepositInput, setBaseDepositInput] = useState("0");
+  const [quoteDepositInput, setQuoteDepositInput] = useState("0");
+  const [anchorAsset, setAchorAsset] = useState<"base" | "quote" | "">("");
   const rangeMin = Number(range[0].toString());
   const rangeMax = Number(range[1].toString());
 
@@ -340,12 +342,46 @@ const AddConcLiqView: FunctionComponent<
 
   const updateInputAndRangeMinMax = useCallback(
     (_min: number, _max: number) => {
-      setInputMin("" + _min);
-      setInputMax("" + _max);
+      setInputMin("" + _min.toFixed(priceDecimal));
+      setInputMax("" + _max.toFixed(priceDecimal));
       setMinRange(new Dec(_min));
       setMaxRange(new Dec(_max));
     },
-    []
+    [priceDecimal]
+  );
+
+  const calculateQuoteDeposit = useCallback(
+    (amount: number) => {
+      if (clPool) {
+        const [lowerTick, upperTick] = addLiquidityConfig.tickRange;
+        const quoteDeposit = calculateDepositAmountForQuote(
+          clPool.currentSqrtPrice.mul(clPool.currentSqrtPrice),
+          lowerTick,
+          upperTick,
+          new Dec(amount)
+        );
+        setQuoteDepositAmountIn(quoteDeposit);
+        setQuoteDepositInput(quoteDeposit.toString());
+      }
+    },
+    [clPool, addLiquidityConfig.tickRange]
+  );
+
+  const calculateBaseDeposit = useCallback(
+    (amount: number) => {
+      if (clPool) {
+        const [lowerTick, upperTick] = addLiquidityConfig.tickRange;
+        const baseDeposit = calculateDepositAmountForBase(
+          clPool.currentSqrtPrice.mul(clPool.currentSqrtPrice),
+          lowerTick,
+          upperTick,
+          new Dec(amount)
+        );
+        setBaseDepositAmountIn(baseDeposit);
+        setBaseDepositInput(baseDeposit.toString());
+      }
+    },
+    [clPool, addLiquidityConfig.tickRange]
   );
 
   useEffect(() => {
@@ -372,8 +408,33 @@ const AddConcLiqView: FunctionComponent<
     if (lastChartData && inputMin === "0" && inputMax === "0") {
       const last = lastChartData.close;
       updateInputAndRangeMinMax(last * 0.75, last * 1.25);
+      setHoverPrice(last);
     }
   }, [lastChartData, inputMax, inputMin]);
+
+  useEffect(() => {
+    if (anchorAsset === "base") {
+      calculateQuoteDeposit(+baseDepositAmountIn.toString());
+    }
+  }, [
+    rangeMin,
+    rangeMax,
+    anchorAsset,
+    baseDepositAmountIn,
+    calculateQuoteDeposit,
+  ]);
+
+  useEffect(() => {
+    if (anchorAsset === "quote") {
+      calculateBaseDeposit(+quoteDepositAmountIn.toString());
+    }
+  }, [
+    rangeMin,
+    rangeMax,
+    anchorAsset,
+    quoteDepositAmountIn,
+    calculateBaseDeposit,
+  ]);
 
   return (
     <>
@@ -401,52 +462,21 @@ const AddConcLiqView: FunctionComponent<
         </div>
         <div className="flex flex-row gap-1">
           <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col rounded-l-2xl bg-osmoverse-700 pl-6">
-            <div className="flex flex-row">
-              <div className="flex flex-1 flex-row pt-4">
-                <h4 className="row-span-2 pr-1 font-caption">
-                  {lastChartData?.close.toFixed(2) || ""}
-                </h4>
-                <div className="flex flex-col justify-center font-caption">
-                  <div className="text-caption text-osmoverse-300">
-                    {t("addConcentratedLiquidity.currentPrice")}
-                  </div>
-                  <div className="text-caption text-osmoverse-300">
-                    {t("addConcentratedLiquidity.basePerQuote", {
-                      base: baseDenom,
-                      quote: quoteDenom,
-                    })}
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-1 flex-row justify-end gap-1 pt-2 pr-2">
-                <RangeSelector
-                  label="7 day"
-                  onClick={() => setHistoricalRange("7d")}
-                  selected={historicalRange === "7d"}
-                />
-                <RangeSelector
-                  label="30 days"
-                  onClick={() => setHistoricalRange("1mo")}
-                  selected={historicalRange === "1mo"}
-                />
-                <RangeSelector
-                  label="1 year"
-                  onClick={() => setHistoricalRange("1y")}
-                  selected={historicalRange === "1y"}
-                />
-              </div>
-            </div>
+            <PriceChartHeader addLiquidityConfig={addLiquidityConfig} />
             <TokenPairHistoricalChart
-              data={historicalChartData.map(({ time, close }) => ({
-                time,
-                price: close,
-              }))}
+              data={historicalChartData}
               annotations={
                 fullRange
                   ? [new Dec(yRange[0] * 1.05), new Dec(yRange[1] * 0.95)]
                   : range
               }
               domain={yRange}
+              onPointerHover={setHoverPrice}
+              onPointerOut={
+                lastChartData
+                  ? () => setHoverPrice(lastChartData.close)
+                  : undefined
+              }
             />
           </div>
           <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-row rounded-r-2xl bg-osmoverse-700">
@@ -482,18 +512,20 @@ const AddConcLiqView: FunctionComponent<
                   depth: addLiquidityConfig.xRange[1],
                 }}
                 onMoveMax={debounce(
-                  (val: number) => setInputMax("" + val),
+                  (val: number) => setInputMax("" + val.toFixed(priceDecimal)),
                   500
                 )}
                 onMoveMin={debounce(
-                  (val: number) => setInputMin("" + val),
+                  (val: number) => setInputMin("" + val.toFixed(priceDecimal)),
                   500
                 )}
                 onSubmitMin={(val) => {
+                  setInputMin("" + val.toFixed(priceDecimal));
                   setMinRange(val);
                   addLiquidityConfig.setFullRange(false);
                 }}
                 onSubmitMax={(val) => {
+                  setInputMax("" + val.toFixed(priceDecimal));
                   setMaxRange(val);
                   addLiquidityConfig.setFullRange(false);
                 }}
@@ -504,14 +536,14 @@ const AddConcLiqView: FunctionComponent<
             </div>
             <div className="flex flex-col items-center justify-center gap-4 pr-8">
               <PriceInputBox
-                currentValue={fullRange ? "" : new Dec(inputMax).toString(4)}
+                currentValue={fullRange ? "" : inputMax}
                 label="high"
                 onChange={setInputMax}
                 onBlur={(e) => setMaxRange(+e.target.value)}
                 infinity={fullRange}
               />
               <PriceInputBox
-                currentValue={fullRange ? "0" : new Dec(inputMin).toString(4)}
+                currentValue={fullRange ? "0" : inputMin}
                 label="low"
                 onChange={setInputMin}
                 onBlur={(e) => setMinRange(+e.target.value)}
@@ -533,37 +565,23 @@ const AddConcLiqView: FunctionComponent<
             getFiatValue={getFiatValue}
             coin={pool?.poolAssets[0]?.amount}
             onUpdate={(amount) => {
+              setAchorAsset("base");
+              setBaseDepositInput("" + amount);
               setBaseDepositAmountIn(amount);
-              if (clPool) {
-                const [lowerTick, upperTick] = addLiquidityConfig.tickRange;
-                const quoteDeposit = calculateDepositAmountForQuote(
-                  clPool.currentSqrtPrice.mul(clPool.currentSqrtPrice),
-                  lowerTick,
-                  upperTick,
-                  new Dec(amount)
-                );
-                setQuoteDepositAmountIn(quoteDeposit);
-              }
+              calculateQuoteDeposit(amount);
             }}
-            currentValue={baseDepositAmountIn}
+            currentValue={baseDepositInput}
           />
           <DepositAmountGroup
             getFiatValue={getFiatValue}
             coin={pool?.poolAssets[1]?.amount}
             onUpdate={(amount) => {
+              setAchorAsset("quote");
+              setQuoteDepositInput("" + amount);
               setQuoteDepositAmountIn(amount);
-              if (clPool) {
-                const [lowerTick, upperTick] = addLiquidityConfig.tickRange;
-                const quoteDeposit = calculateDepositAmountForBase(
-                  clPool.currentSqrtPrice.mul(clPool.currentSqrtPrice),
-                  lowerTick,
-                  upperTick,
-                  new Dec(amount)
-                );
-                setBaseDepositAmountIn(quoteDeposit);
-              }
+              calculateBaseDeposit(amount);
             }}
-            currentValue={quoteDepositAmountIn}
+            currentValue={quoteDepositInput}
           />
         </div>
       </div>
@@ -671,6 +689,59 @@ function SelectorWrapper(props: {
   );
 }
 
+const PriceChartHeader: FunctionComponent<{
+  addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+}> = observer(({ addLiquidityConfig }) => {
+  const {
+    historicalRange,
+    setHistoricalRange,
+    baseDenom,
+    quoteDenom,
+    hoverPrice,
+    priceDecimal,
+  } = addLiquidityConfig;
+
+  const t = useTranslation();
+
+  return (
+    <div className="flex flex-row">
+      <div className="flex flex-1 flex-row pt-4">
+        <h4 className="row-span-2 pr-1 font-caption">
+          {hoverPrice.toFixed(priceDecimal) || ""}
+        </h4>
+        <div className="flex flex-col justify-center font-caption">
+          <div className="text-caption text-osmoverse-300">
+            {t("addConcentratedLiquidity.currentPrice")}
+          </div>
+          <div className="whitespace-nowrap text-caption text-osmoverse-300">
+            {t("addConcentratedLiquidity.basePerQuote", {
+              base: baseDenom,
+              quote: quoteDenom,
+            })}
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-1 flex-row justify-end gap-1 pt-2 pr-2">
+        <RangeSelector
+          label="7 day"
+          onClick={() => setHistoricalRange("7d")}
+          selected={historicalRange === "7d"}
+        />
+        <RangeSelector
+          label="30 days"
+          onClick={() => setHistoricalRange("1mo")}
+          selected={historicalRange === "1mo"}
+        />
+        <RangeSelector
+          label="1 year"
+          onClick={() => setHistoricalRange("1y")}
+          selected={historicalRange === "1y"}
+        />
+      </div>
+    </div>
+  );
+});
+
 function RangeSelector(props: {
   label: string;
   onClick: () => void;
@@ -689,7 +760,7 @@ const DepositAmountGroup: FunctionComponent<{
   getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
   coin?: CoinPretty;
   onUpdate: (amount: number) => void;
-  currentValue: Dec;
+  currentValue: string;
 }> = observer(({ coin, onUpdate, currentValue }) => {
   const { priceStore, chainStore, queriesStore, accountStore } = useStore();
 
@@ -740,12 +811,13 @@ const DepositAmountGroup: FunctionComponent<{
               className="border-0 bg-transparent text-h5"
               inputClassName="!leading-4"
               type="number"
-              currentValue={currentValue.toString(4).trim()}
+              currentValue={currentValue}
               onInput={updateValue}
               rightEntry
             />
             <div className="pr-3 text-caption text-osmoverse-400">
-              {fiatPer && `~$${currentValue.mul(new Dec(fiatPer)).toString(2)}`}
+              {fiatPer &&
+                `~$${new Dec(currentValue).mul(new Dec(fiatPer)).toString(2)}`}
             </div>
           </div>
         </div>

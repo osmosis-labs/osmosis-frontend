@@ -64,6 +64,10 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   @observable
   protected _zoom: number = 1;
+
+  @observable
+  protected _hoverPrice: number = 0;
+
   /*
    Used to get base and quote asset deposit for adding concentrated liquidity
    */
@@ -92,6 +96,14 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   get pool(): ConcentratedLiquidityPool {
     return this._pool;
+  }
+
+  get baseDenom(): string {
+    return this._pool.poolAssetDenoms[0];
+  }
+
+  get quoteDenom(): string {
+    return this._pool.poolAssetDenoms[1];
   }
 
   @action
@@ -204,6 +216,14 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     );
   }
 
+  get priceDecimal(): number {
+    if (!this.lastChartData) return 2;
+    if (this.lastChartData.close <= 0.001) return 5;
+    if (this.lastChartData.close <= 0.01) return 4;
+    if (this.lastChartData.close <= 0.1) return 3;
+    return 2;
+  }
+
   @action
   setHistoricalChartData = (historicalData: TokenPairHistoricalPrice[]) => {
     this._historicalChartData = historicalData;
@@ -216,6 +236,15 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   get activeLiquidity(): ActiveLiquidityPerTickRange[] {
     return this._activeLiquidity;
+  }
+
+  @action
+  setHoverPrice = (price: number) => {
+    this._hoverPrice = price;
+  };
+
+  get hoverPrice(): number {
+    return this._hoverPrice;
   }
 
   @computed
