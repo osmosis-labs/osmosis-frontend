@@ -23,7 +23,6 @@ export function getWalletEndpoints(chains: Chain[]) {
       [chain.chain_name]: {
         rpc: chain.apis?.rpc?.map(({ address }) => address) ?? [],
         rest: chain.apis?.rest?.map(({ address }) => address) ?? [],
-        isLazy: true,
       },
     };
     return newEndpoints;

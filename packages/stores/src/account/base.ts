@@ -113,7 +113,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         }),
       },
       {
-        isLazy: true,
         endpoints: getWalletEndpoints(this.chains),
       },
       {

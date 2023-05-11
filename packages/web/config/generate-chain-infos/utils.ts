@@ -50,11 +50,21 @@ export function getChainInfos(): (ChainInfoWithExplorer &
             {
               address: localChain.rpc,
             },
+            // Add the rpc endpoints from chain-registry to fallback if needed.
+            ...((registryChain.apis?.rpc ?? [])
+              ?.filter(({ address }) => address !== localChain.rpc)
+              ?.map(({ address }) => ({ address })) ?? []),
           ],
           rest: [
             {
               address: localChain.rest,
             },
+            // Add the rest endpoints from chain-registry to fallback if needed.
+            ...(registryChain.apis?.rest ?? [])
+              ?.filter(({ address }) => address !== localChain.rest)
+              ?.map(({ address }) => ({
+                address,
+              })),
           ],
         },
       };
