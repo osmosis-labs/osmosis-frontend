@@ -99,8 +99,8 @@ const chainInfos = IS_TESTNET
         explorerUrlToTx: "https://explorer.theta-testnet.polypore.xyz/transactions/{txHash}",
       },
       {
-        rpc: "https://rpc.sandbox-01.aksh.pw",
-        rest: "https://api.sandbox-01.aksh.pw",
+        rpc: "https://rpc.sandbox.ny.aksh.pw",
+        rest: "https://api.sandbox.ny.aksh.pw",
         chainId: "sandbox",
         chainName: "Sandbox",
         bip44: {
