@@ -1,5 +1,8 @@
 import React from "react";
 
+import { Icon } from "../assets";
+import { IconLink } from "./icon-link";
+
 interface AppDisplayCardProps {
   title?: string;
   subtitle?: string;
@@ -7,6 +10,7 @@ interface AppDisplayCardProps {
   twitterUrl?: string;
   githubUrl?: string;
   externalUrl?: string;
+  mediumUrl?: string;
 }
 
 const AppDisplayCard: React.FC<AppDisplayCardProps> = ({
@@ -16,39 +20,46 @@ const AppDisplayCard: React.FC<AppDisplayCardProps> = ({
   twitterUrl,
   githubUrl,
   externalUrl,
+  mediumUrl,
 }) => {
   return (
     <>
       <style jsx>{`
-        .app-display-card:hover .card-image {
-          @apply scale-115 transform transition-all duration-300 ease-in;
+        .card-image {
+          background-image: url(${imageUrl});
         }
-        .app-display-card {
-          @apply overflow-hidden;
+        .card-image:hover {
+          transform: scale(1.15);
         }
       `}</style>
       <a href={externalUrl} target="_blank" rel="noopener noreferrer">
-        <div className="app-display-card bg-white overflow-hidden rounded-lg rounded-lg bg-osmoverse-800 shadow-md">
-          <div
-            className="card-image h-40 bg-cover bg-center"
-            style={{ backgroundImage: `url(${imageUrl})` }}
-          ></div>
+        <div className="app-display-card bg-white rounded-lg bg-osmoverse-800 shadow-md">
+          <div className="overflow-hidden">
+            <div className="card-image h-40 overflow-hidden bg-cover bg-center transition-transform duration-300 ease-in"></div>
+          </div>
           <div className="p-4">
-            <div className="flex items-center">
+            <div className="flex items-center space-x-3">
               <h6 className="font-semibold">{title}</h6>
-              <div className="ml-auto">
-                <a href={twitterUrl} target="_blank" rel="noopener noreferrer">
-                  <i className="color-osmoverse-400 fab fa-twitter text-xl"></i>
-                </a>
-                <a
-                  href={githubUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="color-osmoverse-400 ml-2"
-                >
-                  <i className="color-osmoverse-400  fab fa-github text-xl"></i>
-                </a>
-              </div>
+              {twitterUrl && (
+                <IconLink url={twitterUrl} ariaLabel="Twitter">
+                  <Icon
+                    id="twitter"
+                    height="14px"
+                    width="14px"
+                    fill="#958FC0"
+                  />
+                </IconLink>
+              )}
+              {mediumUrl && (
+                <IconLink url={mediumUrl} ariaLabel="Medium">
+                  <Icon id="medium" height="14px" width="14px" fill="#958FC0" />
+                </IconLink>
+              )}
+              {githubUrl && (
+                <IconLink url={githubUrl} ariaLabel="GitHub">
+                  <Icon id="github" height="14px" width="14px" fill="#958FC0" />
+                </IconLink>
+              )}
             </div>
             <p className="body2 text-osmoverse-200">{subtitle}</p>
           </div>

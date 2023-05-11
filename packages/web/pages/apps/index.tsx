@@ -10,12 +10,28 @@ import { SearchBox } from "~/components/input";
 type appDataType = {
   title: string;
   subtitle: string;
-  imageUrl: string;
-  externalURL: string;
-  fallbackImageUrl?: string;
-  twitterUrl?: string;
-  gitHubUrl?: string;
+  thumbnail_image_URL: string;
+  external_URL: string;
+  twitter_URL?: string;
+  github_URL?: string;
+  medium_URL?: string;
   featured?: boolean;
+};
+
+type App = {
+  title: string;
+  subtitle: string;
+  external_URL: string;
+  thumbnail_image_URL: string;
+  hero_image_URL: string;
+  twitter_URL?: string;
+  medium_URL?: string;
+  github_URL?: string;
+  featured?: boolean;
+};
+
+type AppStoreProps = {
+  apps: App[];
 };
 
 const dummyData = [
@@ -23,77 +39,67 @@ const dummyData = [
     title: "Mars",
     subtitle:
       "Lend, borrow and earn with an autonomous credit protocol in the Cosmos universe. Open to all, closed to none.",
-    imageUrl:
+    thumbnail_image_URL:
       "https://www.shutterstock.com/image-illustration/landscape-on-planet-mars-scenic-600w-1104793244.jpg",
-    fallbackImageUrl:
-      "https://www.shutterstock.com/image-illustration/landscape-on-planet-mars-scenic-600w-1104793244.jpg",
-    externalURL: "https://www.google.com",
-    twitterUrl: "https://www.google.com",
-    gitHubUrl: "https://www.google.com",
+    external_URL: "https://www.google.com",
+    twitter_URL: "https://www.google.com",
+    github_URL: "https://www.google.com",
     featured: true,
   },
   {
     title: "Saturn",
     subtitle:
       "Lend, borrow and earn with an autonomous credit protocol in the Cosmos universe. Open to all, closed to none.",
-    imageUrl:
+    thumbnail_image_URL:
       "https://www.shutterstock.com/image-illustration/landscape-on-planet-mars-scenic-600w-1104793244.jpg",
-    fallbackImageUrl:
-      "https://www.shutterstock.com/image-illustration/landscape-on-planet-mars-scenic-600w-1104793244.jpg",
-    externalURL: "https://www.google.com",
-    twitterUrl: "https://www.google.com",
-    gitHubUrl: "https://www.google.com",
+    external_URL: "https://www.google.com",
+    twitter_URL: "https://www.google.com",
+    github_URL: "https://www.google.com",
   },
   {
     title: "Neptune",
     subtitle:
       "Lend, borrow and earn with an autonomous credit protocol in the Cosmos universe. Open to all, closed to none.",
-    imageUrl:
+    thumbnail_image_URL:
       "https://www.shutterstock.com/image-illustration/landscape-on-planet-mars-scenic-600w-1104793244.jpg",
-    fallbackImageUrl:
-      "https://www.shutterstock.com/image-illustration/landscape-on-planet-mars-scenic-600w-1104793244.jpg",
-    externalURL: "https://www.google.com",
+    external_URL: "https://www.google.com",
   },
   {
     title: "Uranus",
     subtitle:
       "Lend, borrow and earn with an autonomous credit protocol in the Cosmos universe. Open to all, closed to none.",
-    imageUrl:
+    thumbnail_image_URL:
       "https://www.shutterstock.com/image-illustration/landscape-on-planet-mars-scenic-600w-1104793244.jpg",
-    fallbackImageUrl:
-      "https://www.shutterstock.com/image-illustration/landscape-on-planet-mars-scenic-600w-1104793244.jpg",
-    externalURL: "https://www.google.com",
+    external_URL: "https://www.google.com",
   },
   ,
   {
     title: "Jupiter",
     subtitle:
       "Lend, borrow and earn with an autonomous credit protocol in the Cosmos universe. Open to all, closed to none.",
-    imageUrl:
+    thumbnail_image_URL:
       "https://www.shutterstock.com/image-illustration/landscape-on-planet-mars-scenic-600w-1104793244.jpg",
-    fallbackImageUrl:
-      "https://www.shutterstock.com/image-illustration/landscape-on-planet-mars-scenic-600w-1104793244.jpg",
-    externalURL: "https://www.google.com",
-    twitterUrl: "https://www.google.com",
-    gitHubUrl: "https://www.google.com",
+    external_URL: "https://www.google.com",
+    twitter_URL: "https://www.google.com",
+    github_URL: "https://www.google.com",
   },
   {
     title: "Venus",
     subtitle:
       "Lend, borrow and earn with an autonomous credit protocol in the Cosmos universe. Open to all, closed to none.",
-    imageUrl:
+    thumbnail_image_URL:
       "https://www.shutterstock.com/image-illustration/landscape-on-planet-mars-scenic-600w-1104793244.jpg",
-    fallbackImageUrl:
-      "https://www.shutterstock.com/image-illustration/landscape-on-planet-mars-scenic-600w-1104793244.jpg",
-    externalURL: "https://www.google.com",
+    external_URL: "https://www.google.com",
   },
 ];
 
-export const AppStore = () => {
+export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   const [searchValue, setSearchValue] = React.useState<string>("");
   const [fuzzySearchResults, setFuzzySearchResults] = React.useState<
     appDataType[]
   >([]);
+
+  console.log("my apps", apps);
 
   const t = useTranslation();
 
@@ -141,6 +147,10 @@ export const AppStore = () => {
         subtitle="Lend, borrow and earn with an autonomous credit protocol in the Cosmos universe. Open to all, closed to none."
         imageUrl="https://www.shutterstock.com/image-illustration/landscape-on-planet-mars-scenic-600w-1104793244.jpg"
         fallbackImageUrl="https://www.shutterstock.com/image-illustration/landscape-on-planet-mars-scenic-600w-1104793244.jpg"
+        githubUrl="https://www.google.com"
+        twitterUrl="https://www.nytimes.com"
+        externalUrl="https://www.google.com"
+        mediumUrl="https://www.google.com"
       />
       <div className="body2 mb-2 pt-7 font-bold text-osmoverse-200">
         All apps
@@ -153,10 +163,10 @@ export const AppStore = () => {
                 key={index}
                 title={data?.title}
                 subtitle={data?.subtitle}
-                imageUrl={data?.imageUrl}
-                twitterUrl={data?.externalURL}
-                githubUrl={data?.externalURL}
-                externalUrl={data?.externalURL}
+                imageUrl={data?.thumbnail_image_URL}
+                twitterUrl={data?.twitter_URL}
+                githubUrl={data?.github_URL}
+                externalUrl={data?.external_URL}
               />
             );
           })}
@@ -183,3 +193,18 @@ export const AppStore = () => {
 };
 
 export default AppStore;
+
+export async function getStaticProps() {
+  // The raw URL of the applications.json file in the GitHub repo
+  const url =
+    "https://raw.githubusercontent.com/osmosis-labs/apps-list/main/applications.json";
+
+  const response = await fetch(url);
+  const apps = await response.json();
+
+  return {
+    props: {
+      apps,
+    },
+  };
+}
