@@ -7,7 +7,7 @@ import { chains } from "chain-registry";
 import { IS_TESTNET, OSMOSIS_CHAIN_ID_OVERWRITE } from "../env";
 import { chainInfos } from "./source-chain-infos";
 
-const osmosisChainIdWithoutOverwrite = IS_TESTNET ? "osmo-test-5" : "osmosis-1";
+const osmosisChainIdWithoutOverwrite = IS_TESTNET ? "osmo-test-4" : "osmosis-1";
 
 export function getChainInfos(): (ChainInfoWithExplorer &
   Chain & { chainRegistryChainName: string })[] {
