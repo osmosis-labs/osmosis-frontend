@@ -30,10 +30,14 @@ async function generateAvailablePackages() {
   });
 
   try {
-    fs.writeFileSync(join(__dirname, "/package-types.ts"), formatted, {
-      encoding: "utf8",
-      flag: "w",
-    });
+    fs.writeFileSync(
+      join(__dirname, "/generated/package-types.ts"),
+      formatted,
+      {
+        encoding: "utf8",
+        flag: "w",
+      }
+    );
     console.log("Successfully wrote package-types.ts");
   } catch (e) {
     console.log(`Error writing package-types.ts: ${e}`);

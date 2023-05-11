@@ -1,6 +1,15 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
+    "generate": {
+      "outputs": [
+        "src/codegen/**",
+        "config/wallet-registry.ts",
+        "config/wallet-assets.ts",
+        "config/chain-infos.ts"
+      ],
+      "dependsOn": ["^generate"]
+    },
     "build": {
       "outputs": ["build/**", ".next/**", "!.next/cache/**"],
       "dependsOn": ["generate", "^build"]
@@ -11,15 +20,6 @@
     "start": { "dependsOn": ["build"] },
     "clean": { "cache": false },
     "test": { "dependsOn": ["build"] },
-    "analyze": {},
-    "generate": {
-      "outputs": [
-        "src/codegen/**",
-        "config/wallet-registry.ts",
-        "config/wallet-assets.ts",
-        "config/chain-infos.ts"
-      ],
-      "dependsOn": ["^generate"]
-    }
+    "analyze": {}
   }
 }
