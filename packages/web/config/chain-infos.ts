@@ -101,7 +101,7 @@ const chainInfos = IS_TESTNET
       {
         rpc: "https://rpc.sandbox-01.aksh.pw",
         rest: "https://api.sandbox-01.aksh.pw",
-        chainId: "sandbox",
+        chainId: "sandbox-01",
         chainName: "Sandbox",
         bip44: {
           coinType: 118,
