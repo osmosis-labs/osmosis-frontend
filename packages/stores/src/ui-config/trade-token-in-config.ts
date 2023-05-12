@@ -112,7 +112,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       this.priceStore.calculatePrice(
         new CoinPretty(
           this.sendCurrency,
-          this.amount === ""
+          this.isEmptyInput
             ? "0"
             : new Dec(this.amount).mul(
                 DecUtils.getTenExponentN(this.sendCurrency.coinDecimals)
@@ -277,12 +277,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   @override
   get error(): Error | undefined {
     // If things are loading or there's no input
-    if (
-      this.isSpotPriceLoading ||
-      this.isQuoteLoading ||
-      this.amount === "" ||
-      !new Dec(this.amount).isPositive()
-    ) {
+    if (this.isSpotPriceLoading || this.isQuoteLoading || this.isEmptyInput) {
       // if there's no user input, check if the spot price has an error
       const spotPriceError = this._spotPriceQuote?.value;
       if (!this.isSpotPriceLoading && spotPriceError instanceof Error) {
@@ -306,7 +301,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     }
 
     // If the user doesn't have enough balance, return an error
-    if (this.amount !== "") {
+    if (!this.isEmptyInput) {
       const dec = new Dec(this.amount);
       const balance = this.queriesStore
         .get(this.chainId)
@@ -320,6 +315,10 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
     // There's an error with the input
     return super.error;
+  }
+
+  get isEmptyInput() {
+    return new Dec(this.getAmountPrimitive().amount).isZero();
   }
 
   @computed
@@ -420,11 +419,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     // QUOTE
     // Clear quote output if the input is cleared
     autorun(() => {
-      const inputCleared =
-        this.amount === "" || !new Dec(this.amount).isPositive();
-
       // this also handles race conditions because if the user clears the input, then an prev request result arrives, the old result will be cleared
-      if (this._latestQuote?.state === FULFILLED && inputCleared) {
+      if (this._latestQuote?.state === FULFILLED && this.isEmptyInput) {
         runInAction(() => {
           this._latestQuote = undefined;
         });
@@ -450,7 +446,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       const outCurrencyMinDenom = this.outCurrency.coinMinimalDenom;
       const router = this.router;
 
-      if (denom === "" || !new Dec(amount).isPositive()) return;
+      if (this.isEmptyInput) return;
       if (!router) return;
 
       // Clear any previous user input debounce, then call the debounce function
@@ -571,6 +567,12 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     // clear all results of prev input
     this._latestQuote = undefined;
     this._spotPriceQuote = undefined;
+  }
+
+  /** Reset user input. */
+  reset() {
+    this.setAmount("");
+    this.setFraction(undefined);
   }
 
   /** Calculate the out amount less a given slippage tolerance. */

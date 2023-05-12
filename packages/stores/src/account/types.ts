@@ -12,8 +12,9 @@ export interface OsmosisMsgOpts {
   readonly exitPool: MsgOpt & {
     shareCoinDecimals: number;
   };
-  readonly swapExactAmountIn: MsgOpt;
-  readonly swapExactAmountOut: MsgOpt;
+  readonly splitRouteSwapExactAmountIn: (numPools: number) => MsgOpt;
+  readonly swapExactAmountIn: (numPools: number) => MsgOpt;
+  readonly swapExactAmountOut: (numPools: number) => MsgOpt;
   readonly lockTokens: MsgOpt;
   readonly superfluidDelegate: MsgOpt;
   readonly lockAndSuperfluidDelegate: MsgOpt;
@@ -48,14 +49,18 @@ export const defaultMsgOpts: OsmosisMsgOpts = {
     gas: 280000,
     shareCoinDecimals: 18,
   },
-  swapExactAmountIn: {
+  splitRouteSwapExactAmountIn: (numPools: number) => ({
+    type: "osmosis/poolmanager/split-route-swap-exact-amount-in",
+    gas: 30_000 * numPools,
+  }),
+  swapExactAmountIn: (numPools: number) => ({
     type: "osmosis/gamm/swap-exact-amount-in",
-    gas: 250000,
-  },
-  swapExactAmountOut: {
+    gas: 25_0000 * numPools,
+  }),
+  swapExactAmountOut: (numPools: number) => ({
     type: "osmosis/gamm/swap-exact-amount-out",
-    gas: 250000,
-  },
+    gas: 25_0000 * numPools,
+  }),
   lockTokens: {
     type: "osmosis/lockup/lock-tokens",
     gas: 450000,

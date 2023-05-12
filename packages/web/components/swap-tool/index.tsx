@@ -39,7 +39,6 @@ import { tError } from "../localization";
 import { Popover } from "../popover";
 import { InfoTooltip } from "../tooltip";
 import { SplitRoute } from "./split-route";
-import { useFreshSwapData } from "./use-fresh-swap-data";
 
 export const SwapTool: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!
@@ -105,10 +104,7 @@ export const SwapTool: FunctionComponent<{
 
     // show details
     const [showEstimateDetails, setShowEstimateDetails] = useState(false);
-    const isEstimateDetailRelevant = !(
-      tradeTokenInConfig.amount === "" ||
-      new Dec(tradeTokenInConfig.amount).isZero()
-    );
+    const isEstimateDetailRelevant = !tradeTokenInConfig.isEmptyInput;
     // auto collapse on input clear
     useEffect(() => {
       if (!isEstimateDetailRelevant && !tradeTokenInConfig.isQuoteLoading)
@@ -252,6 +248,9 @@ export const SwapTool: FunctionComponent<{
       if (account.walletStatus !== WalletStatus.Loaded) {
         return account.init();
       }
+
+      if (tradeTokenInConfig.isEmptyInput) return;
+
       const baseEvent = {
         fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
         tokenAmount: Number(tradeTokenInConfig.amount),
@@ -262,8 +261,7 @@ export const SwapTool: FunctionComponent<{
         ),
       };
       logEvent([EventName.Swap.swapStarted, baseEvent]);
-      const userSlippageSetting = slippageConfig.slippage.symbol("").toString();
-      tradeTokenIn(userSlippageSetting)
+      tradeTokenIn(slippageConfig.slippage.toDec())
         .then((result) => {
           // onFullfill
           logEvent([
@@ -275,8 +273,9 @@ export const SwapTool: FunctionComponent<{
           ]);
         })
         .catch((error) => {
-          // failed txs are handled elsewhere
-          console.error(error);
+          // failed broadcast txs are handled elsewhere
+          // this is likely a signature rejection
+          console.error("swap error", error);
         })
         .finally(() => {
           onRequestModalClose?.();
@@ -284,7 +283,6 @@ export const SwapTool: FunctionComponent<{
     };
 
     useTokenSwapQueryParams(tradeTokenInConfig, tradeableCurrencies, isInModal);
-    useFreshSwapData(tradeTokenInConfig);
 
     const outAmountLessSlippage = tradeTokenInConfig.outAmountLessSlippage(
       slippageConfig.slippage.toDec()
@@ -942,6 +940,7 @@ export const SwapTool: FunctionComponent<{
                 : "primary"
             }
             disabled={
+              tradeTokenInConfig.isEmptyInput ||
               Boolean(tradeTokenInConfig.error) ||
               account.txTypeInProgress !== "" ||
               tradeTokenInConfig.isQuoteLoading

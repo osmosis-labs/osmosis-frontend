@@ -1,24 +1,26 @@
-import { Currency } from "@keplr-wallet/types";
+import { Dec } from "@keplr-wallet/unit";
 import {
   ObservableQueryPool,
   ObservableTradeTokenInConfig,
 } from "@osmosis-labs/stores";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useStore } from "~/stores";
+
+import { useFreshSwapData } from "./use-fresh-swap-data";
 
 /** Maintains a single instance of `ObservableTradeTokenInConfig` for React view lifecycle.
  *  Updates `osmosisChainId`, `bech32Address`, `pools` on render.
  *  `percentage` default: `"50"`.
- * `requeryIntervalMs` specifies how often to refetch pool data based on current tokens.
  */
 export function useTradeTokenInConfig(
   osmosisChainId: string,
-  pools: ObservableQueryPool[],
-  requeryIntervalMs = 8000
+  pools: ObservableQueryPool[]
 ): {
   tradeTokenInConfig: ObservableTradeTokenInConfig;
-  tradeTokenIn: (slippage: string) => Promise<"multihop" | "exact-in">;
+  tradeTokenIn: (
+    slippage: Dec
+  ) => Promise<"multiroute" | "multihop" | "exact-in">;
 } {
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
@@ -61,123 +63,107 @@ export function useTradeTokenInConfig(
     );
   }, [config, queriesOsmosis.queryIncentivizedPools.incentivizedPools]);
 
-  // refresh relevant pool data every `requeryIntervalMs` period
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const poolIds =
-        config.optimizedRoutes
-          ?.flatMap(({ pools }) => pools)
-          .map((pool) => pool.id) ?? [];
-
-      poolIds.forEach((poolId) => {
-        queriesStore
-          .get(osmosisChainId)
-          .osmosis!.queryGammPools.getPool(poolId)
-          ?.fetch();
-      });
-    }, requeryIntervalMs);
-    return () => clearInterval(interval);
-  }, [config.optimizedRoutes, osmosisChainId, queriesStore, requeryIntervalMs]);
+  useFreshSwapData(config);
 
   /** User trade token in from config values. */
-  const tradeTokenIn = useCallback(
-    async (maxSlippage: string): Promise<"multihop" | "exact-in"> => {
+  const tradeTokenIn = (maxSlippage: Dec) =>
+    new Promise<"multiroute" | "multihop" | "exact-in">((resolve, reject) => {
       if (!config.optimizedRoutes) {
-        return Promise.reject(
+        return reject(
           "User input should be disabled if no route is found or is being generated"
         );
       }
 
-      const routePools: {
-        poolId: string;
-        tokenOutCurrency: Currency;
-      }[] = [];
+      if (config.isEmptyInput) return reject("No input");
 
-      // TODO: use new split route message if routes.length > 1
-      for (let i = 0; i < config.optimizedRoutes[0].pools.length; i++) {
-        const pool = config.optimizedRoutes[0].pools[i];
-        const tokenOutCurrency = chainStore.osmosis.currencies.find(
-          (cur) =>
-            cur.coinMinimalDenom ===
-            config.optimizedRoutes?.[0]?.tokenOutDenoms[i]
-        );
+      ////////
+      // Prepare swap data
 
-        if (!tokenOutCurrency) {
-          return Promise.reject();
+      type Pool = {
+        id: string;
+        tokenOutDenom: string;
+      };
+      type Route = {
+        pools: Pool[];
+        tokenInAmount: string;
+      };
+
+      const routes: Route[] = [];
+
+      for (const route of config.optimizedRoutes) {
+        const pools: Pool[] = [];
+
+        for (let i = 0; i < route.pools.length; i++) {
+          const pool = route.pools[i];
+
+          pools.push({
+            id: pool.id,
+            tokenOutDenom: route.tokenOutDenoms[i],
+          });
         }
 
-        routePools.push({
-          poolId: pool.id,
-          tokenOutCurrency,
+        routes.push({
+          pools: pools,
+          tokenInAmount: route.initialAmount.toString(),
         });
       }
 
-      const tokenInCurrency = chainStore.osmosis.currencies.find(
-        (cur) =>
-          cur.coinMinimalDenom === config.optimizedRoutes?.[0]?.tokenInDenom
-      );
-
-      if (!tokenInCurrency) {
-        return Promise.reject();
-      }
-
       const tokenIn = {
-        currency: tokenInCurrency,
+        currency: config.sendCurrency,
         amount: config.amount,
       };
 
-      const resetConfigUserInput = () => {
-        config.setAmount("");
-        config.setFraction(undefined);
-      };
+      const tokenOutMinAmount = config
+        .outAmountLessSlippage(maxSlippage)
+        .toCoin().amount;
 
-      if (routePools.length === 1) {
-        await account.osmosis.sendSwapExactAmountInMsg(
-          routePools[0].poolId,
-          tokenIn,
-          routePools[0].tokenOutCurrency,
-          maxSlippage,
-          "",
-          {
-            amount: [
-              {
-                denom: chainStore.osmosis.stakeCurrency.coinMinimalDenom,
-                amount: "0",
-              },
-            ],
-          },
-          undefined,
-          () => {
-            resetConfigUserInput();
-            return "exact-in";
-          }
-        );
+      ////////
+      // Send messages to account
+
+      if (routes.length === 1) {
+        const { pools } = routes[0];
+        account.osmosis
+          .sendSwapExactAmountInMsg(
+            pools,
+            tokenIn,
+            tokenOutMinAmount,
+            undefined,
+            undefined,
+            undefined,
+            () => {
+              config.reset();
+
+              resolve(pools.length === 1 ? "exact-in" : "multihop");
+            }
+          )
+          .catch((reason) => {
+            config.reset();
+            reject(reason);
+          });
+        return pools.length === 1 ? "exact-in" : "multihop";
+      } else if (routes.length > 1) {
+        account.osmosis
+          .sendSplitRouteSwapExactAmountInMsg(
+            routes,
+            tokenIn,
+            tokenOutMinAmount,
+            undefined,
+            undefined,
+            undefined,
+            () => {
+              config.reset();
+
+              resolve("multiroute");
+            }
+          )
+          .catch((reason) => {
+            config.reset();
+            reject(reason);
+          });
       } else {
-        await account.osmosis.sendMultihopSwapExactAmountInMsg(
-          routePools,
-          tokenIn,
-          maxSlippage,
-          "",
-          {
-            amount: [
-              {
-                denom: chainStore.osmosis.stakeCurrency.coinMinimalDenom,
-                amount: "0",
-              },
-            ],
-          },
-          undefined,
-          () => {
-            resetConfigUserInput();
-            return "multihop";
-          }
-        );
+        reject("No routes given");
       }
-
-      return Promise.reject();
-    },
-    [account.osmosis, chainStore.osmosis, config]
-  );
+    });
 
   return { tradeTokenInConfig: config, tradeTokenIn };
 }
