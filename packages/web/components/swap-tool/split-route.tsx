@@ -8,7 +8,7 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { UseDisclosureReturn } from "~/hooks";
+import { UseDisclosureReturn, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 
 import { Tooltip } from "../tooltip";
@@ -98,14 +98,7 @@ const Route: FunctionComponent<{
         </div>
       </div>
 
-      <div
-        className={classNames(
-          "relative flex w-full items-center justify-center",
-          {
-            // "pl-3.5": Boolean(percentage),
-          }
-        )}
-      >
+      <div className="relative flex w-full items-center justify-center">
         <div className="relative flex w-full items-center gap-0.5">
           <Dots className="animate-[pulse_3s_ease-in-out_0.1s_infinite]" />
           <Dots className="animate-[pulse_3s_ease-in-out_0.4s_infinite]" />
@@ -134,6 +127,8 @@ const Dots: FunctionComponent<CustomClasses> = ({ className }) => (
 
 const Pools: FunctionComponent<Route> = observer(
   ({ pools, tokenInDenom, tokenOutDenoms, effectiveSwapFees }) => {
+    const { isMobile } = useWindowSize();
+
     const { chainStore } = useStore();
     const t = useTranslation();
     /** Share same tippy instance to handle animation */
@@ -207,7 +202,7 @@ const Pools: FunctionComponent<Route> = observer(
                     </div>
                   </div>
 
-                  {pools.length < 4 && (
+                  {pools.length < 4 && !isMobile && (
                     <p className="text-caption">
                       {fee.maxDecimals(1).toString()}
                     </p>
