@@ -81,7 +81,7 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
 
     await expect(
       account.osmosis.sendSwapExactAmountInMsg(
-        queryPool!.id,
+        [{ id: queryPool!.id, tokenOutDenom: "ubar" }],
         {
           currency: {
             coinDenom: "ION",
@@ -90,11 +90,7 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
           },
           amount: "10",
         },
-        {
-          coinDenom: "BAR",
-          coinMinimalDenom: "ubar",
-          coinDecimals: 6,
-        }
+        "1"
       )
     ).rejects.not.toBeNull();
   });
@@ -104,20 +100,16 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
 
     await expect(
       account.osmosis.sendSwapExactAmountInMsg(
-        queryPool!.id,
+        [{ id: queryPool!.id, tokenOutDenom: "uatom" }],
         {
           currency: {
-            coinDenom: "BAR",
-            coinMinimalDenom: "ubar",
+            coinDenom: "ION",
+            coinMinimalDenom: "uion",
             coinDecimals: 6,
           },
           amount: "10",
         },
-        {
-          coinDenom: "ATOM",
-          coinMinimalDenom: "uatom",
-          coinDecimals: 6,
-        }
+        "1"
       )
     ).rejects.not.toBeNull();
   });
@@ -148,13 +140,17 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
     const tx = await new Promise<any>((resolve, reject) => {
       account.osmosis
         .sendSwapExactAmountInMsg(
-          queryPool!.id,
+          [
+            {
+              id: queryPool!.id,
+              tokenOutDenom: tokenOutCurrency.coinMinimalDenom,
+            },
+          ],
           tokenIn,
-          tokenOutCurrency,
-          "0",
-          "",
-          {},
-          {},
+          "1",
+          undefined,
+          undefined,
+          undefined,
           (tx) => {
             resolve(tx);
           }
@@ -239,13 +235,17 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
     const tx = await new Promise<any>((resolve, reject) => {
       account.osmosis
         .sendSwapExactAmountInMsg(
-          queryPool!.id,
+          [
+            {
+              id: queryPool!.id,
+              tokenOutDenom: tokenOutCurrency.coinMinimalDenom,
+            },
+          ],
           tokenIn,
-          tokenOutCurrency,
-          doubleSlippage.toString(),
-          "",
-          {},
-          {},
+          "1",
+          undefined,
+          undefined,
+          undefined,
           (tx) => {
             resolve(tx);
           }
@@ -323,13 +323,17 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
     const tx = await new Promise<any>((resolve, reject) => {
       account.osmosis
         .sendSwapExactAmountInMsg(
-          queryPool!.id,
+          [
+            {
+              id: queryPool!.id,
+              tokenOutDenom: tokenOutCurrency.coinMinimalDenom,
+            },
+          ],
           tokenIn,
-          tokenOutCurrency,
-          estimated.priceImpact.maxDecimals(18).toString(),
-          "",
-          {},
-          {},
+          "1",
+          undefined,
+          undefined,
+          undefined,
           (tx) => {
             resolve(tx);
           }
@@ -415,13 +419,17 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
       new Promise<any>((resolve, reject) => {
         account.osmosis
           .sendSwapExactAmountInMsg(
-            queryPool!.id,
+            [
+              {
+                id: queryPool!.id,
+                tokenOutDenom: tokenOutCurrency.coinMinimalDenom,
+              },
+            ],
             tokenIn,
-            tokenOutCurrency,
-            added.toString(),
-            "",
-            {},
-            {},
+            "1",
+            undefined,
+            undefined,
+            undefined,
             (tx) => {
               resolve(tx);
             }
