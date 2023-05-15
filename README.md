@@ -113,3 +113,7 @@ Have a change you want to make with our translations? We have a frontend for upd
 Inlang editor & status:
 
 [![translation badge](https://inlang.com/badge?url=github.com/osmosis-labs/osmosis-frontend)](https://inlang.com/editor/github.com/osmosis-labs/osmosis-frontend?ref=badge)
+
+## Asset Listings
+
+Please see the asset [listing requirements](https://github.com/osmosis-labs/assetlists/blob/main/LISTING.md) to display assets on Osmosis Zone web app.
