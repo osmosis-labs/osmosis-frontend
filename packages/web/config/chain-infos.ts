@@ -70,8 +70,8 @@ const chainInfos = IS_TESTNET
           ("https://testnet.mintscan.io/osmosis-testnet/tx/{txHash}"),
       },
       {
-        rpc: "https://rest.sentry-01.theta-testnet.polypore.xyz",
-        rest: "https://rpc.sentry-01.theta-testnet.polypore.xyz",
+        rpc: "https://lcd-theta.osmotest5.osmosis.zone/",
+        rest: "https://rpc-theta.osmotest5.osmosis.zone/",
         chainId: "theta-testnet-001",
         chainName: "Cosmos Hub Public Testnet",
         bip44: {
