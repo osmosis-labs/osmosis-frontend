@@ -96,7 +96,7 @@ const chainInfos = IS_TESTNET
           },
         ],
         features: ["ibc-transfer", "ibc-go"],
-        explorerUrlToTx: "https://explorer.theta-testnet.polypore.xyz/transactions/{txHash}",
+        explorerUrlToTx: "https://testnet.mintscan.io/osmosis-testnet/txs/{txHash}",
       },
       {
         rpc: "https://rpc.sandbox-01.aksh.pw",
