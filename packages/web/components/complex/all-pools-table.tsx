@@ -154,7 +154,6 @@ export const AllPoolsTable: FunctionComponent<{
       router.query.pools,
     ]);
 
-    const fetchedRemainingPoolsRef = useRef(false);
     const { isMobile } = useWindowSize();
 
     const { chainId } = chainStore.osmosis;
@@ -258,13 +257,10 @@ export const AllPoolsTable: FunctionComponent<{
     );
     const setQuery = useCallback(
       (search: string) => {
-        if (search !== "" && !fetchedRemainingPoolsRef.current) {
-          queriesOsmosis.queryGammPools.fetchRemainingPools();
-          fetchedRemainingPoolsRef.current = true;
-        }
         if (search === "") {
           setIsSearching(false);
         } else {
+          queriesOsmosis.queryGammPools.fetchRemainingPools();
           setIsSearching(true);
         }
         setSorting([]);
