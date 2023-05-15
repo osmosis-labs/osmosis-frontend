@@ -4,8 +4,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useRef } from "react";
-import { useIntersection } from "react-use";
+import { useEffect } from "react";
 
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
 
@@ -34,13 +33,6 @@ const PaginatedTable = ({
   const { rows } = table.getRowModel();
   const router = useRouter();
 
-  const intersectionRef = useRef(null);
-  const intersection = useIntersection(intersectionRef, {
-    root: null,
-    rootMargin: "0px",
-    threshold: 0,
-  });
-
   const rowVirtualizer = useWindowVirtualizer({
     count: rows.length,
     estimateSize: () => (isMobile ? mobileSize || 0 : size),
@@ -56,11 +48,13 @@ const PaginatedTable = ({
         (virtualRows?.[virtualRows.length - 1]?.end || 0)
       : 0;
 
+  const lastRow = rows[rows.length - 1];
+  const lastVirtualRow = virtualRows[virtualRows.length - 1];
   useEffect(() => {
-    if (intersection && intersection.intersectionRatio < 1) {
+    if (lastRow && lastVirtualRow && lastRow.index === lastVirtualRow.index) {
       paginate();
     }
-  }, [intersection, paginate]);
+  }, [lastRow, lastVirtualRow, paginate]);
 
   if (isMobile) {
     return (
@@ -156,13 +150,12 @@ const PaginatedTable = ({
             <td style={{ height: `${paddingTop - topOffset}px` }} />
           </tr>
         )}
-        {virtualRows.map((virtualRow, i) => {
+        {virtualRows.map((virtualRow) => {
           const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
           return (
             <tr
               key={row.id}
               className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
-              ref={i === virtualRows.length - 1 ? intersectionRef : null}
               onClick={() => router.push(`/pool/${row.original.pool.id}`)}
             >
               {row.getVisibleCells().map((cell) => {
