@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { useCallbackRef } from "./use-callback-ref";
 
-export interface UseOverridableStateProps<T> {
+export interface UseControllableStateProps<T> {
   value?: T;
   defaultValue?: T | (() => T);
   onChange?: (value: T) => void;
@@ -10,7 +10,7 @@ export interface UseOverridableStateProps<T> {
 }
 
 /**
- * The `useOverridableState` hook returns the state and function that updates the state, just like React.useState does.
+ * The `useControllableState` hook returns the state and function that updates the state, just like React.useState does.
  * It allows components to handle both overridden and controlled modes, providing control over its internal state
  * when needed.
  *
@@ -21,7 +21,7 @@ export interface UseOverridableStateProps<T> {
  *
  * ```
  *  import React from "react";
- *  import { useOverridableState } from "use-overridable-state";
+ *  import { useControllableState } from "use-overridable-state";
  *
  *  interface ModalProps {
  *    isOpen?: boolean;
@@ -29,7 +29,7 @@ export interface UseOverridableStateProps<T> {
  *  }
  *
  *  const Modal: React.FC<ModalProps> = ({ isOpen, onToggle }) => {
- *    const [open, setOpen] = useOverridableState({
+ *    const [open, setOpen] = useControllableState({
  *      value: isOpen,
  *      defaultValue: false,
  *      onChange: onToggle,
@@ -71,8 +71,8 @@ export interface UseOverridableStateProps<T> {
  *  <Modal isOpen={isOpen} onToggle={handleToggle} />
  * ```
  */
-export function useOverridableState<T = boolean>(
-  props: UseOverridableStateProps<T>
+export function useControllableState<T = boolean>(
+  props: UseControllableStateProps<T>
 ) {
   const {
     value: valueProp,

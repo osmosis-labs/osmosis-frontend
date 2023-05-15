@@ -76,8 +76,9 @@ export function useTradeTokenInConfig(
 
       if (config.isEmptyInput) return reject("No input");
 
-      ////////
-      // Prepare swap data
+      /**
+       * Prepare swap data
+       */
 
       type Pool = {
         id: string;
@@ -117,8 +118,9 @@ export function useTradeTokenInConfig(
         .outAmountLessSlippage(maxSlippage)
         .toCoin().amount;
 
-      ////////
-      // Send messages to account
+      /**
+       * Send messages to account
+       */
 
       if (routes.length === 1) {
         const { pools } = routes[0];

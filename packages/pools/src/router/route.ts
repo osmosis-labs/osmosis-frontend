@@ -2,7 +2,7 @@ import { Int } from "@keplr-wallet/unit";
 
 import { RoutablePool } from "./types";
 
-/** Single path through pools. */
+/** Single route through pools. */
 export interface Route {
   pools: RoutablePool[];
   // tokenOutDenoms means the token to come out from each pool.
@@ -13,7 +13,7 @@ export interface Route {
   tokenInDenom: string;
 }
 
-/** Single path through pools, with the initial amount calculated. */
+/** Represents a route through pools, with the initial amount in. */
 export interface RouteWithInAmount extends Route {
   initialAmount: Int;
 }
