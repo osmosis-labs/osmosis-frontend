@@ -68,6 +68,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
             !account?.isReadyToSendTx ||
             !counterpartyAccount?.isReadyToSendTx ||
             account?.txTypeInProgress !== "" ||
+            counterpartyAccount?.txTypeInProgress !== "" ||
             amountConfig.error != undefined ||
             inTransit ||
             !isCustomWithdrawValid,
