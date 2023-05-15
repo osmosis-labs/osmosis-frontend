@@ -72,7 +72,7 @@ const chainInfos = IS_TESTNET
       {
         rpc: "https://rpc-theta.osmotest5.osmosis.zone/",
         rest: "https://lcd-theta.osmotest5.osmosis.zone/",
-        chainId: "theta-testnet-001",
+        chainId: "provider",
         chainName: "Cosmos Hub Public Testnet",
         bip44: {
           coinType: 118,
