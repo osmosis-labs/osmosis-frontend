@@ -51,12 +51,8 @@ export class ObservableQueryGauge extends ObservableChainQuery<GaugeById> {
     return queryGauge;
   }
 
-  allowFetch() {
-    this._canFetch = true;
-  }
-
   protected canFetch() {
-    return !this._raw && this._canFetch;
+    return this._canFetch;
   }
 
   @action
@@ -77,6 +73,7 @@ export class ObservableQueryGauge extends ObservableChainQuery<GaugeById> {
     }
 
     this.setRaw(response.data.gauge);
+    this._canFetch = false;
   }
 
   get gauge() {
@@ -154,6 +151,11 @@ export class ObservableQueryGauge extends ObservableChainQuery<GaugeById> {
         ),
       };
     });
+  }
+
+  waitFreshResponse(): Promise<Readonly<QueryResponse<GaugeById>> | undefined> {
+    this._canFetch = true;
+    return super.waitFreshResponse();
   }
 }
 
