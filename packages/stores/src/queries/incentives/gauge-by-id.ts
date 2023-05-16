@@ -14,6 +14,9 @@ import { Gauge, GaugeById } from "./types";
 
 /** Individual gauge that can be fetched individually, as well as initialized with data statically (and later refreshed). */
 export class ObservableQueryGauge extends ObservableChainQuery<GaugeById> {
+  // Gauge data managed by child class instead of response member of base class
+  // since there are many gauge requests that may happen, we don't want to over fetch
+  // when it becomes un/observed since it rarely changes.
   @observable.ref
   protected _raw?: Gauge;
 
@@ -178,8 +181,9 @@ export class ObservableQueryGauges extends ObservableChainQueryMap<GaugeById> {
     // If the requested gauge does not have data, fetch it.
     if (!gauge.hasData && !this._fetchingGaugeIds.has(id)) {
       this._fetchingGaugeIds.add(id);
-      gauge.allowFetch();
-      gauge.waitResponse().finally(() => this._fetchingGaugeIds.delete(id));
+      gauge
+        .waitFreshResponse()
+        .finally(() => this._fetchingGaugeIds.delete(id));
     }
 
     return gauge;
