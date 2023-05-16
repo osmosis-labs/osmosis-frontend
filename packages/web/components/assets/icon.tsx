@@ -41,7 +41,6 @@ export const Icon: FunctionComponent<
   }
 > = (props) => {
   const { id, ...rest } = props;
-  console.log("rest", rest);
   return (
     <svg width="24" height="24" {...rest}>
       <use href={`${spriteSVGURL}#${id}`} />

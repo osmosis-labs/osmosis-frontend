@@ -25,15 +25,16 @@ const AppDisplayCard: React.FC<AppDisplayCardProps> = ({
   return (
     <>
       <style jsx>{`
+        .app-display-card:hover .card-image {
+          transform: scale(1.15);
+        }
         .card-image {
           background-image: url(${imageUrl});
-        }
-        .card-image:hover {
-          transform: scale(1.15);
+          transition: transform 0.3s ease-in-out;
         }
       `}</style>
       <a href={externalUrl} target="_blank" rel="noopener noreferrer">
-        <div className="app-display-card bg-white rounded-lg bg-osmoverse-800 shadow-md">
+        <div className="app-display-card bg-white overflow-hidden rounded-lg bg-osmoverse-800 shadow-md">
           <div className="overflow-hidden">
             <div className="card-image h-40 overflow-hidden bg-cover bg-center transition-transform duration-300 ease-in"></div>
           </div>
@@ -61,7 +62,7 @@ const AppDisplayCard: React.FC<AppDisplayCardProps> = ({
                 </IconLink>
               )}
             </div>
-            <p className="body2 text-osmoverse-200">{subtitle}</p>
+            <p className="pt-3 text-xs text-osmoverse-200">{subtitle}</p>
           </div>
         </div>
       </a>

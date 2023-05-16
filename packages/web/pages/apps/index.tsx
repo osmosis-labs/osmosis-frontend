@@ -99,8 +99,6 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
     appDataType[]
   >([]);
 
-  console.log("my apps", apps);
-
   const t = useTranslation();
 
   const options = {
@@ -127,7 +125,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
 
   return (
     <main className="m-auto max-w-container bg-osmoverse-900 py-3 md:px-3">
-      <div className="flex justify-between">
+      <div className="flex justify-between pl-6">
         <div style={{ flexBasis: "55%" }}>
           <h4 className="pb-2 text-h4 font-h4 text-wosmongton-100">
             {t("store.headerTitle")}
@@ -139,7 +137,8 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
         <SearchBox
           placeholder={t("store.searchPlaceholder")}
           onInput={handleSearchInput}
-          className="w-300px self-end"
+          className="self-end"
+          size="long"
         />
       </div>
       <HeroCard
@@ -152,7 +151,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
         externalUrl="https://www.google.com"
         mediumUrl="https://www.google.com"
       />
-      <div className="body2 mb-2 pt-7 font-bold text-osmoverse-200">
+      <div className="body2 mb-2 pt-7 pl-6 font-bold text-osmoverse-200">
         All apps
       </div>
       <div className="container mx-auto py-3">
@@ -172,21 +171,21 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
           })}
         </div>
       </div>
-      <div className="container mx-auto flex py-6">
+      <div className="container mx-auto flex py-6 pl-6">
         <div className="flex flex-col pr-2" style={{ flexBasis: "35%" }}>
           <h6 className="font-semibold">{t("store.getFeatured")}</h6>
-          <p className="body2 pt-5 text-osmoverse-200">
+          <p className="pt-4 text-xs text-osmoverse-200">
             {t("store.featuredDescription")}
           </p>
         </div>
         <div className="flex w-48 items-center justify-center pl-6">
           <Button mode="secondary" size="sm" onClick={handleApplyClick}>
-            {t("store.applyButton")} {"->"}
+            {t("store.applyButton")} &rarr;
           </Button>
         </div>
       </div>
-      <div className="flex w-full items-center overflow-x-auto rounded-[32px] bg-osmoverse-1000 px-8 py-6 text-osmoverse-400 2xl:gap-4 xl:gap-3 1.5lg:px-4 md:flex-col md:items-start md:gap-3 md:px-5 md:py-5">
-        <span className="text-xxs">{t("store.storeDisclaimer")}</span>
+      <div className="flex w-full items-center overflow-x-auto rounded-lg bg-osmoverse-1000 px-8 py-6 text-osmoverse-400 2xl:gap-4 xl:gap-3 1.5lg:px-4 md:flex-col md:items-start md:gap-3 md:px-5 md:py-5">
+        <span className="text-xs">{t("store.storeDisclaimer")}</span>
       </div>
     </main>
   );
