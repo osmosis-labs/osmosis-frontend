@@ -444,7 +444,7 @@
   "viewExplorer": "zobacz eksplorer",
   "waitingForTransaction": "Oczekiwanie na dołączenie transakcji do bloku",
   "highPoolInflationWarning": "Wysokie APR-y mogą wynikać z nagród inflacyjnych. Postępuj ostrożnie.",
-  "streamswap": {
+  "autonomy": {
     "description": "Poznaj Limity i Zlecenia Stop oferowane przez Autonomy: ",
     "link": "osmosis.autoswap.trade"
   }

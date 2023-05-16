@@ -443,7 +443,7 @@
   "viewExplorer": "浏览器查看",
   "waitingForTransaction": "等待交易打包进区块",
   "highPoolInflationWarning": "高APR可能源自通胀性奖励。请谨慎操作。",
-  "streamswap": {
+  "autonomy": {
     "description": "通过 Autonomy 探索限价和止损订单: ",
     "link": "osmosis.autoswap.trade"
   }
