@@ -17,7 +17,6 @@ export class ObservableQueryGauge extends ObservableChainQuery<GaugeById> {
   @observable.ref
   protected _raw?: Gauge;
 
-  @observable
   protected _canFetch = false;
 
   constructor(
@@ -52,13 +51,12 @@ export class ObservableQueryGauge extends ObservableChainQuery<GaugeById> {
     return queryGauge;
   }
 
-  @action
   allowFetch() {
     this._canFetch = true;
   }
 
   protected canFetch() {
-    return this._canFetch;
+    return !this._raw && this._canFetch;
   }
 
   @action
@@ -70,11 +68,12 @@ export class ObservableQueryGauge extends ObservableChainQuery<GaugeById> {
     return this._raw !== undefined;
   }
 
+  // manage the response ourselves, outside of the base store
   protected setResponse(response: Readonly<QueryResponse<GaugeById>>) {
     super.setResponse(response);
 
     for (const coin of response.data.gauge.coins) {
-      this.chainGetter.getChain(this.chainId).findCurrency(coin.denom);
+      this.chainGetter.getChain(this.chainId).addUnknownCurrencies(coin.denom);
     }
 
     this.setRaw(response.data.gauge);
@@ -95,7 +94,7 @@ export class ObservableQueryGauge extends ObservableChainQuery<GaugeById> {
 
   @computed
   get lockupDuration(): Duration {
-    if ((this._canFetch && !this.response) || !this._raw) {
+    if (!this._raw) {
       return dayjs.duration({
         seconds: 0,
       });
