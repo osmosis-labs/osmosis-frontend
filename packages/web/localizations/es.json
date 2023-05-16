@@ -122,7 +122,8 @@
         "insufficientBal": "Saldo insuficiente",
         "insufficientFee": "Cuota insuficiente",
         "reconnectWallet": "Reconectar {walletName}",
-        "wrongNetworkInWallet": "Red incorrecta en {walletName}"
+        "wrongNetworkInWallet": "Red incorrecta en {walletName}",
+        "seeRequest": "Ver solicitud en {walletName}"
       },
       "from": "De",
       "loading": "Cargando",

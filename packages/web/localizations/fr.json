@@ -122,7 +122,8 @@
         "insufficientBal": "Solde insuffisant",
         "insufficientFee": "Frais insuffisants",
         "reconnectWallet": "Reconnecter {walletName}",
-        "wrongNetworkInWallet": "Mauvais réseau dans le {walletName}"
+        "wrongNetworkInWallet": "Mauvais réseau dans le {walletName}",
+        "seeRequest": "Voir la demande dans {walletName}"
       },
       "from": "De",
       "loading": "Chargement",

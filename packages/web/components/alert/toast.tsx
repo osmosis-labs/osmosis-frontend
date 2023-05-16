@@ -1,9 +1,12 @@
 import Image from "next/image";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
+import { t } from "react-multi-lang";
 import { toast, ToastOptions } from "react-toastify";
 
 import { Alert, ToastType } from "./types";
+
+const tAlertField = (field: Alert["caption"] | Alert["message"]) =>
+  typeof field === "string" ? t(field) : t(...(field as Parameters<typeof t>));
 
 export function displayToast(
   alert: Alert,
@@ -50,72 +53,63 @@ export function displayToast(
   }
 }
 
-const LoadingToast: FunctionComponent<Alert> = ({ message, caption }) => {
-  const t = useTranslation();
-  return (
-    <div className="flex items-center gap-3 md:gap-2">
-      <div className="flex h-8 w-8 shrink-0 animate-spin items-center">
-        <Image
-          alt="loading"
-          src="/icons/loading-blue.svg"
-          height={32}
-          width={32}
-        />
-      </div>
-      <div className="text-white-high">
-        <h6 className="mb-2 text-lg md:text-base">{t(message)}</h6>
-        {caption && <p className="text-sm md:text-xs">{t(caption)}</p>}
-      </div>
+const LoadingToast: FunctionComponent<Alert> = ({ message, caption }) => (
+  <div className="flex items-center gap-3 md:gap-2">
+    <div className="flex h-8 w-8 shrink-0 animate-spin items-center">
+      <Image
+        alt="loading"
+        src="/icons/loading-blue.svg"
+        height={32}
+        width={32}
+      />
     </div>
-  );
-};
+    <div className="text-white-high">
+      <h6 className="mb-2 text-lg md:text-base">{tAlertField(message)}</h6>
+      {caption && <p className="text-sm md:text-xs">{tAlertField(caption)}</p>}
+    </div>
+  </div>
+);
 
-const ErrorToast: FunctionComponent<Alert> = ({ message, caption }) => {
-  const t = useTranslation();
-  return (
-    <div className="flex items-center gap-3 md:gap-2">
-      <div className="h-8 w-8 shrink-0">
-        <Image alt="failed" src="/icons/error-x.svg" height={32} width={32} />
-      </div>
-      <div className="text-white-high">
-        <h6 className="mb-2 text-lg md:text-base">{t(message)}</h6>
-        {caption && <p className="text-sm md:text-xs">{t(caption)}</p>}
-      </div>
+const ErrorToast: FunctionComponent<Alert> = ({ message, caption }) => (
+  <div className="flex items-center gap-3 md:gap-2">
+    <div className="h-8 w-8 shrink-0">
+      <Image alt="failed" src="/icons/error-x.svg" height={32} width={32} />
     </div>
-  );
-};
+    <div className="text-white-high">
+      <h6 className="mb-2 text-lg md:text-base">{tAlertField(message)}</h6>
+      {caption && <p className="text-sm md:text-xs">{tAlertField(caption)}</p>}
+    </div>
+  </div>
+);
 
 const SuccessToast: FunctionComponent<Alert> = ({
   message,
   learnMoreUrl,
   learnMoreUrlCaption,
-}) => {
-  const t = useTranslation();
-  return (
-    <div className="flex items-center gap-3 md:gap-2">
-      <div className="h-8 w-8 shrink-0">
-        <Image alt="b" src="/icons/check-circle.svg" height={32} width={32} />
-      </div>
-      <div className="text-white-high">
-        <h6 className="mb-2 text-lg md:text-base">{t(message)}</h6>
-        {learnMoreUrl && learnMoreUrlCaption && (
-          <a
-            target="__blank"
-            href={learnMoreUrl}
-            className="inline cursor-pointer text-sm hover:opacity-75 md:text-xs"
-          >
-            {t(learnMoreUrlCaption ?? "Learn more")}
-            <div className="mb-0.75 ml-2 inline-block">
-              <Image
-                alt="link"
-                src="/icons/link-deco.svg"
-                height={12}
-                width={12}
-              />
-            </div>
-          </a>
-        )}
-      </div>
+}) => (
+  <div className="flex items-center gap-3 md:gap-2">
+    <div className="h-8 w-8 shrink-0">
+      <Image alt="b" src="/icons/check-circle.svg" height={32} width={32} />
     </div>
-  );
-};
+    <div className="text-white-high">
+      <h6 className="mb-2 text-lg md:text-base">{tAlertField(message)}</h6>
+      {learnMoreUrl && learnMoreUrlCaption && (
+        <a
+          target="__blank"
+          href={learnMoreUrl}
+          className="inline cursor-pointer text-sm hover:opacity-75 md:text-xs"
+        >
+          {t(learnMoreUrlCaption ?? "Learn more")}
+          <div className="mb-0.75 ml-2 inline-block">
+            <Image
+              alt="link"
+              src="/icons/link-deco.svg"
+              height={12}
+              width={12}
+            />
+          </div>
+        </a>
+      )}
+    </div>
+  </div>
+);

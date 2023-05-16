@@ -1,6 +1,8 @@
+import { t } from "react-multi-lang";
+
 export interface Alert {
-  message: string;
-  caption?: string;
+  message: Parameters<typeof t> | string;
+  caption?: Parameters<typeof t> | string;
   learnMoreUrl?: string;
   learnMoreUrlCaption?: string;
 }

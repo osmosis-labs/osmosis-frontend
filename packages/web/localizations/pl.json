@@ -122,7 +122,8 @@
         "insufficientBal": "Niewystarczająca Ilość Środków",
         "insufficientFee": "Niewystarczająca Prowizja",
         "reconnectWallet": "Połącz ponownie {walletName}",
-        "wrongNetworkInWallet": "Nieprawidłowa sieć w {walletName}"
+        "wrongNetworkInWallet": "Nieprawidłowa sieć w {walletName}",
+        "seeRequest": "Zobacz żądanie w {walletName}"
       },
       "from": "Od",
       "loading": "Ładowanie",
