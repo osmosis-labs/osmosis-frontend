@@ -105,15 +105,13 @@ export class ObservablePoolDetail {
             duration
           );
 
-        if (!gaugeId) return;
-
-        const gauge = this.externalQueries.queryActiveGauges.get(gaugeId);
-
-        if (!gauge) return;
+        const gauge = this.externalQueries.queryActiveGauges.get(
+          gaugeId ?? "1"
+        );
 
         const apr = this.queries.queryIncentivizedPools.computeApr(
           this.poolId,
-          gauge.lockupDuration,
+          duration,
           this.priceStore,
           this._fiatCurrency
         );
@@ -122,7 +120,7 @@ export class ObservablePoolDetail {
           id: gaugeId,
           duration,
           apr,
-          isLoading: gauge.isFetching,
+          isLoading: gauge?.isFetching ?? true,
         };
       })
       .filter(
