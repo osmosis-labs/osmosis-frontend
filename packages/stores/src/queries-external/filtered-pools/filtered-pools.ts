@@ -142,9 +142,13 @@ export class ObservableQueryFilteredPools
           this.queryLiquiditiesInNetDirection,
           this.queryBalances
         )
-          .then((pool) => runInAction(() => this._pools.set(id, pool)))
+          .then((pool) =>
+            runInAction(() => {
+              this._pools.set(id, pool);
+            })
+          )
           .catch((e: any) => {
-            if (e === "not-found") {
+            if (e.message === "not-found") {
               runInAction(() => this._nonExistentPoolsSet.add(id));
             }
           })

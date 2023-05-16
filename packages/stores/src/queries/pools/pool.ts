@@ -464,7 +464,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     try {
       const response = await fetch(lcdUrl + endpoint);
       const data = (await response.json()) as { pool: PoolRaw };
-      if (response.ok) {
+      if (!response.ok) {
         throw new Error();
       }
 
