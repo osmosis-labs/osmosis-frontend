@@ -387,6 +387,8 @@
   "settings": {
     "filterDust": "Filter Dust",
     "selectLanguage": "Select language",
+    "titleUnverifiedAssets": "Unverified Assets",
+    "unverifiedAssets": "Display unverified assets in pools and swap",
     "title": "Global settings",
     "titleHideDust": "Hide pools with < {fiatSymbol}0.01",
     "titleLanguage": "Language"

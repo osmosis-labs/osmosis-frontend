@@ -41,6 +41,7 @@ import { ProfileStore } from "./profile";
 import {
   HideDustUserSetting,
   LanguageUserSetting,
+  UnverifiedAssetsUserSetting,
   UserSettings,
 } from "./user-settings";
 const semver = require("semver");
@@ -304,6 +305,7 @@ export class RootStore {
         this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)
           ?.symbol ?? "$"
       ),
+      new UnverifiedAssetsUserSetting(),
     ]);
 
     const profileStoreKvStore = makeLocalStorageKVStore("profile_store");

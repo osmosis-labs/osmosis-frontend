@@ -1,18 +1,23 @@
+import { KVStore } from "@keplr-wallet/common";
 import {
+  autorun,
+  computed,
   makeObservable,
   observable,
-  computed,
-  autorun,
-  toJS,
   runInAction,
+  toJS,
 } from "mobx";
-import { FunctionComponent } from "react";
 import { computedFn } from "mobx-utils";
-import { KVStore } from "@keplr-wallet/common";
+import { FunctionComponent } from "react";
+
 import { HideDustUserSetting } from "./hide-dust";
 import { LanguageUserSetting } from "./language";
+import { UnverifiedAssetsUserSetting } from "./unverified-assets";
 
-type UserSettingName = HideDustUserSetting["id"] | LanguageUserSetting["id"];
+type UserSettingName =
+  | HideDustUserSetting["id"]
+  | LanguageUserSetting["id"]
+  | UnverifiedAssetsUserSetting["id"];
 
 export interface UserSetting<TState = any> {
   readonly id: string;
@@ -66,3 +71,4 @@ export class UserSettings {
 
 export * from "./hide-dust";
 export * from "./language";
+export * from "./unverified-assets";
