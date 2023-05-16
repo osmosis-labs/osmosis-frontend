@@ -586,6 +586,134 @@ export class OsmosisAccountImpl {
     );
   }
 
+  async createConcentratedLiquidityPosition(
+    poolId: string,
+    baseDeposit: { currency: Currency; amount: string },
+    quoteDeposit: { currency: Currency; amount: string },
+    lowerTick: Int,
+    upperTick: Int,
+    memo: string = "",
+    onFulfill?: (tx: any) => void
+  ) {
+    const queries = this.queries;
+    this.queriesStore;
+
+    await this.base.cosmos.sendMsgs(
+      "clCreatePosition",
+      async () => {
+        console.log({
+          poolId,
+          baseDeposit,
+          quoteDeposit,
+          lowerTick,
+          upperTick,
+        });
+        const queryPool = queries.queryGammPools.getPool(poolId);
+
+        if (!queryPool) {
+          throw new Error(`Pool #${poolId} not found`);
+        }
+
+        await queryPool.waitFreshResponse();
+
+        const type = queryPool.pool.type;
+        if (type !== "concentrated") {
+          throw new Error("Must be concentrated pool");
+        }
+
+        const baseAmount = new Dec(baseDeposit.amount)
+          .mul(
+            DecUtils.getTenExponentNInPrecisionRange(
+              baseDeposit.currency.coinDecimals
+            )
+          )
+          .truncate();
+        const baseCoin = new Coin(
+          baseDeposit.currency.coinMinimalDenom,
+          baseAmount
+        );
+
+        const quoteAmount = new Dec(quoteDeposit.amount)
+          .mul(
+            DecUtils.getTenExponentNInPrecisionRange(
+              quoteDeposit.currency.coinDecimals
+            )
+          )
+          .truncate();
+        const quoteCoin = new Coin(
+          quoteDeposit.currency.coinMinimalDenom,
+          quoteAmount
+        );
+
+        const msg = {
+          type: this._msgOpts.clCreatePosition.type,
+          value: {
+            pool_id: poolId,
+            sender: this.base.bech32Address,
+            lower_tick: lowerTick.toString(),
+            upper_tick: upperTick.toString(),
+            token_desired_0: {
+              denom: baseCoin.denom,
+              amount: baseCoin.amount.toString(),
+            },
+            token_desired_1: {
+              denom: quoteCoin.denom,
+              amount: quoteCoin.amount.toString(),
+            },
+            token_min_amount_0: baseCoin.amount.toString(),
+            token_min_amount_1: quoteCoin.amount.toString(),
+          },
+        };
+
+        return {
+          aminoMsgs: [msg],
+          protoMsgs: [
+            {
+              typeUrl:
+                "/osmosis.concentratedliquidity.v1beta1.MsgCreatePosition",
+              value:
+                osmosis.concentratedliquidity.v1beta1.MsgCreatePosition.encode({
+                  sender: msg.value.sender,
+                  poolId: Long.fromString(msg.value.pool_id),
+                  lowerTick: Long.fromString(lowerTick.toString()),
+                  upperTick: Long.fromString(upperTick.toString()),
+                  tokenDesired0: {
+                    denom: baseCoin.denom,
+                    amount: baseCoin.amount.toString(),
+                  },
+                  tokenDesired1: {
+                    denom: quoteCoin.denom,
+                    amount: quoteCoin.amount.toString(),
+                  },
+                  tokenMinAmount0: baseCoin.amount.toString(),
+                  tokenMinAmount1: quoteCoin.amount.toString(),
+                }).finish(),
+            },
+          ],
+        };
+      },
+      memo,
+      {
+        amount: [],
+        gas: this._msgOpts.clCreatePosition.gas.toString(),
+      },
+      undefined,
+      (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.base.bech32Address)
+            .balances.forEach((bal) => {
+              bal.waitFreshResponse();
+            });
+          this.queries.queryGammPools.getPool(poolId)?.waitFreshResponse();
+        }
+
+        onFulfill?.(tx);
+      }
+    );
+  }
+
   /**
    * Perform multiple swaps that are routed through multiple pools, with a desired input token.
    *

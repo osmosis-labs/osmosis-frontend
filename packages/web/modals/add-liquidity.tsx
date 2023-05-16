@@ -1,4 +1,7 @@
-import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
+import {
+  ObservableAddConcentratedLiquidityConfig,
+  ObservableAddLiquidityConfig,
+} from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -37,7 +40,7 @@ export const AddLiquidityModal: FunctionComponent<
   const account = accountStore.getAccount(chainId);
   const isSendingMsg = account.txTypeInProgress !== "";
 
-  const { config, addLiquidity } = useAddLiquidityConfig(
+  const { config: addLiquidityConfig, addLiquidity } = useAddLiquidityConfig(
     chainStore,
     chainId,
     poolId,
@@ -56,7 +59,8 @@ export const AddLiquidityModal: FunctionComponent<
   const { poolDetail } = derivedDataStore.getForPool(poolId as string);
   const pool = poolDetail?.pool?.pool;
   const isConcLiq = pool?.type === "concentrated";
-
+  const config = isConcLiq ? addConliqConfig : addLiquidityConfig;
+  console.log(config);
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
       disabled: config.error !== undefined || isSendingMsg,
@@ -69,7 +73,10 @@ export const AddLiquidityModal: FunctionComponent<
         );
 
         if (!isConcLiq) {
-          props.onAddLiquidity?.(addLiquidityResult, config);
+          props.onAddLiquidity?.(
+            addLiquidityResult,
+            config as ObservableAddLiquidityConfig
+          );
         }
       },
       children: config.error
@@ -88,7 +95,9 @@ export const AddLiquidityModal: FunctionComponent<
         className="!max-w-[57.5rem]"
       >
         <AddConcLiquidity
-          addLiquidityConfig={addConliqConfig}
+          addLiquidityConfig={
+            addConliqConfig as ObservableAddConcentratedLiquidityConfig
+          }
           actionButton={accountActionButton}
           getFiatValue={(coin) => priceStore.calculatePrice(coin)}
           onRequestClose={props.onRequestClose}
@@ -105,7 +114,7 @@ export const AddLiquidityModal: FunctionComponent<
     >
       <AddLiquidity
         className="pt-4"
-        addLiquidityConfig={config}
+        addLiquidityConfig={config as ObservableAddLiquidityConfig}
         actionButton={accountActionButton}
         getFiatValue={(coin) => priceStore.calculatePrice(coin)}
       />

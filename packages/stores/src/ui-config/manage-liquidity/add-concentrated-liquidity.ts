@@ -349,6 +349,11 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   get xRange(): [number, number] {
     return [0, Math.max(...this.depthChartData.map((d) => d.depth)) * 1.2];
   }
+
+  @computed
+  get error(): Error | undefined {
+    return;
+  }
 }
 
 function getLiqFrom(target: Int, list: ActiveLiquidityPerTickRange[]): number {

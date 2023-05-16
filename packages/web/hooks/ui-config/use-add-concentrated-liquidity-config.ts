@@ -48,32 +48,26 @@ export function useAddConcentratedLiquidityConfig(
 
   const addLiquidity = useCallback(async () => {
     return new Promise<void>(async (resolve, reject) => {
-      console.log(resolve, reject);
-      // try {
-      //   if (config.isSingleAmountIn && config.singleAmountInConfig) {
-      //     await account.osmosis.sendJoinSwapExternAmountInMsg(
-      //       config.poolId,
-      //       {
-      //         currency: config.singleAmountInConfig.sendCurrency,
-      //         amount: config.singleAmountInConfig.amount,
-      //       },
-      //       undefined,
-      //       undefined,
-      //       resolve
-      //     );
-      //   } else if (config.shareOutAmount) {
-      //     await account.osmosis.sendJoinPoolMsg(
-      //       config.poolId,
-      //       config.shareOutAmount.toDec().toString(),
-      //       undefined,
-      //       undefined,
-      //       resolve
-      //     );
-      //   }
-      // } catch (e: any) {
-      //   console.error(e);
-      //   reject(e.message);
-      // }
+      try {
+        await account.osmosis.createConcentratedLiquidityPosition(
+          config.poolId,
+          {
+            currency: config.baseDepositAmountIn.sendCurrency,
+            amount: config.baseDepositAmountIn.amount,
+          },
+          {
+            currency: config.quoteDepositAmountIn.sendCurrency,
+            amount: config.quoteDepositAmountIn.amount,
+          },
+          config.tickRange[0],
+          config.tickRange[1],
+          undefined,
+          resolve
+        );
+      } catch (e: any) {
+        console.error(e);
+        reject(e.message);
+      }
     });
   }, [account.osmosis, config.sender, config.poolId]);
 
