@@ -137,6 +137,8 @@ export class ObservablePoolBonding {
 
   /** Highest APR that can be earned in this share pool. */
   get highestBondDuration(): BondDuration | undefined {
+    if (!this.poolDetail.longestDuration) return;
+
     return this.getBondDuration(
       this.poolDetail.longestDuration.asMilliseconds()
     );

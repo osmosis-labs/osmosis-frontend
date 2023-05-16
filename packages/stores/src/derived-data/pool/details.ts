@@ -80,7 +80,7 @@ export class ObservablePoolDetail {
   }
 
   @computed
-  get longestDuration(): Duration {
+  get longestDuration(): Duration | undefined {
     return this.lockableDurations[this.lockableDurations.length - 1];
   }
 
