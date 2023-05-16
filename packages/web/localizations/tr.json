@@ -443,5 +443,9 @@
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",
   "waitingForTransaction": "İşlemin bloğa eklenmesi bekleniyor",
-  "highPoolInflationWarning": "Yüksek APR'ler enflasyonist ödüllerden kaynaklanabilir. Dikkatli ilerleyin."
+  "highPoolInflationWarning": "Yüksek APR'ler enflasyonist ödüllerden kaynaklanabilir. Dikkatli ilerleyin.",
+  "streamswap": {
+    "description": "Autonomy tarafından sunulan Sınırlama ve Durdurma Emirlerini Keşfedin: ",
+    "link": "osmosis.autoswap.trade"
+  }
 }
