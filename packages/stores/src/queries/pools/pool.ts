@@ -482,7 +482,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   }
 
   protected static makeEndpointUrl(poolId: string) {
-    return `/osmosis/poolmanager/v1beta1/pools/${poolId}`;
+    return `/osmosis/gamm/v1beta1/pools/${poolId}`;
   }
 
   protected static addUnknownCurrencies(
