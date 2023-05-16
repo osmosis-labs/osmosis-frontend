@@ -29,7 +29,7 @@ const TokenPairHistoricalChart: FunctionComponent<{
         return (
           <XYChart
             key="line-chart"
-            margin={{ top: 0, right: 0, bottom: 36, left: 48 }}
+            margin={{ top: 0, right: 0, bottom: 24, left: 48 }}
             height={height}
             width={width}
             xScale={{

@@ -484,7 +484,7 @@ const AddConcLiqView: FunctionComponent<
           {t("addConcentratedLiquidity.priceRange")}
         </div>
         <div className="flex flex-row gap-1">
-          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col rounded-l-2xl bg-osmoverse-700 pl-6">
+          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
             <PriceChartHeader addLiquidityConfig={addLiquidityConfig} />
             <TokenPairHistoricalChart
               data={historicalChartData}
@@ -504,7 +504,7 @@ const AddConcLiqView: FunctionComponent<
           </div>
           <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-row rounded-r-2xl bg-osmoverse-700">
             <div className="flex flex-1 flex-col">
-              <div className="mt-7 mr-6 flex h-6 flex-row justify-end gap-1">
+              <div className="mt-7 mr-6 mb-8 flex h-6 flex-row justify-end gap-1">
                 <SelectorWrapper
                   alt="refresh"
                   src="/icons/refresh-ccw.svg"
@@ -552,7 +552,7 @@ const AddConcLiqView: FunctionComponent<
                   setMaxRange(val);
                   addLiquidityConfig.setFullRange(false);
                 }}
-                offset={{ top: 0, right: 36, bottom: 36, left: 0 }}
+                offset={{ top: 0, right: 36, bottom: 24 + 28, left: 0 }}
                 horizontal
                 fullRange={fullRange}
               />
@@ -692,9 +692,11 @@ function SelectorWrapper(props: {
   return (
     <div
       className={classNames(
-        "flex h-6 cursor-pointer flex-row items-center justify-center rounded-lg bg-osmoverse-800 px-2 text-xs hover:bg-osmoverse-900",
+        "flex h-6 cursor-pointer flex-row items-center justify-center",
+        "rounded-lg bg-osmoverse-800 px-2 text-caption hover:bg-osmoverse-900",
+        "whitespace-nowrap",
         {
-          "!bg-osmoverse-900": props.selected,
+          "!bg-osmoverse-600": props.selected,
         }
       )}
       onClick={props.onClick}
@@ -718,8 +720,8 @@ const PriceChartHeader: FunctionComponent<{
   const {
     historicalRange,
     setHistoricalRange,
-    baseDenom,
-    quoteDenom,
+    baseDepositAmountIn,
+    quoteDepositAmountIn,
     hoverPrice,
     priceDecimal,
   } = addLiquidityConfig;
@@ -728,7 +730,7 @@ const PriceChartHeader: FunctionComponent<{
 
   return (
     <div className="flex flex-row">
-      <div className="flex flex-1 flex-row pt-4">
+      <div className="flex flex-1 flex-row">
         <h4 className="row-span-2 pr-1 font-caption">
           {hoverPrice.toFixed(priceDecimal) || ""}
         </h4>
@@ -738,20 +740,20 @@ const PriceChartHeader: FunctionComponent<{
           </div>
           <div className="whitespace-nowrap text-caption text-osmoverse-300">
             {t("addConcentratedLiquidity.basePerQuote", {
-              base: baseDenom,
-              quote: quoteDenom,
+              base: baseDepositAmountIn.sendCurrency.coinDenom,
+              quote: quoteDepositAmountIn.sendCurrency.coinDenom,
             })}
           </div>
         </div>
       </div>
-      <div className="flex flex-1 flex-row justify-end gap-1 pt-2 pr-2">
+      <div className="flex flex-1 flex-row justify-end gap-1 pr-2">
         <RangeSelector
           label="7 day"
           onClick={() => setHistoricalRange("7d")}
           selected={historicalRange === "7d"}
         />
         <RangeSelector
-          label="30 days"
+          label="30 day"
           onClick={() => setHistoricalRange("1mo")}
           selected={historicalRange === "1mo"}
         />
@@ -788,7 +790,6 @@ const DepositAmountGroup: FunctionComponent<{
   const { priceStore, chainStore, queriesStore, accountStore } = useStore();
 
   const { chainId } = chainStore.osmosis;
-  // const { nativeBalances, ibcBalances } = assetsStore;
   const { bech32Address } = accountStore.getAccount(chainId);
 
   const fiatPer = coin?.currency.coinGeckoId
@@ -811,7 +812,7 @@ const DepositAmountGroup: FunctionComponent<{
   );
 
   return (
-    <div className="flex flex-1 flex-shrink-0 flex-row items-center rounded-[20px] bg-osmoverse-700 p-[1.25rem]">
+    <div className="flex flex-1 flex-shrink-0 flex-row items-center rounded-[20px] bg-osmoverse-700 p-3">
       <div className="flex w-full flex-row items-center">
         {coin?.currency.coinImageUrl && (
           <Image
@@ -826,7 +827,7 @@ const DepositAmountGroup: FunctionComponent<{
           <div className="text-osmoverse-200">50%</div>
         </div>
         <div className="flex flex-1 flex-col">
-          <div className="text-right text-caption text-wosmongton-300">
+          <div className="mb-[2px] text-right text-caption text-wosmongton-300">
             {walletBalance ? walletBalance.toString() : ""}
           </div>
           <div className="flex h-16 w-[158px] flex-col items-end justify-center self-end rounded-[12px] bg-osmoverse-800">
