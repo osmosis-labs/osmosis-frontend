@@ -1,6 +1,6 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import Image from "next/image";
-import { ComponentProps, useEffect, useState } from "react";
+import { ComponentProps, useCallback, useEffect, useState } from "react";
 import { t } from "react-multi-lang";
 
 import { Button } from "../components/buttons";
@@ -31,7 +31,7 @@ export function useConnectWalletModalRedirect(
 
   const { onOpenWalletSelect } = useWalletSelect();
 
-  const [walletInitiallyConnected] = useState(
+  const [walletInitiallyConnected, setWalletInitiallyConnected] = useState(
     () => osmosisAccount?.walletStatus === WalletStatus.Connected
   );
   const [showSelf, setShowSelf] = useState(true);
@@ -44,6 +44,13 @@ export function useConnectWalletModalRedirect(
       setShowSelf(true);
     }
   }, [osmosisAccount?.walletStatus, walletInitiallyConnected]);
+
+  const resetState = useCallback(() => {
+    setShowSelf(false);
+    setWalletInitiallyConnected(
+      osmosisAccount?.walletStatus === WalletStatus.Connected
+    );
+  }, [osmosisAccount?.walletStatus]);
 
   return {
     showModalBase: showSelf,
@@ -71,5 +78,6 @@ export function useConnectWalletModalRedirect(
         </Button>
       ),
     walletConnected: osmosisAccount?.walletStatus === WalletStatus.Connected,
+    resetState,
   };
 }

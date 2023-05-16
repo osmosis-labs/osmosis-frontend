@@ -59,7 +59,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
 
     const isChainBlockedOrCongested =
       chainStatus === "congested" || chainStatus === "blocked";
-    const { showModalBase, accountActionButton, walletConnected } =
+    const { showModalBase, accountActionButton, walletConnected, resetState } =
       useConnectWalletModalRedirect(
         {
           className: "md:mt-4 mt-6 hover:opacity-75",
@@ -216,14 +216,15 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                     counterpartyAccount?.walletInfo?.prettyName ?? "",
                 }
           }
-          onRequestSwitchWallet={(source) => {
+          onRequestSwitchWallet={async (source) => {
             if (source === "account") {
-              account?.disconnect(false);
+              await account?.disconnect(true);
               onOpenWalletSelect(osmosisChainId);
             } else if (source === "counterpartyAccount") {
-              counterpartyAccount?.disconnect(false);
+              await counterpartyAccount?.disconnect(true);
               onOpenWalletSelect(props.counterpartyChainId);
             }
+            resetState();
           }}
         />
         {accountActionButton}

@@ -8,6 +8,7 @@ import {
   UncommitedHistory,
 } from "@osmosis-labs/stores";
 import { useCallback, useEffect } from "react";
+import { useMount } from "react-use";
 
 import { useStore } from "../../stores";
 import { useAmountConfig, useFakeFeeConfig } from "..";
@@ -56,6 +57,8 @@ export function useIbcTransfer({
   const { onOpenWalletSelect } = useWalletSelect();
 
   const account = accountStore.getWallet(chainId);
+  const counterpartyAccountRepo =
+    accountStore.getWalletRepo(counterpartyChainId);
   const counterpartyAccount = accountStore.getWallet(counterpartyChainId);
 
   const osmosisAddress = account?.address ?? "";
@@ -92,19 +95,20 @@ export function useIbcTransfer({
         }
       : undefined;
 
-  // open dialog to request connecting to counterparty chain
+  useMount(() => {
+    counterpartyAccountRepo?.connect(account?.walletName);
+  });
+
   useEffect(() => {
     if (
-      (account?.address &&
-        (counterpartyAccount?.walletStatus === WalletStatus.Disconnected ||
-          counterpartyAccount?.walletStatus === WalletStatus.Rejected)) ||
-      !counterpartyAccount
+      counterpartyAccount?.walletStatus === WalletStatus.Error ||
+      counterpartyAccount?.walletStatus === WalletStatus.Rejected ||
+      counterpartyAccount?.walletStatus === WalletStatus.NotExist
     ) {
       onOpenWalletSelect(counterpartyChainId);
     }
   }, [
-    account?.address,
-    counterpartyAccount,
+    counterpartyAccount?.walletStatus,
     counterpartyChainId,
     onOpenWalletSelect,
   ]);
