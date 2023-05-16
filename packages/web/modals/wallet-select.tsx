@@ -169,9 +169,14 @@ const ModalContent: FunctionComponent<
     ) => {
       if (!wallet) return;
       if (!("lazyInstall" in wallet)) {
-        wallet.connect(sync).then(() => {
-          onConnectProp?.();
-        });
+        wallet
+          .connect(sync)
+          .then(() => {
+            onConnectProp?.();
+          })
+          .catch(() => {
+            /** DO NOTHING */
+          });
         return;
       }
 
@@ -199,11 +204,19 @@ const ModalContent: FunctionComponent<
           .then(() => {
             setLazyWalletInfo(undefined);
             onConnectProp?.();
+          })
+          .catch(() => {
+            /** DO NOTHING */
           });
       } else {
-        installedWallet?.connect(sync).then(() => {
-          onConnectProp?.();
-        });
+        installedWallet
+          ?.connect(sync)
+          .then(() => {
+            onConnectProp?.();
+          })
+          .catch(() => {
+            /** DO NOTHING */
+          });
       }
     };
 

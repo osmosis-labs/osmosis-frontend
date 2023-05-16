@@ -1,4 +1,3 @@
-import { WalletStatus } from "@cosmos-kit/core";
 import { AmountConfig } from "@keplr-wallet/hooks";
 import {
   AccountStore,
@@ -7,7 +6,7 @@ import {
   OsmosisAccount,
   UncommitedHistory,
 } from "@osmosis-labs/stores";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { useMount } from "react-use";
 
 import { useStore } from "../../stores";
@@ -96,22 +95,24 @@ export function useIbcTransfer({
       : undefined;
 
   useMount(() => {
-    counterpartyAccountRepo?.connect(account?.walletName);
+    counterpartyAccountRepo
+      ?.connect(account?.walletName)
+      .catch(() => onOpenWalletSelect(counterpartyChainId));
   });
 
-  useEffect(() => {
-    if (
-      counterpartyAccount?.walletStatus === WalletStatus.Error ||
-      counterpartyAccount?.walletStatus === WalletStatus.Rejected ||
-      counterpartyAccount?.walletStatus === WalletStatus.NotExist
-    ) {
-      onOpenWalletSelect(counterpartyChainId);
-    }
-  }, [
-    counterpartyAccount?.walletStatus,
-    counterpartyChainId,
-    onOpenWalletSelect,
-  ]);
+  // useEffect(() => {
+  //   if (
+  //     counterpartyAccount?.walletStatus === WalletStatus.Error ||
+  //     counterpartyAccount?.walletStatus === WalletStatus.Rejected ||
+  //     counterpartyAccount?.walletStatus === WalletStatus.NotExist
+  //   ) {
+  //     onOpenWalletSelect(counterpartyChainId);
+  //   }
+  // }, [
+  //   counterpartyAccount?.walletStatus,
+  //   counterpartyChainId,
+  //   onOpenWalletSelect,
+  // ]);
 
   const transfer: (
     onFulfill?: (
