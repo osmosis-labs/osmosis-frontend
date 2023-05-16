@@ -26,9 +26,23 @@ export const IBCAssetInfos: (IBCAsset & {
 })[] = IS_TESTNET
   ? [
       {
+        counterpartyChainId: "theta-testnet-001",
+        sourceChannelId: "channel-12",
+        destChannelId: "channel-2500",
+        coinMinimalDenom: "uatom",
+        isVerified: true,
+      },  
+      {
+        counterpartyChainId: "ares-1",
+        sourceChannelId: "channel-24",
+        destChannelId: "channel-14",
+        coinMinimalDenom: "umars",
+        isVerified: true,
+      },
+      {
         counterpartyChainId: "axelar-testnet-lisbon-3",
-        sourceChannelId: "channel-1946",
-        destChannelId: "channel-135",
+        sourceChannelId: "channel-3",
+        destChannelId: "channel-227",
         coinMinimalDenom: "uausdc",
         sourceChainNameOverride: "Goerli Ethereum",
         isVerified: true,
@@ -50,110 +64,42 @@ export const IBCAssetInfos: (IBCAsset & {
         ],
       },
       {
-        counterpartyChainId: "axelar-testnet-lisbon-3",
-        sourceChannelId: "channel-1946",
-        destChannelId: "channel-135",
-        coinMinimalDenom: "weth-wei",
-        sourceChainNameOverride: "Goerli Ethereum",
-        isVerified: true,
-        originBridgeInfo: {
-          bridge: "axelar" as const,
-          wallets: ["metamask" as const, "walletconnect" as const],
-          method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.weth.ethereum],
-        },
-      },
-      {
-        counterpartyChainId: "axelar-testnet-lisbon-3",
-        sourceChannelId: "channel-1946",
-        destChannelId: "channel-135",
-        coinMinimalDenom: "wbnb-wei",
-        sourceChainNameOverride: "Binance Smart Chain Testnet",
-        isVerified: true,
-        originBridgeInfo: {
-          bridge: "axelar" as const,
-          wallets: ["metamask" as const],
-          method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.wbnb.binance],
-        },
-      },
-      {
-        counterpartyChainId: "axelar-testnet-lisbon-3",
-        sourceChannelId: "channel-1946",
-        destChannelId: "channel-135",
-        coinMinimalDenom: "wmatic-wei",
-        sourceChainNameOverride: "Mumbai",
-        isVerified: true,
-        originBridgeInfo: {
-          bridge: "axelar" as const,
-          wallets: ["metamask" as const],
-          method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.wmatic.polygon],
-        },
-      },
-      {
-        counterpartyChainId: "axelar-testnet-lisbon-3",
-        sourceChannelId: "channel-1946",
-        destChannelId: "channel-135",
-        coinMinimalDenom: "wavax-wei",
-        sourceChainNameOverride: "Avalanche Fuji Testnet",
-        isVerified: true,
-        originBridgeInfo: {
-          bridge: "axelar" as const,
-          wallets: ["metamask" as const],
-          method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.wavax.avalanche],
-        },
-      },
-      {
-        counterpartyChainId: "axelar-testnet-lisbon-3",
-        sourceChannelId: "channel-1946",
-        destChannelId: "channel-135",
-        coinMinimalDenom: "wdev-wei",
-        sourceChainNameOverride: "Moonbase Alpha",
-        isVerified: true,
-        originBridgeInfo: {
-          bridge: "axelar" as const,
-          wallets: ["metamask" as const, "walletconnect" as const],
-          method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.wglmr.moonbeam],
-        },
-      },
-      {
-        counterpartyChainId: "ares-1",
-        sourceChannelId: "channel-2083",
-        destChannelId: "channel-2",
-        coinMinimalDenom: "umars",
-        isVerified: true,
-      },
-      {
-        counterpartyChainId: "axelar-testnet-lisbon-3",
-        sourceChannelId: "channel-1946",
-        destChannelId: "channel-135",
-        coinMinimalDenom: "wftm-wei",
-        sourceChainNameOverride: "Fantom Testnet",
-        isVerified: true,
-        originBridgeInfo: {
-          bridge: "axelar" as const,
-          wallets: ["metamask" as const],
-          method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.wftm.fantom],
-        },
-      },
-      {
         counterpartyChainId: "uni-6",
-        sourceChannelId: "channel-3316",
-        destChannelId: "channel-140",
+        sourceChannelId: "channel-1",
+        destChannelId: "channel-190",
         coinMinimalDenom: "ujunox",
         isVerified: true,
       },
+      {
+        counterpartyChainId: "grand-1",
+        sourceChannelId: "channel-6",
+        destChannelId: "channel-6",
+        coinMinimalDenom: "uusdc",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "sandbox",
+        sourceChannelId: "channel-4",
+        destChannelId: "channel-2",
+        coinMinimalDenom: "uakt",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "kaon-1",
+        sourceChannelId: "channel-10",
+        destChannelId: "channel-2",
+        coinMinimalDenom: "tkyve",
+        isVerified: true,
+      },
+        
+        /*
       {
         counterpartyChainId: "nolus-rila",
         sourceChannelId: "channel-1837",
         destChannelId: "channel-0",
         coinMinimalDenom: "unls",
         isVerified: true,
-      },
+      },*/
     ]
   : [
       {
@@ -178,13 +124,11 @@ export const IBCAssetInfos: (IBCAsset & {
         },
       },
       {
-        counterpartyChainId: IS_TESTNET
-          ? "axelar-testnet-lisbon-3"
-          : "axelar-dojo-1",
-        sourceChannelId: IS_TESTNET ? "channel-312" : "channel-208",
-        destChannelId: IS_TESTNET ? "channel-22" : "channel-3",
+        counterpartyChainId: "axelar-dojo-1",
+        sourceChannelId: "channel-208",
+        destChannelId: "channel-3",
         coinMinimalDenom: "weth-wei",
-        sourceChainNameOverride: IS_TESTNET ? "Goerli Ethereum" : "Ethereum",
+        sourceChainNameOverride: "Ethereum",
         isVerified: true,
         originBridgeInfo: {
           bridge: "axelar" as const,
@@ -208,13 +152,11 @@ export const IBCAssetInfos: (IBCAsset & {
         },
       },
       {
-        counterpartyChainId: IS_TESTNET
-          ? "axelar-testnet-lisbon-3"
-          : "axelar-dojo-1",
-        sourceChannelId: IS_TESTNET ? "channel-312" : "channel-208",
-        destChannelId: IS_TESTNET ? "channel-22" : "channel-3",
-        coinMinimalDenom: IS_TESTNET ? "uausdc" : "uusdc",
-        sourceChainNameOverride: IS_TESTNET ? "Goerli Ethereum" : "Ethereum",
+        counterpartyChainId: "axelar-dojo-1",
+        sourceChannelId: "channel-208",
+        destChannelId: "channel-3",
+        coinMinimalDenom: "uusdc",
+        sourceChainNameOverride: "Ethereum",
         isVerified: true,
         originBridgeInfo: {
           bridge: "axelar" as const,
@@ -262,13 +204,11 @@ export const IBCAssetInfos: (IBCAsset & {
         },
       },
       {
-        counterpartyChainId: IS_TESTNET
-          ? "axelar-testnet-lisbon-3"
-          : "axelar-dojo-1",
-        sourceChannelId: IS_TESTNET ? "channel-1946" : "channel-208",
-        destChannelId: IS_TESTNET ? "channel-135" : "channel-3",
+        counterpartyChainId: "axelar-dojo-1",
+        sourceChannelId: "channel-208",
+        destChannelId: "channel-3",
         coinMinimalDenom: "wmatic-wei",
-        sourceChainNameOverride: IS_TESTNET ? "Mumbai" : "Polygon",
+        sourceChainNameOverride: "Polygon",
         isVerified: true,
         originBridgeInfo: {
           bridge: "axelar" as const,
@@ -305,15 +245,11 @@ export const IBCAssetInfos: (IBCAsset & {
         },
       },
       {
-        counterpartyChainId: IS_TESTNET
-          ? "axelar-testnet-lisbon-3"
-          : "axelar-dojo-1",
-        sourceChannelId: IS_TESTNET ? "channel-1946" : "channel-208",
-        destChannelId: IS_TESTNET ? "channel-135" : "channel-3",
+        counterpartyChainId: "axelar-dojo-1",
+        sourceChannelId: "channel-208",
+        destChannelId: "channel-3",
         coinMinimalDenom: "wavax-wei",
-        sourceChainNameOverride: IS_TESTNET
-          ? "Avalanche Fuji Testnet"
-          : "Avalanche",
+        sourceChainNameOverride: "Avalanche",
         isVerified: true,
         originBridgeInfo: {
           bridge: "axelar" as const,
@@ -556,13 +492,11 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "uusd",
       },
       {
-        counterpartyChainId: IS_TESTNET
-          ? "axelar-testnet-lisbon-3"
-          : "axelar-dojo-1",
-        sourceChannelId: IS_TESTNET ? "channel-312" : "channel-208",
-        destChannelId: IS_TESTNET ? "channel-22" : "channel-3",
-        coinMinimalDenom: IS_TESTNET ? "wdev-wei" : "wglmr-wei",
-        sourceChainNameOverride: IS_TESTNET ? "Moonbase Alpha" : "Moonbeam",
+        counterpartyChainId: "axelar-dojo-1",
+        sourceChannelId: "channel-208",
+        destChannelId: "channel-3",
+        coinMinimalDenom: "wglmr-wei",
+        sourceChainNameOverride: "Moonbeam",
         originBridgeInfo: {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],

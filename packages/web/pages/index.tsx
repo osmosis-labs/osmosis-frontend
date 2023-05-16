@@ -7,7 +7,7 @@ import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { TradeClipboard } from "~/components/trade-clipboard";
 import { useStore } from "~/stores";
 
-import { EventName, IS_FRONTIER } from "../config";
+import { EventName, IS_FRONTIER, IS_TESTNET } from "../config";
 import { useAmplitudeAnalytics } from "../hooks";
 
 const Home: NextPage = observer(function () {
@@ -27,7 +27,7 @@ const Home: NextPage = observer(function () {
           pool
             .computeTotalValueLocked(priceStore)
             .toDec()
-            .gte(new Dec(IS_FRONTIER ? 1_000 : 10_000))
+            .gte(new Dec(IS_TESTNET ? -1 : (IS_FRONTIER ? 1_000 : 10_000)))
         )
         .sort((a, b) => {
           // sort by TVL to find routes amongst most valuable pools
