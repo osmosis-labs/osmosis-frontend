@@ -60,7 +60,7 @@ export const AddLiquidityModal: FunctionComponent<
   const pool = poolDetail?.pool?.pool;
   const isConcLiq = pool?.type === "concentrated";
   const config = isConcLiq ? addConliqConfig : addLiquidityConfig;
-  console.log(config);
+
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
       disabled: config.error !== undefined || isSendingMsg,

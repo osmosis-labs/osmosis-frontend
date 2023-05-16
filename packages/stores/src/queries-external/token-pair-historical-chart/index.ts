@@ -29,12 +29,9 @@ export class ObservableQueryTokenPairHistoricalChart extends ObservableQueryExte
   ) {
     super(
       kvStore,
-      "https://api.osmosis.zone/",
-      // baseURL,
-      `/pairs/v1/historical/2/chart?asset_in=${baseDenom}&asset_out=${quoteDenom}&range=${tf}&asset_type=symbol`
-      // `/pairs/v1/historical/${poolId}/chart?asset_in=${baseDenom}&asset_out=${quoteDenom}&range=${tf}&asset_type=symbol`
+      baseURL,
+      `/pairs/v1/historical/${poolId}/chart?asset_in=${baseDenom}&asset_out=${quoteDenom}&range=${tf}&asset_type=symbol`
     );
-    console.log(baseURL);
     makeObservable(this);
   }
 

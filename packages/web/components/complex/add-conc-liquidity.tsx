@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
 import {
   calculateDepositAmountForBase,
   calculateDepositAmountForQuote,
@@ -28,7 +28,9 @@ import React, {
 import { useTranslation } from "react-multi-lang";
 
 import IconButton from "~/components/buttons/icon-button";
+import { IS_TESTNET } from "~/config";
 import { useStore } from "~/stores";
+import { mockCLDepth, mockTokenPairPricesData } from "~/utils/mock-data";
 
 import { Icon, PoolAssetsIcon } from "../assets";
 import { Button } from "../buttons";
@@ -385,24 +387,45 @@ const AddConcLiqView: FunctionComponent<
   );
 
   useEffect(() => {
+    if (IS_TESTNET) {
+      setHistoricalChartData(
+        mockTokenPairPricesData[addLiquidityConfig.historicalRange].map(
+          (data) => ({
+            ...data,
+            time: data.time * 1000,
+          })
+        )
+      );
+      return;
+    }
+
     if (!queryHistorical.isFetching && queryHistorical.getChartPrices.length) {
       const newData = queryHistorical.getChartPrices;
       setHistoricalChartData(newData);
     }
-  }, [queryHistorical.getChartPrices, queryHistorical.isFetching]);
+  }, [
+    queryHistorical.getChartPrices,
+    queryHistorical.isFetching,
+    addLiquidityConfig.historicalRange,
+  ]);
 
   useEffect(() => {
-    if (!yRange[0] && !yRange[1]) return;
+    if (IS_TESTNET) {
+      addLiquidityConfig.setActiveLiquidity(
+        mockCLDepth.map(({ upper_tick, liquidity_amount, lower_tick }) => {
+          return {
+            lowerTick: new Int(lower_tick),
+            upperTick: new Int(upper_tick),
+            liquidityAmount: new Dec(liquidity_amount),
+          };
+        })
+      );
+      return;
+    }
     if (!queryDepth.isFetching && queryDepth.activeLiquidity) {
       addLiquidityConfig.setActiveLiquidity(queryDepth.activeLiquidity);
     }
-  }, [
-    yRange[0],
-    yRange[1],
-    clPool?.exponentAtPriceOne,
-    queryDepth.isFetching,
-    queryDepth.activeLiquidity,
-  ]);
+  }, [queryDepth.isFetching, queryDepth.activeLiquidity]);
 
   useEffect(() => {
     if (lastChartData && inputMin === "0" && inputMax === "0") {
