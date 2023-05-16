@@ -178,9 +178,6 @@ export class ObservableMetamask implements EthWallet {
   }
 
   send = computedFn(({ method, params: ethTx }) => {
-    if (this.isSending)
-      return Promise.reject(`MetaMask: request in progress: ${this.isSending}`);
-
     if (!this.isConnected) {
       return Promise.reject(
         "MetaMask: can't send request, account not connected"
