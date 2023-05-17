@@ -233,100 +233,124 @@ const MyPositionCard: FunctionComponent<{
         <PositionDataGroup label="Incentives" value="25% APR" />
       </div>
       {!collapsed && (
-        <div className="flex flex-row gap-1">
-          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
-            <PriceChartHeader addLiquidityConfig={config} />
-            <TokenPairHistoricalChart
-              data={config.historicalChartData}
-              annotations={
-                config.fullRange
-                  ? [
-                      new Dec(config.yRange[0] * 1.05),
-                      new Dec(config.yRange[1] * 0.95),
-                    ]
-                  : config.range
-              }
-              domain={config.yRange}
-              // onPointerHover={setHoverPrice}
-              // onPointerOut={
-              //   lastChartData
-              //     ? () => setHoverPrice(lastChartData.close)
-              //     : undefined
-              // }
-            />
-          </div>
-          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-row rounded-r-2xl bg-osmoverse-700">
-            <div className="mt-[84px] flex flex-1 flex-col">
-              <ConcentratedLiquidityDepthChart
-                min={rangeMin}
-                max={rangeMax}
-                yRange={config.yRange}
-                xRange={config.xRange}
-                data={config.depthChartData}
-                annotationDatum={{
-                  price: config.lastChartData?.close || 0,
-                  depth: config.xRange[1],
-                }}
-                rangeAnnotation={[
-                  {
-                    price: Number(lowerPrice.toString()),
-                    depth: config.xRange[1],
-                  },
-                  {
-                    price: Number(upperPrice.toString()),
-                    depth: config.xRange[1],
-                  },
-                ]}
-                offset={{ top: 0, right: 36, bottom: 24 + 28, left: 0 }}
-                horizontal
-                fullRange={config.fullRange}
+        <>
+          <div className="flex flex-row gap-1">
+            <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
+              <PriceChartHeader addLiquidityConfig={config} />
+              <TokenPairHistoricalChart
+                data={config.historicalChartData}
+                annotations={
+                  config.fullRange
+                    ? [
+                        new Dec(config.yRange[0] * 1.05),
+                        new Dec(config.yRange[1] * 0.95),
+                      ]
+                    : config.range
+                }
+                domain={config.yRange}
+                // onPointerHover={setHoverPrice}
+                // onPointerOut={
+                //   lastChartData
+                //     ? () => setHoverPrice(lastChartData.close)
+                //     : undefined
+                // }
               />
             </div>
-            <div className="mb-8 flex flex-col pr-8">
-              <div className="mt-7 mr-6 flex h-6 flex-row gap-1">
-                <SelectorWrapper
-                  alt="refresh"
-                  src="/icons/refresh-ccw.svg"
-                  selected={false}
-                  onClick={() => config.setZoom(1)}
-                />
-                <SelectorWrapper
-                  alt="zoom in"
-                  src="/icons/zoom-in.svg"
-                  selected={false}
-                  onClick={config.zoomIn}
-                />
-                <SelectorWrapper
-                  alt="zoom out"
-                  src="/icons/zoom-out.svg"
-                  selected={false}
-                  onClick={config.zoomOut}
+            <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-row rounded-r-2xl bg-osmoverse-700">
+              <div className="mt-[84px] flex flex-1 flex-col">
+                <ConcentratedLiquidityDepthChart
+                  min={rangeMin}
+                  max={rangeMax}
+                  yRange={config.yRange}
+                  xRange={config.xRange}
+                  data={config.depthChartData}
+                  annotationDatum={{
+                    price: config.lastChartData?.close || 0,
+                    depth: config.xRange[1],
+                  }}
+                  rangeAnnotation={[
+                    {
+                      price: Number(lowerPrice.toString()),
+                      depth: config.xRange[1],
+                    },
+                    {
+                      price: Number(upperPrice.toString()),
+                      depth: config.xRange[1],
+                    },
+                  ]}
+                  offset={{ top: 0, right: 36, bottom: 24 + 28, left: 0 }}
+                  horizontal
+                  fullRange={config.fullRange}
                 />
               </div>
-              <div className="flex h-full flex-col justify-between py-4">
-                {/* TODO: use translation */}
-                <PriceInputBox
-                  currentValue={
-                    config.fullRange
-                      ? ""
-                      : upperPrice.toString(config.priceDecimal)
-                  }
-                  label="Max price"
-                  infinity={config.fullRange}
-                />
-                {/* TODO: use translation */}
-                <PriceInputBox
-                  currentValue={
-                    config.fullRange
-                      ? "0"
-                      : lowerPrice.toString(config.priceDecimal)
-                  }
-                  label="Min price"
-                />
+              <div className="mb-8 flex flex-col pr-8">
+                <div className="mt-7 mr-6 flex h-6 flex-row gap-1">
+                  <SelectorWrapper
+                    alt="refresh"
+                    src="/icons/refresh-ccw.svg"
+                    selected={false}
+                    onClick={() => config.setZoom(1)}
+                  />
+                  <SelectorWrapper
+                    alt="zoom in"
+                    src="/icons/zoom-in.svg"
+                    selected={false}
+                    onClick={config.zoomIn}
+                  />
+                  <SelectorWrapper
+                    alt="zoom out"
+                    src="/icons/zoom-out.svg"
+                    selected={false}
+                    onClick={config.zoomOut}
+                  />
+                </div>
+                <div className="flex h-full flex-col justify-between py-4">
+                  {/* TODO: use translation */}
+                  <PriceInputBox
+                    currentValue={
+                      config.fullRange
+                        ? ""
+                        : upperPrice.toString(config.priceDecimal)
+                    }
+                    label="Max price"
+                    infinity={config.fullRange}
+                  />
+                  {/* TODO: use translation */}
+                  <PriceInputBox
+                    currentValue={
+                      config.fullRange
+                        ? "0"
+                        : lowerPrice.toString(config.priceDecimal)
+                    }
+                    label="Min price"
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
+          <div className="flex flex-row">
+            <div className="flex flex-col">
+              <div>
+                <div>Current Assets</div>
+                <div className="flex flex-row gap-1">
+                  <img
+                    className="h-[1.5rem] w-[1.5rem]"
+                    src={_queryPool.poolAssets[0].amount.currency.coinImageUrl}
+                  />
+                  <span>{positions[0].asset0.amount}</span>
+                  <span>{positions[0].asset0.denom}</span>
+                  <img
+                    className="h-[1.5rem] w-[1.5rem]"
+                    src={_queryPool.poolAssets[1].amount.currency.coinImageUrl}
+                  />
+                  <span>{positions[0].asset1.amount}</span>
+                  <span>{positions[0].asset1.denom}</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col"></div>
+          </div>
+        </>
       )}
     </div>
   );
