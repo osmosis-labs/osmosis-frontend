@@ -443,5 +443,9 @@
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",
   "waitingForTransaction": "İşlemin bloğa eklenmesi bekleniyor",
-  "highPoolInflationWarning": "Yüksek APR'ler enflasyonist ödüllerden kaynaklanabilir. Dikkatli ilerleyin."
+  "highPoolInflationWarning": "Yüksek APR'ler enflasyonist ödüllerden kaynaklanabilir. Dikkatli ilerleyin.",
+  "ibcx": {
+    "description": "ION DAO'dan gelen ilk Cosmos Ekosistem Endeksine tanışın. Ana ağda canlı: ",
+    "link": "index.ion.wtf"
+  }
 }

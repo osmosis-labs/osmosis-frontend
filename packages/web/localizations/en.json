@@ -443,5 +443,9 @@
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",
   "waitingForTransaction": "Waiting for transaction to be included in the block",
-  "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution."
+  "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution.",
+  "ibcx": {
+    "description": "Meet the first Cosmos Ecosystem Index from ION DAO. Live on mainnet: ",
+    "link": "index.ion.wtf"
+  }
 }
