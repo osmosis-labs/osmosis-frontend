@@ -147,7 +147,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 }
 
 export default withLDProvider({
-  clientSideID: "ADD_CLIENT_SIDE_ID_HERE",
+  clientSideID: process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID || "",
   user: {
     anonymous: true,
   },
