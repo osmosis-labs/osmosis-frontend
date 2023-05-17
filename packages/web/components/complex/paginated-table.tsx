@@ -1,7 +1,6 @@
 import { flexRender, Row, Table } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
@@ -96,51 +95,49 @@ const PaginatedTable = ({
       <thead className="z-[51] m-0">
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id}>
-            {headerGroup.headers.map((header) => {
-              return (
-                <th key={header.id} colSpan={header.colSpan}>
-                  {header.isPlaceholder ? null : (
-                    <div
-                      {...{
-                        className: header.column.getCanSort()
-                          ? "cursor-pointer select-none flex items-center gap-2"
-                          : "",
-                        onClick: header.column.getToggleSortingHandler(),
-                      }}
-                    >
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                      {{
-                        asc: (
-                          <Icon
-                            id="sort-up"
-                            className={classNames(
-                              "h-[16px] w-[7px]",
-                              IS_FRONTIER
-                                ? "text-white-full"
-                                : "text-osmoverse-300"
-                            )}
-                          />
-                        ),
-                        desc: (
-                          <Icon
-                            id="sort-down"
-                            className={classNames(
-                              "h-[16px] w-[7px]",
-                              IS_FRONTIER
-                                ? "text-white-full"
-                                : "text-osmoverse-300"
-                            )}
-                          />
-                        ),
-                      }[header.column.getIsSorted() as string] ?? null}
-                    </div>
-                  )}
-                </th>
-              );
-            })}
+            {headerGroup.headers.map((header) => (
+              <th key={header.id} colSpan={header.colSpan}>
+                {header.isPlaceholder ? null : (
+                  <div
+                    className={
+                      header.column.getCanSort()
+                        ? "flex cursor-pointer select-none items-center gap-2"
+                        : ""
+                    }
+                    onClick={() => header.column.getToggleSortingHandler()}
+                  >
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+                    {{
+                      asc: (
+                        <Icon
+                          id="sort-up"
+                          className={classNames(
+                            "h-[16px] w-[7px]",
+                            IS_FRONTIER
+                              ? "text-white-full"
+                              : "text-osmoverse-300"
+                          )}
+                        />
+                      ),
+                      desc: (
+                        <Icon
+                          id="sort-down"
+                          className={classNames(
+                            "h-[16px] w-[7px]",
+                            IS_FRONTIER
+                              ? "text-white-full"
+                              : "text-osmoverse-300"
+                          )}
+                        />
+                      ),
+                    }[header.column.getIsSorted() as string] ?? null}
+                  </div>
+                )}
+              </th>
+            ))}
           </tr>
         ))}
       </thead>
@@ -188,30 +185,28 @@ const PaginatedTable = ({
   );
 };
 
-const MobileTableRow = observer(
-  ({ row }: { row: Row<ObservablePoolWithMetric> }) => {
-    const poolAssets = row.original.pool.poolAssets.map((poolAsset) => ({
-      coinImageUrl: poolAsset.amount.currency.coinImageUrl,
-      coinDenom: poolAsset.amount.currency.coinDenom,
-    }));
+const MobileTableRow = ({ row }: { row: Row<ObservablePoolWithMetric> }) => {
+  const poolAssets = row.original.pool.poolAssets.map((poolAsset) => ({
+    coinImageUrl: poolAsset.amount.currency.coinImageUrl,
+    coinDenom: poolAsset.amount.currency.coinDenom,
+  }));
 
-    return (
-      <AssetCard
-        coinDenom={poolAssets.map((asset) => asset.coinDenom).join("/")}
-        metrics={[
-          {
-            label: "TVL",
-            value: row.original.liquidity.toString(),
-          },
-          {
-            label: "APR",
-            value: row.original.apr.toString(),
-          },
-        ]}
-        coinImageUrl={poolAssets}
-      />
-    );
-  }
-);
+  return (
+    <AssetCard
+      coinDenom={poolAssets.map((asset) => asset.coinDenom).join("/")}
+      metrics={[
+        {
+          label: "TVL",
+          value: row.original.liquidity.toString(),
+        },
+        {
+          label: "APR",
+          value: row.original.apr.toString(),
+        },
+      ]}
+      coinImageUrl={poolAssets}
+    />
+  );
+};
 
 export default PaginatedTable;

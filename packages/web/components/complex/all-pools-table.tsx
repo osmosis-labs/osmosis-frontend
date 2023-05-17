@@ -487,6 +487,10 @@ export const AllPoolsTable: FunctionComponent<{
       [queriesOsmosis.queryGammPools]
     );
 
+    const paginatePoolsQueryStore = useCallback(() => {
+      queriesOsmosis.queryGammPools.paginate();
+    }, [queriesOsmosis.queryGammPools]);
+
     const [mobileSortMenuIsOpen, setMobileSortMenuIsOpen] = useState(false);
 
     const onSelectFilter = useCallback(
@@ -678,7 +682,7 @@ export const AllPoolsTable: FunctionComponent<{
 
           <div className="h-auto overflow-auto">
             <PaginatedTable
-              paginate={handleFetchRemaining}
+              paginate={paginatePoolsQueryStore}
               mobileSize={170}
               size={69}
               table={table}
