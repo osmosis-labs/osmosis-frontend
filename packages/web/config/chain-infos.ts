@@ -320,8 +320,8 @@ const chainInfos = IS_TESTNET
           coinDenom: "IBCX",
           coinMinimalDenom:
             "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          // coinGeckoId: "tbd",
           coinDecimals: 6,
+          coinGeckoId: "pool:ibcx",
           coinImageUrl: "/tokens/ibcx.svg",
         },
       ],
