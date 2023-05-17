@@ -39,7 +39,7 @@ import {
   PoolQuickActionCell,
 } from "../table/cells";
 import { Tooltip } from "../tooltip";
-import PaginatedTable from "./paginated-table";
+import { PaginatedTable } from "./paginated-table";
 
 const TVL_FILTER_THRESHOLD = 1000;
 

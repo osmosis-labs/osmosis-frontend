@@ -1,6 +1,7 @@
 import { flexRender, Row, Table } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
+import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
@@ -20,7 +21,7 @@ type Props = {
   topOffset: number;
 };
 
-const PaginatedTable = ({
+export const PaginatedTable = ({
   mobileSize,
   paginate,
   size,
@@ -185,28 +186,28 @@ const PaginatedTable = ({
   );
 };
 
-const MobileTableRow = ({ row }: { row: Row<ObservablePoolWithMetric> }) => {
-  const poolAssets = row.original.pool.poolAssets.map((poolAsset) => ({
-    coinImageUrl: poolAsset.amount.currency.coinImageUrl,
-    coinDenom: poolAsset.amount.currency.coinDenom,
-  }));
+const MobileTableRow = observer(
+  ({ row }: { row: Row<ObservablePoolWithMetric> }) => {
+    const poolAssets = row.original.pool.poolAssets.map((poolAsset) => ({
+      coinImageUrl: poolAsset.amount.currency.coinImageUrl,
+      coinDenom: poolAsset.amount.currency.coinDenom,
+    }));
 
-  return (
-    <AssetCard
-      coinDenom={poolAssets.map((asset) => asset.coinDenom).join("/")}
-      metrics={[
-        {
-          label: "TVL",
-          value: row.original.liquidity.toString(),
-        },
-        {
-          label: "APR",
-          value: row.original.apr.toString(),
-        },
-      ]}
-      coinImageUrl={poolAssets}
-    />
-  );
-};
-
-export default PaginatedTable;
+    return (
+      <AssetCard
+        coinDenom={poolAssets.map((asset) => asset.coinDenom).join("/")}
+        metrics={[
+          {
+            label: "TVL",
+            value: row.original.liquidity.toString(),
+          },
+          {
+            label: "APR",
+            value: row.original.apr.toString(),
+          },
+        ]}
+        coinImageUrl={poolAssets}
+      />
+    );
+  }
+);
