@@ -28,6 +28,7 @@ import {
   RemoveLiquidityModal,
   SuperfluidValidatorModal,
 } from "~/modals";
+import MyPositionsSection from "~/pages/pools/my-positions-section";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
@@ -46,6 +47,9 @@ const Pools: NextPage = observer(function () {
     useDimension<HTMLDivElement>();
 
   const [myPoolsRef, { height: myPoolsHeight }] =
+    useDimension<HTMLDivElement>();
+
+  const [myPositionsRef, { height: myPositionsHeight }] =
     useDimension<HTMLDivElement>();
 
   // create pool dialog
@@ -254,13 +258,16 @@ const Pools: NextPage = observer(function () {
           setIsCreatingPool={useCallback(() => setIsCreatingPool(true), [])}
         />
       </section>
+      <section ref={myPositionsRef}>
+        <MyPositionsSection />
+      </section>
       <section ref={myPoolsRef}>
         <MyPoolsSection />
       </section>
 
       <section>
         <AllPoolsTable
-          topOffset={myPoolsHeight + poolsOverviewHeight}
+          topOffset={myPositionsHeight + myPoolsHeight + poolsOverviewHeight}
           {...quickActionProps}
         />
       </section>

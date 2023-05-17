@@ -10,7 +10,7 @@ import {
   buildChartTheme,
   XYChart,
 } from "@visx/xychart";
-import { FunctionComponent } from "react";
+import React, { FunctionComponent } from "react";
 
 import { theme } from "~/tailwind.config";
 
@@ -38,6 +38,7 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
   };
   horizontal?: boolean;
   fullRange?: boolean;
+  rangeAnnotation?: DepthData[];
 }> = ({
   data,
   min,
@@ -45,6 +46,7 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
   yRange,
   xRange,
   annotationDatum,
+  rangeAnnotation = [],
   onMoveMin,
   onMoveMax,
   onSubmitMin,
@@ -141,6 +143,24 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
                 />
               </Annotation>
             )}
+            {!!rangeAnnotation.length &&
+              rangeAnnotation.map((datum, i) => (
+                <Annotation
+                  key={i}
+                  dataKey="depth"
+                  xAccessor={(d: DepthData) => d.depth}
+                  yAccessor={(d: DepthData) => d.price}
+                  datum={datum}
+                >
+                  <AnnotationConnector />
+                  <AnnotationLineSubject
+                    orientation="horizontal"
+                    stroke={theme.colors.wosmongton["200"]}
+                    strokeWidth={2}
+                    strokeDasharray={4}
+                  />
+                </Annotation>
+              ))}
             {showMaxDragHandler && (
               <DragContainer
                 defaultValue={fullRange ? yRange[1] * 0.95 : max}
