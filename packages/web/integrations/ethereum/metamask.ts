@@ -8,6 +8,7 @@ import {
   runInAction,
 } from "mobx";
 import { computedFn } from "mobx-utils";
+import { t } from "react-multi-lang";
 import { isAddress, toHex } from "web3-utils";
 
 import { Alert } from "../../components/alert";
@@ -177,7 +178,7 @@ export class ObservableMetamask implements EthWallet {
     this._chainId = undefined;
   }
 
-  send = computedFn(({ method, params: ethTx }) => {
+  readonly send = computedFn(({ method, params: ethTx }) => {
     if (!this.isConnected) {
       return Promise.reject(
         "MetaMask: can't send request, account not connected"
@@ -264,15 +265,14 @@ export class ObservableMetamask implements EthWallet {
     } else if (e.code === -32002) {
       // request is there already
       return {
-        message: [
-          "assets.transfer.errors.seeRequest",
-          { walletName: this.displayInfo.displayName },
-        ],
+        message: t("assets.transfer.errors.seeRequest", {
+          walletName: this.displayInfo.displayName,
+        }),
       };
     }
   }
 
-  makeExplorerUrl = (txHash: string) =>
+  readonly makeExplorerUrl = (txHash: string) =>
     IS_TESTNET
       ? `https://goerli.etherscan.io/tx/${txHash}`
       : `https://etherscan.io/tx/${txHash}`;

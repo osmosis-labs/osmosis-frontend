@@ -27,7 +27,7 @@ const Home: NextPage = observer(function () {
           pool
             .computeTotalValueLocked(priceStore)
             .toDec()
-            .gte(new Dec(IS_TESTNET ? -1 : (IS_FRONTIER ? 1_000 : 10_000)))
+            .gte(new Dec(IS_TESTNET ? -1 : IS_FRONTIER ? 1_000 : 10_000))
         )
         .sort((a, b) => {
           // sort by TVL to find routes amongst most valuable pools

@@ -5,9 +5,6 @@ import { toast, ToastOptions } from "react-toastify";
 
 import { Alert, ToastType } from "./types";
 
-const tAlertField = (field: Alert["caption"] | Alert["message"]) =>
-  typeof field === "string" ? t(field) : t(...(field as Parameters<typeof t>));
-
 export function displayToast(
   alert: Alert,
   type: ToastType,
@@ -64,8 +61,8 @@ const LoadingToast: FunctionComponent<Alert> = ({ message, caption }) => (
       />
     </div>
     <div className="text-white-high">
-      <h6 className="mb-2 text-lg md:text-base">{tAlertField(message)}</h6>
-      {caption && <p className="text-sm md:text-xs">{tAlertField(caption)}</p>}
+      <h6 className="mb-2 text-lg md:text-base">{t(message)}</h6>
+      {caption && <p className="text-sm md:text-xs">{t(caption)}</p>}
     </div>
   </div>
 );
@@ -76,8 +73,8 @@ const ErrorToast: FunctionComponent<Alert> = ({ message, caption }) => (
       <Image alt="failed" src="/icons/error-x.svg" height={32} width={32} />
     </div>
     <div className="text-white-high">
-      <h6 className="mb-2 text-lg md:text-base">{tAlertField(message)}</h6>
-      {caption && <p className="text-sm md:text-xs">{tAlertField(caption)}</p>}
+      <h6 className="mb-2 text-lg md:text-base">{t(message)}</h6>
+      {caption && <p className="text-sm md:text-xs">{t(caption)}</p>}
     </div>
   </div>
 );
@@ -92,7 +89,7 @@ const SuccessToast: FunctionComponent<Alert> = ({
       <Image alt="b" src="/icons/check-circle.svg" height={32} width={32} />
     </div>
     <div className="text-white-high">
-      <h6 className="mb-2 text-lg md:text-base">{tAlertField(message)}</h6>
+      <h6 className="mb-2 text-lg md:text-base">{t(message)}</h6>
       {learnMoreUrl && learnMoreUrlCaption && (
         <a
           target="__blank"
