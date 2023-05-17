@@ -337,14 +337,14 @@ const MyPositionCard: FunctionComponent<{
                     className="h-[1.5rem] w-[1.5rem]"
                     src={_queryPool.poolAssets[0].amount.currency.coinImageUrl}
                   />
-                  <span>{positions[0].asset0.amount}</span>
-                  <span>{positions[0].asset0.denom}</span>
+                  <span>{positions[0]?.asset0.amount}</span>
+                  <span>{positions[0]?.asset0.denom}</span>
                   <img
                     className="h-[1.5rem] w-[1.5rem]"
                     src={_queryPool.poolAssets[1].amount.currency.coinImageUrl}
                   />
-                  <span>{positions[0].asset1.amount}</span>
-                  <span>{positions[0].asset1.denom}</span>
+                  <span>{positions[0]?.asset1.amount}</span>
+                  <span>{positions[0]?.asset1.denom}</span>
                 </div>
               </div>
             </div>
