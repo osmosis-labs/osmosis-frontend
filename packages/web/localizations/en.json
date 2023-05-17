@@ -29,12 +29,13 @@
     "priceRange": "Price Range",
     "currentPrice": "current price",
     "basePerQuote": "{base} per {quote}",
-    "selectVolatilityRange": "Select volatility range",
-    "volatilityDescription": "Tight ranges earn more fees per dollar, but earn no fees when price is out of range.",
-    "superchargedLearnMore": "Learn about supercharged liquidity",
+    "selectVolatilityRange": "Select a volatility strategy",
+    "volatilityDescription": "At ~5X concentration, you’ll earn more on swaps but keep an eye on your position, rebalancing to keep the price in range.",
+    "superchargedLearnMore": "Learn about",
     "fullRange": "Full range",
     "amountToDeposit": "Amount to deposit",
-    "addLiquidity": "Add Liquidity"
+    "addLiquidity": "Add Liquidity",
+    "outOfRangeWarning": "The market price is outside your specified price range. Single-asset deposit only."
   },
   "app": {
     "banner": {

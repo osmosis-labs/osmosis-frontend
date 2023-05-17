@@ -2,10 +2,7 @@ import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
 import {
   calculateDepositAmountForBase,
   calculateDepositAmountForQuote,
-  priceToTick,
-  roundPriceToNearestTick,
 } from "@osmosis-labs/math";
-import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import {
   ObservableAddConcentratedLiquidityConfig,
   ObservablePoolDetail,
@@ -304,9 +301,11 @@ const AddConcLiqView: FunctionComponent<
     fullRange,
     historicalChartData,
     lastChartData,
+    currentPrice,
     priceDecimal,
     baseDepositAmountIn,
     quoteDepositAmountIn,
+    moderatePriceRange,
     setQuoteDepositAmountIn,
     setBaseDepositAmountIn,
     setModalView,
@@ -340,8 +339,6 @@ const AddConcLiqView: FunctionComponent<
 
   const yRange = addLiquidityConfig.yRange;
 
-  const clPool = pool?.pool as ConcentratedLiquidityPool;
-
   const updateInputAndRangeMinMax = useCallback(
     (_min: number, _max: number) => {
       setInputMin("" + _min.toFixed(priceDecimal));
@@ -354,36 +351,32 @@ const AddConcLiqView: FunctionComponent<
 
   const calculateQuoteDeposit = useCallback(
     (amount: number) => {
-      if (clPool) {
-        const [lowerTick, upperTick] = addLiquidityConfig.tickRange;
-        const quoteDeposit = calculateDepositAmountForQuote(
-          clPool.currentSqrtPrice.mul(clPool.currentSqrtPrice),
-          lowerTick,
-          upperTick,
-          new Dec(amount)
-        );
-        setQuoteDepositAmountIn(quoteDeposit);
-        setQuoteDepositInput(quoteDeposit.toString());
-      }
+      const [lowerTick, upperTick] = addLiquidityConfig.tickRange;
+      const quoteDeposit = calculateDepositAmountForQuote(
+        currentPrice,
+        lowerTick,
+        upperTick,
+        new Dec(amount)
+      );
+      setQuoteDepositAmountIn(quoteDeposit);
+      setQuoteDepositInput(quoteDeposit.toString());
     },
-    [clPool, addLiquidityConfig.tickRange]
+    [currentPrice, addLiquidityConfig.tickRange]
   );
 
   const calculateBaseDeposit = useCallback(
     (amount: number) => {
-      if (clPool) {
-        const [lowerTick, upperTick] = addLiquidityConfig.tickRange;
-        const baseDeposit = calculateDepositAmountForBase(
-          clPool.currentSqrtPrice.mul(clPool.currentSqrtPrice),
-          lowerTick,
-          upperTick,
-          new Dec(amount)
-        );
-        setBaseDepositAmountIn(baseDeposit);
-        setBaseDepositInput(baseDeposit.toString());
-      }
+      const [lowerTick, upperTick] = addLiquidityConfig.tickRange;
+      const baseDeposit = calculateDepositAmountForBase(
+        currentPrice,
+        lowerTick,
+        upperTick,
+        new Dec(amount)
+      );
+      setBaseDepositAmountIn(baseDeposit);
+      setBaseDepositInput(baseDeposit.toString());
     },
-    [clPool, addLiquidityConfig.tickRange]
+    [currentPrice, addLiquidityConfig.tickRange]
   );
 
   useEffect(() => {
@@ -428,12 +421,15 @@ const AddConcLiqView: FunctionComponent<
   }, [queryDepth.isFetching, queryDepth.activeLiquidity]);
 
   useEffect(() => {
-    if (lastChartData && inputMin === "0" && inputMax === "0") {
-      const last = lastChartData.close;
-      updateInputAndRangeMinMax(last * 0.75, last * 1.25);
+    if (currentPrice && inputMin === "0" && inputMax === "0") {
+      const last = Number(currentPrice.toString());
+      updateInputAndRangeMinMax(
+        Number(moderatePriceRange[0].toString()),
+        Number(moderatePriceRange[1].toString())
+      );
       setHoverPrice(last);
     }
-  }, [lastChartData, inputMax, inputMin]);
+  }, [currentPrice, inputMax, inputMin]);
 
   useEffect(() => {
     if (anchorAsset === "base") {
@@ -480,7 +476,7 @@ const AddConcLiqView: FunctionComponent<
         </div>
       </div>
       <div className="flex flex-col">
-        <div className="px-2 py-1 text-sm">
+        <div className="px-4 pb-3 text-subtitle1">
           {t("addConcentratedLiquidity.priceRange")}
         </div>
         <div className="flex flex-row gap-1">
@@ -580,7 +576,7 @@ const AddConcLiqView: FunctionComponent<
         addLiquidityConfig={addLiquidityConfig}
       />
       <div className="flex flex-col">
-        <div className="px-2 py-1 text-sm">
+        <div className="px-4 pb-3 text-sm text-subtitle1">
           {t("addConcentratedLiquidity.amountToDeposit")}
         </div>
         <div className="flex flex-row justify-center gap-3">
@@ -594,6 +590,7 @@ const AddConcLiqView: FunctionComponent<
               calculateQuoteDeposit(amount);
             }}
             currentValue={baseDepositInput}
+            outOfRange={currentPrice.lt(range[0]) && currentPrice.lt(range[1])}
           />
           <DepositAmountGroup
             getFiatValue={getFiatValue}
@@ -605,6 +602,7 @@ const AddConcLiqView: FunctionComponent<
               calculateBaseDeposit(amount);
             }}
             currentValue={quoteDepositInput}
+            outOfRange={currentPrice.gt(range[0]) && currentPrice.gt(range[1])}
           />
         </div>
       </div>
@@ -623,27 +621,27 @@ const VolitilitySelectorGroup: FunctionComponent<
 
   return (
     <div className="flex flex-row">
-      <div className="mx-4 flex max-w-[16.375rem] flex-col">
+      <div className="mx-4 flex flex-col">
         <div className="text-subtitle1">
           {t("addConcentratedLiquidity.selectVolatilityRange")}
         </div>
-        <div className="text-caption font-caption text-osmoverse-200">
+        <span className="text-caption font-caption text-osmoverse-200">
           {t("addConcentratedLiquidity.volatilityDescription")}
-        </div>
-        <a
-          className="flex flex-row items-center text-caption font-caption text-wosmongton-300"
-          href="#"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {t("addConcentratedLiquidity.superchargedLearnMore")}
-          <Image
-            alt="learn more"
-            src="/icons/arrow-right.svg"
-            height={12}
-            width={12}
-          />
-        </a>
+          <a
+            className="mx-1 inline-flex flex-row items-center text-caption font-caption text-wosmongton-300"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t("addConcentratedLiquidity.superchargedLearnMore")}
+            <Image
+              alt="learn more"
+              src="/icons/arrow-right.svg"
+              height={12}
+              width={12}
+            />
+          </a>
+        </span>
       </div>
       <div className="flex flex-1 flex-row justify-end gap-2">
         <PresetVolatilityCard
@@ -786,9 +784,10 @@ const DepositAmountGroup: FunctionComponent<{
   coin?: CoinPretty;
   onUpdate: (amount: number) => void;
   currentValue: string;
-}> = observer(({ coin, onUpdate, currentValue }) => {
+  outOfRange?: boolean;
+}> = observer(({ coin, onUpdate, currentValue, outOfRange }) => {
   const { priceStore, chainStore, queriesStore, accountStore } = useStore();
-
+  const t = useTranslation();
   const { chainId } = chainStore.osmosis;
   const { bech32Address } = accountStore.getAccount(chainId);
 
@@ -811,8 +810,25 @@ const DepositAmountGroup: FunctionComponent<{
     [onUpdate]
   );
 
+  if (outOfRange) {
+    return (
+      <div className="flex flex-1 flex-shrink-0 flex-row items-center gap-3 rounded-[20px] bg-osmoverse-700 px-6 py-7">
+        <Image
+          className="flex-shrink-0 flex-grow"
+          alt=""
+          src="/icons/lock.svg"
+          height={24}
+          width={24}
+        />
+        <div className="flex-shrink-1 w-0 flex-1 text-caption text-osmoverse-300">
+          {t("addConcentratedLiquidity.outOfRangeWarning")}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-1 flex-shrink-0 flex-row items-center rounded-[20px] bg-osmoverse-700 p-3">
+    <div className="flex flex-1 flex-shrink-0 flex-row items-center rounded-[20px] bg-osmoverse-700 px-6 py-7">
       <div className="flex w-full flex-row items-center">
         {coin?.currency.coinImageUrl && (
           <Image
@@ -826,8 +842,8 @@ const DepositAmountGroup: FunctionComponent<{
           <h6>{coin?.denom.toUpperCase()}</h6>
           <div className="text-osmoverse-200">50%</div>
         </div>
-        <div className="flex flex-1 flex-col">
-          <div className="mb-[2px] text-right text-caption text-wosmongton-300">
+        <div className="relative flex flex-1 flex-col">
+          <div className="absolute right-0 top-[-16px] mb-[2px] text-right text-caption text-wosmongton-300">
             {walletBalance ? walletBalance.toString() : ""}
           </div>
           <div className="flex h-16 w-[158px] flex-col items-end justify-center self-end rounded-[12px] bg-osmoverse-800">
@@ -871,28 +887,25 @@ const PresetVolatilityCard: FunctionComponent<
     addLiquidityConfig,
     updateInputAndRangeMinMax,
   }) => {
-    const { tickRange, fullRange, setFullRange, lastChartData } =
-      addLiquidityConfig;
-    const lastPrice = lastChartData?.close || 0;
-
-    const moderateTicks = [
-      priceToTick(roundPriceToNearestTick(new Dec(lastPrice * 0.75))),
-      priceToTick(roundPriceToNearestTick(new Dec(lastPrice * 1.25))),
-    ];
-    const aggressiveTicks = [
-      priceToTick(roundPriceToNearestTick(new Dec(lastPrice * 0.5))),
-      priceToTick(roundPriceToNearestTick(new Dec(lastPrice * 1.5))),
-    ];
+    const {
+      tickRange,
+      fullRange,
+      setFullRange,
+      aggressiveTickRange,
+      aggressivePriceRange,
+      moderateTickRange,
+      moderatePriceRange,
+    } = addLiquidityConfig;
 
     const isRangePassive = fullRange;
     const isRangeAggressive =
       !isRangePassive &&
-      tickRange[0].equals(aggressiveTicks[0]) &&
-      tickRange[1].equals(aggressiveTicks[1]);
+      tickRange[0].equals(aggressiveTickRange[0]) &&
+      tickRange[1].equals(aggressiveTickRange[1]);
     const isRangeModerate =
       !isRangePassive &&
-      tickRange[0].equals(moderateTicks[0]) &&
-      tickRange[1].equals(moderateTicks[1]);
+      tickRange[0].equals(moderateTickRange[0]) &&
+      tickRange[1].equals(moderateTickRange[1]);
     const isRangeCustom =
       !isRangeAggressive && !isRangeModerate && !isRangePassive;
 
@@ -910,14 +923,20 @@ const PresetVolatilityCard: FunctionComponent<
           return;
         case "moderate":
           setFullRange(false);
-          updateInputAndRangeMinMax(lastPrice * 0.75, lastPrice * 1.25);
+          updateInputAndRangeMinMax(
+            Number(moderatePriceRange[0].toString()),
+            Number(moderatePriceRange[1].toString())
+          );
           return;
         case "aggressive":
           setFullRange(false);
-          updateInputAndRangeMinMax(lastPrice * 0.5, lastPrice * 1.5);
+          updateInputAndRangeMinMax(
+            Number(aggressivePriceRange[0].toString()),
+            Number(aggressivePriceRange[1].toString())
+          );
           return;
       }
-    }, [type, setFullRange, updateInputAndRangeMinMax, lastPrice]);
+    }, [type, setFullRange, updateInputAndRangeMinMax]);
 
     return (
       <div

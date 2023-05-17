@@ -7,6 +7,7 @@ import {
 import { Dec, Int } from "@keplr-wallet/unit";
 import {
   ActiveLiquidityPerTickRange,
+  calculateDepositAmountForQuote,
   maxSpotPrice,
   minSpotPrice,
   priceToTick,
@@ -137,6 +138,56 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   get pool(): ConcentratedLiquidityPool {
     return this._pool;
+  }
+
+  @computed
+  get currentPrice(): Dec {
+    return this._pool.currentSqrtPrice.mul(this._pool.currentSqrtPrice);
+  }
+
+  @computed
+  get moderatePriceRange(): [Dec, Dec] {
+    return [
+      roundPriceToNearestTick(this.currentPrice.mul(new Dec(0.75))),
+      roundPriceToNearestTick(this.currentPrice.mul(new Dec(1.25))),
+    ];
+  }
+
+  @computed
+  get moderateTickRange(): [Int, Int] {
+    return [
+      priceToTick(this.moderatePriceRange[0]),
+      priceToTick(this.moderatePriceRange[1]),
+    ];
+  }
+
+  @computed
+  get aggressivePriceRange(): [Dec, Dec] {
+    return [
+      roundPriceToNearestTick(this.currentPrice.mul(new Dec(0.5))),
+      roundPriceToNearestTick(this.currentPrice.mul(new Dec(1.5))),
+    ];
+  }
+
+  @computed
+  get aggressiveTickRange(): [Int, Int] {
+    return [
+      priceToTick(this.aggressivePriceRange[0]),
+      priceToTick(this.aggressivePriceRange[1]),
+    ];
+  }
+
+  @computed
+  get depositPercentage(): number {
+    const one = new Dec(1);
+    const quoteDeposit = calculateDepositAmountForQuote(
+      this.currentPrice,
+      this.tickRange[0],
+      this.tickRange[1],
+      one
+    );
+
+    return Number(one.quo(one.add(quoteDeposit.quo(one))).toString());
   }
 
   get baseDenom(): string {
