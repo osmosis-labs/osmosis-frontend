@@ -100,20 +100,6 @@ export function useIbcTransfer({
       .catch(() => onOpenWalletSelect(counterpartyChainId));
   });
 
-  // useEffect(() => {
-  //   if (
-  //     counterpartyAccount?.walletStatus === WalletStatus.Error ||
-  //     counterpartyAccount?.walletStatus === WalletStatus.Rejected ||
-  //     counterpartyAccount?.walletStatus === WalletStatus.NotExist
-  //   ) {
-  //     onOpenWalletSelect(counterpartyChainId);
-  //   }
-  // }, [
-  //   counterpartyAccount?.walletStatus,
-  //   counterpartyChainId,
-  //   onOpenWalletSelect,
-  // ]);
-
   const transfer: (
     onFulfill?: (
       event: Omit<IBCTransferHistory, "status" | "createdAt">

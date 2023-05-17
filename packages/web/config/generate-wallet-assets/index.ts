@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as fs from "fs";
+import path from "path";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as prettier from "prettier";
 
@@ -29,7 +30,14 @@ async function generateWalletAssets() {
   });
 
   try {
-    fs.writeFileSync("config/wallet-assets.ts", formatted, {
+    const dirPath = "config/generated";
+    const filePath = path.join(dirPath, "wallet-assets.ts");
+
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath);
+    }
+
+    fs.writeFileSync(filePath, formatted, {
       encoding: "utf8",
       flag: "w",
     });

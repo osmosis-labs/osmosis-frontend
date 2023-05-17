@@ -4,6 +4,7 @@ import { cosmostationExtensionInfo } from "@cosmos-kit/cosmostation-extension";
 import { keplrExtensionInfo } from "@cosmos-kit/keplr-extension";
 import { leapExtensionInfo } from "@cosmos-kit/leap-extension";
 import * as fs from "fs";
+import path from "path";
 import * as prettier from "prettier";
 
 import { keplrMobileInfo } from "../integrations/keplr-walletconnect/registry";
@@ -21,7 +22,7 @@ const WalletRegistry: (Wallet & {
   {
     ...keplrMobileInfo,
     logo: "/wallets/keplr.svg",
-    lazyInstallUrl: "../integrations/keplr-walletconnect",
+    lazyInstallUrl: "../../integrations/keplr-walletconnect",
     walletClassName: "KeplrMainWalletConnectV1",
   },
   {
@@ -135,7 +136,14 @@ async function generateWalletRegistry() {
   });
 
   try {
-    fs.writeFileSync("config/wallet-registry.ts", formatted, {
+    const dirPath = "config/generated";
+    const filePath = path.join(dirPath, "wallet-registry.ts");
+
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath);
+    }
+
+    fs.writeFileSync(filePath, formatted, {
       encoding: "utf8",
       flag: "w",
     });

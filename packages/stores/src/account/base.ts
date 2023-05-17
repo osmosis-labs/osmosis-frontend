@@ -4,6 +4,7 @@ import {
   AminoTypes,
   BroadcastTxError,
   DeliverTxResponse,
+  SigningStargateClient,
   StdFee,
   TimeoutError,
 } from "@cosmjs/stargate";
@@ -110,7 +111,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
             ...cosmosProtoRegistry,
             ...ibcProtoRegistry,
             ...osmosisProtoRegistry,
-          ]) as any,
+          ]) as unknown as SigningStargateClient["registry"],
         }),
       },
       {
