@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import {
   calculateDepositAmountForBase,
   calculateDepositAmountForQuote,
@@ -27,7 +27,7 @@ import { useTranslation } from "react-multi-lang";
 import IconButton from "~/components/buttons/icon-button";
 import { IS_TESTNET } from "~/config";
 import { useStore } from "~/stores";
-import { mockCLDepth, mockTokenPairPricesData } from "~/utils/mock-data";
+import { mockTokenPairPricesData } from "~/utils/mock-data";
 
 import { Icon, PoolAssetsIcon } from "../assets";
 import { Button } from "../buttons";
@@ -247,13 +247,13 @@ const Overview: FunctionComponent<
   }
 );
 
-function StrategySelector(props: {
+const StrategySelector: FunctionComponent<{
   title: string;
   description: string;
   selected: boolean;
   onClick?: () => void;
   imgSrc: string;
-}) {
+}> = (props) => {
   const { selected, onClick, title, description, imgSrc } = props;
   return (
     <div
@@ -271,19 +271,19 @@ function StrategySelector(props: {
           "flex h-full w-full flex-col items-center justify-center gap-[20px] rounded-[19px] py-8 px-4",
           {
             "bg-osmoverse-700": selected,
-            "hover:bg-osmoverse-700": onClick,
+            "hover:bg-osmoverse-700": Boolean(onClick),
           }
         )}
       >
         <div className="mb-16 text-h6 font-h6">{title}</div>
         <Image alt="" src={imgSrc} width={255} height={145} />
-        <div className="text-center text-body2 font-body2 text-osmoverse-200">
+        <div className="body2 text-center text-osmoverse-200">
           {description}
         </div>
       </div>
     </div>
   );
-}
+};
 
 const AddConcLiqView: FunctionComponent<
   {
@@ -315,7 +315,7 @@ const AddConcLiqView: FunctionComponent<
     setHoverPrice,
   } = addLiquidityConfig;
 
-  const { queriesExternalStore, chainStore, queriesStore } = useStore();
+  const { queriesExternalStore } = useStore();
   const t = useTranslation();
   const [inputMin, setInputMin] = useState("0");
   const [inputMax, setInputMax] = useState("0");
@@ -325,10 +325,6 @@ const AddConcLiqView: FunctionComponent<
   const rangeMin = Number(range[0].toString());
   const rangeMax = Number(range[1].toString());
 
-  const { chainId } = chainStore.osmosis;
-  const queriesOsmosis = queriesStore.get(chainId).osmosis!;
-  const queryDepth =
-    queriesOsmosis.queryLiquiditiesPerTickRange.getForPoolId(poolId);
   const queryHistorical =
     queriesExternalStore.queryTokenPairHistoricalChart.get(
       poolId,
@@ -346,7 +342,7 @@ const AddConcLiqView: FunctionComponent<
       setMinRange(new Dec(_min));
       setMaxRange(new Dec(_max));
     },
-    [priceDecimal]
+    [priceDecimal, setMinRange, setMaxRange]
   );
 
   const calculateQuoteDeposit = useCallback(
@@ -361,7 +357,7 @@ const AddConcLiqView: FunctionComponent<
       setQuoteDepositAmountIn(quoteDeposit);
       setQuoteDepositInput(quoteDeposit.toString());
     },
-    [currentPrice, addLiquidityConfig.tickRange]
+    [currentPrice, addLiquidityConfig.tickRange, setQuoteDepositAmountIn]
   );
 
   const calculateBaseDeposit = useCallback(
@@ -376,7 +372,7 @@ const AddConcLiqView: FunctionComponent<
       setBaseDepositAmountIn(baseDeposit);
       setBaseDepositInput(baseDeposit.toString());
     },
-    [currentPrice, addLiquidityConfig.tickRange]
+    [currentPrice, addLiquidityConfig.tickRange, setBaseDepositAmountIn]
   );
 
   useEffect(() => {
@@ -400,25 +396,8 @@ const AddConcLiqView: FunctionComponent<
     queryHistorical.getChartPrices,
     queryHistorical.isFetching,
     addLiquidityConfig.historicalRange,
+    setHistoricalChartData,
   ]);
-
-  useEffect(() => {
-    if (IS_TESTNET) {
-      addLiquidityConfig.setActiveLiquidity(
-        mockCLDepth.map(({ upper_tick, liquidity_amount, lower_tick }) => {
-          return {
-            lowerTick: new Int(lower_tick),
-            upperTick: new Int(upper_tick),
-            liquidityAmount: new Dec(liquidity_amount),
-          };
-        })
-      );
-      return;
-    }
-    if (!queryDepth.isFetching && queryDepth.activeLiquidity) {
-      addLiquidityConfig.setActiveLiquidity(queryDepth.activeLiquidity);
-    }
-  }, [queryDepth.isFetching, queryDepth.activeLiquidity]);
 
   useEffect(() => {
     if (currentPrice && inputMin === "0" && inputMax === "0") {
@@ -429,7 +408,14 @@ const AddConcLiqView: FunctionComponent<
       );
       setHoverPrice(last);
     }
-  }, [currentPrice, inputMax, inputMin]);
+  }, [
+    currentPrice,
+    inputMax,
+    inputMin,
+    moderatePriceRange,
+    updateInputAndRangeMinMax,
+    setHoverPrice,
+  ]);
 
   useEffect(() => {
     if (anchorAsset === "base") {
@@ -458,27 +444,32 @@ const AddConcLiqView: FunctionComponent<
   return (
     <>
       <div className="align-center relative flex flex-row">
-        <div
-          className="absolute left-0 flex flex h-full cursor-pointer flex-row items-center text-sm"
+        <button
+          className="absolute left-0 flex h-full cursor-pointer items-center"
           onClick={() => setModalView("overview")}
         >
-          <Image src="/icons/arrow-left.svg" width={24} height={24} />
-          <span className="pl-1">{t("addConcentratedLiquidity.back")}</span>
-        </div>
-        <div className="flex-1 text-center text-lg">
-          {t("addConcentratedLiquidity.step2Title")}
-        </div>
-        <div className="absolute right-0 flex h-full items-center text-xs font-subtitle2 text-osmoverse-200">
+          <Image
+            alt="left"
+            src="/icons/arrow-left.svg"
+            width={24}
+            height={24}
+          />
+          <span className="body2 pl-1 text-osmoverse-100">
+            {t("addConcentratedLiquidity.back")}
+          </span>
+        </button>
+        <h6 className="mx-auto">{t("addConcentratedLiquidity.step2Title")}</h6>
+        <span className="caption absolute right-0 flex h-full items-center text-osmoverse-200">
           {t("addConcentratedLiquidity.priceShownIn", {
             base: baseDenom,
             quote: quoteDenom,
           })}
-        </div>
+        </span>
       </div>
       <div className="flex flex-col">
-        <div className="px-4 pb-3 text-subtitle1">
+        <span className="subtitle1 px-4 pb-3">
           {t("addConcentratedLiquidity.priceRange")}
-        </div>
+        </span>
         <div className="flex flex-row gap-1">
           <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
             <PriceChartHeader addLiquidityConfig={addLiquidityConfig} />
@@ -526,28 +517,47 @@ const AddConcLiqView: FunctionComponent<
                 yRange={yRange}
                 xRange={addLiquidityConfig.xRange}
                 data={addLiquidityConfig.depthChartData}
-                annotationDatum={{
-                  price: lastChartData?.close || 0,
-                  depth: addLiquidityConfig.xRange[1],
-                }}
-                onMoveMax={debounce(
-                  (val: number) => setInputMax("" + val.toFixed(priceDecimal)),
-                  500
+                annotationDatum={useMemo(
+                  () => ({
+                    price: lastChartData?.close || 0,
+                    depth: addLiquidityConfig.xRange[1],
+                  }),
+                  [addLiquidityConfig.xRange, lastChartData]
                 )}
-                onMoveMin={debounce(
-                  (val: number) => setInputMin("" + val.toFixed(priceDecimal)),
-                  500
+                // eslint-disable-next-line react-hooks/exhaustive-deps
+                onMoveMax={useCallback(
+                  debounce(
+                    (val: number) =>
+                      setInputMax("" + val.toFixed(priceDecimal)),
+                    500
+                  ),
+                  [priceDecimal]
                 )}
-                onSubmitMin={(val) => {
-                  setInputMin("" + val.toFixed(priceDecimal));
-                  setMinRange(val);
-                  addLiquidityConfig.setFullRange(false);
-                }}
-                onSubmitMax={(val) => {
-                  setInputMax("" + val.toFixed(priceDecimal));
-                  setMaxRange(val);
-                  addLiquidityConfig.setFullRange(false);
-                }}
+                // eslint-disable-next-line react-hooks/exhaustive-deps
+                onMoveMin={useCallback(
+                  debounce(
+                    (val: number) =>
+                      setInputMin("" + val.toFixed(priceDecimal)),
+                    500
+                  ),
+                  [priceDecimal]
+                )}
+                onSubmitMin={useCallback(
+                  (val) => {
+                    setInputMin("" + val.toFixed(priceDecimal));
+                    setMinRange(val);
+                    addLiquidityConfig.setFullRange(false);
+                  },
+                  [priceDecimal, setMinRange, addLiquidityConfig]
+                )}
+                onSubmitMax={useCallback(
+                  (val) => {
+                    setInputMax("" + val.toFixed(priceDecimal));
+                    setMaxRange(val);
+                    addLiquidityConfig.setFullRange(false);
+                  },
+                  [priceDecimal, setMaxRange, addLiquidityConfig]
+                )}
                 offset={{ top: 0, right: 36, bottom: 24 + 28, left: 0 }}
                 horizontal
                 fullRange={fullRange}
@@ -556,14 +566,14 @@ const AddConcLiqView: FunctionComponent<
             <div className="flex flex-col items-center justify-center gap-4 pr-8">
               <PriceInputBox
                 currentValue={fullRange ? "" : inputMax}
-                label="high"
+                label={t("addConcentratedLiquidity.high")}
                 onChange={setInputMax}
                 onBlur={(e) => setMaxRange(+e.target.value)}
                 infinity={fullRange}
               />
               <PriceInputBox
                 currentValue={fullRange ? "0" : inputMin}
-                label="low"
+                label={t("addConcentratedLiquidity.low")}
                 onChange={setInputMin}
                 onBlur={(e) => setMinRange(+e.target.value)}
               />
@@ -571,47 +581,55 @@ const AddConcLiqView: FunctionComponent<
           </div>
         </div>
       </div>
-      <VolitilitySelectorGroup
+      <StrategySelectorGroup
         updateInputAndRangeMinMax={updateInputAndRangeMinMax}
         addLiquidityConfig={addLiquidityConfig}
       />
-      <div className="flex flex-col">
-        <div className="px-4 pb-3 text-sm text-subtitle1">
+      <section className="flex flex-col">
+        <div className="subtitle1 px-4 pb-3">
           {t("addConcentratedLiquidity.amountToDeposit")}
         </div>
         <div className="flex flex-row justify-center gap-3">
           <DepositAmountGroup
             getFiatValue={getFiatValue}
             coin={pool?.poolAssets[0]?.amount}
-            onUpdate={(amount) => {
-              setAchorAsset("base");
-              setBaseDepositInput("" + amount);
-              setBaseDepositAmountIn(amount);
-              calculateQuoteDeposit(amount);
-            }}
+            coinIsToken0={true}
+            onUpdate={useCallback(
+              (amount) => {
+                setAchorAsset("base");
+                setBaseDepositInput("" + amount);
+                setBaseDepositAmountIn(amount);
+                calculateQuoteDeposit(amount);
+              },
+              [calculateQuoteDeposit, setBaseDepositAmountIn]
+            )}
             currentValue={baseDepositInput}
             outOfRange={currentPrice.lt(range[0]) && currentPrice.lt(range[1])}
           />
           <DepositAmountGroup
             getFiatValue={getFiatValue}
             coin={pool?.poolAssets[1]?.amount}
-            onUpdate={(amount) => {
-              setAchorAsset("quote");
-              setQuoteDepositInput("" + amount);
-              setQuoteDepositAmountIn(amount);
-              calculateBaseDeposit(amount);
-            }}
+            coinIsToken0={false}
+            onUpdate={useCallback(
+              (amount) => {
+                setAchorAsset("quote");
+                setQuoteDepositInput("" + amount);
+                setQuoteDepositAmountIn(amount);
+                calculateBaseDeposit(amount);
+              },
+              [calculateBaseDeposit, setQuoteDepositAmountIn]
+            )}
             currentValue={quoteDepositInput}
             outOfRange={currentPrice.gt(range[0]) && currentPrice.gt(range[1])}
           />
         </div>
-      </div>
+      </section>
       {actionButton}
     </>
   );
 });
 
-const VolitilitySelectorGroup: FunctionComponent<
+const StrategySelectorGroup: FunctionComponent<
   {
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     updateInputAndRangeMinMax: (min: number, max: number) => void;
@@ -620,52 +638,46 @@ const VolitilitySelectorGroup: FunctionComponent<
   const t = useTranslation();
 
   return (
-    <div className="flex flex-row">
-      <div className="mx-4 flex flex-col">
-        <div className="text-subtitle1">
+    <section className="flex flex-row">
+      <div className="mx-4 flex flex-col gap-2">
+        <span className="subtitle1">
           {t("addConcentratedLiquidity.selectVolatilityRange")}
-        </div>
-        <span className="text-caption font-caption text-osmoverse-200">
+        </span>
+        <span className="caption text-osmoverse-200">
           {t("addConcentratedLiquidity.volatilityDescription")}
           <a
-            className="mx-1 inline-flex flex-row items-center text-caption font-caption text-wosmongton-300"
+            className="caption mx-1 inline-flex flex-row items-center text-wosmongton-300 underline"
             href="#"
             target="_blank"
             rel="noopener noreferrer"
           >
             {t("addConcentratedLiquidity.superchargedLearnMore")}
-            <Image
-              alt="learn more"
-              src="/icons/arrow-right.svg"
-              height={12}
-              width={12}
-            />
           </a>
         </span>
       </div>
       <div className="flex flex-1 flex-row justify-end gap-2">
-        <PresetVolatilityCard
+        <PresetStrategyCard
           type="custom"
           src="/images/small-vial.svg"
           updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
           addLiquidityConfig={props.addLiquidityConfig}
           label="Custom"
         />
-        <PresetVolatilityCard
+        <PresetStrategyCard
           type="passive"
           src="/images/small-vial.svg"
           updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
           addLiquidityConfig={props.addLiquidityConfig}
           label="Passive"
         />
-        <PresetVolatilityCard
+        <PresetStrategyCard
           type="moderate"
           src="/images/medium-vial.svg"
           updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
           addLiquidityConfig={props.addLiquidityConfig}
           label="Moderate"
         />
-        <PresetVolatilityCard
+        <PresetStrategyCard
           type="aggressive"
           src="/images/large-vial.svg"
           updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
@@ -673,17 +685,17 @@ const VolitilitySelectorGroup: FunctionComponent<
           label="Aggressive"
         />
       </div>
-    </div>
+    </section>
   );
 });
 
-function SelectorWrapper(props: {
+const SelectorWrapper: FunctionComponent<{
   src?: string;
   alt?: string;
   label?: string;
   selected: boolean;
   onClick: () => void;
-}) {
+}> = (props) => {
   const isImage = !!props.src && !props.label;
   const isLabel = !!props.label && !props.src;
 
@@ -691,7 +703,7 @@ function SelectorWrapper(props: {
     <div
       className={classNames(
         "flex h-6 cursor-pointer flex-row items-center justify-center",
-        "rounded-lg bg-osmoverse-800 px-2 text-caption hover:bg-osmoverse-900",
+        "caption rounded-lg bg-osmoverse-800 px-2 hover:bg-osmoverse-900",
         "whitespace-nowrap",
         {
           "!bg-osmoverse-600": props.selected,
@@ -710,7 +722,7 @@ function SelectorWrapper(props: {
       {isLabel && props.label}
     </div>
   );
-}
+};
 
 const PriceChartHeader: FunctionComponent<{
   addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
@@ -733,10 +745,10 @@ const PriceChartHeader: FunctionComponent<{
           {hoverPrice.toFixed(priceDecimal) || ""}
         </h4>
         <div className="flex flex-col justify-center font-caption">
-          <div className="text-caption text-osmoverse-300">
+          <div className="caption text-osmoverse-300">
             {t("addConcentratedLiquidity.currentPrice")}
           </div>
-          <div className="whitespace-nowrap text-caption text-osmoverse-300">
+          <div className="caption whitespace-nowrap text-osmoverse-300">
             {t("addConcentratedLiquidity.basePerQuote", {
               base: baseDepositAmountIn.sendCurrency.coinDenom,
               quote: quoteDepositAmountIn.sendCurrency.coinDenom,
@@ -745,17 +757,17 @@ const PriceChartHeader: FunctionComponent<{
         </div>
       </div>
       <div className="flex flex-1 flex-row justify-end gap-1 pr-2">
-        <RangeSelector
+        <SelectorWrapper
           label="7 day"
           onClick={() => setHistoricalRange("7d")}
           selected={historicalRange === "7d"}
         />
-        <RangeSelector
+        <SelectorWrapper
           label="30 day"
           onClick={() => setHistoricalRange("1mo")}
           selected={historicalRange === "1mo"}
         />
-        <RangeSelector
+        <SelectorWrapper
           label="1 year"
           onClick={() => setHistoricalRange("1y")}
           selected={historicalRange === "1y"}
@@ -765,108 +777,108 @@ const PriceChartHeader: FunctionComponent<{
   );
 });
 
-function RangeSelector(props: {
-  label: string;
-  onClick: () => void;
-  selected: boolean;
-}) {
-  return (
-    <SelectorWrapper
-      label={props.label}
-      selected={props.selected}
-      onClick={props.onClick}
-    />
-  );
-}
-
 const DepositAmountGroup: FunctionComponent<{
   getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
   coin?: CoinPretty;
+  coinIsToken0: boolean;
   onUpdate: (amount: number) => void;
   currentValue: string;
   outOfRange?: boolean;
-}> = observer(({ coin, onUpdate, currentValue, outOfRange }) => {
-  const { priceStore, chainStore, queriesStore, accountStore } = useStore();
-  const t = useTranslation();
-  const { chainId } = chainStore.osmosis;
-  const { bech32Address } = accountStore.getAccount(chainId);
+}> = observer(
+  ({
+    getFiatValue,
+    coin,
+    onUpdate,
+    coinIsToken0,
+    currentValue,
+    outOfRange,
+  }) => {
+    const { chainStore, queriesStore, accountStore } = useStore();
+    const t = useTranslation();
+    const { chainId } = chainStore.osmosis;
+    const { bech32Address } = accountStore.getAccount(chainId);
 
-  const fiatPer = coin?.currency.coinGeckoId
-    ? priceStore.getPrice(coin.currency.coinGeckoId, undefined)
-    : 0;
+    const fiatPer = coin && getFiatValue ? getFiatValue(coin) : 0;
 
-  const walletBalance = coin?.currency
-    ? queriesStore
-        .get(chainId)
-        .queryBalances.getQueryBech32Address(bech32Address)
-        .getBalanceFromCurrency(coin.currency)
-    : null;
+    const walletBalance = coin?.currency
+      ? queriesStore
+          .get(chainId)
+          .queryBalances.getQueryBech32Address(bech32Address)
+          .getBalanceFromCurrency(coin.currency)
+      : null;
 
-  const updateValue = useCallback(
-    (val: string) => {
-      const newVal = Number(val);
-      onUpdate(newVal);
-    },
-    [onUpdate]
-  );
-
-  if (outOfRange) {
-    return (
-      <div className="flex flex-1 flex-shrink-0 flex-row items-center gap-3 rounded-[20px] bg-osmoverse-700 px-6 py-7">
-        <Image
-          className="flex-shrink-0 flex-grow"
-          alt=""
-          src="/icons/lock.svg"
-          height={24}
-          width={24}
-        />
-        <div className="flex-shrink-1 w-0 flex-1 text-caption text-osmoverse-300">
-          {t("addConcentratedLiquidity.outOfRangeWarning")}
-        </div>
-      </div>
+    const updateValue = useCallback(
+      (val: string) => {
+        const newVal = Number(val);
+        onUpdate(newVal);
+      },
+      [onUpdate]
     );
-  }
 
-  return (
-    <div className="flex flex-1 flex-shrink-0 flex-row items-center rounded-[20px] bg-osmoverse-700 px-6 py-7">
-      <div className="flex w-full flex-row items-center">
-        {coin?.currency.coinImageUrl && (
+    if (outOfRange) {
+      return (
+        <div className="flex flex-1 flex-shrink-0 flex-row items-center gap-3 rounded-[20px] bg-osmoverse-700 px-6 py-7">
           <Image
+            className="flex-shrink-0 flex-grow"
             alt=""
-            src={coin?.currency.coinImageUrl}
-            height={58}
-            width={58}
+            src="/icons/lock.svg"
+            height={24}
+            width={24}
           />
-        )}
-        <div className="ml-[.75rem] mr-[2.75rem] flex flex-col">
-          <h6>{coin?.denom.toUpperCase()}</h6>
-          <div className="text-osmoverse-200">50%</div>
-        </div>
-        <div className="relative flex flex-1 flex-col">
-          <div className="absolute right-0 top-[-16px] mb-[2px] text-right text-caption text-wosmongton-300">
-            {walletBalance ? walletBalance.toString() : ""}
+          <div className="flex-shrink-1 caption w-0 flex-1 text-osmoverse-300">
+            {t("addConcentratedLiquidity.outOfRangeWarning")}
           </div>
-          <div className="flex h-16 w-[158px] flex-col items-end justify-center self-end rounded-[12px] bg-osmoverse-800">
-            <InputBox
-              className="border-0 bg-transparent text-h5"
-              inputClassName="!leading-4"
-              type="number"
-              currentValue={currentValue}
-              onInput={updateValue}
-              rightEntry
-            />
-            <div className="pr-3 text-caption text-osmoverse-400">
-              {fiatPer &&
-                `~$${new Dec(currentValue).mul(new Dec(fiatPer)).toString(2)}`}
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex flex-1 flex-shrink-0 flex-row items-center rounded-[20px] bg-osmoverse-700 p-6">
+        <div className="flex w-full flex-row items-center">
+          <div
+            className={classNames(
+              "flex overflow-clip rounded-full border-4 p-1",
+              coinIsToken0 ? "border-wosmongton-500" : "border-bullish-500"
+            )}
+          >
+            {coin?.currency.coinImageUrl && (
+              <Image
+                alt=""
+                src={coin?.currency.coinImageUrl}
+                height={58}
+                width={58}
+              />
+            )}
+          </div>
+          <div className="ml-[.75rem] mr-[2.75rem] flex flex-col">
+            <h6>{coin?.denom ?? ""}</h6>
+            <span className="subtitle1 text-osmoverse-400">50%</span>
+          </div>
+          <div className="relative flex flex-1 flex-col gap-0.5">
+            <span className="caption absolute right-0 top-[-16px] mb-[2px] text-right text-wosmongton-300">
+              {walletBalance ? walletBalance.toString() : ""}
+            </span>
+            <div className="flex h-16 w-[158px] flex-col items-end justify-center self-end rounded-[12px] bg-osmoverse-800">
+              <InputBox
+                className="border-0 bg-transparent text-h5 font-h5"
+                inputClassName="!leading-4"
+                type="number"
+                currentValue={currentValue}
+                onInput={updateValue}
+                rightEntry
+              />
+              <div className="caption pr-3 text-osmoverse-400">
+                {fiatPer && `~${fiatPer.toString()}`}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
-const PresetVolatilityCard: FunctionComponent<
+const PresetStrategyCard: FunctionComponent<
   {
     type: "custom" | "passive" | "moderate" | "aggressive";
     src: string;
@@ -875,7 +887,6 @@ const PresetVolatilityCard: FunctionComponent<
     label: string;
     width?: number;
     height?: number;
-    selected?: boolean;
   } & CustomClasses
 > = observer(
   ({
@@ -916,7 +927,7 @@ const PresetVolatilityCard: FunctionComponent<
     if (type === "passive") isSelected = isRangePassive;
     if (type === "custom") isSelected = isRangeCustom;
 
-    const onClick = useCallback(() => {
+    const onClick = () => {
       switch (type) {
         case "passive":
           setFullRange(true);
@@ -936,68 +947,72 @@ const PresetVolatilityCard: FunctionComponent<
           );
           return;
       }
-    }, [type, setFullRange, updateInputAndRangeMinMax]);
+    };
 
     return (
       <div
         className={classNames(
-          "flex w-[114px] cursor-pointer flex-row items-center justify-center gap-2 p-[2px]",
-          "rounded-2xl",
-          "hover:bg-supercharged-gradient",
+          "flex w-[114px] flex-row items-center justify-center gap-2 rounded-2xl p-[2px]",
           {
             "bg-supercharged-gradient": isSelected,
+            "hover:bg-supercharged-gradient cursor-pointer": type !== "custom",
           }
         )}
         onClick={onClick}
       >
-        <div className="flex h-full w-full flex-col rounded-2xl bg-osmoverse-700 p-3">
-          <Image
-            alt=""
-            className="flex-0 ml-2"
-            src={src}
-            width={width || 64}
-            height={height || 64}
-          />
-          <div className="text-center text-body2 font-body2 text-osmoverse-200">
-            {label}
+        <div className="flex h-full w-full flex-col rounded-2xlinset bg-osmoverse-700 p-3">
+          <div
+            className={classNames("mx-auto transform transition-transform", {
+              "scale-110": isSelected,
+            })}
+          >
+            <Image
+              alt="volatility-selection"
+              src={src}
+              width={width || 64}
+              height={height || 64}
+            />
           </div>
+          <span
+            className={classNames("body2 text-center", {
+              "text-osmoverse-200": !isSelected,
+            })}
+          >
+            {label}
+          </span>
         </div>
       </div>
     );
   }
 );
 
-function PriceInputBox(props: {
+const PriceInputBox: FunctionComponent<{
   label: string;
   currentValue: string;
   onChange: (val: string) => void;
   onBlur: (e: any) => void;
   infinity?: boolean;
-}) {
-  return (
-    <div className="flex w-full max-w-[9.75rem] flex-col items-end rounded-xl bg-osmoverse-800 px-2">
-      <span className="px-2 pt-2 text-caption text-osmoverse-400">
-        {props.label}
-      </span>
-      {props.infinity ? (
-        <div className="flex h-[41px] flex-row items-center px-2">
-          <Image
-            alt="infinity"
-            src="/icons/infinity.svg"
-            width={16}
-            height={16}
-          />
-        </div>
-      ) : (
-        <InputBox
-          className="border-0 bg-transparent text-subtitle1 leading-tight"
-          type="number"
-          rightEntry
-          currentValue={props.currentValue}
-          onInput={(val) => props.onChange(val)}
-          onBlur={props.onBlur}
+}> = ({ label, currentValue, onChange, onBlur, infinity }) => (
+  <div className="flex w-full max-w-[9.75rem] flex-col items-end rounded-xl bg-osmoverse-800 px-2">
+    <span className="caption px-2 pt-2 text-osmoverse-400">{label}</span>
+    {infinity ? (
+      <div className="flex h-[41px] flex-row items-center px-2">
+        <Image
+          alt="infinity"
+          src="/icons/infinity.svg"
+          width={16}
+          height={16}
         />
-      )}
-    </div>
-  );
-}
+      </div>
+    ) : (
+      <InputBox
+        className="border-0 bg-transparent text-subtitle1 leading-tight"
+        type="number"
+        rightEntry
+        currentValue={currentValue}
+        onInput={(val) => onChange(val)}
+        onBlur={onBlur}
+      />
+    )}
+  </div>
+);

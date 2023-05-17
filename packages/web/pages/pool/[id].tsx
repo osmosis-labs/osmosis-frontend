@@ -332,6 +332,11 @@ const Pool: FunctionComponent = observer(() => {
     .maxDecimals(3)
     .inequalitySymbol(false);
 
+  const setShowModal = useCallback(
+    (setter: Function, show: boolean) => () => setter(show),
+    []
+  );
+
   return (
     <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
       <Head>
@@ -343,7 +348,7 @@ const Pool: FunctionComponent = observer(() => {
         <AddLiquidityModal
           isOpen={true}
           poolId={pool.id}
-          onRequestClose={() => setShowAddLiquidityModal(false)}
+          onRequestClose={setShowModal(setShowAddLiquidityModal, false)}
           onAddLiquidity={onAddLiquidity}
         />
       )}
@@ -351,7 +356,7 @@ const Pool: FunctionComponent = observer(() => {
         <RemoveLiquidityModal
           isOpen={true}
           poolId={pool.id}
-          onRequestClose={() => setShowRemoveLiquidityModal(false)}
+          onRequestClose={setShowModal(setShowRemoveLiquidityModal, false)}
           onRemoveLiquidity={onRemoveLiquidity}
         />
       )}
@@ -360,7 +365,7 @@ const Pool: FunctionComponent = observer(() => {
           className="md:!p-0"
           hideCloseButton={isMobile}
           isOpen={showTradeTokenModal}
-          onRequestClose={() => setShowTradeTokenModal(false)}
+          onRequestClose={setShowModal(setShowTradeTokenModal, false)}
           pools={[pool]}
         />
       )}

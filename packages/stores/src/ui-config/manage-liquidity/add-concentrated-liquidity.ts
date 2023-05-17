@@ -16,10 +16,8 @@ import {
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { action, computed, makeObservable, observable } from "mobx";
 
-import {
-  PriceRange,
-  TokenPairHistoricalPrice,
-} from "../../queries-external/token-pair-historical-chart/types";
+import { ObservableQueryLiquidityPerTickRange } from "../../queries";
+import { PriceRange, TokenPairHistoricalPrice } from "../../queries-external";
 
 /** Use to config user input UI for eventually sending a valid add concentrated liquidity msg.
  */
@@ -58,7 +56,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
    Used to get min and max range for adding concentrated liquidity
    */
   @observable
-  protected _range: [Dec, Dec] = [minSpotPrice, minSpotPrice];
+  protected _priceRange: [Dec, Dec] = [minSpotPrice, minSpotPrice];
 
   @observable
   protected _fullRange: boolean = false;
@@ -85,6 +83,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     sender: string,
     protected readonly queriesStore: IQueriesStore,
     protected readonly queryBalances: ObservableQueryBalances,
+    protected readonly queryRange: ObservableQueryLiquidityPerTickRange,
     pool: ConcentratedLiquidityPool
   ) {
     super(chainGetter, initialChainId);
@@ -227,27 +226,27 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   @action
   setMinRange = (min: Dec | number) => {
-    this._range = [
+    this._priceRange = [
       roundPriceToNearestTick(typeof min === "number" ? new Dec(min) : min),
-      this._range[1],
+      this._priceRange[1],
     ];
   };
 
   @action
   setMaxRange = (max: Dec | number) => {
-    this._range = [
-      this._range[0],
+    this._priceRange = [
+      this._priceRange[0],
       roundPriceToNearestTick(typeof max === "number" ? new Dec(max) : max),
     ];
   };
 
   get range(): [Dec, Dec] {
-    return this._range;
+    return this._priceRange;
   }
 
   @computed
   get tickRange(): [Int, Int] {
-    return [priceToTick(this._range[0]), priceToTick(this._range[1])];
+    return [priceToTick(this._priceRange[0]), priceToTick(this._priceRange[1])];
   }
 
   @action
@@ -284,17 +283,17 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   }
 
   @action
-  setZoom = (zoom: number) => {
+  readonly setZoom = (zoom: number) => {
     this._zoom = zoom;
   };
 
   @action
-  zoomIn = () => {
+  readonly zoomIn = () => {
     this._zoom = Math.max(1, this._zoom - 0.2);
   };
 
   @action
-  zoomOut = () => {
+  readonly zoomOut = () => {
     this._zoom = this._zoom + 0.2;
   };
 
@@ -302,12 +301,14 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     return this._historicalChartData;
   }
 
+  @computed
   get lastChartData(): TokenPairHistoricalPrice | null {
     return (
       this._historicalChartData[this._historicalChartData.length - 1] || null
     );
   }
 
+  @computed
   get priceDecimal(): number {
     if (!this.lastChartData) return 2;
     if (this.lastChartData.close <= 0.001) return 5;
@@ -317,21 +318,25 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   }
 
   @action
-  setHistoricalChartData = (historicalData: TokenPairHistoricalPrice[]) => {
+  readonly setHistoricalChartData = (
+    historicalData: TokenPairHistoricalPrice[]
+  ) => {
     this._historicalChartData = historicalData;
   };
 
   @action
-  setActiveLiquidity = (activeliquidity: ActiveLiquidityPerTickRange[]) => {
+  readonly setActiveLiquidity = (
+    activeliquidity: ActiveLiquidityPerTickRange[]
+  ) => {
     this._activeLiquidity = activeliquidity;
   };
 
   get activeLiquidity(): ActiveLiquidityPerTickRange[] {
-    return this._activeLiquidity;
+    return this.queryRange.activeLiquidity;
   }
 
   @action
-  setHoverPrice = (price: number) => {
+  readonly setHoverPrice = (price: number) => {
     this._hoverPrice = price;
   };
 
@@ -403,7 +408,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   @computed
   get error(): Error | undefined {
-    return;
+    return this._baseDepositAmountIn.error || this._quoteDepositAmountIn.error;
   }
 }
 

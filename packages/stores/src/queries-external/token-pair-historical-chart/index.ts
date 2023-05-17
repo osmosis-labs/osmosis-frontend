@@ -8,7 +8,6 @@ import { ObservableQueryExternalBase } from "../base";
 import { PriceRange, TokenPairHistoricalPrice } from "./types";
 
 const AvailableRangeValues = ["7d", "1mo", "1y"] as const;
-type Tf = PriceRange;
 
 /** Queries Imperator token history data chart. */
 export class ObservableQueryTokenPairHistoricalChart extends ObservableQueryExternalBase<
@@ -21,16 +20,12 @@ export class ObservableQueryTokenPairHistoricalChart extends ObservableQueryExte
     protected readonly poolId: string,
     protected readonly baseDenom: string,
     protected readonly quoteDenom: string,
-    /**
-     * Range of historical data
-     * Available values: ["7d", "1mo", "1y"]
-     */
-    protected readonly tf: Tf
+    protected readonly priceRange: PriceRange
   ) {
     super(
       kvStore,
       baseURL,
-      `/pairs/v1/historical/${poolId}/chart?asset_in=${baseDenom}&asset_out=${quoteDenom}&range=${tf}&asset_type=symbol`
+      `/pairs/v1/historical/${poolId}/chart?asset_in=${baseDenom}&asset_out=${quoteDenom}&range=${priceRange}&asset_type=symbol`
     );
     makeObservable(this);
   }
@@ -38,8 +33,8 @@ export class ObservableQueryTokenPairHistoricalChart extends ObservableQueryExte
   protected canFetch(): boolean {
     return (
       this.poolId !== "" &&
-      AvailableRangeValues.includes(this.tf) &&
-      this.tf != null &&
+      AvailableRangeValues.includes(this.priceRange) &&
+      this.priceRange != null &&
       this.baseDenom != null &&
       this.quoteDenom != null
     );
@@ -77,14 +72,21 @@ export class ObservableQueryTokensPairHistoricalChart extends HasMapStore<Observ
         poolId,
         baseDenom,
         quoteDenom,
-        String(tf) as Tf
+        String(tf) as PriceRange
       );
     });
   }
 
-  get(poolId: string, tf?: Tf, baseDenom = "", quoteDenom = "") {
+  get(
+    poolId: string,
+    priceRange?: PriceRange,
+    baseDenom = "",
+    quoteDenom = ""
+  ) {
     return super.get(
-      `${poolId},${tf},${baseDenom},${quoteDenom}`
+      `${poolId},${priceRange},${baseDenom},${quoteDenom}`
     ) as ObservableQueryTokenPairHistoricalChart;
   }
 }
+
+export * from "./types";

@@ -120,81 +120,78 @@ export const TransferAssetSelectModal: FunctionComponent<
             selectedTokenDenom={selectedTokenDenom}
           />
         </div>
-        {selectedToken?.originBridgeInfo &&
-          selectedNetwork &&
-          keplrConnected && (
+        {selectedToken?.originBridgeInfo && selectedNetwork && keplrConnected && (
+          <div
+            className={classNames(
+              "relative flex w-full place-content-between items-center border border-osmoverse-700 p-4 transition-borderRadius",
+              {
+                "rounded-2xl": !isSourceChainDropdownOpen,
+                "rounded-l-2xl rounded-tr-2xl": isSourceChainDropdownOpen,
+              }
+            )}
+          >
+            <span className="subtitle2 text-white-mid">
+              {t("assets.transferAssetSelect.network")}
+            </span>
             <div
-              className={classNames(
-                "relative flex w-full place-content-between items-center border border-osmoverse-700 p-4 transition-borderRadius",
-                {
-                  "rounded-2xl": !isSourceChainDropdownOpen,
-                  "rounded-l-2xl rounded-tr-2xl": isSourceChainDropdownOpen,
-                }
-              )}
+              className={classNames("flex items-center gap-2", {
+                "cursor-pointer":
+                  selectedToken?.originBridgeInfo &&
+                  selectedToken.originBridgeInfo.sourceChainTokens.length > 1,
+              })}
+              onClick={() => {
+                if (
+                  selectedToken?.originBridgeInfo &&
+                  selectedToken.originBridgeInfo.sourceChainTokens.length > 1
+                )
+                  setSourceChainDropdownOpen(!isSourceChainDropdownOpen);
+              }}
             >
-              <span className="subtitle2 text-white-mid">
-                {t("assets.transferAssetSelect.network")}
-              </span>
-              <div
-                className={classNames("flex items-center gap-2", {
-                  "cursor-pointer":
-                    selectedToken?.originBridgeInfo &&
-                    selectedToken.originBridgeInfo.sourceChainTokens.length > 1,
-                })}
-                onClick={() => {
-                  if (
-                    selectedToken?.originBridgeInfo &&
-                    selectedToken.originBridgeInfo.sourceChainTokens.length > 1
-                  )
-                    setSourceChainDropdownOpen(!isSourceChainDropdownOpen);
-                }}
-              >
-                <Network {...selectedNetwork} />
-                {selectedToken?.originBridgeInfo &&
-                  selectedToken.originBridgeInfo.sourceChainTokens.length >
-                    1 && (
-                    <div
-                      className={classNames("flex items-center transition", {
-                        "rotate-180": isSourceChainDropdownOpen,
-                      })}
-                    >
-                      <Icon
-                        id="chevron-down"
-                        height={22}
-                        width={12}
-                        className="text-osmoverse-400"
-                      />
-                    </div>
-                  )}
-              </div>
-              {isSourceChainDropdownOpen && (
-                <div
-                  style={{ borderTopStyle: "dashed" }}
-                  className="absolute top-[100%] -right-[1px] z-50 select-none rounded-b-2xl border border-osmoverse-700 bg-osmoverse-800"
-                >
-                  {selectedToken.originBridgeInfo.sourceChainTokens
-                    .filter(({ id }) => id !== selectedNetwork.id)
-                    .map((sourceChain, index, scArr) => (
-                      <div
-                        key={index}
-                        className={classNames(
-                          "cursor-pointer px-6 py-1.5 transition-colors hover:bg-osmoverse-700",
-                          {
-                            "rounded-b-2xl": scArr.length - 1 === index,
-                          }
-                        )}
-                        onClick={() => {
-                          setSelectedSourceChainKey(sourceChain.id);
-                          setSourceChainDropdownOpen(false);
-                        }}
-                      >
-                        <Network {...sourceChain} />
-                      </div>
-                    ))}
-                </div>
-              )}
+              <Network {...selectedNetwork} />
+              {selectedToken?.originBridgeInfo &&
+                selectedToken.originBridgeInfo.sourceChainTokens.length > 1 && (
+                  <div
+                    className={classNames("flex items-center transition", {
+                      "rotate-180": isSourceChainDropdownOpen,
+                    })}
+                  >
+                    <Icon
+                      id="chevron-down"
+                      height={22}
+                      width={12}
+                      className="text-osmoverse-400"
+                    />
+                  </div>
+                )}
             </div>
-          )}
+            {isSourceChainDropdownOpen && (
+              <div
+                style={{ borderTopStyle: "dashed" }}
+                className="absolute top-[100%] -right-[1px] z-50 select-none rounded-b-2xl border border-osmoverse-700 bg-osmoverse-800"
+              >
+                {selectedToken.originBridgeInfo.sourceChainTokens
+                  .filter(({ id }) => id !== selectedNetwork.id)
+                  .map((sourceChain, index, scArr) => (
+                    <div
+                      key={index}
+                      className={classNames(
+                        "cursor-pointer px-6 py-1.5 transition-colors hover:bg-osmoverse-700",
+                        {
+                          "rounded-b-2xl": scArr.length - 1 === index,
+                        }
+                      )}
+                      onClick={() => {
+                        setSelectedSourceChainKey(sourceChain.id);
+                        setSourceChainDropdownOpen(false);
+                      }}
+                    >
+                      <Network {...sourceChain} />
+                    </div>
+                  ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
       {accountActionButton}
     </ModalBase>

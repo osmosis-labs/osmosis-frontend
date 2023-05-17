@@ -76,7 +76,7 @@
     @apply bg-gradient-positive bg-clip-text text-transparent;
   }
   .bg-supercharged-gradient {
-    background: linear-gradient(270deg, #64C5EE 0%, #EE64E8 100%);
+    background: linear-gradient(270deg, #64c5ee 0%, #ee64e8 100%);
   }
 
   input::-webkit-outer-spin-button,

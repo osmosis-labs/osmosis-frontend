@@ -31,11 +31,13 @@
     "basePerQuote": "{base} per {quote}",
     "selectVolatilityRange": "Select a volatility strategy",
     "volatilityDescription": "At ~5X concentration, you’ll earn more on swaps but keep an eye on your position, rebalancing to keep the price in range.",
-    "superchargedLearnMore": "Learn about",
+    "superchargedLearnMore": "Learn more",
     "fullRange": "Full range",
     "amountToDeposit": "Amount to deposit",
     "addLiquidity": "Add Liquidity",
-    "outOfRangeWarning": "The market price is outside your specified price range. Single-asset deposit only."
+    "outOfRangeWarning": "The market price is outside your specified price range. Single-asset deposit only.",
+    "high": "high",
+    "low": "low"
   },
   "app": {
     "banner": {

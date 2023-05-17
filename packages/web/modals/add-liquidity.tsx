@@ -3,7 +3,7 @@ import {
   ObservableAddLiquidityConfig,
 } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useCallback } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { AddConcLiquidity } from "../components/complex/add-conc-liquidity";
@@ -99,7 +99,10 @@ export const AddLiquidityModal: FunctionComponent<
             addConliqConfig as ObservableAddConcentratedLiquidityConfig
           }
           actionButton={accountActionButton}
-          getFiatValue={(coin) => priceStore.calculatePrice(coin)}
+          getFiatValue={useCallback(
+            (coin) => priceStore.calculatePrice(coin),
+            [priceStore]
+          )}
           onRequestClose={props.onRequestClose}
         />
       </ModalBase>

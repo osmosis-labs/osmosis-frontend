@@ -42,6 +42,9 @@ export function useAddConcentratedLiquidityConfig(
         bech32Address,
         queriesStore,
         queriesStore.get(osmosisChainId).queryBalances,
+        queriesStore
+          .get(osmosisChainId)
+          .osmosis!.queryLiquiditiesPerTickRange.getForPoolId(poolId),
         pool
       )
   );
@@ -69,7 +72,15 @@ export function useAddConcentratedLiquidityConfig(
         reject(e.message);
       }
     });
-  }, [account.osmosis, config.sender, config.poolId]);
+  }, [
+    account.osmosis,
+    config.baseDepositAmountIn.sendCurrency,
+    config.baseDepositAmountIn.amount,
+    config.quoteDepositAmountIn.sendCurrency,
+    config.quoteDepositAmountIn.amount,
+    config.tickRange,
+    config.poolId,
+  ]);
 
   return { config, addLiquidity };
 }

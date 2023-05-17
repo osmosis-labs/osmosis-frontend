@@ -601,13 +601,6 @@ export class OsmosisAccountImpl {
     await this.base.cosmos.sendMsgs(
       "clCreatePosition",
       async () => {
-        console.log({
-          poolId,
-          baseDeposit,
-          quoteDeposit,
-          lowerTick,
-          upperTick,
-        });
         const queryPool = queries.queryGammPools.getPool(poolId);
 
         if (!queryPool) {
