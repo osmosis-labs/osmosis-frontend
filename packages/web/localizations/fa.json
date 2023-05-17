@@ -437,5 +437,9 @@
   "unknownError": "خطای نا شناس",
   "viewExplorer": "مشاهده جزئیات تراکنش",
   "waitingForTransaction": "صبر کنید تا یک تراکنش در بلاک قرار بگیرد",
-  "highPoolInflationWarning": "نرخ سود سالانه بالا ممکن است ناشی از پاداش‌های تورمی باشد. با احتیاط ادامه دهید."
+  "highPoolInflationWarning": "نرخ سود سالانه بالا ممکن است ناشی از پاداش‌های تورمی باشد. با احتیاط ادامه دهید.",
+  "autonomy": {
+    "description": "تحقیق در حد و سفارش‌های توقفی که توسط Autonomy ارائه شده‌اند: ",
+    "link": "osmosis.autoswap.trade"
+  }
 }

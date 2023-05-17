@@ -443,5 +443,9 @@
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",
   "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
-  "highPoolInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență."
+  "highPoolInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență.",
+  "autonomy": {
+    "description": "Explorează Ordinele Limită și Ordinele de Oprire aduse de Autonomy: ",
+    "link": "osmosis.autoswap.trade"
+  }
 }
