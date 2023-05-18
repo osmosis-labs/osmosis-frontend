@@ -11,7 +11,6 @@ import {
 } from "@osmosis-labs/stores";
 import { useCallback, useState } from "react";
 
-import { IS_TESTNET } from "~/config";
 import { useStore } from "~/stores";
 
 /** Maintains a single instance of `ObservableAddConcentratedLiquidityConfig` for React view lifecycle.
@@ -47,8 +46,7 @@ export function useAddConcentratedLiquidityConfig(
           .get(osmosisChainId)
           .osmosis!.queryLiquiditiesPerTickRange.getForPoolId(poolId),
         queriesExternalStore.queryTokenPairHistoricalChart,
-        pool,
-        IS_TESTNET
+        pool
       )
   );
 

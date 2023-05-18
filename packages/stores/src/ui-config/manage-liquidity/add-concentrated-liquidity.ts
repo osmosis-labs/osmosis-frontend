@@ -23,7 +23,6 @@ import {
   PriceRange,
   TokenPairHistoricalPrice,
 } from "../../queries-external";
-import { mockCLDepth, mockTokenPairPricesData } from "./cl-mock-data";
 import { InvalidRangeError } from "./errors";
 
 /** Use to config user input UI for eventually sending a valid add concentrated liquidity msg.
@@ -92,8 +91,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     protected readonly queryBalances: ObservableQueryBalances,
     protected readonly queryRange: ObservableQueryLiquidityPerTickRange,
     protected readonly queryHistorical: DeepReadonly<ObservableQueryTokensPairHistoricalChart>,
-    pool: ConcentratedLiquidityPool,
-    protected readonly isTestnet = false
+    pool: ConcentratedLiquidityPool
   ) {
     super(chainGetter, initialChainId);
 
@@ -132,16 +130,6 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   }
 
   private fetchHistoricalChartData() {
-    if (this.isTestnet) {
-      this.setHistoricalChartData(
-        mockTokenPairPricesData[this.historicalRange].map((data) => ({
-          ...data,
-          time: data.time * 1000,
-        }))
-      );
-      return;
-    }
-
     const query = this.queryHistorical.get(
       this.poolId,
       this.historicalRange,
@@ -368,15 +356,6 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   @computed
   get activeLiquidity(): ActiveLiquidityPerTickRange[] {
-    if (this.isTestnet) {
-      return mockCLDepth.map(({ upper_tick, liquidity_amount, lower_tick }) => {
-        return {
-          lowerTick: new Int(lower_tick),
-          upperTick: new Int(upper_tick),
-          liquidityAmount: new Dec(liquidity_amount),
-        };
-      });
-    }
     return this.queryRange.activeLiquidity;
   }
 
