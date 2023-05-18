@@ -9,7 +9,9 @@ import {
   ActiveLiquidityPerTickRange,
   calculateDepositAmountForBase,
   maxSpotPrice,
+  maxTick,
   minSpotPrice,
+  minTick,
   priceToTick,
   roundPriceToNearestTick,
 } from "@osmosis-labs/math";
@@ -201,7 +203,6 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   get depositPercentages(): [Dec, Dec] {
     if (this.baseDepositOnly) return [new Dec(100), new Dec(0)];
     if (this.quoteDepositOnly) return [new Dec(0), new Dec(100)];
-    if (this.fullRange) return [new Dec(50), new Dec(50)];
 
     const quoteDeposit = new Dec(1);
     const baseDeposit = calculateDepositAmountForBase(
@@ -271,11 +272,13 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   };
 
   get range(): [Dec, Dec] {
+    if (this.fullRange) return [minSpotPrice, maxSpotPrice];
     return this._priceRange;
   }
 
   @computed
   get tickRange(): [Int, Int] {
+    if (this.fullRange) return [minTick, maxTick];
     return [priceToTick(this._priceRange[0]), priceToTick(this._priceRange[1])];
   }
 
@@ -382,6 +385,10 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
     const chartMin = Math.max(0, Math.min(...prices));
     const chartMax = Math.max(...prices);
+
+    if (this.fullRange && prices.length) {
+      return [chartMin * 0.8, chartMax * 1.2];
+    }
 
     const absMax = Math.max(max, chartMax);
     const absMin = Math.min(min, chartMin);
