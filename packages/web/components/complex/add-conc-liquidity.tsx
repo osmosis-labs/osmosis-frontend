@@ -623,26 +623,24 @@ const StrategySelectorGroup: FunctionComponent<
   } & CustomClasses
 > = observer((props) => {
   const t = useTranslation();
-  const { volatilityType } = props.addLiquidityConfig;
+  const { currentStrategy } = props.addLiquidityConfig;
 
   let descriptionText = t(
     "addConcentratedLiquidity.volatilityCustomDescription"
   );
 
-  if (volatilityType === "passive") {
+  if (currentStrategy === "passive") {
     descriptionText = t(
       "addConcentratedLiquidity.volatilityPassiveDescription"
     );
-  } else if (volatilityType === "aggressive") {
+  } else if (currentStrategy === "aggressive") {
     descriptionText = t(
       "addConcentratedLiquidity.volatilityAggressiveDescription"
     );
-  } else if (volatilityType === "moderate") {
+  } else if (currentStrategy === "moderate") {
     descriptionText = t(
       "addConcentratedLiquidity.volatilityModerateDescription"
     );
-  } else if (volatilityType === "custom") {
-    descriptionText = t("addConcentratedLiquidity.volatilityCustomDescription");
   }
 
   return (
@@ -911,7 +909,7 @@ const PresetStrategyCard: FunctionComponent<
     updateInputAndRangeMinMax,
   }) => {
     const {
-      volatilityType,
+      currentStrategy,
       setFullRange,
       aggressivePriceRange,
       moderatePriceRange,

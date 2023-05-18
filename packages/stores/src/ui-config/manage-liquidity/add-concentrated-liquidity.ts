@@ -452,7 +452,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   }
 
   @computed
-  get volatilityType(): "passive" | "custom" | "aggressive" | "moderate" {
+  get currentStrategy(): "passive" | "aggressive" | "moderate" | null {
     const isRangePassive = this.fullRange;
     const isRangeAggressive =
       !isRangePassive &&
@@ -462,14 +462,11 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
       !isRangePassive &&
       this.tickRange[0].equals(this.moderateTickRange[0]) &&
       this.tickRange[1].equals(this.moderateTickRange[1]);
-    const isRangeCustom =
-      !isRangeAggressive && !isRangeModerate && !isRangePassive;
 
     if (isRangePassive) return "passive";
     if (isRangeModerate) return "moderate";
     if (isRangeAggressive) return "aggressive";
-    if (isRangeCustom) return "custom";
-    return "custom";
+    return null;
   }
 
   @computed
