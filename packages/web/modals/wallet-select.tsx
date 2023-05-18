@@ -174,9 +174,7 @@ const ModalContent: FunctionComponent<
           .then(() => {
             onConnectProp?.();
           })
-          .catch(() => {
-            /** DO NOTHING */
-          });
+          .catch(console.error);
         return;
       }
 
@@ -205,18 +203,14 @@ const ModalContent: FunctionComponent<
             setLazyWalletInfo(undefined);
             onConnectProp?.();
           })
-          .catch(() => {
-            /** DO NOTHING */
-          });
+          .catch(console.error);
       } else {
         installedWallet
           ?.connect(sync)
           .then(() => {
             onConnectProp?.();
           })
-          .catch(() => {
-            /** DO NOTHING */
-          });
+          .catch(console.error);
       }
     };
 
