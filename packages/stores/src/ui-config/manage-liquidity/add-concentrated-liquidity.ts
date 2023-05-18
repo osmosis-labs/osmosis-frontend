@@ -271,6 +271,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     ];
   };
 
+  @computed
   get range(): [Dec, Dec] {
     if (this.fullRange) return [minSpotPrice, maxSpotPrice];
     return this._priceRange;
