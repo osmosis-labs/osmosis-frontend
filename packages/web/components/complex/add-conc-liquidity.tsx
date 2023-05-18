@@ -27,7 +27,7 @@ import { useTranslation } from "react-multi-lang";
 import IconButton from "~/components/buttons/icon-button";
 import { useStore } from "~/stores";
 
-import { Icon, PoolAssetsIcon } from "../assets";
+import { Icon, PoolAssetsIcon, PoolAssetsName } from "../assets";
 import { Button } from "../buttons";
 import { InputBox } from "../input";
 import { CustomClasses } from "../types";
@@ -69,19 +69,6 @@ export const AddConcLiquidity: FunctionComponent<
           };
     const pool = poolDetail?.pool;
 
-    // user analytics
-    const { poolName } = useMemo(
-      () => ({
-        poolName: pool?.poolAssets
-          .map(({ amount }) => amount.denom)
-          .join(" / "),
-        poolWeight: pool?.weightedPoolInfo?.assets
-          .map((poolAsset) => poolAsset.weightFraction.toString())
-          .join(" / "),
-      }),
-      [pool?.poolAssets, pool?.weightedPoolInfo?.assets]
-    );
-
     return (
       <div className={classNames("flex flex-col gap-8", className)}>
         {(() => {
@@ -90,7 +77,6 @@ export const AddConcLiquidity: FunctionComponent<
               return (
                 <Overview
                   pool={pool}
-                  poolName={poolName}
                   poolDetail={poolDetail}
                   superfluidPoolDetail={superfluidPoolDetail}
                   addLiquidityConfig={addLiquidityConfig}
@@ -118,7 +104,6 @@ export const AddConcLiquidity: FunctionComponent<
 const Overview: FunctionComponent<
   {
     pool?: ObservableQueryPool;
-    poolName?: string;
     poolDetail?: ObservablePoolDetail;
     superfluidPoolDetail?: ObservableSuperfluidPoolDetail;
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
@@ -128,7 +113,6 @@ const Overview: FunctionComponent<
   ({
     addLiquidityConfig,
     pool,
-    poolName,
     superfluidPoolDetail,
     poolDetail,
     onRequestClose,
@@ -170,17 +154,25 @@ const Overview: FunctionComponent<
           <div className="flex flex-1 flex-col gap-1">
             <div className="flex flex-row flex-nowrap items-center gap-2">
               {pool && (
-                <PoolAssetsIcon
-                  assets={pool.poolAssets.map(
-                    (asset: { amount: CoinPretty }) => ({
-                      coinDenom: asset.amount.denom,
-                      coinImageUrl: asset.amount.currency.coinImageUrl,
-                    })
-                  )}
-                  size="sm"
-                />
+                <>
+                  <PoolAssetsIcon
+                    assets={pool.poolAssets.map(
+                      (asset: { amount: CoinPretty }) => ({
+                        coinDenom: asset.amount.denom,
+                        coinImageUrl: asset.amount.currency.coinImageUrl,
+                      })
+                    )}
+                    size="sm"
+                  />
+                  <PoolAssetsName
+                    size="md"
+                    className="max-w-xs truncate"
+                    assetDenoms={pool.poolAssets.map(
+                      (asset: { amount: CoinPretty }) => asset.amount.denom
+                    )}
+                  />
+                </>
               )}
-              <h6 className="max-w-xs truncate">{poolName}</h6>
             </div>
             {!superfluidPoolDetail?.isSuperfluid && (
               <span className="body2 text-superfluid-gradient">
@@ -304,6 +296,9 @@ const AddConcLiqView: FunctionComponent<
     baseDepositAmountIn,
     quoteDepositAmountIn,
     moderatePriceRange,
+    baseDepositOnly,
+    quoteDepositOnly,
+    depositPercentages,
     setQuoteDepositAmountIn,
     setBaseDepositAmountIn,
     setModalView,
@@ -333,32 +328,60 @@ const AddConcLiqView: FunctionComponent<
 
   const calculateQuoteDeposit = useCallback(
     (amount: number) => {
-      const [lowerTick, upperTick] = addLiquidityConfig.tickRange;
-      const quoteDeposit = calculateDepositAmountForQuote(
-        currentPrice,
-        lowerTick,
-        upperTick,
-        new Dec(amount)
-      );
+      const amt = new Dec(amount);
+      let quoteDeposit: Dec;
+
+      if (fullRange) {
+        quoteDeposit = amt.quo(currentPrice);
+      } else {
+        const [lowerTick, upperTick] = addLiquidityConfig.tickRange;
+        quoteDeposit = calculateDepositAmountForQuote(
+          currentPrice,
+          lowerTick,
+          upperTick,
+          amt
+        );
+      }
+
       setQuoteDepositAmountIn(quoteDeposit);
       setQuoteDepositInput(quoteDeposit.toString());
     },
-    [currentPrice, addLiquidityConfig.tickRange, setQuoteDepositAmountIn]
+    [
+      currentPrice,
+      addLiquidityConfig.tickRange,
+      setQuoteDepositAmountIn,
+      fullRange,
+      currentPrice,
+    ]
   );
 
   const calculateBaseDeposit = useCallback(
     (amount: number) => {
-      const [lowerTick, upperTick] = addLiquidityConfig.tickRange;
-      const baseDeposit = calculateDepositAmountForBase(
-        currentPrice,
-        lowerTick,
-        upperTick,
-        new Dec(amount)
-      );
+      const amt = new Dec(amount);
+      let baseDeposit: Dec;
+
+      if (fullRange) {
+        baseDeposit = amt.mul(currentPrice);
+      } else {
+        const [lowerTick, upperTick] = addLiquidityConfig.tickRange;
+        baseDeposit = calculateDepositAmountForBase(
+          currentPrice,
+          lowerTick,
+          upperTick,
+          amt
+        );
+      }
+
       setBaseDepositAmountIn(baseDeposit);
       setBaseDepositInput(baseDeposit.toString());
     },
-    [currentPrice, addLiquidityConfig.tickRange, setBaseDepositAmountIn]
+    [
+      currentPrice,
+      addLiquidityConfig.tickRange,
+      setBaseDepositAmountIn,
+      fullRange,
+      currentPrice,
+    ]
   );
 
   useEffect(() => {
@@ -518,7 +541,7 @@ const AddConcLiqView: FunctionComponent<
                     setMaxRange(val);
                     addLiquidityConfig.setFullRange(false);
                   },
-                  [priceDecimal, setMaxRange, addLiquidityConfig]
+                  [priceDecimal, setMaxRange, addLiquidityConfig, rangeMin]
                 )}
                 offset={{ top: 0, right: 36, bottom: 24 + 28, left: 0 }}
                 horizontal
@@ -566,7 +589,8 @@ const AddConcLiqView: FunctionComponent<
               [calculateQuoteDeposit, setBaseDepositAmountIn]
             )}
             currentValue={baseDepositInput}
-            outOfRange={currentPrice.lt(range[0]) && currentPrice.lt(range[1])}
+            outOfRange={quoteDepositOnly}
+            percentage={Number(depositPercentages[0].toString())}
           />
           <DepositAmountGroup
             getFiatValue={getFiatValue}
@@ -582,7 +606,8 @@ const AddConcLiqView: FunctionComponent<
               [calculateBaseDeposit, setQuoteDepositAmountIn]
             )}
             currentValue={quoteDepositInput}
-            outOfRange={currentPrice.gt(range[0]) && currentPrice.gt(range[1])}
+            outOfRange={baseDepositOnly}
+            percentage={Number(depositPercentages[1].toString())}
           />
         </div>
       </section>
@@ -745,11 +770,13 @@ const DepositAmountGroup: FunctionComponent<{
   coinIsToken0: boolean;
   onUpdate: (amount: number) => void;
   currentValue: string;
+  percentage: number;
   outOfRange?: boolean;
 }> = observer(
   ({
     getFiatValue,
     coin,
+    percentage,
     onUpdate,
     coinIsToken0,
     currentValue,
@@ -814,7 +841,9 @@ const DepositAmountGroup: FunctionComponent<{
           </div>
           <div className="ml-[.75rem] mr-[2.75rem] flex flex-col">
             <h6>{coin?.denom ?? ""}</h6>
-            <span className="subtitle1 text-osmoverse-400">50%</span>
+            <span className="subtitle1 text-osmoverse-400">
+              {Math.round(percentage).toFixed(0)}%
+            </span>
           </div>
           <div className="relative flex flex-1 flex-col gap-0.5">
             <span className="caption absolute right-0 top-[-16px] mb-[2px] text-right text-wosmongton-300">

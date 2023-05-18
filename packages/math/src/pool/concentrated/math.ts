@@ -302,11 +302,11 @@ export function calculateDepositAmountForQuote(
   const lowerPriceSqrt = tickToSqrtPrice(lowerTick);
   const upperPriceSqrt = tickToSqrtPrice(upperTick);
   const curPriceSqrt = approxSqrt(curPrice);
-  const liquidity = baseDeposit
-    .mul(curPriceSqrt)
-    .mul(upperPriceSqrt)
-    .quo(upperPriceSqrt.sub(curPriceSqrt));
-  return liquidity.mul(curPriceSqrt.sub(lowerPriceSqrt));
+  const liquidityY = baseDeposit.quo(curPriceSqrt.sub(lowerPriceSqrt));
+  return liquidityY
+    .mul(upperPriceSqrt.sub(curPriceSqrt))
+    .quo(upperPriceSqrt)
+    .quo(curPriceSqrt);
 }
 
 export function calculateDepositAmountForBase(
@@ -318,9 +318,9 @@ export function calculateDepositAmountForBase(
   const lowerPriceSqrt = tickToSqrtPrice(lowerTick);
   const upperPriceSqrt = tickToSqrtPrice(upperTick);
   const curPriceSqrt = approxSqrt(curPrice);
-  const liquidityY = quoteDeposit.quo(curPriceSqrt.sub(lowerPriceSqrt));
-  return liquidityY
-    .mul(upperPriceSqrt.sub(curPriceSqrt))
-    .quo(upperPriceSqrt)
-    .quo(curPriceSqrt);
+  const liquidity = quoteDeposit
+    .mul(curPriceSqrt)
+    .mul(upperPriceSqrt)
+    .quo(upperPriceSqrt.sub(curPriceSqrt));
+  return liquidity.mul(curPriceSqrt.sub(lowerPriceSqrt));
 }

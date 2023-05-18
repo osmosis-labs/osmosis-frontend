@@ -7,7 +7,7 @@ import {
 import { Dec, Int } from "@keplr-wallet/unit";
 import {
   ActiveLiquidityPerTickRange,
-  calculateDepositAmountForQuote,
+  calculateDepositAmountForBase,
   maxSpotPrice,
   minSpotPrice,
   priceToTick,
@@ -24,6 +24,7 @@ import {
   TokenPairHistoricalPrice,
 } from "../../queries-external";
 import { mockCLDepth, mockTokenPairPricesData } from "./cl-mock-data";
+import { InvalidRangeError } from "./errors";
 
 /** Use to config user input UI for eventually sending a valid add concentrated liquidity msg.
  */
@@ -209,16 +210,24 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   }
 
   @computed
-  get depositPercentage(): number {
-    const one = new Dec(1);
-    const quoteDeposit = calculateDepositAmountForQuote(
+  get depositPercentages(): [Dec, Dec] {
+    if (this.baseDepositOnly) return [new Dec(100), new Dec(0)];
+    if (this.quoteDepositOnly) return [new Dec(0), new Dec(100)];
+    if (this.fullRange) return [new Dec(50), new Dec(50)];
+
+    const quoteDeposit = new Dec(1);
+    const baseDeposit = calculateDepositAmountForBase(
       this.currentPrice,
       this.tickRange[0],
       this.tickRange[1],
-      one
+      quoteDeposit
     );
+    const totalDeposit = baseDeposit.add(this.currentPrice);
 
-    return Number(one.quo(one.add(quoteDeposit.quo(one))).toString());
+    return [
+      this.currentPrice.quo(totalDeposit).mul(new Dec(100)),
+      baseDeposit.quo(totalDeposit).mul(new Dec(100)),
+    ];
   }
 
   get baseDenom(): string {
@@ -403,8 +412,8 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     const minWithPadding = Math.max(0, absMin - delta * padding);
     const maxWithPadding = absMax + delta * padding;
 
-    const zoomAdjustedMin = zoom > 1 ? absMin / zoom : absMin * zoom;
-    const zoomAdjustedMax = absMax * zoom;
+    const zoomAdjustedMin = zoom > 1 ? chartMin / zoom : chartMin * zoom;
+    const zoomAdjustedMax = chartMax * zoom;
 
     let finalMin = minWithPadding;
     let finalMax = maxWithPadding;
@@ -441,7 +450,39 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   }
 
   @computed
+  get baseDepositOnly(): boolean {
+    return (
+      !this.fullRange &&
+      this.currentPrice.gt(this.range[0]) &&
+      this.currentPrice.gt(this.range[1])
+    );
+  }
+
+  @computed
+  get quoteDepositOnly(): boolean {
+    return (
+      !this.fullRange &&
+      this.currentPrice.lt(this.range[0]) &&
+      this.currentPrice.lt(this.range[1])
+    );
+  }
+
+  @computed
   get error(): Error | undefined {
+    if (!this.fullRange && this.range[0].gte(this.range[1])) {
+      return new InvalidRangeError(
+        "lower range must be less than upper range."
+      );
+    }
+
+    if (this.quoteDepositOnly) {
+      return this._quoteDepositAmountIn.error;
+    }
+
+    if (this.baseDepositOnly) {
+      return this._baseDepositAmountIn.error;
+    }
+
     return this._baseDepositAmountIn.error || this._quoteDepositAmountIn.error;
   }
 }
