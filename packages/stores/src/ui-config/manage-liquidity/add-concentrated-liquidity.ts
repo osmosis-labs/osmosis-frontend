@@ -452,6 +452,24 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   }
 
   @computed
+  get currentStrategy(): "passive" | "aggressive" | "moderate" | null {
+    const isRangePassive = this.fullRange;
+    const isRangeAggressive =
+      !isRangePassive &&
+      this.tickRange[0].equals(this.aggressiveTickRange[0]) &&
+      this.tickRange[1].equals(this.aggressiveTickRange[1]);
+    const isRangeModerate =
+      !isRangePassive &&
+      this.tickRange[0].equals(this.moderateTickRange[0]) &&
+      this.tickRange[1].equals(this.moderateTickRange[1]);
+
+    if (isRangePassive) return "passive";
+    if (isRangeModerate) return "moderate";
+    if (isRangeAggressive) return "aggressive";
+    return null;
+  }
+
+  @computed
   get error(): Error | undefined {
     if (!this.fullRange && this.range[0].gte(this.range[1])) {
       return new InvalidRangeError(
