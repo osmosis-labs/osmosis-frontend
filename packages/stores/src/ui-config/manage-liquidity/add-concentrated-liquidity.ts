@@ -408,7 +408,10 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     const data = this.activeLiquidity;
     const [min, max] = this.yRange;
 
+    if (min === max) return [];
+
     const depths: { price: number; depth: number }[] = [];
+
     for (let price = min; price <= max; price += (max - min) / 20) {
       const spotPrice = Math.min(
         Math.max(Number(minSpotPrice.toString()), price),
@@ -425,6 +428,8 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   @computed
   get xRange(): [number, number] {
+    if (!this.depthChartData.length) return [0, 0];
+
     return [0, Math.max(...this.depthChartData.map((d) => d.depth)) * 1.2];
   }
 
