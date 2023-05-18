@@ -174,7 +174,12 @@ const ModalContent: FunctionComponent<
           .then(() => {
             onConnectProp?.();
           })
-          .catch(console.error);
+          .catch((e) =>
+            console.error(
+              "Error while connecting to direct wallet. Details: ",
+              e
+            )
+          );
         return;
       }
 
@@ -203,14 +208,24 @@ const ModalContent: FunctionComponent<
             setLazyWalletInfo(undefined);
             onConnectProp?.();
           })
-          .catch(console.error);
+          .catch((e) =>
+            console.error(
+              "Error while connecting to newly installed wallet. Details: ",
+              e
+            )
+          );
       } else {
         installedWallet
           ?.connect(sync)
           .then(() => {
             onConnectProp?.();
           })
-          .catch(console.error);
+          .catch((e) =>
+            console.error(
+              "Error while connecting to installed wallet. Details: ",
+              e
+            )
+          );
       }
     };
 
