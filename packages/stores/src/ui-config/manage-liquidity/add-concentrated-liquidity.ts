@@ -225,8 +225,8 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     const totalDeposit = baseDeposit.add(this.currentPrice);
 
     return [
-      this.currentPrice.quo(totalDeposit).mul(new Dec(100)),
       baseDeposit.quo(totalDeposit).mul(new Dec(100)),
+      this.currentPrice.quo(totalDeposit).mul(new Dec(100)),
     ];
   }
 
