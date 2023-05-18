@@ -663,7 +663,7 @@ const StrategySelectorGroup: FunctionComponent<
       </div>
       <div className="flex flex-1 flex-row justify-end gap-2">
         <PresetStrategyCard
-          type="custom"
+          type={null}
           src="/images/small-vial.svg"
           updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
           addLiquidityConfig={props.addLiquidityConfig}
@@ -890,7 +890,7 @@ const DepositAmountGroup: FunctionComponent<{
 
 const PresetStrategyCard: FunctionComponent<
   {
-    type: "custom" | "passive" | "moderate" | "aggressive";
+    type: null | "passive" | "moderate" | "aggressive";
     src: string;
     updateInputAndRangeMinMax: (min: number, max: number) => void;
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
@@ -915,7 +915,7 @@ const PresetStrategyCard: FunctionComponent<
       moderatePriceRange,
     } = addLiquidityConfig;
 
-    const isSelected = type === volatilityType;
+    const isSelected = type === currentStrategy;
 
     const onClick = () => {
       switch (type) {
@@ -945,7 +945,7 @@ const PresetStrategyCard: FunctionComponent<
           "flex w-[114px] flex-row items-center justify-center gap-2 rounded-2xl p-[2px]",
           {
             "bg-supercharged-gradient": isSelected,
-            "hover:bg-supercharged-gradient cursor-pointer": type !== "custom",
+            "hover:bg-supercharged-gradient cursor-pointer": type !== null,
           }
         )}
         onClick={onClick}
