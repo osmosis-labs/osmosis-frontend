@@ -59,11 +59,15 @@ export function useAddConcentratedLiquidityConfig(
           config.poolId,
           {
             currency: config.baseDepositAmountIn.sendCurrency,
-            amount: config.baseDepositAmountIn.amount,
+            amount: config.quoteDepositOnly
+              ? "0"
+              : config.baseDepositAmountIn.amount,
           },
           {
             currency: config.quoteDepositAmountIn.sendCurrency,
-            amount: config.quoteDepositAmountIn.amount,
+            amount: config.baseDepositOnly
+              ? "0"
+              : config.quoteDepositAmountIn.amount,
           },
           config.tickRange[0],
           config.tickRange[1],
