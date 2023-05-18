@@ -14,10 +14,8 @@ import React, {
 import { useTranslation } from "react-multi-lang";
 
 import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
-import { IS_TESTNET } from "~/config";
 import { useAddConcentratedLiquidityConfig } from "~/hooks";
 import { useStore } from "~/stores";
-import { mockCLDepth, mockTokenPairPricesData } from "~/utils/mock-data";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -94,8 +92,7 @@ export default MyPositionsSection;
 const MyPositionCard: FunctionComponent<{
   positions: PositionWithAssets[];
 }> = observer(({ positions }) => {
-  const { derivedDataStore, chainStore, queriesStore, queriesExternalStore } =
-    useStore();
+  const { derivedDataStore, chainStore, queriesStore } = useStore();
   const [collapsed, setCollapsed] = useState(true);
 
   const poolId = positions[0].position.pool_id;
@@ -110,30 +107,11 @@ const MyPositionCard: FunctionComponent<{
     queriesStore
   );
 
-  const {
-    setHistoricalChartData,
-    historicalRange,
-    range,
-    baseDenom,
-    quoteDenom,
-    setActiveLiquidity,
-    setMinRange,
-    setMaxRange,
-  } = config;
+  const { range, setMinRange, setMaxRange, setHoverPrice, lastChartData } =
+    config;
 
   const rangeMin = Number(range[0].toString());
   const rangeMax = Number(range[1].toString());
-
-  const queriesOsmosis = queriesStore.get(chainId).osmosis!;
-  const queryDepth =
-    queriesOsmosis.queryLiquiditiesPerTickRange.getForPoolId(poolId);
-  const queryHistorical =
-    queriesExternalStore.queryTokenPairHistoricalChart.get(
-      poolId,
-      historicalRange,
-      baseDenom,
-      quoteDenom
-    );
 
   const { lower_tick, upper_tick } = positions[0].position;
   const lowerSqrtPrice = tickToSqrtPrice(new Int(lower_tick));
@@ -145,45 +123,6 @@ const MyPositionCard: FunctionComponent<{
     setMinRange(lowerPrice);
     setMaxRange(upperPrice);
   }, [lowerPrice.toString(), upperPrice.toString()]);
-
-  useEffect(() => {
-    if (IS_TESTNET) {
-      setHistoricalChartData(
-        mockTokenPairPricesData[historicalRange].map((data) => ({
-          ...data,
-          time: data.time * 1000,
-        }))
-      );
-      return;
-    }
-
-    if (!queryHistorical.isFetching && queryHistorical.getChartPrices.length) {
-      const newData = queryHistorical.getChartPrices;
-      setHistoricalChartData(newData);
-    }
-  }, [
-    queryHistorical.getChartPrices,
-    queryHistorical.isFetching,
-    historicalRange,
-  ]);
-
-  useEffect(() => {
-    if (IS_TESTNET) {
-      setActiveLiquidity(
-        mockCLDepth.map(({ upper_tick, liquidity_amount, lower_tick }) => {
-          return {
-            lowerTick: new Int(lower_tick),
-            upperTick: new Int(upper_tick),
-            liquidityAmount: new Dec(liquidity_amount),
-          };
-        })
-      );
-      return;
-    }
-    if (!queryDepth.isFetching && queryDepth.activeLiquidity) {
-      setActiveLiquidity(queryDepth.activeLiquidity);
-    }
-  }, [queryDepth.isFetching, queryDepth.activeLiquidity]);
 
   if (!_queryPool) return null;
 
@@ -224,8 +163,7 @@ const MyPositionCard: FunctionComponent<{
         {/* TODO: use translation */}
         <PositionDataGroup
           label="Selected Range"
-          // value={`${lowerPrice.toString()} - ${upperPrice.toString()}`}
-          value={`10.01 <-> 10.97`}
+          value={`${lowerPrice.toString()} - ${upperPrice.toString()}`}
         />
         {/* TODO: use translation */}
         <PositionDataGroup label="My Liquidity" value="$2,350" />
@@ -248,12 +186,12 @@ const MyPositionCard: FunctionComponent<{
                     : config.range
                 }
                 domain={config.yRange}
-                // onPointerHover={setHoverPrice}
-                // onPointerOut={
-                //   lastChartData
-                //     ? () => setHoverPrice(lastChartData.close)
-                //     : undefined
-                // }
+                onPointerHover={setHoverPrice}
+                onPointerOut={
+                  lastChartData
+                    ? () => setHoverPrice(lastChartData.close)
+                    : undefined
+                }
               />
             </div>
             <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-row rounded-r-2xl bg-osmoverse-700">
