@@ -25,9 +25,7 @@ import React, {
 import { useTranslation } from "react-multi-lang";
 
 import IconButton from "~/components/buttons/icon-button";
-import { IS_TESTNET } from "~/config";
 import { useStore } from "~/stores";
-import { mockTokenPairPricesData } from "~/utils/mock-data";
 
 import { Icon, PoolAssetsIcon } from "../assets";
 import { Button } from "../buttons";
@@ -296,7 +294,7 @@ const AddConcLiqView: FunctionComponent<
   const baseDenom = pool?.poolAssets[0]?.amount.denom || "";
   const quoteDenom = pool?.poolAssets[1]?.amount.denom || "";
   const {
-    poolId,
+    yRange,
     range,
     fullRange,
     historicalChartData,
@@ -311,11 +309,9 @@ const AddConcLiqView: FunctionComponent<
     setModalView,
     setMaxRange,
     setMinRange,
-    setHistoricalChartData,
     setHoverPrice,
   } = addLiquidityConfig;
 
-  const { queriesExternalStore } = useStore();
   const t = useTranslation();
   const [inputMin, setInputMin] = useState("0");
   const [inputMax, setInputMax] = useState("0");
@@ -324,16 +320,6 @@ const AddConcLiqView: FunctionComponent<
   const [anchorAsset, setAchorAsset] = useState<"base" | "quote" | "">("");
   const rangeMin = Number(range[0].toString());
   const rangeMax = Number(range[1].toString());
-
-  const queryHistorical =
-    queriesExternalStore.queryTokenPairHistoricalChart.get(
-      poolId,
-      addLiquidityConfig.historicalRange,
-      baseDenom,
-      quoteDenom
-    );
-
-  const yRange = addLiquidityConfig.yRange;
 
   const updateInputAndRangeMinMax = useCallback(
     (_min: number, _max: number) => {
@@ -374,30 +360,6 @@ const AddConcLiqView: FunctionComponent<
     },
     [currentPrice, addLiquidityConfig.tickRange, setBaseDepositAmountIn]
   );
-
-  useEffect(() => {
-    if (IS_TESTNET) {
-      setHistoricalChartData(
-        mockTokenPairPricesData[addLiquidityConfig.historicalRange].map(
-          (data) => ({
-            ...data,
-            time: data.time * 1000,
-          })
-        )
-      );
-      return;
-    }
-
-    if (!queryHistorical.isFetching && queryHistorical.getChartPrices.length) {
-      const newData = queryHistorical.getChartPrices;
-      setHistoricalChartData(newData);
-    }
-  }, [
-    queryHistorical.getChartPrices,
-    queryHistorical.isFetching,
-    addLiquidityConfig.historicalRange,
-    setHistoricalChartData,
-  ]);
 
   useEffect(() => {
     if (currentPrice && inputMin === "0" && inputMax === "0") {

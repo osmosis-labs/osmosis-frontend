@@ -15,9 +15,15 @@ import {
 } from "@osmosis-labs/math";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { action, computed, makeObservable, observable } from "mobx";
+import { DeepReadonly } from "utility-types";
 
 import { ObservableQueryLiquidityPerTickRange } from "../../queries";
-import { PriceRange, TokenPairHistoricalPrice } from "../../queries-external";
+import {
+  ObservableQueryTokensPairHistoricalChart,
+  PriceRange,
+  TokenPairHistoricalPrice,
+} from "../../queries-external";
+import { mockCLDepth, mockTokenPairPricesData } from "./cl-mock-data";
 
 /** Use to config user input UI for eventually sending a valid add concentrated liquidity msg.
  */
@@ -84,7 +90,9 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     protected readonly queriesStore: IQueriesStore,
     protected readonly queryBalances: ObservableQueryBalances,
     protected readonly queryRange: ObservableQueryLiquidityPerTickRange,
-    pool: ConcentratedLiquidityPool
+    protected readonly queryHistorical: DeepReadonly<ObservableQueryTokensPairHistoricalChart>,
+    pool: ConcentratedLiquidityPool,
+    protected readonly isTestnet = false
   ) {
     super(chainGetter, initialChainId);
 
@@ -118,7 +126,31 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     this._baseDepositAmountIn.setSendCurrency(baseCurrency);
     this._quoteDepositAmountIn.setSendCurrency(quoteCurrency);
 
+    this.fetchHistoricalChartData();
     makeObservable(this);
+  }
+
+  private fetchHistoricalChartData() {
+    if (this.isTestnet) {
+      this.setHistoricalChartData(
+        mockTokenPairPricesData[this.historicalRange].map((data) => ({
+          ...data,
+          time: data.time * 1000,
+        }))
+      );
+      return;
+    }
+
+    const query = this.queryHistorical.get(
+      this.poolId,
+      this.historicalRange,
+      this.baseDenom,
+      this.quoteDenom
+    );
+
+    query.waitResponse().then(() => {
+      this.setHistoricalChartData(query.getChartPrices);
+    });
   }
 
   setChain(chainId: string) {
@@ -218,6 +250,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   @action
   setHistoricalRange = (range: PriceRange) => {
     this._historicalRange = range;
+    this.fetchHistoricalChartData();
   };
 
   get historicalRange(): PriceRange {
@@ -324,14 +357,17 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     this._historicalChartData = historicalData;
   };
 
-  @action
-  readonly setActiveLiquidity = (
-    activeliquidity: ActiveLiquidityPerTickRange[]
-  ) => {
-    this._activeLiquidity = activeliquidity;
-  };
-
+  @computed
   get activeLiquidity(): ActiveLiquidityPerTickRange[] {
+    if (this.isTestnet) {
+      return mockCLDepth.map(({ upper_tick, liquidity_amount, lower_tick }) => {
+        return {
+          lowerTick: new Int(lower_tick),
+          upperTick: new Int(upper_tick),
+          liquidityAmount: new Dec(liquidity_amount),
+        };
+      });
+    }
     return this.queryRange.activeLiquidity;
   }
 
@@ -358,19 +394,17 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
     const chartMin = Math.max(0, Math.min(...prices));
     const chartMax = Math.max(...prices);
-    const delta = Math.abs(chartMax - chartMin);
 
-    const minWithPadding = Math.max(
-      0,
-      Math.min(chartMin - delta * padding, min - delta * padding)
-    );
-    const maxWithPadding = Math.max(
-      chartMax + delta * padding,
-      max + delta * padding
-    );
+    const absMax = Math.max(max, chartMax);
+    const absMin = Math.min(min, chartMin);
 
-    const zoomAdjustedMin = zoom > 1 ? chartMin / zoom : chartMin * zoom;
-    const zoomAdjustedMax = chartMax * zoom;
+    const delta = Math.abs(absMax - absMin);
+
+    const minWithPadding = Math.max(0, absMin - delta * padding);
+    const maxWithPadding = absMax + delta * padding;
+
+    const zoomAdjustedMin = zoom > 1 ? absMin / zoom : absMin * zoom;
+    const zoomAdjustedMax = absMax * zoom;
 
     let finalMin = minWithPadding;
     let finalMax = maxWithPadding;
