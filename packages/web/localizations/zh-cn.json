@@ -127,6 +127,28 @@
     "unbondedAssets": "未绑定资产"
   },
   "buyTokens": "购买代币",
+  "addConcentratedLiquidity": {
+    "step1Title": "第 1 步：选择策略",
+    "step2Title": "第 2 步：增加流动性",
+    "managed": "管理",
+    "managedDescription": "招募我们的供应商之一来管理您的职位。即将推出",
+    "manual": "手册",
+    "manualDescription": "创建一个您将定期管理的职位以获得最大的效率和回报。",
+    "back": "返回",
+    "priceShownIn": "每个 {quote} 以 {base} 显示的价格",
+    "priceRange": "价格区间",
+    "currentPrice": "当前价格",
+    "basePerQuote": "{base} 每 {quote}",
+    "selectVolatilityRange": "选择波动率策略",
+    "volatilityDescription": "在大约 5 倍的集中度下，您将通过掉期赚取更多收益，但要密切关注您的头寸，重新平衡以将价格保持在区间内。",
+    "superchargedLearnMore": "了解更多",
+    "fullRange": "全范围",
+    "amountToDeposit": "入金金额",
+    "addLiquidity": "添加流动性",
+    "outOfRangeWarning": "市场价格超出您指定的价格范围。仅限单一资产入金。",
+    "high": "高",
+    "low": "低"
+  },
   "components": {
     "fiatOnrampSelection": {
       "chooseOnramp": "选择法币入口",
@@ -178,6 +200,7 @@
     "insufficientBal": "余额不足",
     "insufficientLiquidity": "流动性不足",
     "invalidNumberAmount": "无效的数字",
+    "invalidRange": "无效的价格范围",
     "invalidScalingFactorControllerAddress": "比例因子控制器地址无效",
     "invalidSlippage": "滑点不可用",
     "invalidSwapFee": "交易费无效",

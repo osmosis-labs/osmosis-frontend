@@ -127,6 +127,28 @@
     "unbondedAssets": "Bağlı Olmayan"
   },
   "buyTokens": "jeton satın al",
+  "addConcentratedLiquidity": {
+    "step1Title": "1. Adım: Bir strateji seçin",
+    "step2Title": "Adım 2: Likidite Ekleyin",
+    "managed": "Yönetilen",
+    "managedDescription": "Pozisyonunuzu yönetmesi için sağlayıcılarımızdan birini görevlendirin. Çok yakında",
+    "manual": "Manuel",
+    "manualDescription": "Maksimum verimlilik ve ödüller için düzenli olarak yöneteceğiniz bir pozisyon oluşturun.",
+    "back": "geri",
+    "priceShownIn": "{quote} başına {base} olarak gösterilen fiyatlar",
+    "priceRange": "Fiyat Aralığı",
+    "currentPrice": "geçerli fiyat",
+    "basePerQuote": "{quote} başına {base}",
+    "selectVolatilityRange": "Bir oynaklık stratejisi seçin",
+    "volatilityDescription": "~5X konsantrasyonda, takaslardan daha fazla kazanacaksınız, ancak fiyatı aralıkta tutmak için yeniden dengeleyerek pozisyonunuzu göz önünde bulundurun.",
+    "superchargedLearnMore": "Daha fazla bilgi edinin",
+    "fullRange": "Tam aralık",
+    "amountToDeposit": "Yatırılacak tutar",
+    "addLiquidity": "Likidite Ekle",
+    "outOfRangeWarning": "Piyasa fiyatı, belirttiğiniz fiyat aralığının dışında. Yalnızca tek varlıklı mevduat.",
+    "high": "yüksek",
+    "low": "az"
+  },
   "components": {
     "fiatOnrampSelection": {
       "chooseOnramp": "Fiat Onramp Seçin",
@@ -178,6 +200,7 @@
     "insufficientBal": "Yetersiz bakiye",
     "insufficientLiquidity": "yetersiz likidite",
     "invalidNumberAmount": "Geçersiz rakam",
+    "invalidRange": "geçersiz fiyat aralığı",
     "invalidScalingFactorControllerAddress": "Geçersiz ölçeklendirme faktörü denetleyici adresi",
     "invalidSlippage": "Geçersiz slipaj",
     "invalidSwapFee": "Takas ücreti geçersiz",

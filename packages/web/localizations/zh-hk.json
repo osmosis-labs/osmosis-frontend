@@ -166,6 +166,28 @@
       "noIncentives": "無激勵"
     }
   },
+  "addConcentratedLiquidity": {
+    "step1Title": "第 1 步：選擇策略",
+    "step2Title": "第 2 步：增加流動性",
+    "managed": "管理",
+    "managedDescription": "招募我們的供應商之一來管理您的職位。即將推出",
+    "manual": "手冊",
+    "manualDescription": "創建一個您將定期管理的職位以獲得最大的效率和回報。",
+    "back": "返回",
+    "priceShownIn": "每個 {quote} 以 {base} 顯示的價格",
+    "priceRange": "價格區間",
+    "currentPrice": "當前價格",
+    "basePerQuote": "{base} 每 {quote}",
+    "selectVolatilityRange": "選擇波動率策略",
+    "volatilityDescription": "在大約 5 倍的集中度下，您將通過掉期賺取更多收益，但要密切關注您的頭寸，重新平衡以將價格保持在區間內。",
+    "superchargedLearnMore": "了解更多",
+    "fullRange": "全範圍",
+    "amountToDeposit": "入金金額",
+    "addLiquidity": "添加流動性",
+    "outOfRangeWarning": "市場價格超出您指定的價格範圍。僅限單一資產入金。",
+    "high": "高",
+    "low": "低"
+  },
   "connectDisclaimer": "連接錢包即表示您已經閱讀和理解 Osmosis 嘅",
   "connectWallet": "連接錢包",
   "errors": {
@@ -178,6 +200,7 @@
     "insufficientBal": "結餘唔夠喎",
     "insufficientLiquidity": "流動性不足",
     "invalidNumberAmount": "非正確數字",
+    "invalidRange": "非正確價格範圍",
     "invalidScalingFactorControllerAddress": "比例因子控制器地址無效",
     "invalidSlippage": "非正確滑價",
     "invalidSwapFee": "非正確兌換費",
