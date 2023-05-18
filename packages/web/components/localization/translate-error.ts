@@ -11,6 +11,7 @@ import {
   DepositNoBalanceError,
   HighSwapFeeError,
   InsufficientBalanceError,
+  InvalidRangeError,
   InvalidScalingFactorControllerAddress,
   InvalidSlippageError,
   InvalidSwapFeeError,
@@ -77,6 +78,8 @@ export function tError<TError extends Error>(e?: TError): Parameters<typeof t> {
     return ["errors.insufficientLiquidity"];
   } else if (e instanceof NoRouteError) {
     return ["errors.noRoute"];
+  } else if (e instanceof InvalidRangeError) {
+    return ["errors.invalidRange"];
   }
 
   return ["errors.generic"];

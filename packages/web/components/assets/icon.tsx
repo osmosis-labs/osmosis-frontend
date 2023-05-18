@@ -12,6 +12,7 @@ export type SpriteIconId =
   | "search"
   | "up-down-arrow"
   | "close"
+  | "close-thin"
   | "info"
   | "globe"
   | "dust-broom"

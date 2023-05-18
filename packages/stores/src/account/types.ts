@@ -22,6 +22,7 @@ export interface OsmosisMsgOpts {
   readonly superfluidUnbondLock: MsgOpt;
   readonly unlockPeriodLock: MsgOpt;
   readonly unPoolWhitelistedPool: MsgOpt;
+  readonly clCreatePosition: MsgOpt;
 }
 
 export const defaultMsgOpts: OsmosisMsgOpts = {
@@ -89,6 +90,10 @@ export const defaultMsgOpts: OsmosisMsgOpts = {
   },
   unPoolWhitelistedPool: {
     type: "osmosis/unpool-whitelisted-pool",
+    gas: 3000000,
+  },
+  clCreatePosition: {
+    type: "osmosis/cl-create-position",
     gas: 3000000,
   },
 };

@@ -32,3 +32,11 @@ export type LiquidityDepth = {
   /** Net liquidity, for calculating active liquidity. */
   netLiquidity: Dec;
 };
+
+export type ActiveLiquidityPerTickRange = {
+  /** Price-correlated tick index. */
+  lowerTick: Int;
+  upperTick: Int;
+  /** Net liquidity, for calculating active liquidity. */
+  liquidityAmount: Dec;
+};

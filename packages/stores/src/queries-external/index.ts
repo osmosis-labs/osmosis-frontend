@@ -4,6 +4,9 @@ export * from "./ibc";
 export * from "./pool-fees";
 export * from "./pool-rewards";
 export * from "./store";
+export * from "./token-data";
+export * from "./token-historical-chart";
+export * from "./token-pair-historical-chart";
 
 export const IMPERATOR_HISTORICAL_DATA_BASEURL =
   "https://api-osmosis.imperator.co";
