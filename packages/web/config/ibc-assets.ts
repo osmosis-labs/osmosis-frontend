@@ -79,8 +79,8 @@ export const IBCAssetInfos: (IBCAsset & {
       },
       {
         counterpartyChainId: "sandbox",
-        sourceChannelId: "channel-4",
-        destChannelId: "channel-2",
+        sourceChannelId: "channel-73",
+        destChannelId: "channel-1",
         coinMinimalDenom: "uakt",
         isVerified: true,
       },
@@ -91,15 +91,6 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "tkyve",
         isVerified: true,
       },
-
-      /*
-      {
-        counterpartyChainId: "nolus-rila",
-        sourceChannelId: "channel-1837",
-        destChannelId: "channel-0",
-        coinMinimalDenom: "unls",
-        isVerified: true,
-      },*/
     ]
   : [
       {
@@ -938,6 +929,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-378",
         destChannelId: "channel-2",
         coinMinimalDenom: "ulamb",
+        isUnstable: true,
       },
       {
         counterpartyChainId: "likecoin-mainnet-2",

@@ -313,18 +313,15 @@ const chainInfos = IS_TESTNET
               // coinGeckoId: "ion",
               coinGeckoId: "pool:uion",
               coinImageUrl: "/tokens/ion.svg",
-            } /*
-        ...(IS_TESTNET
-          ? [
-              {
-                coinDenom: "IBCX",
-                coinMinimalDenom:
-                  "factory/osmo13t90mkyvdnmn9wm8hfen6jk3hnlt8uqx8savlvjd5xghy5z6ye2qymy6cy/uibcx",
-                coinDecimals: 6,
-                coinImageUrl: "/tokens/ibcx.svg",
-              },
-            ]
-          : []),*/,
+            },
+            {
+              coinDenom: "IBCX",
+              coinMinimalDenom:
+                "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
+              coinDecimals: 6,
+              coinGeckoId: "pool:ibcx",
+              coinImageUrl: "/tokens/ibcx.svg",
+            },
           ],
           features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
           explorerUrlToTx:
@@ -3399,8 +3396,6 @@ const chainInfos = IS_TESTNET
               coinGeckoId: "pool:uqosmo",
             },
           ],
-          features: ["ibc-transfer", "ibc-go"],
-          explorerUrlToTx: "https://www.mintscan.io/quicksilver/txs/{txHash}",
         },
         {
           rpc: "https://rpc.8ball.info",
