@@ -28,7 +28,8 @@ export type SpriteIconId =
   | "check-mark"
   | "minus"
   | "alert-triangle"
-  | "wallet";
+  | "wallet"
+  | "left-right";
 
 /**
  * It takes an icon id and returns an svg element with the corresponding icon defined in /public/icons/sprite.svg.
