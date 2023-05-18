@@ -122,7 +122,8 @@
         "insufficientBal": "موجودی نا کافی",
         "insufficientFee": "کارمزد ناکافی",
         "reconnectWallet": "اتصال مجدد کیف پول {walletName}",
-        "wrongNetworkInWallet": "شبکه اشتباه در  {walletName}"
+        "wrongNetworkInWallet": "شبکه اشتباه در  {walletName}",
+        "seeRequest": "درخواست را در {walletName} ببینید"
       },
       "from": "از",
       "loading": "در حال بارگذاری",

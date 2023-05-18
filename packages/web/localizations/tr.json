@@ -122,7 +122,8 @@
         "insufficientBal": "Yetersiz Bakiye",
         "insufficientFee": "Yetersiz Ücret",
         "reconnectWallet": "{walletName} tekrar bağlan",
-        "wrongNetworkInWallet": "{walletName} cüzdanda ağ hatası"
+        "wrongNetworkInWallet": "{walletName} cüzdanda ağ hatası",
+        "seeRequest": "{walletName}'deki talebi gör"
       },
       "from": "Ağından",
       "loading": "Yükleniyor",

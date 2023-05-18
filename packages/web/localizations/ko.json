@@ -122,7 +122,8 @@
         "insufficientBal": "잔액이 부족합니다",
         "insufficientFee": "수수료가 부족합니다",
         "reconnectWallet": "{walletName} 다시 연결",
-        "wrongNetworkInWallet": "{walletName} 잘못된 네트워크"
+        "wrongNetworkInWallet": "{walletName} 잘못된 네트워크",
+        "seeRequest": "{walletName}에서 요청 사항 확인하기"
       },
       "from": "발신 체인",
       "loading": "로딩",

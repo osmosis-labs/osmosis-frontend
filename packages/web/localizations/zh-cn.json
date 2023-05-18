@@ -121,7 +121,8 @@
         "insufficientBal": "余额不足",
         "insufficientFee": "费用不足",
         "reconnectWallet": "重新连接 {walletName}",
-        "wrongNetworkInWallet": "在 {walletName} 中网络错误"
+        "wrongNetworkInWallet": "在 {walletName} 中网络错误",
+        "seeRequest": "在{walletName}中查看请求"
       },
       "from": "从",
       "loading": "加载中",

@@ -122,7 +122,8 @@
         "insufficientBal": "結餘唔夠喎",
         "insufficientFee": "交易費唔夠喎",
         "reconnectWallet": "重新連接 {walletName}",
-        "wrongNetworkInWallet": "非正確網絡? Wrong network in {walletName}"
+        "wrongNetworkInWallet": "非正確網絡? Wrong network in {walletName}",
+        "seeRequest": "在{walletName}中查看請求"
       },
       "from": "從",
       "loading": "載入中",

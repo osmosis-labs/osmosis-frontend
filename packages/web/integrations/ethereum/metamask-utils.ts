@@ -61,7 +61,8 @@ export function switchToChain(
         });
 
         // try again
-        await switchToChain(request, chainName);
+        switchToChain(request, chainName).then(resolve);
+        return;
       } else if (e.code === -32002) {
         // -32002: Request of type 'wallet_switchEthereumChain' already pending
         reject("switchToChain: switch in progress");
