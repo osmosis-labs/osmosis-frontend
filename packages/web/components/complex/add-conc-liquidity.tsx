@@ -623,6 +623,27 @@ const StrategySelectorGroup: FunctionComponent<
   } & CustomClasses
 > = observer((props) => {
   const t = useTranslation();
+  const { volatilityType } = props.addLiquidityConfig;
+
+  let descriptionText = t(
+    "addConcentratedLiquidity.volatilityCustomDescription"
+  );
+
+  if (volatilityType === "passive") {
+    descriptionText = t(
+      "addConcentratedLiquidity.volatilityPassiveDescription"
+    );
+  } else if (volatilityType === "aggressive") {
+    descriptionText = t(
+      "addConcentratedLiquidity.volatilityAggressiveDescription"
+    );
+  } else if (volatilityType === "moderate") {
+    descriptionText = t(
+      "addConcentratedLiquidity.volatilityModerateDescription"
+    );
+  } else if (volatilityType === "custom") {
+    descriptionText = t("addConcentratedLiquidity.volatilityCustomDescription");
+  }
 
   return (
     <section className="flex flex-row">
@@ -631,7 +652,7 @@ const StrategySelectorGroup: FunctionComponent<
           {t("addConcentratedLiquidity.selectVolatilityRange")}
         </span>
         <span className="caption text-osmoverse-200">
-          {t("addConcentratedLiquidity.volatilityDescription")}
+          {descriptionText}
           <a
             className="caption mx-1 inline-flex flex-row items-center text-wosmongton-300 underline"
             href="#"
@@ -890,33 +911,13 @@ const PresetStrategyCard: FunctionComponent<
     updateInputAndRangeMinMax,
   }) => {
     const {
-      tickRange,
-      fullRange,
+      volatilityType,
       setFullRange,
-      aggressiveTickRange,
       aggressivePriceRange,
-      moderateTickRange,
       moderatePriceRange,
     } = addLiquidityConfig;
 
-    const isRangePassive = fullRange;
-    const isRangeAggressive =
-      !isRangePassive &&
-      tickRange[0].equals(aggressiveTickRange[0]) &&
-      tickRange[1].equals(aggressiveTickRange[1]);
-    const isRangeModerate =
-      !isRangePassive &&
-      tickRange[0].equals(moderateTickRange[0]) &&
-      tickRange[1].equals(moderateTickRange[1]);
-    const isRangeCustom =
-      !isRangeAggressive && !isRangeModerate && !isRangePassive;
-
-    let isSelected = false;
-
-    if (type === "moderate") isSelected = isRangeModerate;
-    if (type === "aggressive") isSelected = isRangeAggressive;
-    if (type === "passive") isSelected = isRangePassive;
-    if (type === "custom") isSelected = isRangeCustom;
+    const isSelected = type === volatilityType;
 
     const onClick = () => {
       switch (type) {
