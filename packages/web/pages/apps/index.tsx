@@ -9,7 +9,7 @@ import { SearchBox } from "~/components/input";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 
-type appDataType = {
+type AppDataType = {
   title: string;
   subtitle: string;
   thumbnail_image_URL: string;
@@ -41,7 +41,7 @@ type AppStoreProps = {
 export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   const [searchValue, setSearchValue] = React.useState<string>("");
   const [fuzzySearchResults, setFuzzySearchResults] = React.useState<
-    appDataType[]
+    AppDataType[]
   >([]);
 
   const { applications } = apps;
@@ -67,8 +67,8 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
 
   const handleSearchInput = (value: string) => {
     const searchResults = fuse.search(value);
-    const appDataResults: appDataType[] = searchResults.map(
-      (result) => result.item as appDataType
+    const appDataResults: AppDataType[] = searchResults.map(
+      (result) => result.item as AppDataType
     );
 
     setSearchValue(value);
@@ -78,9 +78,9 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   const iterableData = searchValue ? fuzzySearchResults : nonFeaturedApps;
 
   return (
-    <main className="m-auto max-w-container bg-osmoverse-900 py-3 md:px-3">
-      <div className="flex justify-between pl-6">
-        <div style={{ flexBasis: "55%" }}>
+    <main className="m-auto max-w-container bg-osmoverse-900 py-3 1.5md:px-6 md:px-3">
+      <div className="flex flex-row justify-between pl-6 md:flex-col">
+        <div className="mb-0 basis-1/2 lg:mr-4 md:mb-4 md:mr-0">
           <h4 className="pb-2 text-h4 font-h4 text-wosmongton-100">
             {t("store.headerTitle")}
           </h4>
@@ -88,12 +88,14 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
             {t("store.headerSubtitle")}
           </span>
         </div>
-        <SearchBox
-          placeholder={t("store.searchPlaceholder")}
-          onInput={handleSearchInput}
-          className="self-end"
-          size="long"
-        />
+        <div>
+          <SearchBox
+            placeholder={t("store.searchPlaceholder")}
+            onInput={handleSearchInput}
+            className="self-end"
+            size="long"
+          />
+        </div>
       </div>
       <HeroCard
         title={featuredApp.title}
@@ -105,10 +107,10 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
         mediumUrl={featuredApp.medium_URL}
       />
       <div className="body2 mb-2 pt-7 pl-6 font-bold text-osmoverse-200">
-        All apps
+        {t("store.allAppsHeader")}
       </div>
       <div className="container mx-auto py-3">
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-4 1.5md:grid-cols-2 md:grid-cols-1">
           {iterableData?.map((app, index) => {
             return (
               <AppDisplayCard

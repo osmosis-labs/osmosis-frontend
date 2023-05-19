@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FunctionComponent } from "react";
 
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
@@ -6,7 +6,7 @@ import { useAmplitudeAnalytics } from "~/hooks";
 import { Icon } from "../assets";
 import { IconLink } from "./icon-link";
 
-interface AppDisplayCardProps {
+export const AppDisplayCard: FunctionComponent<{
   title?: string;
   subtitle?: string;
   imageUrl?: string;
@@ -15,9 +15,7 @@ interface AppDisplayCardProps {
   externalUrl?: string;
   mediumUrl?: string;
   index: number;
-}
-
-export const AppDisplayCard: React.FC<AppDisplayCardProps> = ({
+}> = ({
   title,
   subtitle,
   imageUrl,

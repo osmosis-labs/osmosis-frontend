@@ -7,7 +7,7 @@ import { useAmplitudeAnalytics } from "~/hooks";
 import { Icon } from "../assets";
 import { IconLink } from "./icon-link";
 
-interface HeroCardProps {
+export const HeroCard: React.FunctionComponent<{
   title: string;
   subtitle: string;
   imageUrl: string;
@@ -17,9 +17,7 @@ interface HeroCardProps {
   twitterUrl?: string;
   externalUrl: string;
   mediumUrl?: string;
-}
-
-export const HeroCard: React.FC<HeroCardProps> = ({
+}> = ({
   title,
   subtitle,
   imageUrl,
@@ -62,46 +60,39 @@ export const HeroCard: React.FC<HeroCardProps> = ({
         target="_blank"
         rel="noopener noreferrer"
         onClick={handleAppClicked}
+        className="heroImage relative flex items-end overflow-hidden rounded-lg"
       >
-        <div className="heroImage flex items-end overflow-hidden rounded-lg">
-          <div
-            className="backgroundImage"
-            style={{ backgroundImage: `url(${backgroundImageUrl})` }}
-          ></div>
-          <div className="gradient"></div>
-          <div className="content text-white relative z-10 ml-9 mb-9 max-w-35">
-            <div className="flex items-center space-x-6">
-              <h4 className="pb-2 text-h4 font-h4">{title}</h4>
-              {twitterUrl && (
-                <IconLink url={twitterUrl} ariaLabel="Twitter">
-                  <Icon id="twitter" height="16px" width="16px" fill="white" />
-                </IconLink>
-              )}
-              {mediumUrl && (
-                <IconLink url={mediumUrl} ariaLabel="Medium">
-                  <Icon id="medium" height="16px" width="16px" fill="white" />
-                </IconLink>
-              )}
-              {githubUrl && (
-                <IconLink url={githubUrl} ariaLabel="GitHub">
-                  <Icon id="github" height="16px" width="16px" fill="white" />
-                </IconLink>
-              )}
-            </div>
-            <p className="body2">{subtitle}</p>
+        <div
+          className="backgroundImage absolute top-0 left-0 h-full w-full"
+          style={{ backgroundImage: `url(${backgroundImageUrl})` }}
+        ></div>
+        <div className="gradient bg-gradient-to-b absolute top-0 left-0 z-10 h-full w-full from-transparent to-black"></div>
+        <div className="content text-white relative z-20 ml-9 mb-9 max-w-35">
+          <div className="flex items-center space-x-6">
+            <h4 className="pb-2 text-h4 font-h4">{title}</h4>
+            {twitterUrl && (
+              <IconLink url={twitterUrl} ariaLabel="Twitter">
+                <Icon id="twitter" height="16px" width="16px" fill="white" />
+              </IconLink>
+            )}
+            {mediumUrl && (
+              <IconLink url={mediumUrl} ariaLabel="Medium">
+                <Icon id="medium" height="16px" width="16px" fill="white" />
+              </IconLink>
+            )}
+            {githubUrl && (
+              <IconLink url={githubUrl} ariaLabel="GitHub">
+                <Icon id="github" height="16px" width="16px" fill="white" />
+              </IconLink>
+            )}
           </div>
+          <p className="body2">{subtitle}</p>
         </div>
         <style jsx>{`
           .heroImage {
-            position: relative;
             height: 400px;
           }
           .backgroundImage {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -110,22 +101,8 @@ export const HeroCard: React.FC<HeroCardProps> = ({
           .heroImage:hover .backgroundImage {
             transform: scale(1.15);
           }
-          .gradient {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 1));
-            z-index: 1;
-          }
-          .content {
-            position: relative;
-            z-index: 2;
-          }
         `}</style>
       </a>
     </div>
   );
 };
-``;
