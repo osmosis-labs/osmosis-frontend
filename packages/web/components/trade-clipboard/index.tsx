@@ -1134,12 +1134,7 @@ export const TradeClipboard: FunctionComponent<{
               )
             ) : (
               <h6 className="flex items-center gap-3">
-                <Image
-                  alt="wallet"
-                  src="/icons/wallet.svg"
-                  height={24}
-                  width={24}
-                />
+                <Icon id="wallet" className="text-white h-[24px] w-[24px]" />
                 {t("connectWallet")}
               </h6>
             )}
