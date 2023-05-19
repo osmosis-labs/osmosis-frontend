@@ -10,8 +10,10 @@ import {
   ObservableQueryPoolFeesMetrics,
   OsmosisQueries,
 } from "@osmosis-labs/stores";
-import { action, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
+
+import { UnverifiedAssetsState, UserSettings } from "~/stores/user-settings";
 
 import { ObservableVerifiedPoolsStoreMap } from "./verified";
 
@@ -112,15 +114,24 @@ export class ObservablePoolsWithMetric {
       queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
-    protected readonly priceStore: IPriceStore
+    protected readonly priceStore: IPriceStore,
+    protected readonly userSettings: UserSettings
   ) {}
+
+  @computed
+  get showUnverified() {
+    return this.userSettings.getUserSettingById<UnverifiedAssetsState>(
+      "unverified-assets"
+    )?.state.showUnverifiedAssets;
+  }
 
   getAllPools = computedFn(
     (
       sortingColumn?: keyof ObservablePoolWithMetric,
       isSortingDesc?: boolean,
-      showUnverified?: boolean
+      forceShowUnverified?: boolean
     ) => {
+      const showUnverified = this.showUnverified || forceShowUnverified;
       const allPools = this.verifiedPoolsStore
         .get(this.chainId)
         .getAllPools(showUnverified);
@@ -204,7 +215,8 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
       queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
-    protected readonly priceStore: IPriceStore
+    protected readonly priceStore: IPriceStore,
+    protected readonly userSettings: UserSettings
   ) {
     super(
       (chainId: string) =>
@@ -216,7 +228,8 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
           poolsBonding,
           chainStore,
           externalQueries,
-          priceStore
+          priceStore,
+          userSettings
         )
     );
   }
