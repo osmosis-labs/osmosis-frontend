@@ -36,15 +36,15 @@ export function getChainInfos(): (ChainInfoWithExplorer &
       return {
         ...localChain,
         ...registryChain,
-        chain_name: localChain.chainName,
-        chain_id: localChain.chainId,
         // We need this to override the assets chain name in `generate-wallet-assets/utils.ts`
         chainRegistryChainName: registryChain?.chain_name,
-        peers: undefined,
-        explorers: undefined,
-        codebase: undefined,
-        staking: undefined,
-        $schema: undefined,
+        chain_name: localChain.chainName,
+        chain_id: localChain.chainId,
+        pretty_name: registryChain?.pretty_name ?? localChain.chainName,
+        slip44: registryChain?.slip44 ?? localChain.bip44.coinType,
+        bech32_prefix:
+          registryChain?.bech32_prefix ??
+          localChain.bech32Config.bech32PrefixAccAddr,
         fees: registryChain?.fees ?? {
           fee_tokens: localChain.currencies.map((currency) => {
             const gasPriceStep = (currency as any).gasPriceStep as {
@@ -83,6 +83,11 @@ export function getChainInfos(): (ChainInfoWithExplorer &
               })),
           ],
         },
+        peers: undefined,
+        explorers: undefined,
+        codebase: undefined,
+        staking: undefined,
+        $schema: undefined,
       };
     });
 }
