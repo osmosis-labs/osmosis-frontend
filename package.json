@@ -26,7 +26,8 @@
     "lint": "turbo lint",
     "lint:fix": "turbo lint:fix",
     "pre-commit": "lerna run pre-commit",
-    "publish:libs": "lerna publish"
+    "publish:libs": "lerna publish",
+    "machine-translate": "inlang machine translate"
   },
   "pre-commit": [
     "pre-commit"

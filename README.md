@@ -110,7 +110,7 @@ yarn build:libs && npx lerna publish
 
 [![translation badge](https://inlang.com/badge?url=github.com/osmosis-labs/osmosis-frontend)](https://inlang.com/editor/github.com/osmosis-labs/osmosis-frontend?ref=badge)
 
-To add translations, you can either manually edit the translation files in `packages/web/translations` or use the [inlang](https://inlang.com/) editor.
+To add translations, you can manually edit the JSON translation files in `packages/web/translations`, use the [inlang](https://inlang.com/) online editor, or run `yarn machine-translate` to add missing translations using AI from Inlang.
 
 ## Asset Listings
 
