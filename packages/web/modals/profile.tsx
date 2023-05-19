@@ -383,7 +383,7 @@ export const ProfileModal: FunctionComponent<
                   title="Log Out"
                   onClick={() => {
                     logEvent([EventName.ProfileModal.logOutClicked]);
-                    wallet?.disconnect();
+                    wallet?.disconnect(true);
                     props.onRequestClose();
                   }}
                   className="group hover:text-rust-500"
