@@ -2,14 +2,7 @@
 const config = {
   reactStrictMode: true,
   images: {
-    domains: [
-      "app.osmosis.zone",
-      "raw.githubusercontent.com",
-      "user-images.githubusercontent.com",
-      "trustwallet.com",
-      "assets.terra.money",
-      "www.frontier.xyz",
-    ],
+    domains: ["app.osmosis.zone"],
   },
   webpack(config) {
     /**

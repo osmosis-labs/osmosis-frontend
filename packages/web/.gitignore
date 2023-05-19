@@ -37,5 +37,4 @@ yarn-error.log*
 *.tsbuildinfo
 
 # config files
-config/chain-infos.ts
-config/wallet-assets.ts
+generated

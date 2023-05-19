@@ -5,7 +5,7 @@ describe("getChainInfos", () => {
     jest.resetModules();
   });
 
-  it("should return merged ChainInfoWithExplorer & Chain objects", () => {
+  it.only("should return merged ChainInfoWithExplorer & Chain objects", () => {
     const { getChainInfos } = require("../utils");
 
     const result = getChainInfos();
@@ -14,6 +14,7 @@ describe("getChainInfos", () => {
       const originalChain = chains.find(
         ({ chain_id }) => chain_id === chainInfo.chainId
       );
+
       expect(originalChain).toBeDefined();
       expect(chainInfo.chain_name).toBe(chainInfo.chainName);
 

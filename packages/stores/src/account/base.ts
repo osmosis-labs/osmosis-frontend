@@ -4,6 +4,7 @@ import {
   AminoTypes,
   BroadcastTxError,
   DeliverTxResponse,
+  SigningStargateClient,
   StdFee,
   TimeoutError,
 } from "@cosmjs/stargate";
@@ -24,21 +25,21 @@ import {
   QueriesStore,
 } from "@keplr-wallet/stores";
 import { KeplrSignOptions } from "@keplr-wallet/types";
-import { Buffer } from "buffer";
-import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import { action, makeObservable, observable, runInAction } from "mobx";
 import {
   cosmosProtoRegistry,
   cosmwasmProtoRegistry,
   ibcProtoRegistry,
   osmosisProtoRegistry,
-} from "osmojs";
+} from "@osmosis-labs/proto-codecs";
+import { Buffer } from "buffer";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import { action, makeObservable, observable, runInAction } from "mobx";
 import { UnionToIntersection } from "utility-types";
 
 import { OsmosisQueries } from "../queries";
 import { aminoConverters } from "./amino-converters";
 import {
-  CosmosKitLocalStorageKey,
+  CosmosKitAccountsLocalStorageKey,
   getWalletEndpoints,
   logger,
   sleep,
@@ -62,6 +63,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   txTypeInProgressByChain = observable.map<string, string>();
 
   private _walletManager: WalletManager;
+  private _wallets: MainWalletBase[] = [];
 
   constructor(
     protected readonly chains: Chain[],
@@ -85,11 +87,20 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       Injects
     >
   ) {
-    this._walletManager = new WalletManager(
+    this._wallets = wallets;
+    this._walletManager = this.createWalletManager(wallets);
+    this.accountSetCreators = accountSetCreators;
+
+    makeObservable(this);
+  }
+
+  private createWalletManager(wallets: MainWalletBase[]) {
+    const walletManager = new WalletManager(
       this.chains,
       this.assets,
-      this.wallets,
+      wallets,
       logger,
+      true,
       "icns",
       this.options.walletConnectOptions,
       {
@@ -100,28 +111,27 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
             ...cosmosProtoRegistry,
             ...ibcProtoRegistry,
             ...osmosisProtoRegistry,
-          ]) as any,
+          ]) as unknown as SigningStargateClient["registry"],
         }),
       },
       {
-        isLazy: true,
         endpoints: getWalletEndpoints(this.chains),
       },
       {
         duration: 31556926000, // 1 year
         callback() {
-          window?.localStorage.removeItem(CosmosKitLocalStorageKey);
+          window?.localStorage.removeItem(CosmosKitAccountsLocalStorageKey);
         },
       }
     );
 
-    this.walletManager.setActions({
+    walletManager.setActions({
       viewWalletRepo: () => this.refresh(),
       data: () => this.refresh(),
       state: () => this.refresh(),
       message: () => this.refresh(),
     });
-    this.walletManager.walletRepos.forEach((repo) => {
+    walletManager.walletRepos.forEach((repo) => {
       repo.setActions({
         viewWalletRepo: () => this.refresh(),
       });
@@ -134,14 +144,21 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       });
     });
 
-    this.accountSetCreators = accountSetCreators;
+    this.refresh();
 
-    makeObservable(this);
+    return walletManager;
   }
 
   @action
   private refresh() {
     this._refreshRequests++;
+  }
+
+  addWallet(wallet: MainWalletBase) {
+    this._wallets = [...this._wallets, wallet];
+    this._walletManager = this.createWalletManager(this._wallets);
+    this.refresh();
+    return this._walletManager;
   }
 
   get walletManager() {
@@ -309,7 +326,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       const txRaw = await wallet.sign(msgs, fee, memo);
       const encodedTx = TxRaw.encode(txRaw).finish();
-      const endpoint = await wallet.getRpcEndpoint(true);
+      const endpoint = await wallet.getRpcEndpoint();
 
       /**
        * Manually create a Tendermint client to broadcast the transaction to have more control over transaction tracking.

@@ -23,11 +23,12 @@ export function getWalletEndpoints(chains: Chain[]) {
       [chain.chain_name]: {
         rpc: chain.apis?.rpc?.map(({ address }) => address) ?? [],
         rest: chain.apis?.rest?.map(({ address }) => address) ?? [],
-        isLazy: true,
       },
     };
     return newEndpoints;
   }, {} as Record<ChainName, Endpoints>);
 }
 
-export const CosmosKitLocalStorageKey = "cosmos-kit@1:core//accounts";
+export const CosmosKitAccountsLocalStorageKey = "cosmos-kit@1:core//accounts";
+export const CosmosKitWalletLocalStorageKey =
+  "cosmos-kit@1:core//current-wallet";

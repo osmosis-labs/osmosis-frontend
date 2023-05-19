@@ -1,6 +1,9 @@
+import { WalletStatus } from "@cosmos-kit/core";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
+
+import { useWalletSelect } from "~/hooks/wallet-select";
 
 import { Transfer } from "../components/complex/transfer";
 import { EventName } from "../config";
@@ -24,6 +27,9 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
       queriesExternalStore,
     } = useStore();
     const { chainId: osmosisChainId } = chainStore.osmosis;
+
+    const { onOpenWalletSelect, isLoading: isWalletSelectLoading } =
+      useWalletSelect();
 
     const { logEvent } = useAmplitudeAnalytics();
 
@@ -53,7 +59,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
 
     const isChainBlockedOrCongested =
       chainStatus === "congested" || chainStatus === "blocked";
-    const { showModalBase, accountActionButton, walletConnected } =
+    const { showModalBase, accountActionButton, walletConnected, resetState } =
       useConnectWalletModalRedirect(
         {
           className: "md:mt-4 mt-6 hover:opacity-75",
@@ -62,6 +68,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
             !account?.isReadyToSendTx ||
             !counterpartyAccount?.isReadyToSendTx ||
             account?.txTypeInProgress !== "" ||
+            counterpartyAccount?.txTypeInProgress !== "" ||
             amountConfig.error != undefined ||
             inTransit ||
             !isCustomWithdrawValid,
@@ -117,6 +124,10 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
         props.onRequestClose
       );
 
+    const areWalletsConnected =
+      walletConnected &&
+      counterpartyAccount?.walletStatus === WalletStatus.Connected;
+
     return (
       <ModalBase
         {...props}
@@ -140,12 +151,14 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                     address: account?.address ?? "",
                     networkName: chainStore.getChain(osmosisChainId).chainName,
                     iconUrl: "/tokens/osmo.svg",
+                    source: "account" as const,
                   },
                   {
                     address: counterpartyAccount?.address ?? "",
                     networkName:
                       chainStore.getChain(counterpartyChainId).chainName,
                     iconUrl: currency.coinImageUrl,
+                    source: "counterpartyAccount" as const,
                   },
                 ]
               : [
@@ -154,11 +167,13 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                     networkName:
                       chainStore.getChain(counterpartyChainId).chainName,
                     iconUrl: currency.coinImageUrl,
+                    source: "counterpartyAccount" as const,
                   },
                   {
                     address: account?.address ?? "",
                     networkName: chainStore.getChain(osmosisChainId).chainName,
                     iconUrl: "/tokens/osmo.svg",
+                    source: "account" as const,
                   },
                 ]
           }
@@ -187,11 +202,30 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                 }
               : undefined
           }
-          disabled={!walletConnected}
+          disabled={!areWalletsConnected}
           toggleIsMax={() => amountConfig.toggleIsMax()}
           currentValue={amountConfig.amount}
           onInput={(value) => amountConfig.setAmount(value)}
           waitTime={t("assets.ibcTransfer.waitTime")}
+          selectedWalletDisplay={
+            isWalletSelectLoading
+              ? undefined
+              : {
+                  iconUrl: counterpartyAccount?.walletInfo?.logo ?? "",
+                  displayName:
+                    counterpartyAccount?.walletInfo?.prettyName ?? "",
+                }
+          }
+          onRequestSwitchWallet={async (source) => {
+            if (source === "account") {
+              await account?.disconnect(true);
+              onOpenWalletSelect(osmosisChainId);
+            } else if (source === "counterpartyAccount") {
+              await counterpartyAccount?.disconnect(true);
+              onOpenWalletSelect(props.counterpartyChainId);
+            }
+            resetState();
+          }}
         />
         {accountActionButton}
       </ModalBase>

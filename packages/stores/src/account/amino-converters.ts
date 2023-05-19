@@ -1,31 +1,31 @@
 import { AminoMsgTransfer } from "@cosmjs/stargate";
-import Long from "long";
 import {
   cosmosAminoConverters,
   cosmwasmAminoConverters,
-  ibcAminoConverters as osmojsIbcAminoConverters,
-  osmosisAminoConverters as osmojsOsmosisAminoConverters,
-} from "osmojs";
-import { MsgTransfer } from "osmojs/types/codegen/ibc/applications/transfer/v1/tx";
-import { MsgCreateBalancerPool } from "osmojs/types/codegen/osmosis/gamm/pool-models/balancer/tx/tx";
-import { MsgLockTokens } from "osmojs/types/codegen/osmosis/lockup/tx";
+  ibcAminoConverters as originalIbcAminoConverters,
+  osmosisAminoConverters as originalOsmosisAminoConverters,
+} from "@osmosis-labs/proto-codecs";
+import { MsgCreateBalancerPool } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/gamm/pool-models/balancer/tx/tx";
+import { MsgLockTokens } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/lockup/tx";
+import { MsgTransfer } from "cosmjs-types/ibc/applications/transfer/v1/tx";
+import Long from "long";
 
 const osmosisAminoConverters: Record<
-  keyof typeof osmojsOsmosisAminoConverters,
+  keyof typeof originalOsmosisAminoConverters,
   {
     aminoType: string;
     toAmino: (msg: any) => any;
     fromAmino: (msg: any) => any;
   }
 > = {
-  ...osmojsOsmosisAminoConverters,
+  ...originalOsmosisAminoConverters,
   "/osmosis.lockup.MsgBeginUnlocking": {
-    ...osmojsOsmosisAminoConverters["/osmosis.lockup.MsgBeginUnlocking"],
+    ...originalOsmosisAminoConverters["/osmosis.lockup.MsgBeginUnlocking"],
     // The amino type in telescope is not compatible with our nodes.
     aminoType: "osmosis/lockup/begin-unlock-period-lock",
   },
   "/osmosis.lockup.MsgLockTokens": {
-    ...osmojsOsmosisAminoConverters["/osmosis.lockup.MsgLockTokens"],
+    ...originalOsmosisAminoConverters["/osmosis.lockup.MsgLockTokens"],
     /**
      * Duration type definition in telescope crashes toAmino as it does a wrong conversion.
      * @see https://github.com/osmosis-labs/osmojs/issues/12
@@ -43,7 +43,7 @@ const osmosisAminoConverters: Record<
     },
   },
   "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool": {
-    ...osmojsOsmosisAminoConverters[
+    ...originalOsmosisAminoConverters[
       "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool"
     ],
     // The amino type in telescope is not compatible with nodes.
@@ -79,7 +79,7 @@ const osmosisAminoConverters: Record<
       pool_assets,
       future_pool_governor,
     }: Parameters<
-      typeof osmojsOsmosisAminoConverters["/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool"]["fromAmino"]
+      typeof originalOsmosisAminoConverters["/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool"]["fromAmino"]
     >[0]): MsgCreateBalancerPool => {
       return {
         sender,
@@ -101,16 +101,16 @@ const osmosisAminoConverters: Record<
 };
 
 const ibcAminoConverters: Record<
-  keyof typeof osmojsIbcAminoConverters,
+  keyof typeof originalIbcAminoConverters,
   {
     aminoType: string;
     toAmino: (msg: any) => any;
     fromAmino: (msg: any) => any;
   }
 > = {
-  ...osmojsIbcAminoConverters,
+  ...originalIbcAminoConverters,
   "/ibc.applications.transfer.v1.MsgTransfer": {
-    ...osmojsIbcAminoConverters["/ibc.applications.transfer.v1.MsgTransfer"],
+    ...originalIbcAminoConverters["/ibc.applications.transfer.v1.MsgTransfer"],
     // Remove timeout_timestamp as it is not used by our transactions.
     toAmino: ({
       sourcePort,

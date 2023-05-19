@@ -216,11 +216,13 @@ const AxelarTransfer: FunctionComponent<
       address: osmoIcnsName === "" ? address : osmoIcnsName,
       networkName: chainStore.osmosis.chainName,
       iconUrl: "/tokens/osmo.svg",
+      source: "account" as const,
     };
     const counterpartyPath = {
       address: ethWalletClient.accountAddress || "",
       networkName: selectedSourceChainKey,
       iconUrl: originCurrency.coinImageUrl,
+      source: "counterpartyAccount" as const,
     };
 
     /** Osmosis chain ID accepted by Axelar APIs. */
@@ -601,7 +603,7 @@ const AxelarTransfer: FunctionComponent<
                 { "opacity-30": isDepositAddressLoading }
               )}
               disabled={
-                !userCanInteract ||
+                (!userCanInteract && !userDisconnectedEthWallet) ||
                 (!isWithdraw &&
                   !userDisconnectedEthWallet &&
                   inputAmountRaw === "") ||
