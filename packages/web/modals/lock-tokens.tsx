@@ -2,7 +2,7 @@ import { AmountConfig } from "@keplr-wallet/hooks";
 import classNames from "classnames";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { CheckBox } from "../components/control";
@@ -36,7 +36,10 @@ export const LockTokensModal: FunctionComponent<
   const { poolDetail, superfluidPoolDetail, poolBonding } =
     derivedDataStore.getForPool(poolId);
 
-  const bondDurations = poolBonding?.bondDurations ?? [];
+  const bondDurations = useMemo(
+    () => poolBonding?.bondDurations ?? [],
+    [poolBonding?.bondDurations]
+  );
   const availableToken = queryOsmosis.queryGammPoolShare.getAvailableGammShare(
     address,
     poolId
