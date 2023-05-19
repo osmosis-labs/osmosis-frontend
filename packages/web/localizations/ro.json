@@ -122,7 +122,8 @@
         "insufficientBal": "Balanta Insuficienta",
         "insufficientFee": "Taxa Insuficienta",
         "reconnectWallet": "Reconecteaza {walletName}",
-        "wrongNetworkInWallet": "Retea gresita in {walletName}"
+        "wrongNetworkInWallet": "Retea gresita in {walletName}",
+        "seeRequest": "Vezi solicitarea în {walletName}"
       },
       "from": "De la",
       "loading": "Se incarca",
@@ -288,7 +289,8 @@
     "unbond": "Deblocate",
     "unbonding": "deblocare",
     "undelegating": "anulare delegare",
-    "yourStats": "Statisticile tale"
+    "yourStats": "Statisticile tale",
+    "day": "zi"
   },
   "pools": {
     "all": "Toate Pool-urile",

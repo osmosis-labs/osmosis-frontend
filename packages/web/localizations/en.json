@@ -122,7 +122,8 @@
         "insufficientBal": "Insufficient Balance",
         "insufficientFee": "Insufficient Fee",
         "reconnectWallet": "Reconnect {walletName}",
-        "wrongNetworkInWallet": "Wrong network in {walletName}"
+        "wrongNetworkInWallet": "Wrong network in {walletName}",
+        "seeRequest": "See request in {walletName}"
       },
       "from": "From",
       "loading": "Loading",

@@ -26,7 +26,8 @@
     "lint": "turbo lint",
     "lint:fix": "turbo lint:fix",
     "pre-commit": "lerna run pre-commit",
-    "publish:libs": "lerna publish"
+    "publish:libs": "lerna publish",
+    "machine-translate": "inlang machine translate"
   },
   "pre-commit": [
     "pre-commit"
@@ -41,6 +42,7 @@
   },
   "homepage": "https://github.com/osmosis-labs/osmosis-frontend#readme",
   "devDependencies": {
+    "@inlang/cli": "^0.9.6",
     "@types/jest": "^27.4.0",
     "@typescript-eslint/eslint-plugin": "^5.9.0",
     "@typescript-eslint/parser": "^5.9.0",
