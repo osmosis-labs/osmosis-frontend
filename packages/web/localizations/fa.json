@@ -175,7 +175,13 @@
       "SORTMobile": "مرتب سازی"
     },
     "table": {
-      "poolId": "استخر #{id}"
+      "poolId": "استخر #{id}",
+      "stable": "مبادله پایدار",
+      "weighted": "وزن دار",
+      "internal": "مشوق های داخلی",
+      "external": "مشوق های خارجی",
+      "superfluid": "ابر سیال",
+      "noIncentives": "بدون انگیزه"
     }
   },
   "connectDisclaimer": "با اتصال کیف پول شما از کلیه قوانین Osmosis مطلح هستید.",
