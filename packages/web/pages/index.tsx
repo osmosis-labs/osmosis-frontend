@@ -27,7 +27,7 @@ const Home: NextPage = observer(function () {
           pool
             .computeTotalValueLocked(priceStore)
             .toDec()
-            .gte(new Dec(IS_TESTNET ? -1 : (IS_FRONTIER ? 1_000 : 10_000)))
+            .gte(new Dec(IS_TESTNET ? -1 : IS_FRONTIER ? 1_000 : 10_000))
         )
         .sort((a, b) => {
           // sort by TVL to find routes amongst most valuable pools
@@ -56,31 +56,19 @@ const Home: NextPage = observer(function () {
           preserveAspectRatio="xMidYMid slice"
         >
           <g>
-            {!IS_FRONTIER && (
-              <ProgressiveSvgImage
-                lowResXlinkHref="/images/osmosis-home-bg-low.png"
-                xlinkHref="/images/osmosis-home-bg.png"
-                x="56"
-                y="220"
-                width="578.7462"
-                height="725.6817"
-              />
-            )}
             <ProgressiveSvgImage
               lowResXlinkHref={
-                IS_FRONTIER
-                  ? "/images/osmosis-cowboy-woz-low.png"
-                  : "/images/osmosis-home-fg-low.png"
+                IS_FRONTIER ? "/images/osmosis-cowboy-woz-low.png" : undefined
               }
               xlinkHref={
                 IS_FRONTIER
                   ? "/images/osmosis-cowboy-woz.png"
-                  : "/images/osmosis-home-fg.png"
+                  : "/images/ibcx-web-bg.png"
               }
-              x={IS_FRONTIER ? "-100" : "61"}
-              y={IS_FRONTIER ? "100" : "682"}
-              width={IS_FRONTIER ? "800" : "448.8865"}
-              height={IS_FRONTIER ? "800" : "285.1699"}
+              x={IS_FRONTIER ? "-100" : "-140"}
+              y={IS_FRONTIER ? "100" : "0"}
+              width={IS_FRONTIER ? "800" : "130%"}
+              height={IS_FRONTIER ? "800" : "100%"}
             />
           </g>
         </svg>
