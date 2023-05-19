@@ -444,5 +444,9 @@
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",
   "waitingForTransaction": "Oczekiwanie na dołączenie transakcji do bloku",
-  "highPoolInflationWarning": "Wysokie APR-y mogą wynikać z nagród inflacyjnych. Postępuj ostrożnie."
+  "highPoolInflationWarning": "Wysokie APR-y mogą wynikać z nagród inflacyjnych. Postępuj ostrożnie.",
+  "ibcx": {
+    "description": "Poznaj pierwszy Indeks Ekosystemu Cosmos od ION DAO. Dostępny na żywo na mainnecie: ",
+    "link": "index.ion.wtf"
+  }
 }

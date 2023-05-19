@@ -444,5 +444,9 @@
   "unknownError": "未知錯誤",
   "viewExplorer": "使用區塊瀏覽器查看",
   "waitingForTransaction": "正等待交易被加入到區塊中",
-  "highPoolInflationWarning": "高APR可能源自通脹性獎勵。請謹慎操作。"
+  "highPoolInflationWarning": "高APR可能源自通脹性獎勵。請謹慎操作。",
+  "ibcx": {
+    "description": "認識來自 ION DAO 的首個 Cosmos 生態系指數。主網上線: ",
+    "link": "index.ion.wtf"
+  }
 }
