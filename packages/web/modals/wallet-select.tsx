@@ -99,7 +99,8 @@ export const WalletSelectModal: FunctionComponent<
     onRequestClose();
     if (
       walletStatus === WalletStatus.Connecting ||
-      walletStatus === WalletStatus.Rejected
+      walletStatus === WalletStatus.Rejected ||
+      walletStatus === WalletStatus.Error
     ) {
       walletRepo?.disconnect();
     }
@@ -114,7 +115,8 @@ export const WalletSelectModal: FunctionComponent<
           ? () => {
               if (
                 walletStatus === WalletStatus.Connecting ||
-                walletStatus === WalletStatus.Rejected
+                walletStatus === WalletStatus.Rejected ||
+                walletStatus === WalletStatus.Error
               ) {
                 walletRepo?.disconnect();
                 walletRepo?.activate();
@@ -167,9 +169,17 @@ const ModalContent: FunctionComponent<
     ) => {
       if (!wallet) return;
       if (!("lazyInstall" in wallet)) {
-        wallet.connect(sync).then(() => {
-          onConnectProp?.();
-        });
+        wallet
+          .connect(sync)
+          .then(() => {
+            onConnectProp?.();
+          })
+          .catch((e) =>
+            console.error(
+              "Error while connecting to direct wallet. Details: ",
+              e
+            )
+          );
         return;
       }
 
@@ -197,11 +207,25 @@ const ModalContent: FunctionComponent<
           .then(() => {
             setLazyWalletInfo(undefined);
             onConnectProp?.();
-          });
+          })
+          .catch((e) =>
+            console.error(
+              "Error while connecting to newly installed wallet. Details: ",
+              e
+            )
+          );
       } else {
-        installedWallet?.connect(sync).then(() => {
-          onConnectProp?.();
-        });
+        installedWallet
+          ?.connect(sync)
+          .then(() => {
+            onConnectProp?.();
+          })
+          .catch((e) =>
+            console.error(
+              "Error while connecting to installed wallet. Details: ",
+              e
+            )
+          );
       }
     };
 

@@ -4,6 +4,7 @@ import {
   AminoTypes,
   BroadcastTxError,
   DeliverTxResponse,
+  SigningStargateClient,
   StdFee,
   TimeoutError,
 } from "@cosmjs/stargate";
@@ -99,6 +100,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       this.assets,
       wallets,
       logger,
+      true,
       "icns",
       this.options.walletConnectOptions,
       {
@@ -109,11 +111,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
             ...cosmosProtoRegistry,
             ...ibcProtoRegistry,
             ...osmosisProtoRegistry,
-          ]) as any,
+          ]) as unknown as SigningStargateClient["registry"],
         }),
       },
       {
-        isLazy: true,
         endpoints: getWalletEndpoints(this.chains),
       },
       {
@@ -325,7 +326,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       const txRaw = await wallet.sign(msgs, fee, memo);
       const encodedTx = TxRaw.encode(txRaw).finish();
-      const endpoint = await wallet.getRpcEndpoint(true);
+      const endpoint = await wallet.getRpcEndpoint();
 
       /**
        * Manually create a Tendermint client to broadcast the transaction to have more control over transaction tracking.

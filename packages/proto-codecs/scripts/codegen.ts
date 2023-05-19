@@ -4,7 +4,7 @@ import telescope from "@osmonauts/telescope";
 import { join } from "path";
 import { sync as rimraf } from "rimraf";
 
-import { AvailablePackages } from "./package-types";
+import { AvailablePackages } from "./generated/package-types";
 import { protoDirs } from "./utils";
 
 const outPath = join(__dirname, "/../src/codegen");

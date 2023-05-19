@@ -2,6 +2,7 @@ import type { Asset, AssetList } from "@chain-registry/types";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { assets as assetLists } from "chain-registry";
 
+import { ChainInfos } from "../generated/chain-infos";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import IBCAssetInfos from "../ibc-assets";
 
@@ -46,6 +47,15 @@ export function getAssetLists(assetInfos = initialAssetInfos): AssetList[] {
         return hasMatchingMinimalDenom(asset, coinMinimalDenom);
       })
     );
+
+    const newChainName = ChainInfos.find(
+      (chainInfo) => chainInfo.chainRegistryChainName === cloneList.chain_name
+    )?.chainName;
+
+    if (newChainName) {
+      // Override the chain name with the one from chain-infos
+      cloneList.chain_name = newChainName;
+    }
 
     if (cloneList.assets.length > 0) {
       newAssetLists.push(cloneList);

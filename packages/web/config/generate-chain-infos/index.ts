@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as fs from "fs";
+import path from "path";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as prettier from "prettier";
 
@@ -21,7 +22,7 @@ async function generateChainInfo() {
       chainInfos,
       null,
       2
-    )} as (ChainInfoWithExplorer & Chain)[];
+    )} as (ChainInfoWithExplorer & Chain & { chainRegistryChainName: string })[];
   `;
 
   const prettierConfig = await prettier.resolveConfig("./");
@@ -31,7 +32,14 @@ async function generateChainInfo() {
   });
 
   try {
-    fs.writeFileSync("config/chain-infos.ts", formatted, {
+    const dirPath = "config/generated";
+    const filePath = path.join(dirPath, "chain-infos.ts");
+
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath);
+    }
+
+    fs.writeFileSync(filePath, formatted, {
       encoding: "utf8",
       flag: "w",
     });

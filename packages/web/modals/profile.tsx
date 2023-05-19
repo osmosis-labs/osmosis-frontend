@@ -20,9 +20,9 @@ import { useTranslation } from "react-multi-lang";
 import { useCopyToClipboard, useTimeoutFn } from "react-use";
 
 import {
-  CheckMarkIcon,
   CopyIcon,
   ExternalLinkIcon,
+  Icon,
   LogOutIcon,
   QRIcon,
 } from "../components/assets";
@@ -262,12 +262,7 @@ export const ProfileModal: FunctionComponent<
 
           <div className="mt-5 flex w-full flex-col gap-[30px] rounded-[20px] border border-osmoverse-700 bg-osmoverse-800 p-5">
             <div className="flex items-center gap-1.5">
-              <Image
-                src="/icons/profile-wallet.svg"
-                alt="Osmo icon"
-                width={24}
-                height={24}
-              />
+              <Icon id="wallet" className="text-white h-[24px] w-[24px]" />
               <p className="subtitle1 tracking-wide text-osmoverse-300">
                 {t("profile.wallet")}
               </p>
@@ -296,10 +291,9 @@ export const ProfileModal: FunctionComponent<
                       className="group"
                     >
                       {hasCopied ? (
-                        <CheckMarkIcon
-                          classes={{
-                            container: "text-osmoverse-200",
-                          }}
+                        <Icon
+                          id="check-mark"
+                          className="h-[13px] w-[17px] text-osmoverse-200"
                         />
                       ) : (
                         <CopyIcon
@@ -366,11 +360,9 @@ export const ProfileModal: FunctionComponent<
                         >
                           {hasCopied ? (
                             <div className="h-6 w-6">
-                              <CheckMarkIcon
-                                classes={{
-                                  container:
-                                    "w-[24px] h-[24px] text-osmoverse-200",
-                                }}
+                              <Icon
+                                id="check-mark"
+                                className="h-[24px] w-[24px] text-osmoverse-200"
                               />
                             </div>
                           ) : (

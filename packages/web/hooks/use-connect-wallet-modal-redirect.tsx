@@ -1,7 +1,8 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import Image from "next/image";
-import { ComponentProps, useEffect, useState } from "react";
+import { ComponentProps, useCallback, useEffect, useState } from "react";
 import { t } from "react-multi-lang";
+
+import { Icon } from "~/components/assets";
 
 import { Button } from "../components/buttons";
 import { useStore } from "../stores";
@@ -31,7 +32,7 @@ export function useConnectWalletModalRedirect(
 
   const { onOpenWalletSelect } = useWalletSelect();
 
-  const [walletInitiallyConnected] = useState(
+  const [walletInitiallyConnected, setWalletInitiallyConnected] = useState(
     () => osmosisAccount?.walletStatus === WalletStatus.Connected
   );
   const [showSelf, setShowSelf] = useState(true);
@@ -44,6 +45,13 @@ export function useConnectWalletModalRedirect(
       setShowSelf(true);
     }
   }, [osmosisAccount?.walletStatus, walletInitiallyConnected]);
+
+  const resetState = useCallback(() => {
+    setShowSelf(false);
+    setWalletInitiallyConnected(
+      osmosisAccount?.walletStatus === WalletStatus.Connected
+    );
+  }, [osmosisAccount?.walletStatus]);
 
   return {
     showModalBase: showSelf,
@@ -60,16 +68,13 @@ export function useConnectWalletModalRedirect(
           }}
         >
           <h6 className="flex items-center gap-3">
-            <Image
-              alt="wallet"
-              src="/icons/wallet.svg"
-              height={24}
-              width={24}
-            />
+            <Icon id="wallet" className="text-white h-[24px] w-[24px]" />
+
             {connectWalletMessage}
           </h6>
         </Button>
       ),
     walletConnected: osmosisAccount?.walletStatus === WalletStatus.Connected,
+    resetState,
   };
 }

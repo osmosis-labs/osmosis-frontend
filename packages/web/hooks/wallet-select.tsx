@@ -21,6 +21,7 @@ import { useAmplitudeAnalytics } from "./use-amplitude-analytics";
 
 const [WalletSelectInnerProvider, useWalletSelect] = createContext<{
   onOpenWalletSelect: (chainName: string) => void;
+  isOpen: boolean;
   isLoading: boolean;
 }>({
   strict: true,
@@ -124,8 +125,8 @@ export const WalletSelectProvider: FunctionComponent = observer(
     }, []);
 
     const context = useMemo(
-      () => ({ onOpenWalletSelect, isLoading }),
-      [isLoading, onOpenWalletSelect]
+      () => ({ onOpenWalletSelect, isLoading, isOpen: isWalletSelectOpen }),
+      [isLoading, isWalletSelectOpen, onOpenWalletSelect]
     );
 
     return (
