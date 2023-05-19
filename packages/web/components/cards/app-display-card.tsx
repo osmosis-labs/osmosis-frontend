@@ -14,6 +14,7 @@ interface AppDisplayCardProps {
   githubUrl?: string;
   externalUrl?: string;
   mediumUrl?: string;
+  index: number;
 }
 
 export const AppDisplayCard: React.FC<AppDisplayCardProps> = ({
@@ -24,12 +25,13 @@ export const AppDisplayCard: React.FC<AppDisplayCardProps> = ({
   githubUrl,
   externalUrl,
   mediumUrl,
+  index,
 }) => {
   const { logEvent } = useAmplitudeAnalytics();
   const handleAppClicked = () => {
     logEvent([
       EventName.AppStore.appClicked,
-      { appName: title, isFeatured: false, isBanner: false, position: 1 },
+      { appName: title, isFeatured: false, isBanner: false, position: index },
     ]);
   };
   return (

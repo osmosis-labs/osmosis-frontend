@@ -119,6 +119,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
                 twitterUrl={app?.twitter_URL}
                 githubUrl={app?.github_URL}
                 externalUrl={app?.external_URL}
+                index={index}
               />
             );
           })}
