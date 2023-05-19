@@ -1,4 +1,4 @@
-import { Dec, Int } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
 import { tickToSqrtPrice } from "@osmosis-labs/math";
 import { ObservableAddConcentratedLiquidityConfig } from "@osmosis-labs/stores";
 import classNames from "classnames";
@@ -8,6 +8,7 @@ import Image from "next/image";
 import React, {
   FunctionComponent,
   ReactElement,
+  ReactNode,
   useEffect,
   useState,
 } from "react";
@@ -16,6 +17,7 @@ import { useTranslation } from "react-multi-lang";
 import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { useAddConcentratedLiquidityConfig } from "~/hooks";
 import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -74,9 +76,9 @@ const MyPositionsSection = observer(() => {
   if (!Object.keys(mergedPositions).length) return null;
 
   return (
-    <div className="mx-auto pb-[3.75rem]">
+    <div className="mx-auto flex flex-col flex-nowrap gap-5 pb-[3.75rem]">
       {/* TODO: add translation */}
-      <h6 className="">Your Positions</h6>
+      <h6 className="pl-6">Your Positions</h6>
       <div className="flex flex-col gap-3">
         {Object.keys(mergedPositions).map((key) => {
           const positions = mergedPositions[key];
@@ -92,7 +94,7 @@ export default MyPositionsSection;
 const MyPositionCard: FunctionComponent<{
   positions: PositionWithAssets[];
 }> = observer(({ positions }) => {
-  const { derivedDataStore, chainStore, queriesStore } = useStore();
+  const { derivedDataStore, chainStore, queriesStore, priceStore } = useStore();
   const [collapsed, setCollapsed] = useState(true);
 
   const poolId = positions[0].position.pool_id;
@@ -107,8 +109,16 @@ const MyPositionCard: FunctionComponent<{
     queriesStore
   );
 
-  const { range, setMinRange, setMaxRange, setHoverPrice, lastChartData } =
-    config;
+  const {
+    range,
+    pool: clPool,
+    quoteDepositAmountIn,
+    setMinRange,
+    setMaxRange,
+    setHoverPrice,
+    lastChartData,
+    priceDecimal,
+  } = config;
 
   const rangeMin = Number(range[0].toString());
   const rangeMax = Number(range[1].toString());
@@ -126,26 +136,48 @@ const MyPositionCard: FunctionComponent<{
 
   if (!_queryPool) return null;
 
+  const fiatBase = priceStore.calculatePrice(
+    new CoinPretty(
+      config.baseDepositAmountIn.sendCurrency,
+      positions[0].asset0.amount
+    )
+  );
+
+  const fiatQuote = priceStore.calculatePrice(
+    new CoinPretty(
+      config.quoteDepositAmountIn.sendCurrency,
+      positions[0].asset1.amount
+    )
+  );
+
+  const fiatCurrency =
+    priceStore.supportedVsCurrencies[priceStore.defaultVsCurrency];
+
+  const liquidityValue =
+    fiatBase &&
+    fiatQuote &&
+    fiatCurrency &&
+    new PricePretty(fiatCurrency, fiatBase.add(fiatQuote));
+
   return (
     <div
       className={classNames(
-        "flex flex-col gap-8 rounded-[20px] bg-osmoverse-800 p-8"
+        "flex cursor-pointer flex-col gap-8 rounded-[20px] bg-osmoverse-800 p-8 "
       )}
+      onClick={() => setCollapsed(!collapsed)}
     >
-      <div
-        className="flex cursor-pointer flex-row items-center gap-[52px]"
-        onClick={() => setCollapsed(!collapsed)}
-      >
+      <div className="flex flex-row items-center gap-[52px]">
         <div>
           <PoolAssetsIcon
+            className="!w-[78px]"
             assets={_queryPool.poolAssets.map((poolAsset) => ({
               coinImageUrl: poolAsset.amount.currency.coinImageUrl,
               coinDenom: poolAsset.amount.currency.coinDenom,
             }))}
           />
         </div>
-        <div className="flex flex-grow flex-col gap-[10px]">
-          <div className="flex flex-row gap-[14px]">
+        <div className="flex flex-shrink-0 flex-grow flex-col gap-[6px]">
+          <div className="flex flex-row items-center gap-[6px]">
             <PoolAssetsName
               size="md"
               assetDenoms={_queryPool.poolAssets.map(
@@ -153,25 +185,47 @@ const MyPositionCard: FunctionComponent<{
               )}
             />
             {/* TODO: use actual fee */}
-            <span className="text-subtitle1 text-osmoverse-100">0.5% Fee</span>
+            <span className="px-2 py-1 text-subtitle1 text-osmoverse-100">
+              {clPool.swapFee.toString(2)}% Fee
+            </span>
           </div>
           <MyPositionStatus status={PositionStatus.InRange} />
         </div>
-        {/* TODO: use actual ROI */}
-        {/* TODO: use translation */}
-        <PositionDataGroup label="ROI" value="0.18%" />
-        {/* TODO: use translation */}
-        <PositionDataGroup
-          label="Selected Range"
-          value={`${lowerPrice.toString()} - ${upperPrice.toString()}`}
-        />
-        {/* TODO: use translation */}
-        <PositionDataGroup label="My Liquidity" value="$2,350" />
-        {/* TODO: use translation */}
-        <PositionDataGroup label="Incentives" value="25% APR" />
+        <div className="flex flex-row gap-[52px] self-start">
+          {/* TODO: use actual ROI */}
+          {/* TODO: use translation */}
+          <PositionDataGroup label="ROI" value="0.18%" />
+          {/* TODO: use translation */}
+          <RangeDataGroup
+            lowerPrice={
+              new CoinPretty(
+                quoteDepositAmountIn.sendCurrency,
+                lowerPrice.mul(
+                  new Dec(10 ** quoteDepositAmountIn.sendCurrency.coinDecimals)
+                )
+              )
+            }
+            upperPrice={
+              new CoinPretty(
+                quoteDepositAmountIn.sendCurrency,
+                upperPrice.mul(
+                  new Dec(10 ** quoteDepositAmountIn.sendCurrency.coinDecimals)
+                )
+              )
+            }
+            decimal={priceDecimal}
+          />
+          {/* TODO: use translation */}
+          <PositionDataGroup
+            label="My Liquidity"
+            value={liquidityValue ? formatPretty(liquidityValue) : "$0"}
+          />
+          {/* TODO: use translation */}
+          <PositionDataGroup label="Incentives" value="25% APR" />
+        </div>
       </div>
       {!collapsed && (
-        <>
+        <div className="flex flex-col" onClick={(e) => e.stopPropagation()}>
           <div className="flex flex-row gap-1">
             <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
               <PriceChartHeader addLiquidityConfig={config} />
@@ -288,7 +342,7 @@ const MyPositionCard: FunctionComponent<{
             </div>
             <div className="flex flex-col"></div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
@@ -296,13 +350,51 @@ const MyPositionCard: FunctionComponent<{
 
 function PositionDataGroup(props: {
   label: string;
-  value: string;
+  value: string | ReactNode;
 }): ReactElement {
   return (
-    <div className="flex flex-col items-end gap-2">
+    <div className="flex-grow-1 flex max-w-[12rem] flex-shrink-0 flex-col items-end gap-2">
       <div className="text-subtitle1 text-osmoverse-400">{props.label}</div>
-      <h6 className="text-white">{props.value}</h6>
+      {typeof props.value === "string" ? (
+        <h6 className="text-white w-full truncate text-right">{props.value}</h6>
+      ) : (
+        props.value
+      )}
     </div>
+  );
+}
+
+function RangeDataGroup(props: {
+  lowerPrice: CoinPretty;
+  upperPrice: CoinPretty;
+  decimal: number;
+}): ReactElement {
+  const { decimal, lowerPrice, upperPrice } = props;
+  return (
+    <PositionDataGroup
+      label="Selected Range"
+      value={
+        <div className="flex w-full flex-row justify-end gap-1 overflow-hidden break-all">
+          <h6>
+            {formatPretty(lowerPrice, {
+              maximumFractionDigits: decimal,
+              maximumSignificantDigits: decimal,
+              maxDecimals: decimal,
+              hideCoinDenom: true,
+            })}
+          </h6>
+          <img src="/icons/left-right-arrow.svg" className="h-6 w-6" />
+          <h6>
+            {formatPretty(upperPrice, {
+              maximumFractionDigits: decimal,
+              maximumSignificantDigits: decimal,
+              maxDecimals: decimal,
+              hideCoinDenom: true,
+            })}
+          </h6>
+        </div>
+      }
+    />
   );
 }
 
