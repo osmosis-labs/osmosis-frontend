@@ -106,13 +106,11 @@ To start the release process:
 yarn build:libs && npx lerna publish
 ```
 
-## Localization 🌎🗺
-
-Have a change you want to make with our translations? We have a frontend for updating localizations in our app easily, all you need is a GitHub account. Coming soon: creating new language profiles from this frontend.
-
-Inlang editor & status:
+## Translations 🌎🗺
 
 [![translation badge](https://inlang.com/badge?url=github.com/osmosis-labs/osmosis-frontend)](https://inlang.com/editor/github.com/osmosis-labs/osmosis-frontend?ref=badge)
+
+To add translations, you can either manually edit the translation files in `packages/web/translations` or use the [inlang](https://inlang.com/) editor.
 
 ## Asset Listings
 
