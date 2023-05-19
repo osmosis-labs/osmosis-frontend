@@ -331,17 +331,13 @@ const AddConcLiqView: FunctionComponent<
       const amt = new Dec(amount);
       let quoteDeposit: Dec;
 
-      if (fullRange) {
-        quoteDeposit = amt.quo(currentPrice);
-      } else {
-        const [lowerTick, upperTick] = addLiquidityConfig.tickRange;
-        quoteDeposit = calculateDepositAmountForQuote(
-          currentPrice,
-          lowerTick,
-          upperTick,
-          amt
-        );
-      }
+      const [lowerTick, upperTick] = addLiquidityConfig.tickRange;
+      quoteDeposit = calculateDepositAmountForQuote(
+        currentPrice,
+        lowerTick,
+        upperTick,
+        amt
+      );
 
       setQuoteDepositAmountIn(quoteDeposit);
       setQuoteDepositInput(quoteDeposit.toString());
@@ -358,19 +354,13 @@ const AddConcLiqView: FunctionComponent<
   const calculateBaseDeposit = useCallback(
     (amount: number) => {
       const amt = new Dec(amount);
-      let baseDeposit: Dec;
-
-      if (fullRange) {
-        baseDeposit = amt.mul(currentPrice);
-      } else {
-        const [lowerTick, upperTick] = addLiquidityConfig.tickRange;
-        baseDeposit = calculateDepositAmountForBase(
-          currentPrice,
-          lowerTick,
-          upperTick,
-          amt
-        );
-      }
+      const [lowerTick, upperTick] = addLiquidityConfig.tickRange;
+      const baseDeposit = calculateDepositAmountForBase(
+        currentPrice,
+        lowerTick,
+        upperTick,
+        amt
+      );
 
       setBaseDepositAmountIn(baseDeposit);
       setBaseDepositInput(baseDeposit.toString());
