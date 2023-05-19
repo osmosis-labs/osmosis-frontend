@@ -17,7 +17,8 @@
     "scalingFactorInformation": "该因素允许曲线根据可预测的价格变化进行调整，例如流动性质押代币的增值。",
     "singleAsset": "单边资产",
     "title": "添加流动性",
-    "titleInPool": "向#{poolId}号资金池添加流动性"
+    "titleInPool": "向#{poolId}号资金池添加流动性",
+    "stablecoinWarning": "您正在增加流动性"
   },
   "app": {
     "banner": {
