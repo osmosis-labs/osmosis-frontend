@@ -27,6 +27,7 @@ import { useTranslation } from "react-multi-lang";
 import IconButton from "~/components/buttons/icon-button";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import ChartButton from "~/components/chart-button";
+import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "../assets";
@@ -285,31 +286,24 @@ const AddConcLiqView: FunctionComponent<
     getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
   } & CustomClasses
 > = observer(({ addLiquidityConfig, actionButton, getFiatValue, pool }) => {
-  const baseDenom = pool?.poolAssets[0]?.amount.denom || "";
-  const quoteDenom = pool?.poolAssets[1]?.amount.denom || "";
   const {
-    yRange,
     range,
     fullRange,
-    historicalChartData,
-    lastChartData,
     currentPrice,
-    priceDecimal,
     baseDepositAmountIn,
     quoteDepositAmountIn,
     moderatePriceRange,
     baseDepositOnly,
     quoteDepositOnly,
     depositPercentages,
-    historicalRange,
-    setHistoricalRange,
-    hoverPrice,
     setQuoteDepositAmountIn,
     setBaseDepositAmountIn,
     setModalView,
     setMaxRange,
     setMinRange,
-    setHoverPrice,
+    poolId,
+    baseDenom,
+    quoteDenom,
   } = addLiquidityConfig;
 
   const t = useTranslation();
@@ -320,6 +314,22 @@ const AddConcLiqView: FunctionComponent<
   const [anchorAsset, setAchorAsset] = useState<"base" | "quote" | "">("");
   const rangeMin = Number(range[0].toString());
   const rangeMax = Number(range[1].toString());
+
+  const { chainStore } = useStore();
+  const { chainId } = chainStore.osmosis;
+  const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
+
+  const {
+    historicalRange,
+    setHistoricalRange,
+    hoverPrice,
+    priceDecimal,
+    yRange,
+    historicalChartData,
+    lastChartData,
+    setHoverPrice,
+    setRange,
+  } = chartConfig;
 
   const updateInputAndRangeMinMax = useCallback(
     (_min: number, _max: number) => {
@@ -396,6 +406,10 @@ const AddConcLiqView: FunctionComponent<
     updateInputAndRangeMinMax,
     setHoverPrice,
   ]);
+
+  useEffect(() => {
+    setRange(range);
+  }, [range]);
 
   useEffect(() => {
     if (anchorAsset === "base") {
@@ -483,33 +497,33 @@ const AddConcLiqView: FunctionComponent<
                   alt="refresh"
                   src="/icons/refresh-ccw.svg"
                   selected={false}
-                  onClick={() => addLiquidityConfig.setZoom(1)}
+                  onClick={() => chartConfig.setZoom(1)}
                 />
                 <ChartButton
                   alt="zoom in"
                   src="/icons/zoom-in.svg"
                   selected={false}
-                  onClick={addLiquidityConfig.zoomIn}
+                  onClick={chartConfig.zoomIn}
                 />
                 <ChartButton
                   alt="zoom out"
                   src="/icons/zoom-out.svg"
                   selected={false}
-                  onClick={addLiquidityConfig.zoomOut}
+                  onClick={chartConfig.zoomOut}
                 />
               </div>
               <ConcentratedLiquidityDepthChart
                 min={rangeMin}
                 max={rangeMax}
                 yRange={yRange}
-                xRange={addLiquidityConfig.xRange}
-                data={addLiquidityConfig.depthChartData}
+                xRange={chartConfig.xRange}
+                data={chartConfig.depthChartData}
                 annotationDatum={useMemo(
                   () => ({
                     price: lastChartData?.close || 0,
-                    depth: addLiquidityConfig.xRange[1],
+                    depth: chartConfig.xRange[1],
                   }),
-                  [addLiquidityConfig.xRange, lastChartData]
+                  [chartConfig.xRange, lastChartData]
                 )}
                 // eslint-disable-next-line react-hooks/exhaustive-deps
                 onMoveMax={useCallback(
