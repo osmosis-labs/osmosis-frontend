@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
+
 import { Icon } from "../assets";
 import { IconLink } from "./icon-link";
 
@@ -8,7 +11,7 @@ interface HeroCardProps {
   title: string;
   subtitle: string;
   imageUrl: string;
-  fallbackImageUrl: string;
+  fallbackImageUrl?: string;
   label?: string;
   githubUrl?: string;
   twitterUrl?: string;
@@ -27,8 +30,12 @@ export const HeroCard: React.FC<HeroCardProps> = ({
   mediumUrl,
   twitterUrl,
 }) => {
-  const [backgroundImageUrl, setBackgroundImageUrl] = useState(imageUrl);
+  const [backgroundImageUrl, setBackgroundImageUrl] = useState<
+    string | undefined
+  >(imageUrl);
+
   const t = useTranslation();
+  const { logEvent } = useAmplitudeAnalytics();
 
   useEffect(() => {
     const image = new Image();
@@ -38,12 +45,24 @@ export const HeroCard: React.FC<HeroCardProps> = ({
     };
   }, [imageUrl, fallbackImageUrl]);
 
+  const handleAppClicked = () => {
+    logEvent([
+      EventName.AppStore.appClicked,
+      { appName: title, isFeatured: true, isBanner: true },
+    ]);
+  };
+
   return (
     <div className="relative pt-8">
       <div className="body2 mb-2 pl-6 font-bold text-osmoverse-200">
         {label ? label : t("store.featured")}
       </div>
-      <a href={externalUrl} target="_blank" rel="noopener noreferrer">
+      <a
+        href={externalUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={handleAppClicked}
+      >
         <div className="heroImage flex items-end overflow-hidden rounded-lg">
           <div
             className="backgroundImage"

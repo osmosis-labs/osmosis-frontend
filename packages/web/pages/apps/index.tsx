@@ -6,6 +6,8 @@ import { Button } from "~/components/buttons";
 import { HeroCard } from "~/components/cards";
 import AppDisplayCard from "~/components/cards/app-display-card";
 import { SearchBox } from "~/components/input";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 
 type appDataType = {
   title: string;
@@ -31,67 +33,10 @@ type App = {
 };
 
 type AppStoreProps = {
-  apps: App[];
+  apps: {
+    applications: App[];
+  };
 };
-
-const dummyData = [
-  {
-    title: "Mars",
-    subtitle:
-      "Lend, borrow and earn with an autonomous credit protocol in the Cosmos universe. Open to all, closed to none.",
-    thumbnail_image_URL:
-      "https://www.shutterstock.com/image-illustration/landscape-on-planet-mars-scenic-600w-1104793244.jpg",
-    external_URL: "https://www.google.com",
-    twitter_URL: "https://www.google.com",
-    github_URL: "https://www.google.com",
-    featured: true,
-  },
-  {
-    title: "Saturn",
-    subtitle:
-      "Lend, borrow and earn with an autonomous credit protocol in the Cosmos universe. Open to all, closed to none.",
-    thumbnail_image_URL:
-      "https://www.shutterstock.com/image-illustration/landscape-on-planet-mars-scenic-600w-1104793244.jpg",
-    external_URL: "https://www.google.com",
-    twitter_URL: "https://www.google.com",
-    github_URL: "https://www.google.com",
-  },
-  {
-    title: "Neptune",
-    subtitle:
-      "Lend, borrow and earn with an autonomous credit protocol in the Cosmos universe. Open to all, closed to none.",
-    thumbnail_image_URL:
-      "https://www.shutterstock.com/image-illustration/landscape-on-planet-mars-scenic-600w-1104793244.jpg",
-    external_URL: "https://www.google.com",
-  },
-  {
-    title: "Uranus",
-    subtitle:
-      "Lend, borrow and earn with an autonomous credit protocol in the Cosmos universe. Open to all, closed to none.",
-    thumbnail_image_URL:
-      "https://www.shutterstock.com/image-illustration/landscape-on-planet-mars-scenic-600w-1104793244.jpg",
-    external_URL: "https://www.google.com",
-  },
-  ,
-  {
-    title: "Jupiter",
-    subtitle:
-      "Lend, borrow and earn with an autonomous credit protocol in the Cosmos universe. Open to all, closed to none.",
-    thumbnail_image_URL:
-      "https://www.shutterstock.com/image-illustration/landscape-on-planet-mars-scenic-600w-1104793244.jpg",
-    external_URL: "https://www.google.com",
-    twitter_URL: "https://www.google.com",
-    github_URL: "https://www.google.com",
-  },
-  {
-    title: "Venus",
-    subtitle:
-      "Lend, borrow and earn with an autonomous credit protocol in the Cosmos universe. Open to all, closed to none.",
-    thumbnail_image_URL:
-      "https://www.shutterstock.com/image-illustration/landscape-on-planet-mars-scenic-600w-1104793244.jpg",
-    external_URL: "https://www.google.com",
-  },
-];
 
 export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   const [searchValue, setSearchValue] = React.useState<string>("");
@@ -99,15 +44,24 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
     appDataType[]
   >([]);
 
+  const { applications } = apps;
+
   const t = useTranslation();
+  const { logEvent } = useAmplitudeAnalytics();
+
+  let featuredApp = applications?.find((app) => app.featured === true);
+  const nonFeaturedApps = applications?.filter((app) => !app.featured);
+
+  featuredApp = featuredApp ? featuredApp : nonFeaturedApps[0];
 
   const options = {
     keys: ["title"],
   };
-  const fuse = new Fuse(dummyData, options);
+  const fuse = new Fuse(applications, options);
 
   const handleApplyClick = () => {
-    const url = "https://tally.so/";
+    logEvent([EventName.AppStore.applyClicked]);
+    const url = "https://cosmos-ecosystem.webflow.io/submit";
     window.open(url, "_blank");
   };
 
@@ -121,7 +75,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
     setFuzzySearchResults(appDataResults);
   };
 
-  const iterableData = searchValue ? fuzzySearchResults : dummyData;
+  const iterableData = searchValue ? fuzzySearchResults : nonFeaturedApps;
 
   return (
     <main className="m-auto max-w-container bg-osmoverse-900 py-3 md:px-3">
@@ -142,30 +96,29 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
         />
       </div>
       <HeroCard
-        title="Mars"
-        subtitle="Lend, borrow and earn with an autonomous credit protocol in the Cosmos universe. Open to all, closed to none."
-        imageUrl="https://www.shutterstock.com/image-illustration/landscape-on-planet-mars-scenic-600w-1104793244.jpg"
-        fallbackImageUrl="https://www.shutterstock.com/image-illustration/landscape-on-planet-mars-scenic-600w-1104793244.jpg"
-        githubUrl="https://www.google.com"
-        twitterUrl="https://www.nytimes.com"
-        externalUrl="https://www.google.com"
-        mediumUrl="https://www.google.com"
+        title={featuredApp.title}
+        subtitle={featuredApp.subtitle}
+        imageUrl={featuredApp.hero_image_URL}
+        githubUrl={featuredApp.github_URL}
+        twitterUrl={featuredApp.twitter_URL}
+        externalUrl={featuredApp.external_URL}
+        mediumUrl={featuredApp.medium_URL}
       />
       <div className="body2 mb-2 pt-7 pl-6 font-bold text-osmoverse-200">
         All apps
       </div>
       <div className="container mx-auto py-3">
         <div className="grid grid-cols-3 gap-4">
-          {iterableData.map((data, index) => {
+          {iterableData?.map((app, index) => {
             return (
               <AppDisplayCard
                 key={index}
-                title={data?.title}
-                subtitle={data?.subtitle}
-                imageUrl={data?.thumbnail_image_URL}
-                twitterUrl={data?.twitter_URL}
-                githubUrl={data?.github_URL}
-                externalUrl={data?.external_URL}
+                title={app?.title}
+                subtitle={app?.subtitle}
+                imageUrl={app?.thumbnail_image_URL}
+                twitterUrl={app?.twitter_URL}
+                githubUrl={app?.github_URL}
+                externalUrl={app?.external_URL}
               />
             );
           })}
