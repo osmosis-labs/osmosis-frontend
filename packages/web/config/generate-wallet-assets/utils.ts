@@ -33,6 +33,14 @@ export const hasMatchingMinimalDenom = (
 };
 
 export function getAssetLists(assetInfos = initialAssetInfos): AssetList[] {
+  /**
+   * asset list will have the following structure;
+   * {
+   *  $schema?: string | undefined;
+   *  chain_name: string;
+   *  assets: Asset[];
+   * }
+   */
   let newAssetLists: AssetList[] = [];
 
   for (const list of assetLists) {
@@ -49,7 +57,11 @@ export function getAssetLists(assetInfos = initialAssetInfos): AssetList[] {
     );
 
     const newChainName = ChainInfos.find(
-      (chainInfo) => chainInfo.chainRegistryChainName === cloneList.chain_name
+      (chainInfo) =>
+        chainInfo?.chainRegistryChainName?.toLowerCase() ===
+          cloneList?.chain_name?.toLowerCase() ||
+        chainInfo?.chainName?.toLowerCase() ===
+          cloneList?.chain_name?.toLowerCase()
     )?.chainName;
 
     if (newChainName) {
