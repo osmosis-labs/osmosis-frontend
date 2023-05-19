@@ -741,7 +741,6 @@ export class OsmosisAccountImpl {
         if (!queryPool) {
           throw new Error(`Pool #${poolId} not found`);
         }
-        await queryPool.waitFreshResponse();
         const pool = queryPool.pool;
         if (!pool) {
           throw new Error("Unknown pool");
@@ -884,8 +883,6 @@ export class OsmosisAccountImpl {
         if (!queryPool) {
           throw new Error(`Pool #${poolId} not found`);
         }
-
-        await queryPool.waitFreshResponse();
 
         const pool = queryPool.pool;
         if (!pool) {

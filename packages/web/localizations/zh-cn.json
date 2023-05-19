@@ -462,9 +462,5 @@
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",
   "waitingForTransaction": "等待交易打包进区块",
-  "highInflationWarning": "高APR可能源自通胀性奖励。请谨慎操作。",
-  "streamswap": {
-    "description": "跨链启动台已经来了。成为第一个引导新项目的人。探索",
-    "link": "Streamswap。"
-  }
+  "highInflationWarning": "高APR可能源自通胀性奖励。请谨慎操作。"
 }

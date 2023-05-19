@@ -463,9 +463,5 @@
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",
   "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
-  "highInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență.",
-  "streamswap": {
-    "description": "Platforma de lansare interchain este aici. Fiți primul care va lansa proiecte noi. Explorați",
-    "link": "Streamswap."
-  }
+  "highInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență."
 }

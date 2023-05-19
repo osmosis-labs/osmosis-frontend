@@ -463,9 +463,5 @@
   "unknownError": "Error desconocido",
   "viewExplorer": "Ver Explorador",
   "waitingForTransaction": "Esperando que la transacción se incluya en el bloque",
-  "highInflationWarning": "Los APRs altos pueden ser resultado de recompensas inflacionarias. Proceda con precaución.",
-  "streamswap": {
-    "description": "Llegó el lanzador del interchain. Sea el primero en lanzar nuevos proyectos. Explora",
-    "link": "Streamswap."
-  }
+  "highInflationWarning": "Los APRs altos pueden ser resultado de recompensas inflacionarias. Proceda con precaución."
 }
