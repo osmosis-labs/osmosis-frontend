@@ -20,8 +20,8 @@ export type DepthData = {
 };
 
 const ConcentratedLiquidityDepthChart: FunctionComponent<{
-  min: number;
-  max: number;
+  min?: number;
+  max?: number;
   yRange: [number, number];
   xRange: [number, number];
   data: DepthData[];
@@ -161,7 +161,7 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
                   />
                 </Annotation>
               ))}
-            {showMaxDragHandler && (
+            {typeof max !== "undefined" && showMaxDragHandler && (
               <DragContainer
                 key={"max:" + yRange.join("_")}
                 defaultValue={fullRange ? yRange[1] * 0.95 : max}
@@ -172,7 +172,7 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
                 onSubmit={onSubmitMax}
               />
             )}
-            {showMinDragHandler && (
+            {typeof min !== "undefined" && showMinDragHandler && (
               <DragContainer
                 key={"min:" + yRange.join("_")}
                 defaultValue={fullRange ? yRange[0] * 1.05 : min}

@@ -25,6 +25,8 @@ import React, {
 import { useTranslation } from "react-multi-lang";
 
 import IconButton from "~/components/buttons/icon-button";
+import { PriceChartHeader } from "~/components/chart/token-pair-historical";
+import ChartButton from "~/components/chart-button";
 import { useStore } from "~/stores";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "../assets";
@@ -299,6 +301,9 @@ const AddConcLiqView: FunctionComponent<
     baseDepositOnly,
     quoteDepositOnly,
     depositPercentages,
+    historicalRange,
+    setHistoricalRange,
+    hoverPrice,
     setQuoteDepositAmountIn,
     setBaseDepositAmountIn,
     setModalView,
@@ -447,7 +452,14 @@ const AddConcLiqView: FunctionComponent<
         </span>
         <div className="flex flex-row gap-1">
           <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
-            <PriceChartHeader addLiquidityConfig={addLiquidityConfig} />
+            <PriceChartHeader
+              historicalRange={historicalRange}
+              setHistoricalRange={setHistoricalRange}
+              baseDenom={baseDenom}
+              quoteDenom={quoteDenom}
+              hoverPrice={hoverPrice}
+              decimal={priceDecimal}
+            />
             <TokenPairHistoricalChart
               data={historicalChartData}
               annotations={
@@ -467,19 +479,19 @@ const AddConcLiqView: FunctionComponent<
           <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-row rounded-r-2xl bg-osmoverse-700">
             <div className="flex flex-1 flex-col">
               <div className="mt-7 mr-6 mb-8 flex h-6 flex-row justify-end gap-1">
-                <SelectorWrapper
+                <ChartButton
                   alt="refresh"
                   src="/icons/refresh-ccw.svg"
                   selected={false}
                   onClick={() => addLiquidityConfig.setZoom(1)}
                 />
-                <SelectorWrapper
+                <ChartButton
                   alt="zoom in"
                   src="/icons/zoom-in.svg"
                   selected={false}
                   onClick={addLiquidityConfig.zoomIn}
                 />
-                <SelectorWrapper
+                <ChartButton
                   alt="zoom out"
                   src="/icons/zoom-out.svg"
                   selected={false}
@@ -682,94 +694,6 @@ const StrategySelectorGroup: FunctionComponent<
         />
       </div>
     </section>
-  );
-});
-
-const SelectorWrapper: FunctionComponent<{
-  src?: string;
-  alt?: string;
-  label?: string;
-  selected: boolean;
-  onClick: () => void;
-}> = (props) => {
-  const isImage = !!props.src && !props.label;
-  const isLabel = !!props.label && !props.src;
-
-  return (
-    <div
-      className={classNames(
-        "flex h-6 cursor-pointer flex-row items-center justify-center",
-        "caption rounded-lg bg-osmoverse-800 px-2 hover:bg-osmoverse-900",
-        "whitespace-nowrap",
-        {
-          "!bg-osmoverse-600": props.selected,
-        }
-      )}
-      onClick={props.onClick}
-    >
-      {isImage && (
-        <Image
-          alt={props.alt}
-          src={props.src as string}
-          width={16}
-          height={16}
-        />
-      )}
-      {isLabel && props.label}
-    </div>
-  );
-};
-
-const PriceChartHeader: FunctionComponent<{
-  addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-}> = observer(({ addLiquidityConfig }) => {
-  const {
-    historicalRange,
-    setHistoricalRange,
-    baseDepositAmountIn,
-    quoteDepositAmountIn,
-    hoverPrice,
-    priceDecimal,
-  } = addLiquidityConfig;
-
-  const t = useTranslation();
-
-  return (
-    <div className="flex flex-row">
-      <div className="flex flex-1 flex-row">
-        <h4 className="row-span-2 pr-1 font-caption">
-          {hoverPrice.toFixed(priceDecimal) || ""}
-        </h4>
-        <div className="flex flex-col justify-center font-caption">
-          <div className="caption text-osmoverse-300">
-            {t("addConcentratedLiquidity.currentPrice")}
-          </div>
-          <div className="caption whitespace-nowrap text-osmoverse-300">
-            {t("addConcentratedLiquidity.basePerQuote", {
-              base: baseDepositAmountIn.sendCurrency.coinDenom,
-              quote: quoteDepositAmountIn.sendCurrency.coinDenom,
-            })}
-          </div>
-        </div>
-      </div>
-      <div className="flex flex-1 flex-row justify-end gap-1 pr-2">
-        <SelectorWrapper
-          label="7 day"
-          onClick={() => setHistoricalRange("7d")}
-          selected={historicalRange === "7d"}
-        />
-        <SelectorWrapper
-          label="30 day"
-          onClick={() => setHistoricalRange("1mo")}
-          selected={historicalRange === "1mo"}
-        />
-        <SelectorWrapper
-          label="1 year"
-          onClick={() => setHistoricalRange("1y")}
-          selected={historicalRange === "1y"}
-        />
-      </div>
-    </div>
   );
 });
 
