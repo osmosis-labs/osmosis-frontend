@@ -3833,14 +3833,14 @@ chainInfos.push({
       coinMinimalDenom: "cbeth-wei",
       coinDecimals: 18,
       coinGeckoId: "coinbase-wrapped-staked-eth",
-      coinImageUrl: "/tokens/cbeth.svg",
+      coinImageUrl: "/tokens/cbeth.png",
     },
     {
       coinDenom: "rETH",
       coinMinimalDenom: "reth-wei",
       coinDecimals: 18,
       coinGeckoId: "rocket-pool-eth",
-      coinImageUrl: "/tokens/reth.svg",
+      coinImageUrl: "/tokens/reth.png",
     },
     {
       coinDenom: "sfrxETH",
