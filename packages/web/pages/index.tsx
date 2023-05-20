@@ -6,16 +6,20 @@ import { useMemo } from "react";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { TradeClipboard } from "~/components/trade-clipboard";
 import { useStore } from "~/stores";
+import { UnverifiedAssetsState } from "~/stores/user-settings";
 
-import { EventName, IS_FRONTIER } from "../config";
+import { EventName } from "../config";
 import { useAmplitudeAnalytics } from "../hooks";
 
 const Home: NextPage = observer(function () {
-  const { chainStore, queriesStore, priceStore } = useStore();
+  const { chainStore, queriesStore, priceStore, userSettings } = useStore();
   const { chainId } = chainStore.osmosis;
 
   const queries = queriesStore.get(chainId);
   const queryPools = queries.osmosis!.queryGammPools;
+  const showUnverified =
+    userSettings.getUserSettingById<UnverifiedAssetsState>("unverified-assets")
+      ?.state?.showUnverifiedAssets;
 
   // If pool has already passed once, it will be passed immediately without recalculation.
   const allPools = queryPools.getAllPools();
@@ -27,7 +31,7 @@ const Home: NextPage = observer(function () {
           pool
             .computeTotalValueLocked(priceStore)
             .toDec()
-            .gte(new Dec(IS_FRONTIER ? 1_000 : 10_000))
+            .gte(new Dec(showUnverified ? 1_000 : 10_000))
         )
         .sort((a, b) => {
           // sort by TVL to find routes amongst most valuable pools
@@ -56,31 +60,21 @@ const Home: NextPage = observer(function () {
           preserveAspectRatio="xMidYMid slice"
         >
           <g>
-            {!IS_FRONTIER && (
-              <ProgressiveSvgImage
-                lowResXlinkHref="/images/osmosis-home-bg-low.png"
-                xlinkHref="/images/osmosis-home-bg.png"
-                x="56"
-                y="220"
-                width="578.7462"
-                height="725.6817"
-              />
-            )}
             <ProgressiveSvgImage
-              lowResXlinkHref={
-                IS_FRONTIER
-                  ? "/images/osmosis-cowboy-woz-low.png"
-                  : "/images/osmosis-home-fg-low.png"
-              }
-              xlinkHref={
-                IS_FRONTIER
-                  ? "/images/osmosis-cowboy-woz.png"
-                  : "/images/osmosis-home-fg.png"
-              }
-              x={IS_FRONTIER ? "-100" : "61"}
-              y={IS_FRONTIER ? "100" : "682"}
-              width={IS_FRONTIER ? "800" : "448.8865"}
-              height={IS_FRONTIER ? "800" : "285.1699"}
+              lowResXlinkHref="/images/osmosis-home-bg-low.png"
+              xlinkHref="/images/osmosis-home-bg.png"
+              x="56"
+              y="220"
+              width="578.7462"
+              height="725.6817"
+            />
+            <ProgressiveSvgImage
+              lowResXlinkHref="/images/osmosis-home-fg-low.png"
+              xlinkHref="/images/osmosis-home-fg.png"
+              x="61"
+              y="682"
+              width="448.8865"
+              height="285.1699"
             />
           </g>
         </svg>

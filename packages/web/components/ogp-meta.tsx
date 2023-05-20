@@ -1,8 +1,6 @@
 import Head from "next/head";
 import { FunctionComponent } from "react";
 
-import { IS_FRONTIER } from "../config";
-
 /**
  * https://ogp.me/
  *
@@ -10,9 +8,7 @@ import { IS_FRONTIER } from "../config";
  * Picks a random preview image amongst a selection
  */
 export const OgpMeta: FunctionComponent = () => {
-  const previewText = IS_FRONTIER
-    ? "The Osmosis Frontier"
-    : "Trade on Osmosis Zone";
+  const previewText = "Trade on Osmosis Zone";
 
   return (
     <Head>

@@ -14,7 +14,7 @@ export interface IBCAsset {
   // Disable the deposit, withdraw button and show the tooltip.
   isUnstable?: boolean;
 
-  /** Is asset incentivized or strategically worth including in main vs frontier. */
+  /** Is asset incentivized or strategically worth including in main vs frontier (permissionless). */
   isVerified?: boolean;
   // If the asset is from ics20-cw20
   ics20ContractAddress?: string;
