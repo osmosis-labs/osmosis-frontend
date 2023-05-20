@@ -3828,6 +3828,34 @@ chainInfos.push({
       coinGeckoId: "pool:pepe",
       coinImageUrl: "/tokens/pepe.svg",
     },
+    {
+      coinDenom: "cbETH",
+      coinMinimalDenom: "cbeth-wei",
+      coinDecimals: 18,
+      coinGeckoId: "coinbase-wrapped-staked-eth",
+      coinImageUrl: "/tokens/cbeth.svg",
+    },
+    {
+      coinDenom: "rETH",
+      coinMinimalDenom: "reth-wei",
+      coinDecimals: 18,
+      coinGeckoId: "rocket-pool-eth",
+      coinImageUrl: "/tokens/reth.svg",
+    },
+    {
+      coinDenom: "sfrxETH",
+      coinMinimalDenom: "sfrxeth-wei",
+      coinDecimals: 18,
+      coinGeckoId: "staked-frax-ether",
+      coinImageUrl: "/tokens/sfrxeth.svg",
+    },
+    {
+      coinDenom: "wstETH",
+      coinMinimalDenom: "wsteth-wei",
+      coinDecimals: 18,
+      coinGeckoId: "staked-ether",
+      coinImageUrl: "/tokens/wsteth.svg",
+    },
   ],
   feeCurrencies: [
     {
