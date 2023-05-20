@@ -7,6 +7,7 @@ import { ObservableQueryFilteredPools } from "../queries-external/filtered-pools
 import {
   ObservableQueryLiquiditiesNetInDirection,
   ObservableQueryLiquiditiesPerTickRange,
+  ObservableQueryLiquidityPositions,
 } from "./concentrated-liquidity";
 import { ObservableQueryEpochs } from "./epochs";
 import { FallbackStore } from "./fallback-query-store";
@@ -84,6 +85,7 @@ export class OsmosisQueriesImpl {
   // concentrated liquidity
   public readonly queryLiquiditiesInNetDirection: DeepReadonly<ObservableQueryLiquiditiesNetInDirection>;
   public readonly queryLiquiditiesPerTickRange: DeepReadonly<ObservableQueryLiquiditiesPerTickRange>;
+  public readonly queryLiquidityPositions: DeepReadonly<ObservableQueryLiquidityPositions>;
 
   protected _queryGammPools: DeepReadonly<ObservableQueryPoolGetter>;
   public readonly queryGammNumPools: DeepReadonly<ObservableQueryNumPools>;
@@ -161,6 +163,12 @@ export class OsmosisQueriesImpl {
 
     this.queryLiquiditiesPerTickRange =
       new ObservableQueryLiquiditiesPerTickRange(kvStore, chainId, chainGetter);
+
+    this.queryLiquidityPositions = new ObservableQueryLiquidityPositions(
+      kvStore,
+      chainId,
+      chainGetter
+    );
 
     /** Contains a reference to the currently responsive pool store. */
     const poolsQueryFallbacks = new FallbackStore(

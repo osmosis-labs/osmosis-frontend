@@ -1,4 +1,4 @@
-import { Dec, Int } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 import { maxTick, minTick, tickToSqrtPrice } from "@osmosis-labs/math";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
@@ -7,7 +7,6 @@ import React, { FunctionComponent, useEffect } from "react";
 
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import ChartButton from "~/components/chart-button";
-import { PositionWithAssets } from "~/components/my-position-card/index";
 import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/charts/historical-and-liquidity-data";
 
@@ -22,8 +21,8 @@ const TokenPairHistoricalChart = dynamic(
 
 const MyPositionCardExpandedSection: FunctionComponent<{
   chartConfig: ObservableHistoricalAndLiquidityData;
-  positions: PositionWithAssets[];
-}> = observer(({ chartConfig, positions }) => {
+  positionIds: string[];
+}> = observer(({ chartConfig, positionIds }) => {
   const {
     historicalChartData,
     historicalRange,
@@ -44,16 +43,20 @@ const MyPositionCardExpandedSection: FunctionComponent<{
     setRange,
   } = chartConfig;
 
-  const { derivedDataStore } = useStore();
-  const poolId = positions[0].position.pool_id;
+  const { chainStore, derivedDataStore, queriesStore } = useStore();
+
+  const { chainId } = chainStore.osmosis;
+  const queryPositions =
+    queriesStore.get(chainId).osmosis!.queryLiquidityPositions;
+  const { poolId, position, baseAmount, quoteAmount } =
+    queryPositions.getMergedPositions(positionIds);
   const pool = derivedDataStore.poolDetails.get(poolId);
   const _queryPool = pool.pool;
 
-  const { lower_tick, upper_tick } = positions[0].position;
-  const fullRange =
-    lower_tick === minTick.toString() && upper_tick === maxTick.toString();
-  const lowerSqrtPrice = tickToSqrtPrice(new Int(lower_tick));
-  const upperSqrtPrice = tickToSqrtPrice(new Int(upper_tick));
+  const { lowerTick, upperTick } = position!;
+  const fullRange = lowerTick.equals(minTick) && upperTick.equals(maxTick);
+  const lowerSqrtPrice = tickToSqrtPrice(lowerTick);
+  const upperSqrtPrice = tickToSqrtPrice(upperTick);
   const lowerPrice = lowerSqrtPrice.mul(lowerSqrtPrice);
   const upperPrice = upperSqrtPrice.mul(upperSqrtPrice);
 
@@ -164,14 +167,14 @@ const MyPositionCardExpandedSection: FunctionComponent<{
                 className="h-[1.5rem] w-[1.5rem]"
                 src={_queryPool?.poolAssets[0].amount.currency.coinImageUrl}
               />
-              <span>{positions[0]?.asset0.amount}</span>
-              <span>{positions[0]?.asset0.denom}</span>
+              <span>{baseAmount.toString()}</span>
+              <span>{baseDenom}</span>
               <img
                 className="h-[1.5rem] w-[1.5rem]"
                 src={_queryPool?.poolAssets[1].amount.currency.coinImageUrl}
               />
-              <span>{positions[0]?.asset1.amount}</span>
-              <span>{positions[0]?.asset1.denom}</span>
+              <span>{quoteAmount.toString()}</span>
+              <span>{quoteDenom}</span>
             </div>
           </div>
         </div>

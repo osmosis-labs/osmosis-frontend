@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { tickToSqrtPrice } from "@osmosis-labs/math";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -35,35 +35,36 @@ export type PositionWithAssets = {
 };
 
 const MyPositionCard: FunctionComponent<{
-  positions: PositionWithAssets[];
-}> = observer(({ positions }) => {
-  const { chainStore, priceStore } = useStore();
+  positionIds: string[];
+}> = observer(({ positionIds }) => {
+  const { chainStore, priceStore, queriesStore } = useStore();
   const [collapsed, setCollapsed] = useState(true);
 
-  const poolId = positions[0].position.pool_id;
   const { chainId } = chainStore.osmosis;
+  const queryPositions =
+    queriesStore.get(chainId).osmosis!.queryLiquidityPositions;
+
+  const { poolId, position, baseAmount, quoteAmount } =
+    queryPositions.getMergedPositions(positionIds);
 
   const config = useHistoricalAndLiquidityData(chainId, poolId);
 
   const { pool, quoteCurrency, baseCurrency, priceDecimal } = config;
 
-  const { lower_tick, upper_tick } = positions[0].position;
-  const lowerSqrtPrice = tickToSqrtPrice(new Int(lower_tick));
-  const upperSqrtPrice = tickToSqrtPrice(new Int(upper_tick));
+  const { lowerTick, upperTick } = position!;
+
+  const lowerSqrtPrice = tickToSqrtPrice(lowerTick);
+  const upperSqrtPrice = tickToSqrtPrice(upperTick);
   const lowerPrice = lowerSqrtPrice.mul(lowerSqrtPrice);
   const upperPrice = upperSqrtPrice.mul(upperSqrtPrice);
 
   const fiatBase =
     baseCurrency &&
-    priceStore.calculatePrice(
-      new CoinPretty(baseCurrency, positions[0].asset0.amount)
-    );
+    priceStore.calculatePrice(new CoinPretty(baseCurrency, baseAmount));
 
   const fiatQuote =
     quoteCurrency &&
-    priceStore.calculatePrice(
-      new CoinPretty(quoteCurrency, positions[0].asset1.amount)
-    );
+    priceStore.calculatePrice(new CoinPretty(quoteCurrency, quoteAmount));
 
   const fiatCurrency =
     priceStore.supportedVsCurrencies[priceStore.defaultVsCurrency];
@@ -140,7 +141,7 @@ const MyPositionCard: FunctionComponent<{
       {!collapsed && (
         <MyPositionCardExpandedSection
           chartConfig={config}
-          positions={positions}
+          positionIds={positionIds}
         />
       )}
     </div>
