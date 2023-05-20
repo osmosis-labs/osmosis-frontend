@@ -128,7 +128,8 @@ const getStringifiedWallet = (wallet: (typeof WalletRegistry)[number]) => {
  * We need to generate the file in order to not include wallets size in our main bundle.
  */
 async function generateWalletRegistry() {
-  const content = `  
+  const content = `
+      // @ts-nocheck  
       /* eslint-disable import/no-extraneous-dependencies */
       import type { Wallet } from "@cosmos-kit/core";
       export const WalletRegistry: (Wallet & { lazyInstall: Function })[] = [${WalletRegistry.map(
