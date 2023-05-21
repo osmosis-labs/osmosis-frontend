@@ -3834,7 +3834,7 @@ chainInfos.push({
       coinDecimals: 18,
       //coinGeckoId: "coinbase-wrapped-staked-eth",
       coinGeckoId: "pool:cbeth-wei",
-      coinImageUrl: "/tokens/cbETH.png",
+      coinImageUrl: "/tokens/cbeth.png",
     },
     {
       coinDenom: "rETH",
@@ -3842,7 +3842,7 @@ chainInfos.push({
       coinDecimals: 18,
       //coinGeckoId: "rocket-pool-eth",
       coinGeckoId: "pool:reth-wei",
-      coinImageUrl: "/tokens/rETH.png",
+      coinImageUrl: "/tokens/reth.png",
     },
     {
       coinDenom: "sfrxETH",
