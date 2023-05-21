@@ -358,6 +358,7 @@ export const IBCAssetInfos: (IBCAsset & {
           method: "deposit-address" as const,
           sourceChainTokens: [AxelarSourceChainConfigs.pepe.ethereum],
         },
+      },
       {
         counterpartyChainId: "axelar-dojo-1",
         sourceChannelId: "channel-208",
@@ -371,6 +372,7 @@ export const IBCAssetInfos: (IBCAsset & {
           method: "deposit-address" as const,
           sourceChainTokens: [AxelarSourceChainConfigs.cbeth.ethereum],
         },
+      },
       {
         counterpartyChainId: "axelar-dojo-1",
         sourceChannelId: "channel-208",
@@ -384,6 +386,7 @@ export const IBCAssetInfos: (IBCAsset & {
           method: "deposit-address" as const,
           sourceChainTokens: [AxelarSourceChainConfigs.reth.ethereum],
         },
+      },
       {
         counterpartyChainId: "axelar-dojo-1",
         sourceChannelId: "channel-208",
@@ -397,6 +400,7 @@ export const IBCAssetInfos: (IBCAsset & {
           method: "deposit-address" as const,
           sourceChainTokens: [AxelarSourceChainConfigs.sfrxeth.ethereum],
         },
+      },
       {
         counterpartyChainId: "axelar-dojo-1",
         sourceChannelId: "channel-208",
