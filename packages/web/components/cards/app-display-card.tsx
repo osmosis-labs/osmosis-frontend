@@ -41,7 +41,6 @@ export const AppDisplayCard: FunctionComponent<{
           }
           .card-image {
             background-image: url(${imageUrl});
-            transition: transform 0.3s ease-in-out;
           }
         `}</style>
         <a

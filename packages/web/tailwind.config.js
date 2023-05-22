@@ -226,7 +226,6 @@ module.exports = {
           5: "4.75rem",
           6: "5rem",
         },
-        "300px": "300px",
       },
       spacing: {
         sidebar: "13.75rem",
