@@ -43,8 +43,16 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   const [fuzzySearchResults, setFuzzySearchResults] = React.useState<
     AppDataType[]
   >([]);
+  const [fuse, setFuse] = React.useState<Fuse<App> | null>(null);
 
   const { applications } = apps;
+
+  React.useEffect(() => {
+    const options = {
+      keys: ["title"],
+    };
+    setFuse(new Fuse(applications, options));
+  }, [applications]);
 
   const t = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
@@ -54,11 +62,6 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
 
   featuredApp = featuredApp ? featuredApp : nonFeaturedApps[0];
 
-  const options = {
-    keys: ["title"],
-  };
-  const fuse = new Fuse(applications, options);
-
   const handleApplyClick = () => {
     logEvent([EventName.AppStore.applyClicked]);
     const url = "https://cosmos-ecosystem.webflow.io/submit";
@@ -66,13 +69,15 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   };
 
   const handleSearchInput = (value: string) => {
-    const searchResults = fuse.search(value);
-    const appDataResults: AppDataType[] = searchResults.map(
-      (result) => result.item as AppDataType
-    );
+    if (fuse) {
+      const searchResults = fuse.search(value);
+      const appDataResults: AppDataType[] = searchResults.map(
+        (result) => result.item as AppDataType
+      );
 
-    setSearchValue(value);
-    setFuzzySearchResults(appDataResults);
+      setSearchValue(value);
+      setFuzzySearchResults(appDataResults);
+    }
   };
 
   const iterableData = searchValue ? fuzzySearchResults : nonFeaturedApps;
@@ -81,9 +86,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
     <main className="m-auto max-w-container bg-osmoverse-900 py-3 1.5md:px-6 md:px-3">
       <div className="flex flex-row justify-between pl-6 md:flex-col">
         <div className="mb-0 basis-1/2 lg:mr-4 md:mb-4 md:mr-0">
-          <h4 className="pb-2 text-h4 font-h4 text-wosmongton-100">
-            {t("store.headerTitle")}
-          </h4>
+          <h4 className="pb-2 text-wosmongton-100">{t("store.headerTitle")}</h4>
           <span className="body2 text-osmoverse-200">
             {t("store.headerSubtitle")}
           </span>
@@ -114,7 +117,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
           {iterableData?.map((app, index) => {
             return (
               <AppDisplayCard
-                key={index}
+                key={app.title}
                 title={app?.title}
                 subtitle={app?.subtitle}
                 imageUrl={app?.thumbnail_image_URL}
