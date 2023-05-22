@@ -3396,6 +3396,7 @@ const chainInfos = IS_TESTNET
               coinGeckoId: "pool:uqosmo",
             },
           ],
+          explorerUrlToTx: "https://www.mintscan.io/quicksilver/txs/{txHash}",
         },
         {
           rpc: "https://rpc.8ball.info",
