@@ -1,23 +1,23 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import { ChainInfoWithExplorer } from "@osmosis-labs/stores";
 
-import { PeggedCurrency } from "~/stores/assets";
+import { FeeCurrency, PeggedCurrency } from "~/stores/assets";
 
 /** All currency attributes (stake and fee) are defined once in the `currencies` list.
  *  Maintains the option to skip this conversion and keep the verbose `ChainInfo` type.
  */
-export type SimplifiedChainInfo = Omit<
-  ChainInfoWithExplorer,
-  "stakeCurrency" | "feeCurrencies"
-> & {
+export interface SimplifiedChainInfo
+  extends Omit<ChainInfoWithExplorer, "stakeCurrency" | "feeCurrencies"> {
   currencies: Array<
     AppCurrency &
+      FeeCurrency &
       PeggedCurrency & {
         isStakeCurrency?: boolean;
         isFeeCurrency?: boolean;
+        pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
       }
   >;
-};
+}
 
 /** Convert a less redundant chain info schema into one that is accepted by Keplr's suggestChain: `ChainInfo`. */
 export function createKeplrChainInfos(
