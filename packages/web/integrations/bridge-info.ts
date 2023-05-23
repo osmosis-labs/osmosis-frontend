@@ -26,7 +26,8 @@ export type SourceChain =
   | "Polygon"
   | "Mumbai"
   | "Filecoin"
-  | "Filecoin Hyperspace";
+  | "Filecoin Hyperspace"
+  | "Arbitrum";
 
 /** String literal identifiers for a source chain. */
 export type SourceChainKey = SourceChain;
@@ -55,6 +56,7 @@ export const EthClientChainIds_SourceChainMap: {
   "Moonbeam Mainnet": "Moonbeam",
   "Polygon Mainnet": "Polygon",
   "Filecoin - Mainnet": "Filecoin",
+  "Arbitrum One": "Arbitrum",
 };
 
 // Fiat on/off ramps

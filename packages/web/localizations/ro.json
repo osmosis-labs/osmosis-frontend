@@ -122,7 +122,8 @@
         "insufficientBal": "Balanta Insuficienta",
         "insufficientFee": "Taxa Insuficienta",
         "reconnectWallet": "Reconecteaza {walletName}",
-        "wrongNetworkInWallet": "Retea gresita in {walletName}"
+        "wrongNetworkInWallet": "Retea gresita in {walletName}",
+        "seeRequest": "Vezi solicitarea în {walletName}"
       },
       "from": "De la",
       "loading": "Se incarca",
@@ -148,7 +149,7 @@
   "components": {
     "fiatOnrampSelection": {
       "chooseOnramp": "Alegeți rampa fiat",
-      "kadoSubtitle": "Acceptă USDC",
+      "kadoSubtitle": "Acceptă OSMO, USDC",
       "transakSubtitle": "Acceptă OSMO"
     },
     "incentive": {
@@ -288,7 +289,8 @@
     "unbond": "Deblocate",
     "unbonding": "deblocare",
     "undelegating": "anulare delegare",
-    "yourStats": "Statisticile tale"
+    "yourStats": "Statisticile tale",
+    "day": "zi"
   },
   "pools": {
     "all": "Toate Pool-urile",
@@ -463,5 +465,9 @@
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",
   "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
-  "highInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență."
+  "highPoolInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență.",
+  "ibcx": {
+    "description": "Întâlniți primul Index al Ecosistemului Cosmos de la ION DAO. Activ pe mainnet: ",
+    "link": "index.ion.wtf"
+  }
 }

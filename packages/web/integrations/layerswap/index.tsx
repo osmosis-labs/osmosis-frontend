@@ -1,4 +1,5 @@
 import { WalletStatus } from "@cosmos-kit/core";
+import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 
 import { ModalBaseProps } from "../../modals";
@@ -6,8 +7,8 @@ import { useStore } from "../../stores";
 
 /** Assumed wallet connected */
 export const Layerswap: FunctionComponent<
-  {} & Pick<ModalBaseProps, "isOpen" | "onRequestClose">
-> = ({}) => {
+  Pick<ModalBaseProps, "isOpen" | "onRequestClose">
+> = observer(() => {
   const { chainStore, accountStore } = useStore();
 
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
@@ -21,4 +22,4 @@ export const Layerswap: FunctionComponent<
       height="700"
     />
   );
-};
+});

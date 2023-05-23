@@ -2,7 +2,7 @@ import type { Asset, AssetList } from "@chain-registry/types";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { assets as assetLists } from "chain-registry";
 
-import { chainInfos } from "../generate-chain-infos/source-chain-infos";
+import { ChainInfos as chainInfos } from "../generate-chain-infos/source-chain-infos";
 import { ChainInfos } from "../generated/chain-infos";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import IBCAssetInfos from "../ibc-assets";

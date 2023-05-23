@@ -542,8 +542,6 @@ export class OsmosisAccountImpl {
             );
           }
 
-          await queryPool.waitFreshResponse();
-
           const pool = queryPool.pool;
           if (!pool) {
             throw new Error("Unknown pool");
@@ -1087,7 +1085,9 @@ export class OsmosisAccountImpl {
       (tx) => {
         if (tx.code == null || tx.code === 0) {
           const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances.getQueryBech32Address(this.address).fetch();
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
 
           this.queries.queryGammPools.getPool(poolId)?.waitFreshResponse();
         }
@@ -1149,7 +1149,9 @@ export class OsmosisAccountImpl {
         if (tx.code == null || tx.code === 0) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances.getQueryBech32Address(this.address).fetch();
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
 
           // Refresh the locked coins
           this.queries.queryLockedCoins.get(this.address).waitFreshResponse();
@@ -1195,7 +1197,9 @@ export class OsmosisAccountImpl {
         if (tx.code == null || tx.code === 0) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances.getQueryBech32Address(this.address).fetch();
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
 
           queries.osmosis?.queryAccountLocked
             .get(this.address)
@@ -1263,7 +1267,9 @@ export class OsmosisAccountImpl {
         if (tx.code == null || tx.code === 0) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances.getQueryBech32Address(this.address).fetch();
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
 
           // Refresh the locked coins
           queries.osmosis?.queryLockedCoins
@@ -1316,7 +1322,9 @@ export class OsmosisAccountImpl {
         if (tx.code == null || tx.code === 0) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances.getQueryBech32Address(this.address).fetch();
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
 
           // Refresh the locked coins
           this.queries.queryLockedCoins.get(this.address).waitFreshResponse();
@@ -1394,7 +1402,9 @@ export class OsmosisAccountImpl {
         if (tx.code == null || tx.code === 0) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances.getQueryBech32Address(this.address).fetch();
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
 
           // Refresh the locked coins
           queries.osmosis?.queryLockedCoins

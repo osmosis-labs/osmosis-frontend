@@ -122,7 +122,8 @@
         "insufficientBal": "結餘不足",
         "insufficientFee": "交易費不足",
         "reconnectWallet": "重新連接 {walletName}",
-        "wrongNetworkInWallet": "非正確網絡? Wrong network in {walletName}"
+        "wrongNetworkInWallet": "非正確網絡? Wrong network in {walletName}",
+        "seeRequest": "在{walletName}中檢視請求"
       },
       "from": "從",
       "loading": "載入中",
@@ -148,7 +149,7 @@
   "components": {
     "fiatOnrampSelection": {
       "chooseOnramp": "選擇法幣入口",
-      "kadoSubtitle": "支援USDC",
+      "kadoSubtitle": "支援OSMO, USDC",
       "transakSubtitle": "支援OSMO"
     },
     "incentive": {
@@ -463,5 +464,9 @@
   "unknownError": "未知錯誤",
   "viewExplorer": "使用區塊瀏覽器查看",
   "waitingForTransaction": "正等待交易被加入到區塊中",
-  "highInflationWarning": "高APR可能源自通脹性獎勵。請謹慎操作。"
+  "highPoolInflationWarning": "高APR可能源自通脹性獎勵。請謹慎操作。",
+  "ibcx": {
+    "description": "認識來自 ION DAO 的首個 Cosmos 生態系指數。主網上線: ",
+    "link": "index.ion.wtf"
+  }
 }

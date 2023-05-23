@@ -17,7 +17,8 @@
     "scalingFactorInformation": "该因素允许曲线根据可预测的价格变化进行调整，例如流动性质押代币的增值。",
     "singleAsset": "单边资产",
     "title": "添加流动性",
-    "titleInPool": "向#{poolId}号资金池添加流动性"
+    "titleInPool": "向#{poolId}号资金池添加流动性",
+    "stablecoinWarning": "您正在增加流动性"
   },
   "app": {
     "banner": {
@@ -121,7 +122,8 @@
         "insufficientBal": "余额不足",
         "insufficientFee": "费用不足",
         "reconnectWallet": "重新连接 {walletName}",
-        "wrongNetworkInWallet": "在 {walletName} 中网络错误"
+        "wrongNetworkInWallet": "在 {walletName} 中网络错误",
+        "seeRequest": "在{walletName}中查看请求"
       },
       "from": "从",
       "loading": "加载中",
@@ -147,7 +149,7 @@
   "components": {
     "fiatOnrampSelection": {
       "chooseOnramp": "选择法币入口",
-      "kadoSubtitle": "支持USDC",
+      "kadoSubtitle": "支持OSMO, USDC",
       "transakSubtitle": "支持OSMO"
     },
     "incentive": {
@@ -462,5 +464,9 @@
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",
   "waitingForTransaction": "等待交易打包进区块",
-  "highInflationWarning": "高APR可能源自通胀性奖励。请谨慎操作。"
+  "highPoolInflationWarning": "高APR可能源自通胀性奖励。请谨慎操作。",
+  "ibcx": {
+    "description": "认识来自ION DAO的首个 Cosmos 生态系统指数。主网上线: ",
+    "link": "index.ion.wtf"
+  }
 }

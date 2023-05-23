@@ -180,6 +180,13 @@ export const SourceChainTokenConfigs: {
       logoUrl: "/networks/ethereum.svg",
     },
   },
+  pepe: {
+    ethereum: {
+      id: "Ethereum" as const,
+      erc20ContractAddress: "0x6982508145454Ce325dDbE47a25d4ec3d2311933",
+      logoUrl: "/networks/ethereum.svg",
+    },
+  },
   wbnb: {
     binance: {
       id: IS_TESTNET
@@ -268,6 +275,13 @@ export const SourceChainTokenConfigs: {
         wrapDenom: "WFIL",
         tokenMinDenom: "fil",
       },
+    },
+  },
+  arb: {
+    arbitrum: {
+      id: "Arbitrum" as const,
+      erc20ContractAddress: "0x912CE59144191C1204E64559FE8253a0e49E6548",
+      logoUrl: "/networks/arbitrum.svg",
     },
   },
 };

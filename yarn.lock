@@ -2808,6 +2808,11 @@
   resolved "https://registry.npmjs.org/@hutson/parse-repository-url/-/parse-repository-url-3.0.2.tgz"
   integrity sha512-H9XAx3hc0BQHY6l+IFSWHDySypcXsvsuLhgYLUGywmJ5pswRVQJUHpOsobnLYp2ZUaUlKiKDrgWWhosOwAEM8Q==
 
+"@inlang/cli@^0.9.6":
+  version "0.9.6"
+  resolved "https://registry.yarnpkg.com/@inlang/cli/-/cli-0.9.6.tgz#eba6f3a1408c614d768a287718e7faf89f60e622"
+  integrity sha512-fqbh0+7A5qCCPdvAwUviM6m7ZcXCL7ivxv1/ChL2okUPh6r6ohfPJ1Jgkq8ewLrQ12r7OqkwS4Lea31ft8kERA==
+
 "@iov/crypto@2.1.0":
   version "2.1.0"
   resolved "https://registry.npmjs.org/@iov/crypto/-/crypto-2.1.0.tgz"

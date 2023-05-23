@@ -122,7 +122,8 @@
         "insufficientBal": "Solde insuffisant",
         "insufficientFee": "Frais insuffisants",
         "reconnectWallet": "Reconnecter {walletName}",
-        "wrongNetworkInWallet": "Mauvais réseau dans le {walletName}"
+        "wrongNetworkInWallet": "Mauvais réseau dans le {walletName}",
+        "seeRequest": "Voir la demande dans {walletName}"
       },
       "from": "De",
       "loading": "Chargement",
@@ -148,7 +149,7 @@
   "components": {
     "fiatOnrampSelection": {
       "chooseOnramp": "Choisir une rampe de paiement en Fiat",
-      "kadoSubtitle": "Prend en charge USDC",
+      "kadoSubtitle": "Prend en charge OSMO, USDC",
       "transakSubtitle": "Prend en charge OSMO"
     },
     "incentive": {
@@ -463,5 +464,9 @@
   "unknownError": "Erreur inconnue",
   "viewExplorer": "Voir dans l'exploreur",
   "waitingForTransaction": "Attente de l'inclusion de la transaction dans le bloc",
-  "highInflationWarning": "Des APR élevés peuvent être le résultat de récompenses inflationnistes. Procédez avec prudence."
+  "highPoolInflationWarning": "Des APR élevés peuvent être le résultat de récompenses inflationnistes. Procédez avec prudence.",
+  "ibcx": {
+    "description": "Découvrez le premier Index de l'écosystème Cosmos par ION DAO. En direct sur le mainnet: ",
+    "link": "index.ion.wtf"
+  }
 }

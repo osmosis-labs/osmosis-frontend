@@ -122,7 +122,8 @@
         "insufficientBal": "잔액이 부족합니다",
         "insufficientFee": "수수료가 부족합니다",
         "reconnectWallet": "{walletName} 다시 연결",
-        "wrongNetworkInWallet": "{walletName} 잘못된 네트워크"
+        "wrongNetworkInWallet": "{walletName} 잘못된 네트워크",
+        "seeRequest": "{walletName}에서 요청 사항 확인하기"
       },
       "from": "발신 체인",
       "loading": "로딩",
@@ -148,7 +149,7 @@
   "components": {
     "fiatOnrampSelection": {
       "chooseOnramp": "피아트 온램프 선택",
-      "kadoSubtitle": "USDC를 지원합니다",
+      "kadoSubtitle": "OSMO, USDC를 지원합니다",
       "transakSubtitle": "OSMO를 지원합니다"
     },
     "incentive": {
@@ -463,5 +464,9 @@
   "unknownError": "알 수 없는 에러",
   "viewExplorer": "블록 익스플로러 보기",
   "waitingForTransaction": "트랜잭션이 블록에 담기는 중입니다",
-  "highInflationWarning": "높은 APR은 인플레이션 보상에서 비롯될 수 있습니다. 주의해서 진행하십시오."
+  "highPoolInflationWarning": "높은 APR은 인플레이션 보상에서 비롯될 수 있습니다. 주의해서 진행하십시오.",
+  "ibcx": {
+    "description": "ION DAO로부터의 최초의 Cosmos 생태계 지수를 만나보세요. 메인넷에서 활성화되었습니다: ",
+    "link": "index.ion.wtf"
+  }
 }

@@ -21,7 +21,9 @@ export const Info: FunctionComponent<
   className,
   isMobile = false,
 }) =>
-  size === "subtle" ? (
+  size === "subtle" &&
+  typeof message === "string" &&
+  typeof caption === "string" ? (
     <div
       className={classNames(
         "w-full rounded-lg border border-rust-500 p-2",
