@@ -26,7 +26,7 @@ export class ObservableVerifiedPoolsStore
   }
 
   poolExists(id: string) {
-    return this._allPools.has(id) ?? this._verifiedPools.has(id);
+    return this._allPools.has(id) || this._verifiedPools.has(id);
   }
 
   paginate() {
@@ -39,7 +39,7 @@ export class ObservableVerifiedPoolsStore
       .osmosis?.queryGammPools.fetchRemainingPools();
   }
 
-  getAllPools = computedFn((showUnverified?: boolean) => {
+  getAllPools = computedFn((showUnverified = false) => {
     const allPools = this.queriesStore
       .get(this.chainId)
       .osmosis?.queryGammPools.getAllPools();
