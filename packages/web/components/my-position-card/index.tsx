@@ -1,5 +1,4 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
-import { tickToSqrtPrice } from "@osmosis-labs/math";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import React, {
@@ -44,19 +43,14 @@ const MyPositionCard: FunctionComponent<{
   const queryPositions =
     queriesStore.get(chainId).osmosis!.queryLiquidityPositions;
 
-  const { poolId, position, baseAmount, quoteAmount } =
+  const { poolId, baseAmount, quoteAmount, priceRange } =
     queryPositions.getMergedPositions(positionIds);
 
   const config = useHistoricalAndLiquidityData(chainId, poolId);
 
   const { pool, quoteCurrency, baseCurrency, priceDecimal } = config;
 
-  const { lowerTick, upperTick } = position!;
-
-  const lowerSqrtPrice = tickToSqrtPrice(lowerTick);
-  const upperSqrtPrice = tickToSqrtPrice(upperTick);
-  const lowerPrice = lowerSqrtPrice.mul(lowerSqrtPrice);
-  const upperPrice = upperSqrtPrice.mul(upperSqrtPrice);
+  const [lowerPrice, upperPrice] = priceRange;
 
   const fiatBase =
     baseCurrency &&

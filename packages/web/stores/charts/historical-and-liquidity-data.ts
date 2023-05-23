@@ -82,7 +82,9 @@ export class ObservableHistoricalAndLiquidityData {
   }
 
   get quoteCurrency(): AppCurrency | undefined {
-    return this.chainGetter.getChain(this.chainId).findCurrency(this.baseDenom);
+    return this.chainGetter
+      .getChain(this.chainId)
+      .findCurrency(this.quoteDenom);
   }
 
   private fetchHistoricalChartData() {

@@ -1,6 +1,7 @@
 import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter, ObservableChainQuery } from "@keplr-wallet/stores";
 import { Dec, Int } from "@keplr-wallet/unit";
+import { maxTick, minTick, tickToSqrtPrice } from "@osmosis-labs/math";
 import { computed, makeObservable } from "mobx";
 
 import { LiquidityPosition, PositionAsset, PositionData } from "./types";
@@ -184,9 +185,31 @@ class ObservableMergedPositions {
   }
 
   @computed
+  get passive(): boolean {
+    const [lowerTick, upperTick] = this.tickRange;
+
+    if (!lowerTick || !upperTick) return false;
+
+    return lowerTick.equals(minTick) && upperTick.equals(maxTick);
+  }
+
+  @computed
   get tickRange(): [Int, Int] | [] {
     const pos = this.getForPositionId(this.positionsIds[0]);
     return pos.position ? [pos.position.lowerTick, pos.position.upperTick] : [];
+  }
+
+  @computed
+  get priceRange(): [Dec, Dec] {
+    const lowerTick = this.tickRange[0];
+    const upperTick = this.tickRange[1];
+
+    if (!lowerTick || !upperTick) return [new Dec(0), new Dec(0)];
+
+    const lowerSqrt = tickToSqrtPrice(lowerTick);
+    const upperSqrt = tickToSqrtPrice(upperTick);
+
+    return [lowerSqrt.mul(lowerSqrt), upperSqrt.mul(upperSqrt)];
   }
 
   @computed
