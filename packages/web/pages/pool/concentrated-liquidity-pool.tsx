@@ -83,7 +83,7 @@ const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     if (!len) return null;
 
     return (
-      <main className="m-auto mx-8 flex min-h-screen max-w-[1157px] flex-col gap-8 bg-osmoverse-900 py-8 md:gap-4 md:p-4">
+      <main className="m-auto flex min-h-screen max-w-[1221px] flex-col gap-8 bg-osmoverse-900 p-8 md:gap-4 md:p-4">
         <Head>
           <title>
             {t("pool.title", { id: poolId ? poolId.toString() : "-" })}

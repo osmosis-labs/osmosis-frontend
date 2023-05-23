@@ -72,7 +72,7 @@ const MyPositionCard: FunctionComponent<{
   return (
     <div
       className={classNames(
-        "flex cursor-pointer flex-col gap-8 rounded-[20px] bg-osmoverse-800 p-8 "
+        "flex cursor-pointer flex-col gap-8 overflow-hidden rounded-[20px] bg-osmoverse-800 p-8"
       )}
       onClick={() => setCollapsed(!collapsed)}
     >
@@ -96,7 +96,7 @@ const MyPositionCard: FunctionComponent<{
             />
             {/* TODO: use actual fee */}
             <span className="px-2 py-1 text-subtitle1 text-osmoverse-100">
-              {pool?.swapFee.toString()}% Fee
+              {pool?.swapFee.toString()} Fee
             </span>
           </div>
           <MyPositionStatus status={PositionStatus.InRange} />
