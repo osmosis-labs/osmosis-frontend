@@ -1,8 +1,8 @@
 import Fuse from "fuse.js";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { Button } from "~/components/buttons";
+import { buttonCVA } from "~/components/buttons";
 import { HeroCard } from "~/components/cards";
 import AppDisplayCard from "~/components/cards/app-display-card";
 import { SearchBox } from "~/components/input";
@@ -39,15 +39,15 @@ type AppStoreProps = {
 };
 
 export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
-  const [searchValue, setSearchValue] = React.useState<string>("");
-  const [fuzzySearchResults, setFuzzySearchResults] = React.useState<
-    AppDataType[]
-  >([]);
-  const [fuse, setFuse] = React.useState<Fuse<App> | null>(null);
+  const [searchValue, setSearchValue] = useState<string>("");
+  const [fuzzySearchResults, setFuzzySearchResults] = useState<AppDataType[]>(
+    []
+  );
+  const [fuse, setFuse] = useState<Fuse<App> | null>(null);
 
   const { applications } = apps;
 
-  React.useEffect(() => {
+  useEffect(() => {
     const options = {
       keys: ["title"],
     };
@@ -83,7 +83,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   const iterableData = searchValue ? fuzzySearchResults : nonFeaturedApps;
 
   return (
-    <main className="m-auto max-w-container bg-osmoverse-900 py-3 1.5md:px-6 md:px-3">
+    <main className="mx-auto flex max-w-container flex-col bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
       <div className="flex flex-row justify-between pl-6 md:flex-col">
         <div className="mb-0 basis-1/2 lg:mr-4 md:mb-4 md:mr-0">
           <h4 className="pb-2 text-wosmongton-100">{t("store.headerTitle")}</h4>
@@ -138,9 +138,17 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
           </p>
         </div>
         <div className="flex w-48 items-center justify-center pl-6">
-          <Button mode="secondary" size="sm" onClick={handleApplyClick}>
+          <a
+            className={buttonCVA({
+              mode: "secondary",
+            })}
+            href="https://cosmos-ecosystem.webflow.io/submit"
+            target="_blank"
+            rel="noreferrer noopener"
+            onClick={handleApplyClick}
+          >
             {t("store.applyButton")} &rarr;
-          </Button>
+          </a>
         </div>
       </div>
       <div className="flex w-full items-center overflow-x-auto rounded-lg bg-osmoverse-1000 px-8 py-6 text-osmoverse-400 2xl:gap-4 xl:gap-3 1.5lg:px-4 md:flex-col md:items-start md:gap-3 md:px-5 md:py-5">
