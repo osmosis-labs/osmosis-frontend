@@ -5,6 +5,7 @@ import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import React, { FunctionComponent, ReactNode, useEffect } from "react";
+import { useTranslation } from "react-multi-lang";
 
 import { Button } from "~/components/buttons";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
@@ -57,6 +58,8 @@ const MyPositionCardExpandedSection: FunctionComponent<{
     queryPositions.getMergedPositions(positionIds);
 
   const [lowerPrice, upperPrice] = priceRange;
+
+  const t = useTranslation();
 
   const fiatPerBase =
     baseCurrency &&
@@ -148,16 +151,14 @@ const MyPositionCardExpandedSection: FunctionComponent<{
               />
             </div>
             <div className="flex h-full flex-col justify-between py-4">
-              {/* TODO: use translation */}
               <PriceBox
                 currentValue={passive ? "0" : upperPrice.toString(priceDecimal)}
-                label="Max price"
+                label={t("clPositions.maxPrice")}
                 infinity={passive}
               />
-              {/* TODO: use translation */}
               <PriceBox
                 currentValue={passive ? "0" : lowerPrice.toString(priceDecimal)}
-                label="Min price"
+                label={t("clPositions.minPrice")}
               />
             </div>
           </div>
@@ -171,8 +172,7 @@ const MyPositionCardExpandedSection: FunctionComponent<{
               fiatPerQuote={fiatPerQuote}
               fiatCurrency={fiatCurrency}
               className="flex-shrink flex-grow"
-              // TODO: use translation
-              title="Current Assets"
+              title={t("clPositions.currentAssets")}
               baseAsset={
                 baseCurrency && new CoinPretty(baseCurrency, baseAmount)
               }
@@ -185,8 +185,7 @@ const MyPositionCardExpandedSection: FunctionComponent<{
               fiatPerQuote={fiatPerQuote}
               fiatCurrency={fiatCurrency}
               className="flex-shrink flex-grow"
-              // TODO: use translation
-              title="Total fees earned"
+              title={t("clPositions.totalFeesEarned")}
               baseAsset={
                 baseCurrency && new CoinPretty(baseCurrency, new Dec(0))
               }
@@ -201,8 +200,7 @@ const MyPositionCardExpandedSection: FunctionComponent<{
               fiatPerQuote={fiatPerQuote}
               fiatCurrency={fiatCurrency}
               className="flex-shrink flex-grow"
-              // TODO: use translation
-              title="Principle Assets"
+              title={t("clPositions.principleAssets")}
               baseAsset={
                 baseCurrency && new CoinPretty(baseCurrency, new Dec(0))
               }
@@ -215,8 +213,7 @@ const MyPositionCardExpandedSection: FunctionComponent<{
               fiatPerQuote={fiatPerQuote}
               fiatCurrency={fiatCurrency}
               className="flex-shrink flex-grow"
-              // TODO: use translation
-              title="Unclaimed fees"
+              title={t("clPositions.unclaimedFees")}
               baseAsset={
                 baseCurrency && new CoinPretty(baseCurrency, new Dec(0))
               }
@@ -228,10 +225,9 @@ const MyPositionCardExpandedSection: FunctionComponent<{
         </div>
       </div>
       <div className="mt-4 flex flex-row justify-end gap-5">
-        {/* TODO: use translation */}
-        <PositionButton>Collect Rewards</PositionButton>
-        <PositionButton>Remove Liquidity</PositionButton>
-        <PositionButton>Increase Liquidity</PositionButton>
+        <PositionButton>{t("clPositions.collectRewards")}</PositionButton>
+        <PositionButton>{t("clPositions.removeLiquidity")}</PositionButton>
+        <PositionButton>{t("clPositions.increaseLiquidity")}</PositionButton>
       </div>
     </div>
   );

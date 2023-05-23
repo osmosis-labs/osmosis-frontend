@@ -8,6 +8,7 @@ import React, {
   ReactNode,
   useState,
 } from "react";
+import { useTranslation } from "react-multi-lang";
 
 import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import MyPositionCardExpandedSection from "~/components/my-position-card/expanded";
@@ -37,6 +38,7 @@ export type PositionWithAssets = {
 const MyPositionCard: FunctionComponent<{
   positionIds: string[];
 }> = observer(({ positionIds }) => {
+  const t = useTranslation();
   const { chainStore, priceStore, queriesStore } = useStore();
   const [collapsed, setCollapsed] = useState(true);
 
@@ -113,7 +115,6 @@ const MyPositionCard: FunctionComponent<{
                 (asset) => asset.amount.currency.coinDenom
               )}
             />
-            {/* TODO: use actual fee */}
             <span className="px-2 py-1 text-subtitle1 text-osmoverse-100">
               {pool?.swapFee.toString()} Fee
             </span>
@@ -130,9 +131,7 @@ const MyPositionCard: FunctionComponent<{
         </div>
         <div className="flex flex-row gap-[52px] self-start">
           {/* TODO: use actual ROI */}
-          {/* TODO: use translation */}
-          <PositionDataGroup label="ROI" value="0.18%" />
-          {/* TODO: use translation */}
+          <PositionDataGroup label={t("clPositions.roi")} value="0.18%" />
           <RangeDataGroup
             lowerPrice={
               quoteCurrency &&
@@ -150,13 +149,14 @@ const MyPositionCard: FunctionComponent<{
             }
             decimal={priceDecimal}
           />
-          {/* TODO: use translation */}
           <PositionDataGroup
-            label="My Liquidity"
+            label={t("clPositions.myLiquidity")}
             value={liquidityValue ? formatPretty(liquidityValue) : "$0"}
           />
-          {/* TODO: use translation */}
-          <PositionDataGroup label="Incentives" value="25% APR" />
+          <PositionDataGroup
+            label={t("clPositions.incentives")}
+            value="25% APR"
+          />
         </div>
       </div>
       {!collapsed && (
@@ -192,10 +192,11 @@ function RangeDataGroup(props: {
   upperPrice?: CoinPretty;
   decimal: number;
 }): ReactElement {
+  const t = useTranslation();
   const { decimal, lowerPrice, upperPrice } = props;
   return (
     <PositionDataGroup
-      label="Selected Range"
+      label={t("clPositions.selectedRange")}
       value={
         <div className="flex w-full flex-row justify-end gap-1 overflow-hidden">
           <h6>
@@ -229,10 +230,12 @@ enum PositionStatus {
   outOfRange,
 }
 function MyPositionStatus(props: { status: PositionStatus }): ReactElement {
-  // TODO: use translation
-  let label = "IN RANGE";
-  if (props.status === PositionStatus.NearBounds) label = "NEAR BOUNDS";
-  if (props.status === PositionStatus.outOfRange) label = "OUT OF RANGE";
+  const t = useTranslation();
+  let label = t("clPositions.inRange");
+  if (props.status === PositionStatus.NearBounds)
+    label = t("clPositions.nearBounds");
+  if (props.status === PositionStatus.outOfRange)
+    label = t("clPositions.outOfRange");
 
   return (
     <div
