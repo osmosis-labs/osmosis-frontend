@@ -4,7 +4,7 @@ import type { NextPage } from "next";
 import { useEffect, useMemo, useRef } from "react";
 
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
-import { TradeClipboard } from "~/components/trade-clipboard";
+import { SwapTool } from "~/components/swap-tool";
 import { EventName, IS_FRONTIER, IS_TESTNET } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useStore } from "~/stores";
@@ -94,7 +94,7 @@ const Home: NextPage = observer(function () {
         </svg>
       </div>
       <div className="flex h-full w-full items-center overflow-y-auto overflow-x-hidden">
-        <TradeClipboard
+        <SwapTool
           containerClassName="w-[27rem] md:mt-mobile-header ml-auto mr-[15%] lg:mx-auto"
           pools={pools}
         />

@@ -382,7 +382,7 @@
     "titleMobile": "Select Validator"
   },
   "swap": {
-    "autoRouter": "Route",
+    "autoRouter": "Route taken",
     "autoRouterToggle": {
       "hide": "Hide",
       "show": "Show"

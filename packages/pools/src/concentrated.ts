@@ -3,7 +3,7 @@ import { ConcentratedLiquidityMath, LiquidityDepth } from "@osmosis-labs/math";
 
 import { NotEnoughLiquidityError } from "./errors";
 import { BasePool } from "./interface";
-import { RoutablePool, SwapResult } from "./router";
+import { Quote, RoutablePool } from "./router";
 
 export interface ConcentratedLiquidityPoolRaw {
   "@type": string;
@@ -166,7 +166,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     },
     tokenOutDenom: string,
     swapFee: Dec = this.swapFee
-  ): Promise<SwapResult> {
+  ): Promise<Quote> {
     this.validateDenoms(tokenIn.denom, tokenOutDenom);
 
     /** Reminder: currentSqrtPrice: amountToken1/amountToken0 or token 1 per token 0  */
@@ -210,18 +210,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
 
     const { amountOut, afterSqrtPrice } = calcResult;
 
-    if (amountOut.equals(new Int(0))) {
-      return {
-        amount: new Int(0),
-        beforeSpotPriceInOverOut: new Dec(0),
-        beforeSpotPriceOutOverIn: new Dec(0),
-        afterSpotPriceInOverOut: new Dec(0),
-        afterSpotPriceOutOverIn: new Dec(0),
-        effectivePriceInOverOut: new Dec(0),
-        effectivePriceOutOverIn: new Dec(0),
-        priceImpactTokenOut: new Dec(0),
-      };
-    }
+    if (amountOut.lte(new Int(0))) throw new NotEnoughLiquidityError();
 
     /** final price token1/token0 */
     const afterSpotPriceInOverOut = this.spotPrice(
@@ -262,7 +251,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     },
     tokenInDenom: string,
     swapFee: Dec = this.swapFee
-  ): Promise<SwapResult> {
+  ): Promise<Quote> {
     this.validateDenoms(tokenInDenom, tokenOut.denom);
 
     /** Reminder: currentSqrtPrice: amountToken1/amountToken0 or token 1 per token 0  */
@@ -305,18 +294,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
 
     const { amountIn, afterSqrtPrice } = calcResult;
 
-    if (amountIn.equals(new Int(0))) {
-      return {
-        amount: new Int(0),
-        beforeSpotPriceInOverOut: new Dec(0),
-        beforeSpotPriceOutOverIn: new Dec(0),
-        afterSpotPriceInOverOut: new Dec(0),
-        afterSpotPriceOutOverIn: new Dec(0),
-        effectivePriceInOverOut: new Dec(0),
-        effectivePriceOutOverIn: new Dec(0),
-        priceImpactTokenOut: new Dec(0),
-      };
-    }
+    if (amountIn.lte(new Int(0))) throw new NotEnoughLiquidityError();
 
     /** final price token1/token0 */
     const afterSpotPriceInOverOut = this.spotPrice(

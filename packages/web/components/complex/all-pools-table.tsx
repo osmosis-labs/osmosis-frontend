@@ -1,6 +1,6 @@
 import { Menu } from "@headlessui/react";
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { BasePool } from "@osmosis-labs/pools";
+import type { BasePool } from "@osmosis-labs/pools";
 import {
   CellContext,
   createColumnHelper,

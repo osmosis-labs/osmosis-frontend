@@ -1,4 +1,5 @@
 import { Dec, Int } from "@keplr-wallet/unit";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import deepmerge from "deepmerge";
 
 import { StablePool } from "../../stable";
@@ -6,8 +7,11 @@ import { WeightedPool } from "../../weighted";
 import {
   OptimizedRoutes,
   OptimizedRoutesParams,
+  Quote,
   RoutablePool,
-  SwapResult,
+  Route,
+  RouteWithInAmount,
+  TokenOutGivenInRouter,
 } from "..";
 
 // Mock RoutablePool for testing purposes
@@ -30,12 +34,12 @@ export class MockRoutablePool implements RoutablePool {
     // You can return a static value for testing purposes, or have different values for different tokens
     return this.limitAmount;
   }
-  getTokenOutByTokenIn(): Promise<SwapResult> {
+  getTokenOutByTokenIn(): Promise<Quote> {
     // Implement the function
 
     return Promise.reject("Needs impl");
   }
-  getTokenInByTokenOut(): Promise<SwapResult> {
+  getTokenInByTokenOut(): Promise<Quote> {
     // Implement the function
     return Promise.reject("Needs impl");
   }
@@ -76,28 +80,131 @@ export const makeMockRoutablePool = (
   };
   ```
  */
+
+// Mock OptimizedRoutes for testing purposes to get access to protected methods
+export class TestOptimizedRoutes
+  extends OptimizedRoutes
+  implements TokenOutGivenInRouter
+{
+  constructor(...args: ConstructorParameters<typeof OptimizedRoutes>) {
+    super(...args);
+  }
+
+  getOptimizedRoutesByTokenIn(
+    ...args: Parameters<TokenOutGivenInRouter["getOptimizedRoutesByTokenIn"]>
+  ) {
+    return super.getOptimizedRoutesByTokenIn(...args);
+  }
+
+  calculateTokenOutByTokenIn(
+    ...args: Parameters<TokenOutGivenInRouter["calculateTokenOutByTokenIn"]>
+  ) {
+    return super.calculateTokenOutByTokenIn(...args);
+  }
+
+  getCandidateRoutes(tokenInDenom: string, tokenOutDenom: string): Route[] {
+    return super.getCandidateRoutes(tokenInDenom, tokenOutDenom);
+  }
+
+  findBestSplitTokenIn(
+    candidateRoutes: Route[],
+    tokenInAmount: Int
+  ): Promise<RouteWithInAmount[]> {
+    return super.findBestSplitTokenIn(candidateRoutes, tokenInAmount);
+  }
+}
+
+/** Make a router with protected methods exposed, with default pools.
+ *
+ *  All params are optionally deep-overridable via a partial object.
+ */
 export function makeDefaultTestRouterParams(
-  overrideParams: Partial<OptimizedRoutesParams>
+  overrideParams: Partial<OptimizedRoutesParams> = {}
 ) {
+  const pools = [
+    makeWeightedPool({
+      firstPoolAsset: { amount: "1000" },
+      secondPoolAsset: { amount: "1000" },
+    }),
+    makeWeightedPool({ id: "2" }),
+  ];
   const params: OptimizedRoutesParams = {
-    pools: [
-      makeWeightedPool({
-        id: "2",
-        firstPoolAsset: { amount: "1000" },
-        secondPoolAsset: { amount: "1000" },
-      }),
-      makeWeightedPool(),
-    ],
+    pools,
     incentivizedPoolIds: ["1", "2"],
     stakeCurrencyMinDenom: "uosmo",
     getPoolTotalValueLocked: (poolId: string) =>
       new Dec(10_000_000).mul(new Dec(poolId)),
     ...overrideParams,
   };
-  return new OptimizedRoutes(params);
+  return new TestOptimizedRoutes(params);
+}
+
+export class RoutesTestOptimizedRoutes
+  extends OptimizedRoutes
+  implements TokenOutGivenInRouter
+{
+  private testRoutes: Route[];
+
+  constructor(
+    testRoutes: Route[],
+    ...args: ConstructorParameters<typeof OptimizedRoutes>
+  ) {
+    super(...args);
+    this.testRoutes = testRoutes;
+  }
+
+  getOptimizedRoutesByTokenIn(
+    ...args: Parameters<TokenOutGivenInRouter["getOptimizedRoutesByTokenIn"]>
+  ) {
+    return super.getOptimizedRoutesByTokenIn(...args);
+  }
+
+  calculateTokenOutByTokenIn(
+    ...args: Parameters<TokenOutGivenInRouter["calculateTokenOutByTokenIn"]>
+  ) {
+    return super.calculateTokenOutByTokenIn(...args);
+  }
+
+  getCandidateRoutes(): Route[] {
+    return this.testRoutes;
+  }
+
+  findBestSplitTokenIn(
+    candidateRoutes: Route[],
+    tokenInAmount: Int
+  ): Promise<RouteWithInAmount[]> {
+    return super.findBestSplitTokenIn(candidateRoutes, tokenInAmount);
+  }
+}
+
+/** Create a router that always returns the given `forcedRoutes` from `getCandidateRoutes`
+ *
+ *  Pools irrelevant.
+ */
+export function makeRouterWithForceRoutes(
+  forcedRoutes: Route[],
+  overrideParams: Partial<OptimizedRoutesParams> = {}
+) {
+  const pools = [
+    makeWeightedPool({
+      firstPoolAsset: { amount: "1000" },
+      secondPoolAsset: { amount: "1000" },
+    }),
+    makeWeightedPool({ id: "2" }),
+  ];
+  const params: OptimizedRoutesParams = {
+    pools,
+    incentivizedPoolIds: ["1", "2"],
+    stakeCurrencyMinDenom: "uosmo",
+    getPoolTotalValueLocked: (poolId: string) =>
+      new Dec(10_000_000).mul(new Dec(poolId)),
+    ...overrideParams,
+  };
+  return new RoutesTestOptimizedRoutes(forcedRoutes, params);
 }
 
 /**
+ * NOTE: Pool ID is used as TVL
  * ```
  * const {
     id,
@@ -174,6 +281,7 @@ export function makeWeightedPool(
 }
 
 /**
+ * NOTE: Pool ID is used as TVL
  * ```
  * const {
     id,
