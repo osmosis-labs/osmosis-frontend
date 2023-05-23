@@ -1,16 +1,23 @@
+import { ObservableQueryLiquidityPositionsByAddress } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Head from "next/head";
-import React, { FunctionComponent, ReactElement } from "react";
+import React, {
+  FunctionComponent,
+  ReactElement,
+  useEffect,
+  useState,
+} from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import ChartButton from "~/components/chart-button";
+import MyPositionCard from "~/components/my-position-card";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
+import { AddLiquidityModal } from "~/modals";
 import { useStore } from "~/stores";
-import { theme } from "~/tailwind.config";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -23,10 +30,29 @@ const TokenPairHistoricalChart = dynamic(
 
 const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
   observer(({ poolId }) => {
-    const { chainStore } = useStore();
+    const { chainStore, accountStore, queriesStore } = useStore();
     const { chainId } = chainStore.osmosis;
+    const account = accountStore.getAccount(chainId);
     const config = useHistoricalAndLiquidityData(chainId, poolId);
     const t = useTranslation();
+    const [showAddLiquidityModal, setShowAddLiquidityModal] = useState(false);
+
+    const [queryAddress, setQueryAddress] =
+      useState<ObservableQueryLiquidityPositionsByAddress | null>(null);
+
+    useEffect(() => {
+      (async () => {
+        if (!account.bech32Address) return;
+
+        setQueryAddress(
+          await queriesStore
+            .get(chainId)
+            .osmosis!.queryLiquidityPositions.getForAddress(
+              account.bech32Address
+            )
+        );
+      })();
+    }, [account.bech32Address]);
 
     const {
       pool,
@@ -50,15 +76,28 @@ const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       // quoteCurrency,
     } = config;
 
+    if (!queryAddress) return null;
+
+    const len = Object.keys(queryAddress.mergedPositionIds).length;
+
+    if (!len) return null;
+
     return (
-      <main className="m-auto flex min-h-screen max-w-[1157px] flex-col gap-8 bg-osmoverse-900 py-8 md:gap-4 md:p-4">
+      <main className="m-auto mx-8 flex min-h-screen max-w-[1157px] flex-col gap-8 bg-osmoverse-900 py-8 md:gap-4 md:p-4">
         <Head>
           <title>
             {t("pool.title", { id: poolId ? poolId.toString() : "-" })}
           </title>
         </Head>
-        <section className="flex flex-col gap-5">
-          <div className="my-4 flex flex-col rounded-[28px] bg-osmoverse-1000 p-8">
+        {pool && showAddLiquidityModal && (
+          <AddLiquidityModal
+            isOpen={true}
+            poolId={pool.id}
+            onRequestClose={() => setShowAddLiquidityModal(false)}
+          />
+        )}
+        <section className="flex flex-col gap-8">
+          <div className="flex flex-col rounded-[28px] bg-osmoverse-1000 p-8">
             <div className="flex flex-row">
               <div className="flex flex-col gap-3">
                 <div className="flex flex-row items-center gap-2">
@@ -145,7 +184,6 @@ const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     }}
                     offset={{ top: 0, right: 36, bottom: 24 + 28, left: 0 }}
                     horizontal
-                    barFill={theme.colors.osmoverse["500"]}
                   />
                 </div>
               </div>
@@ -172,10 +210,19 @@ const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                   </span>
                 </div>
               </div>
-              <Button className="w-fit text-subtitle1 font-subtitle1" size="sm">
+              <Button
+                className="w-fit text-subtitle1 font-subtitle1"
+                size="sm"
+                onClick={() => setShowAddLiquidityModal(true)}
+              >
                 Create a position
               </Button>
             </div>
+          </div>
+          <div className="flex flex-col gap-3">
+            {queryAddress.mergedPositionIds.map((positionIds, index) => {
+              return <MyPositionCard key={index} positionIds={positionIds} />;
+            })}
           </div>
         </section>
       </main>
