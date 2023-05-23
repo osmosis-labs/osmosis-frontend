@@ -1,4 +1,5 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import React, {
@@ -69,6 +70,24 @@ const MyPositionCard: FunctionComponent<{
     fiatCurrency &&
     new PricePretty(fiatCurrency, fiatBase.add(fiatQuote));
 
+  const clPool = pool?.pool as ConcentratedLiquidityPool;
+
+  if (!clPool) return null;
+
+  const currentSqrtPrice = clPool.currentSqrtPrice;
+  const currentPrice = currentSqrtPrice.mul(currentSqrtPrice);
+
+  const inRange = lowerPrice.lt(currentPrice) && upperPrice.gt(currentPrice);
+
+  const diff = new Dec(
+    Math.min(
+      Number(currentPrice.sub(lowerPrice).toString()),
+      Number(upperPrice.sub(currentPrice).toString())
+    )
+  );
+
+  const diffPercentage = diff.quo(currentPrice).mul(new Dec(100));
+
   return (
     <div
       className={classNames(
@@ -99,7 +118,15 @@ const MyPositionCard: FunctionComponent<{
               {pool?.swapFee.toString()} Fee
             </span>
           </div>
-          <MyPositionStatus status={PositionStatus.InRange} />
+          <MyPositionStatus
+            status={
+              inRange
+                ? diffPercentage.lte(new Dec(10))
+                  ? PositionStatus.NearBounds
+                  : PositionStatus.InRange
+                : PositionStatus.outOfRange
+            }
+          />
         </div>
         <div className="flex flex-row gap-[52px] self-start">
           {/* TODO: use actual ROI */}
@@ -219,7 +246,7 @@ function MyPositionStatus(props: { status: PositionStatus }): ReactElement {
       )}
     >
       <div
-        className={classNames("h-3 w-3 rounded-full bg-bullish-500", {
+        className={classNames("h-3 w-3 rounded-full", {
           "bg-bullish-500": props.status === PositionStatus.InRange,
           "bg-ammelia-600": props.status === PositionStatus.NearBounds,
           "bg-rust-500": props.status === PositionStatus.outOfRange,
