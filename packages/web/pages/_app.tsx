@@ -22,12 +22,7 @@ import { Icon } from "~/components/assets";
 import { MainLayout } from "../components/layouts";
 import { OgpMeta } from "../components/ogp-meta";
 import { MainLayoutMenu } from "../components/types";
-import {
-  AmplitudeEvent,
-  EventName,
-  IS_FRONTIER,
-  PromotedLBPPoolIds,
-} from "../config";
+import { AmplitudeEvent, EventName, PromotedLBPPoolIds } from "../config";
 import { GetKeplrProvider } from "../hooks";
 import { useAmplitudeAnalytics } from "../hooks/use-amplitude-analytics";
 import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
@@ -133,7 +128,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <IbcNotifier />
         <ToastContainer
           toastStyle={{
-            backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
+            backgroundColor: "#2d2755",
           }}
           transition={Bounce}
         />

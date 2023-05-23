@@ -3,7 +3,6 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { FunctionComponent } from "react";
 
-import { IS_FRONTIER } from "../../config";
 import { useCurrentLanguage, useWindowSize } from "../../hooks";
 import { MainMenu } from "../main-menu";
 import { NavBar } from "../navbar";
@@ -64,7 +63,7 @@ const OsmosisFullLogo: FunctionComponent<{
 }> = ({ width = 178, height = 48, onClick }) => (
   <Image
     className="hover:cursor-pointer"
-    src={IS_FRONTIER ? "/osmosis-logo-frontier.svg" : "/osmosis-logo-main.svg"}
+    src="/osmosis-logo-main.svg"
     alt="osmosis logo"
     width={width}
     height={height}
