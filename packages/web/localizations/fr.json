@@ -387,6 +387,8 @@
   "settings": {
     "filterDust": "Filtrer la poussière",
     "selectLanguage": "Choisir la langue",
+    "titleUnverifiedAssets": "Actifs non vérifiés",
+    "unverifiedAssets": "Afficher les actifs non vérifiés dans les pools et l'échange",
     "title": "Paramètres globaux",
     "titleHideDust": "Masquer les piscines avec < 0.01{fiatSymbol}",
     "titleLanguage": "Langue"

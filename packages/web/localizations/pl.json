@@ -387,6 +387,8 @@
   "settings": {
     "filterDust": "Filtruj kurz",
     "selectLanguage": "Wybierz język",
+    "titleUnverifiedAssets": "Niezweryfikowane aktywa",
+    "unverifiedAssets": "Wyświetl niezweryfikowane aktywa w pulach i swapie",
     "title": "Ustawienia ogólne",
     "titleHideDust": "Ukryj pule z < {fiatSymbol}0.01",
     "titleLanguage": "Język"

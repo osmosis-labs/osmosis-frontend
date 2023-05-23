@@ -386,6 +386,8 @@
   "settings": {
     "filterDust": "滤尘",
     "selectLanguage": "选择语言",
+    "titleUnverifiedAssets": "未经验证的资产",
+    "unverifiedAssets": "在池和交换中显示未经验证的资产",
     "title": "全局设置",
     "titleHideDust": "使用 < {fiatSymbol}0.01 隐藏矿池",
     "titleLanguage": "语言"

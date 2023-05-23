@@ -387,6 +387,8 @@
   "settings": {
     "filterDust": "濾塵",
     "selectLanguage": "選擇語言",
+    "titleUnverifiedAssets": "未經驗證的資產",
+    "unverifiedAssets": "在池和交換中顯示未經驗證的資產",
     "title": "全局設置",
     "titleHideDust": "隱藏 < {fiatSymbol}0.01 的礦池",
     "titleLanguage": "語言"

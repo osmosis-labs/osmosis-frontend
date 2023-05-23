@@ -387,6 +387,8 @@
   "settings": {
     "filterDust": "소액 필터",
     "selectLanguage": "언어 선택",
+    "titleUnverifiedAssets": "미확인 자산",
+    "unverifiedAssets": "미확인 자산을 풀과 교환에서 표시",
     "title": "설정",
     "titleHideDust": "< {fiatSymbol}0.01 미만인 풀 숨기기",
     "titleLanguage": "언어"

@@ -381,6 +381,8 @@
   "settings": {
     "filterDust": "فیلتر",
     "selectLanguage": "انتخاب زبان",
+    "titleUnverifiedAssets": "دارایی های تایید نشده",
+    "unverifiedAssets": "نمایش دارایی های تایید نشده در استخرها و تبادل",
     "title": "تنظیمات کلی",
     "titleHideDust": "مخفی سازی استخر با موجودی کمتر از < {fiatSymbol}0.01",
     "titleLanguage": "زبان"
