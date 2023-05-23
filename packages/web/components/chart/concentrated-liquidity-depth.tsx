@@ -39,6 +39,7 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
   horizontal?: boolean;
   fullRange?: boolean;
   rangeAnnotation?: DepthData[];
+  barFill?: string;
 }> = ({
   data,
   min,
@@ -54,6 +55,7 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
   offset,
   horizontal = true,
   fullRange = false,
+  barFill = theme.colors.osmoverse["400"],
 }) => {
   const xMax = xRange[1];
   const showMinDragHandler =
@@ -122,7 +124,7 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
               data={data}
               xAccessor={(d: DepthData) => d?.depth}
               yAccessor={(d: DepthData) => d?.price}
-              colorAccessor={() => theme.colors.barFill}
+              colorAccessor={() => barFill}
             />
             {annotationDatum && (
               <Annotation
@@ -187,7 +189,7 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
             )}
             <style>{`
               .visx-bar {
-                stroke: ${theme.colors.barFill};
+                stroke: ${barFill};
                 stroke-width: 3px;
               }
             `}</style>

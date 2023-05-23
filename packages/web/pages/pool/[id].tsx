@@ -20,6 +20,8 @@ import {
 import { useTranslation } from "react-multi-lang";
 import { useMeasure } from "react-use";
 
+import ConcentratedLiquidityPool from "~/pages/pool/concentrated-liquidity-pool";
+
 import { Icon, PoolAssetsIcon } from "../../components/assets";
 import { ArrowButton, Button } from "../../components/buttons";
 import { BondCard } from "../../components/cards";
@@ -336,6 +338,10 @@ const Pool: FunctionComponent = observer(() => {
     (setter: Function, show: boolean) => () => setter(show),
     []
   );
+
+  if (pool?.type === "concentrated") {
+    return <ConcentratedLiquidityPool poolId={poolId} />;
+  }
 
   return (
     <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
