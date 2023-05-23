@@ -444,9 +444,5 @@
   "unknownError": "Error desconocido",
   "viewExplorer": "Ver Explorador",
   "waitingForTransaction": "Esperando que la transacción se incluya en el bloque",
-  "highPoolInflationWarning": "Los APRs altos pueden ser resultado de recompensas inflacionarias. Proceda con precaución.",
-  "ibcx": {
-    "description": "Conoce el primer Índice del Ecosistema Cosmos de ION DAO. Activo en mainnet: ",
-    "link": "index.ion.wtf"
-  }
+  "highPoolInflationWarning": "Los APRs altos pueden ser resultado de recompensas inflacionarias. Proceda con precaución."
 }
