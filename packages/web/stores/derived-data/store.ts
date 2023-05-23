@@ -14,6 +14,7 @@ import {
 import { DeepReadonly } from "utility-types";
 
 import { ObservableAssets } from "../assets";
+import { UserSettings } from "../user-settings";
 import {
   ObservablePoolsWithMetrics,
   ObservableVerifiedPoolsStoreMap,
@@ -36,7 +37,8 @@ export class DerivedDataStore extends BaseDerivedDataStore {
     protected readonly accountStore: IAccountStore,
     protected readonly priceStore: IPriceStore,
     protected readonly chainGetter: ChainStore,
-    protected readonly assetStore: ObservableAssets
+    protected readonly assetStore: ObservableAssets,
+    protected readonly userSettings: UserSettings
   ) {
     super(
       osmosisChainId,
@@ -60,7 +62,8 @@ export class DerivedDataStore extends BaseDerivedDataStore {
       this.poolsBonding,
       this.chainGetter,
       this.externalQueries,
-      this.priceStore
+      this.priceStore,
+      this.userSettings
     );
   }
 }

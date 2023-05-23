@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
 
-import { IS_FRONTIER } from "../config";
 import { useAmplitudeAnalytics } from "../hooks";
 import { MainLayoutMenu } from "./types";
 
@@ -96,11 +95,7 @@ export const MainMenu: FunctionComponent<{
                   {!selectionTest && typeof link === "string" && (
                     <div className="ml-2">
                       <Image
-                        src={
-                          IS_FRONTIER
-                            ? "/icons/link-deco-white.svg"
-                            : "/icons/link-deco.svg"
-                        }
+                        src="/icons/link-deco.svg"
                         alt="link"
                         width={12}
                         height={12}

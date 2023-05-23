@@ -55,29 +55,6 @@ npx turbo link
 yarn dev
 ```
 
-## Frontier 🤠
-
-To reduce duplicated effort, `master` branch is used to deploy the frontier app as well. The frontier deployment has `NEXT_PUBLIC_IS_FRONTIER` env var set to `true`. If making
-updates to frontier, please target the master branch. Frontier assets are configured in `packages/web/config/ibc-assets.ts`.
-
-### Develop
-
-To develop with frontier configuration, use:
-
-```bash
-yarn build:frontier && yarn dev:frontier
-```
-
-### Deploy
-
-To deploy frontier (the env var will be set for you):
-
-```bash
-yarn build:frontier && yarn start:frontier
-```
-
-Otherwise the non-frontier commands can be used with the env var set to true.
-
 ### Testnet
 
 Testnet version of the frontend uses `NEXT_PUBLIC_IS_TESTNET=true`. By default, it points to the canonical testnet, but packages/web/.env can be changed to point to [localosmosis](https://github.com/osmosis-labs/osmosis/tree/main/tests/localosmosis).

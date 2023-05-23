@@ -28,7 +28,7 @@ import {
   toastOnBroadcastFailed,
   toastOnFulfill,
 } from "../components/alert";
-import { ChainInfos, IBCAssetInfos, IS_FRONTIER } from "../config";
+import { ChainInfos, IBCAssetInfos } from "../config";
 import { PoolPriceRoutes } from "../config";
 import { suggestChainFromWindow } from "../hooks/use-keplr/utils";
 import { AxelarTransferStatusSource } from "../integrations/axelar";
@@ -192,6 +192,16 @@ export class RootStore {
       PoolPriceRoutes
     );
 
+    const userSettingKvStore = makeLocalStorageKVStore("user_setting");
+    this.userSettings = new UserSettings(userSettingKvStore, [
+      new LanguageUserSetting(0), // give index of default language in SUPPORTED_LANGUAGES
+      new HideDustUserSetting(
+        this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)
+          ?.symbol ?? "$"
+      ),
+      new UnverifiedAssetsUserSetting(),
+    ]);
+
     this.queriesExternalStore = new QueriesExternalStore(
       makeIndexedKVStore("store_web_queries"),
       this.priceStore,
@@ -205,8 +215,6 @@ export class RootStore {
       ).osmosis!.queryIncentivizedPools,
       typeof window !== "undefined"
         ? window.origin
-        : IS_FRONTIER
-        ? "https://frontier.osmosis.zone"
         : "https://app.osmosis.zone",
       IS_TESTNET ? "https://api.testnet.osmosis.zone/" : undefined
     );
@@ -217,7 +225,8 @@ export class RootStore {
       this.accountStore,
       this.queriesStore,
       this.priceStore,
-      this.chainStore.osmosis.chainId
+      this.chainStore.osmosis.chainId,
+      this.userSettings
     );
 
     this.derivedDataStore = new DerivedDataStore(
@@ -227,7 +236,8 @@ export class RootStore {
       this.accountStore,
       this.priceStore,
       this.chainStore,
-      this.assetsStore
+      this.assetsStore,
+      this.userSettings
     );
 
     this.ibcTransferHistoryStore = new IBCTransferHistoryStore(
@@ -297,16 +307,6 @@ export class RootStore {
       this.accountStore,
       this.queriesStore
     );
-
-    const userSettingKvStore = makeLocalStorageKVStore("user_setting");
-    this.userSettings = new UserSettings(userSettingKvStore, [
-      new LanguageUserSetting(0), // give index of default language in SUPPORTED_LANGUAGES
-      new HideDustUserSetting(
-        this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)
-          ?.symbol ?? "$"
-      ),
-      new UnverifiedAssetsUserSetting(),
-    ]);
 
     const profileStoreKvStore = makeLocalStorageKVStore("profile_store");
     this.profileStore = new ProfileStore(profileStoreKvStore);

@@ -8,7 +8,7 @@ import { ChainStore, IPriceStore, OsmosisQueries } from "@osmosis-labs/stores";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
-import { IS_FRONTIER } from "../../config";
+import { UnverifiedAssetsState, UserSettings } from "../user-settings";
 import {
   CoinBalance,
   IBCAsset,
@@ -42,9 +42,17 @@ export class ObservableAssets {
       CosmosQueries & CosmwasmQueries & OsmosisQueries
     >,
     protected readonly priceStore: IPriceStore,
-    protected readonly chainId: string
+    protected readonly chainId: string,
+    protected readonly userSettings: UserSettings
   ) {
     makeObservable(this);
+  }
+
+  @computed
+  get showUnverified() {
+    return this.userSettings.getUserSettingById<UnverifiedAssetsState>(
+      "unverified-assets"
+    )?.state.showUnverifiedAssets;
   }
 
   @computed
@@ -90,7 +98,7 @@ export class ObservableAssets {
     sourceChainNameOverride?: string;
   })[] {
     return this.ibcAssets
-      .filter((ibcAsset) => (IS_FRONTIER ? true : ibcAsset.isVerified))
+      .filter((ibcAsset) => (this.showUnverified ? true : ibcAsset.isVerified))
       .map((ibcAsset) => {
         const chainInfo = this.chainStore.getChain(
           ibcAsset.counterpartyChainId

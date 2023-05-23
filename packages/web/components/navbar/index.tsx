@@ -9,7 +9,7 @@ import { useTranslation } from "react-multi-lang";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { removeQueryParam } from "~/utils/url";
 
-import { Announcement, EventName, IS_FRONTIER } from "../../config";
+import { Announcement, EventName } from "../../config";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -389,7 +389,6 @@ const ExternalLinkModal: FunctionComponent<
           <a
             className={buttonCVA({
               mode: "primary",
-              frontier: IS_FRONTIER,
             })}
             href={url}
             target="_blank"
