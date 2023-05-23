@@ -48,16 +48,16 @@ export function getChainInfos(): (ChainInfoWithExplorer &
         fees: registryChain?.fees ?? {
           fee_tokens: localChain.currencies.map((currency) => {
             const gasPriceStep = (currency as any).gasPriceStep as {
-              low: number;
-              average: number;
-              high: number;
+              low?: number;
+              average?: number;
+              high?: number;
             };
             return {
               denom: currency.coinMinimalDenom,
               fixed_min_gas_price: 0,
-              low_gas_price: gasPriceStep.low,
-              average_gas_price: gasPriceStep.average,
-              high_gas_price: gasPriceStep.high,
+              low_gas_price: gasPriceStep?.low,
+              average_gas_price: gasPriceStep?.average,
+              high_gas_price: gasPriceStep?.high,
             };
           }),
         },
