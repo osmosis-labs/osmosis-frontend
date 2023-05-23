@@ -1,7 +1,6 @@
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 
-import { IS_FRONTIER } from "../../config";
 import { CustomClasses, Disableable } from "../types";
 import { MenuOption } from "./types";
 
@@ -34,7 +33,6 @@ export const MenuToggle: FunctionComponent<Props> = ({
           "relative h-10 cursor-pointer select-none px-4 py-2",
           {
             "rounded-full bg-wosmongton-400": id === selectedOptionId,
-            "text-osmoverse-1000": id === selectedOptionId && IS_FRONTIER,
           },
           className
         )}

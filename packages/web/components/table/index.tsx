@@ -9,7 +9,6 @@ import React, {
   useState,
 } from "react";
 
-import { IS_FRONTIER } from "../../config";
 import { useWindowSize } from "../../hooks";
 import { replaceAt } from "../../utils/array";
 import { InfoTooltip } from "../tooltip";
@@ -99,22 +98,14 @@ export const Table = <TCell extends BaseCell>({
                         {colDef?.sort?.currentDirection === "ascending" ? (
                           <Image
                             alt="ascending"
-                            src={
-                              IS_FRONTIER
-                                ? "/icons/sort-up-white.svg"
-                                : "/icons/sort-up.svg"
-                            }
+                            src="/icons/sort-up.svg"
                             height={16}
                             width={16}
                           />
                         ) : colDef?.sort?.currentDirection === "descending" ? (
                           <Image
                             alt="descending"
-                            src={
-                              IS_FRONTIER
-                                ? "/icons/sort-down-white.svg"
-                                : "/icons/sort-down.svg"
-                            }
+                            src="/icons/sort-down.svg"
                             height={16}
                             width={16}
                           />

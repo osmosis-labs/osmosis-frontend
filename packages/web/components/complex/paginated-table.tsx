@@ -1,6 +1,5 @@
 import { flexRender, Row, Table } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
-import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -9,7 +8,6 @@ import { useIntersection } from "react-use";
 
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
 
-import { IS_FRONTIER } from "../../config";
 import { useWindowSize } from "../../hooks";
 import { Icon } from "../assets";
 import { AssetCard } from "../cards";
@@ -122,23 +120,13 @@ const PaginatedTable = ({
                         asc: (
                           <Icon
                             id="sort-up"
-                            className={classNames(
-                              "h-[16px] w-[7px]",
-                              IS_FRONTIER
-                                ? "text-white-full"
-                                : "text-osmoverse-300"
-                            )}
+                            className="h-[16px] w-[7px] text-osmoverse-300"
                           />
                         ),
                         desc: (
                           <Icon
                             id="sort-down"
-                            className={classNames(
-                              "h-[16px] w-[7px]",
-                              IS_FRONTIER
-                                ? "text-white-full"
-                                : "text-osmoverse-300"
-                            )}
+                            className="h-[16px] w-[7px] text-osmoverse-300"
                           />
                         ),
                       }[header.column.getIsSorted() as string] ?? null}
