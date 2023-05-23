@@ -6,6 +6,9 @@ import { useRouter } from "next/router";
 import { Fragment, FunctionComponent, useEffect, useRef } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { UnverifiedAssetsState } from "~/stores/user-settings";
+import { removeQueryParam } from "~/utils/url";
+
 import { Announcement, EventName, IS_FRONTIER } from "../../config";
 import {
   useAmplitudeAnalytics,
@@ -38,7 +41,10 @@ export const NavBar: FunctionComponent<
       osmosis: { chainId },
     },
     accountStore,
+    userSettings,
   } = useStore();
+
+  const { query } = useRouter();
 
   const {
     isOpen: isSettingsOpen,
@@ -63,6 +69,17 @@ export const NavBar: FunctionComponent<
     router.events.on("routeChangeComplete", handler);
     return () => router.events.off("routeChangeComplete", handler);
   }, [router.events]);
+
+  useEffect(() => {
+    const UnverifiedAssetsQueryKey = "unverified_assets";
+    if (query[UnverifiedAssetsQueryKey] === "true") {
+      onOpenSettings();
+      userSettings
+        .getUserSettingById<UnverifiedAssetsState>("unverified-assets")
+        ?.setState({ showUnverifiedAssets: true });
+      removeQueryParam(UnverifiedAssetsQueryKey);
+    }
+  }, [onOpenSettings, query, userSettings]);
 
   const account = accountStore.getAccount(chainId);
   const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(
