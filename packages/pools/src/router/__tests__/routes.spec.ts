@@ -225,7 +225,7 @@ describe("OptimizedRoutes", () => {
         .catch((e) => expect(e).toBeTruthy());
     });
 
-    it("stable pool - scaling factors don't affect amounts", async () => {
+    it("routes a stable pool - scaling factors don't affect amounts", async () => {
       const normalPools = [
         makeStablePool({
           firstPoolAsset: { denom: "uust" },
@@ -282,7 +282,7 @@ describe("OptimizedRoutes", () => {
       expect(scaledOut.amount.toString()).toEqual(normalOut.amount.toString());
     });
 
-    it("preferred pool IDs - normal: splits with preferred pool", async () => {
+    it("uses preferred pool IDs - normal: splits with preferred pool", async () => {
       // nothing special here, just a normal split and a preferred pool is there
 
       let c = 1;
@@ -353,7 +353,7 @@ describe("OptimizedRoutes", () => {
       expect(split[1].initialAmount.equals(new Int(40))).toBeTruthy(); // route 2 gets 40% of the trade
     });
 
-    it("preferred pool IDs - lifts preferred direct pool into used route", async () => {
+    it("uses preferred pool IDs - lifts preferred direct pool into used route", async () => {
       // returns a route that would have come in 3rd get lifted to 2nd because of preferred pool
 
       let c = 1;
@@ -459,7 +459,7 @@ describe("OptimizedRoutes", () => {
   });
 
   describe("calculateTokenOutByTokenIn", () => {
-    it("handles - not enough liquidity in a route", () => {
+    it("handles not enough liquidity in a route", () => {
       // uion => ufoo => ujuno
       const pools = [
         makeWeightedPool({
@@ -485,7 +485,7 @@ describe("OptimizedRoutes", () => {
         NotEnoughLiquidityError
       );
     });
-    it("handles - invalid route", () => {
+    it("handles invalid route", () => {
       {
         // uion => ufoo => ujuno
         const pools = [
@@ -608,7 +608,7 @@ describe("OptimizedRoutes", () => {
       }
     });
 
-    it("OSMO fee discount - 2 pools with 1% fee", async () => {
+    it("includes OSMO fee discount - 2 pools with 1% fee", async () => {
       const pools = [
         makeWeightedPool({
           firstPoolAsset: { amount: "100000000000000" },
@@ -657,7 +657,7 @@ describe("OptimizedRoutes", () => {
       const parsedNonDiscountAmt = parseInt(nondiscountedOut.amount.toString());
       expect(parsedDiscountAmt).toBeGreaterThan(parsedNonDiscountAmt); // user gets more out
     });
-    it("OSMO fee discount - 2 pools with different (small, large) fees", async () => {
+    it("includes OSMO fee discount - 2 pools with different (small, large) fees", async () => {
       const poolsWithALargeFee = [
         makeWeightedPool({
           firstPoolAsset: { amount: "100000000000000" },
@@ -715,7 +715,7 @@ describe("OptimizedRoutes", () => {
       const parsedSmallFeeOut = parseInt(smallFeeOut.amount.toString());
       expect(parsedLargeFeeOut).toBeLessThan(parsedSmallFeeOut); // user gets less out since fee is big
     });
-    it("OSMO fee discount - no fee discount for route w/ 3 pools", async () => {
+    it("includes OSMO fee discount - no fee discount for route w/ 3 pools", async () => {
       const pools = [
         makeWeightedPool({
           firstPoolAsset: { amount: "100000000000000" },
@@ -769,7 +769,7 @@ describe("OptimizedRoutes", () => {
       const parsedNonDiscountAmt = parseInt(nondiscountedOut.amount.toString());
       expect(parsedDiscountAmt).toEqual(parsedNonDiscountAmt); // user gets more out
     });
-    it("many pools - finds a route through all pools between any two valid assets - low max pool - no throw", async () => {
+    it("handles many pools - finds a route through all pools between any two valid assets - low max pool - no throw", async () => {
       const allDenoms = Array.from(
         new Set(allPools.flatMap((pool) => pool.poolAssetDenoms))
       );
@@ -800,7 +800,7 @@ describe("OptimizedRoutes", () => {
 
       expect(threw).toBeFalsy();
     });
-    it("many pools - finds a route through all pools between any two valid assets - high max pool - no throw", async () => {
+    it("handles many pools - finds a route through all pools between any two valid assets - high max pool - no throw", async () => {
       const allDenoms = Array.from(
         new Set(allPools.flatMap((pool) => pool.poolAssetDenoms))
       ).filter((denom) => !denom.includes("gamm"));
@@ -984,7 +984,7 @@ describe("OptimizedRoutes", () => {
     });
     // weighted pools' calcOutAmountGivenIn is much faster than stableswap, which uses it's own binary search
     // this is to get an eye on the performance of searching for out amounts through stable pools
-    it("performance - splits using stable pools: 2 routes - uion -> uusdc", async () => {
+    it("is performant - splits using stable pools: 2 routes - uion -> uusdc", async () => {
       const baseRouteInfo = {
         tokenOutDenoms: ["uosmo", "uusdc"],
         tokenInDenom: "uion",
