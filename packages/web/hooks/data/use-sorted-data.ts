@@ -48,7 +48,7 @@ export function useSortedData<TData>(
   );
 
   const directionalResults = useMemo(
-    () => (sortDirection === "descending" ? results.reverse() : results),
+    () => (sortDirection === "descending" ? [...results].reverse() : results),
     [sortDirection, results]
   );
 
