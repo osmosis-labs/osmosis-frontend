@@ -29,6 +29,7 @@
     "@keplr-wallet/wc-client": "^0.10.24",
     "@metamask/onboarding": "^1.0.1",
     "@next/bundle-analyzer": "^12.1.6",
+    "@osmosis-labs/math": "^4.0.0",
     "@osmosis-labs/pools": "^4.0.0",
     "@osmosis-labs/stores": "^4.0.0",
     "@tanstack/react-table": "^8.7.9",
