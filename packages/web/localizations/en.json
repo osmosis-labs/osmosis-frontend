@@ -17,6 +17,31 @@
     "title": "Add Liquidity",
     "titleInPool": "Add liquidity to pool #{poolId}"
   },
+  "addConcentratedLiquidity": {
+    "step1Title": "Step 1: Pick a strategy",
+    "step2Title": "Step 2: Add Liquidity",
+    "managed": "Managed",
+    "managedDescription": "Enlist one of our providers to manage your position. Coming soon",
+    "manual": "Manual",
+    "manualDescription": "Create a position which you will regular manage for maximum efficiency and rewards.",
+    "back": "Back",
+    "priceShownIn": "Prices shown in {base} per {quote}",
+    "priceRange": "Price Range",
+    "currentPrice": "current price",
+    "basePerQuote": "{base} per {quote}",
+    "selectVolatilityRange": "Select a volatility strategy",
+    "volatilityModerateDescription": "At ~5X concentration, you’ll earn more on swaps but keep an eye on your position, rebalancing to keep the price in range.",
+    "volatilityAggressiveDescription": "At ~30X concentration, you’ll earn a great deal on swaps but risk the price moving out of range. Check this position frequently.",
+    "volatilityCustomDescription": "Create a position that suites your strategy. Remember to keep an eye on any position you set.",
+    "volatilityPassiveDescription": "This full range position is great for setting and forgetting. Earn less on swaps but always remain in range.",
+    "superchargedLearnMore": "Learn more",
+    "fullRange": "Full range",
+    "amountToDeposit": "Amount to deposit",
+    "addLiquidity": "Add Liquidity",
+    "outOfRangeWarning": "The market price is outside your specified price range. Single-asset deposit only.",
+    "high": "high",
+    "low": "low"
+  },
   "app": {
     "banner": {
       "backToOsmosis": "Back to Osmosis",
@@ -193,7 +218,8 @@
     "notInitialized": "Not initialized",
     "percentageSum": "Sum of percentages is not 100",
     "scalingFactorTooLow": "Scaling factor too low",
-    "zeroAmount": "Amount is zero"
+    "zeroAmount": "Amount is zero",
+    "invalidRange":  "Invalid price range"
   },
   "keplr": {
     "extension": "Keplr Browser Extension",

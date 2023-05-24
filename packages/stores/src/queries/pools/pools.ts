@@ -69,7 +69,6 @@ export class ObservableQueryPools
     if (!this.response && !this._pools.get(id)) {
       return undefined;
     }
-
     return this._pools.get(id);
   }
 

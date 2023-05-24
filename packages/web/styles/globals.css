@@ -75,6 +75,9 @@
   .text-gradient-positive {
     @apply bg-gradient-positive bg-clip-text text-transparent;
   }
+  .bg-supercharged-gradient {
+    background: linear-gradient(270deg, #64c5ee 0%, #ee64e8 100%);
+  }
 
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
@@ -272,4 +275,9 @@
 
 .tippy-box[data-animation="fade"][data-state="hidden"] {
   opacity: 0;
+}
+
+.visx-tooltip {
+  z-index: 9000000;
+  box-shadow: none !important;
 }

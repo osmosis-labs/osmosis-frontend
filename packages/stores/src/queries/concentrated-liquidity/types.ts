@@ -6,3 +6,11 @@ export type LiquidityNetInDirection = {
   current_tick: string;
   current_liquidity: string;
 };
+
+export type LiquidityPerTickRange = {
+  liquidity: {
+    liquidity_amount: string;
+    lower_tick: string;
+    upper_tick: string;
+  }[];
+};

@@ -56,6 +56,14 @@ const chainInfos = (
           coinGeckoId: "pool:uion",
           coinImageUrl: "/tokens/ion.svg",
         },
+        {
+          coinDenom: "tUSDC",
+          coinMinimalDenom: "uusdc",
+          coinDecimals: 6,
+          // coinGeckoId: "ion",
+          coinGeckoId: "usdc",
+          coinImageUrl: "/tokens/usdc.svg",
+        },
         ...(IS_TESTNET
           ? [
               {

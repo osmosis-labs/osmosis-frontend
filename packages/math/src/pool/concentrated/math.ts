@@ -1,6 +1,7 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 
 import { smallestDec } from "./const";
+import { tickToSqrtPrice } from "./tick";
 
 /** The `@keplr-wallet/unit` `Dec` object doesn't have the `mulRoundUp()` function
  *  as seen in Cosmos SDK `Dec` object. To adapt, we extend Dec and add the function.
@@ -290,4 +291,36 @@ export function convertTokenInGivenOutToTokenOutGivenIn(
   }
   // is in given out -- token1 for token0
   return new Dec(specifiedTokenOut.amount).quo(currentPrice).truncate();
+}
+
+export function calculateDepositAmountForQuote(
+  curPrice: Dec,
+  lowerTick: Int,
+  upperTick: Int,
+  baseDeposit: Dec
+): Dec {
+  const lowerPriceSqrt = tickToSqrtPrice(lowerTick);
+  const upperPriceSqrt = tickToSqrtPrice(upperTick);
+  const curPriceSqrt = approxSqrt(curPrice);
+  const liquidityY = baseDeposit.quo(curPriceSqrt.sub(lowerPriceSqrt));
+  return liquidityY
+    .mul(upperPriceSqrt.sub(curPriceSqrt))
+    .quo(upperPriceSqrt)
+    .quo(curPriceSqrt);
+}
+
+export function calculateDepositAmountForBase(
+  curPrice: Dec,
+  lowerTick: Int,
+  upperTick: Int,
+  quoteDeposit: Dec
+): Dec {
+  const lowerPriceSqrt = tickToSqrtPrice(lowerTick);
+  const upperPriceSqrt = tickToSqrtPrice(upperTick);
+  const curPriceSqrt = approxSqrt(curPrice);
+  const liquidity = quoteDeposit
+    .mul(curPriceSqrt)
+    .mul(upperPriceSqrt)
+    .quo(upperPriceSqrt.sub(curPriceSqrt));
+  return liquidity.mul(curPriceSqrt.sub(lowerPriceSqrt));
 }

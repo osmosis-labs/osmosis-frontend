@@ -303,6 +303,21 @@ export class ObservableQueryPool extends ObservableChainQuery<{
         };
       });
     }
+
+    if (this.pool instanceof ConcentratedLiquidityPool) {
+      const { balances } = this.queryBalances.getQueryBech32Address(
+        this.pool.address
+      );
+      return this.poolAssetDenoms
+        .map((denom) => {
+          const amount = balances.find(
+            (balance) => balance.currency.coinMinimalDenom === denom
+          )?.balance;
+          return amount ? { amount } : undefined;
+        })
+        .filter((amount) => !!amount) as { amount: CoinPretty }[];
+    }
+
     return [];
   }
 
