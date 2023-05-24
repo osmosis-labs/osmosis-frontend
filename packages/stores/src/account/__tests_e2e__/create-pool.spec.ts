@@ -126,7 +126,7 @@ describe("Create Pool Tx", () => {
             value:
               "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool",
           },
-          { key: "module", value: "gamm" },
+          { key: "module", value: "poolmanager" },
           {
             key: "sender",
             value: account.bech32Address,
@@ -191,7 +191,7 @@ describe("Create Pool Tx", () => {
             value:
               "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool",
           },
-          { key: "module", value: "gamm" },
+          { key: "module", value: "poolmanager" },
           {
             key: "sender",
             value: account.bech32Address,
