@@ -1,21 +1,20 @@
-import { HTMLProps } from "react";
-interface IconLinkProps extends HTMLProps<HTMLAnchorElement> {
-  url: string;
-  ariaLabel?: string;
-}
+import { FC, HTMLProps } from "react";
 
-export const IconLink: React.FC<IconLinkProps> = (props) => {
+export const IconLink: FC<
+  HTMLProps<HTMLAnchorElement> & {
+    url: string;
+    ariaLabel?: string;
+  }
+> = ({ url, ariaLabel, children, className }) => {
   return (
     <a
-      href={props.url}
+      href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className={props.className}
-      aria-label={props.ariaLabel}
+      className={className}
+      aria-label={ariaLabel}
     >
-      {props.children}
+      {children}
     </a>
   );
 };
-
-export default IconLink;

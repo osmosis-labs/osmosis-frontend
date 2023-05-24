@@ -64,8 +64,6 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
 
   const handleApplyClick = () => {
     logEvent([EventName.AppStore.applyClicked]);
-    const url = "https://cosmos-ecosystem.webflow.io/submit";
-    window.open(url, "_blank");
   };
 
   const handleSearchInput = (value: string) => {

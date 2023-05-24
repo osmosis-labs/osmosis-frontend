@@ -60,7 +60,7 @@ export const HeroCard: React.FunctionComponent<{
         target="_blank"
         rel="noopener noreferrer"
         onClick={handleAppClicked}
-        className="heroImage height-[400px] relative flex items-end overflow-hidden rounded-lg"
+        className="heroImage relative flex h-[400px] items-end overflow-hidden rounded-lg"
       >
         <div
           className="backgroundImage absolute top-0 left-0 z-10 h-full w-full bg-cover bg-center bg-no-repeat"
