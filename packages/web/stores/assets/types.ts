@@ -42,6 +42,14 @@ export interface IBCChainIdentity {
   chainName: string;
 }
 
+export type FeeCurrency = AppCurrency & {
+  gasPriceStep?: {
+    low: number;
+    average: number;
+    high: number;
+  };
+};
+
 export type PeggedCurrency = AppCurrency & {
   originCurrency?: AppCurrency & {
     /** For assets that are pegged/stablecoins. */
