@@ -4,90 +4,70 @@ import {
   chainId,
   deepContained,
   getEventFromTx,
+  getLatestQueryPool,
   RootStore,
   waitAccountLoaded,
 } from "../../__tests_e2e__/test-env";
 import { estimateJoinSwap } from "@osmosis-labs/math";
-
-jest.setTimeout(100 * 1000);
+import { ObservableQueryPool } from "../../queries";
 
 describe("Join Pool Tx", () => {
   let { accountStore, queriesStore } = new RootStore();
-  let poolId: string | undefined; // relies on `jest --runInBand` to work properly
+  let queryPool: ObservableQueryPool | undefined; // relies on `jest --runInBand` to work properly
 
   beforeEach(async () => {
     // Init new localnet per test
     const account = accountStore.getAccount(chainId);
-    account.cosmos.broadcastMode = "block";
-
+    account.cosmos.broadcastMode = "sync";
     await waitAccountLoaded(account);
 
     // And prepare the pool
-    await new Promise<any>((resolve) => {
-      account.osmosis.sendCreateBalancerPoolMsg(
-        "0",
-        [
-          {
-            weight: "200",
-            token: {
-              currency: {
-                coinDenom: "OSMO",
-                coinMinimalDenom: "uosmo",
-                coinDecimals: 6,
-              },
-              amount: "100",
+    await account.osmosis.sendCreateBalancerPoolMsg(
+      "0",
+      [
+        {
+          weight: "200",
+          token: {
+            currency: {
+              coinDenom: "OSMO",
+              coinMinimalDenom: "uosmo",
+              coinDecimals: 6,
             },
+            amount: "100",
           },
-          {
-            weight: "300",
-            token: {
-              currency: {
-                coinDenom: "ION",
-                coinMinimalDenom: "uion",
-                coinDecimals: 6,
-              },
-              amount: "100",
+        },
+        {
+          weight: "300",
+          token: {
+            currency: {
+              coinDenom: "ION",
+              coinMinimalDenom: "uion",
+              coinDecimals: 6,
             },
+            amount: "100",
           },
-        ],
-        "",
-        (tx) => {
-          resolve(tx);
-        }
-      );
-    });
+        },
+      ],
+      ""
+    );
 
-    // refresh stores
-    await queriesStore
-      .get(chainId)
-      .osmosis!.queryGammNumPools.waitFreshResponse();
-    await queriesStore.get(chainId).osmosis!.queryGammPools.waitFreshResponse();
-
-    // set poolId
-    const numPools =
-      queriesStore.get(chainId).osmosis!.queryGammNumPools.numPools;
-    poolId = numPools.toString();
+    queryPool = await getLatestQueryPool(chainId, queriesStore);
   });
 
   test("with no max slippage", async () => {
     const account = accountStore.getAccount(chainId);
 
-    const queriesOsmosis = queriesStore.get(chainId).osmosis!;
-
     const shareOutAmount = "1";
     const maxSlippage = "0";
 
-    const queryPool = queriesOsmosis.queryGammPools.getPool(poolId!)!;
-    const sharePool = queryPool.sharePool;
-    if (!sharePool) throw new Error("Not share pool");
+    const sharePool = queryPool!.sharePool!;
 
-    await queryPool.waitFreshResponse();
     const estimated = estimateJoinSwap(
       sharePool,
       sharePool.poolAssets,
       (coin) =>
         new CoinPretty(
-          queryPool.poolAssets.find(
+          queryPool!.poolAssets.find(
             (a) => a.amount.toCoin().denom === coin.denom
           )!.amount.currency,
           coin.amount
@@ -98,9 +78,15 @@ describe("Join Pool Tx", () => {
 
     const tx = await new Promise<any>((resolve, rejects) => {
       account.osmosis
-        .sendJoinPoolMsg(poolId!, shareOutAmount, maxSlippage, "", (tx) => {
-          resolve(tx);
-        })
+        .sendJoinPoolMsg(
+          queryPool!.id,
+          shareOutAmount,
+          maxSlippage,
+          "",
+          (tx) => {
+            resolve(tx);
+          }
+        )
         .catch((e) => rejects(e));
     });
 
@@ -146,7 +132,7 @@ describe("Join Pool Tx", () => {
             value: `${new Dec(shareOutAmount)
               .mul(DecUtils.getTenExponentNInPrecisionRange(18))
               .truncate()
-              .toString()}gamm/pool/${poolId!}`,
+              .toString()}gamm/pool/${queryPool!.id}`,
           },
         ]),
       },
@@ -160,11 +146,7 @@ describe("Join Pool Tx", () => {
     const shareOutAmount = "1";
     const maxSlippage = "0.1";
 
-    const queryPool = queriesStore
-      .get(chainId)
-      .osmosis!.queryGammPools.getPool(poolId!)!;
-    await queryPool.waitFreshResponse();
-    const sharePool = queryPool.sharePool;
+    const sharePool = queryPool!.sharePool;
     if (!sharePool) throw new Error("Not share pool");
 
     const estimated = estimateJoinSwap(
@@ -173,7 +155,7 @@ describe("Join Pool Tx", () => {
       (coin) =>
         new CoinPretty(
           // eslint-disable-next-line
-          queryPool.poolAssets.find(
+          queryPool!.poolAssets.find(
             (a) => a.amount.toCoin().denom === coin.denom
           )!.amount.currency,
           coin.amount
@@ -184,9 +166,15 @@ describe("Join Pool Tx", () => {
 
     const tx = await new Promise<any>((resolve, rejects) => {
       account.osmosis
-        .sendJoinPoolMsg(poolId!, shareOutAmount, maxSlippage, "", (tx) => {
-          resolve(tx);
-        })
+        .sendJoinPoolMsg(
+          queryPool!.id,
+          shareOutAmount,
+          maxSlippage,
+          "",
+          (tx) => {
+            resolve(tx);
+          }
+        )
         .catch((e) => rejects(e));
     });
 
@@ -231,8 +219,8 @@ describe("Join Pool Tx", () => {
             key: "amount",
             value: `${new Dec(shareOutAmount)
               .mul(DecUtils.getTenExponentNInPrecisionRange(18))
-              .truncate()
-              .toString()}gamm/pool/${poolId!}`,
+              .roundUp()
+              .toString()}gamm/pool/${queryPool!.id}`,
           },
         ]),
       },

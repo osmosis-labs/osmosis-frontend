@@ -3,6 +3,7 @@ import {
   chainId,
   deepContained,
   getEventFromTx,
+  getLatestQueryPool,
   RootStore,
   waitAccountLoaded,
 } from "../../__tests_e2e__/test-env";
@@ -11,87 +12,71 @@ import { Currency } from "@keplr-wallet/types";
 import { estimateSwapExactAmountOut } from "@osmosis-labs/math";
 import { ObservableQueryPool } from "src/queries";
 
-// https://docs.osmosis.zone/developing/osmosis-core/modules/spec-gamm.html#swap-exact-amount-out
-
-jest.setTimeout(60000);
-
 describe("Test Osmosis Swap Exact Amount Out Tx", () => {
   const { accountStore, queriesStore } = new RootStore();
   let queryPool: ObservableQueryPool | undefined;
 
   beforeEach(async () => {
     const account = accountStore.getAccount(chainId);
-    account.cosmos.broadcastMode = "block";
+    account.cosmos.broadcastMode = "sync";
     await waitAccountLoaded(account);
 
     // And prepare the pool
-    await new Promise<any>((resolve) => {
-      account.osmosis.sendCreateBalancerPoolMsg(
-        "0",
-        [
-          {
-            weight: "200",
-            token: {
-              currency: {
-                coinDenom: "OSMO",
-                coinMinimalDenom: "uosmo",
-                coinDecimals: 6,
-              },
-              amount: "100",
-            },
+    await account.osmosis.sendCreateBalancerPoolMsg("0", [
+      {
+        weight: "200",
+        token: {
+          currency: {
+            coinDenom: "OSMO",
+            coinMinimalDenom: "uosmo",
+            coinDecimals: 6,
           },
-          {
-            weight: "300",
-            token: {
-              currency: {
-                coinDenom: "ION",
-                coinMinimalDenom: "uion",
-                coinDecimals: 6,
-              },
-              amount: "100",
-            },
+          amount: "100",
+        },
+      },
+      {
+        weight: "300",
+        token: {
+          currency: {
+            coinDenom: "ION",
+            coinMinimalDenom: "uion",
+            coinDecimals: 6,
           },
-        ],
-        "",
-        (tx) => {
-          resolve(tx);
-        }
-      );
-    });
+          amount: "100",
+        },
+      },
+    ]);
 
-    // refresh stores
-    await queriesStore
-      .get(chainId)
-      .osmosis!.queryGammNumPools.waitFreshResponse();
-    await queriesStore.get(chainId).osmosis!.queryGammPools.waitFreshResponse();
-
-    // set poolId
-    const numPools =
-      queriesStore.get(chainId).osmosis!.queryGammNumPools.numPools;
-    const poolId = numPools.toString();
-
-    // get query pool
-    queryPool = queriesStore
-      .get(chainId)
-      .osmosis!.queryGammPools.getPool(poolId);
+    queryPool = await getLatestQueryPool(chainId, queriesStore);
   });
 
   test("should fail with unregistered pool asset", async () => {
     const account = accountStore.getAccount(chainId);
 
     await expect(
-      account.osmosis.sendSwapExactAmountOutMsg(
-        [{ id: queryPool!.id, tokenInDenom: "uion" }],
-        {
-          currency: {
-            coinDenom: "CAN",
-            coinMinimalDenom: "ucan",
-            coinDecimals: 6,
-          },
-          amount: "1",
-        },
-        "10"
-      )
+      new Promise((resolve, reject) => {
+        account.osmosis
+          .sendSwapExactAmountOutMsg(
+            [{ id: queryPool!.id, tokenInDenom: "uion" }],
+            {
+              currency: {
+                coinDenom: "CAN",
+                coinMinimalDenom: "ucan",
+                coinDecimals: 6,
+              },
+              amount: "1",
+            },
+            "10",
+            undefined,
+            undefined,
+            undefined,
+            (tx) => {
+              if (tx.code) reject(tx);
+              else resolve(tx);
+            }
+          )
+          .catch(reject);
+      })
     ).rejects.not.toBeNull();
   });
 
@@ -99,22 +84,33 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
     const account = accountStore.getAccount(chainId);
 
     await expect(
-      account.osmosis.sendSwapExactAmountOutMsg(
-        [{ id: queryPool!.id, tokenInDenom: "ukwon" }],
-        {
-          currency: {
-            coinDenom: "Do",
-            coinMinimalDenom: "udo",
-            coinDecimals: 6,
-          },
-          amount: "1",
-        },
-        "10"
-      )
+      new Promise((resolve, reject) => {
+        account.osmosis
+          .sendSwapExactAmountOutMsg(
+            [{ id: queryPool!.id, tokenInDenom: "ukwon" }],
+            {
+              currency: {
+                coinDenom: "Do",
+                coinMinimalDenom: "udo",
+                coinDecimals: 6,
+              },
+              amount: "1",
+            },
+            "10",
+            undefined,
+            undefined,
+            undefined,
+            (tx) => {
+              if (tx.code) reject(tx);
+              else resolve(tx);
+            }
+          )
+          .catch(reject);
+      })
     ).rejects.not.toBeNull();
   });
 
-  test("with no max slippage", async () => {
+  test("succeed with no max slippage", async () => {
     const account = accountStore.getAccount(chainId);
 
     const tokenInCurrency = {
@@ -147,12 +143,22 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
             },
           ],
           tokenOut,
-          "10",
-          "0",
+          estimated.tokenIn
+            .toDec()
+            .mul(
+              DecUtils.getTenExponentNInPrecisionRange(
+                tokenInCurrency.coinDecimals
+              )
+            )
+            .mul(new Dec(1))
+            .truncate()
+            .toString(),
+          undefined,
           undefined,
           undefined,
           (tx) => {
-            resolve(tx);
+            if (tx.code) reject(tx.log);
+            else resolve(tx);
           }
         )
         .catch(reject);
@@ -164,9 +170,9 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
         attributes: [
           {
             key: "action",
-            value: "/osmosis.gamm.v1beta1.MsgSwapExactAmountOut",
+            value: "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut",
           },
-          { key: "module", value: "gamm" },
+          { key: "module", value: "poolmanager" },
           {
             key: "sender",
             value: account.bech32Address,
@@ -200,7 +206,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
     );
   });
 
-  test("with slippage", async () => {
+  test("succeed with slippage", async () => {
     const account = accountStore.getAccount(chainId);
 
     const tokenInCurrency = {
@@ -223,14 +229,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
       tokenOut
     );
 
-    const doubleSlippage = new IntPretty(
-      estimated.priceImpact.toDec().mul(new Dec(2))
-    )
-      .locale(false)
-      .maxDecimals(4)
-      .trim(true);
-
-    expect(doubleSlippage.toDec().gt(new Dec(0))).toBeTruthy();
+    const slippageTolerance = new Dec(0.01);
 
     const tx = await new Promise<any>((resolve, reject) => {
       account.osmosis
@@ -242,12 +241,22 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
             },
           ],
           tokenOut,
-          "10",
-          "0",
+          estimated.tokenIn
+            .toDec()
+            .mul(
+              DecUtils.getTenExponentNInPrecisionRange(
+                tokenInCurrency.coinDecimals
+              )
+            )
+            .mul(new Dec(1).add(slippageTolerance))
+            .truncate()
+            .toString(),
+          undefined,
           undefined,
           undefined,
           (tx) => {
-            resolve(tx);
+            if (tx.code) reject(tx.log);
+            else resolve(tx);
           }
         )
         .catch(reject);
@@ -259,9 +268,9 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
         attributes: [
           {
             key: "action",
-            value: "/osmosis.gamm.v1beta1.MsgSwapExactAmountOut",
+            value: "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut",
           },
-          { key: "module", value: "gamm" },
+          { key: "module", value: "poolmanager" },
           {
             key: "sender",
             value: account.bech32Address,
@@ -295,7 +304,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
     );
   });
 
-  test("with exactly matched slippage and max slippage", async () => {
+  test("succeed with exactly matched slippage and max slippage", async () => {
     const account = accountStore.getAccount(chainId);
 
     const tokenInCurrency = {
@@ -330,12 +339,13 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
             },
           ],
           tokenOut,
-          "10",
+          estimated.tokenIn.toCoin().amount,
           "0",
           undefined,
           undefined,
           (tx) => {
-            resolve(tx);
+            if (tx.code) reject(tx.log);
+            else resolve(tx);
           }
         )
         .catch(reject);
@@ -347,9 +357,9 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
         attributes: [
           {
             key: "action",
-            value: "/osmosis.gamm.v1beta1.MsgSwapExactAmountOut",
+            value: "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut",
           },
-          { key: "module", value: "gamm" },
+          { key: "module", value: "poolmanager" },
           {
             key: "sender",
             value: account.bech32Address,
@@ -431,7 +441,8 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
             undefined,
             undefined,
             (tx) => {
-              resolve(tx);
+              if (tx.code) reject(tx.log);
+              else resolve(tx);
             }
           )
           .catch(reject);
@@ -445,20 +456,23 @@ async function estimateSwapExactOut(
   tokenInCurrency: Currency,
   tokenOut: { currency: Currency; amount: string }
 ) {
-  await queryPool!.waitFreshResponse();
-  const inPoolAsset = queryPool!.getPoolAsset(tokenInCurrency.coinMinimalDenom);
-  const outPoolAsset = queryPool!.getPoolAsset(
+  await queryPool.waitFreshResponse();
+  const inPoolAsset = queryPool.getPoolAsset(tokenInCurrency.coinMinimalDenom);
+  const outPoolAsset = queryPool.getPoolAsset(
     tokenOut.currency.coinMinimalDenom
   );
-  const inPoolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
-    ({ denom }) => denom === inPoolAsset.amount.currency.coinMinimalDenom
-  )?.weight;
-  const outPoolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
-    ({ denom }) => denom === outPoolAsset.amount.currency.coinMinimalDenom
-  )?.weight;
-  const poolAssets = queryPool?.stableSwapInfo
+  const inPoolAssetWeight = queryPool.weightedPoolInfo?.assets
+    .find(({ denom }) => denom === inPoolAsset.amount.currency.coinMinimalDenom)
+    ?.weight.locale(false);
+  const outPoolAssetWeight = queryPool.weightedPoolInfo?.assets
+    .find(
+      ({ denom }) => denom === outPoolAsset.amount.currency.coinMinimalDenom
+    )
+    ?.weight.locale(false);
+  const poolAssets = queryPool.stableSwapInfo
     ? queryPool.stableSwapInfo.assets
     : [];
+
   return estimateSwapExactAmountOut(
     {
       inPoolAsset: {
@@ -472,11 +486,11 @@ async function estimateSwapExactOut(
         denom: outPoolAsset.amount.currency.coinMinimalDenom,
         amount: new Int(outPoolAsset.amount.toCoin().amount),
         weight: outPoolAssetWeight
-          ? new Int(outPoolAsset.toString())
+          ? new Int(outPoolAssetWeight.toString())
           : undefined,
       },
       poolAssets,
-      swapFee: queryPool!.swapFee.toDec(),
+      swapFee: queryPool.swapFee.toDec(),
     },
     new Coin(
       tokenOut.currency.coinMinimalDenom,
