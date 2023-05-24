@@ -31,6 +31,17 @@
       "title": "Tüm izin gerektirmeyen varlıkları görüntülüyorsunuz."
     }
   },
+  "store": {
+    "headerTitle": "Deneyiminizi Süper Hızlı Hale Getirin",
+    "headerSubtitle": "Alım satım sadece ilk adım. Varlıklarınızı çalıştırın ve kaldıraç, kasalar ve daha fazlasıyla çok daha fazlasını başarın.",
+    "featured": "Öne Çıkan",
+    "searchPlaceholder": "Ara",
+    "getFeatured": "Öne Çıkan Olun",
+    "featuredDescription": "Uygulama mağazasında başlatın ve binlerce kullanıcıya erişin. Listelenmek veya öne çıkan olmak istiyorsanız, bize ulaşın ve iletişimde olacağız.",
+    "applyButton": "Uygula",
+    "storeDisclaimer": "Belirli içerikler, Osmosis Labs veya bağlı ortaklıklarından herhangi biri ile bağlantılı olmayan üçüncü taraflar tarafından hazırlanmıştır ve Osmosis Labs, bu tür içeriklerden sorumlu değildir. Osmosis Labs, içerikteki hatalar veya gecikmelerden veya herhangi bir içeriğe dayalı olarak alınan eylemlerden sorumlu değildir. Bilgiler, yalnızca bilgilendirme amaçlı olarak sağlanmıştır ve yatırım tavsiyesi değildir. Bu, belirli bir dijital varlığı satın almak veya satmak veya belirli bir yatırım stratejisini kullanmak için bir öneri değildir. Osmosis Labs, sağlanan herhangi bir bilginin doğruluğu, uygunluğu veya geçerliliği veya belirli bir varlık için yapılan beyanlar konusunda hiçbir temsilde bulunmamaktadır. Gösterilen fiyatlar sadece gösterim amaçlıdır. Gerçek kripto para birimi fiyatları ve ilişkili istatistiklerde farklılıklar olabilir. Sunulan veriler, Osmosis Labs'in borsasında ve seçili diğer kripto para birimi borsalarında işlem gören varlıkları yansıtabilir.",
+    "allAppsHeader": "Tüm Uygulamalar"
+  },
   "assets": {
     "bondedAssets": "Bağlı",
     "historyTable": {
@@ -239,6 +250,7 @@
     "pools": "Havuzlar",
     "signOut": "Bağlantıyı Kes",
     "stake": "Stake",
+    "store": "Uygulamalar",
     "swap": "Takas",
     "vote": "Oy Kullan"
   },
