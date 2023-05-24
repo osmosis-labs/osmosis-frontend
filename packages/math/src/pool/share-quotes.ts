@@ -497,7 +497,7 @@ function estimateSwapExactAmountOut_Raw(
           new Dec(outPoolAsset.weight),
           new Dec(tokenOut.amount),
           swapFee
-        ).truncate()
+        ).roundUp()
       : StableSwapMath.calcInGivenOut(
           stableSwapTokens,
           new Coin(outPoolAsset.denom, outPoolAsset.amount),
@@ -523,9 +523,9 @@ function estimateSwapExactAmountOut_Raw(
   const spotPriceAfter =
     inPoolAsset.weight && outPoolAsset.weight
       ? WeightedPoolMath.calcSpotPrice(
-          new Dec(inPoolAsset.amount).add(new Dec(inPoolAsset.amount)),
+          new Dec(inPoolAsset.amount).add(new Dec(tokenInAmount)),
           new Dec(inPoolAsset.weight),
-          new Dec(outPoolAsset.amount).sub(new Dec(outPoolAsset.amount)),
+          new Dec(outPoolAsset.amount).sub(new Dec(tokenOut.amount)),
           new Dec(outPoolAsset.weight),
           swapFee
         )

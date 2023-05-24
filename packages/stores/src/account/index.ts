@@ -17,7 +17,7 @@ import { DeepPartial } from "utility-types";
 import { OsmosisQueries } from "../queries";
 import * as Msgs from "./msg/amino";
 import { osmosis } from "./msg/proto";
-import { defaultMsgOpts, OsmosisMsgOpts } from "./types";
+import { defaultMsgOpts, OsmosisMsgOpts } from "./msg-opts";
 
 export interface OsmosisAccount {
   osmosis: OsmosisAccountImpl;
@@ -71,7 +71,7 @@ export class OsmosisAccountImpl {
    * @param swapFee The swap fee of the pool. Should set as the percentage. (Ex. 10% -> 10)
    * @param assets Assets that will be provided to the pool initially, with weights. Token can be parsed as to primitive by convenience. `amount`s are not in micro.
    * @param memo Transaction memo.
-   * @param onFulfill Callback to handle tx fulfillment.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
    */
   async sendCreateBalancerPoolMsg(
     swapFee: string,
@@ -193,7 +193,7 @@ export class OsmosisAccountImpl {
    * @param assets Assets that will be provided to the pool initially, with scaling factors. Token can be parsed as to primitive by convenience. `amount`s are not in micro.
    * @param memo Transaction memo.
    * @param scalingFactorControllerAddress Osmo address of account permitted to change scaling factors later.
-   * @param onFulfill Callback to handle tx fulfillment.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
    */
   async sendCreateStableswapPoolMsg(
     swapFee: string,
@@ -337,7 +337,7 @@ export class OsmosisAccountImpl {
    * @param shareOutAmount LP share amount.
    * @param maxSlippage Max tolerated slippage. Default: 2.5.
    * @param memo Memo attachment.
-   * @param onFulfill Callback to handle tx fulfillment.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
    */
   async sendJoinPoolMsg(
     poolId: string,
@@ -462,7 +462,7 @@ export class OsmosisAccountImpl {
    * @param tokenIn Token being swapped in. `tokenIn.amount` is NOT in micro amount.
    * @param maxSlippage Max tolerated slippage. Default: 2.5.
    * @param memo Transaction memo.
-   * @param onFulfill Callback to handle tx fullfillment.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
   async sendJoinSwapExternAmountInMsg(
     poolId: string,
@@ -593,7 +593,7 @@ export class OsmosisAccountImpl {
    * @param memo Transaction memo.
    * @param stdFee Fee options.
    * @param signOptions Signing options.
-   * @param onFulfill Callback to handle tx fullfillment.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
   async sendSplitRouteSwapExactAmountInMsg(
     routes: {
@@ -613,7 +613,7 @@ export class OsmosisAccountImpl {
     const numPools = routes.reduce((acc, route) => acc + route.pools.length, 0);
     await this.base.cosmos.sendMsgs(
       "splitRouteSwapExactAmountIn",
-      async () => {
+      () => {
         const msg = Msgs.Amino.makeSplitRouteSwapExactAmountInMsg(
           this._msgOpts.splitRouteSwapExactAmountIn(numPools),
           this.base.bech32Address,
@@ -700,7 +700,7 @@ export class OsmosisAccountImpl {
    * @param memo Transaction memo.
    * @param stdFee Fee options.
    * @param signOptions Signing options.
-   * @param onFulfill Callback to handle tx fullfillment.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
   async sendSwapExactAmountInMsg(
     pools: {
@@ -731,8 +731,8 @@ export class OsmosisAccountImpl {
           aminoMsgs: [msg],
           protoMsgs: [
             {
-              typeUrl: "/osmosis.gamm.v1beta1.MsgSwapExactAmountIn",
-              value: osmosis.gamm.v1beta1.MsgSwapExactAmountIn.encode({
+              typeUrl: "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
+              value: osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn.encode({
                 sender: msg.value.sender,
                 routes: msg.value.routes.map((route) => {
                   return {
@@ -793,7 +793,7 @@ export class OsmosisAccountImpl {
    * @param memo Transaction memo.
    * @param stdFee Fee options.
    * @param signOptions Signing options.
-   * @param onFulfill Callback to handle tx fullfillment.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
   async sendSwapExactAmountOutMsg(
     pools: {
@@ -822,8 +822,8 @@ export class OsmosisAccountImpl {
           aminoMsgs: [msg],
           protoMsgs: [
             {
-              typeUrl: "/osmosis.gamm.v1beta1.MsgSwapExactAmountOut",
-              value: osmosis.gamm.v1beta1.MsgSwapExactAmountOut.encode({
+              typeUrl: "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut",
+              value: osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut.encode({
                 sender: msg.value.sender,
                 routes: msg.value.routes.map(
                   (route: { pool_id: string; token_in_denom: string }) => {
@@ -883,7 +883,7 @@ export class OsmosisAccountImpl {
    * @param shareInAmount LP shares to redeem.
    * @param maxSlippage Max tolerated slippage. Default: 2.5.
    * @param memo Transaction memo.
-   * @param onFulfill Callback to handle tx fullfillment.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
   async sendExitPoolMsg(
     poolId: string,
@@ -998,7 +998,7 @@ export class OsmosisAccountImpl {
    * @param duration Duration, in seconds, to lock up the tokens.
    * @param tokens Tokens to lock. `amount`s are not in micro.
    * @param memo Transaction memo.
-   * @param onFulfill Callback to handle tx fullfillment.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
   async sendLockTokensMsg(
     duration: number,
@@ -1084,7 +1084,7 @@ export class OsmosisAccountImpl {
    * @param lockIds Ids of LP bonded locks.
    * @param validatorAddress Bech32 address of validator to delegate to.
    * @param memo Tx memo.
-   * @param onFulfill Callback to handle tx fullfillment.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
   async sendSuperfluidDelegateMsg(
     lockIds: string[],
@@ -1156,7 +1156,7 @@ export class OsmosisAccountImpl {
    * @param tokens LP tokens to delegate and lock. `amount`s are not in micro.
    * @param validatorAddress Validator address to delegate to.
    * @param memo Tx memo.
-   * @param onFulfill Callback to handle tx fullfillment.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
   async sendLockAndSuperfluidDelegateMsg(
     tokens: {
@@ -1240,7 +1240,7 @@ export class OsmosisAccountImpl {
    * https://docs.osmosis.zone/developing/modules/spec-lockup.html#begin-unlock-by-id
    * @param lockIds Ids of locks to unlock.
    * @param memo Transaction memo.
-   * @param onFulfill Callback to handle tx fullfillment.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
   async sendBeginUnlockingMsg(
     lockIds: string[],
@@ -1309,7 +1309,7 @@ export class OsmosisAccountImpl {
    * https://docs.osmosis.zone/developing/osmosis-core/modules/spec-superfluid.html#superfluid-unbond-lock
    * @param locks IDs and whether the lock is synthetic
    * @param memo Transaction memo.
-   * @param onFulfill Callback to handle tx fullfillment.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
   async sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
     locks: {
@@ -1530,4 +1530,4 @@ export class OsmosisAccountImpl {
   };
 }
 
-export * from "./types";
+export * from "./msg-opts";

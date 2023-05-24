@@ -50,15 +50,15 @@ export const defaultMsgOpts: OsmosisMsgOpts = {
     shareCoinDecimals: 18,
   },
   splitRouteSwapExactAmountIn: (numPools: number) => ({
-    type: "osmosis/poolmanager/split-route-swap-exact-amount-in",
-    gas: 30_000 * numPools,
+    type: "osmosis/poolmanager/split-amount-in",
+    gas: 110_000 * numPools,
   }),
   swapExactAmountIn: (numPools: number) => ({
-    type: "osmosis/gamm/swap-exact-amount-in",
+    type: "osmosis/poolmanager/swap-exact-amount-in",
     gas: 25_0000 * numPools,
   }),
   swapExactAmountOut: (numPools: number) => ({
-    type: "osmosis/gamm/swap-exact-amount-out",
+    type: "osmosis/poolmanager/swap-exact-amount-out",
     gas: 25_0000 * numPools,
   }),
   lockTokens: {
