@@ -24,6 +24,7 @@ const searchBoxClasses = cva(
         medium:
           "h-12 pl-5 pr-2 w-max [&_input]:text-body2 [&_input]:font-body2",
         large: "h-14 pl-5 pr-3 w-max [&_input]:text-body1 [&_input]:font-body2",
+        long: "h-14 pl-5 pr-3 w-80 [&_input]:text-body1 [&_input]:font-body2",
       },
     },
     defaultVariants: {
