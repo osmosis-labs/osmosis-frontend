@@ -15,7 +15,8 @@
     "singleAsset": "单边资产",
     "stablecoinWarning": "您正在為 {denom} 添加流動性，這是一種由 {mechanism} 支持的穩定幣。",
     "title": "添加流动性",
-    "titleInPool": "向#{poolId}号资金池添加流动性"
+    "titleInPool": "向#{poolId}号资金池添加流动性",
+    "stablecoinWarning": "您正在增加流动性"
   },
   "app": {
     "banner": {
@@ -25,6 +26,17 @@
       "externalLinkModalTitle": "离开Osmosis",
       "goToSite": "前往网站"
     }
+  },
+  "store": {
+    "headerTitle": "提升您的体验",
+    "headerSubtitle": "交易仅仅是第一步。利用杠杆、金库等手段投入您的资产，实现更多目标。",
+    "featured": "特色",
+    "searchPlaceholder": "搜索",
+    "getFeatured": "获得特色",
+    "featuredDescription": "在应用商店上架并接触成千上万的用户。如果您想上榜或被推荐，请联系我们，我们将保持沟通。",
+    "applyButton": "申请",
+    "storeDisclaimer": "部分内容由与 Osmosis Labs 或其任何附属公司无关的第三方准备，Osmosis Labs 对此类内容不承担责任。Osmosis Labs 不对内容中的任何错误或延迟，或因依赖任何内容而采取的任何行动承担责任。信息仅供参考，不构成投资建议。这不是购买或出售特定数字资产或采用特定投资策略的建议。 Osmosis Labs 不对所提供的任何信息的准确性、适当性或有效性，或针对特定资产作出任何陈述。显示的价格仅用于说明目的。实际加密货币价格及相关统计数据可能有所不同。所呈现的数据可能反映在 Osmosis Labs 交易所及选定的其他加密货币交易所上交易的资产。",
+    "allAppsHeader": "所有应用"
   },
   "assets": {
     "bondedAssets": "已绑定资产",
@@ -107,7 +119,8 @@
         "insufficientBal": "余额不足",
         "insufficientFee": "费用不足",
         "reconnectWallet": "重新连接 {walletName}",
-        "wrongNetworkInWallet": "在 {walletName} 中网络错误"
+        "wrongNetworkInWallet": "在 {walletName} 中网络错误",
+        "seeRequest": "在{walletName}中查看请求"
       },
       "from": "从",
       "loading": "加载中",
@@ -220,6 +233,7 @@
     "info": "统计数据",
     "pools": "资金池",
     "stake": "质押",
+    "store": "应用",
     "swap": "兑换",
     "vote": "投票"
   },
@@ -386,5 +400,9 @@
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",
   "waitingForTransaction": "等待交易打包进区块",
-  "highPoolInflationWarning": "高APR可能源自通胀性奖励。请谨慎操作。"
+  "highPoolInflationWarning": "高APR可能源自通胀性奖励。请谨慎操作。",
+  "ibcx": {
+    "description": "认识来自ION DAO的首个 Cosmos 生态系统指数。主网上线: ",
+    "link": "index.ion.wtf"
+  }
 }

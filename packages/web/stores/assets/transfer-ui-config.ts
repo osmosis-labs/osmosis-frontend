@@ -9,6 +9,8 @@ import {
 } from "mobx";
 import { ComponentProps } from "react";
 
+import { displayToast, ToastType } from "~/components/alert";
+
 import {
   FiatRampKey,
   ObservableWallet,
@@ -223,7 +225,7 @@ export class ObservableTransferUIConfig {
   @action
   protected launchIbcTransferModal(
     direction: TransferDir,
-    balance: (typeof this.assetsStore.ibcBalances)[0]
+    balance: typeof this.assetsStore.ibcBalances[0]
   ) {
     const currency = balance.balance.currency;
     // IBC multihop currency
@@ -379,7 +381,10 @@ export class ObservableTransferUIConfig {
 
           if (!selectedWallet.isConnected) {
             wallets.forEach((wallet) => wallet.disable());
-            selectedWallet.enable().then(openBridgeModal);
+            selectedWallet
+              .enable()
+              .then(openBridgeModal)
+              .catch((e) => this.displayWalletErrorToast(selectedWallet, e));
           } else openBridgeModal();
         } else if (selectedFiatRamp !== undefined) {
           this.closeAllModals();
@@ -439,6 +444,28 @@ export class ObservableTransferUIConfig {
       this._ibcTransferModal =
       this._fiatRampsModal =
         undefined;
+  }
+
+  protected displayWalletErrorToast(wallet: ObservableWallet, e: any) {
+    const alert = wallet.displayError?.(e);
+
+    if (!alert || typeof alert === "string") {
+      // unknown
+      displayToast(
+        {
+          message: "errors.generic",
+          caption: "unknownError",
+        },
+        ToastType.ERROR
+      );
+      console.error(alert || e?.message || e);
+    } else {
+      displayToast(
+        alert,
+        // if we know it's a pending op, show loading toast
+        e.code === -32002 ? ToastType.LOADING : ToastType.ERROR
+      );
+    }
   }
 }
 

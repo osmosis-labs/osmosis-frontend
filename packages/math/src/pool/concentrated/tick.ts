@@ -224,6 +224,14 @@ export function estimateInitialTickBound({
   };
 }
 
+export function roundPriceToNearestTick(price: Dec): Dec {
+  if (price.gt(maxSpotPrice)) return maxSpotPrice;
+  if (price.lt(minSpotPrice)) return minSpotPrice;
+  const tick = priceToTick(price);
+  const sqrtPrice = tickToSqrtPrice(tick);
+  return sqrtPrice.mul(sqrtPrice);
+}
+
 // TODO: consider moving
 function powTenBigDec(exponent: Int): BigDec {
   if (exponent.gte(new Int(0))) {

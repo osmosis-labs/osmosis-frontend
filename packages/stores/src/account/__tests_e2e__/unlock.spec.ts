@@ -16,7 +16,7 @@ describe("Unbond Token Tx", () => {
     "index light average senior silent limit usual local involve delay update rack cause inmate wall render magnet common feature laundry exact casual resource hundred"
   );
   const account = accountStore.getAccount(chainId);
-  account.cosmos.broadcastMode = "block";
+  account.cosmos.broadcastMode = "sync";
 
   let userLockIds: string[] | undefined;
 

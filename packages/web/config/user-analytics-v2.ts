@@ -156,4 +156,8 @@ export const EventName = {
     blockExplorerLinkOutClicked:
       "Profile Modal: Block explorer link-out clicked",
   },
+  AppStore: {
+    appClicked: "App Store: App clicked",
+    applyClicked: "App Store: Apply CTA clicked",
+  },
 };

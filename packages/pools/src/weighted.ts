@@ -1,8 +1,9 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 import { WeightedPoolMath } from "@osmosis-labs/math";
 
+import { NotEnoughLiquidityError } from "./errors";
 import { SharePool } from "./interface";
-import { RoutablePool, SwapResult } from "./router";
+import { Quote, RoutablePool } from "./router";
 
 /** Raw query response representation of pool. */
 export interface WeightedPoolRaw {
@@ -208,7 +209,7 @@ export class WeightedPool implements SharePool, RoutablePool {
     tokenOut: { denom: string; amount: Int },
     tokenInDenom: string,
     swapFee?: Dec
-  ): Promise<SwapResult> {
+  ): Promise<Quote> {
     const inPoolAsset = this.getPoolAsset(tokenInDenom);
     const outPoolAsset = this.getPoolAsset(tokenOut.denom);
 
@@ -228,6 +229,8 @@ export class WeightedPool implements SharePool, RoutablePool {
       new Dec(tokenOut.amount),
       swapFee ?? this.swapFee
     ).truncate();
+
+    if (tokenInAmount.lte(new Int(0))) throw new NotEnoughLiquidityError();
 
     const afterSpotPriceInOverOut = WeightedPoolMath.calcSpotPrice(
       new Dec(inPoolAsset.amount).add(new Dec(tokenInAmount)),
@@ -264,7 +267,7 @@ export class WeightedPool implements SharePool, RoutablePool {
     tokenIn: { denom: string; amount: Int },
     tokenOutDenom: string,
     swapFee?: Dec
-  ): Promise<SwapResult> {
+  ): Promise<Quote> {
     const inPoolAsset = this.getPoolAsset(tokenIn.denom);
     const outPoolAsset = this.getPoolAsset(tokenOutDenom);
 
@@ -285,18 +288,7 @@ export class WeightedPool implements SharePool, RoutablePool {
       swapFee ?? this.swapFee
     ).truncate();
 
-    if (tokenOutAmount.equals(new Int(0))) {
-      return {
-        amount: new Int(0),
-        beforeSpotPriceInOverOut: new Dec(0),
-        beforeSpotPriceOutOverIn: new Dec(0),
-        afterSpotPriceInOverOut: new Dec(0),
-        afterSpotPriceOutOverIn: new Dec(0),
-        effectivePriceInOverOut: new Dec(0),
-        effectivePriceOutOverIn: new Dec(0),
-        priceImpactTokenOut: new Dec(0),
-      };
-    }
+    if (tokenOutAmount.lte(new Int(0))) throw new NotEnoughLiquidityError();
 
     const afterSpotPriceInOverOut = WeightedPoolMath.calcSpotPrice(
       new Dec(inPoolAsset.amount).add(new Dec(tokenIn.amount)),

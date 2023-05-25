@@ -118,7 +118,7 @@ export function calcInGivenOut(
     .map(({ amount }) => amount);
 
   if (!tokenOutSupply || !tokenInSupply)
-    throw new Error("token supply incorrect");
+    throw new Error("Invalid token supply");
 
   let cfmmOut: BigDec | undefined;
   try {

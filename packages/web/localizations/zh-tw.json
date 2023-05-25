@@ -26,6 +26,17 @@
       "goToSite": "前往網站"
     }
   },
+  "store": {
+    "headerTitle": "提升您的體驗",
+    "headerSubtitle": "交易僅僅是第一步。利用槓桿、金庫等手段投入您的資產，實現更多目標。",
+    "featured": "特色",
+    "searchPlaceholder": "搜索",
+    "getFeatured": "獲得特色",
+    "featuredDescription": "在應用商店上架並接觸成千上萬的用戶。如果您想上榜或被推薦，請聯繫我們，我們將保持溝通。",
+    "applyButton": "申請",
+    "storeDisclaimer": "部分內容由與 Osmosis Labs 或其任何附屬公司無關的第三方準備，Osmosis Labs 對此類內容不承擔責任。Osmosis Labs 不對內容中的任何錯誤或延遲，或因依賴任何內容而採取的任何行動承擔責任。信息僅供參考，不構成投資建議。這不是購買或出售特定數字資產或采用特定投資策略的建議。 Osmosis Labs 不對所提供的任何信息的准確性、適當性或有效性，或針對特定資產作出任何陳述。顯示的價格僅用於說明目的。實際加密貨幣價格及相關統計數據可能有所不同。所呈現的數據可能反映在 Osmosis Labs 交易所及選定的其他加密貨幣交易所上交易的資產。",
+    "allAppsHeader": "所有應用"
+  },
   "assets": {
     "bondedAssets": "已鎖定",
     "historyTable": {
@@ -107,7 +118,8 @@
         "insufficientBal": "結餘不足",
         "insufficientFee": "交易費不足",
         "reconnectWallet": "重新連接 {walletName}",
-        "wrongNetworkInWallet": "非正確網絡? Wrong network in {walletName}"
+        "wrongNetworkInWallet": "非正確網絡? Wrong network in {walletName}",
+        "seeRequest": "在{walletName}中檢視請求"
       },
       "from": "從",
       "loading": "載入中",
@@ -220,6 +232,7 @@
     "info": "統計數據",
     "pools": "流動性池",
     "stake": "質押",
+    "store": "應用",
     "swap": "兌換",
     "vote": "投票"
   },
@@ -386,5 +399,9 @@
   "unknownError": "未知錯誤",
   "viewExplorer": "使用區塊瀏覽器查看",
   "waitingForTransaction": "正等待交易被加入到區塊中",
-  "highPoolInflationWarning": "高APR可能源自通脹性獎勵。請謹慎操作。"
+  "highPoolInflationWarning": "高APR可能源自通脹性獎勵。請謹慎操作。",
+  "ibcx": {
+    "description": "認識來自 ION DAO 的首個 Cosmos 生態系指數。主網上線: ",
+    "link": "index.ion.wtf"
+  }
 }

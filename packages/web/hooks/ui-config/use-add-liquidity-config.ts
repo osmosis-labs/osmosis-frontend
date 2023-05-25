@@ -1,4 +1,3 @@
-import { useState, useCallback } from "react";
 import {
   ChainGetter,
   CosmosQueries,
@@ -6,9 +5,11 @@ import {
   IQueriesStore,
 } from "@keplr-wallet/stores";
 import {
-  OsmosisQueries,
   ObservableAddLiquidityConfig,
+  OsmosisQueries,
 } from "@osmosis-labs/stores";
+import { useCallback, useState } from "react";
+
 import { useStore } from "../../stores";
 
 /** Maintains a single instance of `ObservableAddLiquidityConfig` for React view lifecycle.

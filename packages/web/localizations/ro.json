@@ -26,6 +26,17 @@
       "goToSite": "Du-te la site"
     }
   },
+  "store": {
+    "headerTitle": "Îmbunătățește-ți experiența",
+    "headerSubtitle": "Tranzacționarea este doar primul pas. Pune-ți activele la treabă și realizează mult mai mult cu levier, seifuri și altele.",
+    "featured": "Recomandat",
+    "searchPlaceholder": "Căutare",
+    "getFeatured": "Fii recomandat",
+    "featuredDescription": "Lansează-te pe magazinul de aplicații și obține acces la mii de utilizatori. Dacă dorești să fii listat sau recomandat, contactează-ne și vom fi în legătură.",
+    "applyButton": "Aplică",
+    "storeDisclaimer": "Anumite conținuturi au fost pregătite de terțe părți neafiliate cu Osmosis Labs sau cu oricare dintre afilierile sale, iar Osmosis Labs nu este responsabilă pentru astfel de conținuturi. Osmosis Labs nu este responsabilă pentru eventualele erori sau întârzieri în conținut sau pentru orice acțiuni întreprinse bazându-se pe orice conținut. Informațiile sunt furnizate numai în scop informativ și nu constituie sfaturi de investiții. Aceasta nu este o recomandare de a cumpăra sau vinde un anumit activ digital sau de a utiliza o anumită strategie de investiții. Osmosis Labs nu face nicio declarație cu privire la acuratețea, adecvarea sau validitatea oricăror informații furnizate sau pentru un anumit activ. Prețurile prezentate sunt doar în scop ilustrativ. Prețurile reale ale criptomonedelor și statisticile asociate pot varia. Datele prezentate pot reflecta active tranzacționate pe bursa Osmosis Labs și pe alte burse de criptomonede selectate.",
+    "allAppsHeader": "Toate aplicațiile"
+  },
   "assets": {
     "bondedAssets": "Blocate",
     "historyTable": {
@@ -107,7 +118,8 @@
         "insufficientBal": "Balanta Insuficienta",
         "insufficientFee": "Taxa Insuficienta",
         "reconnectWallet": "Reconecteaza {walletName}",
-        "wrongNetworkInWallet": "Retea gresita in {walletName}"
+        "wrongNetworkInWallet": "Retea gresita in {walletName}",
+        "seeRequest": "Vezi solicitarea în {walletName}"
       },
       "from": "De la",
       "loading": "Se incarca",
@@ -220,6 +232,7 @@
     "info": "Statistici",
     "pools": "Pool-uri",
     "stake": "Actiuni",
+    "store": "Aplicații",
     "swap": "Schimba",
     "vote": "Vot"
   },
@@ -270,7 +283,8 @@
     "unbond": "Deblocate",
     "unbonding": "deblocare",
     "undelegating": "anulare delegare",
-    "yourStats": "Statisticile tale"
+    "yourStats": "Statisticile tale",
+    "day": "zi"
   },
   "pools": {
     "allPools": {
@@ -386,5 +400,9 @@
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",
   "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
-  "highPoolInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență."
+  "highPoolInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență.",
+  "ibcx": {
+    "description": "Întâlniți primul Index al Ecosistemului Cosmos de la ION DAO. Activ pe mainnet: ",
+    "link": "index.ion.wtf"
+  }
 }

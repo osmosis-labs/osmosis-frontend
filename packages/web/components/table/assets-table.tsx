@@ -190,6 +190,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
       toggleSortDirection,
       sortedCells,
     ] = useSortedData(cells);
+
     const setSortKey = useCallback(
       (term: string) => {
         logEvent([

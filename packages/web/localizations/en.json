@@ -17,6 +17,31 @@
     "title": "Add Liquidity",
     "titleInPool": "Add liquidity to pool #{poolId}"
   },
+  "addConcentratedLiquidity": {
+    "step1Title": "Step 1: Pick a strategy",
+    "step2Title": "Step 2: Add Liquidity",
+    "managed": "Managed",
+    "managedDescription": "Enlist one of our providers to manage your position. Coming soon",
+    "manual": "Manual",
+    "manualDescription": "Create a position which you will regular manage for maximum efficiency and rewards.",
+    "back": "Back",
+    "priceShownIn": "Prices shown in {base} per {quote}",
+    "priceRange": "Price Range",
+    "currentPrice": "current price",
+    "basePerQuote": "{base} per {quote}",
+    "selectVolatilityRange": "Select a volatility strategy",
+    "volatilityModerateDescription": "At ~5X concentration, you’ll earn more on swaps but keep an eye on your position, rebalancing to keep the price in range.",
+    "volatilityAggressiveDescription": "At ~30X concentration, you’ll earn a great deal on swaps but risk the price moving out of range. Check this position frequently.",
+    "volatilityCustomDescription": "Create a position that suites your strategy. Remember to keep an eye on any position you set.",
+    "volatilityPassiveDescription": "This full range position is great for setting and forgetting. Earn less on swaps but always remain in range.",
+    "superchargedLearnMore": "Learn more",
+    "fullRange": "Full range",
+    "amountToDeposit": "Amount to deposit",
+    "addLiquidity": "Add Liquidity",
+    "outOfRangeWarning": "The market price is outside your specified price range. Single-asset deposit only.",
+    "high": "high",
+    "low": "low"
+  },
   "app": {
     "banner": {
       "backToOsmosis": "Back to Osmosis",
@@ -25,6 +50,17 @@
       "externalLinkModalTitle": "Leaving Osmosis",
       "goToSite": "Go to Site"
     }
+  },
+  "store": {
+    "headerTitle": "Supercharge your experience",
+    "headerSubtitle": "Trading is just the first step. Put your assets to work and accomplish so much more with leverage, vaults, and beyond.",
+    "featured": "Featured",
+    "searchPlaceholder": "Search",
+    "getFeatured": "Get Featured",
+    "featuredDescription": "Launch on the app store and get access to thousands of users. If you want to get listed or featured, reach out and we’ll be in touch.",
+    "applyButton": "Apply",
+    "storeDisclaimer": "Certain content has been prepared by third parties not affiliated with Osmosis Labs or any of its affiliates and Osmosis Labs is not responsible for such content. Osmosis Labs is not liable for any errors or delays in content, or for any actions taken in reliance on any content. Information is provided for informational purposes only and is not investment advice. This is not a recommendation to buy or sell a particular digital asset or to employ a particular investment strategy. Osmosis Labs makes no representation on the accuracy, suitability, or validity of any information provided or for a particular asset. Prices shown are for illustrative purposes only. Actual cryptocurrency prices and associated stats may vary. Data presented may reflect assets traded on Osmosis Labs’s exchange and select other cryptocurrency exchanges.",
+    "allAppsHeader": "All Apps"
   },
   "assets": {
     "bondedAssets": "Bonded",
@@ -107,7 +143,8 @@
         "insufficientBal": "Insufficient Balance",
         "insufficientFee": "Insufficient Fee",
         "reconnectWallet": "Reconnect {walletName}",
-        "wrongNetworkInWallet": "Wrong network in {walletName}"
+        "wrongNetworkInWallet": "Wrong network in {walletName}",
+        "seeRequest": "See request in {walletName}"
       },
       "from": "From",
       "loading": "Loading",
@@ -193,7 +230,8 @@
     "notInitialized": "Not initialized",
     "percentageSum": "Sum of percentages is not 100",
     "scalingFactorTooLow": "Scaling factor too low",
-    "zeroAmount": "Amount is zero"
+    "zeroAmount": "Amount is zero",
+    "invalidRange": "Invalid price range"
   },
   "keplr": {
     "extension": "Keplr Browser Extension",
@@ -220,6 +258,7 @@
     "info": "Stats",
     "pools": "Pools",
     "stake": "Stake",
+    "store": "Apps",
     "swap": "Swap",
     "vote": "Vote"
   },
@@ -356,7 +395,7 @@
     "titleMobile": "Select Validator"
   },
   "swap": {
-    "autoRouter": "Route",
+    "autoRouter": "Route taken",
     "autoRouterToggle": {
       "hide": "Hide",
       "show": "Show"
@@ -386,5 +425,9 @@
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",
   "waitingForTransaction": "Waiting for transaction to be included in the block",
-  "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution."
+  "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution.",
+  "ibcx": {
+    "description": "Meet the first Cosmos Ecosystem Index from ION DAO. Live on mainnet: ",
+    "link": "index.ion.wtf"
+  }
 }

@@ -1,6 +1,6 @@
 import { Menu } from "@headlessui/react";
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { BasePool } from "@osmosis-labs/pools";
+import type { BasePool } from "@osmosis-labs/pools";
 import {
   CellContext,
   createColumnHelper,
@@ -23,7 +23,7 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { EventName } from "~/config";
+import { EventName, IS_TESTNET } from "~/config";
 import { useAmplitudeAnalytics, useFilteredData, useWindowSize } from "~/hooks";
 import { MenuOptionsModal } from "~/modals";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
@@ -198,7 +198,10 @@ export const AllPoolsTable: FunctionComponent<{
       () =>
         allPoolsWithMetrics.filter((p) => {
           // Filter out pools with low TVL.
-          if (!p.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))) {
+          if (
+            !IS_TESTNET &&
+            !p.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
+          ) {
             return false;
           }
 

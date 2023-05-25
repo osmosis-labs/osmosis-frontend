@@ -38,8 +38,10 @@ export const SelectAssetSourceModal: FunctionComponent<
     {
       className: "mt-3 mx-auto",
       disabled:
-        props.initiallySelectedWalletId === undefined &&
-        !selectedAssetSourceKey,
+        (props.initiallySelectedWalletId === undefined &&
+          !selectedAssetSourceKey) ||
+        (selectedWallet?.isInstalled === false ?? false) ||
+        Boolean(selectedWallet?.isSending),
       onClick: () => {
         if (canOnboardSelectedWallet) {
           selectedWallet!.onboard?.();

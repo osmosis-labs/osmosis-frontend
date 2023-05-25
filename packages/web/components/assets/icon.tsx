@@ -12,6 +12,7 @@ export type SpriteIconId =
   | "search"
   | "up-down-arrow"
   | "close"
+  | "close-thin"
   | "info"
   | "globe"
   | "dust-broom"
@@ -26,6 +27,9 @@ export type SpriteIconId =
   | "sort-down"
   | "check-mark"
   | "minus"
+  | "github"
+  | "twitter"
+  | "medium"
   | "alert-triangle";
 
 /**

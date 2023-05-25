@@ -3,7 +3,7 @@ import { FunctionComponent } from "react";
 
 import { useConnectWalletModalRedirect } from "~/hooks";
 
-import { TradeClipboard } from "../components/trade-clipboard";
+import { SwapTool } from "../components/swap-tool";
 import { ModalBase, ModalBaseProps } from "./base";
 
 interface Props extends ModalBaseProps {
@@ -21,7 +21,7 @@ export const TradeTokens: FunctionComponent<Props> = (props) => {
       hideCloseButton
       className="!w-fit !p-0"
     >
-      <TradeClipboard
+      <SwapTool
         pools={props.pools}
         isInModal
         onRequestModalClose={props.onRequestClose}

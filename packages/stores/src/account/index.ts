@@ -10,15 +10,14 @@ import { BondStatus } from "@keplr-wallet/stores/build/query/cosmos/staking/type
 import { Currency, KeplrSignOptions } from "@keplr-wallet/types";
 import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import * as WeightedPoolEstimates from "@osmosis-labs/math";
-import { BasePool } from "@osmosis-labs/pools";
 import deepmerge from "deepmerge";
 import Long from "long";
 import { DeepPartial } from "utility-types";
 
 import { OsmosisQueries } from "../queries";
-import * as Msgs from "./msg/make-msg";
+import * as Msgs from "./msg/amino";
 import { osmosis } from "./msg/proto";
-import { defaultMsgOpts, OsmosisMsgOpts } from "./types";
+import { defaultMsgOpts, OsmosisMsgOpts } from "./msg-opts";
 
 export interface OsmosisAccount {
   osmosis: OsmosisAccountImpl;
@@ -72,7 +71,7 @@ export class OsmosisAccountImpl {
    * @param swapFee The swap fee of the pool. Should set as the percentage. (Ex. 10% -> 10)
    * @param assets Assets that will be provided to the pool initially, with weights. Token can be parsed as to primitive by convenience. `amount`s are not in micro.
    * @param memo Transaction memo.
-   * @param onFulfill Callback to handle tx fulfillment.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
    */
   async sendCreateBalancerPoolMsg(
     swapFee: string,
@@ -194,7 +193,7 @@ export class OsmosisAccountImpl {
    * @param assets Assets that will be provided to the pool initially, with scaling factors. Token can be parsed as to primitive by convenience. `amount`s are not in micro.
    * @param memo Transaction memo.
    * @param scalingFactorControllerAddress Osmo address of account permitted to change scaling factors later.
-   * @param onFulfill Callback to handle tx fulfillment.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
    */
   async sendCreateStableswapPoolMsg(
     swapFee: string,
@@ -338,7 +337,7 @@ export class OsmosisAccountImpl {
    * @param shareOutAmount LP share amount.
    * @param maxSlippage Max tolerated slippage. Default: 2.5.
    * @param memo Memo attachment.
-   * @param onFulfill Callback to handle tx fulfillment.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
    */
   async sendJoinPoolMsg(
     poolId: string,
@@ -463,7 +462,7 @@ export class OsmosisAccountImpl {
    * @param tokenIn Token being swapped in. `tokenIn.amount` is NOT in micro amount.
    * @param maxSlippage Max tolerated slippage. Default: 2.5.
    * @param memo Transaction memo.
-   * @param onFulfill Callback to handle tx fullfillment.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
   async sendJoinSwapExternAmountInMsg(
     poolId: string,
@@ -586,115 +585,266 @@ export class OsmosisAccountImpl {
     );
   }
 
+  async createConcentratedLiquidityPosition(
+    poolId: string,
+    baseDeposit: { currency: Currency; amount: string },
+    quoteDeposit: { currency: Currency; amount: string },
+    lowerTick: Int,
+    upperTick: Int,
+    memo: string = "",
+    onFulfill?: (tx: any) => void
+  ) {
+    const queries = this.queries;
+    this.queriesStore;
+
+    await this.base.cosmos.sendMsgs(
+      "clCreatePosition",
+      async () => {
+        const queryPool = queries.queryGammPools.getPool(poolId);
+
+        if (!queryPool) {
+          throw new Error(`Pool #${poolId} not found`);
+        }
+
+        await queryPool.waitFreshResponse();
+
+        const type = queryPool.pool.type;
+        if (type !== "concentrated") {
+          throw new Error("Must be concentrated pool");
+        }
+
+        const baseAmount = new Dec(baseDeposit.amount)
+          .mul(
+            DecUtils.getTenExponentNInPrecisionRange(
+              baseDeposit.currency.coinDecimals
+            )
+          )
+          .truncate();
+        const baseCoin = new Coin(
+          baseDeposit.currency.coinMinimalDenom,
+          baseAmount
+        );
+
+        const quoteAmount = new Dec(quoteDeposit.amount)
+          .mul(
+            DecUtils.getTenExponentNInPrecisionRange(
+              quoteDeposit.currency.coinDecimals
+            )
+          )
+          .truncate();
+        const quoteCoin = new Coin(
+          quoteDeposit.currency.coinMinimalDenom,
+          quoteAmount
+        );
+
+        const msg = {
+          type: this._msgOpts.clCreatePosition.type,
+          value: {
+            pool_id: poolId,
+            sender: this.base.bech32Address,
+            lower_tick: lowerTick.toString(),
+            upper_tick: upperTick.toString(),
+            token_desired_0: {
+              denom: baseCoin.denom,
+              amount: baseCoin.amount.toString(),
+            },
+            token_desired_1: {
+              denom: quoteCoin.denom,
+              amount: quoteCoin.amount.toString(),
+            },
+            token_min_amount_0: baseCoin.amount.toString(),
+            token_min_amount_1: quoteCoin.amount.toString(),
+          },
+        };
+
+        return {
+          aminoMsgs: [msg],
+          protoMsgs: [
+            {
+              typeUrl:
+                "/osmosis.concentratedliquidity.v1beta1.MsgCreatePosition",
+              value:
+                osmosis.concentratedliquidity.v1beta1.MsgCreatePosition.encode({
+                  sender: msg.value.sender,
+                  poolId: Long.fromString(msg.value.pool_id),
+                  lowerTick: Long.fromString(lowerTick.toString()),
+                  upperTick: Long.fromString(upperTick.toString()),
+                  tokenDesired0: {
+                    denom: baseCoin.denom,
+                    amount: baseCoin.amount.toString(),
+                  },
+                  tokenDesired1: {
+                    denom: quoteCoin.denom,
+                    amount: quoteCoin.amount.toString(),
+                  },
+                  tokenMinAmount0: baseCoin.amount.toString(),
+                  tokenMinAmount1: quoteCoin.amount.toString(),
+                }).finish(),
+            },
+          ],
+        };
+      },
+      memo,
+      {
+        amount: [],
+        gas: this._msgOpts.clCreatePosition.gas.toString(),
+      },
+      undefined,
+      (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.base.bech32Address)
+            .balances.forEach((bal) => {
+              bal.waitFreshResponse();
+            });
+          this.queries.queryGammPools.getPool(poolId)?.waitFreshResponse();
+        }
+
+        onFulfill?.(tx);
+      }
+    );
+  }
+
   /**
-   * Perform multiple swaps that are routed through multiple pools, with a desired input token.
    *
-   * https://docs.osmosis.zone/developing/modules/spec-gamm.html#swap-exact-amount-in
-   * @param routes Desired pools to swap through.
-   * @param tokenIn Token being swapped.
-   * @param maxSlippage Max tolerated slippage.
+   * @param routes Routes to split swap through.
+   * @param tokenIn Token swapping in.
+   * @param tokenOutMinAmount Minimum amount of token out expected.
    * @param memo Transaction memo.
-   * @param onFulfill Callback to handle tx fullfillment.
+   * @param stdFee Fee options.
+   * @param signOptions Signing options.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
-  async sendMultihopSwapExactAmountInMsg(
+  async sendSplitRouteSwapExactAmountInMsg(
     routes: {
-      poolId: string;
-      tokenOutCurrency: Currency;
+      pools: {
+        id: string;
+        tokenOutDenom: string;
+      }[];
+      tokenInAmount: string;
     }[],
-    tokenIn: { currency: Currency; amount: string },
-    maxSlippage: string = "0",
+    tokenIn: { currency: Currency },
+    tokenOutMinAmount: string,
     memo: string = "",
     stdFee: Partial<StdFee> = {},
     signOptions?: KeplrSignOptions,
     onFulfill?: (tx: any) => void
   ) {
-    const queries = this.queries;
+    const numPools = routes.reduce((acc, route) => acc + route.pools.length, 0);
+    await this.base.cosmos.sendMsgs(
+      "splitRouteSwapExactAmountIn",
+      () => {
+        const msg = Msgs.Amino.makeSplitRouteSwapExactAmountInMsg(
+          this._msgOpts.splitRouteSwapExactAmountIn(numPools),
+          this.base.bech32Address,
+          routes,
+          tokenIn.currency.coinMinimalDenom,
+          tokenOutMinAmount
+        );
 
+        return {
+          aminoMsgs: [msg],
+          protoMsgs: [
+            {
+              typeUrl:
+                "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
+              value:
+                osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn.encode(
+                  {
+                    sender: msg.value.sender,
+                    routes: msg.value.routes.map((route) => ({
+                      pools: route.pools.map((pool) => ({
+                        poolId: Long.fromString(pool.pool_id),
+                        tokenOutDenom: pool.token_out_denom,
+                      })),
+                      tokenInAmount: route.token_in_amount,
+                    })),
+                    tokenInDenom: msg.value.token_in_denom,
+                    tokenOutMinAmount: msg.value.token_out_min_amount,
+                  }
+                ).finish(),
+            },
+          ],
+        };
+      },
+      memo,
+      {
+        amount: stdFee.amount ?? [],
+        gas:
+          stdFee.gas ??
+          this._msgOpts.splitRouteSwapExactAmountIn(numPools).gas.toString(),
+      },
+      signOptions,
+      (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.base.bech32Address)
+            .balances.forEach((bal) => {
+              if (
+                bal.currency.coinMinimalDenom ===
+                  tokenIn.currency.coinMinimalDenom ||
+                routes
+                  .flatMap(({ pools }) => pools)
+                  .find(
+                    (pool) =>
+                      pool.tokenOutDenom === bal.currency.coinMinimalDenom
+                  )
+              ) {
+                bal.waitFreshResponse();
+              }
+            });
+
+          routes
+            .flatMap(({ pools }) => pools)
+            .forEach(({ id: poolId }) => {
+              queries.osmosis?.queryGammPools
+                .getPool(poolId)
+                ?.waitFreshResponse();
+            });
+        }
+
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
+   * Perform swap through one or more pools, with a desired input token.
+   *
+   * https://docs.osmosis.zone/developing/modules/spec-gamm.html#swap-exact-amount-in
+   * @param pools Desired pools to swap through.
+   * @param tokenIn Token being swapped.
+   * @param tokenOutMinAmount Min out amount.
+   * @param memo Transaction memo.
+   * @param stdFee Fee options.
+   * @param signOptions Signing options.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
+   */
+  async sendSwapExactAmountInMsg(
+    pools: {
+      id: string;
+      tokenOutDenom: string;
+    }[],
+    tokenIn: { currency: Currency; amount: string },
+    tokenOutMinAmount: string,
+    memo: string = "",
+    stdFee: Partial<StdFee> = {},
+    signOptions?: KeplrSignOptions,
+    onFulfill?: (tx: any) => void
+  ) {
     await this.base.cosmos.sendMsgs(
       "swapExactAmountIn",
       async () => {
-        // refresh data and get pools
-        const pools: BasePool[] = [];
-        for (const route of routes) {
-          const queryPool = queries.queryGammPools.getPool(route.poolId);
-
-          if (!queryPool) {
-            throw new Error(
-              `Pool #${route.poolId} of route with ${route.tokenOutCurrency.coinMinimalDenom} not found`
-            );
-          }
-
-          pools.push(queryPool.pool);
-        }
-
         // make message with estimated min out amounts
-        const msg = Msgs.Amino.makeMultihopSwapExactAmountInMsg(
-          this._msgOpts.swapExactAmountIn,
+        const msg = Msgs.Amino.makeSwapExactAmountInMsg(
+          this._msgOpts.swapExactAmountIn(pools.length),
           this.base.bech32Address,
           tokenIn,
-          pools.map((pool, i) => {
-            const queryPool = queries.queryGammPools.getPool(pool.id);
-            const isIncentivized =
-              queries.queryIncentivizedPools.isIncentivized(pool.id);
-            const tokenOutCurrency = routes[i].tokenOutCurrency;
-
-            if (!queryPool) {
-              throw new Error(`Pool #${pool.id} not found for route`);
-            }
-
-            if (i !== 0 && typeof routes[i - 1] === "undefined") {
-              throw new Error("Previous route not found");
-            }
-
-            // reconcile weighted and stable pool asset data
-            const inPoolAsset = queryPool.getPoolAsset(
-              i === 0
-                ? tokenIn.currency.coinMinimalDenom
-                : routes[i - 1].tokenOutCurrency.coinMinimalDenom
-            );
-            const outPoolAsset = queryPool.getPoolAsset(
-              tokenOutCurrency.coinMinimalDenom
-            );
-            const inPoolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
-              ({ denom }) =>
-                denom === inPoolAsset.amount.currency.coinMinimalDenom
-            )?.weight;
-            const outPoolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
-              ({ denom }) =>
-                denom === outPoolAsset.amount.currency.coinMinimalDenom
-            )?.weight;
-
-            const poolAssets = queryPool?.stableSwapInfo
-              ? queryPool.stableSwapInfo.assets
-              : [];
-
-            return {
-              pool: {
-                id: pool.id,
-                swapFee: pool.swapFee,
-                inPoolAsset: {
-                  ...inPoolAsset.amount.currency,
-                  amount: new Int(inPoolAsset.amount.toCoin().amount),
-                  weight: inPoolAssetWeight
-                    ? new Int(inPoolAssetWeight.toDec().truncate().toString())
-                    : undefined,
-                },
-                outPoolAsset: {
-                  denom: outPoolAsset.amount.currency.coinMinimalDenom,
-                  amount: new Int(outPoolAsset.amount.toCoin().amount),
-                  weight: outPoolAssetWeight
-                    ? new Int(outPoolAssetWeight.toDec().truncate().toString())
-                    : undefined,
-                },
-                isIncentivized,
-                poolAssets,
-              },
-              tokenOutCurrency,
-            };
-          }),
-          this.chainGetter.getChain(this.chainId).stakeCurrency
-            .coinMinimalDenom,
-          maxSlippage
+          pools,
+          tokenOutMinAmount
         );
 
         // encode proto messages from amino msg data
@@ -702,8 +852,8 @@ export class OsmosisAccountImpl {
           aminoMsgs: [msg],
           protoMsgs: [
             {
-              typeUrl: "/osmosis.gamm.v1beta1.MsgSwapExactAmountIn",
-              value: osmosis.gamm.v1beta1.MsgSwapExactAmountIn.encode({
+              typeUrl: "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
+              value: osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn.encode({
                 sender: msg.value.sender,
                 routes: msg.value.routes.map((route) => {
                   return {
@@ -723,9 +873,7 @@ export class OsmosisAccountImpl {
         amount: stdFee.amount ?? [],
         gas:
           stdFee.gas ??
-          (
-            this._msgOpts.swapExactAmountIn.gas * Math.max(routes.length, 1)
-          ).toString(),
+          this._msgOpts.swapExactAmountIn(pools.length).gas.toString(),
       },
       signOptions,
       (tx) => {
@@ -738,149 +886,19 @@ export class OsmosisAccountImpl {
               if (
                 bal.currency.coinMinimalDenom ===
                   tokenIn.currency.coinMinimalDenom ||
-                routes.find(
-                  (r) =>
-                    r.tokenOutCurrency.coinMinimalDenom ===
-                    bal.currency.coinMinimalDenom
+                pools.find(
+                  (pool) => pool.tokenOutDenom === bal.currency.coinMinimalDenom
                 )
               ) {
                 bal.waitFreshResponse();
               }
             });
 
-          routes.forEach(({ poolId }) =>
-            queries.osmosis?.queryGammPools.getPool(poolId)?.waitFreshResponse()
-          );
-        }
-
-        onFulfill?.(tx);
-      }
-    );
-  }
-
-  /**
-   * https://docs.osmosis.zone/developing/modules/spec-gamm.html#swap-exact-amount-in
-   * @param poolId Id of pool to swap within.
-   * @param tokenIn Token being swapped in. `tokenIn.amount` is NOT in micro.
-   * @param tokenOutCurrency Currency of outgoing token.
-   * @param maxSlippage Max tolerated slippage.
-   * @param memo Transaction memo.
-   * @param onFulfill Callback to handle tx fullfillment.
-   */
-  async sendSwapExactAmountInMsg(
-    poolId: string,
-    tokenIn: { currency: Currency; amount: string },
-    tokenOutCurrency: Currency,
-    maxSlippage: string = "0",
-    memo: string = "",
-    stdFee: Partial<StdFee> = {},
-    signOptions?: KeplrSignOptions,
-    onFulfill?: (tx: any) => void
-  ) {
-    const queries = this.queries;
-
-    await this.base.cosmos.sendMsgs(
-      "swapExactAmountIn",
-      async () => {
-        // get pool info and refetch
-        const queryPool = queries.queryGammPools.getPool(poolId);
-        if (!queryPool) {
-          throw new Error(`Pool #${poolId} not found`);
-        }
-        const pool = queryPool.pool;
-
-        // reconcile weighted and stable pool asset data
-        const inPoolAsset = queryPool.getPoolAsset(
-          tokenIn.currency.coinMinimalDenom
-        );
-        const outPoolAsset = queryPool.getPoolAsset(
-          tokenOutCurrency.coinMinimalDenom
-        );
-        const inPoolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
-          ({ denom }) => denom === inPoolAsset.amount.currency.coinMinimalDenom
-        )?.weight;
-        const outPoolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
-          ({ denom }) => denom === outPoolAsset.amount.currency.coinMinimalDenom
-        )?.weight;
-        const poolAssets = queryPool.stableSwapInfo
-          ? queryPool.stableSwapInfo.assets
-          : [];
-
-        const msg = Msgs.Amino.makeSwapExactAmountInMsg(
-          {
-            // ...pool, <= does not work w/ getters
-            id: pool.id,
-            swapFee: pool.swapFee,
-            inPoolAsset: {
-              ...inPoolAsset.amount.currency,
-              amount: new Int(inPoolAsset.amount.toCoin().amount),
-              weight: inPoolAssetWeight
-                ? new Int(inPoolAssetWeight.toDec().truncate().toString())
-                : undefined,
-            },
-            outPoolAsset: {
-              denom: outPoolAsset.amount.currency.coinMinimalDenom,
-              amount: new Int(outPoolAsset.amount.toCoin().amount),
-              weight: outPoolAssetWeight
-                ? new Int(outPoolAssetWeight.toDec().truncate().toString())
-                : undefined,
-            },
-            poolAssets,
-          },
-          this._msgOpts.swapExactAmountIn,
-          this.base.bech32Address,
-          tokenIn,
-          tokenOutCurrency,
-          maxSlippage
-        );
-
-        return {
-          aminoMsgs: [msg],
-          protoMsgs: [
-            {
-              typeUrl: "/osmosis.gamm.v1beta1.MsgSwapExactAmountIn",
-              value: osmosis.gamm.v1beta1.MsgSwapExactAmountIn.encode({
-                sender: msg.value.sender,
-                routes: msg.value.routes.map(
-                  (route: { pool_id: string; token_out_denom: string }) => {
-                    return {
-                      poolId: Long.fromString(route.pool_id),
-                      tokenOutDenom: route.token_out_denom,
-                    };
-                  }
-                ),
-                tokenIn: msg.value.token_in,
-                tokenOutMinAmount: msg.value.token_out_min_amount,
-              }).finish(),
-            },
-          ],
-        };
-      },
-      memo,
-      {
-        amount: stdFee.amount ?? [],
-        gas: stdFee.gas ?? this._msgOpts.swapExactAmountIn.gas.toString(),
-      },
-      signOptions,
-      (tx) => {
-        if (tx.code == null || tx.code === 0) {
-          // Refresh the balances
-          const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.base.bech32Address)
-            .balances.forEach((bal) => {
-              if (
-                bal.currency.coinMinimalDenom ===
-                  tokenIn.currency.coinMinimalDenom ||
-                bal.currency.coinMinimalDenom ===
-                  tokenOutCurrency.coinMinimalDenom
-              ) {
-                bal.waitFreshResponse();
-              }
-            });
-
-          // Refresh the pool
-          this.queries.queryGammPools.getPool(poolId)?.waitFreshResponse();
+          pools.forEach(({ id: poolId }) => {
+            queries.osmosis?.queryGammPools
+              .getPool(poolId)
+              ?.waitFreshResponse();
+          });
         }
 
         onFulfill?.(tx);
@@ -890,86 +908,43 @@ export class OsmosisAccountImpl {
 
   /**
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#swap-exact-amount-out
-   * @param poolId Id of pool to swap within.
-   * @param tokenInCurrency Currency of incoming token.
-   * @param tokenOut Token being swapped. `tokenIn.amount` is NOT in micro.
-   * @param maxSlippage Max amount of tolerated slippage.
+   * @param pools Desired pools to swap through.
+   * @param tokenOut Token specified out.
+   * @param tokenInMaxAmount Max token in.
    * @param memo Transaction memo.
-   * @param onFulfill Callback to handle tx fullfillment.
+   * @param stdFee Fee options.
+   * @param signOptions Signing options.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
   async sendSwapExactAmountOutMsg(
-    poolId: string,
-    tokenInCurrency: Currency,
+    pools: {
+      id: string;
+      tokenInDenom: string;
+    }[],
     tokenOut: { currency: Currency; amount: string },
-    maxSlippage: string = "0",
+    tokenInMaxAmount: string,
     memo: string = "",
+    stdFee: Partial<StdFee> = {},
+    signOptions?: KeplrSignOptions,
     onFulfill?: (tx: any) => void
   ) {
-    const queries = this.queries;
-
     await this.base.cosmos.sendMsgs(
       "swapExactAmountOut",
       async () => {
-        const queryPool = queries.queryGammPools.getPool(poolId);
-
-        if (!queryPool) {
-          throw new Error(`Pool #${poolId} not found`);
-        }
-
-        const pool = queryPool.pool;
-        if (!pool) {
-          throw new Error("Unknown pool");
-        }
-
-        const inPoolAsset = queryPool.getPoolAsset(
-          tokenInCurrency.coinMinimalDenom
-        );
-        const outPoolAsset = queryPool.getPoolAsset(
-          tokenOut.currency.coinMinimalDenom
-        );
-        const inPoolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
-          ({ denom }) => denom === inPoolAsset.amount.currency.coinMinimalDenom
-        )?.weight;
-        const outPoolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
-          ({ denom }) => denom === outPoolAsset.amount.currency.coinMinimalDenom
-        )?.weight;
-        const poolAssets = queryPool?.stableSwapInfo
-          ? queryPool.stableSwapInfo.assets
-          : [];
-
         const msg = Msgs.Amino.makeSwapExactAmountOutMsg(
-          {
-            id: pool.id,
-            swapFee: pool.swapFee,
-            inPoolAsset: {
-              ...inPoolAsset.amount.currency,
-              amount: new Int(inPoolAsset.amount.toCoin().amount),
-              weight: inPoolAssetWeight
-                ? new Int(inPoolAssetWeight.toDec().truncate().toString())
-                : undefined,
-            },
-            outPoolAsset: {
-              denom: outPoolAsset.amount.currency.coinMinimalDenom,
-              amount: new Int(outPoolAsset.amount.toCoin().amount),
-              weight: outPoolAssetWeight
-                ? new Int(outPoolAssetWeight.toDec().truncate().toString())
-                : undefined,
-            },
-            poolAssets,
-          },
-          this._msgOpts.swapExactAmountOut,
-          this.base.bech32Address,
-          tokenInCurrency,
           tokenOut,
-          maxSlippage
+          pools,
+          tokenInMaxAmount,
+          this._msgOpts.swapExactAmountOut(pools.length),
+          this.base.bech32Address
         );
 
         return {
           aminoMsgs: [msg],
           protoMsgs: [
             {
-              typeUrl: "/osmosis.gamm.v1beta1.MsgSwapExactAmountOut",
-              value: osmosis.gamm.v1beta1.MsgSwapExactAmountOut.encode({
+              typeUrl: "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut",
+              value: osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut.encode({
                 sender: msg.value.sender,
                 routes: msg.value.routes.map(
                   (route: { pool_id: string; token_in_denom: string }) => {
@@ -988,10 +963,12 @@ export class OsmosisAccountImpl {
       },
       memo,
       {
-        amount: [],
-        gas: this._msgOpts.swapExactAmountIn.gas.toString(),
+        amount: stdFee.amount ?? [],
+        gas:
+          stdFee.gas ??
+          this._msgOpts.swapExactAmountIn(pools.length).gas.toString(),
       },
-      undefined,
+      signOptions,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
           // Refresh the balances
@@ -1000,8 +977,10 @@ export class OsmosisAccountImpl {
             .getQueryBech32Address(this.base.bech32Address)
             .balances.forEach((bal) => {
               if (
-                bal.currency.coinMinimalDenom ===
-                  tokenInCurrency.coinMinimalDenom ||
+                pools.some(
+                  ({ tokenInDenom }) =>
+                    tokenInDenom === bal.currency.coinMinimalDenom
+                ) ||
                 bal.currency.coinMinimalDenom ===
                   tokenOut.currency.coinMinimalDenom
               ) {
@@ -1009,7 +988,9 @@ export class OsmosisAccountImpl {
               }
             });
 
-          this.queries.queryGammPools.getPool(poolId)?.waitFreshResponse();
+          pools.forEach(({ id }) =>
+            this.queries.queryGammPools.getPool(id)?.waitFreshResponse()
+          );
         }
 
         onFulfill?.(tx);
@@ -1023,7 +1004,7 @@ export class OsmosisAccountImpl {
    * @param shareInAmount LP shares to redeem.
    * @param maxSlippage Max tolerated slippage. Default: 2.5.
    * @param memo Transaction memo.
-   * @param onFulfill Callback to handle tx fullfillment.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
   async sendExitPoolMsg(
     poolId: string,
@@ -1123,7 +1104,7 @@ export class OsmosisAccountImpl {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
-            .fetch();
+            .balances.forEach((balance) => balance.waitFreshResponse());
 
           this.queries.queryGammPools.getPool(poolId)?.waitFreshResponse();
         }
@@ -1138,7 +1119,7 @@ export class OsmosisAccountImpl {
    * @param duration Duration, in seconds, to lock up the tokens.
    * @param tokens Tokens to lock. `amount`s are not in micro.
    * @param memo Transaction memo.
-   * @param onFulfill Callback to handle tx fullfillment.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
   async sendLockTokensMsg(
     duration: number,
@@ -1204,7 +1185,7 @@ export class OsmosisAccountImpl {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
-            .fetch();
+            .balances.forEach((balance) => balance.waitFreshResponse());
 
           // Refresh the locked coins
           this.queries.queryLockedCoins
@@ -1224,7 +1205,7 @@ export class OsmosisAccountImpl {
    * @param lockIds Ids of LP bonded locks.
    * @param validatorAddress Bech32 address of validator to delegate to.
    * @param memo Tx memo.
-   * @param onFulfill Callback to handle tx fullfillment.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
   async sendSuperfluidDelegateMsg(
     lockIds: string[],
@@ -1272,7 +1253,7 @@ export class OsmosisAccountImpl {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
-            .fetch();
+            .balances.forEach((balance) => balance.waitFreshResponse());
 
           queries.osmosis?.queryAccountLocked
             .get(this.base.bech32Address)
@@ -1296,7 +1277,7 @@ export class OsmosisAccountImpl {
    * @param tokens LP tokens to delegate and lock. `amount`s are not in micro.
    * @param validatorAddress Validator address to delegate to.
    * @param memo Tx memo.
-   * @param onFulfill Callback to handle tx fullfillment.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
   async sendLockAndSuperfluidDelegateMsg(
     tokens: {
@@ -1356,7 +1337,7 @@ export class OsmosisAccountImpl {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
-            .fetch();
+            .balances.forEach((balance) => balance.waitFreshResponse());
 
           // Refresh the locked coins
           queries.osmosis?.queryLockedCoins
@@ -1380,7 +1361,7 @@ export class OsmosisAccountImpl {
    * https://docs.osmosis.zone/developing/modules/spec-lockup.html#begin-unlock-by-id
    * @param lockIds Ids of locks to unlock.
    * @param memo Transaction memo.
-   * @param onFulfill Callback to handle tx fullfillment.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
   async sendBeginUnlockingMsg(
     lockIds: string[],
@@ -1426,7 +1407,7 @@ export class OsmosisAccountImpl {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
-            .fetch();
+            .balances.forEach((balance) => balance.waitFreshResponse());
 
           // Refresh the locked coins
           this.queries.queryLockedCoins
@@ -1449,7 +1430,7 @@ export class OsmosisAccountImpl {
    * https://docs.osmosis.zone/developing/osmosis-core/modules/spec-superfluid.html#superfluid-unbond-lock
    * @param locks IDs and whether the lock is synthetic
    * @param memo Transaction memo.
-   * @param onFulfill Callback to handle tx fullfillment.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
   async sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
     locks: {
@@ -1557,7 +1538,7 @@ export class OsmosisAccountImpl {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
-            .fetch();
+            .balances.forEach((balance) => balance.waitFreshResponse());
 
           // Refresh the locked coins
           queries.osmosis?.queryLockedCoins
@@ -1670,4 +1651,4 @@ export class OsmosisAccountImpl {
   };
 }
 
-export * from "./types";
+export * from "./msg-opts";

@@ -6,8 +6,8 @@ import {
 } from "@keplr-wallet/stores";
 import { makeObservable, observable, runInAction } from "mobx";
 import { computedFn } from "mobx-utils";
-import { ObservableQueryLiquiditiesNetInDirection } from "src/queries/concentrated-liquidity";
 
+import { ObservableQueryLiquiditiesNetInDirection } from "../../queries";
 import {
   ObservableQueryNumPools,
   ObservableQueryPool,

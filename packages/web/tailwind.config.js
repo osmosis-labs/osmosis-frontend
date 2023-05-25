@@ -96,6 +96,7 @@ module.exports = {
       transparent: "transparent",
       black: "black",
       inherit: "inherit",
+      barFill: "#4f4aa2",
     },
     fontSize: {
       xxs: "0.5rem",
@@ -214,6 +215,9 @@ module.exports = {
         content: "calc(100vh - 72px)",
         "content-mobile": "calc(100vh - 58px)",
       },
+      flex: {
+        "basis-50": "0 1 50%",
+      },
       width: {
         loader: {
           1: "3.75rem",
@@ -233,6 +237,7 @@ module.exports = {
         container: "70rem",
         clipboard: "32.5rem",
         modal: "42rem",
+        35: "35%",
       },
       maxHeight: {
         terms: "28rem",
@@ -249,6 +254,7 @@ module.exports = {
       boxShadow: {
         separator: "0px -1px 0px 0px rgba(255, 255, 255, 0.12)",
         md: "0px 6px 8px rgba(9, 5, 36, 0.2)",
+        "volatility-preset": "0px 0px 12px 2px #8C8AF9",
       },
       borderRadius: {
         none: "0",
