@@ -985,7 +985,6 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-378",
         destChannelId: "channel-2",
         coinMinimalDenom: "ulamb",
-        isUnstable: true,
       },
       {
         counterpartyChainId: "likecoin-mainnet-2",
