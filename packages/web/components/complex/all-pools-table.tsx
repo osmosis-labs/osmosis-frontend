@@ -383,19 +383,23 @@ export const AllPoolsTable: FunctionComponent<{
 
               return (
                 <MetricLoaderCell
+                  className="w-2 text-right"
                   isLoading={
                     queriesOsmosis.queryIncentivizedPools.isAprFetching
                   }
                   value={
                     // Only display warning when APR is too high
                     isAPRTooHigh ? (
-                      <Tooltip content={t("highPoolInflationWarning")}>
+                      <Tooltip
+                        className="w-5"
+                        content={t("highPoolInflationWarning")}
+                      >
                         <p className="flex items-center gap-1.5">
+                          {pool.apr.toString()}
                           <Icon
                             id="alert-triangle"
                             className="h-4 w-4 text-osmoverse-400"
                           />
-                          {pool.apr.toString()}
                         </p>
                       </Tooltip>
                     ) : (

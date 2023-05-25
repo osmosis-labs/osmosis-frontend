@@ -103,11 +103,11 @@
   }
 
   thead > tr > th:first-child {
-    @apply rounded-tl-lg py-[18px] pl-10 pr-3 md:rounded-none;
+    @apply justify-start rounded-tl-lg py-[18px] pl-10 pr-3 md:rounded-none;
   }
 
   thead > tr > th {
-    @apply p-3 py-[18px] font-body2;
+    @apply justify-end p-3 py-[18px] font-body2;
   }
 
   thead > tr > th:last-child {
@@ -119,7 +119,7 @@
   }
 
   tbody > tr > td {
-    @apply p-3;
+    @apply p-3 text-right;
   }
 
   tbody > tr > td:last-child {

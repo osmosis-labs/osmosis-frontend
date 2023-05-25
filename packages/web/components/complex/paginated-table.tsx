@@ -93,19 +93,21 @@ export const PaginatedTable = ({
 
   return (
     <table className="w-full">
-      <thead className="z-[51] m-0">
+      <thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
+            {headerGroup.headers.map((header, i) => (
               <th key={header.id} colSpan={header.colSpan}>
                 {header.isPlaceholder ? null : (
                   <div
-                    className={
-                      header.column.getCanSort()
-                        ? "flex cursor-pointer select-none items-center gap-2"
-                        : ""
-                    }
-                    onClick={() => header.column.getToggleSortingHandler()}
+                    className={classNames(
+                      {
+                        "flex cursor-pointer select-none items-center gap-2":
+                          header.column.getCanSort(),
+                      },
+                      i === 0 ? "justify-start" : "justify-end"
+                    )}
+                    onClick={header.column.getToggleSortingHandler()}
                   >
                     {flexRender(
                       header.column.columnDef.header,
