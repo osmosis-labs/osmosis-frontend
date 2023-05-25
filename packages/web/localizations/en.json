@@ -219,7 +219,7 @@
     "percentageSum": "Sum of percentages is not 100",
     "scalingFactorTooLow": "Scaling factor too low",
     "zeroAmount": "Amount is zero",
-    "invalidRange":  "Invalid price range"
+    "invalidRange": "Invalid price range"
   },
   "keplr": {
     "extension": "Keplr Browser Extension",
