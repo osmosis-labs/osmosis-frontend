@@ -165,12 +165,10 @@ export const PaginatedTable = ({
                       href={`/pool/${row.original.pool.id}`}
                       key={virtualRow.index}
                     >
-                      <a className="focus:outline-none">
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </a>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </Link>
                   </td>
                 );
