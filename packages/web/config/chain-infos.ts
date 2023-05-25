@@ -3556,7 +3556,7 @@ chainInfos.push({
       coinDecimals: 6,
       // coinGeckoId: "tether",
       coinGeckoId: "pool:uusdt.grv",
-      coinImageUrl: "/tokens/usdt.svg",
+      coinImageUrl: "/tokens/usdt.png",
       pegMechanism: "collateralized",
     },
     {
@@ -3582,7 +3582,7 @@ chainInfos.push({
       coinDecimals: 8,
       // coinGeckoId: "wrapped-bitcoin",
       coinGeckoId: "pool:wbtc-satoshi",
-      coinImageUrl: "/tokens/wbtc.png",
+      coinImageUrl: "/tokens/wbtc-with-letters.png",
     },
     {
       coinDenom: "LINK",
@@ -3747,7 +3747,7 @@ chainInfos.push({
       coinMinimalDenom: "pepe-wei",
       coinDecimals: 18,
       coinGeckoId: "pool:pepe",
-      coinImageUrl: "/tokens/pepe.svg",
+      coinImageUrl: "/tokens/pepe-circular.svg",
     },
     {
       coinDenom: "cbETH",
