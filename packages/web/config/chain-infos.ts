@@ -3747,7 +3747,7 @@ chainInfos.push({
       coinMinimalDenom: "pepe-wei",
       coinDecimals: 18,
       coinGeckoId: "pool:pepe",
-      coinImageUrl: "/tokens/pepe-circular.svg",
+      coinImageUrl: "/tokens/pepe-circular.png",
     },
     {
       coinDenom: "cbETH",
