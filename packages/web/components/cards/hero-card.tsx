@@ -48,6 +48,7 @@ export const HeroCard: React.FunctionComponent<{
       EventName.AppStore.appClicked,
       { appName: title, isFeatured: true, isBanner: true },
     ]);
+    window.open(externalUrl, "_blank", "noopener noreferrer");
   };
 
   return (
@@ -55,12 +56,9 @@ export const HeroCard: React.FunctionComponent<{
       <div className="body2 mb-2 pl-6 font-bold text-osmoverse-200">
         {label ? label : t("store.featured")}
       </div>
-      <a
-        href={externalUrl}
-        target="_blank"
-        rel="noopener noreferrer"
+      <div
         onClick={handleAppClicked}
-        className="heroImage relative flex h-[400px] items-end overflow-hidden rounded-lg"
+        className="heroImage relative flex h-[400px] cursor-pointer items-end overflow-hidden rounded-lg"
       >
         <div
           className="backgroundImage absolute top-0 left-0 z-10 h-full w-full bg-cover bg-center bg-no-repeat"
@@ -99,11 +97,11 @@ export const HeroCard: React.FunctionComponent<{
             background: linear-gradient(
               to bottom,
               rgba(0, 0, 0, 0),
-              rgba(0, 0, 0, 0.5)
+              rgba(0, 0, 0, 0.8)
             );
           }
         `}</style>
-      </a>
+      </div>
     </div>
   );
 };

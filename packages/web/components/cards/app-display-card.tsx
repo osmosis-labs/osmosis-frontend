@@ -31,6 +31,7 @@ export const AppDisplayCard: FunctionComponent<{
       EventName.AppStore.appClicked,
       { appName: title, isFeatured: false, isBanner: false, position: index },
     ]);
+    window.open(externalUrl, "_blank", "noopener noreferrer");
   };
   return (
     <>
@@ -42,19 +43,10 @@ export const AppDisplayCard: FunctionComponent<{
           background-image: url(${imageUrl});
         }
       `}</style>
-      <a
-        href={externalUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={handleAppClicked}
-      >
+      <div className="cursor-pointer" onClick={handleAppClicked}>
         <div className="app-display-card bg-white h-[300px] overflow-hidden rounded-lg bg-osmoverse-800 shadow-md">
           <div className="overflow-hidden">
-            <ImageComponent
-              src={imageUrl || ""}
-              alt={`${title} thumbnail`}
-              className="h-40 transition-transform duration-300 ease-in"
-            />
+            <div className="card-image inset-0 h-40 overflow-hidden bg-cover bg-center transition-transform duration-300 ease-in"></div>
           </div>
           <div className="min-h-[120px] p-4">
             <div className="flex items-center space-x-3">
@@ -83,25 +75,7 @@ export const AppDisplayCard: FunctionComponent<{
             <p className="pt-3 text-xs text-osmoverse-200">{subtitle}</p>
           </div>
         </div>
-      </a>
+      </div>
     </>
-  );
-};
-
-export default AppDisplayCard;
-
-const ImageComponent: React.FC<{
-  src: string;
-  alt: string;
-  className?: string;
-}> = ({ src, alt, className }) => {
-  return (
-    <div className={`relative overflow-hidden ${className}`}>
-      <img
-        className="absolute inset-0 h-full w-full object-cover object-center"
-        src={src}
-        alt={alt}
-      />
-    </div>
   );
 };

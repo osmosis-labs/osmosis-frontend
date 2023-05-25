@@ -94,7 +94,7 @@ export const MainMenu: FunctionComponent<{
                       icon
                     )}
                   </div>
-                  <p
+                  <div
                     className={classNames(
                       "max-w-24 ml-2.5 overflow-x-hidden text-base font-semibold transition-all",
                       {
@@ -114,7 +114,7 @@ export const MainMenu: FunctionComponent<{
                     ) : (
                       label
                     )}
-                  </p>
+                  </div>
                   {!selectionTest && typeof link === "string" && (
                     <div className="ml-2">
                       <Image

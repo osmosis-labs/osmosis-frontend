@@ -5,7 +5,7 @@ import { useWindowSize } from "react-use";
 
 import { buttonCVA } from "~/components/buttons";
 import { HeroCard } from "~/components/cards";
-import AppDisplayCard from "~/components/cards/app-display-card";
+import { AppDisplayCard } from "~/components/cards/app-display-card";
 import { SearchBox } from "~/components/input";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
