@@ -75,6 +75,13 @@ function MyApp({ Component, pageProps }: AppProps) {
         iconSelected: "/icons/asset-white.svg",
         selectionTest: /\/assets/,
       },
+      {
+        label: t("menu.store"),
+        link: "/apps",
+        icon: "/icons/app-icon.svg",
+        iconSelected: "/icons/app-icon.svg",
+        selectionTest: /\/apps/,
+      },
     ];
 
     if (PromotedLBPPoolIds.length > 0) {

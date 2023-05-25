@@ -180,6 +180,13 @@ export const SourceChainTokenConfigs: {
       logoUrl: "/networks/ethereum.svg",
     },
   },
+  pepe: {
+    ethereum: {
+      id: "Ethereum" as const,
+      erc20ContractAddress: "0x6982508145454Ce325dDbE47a25d4ec3d2311933",
+      logoUrl: "/networks/ethereum.svg",
+    },
+  },
   wbnb: {
     binance: {
       id: IS_TESTNET

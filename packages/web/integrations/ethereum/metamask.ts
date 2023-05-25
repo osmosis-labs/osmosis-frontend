@@ -8,6 +8,7 @@ import {
   runInAction,
 } from "mobx";
 import { computedFn } from "mobx-utils";
+import { t } from "react-multi-lang";
 import { isAddress, toHex } from "web3-utils";
 
 import { Alert } from "../../components/alert";
@@ -151,6 +152,10 @@ export class ObservableMetamask implements EthWallet {
   enable(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       withEthInWindow((ethereum) => {
+        if (this.isSending) {
+          console.log("enable() isSending = true");
+          return reject(`MetaMask: request in progress: ${this.isSending}`);
+        }
         return ethereum
           .request({ method: "eth_requestAccounts" })
           .then((accounts) => {
@@ -173,7 +178,7 @@ export class ObservableMetamask implements EthWallet {
     this._chainId = undefined;
   }
 
-  send = computedFn(({ method, params: ethTx }) => {
+  readonly send = computedFn(({ method, params: ethTx }) => {
     if (!this.isConnected) {
       return Promise.reject(
         "MetaMask: can't send request, account not connected"
@@ -197,6 +202,7 @@ export class ObservableMetamask implements EthWallet {
             // metamask may clear address upon switching network
             await this.enable();
           } catch (e: any) {
+            console.log("metamask error", e);
             if (e === "switchToChain: switch in progress") {
               return Promise.reject("MetaMask: Switch pending already");
             }
@@ -232,6 +238,7 @@ export class ObservableMetamask implements EthWallet {
             );
           }
         } catch (e: any) {
+          console.log("in send", e.code);
           throw e;
         } finally {
           runInAction(() => (this._isSending = null));
@@ -253,12 +260,19 @@ export class ObservableMetamask implements EthWallet {
       // wallet is not logged in (but is connected)
       return {
         message: "Action Unavailable",
-        caption: `Please log into MetaMask`,
+        caption: "Please log into MetaMask",
+      };
+    } else if (e.code === -32002) {
+      // request is there already
+      return {
+        message: t("assets.transfer.errors.seeRequest", {
+          walletName: this.displayInfo.displayName,
+        }),
       };
     }
   }
 
-  makeExplorerUrl = (txHash: string) =>
+  readonly makeExplorerUrl = (txHash: string) =>
     IS_TESTNET
       ? `https://goerli.etherscan.io/tx/${txHash}`
       : `https://etherscan.io/tx/${txHash}`;

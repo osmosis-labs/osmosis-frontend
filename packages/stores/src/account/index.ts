@@ -1104,7 +1104,7 @@ export class OsmosisAccountImpl {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
-            .fetch();
+            .balances.forEach((balance) => balance.waitFreshResponse());
 
           this.queries.queryGammPools.getPool(poolId)?.waitFreshResponse();
         }
@@ -1185,7 +1185,7 @@ export class OsmosisAccountImpl {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
-            .fetch();
+            .balances.forEach((balance) => balance.waitFreshResponse());
 
           // Refresh the locked coins
           this.queries.queryLockedCoins
@@ -1253,7 +1253,7 @@ export class OsmosisAccountImpl {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
-            .fetch();
+            .balances.forEach((balance) => balance.waitFreshResponse());
 
           queries.osmosis?.queryAccountLocked
             .get(this.base.bech32Address)
@@ -1337,7 +1337,7 @@ export class OsmosisAccountImpl {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
-            .fetch();
+            .balances.forEach((balance) => balance.waitFreshResponse());
 
           // Refresh the locked coins
           queries.osmosis?.queryLockedCoins
@@ -1407,7 +1407,7 @@ export class OsmosisAccountImpl {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
-            .fetch();
+            .balances.forEach((balance) => balance.waitFreshResponse());
 
           // Refresh the locked coins
           this.queries.queryLockedCoins
@@ -1538,7 +1538,7 @@ export class OsmosisAccountImpl {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
-            .fetch();
+            .balances.forEach((balance) => balance.waitFreshResponse());
 
           // Refresh the locked coins
           queries.osmosis?.queryLockedCoins

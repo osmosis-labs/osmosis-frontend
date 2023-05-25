@@ -1561,16 +1561,6 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     destCoinId: "pool:uosmo",
   },
   {
-    alternativeCoinId: "pool:pepe",
-    poolId: "979",
-    spotPriceSourceDenom: DenomHelper.ibcDenom(
-      [{ portId: "transfer", channelId: "channel-169" }],
-      "cw20:juno1zqrj3ta4u7ylv0wqzd8t8q3jrr9rdmn43zuzp9zemeunecnhy8fss778g7"
-    ),
-    spotPriceDestDenom: "uosmo",
-    destCoinId: "pool:uosmo",
-  },
-  {
     alternativeCoinId: "pool:catmos",
     poolId: "981",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
@@ -1644,16 +1634,6 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     destCoinId: "pool:uosmo",
   },
   {
-    alternativeCoinId: "pool:void",
-    poolId: "1003",
-    spotPriceSourceDenom: DenomHelper.ibcDenom(
-      [{ portId: "transfer", channelId: "channel-169" }],
-      "cw20:juno1lpvx3mv2a6ddzfjc7zzz2v2cm5gqgqf0hx67hc5p5qwn7hz4cdjsnznhu8"
-    ),
-    spotPriceDestDenom: "uosmo",
-    destCoinId: "pool:uosmo",
-  },
-  {
     alternativeCoinId: "pool:ubnt",
     poolId: "1007",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
@@ -1693,6 +1673,34 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
       [{ portId: "transfer", channelId: "channel-169" }],
       "cw20:juno1epxnvge53c4hkcmqzlxryw5fp7eae2utyk6ehjcfpwajwp48km3sgxsh9k"
     ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:pepe",
+    poolId: "1018",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-208" }],
+      "pepe-wei"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:uctk",
+    poolId: "1020",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-146" }],
+      "uctk"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:ibcx",
+    poolId: "1022",
+    spotPriceSourceDenom:
+      "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
   },
