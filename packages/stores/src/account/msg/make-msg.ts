@@ -141,11 +141,15 @@ export class Amino {
 
     const tokenOutMinAmount = maxSlippageDec.equals(new Dec(0))
       ? new Int(1)
-      : PoolMath.calcPriceImpactWithAmount(
-          estimated.raw.spotPriceBefore,
-          inUAmount,
-          maxSlippageDec
-        );
+      : estimated.tokenOut
+          .toDec()
+          .mul(new Dec(1).sub(maxSlippageDec))
+          .mulTruncate(
+            DecUtils.getTenExponentNInPrecisionRange(
+              estimated.tokenOut.currency.coinDecimals
+            )
+          )
+          .truncate();
 
     return {
       type: msgOpt.type,
