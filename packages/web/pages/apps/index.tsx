@@ -1,6 +1,7 @@
 import Fuse from "fuse.js";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-multi-lang";
+import { useWindowSize } from "react-use";
 
 import { buttonCVA } from "~/components/buttons";
 import { HeroCard } from "~/components/cards";
@@ -47,6 +48,10 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
 
   const { applications } = apps;
 
+  const t = useTranslation();
+  const { logEvent } = useAmplitudeAnalytics();
+  const { width } = useWindowSize();
+
   useEffect(() => {
     const options = {
       keys: ["title"],
@@ -54,8 +59,9 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
     setFuse(new Fuse(applications, options));
   }, [applications]);
 
-  const t = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
+  useEffect(() => {
+    logEvent([EventName.AppStore.pageViewed]);
+  }, [logEvent]);
 
   let featuredApp = applications?.find((app) => app.featured === true);
   const nonFeaturedApps = applications?.filter((app) => !app.featured);
@@ -80,6 +86,25 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
 
   const iterableData = searchValue ? fuzzySearchResults : nonFeaturedApps;
 
+  const getSize = useCallback(() => {
+    if (width <= 480) {
+      return "small";
+    } else if (width <= 900) {
+      return "medium";
+    } else if (width <= 1500) {
+      return "long";
+    }
+    return "large";
+  }, [width]);
+
+  const [searchBoxSize, setSearchBoxSize] = useState<
+    "small" | "medium" | "long" | "large" | null
+  >(() => getSize());
+
+  useEffect(() => {
+    setSearchBoxSize(getSize());
+  }, [width, getSize]);
+
   return (
     <main className="mx-auto flex max-w-container flex-col bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
       <div className="flex flex-row justify-between pl-6 md:flex-col">
@@ -94,7 +119,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
             placeholder={t("store.searchPlaceholder")}
             onInput={handleSearchInput}
             className="self-end"
-            size="long"
+            size={searchBoxSize || "long"}
           />
         </div>
       </div>

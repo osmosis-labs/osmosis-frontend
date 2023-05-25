@@ -48,9 +48,13 @@ export const AppDisplayCard: FunctionComponent<{
         rel="noopener noreferrer"
         onClick={handleAppClicked}
       >
-        <div className="app-display-card bg-white overflow-hidden rounded-lg bg-osmoverse-800 shadow-md">
+        <div className="app-display-card bg-white h-[300px] overflow-hidden rounded-lg bg-osmoverse-800 shadow-md">
           <div className="overflow-hidden">
-            <div className="card-image h-40 overflow-hidden bg-cover bg-center transition-transform duration-300 ease-in"></div>
+            <ImageComponent
+              src={imageUrl || ""}
+              alt={`${title} thumbnail`}
+              className="h-40 transition-transform duration-300 ease-in"
+            />
           </div>
           <div className="min-h-[120px] p-4">
             <div className="flex items-center space-x-3">
@@ -85,3 +89,19 @@ export const AppDisplayCard: FunctionComponent<{
 };
 
 export default AppDisplayCard;
+
+const ImageComponent: React.FC<{
+  src: string;
+  alt: string;
+  className?: string;
+}> = ({ src, alt, className }) => {
+  return (
+    <div className={`relative overflow-hidden ${className}`}>
+      <img
+        className="absolute inset-0 h-full w-full object-cover object-center"
+        src={src}
+        alt={alt}
+      />
+    </div>
+  );
+};

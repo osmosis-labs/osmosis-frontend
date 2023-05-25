@@ -4,9 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
+import { useTranslation } from "react-multi-lang";
 
 import { IS_FRONTIER } from "../config";
 import { useAmplitudeAnalytics } from "../hooks";
+import { Pill } from "./indicators/pill";
 import { MainLayoutMenu } from "./types";
 
 export const MainMenu: FunctionComponent<{
@@ -16,11 +18,21 @@ export const MainMenu: FunctionComponent<{
   const router = useRouter();
   const { logEvent } = useAmplitudeAnalytics();
 
+  const t = useTranslation();
+
   return (
     <ul className="mt-20 flex w-full flex-col gap-3 md:mt-0 md:gap-0">
       {menus.map(
         (
-          { label, link, icon, iconSelected, selectionTest, amplitudeEvent },
+          {
+            label,
+            link,
+            icon,
+            iconSelected,
+            selectionTest,
+            amplitudeEvent,
+            isNew,
+          },
           index
         ) => {
           const selected = selectionTest
@@ -49,7 +61,7 @@ export const MainMenu: FunctionComponent<{
               <LinkOrDiv href={link}>
                 <a
                   className={classNames(
-                    "flex items-center hover:opacity-100",
+                    "flex w-full items-center hover:opacity-100",
                     selected ? "opacity-100" : "opacity-75"
                   )}
                   target={selectionTest ? "_self" : "_blank"}
@@ -88,10 +100,20 @@ export const MainMenu: FunctionComponent<{
                       {
                         "text-white-full/60 group-hover:text-white-mid":
                           !selected,
+                        "w-full": isNew,
                       }
                     )}
                   >
-                    {label}
+                    {isNew ? (
+                      <div className="flex flex-row items-center justify-between">
+                        {label}{" "}
+                        <Pill>
+                          <span>{t("new")}</span>
+                        </Pill>
+                      </div>
+                    ) : (
+                      label
+                    )}
                   </p>
                   {!selectionTest && typeof link === "string" && (
                     <div className="ml-2">
