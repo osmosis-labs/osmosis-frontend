@@ -105,18 +105,12 @@ const Pool: FunctionComponent = observer(() => {
   useEffect(() => {
     // redirect if CL pool and CL feature is off
     if (
-      poolExists === true &&
       poolDetail?.pool?.type === "concentrated" &&
       !featureFlags.concentratedLiquidity
     ) {
       router.push("/pools");
     }
-  }, [
-    poolExists,
-    poolDetail?.pool?.type,
-    featureFlags.concentratedLiquidity,
-    router,
-  ]);
+  }, [poolDetail?.pool?.type, featureFlags.concentratedLiquidity, router]);
 
   // user analytics
   const { poolName, poolWeight } = useMemo(
