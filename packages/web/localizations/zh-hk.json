@@ -444,5 +444,9 @@
   "unknownError": "未知錯誤",
   "viewExplorer": "使用區塊瀏覽器查看",
   "waitingForTransaction": "正等待交易被加入到區塊中",
-  "highPoolInflationWarning": "高APR可能源自通脹性獎勵。請謹慎操作。"
+  "highPoolInflationWarning": "高APR可能源自通脹性獎勵。請謹慎操作。",
+  "autonomy": {
+    "description": "探索由 Autonomy 提供的限價和止損訂單: ",
+    "link": "osmosis.autoswap.trade"
+  }
 }
