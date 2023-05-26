@@ -9,6 +9,7 @@ import { useTranslation } from "react-multi-lang";
 import { ShowMoreButton } from "~/components/buttons/show-more";
 import { PoolCard } from "~/components/cards";
 import { AllPoolsTable } from "~/components/complex";
+import { SuperchargeDaiOsmoPool } from "~/components/funnels/concentrated-liquidity/supercharge-dai-osmo-pool";
 import { MetricLoader } from "~/components/loaders";
 import { PoolsOverview } from "~/components/overview/pools";
 import { EventName } from "~/config";
@@ -252,6 +253,21 @@ const Pools: NextPage = observer(function () {
         <PoolsOverview
           className="mx-auto"
           setIsCreatingPool={useCallback(() => setIsCreatingPool(true), [])}
+        />
+      </section>
+      <section className="pt-8 pb-10 md:pt-4 md:pb-5">
+        <SuperchargeDaiOsmoPool
+          title="Supercharge you DAI/OSMO Pool"
+          caption="Supercharged positions allow you to earn 27.9% APR. 
+Learn how it works in 30 seconds, or upgrade your position in a few clicks. "
+          primaryCta="Upgrade to supercharged"
+          secondaryCta="Learn in 30 seconds"
+          onCtaClick={() => {
+            console.log("CTA");
+          }}
+          onSecondaryClick={() => {
+            console.log("Secondary");
+          }}
         />
       </section>
       <section ref={myPoolsRef}>
