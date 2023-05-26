@@ -1,5 +1,5 @@
 import Fuse from "fuse.js";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 import { useWindowSize } from "react-use";
 
@@ -85,23 +85,13 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
 
   const iterableData = searchValue ? fuzzySearchResults : nonFeaturedApps;
 
-  const [searchBoxSize, setSearchBoxSize] = useState<
-    "small" | "medium" | "long" | "large" | null
-  >(null);
-
-  useEffect(() => {
-    const getSize = () => {
-      if (width <= Breakpoint.SM) {
-        return "small";
-      } else if (width <= Breakpoint.LG) {
-        return "medium";
-      } else if (width <= Breakpoint.XXL) {
-        return "long";
-      }
-      return "large";
-    };
-
-    setSearchBoxSize(getSize());
+  const searchBoxSize = useMemo(() => {
+    if (width <= Breakpoint.SM) {
+      return "small";
+    } else if (width <= Breakpoint.LG) {
+      return "medium";
+    }
+    return "long";
   }, [width]);
 
   return (
