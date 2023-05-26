@@ -49,7 +49,9 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   const { applications } = apps;
 
   const t = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
+  const { logEvent } = useAmplitudeAnalytics({
+    onLoadEvent: [EventName.AppStore.pageViewed],
+  });
   const { width } = useWindowSize();
 
   useEffect(() => {
@@ -58,10 +60,6 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
     };
     setFuse(new Fuse(applications, options));
   }, [applications]);
-
-  useEffect(() => {
-    logEvent([EventName.AppStore.pageViewed]);
-  }, [logEvent]);
 
   let featuredApp = applications?.find((app) => app.featured === true);
   const nonFeaturedApps = applications?.filter((app) => !app.featured);

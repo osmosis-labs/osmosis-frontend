@@ -106,9 +106,11 @@ export const MainMenu: FunctionComponent<{
                   >
                     {isNew ? (
                       <div className="flex flex-row items-center justify-between">
-                        {label}{" "}
+                        {label}
                         <Pill>
-                          <span>{t("new")}</span>
+                          <span className="button px-[8px] py-[2px]">
+                            {t("new")}
+                          </span>
                         </Pill>
                       </div>
                     ) : (

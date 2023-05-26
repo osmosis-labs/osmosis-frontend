@@ -64,7 +64,7 @@ export const HeroCard: React.FunctionComponent<{
           className="backgroundImage absolute top-0 left-0 z-10 h-full w-full bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${backgroundImageUrl})` }}
         ></div>
-        <div className="gradient  absolute top-0 left-0 z-20 h-full w-full"></div>
+        <div className="gradient absolute top-0 left-0 z-20 h-full w-full bg-gradient-hero-card"></div>
         <div className="content text-white relative z-30 ml-9 mb-9 max-w-35">
           <div className="flex items-center space-x-6">
             <h4 className="pb-2 text-h4 font-h4">{title}</h4>
@@ -92,13 +92,6 @@ export const HeroCard: React.FunctionComponent<{
           }
           .heroImage:hover .backgroundImage {
             transform: scale(1.15);
-          }
-          .gradient {
-            background: linear-gradient(
-              to bottom,
-              rgba(0, 0, 0, 0),
-              rgba(0, 0, 0, 0.8)
-            );
           }
         `}</style>
       </div>
