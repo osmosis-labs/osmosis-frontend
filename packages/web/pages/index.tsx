@@ -1,4 +1,5 @@
 import { Dec } from "@keplr-wallet/unit";
+import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { useEffect, useMemo, useRef } from "react";
@@ -10,6 +11,8 @@ import { useAmplitudeAnalytics } from "~/hooks";
 import { useStore } from "~/stores";
 
 const Home: NextPage = observer(function () {
+  const featureFlags = useFlags();
+
   const { chainStore, queriesStore, priceStore } = useStore();
   const { chainId } = chainStore.osmosis;
 
@@ -23,14 +26,23 @@ const Home: NextPage = observer(function () {
   const pools = useMemo(
     () =>
       allPools
-        .filter(
-          (pool) =>
-            IS_TESTNET ||
-            pool
-              .computeTotalValueLocked(priceStore)
-              .toDec()
-              .gte(new Dec(IS_FRONTIER ? 1_000 : 10_000))
-        )
+        .filter((pool) => {
+          // include all pools on testnet env
+          if (IS_TESTNET) return true;
+
+          // filter concentrated pools if feature flag is not enabled
+          if (
+            pool.type === "concentrated" &&
+            !featureFlags.concentratedLiquidity
+          )
+            return false;
+
+          // some min TVL
+          return pool
+            .computeTotalValueLocked(priceStore)
+            .toDec()
+            .gte(new Dec(IS_FRONTIER ? 1_000 : 10_000));
+        })
         .sort((a, b) => {
           // sort by TVL to find routes amongst most valuable pools
           const aTVL = a.computeTotalValueLocked(priceStore);
@@ -39,7 +51,7 @@ const Home: NextPage = observer(function () {
           return Number(bTVL.sub(aTVL).toDec().toString());
         }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [allPools, priceStore.response]
+    [allPools, priceStore.response, featureFlags.concentratedLiquidity]
   );
 
   const requestedRemaining = useRef(false);
