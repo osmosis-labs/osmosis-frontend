@@ -6,6 +6,7 @@ import {
 } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { Duration } from "dayjs/plugin/duration";
+import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import Head from "next/head";
 import Image from "next/image";
@@ -60,6 +61,7 @@ const Pool: FunctionComponent = observer(() => {
   } = useStore();
   const t = useTranslation();
   const { isMobile } = useWindowSize();
+  const featureFlags = useFlags();
 
   const [poolDetailsContainerRef, { y: poolDetailsContainerOffset }] =
     useMeasure<HTMLDivElement>();
@@ -98,6 +100,23 @@ const Pool: FunctionComponent = observer(() => {
         };
   const pool = poolDetail?.pool;
   const { superfluidDelegateToValidator } = useSuperfluidPool();
+
+  // feature flag check
+  useEffect(() => {
+    // redirect if CL pool and CL feature is off
+    if (
+      poolExists === true &&
+      poolDetail?.pool?.type === "concentrated" &&
+      !featureFlags.concentratedLiquidity
+    ) {
+      router.push("/pools");
+    }
+  }, [
+    poolExists,
+    poolDetail?.pool?.type,
+    featureFlags.concentratedLiquidity,
+    router,
+  ]);
 
   // user analytics
   const { poolName, poolWeight } = useMemo(
