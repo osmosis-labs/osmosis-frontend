@@ -234,7 +234,8 @@
     "stake": "Stake",
     "store": "Applications",
     "swap": "Échanger",
-    "vote": "Voter"
+    "vote": "Voter",
+    "new": "NOUVEAU"
   },
   "pool": {
     "24hrTradingVolume": "Volume de transactions sur 24h",

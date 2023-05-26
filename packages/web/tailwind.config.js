@@ -174,6 +174,8 @@ module.exports = {
       "gradient-negative": IS_FRONTIER
         ? "linear-gradient(96.42deg, #B03A20 -0.59%, #FA825D 100%);"
         : "linear-gradient(96.42deg, #B03A20 -0.59%, #FA825D 100%);",
+      "gradient-hero-card":
+        "linear-gradient(to bottom,rgba(0, 0, 0, 0),rgba(0, 0, 0, 0.8));",
     },
     screens: {
       "3xl": { max: "1792px" },

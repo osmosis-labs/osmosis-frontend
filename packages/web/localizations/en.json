@@ -260,7 +260,8 @@
     "stake": "Stake",
     "store": "Apps",
     "swap": "Swap",
-    "vote": "Vote"
+    "vote": "Vote",
+    "new": "NEW"
   },
   "pool": {
     "24hrTradingVolume": "24h Trading volume",

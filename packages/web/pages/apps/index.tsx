@@ -1,11 +1,13 @@
 import Fuse from "fuse.js";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
+import { useWindowSize } from "react-use";
 
 import { buttonCVA } from "~/components/buttons";
 import { HeroCard } from "~/components/cards";
-import AppDisplayCard from "~/components/cards/app-display-card";
+import { AppDisplayCard } from "~/components/cards/app-display-card";
 import { SearchBox } from "~/components/input";
+import { Breakpoint } from "~/components/types";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 
@@ -47,15 +49,18 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
 
   const { applications } = apps;
 
+  const t = useTranslation();
+  const { logEvent } = useAmplitudeAnalytics({
+    onLoadEvent: [EventName.AppStore.pageViewed],
+  });
+  const { width } = useWindowSize();
+
   useEffect(() => {
     const options = {
       keys: ["title"],
     };
     setFuse(new Fuse(applications, options));
   }, [applications]);
-
-  const t = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
 
   let featuredApp = applications?.find((app) => app.featured === true);
   const nonFeaturedApps = applications?.filter((app) => !app.featured);
@@ -80,6 +85,15 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
 
   const iterableData = searchValue ? fuzzySearchResults : nonFeaturedApps;
 
+  const searchBoxSize = useMemo(() => {
+    if (width <= Breakpoint.SM) {
+      return "small";
+    } else if (width <= Breakpoint.LG) {
+      return "medium";
+    }
+    return "long";
+  }, [width]);
+
   return (
     <main className="mx-auto flex max-w-container flex-col bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
       <div className="flex flex-row justify-between pl-6 md:flex-col">
@@ -94,7 +108,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
             placeholder={t("store.searchPlaceholder")}
             onInput={handleSearchInput}
             className="self-end"
-            size="long"
+            size={searchBoxSize || "long"}
           />
         </div>
       </div>
