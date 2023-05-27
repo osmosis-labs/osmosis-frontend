@@ -24,8 +24,16 @@ export class ConcentratedLiquidityPoolAmountProvider
   }
 
   async getPoolAmounts(): Promise<{ token0Amount: Int; token1Amount: Int }> {
+    // only fetches if stale, otherwise immediately resolves
     await Promise.all(
-      this._queryBalance.balances.map((bal) => bal.waitResponse())
+      this._queryBalance.balances
+        .filter(
+          (bal) =>
+            // focus on tokens in this pool
+            bal.currency.coinMinimalDenom === this.poolRaw.token0 ||
+            bal.currency.coinMinimalDenom === this.poolRaw.token1
+        )
+        .map((bal) => bal.waitResponse())
     );
     const token0Amount = this._queryBalance.balances
       .find((bal) => bal.currency.coinMinimalDenom === this.poolRaw.token0)
