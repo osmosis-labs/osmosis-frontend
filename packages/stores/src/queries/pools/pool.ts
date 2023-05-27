@@ -500,6 +500,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     return `/osmosis/gamm/v1beta1/pools/${poolId}`;
   }
 
+  /** Add any currencies found within pool to the registry. */
   protected static addUnknownCurrencies(
     raw: PoolRaw,
     chainGetter: ChainGetter,

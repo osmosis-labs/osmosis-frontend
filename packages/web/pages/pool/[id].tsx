@@ -350,6 +350,8 @@ const Pool: FunctionComponent = observer(() => {
     []
   );
 
+  const tradePools = useMemo(() => (pool ? [pool] : []), [pool]);
+
   return (
     <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
       <Head>
@@ -379,7 +381,7 @@ const Pool: FunctionComponent = observer(() => {
           hideCloseButton={isMobile}
           isOpen={showTradeTokenModal}
           onRequestClose={setShowModal(setShowTradeTokenModal, false)}
-          pools={[pool]}
+          memoedPools={tradePools}
         />
       )}
       {lockLPTokensConfig && showLockLPTokenModal && (
