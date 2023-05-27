@@ -61,7 +61,7 @@ const testnetChainInfos: SimplifiedChainInfo[] = [
       {
         coinDenom: "tUSDC",
         coinMinimalDenom: "uusdc",
-        coinDecimals: 18,
+        coinDecimals: 6,
         coinImageUrl: "/tokens/usdc.svg",
       },
     ],
