@@ -1,6 +1,7 @@
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
 import { ObservablePoolDetail } from "@osmosis-labs/stores";
 import { Duration } from "dayjs/plugin/duration";
+import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { ComponentProps, useCallback, useMemo, useState } from "react";
@@ -271,6 +272,7 @@ const Pools: NextPage = observer(function () {
 const MyPoolsSection = observer(() => {
   const { accountStore, derivedDataStore, queriesStore, chainStore } =
     useStore();
+  const featureFlags = useFlags();
 
   const t = useTranslation();
 
@@ -297,13 +299,25 @@ const MyPoolsSection = observer(() => {
         : myPoolIds
       )
         .map((myPoolId) => derivedDataStore.poolDetails.get(myPoolId))
-        .filter((pool): pool is ObservablePoolDetail => !!pool),
+        .filter((pool): pool is ObservablePoolDetail => {
+          if (pool === undefined) return false;
+
+          // concentrated liquidity liquidity feature flag
+          if (
+            !featureFlags.concentratedLiquidity &&
+            pool.pool?.type === "concentrated"
+          )
+            return false;
+
+          return true;
+        }),
     [
       isMobile,
       showMoreMyPools,
       myPoolIds,
       poolCountShowMoreThreshold,
       derivedDataStore.poolDetails,
+      featureFlags.concentratedLiquidity,
     ]
   );
 

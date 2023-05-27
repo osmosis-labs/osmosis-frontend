@@ -19,7 +19,6 @@ const Home: NextPage = observer(function () {
   const queries = queriesStore.get(chainId);
   const queryPools = queries.osmosis!.queryGammPools;
 
-  // If pool has already passed once, it will be passed immediately without recalculation.
   const allPools = queryPools.getAllPools();
 
   // Pools should be memoized before passing to trade in config
