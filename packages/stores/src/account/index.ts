@@ -585,6 +585,17 @@ export class OsmosisAccountImpl {
     );
   }
 
+  /**
+   * Create a concentrated liquidity position in a pool.
+   *
+   * @param poolId ID of pool to create position in.
+   * @param baseDeposit Base asset currency and amount.
+   * @param quoteDeposit Quote asset currency and amount.
+   * @param lowerTick Lower tick index.
+   * @param upperTick Upper tick index.
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
+   */
   async createConcentratedLiquidityPosition(
     poolId: string,
     baseDeposit: { currency: Currency; amount: string },
@@ -644,14 +655,16 @@ export class OsmosisAccountImpl {
             sender: this.base.bech32Address,
             lower_tick: lowerTick.toString(),
             upper_tick: upperTick.toString(),
-            token_desired_0: {
-              denom: baseCoin.denom,
-              amount: baseCoin.amount.toString(),
-            },
-            token_desired_1: {
-              denom: quoteCoin.denom,
-              amount: quoteCoin.amount.toString(),
-            },
+            tokens_provided: [
+              {
+                denom: baseCoin.denom,
+                amount: baseCoin.amount.toString(),
+              },
+              {
+                denom: quoteCoin.denom,
+                amount: quoteCoin.amount.toString(),
+              },
+            ],
             token_min_amount_0: baseCoin.amount.toString(),
             token_min_amount_1: quoteCoin.amount.toString(),
           },
@@ -669,14 +682,16 @@ export class OsmosisAccountImpl {
                   poolId: Long.fromString(msg.value.pool_id),
                   lowerTick: Long.fromString(lowerTick.toString()),
                   upperTick: Long.fromString(upperTick.toString()),
-                  tokenDesired0: {
-                    denom: baseCoin.denom,
-                    amount: baseCoin.amount.toString(),
-                  },
-                  tokenDesired1: {
-                    denom: quoteCoin.denom,
-                    amount: quoteCoin.amount.toString(),
-                  },
+                  tokensProvided: [
+                    {
+                      denom: baseCoin.denom,
+                      amount: baseCoin.amount.toString(),
+                    },
+                    {
+                      denom: quoteCoin.denom,
+                      amount: quoteCoin.amount.toString(),
+                    },
+                  ],
                   tokenMinAmount0: baseCoin.amount.toString(),
                   tokenMinAmount1: quoteCoin.amount.toString(),
                 }).finish(),

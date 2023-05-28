@@ -1080,6 +1080,38 @@ exports.osmosis = $root.osmosis = (() => {
           "name",
           { value: "SwapExactAmountOut" }
         );
+        Object.defineProperty(
+          (Msg.prototype.splitRouteSwapExactAmountIn =
+            function splitRouteSwapExactAmountIn(request, callback) {
+              return this.rpcCall(
+                splitRouteSwapExactAmountIn,
+                $root.osmosis.poolmanager.v1beta1
+                  .MsgSplitRouteSwapExactAmountIn,
+                $root.osmosis.poolmanager.v1beta1
+                  .MsgSplitRouteSwapExactAmountInResponse,
+                request,
+                callback
+              );
+            }),
+          "name",
+          { value: "SplitRouteSwapExactAmountIn" }
+        );
+        Object.defineProperty(
+          (Msg.prototype.splitRouteSwapExactAmountOut =
+            function splitRouteSwapExactAmountOut(request, callback) {
+              return this.rpcCall(
+                splitRouteSwapExactAmountOut,
+                $root.osmosis.poolmanager.v1beta1
+                  .MsgSplitRouteSwapExactAmountOut,
+                $root.osmosis.poolmanager.v1beta1
+                  .MsgSplitRouteSwapExactAmountOutResponse,
+                request,
+                callback
+              );
+            }),
+          "name",
+          { value: "SplitRouteSwapExactAmountOut" }
+        );
         return Msg;
       })();
       v1beta1.MsgSwapExactAmountIn = (function () {
@@ -5272,6 +5304,7 @@ exports.osmosis = $root.osmosis = (() => {
           v1beta1.MsgMigrateSharesToFullRangeConcentratedPosition =
             (function () {
               function MsgMigrateSharesToFullRangeConcentratedPosition(p) {
+                this.tokenOutMins = [];
                 if (p)
                   for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
                     if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
@@ -5280,6 +5313,8 @@ exports.osmosis = $root.osmosis = (() => {
                 "";
               MsgMigrateSharesToFullRangeConcentratedPosition.prototype.sharesToMigrate =
                 null;
+              MsgMigrateSharesToFullRangeConcentratedPosition.prototype.tokenOutMins =
+                $util.emptyArray;
               MsgMigrateSharesToFullRangeConcentratedPosition.create =
                 function create(properties) {
                   return new MsgMigrateSharesToFullRangeConcentratedPosition(
@@ -5302,6 +5337,13 @@ exports.osmosis = $root.osmosis = (() => {
                       m.sharesToMigrate,
                       w.uint32(18).fork()
                     ).ldelim();
+                  if (m.tokenOutMins != null && m.tokenOutMins.length) {
+                    for (var i = 0; i < m.tokenOutMins.length; ++i)
+                      $root.cosmos.base.v1beta1.Coin.encode(
+                        m.tokenOutMins[i],
+                        w.uint32(26).fork()
+                      ).ldelim();
+                  }
                   return w;
                 };
               MsgMigrateSharesToFullRangeConcentratedPosition.decode =
@@ -5319,6 +5361,13 @@ exports.osmosis = $root.osmosis = (() => {
                       case 2:
                         m.sharesToMigrate =
                           $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32());
+                        break;
+                      case 3:
+                        if (!(m.tokenOutMins && m.tokenOutMins.length))
+                          m.tokenOutMins = [];
+                        m.tokenOutMins.push(
+                          $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
+                        );
                         break;
                       default:
                         r.skipType(t & 7);
@@ -5350,12 +5399,32 @@ exports.osmosis = $root.osmosis = (() => {
                         d.sharesToMigrate
                       );
                   }
+                  if (d.tokenOutMins) {
+                    if (!Array.isArray(d.tokenOutMins))
+                      throw TypeError(
+                        ".osmosis.gamm.poolmodels.balancer.v1beta1.MsgMigrateSharesToFullRangeConcentratedPosition.tokenOutMins: array expected"
+                      );
+                    m.tokenOutMins = [];
+                    for (var i = 0; i < d.tokenOutMins.length; ++i) {
+                      if (typeof d.tokenOutMins[i] !== "object")
+                        throw TypeError(
+                          ".osmosis.gamm.poolmodels.balancer.v1beta1.MsgMigrateSharesToFullRangeConcentratedPosition.tokenOutMins: object expected"
+                        );
+                      m.tokenOutMins[i] =
+                        $root.cosmos.base.v1beta1.Coin.fromObject(
+                          d.tokenOutMins[i]
+                        );
+                    }
+                  }
                   return m;
                 };
               MsgMigrateSharesToFullRangeConcentratedPosition.toObject =
                 function toObject(m, o) {
                   if (!o) o = {};
                   var d = {};
+                  if (o.arrays || o.defaults) {
+                    d.tokenOutMins = [];
+                  }
                   if (o.defaults) {
                     d.sender = "";
                     d.sharesToMigrate = null;
@@ -5371,6 +5440,16 @@ exports.osmosis = $root.osmosis = (() => {
                       m.sharesToMigrate,
                       o
                     );
+                  }
+                  if (m.tokenOutMins && m.tokenOutMins.length) {
+                    d.tokenOutMins = [];
+                    for (var j = 0; j < m.tokenOutMins.length; ++j) {
+                      d.tokenOutMins[j] =
+                        $root.cosmos.base.v1beta1.Coin.toObject(
+                          m.tokenOutMins[j],
+                          o
+                        );
+                    }
                   }
                   return d;
                 };
@@ -6646,8 +6725,7 @@ exports.osmosis = $root.osmosis = (() => {
         MsgCreateConcentratedPool.prototype.tickSpacing = $util.Long
           ? $util.Long.fromBits(0, 0, true)
           : 0;
-        MsgCreateConcentratedPool.prototype.exponentAtPriceOne = "";
-        MsgCreateConcentratedPool.prototype.swapFee = "";
+        MsgCreateConcentratedPool.prototype.spreadFactor = "";
         MsgCreateConcentratedPool.create = function create(properties) {
           return new MsgCreateConcentratedPool(properties);
         };
@@ -6665,12 +6743,10 @@ exports.osmosis = $root.osmosis = (() => {
           )
             w.uint32(32).uint64(m.tickSpacing);
           if (
-            m.exponentAtPriceOne != null &&
-            Object.hasOwnProperty.call(m, "exponentAtPriceOne")
+            m.spreadFactor != null &&
+            Object.hasOwnProperty.call(m, "spreadFactor")
           )
-            w.uint32(42).string(m.exponentAtPriceOne);
-          if (m.swapFee != null && Object.hasOwnProperty.call(m, "swapFee"))
-            w.uint32(74).string(m.swapFee);
+            w.uint32(42).string(m.spreadFactor);
           return w;
         };
         MsgCreateConcentratedPool.decode = function decode(r, l) {
@@ -6694,10 +6770,7 @@ exports.osmosis = $root.osmosis = (() => {
                 m.tickSpacing = r.uint64();
                 break;
               case 5:
-                m.exponentAtPriceOne = r.string();
-                break;
-              case 9:
-                m.swapFee = r.string();
+                m.spreadFactor = r.string();
                 break;
               default:
                 r.skipType(t & 7);
@@ -6739,11 +6812,8 @@ exports.osmosis = $root.osmosis = (() => {
                 d.tickSpacing.high >>> 0
               ).toNumber(true);
           }
-          if (d.exponentAtPriceOne != null) {
-            m.exponentAtPriceOne = String(d.exponentAtPriceOne);
-          }
-          if (d.swapFee != null) {
-            m.swapFee = String(d.swapFee);
+          if (d.spreadFactor != null) {
+            m.spreadFactor = String(d.spreadFactor);
           }
           return m;
         };
@@ -6763,8 +6833,7 @@ exports.osmosis = $root.osmosis = (() => {
                   ? n.toNumber()
                   : n;
             } else d.tickSpacing = o.longs === String ? "0" : 0;
-            d.exponentAtPriceOne = "";
-            d.swapFee = "";
+            d.spreadFactor = "";
           }
           if (m.sender != null && m.hasOwnProperty("sender")) {
             d.sender = m.sender;
@@ -6790,14 +6859,8 @@ exports.osmosis = $root.osmosis = (() => {
                     ).toNumber(true)
                   : m.tickSpacing;
           }
-          if (
-            m.exponentAtPriceOne != null &&
-            m.hasOwnProperty("exponentAtPriceOne")
-          ) {
-            d.exponentAtPriceOne = m.exponentAtPriceOne;
-          }
-          if (m.swapFee != null && m.hasOwnProperty("swapFee")) {
-            d.swapFee = m.swapFee;
+          if (m.spreadFactor != null && m.hasOwnProperty("spreadFactor")) {
+            d.spreadFactor = m.spreadFactor;
           }
           return d;
         };
@@ -7214,17 +7277,22 @@ exports.osmosis = $root.osmosis = (() => {
         }
         Pool.prototype.address = "";
         Pool.prototype.incentivesAddress = "";
+        Pool.prototype.feesAddress = "";
         Pool.prototype.id = $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
         Pool.prototype.currentTickLiquidity = "";
         Pool.prototype.token0 = "";
         Pool.prototype.token1 = "";
         Pool.prototype.currentSqrtPrice = "";
-        Pool.prototype.currentTick = "";
+        Pool.prototype.currentTick = $util.Long
+          ? $util.Long.fromBits(0, 0, false)
+          : 0;
         Pool.prototype.tickSpacing = $util.Long
           ? $util.Long.fromBits(0, 0, true)
           : 0;
-        Pool.prototype.exponentAtPriceOne = "";
-        Pool.prototype.swapFee = "";
+        Pool.prototype.exponentAtPriceOne = $util.Long
+          ? $util.Long.fromBits(0, 0, false)
+          : 0;
+        Pool.prototype.spreadFactor = "";
         Pool.prototype.lastLiquidityUpdate = null;
         Pool.create = function create(properties) {
           return new Pool(properties);
@@ -7238,46 +7306,54 @@ exports.osmosis = $root.osmosis = (() => {
             Object.hasOwnProperty.call(m, "incentivesAddress")
           )
             w.uint32(18).string(m.incentivesAddress);
+          if (
+            m.feesAddress != null &&
+            Object.hasOwnProperty.call(m, "feesAddress")
+          )
+            w.uint32(26).string(m.feesAddress);
           if (m.id != null && Object.hasOwnProperty.call(m, "id"))
-            w.uint32(24).uint64(m.id);
+            w.uint32(32).uint64(m.id);
           if (
             m.currentTickLiquidity != null &&
             Object.hasOwnProperty.call(m, "currentTickLiquidity")
           )
-            w.uint32(34).string(m.currentTickLiquidity);
+            w.uint32(42).string(m.currentTickLiquidity);
           if (m.token0 != null && Object.hasOwnProperty.call(m, "token0"))
-            w.uint32(42).string(m.token0);
+            w.uint32(50).string(m.token0);
           if (m.token1 != null && Object.hasOwnProperty.call(m, "token1"))
-            w.uint32(50).string(m.token1);
+            w.uint32(58).string(m.token1);
           if (
             m.currentSqrtPrice != null &&
             Object.hasOwnProperty.call(m, "currentSqrtPrice")
           )
-            w.uint32(58).string(m.currentSqrtPrice);
+            w.uint32(66).string(m.currentSqrtPrice);
           if (
             m.currentTick != null &&
             Object.hasOwnProperty.call(m, "currentTick")
           )
-            w.uint32(66).string(m.currentTick);
+            w.uint32(72).int64(m.currentTick);
           if (
             m.tickSpacing != null &&
             Object.hasOwnProperty.call(m, "tickSpacing")
           )
-            w.uint32(72).uint64(m.tickSpacing);
+            w.uint32(80).uint64(m.tickSpacing);
           if (
             m.exponentAtPriceOne != null &&
             Object.hasOwnProperty.call(m, "exponentAtPriceOne")
           )
-            w.uint32(82).string(m.exponentAtPriceOne);
-          if (m.swapFee != null && Object.hasOwnProperty.call(m, "swapFee"))
-            w.uint32(90).string(m.swapFee);
+            w.uint32(88).int64(m.exponentAtPriceOne);
+          if (
+            m.spreadFactor != null &&
+            Object.hasOwnProperty.call(m, "spreadFactor")
+          )
+            w.uint32(98).string(m.spreadFactor);
           if (
             m.lastLiquidityUpdate != null &&
             Object.hasOwnProperty.call(m, "lastLiquidityUpdate")
           )
             $root.google.protobuf.Timestamp.encode(
               m.lastLiquidityUpdate,
-              w.uint32(98).fork()
+              w.uint32(106).fork()
             ).ldelim();
           return w;
         };
@@ -7295,33 +7371,36 @@ exports.osmosis = $root.osmosis = (() => {
                 m.incentivesAddress = r.string();
                 break;
               case 3:
-                m.id = r.uint64();
+                m.feesAddress = r.string();
                 break;
               case 4:
-                m.currentTickLiquidity = r.string();
+                m.id = r.uint64();
                 break;
               case 5:
-                m.token0 = r.string();
+                m.currentTickLiquidity = r.string();
                 break;
               case 6:
-                m.token1 = r.string();
+                m.token0 = r.string();
                 break;
               case 7:
-                m.currentSqrtPrice = r.string();
+                m.token1 = r.string();
                 break;
               case 8:
-                m.currentTick = r.string();
+                m.currentSqrtPrice = r.string();
                 break;
               case 9:
-                m.tickSpacing = r.uint64();
+                m.currentTick = r.int64();
                 break;
               case 10:
-                m.exponentAtPriceOne = r.string();
+                m.tickSpacing = r.uint64();
                 break;
               case 11:
-                m.swapFee = r.string();
+                m.exponentAtPriceOne = r.int64();
                 break;
               case 12:
+                m.spreadFactor = r.string();
+                break;
+              case 13:
                 m.lastLiquidityUpdate = $root.google.protobuf.Timestamp.decode(
                   r,
                   r.uint32()
@@ -7343,6 +7422,9 @@ exports.osmosis = $root.osmosis = (() => {
           }
           if (d.incentivesAddress != null) {
             m.incentivesAddress = String(d.incentivesAddress);
+          }
+          if (d.feesAddress != null) {
+            m.feesAddress = String(d.feesAddress);
           }
           if (d.id != null) {
             if ($util.Long) (m.id = $util.Long.fromValue(d.id)).unsigned = true;
@@ -7367,7 +7449,19 @@ exports.osmosis = $root.osmosis = (() => {
             m.currentSqrtPrice = String(d.currentSqrtPrice);
           }
           if (d.currentTick != null) {
-            m.currentTick = String(d.currentTick);
+            if ($util.Long)
+              (m.currentTick = $util.Long.fromValue(
+                d.currentTick
+              )).unsigned = false;
+            else if (typeof d.currentTick === "string")
+              m.currentTick = parseInt(d.currentTick, 10);
+            else if (typeof d.currentTick === "number")
+              m.currentTick = d.currentTick;
+            else if (typeof d.currentTick === "object")
+              m.currentTick = new $util.LongBits(
+                d.currentTick.low >>> 0,
+                d.currentTick.high >>> 0
+              ).toNumber();
           }
           if (d.tickSpacing != null) {
             if ($util.Long)
@@ -7385,10 +7479,22 @@ exports.osmosis = $root.osmosis = (() => {
               ).toNumber(true);
           }
           if (d.exponentAtPriceOne != null) {
-            m.exponentAtPriceOne = String(d.exponentAtPriceOne);
+            if ($util.Long)
+              (m.exponentAtPriceOne = $util.Long.fromValue(
+                d.exponentAtPriceOne
+              )).unsigned = false;
+            else if (typeof d.exponentAtPriceOne === "string")
+              m.exponentAtPriceOne = parseInt(d.exponentAtPriceOne, 10);
+            else if (typeof d.exponentAtPriceOne === "number")
+              m.exponentAtPriceOne = d.exponentAtPriceOne;
+            else if (typeof d.exponentAtPriceOne === "object")
+              m.exponentAtPriceOne = new $util.LongBits(
+                d.exponentAtPriceOne.low >>> 0,
+                d.exponentAtPriceOne.high >>> 0
+              ).toNumber();
           }
-          if (d.swapFee != null) {
-            m.swapFee = String(d.swapFee);
+          if (d.spreadFactor != null) {
+            m.spreadFactor = String(d.spreadFactor);
           }
           if (d.lastLiquidityUpdate != null) {
             if (typeof d.lastLiquidityUpdate !== "object")
@@ -7407,6 +7513,7 @@ exports.osmosis = $root.osmosis = (() => {
           if (o.defaults) {
             d.address = "";
             d.incentivesAddress = "";
+            d.feesAddress = "";
             if ($util.Long) {
               var n = new $util.Long(0, 0, true);
               d.id =
@@ -7420,7 +7527,15 @@ exports.osmosis = $root.osmosis = (() => {
             d.token0 = "";
             d.token1 = "";
             d.currentSqrtPrice = "";
-            d.currentTick = "";
+            if ($util.Long) {
+              var n = new $util.Long(0, 0, false);
+              d.currentTick =
+                o.longs === String
+                  ? n.toString()
+                  : o.longs === Number
+                  ? n.toNumber()
+                  : n;
+            } else d.currentTick = o.longs === String ? "0" : 0;
             if ($util.Long) {
               var n = new $util.Long(0, 0, true);
               d.tickSpacing =
@@ -7430,8 +7545,16 @@ exports.osmosis = $root.osmosis = (() => {
                   ? n.toNumber()
                   : n;
             } else d.tickSpacing = o.longs === String ? "0" : 0;
-            d.exponentAtPriceOne = "";
-            d.swapFee = "";
+            if ($util.Long) {
+              var n = new $util.Long(0, 0, false);
+              d.exponentAtPriceOne =
+                o.longs === String
+                  ? n.toString()
+                  : o.longs === Number
+                  ? n.toNumber()
+                  : n;
+            } else d.exponentAtPriceOne = o.longs === String ? "0" : 0;
+            d.spreadFactor = "";
             d.lastLiquidityUpdate = null;
           }
           if (m.address != null && m.hasOwnProperty("address")) {
@@ -7442,6 +7565,9 @@ exports.osmosis = $root.osmosis = (() => {
             m.hasOwnProperty("incentivesAddress")
           ) {
             d.incentivesAddress = m.incentivesAddress;
+          }
+          if (m.feesAddress != null && m.hasOwnProperty("feesAddress")) {
+            d.feesAddress = m.feesAddress;
           }
           if (m.id != null && m.hasOwnProperty("id")) {
             if (typeof m.id === "number")
@@ -7476,7 +7602,19 @@ exports.osmosis = $root.osmosis = (() => {
             d.currentSqrtPrice = m.currentSqrtPrice;
           }
           if (m.currentTick != null && m.hasOwnProperty("currentTick")) {
-            d.currentTick = m.currentTick;
+            if (typeof m.currentTick === "number")
+              d.currentTick =
+                o.longs === String ? String(m.currentTick) : m.currentTick;
+            else
+              d.currentTick =
+                o.longs === String
+                  ? $util.Long.prototype.toString.call(m.currentTick)
+                  : o.longs === Number
+                  ? new $util.LongBits(
+                      m.currentTick.low >>> 0,
+                      m.currentTick.high >>> 0
+                    ).toNumber()
+                  : m.currentTick;
           }
           if (m.tickSpacing != null && m.hasOwnProperty("tickSpacing")) {
             if (typeof m.tickSpacing === "number")
@@ -7497,10 +7635,24 @@ exports.osmosis = $root.osmosis = (() => {
             m.exponentAtPriceOne != null &&
             m.hasOwnProperty("exponentAtPriceOne")
           ) {
-            d.exponentAtPriceOne = m.exponentAtPriceOne;
+            if (typeof m.exponentAtPriceOne === "number")
+              d.exponentAtPriceOne =
+                o.longs === String
+                  ? String(m.exponentAtPriceOne)
+                  : m.exponentAtPriceOne;
+            else
+              d.exponentAtPriceOne =
+                o.longs === String
+                  ? $util.Long.prototype.toString.call(m.exponentAtPriceOne)
+                  : o.longs === Number
+                  ? new $util.LongBits(
+                      m.exponentAtPriceOne.low >>> 0,
+                      m.exponentAtPriceOne.high >>> 0
+                    ).toNumber()
+                  : m.exponentAtPriceOne;
           }
-          if (m.swapFee != null && m.hasOwnProperty("swapFee")) {
-            d.swapFee = m.swapFee;
+          if (m.spreadFactor != null && m.hasOwnProperty("spreadFactor")) {
+            d.spreadFactor = m.spreadFactor;
           }
           if (
             m.lastLiquidityUpdate != null &&
@@ -7800,21 +7952,25 @@ exports.osmosis = $root.osmosis = (() => {
         };
         return Position;
       })();
-      v1beta1.PositionWithUnderlyingAssetBreakdown = (function () {
-        function PositionWithUnderlyingAssetBreakdown(p) {
+      v1beta1.FullPositionBreakdown = (function () {
+        function FullPositionBreakdown(p) {
+          this.claimableFees = [];
+          this.claimableIncentives = [];
+          this.forfeitedIncentives = [];
           if (p)
             for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
               if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
         }
-        PositionWithUnderlyingAssetBreakdown.prototype.position = null;
-        PositionWithUnderlyingAssetBreakdown.prototype.asset0 = null;
-        PositionWithUnderlyingAssetBreakdown.prototype.asset1 = null;
-        PositionWithUnderlyingAssetBreakdown.create = function create(
-          properties
-        ) {
-          return new PositionWithUnderlyingAssetBreakdown(properties);
+        FullPositionBreakdown.prototype.position = null;
+        FullPositionBreakdown.prototype.asset0 = null;
+        FullPositionBreakdown.prototype.asset1 = null;
+        FullPositionBreakdown.prototype.claimableFees = $util.emptyArray;
+        FullPositionBreakdown.prototype.claimableIncentives = $util.emptyArray;
+        FullPositionBreakdown.prototype.forfeitedIncentives = $util.emptyArray;
+        FullPositionBreakdown.create = function create(properties) {
+          return new FullPositionBreakdown(properties);
         };
-        PositionWithUnderlyingAssetBreakdown.encode = function encode(m, w) {
+        FullPositionBreakdown.encode = function encode(m, w) {
           if (!w) w = $Writer.create();
           if (m.position != null && Object.hasOwnProperty.call(m, "position"))
             $root.osmosis.concentratedliquidity.v1beta1.Position.encode(
@@ -7831,13 +7987,34 @@ exports.osmosis = $root.osmosis = (() => {
               m.asset1,
               w.uint32(26).fork()
             ).ldelim();
+          if (m.claimableFees != null && m.claimableFees.length) {
+            for (var i = 0; i < m.claimableFees.length; ++i)
+              $root.cosmos.base.v1beta1.Coin.encode(
+                m.claimableFees[i],
+                w.uint32(34).fork()
+              ).ldelim();
+          }
+          if (m.claimableIncentives != null && m.claimableIncentives.length) {
+            for (var i = 0; i < m.claimableIncentives.length; ++i)
+              $root.cosmos.base.v1beta1.Coin.encode(
+                m.claimableIncentives[i],
+                w.uint32(42).fork()
+              ).ldelim();
+          }
+          if (m.forfeitedIncentives != null && m.forfeitedIncentives.length) {
+            for (var i = 0; i < m.forfeitedIncentives.length; ++i)
+              $root.cosmos.base.v1beta1.Coin.encode(
+                m.forfeitedIncentives[i],
+                w.uint32(50).fork()
+              ).ldelim();
+          }
           return w;
         };
-        PositionWithUnderlyingAssetBreakdown.decode = function decode(r, l) {
+        FullPositionBreakdown.decode = function decode(r, l) {
           if (!(r instanceof $Reader)) r = $Reader.create(r);
           var c = l === undefined ? r.len : r.pos + l,
             m =
-              new $root.osmosis.concentratedliquidity.v1beta1.PositionWithUnderlyingAssetBreakdown();
+              new $root.osmosis.concentratedliquidity.v1beta1.FullPositionBreakdown();
           while (r.pos < c) {
             var t = r.uint32();
             switch (t >>> 3) {
@@ -7854,6 +8031,27 @@ exports.osmosis = $root.osmosis = (() => {
               case 3:
                 m.asset1 = $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32());
                 break;
+              case 4:
+                if (!(m.claimableFees && m.claimableFees.length))
+                  m.claimableFees = [];
+                m.claimableFees.push(
+                  $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
+                );
+                break;
+              case 5:
+                if (!(m.claimableIncentives && m.claimableIncentives.length))
+                  m.claimableIncentives = [];
+                m.claimableIncentives.push(
+                  $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
+                );
+                break;
+              case 6:
+                if (!(m.forfeitedIncentives && m.forfeitedIncentives.length))
+                  m.forfeitedIncentives = [];
+                m.forfeitedIncentives.push(
+                  $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
+                );
+                break;
               default:
                 r.skipType(t & 7);
                 break;
@@ -7861,21 +8059,18 @@ exports.osmosis = $root.osmosis = (() => {
           }
           return m;
         };
-        PositionWithUnderlyingAssetBreakdown.fromObject = function fromObject(
-          d
-        ) {
+        FullPositionBreakdown.fromObject = function fromObject(d) {
           if (
             d instanceof
-            $root.osmosis.concentratedliquidity.v1beta1
-              .PositionWithUnderlyingAssetBreakdown
+            $root.osmosis.concentratedliquidity.v1beta1.FullPositionBreakdown
           )
             return d;
           var m =
-            new $root.osmosis.concentratedliquidity.v1beta1.PositionWithUnderlyingAssetBreakdown();
+            new $root.osmosis.concentratedliquidity.v1beta1.FullPositionBreakdown();
           if (d.position != null) {
             if (typeof d.position !== "object")
               throw TypeError(
-                ".osmosis.concentratedliquidity.v1beta1.PositionWithUnderlyingAssetBreakdown.position: object expected"
+                ".osmosis.concentratedliquidity.v1beta1.FullPositionBreakdown.position: object expected"
               );
             m.position =
               $root.osmosis.concentratedliquidity.v1beta1.Position.fromObject(
@@ -7885,25 +8080,77 @@ exports.osmosis = $root.osmosis = (() => {
           if (d.asset0 != null) {
             if (typeof d.asset0 !== "object")
               throw TypeError(
-                ".osmosis.concentratedliquidity.v1beta1.PositionWithUnderlyingAssetBreakdown.asset0: object expected"
+                ".osmosis.concentratedliquidity.v1beta1.FullPositionBreakdown.asset0: object expected"
               );
             m.asset0 = $root.cosmos.base.v1beta1.Coin.fromObject(d.asset0);
           }
           if (d.asset1 != null) {
             if (typeof d.asset1 !== "object")
               throw TypeError(
-                ".osmosis.concentratedliquidity.v1beta1.PositionWithUnderlyingAssetBreakdown.asset1: object expected"
+                ".osmosis.concentratedliquidity.v1beta1.FullPositionBreakdown.asset1: object expected"
               );
             m.asset1 = $root.cosmos.base.v1beta1.Coin.fromObject(d.asset1);
           }
+          if (d.claimableFees) {
+            if (!Array.isArray(d.claimableFees))
+              throw TypeError(
+                ".osmosis.concentratedliquidity.v1beta1.FullPositionBreakdown.claimableFees: array expected"
+              );
+            m.claimableFees = [];
+            for (var i = 0; i < d.claimableFees.length; ++i) {
+              if (typeof d.claimableFees[i] !== "object")
+                throw TypeError(
+                  ".osmosis.concentratedliquidity.v1beta1.FullPositionBreakdown.claimableFees: object expected"
+                );
+              m.claimableFees[i] = $root.cosmos.base.v1beta1.Coin.fromObject(
+                d.claimableFees[i]
+              );
+            }
+          }
+          if (d.claimableIncentives) {
+            if (!Array.isArray(d.claimableIncentives))
+              throw TypeError(
+                ".osmosis.concentratedliquidity.v1beta1.FullPositionBreakdown.claimableIncentives: array expected"
+              );
+            m.claimableIncentives = [];
+            for (var i = 0; i < d.claimableIncentives.length; ++i) {
+              if (typeof d.claimableIncentives[i] !== "object")
+                throw TypeError(
+                  ".osmosis.concentratedliquidity.v1beta1.FullPositionBreakdown.claimableIncentives: object expected"
+                );
+              m.claimableIncentives[i] =
+                $root.cosmos.base.v1beta1.Coin.fromObject(
+                  d.claimableIncentives[i]
+                );
+            }
+          }
+          if (d.forfeitedIncentives) {
+            if (!Array.isArray(d.forfeitedIncentives))
+              throw TypeError(
+                ".osmosis.concentratedliquidity.v1beta1.FullPositionBreakdown.forfeitedIncentives: array expected"
+              );
+            m.forfeitedIncentives = [];
+            for (var i = 0; i < d.forfeitedIncentives.length; ++i) {
+              if (typeof d.forfeitedIncentives[i] !== "object")
+                throw TypeError(
+                  ".osmosis.concentratedliquidity.v1beta1.FullPositionBreakdown.forfeitedIncentives: object expected"
+                );
+              m.forfeitedIncentives[i] =
+                $root.cosmos.base.v1beta1.Coin.fromObject(
+                  d.forfeitedIncentives[i]
+                );
+            }
+          }
           return m;
         };
-        PositionWithUnderlyingAssetBreakdown.toObject = function toObject(
-          m,
-          o
-        ) {
+        FullPositionBreakdown.toObject = function toObject(m, o) {
           if (!o) o = {};
           var d = {};
+          if (o.arrays || o.defaults) {
+            d.claimableFees = [];
+            d.claimableIncentives = [];
+            d.forfeitedIncentives = [];
+          }
           if (o.defaults) {
             d.position = null;
             d.asset0 = null;
@@ -7922,20 +8169,45 @@ exports.osmosis = $root.osmosis = (() => {
           if (m.asset1 != null && m.hasOwnProperty("asset1")) {
             d.asset1 = $root.cosmos.base.v1beta1.Coin.toObject(m.asset1, o);
           }
+          if (m.claimableFees && m.claimableFees.length) {
+            d.claimableFees = [];
+            for (var j = 0; j < m.claimableFees.length; ++j) {
+              d.claimableFees[j] = $root.cosmos.base.v1beta1.Coin.toObject(
+                m.claimableFees[j],
+                o
+              );
+            }
+          }
+          if (m.claimableIncentives && m.claimableIncentives.length) {
+            d.claimableIncentives = [];
+            for (var j = 0; j < m.claimableIncentives.length; ++j) {
+              d.claimableIncentives[j] =
+                $root.cosmos.base.v1beta1.Coin.toObject(
+                  m.claimableIncentives[j],
+                  o
+                );
+            }
+          }
+          if (m.forfeitedIncentives && m.forfeitedIncentives.length) {
+            d.forfeitedIncentives = [];
+            for (var j = 0; j < m.forfeitedIncentives.length; ++j) {
+              d.forfeitedIncentives[j] =
+                $root.cosmos.base.v1beta1.Coin.toObject(
+                  m.forfeitedIncentives[j],
+                  o
+                );
+            }
+          }
           return d;
         };
-        PositionWithUnderlyingAssetBreakdown.prototype.toJSON =
-          function toJSON() {
-            return this.constructor.toObject(
-              this,
-              $protobuf.util.toJSONOptions
-            );
-          };
-        return PositionWithUnderlyingAssetBreakdown;
+        FullPositionBreakdown.prototype.toJSON = function toJSON() {
+          return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+        return FullPositionBreakdown;
       })();
       v1beta1.TickInfo = (function () {
         function TickInfo(p) {
-          this.feeGrowthOutside = [];
+          this.feeGrowthOppositeDirectionOfLastTraversal = [];
           this.uptimeTrackers = [];
           if (p)
             for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
@@ -7943,7 +8215,8 @@ exports.osmosis = $root.osmosis = (() => {
         }
         TickInfo.prototype.liquidityGross = "";
         TickInfo.prototype.liquidityNet = "";
-        TickInfo.prototype.feeGrowthOutside = $util.emptyArray;
+        TickInfo.prototype.feeGrowthOppositeDirectionOfLastTraversal =
+          $util.emptyArray;
         TickInfo.prototype.uptimeTrackers = $util.emptyArray;
         TickInfo.create = function create(properties) {
           return new TickInfo(properties);
@@ -7960,10 +8233,17 @@ exports.osmosis = $root.osmosis = (() => {
             Object.hasOwnProperty.call(m, "liquidityNet")
           )
             w.uint32(18).string(m.liquidityNet);
-          if (m.feeGrowthOutside != null && m.feeGrowthOutside.length) {
-            for (var i = 0; i < m.feeGrowthOutside.length; ++i)
+          if (
+            m.feeGrowthOppositeDirectionOfLastTraversal != null &&
+            m.feeGrowthOppositeDirectionOfLastTraversal.length
+          ) {
+            for (
+              var i = 0;
+              i < m.feeGrowthOppositeDirectionOfLastTraversal.length;
+              ++i
+            )
               $root.cosmos.base.v1beta1.DecCoin.encode(
-                m.feeGrowthOutside[i],
+                m.feeGrowthOppositeDirectionOfLastTraversal[i],
                 w.uint32(26).fork()
               ).ldelim();
           }
@@ -7990,9 +8270,14 @@ exports.osmosis = $root.osmosis = (() => {
                 m.liquidityNet = r.string();
                 break;
               case 3:
-                if (!(m.feeGrowthOutside && m.feeGrowthOutside.length))
-                  m.feeGrowthOutside = [];
-                m.feeGrowthOutside.push(
+                if (
+                  !(
+                    m.feeGrowthOppositeDirectionOfLastTraversal &&
+                    m.feeGrowthOppositeDirectionOfLastTraversal.length
+                  )
+                )
+                  m.feeGrowthOppositeDirectionOfLastTraversal = [];
+                m.feeGrowthOppositeDirectionOfLastTraversal.push(
                   $root.cosmos.base.v1beta1.DecCoin.decode(r, r.uint32())
                 );
                 break;
@@ -8023,20 +8308,27 @@ exports.osmosis = $root.osmosis = (() => {
           if (d.liquidityNet != null) {
             m.liquidityNet = String(d.liquidityNet);
           }
-          if (d.feeGrowthOutside) {
-            if (!Array.isArray(d.feeGrowthOutside))
+          if (d.feeGrowthOppositeDirectionOfLastTraversal) {
+            if (!Array.isArray(d.feeGrowthOppositeDirectionOfLastTraversal))
               throw TypeError(
-                ".osmosis.concentratedliquidity.v1beta1.TickInfo.feeGrowthOutside: array expected"
+                ".osmosis.concentratedliquidity.v1beta1.TickInfo.feeGrowthOppositeDirectionOfLastTraversal: array expected"
               );
-            m.feeGrowthOutside = [];
-            for (var i = 0; i < d.feeGrowthOutside.length; ++i) {
-              if (typeof d.feeGrowthOutside[i] !== "object")
+            m.feeGrowthOppositeDirectionOfLastTraversal = [];
+            for (
+              var i = 0;
+              i < d.feeGrowthOppositeDirectionOfLastTraversal.length;
+              ++i
+            ) {
+              if (
+                typeof d.feeGrowthOppositeDirectionOfLastTraversal[i] !==
+                "object"
+              )
                 throw TypeError(
-                  ".osmosis.concentratedliquidity.v1beta1.TickInfo.feeGrowthOutside: object expected"
+                  ".osmosis.concentratedliquidity.v1beta1.TickInfo.feeGrowthOppositeDirectionOfLastTraversal: object expected"
                 );
-              m.feeGrowthOutside[i] =
+              m.feeGrowthOppositeDirectionOfLastTraversal[i] =
                 $root.cosmos.base.v1beta1.DecCoin.fromObject(
-                  d.feeGrowthOutside[i]
+                  d.feeGrowthOppositeDirectionOfLastTraversal[i]
                 );
             }
           }
@@ -8063,7 +8355,7 @@ exports.osmosis = $root.osmosis = (() => {
           if (!o) o = {};
           var d = {};
           if (o.arrays || o.defaults) {
-            d.feeGrowthOutside = [];
+            d.feeGrowthOppositeDirectionOfLastTraversal = [];
             d.uptimeTrackers = [];
           }
           if (o.defaults) {
@@ -8076,12 +8368,19 @@ exports.osmosis = $root.osmosis = (() => {
           if (m.liquidityNet != null && m.hasOwnProperty("liquidityNet")) {
             d.liquidityNet = m.liquidityNet;
           }
-          if (m.feeGrowthOutside && m.feeGrowthOutside.length) {
-            d.feeGrowthOutside = [];
-            for (var j = 0; j < m.feeGrowthOutside.length; ++j) {
-              d.feeGrowthOutside[j] =
+          if (
+            m.feeGrowthOppositeDirectionOfLastTraversal &&
+            m.feeGrowthOppositeDirectionOfLastTraversal.length
+          ) {
+            d.feeGrowthOppositeDirectionOfLastTraversal = [];
+            for (
+              var j = 0;
+              j < m.feeGrowthOppositeDirectionOfLastTraversal.length;
+              ++j
+            ) {
+              d.feeGrowthOppositeDirectionOfLastTraversal[j] =
                 $root.cosmos.base.v1beta1.DecCoin.toObject(
-                  m.feeGrowthOutside[j],
+                  m.feeGrowthOppositeDirectionOfLastTraversal[j],
                   o
                 );
             }
@@ -8250,6 +8549,23 @@ exports.osmosis = $root.osmosis = (() => {
           { value: "WithdrawPosition" }
         );
         Object.defineProperty(
+          (Msg.prototype.addToPosition = function addToPosition(
+            request,
+            callback
+          ) {
+            return this.rpcCall(
+              addToPosition,
+              $root.osmosis.concentratedliquidity.v1beta1.MsgAddToPosition,
+              $root.osmosis.concentratedliquidity.v1beta1
+                .MsgAddToPositionResponse,
+              request,
+              callback
+            );
+          }),
+          "name",
+          { value: "AddToPosition" }
+        );
+        Object.defineProperty(
           (Msg.prototype.collectFees = function collectFees(request, callback) {
             return this.rpcCall(
               collectFees,
@@ -8300,6 +8616,7 @@ exports.osmosis = $root.osmosis = (() => {
       })();
       v1beta1.MsgCreatePosition = (function () {
         function MsgCreatePosition(p) {
+          this.tokensProvided = [];
           if (p)
             for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
               if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
@@ -8314,8 +8631,7 @@ exports.osmosis = $root.osmosis = (() => {
         MsgCreatePosition.prototype.upperTick = $util.Long
           ? $util.Long.fromBits(0, 0, false)
           : 0;
-        MsgCreatePosition.prototype.tokenDesired0 = null;
-        MsgCreatePosition.prototype.tokenDesired1 = null;
+        MsgCreatePosition.prototype.tokensProvided = $util.emptyArray;
         MsgCreatePosition.prototype.tokenMinAmount0 = "";
         MsgCreatePosition.prototype.tokenMinAmount1 = "";
         MsgCreatePosition.create = function create(properties) {
@@ -8331,32 +8647,23 @@ exports.osmosis = $root.osmosis = (() => {
             w.uint32(24).int64(m.lowerTick);
           if (m.upperTick != null && Object.hasOwnProperty.call(m, "upperTick"))
             w.uint32(32).int64(m.upperTick);
-          if (
-            m.tokenDesired0 != null &&
-            Object.hasOwnProperty.call(m, "tokenDesired0")
-          )
-            $root.cosmos.base.v1beta1.Coin.encode(
-              m.tokenDesired0,
-              w.uint32(42).fork()
-            ).ldelim();
-          if (
-            m.tokenDesired1 != null &&
-            Object.hasOwnProperty.call(m, "tokenDesired1")
-          )
-            $root.cosmos.base.v1beta1.Coin.encode(
-              m.tokenDesired1,
-              w.uint32(50).fork()
-            ).ldelim();
+          if (m.tokensProvided != null && m.tokensProvided.length) {
+            for (var i = 0; i < m.tokensProvided.length; ++i)
+              $root.cosmos.base.v1beta1.Coin.encode(
+                m.tokensProvided[i],
+                w.uint32(42).fork()
+              ).ldelim();
+          }
           if (
             m.tokenMinAmount0 != null &&
             Object.hasOwnProperty.call(m, "tokenMinAmount0")
           )
-            w.uint32(58).string(m.tokenMinAmount0);
+            w.uint32(50).string(m.tokenMinAmount0);
           if (
             m.tokenMinAmount1 != null &&
             Object.hasOwnProperty.call(m, "tokenMinAmount1")
           )
-            w.uint32(66).string(m.tokenMinAmount1);
+            w.uint32(58).string(m.tokenMinAmount1);
           return w;
         };
         MsgCreatePosition.decode = function decode(r, l) {
@@ -8380,21 +8687,16 @@ exports.osmosis = $root.osmosis = (() => {
                 m.upperTick = r.int64();
                 break;
               case 5:
-                m.tokenDesired0 = $root.cosmos.base.v1beta1.Coin.decode(
-                  r,
-                  r.uint32()
+                if (!(m.tokensProvided && m.tokensProvided.length))
+                  m.tokensProvided = [];
+                m.tokensProvided.push(
+                  $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
                 );
                 break;
               case 6:
-                m.tokenDesired1 = $root.cosmos.base.v1beta1.Coin.decode(
-                  r,
-                  r.uint32()
-                );
-                break;
-              case 7:
                 m.tokenMinAmount0 = r.string();
                 break;
-              case 8:
+              case 7:
                 m.tokenMinAmount1 = r.string();
                 break;
               default:
@@ -8455,23 +8757,21 @@ exports.osmosis = $root.osmosis = (() => {
                 d.upperTick.high >>> 0
               ).toNumber();
           }
-          if (d.tokenDesired0 != null) {
-            if (typeof d.tokenDesired0 !== "object")
+          if (d.tokensProvided) {
+            if (!Array.isArray(d.tokensProvided))
               throw TypeError(
-                ".osmosis.concentratedliquidity.v1beta1.MsgCreatePosition.tokenDesired0: object expected"
+                ".osmosis.concentratedliquidity.v1beta1.MsgCreatePosition.tokensProvided: array expected"
               );
-            m.tokenDesired0 = $root.cosmos.base.v1beta1.Coin.fromObject(
-              d.tokenDesired0
-            );
-          }
-          if (d.tokenDesired1 != null) {
-            if (typeof d.tokenDesired1 !== "object")
-              throw TypeError(
-                ".osmosis.concentratedliquidity.v1beta1.MsgCreatePosition.tokenDesired1: object expected"
+            m.tokensProvided = [];
+            for (var i = 0; i < d.tokensProvided.length; ++i) {
+              if (typeof d.tokensProvided[i] !== "object")
+                throw TypeError(
+                  ".osmosis.concentratedliquidity.v1beta1.MsgCreatePosition.tokensProvided: object expected"
+                );
+              m.tokensProvided[i] = $root.cosmos.base.v1beta1.Coin.fromObject(
+                d.tokensProvided[i]
               );
-            m.tokenDesired1 = $root.cosmos.base.v1beta1.Coin.fromObject(
-              d.tokenDesired1
-            );
+            }
           }
           if (d.tokenMinAmount0 != null) {
             m.tokenMinAmount0 = String(d.tokenMinAmount0);
@@ -8484,6 +8784,9 @@ exports.osmosis = $root.osmosis = (() => {
         MsgCreatePosition.toObject = function toObject(m, o) {
           if (!o) o = {};
           var d = {};
+          if (o.arrays || o.defaults) {
+            d.tokensProvided = [];
+          }
           if (o.defaults) {
             if ($util.Long) {
               var n = new $util.Long(0, 0, true);
@@ -8513,8 +8816,6 @@ exports.osmosis = $root.osmosis = (() => {
                   ? n.toNumber()
                   : n;
             } else d.upperTick = o.longs === String ? "0" : 0;
-            d.tokenDesired0 = null;
-            d.tokenDesired1 = null;
             d.tokenMinAmount0 = "";
             d.tokenMinAmount1 = "";
           }
@@ -8565,17 +8866,14 @@ exports.osmosis = $root.osmosis = (() => {
                     ).toNumber()
                   : m.upperTick;
           }
-          if (m.tokenDesired0 != null && m.hasOwnProperty("tokenDesired0")) {
-            d.tokenDesired0 = $root.cosmos.base.v1beta1.Coin.toObject(
-              m.tokenDesired0,
-              o
-            );
-          }
-          if (m.tokenDesired1 != null && m.hasOwnProperty("tokenDesired1")) {
-            d.tokenDesired1 = $root.cosmos.base.v1beta1.Coin.toObject(
-              m.tokenDesired1,
-              o
-            );
+          if (m.tokensProvided && m.tokensProvided.length) {
+            d.tokensProvided = [];
+            for (var j = 0; j < m.tokensProvided.length; ++j) {
+              d.tokensProvided[j] = $root.cosmos.base.v1beta1.Coin.toObject(
+                m.tokensProvided[j],
+                o
+              );
+            }
           }
           if (
             m.tokenMinAmount0 != null &&
@@ -8609,6 +8907,12 @@ exports.osmosis = $root.osmosis = (() => {
         MsgCreatePositionResponse.prototype.amount1 = "";
         MsgCreatePositionResponse.prototype.joinTime = null;
         MsgCreatePositionResponse.prototype.liquidityCreated = "";
+        MsgCreatePositionResponse.prototype.lowerTick = $util.Long
+          ? $util.Long.fromBits(0, 0, false)
+          : 0;
+        MsgCreatePositionResponse.prototype.upperTick = $util.Long
+          ? $util.Long.fromBits(0, 0, false)
+          : 0;
         MsgCreatePositionResponse.create = function create(properties) {
           return new MsgCreatePositionResponse(properties);
         };
@@ -8633,6 +8937,10 @@ exports.osmosis = $root.osmosis = (() => {
             Object.hasOwnProperty.call(m, "liquidityCreated")
           )
             w.uint32(42).string(m.liquidityCreated);
+          if (m.lowerTick != null && Object.hasOwnProperty.call(m, "lowerTick"))
+            w.uint32(48).int64(m.lowerTick);
+          if (m.upperTick != null && Object.hasOwnProperty.call(m, "upperTick"))
+            w.uint32(56).int64(m.upperTick);
           return w;
         };
         MsgCreatePositionResponse.decode = function decode(r, l) {
@@ -8660,6 +8968,12 @@ exports.osmosis = $root.osmosis = (() => {
                 break;
               case 5:
                 m.liquidityCreated = r.string();
+                break;
+              case 6:
+                m.lowerTick = r.int64();
+                break;
+              case 7:
+                m.upperTick = r.int64();
                 break;
               default:
                 r.skipType(t & 7);
@@ -8708,6 +9022,34 @@ exports.osmosis = $root.osmosis = (() => {
           if (d.liquidityCreated != null) {
             m.liquidityCreated = String(d.liquidityCreated);
           }
+          if (d.lowerTick != null) {
+            if ($util.Long)
+              (m.lowerTick = $util.Long.fromValue(
+                d.lowerTick
+              )).unsigned = false;
+            else if (typeof d.lowerTick === "string")
+              m.lowerTick = parseInt(d.lowerTick, 10);
+            else if (typeof d.lowerTick === "number") m.lowerTick = d.lowerTick;
+            else if (typeof d.lowerTick === "object")
+              m.lowerTick = new $util.LongBits(
+                d.lowerTick.low >>> 0,
+                d.lowerTick.high >>> 0
+              ).toNumber();
+          }
+          if (d.upperTick != null) {
+            if ($util.Long)
+              (m.upperTick = $util.Long.fromValue(
+                d.upperTick
+              )).unsigned = false;
+            else if (typeof d.upperTick === "string")
+              m.upperTick = parseInt(d.upperTick, 10);
+            else if (typeof d.upperTick === "number") m.upperTick = d.upperTick;
+            else if (typeof d.upperTick === "object")
+              m.upperTick = new $util.LongBits(
+                d.upperTick.low >>> 0,
+                d.upperTick.high >>> 0
+              ).toNumber();
+          }
           return m;
         };
         MsgCreatePositionResponse.toObject = function toObject(m, o) {
@@ -8727,6 +9069,24 @@ exports.osmosis = $root.osmosis = (() => {
             d.amount1 = "";
             d.joinTime = null;
             d.liquidityCreated = "";
+            if ($util.Long) {
+              var n = new $util.Long(0, 0, false);
+              d.lowerTick =
+                o.longs === String
+                  ? n.toString()
+                  : o.longs === Number
+                  ? n.toNumber()
+                  : n;
+            } else d.lowerTick = o.longs === String ? "0" : 0;
+            if ($util.Long) {
+              var n = new $util.Long(0, 0, false);
+              d.upperTick =
+                o.longs === String
+                  ? n.toString()
+                  : o.longs === Number
+                  ? n.toNumber()
+                  : n;
+            } else d.upperTick = o.longs === String ? "0" : 0;
           }
           if (m.positionId != null && m.hasOwnProperty("positionId")) {
             if (typeof m.positionId === "number")
@@ -8761,12 +9121,345 @@ exports.osmosis = $root.osmosis = (() => {
           ) {
             d.liquidityCreated = m.liquidityCreated;
           }
+          if (m.lowerTick != null && m.hasOwnProperty("lowerTick")) {
+            if (typeof m.lowerTick === "number")
+              d.lowerTick =
+                o.longs === String ? String(m.lowerTick) : m.lowerTick;
+            else
+              d.lowerTick =
+                o.longs === String
+                  ? $util.Long.prototype.toString.call(m.lowerTick)
+                  : o.longs === Number
+                  ? new $util.LongBits(
+                      m.lowerTick.low >>> 0,
+                      m.lowerTick.high >>> 0
+                    ).toNumber()
+                  : m.lowerTick;
+          }
+          if (m.upperTick != null && m.hasOwnProperty("upperTick")) {
+            if (typeof m.upperTick === "number")
+              d.upperTick =
+                o.longs === String ? String(m.upperTick) : m.upperTick;
+            else
+              d.upperTick =
+                o.longs === String
+                  ? $util.Long.prototype.toString.call(m.upperTick)
+                  : o.longs === Number
+                  ? new $util.LongBits(
+                      m.upperTick.low >>> 0,
+                      m.upperTick.high >>> 0
+                    ).toNumber()
+                  : m.upperTick;
+          }
           return d;
         };
         MsgCreatePositionResponse.prototype.toJSON = function toJSON() {
           return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
         return MsgCreatePositionResponse;
+      })();
+      v1beta1.MsgAddToPosition = (function () {
+        function MsgAddToPosition(p) {
+          if (p)
+            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+              if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+        }
+        MsgAddToPosition.prototype.positionId = $util.Long
+          ? $util.Long.fromBits(0, 0, true)
+          : 0;
+        MsgAddToPosition.prototype.sender = "";
+        MsgAddToPosition.prototype.amount0 = "";
+        MsgAddToPosition.prototype.amount1 = "";
+        MsgAddToPosition.prototype.tokenMinAmount0 = "";
+        MsgAddToPosition.prototype.tokenMinAmount1 = "";
+        MsgAddToPosition.create = function create(properties) {
+          return new MsgAddToPosition(properties);
+        };
+        MsgAddToPosition.encode = function encode(m, w) {
+          if (!w) w = $Writer.create();
+          if (
+            m.positionId != null &&
+            Object.hasOwnProperty.call(m, "positionId")
+          )
+            w.uint32(8).uint64(m.positionId);
+          if (m.sender != null && Object.hasOwnProperty.call(m, "sender"))
+            w.uint32(18).string(m.sender);
+          if (m.amount0 != null && Object.hasOwnProperty.call(m, "amount0"))
+            w.uint32(26).string(m.amount0);
+          if (m.amount1 != null && Object.hasOwnProperty.call(m, "amount1"))
+            w.uint32(34).string(m.amount1);
+          if (
+            m.tokenMinAmount0 != null &&
+            Object.hasOwnProperty.call(m, "tokenMinAmount0")
+          )
+            w.uint32(42).string(m.tokenMinAmount0);
+          if (
+            m.tokenMinAmount1 != null &&
+            Object.hasOwnProperty.call(m, "tokenMinAmount1")
+          )
+            w.uint32(50).string(m.tokenMinAmount1);
+          return w;
+        };
+        MsgAddToPosition.decode = function decode(r, l) {
+          if (!(r instanceof $Reader)) r = $Reader.create(r);
+          var c = l === undefined ? r.len : r.pos + l,
+            m =
+              new $root.osmosis.concentratedliquidity.v1beta1.MsgAddToPosition();
+          while (r.pos < c) {
+            var t = r.uint32();
+            switch (t >>> 3) {
+              case 1:
+                m.positionId = r.uint64();
+                break;
+              case 2:
+                m.sender = r.string();
+                break;
+              case 3:
+                m.amount0 = r.string();
+                break;
+              case 4:
+                m.amount1 = r.string();
+                break;
+              case 5:
+                m.tokenMinAmount0 = r.string();
+                break;
+              case 6:
+                m.tokenMinAmount1 = r.string();
+                break;
+              default:
+                r.skipType(t & 7);
+                break;
+            }
+          }
+          return m;
+        };
+        MsgAddToPosition.fromObject = function fromObject(d) {
+          if (
+            d instanceof
+            $root.osmosis.concentratedliquidity.v1beta1.MsgAddToPosition
+          )
+            return d;
+          var m =
+            new $root.osmosis.concentratedliquidity.v1beta1.MsgAddToPosition();
+          if (d.positionId != null) {
+            if ($util.Long)
+              (m.positionId = $util.Long.fromValue(
+                d.positionId
+              )).unsigned = true;
+            else if (typeof d.positionId === "string")
+              m.positionId = parseInt(d.positionId, 10);
+            else if (typeof d.positionId === "number")
+              m.positionId = d.positionId;
+            else if (typeof d.positionId === "object")
+              m.positionId = new $util.LongBits(
+                d.positionId.low >>> 0,
+                d.positionId.high >>> 0
+              ).toNumber(true);
+          }
+          if (d.sender != null) {
+            m.sender = String(d.sender);
+          }
+          if (d.amount0 != null) {
+            m.amount0 = String(d.amount0);
+          }
+          if (d.amount1 != null) {
+            m.amount1 = String(d.amount1);
+          }
+          if (d.tokenMinAmount0 != null) {
+            m.tokenMinAmount0 = String(d.tokenMinAmount0);
+          }
+          if (d.tokenMinAmount1 != null) {
+            m.tokenMinAmount1 = String(d.tokenMinAmount1);
+          }
+          return m;
+        };
+        MsgAddToPosition.toObject = function toObject(m, o) {
+          if (!o) o = {};
+          var d = {};
+          if (o.defaults) {
+            if ($util.Long) {
+              var n = new $util.Long(0, 0, true);
+              d.positionId =
+                o.longs === String
+                  ? n.toString()
+                  : o.longs === Number
+                  ? n.toNumber()
+                  : n;
+            } else d.positionId = o.longs === String ? "0" : 0;
+            d.sender = "";
+            d.amount0 = "";
+            d.amount1 = "";
+            d.tokenMinAmount0 = "";
+            d.tokenMinAmount1 = "";
+          }
+          if (m.positionId != null && m.hasOwnProperty("positionId")) {
+            if (typeof m.positionId === "number")
+              d.positionId =
+                o.longs === String ? String(m.positionId) : m.positionId;
+            else
+              d.positionId =
+                o.longs === String
+                  ? $util.Long.prototype.toString.call(m.positionId)
+                  : o.longs === Number
+                  ? new $util.LongBits(
+                      m.positionId.low >>> 0,
+                      m.positionId.high >>> 0
+                    ).toNumber(true)
+                  : m.positionId;
+          }
+          if (m.sender != null && m.hasOwnProperty("sender")) {
+            d.sender = m.sender;
+          }
+          if (m.amount0 != null && m.hasOwnProperty("amount0")) {
+            d.amount0 = m.amount0;
+          }
+          if (m.amount1 != null && m.hasOwnProperty("amount1")) {
+            d.amount1 = m.amount1;
+          }
+          if (
+            m.tokenMinAmount0 != null &&
+            m.hasOwnProperty("tokenMinAmount0")
+          ) {
+            d.tokenMinAmount0 = m.tokenMinAmount0;
+          }
+          if (
+            m.tokenMinAmount1 != null &&
+            m.hasOwnProperty("tokenMinAmount1")
+          ) {
+            d.tokenMinAmount1 = m.tokenMinAmount1;
+          }
+          return d;
+        };
+        MsgAddToPosition.prototype.toJSON = function toJSON() {
+          return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+        return MsgAddToPosition;
+      })();
+      v1beta1.MsgAddToPositionResponse = (function () {
+        function MsgAddToPositionResponse(p) {
+          if (p)
+            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+              if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+        }
+        MsgAddToPositionResponse.prototype.positionId = $util.Long
+          ? $util.Long.fromBits(0, 0, true)
+          : 0;
+        MsgAddToPositionResponse.prototype.amount0 = "";
+        MsgAddToPositionResponse.prototype.amount1 = "";
+        MsgAddToPositionResponse.create = function create(properties) {
+          return new MsgAddToPositionResponse(properties);
+        };
+        MsgAddToPositionResponse.encode = function encode(m, w) {
+          if (!w) w = $Writer.create();
+          if (
+            m.positionId != null &&
+            Object.hasOwnProperty.call(m, "positionId")
+          )
+            w.uint32(8).uint64(m.positionId);
+          if (m.amount0 != null && Object.hasOwnProperty.call(m, "amount0"))
+            w.uint32(18).string(m.amount0);
+          if (m.amount1 != null && Object.hasOwnProperty.call(m, "amount1"))
+            w.uint32(26).string(m.amount1);
+          return w;
+        };
+        MsgAddToPositionResponse.decode = function decode(r, l) {
+          if (!(r instanceof $Reader)) r = $Reader.create(r);
+          var c = l === undefined ? r.len : r.pos + l,
+            m =
+              new $root.osmosis.concentratedliquidity.v1beta1.MsgAddToPositionResponse();
+          while (r.pos < c) {
+            var t = r.uint32();
+            switch (t >>> 3) {
+              case 1:
+                m.positionId = r.uint64();
+                break;
+              case 2:
+                m.amount0 = r.string();
+                break;
+              case 3:
+                m.amount1 = r.string();
+                break;
+              default:
+                r.skipType(t & 7);
+                break;
+            }
+          }
+          return m;
+        };
+        MsgAddToPositionResponse.fromObject = function fromObject(d) {
+          if (
+            d instanceof
+            $root.osmosis.concentratedliquidity.v1beta1.MsgAddToPositionResponse
+          )
+            return d;
+          var m =
+            new $root.osmosis.concentratedliquidity.v1beta1.MsgAddToPositionResponse();
+          if (d.positionId != null) {
+            if ($util.Long)
+              (m.positionId = $util.Long.fromValue(
+                d.positionId
+              )).unsigned = true;
+            else if (typeof d.positionId === "string")
+              m.positionId = parseInt(d.positionId, 10);
+            else if (typeof d.positionId === "number")
+              m.positionId = d.positionId;
+            else if (typeof d.positionId === "object")
+              m.positionId = new $util.LongBits(
+                d.positionId.low >>> 0,
+                d.positionId.high >>> 0
+              ).toNumber(true);
+          }
+          if (d.amount0 != null) {
+            m.amount0 = String(d.amount0);
+          }
+          if (d.amount1 != null) {
+            m.amount1 = String(d.amount1);
+          }
+          return m;
+        };
+        MsgAddToPositionResponse.toObject = function toObject(m, o) {
+          if (!o) o = {};
+          var d = {};
+          if (o.defaults) {
+            if ($util.Long) {
+              var n = new $util.Long(0, 0, true);
+              d.positionId =
+                o.longs === String
+                  ? n.toString()
+                  : o.longs === Number
+                  ? n.toNumber()
+                  : n;
+            } else d.positionId = o.longs === String ? "0" : 0;
+            d.amount0 = "";
+            d.amount1 = "";
+          }
+          if (m.positionId != null && m.hasOwnProperty("positionId")) {
+            if (typeof m.positionId === "number")
+              d.positionId =
+                o.longs === String ? String(m.positionId) : m.positionId;
+            else
+              d.positionId =
+                o.longs === String
+                  ? $util.Long.prototype.toString.call(m.positionId)
+                  : o.longs === Number
+                  ? new $util.LongBits(
+                      m.positionId.low >>> 0,
+                      m.positionId.high >>> 0
+                    ).toNumber(true)
+                  : m.positionId;
+          }
+          if (m.amount0 != null && m.hasOwnProperty("amount0")) {
+            d.amount0 = m.amount0;
+          }
+          if (m.amount1 != null && m.hasOwnProperty("amount1")) {
+            d.amount1 = m.amount1;
+          }
+          return d;
+        };
+        MsgAddToPositionResponse.prototype.toJSON = function toJSON() {
+          return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+        return MsgAddToPositionResponse;
       })();
       v1beta1.MsgWithdrawPosition = (function () {
         function MsgWithdrawPosition(p) {
@@ -9320,11 +10013,14 @@ exports.osmosis = $root.osmosis = (() => {
       v1beta1.MsgCollectIncentivesResponse = (function () {
         function MsgCollectIncentivesResponse(p) {
           this.collectedIncentives = [];
+          this.forfeitedIncentives = [];
           if (p)
             for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
               if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
         }
         MsgCollectIncentivesResponse.prototype.collectedIncentives =
+          $util.emptyArray;
+        MsgCollectIncentivesResponse.prototype.forfeitedIncentives =
           $util.emptyArray;
         MsgCollectIncentivesResponse.create = function create(properties) {
           return new MsgCollectIncentivesResponse(properties);
@@ -9336,6 +10032,13 @@ exports.osmosis = $root.osmosis = (() => {
               $root.cosmos.base.v1beta1.Coin.encode(
                 m.collectedIncentives[i],
                 w.uint32(10).fork()
+              ).ldelim();
+          }
+          if (m.forfeitedIncentives != null && m.forfeitedIncentives.length) {
+            for (var i = 0; i < m.forfeitedIncentives.length; ++i)
+              $root.cosmos.base.v1beta1.Coin.encode(
+                m.forfeitedIncentives[i],
+                w.uint32(18).fork()
               ).ldelim();
           }
           return w;
@@ -9352,6 +10055,13 @@ exports.osmosis = $root.osmosis = (() => {
                 if (!(m.collectedIncentives && m.collectedIncentives.length))
                   m.collectedIncentives = [];
                 m.collectedIncentives.push(
+                  $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
+                );
+                break;
+              case 2:
+                if (!(m.forfeitedIncentives && m.forfeitedIncentives.length))
+                  m.forfeitedIncentives = [];
+                m.forfeitedIncentives.push(
                   $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
                 );
                 break;
@@ -9388,6 +10098,23 @@ exports.osmosis = $root.osmosis = (() => {
                 );
             }
           }
+          if (d.forfeitedIncentives) {
+            if (!Array.isArray(d.forfeitedIncentives))
+              throw TypeError(
+                ".osmosis.concentratedliquidity.v1beta1.MsgCollectIncentivesResponse.forfeitedIncentives: array expected"
+              );
+            m.forfeitedIncentives = [];
+            for (var i = 0; i < d.forfeitedIncentives.length; ++i) {
+              if (typeof d.forfeitedIncentives[i] !== "object")
+                throw TypeError(
+                  ".osmosis.concentratedliquidity.v1beta1.MsgCollectIncentivesResponse.forfeitedIncentives: object expected"
+                );
+              m.forfeitedIncentives[i] =
+                $root.cosmos.base.v1beta1.Coin.fromObject(
+                  d.forfeitedIncentives[i]
+                );
+            }
+          }
           return m;
         };
         MsgCollectIncentivesResponse.toObject = function toObject(m, o) {
@@ -9395,6 +10122,7 @@ exports.osmosis = $root.osmosis = (() => {
           var d = {};
           if (o.arrays || o.defaults) {
             d.collectedIncentives = [];
+            d.forfeitedIncentives = [];
           }
           if (m.collectedIncentives && m.collectedIncentives.length) {
             d.collectedIncentives = [];
@@ -9406,383 +10134,22 @@ exports.osmosis = $root.osmosis = (() => {
                 );
             }
           }
+          if (m.forfeitedIncentives && m.forfeitedIncentives.length) {
+            d.forfeitedIncentives = [];
+            for (var j = 0; j < m.forfeitedIncentives.length; ++j) {
+              d.forfeitedIncentives[j] =
+                $root.cosmos.base.v1beta1.Coin.toObject(
+                  m.forfeitedIncentives[j],
+                  o
+                );
+            }
+          }
           return d;
         };
         MsgCollectIncentivesResponse.prototype.toJSON = function toJSON() {
           return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
         return MsgCollectIncentivesResponse;
-      })();
-      v1beta1.MsgCreateIncentive = (function () {
-        function MsgCreateIncentive(p) {
-          if (p)
-            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
-              if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-        }
-        MsgCreateIncentive.prototype.poolId = $util.Long
-          ? $util.Long.fromBits(0, 0, true)
-          : 0;
-        MsgCreateIncentive.prototype.sender = "";
-        MsgCreateIncentive.prototype.incentiveDenom = "";
-        MsgCreateIncentive.prototype.incentiveAmount = "";
-        MsgCreateIncentive.prototype.emissionRate = "";
-        MsgCreateIncentive.prototype.startTime = null;
-        MsgCreateIncentive.prototype.minUptime = null;
-        MsgCreateIncentive.create = function create(properties) {
-          return new MsgCreateIncentive(properties);
-        };
-        MsgCreateIncentive.encode = function encode(m, w) {
-          if (!w) w = $Writer.create();
-          if (m.poolId != null && Object.hasOwnProperty.call(m, "poolId"))
-            w.uint32(8).uint64(m.poolId);
-          if (m.sender != null && Object.hasOwnProperty.call(m, "sender"))
-            w.uint32(18).string(m.sender);
-          if (
-            m.incentiveDenom != null &&
-            Object.hasOwnProperty.call(m, "incentiveDenom")
-          )
-            w.uint32(26).string(m.incentiveDenom);
-          if (
-            m.incentiveAmount != null &&
-            Object.hasOwnProperty.call(m, "incentiveAmount")
-          )
-            w.uint32(34).string(m.incentiveAmount);
-          if (
-            m.emissionRate != null &&
-            Object.hasOwnProperty.call(m, "emissionRate")
-          )
-            w.uint32(42).string(m.emissionRate);
-          if (m.startTime != null && Object.hasOwnProperty.call(m, "startTime"))
-            $root.google.protobuf.Timestamp.encode(
-              m.startTime,
-              w.uint32(50).fork()
-            ).ldelim();
-          if (m.minUptime != null && Object.hasOwnProperty.call(m, "minUptime"))
-            $root.google.protobuf.Duration.encode(
-              m.minUptime,
-              w.uint32(58).fork()
-            ).ldelim();
-          return w;
-        };
-        MsgCreateIncentive.decode = function decode(r, l) {
-          if (!(r instanceof $Reader)) r = $Reader.create(r);
-          var c = l === undefined ? r.len : r.pos + l,
-            m =
-              new $root.osmosis.concentratedliquidity.v1beta1.MsgCreateIncentive();
-          while (r.pos < c) {
-            var t = r.uint32();
-            switch (t >>> 3) {
-              case 1:
-                m.poolId = r.uint64();
-                break;
-              case 2:
-                m.sender = r.string();
-                break;
-              case 3:
-                m.incentiveDenom = r.string();
-                break;
-              case 4:
-                m.incentiveAmount = r.string();
-                break;
-              case 5:
-                m.emissionRate = r.string();
-                break;
-              case 6:
-                m.startTime = $root.google.protobuf.Timestamp.decode(
-                  r,
-                  r.uint32()
-                );
-                break;
-              case 7:
-                m.minUptime = $root.google.protobuf.Duration.decode(
-                  r,
-                  r.uint32()
-                );
-                break;
-              default:
-                r.skipType(t & 7);
-                break;
-            }
-          }
-          return m;
-        };
-        MsgCreateIncentive.fromObject = function fromObject(d) {
-          if (
-            d instanceof
-            $root.osmosis.concentratedliquidity.v1beta1.MsgCreateIncentive
-          )
-            return d;
-          var m =
-            new $root.osmosis.concentratedliquidity.v1beta1.MsgCreateIncentive();
-          if (d.poolId != null) {
-            if ($util.Long)
-              (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
-            else if (typeof d.poolId === "string")
-              m.poolId = parseInt(d.poolId, 10);
-            else if (typeof d.poolId === "number") m.poolId = d.poolId;
-            else if (typeof d.poolId === "object")
-              m.poolId = new $util.LongBits(
-                d.poolId.low >>> 0,
-                d.poolId.high >>> 0
-              ).toNumber(true);
-          }
-          if (d.sender != null) {
-            m.sender = String(d.sender);
-          }
-          if (d.incentiveDenom != null) {
-            m.incentiveDenom = String(d.incentiveDenom);
-          }
-          if (d.incentiveAmount != null) {
-            m.incentiveAmount = String(d.incentiveAmount);
-          }
-          if (d.emissionRate != null) {
-            m.emissionRate = String(d.emissionRate);
-          }
-          if (d.startTime != null) {
-            if (typeof d.startTime !== "object")
-              throw TypeError(
-                ".osmosis.concentratedliquidity.v1beta1.MsgCreateIncentive.startTime: object expected"
-              );
-            m.startTime = $root.google.protobuf.Timestamp.fromObject(
-              d.startTime
-            );
-          }
-          if (d.minUptime != null) {
-            if (typeof d.minUptime !== "object")
-              throw TypeError(
-                ".osmosis.concentratedliquidity.v1beta1.MsgCreateIncentive.minUptime: object expected"
-              );
-            m.minUptime = $root.google.protobuf.Duration.fromObject(
-              d.minUptime
-            );
-          }
-          return m;
-        };
-        MsgCreateIncentive.toObject = function toObject(m, o) {
-          if (!o) o = {};
-          var d = {};
-          if (o.defaults) {
-            if ($util.Long) {
-              var n = new $util.Long(0, 0, true);
-              d.poolId =
-                o.longs === String
-                  ? n.toString()
-                  : o.longs === Number
-                  ? n.toNumber()
-                  : n;
-            } else d.poolId = o.longs === String ? "0" : 0;
-            d.sender = "";
-            d.incentiveDenom = "";
-            d.incentiveAmount = "";
-            d.emissionRate = "";
-            d.startTime = null;
-            d.minUptime = null;
-          }
-          if (m.poolId != null && m.hasOwnProperty("poolId")) {
-            if (typeof m.poolId === "number")
-              d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
-            else
-              d.poolId =
-                o.longs === String
-                  ? $util.Long.prototype.toString.call(m.poolId)
-                  : o.longs === Number
-                  ? new $util.LongBits(
-                      m.poolId.low >>> 0,
-                      m.poolId.high >>> 0
-                    ).toNumber(true)
-                  : m.poolId;
-          }
-          if (m.sender != null && m.hasOwnProperty("sender")) {
-            d.sender = m.sender;
-          }
-          if (m.incentiveDenom != null && m.hasOwnProperty("incentiveDenom")) {
-            d.incentiveDenom = m.incentiveDenom;
-          }
-          if (
-            m.incentiveAmount != null &&
-            m.hasOwnProperty("incentiveAmount")
-          ) {
-            d.incentiveAmount = m.incentiveAmount;
-          }
-          if (m.emissionRate != null && m.hasOwnProperty("emissionRate")) {
-            d.emissionRate = m.emissionRate;
-          }
-          if (m.startTime != null && m.hasOwnProperty("startTime")) {
-            d.startTime = $root.google.protobuf.Timestamp.toObject(
-              m.startTime,
-              o
-            );
-          }
-          if (m.minUptime != null && m.hasOwnProperty("minUptime")) {
-            d.minUptime = $root.google.protobuf.Duration.toObject(
-              m.minUptime,
-              o
-            );
-          }
-          return d;
-        };
-        MsgCreateIncentive.prototype.toJSON = function toJSON() {
-          return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-        return MsgCreateIncentive;
-      })();
-      v1beta1.MsgCreateIncentiveResponse = (function () {
-        function MsgCreateIncentiveResponse(p) {
-          if (p)
-            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
-              if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
-        }
-        MsgCreateIncentiveResponse.prototype.incentiveDenom = "";
-        MsgCreateIncentiveResponse.prototype.incentiveAmount = "";
-        MsgCreateIncentiveResponse.prototype.emissionRate = "";
-        MsgCreateIncentiveResponse.prototype.startTime = null;
-        MsgCreateIncentiveResponse.prototype.minUptime = null;
-        MsgCreateIncentiveResponse.create = function create(properties) {
-          return new MsgCreateIncentiveResponse(properties);
-        };
-        MsgCreateIncentiveResponse.encode = function encode(m, w) {
-          if (!w) w = $Writer.create();
-          if (
-            m.incentiveDenom != null &&
-            Object.hasOwnProperty.call(m, "incentiveDenom")
-          )
-            w.uint32(10).string(m.incentiveDenom);
-          if (
-            m.incentiveAmount != null &&
-            Object.hasOwnProperty.call(m, "incentiveAmount")
-          )
-            w.uint32(18).string(m.incentiveAmount);
-          if (
-            m.emissionRate != null &&
-            Object.hasOwnProperty.call(m, "emissionRate")
-          )
-            w.uint32(26).string(m.emissionRate);
-          if (m.startTime != null && Object.hasOwnProperty.call(m, "startTime"))
-            $root.google.protobuf.Timestamp.encode(
-              m.startTime,
-              w.uint32(34).fork()
-            ).ldelim();
-          if (m.minUptime != null && Object.hasOwnProperty.call(m, "minUptime"))
-            $root.google.protobuf.Duration.encode(
-              m.minUptime,
-              w.uint32(42).fork()
-            ).ldelim();
-          return w;
-        };
-        MsgCreateIncentiveResponse.decode = function decode(r, l) {
-          if (!(r instanceof $Reader)) r = $Reader.create(r);
-          var c = l === undefined ? r.len : r.pos + l,
-            m =
-              new $root.osmosis.concentratedliquidity.v1beta1.MsgCreateIncentiveResponse();
-          while (r.pos < c) {
-            var t = r.uint32();
-            switch (t >>> 3) {
-              case 1:
-                m.incentiveDenom = r.string();
-                break;
-              case 2:
-                m.incentiveAmount = r.string();
-                break;
-              case 3:
-                m.emissionRate = r.string();
-                break;
-              case 4:
-                m.startTime = $root.google.protobuf.Timestamp.decode(
-                  r,
-                  r.uint32()
-                );
-                break;
-              case 5:
-                m.minUptime = $root.google.protobuf.Duration.decode(
-                  r,
-                  r.uint32()
-                );
-                break;
-              default:
-                r.skipType(t & 7);
-                break;
-            }
-          }
-          return m;
-        };
-        MsgCreateIncentiveResponse.fromObject = function fromObject(d) {
-          if (
-            d instanceof
-            $root.osmosis.concentratedliquidity.v1beta1
-              .MsgCreateIncentiveResponse
-          )
-            return d;
-          var m =
-            new $root.osmosis.concentratedliquidity.v1beta1.MsgCreateIncentiveResponse();
-          if (d.incentiveDenom != null) {
-            m.incentiveDenom = String(d.incentiveDenom);
-          }
-          if (d.incentiveAmount != null) {
-            m.incentiveAmount = String(d.incentiveAmount);
-          }
-          if (d.emissionRate != null) {
-            m.emissionRate = String(d.emissionRate);
-          }
-          if (d.startTime != null) {
-            if (typeof d.startTime !== "object")
-              throw TypeError(
-                ".osmosis.concentratedliquidity.v1beta1.MsgCreateIncentiveResponse.startTime: object expected"
-              );
-            m.startTime = $root.google.protobuf.Timestamp.fromObject(
-              d.startTime
-            );
-          }
-          if (d.minUptime != null) {
-            if (typeof d.minUptime !== "object")
-              throw TypeError(
-                ".osmosis.concentratedliquidity.v1beta1.MsgCreateIncentiveResponse.minUptime: object expected"
-              );
-            m.minUptime = $root.google.protobuf.Duration.fromObject(
-              d.minUptime
-            );
-          }
-          return m;
-        };
-        MsgCreateIncentiveResponse.toObject = function toObject(m, o) {
-          if (!o) o = {};
-          var d = {};
-          if (o.defaults) {
-            d.incentiveDenom = "";
-            d.incentiveAmount = "";
-            d.emissionRate = "";
-            d.startTime = null;
-            d.minUptime = null;
-          }
-          if (m.incentiveDenom != null && m.hasOwnProperty("incentiveDenom")) {
-            d.incentiveDenom = m.incentiveDenom;
-          }
-          if (
-            m.incentiveAmount != null &&
-            m.hasOwnProperty("incentiveAmount")
-          ) {
-            d.incentiveAmount = m.incentiveAmount;
-          }
-          if (m.emissionRate != null && m.hasOwnProperty("emissionRate")) {
-            d.emissionRate = m.emissionRate;
-          }
-          if (m.startTime != null && m.hasOwnProperty("startTime")) {
-            d.startTime = $root.google.protobuf.Timestamp.toObject(
-              m.startTime,
-              o
-            );
-          }
-          if (m.minUptime != null && m.hasOwnProperty("minUptime")) {
-            d.minUptime = $root.google.protobuf.Duration.toObject(
-              m.minUptime,
-              o
-            );
-          }
-          return d;
-        };
-        MsgCreateIncentiveResponse.prototype.toJSON = function toJSON() {
-          return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-        return MsgCreateIncentiveResponse;
       })();
       v1beta1.MsgFungifyChargedPositions = (function () {
         function MsgFungifyChargedPositions(p) {
@@ -10119,6 +10486,25 @@ exports.osmosis = $root.osmosis = (() => {
         { value: "LockAndSuperfluidDelegate" }
       );
       Object.defineProperty(
+        (Msg.prototype.createFullRangePositionAndSuperfluidDelegate =
+          function createFullRangePositionAndSuperfluidDelegate(
+            request,
+            callback
+          ) {
+            return this.rpcCall(
+              createFullRangePositionAndSuperfluidDelegate,
+              $root.osmosis.superfluid
+                .MsgCreateFullRangePositionAndSuperfluidDelegate,
+              $root.osmosis.superfluid
+                .MsgCreateFullRangePositionAndSuperfluidDelegateResponse,
+              request,
+              callback
+            );
+          }),
+        "name",
+        { value: "CreateFullRangePositionAndSuperfluidDelegate" }
+      );
+      Object.defineProperty(
         (Msg.prototype.unPoolWhitelistedPool = function unPoolWhitelistedPool(
           request,
           callback
@@ -10152,6 +10538,25 @@ exports.osmosis = $root.osmosis = (() => {
           }),
         "name",
         { value: "UnlockAndMigrateSharesToFullRangeConcentratedPosition" }
+      );
+      Object.defineProperty(
+        (Msg.prototype.addToConcentratedLiquiditySuperfluidPosition =
+          function addToConcentratedLiquiditySuperfluidPosition(
+            request,
+            callback
+          ) {
+            return this.rpcCall(
+              addToConcentratedLiquiditySuperfluidPosition,
+              $root.osmosis.superfluid
+                .MsgAddToConcentratedLiquiditySuperfluidPosition,
+              $root.osmosis.superfluid
+                .MsgAddToConcentratedLiquiditySuperfluidPositionResponse,
+              request,
+              callback
+            );
+          }),
+        "name",
+        { value: "AddToConcentratedLiquiditySuperfluidPosition" }
       );
       return Msg;
     })();
@@ -10730,6 +11135,9 @@ exports.osmosis = $root.osmosis = (() => {
           for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
             if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
       }
+      MsgSuperfluidUndelegateAndUnbondLockResponse.prototype.lockId = $util.Long
+        ? $util.Long.fromBits(0, 0, true)
+        : 0;
       MsgSuperfluidUndelegateAndUnbondLockResponse.create = function create(
         properties
       ) {
@@ -10740,6 +11148,8 @@ exports.osmosis = $root.osmosis = (() => {
         w
       ) {
         if (!w) w = $Writer.create();
+        if (m.lockId != null && Object.hasOwnProperty.call(m, "lockId"))
+          w.uint32(8).uint64(m.lockId);
         return w;
       };
       MsgSuperfluidUndelegateAndUnbondLockResponse.decode = function decode(
@@ -10753,6 +11163,9 @@ exports.osmosis = $root.osmosis = (() => {
         while (r.pos < c) {
           var t = r.uint32();
           switch (t >>> 3) {
+            case 1:
+              m.lockId = r.uint64();
+              break;
             default:
               r.skipType(t & 7);
               break;
@@ -10768,12 +11181,55 @@ exports.osmosis = $root.osmosis = (() => {
               .MsgSuperfluidUndelegateAndUnbondLockResponse
           )
             return d;
-          return new $root.osmosis.superfluid.MsgSuperfluidUndelegateAndUnbondLockResponse();
+          var m =
+            new $root.osmosis.superfluid.MsgSuperfluidUndelegateAndUnbondLockResponse();
+          if (d.lockId != null) {
+            if ($util.Long)
+              (m.lockId = $util.Long.fromValue(d.lockId)).unsigned = true;
+            else if (typeof d.lockId === "string")
+              m.lockId = parseInt(d.lockId, 10);
+            else if (typeof d.lockId === "number") m.lockId = d.lockId;
+            else if (typeof d.lockId === "object")
+              m.lockId = new $util.LongBits(
+                d.lockId.low >>> 0,
+                d.lockId.high >>> 0
+              ).toNumber(true);
+          }
+          return m;
         };
-      MsgSuperfluidUndelegateAndUnbondLockResponse.toObject =
-        function toObject() {
-          return {};
-        };
+      MsgSuperfluidUndelegateAndUnbondLockResponse.toObject = function toObject(
+        m,
+        o
+      ) {
+        if (!o) o = {};
+        var d = {};
+        if (o.defaults) {
+          if ($util.Long) {
+            var n = new $util.Long(0, 0, true);
+            d.lockId =
+              o.longs === String
+                ? n.toString()
+                : o.longs === Number
+                ? n.toNumber()
+                : n;
+          } else d.lockId = o.longs === String ? "0" : 0;
+        }
+        if (m.lockId != null && m.hasOwnProperty("lockId")) {
+          if (typeof m.lockId === "number")
+            d.lockId = o.longs === String ? String(m.lockId) : m.lockId;
+          else
+            d.lockId =
+              o.longs === String
+                ? $util.Long.prototype.toString.call(m.lockId)
+                : o.longs === Number
+                ? new $util.LongBits(
+                    m.lockId.low >>> 0,
+                    m.lockId.high >>> 0
+                  ).toNumber(true)
+                : m.lockId;
+        }
+        return d;
+      };
       MsgSuperfluidUndelegateAndUnbondLockResponse.prototype.toJSON =
         function toJSON() {
           return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
@@ -10981,6 +11437,334 @@ exports.osmosis = $root.osmosis = (() => {
         };
       return MsgLockAndSuperfluidDelegateResponse;
     })();
+    superfluid.MsgCreateFullRangePositionAndSuperfluidDelegate = (function () {
+      function MsgCreateFullRangePositionAndSuperfluidDelegate(p) {
+        this.coins = [];
+        if (p)
+          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+      }
+      MsgCreateFullRangePositionAndSuperfluidDelegate.prototype.sender = "";
+      MsgCreateFullRangePositionAndSuperfluidDelegate.prototype.coins =
+        $util.emptyArray;
+      MsgCreateFullRangePositionAndSuperfluidDelegate.prototype.valAddr = "";
+      MsgCreateFullRangePositionAndSuperfluidDelegate.prototype.poolId =
+        $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
+      MsgCreateFullRangePositionAndSuperfluidDelegate.create = function create(
+        properties
+      ) {
+        return new MsgCreateFullRangePositionAndSuperfluidDelegate(properties);
+      };
+      MsgCreateFullRangePositionAndSuperfluidDelegate.encode = function encode(
+        m,
+        w
+      ) {
+        if (!w) w = $Writer.create();
+        if (m.sender != null && Object.hasOwnProperty.call(m, "sender"))
+          w.uint32(10).string(m.sender);
+        if (m.coins != null && m.coins.length) {
+          for (var i = 0; i < m.coins.length; ++i)
+            $root.cosmos.base.v1beta1.Coin.encode(
+              m.coins[i],
+              w.uint32(18).fork()
+            ).ldelim();
+        }
+        if (m.valAddr != null && Object.hasOwnProperty.call(m, "valAddr"))
+          w.uint32(26).string(m.valAddr);
+        if (m.poolId != null && Object.hasOwnProperty.call(m, "poolId"))
+          w.uint32(32).uint64(m.poolId);
+        return w;
+      };
+      MsgCreateFullRangePositionAndSuperfluidDelegate.decode = function decode(
+        r,
+        l
+      ) {
+        if (!(r instanceof $Reader)) r = $Reader.create(r);
+        var c = l === undefined ? r.len : r.pos + l,
+          m =
+            new $root.osmosis.superfluid.MsgCreateFullRangePositionAndSuperfluidDelegate();
+        while (r.pos < c) {
+          var t = r.uint32();
+          switch (t >>> 3) {
+            case 1:
+              m.sender = r.string();
+              break;
+            case 2:
+              if (!(m.coins && m.coins.length)) m.coins = [];
+              m.coins.push(
+                $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
+              );
+              break;
+            case 3:
+              m.valAddr = r.string();
+              break;
+            case 4:
+              m.poolId = r.uint64();
+              break;
+            default:
+              r.skipType(t & 7);
+              break;
+          }
+        }
+        return m;
+      };
+      MsgCreateFullRangePositionAndSuperfluidDelegate.fromObject =
+        function fromObject(d) {
+          if (
+            d instanceof
+            $root.osmosis.superfluid
+              .MsgCreateFullRangePositionAndSuperfluidDelegate
+          )
+            return d;
+          var m =
+            new $root.osmosis.superfluid.MsgCreateFullRangePositionAndSuperfluidDelegate();
+          if (d.sender != null) {
+            m.sender = String(d.sender);
+          }
+          if (d.coins) {
+            if (!Array.isArray(d.coins))
+              throw TypeError(
+                ".osmosis.superfluid.MsgCreateFullRangePositionAndSuperfluidDelegate.coins: array expected"
+              );
+            m.coins = [];
+            for (var i = 0; i < d.coins.length; ++i) {
+              if (typeof d.coins[i] !== "object")
+                throw TypeError(
+                  ".osmosis.superfluid.MsgCreateFullRangePositionAndSuperfluidDelegate.coins: object expected"
+                );
+              m.coins[i] = $root.cosmos.base.v1beta1.Coin.fromObject(
+                d.coins[i]
+              );
+            }
+          }
+          if (d.valAddr != null) {
+            m.valAddr = String(d.valAddr);
+          }
+          if (d.poolId != null) {
+            if ($util.Long)
+              (m.poolId = $util.Long.fromValue(d.poolId)).unsigned = true;
+            else if (typeof d.poolId === "string")
+              m.poolId = parseInt(d.poolId, 10);
+            else if (typeof d.poolId === "number") m.poolId = d.poolId;
+            else if (typeof d.poolId === "object")
+              m.poolId = new $util.LongBits(
+                d.poolId.low >>> 0,
+                d.poolId.high >>> 0
+              ).toNumber(true);
+          }
+          return m;
+        };
+      MsgCreateFullRangePositionAndSuperfluidDelegate.toObject =
+        function toObject(m, o) {
+          if (!o) o = {};
+          var d = {};
+          if (o.arrays || o.defaults) {
+            d.coins = [];
+          }
+          if (o.defaults) {
+            d.sender = "";
+            d.valAddr = "";
+            if ($util.Long) {
+              var n = new $util.Long(0, 0, true);
+              d.poolId =
+                o.longs === String
+                  ? n.toString()
+                  : o.longs === Number
+                  ? n.toNumber()
+                  : n;
+            } else d.poolId = o.longs === String ? "0" : 0;
+          }
+          if (m.sender != null && m.hasOwnProperty("sender")) {
+            d.sender = m.sender;
+          }
+          if (m.coins && m.coins.length) {
+            d.coins = [];
+            for (var j = 0; j < m.coins.length; ++j) {
+              d.coins[j] = $root.cosmos.base.v1beta1.Coin.toObject(
+                m.coins[j],
+                o
+              );
+            }
+          }
+          if (m.valAddr != null && m.hasOwnProperty("valAddr")) {
+            d.valAddr = m.valAddr;
+          }
+          if (m.poolId != null && m.hasOwnProperty("poolId")) {
+            if (typeof m.poolId === "number")
+              d.poolId = o.longs === String ? String(m.poolId) : m.poolId;
+            else
+              d.poolId =
+                o.longs === String
+                  ? $util.Long.prototype.toString.call(m.poolId)
+                  : o.longs === Number
+                  ? new $util.LongBits(
+                      m.poolId.low >>> 0,
+                      m.poolId.high >>> 0
+                    ).toNumber(true)
+                  : m.poolId;
+          }
+          return d;
+        };
+      MsgCreateFullRangePositionAndSuperfluidDelegate.prototype.toJSON =
+        function toJSON() {
+          return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+      return MsgCreateFullRangePositionAndSuperfluidDelegate;
+    })();
+    superfluid.MsgCreateFullRangePositionAndSuperfluidDelegateResponse =
+      (function () {
+        function MsgCreateFullRangePositionAndSuperfluidDelegateResponse(p) {
+          if (p)
+            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+              if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+        }
+        MsgCreateFullRangePositionAndSuperfluidDelegateResponse.prototype.lockID =
+          $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
+        MsgCreateFullRangePositionAndSuperfluidDelegateResponse.prototype.positionID =
+          $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
+        MsgCreateFullRangePositionAndSuperfluidDelegateResponse.create =
+          function create(properties) {
+            return new MsgCreateFullRangePositionAndSuperfluidDelegateResponse(
+              properties
+            );
+          };
+        MsgCreateFullRangePositionAndSuperfluidDelegateResponse.encode =
+          function encode(m, w) {
+            if (!w) w = $Writer.create();
+            if (m.lockID != null && Object.hasOwnProperty.call(m, "lockID"))
+              w.uint32(8).uint64(m.lockID);
+            if (
+              m.positionID != null &&
+              Object.hasOwnProperty.call(m, "positionID")
+            )
+              w.uint32(16).uint64(m.positionID);
+            return w;
+          };
+        MsgCreateFullRangePositionAndSuperfluidDelegateResponse.decode =
+          function decode(r, l) {
+            if (!(r instanceof $Reader)) r = $Reader.create(r);
+            var c = l === undefined ? r.len : r.pos + l,
+              m =
+                new $root.osmosis.superfluid.MsgCreateFullRangePositionAndSuperfluidDelegateResponse();
+            while (r.pos < c) {
+              var t = r.uint32();
+              switch (t >>> 3) {
+                case 1:
+                  m.lockID = r.uint64();
+                  break;
+                case 2:
+                  m.positionID = r.uint64();
+                  break;
+                default:
+                  r.skipType(t & 7);
+                  break;
+              }
+            }
+            return m;
+          };
+        MsgCreateFullRangePositionAndSuperfluidDelegateResponse.fromObject =
+          function fromObject(d) {
+            if (
+              d instanceof
+              $root.osmosis.superfluid
+                .MsgCreateFullRangePositionAndSuperfluidDelegateResponse
+            )
+              return d;
+            var m =
+              new $root.osmosis.superfluid.MsgCreateFullRangePositionAndSuperfluidDelegateResponse();
+            if (d.lockID != null) {
+              if ($util.Long)
+                (m.lockID = $util.Long.fromValue(d.lockID)).unsigned = true;
+              else if (typeof d.lockID === "string")
+                m.lockID = parseInt(d.lockID, 10);
+              else if (typeof d.lockID === "number") m.lockID = d.lockID;
+              else if (typeof d.lockID === "object")
+                m.lockID = new $util.LongBits(
+                  d.lockID.low >>> 0,
+                  d.lockID.high >>> 0
+                ).toNumber(true);
+            }
+            if (d.positionID != null) {
+              if ($util.Long)
+                (m.positionID = $util.Long.fromValue(
+                  d.positionID
+                )).unsigned = true;
+              else if (typeof d.positionID === "string")
+                m.positionID = parseInt(d.positionID, 10);
+              else if (typeof d.positionID === "number")
+                m.positionID = d.positionID;
+              else if (typeof d.positionID === "object")
+                m.positionID = new $util.LongBits(
+                  d.positionID.low >>> 0,
+                  d.positionID.high >>> 0
+                ).toNumber(true);
+            }
+            return m;
+          };
+        MsgCreateFullRangePositionAndSuperfluidDelegateResponse.toObject =
+          function toObject(m, o) {
+            if (!o) o = {};
+            var d = {};
+            if (o.defaults) {
+              if ($util.Long) {
+                var n = new $util.Long(0, 0, true);
+                d.lockID =
+                  o.longs === String
+                    ? n.toString()
+                    : o.longs === Number
+                    ? n.toNumber()
+                    : n;
+              } else d.lockID = o.longs === String ? "0" : 0;
+              if ($util.Long) {
+                var n = new $util.Long(0, 0, true);
+                d.positionID =
+                  o.longs === String
+                    ? n.toString()
+                    : o.longs === Number
+                    ? n.toNumber()
+                    : n;
+              } else d.positionID = o.longs === String ? "0" : 0;
+            }
+            if (m.lockID != null && m.hasOwnProperty("lockID")) {
+              if (typeof m.lockID === "number")
+                d.lockID = o.longs === String ? String(m.lockID) : m.lockID;
+              else
+                d.lockID =
+                  o.longs === String
+                    ? $util.Long.prototype.toString.call(m.lockID)
+                    : o.longs === Number
+                    ? new $util.LongBits(
+                        m.lockID.low >>> 0,
+                        m.lockID.high >>> 0
+                      ).toNumber(true)
+                    : m.lockID;
+            }
+            if (m.positionID != null && m.hasOwnProperty("positionID")) {
+              if (typeof m.positionID === "number")
+                d.positionID =
+                  o.longs === String ? String(m.positionID) : m.positionID;
+              else
+                d.positionID =
+                  o.longs === String
+                    ? $util.Long.prototype.toString.call(m.positionID)
+                    : o.longs === Number
+                    ? new $util.LongBits(
+                        m.positionID.low >>> 0,
+                        m.positionID.high >>> 0
+                      ).toNumber(true)
+                    : m.positionID;
+            }
+            return d;
+          };
+        MsgCreateFullRangePositionAndSuperfluidDelegateResponse.prototype.toJSON =
+          function toJSON() {
+            return this.constructor.toObject(
+              this,
+              $protobuf.util.toJSONOptions
+            );
+          };
+        return MsgCreateFullRangePositionAndSuperfluidDelegateResponse;
+      })();
     superfluid.MsgUnPoolWhitelistedPool = (function () {
       function MsgUnPoolWhitelistedPool(p) {
         if (p)
@@ -11192,6 +11976,7 @@ exports.osmosis = $root.osmosis = (() => {
     superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition =
       (function () {
         function MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition(p) {
+          this.tokenOutMins = [];
           if (p)
             for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
               if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
@@ -11202,6 +11987,8 @@ exports.osmosis = $root.osmosis = (() => {
           $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
         MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition.prototype.sharesToMigrate =
           null;
+        MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition.prototype.tokenOutMins =
+          $util.emptyArray;
         MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition.create =
           function create(properties) {
             return new MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition(
@@ -11223,6 +12010,13 @@ exports.osmosis = $root.osmosis = (() => {
                 m.sharesToMigrate,
                 w.uint32(26).fork()
               ).ldelim();
+            if (m.tokenOutMins != null && m.tokenOutMins.length) {
+              for (var i = 0; i < m.tokenOutMins.length; ++i)
+                $root.cosmos.base.v1beta1.Coin.encode(
+                  m.tokenOutMins[i],
+                  w.uint32(34).fork()
+                ).ldelim();
+            }
             return w;
           };
         MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition.decode =
@@ -11244,6 +12038,13 @@ exports.osmosis = $root.osmosis = (() => {
                   m.sharesToMigrate = $root.cosmos.base.v1beta1.Coin.decode(
                     r,
                     r.uint32()
+                  );
+                  break;
+                case 4:
+                  if (!(m.tokenOutMins && m.tokenOutMins.length))
+                    m.tokenOutMins = [];
+                  m.tokenOutMins.push(
+                    $root.cosmos.base.v1beta1.Coin.decode(r, r.uint32())
                   );
                   break;
                 default:
@@ -11287,12 +12088,31 @@ exports.osmosis = $root.osmosis = (() => {
                 d.sharesToMigrate
               );
             }
+            if (d.tokenOutMins) {
+              if (!Array.isArray(d.tokenOutMins))
+                throw TypeError(
+                  ".osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition.tokenOutMins: array expected"
+                );
+              m.tokenOutMins = [];
+              for (var i = 0; i < d.tokenOutMins.length; ++i) {
+                if (typeof d.tokenOutMins[i] !== "object")
+                  throw TypeError(
+                    ".osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition.tokenOutMins: object expected"
+                  );
+                m.tokenOutMins[i] = $root.cosmos.base.v1beta1.Coin.fromObject(
+                  d.tokenOutMins[i]
+                );
+              }
+            }
             return m;
           };
         MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition.toObject =
           function toObject(m, o) {
             if (!o) o = {};
             var d = {};
+            if (o.arrays || o.defaults) {
+              d.tokenOutMins = [];
+            }
             if (o.defaults) {
               d.sender = "";
               if ($util.Long) {
@@ -11331,6 +12151,15 @@ exports.osmosis = $root.osmosis = (() => {
                 m.sharesToMigrate,
                 o
               );
+            }
+            if (m.tokenOutMins && m.tokenOutMins.length) {
+              d.tokenOutMins = [];
+              for (var j = 0; j < m.tokenOutMins.length; ++j) {
+                d.tokenOutMins[j] = $root.cosmos.base.v1beta1.Coin.toObject(
+                  m.tokenOutMins[j],
+                  o
+                );
+              }
             }
             return d;
           };
@@ -11484,6 +12313,390 @@ exports.osmosis = $root.osmosis = (() => {
             );
           };
         return MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse;
+      })();
+    superfluid.MsgAddToConcentratedLiquiditySuperfluidPosition = (function () {
+      function MsgAddToConcentratedLiquiditySuperfluidPosition(p) {
+        if (p)
+          for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+            if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+      }
+      MsgAddToConcentratedLiquiditySuperfluidPosition.prototype.positionId =
+        $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
+      MsgAddToConcentratedLiquiditySuperfluidPosition.prototype.sender = "";
+      MsgAddToConcentratedLiquiditySuperfluidPosition.prototype.tokenDesired0 =
+        null;
+      MsgAddToConcentratedLiquiditySuperfluidPosition.prototype.tokenDesired1 =
+        null;
+      MsgAddToConcentratedLiquiditySuperfluidPosition.create = function create(
+        properties
+      ) {
+        return new MsgAddToConcentratedLiquiditySuperfluidPosition(properties);
+      };
+      MsgAddToConcentratedLiquiditySuperfluidPosition.encode = function encode(
+        m,
+        w
+      ) {
+        if (!w) w = $Writer.create();
+        if (m.positionId != null && Object.hasOwnProperty.call(m, "positionId"))
+          w.uint32(8).uint64(m.positionId);
+        if (m.sender != null && Object.hasOwnProperty.call(m, "sender"))
+          w.uint32(18).string(m.sender);
+        if (
+          m.tokenDesired0 != null &&
+          Object.hasOwnProperty.call(m, "tokenDesired0")
+        )
+          $root.cosmos.base.v1beta1.Coin.encode(
+            m.tokenDesired0,
+            w.uint32(26).fork()
+          ).ldelim();
+        if (
+          m.tokenDesired1 != null &&
+          Object.hasOwnProperty.call(m, "tokenDesired1")
+        )
+          $root.cosmos.base.v1beta1.Coin.encode(
+            m.tokenDesired1,
+            w.uint32(34).fork()
+          ).ldelim();
+        return w;
+      };
+      MsgAddToConcentratedLiquiditySuperfluidPosition.decode = function decode(
+        r,
+        l
+      ) {
+        if (!(r instanceof $Reader)) r = $Reader.create(r);
+        var c = l === undefined ? r.len : r.pos + l,
+          m =
+            new $root.osmosis.superfluid.MsgAddToConcentratedLiquiditySuperfluidPosition();
+        while (r.pos < c) {
+          var t = r.uint32();
+          switch (t >>> 3) {
+            case 1:
+              m.positionId = r.uint64();
+              break;
+            case 2:
+              m.sender = r.string();
+              break;
+            case 3:
+              m.tokenDesired0 = $root.cosmos.base.v1beta1.Coin.decode(
+                r,
+                r.uint32()
+              );
+              break;
+            case 4:
+              m.tokenDesired1 = $root.cosmos.base.v1beta1.Coin.decode(
+                r,
+                r.uint32()
+              );
+              break;
+            default:
+              r.skipType(t & 7);
+              break;
+          }
+        }
+        return m;
+      };
+      MsgAddToConcentratedLiquiditySuperfluidPosition.fromObject =
+        function fromObject(d) {
+          if (
+            d instanceof
+            $root.osmosis.superfluid
+              .MsgAddToConcentratedLiquiditySuperfluidPosition
+          )
+            return d;
+          var m =
+            new $root.osmosis.superfluid.MsgAddToConcentratedLiquiditySuperfluidPosition();
+          if (d.positionId != null) {
+            if ($util.Long)
+              (m.positionId = $util.Long.fromValue(
+                d.positionId
+              )).unsigned = true;
+            else if (typeof d.positionId === "string")
+              m.positionId = parseInt(d.positionId, 10);
+            else if (typeof d.positionId === "number")
+              m.positionId = d.positionId;
+            else if (typeof d.positionId === "object")
+              m.positionId = new $util.LongBits(
+                d.positionId.low >>> 0,
+                d.positionId.high >>> 0
+              ).toNumber(true);
+          }
+          if (d.sender != null) {
+            m.sender = String(d.sender);
+          }
+          if (d.tokenDesired0 != null) {
+            if (typeof d.tokenDesired0 !== "object")
+              throw TypeError(
+                ".osmosis.superfluid.MsgAddToConcentratedLiquiditySuperfluidPosition.tokenDesired0: object expected"
+              );
+            m.tokenDesired0 = $root.cosmos.base.v1beta1.Coin.fromObject(
+              d.tokenDesired0
+            );
+          }
+          if (d.tokenDesired1 != null) {
+            if (typeof d.tokenDesired1 !== "object")
+              throw TypeError(
+                ".osmosis.superfluid.MsgAddToConcentratedLiquiditySuperfluidPosition.tokenDesired1: object expected"
+              );
+            m.tokenDesired1 = $root.cosmos.base.v1beta1.Coin.fromObject(
+              d.tokenDesired1
+            );
+          }
+          return m;
+        };
+      MsgAddToConcentratedLiquiditySuperfluidPosition.toObject =
+        function toObject(m, o) {
+          if (!o) o = {};
+          var d = {};
+          if (o.defaults) {
+            if ($util.Long) {
+              var n = new $util.Long(0, 0, true);
+              d.positionId =
+                o.longs === String
+                  ? n.toString()
+                  : o.longs === Number
+                  ? n.toNumber()
+                  : n;
+            } else d.positionId = o.longs === String ? "0" : 0;
+            d.sender = "";
+            d.tokenDesired0 = null;
+            d.tokenDesired1 = null;
+          }
+          if (m.positionId != null && m.hasOwnProperty("positionId")) {
+            if (typeof m.positionId === "number")
+              d.positionId =
+                o.longs === String ? String(m.positionId) : m.positionId;
+            else
+              d.positionId =
+                o.longs === String
+                  ? $util.Long.prototype.toString.call(m.positionId)
+                  : o.longs === Number
+                  ? new $util.LongBits(
+                      m.positionId.low >>> 0,
+                      m.positionId.high >>> 0
+                    ).toNumber(true)
+                  : m.positionId;
+          }
+          if (m.sender != null && m.hasOwnProperty("sender")) {
+            d.sender = m.sender;
+          }
+          if (m.tokenDesired0 != null && m.hasOwnProperty("tokenDesired0")) {
+            d.tokenDesired0 = $root.cosmos.base.v1beta1.Coin.toObject(
+              m.tokenDesired0,
+              o
+            );
+          }
+          if (m.tokenDesired1 != null && m.hasOwnProperty("tokenDesired1")) {
+            d.tokenDesired1 = $root.cosmos.base.v1beta1.Coin.toObject(
+              m.tokenDesired1,
+              o
+            );
+          }
+          return d;
+        };
+      MsgAddToConcentratedLiquiditySuperfluidPosition.prototype.toJSON =
+        function toJSON() {
+          return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+      return MsgAddToConcentratedLiquiditySuperfluidPosition;
+    })();
+    superfluid.MsgAddToConcentratedLiquiditySuperfluidPositionResponse =
+      (function () {
+        function MsgAddToConcentratedLiquiditySuperfluidPositionResponse(p) {
+          if (p)
+            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+              if (p[ks[i]] != null) this[ks[i]] = p[ks[i]];
+        }
+        MsgAddToConcentratedLiquiditySuperfluidPositionResponse.prototype.positionId =
+          $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
+        MsgAddToConcentratedLiquiditySuperfluidPositionResponse.prototype.amount0 =
+          "";
+        MsgAddToConcentratedLiquiditySuperfluidPositionResponse.prototype.amount1 =
+          "";
+        MsgAddToConcentratedLiquiditySuperfluidPositionResponse.prototype.newLiquidity =
+          "";
+        MsgAddToConcentratedLiquiditySuperfluidPositionResponse.prototype.lockId =
+          $util.Long ? $util.Long.fromBits(0, 0, true) : 0;
+        MsgAddToConcentratedLiquiditySuperfluidPositionResponse.create =
+          function create(properties) {
+            return new MsgAddToConcentratedLiquiditySuperfluidPositionResponse(
+              properties
+            );
+          };
+        MsgAddToConcentratedLiquiditySuperfluidPositionResponse.encode =
+          function encode(m, w) {
+            if (!w) w = $Writer.create();
+            if (
+              m.positionId != null &&
+              Object.hasOwnProperty.call(m, "positionId")
+            )
+              w.uint32(8).uint64(m.positionId);
+            if (m.amount0 != null && Object.hasOwnProperty.call(m, "amount0"))
+              w.uint32(18).string(m.amount0);
+            if (m.amount1 != null && Object.hasOwnProperty.call(m, "amount1"))
+              w.uint32(26).string(m.amount1);
+            if (m.lockId != null && Object.hasOwnProperty.call(m, "lockId"))
+              w.uint32(32).uint64(m.lockId);
+            if (
+              m.newLiquidity != null &&
+              Object.hasOwnProperty.call(m, "newLiquidity")
+            )
+              w.uint32(42).string(m.newLiquidity);
+            return w;
+          };
+        MsgAddToConcentratedLiquiditySuperfluidPositionResponse.decode =
+          function decode(r, l) {
+            if (!(r instanceof $Reader)) r = $Reader.create(r);
+            var c = l === undefined ? r.len : r.pos + l,
+              m =
+                new $root.osmosis.superfluid.MsgAddToConcentratedLiquiditySuperfluidPositionResponse();
+            while (r.pos < c) {
+              var t = r.uint32();
+              switch (t >>> 3) {
+                case 1:
+                  m.positionId = r.uint64();
+                  break;
+                case 2:
+                  m.amount0 = r.string();
+                  break;
+                case 3:
+                  m.amount1 = r.string();
+                  break;
+                case 5:
+                  m.newLiquidity = r.string();
+                  break;
+                case 4:
+                  m.lockId = r.uint64();
+                  break;
+                default:
+                  r.skipType(t & 7);
+                  break;
+              }
+            }
+            return m;
+          };
+        MsgAddToConcentratedLiquiditySuperfluidPositionResponse.fromObject =
+          function fromObject(d) {
+            if (
+              d instanceof
+              $root.osmosis.superfluid
+                .MsgAddToConcentratedLiquiditySuperfluidPositionResponse
+            )
+              return d;
+            var m =
+              new $root.osmosis.superfluid.MsgAddToConcentratedLiquiditySuperfluidPositionResponse();
+            if (d.positionId != null) {
+              if ($util.Long)
+                (m.positionId = $util.Long.fromValue(
+                  d.positionId
+                )).unsigned = true;
+              else if (typeof d.positionId === "string")
+                m.positionId = parseInt(d.positionId, 10);
+              else if (typeof d.positionId === "number")
+                m.positionId = d.positionId;
+              else if (typeof d.positionId === "object")
+                m.positionId = new $util.LongBits(
+                  d.positionId.low >>> 0,
+                  d.positionId.high >>> 0
+                ).toNumber(true);
+            }
+            if (d.amount0 != null) {
+              m.amount0 = String(d.amount0);
+            }
+            if (d.amount1 != null) {
+              m.amount1 = String(d.amount1);
+            }
+            if (d.newLiquidity != null) {
+              m.newLiquidity = String(d.newLiquidity);
+            }
+            if (d.lockId != null) {
+              if ($util.Long)
+                (m.lockId = $util.Long.fromValue(d.lockId)).unsigned = true;
+              else if (typeof d.lockId === "string")
+                m.lockId = parseInt(d.lockId, 10);
+              else if (typeof d.lockId === "number") m.lockId = d.lockId;
+              else if (typeof d.lockId === "object")
+                m.lockId = new $util.LongBits(
+                  d.lockId.low >>> 0,
+                  d.lockId.high >>> 0
+                ).toNumber(true);
+            }
+            return m;
+          };
+        MsgAddToConcentratedLiquiditySuperfluidPositionResponse.toObject =
+          function toObject(m, o) {
+            if (!o) o = {};
+            var d = {};
+            if (o.defaults) {
+              if ($util.Long) {
+                var n = new $util.Long(0, 0, true);
+                d.positionId =
+                  o.longs === String
+                    ? n.toString()
+                    : o.longs === Number
+                    ? n.toNumber()
+                    : n;
+              } else d.positionId = o.longs === String ? "0" : 0;
+              d.amount0 = "";
+              d.amount1 = "";
+              if ($util.Long) {
+                var n = new $util.Long(0, 0, true);
+                d.lockId =
+                  o.longs === String
+                    ? n.toString()
+                    : o.longs === Number
+                    ? n.toNumber()
+                    : n;
+              } else d.lockId = o.longs === String ? "0" : 0;
+              d.newLiquidity = "";
+            }
+            if (m.positionId != null && m.hasOwnProperty("positionId")) {
+              if (typeof m.positionId === "number")
+                d.positionId =
+                  o.longs === String ? String(m.positionId) : m.positionId;
+              else
+                d.positionId =
+                  o.longs === String
+                    ? $util.Long.prototype.toString.call(m.positionId)
+                    : o.longs === Number
+                    ? new $util.LongBits(
+                        m.positionId.low >>> 0,
+                        m.positionId.high >>> 0
+                      ).toNumber(true)
+                    : m.positionId;
+            }
+            if (m.amount0 != null && m.hasOwnProperty("amount0")) {
+              d.amount0 = m.amount0;
+            }
+            if (m.amount1 != null && m.hasOwnProperty("amount1")) {
+              d.amount1 = m.amount1;
+            }
+            if (m.lockId != null && m.hasOwnProperty("lockId")) {
+              if (typeof m.lockId === "number")
+                d.lockId = o.longs === String ? String(m.lockId) : m.lockId;
+              else
+                d.lockId =
+                  o.longs === String
+                    ? $util.Long.prototype.toString.call(m.lockId)
+                    : o.longs === Number
+                    ? new $util.LongBits(
+                        m.lockId.low >>> 0,
+                        m.lockId.high >>> 0
+                      ).toNumber(true)
+                    : m.lockId;
+            }
+            if (m.newLiquidity != null && m.hasOwnProperty("newLiquidity")) {
+              d.newLiquidity = m.newLiquidity;
+            }
+            return d;
+          };
+        MsgAddToConcentratedLiquiditySuperfluidPositionResponse.prototype.toJSON =
+          function toJSON() {
+            return this.constructor.toObject(
+              this,
+              $protobuf.util.toJSONOptions
+            );
+          };
+        return MsgAddToConcentratedLiquiditySuperfluidPositionResponse;
       })();
     return superfluid;
   })();
