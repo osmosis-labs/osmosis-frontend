@@ -4,7 +4,7 @@ command -v shellcheck >/dev/null && shellcheck "$0"
 
 PROTO_DIR="./chain-proto"
 
-OSMOSIS_COMMIT_HASH="ac133fdd73dbd27b8bc7b6d49049f5d594e771cb"
+OSMOSIS_COMMIT_HASH="d4589073ea008fc90ae79d5337228a3c2b89c0af"
 ICS23_COMMIT_HASH="f4deb054b697458e7f0aa353c2f45a365361e895"
 
 mkdir -p .repos

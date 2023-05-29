@@ -77,6 +77,12 @@ export interface PeriodLock {
   endTime?: Date;
   /** Coins are the tokens locked within the lock, kept in the module account. */
   coins: Coin[];
+  /**
+   * Reward Receiver Address is the address that would be receiving rewards for
+   * the incentives for the lock. This is set to owner by default and can be
+   * changed via separate msg.
+   */
+  rewardReceiverAddress: string;
 }
 export interface PeriodLockProtoMsg {
   typeUrl: "/osmosis.lockup.PeriodLock";
@@ -114,6 +120,12 @@ export interface PeriodLockAmino {
   end_time?: Date;
   /** Coins are the tokens locked within the lock, kept in the module account. */
   coins: CoinAmino[];
+  /**
+   * Reward Receiver Address is the address that would be receiving rewards for
+   * the incentives for the lock. This is set to owner by default and can be
+   * changed via separate msg.
+   */
+  reward_receiver_address: string;
 }
 export interface PeriodLockAminoMsg {
   type: "osmosis/lockup/period-lock";
@@ -132,6 +144,7 @@ export interface PeriodLockSDKType {
   duration?: DurationSDKType;
   end_time?: Date;
   coins: CoinSDKType[];
+  reward_receiver_address: string;
 }
 /**
  * QueryCondition is a struct used for querying locks upon different conditions.
@@ -281,6 +294,7 @@ function createBasePeriodLock(): PeriodLock {
     duration: undefined,
     endTime: undefined,
     coins: [],
+    rewardReceiverAddress: "",
   };
 }
 export const PeriodLock = {
@@ -306,6 +320,9 @@ export const PeriodLock = {
     }
     for (const v of message.coins) {
       Coin.encode(v!, writer.uint32(42).fork()).ldelim();
+    }
+    if (message.rewardReceiverAddress !== "") {
+      writer.uint32(50).string(message.rewardReceiverAddress);
     }
     return writer;
   },
@@ -333,6 +350,9 @@ export const PeriodLock = {
         case 5:
           message.coins.push(Coin.decode(reader, reader.uint32()));
           break;
+        case 6:
+          message.rewardReceiverAddress = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -353,6 +373,7 @@ export const PeriodLock = {
         : undefined;
     message.endTime = object.endTime ?? undefined;
     message.coins = object.coins?.map((e) => Coin.fromPartial(e)) || [];
+    message.rewardReceiverAddress = object.rewardReceiverAddress ?? "";
     return message;
   },
   fromAmino(object: PeriodLockAmino): PeriodLock {
@@ -368,6 +389,7 @@ export const PeriodLock = {
       coins: Array.isArray(object?.coins)
         ? object.coins.map((e: any) => Coin.fromAmino(e))
         : [],
+      rewardReceiverAddress: object.reward_receiver_address,
     };
   },
   toAmino(message: PeriodLock): PeriodLockAmino {
@@ -385,6 +407,7 @@ export const PeriodLock = {
     } else {
       obj.coins = [];
     }
+    obj.reward_receiver_address = message.rewardReceiverAddress;
     return obj;
   },
   fromAminoMsg(object: PeriodLockAminoMsg): PeriodLock {

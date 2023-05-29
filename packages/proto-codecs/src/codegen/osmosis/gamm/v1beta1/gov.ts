@@ -14,6 +14,7 @@ import {
  * a single concentrated pool.
  */
 export interface ReplaceMigrationRecordsProposal {
+  $typeUrl?: string;
   title: string;
   description: string;
   records: BalancerToConcentratedPoolLink[];
@@ -35,7 +36,7 @@ export interface ReplaceMigrationRecordsProposalAmino {
   records: BalancerToConcentratedPoolLinkAmino[];
 }
 export interface ReplaceMigrationRecordsProposalAminoMsg {
-  type: "osmosis/gamm/replace-migration-records-proposal";
+  type: "osmosis/ReplaceMigrationRecordsProposal";
   value: ReplaceMigrationRecordsProposalAmino;
 }
 /**
@@ -46,6 +47,7 @@ export interface ReplaceMigrationRecordsProposalAminoMsg {
  * a single concentrated pool.
  */
 export interface ReplaceMigrationRecordsProposalSDKType {
+  $typeUrl?: string;
   title: string;
   description: string;
   records: BalancerToConcentratedPoolLinkSDKType[];
@@ -61,6 +63,7 @@ export interface ReplaceMigrationRecordsProposalSDKType {
  * [(Balancer 1, CL 5), (Balancer 3, CL 4), (Balancer 4, CL 10)]
  */
 export interface UpdateMigrationRecordsProposal {
+  $typeUrl?: string;
   title: string;
   description: string;
   records: BalancerToConcentratedPoolLink[];
@@ -85,7 +88,7 @@ export interface UpdateMigrationRecordsProposalAmino {
   records: BalancerToConcentratedPoolLinkAmino[];
 }
 export interface UpdateMigrationRecordsProposalAminoMsg {
-  type: "osmosis/gamm/update-migration-records-proposal";
+  type: "osmosis/UpdateMigrationRecordsProposal";
   value: UpdateMigrationRecordsProposalAmino;
 }
 /**
@@ -99,12 +102,14 @@ export interface UpdateMigrationRecordsProposalAminoMsg {
  * [(Balancer 1, CL 5), (Balancer 3, CL 4), (Balancer 4, CL 10)]
  */
 export interface UpdateMigrationRecordsProposalSDKType {
+  $typeUrl?: string;
   title: string;
   description: string;
   records: BalancerToConcentratedPoolLinkSDKType[];
 }
 function createBaseReplaceMigrationRecordsProposal(): ReplaceMigrationRecordsProposal {
   return {
+    $typeUrl: "/osmosis.gamm.v1beta1.ReplaceMigrationRecordsProposal",
     title: "",
     description: "",
     records: [],
@@ -207,7 +212,7 @@ export const ReplaceMigrationRecordsProposal = {
     message: ReplaceMigrationRecordsProposal
   ): ReplaceMigrationRecordsProposalAminoMsg {
     return {
-      type: "osmosis/gamm/replace-migration-records-proposal",
+      type: "osmosis/ReplaceMigrationRecordsProposal",
       value: ReplaceMigrationRecordsProposal.toAmino(message),
     };
   },
@@ -230,6 +235,7 @@ export const ReplaceMigrationRecordsProposal = {
 };
 function createBaseUpdateMigrationRecordsProposal(): UpdateMigrationRecordsProposal {
   return {
+    $typeUrl: "/osmosis.gamm.v1beta1.UpdateMigrationRecordsProposal",
     title: "",
     description: "",
     records: [],
@@ -332,7 +338,7 @@ export const UpdateMigrationRecordsProposal = {
     message: UpdateMigrationRecordsProposal
   ): UpdateMigrationRecordsProposalAminoMsg {
     return {
-      type: "osmosis/gamm/update-migration-records-proposal",
+      type: "osmosis/UpdateMigrationRecordsProposal",
       value: UpdateMigrationRecordsProposal.toAmino(message),
     };
   },

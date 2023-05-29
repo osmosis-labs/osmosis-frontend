@@ -8,6 +8,7 @@ export interface CosmWasmPool {
   contractAddress: string;
   poolId: Long;
   codeId: Long;
+  instantiateMsg: Uint8Array;
 }
 export interface CosmWasmPoolProtoMsg {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool";
@@ -18,6 +19,7 @@ export interface CosmWasmPoolAmino {
   contract_address: string;
   pool_id: string;
   code_id: string;
+  instantiate_msg: Uint8Array;
 }
 export interface CosmWasmPoolAminoMsg {
   type: "osmosis/cosmwasmpool/cosm-wasm-pool";
@@ -29,6 +31,7 @@ export interface CosmWasmPoolSDKType {
   contract_address: string;
   pool_id: Long;
   code_id: Long;
+  instantiate_msg: Uint8Array;
 }
 function createBaseCosmWasmPool(): CosmWasmPool {
   return {
@@ -37,6 +40,7 @@ function createBaseCosmWasmPool(): CosmWasmPool {
     contractAddress: "",
     poolId: Long.UZERO,
     codeId: Long.UZERO,
+    instantiateMsg: new Uint8Array(),
   };
 }
 export const CosmWasmPool = {
@@ -56,6 +60,9 @@ export const CosmWasmPool = {
     }
     if (!message.codeId.isZero()) {
       writer.uint32(32).uint64(message.codeId);
+    }
+    if (message.instantiateMsg.length !== 0) {
+      writer.uint32(42).bytes(message.instantiateMsg);
     }
     return writer;
   },
@@ -78,6 +85,9 @@ export const CosmWasmPool = {
         case 4:
           message.codeId = reader.uint64() as Long;
           break;
+        case 5:
+          message.instantiateMsg = reader.bytes();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -97,6 +107,7 @@ export const CosmWasmPool = {
       object.codeId !== undefined && object.codeId !== null
         ? Long.fromValue(object.codeId)
         : Long.UZERO;
+    message.instantiateMsg = object.instantiateMsg ?? new Uint8Array();
     return message;
   },
   fromAmino(object: CosmWasmPoolAmino): CosmWasmPool {
@@ -105,6 +116,7 @@ export const CosmWasmPool = {
       contractAddress: object.contract_address,
       poolId: Long.fromString(object.pool_id),
       codeId: Long.fromString(object.code_id),
+      instantiateMsg: object.instantiate_msg,
     };
   },
   toAmino(message: CosmWasmPool): CosmWasmPoolAmino {
@@ -113,6 +125,7 @@ export const CosmWasmPool = {
     obj.contract_address = message.contractAddress;
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     obj.code_id = message.codeId ? message.codeId.toString() : undefined;
+    obj.instantiate_msg = message.instantiateMsg;
     return obj;
   },
   fromAminoMsg(object: CosmWasmPoolAminoMsg): CosmWasmPool {

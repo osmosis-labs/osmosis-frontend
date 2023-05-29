@@ -68,7 +68,10 @@ export interface MsgCreateBalancerPoolResponseSDKType {
 /** ===================== MsgMigrateSharesToFullRangeConcentratedPosition */
 export interface MsgMigrateSharesToFullRangeConcentratedPosition {
   sender: string;
+  /** shares_to_migrate indicates number of shares to migrate. */
   sharesToMigrate?: Coin;
+  /** token_out_mins indicates minimum token to exit Balancer pool with. */
+  tokenOutMins: Coin[];
 }
 export interface MsgMigrateSharesToFullRangeConcentratedPositionProtoMsg {
   typeUrl: "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgMigrateSharesToFullRangeConcentratedPosition";
@@ -77,7 +80,10 @@ export interface MsgMigrateSharesToFullRangeConcentratedPositionProtoMsg {
 /** ===================== MsgMigrateSharesToFullRangeConcentratedPosition */
 export interface MsgMigrateSharesToFullRangeConcentratedPositionAmino {
   sender: string;
+  /** shares_to_migrate indicates number of shares to migrate. */
   shares_to_migrate?: CoinAmino;
+  /** token_out_mins indicates minimum token to exit Balancer pool with. */
+  token_out_mins: CoinAmino[];
 }
 export interface MsgMigrateSharesToFullRangeConcentratedPositionAminoMsg {
   type: "osmosis/gamm/poolmodels/balancer/migrate-shares-to-full-range-concentrated-position";
@@ -87,6 +93,7 @@ export interface MsgMigrateSharesToFullRangeConcentratedPositionAminoMsg {
 export interface MsgMigrateSharesToFullRangeConcentratedPositionSDKType {
   sender: string;
   shares_to_migrate?: CoinSDKType;
+  token_out_mins: CoinSDKType[];
 }
 export interface MsgMigrateSharesToFullRangeConcentratedPositionResponse {
   amount0: string;
@@ -330,6 +337,7 @@ function createBaseMsgMigrateSharesToFullRangeConcentratedPosition(): MsgMigrate
   return {
     sender: "",
     sharesToMigrate: undefined,
+    tokenOutMins: [],
   };
 }
 export const MsgMigrateSharesToFullRangeConcentratedPosition = {
@@ -344,6 +352,9 @@ export const MsgMigrateSharesToFullRangeConcentratedPosition = {
     }
     if (message.sharesToMigrate !== undefined) {
       Coin.encode(message.sharesToMigrate, writer.uint32(18).fork()).ldelim();
+    }
+    for (const v of message.tokenOutMins) {
+      Coin.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
@@ -363,6 +374,9 @@ export const MsgMigrateSharesToFullRangeConcentratedPosition = {
         case 2:
           message.sharesToMigrate = Coin.decode(reader, reader.uint32());
           break;
+        case 3:
+          message.tokenOutMins.push(Coin.decode(reader, reader.uint32()));
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -379,6 +393,8 @@ export const MsgMigrateSharesToFullRangeConcentratedPosition = {
       object.sharesToMigrate !== undefined && object.sharesToMigrate !== null
         ? Coin.fromPartial(object.sharesToMigrate)
         : undefined;
+    message.tokenOutMins =
+      object.tokenOutMins?.map((e) => Coin.fromPartial(e)) || [];
     return message;
   },
   fromAmino(
@@ -389,6 +405,9 @@ export const MsgMigrateSharesToFullRangeConcentratedPosition = {
       sharesToMigrate: object?.shares_to_migrate
         ? Coin.fromAmino(object.shares_to_migrate)
         : undefined,
+      tokenOutMins: Array.isArray(object?.token_out_mins)
+        ? object.token_out_mins.map((e: any) => Coin.fromAmino(e))
+        : [],
     };
   },
   toAmino(
@@ -399,6 +418,13 @@ export const MsgMigrateSharesToFullRangeConcentratedPosition = {
     obj.shares_to_migrate = message.sharesToMigrate
       ? Coin.toAmino(message.sharesToMigrate)
       : undefined;
+    if (message.tokenOutMins) {
+      obj.token_out_mins = message.tokenOutMins.map((e) =>
+        e ? Coin.toAmino(e) : undefined
+      );
+    } else {
+      obj.token_out_mins = [];
+    }
     return obj;
   },
   fromAminoMsg(

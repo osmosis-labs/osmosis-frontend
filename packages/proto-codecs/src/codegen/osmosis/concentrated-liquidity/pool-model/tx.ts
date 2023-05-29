@@ -8,8 +8,7 @@ export interface MsgCreateConcentratedPool {
   denom0: string;
   denom1: string;
   tickSpacing: Long;
-  exponentAtPriceOne: string;
-  swapFee: string;
+  spreadFactor: string;
 }
 export interface MsgCreateConcentratedPoolProtoMsg {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCreateConcentratedPool";
@@ -21,8 +20,7 @@ export interface MsgCreateConcentratedPoolAmino {
   denom0: string;
   denom1: string;
   tick_spacing: string;
-  exponent_at_price_one: string;
-  swap_fee: string;
+  spread_factor: string;
 }
 export interface MsgCreateConcentratedPoolAminoMsg {
   type: "osmosis/concentratedliquidity/create-concentrated-pool";
@@ -34,8 +32,7 @@ export interface MsgCreateConcentratedPoolSDKType {
   denom0: string;
   denom1: string;
   tick_spacing: Long;
-  exponent_at_price_one: string;
-  swap_fee: string;
+  spread_factor: string;
 }
 /** Returns a unique poolID to identify the pool with. */
 export interface MsgCreateConcentratedPoolResponse {
@@ -63,8 +60,7 @@ function createBaseMsgCreateConcentratedPool(): MsgCreateConcentratedPool {
     denom0: "",
     denom1: "",
     tickSpacing: Long.UZERO,
-    exponentAtPriceOne: "",
-    swapFee: "",
+    spreadFactor: "",
   };
 }
 export const MsgCreateConcentratedPool = {
@@ -85,11 +81,8 @@ export const MsgCreateConcentratedPool = {
     if (!message.tickSpacing.isZero()) {
       writer.uint32(32).uint64(message.tickSpacing);
     }
-    if (message.exponentAtPriceOne !== "") {
-      writer.uint32(42).string(message.exponentAtPriceOne);
-    }
-    if (message.swapFee !== "") {
-      writer.uint32(74).string(message.swapFee);
+    if (message.spreadFactor !== "") {
+      writer.uint32(42).string(message.spreadFactor);
     }
     return writer;
   },
@@ -116,10 +109,7 @@ export const MsgCreateConcentratedPool = {
           message.tickSpacing = reader.uint64() as Long;
           break;
         case 5:
-          message.exponentAtPriceOne = reader.string();
-          break;
-        case 9:
-          message.swapFee = reader.string();
+          message.spreadFactor = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -139,8 +129,7 @@ export const MsgCreateConcentratedPool = {
       object.tickSpacing !== undefined && object.tickSpacing !== null
         ? Long.fromValue(object.tickSpacing)
         : Long.UZERO;
-    message.exponentAtPriceOne = object.exponentAtPriceOne ?? "";
-    message.swapFee = object.swapFee ?? "";
+    message.spreadFactor = object.spreadFactor ?? "";
     return message;
   },
   fromAmino(object: MsgCreateConcentratedPoolAmino): MsgCreateConcentratedPool {
@@ -149,8 +138,7 @@ export const MsgCreateConcentratedPool = {
       denom0: object.denom0,
       denom1: object.denom1,
       tickSpacing: Long.fromString(object.tick_spacing),
-      exponentAtPriceOne: object.exponent_at_price_one,
-      swapFee: object.swap_fee,
+      spreadFactor: object.spread_factor,
     };
   },
   toAmino(message: MsgCreateConcentratedPool): MsgCreateConcentratedPoolAmino {
@@ -161,8 +149,7 @@ export const MsgCreateConcentratedPool = {
     obj.tick_spacing = message.tickSpacing
       ? message.tickSpacing.toString()
       : undefined;
-    obj.exponent_at_price_one = message.exponentAtPriceOne;
-    obj.swap_fee = message.swapFee;
+    obj.spread_factor = message.spreadFactor;
     return obj;
   },
   fromAminoMsg(

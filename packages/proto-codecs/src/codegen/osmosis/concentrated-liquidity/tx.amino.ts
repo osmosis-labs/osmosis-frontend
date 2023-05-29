@@ -1,7 +1,8 @@
 //@ts-nocheck
 import {
-  MsgCollectFees,
+  MsgAddToPosition,
   MsgCollectIncentives,
+  MsgCollectSpreadRewards,
   MsgCreatePosition,
   MsgFungifyChargedPositions,
   MsgWithdrawPosition,
@@ -17,10 +18,15 @@ export const AminoConverter = {
     toAmino: MsgWithdrawPosition.toAmino,
     fromAmino: MsgWithdrawPosition.fromAmino,
   },
-  "/osmosis.concentratedliquidity.v1beta1.MsgCollectFees": {
-    aminoType: "osmosis/concentratedliquidity/collect-fees",
-    toAmino: MsgCollectFees.toAmino,
-    fromAmino: MsgCollectFees.fromAmino,
+  "/osmosis.concentratedliquidity.v1beta1.MsgAddToPosition": {
+    aminoType: "osmosis/concentratedliquidity/add-to-position",
+    toAmino: MsgAddToPosition.toAmino,
+    fromAmino: MsgAddToPosition.fromAmino,
+  },
+  "/osmosis.concentratedliquidity.v1beta1.MsgCollectSpreadRewards": {
+    aminoType: "osmosis/concentratedliquidity/collect-spread-rewards",
+    toAmino: MsgCollectSpreadRewards.toAmino,
+    fromAmino: MsgCollectSpreadRewards.fromAmino,
   },
   "/osmosis.concentratedliquidity.v1beta1.MsgCollectIncentives": {
     aminoType: "osmosis/concentratedliquidity/collect-incentives",

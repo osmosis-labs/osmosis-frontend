@@ -21,7 +21,7 @@ export const AminoConverter = {
     fromAmino: MsgExitPool.fromAmino,
   },
   "/osmosis.gamm.v1beta1.MsgSwapExactAmountIn": {
-    aminoType: "osmosis/gamm/swap-exact-amount-in",
+    aminoType: "osmosis/gamm/exit-pool",
     toAmino: MsgSwapExactAmountIn.toAmino,
     fromAmino: MsgSwapExactAmountIn.fromAmino,
   },
