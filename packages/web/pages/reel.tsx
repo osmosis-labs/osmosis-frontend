@@ -8,9 +8,9 @@ import {
 
 const Reel = () => {
   return (
-    <div className="w-fit">
+    <div className="relative w-fit">
       <Stepper autoplay={{ delayInMs: 4000, stopOnHover: true }}>
-        <StepperLeftChevronNavigation />
+        <StepperLeftChevronNavigation className="absolute left-0 top-1/2 z-50" />
         <Step>
           <h4>Heading</h4>
           <div className="h-12 w-12 bg-osmoverse-500"></div>
@@ -26,7 +26,7 @@ const Reel = () => {
           <div className="h-12 w-12 bg-osmoverse-500"></div>
           <p>test 3</p>
         </Step>
-        <StepperRightChevronNavigation />
+        <StepperRightChevronNavigation className="absolute right-0 top-1/2 z-50" />
         <StepsIndicator mode="pills" />
       </Stepper>
     </div>

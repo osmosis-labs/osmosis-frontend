@@ -145,7 +145,7 @@ export const StepperRightChevronNavigation: FunctionComponent<{
       mode="unstyled"
       icon={<Icon id="chevron-right" />}
       className={classNames(
-        "text-osmoverse-400 disabled:cursor-not-allowed disabled:opacity-60",
+        "h-3 w-3 text-osmoverse-400 disabled:cursor-not-allowed disabled:opacity-60",
         className
       )}
       onClick={() => {
@@ -166,7 +166,7 @@ export const StepperLeftChevronNavigation: FunctionComponent<{
       mode="unstyled"
       icon={<Icon id="chevron-left" />}
       className={classNames(
-        "text-osmoverse-400 disabled:cursor-not-allowed disabled:opacity-60",
+        "h-3 w-3 text-osmoverse-400 disabled:cursor-not-allowed disabled:opacity-60",
         className
       )}
       onClick={() => {
