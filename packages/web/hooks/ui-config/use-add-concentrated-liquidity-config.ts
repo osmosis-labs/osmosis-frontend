@@ -83,6 +83,8 @@ export function useAddConcentratedLiquidityConfig(
     config.baseDepositAmountIn.amount,
     config.quoteDepositAmountIn.sendCurrency,
     config.quoteDepositAmountIn.amount,
+    config.baseDepositOnly,
+    config.quoteDepositOnly,
     config.tickRange,
     config.poolId,
   ]);
