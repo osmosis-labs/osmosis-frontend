@@ -6,7 +6,6 @@ import {
   DeliverTxResponse,
   SigningStargateClient,
   StdFee,
-  TimeoutError,
 } from "@cosmjs/stargate";
 import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
 import {
@@ -37,12 +36,13 @@ import { action, makeObservable, observable, runInAction } from "mobx";
 import { UnionToIntersection } from "utility-types";
 
 import { OsmosisQueries } from "../queries";
+import { TxTracer } from "../tx";
 import { aminoConverters } from "./amino-converters";
+import { TxEvent } from "./types";
 import {
   CosmosKitAccountsLocalStorageKey,
   getWalletEndpoints,
   logger,
-  sleep,
 } from "./utils";
 
 export class AccountStore<Injects extends Record<string, any>[] = []> {
@@ -324,20 +324,56 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         }
       }
 
-      const txRaw = await wallet.sign(msgs, fee, memo);
+      const endpoint = await wallet.getRpcEndpoint(true);
+      const endpointUrl = new URL(
+        typeof endpoint === "string" ? endpoint : endpoint.url
+      );
+      const websocketUrl = `wss://${endpointUrl.host}`;
+
+      if (!wallet.address) {
+        throw new Error(
+          "Address is required to estimate fee. Try connect to fetch address."
+        );
+      }
+
+      if (!wallet.offlineSigner) {
+        await wallet.initOfflineSigner();
+      }
+
+      const client = await SigningStargateClient.connectWithSigner(
+        websocketUrl,
+        wallet.offlineSigner!,
+        wallet.signingStargateOptions
+      );
+
+      let usedFee: StdFee;
+      if (typeof fee === "undefined" || typeof fee === "number") {
+        usedFee = await wallet.estimateFee(msgs, "stargate", memo, fee);
+      } else {
+        usedFee = fee;
+      }
+
+      const txRaw = await client.sign(
+        wallet.address,
+        msgs,
+        usedFee,
+        memo || ""
+      );
       const encodedTx = TxRaw.encode(txRaw).finish();
-      const endpoint = await wallet.getRpcEndpoint();
 
       /**
        * Manually create a Tendermint client to broadcast the transaction to have more control over transaction tracking.
        * Cosmjs team is working on a similar solution within their library.
        * @see https://github.com/cosmos/cosmjs/issues/1316
        */
-      const tmClient = await Tendermint34Client.connect(
-        typeof endpoint === "string" ? endpoint : endpoint.url
-      );
+      const tmClient = await Tendermint34Client.connect(websocketUrl);
 
       const broadcasted = await tmClient.broadcastTxSync({ tx: encodedTx });
+
+      const txTracer = new TxTracer(
+        typeof endpoint === "string" ? endpoint : endpoint.url,
+        "/websocket"
+      );
 
       if (broadcasted.code) {
         throw new BroadcastTxError(broadcasted.code, "", broadcasted.log);
@@ -351,50 +387,32 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         onBroadcasted(broadcasted.hash);
       }
 
-      const signingClient = await wallet.getSigningStargateClient();
-      const timeoutMs = signingClient.broadcastTimeoutMs ?? 60_000;
-      const pollIntervalMs = signingClient.broadcastPollIntervalMs ?? 3_000;
+      const txHash = Buffer.from(broadcasted.hash);
+      const tx = await txTracer
+        .traceTx(txHash)
+        .then(
+          (tx: {
+            data: string;
+            events: TxEvent;
+            gas_used: string;
+            gas_wanted: string;
+            log: string;
+            code?: number;
+            height?: number;
+          }) => {
+            txTracer.close();
 
-      let timedOut = false;
-      const txPollTimeout = setTimeout(() => {
-        timedOut = true;
-      }, timeoutMs);
-
-      const pollForTx = async (txId: string): Promise<DeliverTxResponse> => {
-        if (timedOut) {
-          throw new TimeoutError(
-            `Transaction with ID ${txId} was submitted but was not yet found on the chain. You might want to check later. There was a wait of ${
-              timeoutMs / 1000
-            } seconds.`,
-            txId
-          );
-        }
-        await sleep(pollIntervalMs);
-        const result = await signingClient.getTx(txId);
-        return result
-          ? {
-              code: result.code,
-              height: result.height,
-              rawLog: result.rawLog,
-              transactionHash: txId,
-              gasUsed: result.gasUsed,
-              gasWanted: result.gasWanted,
-            }
-          : pollForTx(txId);
-      };
-
-      const tx = await new Promise<DeliverTxResponse>((resolve, reject) =>
-        pollForTx(Buffer.from(broadcasted.hash).toString("hex")).then(
-          (value) => {
-            clearTimeout(txPollTimeout);
-            resolve(value);
-          },
-          (error) => {
-            clearTimeout(txPollTimeout);
-            reject(error);
+            return {
+              transactionHash: txHash.toString("hex"),
+              code: tx?.code,
+              height: tx?.height,
+              rawLog: tx?.log || "",
+              events: tx?.events,
+              gasUsed: tx?.gas_used,
+              gasWanted: tx?.gas_wanted,
+            };
           }
-        )
-      );
+        );
 
       runInAction(() => {
         this.txTypeInProgressByChain.set(chainNameOrId, "");

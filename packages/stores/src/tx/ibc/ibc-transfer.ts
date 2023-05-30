@@ -2,6 +2,7 @@ import { DeliverTxResponse } from "@cosmjs/stargate";
 import { AmountConfig } from "@keplr-wallet/hooks";
 import { Buffer } from "buffer";
 
+import { TxEvent } from "../../account";
 import { IBCTransferHistory, UncommitedHistory } from "../../ibc-history";
 import { IbcTransferCounterparty, IbcTransferSender } from "./types";
 
@@ -48,7 +49,7 @@ export async function basicIbcTransfer(
     onFulfill: (tx: DeliverTxResponse) => {
       if (!tx.code) {
         const events = JSON.parse(tx?.rawLog ?? "{}")[0]?.events as
-          | Event[]
+          | TxEvent[]
           | undefined;
 
         for (const event of events ?? []) {
