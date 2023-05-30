@@ -288,8 +288,8 @@ const testnetChainInfos: SimplifiedChainInfo[] = [
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {
-          low: 0,
-          average: 0,
+          low: 0.0001,
+          average: 0.0001,
           high: 0.025,
         },
       },
