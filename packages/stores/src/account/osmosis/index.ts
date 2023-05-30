@@ -128,7 +128,7 @@ export class OsmosisAccountImpl {
       },
     });
 
-    await this.base.sign(
+    await this.base.signAndBroadcast(
       this.chainId,
       "createBalancerPool",
       [msg],
@@ -242,7 +242,7 @@ export class OsmosisAccountImpl {
       poolParams,
     });
 
-    await this.base.sign(
+    await this.base.signAndBroadcast(
       this.chainId,
       "createStableswapPool",
       [msg],
@@ -297,7 +297,7 @@ export class OsmosisAccountImpl {
     const queries = this.queries;
     const mkp = this.makeCoinPretty;
 
-    await this.base.sign(
+    await this.base.signAndBroadcast(
       this.chainId,
       "joinPool",
       async () => {
@@ -406,7 +406,7 @@ export class OsmosisAccountImpl {
   ) {
     const queries = this.queries;
 
-    await this.base.sign(
+    await this.base.signAndBroadcast(
       this.chainId,
       "joinPool",
       async () => {
@@ -526,7 +526,7 @@ export class OsmosisAccountImpl {
   ) {
     const queries = this.queries;
 
-    await this.base.sign(
+    await this.base.signAndBroadcast(
       this.chainId,
       "swapExactAmountIn",
       async () => {
@@ -730,7 +730,7 @@ export class OsmosisAccountImpl {
   ) {
     const queries = this.queries;
 
-    await this.base.sign(
+    await this.base.signAndBroadcast(
       this.chainId,
       "swapExactAmountIn",
       async () => {
@@ -872,7 +872,7 @@ export class OsmosisAccountImpl {
   ) {
     const queries = this.queries;
 
-    await this.base.sign(
+    await this.base.signAndBroadcast(
       this.chainId,
       "swapExactAmountOut",
       async () => {
@@ -1014,7 +1014,7 @@ export class OsmosisAccountImpl {
     const queries = this.queries;
     const mkp = this.makeCoinPretty;
 
-    await this.base.sign(
+    await this.base.signAndBroadcast(
       this.chainId,
       "exitPool",
       async () => {
@@ -1135,7 +1135,7 @@ export class OsmosisAccountImpl {
       },
     });
 
-    await this.base.sign(
+    await this.base.signAndBroadcast(
       this.chainId,
       "lockTokens",
       [msg],
@@ -1183,7 +1183,7 @@ export class OsmosisAccountImpl {
       });
     });
 
-    await this.base.sign(
+    await this.base.signAndBroadcast(
       this.chainId,
       "superfluidDelegate",
       msgs,
@@ -1253,7 +1253,7 @@ export class OsmosisAccountImpl {
       valAddr: validatorAddress,
     });
 
-    await this.base.sign(
+    await this.base.signAndBroadcast(
       this.chainId,
       "lockAndSuperfluidDelegate",
       [msg],
@@ -1308,7 +1308,7 @@ export class OsmosisAccountImpl {
       });
     });
 
-    await this.base.sign(
+    await this.base.signAndBroadcast(
       this.chainId,
       "beginUnlocking",
       msgs,
@@ -1384,7 +1384,7 @@ export class OsmosisAccountImpl {
       }
     }
 
-    await this.base.sign(
+    await this.base.signAndBroadcast(
       this.chainId,
       "beginUnlocking",
       msgs,
@@ -1440,7 +1440,7 @@ export class OsmosisAccountImpl {
       sender: this.address,
     });
 
-    await this.base.sign(
+    await this.base.signAndBroadcast(
       this.chainId,
       "unPoolWhitelistedPool",
       [msg],

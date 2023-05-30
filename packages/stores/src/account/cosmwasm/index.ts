@@ -92,7 +92,7 @@ export class CosmwasmAccountImpl {
       funds,
     });
 
-    await this.base.sign(
+    await this.base.signAndBroadcast(
       this.chainId,
       type,
       [msg],

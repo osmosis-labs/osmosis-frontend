@@ -139,7 +139,7 @@ export class CosmosAccountImpl {
       memo: "",
     });
 
-    await this.base.sign(
+    await this.base.signAndBroadcast(
       this.chainId,
       "sendIbcTransfer",
       [msg],
