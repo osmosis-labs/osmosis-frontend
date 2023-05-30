@@ -65,7 +65,7 @@ export const HeroCard: React.FunctionComponent<{
           style={{ backgroundImage: `url(${backgroundImageUrl})` }}
         ></div>
         <div className="gradient absolute top-0 left-0 z-20 h-full w-full bg-gradient-hero-card"></div>
-        <div className="content text-white relative z-30 ml-9 mb-9 max-w-35 sm:max-w-full">
+        <div className="content text-white relative z-30 m-9 max-w-35 sm:max-w-full">
           <div className="flex items-center space-x-6">
             <h4 className="pb-2 text-h4 font-h4">{title}</h4>
             {!!twitterUrl && (

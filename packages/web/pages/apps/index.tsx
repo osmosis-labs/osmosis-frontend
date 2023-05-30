@@ -116,7 +116,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
         title={featuredApp.title}
         subtitle={featuredApp.subtitle}
         imageUrl={
-          searchBoxSize === "small"
+          width <= Breakpoint.SM
             ? featuredApp.thumbnail_image_URL
             : featuredApp.hero_image_URL
         }
