@@ -98,9 +98,10 @@ export const StepsIndicator: FunctionComponent<{
                 <span
                   className="absolute inset-0 -translate-x-full transform rounded-sm bg-osmoverse-100"
                   style={{
-                    animation: `transformInitial ${
-                      autoplay?.delayInMs ?? 0
-                    }ms forwards ease-in-out`,
+                    animationName: "transformInitial",
+                    animationDuration: `${autoplay?.delayInMs ?? 0}ms`,
+                    animationTimingFunction: "ease-in-out",
+                    animationFillMode: "forwards",
                     animationPlayState: isStopped ? "paused" : "running",
                   }}
                 />
