@@ -269,6 +269,35 @@ const testnetChainInfos: SimplifiedChainInfo[] = [
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://testnet.mintscan.io/kyve-testnet/txs/{txHash}",
   },
+  {
+    rpc: "https://rpc.test.quicksilver.zone:443",
+    rest: "https://lcd.test.quicksilver.zone:443",
+    chainId: "rhye-1",
+    chainName: "Quicksilver Testnet",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("quick"),
+    currencies: [
+      {
+        coinDenom: "QCK",
+        coinMinimalDenom: "uqck",
+        coinDecimals: 6,
+        coinImageUrl: "/tokens/qck.svg",
+        coinGeckoId: "usd-coin",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0,
+          average: 0,
+          high: 0.025,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx:
+      "https://testnet.quicksilver.explorers.guru/transaction/{txHash}",
+  },
 ];
 
 const mainnetChainInfos: SimplifiedChainInfo[] = [
