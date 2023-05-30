@@ -91,6 +91,13 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "tkyve",
         isVerified: true,
       },
+      {
+        counterpartyChainId: "rhye-1",
+        sourceChannelId: "channel-13",
+        destChannelId: "channel-20",
+        coinMinimalDenom: "uqck",
+        isVerified: true,
+      },
     ]
   : [
       {
