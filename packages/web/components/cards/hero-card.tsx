@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { EventName } from "~/config";
@@ -21,27 +21,14 @@ export const HeroCard: React.FunctionComponent<{
   title,
   subtitle,
   imageUrl,
-  fallbackImageUrl,
   label,
   githubUrl,
   externalUrl,
   mediumUrl,
   twitterUrl,
 }) => {
-  const [backgroundImageUrl, setBackgroundImageUrl] = useState<
-    string | undefined
-  >(imageUrl);
-
   const t = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
-
-  useEffect(() => {
-    const image = new Image();
-    image.src = imageUrl;
-    image.onerror = () => {
-      setBackgroundImageUrl(fallbackImageUrl);
-    };
-  }, [imageUrl, fallbackImageUrl]);
 
   const handleAppClicked = () => {
     logEvent([
