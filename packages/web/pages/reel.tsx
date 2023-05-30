@@ -9,7 +9,12 @@ import {
 const Reel = () => {
   return (
     <div className="relative w-fit">
-      <Stepper autoplay={{ delayInMs: 4000, stopOnHover: true }}>
+      <Stepper
+        autoplay={{ delayInMs: 4000, stopOnHover: true }}
+        className="flex flex-col"
+      >
+        <StepsIndicator mode="pills" />
+
         <StepperLeftChevronNavigation className="absolute left-0 top-1/2 z-50" />
         <Step>
           <h4>Heading</h4>
@@ -27,7 +32,6 @@ const Reel = () => {
           <p>test 3</p>
         </Step>
         <StepperRightChevronNavigation className="absolute right-0 top-1/2 z-50" />
-        <StepsIndicator mode="pills" />
       </Stepper>
     </div>
   );

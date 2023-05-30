@@ -16,6 +16,7 @@ import IconButton from "../buttons/icon-button";
 import useSteps, { UseStepsReturn } from "./use-steps";
 
 interface StepsProps {
+  className?: string;
   autoplay?: {
     delayInMs: number;
     stopOnLastSlide?: boolean;
@@ -74,13 +75,19 @@ Step.defaultProps = {
 
 export const StepsIndicator: FunctionComponent<{
   mode?: "pills" | "dots";
-}> = ({ mode = "dots" }) => {
+  className?: string;
+}> = ({ mode = "dots", className }) => {
   const { activeStep, totalSteps, setActiveStep, autoplay, isStopped } =
     useStepperContext();
 
   if (mode === "pills") {
     return (
-      <div className="flex items-center justify-center gap-5">
+      <div
+        className={classNames(
+          "flex items-center justify-center gap-5",
+          className
+        )}
+      >
         {Array.from({ length: totalSteps }).map((_, index) => {
           const isActive = index === activeStep;
 
@@ -116,7 +123,12 @@ export const StepsIndicator: FunctionComponent<{
   }
 
   return (
-    <div className="flex items-center justify-center gap-5">
+    <div
+      className={classNames(
+        "flex items-center justify-center gap-5",
+        className
+      )}
+    >
       {Array.from({ length: totalSteps }).map((_, index) => (
         <button
           key={index}
@@ -288,9 +300,11 @@ const Stepper: FunctionComponent<StepsProps> = (props) => {
   return (
     <StepperContextProvider value={context}>
       <div
+        className={props.className}
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
       >
+        {otherElements}
         {stepElements.map((child, index) => (
           <StepContextProvider
             key={index}
@@ -302,7 +316,6 @@ const Stepper: FunctionComponent<StepsProps> = (props) => {
           </StepContextProvider>
         ))}
       </div>
-      {otherElements}
     </StepperContextProvider>
   );
 };
