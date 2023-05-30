@@ -1,10 +1,11 @@
 import classNames from "classnames";
 import {
   Children,
-  FC,
   FunctionComponent,
   ReactElement,
   useEffect,
+  useMemo,
+  useRef,
   useState,
 } from "react";
 
@@ -12,10 +13,20 @@ import { createContext } from "~/utils/react-context";
 
 import useSteps, { UseStepsReturn } from "./use-steps";
 
-const [StepperContextProvider, useStepperContext] =
-  createContext<UseStepsReturn>({
-    name: "Stepper",
-  });
+interface StepsProps {
+  autoplay?: {
+    delayInMs: number;
+    stopOnLastSlide?: boolean;
+    isStopped?: boolean;
+    stopOnHover?: boolean;
+  };
+}
+
+const [StepperContextProvider, useStepperContext] = createContext<
+  UseStepsReturn & StepsProps & { isStopped: boolean }
+>({
+  name: "Stepper",
+});
 
 const [StepContextProvider, useStepContext] = createContext<{
   index: number;
@@ -23,15 +34,24 @@ const [StepContextProvider, useStepContext] = createContext<{
   name: "Step",
 });
 
-const Step: FunctionComponent<{ className?: string }> = (props) => {
+const Step: FunctionComponent<{
+  className?: string;
+  /**
+   * Do not overwrite this property without modifying Stepper.
+   * It's needed to filter step elements in Stepper.
+   */
+  __TYPE?: string;
+}> = (props) => {
   const { activeStep } = useStepperContext();
   const { index } = useStepContext();
 
   const isActive = activeStep === index;
 
+  const { __TYPE, ...rest } = props;
+
   return (
     <div
-      {...props}
+      {...rest}
       className={classNames(
         {
           "pointer-events-auto relative z-10 opacity-100": isActive,
@@ -50,8 +70,47 @@ Step.defaultProps = {
   __TYPE: "Step",
 };
 
-export const StepsIndicator: FC = () => {
-  const { activeStep, totalSteps, setActiveStep } = useStepperContext();
+export const StepsIndicator: FunctionComponent<{
+  mode?: "pills" | "dots";
+}> = ({ mode = "dots" }) => {
+  const { activeStep, totalSteps, setActiveStep, autoplay, isStopped } =
+    useStepperContext();
+
+  if (mode === "pills") {
+    return (
+      <div className="flex items-center justify-center gap-5">
+        {Array.from({ length: totalSteps }).map((_, index) => {
+          const isActive = index === activeStep;
+
+          return (
+            <button
+              key={index}
+              onClick={() => {
+                setActiveStep(index);
+              }}
+              className={classNames(
+                "relative h-1 w-full max-w-[66px] overflow-hidden rounded-sm bg-osmoverse-700",
+                index < activeStep ? "bg-osmoverse-100" : "bg-osmoverse-700"
+              )}
+            >
+              <span className="sr-only">{`Step ${index + 1}`}</span>
+              {isActive && (
+                <span
+                  className="absolute inset-0 -translate-x-full transform rounded-sm bg-osmoverse-100"
+                  style={{
+                    animation: `transformInitial ${
+                      autoplay?.delayInMs ?? 0
+                    }ms forwards ease-in-out`,
+                    animationPlayState: isStopped ? "paused" : "running",
+                  }}
+                />
+              )}
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center justify-center gap-5">
@@ -63,11 +122,11 @@ export const StepsIndicator: FC = () => {
           }}
           className={classNames(
             "mx-1 h-2 w-2 rounded-full",
-            index === activeStep
-              ? "bg-osmoverse-500"
-              : "bg-osmoverse-300 dark:bg-osmoverse-700"
+            index === activeStep ? "bg-osmoverse-500" : "bg-osmoverse-700"
           )}
-        />
+        >
+          <span className="sr-only">{`Step ${index + 1}`}</span>
+        </button>
       ))}
     </div>
   );
@@ -88,7 +147,7 @@ export const StepsIndicator: FC = () => {
  *    These buttons allow users to manually move between steps, granting a high level of navigational control.
  *
  * @example
- * <Stepper autoplay={{ delay: 4000, stopOnHover: true }}>
+ * <Stepper autoplay={{ delayInMs: 4000, stopOnHover: true }}>
  *  <Step>
  *   <h4>Heading</h4>
  *   <div className="h-12 w-12 bg-osmoverse-500"></div>
@@ -100,15 +159,10 @@ export const StepsIndicator: FC = () => {
  *  <StepsIndicator />
  * </Stepper>
  */
-const Stepper: FC<{
-  autoplay?: {
-    delay: number;
-    stopOnLastSlide?: boolean;
-    isStopped?: boolean;
-    stopOnHover?: boolean;
-  };
-}> = (props) => {
+const Stepper: FunctionComponent<StepsProps> = (props) => {
   const { children, autoplay } = props;
+
+  const timerTimeInMs = useRef(0);
 
   const stepElements = Children.toArray(children).filter((child) => {
     if (!child) return false;
@@ -120,44 +174,63 @@ const Stepper: FC<{
     return (child as ReactElement)?.props?.__TYPE !== "Step";
   });
 
-  const context = useSteps({ count: stepElements.length });
+  const stepsContext = useSteps({ count: stepElements.length });
   const [isHovering, setIsHovering] = useState(false);
 
+  const isStopped = useMemo(
+    () => (autoplay?.stopOnHover && isHovering) || Boolean(autoplay?.isStopped),
+    [autoplay?.isStopped, autoplay?.stopOnHover, isHovering]
+  );
+
   useEffect(() => {
-    if (autoplay && Boolean(autoplay?.delay)) {
+    if (autoplay && Boolean(autoplay?.delayInMs)) {
+      const IntervalTimeIncrements = 1000;
       const interval = setInterval(() => {
-        // Stop autoplay if it's set to stop on hover and the user is hovering.
-        if (autoplay?.stopOnHover && isHovering) {
+        if (isStopped) {
           return;
         }
 
-        if (autoplay?.isStopped) {
+        timerTimeInMs.current += IntervalTimeIncrements;
+
+        if (timerTimeInMs.current < autoplay.delayInMs) {
           return;
         }
 
         // Stop autoplay if it's set to stop on the last slide.
         if (
           autoplay?.stopOnLastSlide &&
-          context.activeStep === context.totalSteps - 1
+          stepsContext.activeStep === stepsContext.totalSteps - 1
         ) {
           clearInterval(interval);
+          timerTimeInMs.current = 0;
           return;
         }
 
         // If the active step is the last step and it should not stop on last slide, go back to the first step.
-        if (context.activeStep === context.totalSteps - 1) {
-          context.setActiveStep(0);
+        if (stepsContext.activeStep === stepsContext.totalSteps - 1) {
+          stepsContext.setActiveStep(0);
+          timerTimeInMs.current = 0;
           return;
         }
 
-        context.nextStep();
-      }, autoplay.delay);
+        stepsContext.nextStep();
+        timerTimeInMs.current = 0;
+      }, IntervalTimeIncrements);
 
       return () => {
         clearInterval(interval);
       };
     }
-  }, [autoplay, context, isHovering]);
+  }, [autoplay, stepsContext, isHovering, isStopped]);
+
+  const context = useMemo(
+    () => ({
+      ...stepsContext,
+      autoplay,
+      isStopped,
+    }),
+    [autoplay, isStopped, stepsContext]
+  );
 
   return (
     <StepperContextProvider value={context}>
