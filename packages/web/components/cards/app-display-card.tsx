@@ -46,7 +46,11 @@ export const AppDisplayCard: FunctionComponent<{
       <div className="cursor-pointer" onClick={handleAppClicked}>
         <div className="app-display-card bg-white h-[280px] overflow-hidden rounded-2xl bg-osmoverse-800 shadow-md lg:h-[300px]">
           <div className="overflow-hidden">
-            <div className="card-image inset-0 h-40 overflow-hidden rounded-2xl bg-cover bg-center transition-transform duration-300 ease-in"></div>
+            <img
+              className="card-image inset-0 h-40 w-full overflow-hidden rounded-2xl bg-cover bg-center transition-transform duration-300 ease-in"
+              src={imageUrl}
+              alt="card image"
+            />
           </div>
           <div className="flex min-h-[120px] flex-col px-6 pt-4 pb-8">
             <div className="flex items-center space-x-3">
