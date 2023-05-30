@@ -11,6 +11,8 @@ import {
 
 import { createContext } from "~/utils/react-context";
 
+import { Icon } from "../assets";
+import IconButton from "../buttons/icon-button";
 import useSteps, { UseStepsReturn } from "./use-steps";
 
 interface StepsProps {
@@ -133,6 +135,48 @@ export const StepsIndicator: FunctionComponent<{
   );
 };
 
+export const StepperRightChevronNavigation: FunctionComponent<{
+  className?: string;
+}> = ({ className }) => {
+  const { nextStep, activeStep, totalSteps } = useStepperContext();
+  return (
+    <IconButton
+      aria-label="Next step"
+      mode="unstyled"
+      icon={<Icon id="chevron-right" />}
+      className={classNames(
+        "text-osmoverse-400 disabled:cursor-not-allowed disabled:opacity-60",
+        className
+      )}
+      onClick={() => {
+        nextStep();
+      }}
+      disabled={activeStep === totalSteps - 1}
+    />
+  );
+};
+
+export const StepperLeftChevronNavigation: FunctionComponent<{
+  className?: string;
+}> = ({ className }) => {
+  const { previousStep, activeStep } = useStepperContext();
+  return (
+    <IconButton
+      aria-label="Previous step"
+      mode="unstyled"
+      icon={<Icon id="chevron-left" />}
+      className={classNames(
+        "text-osmoverse-400 disabled:cursor-not-allowed disabled:opacity-60",
+        className
+      )}
+      onClick={() => {
+        previousStep();
+      }}
+      disabled={activeStep === 0}
+    />
+  );
+};
+
 /**
  * The Stepper component is a UI element that can be used to display content sequentially.
  * It is an ideal choice for constructing features like slideshows, reels, or wizards where
@@ -229,6 +273,14 @@ const Stepper: FunctionComponent<StepsProps> = (props) => {
       ...stepsContext,
       autoplay,
       isStopped,
+      previousStep: () => {
+        stepsContext.previousStep();
+        timerTimeInMs.current = 0;
+      },
+      nextStep: () => {
+        stepsContext.nextStep();
+        timerTimeInMs.current = 0;
+      },
     }),
     [autoplay, isStopped, stepsContext]
   );
