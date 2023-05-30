@@ -10,9 +10,15 @@ import {
   SwapAmountInRoute,
   SwapAmountInRouteAmino,
   SwapAmountInRouteSDKType,
+  SwapAmountInSplitRoute,
+  SwapAmountInSplitRouteAmino,
+  SwapAmountInSplitRouteSDKType,
   SwapAmountOutRoute,
   SwapAmountOutRouteAmino,
   SwapAmountOutRouteSDKType,
+  SwapAmountOutSplitRoute,
+  SwapAmountOutSplitRouteAmino,
+  SwapAmountOutSplitRouteSDKType,
 } from "./swap_route";
 /** ===================== MsgSwapExactAmountIn */
 export interface MsgSwapExactAmountIn {
@@ -60,6 +66,52 @@ export interface MsgSwapExactAmountInResponseAminoMsg {
 export interface MsgSwapExactAmountInResponseSDKType {
   token_out_amount: string;
 }
+/** ===================== MsgSplitRouteSwapExactAmountIn */
+export interface MsgSplitRouteSwapExactAmountIn {
+  sender: string;
+  routes: SwapAmountInSplitRoute[];
+  tokenInDenom: string;
+  tokenOutMinAmount: string;
+}
+export interface MsgSplitRouteSwapExactAmountInProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn";
+  value: Uint8Array;
+}
+/** ===================== MsgSplitRouteSwapExactAmountIn */
+export interface MsgSplitRouteSwapExactAmountInAmino {
+  sender: string;
+  routes: SwapAmountInSplitRouteAmino[];
+  token_in_denom: string;
+  token_out_min_amount: string;
+}
+export interface MsgSplitRouteSwapExactAmountInAminoMsg {
+  type: "osmosis/poolmanager/split-route-swap-exact-amount-in";
+  value: MsgSplitRouteSwapExactAmountInAmino;
+}
+/** ===================== MsgSplitRouteSwapExactAmountIn */
+export interface MsgSplitRouteSwapExactAmountInSDKType {
+  sender: string;
+  routes: SwapAmountInSplitRouteSDKType[];
+  token_in_denom: string;
+  token_out_min_amount: string;
+}
+export interface MsgSplitRouteSwapExactAmountInResponse {
+  tokenOutAmount: string;
+}
+export interface MsgSplitRouteSwapExactAmountInResponseProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountInResponse";
+  value: Uint8Array;
+}
+export interface MsgSplitRouteSwapExactAmountInResponseAmino {
+  token_out_amount: string;
+}
+export interface MsgSplitRouteSwapExactAmountInResponseAminoMsg {
+  type: "osmosis/poolmanager/split-route-swap-exact-amount-in-response";
+  value: MsgSplitRouteSwapExactAmountInResponseAmino;
+}
+export interface MsgSplitRouteSwapExactAmountInResponseSDKType {
+  token_out_amount: string;
+}
 /** ===================== MsgSwapExactAmountOut */
 export interface MsgSwapExactAmountOut {
   sender: string;
@@ -104,6 +156,52 @@ export interface MsgSwapExactAmountOutResponseAminoMsg {
   value: MsgSwapExactAmountOutResponseAmino;
 }
 export interface MsgSwapExactAmountOutResponseSDKType {
+  token_in_amount: string;
+}
+/** ===================== MsgSplitRouteSwapExactAmountOut */
+export interface MsgSplitRouteSwapExactAmountOut {
+  sender: string;
+  routes: SwapAmountOutSplitRoute[];
+  tokenOutDenom: string;
+  tokenInMaxAmount: string;
+}
+export interface MsgSplitRouteSwapExactAmountOutProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOut";
+  value: Uint8Array;
+}
+/** ===================== MsgSplitRouteSwapExactAmountOut */
+export interface MsgSplitRouteSwapExactAmountOutAmino {
+  sender: string;
+  routes: SwapAmountOutSplitRouteAmino[];
+  token_out_denom: string;
+  token_in_max_amount: string;
+}
+export interface MsgSplitRouteSwapExactAmountOutAminoMsg {
+  type: "osmosis/poolmanager/split-route-swap-exact-amount-out";
+  value: MsgSplitRouteSwapExactAmountOutAmino;
+}
+/** ===================== MsgSplitRouteSwapExactAmountOut */
+export interface MsgSplitRouteSwapExactAmountOutSDKType {
+  sender: string;
+  routes: SwapAmountOutSplitRouteSDKType[];
+  token_out_denom: string;
+  token_in_max_amount: string;
+}
+export interface MsgSplitRouteSwapExactAmountOutResponse {
+  tokenInAmount: string;
+}
+export interface MsgSplitRouteSwapExactAmountOutResponseProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOutResponse";
+  value: Uint8Array;
+}
+export interface MsgSplitRouteSwapExactAmountOutResponseAmino {
+  token_in_amount: string;
+}
+export interface MsgSplitRouteSwapExactAmountOutResponseAminoMsg {
+  type: "osmosis/poolmanager/split-route-swap-exact-amount-out-response";
+  value: MsgSplitRouteSwapExactAmountOutResponseAmino;
+}
+export interface MsgSplitRouteSwapExactAmountOutResponseSDKType {
   token_in_amount: string;
 }
 function createBaseMsgSwapExactAmountIn(): MsgSwapExactAmountIn {
@@ -307,6 +405,223 @@ export const MsgSwapExactAmountInResponse = {
     return {
       typeUrl: "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountInResponse",
       value: MsgSwapExactAmountInResponse.encode(message).finish(),
+    };
+  },
+};
+function createBaseMsgSplitRouteSwapExactAmountIn(): MsgSplitRouteSwapExactAmountIn {
+  return {
+    sender: "",
+    routes: [],
+    tokenInDenom: "",
+    tokenOutMinAmount: "",
+  };
+}
+export const MsgSplitRouteSwapExactAmountIn = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
+  encode(
+    message: MsgSplitRouteSwapExactAmountIn,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.sender !== "") {
+      writer.uint32(10).string(message.sender);
+    }
+    for (const v of message.routes) {
+      SwapAmountInSplitRoute.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.tokenInDenom !== "") {
+      writer.uint32(26).string(message.tokenInDenom);
+    }
+    if (message.tokenOutMinAmount !== "") {
+      writer.uint32(34).string(message.tokenOutMinAmount);
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): MsgSplitRouteSwapExactAmountIn {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgSplitRouteSwapExactAmountIn();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.sender = reader.string();
+          break;
+        case 2:
+          message.routes.push(
+            SwapAmountInSplitRoute.decode(reader, reader.uint32())
+          );
+          break;
+        case 3:
+          message.tokenInDenom = reader.string();
+          break;
+        case 4:
+          message.tokenOutMinAmount = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<MsgSplitRouteSwapExactAmountIn>
+  ): MsgSplitRouteSwapExactAmountIn {
+    const message = createBaseMsgSplitRouteSwapExactAmountIn();
+    message.sender = object.sender ?? "";
+    message.routes =
+      object.routes?.map((e) => SwapAmountInSplitRoute.fromPartial(e)) || [];
+    message.tokenInDenom = object.tokenInDenom ?? "";
+    message.tokenOutMinAmount = object.tokenOutMinAmount ?? "";
+    return message;
+  },
+  fromAmino(
+    object: MsgSplitRouteSwapExactAmountInAmino
+  ): MsgSplitRouteSwapExactAmountIn {
+    return {
+      sender: object.sender,
+      routes: Array.isArray(object?.routes)
+        ? object.routes.map((e: any) => SwapAmountInSplitRoute.fromAmino(e))
+        : [],
+      tokenInDenom: object.token_in_denom,
+      tokenOutMinAmount: object.token_out_min_amount,
+    };
+  },
+  toAmino(
+    message: MsgSplitRouteSwapExactAmountIn
+  ): MsgSplitRouteSwapExactAmountInAmino {
+    const obj: any = {};
+    obj.sender = message.sender;
+    if (message.routes) {
+      obj.routes = message.routes.map((e) =>
+        e ? SwapAmountInSplitRoute.toAmino(e) : undefined
+      );
+    } else {
+      obj.routes = [];
+    }
+    obj.token_in_denom = message.tokenInDenom;
+    obj.token_out_min_amount = message.tokenOutMinAmount;
+    return obj;
+  },
+  fromAminoMsg(
+    object: MsgSplitRouteSwapExactAmountInAminoMsg
+  ): MsgSplitRouteSwapExactAmountIn {
+    return MsgSplitRouteSwapExactAmountIn.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: MsgSplitRouteSwapExactAmountIn
+  ): MsgSplitRouteSwapExactAmountInAminoMsg {
+    return {
+      type: "osmosis/poolmanager/split-route-swap-exact-amount-in",
+      value: MsgSplitRouteSwapExactAmountIn.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: MsgSplitRouteSwapExactAmountInProtoMsg
+  ): MsgSplitRouteSwapExactAmountIn {
+    return MsgSplitRouteSwapExactAmountIn.decode(message.value);
+  },
+  toProto(message: MsgSplitRouteSwapExactAmountIn): Uint8Array {
+    return MsgSplitRouteSwapExactAmountIn.encode(message).finish();
+  },
+  toProtoMsg(
+    message: MsgSplitRouteSwapExactAmountIn
+  ): MsgSplitRouteSwapExactAmountInProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
+      value: MsgSplitRouteSwapExactAmountIn.encode(message).finish(),
+    };
+  },
+};
+function createBaseMsgSplitRouteSwapExactAmountInResponse(): MsgSplitRouteSwapExactAmountInResponse {
+  return {
+    tokenOutAmount: "",
+  };
+}
+export const MsgSplitRouteSwapExactAmountInResponse = {
+  typeUrl:
+    "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountInResponse",
+  encode(
+    message: MsgSplitRouteSwapExactAmountInResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.tokenOutAmount !== "") {
+      writer.uint32(10).string(message.tokenOutAmount);
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): MsgSplitRouteSwapExactAmountInResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgSplitRouteSwapExactAmountInResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.tokenOutAmount = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<MsgSplitRouteSwapExactAmountInResponse>
+  ): MsgSplitRouteSwapExactAmountInResponse {
+    const message = createBaseMsgSplitRouteSwapExactAmountInResponse();
+    message.tokenOutAmount = object.tokenOutAmount ?? "";
+    return message;
+  },
+  fromAmino(
+    object: MsgSplitRouteSwapExactAmountInResponseAmino
+  ): MsgSplitRouteSwapExactAmountInResponse {
+    return {
+      tokenOutAmount: object.token_out_amount,
+    };
+  },
+  toAmino(
+    message: MsgSplitRouteSwapExactAmountInResponse
+  ): MsgSplitRouteSwapExactAmountInResponseAmino {
+    const obj: any = {};
+    obj.token_out_amount = message.tokenOutAmount;
+    return obj;
+  },
+  fromAminoMsg(
+    object: MsgSplitRouteSwapExactAmountInResponseAminoMsg
+  ): MsgSplitRouteSwapExactAmountInResponse {
+    return MsgSplitRouteSwapExactAmountInResponse.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: MsgSplitRouteSwapExactAmountInResponse
+  ): MsgSplitRouteSwapExactAmountInResponseAminoMsg {
+    return {
+      type: "osmosis/poolmanager/split-route-swap-exact-amount-in-response",
+      value: MsgSplitRouteSwapExactAmountInResponse.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: MsgSplitRouteSwapExactAmountInResponseProtoMsg
+  ): MsgSplitRouteSwapExactAmountInResponse {
+    return MsgSplitRouteSwapExactAmountInResponse.decode(message.value);
+  },
+  toProto(message: MsgSplitRouteSwapExactAmountInResponse): Uint8Array {
+    return MsgSplitRouteSwapExactAmountInResponse.encode(message).finish();
+  },
+  toProtoMsg(
+    message: MsgSplitRouteSwapExactAmountInResponse
+  ): MsgSplitRouteSwapExactAmountInResponseProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountInResponse",
+      value: MsgSplitRouteSwapExactAmountInResponse.encode(message).finish(),
     };
   },
 };
@@ -515,6 +830,223 @@ export const MsgSwapExactAmountOutResponse = {
     return {
       typeUrl: "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountOutResponse",
       value: MsgSwapExactAmountOutResponse.encode(message).finish(),
+    };
+  },
+};
+function createBaseMsgSplitRouteSwapExactAmountOut(): MsgSplitRouteSwapExactAmountOut {
+  return {
+    sender: "",
+    routes: [],
+    tokenOutDenom: "",
+    tokenInMaxAmount: "",
+  };
+}
+export const MsgSplitRouteSwapExactAmountOut = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOut",
+  encode(
+    message: MsgSplitRouteSwapExactAmountOut,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.sender !== "") {
+      writer.uint32(10).string(message.sender);
+    }
+    for (const v of message.routes) {
+      SwapAmountOutSplitRoute.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.tokenOutDenom !== "") {
+      writer.uint32(26).string(message.tokenOutDenom);
+    }
+    if (message.tokenInMaxAmount !== "") {
+      writer.uint32(34).string(message.tokenInMaxAmount);
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): MsgSplitRouteSwapExactAmountOut {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgSplitRouteSwapExactAmountOut();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.sender = reader.string();
+          break;
+        case 2:
+          message.routes.push(
+            SwapAmountOutSplitRoute.decode(reader, reader.uint32())
+          );
+          break;
+        case 3:
+          message.tokenOutDenom = reader.string();
+          break;
+        case 4:
+          message.tokenInMaxAmount = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<MsgSplitRouteSwapExactAmountOut>
+  ): MsgSplitRouteSwapExactAmountOut {
+    const message = createBaseMsgSplitRouteSwapExactAmountOut();
+    message.sender = object.sender ?? "";
+    message.routes =
+      object.routes?.map((e) => SwapAmountOutSplitRoute.fromPartial(e)) || [];
+    message.tokenOutDenom = object.tokenOutDenom ?? "";
+    message.tokenInMaxAmount = object.tokenInMaxAmount ?? "";
+    return message;
+  },
+  fromAmino(
+    object: MsgSplitRouteSwapExactAmountOutAmino
+  ): MsgSplitRouteSwapExactAmountOut {
+    return {
+      sender: object.sender,
+      routes: Array.isArray(object?.routes)
+        ? object.routes.map((e: any) => SwapAmountOutSplitRoute.fromAmino(e))
+        : [],
+      tokenOutDenom: object.token_out_denom,
+      tokenInMaxAmount: object.token_in_max_amount,
+    };
+  },
+  toAmino(
+    message: MsgSplitRouteSwapExactAmountOut
+  ): MsgSplitRouteSwapExactAmountOutAmino {
+    const obj: any = {};
+    obj.sender = message.sender;
+    if (message.routes) {
+      obj.routes = message.routes.map((e) =>
+        e ? SwapAmountOutSplitRoute.toAmino(e) : undefined
+      );
+    } else {
+      obj.routes = [];
+    }
+    obj.token_out_denom = message.tokenOutDenom;
+    obj.token_in_max_amount = message.tokenInMaxAmount;
+    return obj;
+  },
+  fromAminoMsg(
+    object: MsgSplitRouteSwapExactAmountOutAminoMsg
+  ): MsgSplitRouteSwapExactAmountOut {
+    return MsgSplitRouteSwapExactAmountOut.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: MsgSplitRouteSwapExactAmountOut
+  ): MsgSplitRouteSwapExactAmountOutAminoMsg {
+    return {
+      type: "osmosis/poolmanager/split-route-swap-exact-amount-out",
+      value: MsgSplitRouteSwapExactAmountOut.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: MsgSplitRouteSwapExactAmountOutProtoMsg
+  ): MsgSplitRouteSwapExactAmountOut {
+    return MsgSplitRouteSwapExactAmountOut.decode(message.value);
+  },
+  toProto(message: MsgSplitRouteSwapExactAmountOut): Uint8Array {
+    return MsgSplitRouteSwapExactAmountOut.encode(message).finish();
+  },
+  toProtoMsg(
+    message: MsgSplitRouteSwapExactAmountOut
+  ): MsgSplitRouteSwapExactAmountOutProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOut",
+      value: MsgSplitRouteSwapExactAmountOut.encode(message).finish(),
+    };
+  },
+};
+function createBaseMsgSplitRouteSwapExactAmountOutResponse(): MsgSplitRouteSwapExactAmountOutResponse {
+  return {
+    tokenInAmount: "",
+  };
+}
+export const MsgSplitRouteSwapExactAmountOutResponse = {
+  typeUrl:
+    "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOutResponse",
+  encode(
+    message: MsgSplitRouteSwapExactAmountOutResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.tokenInAmount !== "") {
+      writer.uint32(10).string(message.tokenInAmount);
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): MsgSplitRouteSwapExactAmountOutResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgSplitRouteSwapExactAmountOutResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.tokenInAmount = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<MsgSplitRouteSwapExactAmountOutResponse>
+  ): MsgSplitRouteSwapExactAmountOutResponse {
+    const message = createBaseMsgSplitRouteSwapExactAmountOutResponse();
+    message.tokenInAmount = object.tokenInAmount ?? "";
+    return message;
+  },
+  fromAmino(
+    object: MsgSplitRouteSwapExactAmountOutResponseAmino
+  ): MsgSplitRouteSwapExactAmountOutResponse {
+    return {
+      tokenInAmount: object.token_in_amount,
+    };
+  },
+  toAmino(
+    message: MsgSplitRouteSwapExactAmountOutResponse
+  ): MsgSplitRouteSwapExactAmountOutResponseAmino {
+    const obj: any = {};
+    obj.token_in_amount = message.tokenInAmount;
+    return obj;
+  },
+  fromAminoMsg(
+    object: MsgSplitRouteSwapExactAmountOutResponseAminoMsg
+  ): MsgSplitRouteSwapExactAmountOutResponse {
+    return MsgSplitRouteSwapExactAmountOutResponse.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: MsgSplitRouteSwapExactAmountOutResponse
+  ): MsgSplitRouteSwapExactAmountOutResponseAminoMsg {
+    return {
+      type: "osmosis/poolmanager/split-route-swap-exact-amount-out-response",
+      value: MsgSplitRouteSwapExactAmountOutResponse.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: MsgSplitRouteSwapExactAmountOutResponseProtoMsg
+  ): MsgSplitRouteSwapExactAmountOutResponse {
+    return MsgSplitRouteSwapExactAmountOutResponse.decode(message.value);
+  },
+  toProto(message: MsgSplitRouteSwapExactAmountOutResponse): Uint8Array {
+    return MsgSplitRouteSwapExactAmountOutResponse.encode(message).finish();
+  },
+  toProtoMsg(
+    message: MsgSplitRouteSwapExactAmountOutResponse
+  ): MsgSplitRouteSwapExactAmountOutResponseProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOutResponse",
+      value: MsgSplitRouteSwapExactAmountOutResponse.encode(message).finish(),
     };
   },
 };
