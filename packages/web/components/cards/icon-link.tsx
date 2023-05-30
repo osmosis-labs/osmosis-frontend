@@ -1,4 +1,4 @@
-import { FC, HTMLProps } from "react";
+import React, { FC, HTMLProps } from "react";
 
 export const IconLink: FC<
   HTMLProps<HTMLAnchorElement> & {
@@ -6,6 +6,12 @@ export const IconLink: FC<
     ariaLabel?: string;
   }
 > = ({ url, ariaLabel, children, className }) => {
+  const handleClick = (
+    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
+  ) => {
+    event.stopPropagation();
+  };
+
   return (
     <a
       href={url}
@@ -13,6 +19,7 @@ export const IconLink: FC<
       rel="noopener noreferrer"
       className={className}
       aria-label={ariaLabel}
+      onClick={handleClick}
     >
       {children}
     </a>
