@@ -115,7 +115,11 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
       <HeroCard
         title={featuredApp.title}
         subtitle={featuredApp.subtitle}
-        imageUrl={featuredApp.hero_image_URL}
+        imageUrl={
+          searchBoxSize === "small"
+            ? featuredApp.thumbnail_image_URL
+            : featuredApp.hero_image_URL
+        }
         githubUrl={featuredApp.github_URL}
         twitterUrl={featuredApp.twitter_URL}
         externalUrl={featuredApp.external_URL}
@@ -163,7 +167,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
           </a>
         </div>
       </div>
-      <div className="flex w-full items-center overflow-x-auto rounded-lg bg-osmoverse-1000 px-8 py-6 text-osmoverse-400 2xl:gap-4 xl:gap-3 1.5lg:px-4 md:flex-col md:items-start md:gap-3 md:px-5 md:py-5">
+      <div className="flex w-full items-center overflow-x-auto rounded-2xl bg-osmoverse-1000 px-8 py-6 text-osmoverse-400 2xl:gap-4 xl:gap-3 1.5lg:px-4 md:flex-col md:items-start md:gap-3 md:px-5 md:py-5">
         <span className="text-xs">{t("store.storeDisclaimer")}</span>
       </div>
     </main>
