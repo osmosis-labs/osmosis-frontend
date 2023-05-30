@@ -10,7 +10,6 @@ import { BondStatus } from "@keplr-wallet/stores/build/query/cosmos/staking/type
 import { Currency, KeplrSignOptions } from "@keplr-wallet/types";
 import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import * as WeightedPoolEstimates from "@osmosis-labs/math";
-import { Pool } from "@osmosis-labs/pools";
 import deepmerge from "deepmerge";
 import Long from "long";
 import { DeepPartial } from "utility-types";
@@ -601,100 +600,33 @@ export class OsmosisAccountImpl {
       tokenOutCurrency: Currency;
     }[],
     tokenIn: { currency: Currency; amount: string },
-    maxSlippage: string = "0",
+    tokenOutMinAmount: string,
     memo: string = "",
     stdFee: Partial<StdFee> = {},
     signOptions?: KeplrSignOptions,
     onFulfill?: (tx: any) => void
   ) {
-    const queries = this.queries;
-
     await this.base.cosmos.sendMsgs(
       "swapExactAmountIn",
       async () => {
-        // refresh data and get pools
-        const pools: Pool[] = [];
-        for (const route of routes) {
-          const queryPool = queries.queryGammPools.getPool(route.poolId);
-
-          if (!queryPool) {
-            throw new Error(
-              `Pool #${route.poolId} of route with ${route.tokenOutCurrency.coinMinimalDenom} not found`
-            );
-          }
-
-          pools.push(queryPool.pool);
-        }
-
         // make message with estimated min out amounts
-        const msg = Msgs.Amino.makeMultihopSwapExactAmountInMsg(
-          this._msgOpts.swapExactAmountIn,
-          this.base.bech32Address,
-          tokenIn,
-          pools.map((pool, i) => {
-            const queryPool = queries.queryGammPools.getPool(pool.id);
-            const isIncentivized =
-              queries.queryIncentivizedPools.isIncentivized(pool.id);
-            const tokenOutCurrency = routes[i].tokenOutCurrency;
-
-            if (!queryPool) {
-              throw new Error(`Pool #${pool.id} not found for route`);
-            }
-
-            if (i !== 0 && typeof routes[i - 1] === "undefined") {
-              throw new Error("Previous route not found");
-            }
-
-            // reconcile weighted and stable pool asset data
-            const inPoolAsset = queryPool.getPoolAsset(
-              i === 0
-                ? tokenIn.currency.coinMinimalDenom
-                : routes[i - 1].tokenOutCurrency.coinMinimalDenom
-            );
-            const outPoolAsset = queryPool.getPoolAsset(
-              tokenOutCurrency.coinMinimalDenom
-            );
-            const inPoolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
-              ({ denom }) =>
-                denom === inPoolAsset.amount.currency.coinMinimalDenom
-            )?.weight;
-            const outPoolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
-              ({ denom }) =>
-                denom === outPoolAsset.amount.currency.coinMinimalDenom
-            )?.weight;
-
-            const poolAssets = queryPool?.stableSwapInfo
-              ? queryPool.stableSwapInfo.assets
-              : [];
-
-            return {
-              pool: {
-                id: pool.id,
-                swapFee: pool.swapFee,
-                inPoolAsset: {
-                  ...inPoolAsset.amount.currency,
-                  amount: new Int(inPoolAsset.amount.toCoin().amount),
-                  weight: inPoolAssetWeight
-                    ? new Int(inPoolAssetWeight.toDec().truncate().toString())
-                    : undefined,
-                },
-                outPoolAsset: {
-                  denom: outPoolAsset.amount.currency.coinMinimalDenom,
-                  amount: new Int(outPoolAsset.amount.toCoin().amount),
-                  weight: outPoolAssetWeight
-                    ? new Int(outPoolAssetWeight.toDec().truncate().toString())
-                    : undefined,
-                },
-                isIncentivized,
-                poolAssets,
-              },
-              tokenOutCurrency,
-            };
-          }),
-          this.chainGetter.getChain(this.chainId).stakeCurrency
-            .coinMinimalDenom,
-          maxSlippage
-        );
+        const msg = {
+          type: this._msgOpts.swapExactAmountIn.type,
+          value: {
+            sender: this.base.bech32Address,
+            routes: routes.map((route) => {
+              return {
+                pool_id: route.poolId,
+                token_out_denom: route.tokenOutCurrency.coinMinimalDenom,
+              };
+            }),
+            token_in: {
+              denom: tokenIn.currency.coinMinimalDenom,
+              amount: tokenIn.amount.toString(),
+            },
+            token_out_min_amount: tokenOutMinAmount.toString(),
+          },
+        };
 
         // encode proto messages from amino msg data
         return {
@@ -762,7 +694,7 @@ export class OsmosisAccountImpl {
    * @param poolId Id of pool to swap within.
    * @param tokenIn Token being swapped in. `tokenIn.amount` is NOT in micro.
    * @param tokenOutCurrency Currency of outgoing token.
-   * @param maxSlippage Max tolerated slippage.
+   * @param tokenOutMinAmount Min amount of out token.
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fullfillment.
    */
@@ -770,68 +702,32 @@ export class OsmosisAccountImpl {
     poolId: string,
     tokenIn: { currency: Currency; amount: string },
     tokenOutCurrency: Currency,
-    maxSlippage: string = "0",
+    tokenOutMinAmount: string,
     memo: string = "",
     stdFee: Partial<StdFee> = {},
     signOptions?: KeplrSignOptions,
     onFulfill?: (tx: any) => void
   ) {
-    const queries = this.queries;
-
     await this.base.cosmos.sendMsgs(
       "swapExactAmountIn",
       async () => {
-        // get pool info and refetch
-        const queryPool = queries.queryGammPools.getPool(poolId);
-        if (!queryPool) {
-          throw new Error(`Pool #${poolId} not found`);
-        }
-        const pool = queryPool.pool;
-
-        // reconcile weighted and stable pool asset data
-        const inPoolAsset = queryPool.getPoolAsset(
-          tokenIn.currency.coinMinimalDenom
-        );
-        const outPoolAsset = queryPool.getPoolAsset(
-          tokenOutCurrency.coinMinimalDenom
-        );
-        const inPoolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
-          ({ denom }) => denom === inPoolAsset.amount.currency.coinMinimalDenom
-        )?.weight;
-        const outPoolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
-          ({ denom }) => denom === outPoolAsset.amount.currency.coinMinimalDenom
-        )?.weight;
-        const poolAssets = queryPool.stableSwapInfo
-          ? queryPool.stableSwapInfo.assets
-          : [];
-
-        const msg = Msgs.Amino.makeSwapExactAmountInMsg(
-          {
-            // ...pool, <= does not work w/ getters
-            id: pool.id,
-            swapFee: pool.swapFee,
-            inPoolAsset: {
-              ...inPoolAsset.amount.currency,
-              amount: new Int(inPoolAsset.amount.toCoin().amount),
-              weight: inPoolAssetWeight
-                ? new Int(inPoolAssetWeight.toDec().truncate().toString())
-                : undefined,
+        const msg = {
+          type: this._msgOpts.swapExactAmountIn.type,
+          value: {
+            sender: this.base.bech32Address,
+            routes: [
+              {
+                pool_id: poolId,
+                token_out_denom: tokenOutCurrency.coinMinimalDenom,
+              },
+            ],
+            token_in: {
+              denom: tokenIn.currency.coinMinimalDenom,
+              amount: tokenIn.amount.toString(),
             },
-            outPoolAsset: {
-              denom: outPoolAsset.amount.currency.coinMinimalDenom,
-              amount: new Int(outPoolAsset.amount.toCoin().amount),
-              weight: outPoolAssetWeight
-                ? new Int(outPoolAssetWeight.toDec().truncate().toString())
-                : undefined,
-            },
-            poolAssets,
+            token_out_min_amount: tokenOutMinAmount.toString(),
           },
-          this._msgOpts.swapExactAmountIn,
-          this.base.bech32Address,
-          tokenIn,
-          tokenOutCurrency,
-          maxSlippage
-        );
+        };
 
         return {
           aminoMsgs: [msg],
