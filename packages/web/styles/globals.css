@@ -279,9 +279,13 @@
   }
 }
 
-@keyframes transformInitial {
+@keyframes pillLoad {
+  from {
+    opacity: 0;
+  }
   to {
     transform: initial;
+    opacity: 1;
   }
 }
 
