@@ -17,11 +17,13 @@ export const IconLink: FC<
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className={className}
+      className={`transition-colors duration-200 ease-in-out ${className} hover:bg-gray-300`}
       aria-label={ariaLabel}
       onClick={handleClick}
     >
-      {children}
+      <div className="transition-all duration-200 hover:brightness-75">
+        {children}
+      </div>
     </a>
   );
 };
