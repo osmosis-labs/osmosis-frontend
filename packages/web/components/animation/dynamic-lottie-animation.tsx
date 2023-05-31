@@ -17,7 +17,7 @@ export const DynamicLottieAnimation: FunctionComponent<
   // dynamic load JSON animation data
   useEffect(() => {
     if (!lottie) {
-      props.futureLottieContents.then(setLottie);
+      props.futureLottieContents.then(setLottie).catch(console.error);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.futureLottieContents]);
