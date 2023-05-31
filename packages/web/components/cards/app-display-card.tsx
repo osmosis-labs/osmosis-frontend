@@ -41,18 +41,17 @@ export const AppDisplayCard: FunctionComponent<{
         }
         .card-image {
           background-image: url(${imageUrl});
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
         }
       `}</style>
       <div className="cursor-pointer" onClick={handleAppClicked}>
-        <div className="app-display-card bg-white h-[280px] overflow-hidden rounded-2xl bg-osmoverse-800 shadow-md lg:h-[300px]">
-          <div className="overflow-hidden">
-            <img
-              className="card-image inset-0 h-40 w-full overflow-hidden rounded-2xl bg-cover bg-center transition-transform duration-300 ease-in"
-              src={imageUrl}
-              alt="card image"
-            />
+        <div className="app-display-card bg-white min-h-[320px] overflow-hidden rounded-2xl bg-osmoverse-800 shadow-md xl:min-h-[320px] lg:min-h-[320px] md:min-h-[360px] sm:min-h-[290px] xs:min-h-[330px]">
+          <div className="overflow-hidden rounded-2xl">
+            <div className="card-image  min-h-[190px] xl:min-h-[180px] lg:min-h-[140px] md:min-h-[210px]  sm:min-h-[160px]  xs:min-h-[210px]"></div>
           </div>
-          <div className="flex min-h-[120px] flex-col px-6 pt-4 pb-8">
+          <div className="flex min-h-[120px] flex-col px-6 pt-4 pb-8 xl:min-h-[160px] lg:min-h-[150px] md:min-h-[140px] sm:min-h-[120px]">
             <div className="flex items-center space-x-3">
               <h6 className="font-semibold">{title}</h6>
               {!!twitterUrl && (

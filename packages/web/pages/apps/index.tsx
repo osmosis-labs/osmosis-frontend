@@ -129,7 +129,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
         {t("store.allAppsHeader")}
       </div>
       <div className="container mx-auto py-3">
-        <div className="grid grid-cols-3 gap-4 1.5md:grid-cols-2 md:grid-cols-1">
+        <div className="grid grid-cols-3 gap-4 xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 xs:grid-cols-1">
           {iterableData?.map((app, index) => {
             return (
               <AppDisplayCard
@@ -146,6 +146,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
           })}
         </div>
       </div>
+
       <div className="container mx-auto flex py-6 pl-6">
         <div className="flex flex-col pr-2" style={{ flexBasis: "35%" }}>
           <h6 className="font-semibold">{t("store.getFeatured")}</h6>
