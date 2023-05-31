@@ -354,6 +354,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         await wallet.initOfflineSigner();
       }
 
+      if (!wallet.offlineSigner) {
+        throw new Error("Offline signer failed to initialize");
+      }
+
       let usedFee: StdFee;
       if (typeof fee === "undefined" || typeof fee === "number") {
         usedFee = await wallet.estimateFee(msgs, "stargate", memo, fee);
@@ -363,22 +367,12 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       const txRaw = await this.sign(
         wallet,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        wallet.offlineSigner!,
+        wallet.offlineSigner,
         msgs,
         usedFee,
         memo || ""
       );
       const encodedTx = TxRaw.encode(txRaw).finish();
-
-      /**
-       * Manually create a Tendermint client to broadcast the transaction to have more control over transaction tracking.
-       * Cosmjs team is working on a similar solution within their library.
-       * @see https://github.com/cosmos/cosmjs/issues/1316
-       */
-      // const tmClient = await Tendermint34Client.connect(rpcEndpointString);
-
-      // const broadcasted = await tmClient.broadcastTxSync({ tx: encodedTx });
 
       const restEndpoint = getEndpointString(
         await wallet.getRestEndpoint(true)
