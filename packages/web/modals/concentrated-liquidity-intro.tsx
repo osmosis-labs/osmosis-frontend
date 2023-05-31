@@ -47,7 +47,7 @@ export const ConcentratedLiquidityIntroModal: FunctionComponent<{
       isOpen={featureFlags.concentratedLiquidity && showSelf}
       title={
         showLearnMore
-          ? undefined
+          ? t("addConcentratedLiquidityIntro.learnMoreTitle")
           : showFromPoolDetail
           ? t("addConcentratedLiquidityIntro.poolDetailTitle")
           : t("addConcentratedLiquidityIntro.title")

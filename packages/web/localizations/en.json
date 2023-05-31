@@ -65,12 +65,21 @@
   "addConcentratedLiquidityIntro": {
     "title": "Introducing Supercharged Liquidity",
     "poolDetailTitle": "Supercharge your DAI/OSMO",
+    "learnMoreTitle": "What is Supercharged Liquidity?",
     "subtitle": "Crushing inflation, increasing earning potential, no bonding periods",
     "body": "OSMO token holders, rejoice. Supercharged liquidity will drastically cut inflation while also giving liquidity providers significantly more leverage. And no more bonding periods! You can remove liquidity at any time.",
     "body2": "We’ll be rolling out upgraded pools incrementally, starting with Pool #8: DAI/OSMO. If you’re interested in creating a position, learn more below.",
     "explorePoolCta": "Explore the pool",
     "upgradePositionCta": "Upgrade your position",
-    "secondaryCta": "Learn in 30s"
+    "secondaryCta": "Learn in 30s",
+    "tutorialA": {
+      "1": "Use way less capital to earn the same amount or more in pools. Here’s how it works.",
+      "2": "Instead of setting and forgetting a position, it’s a bit more active. You, Woz, and Ammelia can choose where to “concentrate” your liquidity.",
+      "3": "Pick a strategy that best suits you. Woz might have an aggressive strategy that earns more, but only if the current price remains in his range.",
+      "4": "Ammelia chose a passive strategy. By distributing a little bit across the entire span, she earns less but never goes out of range.",
+      "5": "If the price goes out of your range, all assets will be converted to the lower nominal value of the two. This will revert if the price re-enters your range. Passive strategies are easier to manage.",
+      "6": "Finally, the longer you keep your position open, the more incentives you might get. There are no bonding periods and you’re free to remove your liquidity at any time."
+    }
   },
   "assets": {
     "bondedAssets": "Bonded",
