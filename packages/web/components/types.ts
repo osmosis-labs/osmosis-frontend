@@ -9,6 +9,7 @@ export type MainLayoutMenu = {
   iconSelected?: string;
   selectionTest?: RegExp;
   amplitudeEvent?: AmplitudeEvent;
+  isNew?: Boolean;
 };
 
 /** PROPS */

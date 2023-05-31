@@ -1,11 +1,13 @@
 import Fuse from "fuse.js";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
+import { useWindowSize } from "react-use";
 
 import { buttonCVA } from "~/components/buttons";
 import { HeroCard } from "~/components/cards";
-import AppDisplayCard from "~/components/cards/app-display-card";
+import { AppDisplayCard } from "~/components/cards/app-display-card";
 import { SearchBox } from "~/components/input";
+import { Breakpoint } from "~/components/types";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 
@@ -47,15 +49,18 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
 
   const { applications } = apps;
 
+  const t = useTranslation();
+  const { logEvent } = useAmplitudeAnalytics({
+    onLoadEvent: [EventName.AppStore.pageViewed],
+  });
+  const { width } = useWindowSize();
+
   useEffect(() => {
     const options = {
       keys: ["title"],
     };
     setFuse(new Fuse(applications, options));
   }, [applications]);
-
-  const t = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
 
   let featuredApp = applications?.find((app) => app.featured === true);
   const nonFeaturedApps = applications?.filter((app) => !app.featured);
@@ -80,6 +85,15 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
 
   const iterableData = searchValue ? fuzzySearchResults : nonFeaturedApps;
 
+  const searchBoxSize = useMemo(() => {
+    if (width <= Breakpoint.SM) {
+      return "small";
+    } else if (width <= Breakpoint.LG) {
+      return "medium";
+    }
+    return "long";
+  }, [width]);
+
   return (
     <main className="mx-auto flex max-w-container flex-col bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
       <div className="flex flex-row justify-between pl-6 md:flex-col">
@@ -94,14 +108,18 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
             placeholder={t("store.searchPlaceholder")}
             onInput={handleSearchInput}
             className="self-end"
-            size="long"
+            size={searchBoxSize || "long"}
           />
         </div>
       </div>
       <HeroCard
         title={featuredApp.title}
         subtitle={featuredApp.subtitle}
-        imageUrl={featuredApp.hero_image_URL}
+        imageUrl={
+          width <= Breakpoint.SM
+            ? featuredApp.thumbnail_image_URL
+            : featuredApp.hero_image_URL
+        }
         githubUrl={featuredApp.github_URL}
         twitterUrl={featuredApp.twitter_URL}
         externalUrl={featuredApp.external_URL}
@@ -149,7 +167,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
           </a>
         </div>
       </div>
-      <div className="flex w-full items-center overflow-x-auto rounded-lg bg-osmoverse-1000 px-8 py-6 text-osmoverse-400 2xl:gap-4 xl:gap-3 1.5lg:px-4 md:flex-col md:items-start md:gap-3 md:px-5 md:py-5">
+      <div className="flex w-full items-center overflow-x-auto rounded-2xl bg-osmoverse-1000 px-8 py-6 text-osmoverse-400 2xl:gap-4 xl:gap-3 1.5lg:px-4 md:flex-col md:items-start md:gap-3 md:px-5 md:py-5">
         <span className="text-xs">{t("store.storeDisclaimer")}</span>
       </div>
     </main>
