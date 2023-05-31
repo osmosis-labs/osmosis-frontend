@@ -22,5 +22,5 @@ export const DynamicLottieAnimation: FunctionComponent<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.futureLottieContents]);
 
-  return <Lottie {...props} animationData={null}></Lottie>;
+  return <Lottie {...props} animationData={lottie}></Lottie>;
 };
