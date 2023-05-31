@@ -71,7 +71,7 @@ const InfoSlide: FunctionComponent<
     <section>
       <p className="body2 h-[50px]">{bodyText}</p>
       <DynamicLottieAnimation
-        className="!h-[340px]"
+        className="h-[340px]"
         futureLottieContents={futureLottieContents}
       />
     </section>
