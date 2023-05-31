@@ -1,4 +1,4 @@
-import { FiatCurrency } from "@keplr-wallet/types";
+import { AppCurrency, FiatCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -92,7 +92,10 @@ const MyPositionCardExpandedSection: FunctionComponent<{
             data={historicalChartData}
             annotations={
               passive
-                ? [new Dec(yRange[0] * 1.05), new Dec(yRange[1] * 0.95)]
+                ? [
+                    new Dec((yRange[0] || 0) * 1.05),
+                    new Dec((yRange[1] || 0) * 0.95),
+                  ]
                 : range || []
             }
             domain={yRange}
@@ -171,27 +174,25 @@ const MyPositionCardExpandedSection: FunctionComponent<{
               fiatPerBase={fiatPerBase}
               fiatPerQuote={fiatPerQuote}
               fiatCurrency={fiatCurrency}
-              className="flex-shrink flex-grow"
+              className="w-0 flex-shrink flex-grow"
               title={t("clPositions.currentAssets")}
-              baseAsset={
-                baseCurrency && new CoinPretty(baseCurrency, baseAmount)
-              }
-              quoteAsset={
-                quoteCurrency && new CoinPretty(quoteCurrency, quoteAmount)
-              }
+              baseCurrency={baseCurrency}
+              quoteCurrency={quoteCurrency}
+              baseAmount={baseAmount}
+              quoteAmount={quoteAmount}
+              baseDenom={baseDenom}
+              quoteDenom={quoteDenom}
             />
             <AssetPairAmountDetail
               fiatPerBase={fiatPerBase}
               fiatPerQuote={fiatPerQuote}
               fiatCurrency={fiatCurrency}
-              className="flex-shrink flex-grow"
+              className="w-0 flex-shrink flex-grow"
               title={t("clPositions.totalFeesEarned")}
-              baseAsset={
-                baseCurrency && new CoinPretty(baseCurrency, new Dec(0))
-              }
-              quoteAsset={
-                quoteCurrency && new CoinPretty(quoteCurrency, new Dec(0))
-              }
+              baseCurrency={baseCurrency}
+              quoteCurrency={quoteCurrency}
+              baseDenom={baseDenom}
+              quoteDenom={quoteDenom}
             />
           </div>
           <div className="flex flex-row justify-between">
@@ -199,27 +200,23 @@ const MyPositionCardExpandedSection: FunctionComponent<{
               fiatPerBase={fiatPerBase}
               fiatPerQuote={fiatPerQuote}
               fiatCurrency={fiatCurrency}
-              className="flex-shrink flex-grow"
+              className="w-0 flex-shrink flex-grow"
               title={t("clPositions.principleAssets")}
-              baseAsset={
-                baseCurrency && new CoinPretty(baseCurrency, new Dec(0))
-              }
-              quoteAsset={
-                quoteCurrency && new CoinPretty(quoteCurrency, new Dec(0))
-              }
+              baseCurrency={baseCurrency}
+              quoteCurrency={quoteCurrency}
+              baseDenom={baseDenom}
+              quoteDenom={quoteDenom}
             />
             <AssetPairAmountDetail
               fiatPerBase={fiatPerBase}
               fiatPerQuote={fiatPerQuote}
               fiatCurrency={fiatCurrency}
-              className="flex-shrink flex-grow"
+              className="w-0 flex-shrink flex-grow"
               title={t("clPositions.unclaimedFees")}
-              baseAsset={
-                baseCurrency && new CoinPretty(baseCurrency, new Dec(0))
-              }
-              quoteAsset={
-                quoteCurrency && new CoinPretty(quoteCurrency, new Dec(0))
-              }
+              baseCurrency={baseCurrency}
+              quoteCurrency={quoteCurrency}
+              baseDenom={baseDenom}
+              quoteDenom={quoteDenom}
             />
           </div>
         </div>
@@ -250,8 +247,12 @@ function PositionButton(props: { children: ReactNode }) {
 const AssetPairAmountDetail: FunctionComponent<{
   className?: string;
   title: string;
-  baseAsset?: CoinPretty;
-  quoteAsset?: CoinPretty;
+  baseCurrency?: AppCurrency;
+  quoteCurrency?: AppCurrency;
+  baseAmount?: Dec;
+  baseDenom?: string;
+  quoteAmount?: Dec;
+  quoteDenom?: string;
   fiatPerBase?: PricePretty;
   fiatPerQuote?: PricePretty;
   fiatCurrency?: FiatCurrency;
@@ -260,21 +261,25 @@ const AssetPairAmountDetail: FunctionComponent<{
     className,
     title,
     fiatCurrency,
-    baseAsset,
-    quoteAsset,
+    baseCurrency,
+    quoteCurrency,
+    baseAmount,
+    quoteAmount,
     fiatPerBase,
     fiatPerQuote,
   }) => {
     const fiatBase =
-      fiatPerBase && baseAsset
-        ? baseAsset.toDec().mul(fiatPerBase.toDec())
+      fiatPerBase && baseAmount
+        ? baseAmount.mul(fiatPerBase.toDec())
         : new Dec(0);
     const fiatQuote =
-      fiatPerQuote && quoteAsset
-        ? quoteAsset.toDec().mul(fiatPerQuote.toDec())
+      fiatPerQuote && quoteAmount
+        ? quoteAmount.mul(fiatPerQuote.toDec())
         : new Dec(0);
     const totalFiat =
       fiatCurrency && new PricePretty(fiatCurrency, fiatBase.add(fiatQuote));
+
+    if (!baseAmount || !quoteAmount) return null;
 
     return (
       <div
@@ -285,24 +290,24 @@ const AssetPairAmountDetail: FunctionComponent<{
       >
         <div className="text-subtitle1">{title}</div>
         <div className="flex flex-row items-center gap-5">
-          {baseAsset && (
+          {baseCurrency && (
             <div className="flex flex-row items-center gap-2">
               <img
                 className="h-[1.5rem] w-[1.5rem]"
-                src={baseAsset.currency.coinImageUrl}
+                src={baseCurrency.coinImageUrl}
               />
-              <span>{baseAsset.toDec().toString(2)}</span>
-              <span>{baseAsset.currency.coinDenom}</span>
+              <span>{baseAmount.toString(baseCurrency.coinDecimals)}</span>
+              <span>{baseCurrency.coinDenom}</span>
             </div>
           )}
-          {quoteAsset && (
+          {quoteCurrency && (
             <div className="flex flex-row items-center gap-2">
               <img
                 className="h-[1.5rem] w-[1.5rem]"
-                src={quoteAsset.currency.coinImageUrl}
+                src={quoteCurrency.coinImageUrl}
               />
-              <span>{quoteAsset.toDec().toString(2)}</span>
-              <span>{quoteAsset.currency.coinDenom}</span>
+              <span>{quoteAmount.toString(quoteCurrency.coinDecimals)}</span>
+              <span>{quoteCurrency.coinDenom}</span>
               <span>({totalFiat ? formatPretty(totalFiat) : "$0"})</span>
             </div>
           )}

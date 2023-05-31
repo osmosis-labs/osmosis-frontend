@@ -131,7 +131,7 @@ const MyPositionCard: FunctionComponent<{
         </div>
         <div className="flex flex-row gap-[52px] self-start">
           {/* TODO: use actual ROI */}
-          <PositionDataGroup label={t("clPositions.roi")} value="0.18%" />
+          <PositionDataGroup label={t("clPositions.roi")} value="-" />
           <RangeDataGroup
             lowerPrice={
               quoteCurrency &&
@@ -153,10 +153,7 @@ const MyPositionCard: FunctionComponent<{
             label={t("clPositions.myLiquidity")}
             value={liquidityValue ? formatPretty(liquidityValue) : "$0"}
           />
-          <PositionDataGroup
-            label={t("clPositions.incentives")}
-            value="25% APR"
-          />
+          <PositionDataGroup label={t("clPositions.incentives")} value="-" />
         </div>
       </div>
       {!collapsed && (

@@ -355,7 +355,20 @@ const Pool: FunctionComponent = observer(() => {
   const tradePools = useMemo(() => (pool ? [pool] : []), [pool]);
 
   if (pool?.type === "concentrated") {
-    return <ConcentratedLiquidityPool poolId={poolId} />;
+    return (
+      <>
+        {pool && showTradeTokenModal && (
+          <TradeTokens
+            className="md:!p-0"
+            hideCloseButton={isMobile}
+            isOpen={showTradeTokenModal}
+            onRequestClose={setShowModal(setShowTradeTokenModal, false)}
+            pools={[pool]}
+          />
+        )}
+        <ConcentratedLiquidityPool poolId={poolId} />
+      </>
+    );
   }
 
   return (
