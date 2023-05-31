@@ -298,6 +298,34 @@ const testnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx:
       "https://testnet.quicksilver.explorers.guru/transaction/{txHash}",
   },
+  {
+    rpc: "https://rpc-testnet.c4e.io",
+    rest: "https://lcd-testnet.c4e.io",
+    chainId: "babajaga-1",
+    chainName: "Chain4Energy Testnet",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("c4e"),
+    currencies: [
+      {
+        coinDenom: "C4E",
+        coinMinimalDenom: "uc4e",
+        coinDecimals: 6,
+        coinImageUrl: "/tokens/c4e.png",
+        coinGeckoId: "usd-coin",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.02,
+          average: 0.03,
+          high: 0.06,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://explorer-testnet.c4e.io/transactions/{txHash}",
+  },
 ];
 
 const mainnetChainInfos: SimplifiedChainInfo[] = [
