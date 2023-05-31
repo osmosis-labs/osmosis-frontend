@@ -48,10 +48,10 @@ export const AppDisplayCard: FunctionComponent<{
       `}</style>
       <div className="cursor-pointer" onClick={handleAppClicked}>
         <div className="app-display-card bg-white min-h-[320px] overflow-hidden rounded-2xl bg-osmoverse-800 shadow-md xl:min-h-[320px] lg:min-h-[320px] md:min-h-[360px] sm:min-h-[290px] xs:min-h-[330px]">
-          <div className="overflow-hidden">
+          <div className="overflow-hidden rounded-2xl">
             <div className="card-image  min-h-[190px] xl:min-h-[180px] lg:min-h-[140px] md:min-h-[210px]  sm:min-h-[160px]  xs:min-h-[210px]"></div>
           </div>
-          <div className="flex min-h-[120px] flex-col px-6 pt-4 pb-8 xl:min-h-[160px] lg:min-h-[150px] md:min-h-[140px] sm:min-h-[180px]">
+          <div className="flex min-h-[120px] flex-col px-6 pt-4 pb-8 xl:min-h-[160px] lg:min-h-[150px] md:min-h-[140px] sm:min-h-[120px]">
             <div className="flex items-center space-x-3">
               <h6 className="font-semibold">{title}</h6>
               {!!twitterUrl && (
