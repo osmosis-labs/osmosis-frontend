@@ -31,6 +31,17 @@
       "title": "你睇緊所有 permissionless 資產."
     }
   },
+  "store": {
+    "headerTitle": "提升您的體驗",
+    "headerSubtitle": "交易僅僅是第一步。將您的資產付諸實踐，並通過槓桿、金庫等手段實現更多目標。",
+    "featured": "精選",
+    "searchPlaceholder": "搜索",
+    "getFeatured": "獲得精選",
+    "featuredDescription": "在應用商店上架，並接觸到成千上萬的用戶。如果您想上榜或獲得精選，請聯繫我們，我們將保持聯繫。",
+    "applyButton": "申請",
+    "storeDisclaimer": "部分內容由與 Osmosis Labs 或其任何附屬公司無關的第三方準備，Osmosis Labs 對此類內容不承擔責任。Osmosis Labs 不對內容中的任何錯誤或延遲，或因依賴任何內容而採取的任何行動承擔責任。信息僅供參考，不構成投資建議。這不是購買或出售特定數字資產或采用特定投資策略的建議。 Osmosis Labs 不對所提供的任何信息的准確性、適當性或有效性，或針對特定資產作出任何陳述。顯示的價格僅用於說明目的。實際加密貨幣價格及相關統計數據可能有所不同。所呈現的數據可能反映在 Osmosis Labs 交易所及選定的其他加密貨幣交易所上交易的資產。",
+    "allAppsHeader": "所有應用"
+  },
   "assets": {
     "bondedAssets": "已鎖定",
     "historyTable": {
@@ -239,8 +250,10 @@
     "pools": "流動性池",
     "signOut": "斷開連接",
     "stake": "質押",
+    "store": "應用",
     "swap": "兌換",
-    "vote": "投票"
+    "vote": "投票",
+    "new": "新的"
   },
   "pool": {
     "24hrTradingVolume": "24小時交易量",
