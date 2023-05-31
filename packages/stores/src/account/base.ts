@@ -411,7 +411,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       const txTracer = new TxTracer(rpcEndpoint, "/websocket");
 
       if (broadcasted.code) {
-        throw new BroadcastTxError(broadcasted.code, "", broadcasted.logs);
+        throw new BroadcastTxError(broadcasted.code, "", broadcasted.raw_log);
       }
 
       const txHashBuffer = Buffer.from(broadcasted.txhash, "hex");
