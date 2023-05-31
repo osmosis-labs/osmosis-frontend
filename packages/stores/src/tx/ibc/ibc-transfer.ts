@@ -1,8 +1,7 @@
-import { DeliverTxResponse } from "@cosmjs/stargate";
 import { AmountConfig } from "@keplr-wallet/hooks";
 import { Buffer } from "buffer";
 
-import { TxEvent } from "../../account";
+import { DeliverTxResponse, TxEvent } from "../../account";
 import { IBCTransferHistory, UncommitedHistory } from "../../ibc-history";
 import { IbcTransferCounterparty, IbcTransferSender } from "./types";
 
@@ -164,11 +163,3 @@ export async function basicIbcTransfer(
     );
   }
 }
-
-type Event = {
-  type: string;
-  attributes: {
-    key: string;
-    value: string;
-  }[];
-};

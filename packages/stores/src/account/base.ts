@@ -1,21 +1,29 @@
 import type { AssetList, Chain } from "@chain-registry/types";
-import { encodeSecp256k1Pubkey } from "@cosmjs/amino";
+import {
+  AminoMsg,
+  encodeSecp256k1Pubkey,
+  makeSignDoc as makeSignDocAmino,
+  OfflineAminoSigner,
+} from "@cosmjs/amino";
+import { fromBase64 } from "@cosmjs/encoding";
+import { Int53 } from "@cosmjs/math";
 import {
   EncodeObject,
   encodePubkey,
   isOfflineDirectSigner,
+  makeAuthInfoBytes,
+  makeSignDoc,
+  OfflineDirectSigner,
   OfflineSigner,
   Registry,
 } from "@cosmjs/proto-signing";
 import {
   AminoTypes,
   BroadcastTxError,
-  DeliverTxResponse,
   SignerData,
   SigningStargateClient,
   StdFee,
 } from "@cosmjs/stargate";
-import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
 import {
   ChainWalletBase,
   MainWalletBase,
@@ -48,11 +56,13 @@ import { UnionToIntersection } from "utility-types";
 import { OsmosisQueries } from "../queries";
 import { TxTracer } from "../tx";
 import { aminoConverters } from "./amino-converters";
-import { TxEvent } from "./types";
+import { DeliverTxResponse, TxEvent } from "./types";
 import {
   CosmosKitAccountsLocalStorageKey,
+  getEndpointString,
   getWalletEndpoints,
   logger,
+  removeLastSlash,
 } from "./utils";
 
 export class AccountStore<Injects extends Record<string, any>[] = []> {
@@ -344,16 +354,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         await wallet.initOfflineSigner();
       }
 
-      const endpoint = await wallet.getRpcEndpoint();
-      const endpointString =
-        typeof endpoint === "string" ? endpoint : endpoint.url;
-      const client = await SigningStargateClient.connectWithSigner(
-        endpointString,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        wallet.offlineSigner!,
-        wallet.signingStargateOptions
-      );
-
       let usedFee: StdFee;
       if (typeof fee === "undefined" || typeof fee === "number") {
         usedFee = await wallet.estimateFee(msgs, "stargate", memo, fee);
@@ -361,8 +361,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         usedFee = fee;
       }
 
-      const txRaw = await client.sign(
-        wallet.address,
+      const txRaw = await this.sign(
+        wallet,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        wallet.offlineSigner!,
         msgs,
         usedFee,
         memo || ""
@@ -374,27 +376,56 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
        * Cosmjs team is working on a similar solution within their library.
        * @see https://github.com/cosmos/cosmjs/issues/1316
        */
-      const tmClient = await Tendermint34Client.connect(endpointString);
+      // const tmClient = await Tendermint34Client.connect(rpcEndpointString);
 
-      const broadcasted = await tmClient.broadcastTxSync({ tx: encodedTx });
+      // const broadcasted = await tmClient.broadcastTxSync({ tx: encodedTx });
 
-      const txTracer = new TxTracer(endpointString, "/websocket");
+      const restEndpoint = getEndpointString(
+        await wallet.getRestEndpoint(true)
+      );
+
+      const res = await axios.post<{
+        tx_response: {
+          height: string;
+          txhash: string;
+          codespace: string;
+          code: number;
+          data: string;
+          raw_log: string;
+          logs: unknown[];
+          info: string;
+          gas_wanted: string;
+          gas_used: string;
+          tx: unknown;
+          timestamp: string;
+          events: unknown[];
+        };
+      }>(`${removeLastSlash(restEndpoint)}/cosmos/tx/v1beta1/txs`, {
+        tx_bytes: Buffer.from(encodedTx).toString("base64"),
+        mode: "BROADCAST_MODE_SYNC",
+      });
+
+      const broadcasted = res.data.tx_response;
+
+      const rpcEndpoint = getEndpointString(await wallet.getRpcEndpoint(true));
+      const txTracer = new TxTracer(rpcEndpoint, "/websocket");
 
       if (broadcasted.code) {
-        throw new BroadcastTxError(broadcasted.code, "", broadcasted.log);
+        throw new BroadcastTxError(broadcasted.code, "", broadcasted.logs);
       }
 
+      const txHashBuffer = Buffer.from(broadcasted.txhash, "hex");
+
       if (this.options.preTxEvents?.onBroadcasted) {
-        this.options.preTxEvents.onBroadcasted(chainNameOrId, broadcasted.hash);
+        this.options.preTxEvents.onBroadcasted(chainNameOrId, txHashBuffer);
       }
 
       if (onBroadcasted) {
-        onBroadcasted(broadcasted.hash);
+        onBroadcasted(txHashBuffer);
       }
 
-      const txHash = Buffer.from(broadcasted.hash);
       const tx = await txTracer
-        .traceTx(txHash)
+        .traceTx(txHashBuffer)
         .then(
           (tx: {
             data: string;
@@ -408,8 +439,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
             txTracer.close();
 
             return {
-              transactionHash: txHash.toString("hex"),
-              code: tx?.code,
+              transactionHash: broadcasted.txhash,
+              code: tx?.code ?? 0,
               height: tx?.height,
               rawLog: tx?.log || "",
               events: tx?.events,
@@ -472,9 +503,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }
 
   public async sign(
-    wallet: ReturnType<typeof this.getWallet>,
+    wallet: ChainWalletBase,
     signer: OfflineSigner,
-    signerAddress: string,
     messages: readonly EncodeObject[],
     fee: StdFee,
     memo: string
@@ -496,7 +526,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       ? this.signDirect(
           wallet,
           signer,
-          signerAddress,
+          wallet.address ?? "",
           messages,
           fee,
           memo,
@@ -505,7 +535,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       : this.signAmino(
           wallet,
           signer,
-          signerAddress,
+          wallet.address ?? "",
           messages,
           fee,
           memo,
@@ -514,7 +544,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }
 
   private async signAmino(
-    wallet: ReturnType<typeof this.getWallet>,
+    wallet: ChainWalletBase,
     signer: OfflineSigner,
     signerAddress: string,
     messages: readonly EncodeObject[],
@@ -522,8 +552,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     memo: string,
     { accountNumber, sequence, chainId }: SignerData
   ): Promise<TxRaw> {
-    if (!isOfflineDirectSigner(signer)) {
-      throw new Error("condition is not truthy");
+    if (isOfflineDirectSigner(signer)) {
+      throw new Error("Signer has to be OfflineAminoSigner");
     }
 
     const accountFromSigner = (await signer.getAccounts()).find(
@@ -541,7 +571,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     const signMode = SignMode.SIGN_MODE_LEGACY_AMINO_JSON;
     const msgs = messages.map((msg) =>
       wallet?.signingStargateOptions?.aminoTypes?.toAmino(msg)
-    );
+    ) as AminoMsg[];
+
     const signDoc = makeSignDocAmino(
       msgs,
       fee,
@@ -550,23 +581,29 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       accountNumber,
       sequence
     );
-    const { signature, signed } = await signer.signAmino(
-      signerAddress,
-      signDoc
-    );
+
+    const { signature, signed } = await (
+      signer as unknown as OfflineAminoSigner
+    ).signAmino(signerAddress, signDoc);
+
     const signedTxBody = {
       messages: signed.msgs.map((msg) =>
         wallet?.signingStargateOptions?.aminoTypes?.fromAmino(msg)
       ),
       memo: signed.memo,
     };
-    const signedTxBodyEncodeObject: TxBodyEncodeObject = {
+
+    const signedTxBodyEncodeObject = {
       typeUrl: "/cosmos.tx.v1beta1.TxBody",
       value: signedTxBody,
     };
-    const signedTxBodyBytes = this.registry.encode(signedTxBodyEncodeObject);
-    const signedGasLimit = Int53.fromString(signed.fee.gas).toNumber();
-    const signedSequence = Int53.fromString(signed.sequence).toNumber();
+
+    const signedTxBodyBytes = wallet?.signingStargateOptions?.registry?.encode(
+      signedTxBodyEncodeObject
+    );
+
+    const signedGasLimit = Int53.fromString(String(signed.fee.gas)).toNumber();
+    const signedSequence = Int53.fromString(String(signed.sequence)).toNumber();
     const signedAuthInfoBytes = makeAuthInfoBytes(
       [{ pubkey, sequence: signedSequence }],
       signed.fee.amount,
@@ -575,6 +612,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       signed.fee.payer,
       signMode
     );
+
     return TxRaw.fromPartial({
       bodyBytes: signedTxBodyBytes,
       authInfoBytes: signedAuthInfoBytes,
@@ -583,7 +621,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }
 
   private async signDirect(
-    wallet: ReturnType<typeof this.getWallet>,
+    wallet: ChainWalletBase,
     signer: OfflineSigner,
     signerAddress: string,
     messages: readonly EncodeObject[],
@@ -591,8 +629,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     memo: string,
     { accountNumber, sequence, chainId }: SignerData
   ): Promise<TxRaw> {
-    if (isOfflineDirectSigner(signer)) {
-      throw new Error("condition is not truthy");
+    if (!isOfflineDirectSigner(signer)) {
+      throw new Error("Signer has to be OfflineDirectSigner");
     }
 
     const accountFromSigner = (await signer.getAccounts()).find(
@@ -604,16 +642,17 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     const pubkey = encodePubkey(
       encodeSecp256k1Pubkey(accountFromSigner.pubkey)
     );
-    const txBodyEncodeObject: TxBodyEncodeObject = {
+    const txBodyEncodeObject = {
       typeUrl: "/cosmos.tx.v1beta1.TxBody",
       value: {
         messages: messages,
         memo: memo,
       },
     };
-    const txBodyBytes =
-      wallet?.signingStargateOptions?.registry?.encode(txBodyEncodeObject);
-    const gasLimit = Int53.fromString(fee.gas).toNumber();
+    const txBodyBytes = wallet?.signingStargateOptions?.registry?.encode(
+      txBodyEncodeObject
+    ) as Uint8Array;
+    const gasLimit = Int53.fromString(String(fee.gas)).toNumber();
     const authInfoBytes = makeAuthInfoBytes(
       [{ pubkey, sequence }],
       fee.amount,
@@ -627,10 +666,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId,
       accountNumber
     );
-    const { signature, signed } = await signer.signDirect(
-      signerAddress,
-      signDoc
-    );
+    const { signature, signed } = await (
+      signer as unknown as OfflineDirectSigner
+    ).signDirect(signerAddress, signDoc);
     return TxRaw.fromPartial({
       bodyBytes: signed.bodyBytes,
       authInfoBytes: signed.authInfoBytes,
@@ -638,9 +676,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     });
   }
 
-  public async getAccountFromNode(wallet: ReturnType<typeof this.getWallet>) {
+  public async getAccountFromNode(wallet: ChainWalletBase) {
     try {
-      const endpoint = await wallet?.getRestEndpoint(true);
+      const endpoint = getEndpointString(await wallet?.getRestEndpoint(true));
       const address = wallet?.address;
 
       if (!address) {
@@ -652,24 +690,25 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
 
       const res = await axios.get<{
-        "@type": string;
-        address: string;
-        pub_key: { "@type": string; key: string };
-        account_number: string;
-        sequence: string;
-      }>(`${endpoint}/cosmos/auth/v1beta1/accounts/${address}`);
+        account: {
+          "@type": string;
+          address: string;
+          pub_key: { "@type": string; key: string };
+          account_number: string;
+          sequence: string;
+        };
+      }>(
+        `${removeLastSlash(endpoint)}/cosmos/auth/v1beta1/accounts/${address}`
+      );
 
-      return res.data;
+      return res.data.account;
     } catch (error: any) {
-      if (/rpc error: code = NotFound/i.test(error.toString())) {
-        return null;
-      }
       throw error;
     }
   }
 
   public async getSequence(
-    wallet: ReturnType<typeof this.getWallet>
+    wallet: ChainWalletBase
   ): Promise<{ accountNumber: number; sequence: number }> {
     const account = await this.getAccountFromNode(wallet);
     if (!account) {
@@ -677,6 +716,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         `Account '${wallet?.address}' does not exist on chain. Send some tokens there before trying to query sequence.`
       );
     }
+
     return {
       accountNumber: Number(account.account_number),
       sequence: Number(account.sequence),
