@@ -45,7 +45,7 @@ export const HeroCard: React.FunctionComponent<{
       </div>
       <div
         onClick={handleAppClicked}
-        className="heroImage relative flex h-[400px]  cursor-pointer items-end overflow-hidden rounded-lg sm:h-[300px]"
+        className="heroImage relative flex h-[400px]  cursor-pointer items-end overflow-hidden rounded-2xl sm:h-[300px]"
       >
         <div
           className="absolute top-0 left-0 z-10 h-full w-full  bg-cover bg-center bg-no-repeat"
@@ -55,7 +55,7 @@ export const HeroCard: React.FunctionComponent<{
         ></div>
 
         <div className="gradient absolute top-0 left-0 z-20 h-full w-full bg-gradient-hero-card"></div>
-        <div className="content text-white relative z-30 m-9 max-w-35 sm:max-w-full">
+        <div className="content text-white relative z-30 m-9 max-w-[45%] sm:max-w-full">
           <div className="flex items-center space-x-6">
             <h4 className="pb-2 text-h4 font-h4">{title}</h4>
             {!!twitterUrl && (
