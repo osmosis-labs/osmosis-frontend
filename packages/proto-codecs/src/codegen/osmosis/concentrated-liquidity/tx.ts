@@ -2,11 +2,6 @@
 import * as _m0 from "protobufjs/minimal";
 
 import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
-import {
-  Duration,
-  DurationAmino,
-  DurationSDKType,
-} from "../../google/protobuf/duration";
 import { Timestamp } from "../../google/protobuf/timestamp";
 import { fromTimestamp, Long, toTimestamp } from "../../helpers";
 /** ===================== MsgCreatePosition */
@@ -15,8 +10,13 @@ export interface MsgCreatePosition {
   sender: string;
   lowerTick: Long;
   upperTick: Long;
-  tokenDesired0?: Coin;
-  tokenDesired1?: Coin;
+  /**
+   * tokens_provided is the amount of tokens provided for the position.
+   * It must at a minimum be of length 1 (for a single sided position)
+   * and at a maximum be of length 2 (for a position that straddles the current
+   * tick).
+   */
+  tokensProvided: Coin[];
   tokenMinAmount0: string;
   tokenMinAmount1: string;
 }
@@ -30,8 +30,13 @@ export interface MsgCreatePositionAmino {
   sender: string;
   lower_tick: string;
   upper_tick: string;
-  token_desired0?: CoinAmino;
-  token_desired1?: CoinAmino;
+  /**
+   * tokens_provided is the amount of tokens provided for the position.
+   * It must at a minimum be of length 1 (for a single sided position)
+   * and at a maximum be of length 2 (for a position that straddles the current
+   * tick).
+   */
+  tokens_provided: CoinAmino[];
   token_min_amount0: string;
   token_min_amount1: string;
 }
@@ -45,8 +50,7 @@ export interface MsgCreatePositionSDKType {
   sender: string;
   lower_tick: Long;
   upper_tick: Long;
-  token_desired0?: CoinSDKType;
-  token_desired1?: CoinSDKType;
+  tokens_provided: CoinSDKType[];
   token_min_amount0: string;
   token_min_amount1: string;
 }
@@ -56,6 +60,14 @@ export interface MsgCreatePositionResponse {
   amount1: string;
   joinTime?: Date;
   liquidityCreated: string;
+  /**
+   * the lower and upper tick are in the response because there are
+   * instances in which multiple ticks represent the same price, so
+   * we may move their provided tick to the canonical tick that represents
+   * the same price.
+   */
+  lowerTick: Long;
+  upperTick: Long;
 }
 export interface MsgCreatePositionResponseProtoMsg {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCreatePositionResponse";
@@ -67,6 +79,14 @@ export interface MsgCreatePositionResponseAmino {
   amount1: string;
   join_time?: Date;
   liquidity_created: string;
+  /**
+   * the lower and upper tick are in the response because there are
+   * instances in which multiple ticks represent the same price, so
+   * we may move their provided tick to the canonical tick that represents
+   * the same price.
+   */
+  lower_tick: string;
+  upper_tick: string;
 }
 export interface MsgCreatePositionResponseAminoMsg {
   type: "osmosis/concentratedliquidity/create-position-response";
@@ -78,6 +98,94 @@ export interface MsgCreatePositionResponseSDKType {
   amount1: string;
   join_time?: Date;
   liquidity_created: string;
+  lower_tick: Long;
+  upper_tick: Long;
+}
+/** ===================== MsgAddToPosition */
+export interface MsgAddToPosition {
+  positionId: Long;
+  sender: string;
+  /** amount0 represents the amount of token0 willing to put in. */
+  amount0: string;
+  /** amount1 represents the amount of token1 willing to put in. */
+  amount1: string;
+  /**
+   * token_min_amount0 represents the minimum amount of token0 desired from the
+   * new position being created. Note that this field indicates the min amount0
+   * corresponding to the total liquidity of the position, not just the
+   * liquidity that is being added.
+   */
+  tokenMinAmount0: string;
+  /**
+   * token_min_amount1 represents the minimum amount of token1 desired from the
+   * new position being created. Note that this field indicates the min amount1
+   * corresponding to the total liquidity of the position, not just the
+   * liquidity that is being added.
+   */
+  tokenMinAmount1: string;
+}
+export interface MsgAddToPositionProtoMsg {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgAddToPosition";
+  value: Uint8Array;
+}
+/** ===================== MsgAddToPosition */
+export interface MsgAddToPositionAmino {
+  position_id: string;
+  sender: string;
+  /** amount0 represents the amount of token0 willing to put in. */
+  amount0: string;
+  /** amount1 represents the amount of token1 willing to put in. */
+  amount1: string;
+  /**
+   * token_min_amount0 represents the minimum amount of token0 desired from the
+   * new position being created. Note that this field indicates the min amount0
+   * corresponding to the total liquidity of the position, not just the
+   * liquidity that is being added.
+   */
+  token_min_amount0: string;
+  /**
+   * token_min_amount1 represents the minimum amount of token1 desired from the
+   * new position being created. Note that this field indicates the min amount1
+   * corresponding to the total liquidity of the position, not just the
+   * liquidity that is being added.
+   */
+  token_min_amount1: string;
+}
+export interface MsgAddToPositionAminoMsg {
+  type: "osmosis/concentratedliquidity/add-to-position";
+  value: MsgAddToPositionAmino;
+}
+/** ===================== MsgAddToPosition */
+export interface MsgAddToPositionSDKType {
+  position_id: Long;
+  sender: string;
+  amount0: string;
+  amount1: string;
+  token_min_amount0: string;
+  token_min_amount1: string;
+}
+export interface MsgAddToPositionResponse {
+  positionId: Long;
+  amount0: string;
+  amount1: string;
+}
+export interface MsgAddToPositionResponseProtoMsg {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgAddToPositionResponse";
+  value: Uint8Array;
+}
+export interface MsgAddToPositionResponseAmino {
+  position_id: string;
+  amount0: string;
+  amount1: string;
+}
+export interface MsgAddToPositionResponseAminoMsg {
+  type: "osmosis/concentratedliquidity/add-to-position-response";
+  value: MsgAddToPositionResponseAmino;
+}
+export interface MsgAddToPositionResponseSDKType {
+  position_id: Long;
+  amount0: string;
+  amount1: string;
 }
 /** ===================== MsgWithdrawPosition */
 export interface MsgWithdrawPosition {
@@ -125,45 +233,45 @@ export interface MsgWithdrawPositionResponseSDKType {
   amount0: string;
   amount1: string;
 }
-/** ===================== MsgCollectFees */
-export interface MsgCollectFees {
+/** ===================== MsgCollectSpreadRewards */
+export interface MsgCollectSpreadRewards {
   positionIds: Long[];
   sender: string;
 }
-export interface MsgCollectFeesProtoMsg {
-  typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCollectFees";
+export interface MsgCollectSpreadRewardsProtoMsg {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCollectSpreadRewards";
   value: Uint8Array;
 }
-/** ===================== MsgCollectFees */
-export interface MsgCollectFeesAmino {
+/** ===================== MsgCollectSpreadRewards */
+export interface MsgCollectSpreadRewardsAmino {
   position_ids: string[];
   sender: string;
 }
-export interface MsgCollectFeesAminoMsg {
-  type: "osmosis/concentratedliquidity/collect-fees";
-  value: MsgCollectFeesAmino;
+export interface MsgCollectSpreadRewardsAminoMsg {
+  type: "osmosis/concentratedliquidity/collect-spread-rewards";
+  value: MsgCollectSpreadRewardsAmino;
 }
-/** ===================== MsgCollectFees */
-export interface MsgCollectFeesSDKType {
+/** ===================== MsgCollectSpreadRewards */
+export interface MsgCollectSpreadRewardsSDKType {
   position_ids: Long[];
   sender: string;
 }
-export interface MsgCollectFeesResponse {
-  collectedFees: Coin[];
+export interface MsgCollectSpreadRewardsResponse {
+  collectedSpreadRewards: Coin[];
 }
-export interface MsgCollectFeesResponseProtoMsg {
-  typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCollectFeesResponse";
+export interface MsgCollectSpreadRewardsResponseProtoMsg {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCollectSpreadRewardsResponse";
   value: Uint8Array;
 }
-export interface MsgCollectFeesResponseAmino {
-  collected_fees: CoinAmino[];
+export interface MsgCollectSpreadRewardsResponseAmino {
+  collected_spread_rewards: CoinAmino[];
 }
-export interface MsgCollectFeesResponseAminoMsg {
-  type: "osmosis/concentratedliquidity/collect-fees-response";
-  value: MsgCollectFeesResponseAmino;
+export interface MsgCollectSpreadRewardsResponseAminoMsg {
+  type: "osmosis/concentratedliquidity/collect-spread-rewards-response";
+  value: MsgCollectSpreadRewardsResponseAmino;
 }
-export interface MsgCollectFeesResponseSDKType {
-  collected_fees: CoinSDKType[];
+export interface MsgCollectSpreadRewardsResponseSDKType {
+  collected_spread_rewards: CoinSDKType[];
 }
 /** ===================== MsgCollectIncentives */
 export interface MsgCollectIncentives {
@@ -190,6 +298,7 @@ export interface MsgCollectIncentivesSDKType {
 }
 export interface MsgCollectIncentivesResponse {
   collectedIncentives: Coin[];
+  forfeitedIncentives: Coin[];
 }
 export interface MsgCollectIncentivesResponseProtoMsg {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCollectIncentivesResponse";
@@ -197,6 +306,7 @@ export interface MsgCollectIncentivesResponseProtoMsg {
 }
 export interface MsgCollectIncentivesResponseAmino {
   collected_incentives: CoinAmino[];
+  forfeited_incentives: CoinAmino[];
 }
 export interface MsgCollectIncentivesResponseAminoMsg {
   type: "osmosis/concentratedliquidity/collect-incentives-response";
@@ -204,73 +314,7 @@ export interface MsgCollectIncentivesResponseAminoMsg {
 }
 export interface MsgCollectIncentivesResponseSDKType {
   collected_incentives: CoinSDKType[];
-}
-/** ===================== MsgCreateIncentive */
-export interface MsgCreateIncentive {
-  poolId: Long;
-  sender: string;
-  incentiveDenom: string;
-  incentiveAmount: string;
-  emissionRate: string;
-  startTime?: Date;
-  minUptime?: Duration;
-}
-export interface MsgCreateIncentiveProtoMsg {
-  typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCreateIncentive";
-  value: Uint8Array;
-}
-/** ===================== MsgCreateIncentive */
-export interface MsgCreateIncentiveAmino {
-  pool_id: string;
-  sender: string;
-  incentive_denom: string;
-  incentive_amount: string;
-  emission_rate: string;
-  start_time?: Date;
-  min_uptime?: DurationAmino;
-}
-export interface MsgCreateIncentiveAminoMsg {
-  type: "osmosis/concentratedliquidity/create-incentive";
-  value: MsgCreateIncentiveAmino;
-}
-/** ===================== MsgCreateIncentive */
-export interface MsgCreateIncentiveSDKType {
-  pool_id: Long;
-  sender: string;
-  incentive_denom: string;
-  incentive_amount: string;
-  emission_rate: string;
-  start_time?: Date;
-  min_uptime?: DurationSDKType;
-}
-export interface MsgCreateIncentiveResponse {
-  incentiveDenom: string;
-  incentiveAmount: string;
-  emissionRate: string;
-  startTime?: Date;
-  minUptime?: Duration;
-}
-export interface MsgCreateIncentiveResponseProtoMsg {
-  typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCreateIncentiveResponse";
-  value: Uint8Array;
-}
-export interface MsgCreateIncentiveResponseAmino {
-  incentive_denom: string;
-  incentive_amount: string;
-  emission_rate: string;
-  start_time?: Date;
-  min_uptime?: DurationAmino;
-}
-export interface MsgCreateIncentiveResponseAminoMsg {
-  type: "osmosis/concentratedliquidity/create-incentive-response";
-  value: MsgCreateIncentiveResponseAmino;
-}
-export interface MsgCreateIncentiveResponseSDKType {
-  incentive_denom: string;
-  incentive_amount: string;
-  emission_rate: string;
-  start_time?: Date;
-  min_uptime?: DurationSDKType;
+  forfeited_incentives: CoinSDKType[];
 }
 /** ===================== MsgFungifyChargedPositions */
 export interface MsgFungifyChargedPositions {
@@ -318,8 +362,7 @@ function createBaseMsgCreatePosition(): MsgCreatePosition {
     sender: "",
     lowerTick: Long.ZERO,
     upperTick: Long.ZERO,
-    tokenDesired0: undefined,
-    tokenDesired1: undefined,
+    tokensProvided: [],
     tokenMinAmount0: "",
     tokenMinAmount1: "",
   };
@@ -342,17 +385,14 @@ export const MsgCreatePosition = {
     if (!message.upperTick.isZero()) {
       writer.uint32(32).int64(message.upperTick);
     }
-    if (message.tokenDesired0 !== undefined) {
-      Coin.encode(message.tokenDesired0, writer.uint32(42).fork()).ldelim();
-    }
-    if (message.tokenDesired1 !== undefined) {
-      Coin.encode(message.tokenDesired1, writer.uint32(50).fork()).ldelim();
+    for (const v of message.tokensProvided) {
+      Coin.encode(v!, writer.uint32(42).fork()).ldelim();
     }
     if (message.tokenMinAmount0 !== "") {
-      writer.uint32(58).string(message.tokenMinAmount0);
+      writer.uint32(50).string(message.tokenMinAmount0);
     }
     if (message.tokenMinAmount1 !== "") {
-      writer.uint32(66).string(message.tokenMinAmount1);
+      writer.uint32(58).string(message.tokenMinAmount1);
     }
     return writer;
   },
@@ -376,15 +416,12 @@ export const MsgCreatePosition = {
           message.upperTick = reader.int64() as Long;
           break;
         case 5:
-          message.tokenDesired0 = Coin.decode(reader, reader.uint32());
+          message.tokensProvided.push(Coin.decode(reader, reader.uint32()));
           break;
         case 6:
-          message.tokenDesired1 = Coin.decode(reader, reader.uint32());
-          break;
-        case 7:
           message.tokenMinAmount0 = reader.string();
           break;
-        case 8:
+        case 7:
           message.tokenMinAmount1 = reader.string();
           break;
         default:
@@ -409,14 +446,8 @@ export const MsgCreatePosition = {
       object.upperTick !== undefined && object.upperTick !== null
         ? Long.fromValue(object.upperTick)
         : Long.ZERO;
-    message.tokenDesired0 =
-      object.tokenDesired0 !== undefined && object.tokenDesired0 !== null
-        ? Coin.fromPartial(object.tokenDesired0)
-        : undefined;
-    message.tokenDesired1 =
-      object.tokenDesired1 !== undefined && object.tokenDesired1 !== null
-        ? Coin.fromPartial(object.tokenDesired1)
-        : undefined;
+    message.tokensProvided =
+      object.tokensProvided?.map((e) => Coin.fromPartial(e)) || [];
     message.tokenMinAmount0 = object.tokenMinAmount0 ?? "";
     message.tokenMinAmount1 = object.tokenMinAmount1 ?? "";
     return message;
@@ -427,12 +458,9 @@ export const MsgCreatePosition = {
       sender: object.sender,
       lowerTick: Long.fromString(object.lower_tick),
       upperTick: Long.fromString(object.upper_tick),
-      tokenDesired0: object?.token_desired0
-        ? Coin.fromAmino(object.token_desired0)
-        : undefined,
-      tokenDesired1: object?.token_desired1
-        ? Coin.fromAmino(object.token_desired1)
-        : undefined,
+      tokensProvided: Array.isArray(object?.tokens_provided)
+        ? object.tokens_provided.map((e: any) => Coin.fromAmino(e))
+        : [],
       tokenMinAmount0: object.token_min_amount0,
       tokenMinAmount1: object.token_min_amount1,
     };
@@ -447,12 +475,13 @@ export const MsgCreatePosition = {
     obj.upper_tick = message.upperTick
       ? message.upperTick.toString()
       : undefined;
-    obj.token_desired0 = message.tokenDesired0
-      ? Coin.toAmino(message.tokenDesired0)
-      : undefined;
-    obj.token_desired1 = message.tokenDesired1
-      ? Coin.toAmino(message.tokenDesired1)
-      : undefined;
+    if (message.tokensProvided) {
+      obj.tokens_provided = message.tokensProvided.map((e) =>
+        e ? Coin.toAmino(e) : undefined
+      );
+    } else {
+      obj.tokens_provided = [];
+    }
     obj.token_min_amount0 = message.tokenMinAmount0;
     obj.token_min_amount1 = message.tokenMinAmount1;
     return obj;
@@ -486,6 +515,8 @@ function createBaseMsgCreatePositionResponse(): MsgCreatePositionResponse {
     amount1: "",
     joinTime: undefined,
     liquidityCreated: "",
+    lowerTick: Long.ZERO,
+    upperTick: Long.ZERO,
   };
 }
 export const MsgCreatePositionResponse = {
@@ -511,6 +542,12 @@ export const MsgCreatePositionResponse = {
     }
     if (message.liquidityCreated !== "") {
       writer.uint32(42).string(message.liquidityCreated);
+    }
+    if (!message.lowerTick.isZero()) {
+      writer.uint32(48).int64(message.lowerTick);
+    }
+    if (!message.upperTick.isZero()) {
+      writer.uint32(56).int64(message.upperTick);
     }
     return writer;
   },
@@ -541,6 +578,12 @@ export const MsgCreatePositionResponse = {
         case 5:
           message.liquidityCreated = reader.string();
           break;
+        case 6:
+          message.lowerTick = reader.int64() as Long;
+          break;
+        case 7:
+          message.upperTick = reader.int64() as Long;
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -560,6 +603,14 @@ export const MsgCreatePositionResponse = {
     message.amount1 = object.amount1 ?? "";
     message.joinTime = object.joinTime ?? undefined;
     message.liquidityCreated = object.liquidityCreated ?? "";
+    message.lowerTick =
+      object.lowerTick !== undefined && object.lowerTick !== null
+        ? Long.fromValue(object.lowerTick)
+        : Long.ZERO;
+    message.upperTick =
+      object.upperTick !== undefined && object.upperTick !== null
+        ? Long.fromValue(object.upperTick)
+        : Long.ZERO;
     return message;
   },
   fromAmino(object: MsgCreatePositionResponseAmino): MsgCreatePositionResponse {
@@ -571,6 +622,8 @@ export const MsgCreatePositionResponse = {
         ? Timestamp.fromAmino(object.join_time)
         : undefined,
       liquidityCreated: object.liquidity_created,
+      lowerTick: Long.fromString(object.lower_tick),
+      upperTick: Long.fromString(object.upper_tick),
     };
   },
   toAmino(message: MsgCreatePositionResponse): MsgCreatePositionResponseAmino {
@@ -584,6 +637,12 @@ export const MsgCreatePositionResponse = {
       ? Timestamp.toAmino(message.joinTime)
       : undefined;
     obj.liquidity_created = message.liquidityCreated;
+    obj.lower_tick = message.lowerTick
+      ? message.lowerTick.toString()
+      : undefined;
+    obj.upper_tick = message.upperTick
+      ? message.upperTick.toString()
+      : undefined;
     return obj;
   },
   fromAminoMsg(
@@ -614,6 +673,240 @@ export const MsgCreatePositionResponse = {
       typeUrl:
         "/osmosis.concentratedliquidity.v1beta1.MsgCreatePositionResponse",
       value: MsgCreatePositionResponse.encode(message).finish(),
+    };
+  },
+};
+function createBaseMsgAddToPosition(): MsgAddToPosition {
+  return {
+    positionId: Long.UZERO,
+    sender: "",
+    amount0: "",
+    amount1: "",
+    tokenMinAmount0: "",
+    tokenMinAmount1: "",
+  };
+}
+export const MsgAddToPosition = {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgAddToPosition",
+  encode(
+    message: MsgAddToPosition,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (!message.positionId.isZero()) {
+      writer.uint32(8).uint64(message.positionId);
+    }
+    if (message.sender !== "") {
+      writer.uint32(18).string(message.sender);
+    }
+    if (message.amount0 !== "") {
+      writer.uint32(26).string(message.amount0);
+    }
+    if (message.amount1 !== "") {
+      writer.uint32(34).string(message.amount1);
+    }
+    if (message.tokenMinAmount0 !== "") {
+      writer.uint32(42).string(message.tokenMinAmount0);
+    }
+    if (message.tokenMinAmount1 !== "") {
+      writer.uint32(50).string(message.tokenMinAmount1);
+    }
+    return writer;
+  },
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgAddToPosition {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgAddToPosition();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.positionId = reader.uint64() as Long;
+          break;
+        case 2:
+          message.sender = reader.string();
+          break;
+        case 3:
+          message.amount0 = reader.string();
+          break;
+        case 4:
+          message.amount1 = reader.string();
+          break;
+        case 5:
+          message.tokenMinAmount0 = reader.string();
+          break;
+        case 6:
+          message.tokenMinAmount1 = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<MsgAddToPosition>): MsgAddToPosition {
+    const message = createBaseMsgAddToPosition();
+    message.positionId =
+      object.positionId !== undefined && object.positionId !== null
+        ? Long.fromValue(object.positionId)
+        : Long.UZERO;
+    message.sender = object.sender ?? "";
+    message.amount0 = object.amount0 ?? "";
+    message.amount1 = object.amount1 ?? "";
+    message.tokenMinAmount0 = object.tokenMinAmount0 ?? "";
+    message.tokenMinAmount1 = object.tokenMinAmount1 ?? "";
+    return message;
+  },
+  fromAmino(object: MsgAddToPositionAmino): MsgAddToPosition {
+    return {
+      positionId: Long.fromString(object.position_id),
+      sender: object.sender,
+      amount0: object.amount0,
+      amount1: object.amount1,
+      tokenMinAmount0: object.token_min_amount0,
+      tokenMinAmount1: object.token_min_amount1,
+    };
+  },
+  toAmino(message: MsgAddToPosition): MsgAddToPositionAmino {
+    const obj: any = {};
+    obj.position_id = message.positionId
+      ? message.positionId.toString()
+      : undefined;
+    obj.sender = message.sender;
+    obj.amount0 = message.amount0;
+    obj.amount1 = message.amount1;
+    obj.token_min_amount0 = message.tokenMinAmount0;
+    obj.token_min_amount1 = message.tokenMinAmount1;
+    return obj;
+  },
+  fromAminoMsg(object: MsgAddToPositionAminoMsg): MsgAddToPosition {
+    return MsgAddToPosition.fromAmino(object.value);
+  },
+  toAminoMsg(message: MsgAddToPosition): MsgAddToPositionAminoMsg {
+    return {
+      type: "osmosis/concentratedliquidity/add-to-position",
+      value: MsgAddToPosition.toAmino(message),
+    };
+  },
+  fromProtoMsg(message: MsgAddToPositionProtoMsg): MsgAddToPosition {
+    return MsgAddToPosition.decode(message.value);
+  },
+  toProto(message: MsgAddToPosition): Uint8Array {
+    return MsgAddToPosition.encode(message).finish();
+  },
+  toProtoMsg(message: MsgAddToPosition): MsgAddToPositionProtoMsg {
+    return {
+      typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgAddToPosition",
+      value: MsgAddToPosition.encode(message).finish(),
+    };
+  },
+};
+function createBaseMsgAddToPositionResponse(): MsgAddToPositionResponse {
+  return {
+    positionId: Long.UZERO,
+    amount0: "",
+    amount1: "",
+  };
+}
+export const MsgAddToPositionResponse = {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgAddToPositionResponse",
+  encode(
+    message: MsgAddToPositionResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (!message.positionId.isZero()) {
+      writer.uint32(8).uint64(message.positionId);
+    }
+    if (message.amount0 !== "") {
+      writer.uint32(18).string(message.amount0);
+    }
+    if (message.amount1 !== "") {
+      writer.uint32(26).string(message.amount1);
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): MsgAddToPositionResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgAddToPositionResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.positionId = reader.uint64() as Long;
+          break;
+        case 2:
+          message.amount0 = reader.string();
+          break;
+        case 3:
+          message.amount1 = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<MsgAddToPositionResponse>
+  ): MsgAddToPositionResponse {
+    const message = createBaseMsgAddToPositionResponse();
+    message.positionId =
+      object.positionId !== undefined && object.positionId !== null
+        ? Long.fromValue(object.positionId)
+        : Long.UZERO;
+    message.amount0 = object.amount0 ?? "";
+    message.amount1 = object.amount1 ?? "";
+    return message;
+  },
+  fromAmino(object: MsgAddToPositionResponseAmino): MsgAddToPositionResponse {
+    return {
+      positionId: Long.fromString(object.position_id),
+      amount0: object.amount0,
+      amount1: object.amount1,
+    };
+  },
+  toAmino(message: MsgAddToPositionResponse): MsgAddToPositionResponseAmino {
+    const obj: any = {};
+    obj.position_id = message.positionId
+      ? message.positionId.toString()
+      : undefined;
+    obj.amount0 = message.amount0;
+    obj.amount1 = message.amount1;
+    return obj;
+  },
+  fromAminoMsg(
+    object: MsgAddToPositionResponseAminoMsg
+  ): MsgAddToPositionResponse {
+    return MsgAddToPositionResponse.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: MsgAddToPositionResponse
+  ): MsgAddToPositionResponseAminoMsg {
+    return {
+      type: "osmosis/concentratedliquidity/add-to-position-response",
+      value: MsgAddToPositionResponse.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: MsgAddToPositionResponseProtoMsg
+  ): MsgAddToPositionResponse {
+    return MsgAddToPositionResponse.decode(message.value);
+  },
+  toProto(message: MsgAddToPositionResponse): Uint8Array {
+    return MsgAddToPositionResponse.encode(message).finish();
+  },
+  toProtoMsg(
+    message: MsgAddToPositionResponse
+  ): MsgAddToPositionResponseProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.concentratedliquidity.v1beta1.MsgAddToPositionResponse",
+      value: MsgAddToPositionResponse.encode(message).finish(),
     };
   },
 };
@@ -810,16 +1103,16 @@ export const MsgWithdrawPositionResponse = {
     };
   },
 };
-function createBaseMsgCollectFees(): MsgCollectFees {
+function createBaseMsgCollectSpreadRewards(): MsgCollectSpreadRewards {
   return {
     positionIds: [],
     sender: "",
   };
 }
-export const MsgCollectFees = {
-  typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCollectFees",
+export const MsgCollectSpreadRewards = {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCollectSpreadRewards",
   encode(
-    message: MsgCollectFees,
+    message: MsgCollectSpreadRewards,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
     writer.uint32(10).fork();
@@ -832,10 +1125,13 @@ export const MsgCollectFees = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCollectFees {
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): MsgCollectSpreadRewards {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgCollectFees();
+    const message = createBaseMsgCollectSpreadRewards();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -859,14 +1155,16 @@ export const MsgCollectFees = {
     }
     return message;
   },
-  fromPartial(object: Partial<MsgCollectFees>): MsgCollectFees {
-    const message = createBaseMsgCollectFees();
+  fromPartial(
+    object: Partial<MsgCollectSpreadRewards>
+  ): MsgCollectSpreadRewards {
+    const message = createBaseMsgCollectSpreadRewards();
     message.positionIds =
       object.positionIds?.map((e) => Long.fromValue(e)) || [];
     message.sender = object.sender ?? "";
     return message;
   },
-  fromAmino(object: MsgCollectFeesAmino): MsgCollectFees {
+  fromAmino(object: MsgCollectSpreadRewardsAmino): MsgCollectSpreadRewards {
     return {
       positionIds: Array.isArray(object?.position_ids)
         ? object.position_ids.map((e: any) => e)
@@ -874,7 +1172,7 @@ export const MsgCollectFees = {
       sender: object.sender,
     };
   },
-  toAmino(message: MsgCollectFees): MsgCollectFeesAmino {
+  toAmino(message: MsgCollectSpreadRewards): MsgCollectSpreadRewardsAmino {
     const obj: any = {};
     if (message.positionIds) {
       obj.position_ids = message.positionIds.map((e) => e);
@@ -884,40 +1182,49 @@ export const MsgCollectFees = {
     obj.sender = message.sender;
     return obj;
   },
-  fromAminoMsg(object: MsgCollectFeesAminoMsg): MsgCollectFees {
-    return MsgCollectFees.fromAmino(object.value);
+  fromAminoMsg(
+    object: MsgCollectSpreadRewardsAminoMsg
+  ): MsgCollectSpreadRewards {
+    return MsgCollectSpreadRewards.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgCollectFees): MsgCollectFeesAminoMsg {
+  toAminoMsg(
+    message: MsgCollectSpreadRewards
+  ): MsgCollectSpreadRewardsAminoMsg {
     return {
-      type: "osmosis/concentratedliquidity/collect-fees",
-      value: MsgCollectFees.toAmino(message),
+      type: "osmosis/concentratedliquidity/collect-spread-rewards",
+      value: MsgCollectSpreadRewards.toAmino(message),
     };
   },
-  fromProtoMsg(message: MsgCollectFeesProtoMsg): MsgCollectFees {
-    return MsgCollectFees.decode(message.value);
+  fromProtoMsg(
+    message: MsgCollectSpreadRewardsProtoMsg
+  ): MsgCollectSpreadRewards {
+    return MsgCollectSpreadRewards.decode(message.value);
   },
-  toProto(message: MsgCollectFees): Uint8Array {
-    return MsgCollectFees.encode(message).finish();
+  toProto(message: MsgCollectSpreadRewards): Uint8Array {
+    return MsgCollectSpreadRewards.encode(message).finish();
   },
-  toProtoMsg(message: MsgCollectFees): MsgCollectFeesProtoMsg {
+  toProtoMsg(
+    message: MsgCollectSpreadRewards
+  ): MsgCollectSpreadRewardsProtoMsg {
     return {
-      typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCollectFees",
-      value: MsgCollectFees.encode(message).finish(),
+      typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCollectSpreadRewards",
+      value: MsgCollectSpreadRewards.encode(message).finish(),
     };
   },
 };
-function createBaseMsgCollectFeesResponse(): MsgCollectFeesResponse {
+function createBaseMsgCollectSpreadRewardsResponse(): MsgCollectSpreadRewardsResponse {
   return {
-    collectedFees: [],
+    collectedSpreadRewards: [],
   };
 }
-export const MsgCollectFeesResponse = {
-  typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCollectFeesResponse",
+export const MsgCollectSpreadRewardsResponse = {
+  typeUrl:
+    "/osmosis.concentratedliquidity.v1beta1.MsgCollectSpreadRewardsResponse",
   encode(
-    message: MsgCollectFeesResponse,
+    message: MsgCollectSpreadRewardsResponse,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
-    for (const v of message.collectedFees) {
+    for (const v of message.collectedSpreadRewards) {
       Coin.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
@@ -925,15 +1232,17 @@ export const MsgCollectFeesResponse = {
   decode(
     input: _m0.Reader | Uint8Array,
     length?: number
-  ): MsgCollectFeesResponse {
+  ): MsgCollectSpreadRewardsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgCollectFeesResponse();
+    const message = createBaseMsgCollectSpreadRewardsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.collectedFees.push(Coin.decode(reader, reader.uint32()));
+          message.collectedSpreadRewards.push(
+            Coin.decode(reader, reader.uint32())
+          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -942,51 +1251,64 @@ export const MsgCollectFeesResponse = {
     }
     return message;
   },
-  fromPartial(object: Partial<MsgCollectFeesResponse>): MsgCollectFeesResponse {
-    const message = createBaseMsgCollectFeesResponse();
-    message.collectedFees =
-      object.collectedFees?.map((e) => Coin.fromPartial(e)) || [];
+  fromPartial(
+    object: Partial<MsgCollectSpreadRewardsResponse>
+  ): MsgCollectSpreadRewardsResponse {
+    const message = createBaseMsgCollectSpreadRewardsResponse();
+    message.collectedSpreadRewards =
+      object.collectedSpreadRewards?.map((e) => Coin.fromPartial(e)) || [];
     return message;
   },
-  fromAmino(object: MsgCollectFeesResponseAmino): MsgCollectFeesResponse {
+  fromAmino(
+    object: MsgCollectSpreadRewardsResponseAmino
+  ): MsgCollectSpreadRewardsResponse {
     return {
-      collectedFees: Array.isArray(object?.collected_fees)
-        ? object.collected_fees.map((e: any) => Coin.fromAmino(e))
+      collectedSpreadRewards: Array.isArray(object?.collected_spread_rewards)
+        ? object.collected_spread_rewards.map((e: any) => Coin.fromAmino(e))
         : [],
     };
   },
-  toAmino(message: MsgCollectFeesResponse): MsgCollectFeesResponseAmino {
+  toAmino(
+    message: MsgCollectSpreadRewardsResponse
+  ): MsgCollectSpreadRewardsResponseAmino {
     const obj: any = {};
-    if (message.collectedFees) {
-      obj.collected_fees = message.collectedFees.map((e) =>
+    if (message.collectedSpreadRewards) {
+      obj.collected_spread_rewards = message.collectedSpreadRewards.map((e) =>
         e ? Coin.toAmino(e) : undefined
       );
     } else {
-      obj.collected_fees = [];
+      obj.collected_spread_rewards = [];
     }
     return obj;
   },
-  fromAminoMsg(object: MsgCollectFeesResponseAminoMsg): MsgCollectFeesResponse {
-    return MsgCollectFeesResponse.fromAmino(object.value);
+  fromAminoMsg(
+    object: MsgCollectSpreadRewardsResponseAminoMsg
+  ): MsgCollectSpreadRewardsResponse {
+    return MsgCollectSpreadRewardsResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgCollectFeesResponse): MsgCollectFeesResponseAminoMsg {
+  toAminoMsg(
+    message: MsgCollectSpreadRewardsResponse
+  ): MsgCollectSpreadRewardsResponseAminoMsg {
     return {
-      type: "osmosis/concentratedliquidity/collect-fees-response",
-      value: MsgCollectFeesResponse.toAmino(message),
+      type: "osmosis/concentratedliquidity/collect-spread-rewards-response",
+      value: MsgCollectSpreadRewardsResponse.toAmino(message),
     };
   },
   fromProtoMsg(
-    message: MsgCollectFeesResponseProtoMsg
-  ): MsgCollectFeesResponse {
-    return MsgCollectFeesResponse.decode(message.value);
+    message: MsgCollectSpreadRewardsResponseProtoMsg
+  ): MsgCollectSpreadRewardsResponse {
+    return MsgCollectSpreadRewardsResponse.decode(message.value);
   },
-  toProto(message: MsgCollectFeesResponse): Uint8Array {
-    return MsgCollectFeesResponse.encode(message).finish();
+  toProto(message: MsgCollectSpreadRewardsResponse): Uint8Array {
+    return MsgCollectSpreadRewardsResponse.encode(message).finish();
   },
-  toProtoMsg(message: MsgCollectFeesResponse): MsgCollectFeesResponseProtoMsg {
+  toProtoMsg(
+    message: MsgCollectSpreadRewardsResponse
+  ): MsgCollectSpreadRewardsResponseProtoMsg {
     return {
-      typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCollectFeesResponse",
-      value: MsgCollectFeesResponse.encode(message).finish(),
+      typeUrl:
+        "/osmosis.concentratedliquidity.v1beta1.MsgCollectSpreadRewardsResponse",
+      value: MsgCollectSpreadRewardsResponse.encode(message).finish(),
     };
   },
 };
@@ -1092,6 +1414,7 @@ export const MsgCollectIncentives = {
 function createBaseMsgCollectIncentivesResponse(): MsgCollectIncentivesResponse {
   return {
     collectedIncentives: [],
+    forfeitedIncentives: [],
   };
 }
 export const MsgCollectIncentivesResponse = {
@@ -1103,6 +1426,9 @@ export const MsgCollectIncentivesResponse = {
   ): _m0.Writer {
     for (const v of message.collectedIncentives) {
       Coin.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    for (const v of message.forfeitedIncentives) {
+      Coin.encode(v!, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -1121,6 +1447,11 @@ export const MsgCollectIncentivesResponse = {
             Coin.decode(reader, reader.uint32())
           );
           break;
+        case 2:
+          message.forfeitedIncentives.push(
+            Coin.decode(reader, reader.uint32())
+          );
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -1134,6 +1465,8 @@ export const MsgCollectIncentivesResponse = {
     const message = createBaseMsgCollectIncentivesResponse();
     message.collectedIncentives =
       object.collectedIncentives?.map((e) => Coin.fromPartial(e)) || [];
+    message.forfeitedIncentives =
+      object.forfeitedIncentives?.map((e) => Coin.fromPartial(e)) || [];
     return message;
   },
   fromAmino(
@@ -1142,6 +1475,9 @@ export const MsgCollectIncentivesResponse = {
     return {
       collectedIncentives: Array.isArray(object?.collected_incentives)
         ? object.collected_incentives.map((e: any) => Coin.fromAmino(e))
+        : [],
+      forfeitedIncentives: Array.isArray(object?.forfeited_incentives)
+        ? object.forfeited_incentives.map((e: any) => Coin.fromAmino(e))
         : [],
     };
   },
@@ -1155,6 +1491,13 @@ export const MsgCollectIncentivesResponse = {
       );
     } else {
       obj.collected_incentives = [];
+    }
+    if (message.forfeitedIncentives) {
+      obj.forfeited_incentives = message.forfeitedIncentives.map((e) =>
+        e ? Coin.toAmino(e) : undefined
+      );
+    } else {
+      obj.forfeited_incentives = [];
     }
     return obj;
   },
@@ -1186,299 +1529,6 @@ export const MsgCollectIncentivesResponse = {
       typeUrl:
         "/osmosis.concentratedliquidity.v1beta1.MsgCollectIncentivesResponse",
       value: MsgCollectIncentivesResponse.encode(message).finish(),
-    };
-  },
-};
-function createBaseMsgCreateIncentive(): MsgCreateIncentive {
-  return {
-    poolId: Long.UZERO,
-    sender: "",
-    incentiveDenom: "",
-    incentiveAmount: "",
-    emissionRate: "",
-    startTime: undefined,
-    minUptime: undefined,
-  };
-}
-export const MsgCreateIncentive = {
-  typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCreateIncentive",
-  encode(
-    message: MsgCreateIncentive,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.poolId.isZero()) {
-      writer.uint32(8).uint64(message.poolId);
-    }
-    if (message.sender !== "") {
-      writer.uint32(18).string(message.sender);
-    }
-    if (message.incentiveDenom !== "") {
-      writer.uint32(26).string(message.incentiveDenom);
-    }
-    if (message.incentiveAmount !== "") {
-      writer.uint32(34).string(message.incentiveAmount);
-    }
-    if (message.emissionRate !== "") {
-      writer.uint32(42).string(message.emissionRate);
-    }
-    if (message.startTime !== undefined) {
-      Timestamp.encode(
-        toTimestamp(message.startTime),
-        writer.uint32(50).fork()
-      ).ldelim();
-    }
-    if (message.minUptime !== undefined) {
-      Duration.encode(message.minUptime, writer.uint32(58).fork()).ldelim();
-    }
-    return writer;
-  },
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateIncentive {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgCreateIncentive();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.poolId = reader.uint64() as Long;
-          break;
-        case 2:
-          message.sender = reader.string();
-          break;
-        case 3:
-          message.incentiveDenom = reader.string();
-          break;
-        case 4:
-          message.incentiveAmount = reader.string();
-          break;
-        case 5:
-          message.emissionRate = reader.string();
-          break;
-        case 6:
-          message.startTime = fromTimestamp(
-            Timestamp.decode(reader, reader.uint32())
-          );
-          break;
-        case 7:
-          message.minUptime = Duration.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromPartial(object: Partial<MsgCreateIncentive>): MsgCreateIncentive {
-    const message = createBaseMsgCreateIncentive();
-    message.poolId =
-      object.poolId !== undefined && object.poolId !== null
-        ? Long.fromValue(object.poolId)
-        : Long.UZERO;
-    message.sender = object.sender ?? "";
-    message.incentiveDenom = object.incentiveDenom ?? "";
-    message.incentiveAmount = object.incentiveAmount ?? "";
-    message.emissionRate = object.emissionRate ?? "";
-    message.startTime = object.startTime ?? undefined;
-    message.minUptime =
-      object.minUptime !== undefined && object.minUptime !== null
-        ? Duration.fromPartial(object.minUptime)
-        : undefined;
-    return message;
-  },
-  fromAmino(object: MsgCreateIncentiveAmino): MsgCreateIncentive {
-    return {
-      poolId: Long.fromString(object.pool_id),
-      sender: object.sender,
-      incentiveDenom: object.incentive_denom,
-      incentiveAmount: object.incentive_amount,
-      emissionRate: object.emission_rate,
-      startTime: object?.start_time
-        ? Timestamp.fromAmino(object.start_time)
-        : undefined,
-      minUptime: object?.min_uptime
-        ? Duration.fromAmino(object.min_uptime)
-        : undefined,
-    };
-  },
-  toAmino(message: MsgCreateIncentive): MsgCreateIncentiveAmino {
-    const obj: any = {};
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
-    obj.sender = message.sender;
-    obj.incentive_denom = message.incentiveDenom;
-    obj.incentive_amount = message.incentiveAmount;
-    obj.emission_rate = message.emissionRate;
-    obj.start_time = message.startTime
-      ? Timestamp.toAmino(message.startTime)
-      : undefined;
-    obj.min_uptime = message.minUptime
-      ? Duration.toAmino(message.minUptime)
-      : undefined;
-    return obj;
-  },
-  fromAminoMsg(object: MsgCreateIncentiveAminoMsg): MsgCreateIncentive {
-    return MsgCreateIncentive.fromAmino(object.value);
-  },
-  toAminoMsg(message: MsgCreateIncentive): MsgCreateIncentiveAminoMsg {
-    return {
-      type: "osmosis/concentratedliquidity/create-incentive",
-      value: MsgCreateIncentive.toAmino(message),
-    };
-  },
-  fromProtoMsg(message: MsgCreateIncentiveProtoMsg): MsgCreateIncentive {
-    return MsgCreateIncentive.decode(message.value);
-  },
-  toProto(message: MsgCreateIncentive): Uint8Array {
-    return MsgCreateIncentive.encode(message).finish();
-  },
-  toProtoMsg(message: MsgCreateIncentive): MsgCreateIncentiveProtoMsg {
-    return {
-      typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCreateIncentive",
-      value: MsgCreateIncentive.encode(message).finish(),
-    };
-  },
-};
-function createBaseMsgCreateIncentiveResponse(): MsgCreateIncentiveResponse {
-  return {
-    incentiveDenom: "",
-    incentiveAmount: "",
-    emissionRate: "",
-    startTime: undefined,
-    minUptime: undefined,
-  };
-}
-export const MsgCreateIncentiveResponse = {
-  typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCreateIncentiveResponse",
-  encode(
-    message: MsgCreateIncentiveResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (message.incentiveDenom !== "") {
-      writer.uint32(10).string(message.incentiveDenom);
-    }
-    if (message.incentiveAmount !== "") {
-      writer.uint32(18).string(message.incentiveAmount);
-    }
-    if (message.emissionRate !== "") {
-      writer.uint32(26).string(message.emissionRate);
-    }
-    if (message.startTime !== undefined) {
-      Timestamp.encode(
-        toTimestamp(message.startTime),
-        writer.uint32(34).fork()
-      ).ldelim();
-    }
-    if (message.minUptime !== undefined) {
-      Duration.encode(message.minUptime, writer.uint32(42).fork()).ldelim();
-    }
-    return writer;
-  },
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number
-  ): MsgCreateIncentiveResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgCreateIncentiveResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.incentiveDenom = reader.string();
-          break;
-        case 2:
-          message.incentiveAmount = reader.string();
-          break;
-        case 3:
-          message.emissionRate = reader.string();
-          break;
-        case 4:
-          message.startTime = fromTimestamp(
-            Timestamp.decode(reader, reader.uint32())
-          );
-          break;
-        case 5:
-          message.minUptime = Duration.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromPartial(
-    object: Partial<MsgCreateIncentiveResponse>
-  ): MsgCreateIncentiveResponse {
-    const message = createBaseMsgCreateIncentiveResponse();
-    message.incentiveDenom = object.incentiveDenom ?? "";
-    message.incentiveAmount = object.incentiveAmount ?? "";
-    message.emissionRate = object.emissionRate ?? "";
-    message.startTime = object.startTime ?? undefined;
-    message.minUptime =
-      object.minUptime !== undefined && object.minUptime !== null
-        ? Duration.fromPartial(object.minUptime)
-        : undefined;
-    return message;
-  },
-  fromAmino(
-    object: MsgCreateIncentiveResponseAmino
-  ): MsgCreateIncentiveResponse {
-    return {
-      incentiveDenom: object.incentive_denom,
-      incentiveAmount: object.incentive_amount,
-      emissionRate: object.emission_rate,
-      startTime: object?.start_time
-        ? Timestamp.fromAmino(object.start_time)
-        : undefined,
-      minUptime: object?.min_uptime
-        ? Duration.fromAmino(object.min_uptime)
-        : undefined,
-    };
-  },
-  toAmino(
-    message: MsgCreateIncentiveResponse
-  ): MsgCreateIncentiveResponseAmino {
-    const obj: any = {};
-    obj.incentive_denom = message.incentiveDenom;
-    obj.incentive_amount = message.incentiveAmount;
-    obj.emission_rate = message.emissionRate;
-    obj.start_time = message.startTime
-      ? Timestamp.toAmino(message.startTime)
-      : undefined;
-    obj.min_uptime = message.minUptime
-      ? Duration.toAmino(message.minUptime)
-      : undefined;
-    return obj;
-  },
-  fromAminoMsg(
-    object: MsgCreateIncentiveResponseAminoMsg
-  ): MsgCreateIncentiveResponse {
-    return MsgCreateIncentiveResponse.fromAmino(object.value);
-  },
-  toAminoMsg(
-    message: MsgCreateIncentiveResponse
-  ): MsgCreateIncentiveResponseAminoMsg {
-    return {
-      type: "osmosis/concentratedliquidity/create-incentive-response",
-      value: MsgCreateIncentiveResponse.toAmino(message),
-    };
-  },
-  fromProtoMsg(
-    message: MsgCreateIncentiveResponseProtoMsg
-  ): MsgCreateIncentiveResponse {
-    return MsgCreateIncentiveResponse.decode(message.value);
-  },
-  toProto(message: MsgCreateIncentiveResponse): Uint8Array {
-    return MsgCreateIncentiveResponse.encode(message).finish();
-  },
-  toProtoMsg(
-    message: MsgCreateIncentiveResponse
-  ): MsgCreateIncentiveResponseProtoMsg {
-    return {
-      typeUrl:
-        "/osmosis.concentratedliquidity.v1beta1.MsgCreateIncentiveResponse",
-      value: MsgCreateIncentiveResponse.encode(message).finish(),
     };
   },
 };

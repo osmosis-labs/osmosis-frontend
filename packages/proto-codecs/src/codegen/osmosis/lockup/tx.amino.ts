@@ -5,6 +5,7 @@ import {
   MsgExtendLockup,
   MsgForceUnlock,
   MsgLockTokens,
+  MsgSetRewardReceiverAddress,
 } from "./tx";
 export const AminoConverter = {
   "/osmosis.lockup.MsgLockTokens": {
@@ -31,5 +32,10 @@ export const AminoConverter = {
     aminoType: "osmosis/lockup/force-unlock",
     toAmino: MsgForceUnlock.toAmino,
     fromAmino: MsgForceUnlock.fromAmino,
+  },
+  "/osmosis.lockup.MsgSetRewardReceiverAddress": {
+    aminoType: "osmosis/lockup/set-reward-receiver-address",
+    toAmino: MsgSetRewardReceiverAddress.toAmino,
+    fromAmino: MsgSetRewardReceiverAddress.fromAmino,
   },
 };

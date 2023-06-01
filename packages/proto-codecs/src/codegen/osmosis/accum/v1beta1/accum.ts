@@ -6,6 +6,11 @@ import {
   DecCoinAmino,
   DecCoinSDKType,
 } from "../../../cosmos/base/v1beta1/coin";
+/**
+ * AccumulatorContent is the state-entry for the global accumulator.
+ * It contains the name of the global accumulator and the total value of
+ * shares belonging to it from all positions.
+ */
 export interface AccumulatorContent {
   accumValue: DecCoin[];
   totalShares: string;
@@ -14,6 +19,11 @@ export interface AccumulatorContentProtoMsg {
   typeUrl: "/osmosis.accum.v1beta1.AccumulatorContent";
   value: Uint8Array;
 }
+/**
+ * AccumulatorContent is the state-entry for the global accumulator.
+ * It contains the name of the global accumulator and the total value of
+ * shares belonging to it from all positions.
+ */
 export interface AccumulatorContentAmino {
   accum_value: DecCoinAmino[];
   total_shares: string;
@@ -22,6 +32,11 @@ export interface AccumulatorContentAminoMsg {
   type: "osmosis/accum/accumulator-content";
   value: AccumulatorContentAmino;
 }
+/**
+ * AccumulatorContent is the state-entry for the global accumulator.
+ * It contains the name of the global accumulator and the total value of
+ * shares belonging to it from all positions.
+ */
 export interface AccumulatorContentSDKType {
   accum_value: DecCoinSDKType[];
   total_shares: string;
@@ -37,30 +52,102 @@ export interface OptionsAminoMsg {
   value: OptionsAmino;
 }
 export interface OptionsSDKType {}
+/**
+ * Record corresponds to an individual position value belonging to the
+ * global accumulator.
+ */
 export interface Record {
+  /**
+   * num_shares is the number of shares belonging to the position associated
+   * with this record.
+   */
   numShares: string;
-  initAccumValue: DecCoin[];
-  unclaimedRewards: DecCoin[];
+  /**
+   * accum_value_per_share is the subset of coins per shar of the global
+   * accumulator value that allows to infer how much a position is entitled to
+   * per share that it owns.
+   *
+   * In the default case with no intervals, this value equals to the global
+   * accumulator value at the time of the position creation, the last update or
+   * reward claim.
+   *
+   * In the interval case such as concentrated liquidity, this value equals to
+   * the global growth of rewards inside the interval during one of: the time of
+   * the position creation, the last update or reward claim. Note, that
+   * immediately prior to claiming or updating rewards, this value must be
+   * updated to "the growth inside at the time of last update + the growth
+   * outside at the time of the current block". This is so that the claiming
+   * logic can subtract this updated value from the global accumulator value to
+   * get the growth inside the interval from the time of last update up until
+   * the current block time.
+   */
+  accumValuePerShare: DecCoin[];
+  /**
+   * unclaimed_rewards_total is the total amount of unclaimed rewards that the
+   * position is entitled to. This value is updated whenever shares are added or
+   * removed from an existing position. We also expose API for manually updating
+   * this value for some custom use cases such as merging pre-existing positions
+   * into a single one.
+   */
+  unclaimedRewardsTotal: DecCoin[];
   options?: Options;
 }
 export interface RecordProtoMsg {
   typeUrl: "/osmosis.accum.v1beta1.Record";
   value: Uint8Array;
 }
+/**
+ * Record corresponds to an individual position value belonging to the
+ * global accumulator.
+ */
 export interface RecordAmino {
+  /**
+   * num_shares is the number of shares belonging to the position associated
+   * with this record.
+   */
   num_shares: string;
-  init_accum_value: DecCoinAmino[];
-  unclaimed_rewards: DecCoinAmino[];
+  /**
+   * accum_value_per_share is the subset of coins per shar of the global
+   * accumulator value that allows to infer how much a position is entitled to
+   * per share that it owns.
+   *
+   * In the default case with no intervals, this value equals to the global
+   * accumulator value at the time of the position creation, the last update or
+   * reward claim.
+   *
+   * In the interval case such as concentrated liquidity, this value equals to
+   * the global growth of rewards inside the interval during one of: the time of
+   * the position creation, the last update or reward claim. Note, that
+   * immediately prior to claiming or updating rewards, this value must be
+   * updated to "the growth inside at the time of last update + the growth
+   * outside at the time of the current block". This is so that the claiming
+   * logic can subtract this updated value from the global accumulator value to
+   * get the growth inside the interval from the time of last update up until
+   * the current block time.
+   */
+  accum_value_per_share: DecCoinAmino[];
+  /**
+   * unclaimed_rewards_total is the total amount of unclaimed rewards that the
+   * position is entitled to. This value is updated whenever shares are added or
+   * removed from an existing position. We also expose API for manually updating
+   * this value for some custom use cases such as merging pre-existing positions
+   * into a single one.
+   */
+  unclaimed_rewards_total: DecCoinAmino[];
   options?: OptionsAmino;
 }
 export interface RecordAminoMsg {
   type: "osmosis/accum/record";
   value: RecordAmino;
 }
+/**
+ * Record corresponds to an individual position value belonging to the
+ * global accumulator.
+ */
 export interface RecordSDKType {
   num_shares: string;
-  init_accum_value: DecCoinSDKType[];
-  unclaimed_rewards: DecCoinSDKType[];
+  accum_value_per_share: DecCoinSDKType[];
+  unclaimed_rewards_total: DecCoinSDKType[];
   options?: OptionsSDKType;
 }
 function createBaseAccumulatorContent(): AccumulatorContent {
@@ -210,8 +297,8 @@ export const Options = {
 function createBaseRecord(): Record {
   return {
     numShares: "",
-    initAccumValue: [],
-    unclaimedRewards: [],
+    accumValuePerShare: [],
+    unclaimedRewardsTotal: [],
     options: undefined,
   };
 }
@@ -224,10 +311,10 @@ export const Record = {
     if (message.numShares !== "") {
       writer.uint32(10).string(message.numShares);
     }
-    for (const v of message.initAccumValue) {
+    for (const v of message.accumValuePerShare) {
       DecCoin.encode(v!, writer.uint32(18).fork()).ldelim();
     }
-    for (const v of message.unclaimedRewards) {
+    for (const v of message.unclaimedRewardsTotal) {
       DecCoin.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     if (message.options !== undefined) {
@@ -246,10 +333,12 @@ export const Record = {
           message.numShares = reader.string();
           break;
         case 2:
-          message.initAccumValue.push(DecCoin.decode(reader, reader.uint32()));
+          message.accumValuePerShare.push(
+            DecCoin.decode(reader, reader.uint32())
+          );
           break;
         case 3:
-          message.unclaimedRewards.push(
+          message.unclaimedRewardsTotal.push(
             DecCoin.decode(reader, reader.uint32())
           );
           break;
@@ -266,10 +355,10 @@ export const Record = {
   fromPartial(object: Partial<Record>): Record {
     const message = createBaseRecord();
     message.numShares = object.numShares ?? "";
-    message.initAccumValue =
-      object.initAccumValue?.map((e) => DecCoin.fromPartial(e)) || [];
-    message.unclaimedRewards =
-      object.unclaimedRewards?.map((e) => DecCoin.fromPartial(e)) || [];
+    message.accumValuePerShare =
+      object.accumValuePerShare?.map((e) => DecCoin.fromPartial(e)) || [];
+    message.unclaimedRewardsTotal =
+      object.unclaimedRewardsTotal?.map((e) => DecCoin.fromPartial(e)) || [];
     message.options =
       object.options !== undefined && object.options !== null
         ? Options.fromPartial(object.options)
@@ -279,11 +368,11 @@ export const Record = {
   fromAmino(object: RecordAmino): Record {
     return {
       numShares: object.num_shares,
-      initAccumValue: Array.isArray(object?.init_accum_value)
-        ? object.init_accum_value.map((e: any) => DecCoin.fromAmino(e))
+      accumValuePerShare: Array.isArray(object?.accum_value_per_share)
+        ? object.accum_value_per_share.map((e: any) => DecCoin.fromAmino(e))
         : [],
-      unclaimedRewards: Array.isArray(object?.unclaimed_rewards)
-        ? object.unclaimed_rewards.map((e: any) => DecCoin.fromAmino(e))
+      unclaimedRewardsTotal: Array.isArray(object?.unclaimed_rewards_total)
+        ? object.unclaimed_rewards_total.map((e: any) => DecCoin.fromAmino(e))
         : [],
       options: object?.options ? Options.fromAmino(object.options) : undefined,
     };
@@ -291,19 +380,19 @@ export const Record = {
   toAmino(message: Record): RecordAmino {
     const obj: any = {};
     obj.num_shares = message.numShares;
-    if (message.initAccumValue) {
-      obj.init_accum_value = message.initAccumValue.map((e) =>
+    if (message.accumValuePerShare) {
+      obj.accum_value_per_share = message.accumValuePerShare.map((e) =>
         e ? DecCoin.toAmino(e) : undefined
       );
     } else {
-      obj.init_accum_value = [];
+      obj.accum_value_per_share = [];
     }
-    if (message.unclaimedRewards) {
-      obj.unclaimed_rewards = message.unclaimedRewards.map((e) =>
+    if (message.unclaimedRewardsTotal) {
+      obj.unclaimed_rewards_total = message.unclaimedRewardsTotal.map((e) =>
         e ? DecCoin.toAmino(e) : undefined
       );
     } else {
-      obj.unclaimed_rewards = [];
+      obj.unclaimed_rewards_total = [];
     }
     obj.options = message.options
       ? Options.toAmino(message.options)

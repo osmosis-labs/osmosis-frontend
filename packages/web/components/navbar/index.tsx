@@ -304,7 +304,7 @@ const AnnouncementBanner: FunctionComponent<
   return (
     <div
       className={classNames(
-        "fixed top-[72px] z-[51] float-right my-auto ml-sidebar flex w-[calc(100vw_-_12.875rem)] items-center px-8 py-[14px] md:ml-0 md:w-full sm:gap-3 sm:px-2",
+        "fixed top-[71px] z-[51] float-right my-auto ml-sidebar flex w-[calc(100vw_-_12.875rem)] items-center px-8 py-[14px] md:top-[57px] md:ml-0 md:w-full sm:gap-3 sm:px-2",
         {
           "bg-gradient-negative": isWarning,
           "bg-gradient-neutral": !isWarning,
@@ -312,8 +312,8 @@ const AnnouncementBanner: FunctionComponent<
         bg
       )}
     >
-      <div className="flex w-full place-content-center items-center gap-1.5 text-center text-subtitle1 lg:flex-col lg:gap-1 md:text-left sm:items-start">
-        {t(enTextOrLocalizationPath)}{" "}
+      <div className="flex w-full place-content-center items-center gap-1.5 text-center text-subtitle1 lg:gap-1 lg:text-xs lg:tracking-normal md:text-left md:text-xxs sm:items-start">
+        <span>{t(enTextOrLocalizationPath)}</span>
         {Boolean(link) && (
           <div className="flex cursor-pointer items-center gap-2">
             {link?.isExternal ? (

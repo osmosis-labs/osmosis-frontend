@@ -252,7 +252,8 @@
     "stake": "Actiuni",
     "store": "Aplicații",
     "swap": "Schimba",
-    "vote": "Vot"
+    "vote": "Vot",
+    "new": "NOU"
   },
   "pool": {
     "24hrTradingVolume": "Volum tranzactionare 24h",
