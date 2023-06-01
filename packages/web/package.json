@@ -61,6 +61,7 @@
     "fuse.js": "^6.5.3",
     "highcharts": "^9.1.0",
     "highcharts-react-official": "^3.0.0",
+    "launchdarkly-react-client-sdk": "^3.0.6",
     "lottie-react": "^2.4.0",
     "mobx": "^6.3.10",
     "mobx-react-lite": "^3.2.2",

@@ -252,7 +252,8 @@
     "stake": "Abonar",
     "store": "Aplicaciones",
     "swap": "Intercambio",
-    "vote": "Votar"
+    "vote": "Votar",
+    "new": "NUEVO"
   },
   "pool": {
     "24hrTradingVolume": "Volumen Últimas 24h",
