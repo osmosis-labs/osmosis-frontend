@@ -1983,6 +1983,16 @@
     bowser "2.11.0"
     events "3.3.0"
 
+"@cosmos-kit/core@^1.5.3":
+  version "1.5.3"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/core/-/core-1.5.3.tgz#fd447da0d5cdc0318eaf6b980d333abbc7be7eb3"
+  integrity sha512-xYAjQp8lh2kpbvd5Vv2bIWnNJSwwoacPKFK3aU0gqU8oQtehnfgD6iNilEJv9ZZ6LgVvTywoaqTtFhRVnhChgQ==
+  dependencies:
+    "@chain-registry/types" "0.13.0"
+    "@walletconnect/types" "2.7.2"
+    bowser "2.11.0"
+    events "3.3.0"
+
 "@cosmos-kit/cosmostation-extension@^0.16.4":
   version "0.16.4"
   resolved "https://registry.yarnpkg.com/@cosmos-kit/cosmostation-extension/-/cosmostation-extension-0.16.4.tgz#bf8a340069a2f741b41a7ad9773dfd76ca9462c3"
@@ -2033,29 +2043,30 @@
     "@cosmos-kit/keplr-extension" "^0.35.2"
     "@cosmos-kit/keplr-mobile" "^0.33.29"
 
-"@cosmos-kit/leap-extension@^0.16.4":
-  version "0.16.4"
-  resolved "https://registry.yarnpkg.com/@cosmos-kit/leap-extension/-/leap-extension-0.16.4.tgz#2e02c9b65875b410edf6750abc1efd516f860429"
-  integrity sha512-QuJN7IE8BN7fozXMLOUsH3ywmHFe84kNlvtganjXof7halCLXcHqKuGl+cyKZ2mFfd61fwPb2/u7BQWKyJt+Jg==
+"@cosmos-kit/leap-extension@^0.16.6":
+  version "0.16.6"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/leap-extension/-/leap-extension-0.16.6.tgz#fb63c12318149f0f66e25dc3484b0476f3890042"
+  integrity sha512-M8QP5SGT2OEtizqc4UDoG8CPztq/ZfCkRc/6QM8/QQo8g6YNk17U+MtxDl5dU2fivNUfhaXBh6WEH7g9NvlQQw==
   dependencies:
     "@chain-registry/keplr" "1.8.0"
-    "@cosmos-kit/core" "^1.5.1"
+    "@cosmos-kit/core" "^1.5.3"
 
-"@cosmos-kit/leap-mobile@0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@cosmos-kit/leap-mobile/-/leap-mobile-0.0.2.tgz#a0b96d1ee5beb8df89dc5f4874c28819d3bae38b"
-  integrity sha512-YBNvcS6DeZs9ybalXAS3RA9tsKwRo1Q04f3SS8yHsbx3fr1dw//8Oi7iHj1Kvno9q16o6+NyBViWwaPRaXKR9A==
+"@cosmos-kit/leap-mobile@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/leap-mobile/-/leap-mobile-0.1.2.tgz#1e07b3d86d469e3745a100f29de49bd3c2eaec4a"
+  integrity sha512-NhPqzvfbmgJhWwhXRp+Ym+gy8zNOet8YUqL7L3/faS4+BkrnZ591jIHVUYU+VKRMBwOlX/ynqEXPuTPx5Dz7bQ==
   dependencies:
     "@chain-registry/keplr" "1.8.0"
-    "@cosmos-kit/core" "^1.5.1"
-    "@cosmos-kit/walletconnect" "^0.3.7"
+    "@cosmos-kit/core" "^1.5.3"
+    "@cosmos-kit/walletconnect" "^0.3.9"
 
-"@cosmos-kit/leap@0.14.28":
-  version "0.14.28"
-  resolved "https://registry.yarnpkg.com/@cosmos-kit/leap/-/leap-0.14.28.tgz#efaa3a727924fcaf9aeef4ac2a8dce71cc20cb41"
-  integrity sha512-QYq9P/nMILOo7+7Zwd4Ua376j3ZK3GDz7k4XEB7nMCURtMqF+5yTnxUuYrtfuTgj5GLsV5Un9OrOvQxWA3u7MQ==
+"@cosmos-kit/leap@0.15.2":
+  version "0.15.2"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/leap/-/leap-0.15.2.tgz#911ec51d07f21a6b9ebf5ebbe7e9cf7caa236e67"
+  integrity sha512-kyBGOL44sDHp6L3aIBS8OsQlFVvnshgEED9qodCV5vZpRzjzV1ZuIgYyom48Xe+3x8jePGC0fOAFCfFxLBn8Cg==
   dependencies:
-    "@cosmos-kit/leap-extension" "^0.16.4"
+    "@cosmos-kit/leap-extension" "^0.16.6"
+    "@cosmos-kit/leap-mobile" "^0.1.2"
 
 "@cosmos-kit/walletconnect@^0.3.7":
   version "0.3.7"
@@ -2064,6 +2075,18 @@
   dependencies:
     "@babel/runtime" "7.11.2"
     "@cosmos-kit/core" "^1.5.1"
+    "@walletconnect/sign-client" "^2.7.2"
+    "@walletconnect/types" "^2.7.2"
+    "@walletconnect/utils" "^2.7.2"
+    events "3.3.0"
+
+"@cosmos-kit/walletconnect@^0.3.9":
+  version "0.3.9"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/walletconnect/-/walletconnect-0.3.9.tgz#b79cd6952c37a5d44d8141a4fd22b49156bf959f"
+  integrity sha512-jB3poO79L8KJiKCFD2BJE1fZXIhIu0Bpuafeu3iUR8yCDBBLJJq28VsX/mlfUUJ0Ijhr8rMQaMeBeWqmYMnnsw==
+  dependencies:
+    "@babel/runtime" "7.11.2"
+    "@cosmos-kit/core" "^1.5.3"
     "@walletconnect/sign-client" "^2.7.2"
     "@walletconnect/types" "^2.7.2"
     "@walletconnect/utils" "^2.7.2"
@@ -13219,11 +13242,6 @@ react-dom@17.0.2:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
     scheduler "^0.20.2"
-
-react-icons@^4.8.0:
-  version "4.8.0"
-  resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-4.8.0.tgz#621e900caa23b912f737e41be57f27f6b2bff445"
-  integrity sha512-N6+kOLcihDiAnj5Czu637waJqSnwlMNROzVZMhfX68V/9bu9qHaMIJC4UdozWoOk57gahFCNHwVvWzm0MTzRjg==
 
 react-input-autosize@^3.0.0:
   version "3.0.0"
