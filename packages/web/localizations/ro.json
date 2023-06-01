@@ -479,8 +479,8 @@
   "viewExplorer": "vezi explorer",
   "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
   "highPoolInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență.",
-  "ibcx": {
-    "description": "Întâlniți primul Index al Ecosistemului Cosmos de la ION DAO. Activ pe mainnet: ",
-    "link": "index.ion.wtf"
+  "autonomy": {
+    "description": "Explorează Ordinele Limită și Ordinele de Oprire aduse de Autonomy: ",
+    "link": "osmosis.autoswap.trade"
   }
 }

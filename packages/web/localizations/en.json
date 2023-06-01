@@ -478,8 +478,8 @@
   "viewExplorer": "View explorer",
   "waitingForTransaction": "Waiting for transaction to be included in the block",
   "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution.",
-  "ibcx": {
-    "description": "Meet the first Cosmos Ecosystem Index from ION DAO. Live on mainnet: ",
-    "link": "index.ion.wtf"
+  "autonomy": {
+    "description": "Explore Limit and Stop Orders brought to you by Autonomy: ",
+    "link": "osmosis.autoswap.trade"
   }
 }

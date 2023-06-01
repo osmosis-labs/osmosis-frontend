@@ -91,6 +91,13 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "tkyve",
         isVerified: true,
       },
+      {
+        counterpartyChainId: "rhye-1",
+        sourceChannelId: "channel-13",
+        destChannelId: "channel-20",
+        coinMinimalDenom: "uqck",
+        isVerified: true,
+      },
     ]
   : [
       {
@@ -357,6 +364,62 @@ export const IBCAssetInfos: (IBCAsset & {
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
           sourceChainTokens: [AxelarSourceChainConfigs.pepe.ethereum],
+        },
+      },
+      {
+        counterpartyChainId: "axelar-dojo-1",
+        sourceChannelId: "channel-208",
+        destChannelId: "channel-3",
+        coinMinimalDenom: "cbeth-wei",
+        sourceChainNameOverride: "Ethereum",
+        isVerified: true,
+        originBridgeInfo: {
+          bridge: "axelar" as const,
+          wallets: ["metamask" as const, "walletconnect" as const],
+          method: "deposit-address" as const,
+          sourceChainTokens: [AxelarSourceChainConfigs.cbeth.ethereum],
+        },
+      },
+      {
+        counterpartyChainId: "axelar-dojo-1",
+        sourceChannelId: "channel-208",
+        destChannelId: "channel-3",
+        coinMinimalDenom: "reth-wei",
+        sourceChainNameOverride: "Ethereum",
+        isVerified: true,
+        originBridgeInfo: {
+          bridge: "axelar" as const,
+          wallets: ["metamask" as const, "walletconnect" as const],
+          method: "deposit-address" as const,
+          sourceChainTokens: [AxelarSourceChainConfigs.reth.ethereum],
+        },
+      },
+      {
+        counterpartyChainId: "axelar-dojo-1",
+        sourceChannelId: "channel-208",
+        destChannelId: "channel-3",
+        coinMinimalDenom: "sfrxeth-wei",
+        sourceChainNameOverride: "Ethereum",
+        isVerified: true,
+        originBridgeInfo: {
+          bridge: "axelar" as const,
+          wallets: ["metamask" as const, "walletconnect" as const],
+          method: "deposit-address" as const,
+          sourceChainTokens: [AxelarSourceChainConfigs.sfrxeth.ethereum],
+        },
+      },
+      {
+        counterpartyChainId: "axelar-dojo-1",
+        sourceChannelId: "channel-208",
+        destChannelId: "channel-3",
+        coinMinimalDenom: "wsteth-wei",
+        sourceChainNameOverride: "Ethereum",
+        isVerified: true,
+        originBridgeInfo: {
+          bridge: "axelar" as const,
+          wallets: ["metamask" as const, "walletconnect" as const],
+          method: "deposit-address" as const,
+          sourceChainTokens: [AxelarSourceChainConfigs.wsteth.ethereum],
         },
       },
       {
@@ -929,7 +992,6 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-378",
         destChannelId: "channel-2",
         coinMinimalDenom: "ulamb",
-        isUnstable: true,
       },
       {
         counterpartyChainId: "likecoin-mainnet-2",

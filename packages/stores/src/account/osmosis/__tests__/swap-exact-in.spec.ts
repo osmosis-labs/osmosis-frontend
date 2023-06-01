@@ -93,7 +93,8 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
           coinDenom: "BAR",
           coinMinimalDenom: "ubar",
           coinDecimals: 6,
-        }
+        },
+        "1"
       )
     ).rejects.not.toBeNull();
   });
@@ -116,7 +117,8 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
           coinDenom: "ATOM",
           coinMinimalDenom: "uatom",
           coinDecimals: 6,
-        }
+        },
+        "1"
       )
     ).rejects.not.toBeNull();
   });

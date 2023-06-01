@@ -9,7 +9,14 @@ import {
   PageResponseAmino,
   PageResponseSDKType,
 } from "../../cosmos/base/query/v1beta1/pagination";
-import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
+import {
+  Coin,
+  CoinAmino,
+  CoinSDKType,
+  DecCoin,
+  DecCoinAmino,
+  DecCoinSDKType,
+} from "../../cosmos/base/v1beta1/coin";
 import {
   Any,
   AnyAmino,
@@ -37,6 +44,11 @@ import {
   FullPositionBreakdownAmino,
   FullPositionBreakdownSDKType,
 } from "./position";
+import {
+  UptimeTracker,
+  UptimeTrackerAmino,
+  UptimeTrackerSDKType,
+} from "./tickInfo";
 /** =============================== UserPositions */
 export interface UserPositionsRequest {
   address: string;
@@ -418,6 +430,89 @@ export interface ClaimableIncentivesResponseAminoMsg {
 export interface ClaimableIncentivesResponseSDKType {
   claimable_incentives: CoinSDKType[];
   forfeited_incentives: CoinSDKType[];
+}
+/** ===================== QueryPoolAccumulatorRewards */
+export interface PoolAccumulatorRewardsRequest {
+  poolId: Long;
+}
+export interface PoolAccumulatorRewardsRequestProtoMsg {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.PoolAccumulatorRewardsRequest";
+  value: Uint8Array;
+}
+/** ===================== QueryPoolAccumulatorRewards */
+export interface PoolAccumulatorRewardsRequestAmino {
+  pool_id: string;
+}
+export interface PoolAccumulatorRewardsRequestAminoMsg {
+  type: "osmosis/concentratedliquidity/pool-accumulator-rewards-request";
+  value: PoolAccumulatorRewardsRequestAmino;
+}
+/** ===================== QueryPoolAccumulatorRewards */
+export interface PoolAccumulatorRewardsRequestSDKType {
+  pool_id: Long;
+}
+export interface PoolAccumulatorRewardsResponse {
+  spreadRewardGrowthGlobal: DecCoin[];
+  uptimeGrowthGlobal: UptimeTracker[];
+}
+export interface PoolAccumulatorRewardsResponseProtoMsg {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.PoolAccumulatorRewardsResponse";
+  value: Uint8Array;
+}
+export interface PoolAccumulatorRewardsResponseAmino {
+  spread_reward_growth_global: DecCoinAmino[];
+  uptime_growth_global: UptimeTrackerAmino[];
+}
+export interface PoolAccumulatorRewardsResponseAminoMsg {
+  type: "osmosis/concentratedliquidity/pool-accumulator-rewards-response";
+  value: PoolAccumulatorRewardsResponseAmino;
+}
+export interface PoolAccumulatorRewardsResponseSDKType {
+  spread_reward_growth_global: DecCoinSDKType[];
+  uptime_growth_global: UptimeTrackerSDKType[];
+}
+/** ===================== QueryTickAccumulatorTrackers */
+export interface TickAccumulatorTrackersRequest {
+  poolId: Long;
+  tickIndex: Long;
+}
+export interface TickAccumulatorTrackersRequestProtoMsg {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.TickAccumulatorTrackersRequest";
+  value: Uint8Array;
+}
+/** ===================== QueryTickAccumulatorTrackers */
+export interface TickAccumulatorTrackersRequestAmino {
+  pool_id: string;
+  tick_index: string;
+}
+export interface TickAccumulatorTrackersRequestAminoMsg {
+  type: "osmosis/concentratedliquidity/tick-accumulator-trackers-request";
+  value: TickAccumulatorTrackersRequestAmino;
+}
+/** ===================== QueryTickAccumulatorTrackers */
+export interface TickAccumulatorTrackersRequestSDKType {
+  pool_id: Long;
+  tick_index: Long;
+}
+export interface TickAccumulatorTrackersResponse {
+  spreadRewardGrowthOppositeDirectionOfLastTraversal: DecCoin[];
+  uptimeTrackers: UptimeTracker[];
+}
+export interface TickAccumulatorTrackersResponseProtoMsg {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.TickAccumulatorTrackersResponse";
+  value: Uint8Array;
+}
+export interface TickAccumulatorTrackersResponseAmino {
+  spread_reward_growth_opposite_direction_of_last_traversal: DecCoinAmino[];
+  uptime_trackers: UptimeTrackerAmino[];
+}
+export interface TickAccumulatorTrackersResponseAminoMsg {
+  type: "osmosis/concentratedliquidity/tick-accumulator-trackers-response";
+  value: TickAccumulatorTrackersResponseAmino;
+}
+export interface TickAccumulatorTrackersResponseSDKType {
+  spread_reward_growth_opposite_direction_of_last_traversal: DecCoinSDKType[];
+  uptime_trackers: UptimeTrackerSDKType[];
 }
 function createBaseUserPositionsRequest(): UserPositionsRequest {
   return {
@@ -2128,6 +2223,460 @@ export const ClaimableIncentivesResponse = {
       typeUrl:
         "/osmosis.concentratedliquidity.v1beta1.ClaimableIncentivesResponse",
       value: ClaimableIncentivesResponse.encode(message).finish(),
+    };
+  },
+};
+function createBasePoolAccumulatorRewardsRequest(): PoolAccumulatorRewardsRequest {
+  return {
+    poolId: Long.UZERO,
+  };
+}
+export const PoolAccumulatorRewardsRequest = {
+  typeUrl:
+    "/osmosis.concentratedliquidity.v1beta1.PoolAccumulatorRewardsRequest",
+  encode(
+    message: PoolAccumulatorRewardsRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (!message.poolId.isZero()) {
+      writer.uint32(8).uint64(message.poolId);
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): PoolAccumulatorRewardsRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePoolAccumulatorRewardsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.poolId = reader.uint64() as Long;
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<PoolAccumulatorRewardsRequest>
+  ): PoolAccumulatorRewardsRequest {
+    const message = createBasePoolAccumulatorRewardsRequest();
+    message.poolId =
+      object.poolId !== undefined && object.poolId !== null
+        ? Long.fromValue(object.poolId)
+        : Long.UZERO;
+    return message;
+  },
+  fromAmino(
+    object: PoolAccumulatorRewardsRequestAmino
+  ): PoolAccumulatorRewardsRequest {
+    return {
+      poolId: Long.fromString(object.pool_id),
+    };
+  },
+  toAmino(
+    message: PoolAccumulatorRewardsRequest
+  ): PoolAccumulatorRewardsRequestAmino {
+    const obj: any = {};
+    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    return obj;
+  },
+  fromAminoMsg(
+    object: PoolAccumulatorRewardsRequestAminoMsg
+  ): PoolAccumulatorRewardsRequest {
+    return PoolAccumulatorRewardsRequest.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: PoolAccumulatorRewardsRequest
+  ): PoolAccumulatorRewardsRequestAminoMsg {
+    return {
+      type: "osmosis/concentratedliquidity/pool-accumulator-rewards-request",
+      value: PoolAccumulatorRewardsRequest.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: PoolAccumulatorRewardsRequestProtoMsg
+  ): PoolAccumulatorRewardsRequest {
+    return PoolAccumulatorRewardsRequest.decode(message.value);
+  },
+  toProto(message: PoolAccumulatorRewardsRequest): Uint8Array {
+    return PoolAccumulatorRewardsRequest.encode(message).finish();
+  },
+  toProtoMsg(
+    message: PoolAccumulatorRewardsRequest
+  ): PoolAccumulatorRewardsRequestProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.concentratedliquidity.v1beta1.PoolAccumulatorRewardsRequest",
+      value: PoolAccumulatorRewardsRequest.encode(message).finish(),
+    };
+  },
+};
+function createBasePoolAccumulatorRewardsResponse(): PoolAccumulatorRewardsResponse {
+  return {
+    spreadRewardGrowthGlobal: [],
+    uptimeGrowthGlobal: [],
+  };
+}
+export const PoolAccumulatorRewardsResponse = {
+  typeUrl:
+    "/osmosis.concentratedliquidity.v1beta1.PoolAccumulatorRewardsResponse",
+  encode(
+    message: PoolAccumulatorRewardsResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    for (const v of message.spreadRewardGrowthGlobal) {
+      DecCoin.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    for (const v of message.uptimeGrowthGlobal) {
+      UptimeTracker.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): PoolAccumulatorRewardsResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePoolAccumulatorRewardsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.spreadRewardGrowthGlobal.push(
+            DecCoin.decode(reader, reader.uint32())
+          );
+          break;
+        case 2:
+          message.uptimeGrowthGlobal.push(
+            UptimeTracker.decode(reader, reader.uint32())
+          );
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<PoolAccumulatorRewardsResponse>
+  ): PoolAccumulatorRewardsResponse {
+    const message = createBasePoolAccumulatorRewardsResponse();
+    message.spreadRewardGrowthGlobal =
+      object.spreadRewardGrowthGlobal?.map((e) => DecCoin.fromPartial(e)) || [];
+    message.uptimeGrowthGlobal =
+      object.uptimeGrowthGlobal?.map((e) => UptimeTracker.fromPartial(e)) || [];
+    return message;
+  },
+  fromAmino(
+    object: PoolAccumulatorRewardsResponseAmino
+  ): PoolAccumulatorRewardsResponse {
+    return {
+      spreadRewardGrowthGlobal: Array.isArray(
+        object?.spread_reward_growth_global
+      )
+        ? object.spread_reward_growth_global.map((e: any) =>
+            DecCoin.fromAmino(e)
+          )
+        : [],
+      uptimeGrowthGlobal: Array.isArray(object?.uptime_growth_global)
+        ? object.uptime_growth_global.map((e: any) =>
+            UptimeTracker.fromAmino(e)
+          )
+        : [],
+    };
+  },
+  toAmino(
+    message: PoolAccumulatorRewardsResponse
+  ): PoolAccumulatorRewardsResponseAmino {
+    const obj: any = {};
+    if (message.spreadRewardGrowthGlobal) {
+      obj.spread_reward_growth_global = message.spreadRewardGrowthGlobal.map(
+        (e) => (e ? DecCoin.toAmino(e) : undefined)
+      );
+    } else {
+      obj.spread_reward_growth_global = [];
+    }
+    if (message.uptimeGrowthGlobal) {
+      obj.uptime_growth_global = message.uptimeGrowthGlobal.map((e) =>
+        e ? UptimeTracker.toAmino(e) : undefined
+      );
+    } else {
+      obj.uptime_growth_global = [];
+    }
+    return obj;
+  },
+  fromAminoMsg(
+    object: PoolAccumulatorRewardsResponseAminoMsg
+  ): PoolAccumulatorRewardsResponse {
+    return PoolAccumulatorRewardsResponse.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: PoolAccumulatorRewardsResponse
+  ): PoolAccumulatorRewardsResponseAminoMsg {
+    return {
+      type: "osmosis/concentratedliquidity/pool-accumulator-rewards-response",
+      value: PoolAccumulatorRewardsResponse.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: PoolAccumulatorRewardsResponseProtoMsg
+  ): PoolAccumulatorRewardsResponse {
+    return PoolAccumulatorRewardsResponse.decode(message.value);
+  },
+  toProto(message: PoolAccumulatorRewardsResponse): Uint8Array {
+    return PoolAccumulatorRewardsResponse.encode(message).finish();
+  },
+  toProtoMsg(
+    message: PoolAccumulatorRewardsResponse
+  ): PoolAccumulatorRewardsResponseProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.concentratedliquidity.v1beta1.PoolAccumulatorRewardsResponse",
+      value: PoolAccumulatorRewardsResponse.encode(message).finish(),
+    };
+  },
+};
+function createBaseTickAccumulatorTrackersRequest(): TickAccumulatorTrackersRequest {
+  return {
+    poolId: Long.UZERO,
+    tickIndex: Long.ZERO,
+  };
+}
+export const TickAccumulatorTrackersRequest = {
+  typeUrl:
+    "/osmosis.concentratedliquidity.v1beta1.TickAccumulatorTrackersRequest",
+  encode(
+    message: TickAccumulatorTrackersRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (!message.poolId.isZero()) {
+      writer.uint32(8).uint64(message.poolId);
+    }
+    if (!message.tickIndex.isZero()) {
+      writer.uint32(16).int64(message.tickIndex);
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): TickAccumulatorTrackersRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTickAccumulatorTrackersRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.poolId = reader.uint64() as Long;
+          break;
+        case 2:
+          message.tickIndex = reader.int64() as Long;
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<TickAccumulatorTrackersRequest>
+  ): TickAccumulatorTrackersRequest {
+    const message = createBaseTickAccumulatorTrackersRequest();
+    message.poolId =
+      object.poolId !== undefined && object.poolId !== null
+        ? Long.fromValue(object.poolId)
+        : Long.UZERO;
+    message.tickIndex =
+      object.tickIndex !== undefined && object.tickIndex !== null
+        ? Long.fromValue(object.tickIndex)
+        : Long.ZERO;
+    return message;
+  },
+  fromAmino(
+    object: TickAccumulatorTrackersRequestAmino
+  ): TickAccumulatorTrackersRequest {
+    return {
+      poolId: Long.fromString(object.pool_id),
+      tickIndex: Long.fromString(object.tick_index),
+    };
+  },
+  toAmino(
+    message: TickAccumulatorTrackersRequest
+  ): TickAccumulatorTrackersRequestAmino {
+    const obj: any = {};
+    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    obj.tick_index = message.tickIndex
+      ? message.tickIndex.toString()
+      : undefined;
+    return obj;
+  },
+  fromAminoMsg(
+    object: TickAccumulatorTrackersRequestAminoMsg
+  ): TickAccumulatorTrackersRequest {
+    return TickAccumulatorTrackersRequest.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: TickAccumulatorTrackersRequest
+  ): TickAccumulatorTrackersRequestAminoMsg {
+    return {
+      type: "osmosis/concentratedliquidity/tick-accumulator-trackers-request",
+      value: TickAccumulatorTrackersRequest.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: TickAccumulatorTrackersRequestProtoMsg
+  ): TickAccumulatorTrackersRequest {
+    return TickAccumulatorTrackersRequest.decode(message.value);
+  },
+  toProto(message: TickAccumulatorTrackersRequest): Uint8Array {
+    return TickAccumulatorTrackersRequest.encode(message).finish();
+  },
+  toProtoMsg(
+    message: TickAccumulatorTrackersRequest
+  ): TickAccumulatorTrackersRequestProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.concentratedliquidity.v1beta1.TickAccumulatorTrackersRequest",
+      value: TickAccumulatorTrackersRequest.encode(message).finish(),
+    };
+  },
+};
+function createBaseTickAccumulatorTrackersResponse(): TickAccumulatorTrackersResponse {
+  return {
+    spreadRewardGrowthOppositeDirectionOfLastTraversal: [],
+    uptimeTrackers: [],
+  };
+}
+export const TickAccumulatorTrackersResponse = {
+  typeUrl:
+    "/osmosis.concentratedliquidity.v1beta1.TickAccumulatorTrackersResponse",
+  encode(
+    message: TickAccumulatorTrackersResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    for (const v of message.spreadRewardGrowthOppositeDirectionOfLastTraversal) {
+      DecCoin.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    for (const v of message.uptimeTrackers) {
+      UptimeTracker.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): TickAccumulatorTrackersResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTickAccumulatorTrackersResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.spreadRewardGrowthOppositeDirectionOfLastTraversal.push(
+            DecCoin.decode(reader, reader.uint32())
+          );
+          break;
+        case 2:
+          message.uptimeTrackers.push(
+            UptimeTracker.decode(reader, reader.uint32())
+          );
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<TickAccumulatorTrackersResponse>
+  ): TickAccumulatorTrackersResponse {
+    const message = createBaseTickAccumulatorTrackersResponse();
+    message.spreadRewardGrowthOppositeDirectionOfLastTraversal =
+      object.spreadRewardGrowthOppositeDirectionOfLastTraversal?.map((e) =>
+        DecCoin.fromPartial(e)
+      ) || [];
+    message.uptimeTrackers =
+      object.uptimeTrackers?.map((e) => UptimeTracker.fromPartial(e)) || [];
+    return message;
+  },
+  fromAmino(
+    object: TickAccumulatorTrackersResponseAmino
+  ): TickAccumulatorTrackersResponse {
+    return {
+      spreadRewardGrowthOppositeDirectionOfLastTraversal: Array.isArray(
+        object?.spread_reward_growth_opposite_direction_of_last_traversal
+      )
+        ? object.spread_reward_growth_opposite_direction_of_last_traversal.map(
+            (e: any) => DecCoin.fromAmino(e)
+          )
+        : [],
+      uptimeTrackers: Array.isArray(object?.uptime_trackers)
+        ? object.uptime_trackers.map((e: any) => UptimeTracker.fromAmino(e))
+        : [],
+    };
+  },
+  toAmino(
+    message: TickAccumulatorTrackersResponse
+  ): TickAccumulatorTrackersResponseAmino {
+    const obj: any = {};
+    if (message.spreadRewardGrowthOppositeDirectionOfLastTraversal) {
+      obj.spread_reward_growth_opposite_direction_of_last_traversal =
+        message.spreadRewardGrowthOppositeDirectionOfLastTraversal.map((e) =>
+          e ? DecCoin.toAmino(e) : undefined
+        );
+    } else {
+      obj.spread_reward_growth_opposite_direction_of_last_traversal = [];
+    }
+    if (message.uptimeTrackers) {
+      obj.uptime_trackers = message.uptimeTrackers.map((e) =>
+        e ? UptimeTracker.toAmino(e) : undefined
+      );
+    } else {
+      obj.uptime_trackers = [];
+    }
+    return obj;
+  },
+  fromAminoMsg(
+    object: TickAccumulatorTrackersResponseAminoMsg
+  ): TickAccumulatorTrackersResponse {
+    return TickAccumulatorTrackersResponse.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: TickAccumulatorTrackersResponse
+  ): TickAccumulatorTrackersResponseAminoMsg {
+    return {
+      type: "osmosis/concentratedliquidity/tick-accumulator-trackers-response",
+      value: TickAccumulatorTrackersResponse.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: TickAccumulatorTrackersResponseProtoMsg
+  ): TickAccumulatorTrackersResponse {
+    return TickAccumulatorTrackersResponse.decode(message.value);
+  },
+  toProto(message: TickAccumulatorTrackersResponse): Uint8Array {
+    return TickAccumulatorTrackersResponse.encode(message).finish();
+  },
+  toProtoMsg(
+    message: TickAccumulatorTrackersResponse
+  ): TickAccumulatorTrackersResponseProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.concentratedliquidity.v1beta1.TickAccumulatorTrackersResponse",
+      value: TickAccumulatorTrackersResponse.encode(message).finish(),
     };
   },
 };

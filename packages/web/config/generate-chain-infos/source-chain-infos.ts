@@ -269,12 +269,41 @@ const testnetChainInfos: SimplifiedChainInfo[] = [
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://testnet.mintscan.io/kyve-testnet/txs/{txHash}",
   },
+  {
+    rpc: "https://rpc.test.quicksilver.zone:443",
+    rest: "https://lcd.test.quicksilver.zone:443",
+    chainId: "rhye-1",
+    chainName: "Quicksilver Testnet",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("quick"),
+    currencies: [
+      {
+        coinDenom: "QCK",
+        coinMinimalDenom: "uqck",
+        coinDecimals: 6,
+        coinImageUrl: "/tokens/qck.svg",
+        coinGeckoId: "usd-coin",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.0001,
+          average: 0.0001,
+          high: 0.025,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx:
+      "https://testnet.quicksilver.explorers.guru/transaction/{txHash}",
+  },
 ];
 
 const mainnetChainInfos: SimplifiedChainInfo[] = [
   {
-    rpc: OSMOSIS_RPC_OVERWRITE ?? "https://rpc.osmosis.zone/",
-    rest: OSMOSIS_REST_OVERWRITE ?? "https://lcd.osmosis.zone/",
+    rpc: OSMOSIS_RPC_OVERWRITE ?? "https://rpc-osmosis.keplr.app/",
+    rest: OSMOSIS_REST_OVERWRITE ?? "https://lcd-osmosis.keplr.app/",
     chainId: OSMOSIS_CHAIN_ID_OVERWRITE ?? "osmosis-1",
     chainName: OSMOSIS_CHAIN_NAME_OVERWRITE ?? "Osmosis",
     bip44: {
@@ -3556,7 +3585,7 @@ chainInfos.push({
       coinDecimals: 6,
       // coinGeckoId: "tether",
       coinGeckoId: "pool:uusdt.grv",
-      coinImageUrl: "/tokens/usdt.svg",
+      coinImageUrl: "/tokens/usdt.png",
       pegMechanism: "collateralized",
     },
     {
@@ -3582,7 +3611,7 @@ chainInfos.push({
       coinDecimals: 8,
       // coinGeckoId: "wrapped-bitcoin",
       coinGeckoId: "pool:wbtc-satoshi",
-      coinImageUrl: "/tokens/wbtc.png",
+      coinImageUrl: "/tokens/wbtc-with-letters.png",
     },
     {
       coinDenom: "LINK",
@@ -3747,7 +3776,39 @@ chainInfos.push({
       coinMinimalDenom: "pepe-wei",
       coinDecimals: 18,
       coinGeckoId: "pool:pepe",
-      coinImageUrl: "/tokens/pepe.svg",
+      coinImageUrl: "/tokens/pepe-circular.png",
+    },
+    {
+      coinDenom: "cbETH",
+      coinMinimalDenom: "cbeth-wei",
+      coinDecimals: 18,
+      //coinGeckoId: "coinbase-wrapped-staked-eth",
+      coinGeckoId: "pool:cbeth-wei",
+      coinImageUrl: "/tokens/cbeth.png",
+    },
+    {
+      coinDenom: "rETH",
+      coinMinimalDenom: "reth-wei",
+      coinDecimals: 18,
+      //coinGeckoId: "rocket-pool-eth",
+      coinGeckoId: "pool:reth-wei",
+      coinImageUrl: "/tokens/reth.png",
+    },
+    {
+      coinDenom: "sfrxETH",
+      coinMinimalDenom: "sfrxeth-wei",
+      coinDecimals: 18,
+      //coinGeckoId: "staked-frax-ether",
+      coinGeckoId: "pool:sfrxeth-wei",
+      coinImageUrl: "/tokens/sfrxeth.svg",
+    },
+    {
+      coinDenom: "wstETH",
+      coinMinimalDenom: "wsteth-wei",
+      coinDecimals: 18,
+      //coinGeckoId: "staked-ether",
+      coinGeckoId: "pool:wsteth-wei",
+      coinImageUrl: "/tokens/wsteth.svg",
     },
   ],
   feeCurrencies: [
