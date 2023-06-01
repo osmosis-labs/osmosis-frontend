@@ -98,6 +98,13 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "uqck",
         isVerified: true,
       },
+      {
+        counterpartyChainId: "rila-1",
+        sourceChannelId: "channel-110",
+        destChannelId: "channel-0",
+        coinMinimalDenom: "unls",
+        isVerified: true,
+      },
     ]
   : [
       {
