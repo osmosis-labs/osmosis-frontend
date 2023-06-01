@@ -19,6 +19,7 @@ import {
 import { Bounce, ToastContainer } from "react-toastify";
 
 import { Icon } from "~/components/assets";
+import ErrorBoundary from "~/components/error/error-boundary";
 
 import { MainLayout } from "../components/layouts";
 import { OgpMeta } from "../components/ogp-meta";
@@ -125,32 +126,35 @@ function MyApp({ Component, pageProps }: AppProps) {
   }, [t]);
 
   useAmplitudeAnalytics({ init: true });
+
   return (
-    <GetKeplrProvider>
-      <StoreProvider>
-        <Head>
-          {/* metamask Osmosis app icon */}
-          <link
-            rel="shortcut icon"
-            href={`${
-              typeof window !== "undefined" ? window.origin : ""
-            }/osmosis-logo-wc.png`}
+    <ErrorBoundary>
+      <GetKeplrProvider>
+        <StoreProvider>
+          <Head>
+            {/* metamask Osmosis app icon */}
+            <link
+              rel="shortcut icon"
+              href={`${
+                typeof window !== "undefined" ? window.origin : ""
+              }/osmosis-logo-wc.png`}
+            />
+            <link rel="preload" as="image/svg+xml" href={spriteSVGURL} />
+          </Head>
+          <OgpMeta />
+          <IbcNotifier />
+          <ToastContainer
+            toastStyle={{
+              backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
+            }}
+            transition={Bounce}
           />
-          <link rel="preload" as="image/svg+xml" href={spriteSVGURL} />
-        </Head>
-        <OgpMeta />
-        <IbcNotifier />
-        <ToastContainer
-          toastStyle={{
-            backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
-          }}
-          transition={Bounce}
-        />
-        <MainLayout menus={menus}>
-          {Component && <Component {...pageProps} />}
-        </MainLayout>
-      </StoreProvider>
-    </GetKeplrProvider>
+          <MainLayout menus={menus}>
+            {Component && <Component {...pageProps} />}
+          </MainLayout>
+        </StoreProvider>
+      </GetKeplrProvider>
+    </ErrorBoundary>
   );
 }
 
