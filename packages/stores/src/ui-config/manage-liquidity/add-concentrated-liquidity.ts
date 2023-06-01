@@ -4,10 +4,11 @@ import {
   IQueriesStore,
   ObservableQueryBalances,
 } from "@keplr-wallet/stores";
-import { Dec, Int } from "@keplr-wallet/unit";
+import { Dec, Int, RatePretty } from "@keplr-wallet/unit";
 import {
   ActiveLiquidityPerTickRange,
   calculateDepositAmountForBase,
+  calculateDepositAmountForQuote,
   maxSpotPrice,
   maxTick,
   minSpotPrice,
@@ -16,7 +17,7 @@ import {
   roundPriceToNearestTick,
 } from "@osmosis-labs/math";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
-import { action, computed, makeObservable, observable } from "mobx";
+import { action, autorun, computed, makeObservable, observable } from "mobx";
 import { DeepReadonly } from "utility-types";
 
 import { ObservableQueryLiquidityPerTickRange } from "../../queries";
@@ -84,6 +85,9 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   @observable
   protected _quoteDepositAmountIn: AmountConfig;
 
+  @observable
+  protected _anchorAsset: "base" | "quote" = "base";
+
   constructor(
     protected readonly chainGetter: ChainGetter,
     initialChainId: string,
@@ -126,8 +130,53 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
     this._baseDepositAmountIn.setSendCurrency(baseCurrency);
     this._quoteDepositAmountIn.setSendCurrency(quoteCurrency);
+    this._baseDepositAmountIn.setAmount("0");
+    this._quoteDepositAmountIn.setAmount("0");
 
     this.fetchHistoricalChartData();
+
+    // Calculate quote amount when base amount is input and anchor is base
+    autorun(() => {
+      const baseAmountRaw =
+        this.baseDepositAmountIn.getAmountPrimitive().amount;
+      const baseAmount = new Int(baseAmountRaw);
+      const anchor = this._anchorAsset;
+
+      if (anchor !== "base" || baseAmount.lt(new Int(0))) return;
+
+      if (baseAmount.isZero()) this.quoteDepositAmountIn.setAmount("0");
+
+      const [lowerTick, upperTick] = this.tickRange;
+      const quoteAmount = calculateDepositAmountForQuote(
+        this.pool.currentSqrtPrice,
+        lowerTick,
+        upperTick,
+        baseAmount
+      );
+      this.quoteDepositAmountIn.setAmount(quoteAmount.toString());
+    });
+
+    // Calculate base amount when quote amount is input and anchor is quote
+    autorun(() => {
+      const quoteAmountRaw =
+        this.quoteDepositAmountIn.getAmountPrimitive().amount;
+      const quoteAmount = new Int(quoteAmountRaw);
+      const anchor = this._anchorAsset;
+
+      if (anchor !== "quote" || quoteAmount.lt(new Int(0))) return;
+
+      if (quoteAmount.isZero()) this.baseDepositAmountIn.setAmount("0");
+
+      const [lowerTick, upperTick] = this.tickRange;
+      const baseDeposit = calculateDepositAmountForBase(
+        this.pool.currentSqrtPrice,
+        lowerTick,
+        upperTick,
+        quoteAmount
+      );
+      this.baseDepositAmountIn.setAmount(baseDeposit.toString());
+    });
+
     makeObservable(this);
   }
 
@@ -200,22 +249,24 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   }
 
   @computed
-  get depositPercentages(): [Dec, Dec] {
-    if (this.baseDepositOnly) return [new Dec(100), new Dec(0)];
-    if (this.quoteDepositOnly) return [new Dec(0), new Dec(100)];
+  get depositPercentages(): [RatePretty, RatePretty] {
+    if (this.baseDepositOnly) return [new RatePretty(1), new RatePretty(0)];
+    if (this.quoteDepositOnly) return [new RatePretty(0), new RatePretty(1)];
 
-    const quoteDeposit = new Dec(1);
+    const quoteDeposit = new Int(1);
+    const [lowerTick, upperTick] = this.tickRange;
     const baseDeposit = calculateDepositAmountForBase(
-      this.currentPrice,
-      this.tickRange[0],
-      this.tickRange[1],
+      this.pool.currentSqrtPrice,
+      lowerTick,
+      upperTick,
       quoteDeposit
     );
-    const totalDeposit = baseDeposit.add(this.currentPrice);
+
+    const totalDeposit = new Dec(baseDeposit.add(this.currentPrice.truncate()));
 
     return [
-      baseDeposit.quo(totalDeposit).mul(new Dec(100)),
-      this.currentPrice.quo(totalDeposit).mul(new Dec(100)),
+      new RatePretty(new Dec(baseDeposit).quo(totalDeposit)),
+      new RatePretty(this.currentPrice.quo(totalDeposit)),
     ];
   }
 
@@ -244,6 +295,11 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   get modalView(): "overview" | "add_manual" | "add_managed" {
     return this._modalView;
   }
+
+  @action
+  setAnchorAsset = (anchor: "base" | "quote") => {
+    this._anchorAsset = anchor;
+  };
 
   @action
   setHistoricalRange = (range: PriceRange) => {
@@ -291,18 +347,6 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   get fullRange(): boolean {
     return this._fullRange;
   }
-
-  @action
-  setBaseDepositAmountIn = (amount: Dec | number) => {
-    const amountDec = typeof amount === "number" ? new Dec(amount) : amount;
-    this._baseDepositAmountIn.setAmount(amountDec.toString());
-  };
-
-  @action
-  setQuoteDepositAmountIn = (amount: Dec | number) => {
-    const amountDec = typeof amount === "number" ? new Dec(amount) : amount;
-    this._quoteDepositAmountIn.setAmount(amountDec.toString());
-  };
 
   get baseDepositAmountIn(): AmountConfig {
     return this._baseDepositAmountIn;

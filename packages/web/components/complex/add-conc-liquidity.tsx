@@ -1,9 +1,5 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import {
-  calculateDepositAmountForBase,
-  calculateDepositAmountForQuote,
-} from "@osmosis-labs/math";
-import {
   ObservableAddConcentratedLiquidityConfig,
   ObservablePoolDetail,
   ObservableQueryPool,
@@ -299,20 +295,16 @@ const AddConcLiqView: FunctionComponent<
     baseDepositOnly,
     quoteDepositOnly,
     depositPercentages,
-    setQuoteDepositAmountIn,
-    setBaseDepositAmountIn,
     setModalView,
     setMaxRange,
     setMinRange,
     setHoverPrice,
+    setAnchorAsset,
   } = addLiquidityConfig;
 
   const t = useTranslation();
   const [inputMin, setInputMin] = useState("0");
   const [inputMax, setInputMax] = useState("0");
-  const [baseDepositInput, setBaseDepositInput] = useState("0");
-  const [quoteDepositInput, setQuoteDepositInput] = useState("0");
-  const [anchorAsset, setAchorAsset] = useState<"base" | "quote" | "">("");
   const rangeMin = Number(range[0].toString());
   const rangeMax = Number(range[1].toString());
 
@@ -324,54 +316,6 @@ const AddConcLiqView: FunctionComponent<
       setMaxRange(new Dec(_max));
     },
     [priceDecimal, setMinRange, setMaxRange]
-  );
-
-  const calculateQuoteDeposit = useCallback(
-    (amount: number) => {
-      const amt = new Dec(amount);
-      let quoteDeposit: Dec;
-
-      const [lowerTick, upperTick] = addLiquidityConfig.tickRange;
-      quoteDeposit = calculateDepositAmountForQuote(
-        currentPrice,
-        lowerTick,
-        upperTick,
-        amt
-      );
-
-      setQuoteDepositAmountIn(quoteDeposit);
-      setQuoteDepositInput(quoteDeposit.toString());
-    },
-    [
-      currentPrice,
-      addLiquidityConfig.tickRange,
-      setQuoteDepositAmountIn,
-      fullRange,
-      currentPrice,
-    ]
-  );
-
-  const calculateBaseDeposit = useCallback(
-    (amount: number) => {
-      const amt = new Dec(amount);
-      const [lowerTick, upperTick] = addLiquidityConfig.tickRange;
-      const baseDeposit = calculateDepositAmountForBase(
-        currentPrice,
-        lowerTick,
-        upperTick,
-        amt
-      );
-
-      setBaseDepositAmountIn(baseDeposit);
-      setBaseDepositInput(baseDeposit.toString());
-    },
-    [
-      currentPrice,
-      addLiquidityConfig.tickRange,
-      setBaseDepositAmountIn,
-      fullRange,
-      currentPrice,
-    ]
   );
 
   useEffect(() => {
@@ -390,30 +334,6 @@ const AddConcLiqView: FunctionComponent<
     moderatePriceRange,
     updateInputAndRangeMinMax,
     setHoverPrice,
-  ]);
-
-  useEffect(() => {
-    if (anchorAsset === "base") {
-      calculateQuoteDeposit(+baseDepositAmountIn.amount);
-    }
-  }, [
-    rangeMin,
-    rangeMax,
-    anchorAsset,
-    baseDepositAmountIn,
-    calculateQuoteDeposit,
-  ]);
-
-  useEffect(() => {
-    if (anchorAsset === "quote") {
-      calculateBaseDeposit(+quoteDepositAmountIn.amount);
-    }
-  }, [
-    rangeMin,
-    rangeMax,
-    anchorAsset,
-    quoteDepositAmountIn,
-    calculateBaseDeposit,
   ]);
 
   return (
@@ -531,7 +451,7 @@ const AddConcLiqView: FunctionComponent<
                     setMaxRange(val);
                     addLiquidityConfig.setFullRange(false);
                   },
-                  [priceDecimal, setMaxRange, addLiquidityConfig, rangeMin]
+                  [priceDecimal, setMaxRange, addLiquidityConfig]
                 )}
                 offset={{ top: 0, right: 36, bottom: 24 + 28, left: 0 }}
                 horizontal
@@ -571,16 +491,14 @@ const AddConcLiqView: FunctionComponent<
             coinIsToken0={true}
             onUpdate={useCallback(
               (amount) => {
-                setAchorAsset("base");
-                setBaseDepositInput("" + amount);
-                setBaseDepositAmountIn(amount);
-                calculateQuoteDeposit(amount);
+                setAnchorAsset("base");
+                baseDepositAmountIn.setAmount(amount);
               },
-              [calculateQuoteDeposit, setBaseDepositAmountIn]
+              [baseDepositAmountIn, setAnchorAsset]
             )}
-            currentValue={baseDepositInput}
+            currentValue={baseDepositAmountIn.amount}
             outOfRange={quoteDepositOnly}
-            percentage={Number(depositPercentages[0].toString())}
+            percentage={depositPercentages[0].toString()}
           />
           <DepositAmountGroup
             getFiatValue={getFiatValue}
@@ -588,16 +506,14 @@ const AddConcLiqView: FunctionComponent<
             coinIsToken0={false}
             onUpdate={useCallback(
               (amount) => {
-                setAchorAsset("quote");
-                setQuoteDepositInput("" + amount);
-                setQuoteDepositAmountIn(amount);
-                calculateBaseDeposit(amount);
+                setAnchorAsset("quote");
+                quoteDepositAmountIn.setAmount(amount);
               },
-              [calculateBaseDeposit, setQuoteDepositAmountIn]
+              [quoteDepositAmountIn, setAnchorAsset]
             )}
-            currentValue={quoteDepositInput}
+            currentValue={quoteDepositAmountIn.amount}
             outOfRange={baseDepositOnly}
-            percentage={Number(depositPercentages[1].toString())}
+            percentage={depositPercentages[1].toString()}
           />
         </div>
       </section>
@@ -777,18 +693,18 @@ const DepositAmountGroup: FunctionComponent<{
   getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
   coin?: CoinPretty;
   coinIsToken0: boolean;
-  onUpdate: (amount: number) => void;
+  onUpdate: (amount: string) => void;
   currentValue: string;
-  percentage: number;
+  percentage: string;
   outOfRange?: boolean;
 }> = observer(
   ({
     getFiatValue,
     coin,
-    percentage,
     onUpdate,
     coinIsToken0,
     currentValue,
+    percentage,
     outOfRange,
   }) => {
     const { chainStore, queriesStore, accountStore } = useStore();
@@ -804,14 +720,6 @@ const DepositAmountGroup: FunctionComponent<{
           .queryBalances.getQueryBech32Address(bech32Address)
           .getBalanceFromCurrency(coin.currency)
       : null;
-
-    const updateValue = useCallback(
-      (val: string) => {
-        const newVal = Number(val);
-        onUpdate(newVal);
-      },
-      [onUpdate]
-    );
 
     if (outOfRange) {
       return (
@@ -850,9 +758,7 @@ const DepositAmountGroup: FunctionComponent<{
           </div>
           <div className="ml-[.75rem] mr-[2.75rem] flex flex-col">
             <h6>{coin?.denom ?? ""}</h6>
-            <span className="subtitle1 text-osmoverse-400">
-              {Math.round(percentage).toFixed(0)}%
-            </span>
+            <span className="subtitle1 text-osmoverse-400">{percentage}</span>
           </div>
           <div className="relative flex flex-1 flex-col gap-0.5">
             <span className="caption absolute right-0 top-[-16px] mb-[2px] text-right text-wosmongton-300">
@@ -864,7 +770,7 @@ const DepositAmountGroup: FunctionComponent<{
                 inputClassName="!leading-4"
                 type="number"
                 currentValue={currentValue}
-                onInput={updateValue}
+                onInput={onUpdate}
                 rightEntry
               />
               <div className="caption pr-3 text-osmoverse-400">

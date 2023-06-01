@@ -238,7 +238,6 @@ export class ObservableMetamask implements EthWallet {
             );
           }
         } catch (e: any) {
-          console.log("in send", e.code);
           throw e;
         } finally {
           runInAction(() => (this._isSending = null));
