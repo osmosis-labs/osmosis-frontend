@@ -21,6 +21,7 @@ import { useTranslation } from "react-multi-lang";
 import { Button } from "~/components/buttons";
 import ClientOnly from "~/components/client-only";
 import SkeletonLoader from "~/components/skeleton-loader";
+import { Step, Stepper, StepsIndicator } from "~/components/stepper";
 import { WalletRegistry } from "~/config";
 import { useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
@@ -521,7 +522,54 @@ const RightModalContent: FunctionComponent<
       return <QRCodeView wallet={currentWallet!} />;
     }
 
-    return <div className="flex flex-col gap-2"></div>;
+    return (
+      <div>
+        <Stepper
+          className="flex flex-col gap-2"
+          autoplay={{ stopOnHover: true, delayInMs: 8000 }}
+        >
+          <StepsIndicator className="order-1" />
+          <Step>
+            <div className="flex flex-col justify-center text-center">
+              <h1 className="subtitle1">What are wallets?</h1>
+              <p className="body2 text-osmoverse-300">
+                Wallets are used to send, receive, and store all your digital
+                assets like OSMO and ATOM.
+              </p>
+            </div>
+          </Step>
+          <Step>
+            <div className="flex flex-col justify-center text-center">
+              <h1 className="subtitle1">No accounts. No passwords.</h1>
+              <p className="body2 text-osmoverse-300">
+                Use your wallet to sign into many different platforms. No unique
+                accounts or passwords.
+              </p>
+            </div>
+          </Step>
+          <Step>
+            <div className="flex flex-col justify-center text-center">
+              <h1 className="subtitle1">Your keys, your funds.</h1>
+              <p className="body2 text-osmoverse-300">
+                The beauty of a decentralized exchange. None of your assets are
+                ever with us.
+              </p>
+            </div>
+          </Step>
+          <Step>
+            <div className="flex flex-col justify-center text-center">
+              <h1 className="subtitle1">Create a wallet to get started</h1>
+              <p className="body2 text-osmoverse-300">
+                Set up your first wallet and get signed in! Send, receive, or
+                buy assets.
+              </p>
+            </div>
+          </Step>
+        </Stepper>
+
+        <Button>Create a wallet</Button>
+      </div>
+    );
   }
 );
 
