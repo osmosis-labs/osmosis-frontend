@@ -7,12 +7,14 @@ import {
   DecUtils,
   Int,
   IntPretty,
+  PricePretty,
   RatePretty,
 } from "@keplr-wallet/unit";
 import {
-  MultihopSwapResult,
+  NoRouteError,
   OptimizedRoutes,
-  RouteWithInAmount,
+  SplitTokenInQuote,
+  Token,
   TokenOutGivenInRouter,
 } from "@osmosis-labs/pools";
 import { debounce } from "debounce";
@@ -23,20 +25,22 @@ import {
   makeObservable,
   observable,
   override,
+  runInAction,
 } from "mobx";
 import {
+  computedFn,
   fromPromise,
   FULFILLED,
   IPromiseBasedObservable,
   PENDING,
   REJECTED,
 } from "mobx-utils";
-import { IPriceStore } from "src/price";
 
+import { IPriceStore } from "../price";
 import { ObservableQueryPool, OsmosisQueries } from "../queries";
 import { InsufficientBalanceError, NoSendCurrencyError } from "./errors";
 
-type PrettyMultihopSwapResult = {
+type PrettyQuote = {
   amount: CoinPretty;
   beforeSpotPriceWithoutSwapFeeInOverOut: IntPretty;
   beforeSpotPriceWithoutSwapFeeOutOverIn: IntPretty;
@@ -63,24 +67,14 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   @observable
   protected _outCurrencyMinDenom: string | undefined = undefined;
 
-  // routes
+  // quotes
   @observable.ref
-  protected _latestOptimizedRoutes:
-    | IPromiseBasedObservable<RouteWithInAmount[]>
+  protected _latestQuote:
+    | IPromiseBasedObservable<SplitTokenInQuote>
     | undefined = undefined;
   @observable.ref
-  protected _latestSpotPriceRoutes:
-    | IPromiseBasedObservable<RouteWithInAmount[]>
-    | undefined = undefined;
-
-  // swap result
-  @observable.ref
-  protected _latestSwapResult:
-    | IPromiseBasedObservable<MultihopSwapResult>
-    | undefined = undefined;
-  @observable.ref
-  protected _spotPriceResult:
-    | IPromiseBasedObservable<MultihopSwapResult>
+  protected _spotPriceQuote:
+    | IPromiseBasedObservable<SplitTokenInQuote>
     | undefined = undefined;
 
   @override
@@ -113,8 +107,29 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   }
 
   @computed
+  get sendValue(): PricePretty {
+    return (
+      this.priceStore.calculatePrice(
+        new CoinPretty(
+          this.sendCurrency,
+          this.isEmptyInput
+            ? "0"
+            : new Dec(this.amount).mul(
+                DecUtils.getTenExponentN(this.sendCurrency.coinDecimals)
+              )
+        )
+      ) ??
+      new PricePretty(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)!,
+        0
+      )
+    );
+  }
+
+  @computed
   get outCurrency(): AppCurrency {
-    if (this.sendableCurrencies.length <= 1) {
+    if (this.sendableCurrencies.length === 0) {
       // For the case before pools are initially fetched,
       return this.initialSelectCurrencies.out;
     }
@@ -140,6 +155,19 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     return initialCurrency ?? this.sendableCurrencies[1];
   }
 
+  @computed
+  get outValue(): PricePretty {
+    return (
+      this.priceStore.calculatePrice(this.expectedSwapResult.amount) ??
+      new PricePretty(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)!,
+        0
+      )
+    );
+  }
+
+  /** A map of the valid tradable currencies found on Osmosis chain store. */
   @computed
   get sendableCurrencies(): AppCurrency[] {
     if (this._pools.length === 0) {
@@ -173,50 +201,16 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       });
   }
 
-  @computed
-  protected get router(): TokenOutGivenInRouter {
-    const stakeCurrencyMinDenom = this.chainGetter.getChain(this.initialChainId)
-      .stakeCurrency.coinMinimalDenom;
-    const getPoolTotalValueLocked = (poolId: string) => {
-      const queryPool = this._pools.find((pool) => pool.id === poolId);
-      if (queryPool) {
-        return queryPool.computeTotalValueLocked(this.priceStore).toDec();
-      } else {
-        console.warn("Returning 0 TVL for poolId: " + poolId);
-        return new Dec(0);
-      }
-    };
-
-    return new OptimizedRoutes({
-      pools: this._pools.map((pool) => pool.pool),
-      incentivizedPoolIds: this._incentivizedPoolIds,
-      stakeCurrencyMinDenom,
-      getPoolTotalValueLocked,
-    });
-  }
-
-  /** Latest and best route from most recent user input amounts and token selections. */
-  @computed
-  get optimizedRoute(): RouteWithInAmount | undefined {
-    return this._latestOptimizedRoutes?.case({
-      fulfilled: (routes) => routes[0], // get best route
-      rejected: (e) => {
-        console.error("Route rejected", e);
-        return undefined;
-      },
-    });
-  }
-
   /** Prettify swap result for display. */
   @computed
-  get expectedSwapResult(): PrettyMultihopSwapResult {
-    if (this._latestOptimizedRoutes?.state === REJECTED)
-      return this.zeroSwapResult;
-
+  get expectedSwapResult(): PrettyQuote {
     return (
-      this._latestSwapResult?.case({
-        fulfilled: (result) => this.makePrettyMultihopResult(result),
+      this._latestQuote?.case({
+        fulfilled: (quote) => this.makePrettyQuote(quote),
         rejected: (e) => {
+          // this may happen a lot, so don't log to console
+          if (e instanceof NoRouteError) return undefined;
+
           console.error("Swap result rejected", e);
           return undefined;
         },
@@ -224,24 +218,48 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     );
   }
 
+  /** Routes for current quote */
+  @computed
+  get optimizedRoutes(): SplitTokenInQuote["split"] {
+    return (
+      this._latestQuote?.case({
+        fulfilled: ({ split }) => split,
+        rejected: (e) => {
+          // this may happen a lot, so don't log to console
+          if (e instanceof NoRouteError) return [];
+
+          console.error("Optimized routes rejected", e);
+          return [];
+        },
+      }) ?? []
+    );
+  }
+
   /** Quote is loading for user amount and token select inputs. */
   @computed
-  get tradeIsLoading(): boolean {
-    return (
-      this._latestOptimizedRoutes?.state === PENDING ||
-      this._latestSwapResult?.state === PENDING
-    );
+  get isQuoteLoading(): boolean {
+    return this._latestQuote?.state === PENDING;
   }
 
   /** Calculated spot price with amount of 1 token in for currently selected tokens. */
   @computed
   get expectedSpotPrice(): IntPretty {
+    // Use the spot price from the same quote based on the input amount
+    // as the spot price may change based on the input amount and it's routes
+    const quoteFromInputAmount = this._latestQuote;
+    const quoteFromSpotPrice = this._spotPriceQuote;
+    const quote = quoteFromInputAmount ?? quoteFromSpotPrice;
+
     return (
-      this._spotPriceResult?.case({
-        fulfilled: (result) =>
-          this.makePrettyMultihopResult(result)
-            .beforeSpotPriceWithoutSwapFeeInOverOut,
+      quote?.case({
+        fulfilled: (quote) => {
+          return this.makePrettyQuote(quote)
+            .beforeSpotPriceWithoutSwapFeeOutOverIn;
+        },
         rejected: (e) => {
+          // this may happen a lot, so don't log to console
+          if (e instanceof NoRouteError) return undefined;
+
           console.error("Spot price rejected", e);
           return undefined;
         },
@@ -252,42 +270,38 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   /** Spot price for currently selected tokens is loading. */
   @computed
   get isSpotPriceLoading(): boolean {
-    return this._spotPriceResult?.state === PENDING;
+    return this._spotPriceQuote?.state === PENDING;
   }
 
   /** Any error derived from state. */
   @override
   get error(): Error | undefined {
-    // If things are loading or there's no input, there can't be an error
-    if (
-      this.isSpotPriceLoading ||
-      this.isSpotPriceLoading ||
-      this.amount === "" ||
-      !new Dec(this.amount).isPositive()
-    )
+    // If things are loading or there's no input
+    if (this.isSpotPriceLoading || this.isQuoteLoading || this.isEmptyInput) {
+      // if there's no user input, check if the spot price has an error
+      const spotPriceError = this._spotPriceQuote?.value;
+      if (!this.isSpotPriceLoading && spotPriceError instanceof Error) {
+        return spotPriceError;
+      }
+
       return;
+    }
 
     const sendCurrency = this.sendCurrency;
     if (!sendCurrency) {
       return new NoSendCurrencyError("Currency to send not set");
     }
 
-    // If there's an error from the latest generated route result, return it
-    if (this._latestOptimizedRoutes?.state === REJECTED) {
-      return this._latestOptimizedRoutes.case({
-        rejected: (error) => error,
-      });
-    }
-
-    // If there's an error from the latest swap result, return it
-    if (this._latestSwapResult?.state === REJECTED) {
-      return this._latestSwapResult.case({
-        rejected: (error) => error,
-      });
+    // If there's an error from the latest swap quote, return it
+    if (
+      this._latestQuote?.state === REJECTED &&
+      this._latestQuote.value instanceof Error
+    ) {
+      return this._latestQuote.value;
     }
 
     // If the user doesn't have enough balance, return an error
-    if (this.amount !== "") {
+    if (!this.isEmptyInput) {
       const dec = new Dec(this.amount);
       const balance = this.queriesStore
         .get(this.chainId)
@@ -303,6 +317,10 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     return super.error;
   }
 
+  get isEmptyInput() {
+    return new Dec(this.getAmountPrimitive().amount).isZero();
+  }
+
   @computed
   protected get currencyMap(): Map<string, AppCurrency> {
     return this.sendableCurrencies.reduce<Map<string, AppCurrency>>(
@@ -312,7 +330,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   }
 
   @computed
-  protected get zeroSwapResult(): PrettyMultihopSwapResult {
+  protected get zeroSwapResult(): PrettyQuote {
     return {
       amount: new CoinPretty(this.outCurrency, new Dec(0)).ready(false),
       beforeSpotPriceWithoutSwapFeeInOverOut: new IntPretty(0).ready(false),
@@ -332,6 +350,54 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     };
   }
 
+  /** Valid router instance that updates any time pools, incentivzed pool IDs, etc. changes. */
+  @computed
+  protected get router(): TokenOutGivenInRouter | undefined {
+    if (this._pools.length === 0) return;
+
+    // cache lives for the lifetime of the router instance
+    // any time pools are updated (or any observed value), a new router instance is created (with new cache)
+    const stakeCurrencyMinDenom: string | undefined = this.chainGetter.getChain(
+      this.initialChainId
+    ).stakeCurrency.coinMinimalDenom;
+    if (!stakeCurrencyMinDenom) return;
+
+    const getPoolTotalValueLocked = (poolId: string) => {
+      const queryPool = this._pools.find((pool) => pool.id === poolId);
+      if (queryPool) {
+        return queryPool.computeTotalValueLocked(this.priceStore).toDec();
+      } else {
+        console.warn("Returning 0 TVL for poolId: " + poolId);
+        return new Dec(0);
+      }
+    };
+
+    return new OptimizedRoutes({
+      pools: this._pools.map((pool) => pool.pool),
+      preferredPoolIds: this._pools.reduce((preferredIds, pool) => {
+        // prefer concentrated & stable pools with some min amount of liquidity
+        if (
+          (pool.type === "concentrated" &&
+            pool
+              .computeTotalValueLocked(this.priceStore)
+              .toDec()
+              .gt(new Dec(4_000))) ||
+          (pool.type === "stable" &&
+            pool
+              .computeTotalValueLocked(this.priceStore)
+              .toDec()
+              .gt(new Dec(4_000_000)))
+        ) {
+          preferredIds.push(pool.id);
+        }
+        return preferredIds;
+      }, [] as string[]),
+      incentivizedPoolIds: this._incentivizedPoolIds,
+      stakeCurrencyMinDenom,
+      getPoolTotalValueLocked,
+    });
+  }
+
   constructor(
     chainGetter: ChainGetter,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
@@ -349,95 +415,99 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
     this._pools = pools;
 
-    // Recalculate optimized routes when send currency, it's amount, or out currency changes. This is debounced to prevent spamming the server
-    const debounceGenerateRoutes = debounce(
+    ////////
+    // QUOTE
+    // Clear quote output if the input is cleared
+    autorun(() => {
+      // this also handles race conditions because if the user clears the input, then an prev request result arrives, the old result will be cleared
+      if (this._latestQuote?.state === FULFILLED && this.isEmptyInput) {
+        runInAction(() => {
+          this._latestQuote = undefined;
+        });
+      }
+    });
+    // React to user input and request a swap result. This is debounced to prevent spamming the server
+    const debounceGetQuote = debounce(
       (
-        ...params: Parameters<typeof this.router.getOptimizedRoutesByTokenIn>
+        router: TokenOutGivenInRouter,
+        tokenIn: Token,
+        tokenOutDenom: string
       ) => {
-        const routesPromise = this.router.getOptimizedRoutesByTokenIn(
-          ...params
-        );
-        this.setOptimizedRoutes(fromPromise(routesPromise));
+        const futureQuote = router.routeByTokenIn(tokenIn, tokenOutDenom);
+        runInAction(() => {
+          this._latestQuote = fromPromise(futureQuote);
+        });
       },
-      350
+      350,
+      true
     );
     autorun(() => {
       const { denom, amount } = this.getAmountPrimitive();
+      const outCurrencyMinDenom = this.outCurrency.coinMinimalDenom;
+      const router = this.router;
 
-      // Clear any previous user input debounce
-      debounceGenerateRoutes.clear();
+      if (this.isEmptyInput) return;
+      if (!router) return;
 
-      debounceGenerateRoutes(
+      // Clear any previous user input debounce, then call the debounce function
+      debounceGetQuote.clear();
+      debounceGetQuote(
+        router,
         {
           denom,
           amount: new Int(amount),
         },
-        this.outCurrency.coinMinimalDenom
+        outCurrencyMinDenom
       );
     });
 
-    // Clear any output if the input is cleared
-    autorun(() => {
-      const inputCleared =
-        this.amount === "" || !new Dec(this.amount).isPositive();
-
-      // this also handles race conditions because if the user clears the input, then an prev request result arrives, the old result will be cleared
-      if (this._latestSwapResult?.state === FULFILLED && inputCleared) {
-        this.setSwapResult(undefined);
-      }
-    });
-
-    // React to user input and request a swap result. This is debounced to prevent spamming the server
-    const debounceCalculateTokenOut = debounce((route: RouteWithInAmount) => {
-      const tokenOutPromise = this.router.calculateTokenOutByTokenIn(route);
-      this.setSwapResult(fromPromise(tokenOutPromise));
-    }, 350);
-    autorun(() => {
-      const route = this.optimizedRoute;
-
-      // No route or amount input, so no need to calculate a swap result
-      if (!route) {
-        return;
-      }
-
-      // Clear any previous user input debounce
-      debounceCalculateTokenOut.clear();
-
-      debounceCalculateTokenOut(route);
-    });
-
+    ////////
+    // SPOT PRICE
+    const debounceGetSpotPrice = debounce(
+      (
+        router: TokenOutGivenInRouter,
+        tokenIn: Token,
+        tokenOutDenom: string
+      ) => {
+        const futureQuote = router.routeByTokenIn(tokenIn, tokenOutDenom);
+        runInAction(() => {
+          this._spotPriceQuote = fromPromise(futureQuote);
+        });
+      },
+      500
+    );
     // React to changes in send/out currencies, then generate a spot price by directly calculating from the pools
-    autorun(async () => {
-      this.setSpotPriceResult(undefined);
-
-      let bestRoute:
-        | Awaited<ReturnType<typeof this.router.getOptimizedRoutesByTokenIn>>[0]
-        | undefined;
-      /** 1_000_000 uosmo vs 1 uosmo */
+    autorun(() => {
+      /** Use 1_000_000 uosmo (6 decimals) vs 1 uosmo */
       const oneWithDecimals = new Int(
         DecUtils.getTenExponentNInPrecisionRange(this.sendCurrency.coinDecimals)
           .truncate()
           .toString()
       );
-      const tokenIn = {
-        denom: this.sendCurrency.coinMinimalDenom,
-        amount: oneWithDecimals,
-      };
-      const outCurrencyDenom = this.outCurrency.coinMinimalDenom;
-      const router = this.router;
-      try {
-        bestRoute = (
-          await router.getOptimizedRoutesByTokenIn(tokenIn, outCurrencyDenom)
-        )?.[0];
-      } catch (e: any) {
-        // Ignore errors from calculating spot price, as they aren't from user input
-        console.error("Error calculating spot price: ", e.message);
-        return this.setSpotPriceResult(undefined);
-      }
-      if (!bestRoute) return;
 
-      const tokenOutPromise = router.calculateTokenOutByTokenIn(bestRoute);
-      this.setSpotPriceResult(fromPromise(tokenOutPromise));
+      const sendCurrencyMinDenom = this.sendCurrency.coinMinimalDenom;
+      const outCurrencyMinDenom = this.outCurrency.coinMinimalDenom;
+      const router = this.router;
+
+      // don't request a spot price if there's already a quote given an amount
+      const isQuoteLoading = this.isQuoteLoading;
+      const expectedSwapResult = this.expectedSwapResult;
+      const isQuoteFromAmount =
+        isQuoteLoading ||
+        (expectedSwapResult && !expectedSwapResult.amount.toDec().isZero());
+
+      if (isQuoteFromAmount || !router) return;
+
+      // clear any prior reactions
+      debounceGetSpotPrice.clear();
+      debounceGetSpotPrice(
+        router,
+        {
+          denom: sendCurrencyMinDenom,
+          amount: oneWithDecimals,
+        },
+        outCurrencyMinDenom
+      );
     });
 
     makeObservable(this);
@@ -473,7 +543,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
   @action
   switchInAndOut() {
-    // give back the swap fee amount
     const outAmount = this.expectedSwapResult?.amount;
     if (outAmount && outAmount.toDec().isZero()) {
       this.setAmount("");
@@ -496,38 +565,33 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     this._outCurrencyMinDenom = prevInCurrency;
 
     // clear all results of prev input
-    this._latestOptimizedRoutes = undefined;
-    this._latestSwapResult = undefined;
-
-    this._latestSpotPriceRoutes = undefined;
-    this._spotPriceResult = undefined;
+    this._latestQuote = undefined;
+    this._spotPriceQuote = undefined;
   }
 
-  @action
-  protected setOptimizedRoutes(
-    optimizedRoutes: IPromiseBasedObservable<RouteWithInAmount[]> | undefined
-  ) {
-    this._latestOptimizedRoutes = optimizedRoutes;
+  /** Reset user input. */
+  reset() {
+    this.setAmount("");
+    this.setFraction(undefined);
   }
 
-  @action
-  protected setSwapResult(
-    result: IPromiseBasedObservable<MultihopSwapResult> | undefined
-  ) {
-    this._latestSwapResult = result;
-  }
-
-  @action
-  protected setSpotPriceResult(
-    result: IPromiseBasedObservable<MultihopSwapResult> | undefined
-  ) {
-    this._spotPriceResult = result;
-  }
+  /** Calculate the out amount less a given slippage tolerance. */
+  readonly outAmountLessSlippage = computedFn((slippage: Dec) => {
+    return new CoinPretty(
+      this.outCurrency,
+      this.expectedSwapResult.amount
+        .toDec()
+        .mul(new Dec(1).sub(slippage))
+        .mulTruncate(
+          DecUtils.getTenExponentNInPrecisionRange(
+            this.outCurrency.coinDecimals
+          )
+        )
+    );
+  });
 
   /** Convert raw router type into a prettified form ready for display. */
-  protected makePrettyMultihopResult(
-    result: MultihopSwapResult
-  ): PrettyMultihopSwapResult {
+  protected makePrettyQuote(result: SplitTokenInQuote): PrettyQuote {
     const multiplicationInOverOut = DecUtils.getTenExponentN(
       this.outCurrency.coinDecimals - this.sendCurrency.coinDecimals
     );
@@ -581,8 +645,12 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         result.tokenInFeeAmount
       ).locale(false), // locale - remove commas
       swapFee: new RatePretty(result.swapFee),
-      priceImpact: new RatePretty(result.priceImpactTokenOut.neg()),
-      isMultihopOsmoFeeDiscount: result.multiHopOsmoDiscount,
+      priceImpact: new RatePretty(
+        result.priceImpactTokenOut.neg()
+      ).inequalitySymbol(false),
+      isMultihopOsmoFeeDiscount: result.split.some(
+        ({ multiHopOsmoDiscount }) => multiHopOsmoDiscount
+      ),
     };
   }
 }

@@ -1,23 +1,30 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 
-import { Route } from "./route";
+import { RouteWithInAmount } from "./route";
+
+export type Token = {
+  /** Denom of the token. */
+  denom: string;
+  /** Base/min amount of the token. */
+  amount: Int;
+};
 
 export interface TokenOutGivenInRouter {
+  /** Route, with splits, given an in token and out denom. */
+  routeByTokenIn(
+    tokenIn: Token,
+    tokenOutDenom: string
+  ): Promise<SplitTokenInQuote>;
+
+  /** Converges on an optimal set of routes to split through for a given amount of token in and out token. */
   getOptimizedRoutesByTokenIn(
-    tokenIn: {
-      denom: string;
-      amount: Int;
-    },
+    tokenIn: Token,
     tokenOutDenom: string
   ): Promise<RouteWithInAmount[]>;
+  /** Calculate the amount of token out by simulating a swap through a set of routes (split). */
   calculateTokenOutByTokenIn(
-    route: RouteWithInAmount
-  ): Promise<MultihopSwapResult>;
-}
-
-/** Single path through pools, with the initial amount calculated. */
-export interface RouteWithInAmount extends Route {
-  initialAmount: Int;
+    routes: RouteWithInAmount[]
+  ): Promise<SplitTokenInQuote>;
 }
 
 export interface RoutablePool {
@@ -28,28 +35,25 @@ export interface RoutablePool {
 
   /** Get the maximum amount of token that can be swapped in this pool. */
   getLimitAmountByTokenIn(denom: string): Promise<Int>;
-  /** Get the swap result for swapping an amount of token in. */
+  /** Get the swap result for swapping an amount of token in.
+   *  @throws NotEnoughLiquidityError if there is not enough liquidity in the pool.
+   */
   getTokenOutByTokenIn(
-    tokenIn: {
-      denom: string;
-      amount: Int;
-    },
+    tokenIn: Token,
     tokenOutDenom: string,
     swapFee?: Dec
-  ): Promise<SwapResult>;
-  /** Get the amount of token in needed for swapping an amount of token out. */
+  ): Promise<Quote>;
+  /** Get the amount of token in needed for swapping an amount of token out.
+   *  @throws NotEnoughLiquidityError if there is not enough liquidity in the pool.
+   */
   getTokenInByTokenOut(
-    tokenOut: {
-      denom: string;
-      amount: Int;
-    },
+    tokenOut: Token,
     tokenInDenom: string,
     swapFee?: Dec
-  ): Promise<SwapResult>;
+  ): Promise<Quote>;
 }
 
-/** Result of swapping through a pool. */
-export type SwapResult = {
+export type Quote = {
   amount: Int;
   beforeSpotPriceInOverOut: Dec;
   beforeSpotPriceOutOverIn: Dec;
@@ -61,9 +65,14 @@ export type SwapResult = {
   priceImpactTokenOut: Dec;
 };
 
-/** Result of swapping through multiple pools multihop. */
-export type MultihopSwapResult = SwapResult & {
+/** Quote with potential split of in token amount across multiple routes. */
+export type SplitTokenInQuote = Quote & {
+  split: (RouteWithInAmount & {
+    /** Orderered array of the effective swap fees possibly including OSMO discount. */
+    effectiveSwapFees: Dec[];
+    multiHopOsmoDiscount: boolean;
+  })[];
+  /** In amount after fees paid are subtracted. */
   tokenInFeeAmount: Int;
   swapFee: Dec;
-  multiHopOsmoDiscount: boolean;
 };

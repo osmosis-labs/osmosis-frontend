@@ -7,8 +7,6 @@ import {
   waitAccountLoaded,
 } from "../../__tests_e2e__/test-env";
 
-jest.setTimeout(100000);
-
 describe("Create Pool Tx", () => {
   const { accountStore } = new RootStore();
 
@@ -22,7 +20,7 @@ describe("Create Pool Tx", () => {
     const account = accountStore.getAccount(chainId);
 
     await expect(
-      account.osmosis.sendCreateBalancerPoolMsg("0", [], "", (_) => {})
+      account.osmosis.sendCreateBalancerPoolMsg("0", [])
     ).rejects.not.toBeNull();
   });
 
@@ -30,24 +28,19 @@ describe("Create Pool Tx", () => {
     const account = accountStore.getAccount(chainId);
 
     await expect(
-      account.osmosis.sendCreateBalancerPoolMsg(
-        "0",
-        [
-          {
-            weight: "100",
-            token: {
-              currency: {
-                coinDenom: "OSMO",
-                coinMinimalDenom: "uosmo",
-                coinDecimals: 6,
-              },
-              amount: "100",
+      account.osmosis.sendCreateBalancerPoolMsg("0", [
+        {
+          weight: "100",
+          token: {
+            currency: {
+              coinDenom: "OSMO",
+              coinMinimalDenom: "uosmo",
+              coinDecimals: 6,
             },
+            amount: "100",
           },
-        ],
-        "",
-        (_) => {}
-      )
+        },
+      ])
     ).rejects.not.toBeNull();
   });
 
@@ -133,7 +126,7 @@ describe("Create Pool Tx", () => {
             value:
               "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool",
           },
-          { key: "module", value: "gamm" },
+          { key: "module", value: "poolmanager" },
           {
             key: "sender",
             value: account.bech32Address,
@@ -198,7 +191,7 @@ describe("Create Pool Tx", () => {
             value:
               "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool",
           },
-          { key: "module", value: "gamm" },
+          { key: "module", value: "poolmanager" },
           {
             key: "sender",
             value: account.bech32Address,

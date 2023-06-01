@@ -26,6 +26,17 @@
       "goToSite": "Aller au site"
     }
   },
+  "store": {
+    "headerTitle": "Boostez votre expérience",
+    "headerSubtitle": "Le trading n'est que la première étape. Mettez vos actifs au travail et accomplissez bien plus encore avec l'effet de levier, les coffres-forts et au-delà.",
+    "featured": "En vedette",
+    "searchPlaceholder": "Rechercher",
+    "getFeatured": "Être en vedette",
+    "featuredDescription": "Lancez-vous sur l'App Store et accédez à des milliers d'utilisateurs. Si vous souhaitez être répertorié ou mis en vedette, contactez-nous et nous vous répondrons.",
+    "applyButton": "Appliquer",
+    "storeDisclaimer": "Certains contenus ont été préparés par des tiers non affiliés à Osmosis Labs ou à l'une de ses filiales et Osmosis Labs n'est pas responsable de ces contenus. Osmosis Labs n'est pas responsable des erreurs ou des retards dans le contenu, ni des actions entreprises en se basant sur un quelconque contenu. Les informations sont fournies à des fins informatives uniquement et ne constituent pas un conseil en investissement. Ceci n'est pas une recommandation d'achat ou de vente d'un actif numérique particulier ou d'adoption d'une stratégie d'investissement particulière. Osmosis Labs ne fait aucune déclaration quant à l'exactitude, à la pertinence ou à la validité des informations fournies ou pour un actif particulier. Les prix indiqués sont à titre illustratif seulement. Les prix réels des cryptomonnaies et les statistiques associées peuvent varier. Les données présentées peuvent refléter les actifs échangés sur la plateforme d'échange d'Osmosis Labs et d'autres plateformes d'échange de cryptomonnaies sélectionnées.",
+    "allAppsHeader": "Toutes les applications"
+  },
   "assets": {
     "bondedAssets": "Actifs liés",
     "historyTable": {
@@ -107,7 +118,8 @@
         "insufficientBal": "Solde insuffisant",
         "insufficientFee": "Frais insuffisants",
         "reconnectWallet": "Reconnecter {walletName}",
-        "wrongNetworkInWallet": "Mauvais réseau dans le {walletName}"
+        "wrongNetworkInWallet": "Mauvais réseau dans le {walletName}",
+        "seeRequest": "Voir la demande dans {walletName}"
       },
       "from": "De",
       "loading": "Chargement",
@@ -220,8 +232,10 @@
     "info": "Info",
     "pools": "Bassins",
     "stake": "Stake",
+    "store": "Applications",
     "swap": "Échanger",
-    "vote": "Voter"
+    "vote": "Voter",
+    "new": "NOUVEAU"
   },
   "pool": {
     "24hrTradingVolume": "Volume de transactions sur 24h",
@@ -386,5 +400,9 @@
   "unknownError": "Erreur inconnue",
   "viewExplorer": "Voir dans l'exploreur",
   "waitingForTransaction": "Attente de l'inclusion de la transaction dans le bloc",
-  "highPoolInflationWarning": "Des APR élevés peuvent être le résultat de récompenses inflationnistes. Procédez avec prudence."
+  "highPoolInflationWarning": "Des APR élevés peuvent être le résultat de récompenses inflationnistes. Procédez avec prudence.",
+  "ibcx": {
+    "description": "Découvrez le premier Index de l'écosystème Cosmos par ION DAO. En direct sur le mainnet: ",
+    "link": "index.ion.wtf"
+  }
 }

@@ -1,6 +1,6 @@
 import { Menu } from "@headlessui/react";
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { BasePool } from "@osmosis-labs/pools";
+import type { BasePool } from "@osmosis-labs/pools";
 import {
   CellContext,
   createColumnHelper,
@@ -10,6 +10,7 @@ import {
 } from "@tanstack/react-table";
 import classNames from "classnames";
 import EventEmitter from "eventemitter3";
+import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import {
@@ -79,13 +80,21 @@ const searchPoolsMemoedKeys = [
 ];
 
 function getPoolFilters(
-  t: ReturnType<typeof useTranslation>
-): Record<BasePool["type"], string> {
-  return {
+  t: ReturnType<typeof useTranslation>,
+  concentratedLiquidityEnabled: boolean
+): Partial<Record<BasePool["type"], string>> {
+  const base = {
     stable: t("components.table.stable"),
     weighted: t("components.table.weighted"),
-    concentrated: t("components.table.concentrated"),
   };
+
+  if (concentratedLiquidityEnabled) {
+    return {
+      ...base,
+      concentrated: t("components.table.concentrated"),
+    };
+  }
+  return base;
 }
 
 function getIncentiveFilters(
@@ -110,9 +119,13 @@ export const AllPoolsTable: FunctionComponent<{
       useStore();
     const t = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
+    const featureFlags = useFlags();
 
     const router = useRouter();
-    const PoolFilters = useMemo(() => getPoolFilters(t), [t]);
+    const PoolFilters = useMemo(
+      () => getPoolFilters(t, featureFlags.concentratedLiquidity),
+      [t, featureFlags.concentratedLiquidity]
+    );
     const IncentiveFilters = useMemo(() => getIncentiveFilters(t), [t]);
     const poolFilterQuery = String(router.query?.pool ?? "")
       .split(",")
@@ -193,7 +206,12 @@ export const AllPoolsTable: FunctionComponent<{
 
     const allPoolsWithMetrics = derivedDataStore.poolsWithMetrics
       .get(chainId)
-      .getAllPools(sorting[0]?.id, sorting[0]?.desc, isSearching);
+      .getAllPools(
+        sorting[0]?.id,
+        sorting[0]?.desc,
+        isSearching,
+        featureFlags.concentratedLiquidity
+      );
 
     const initiallyFilteredPools = useMemo(
       () =>

@@ -2,7 +2,6 @@ import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter, CoinGeckoPriceStore } from "@keplr-wallet/stores";
 import { FiatCurrency } from "@keplr-wallet/types";
 import { Dec } from "@keplr-wallet/unit";
-import { observable } from "mobx";
 import { computedFn } from "mobx-utils";
 
 import { ObservableQueryPoolGetter } from "../queries";
@@ -17,7 +16,6 @@ export class PoolFallbackPriceStore
   implements IPriceStore
 {
   /** Coin ID => `IntermediateRoute` */
-  @observable.shallow
   protected _intermediateRoutesMap: Map<string, IntermediateRoute>;
 
   constructor(
@@ -28,7 +26,7 @@ export class PoolFallbackPriceStore
       [vsCurrency: string]: FiatCurrency;
     },
     defaultVsCurrency: string,
-    protected readonly queryPool: ObservableQueryPoolGetter,
+    protected readonly queryPools: ObservableQueryPoolGetter,
     intermediateRoutes: IntermediateRoute[]
   ) {
     super(kvStore, supportedVsCurrencies, defaultVsCurrency, {
@@ -51,10 +49,9 @@ export class PoolFallbackPriceStore
       }
 
       try {
-        const routes = this._intermediateRoutesMap;
-        const route = routes.get(coinId);
+        const route = this._intermediateRoutesMap.get(coinId);
         if (route) {
-          const pool = this.queryPool.getPool(route.poolId);
+          const pool = this.queryPools.getPool(route.poolId);
           if (!pool) {
             return;
           }

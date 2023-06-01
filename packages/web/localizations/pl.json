@@ -26,6 +26,17 @@
       "goToSite": "Przejdź do strony"
     }
   },
+  "store": {
+    "headerTitle": "Podkręć swoje doświadczenie",
+    "headerSubtitle": "Handel to dopiero początek. Wykorzystaj swoje aktywa i osiągnij znacznie więcej dzięki dźwigni, skarbcem i innym rozwiązaniom.",
+    "featured": "Wyróżnione",
+    "searchPlaceholder": "Szukaj",
+    "getFeatured": "Zostań wyróżniony",
+    "featuredDescription": "Uruchom aplikację w sklepie z aplikacjami i uzyskaj dostęp do tysięcy użytkowników. Jeśli chcesz się pojawić na liście lub zostać wyróżnionym, skontaktuj się z nami, a my się odezwiemy.",
+    "applyButton": "Aplikuj",
+    "storeDisclaimer": "Niektóre treści zostały przygotowane przez osoby trzecie niezwiązane z Osmosis Labs ani żadnym z jego partnerów, a Osmosis Labs nie ponosi odpowiedzialności za takie treści. Osmosis Labs nie ponosi odpowiedzialności za błędy lub opóźnienia w treści ani za żadne działania podjęte w oparciu o jakąkolwiek treść. Informacje są dostarczane wyłącznie w celach informacyjnych i nie stanowią porady inwestycyjnej. To nie jest rekomendacja zakupu lub sprzedaży konkretnego aktywa cyfrowego ani stosowania konkretnej strategii inwestycyjnej. Osmosis Labs nie składa żadnych deklaracji co do dokładności, przydatności lub ważności żadnych dostarczonych informacji ani co do konkretnego aktywa. Ceny prezentowane są tylko w celach ilustracyjnych. Rzeczywiste ceny kryptowalut i powiązane dane statystyczne mogą się różnić. Prezentowane dane mogą odzwierciedlać aktywa handlowane na giełdzie Osmosis Labs oraz na wybranych innych giełdach kryptowalut.",
+    "allAppsHeader": "Wszystkie aplikacje"
+  },
   "assets": {
     "bondedAssets": "Związane",
     "historyTable": {
@@ -107,7 +118,8 @@
         "insufficientBal": "Niewystarczająca Ilość Środków",
         "insufficientFee": "Niewystarczająca Prowizja",
         "reconnectWallet": "Połącz ponownie {walletName}",
-        "wrongNetworkInWallet": "Nieprawidłowa sieć w {walletName}"
+        "wrongNetworkInWallet": "Nieprawidłowa sieć w {walletName}",
+        "seeRequest": "Zobacz żądanie w {walletName}"
       },
       "from": "Od",
       "loading": "Ładowanie",
@@ -220,8 +232,10 @@
     "info": "Statystyki",
     "pools": "Pule",
     "stake": "Stakuj",
+    "store": "Aplikacje",
     "swap": "Wymień",
-    "vote": "Głosuj"
+    "vote": "Głosuj",
+    "new": "NOWY"
   },
   "pool": {
     "24hrTradingVolume": "24h Wolumen wymian",
@@ -386,5 +400,9 @@
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",
   "waitingForTransaction": "Oczekiwanie na dołączenie transakcji do bloku",
-  "highPoolInflationWarning": "Wysokie APR-y mogą wynikać z nagród inflacyjnych. Postępuj ostrożnie."
+  "highPoolInflationWarning": "Wysokie APR-y mogą wynikać z nagród inflacyjnych. Postępuj ostrożnie.",
+  "ibcx": {
+    "description": "Poznaj pierwszy Indeks Ekosystemu Cosmos od ION DAO. Dostępny na żywo na mainnecie: ",
+    "link": "index.ion.wtf"
+  }
 }

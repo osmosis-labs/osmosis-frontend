@@ -27,6 +27,9 @@ export type SpriteIconId =
   | "sort-down"
   | "check-mark"
   | "minus"
+  | "github"
+  | "twitter"
+  | "medium"
   | "alert-triangle";
 
 /**

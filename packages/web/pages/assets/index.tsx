@@ -1,5 +1,6 @@
 import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
+import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import {
@@ -383,6 +384,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
   ({ poolIds }) => {
     const { chainStore, queriesStore, derivedDataStore } = useStore();
     const t = useTranslation();
+    const featureFlags = useFlags();
 
     const queryOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
@@ -395,7 +397,10 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
         const apr =
           poolBonding.highestBondDuration?.aggregateApr ?? new RatePretty(0);
 
-        if (!pool) {
+        if (
+          !pool ||
+          (pool.type === "concentrated" && !featureFlags.concentratedLiquidity)
+        ) {
           return undefined;
         }
 

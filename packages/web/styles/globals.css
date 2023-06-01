@@ -276,6 +276,25 @@
   }
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pillLoad {
+  from {
+    opacity: 0;
+  }
+  to {
+    transform: initial;
+    opacity: 1;
+  }
+}
+
 .tippy-box[data-animation="fade"][data-state="hidden"] {
   opacity: 0;
 }

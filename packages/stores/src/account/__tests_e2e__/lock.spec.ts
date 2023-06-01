@@ -14,7 +14,7 @@ describe("Lock Token Tx", () => {
     "cream sport mango believe inhale text fish rely elegant below earth april wall rug ritual blossom cherry detail length blind digital proof identify ride"
   );
   const account = accountStore.getAccount(chainId);
-  account.cosmos.broadcastMode = "block";
+  account.cosmos.broadcastMode = "sync";
 
   beforeEach(async () => {
     await waitAccountLoaded(account);

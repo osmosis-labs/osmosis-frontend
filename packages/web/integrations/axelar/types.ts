@@ -54,6 +54,7 @@ export const AxelarChainIds_SourceChainMap: {
       Moonbeam: "Moonbeam",
       Polygon: "Polygon",
       filecoin: "Filecoin",
+      arbitrum: "Arbitrum",
     };
 
 export type SourceChainTokenConfig = {

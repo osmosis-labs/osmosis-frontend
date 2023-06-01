@@ -74,6 +74,36 @@
       "goToSite": "Go to Site"
     }
   },
+  "store": {
+    "headerTitle": "Supercharge your experience",
+    "headerSubtitle": "Trading is just the first step. Put your assets to work and accomplish so much more with leverage, vaults, and beyond.",
+    "featured": "Featured",
+    "searchPlaceholder": "Search",
+    "getFeatured": "Get Featured",
+    "featuredDescription": "Launch on the app store and get access to thousands of users. If you want to get listed or featured, reach out and we’ll be in touch.",
+    "applyButton": "Apply",
+    "storeDisclaimer": "Certain content has been prepared by third parties not affiliated with Osmosis Labs or any of its affiliates and Osmosis Labs is not responsible for such content. Osmosis Labs is not liable for any errors or delays in content, or for any actions taken in reliance on any content. Information is provided for informational purposes only and is not investment advice. This is not a recommendation to buy or sell a particular digital asset or to employ a particular investment strategy. Osmosis Labs makes no representation on the accuracy, suitability, or validity of any information provided or for a particular asset. Prices shown are for illustrative purposes only. Actual cryptocurrency prices and associated stats may vary. Data presented may reflect assets traded on Osmosis Labs’s exchange and select other cryptocurrency exchanges.",
+    "allAppsHeader": "All Apps"
+  },
+  "addConcentratedLiquidityIntro": {
+    "title": "Introducing Supercharged Liquidity",
+    "poolDetailTitle": "Supercharge your DAI/OSMO",
+    "learnMoreTitle": "What is Supercharged Liquidity?",
+    "subtitle": "Crushing inflation, increasing earning potential, no bonding periods",
+    "body": "OSMO token holders, rejoice. Supercharged liquidity will drastically cut inflation while also giving liquidity providers significantly more leverage. And no more bonding periods! You can remove liquidity at any time.",
+    "body2": "We’ll be rolling out upgraded pools incrementally, starting with Pool #8: DAI/OSMO. If you’re interested in creating a position, learn more below.",
+    "explorePoolCta": "Explore the pool",
+    "upgradePositionCta": "Upgrade your position",
+    "secondaryCta": "Learn in 30s",
+    "tutorialA": {
+      "1": "Use way less capital to earn the same amount or more in pools. Here’s how it works.",
+      "2": "Instead of setting and forgetting a position, it’s a bit more active. You, Bob, Mary, and Ammelia can choose where to “concentrate” your liquidity.",
+      "3": "Pick a strategy that best suits you. Woz might have an aggressive strategy that earns more, but only if the current price remains in his range.",
+      "4": "Ammelia chose a passive strategy. By distributing a little bit across the entire span, she earns less but never goes out of range.",
+      "5": "If the price goes out of your range, all assets will be converted to the lower nominal value of the two. This will revert if the price re-enters your range. Passive strategies are easier to manage.",
+      "6": "Finally, the longer you keep your position open, the more incentives you might get. There are no bonding periods and you’re free to remove your liquidity at any time."
+    }
+  },
   "assets": {
     "bondedAssets": "Bonded",
     "historyTable": {
@@ -155,7 +185,8 @@
         "insufficientBal": "Insufficient Balance",
         "insufficientFee": "Insufficient Fee",
         "reconnectWallet": "Reconnect {walletName}",
-        "wrongNetworkInWallet": "Wrong network in {walletName}"
+        "wrongNetworkInWallet": "Wrong network in {walletName}",
+        "seeRequest": "See request in {walletName}"
       },
       "from": "From",
       "loading": "Loading",
@@ -242,7 +273,7 @@
     "percentageSum": "Sum of percentages is not 100",
     "scalingFactorTooLow": "Scaling factor too low",
     "zeroAmount": "Amount is zero",
-    "invalidRange":  "Invalid price range"
+    "invalidRange": "Invalid price range"
   },
   "keplr": {
     "extension": "Keplr Browser Extension",
@@ -269,8 +300,10 @@
     "info": "Stats",
     "pools": "Pools",
     "stake": "Stake",
+    "store": "Apps",
     "swap": "Swap",
-    "vote": "Vote"
+    "vote": "Vote",
+    "new": "NEW"
   },
   "pool": {
     "24hrTradingVolume": "24h Trading volume",
@@ -405,7 +438,7 @@
     "titleMobile": "Select Validator"
   },
   "swap": {
-    "autoRouter": "Route",
+    "autoRouter": "Route taken",
     "autoRouterToggle": {
       "hide": "Hide",
       "show": "Show"
@@ -435,5 +468,9 @@
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",
   "waitingForTransaction": "Waiting for transaction to be included in the block",
-  "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution."
+  "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution.",
+  "ibcx": {
+    "description": "Meet the first Cosmos Ecosystem Index from ION DAO. Live on mainnet: ",
+    "link": "index.ion.wtf"
+  }
 }

@@ -3,14 +3,14 @@ import { FunctionComponent } from "react";
 
 import { useConnectWalletModalRedirect } from "~/hooks";
 
-import { TradeClipboard } from "../components/trade-clipboard";
+import { SwapTool } from "../components/swap-tool";
 import { ModalBase, ModalBaseProps } from "./base";
 
-interface Props extends ModalBaseProps {
-  pools: ObservableQueryPool[];
-}
-
-export const TradeTokens: FunctionComponent<Props> = (props) => {
+export const TradeTokens: FunctionComponent<
+  {
+    memoedPools: ObservableQueryPool[];
+  } & ModalBaseProps
+> = (props) => {
   const { showModalBase, accountActionButton, walletConnected } =
     useConnectWalletModalRedirect({}, props.onRequestClose);
 
@@ -21,8 +21,8 @@ export const TradeTokens: FunctionComponent<Props> = (props) => {
       hideCloseButton
       className="!w-fit !p-0"
     >
-      <TradeClipboard
-        pools={props.pools}
+      <SwapTool
+        pools={props.memoedPools}
         isInModal
         onRequestModalClose={props.onRequestClose}
         swapButton={!walletConnected ? accountActionButton : undefined}
