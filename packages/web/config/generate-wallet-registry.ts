@@ -27,7 +27,7 @@ const WalletRegistry: (Wallet & {
   },
   {
     ...leapExtensionInfo,
-    logo: "/wallets/leap.png",
+    logo: "/wallets/leap.svg",
     lazyInstallUrl: "@cosmos-kit/leap-extension",
     walletClassName: "LeapExtensionWallet",
   },
