@@ -458,8 +458,8 @@
   "viewExplorer": "مشاهده جزئیات تراکنش",
   "waitingForTransaction": "صبر کنید تا یک تراکنش در بلاک قرار بگیرد",
   "highPoolInflationWarning": "نرخ سود سالانه بالا ممکن است ناشی از پاداش‌های تورمی باشد. با احتیاط ادامه دهید.",
-  "ibcx": {
-    "description": "با نخستین شاخص اکوسیستم کوزموس از ION DAO آشنا شوید. فعال در مین‌نت: ",
-    "link": "index.ion.wtf"
+  "autonomy": {
+    "description": "تحقیق در حد و سفارش‌های توقفی که توسط Autonomy ارائه شده‌اند: ",
+    "link": "osmosis.autoswap.trade"
   }
 }

@@ -508,7 +508,7 @@ export class OsmosisAccountImpl {
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#swap-exact-amount-in
    * @param routes Desired pools to swap through.
    * @param tokenIn Token being swapped.
-   * @param maxSlippage Max tolerated slippage.
+   * @param tokenOutMinAmount Min amount of out token.
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fullfillment.
    */
@@ -518,7 +518,7 @@ export class OsmosisAccountImpl {
       tokenOutCurrency: Currency;
     }[],
     tokenIn: { currency: Currency; amount: string },
-    maxSlippage: string = "0",
+    tokenOutMinAmount: string,
     memo: string = "",
     stdFee: Partial<StdFee> = {},
     signOptions?: KeplrSignOptions,
@@ -530,8 +530,6 @@ export class OsmosisAccountImpl {
       this.chainId,
       "swapExactAmountIn",
       async () => {
-        // refresh data and get pools
-        await queries.queryIncentivizedPools.waitFreshResponse();
         const pools: Pool[] = [];
         for (const route of routes) {
           const queryPool = queries.queryGammPools.getPool(route.poolId);
@@ -612,39 +610,6 @@ export class OsmosisAccountImpl {
           };
         });
 
-        const estimated = PoolMath.estimateMultihopSwapExactAmountIn(
-          {
-            currency: tokenIn.currency,
-            amount: new Dec(tokenIn.amount)
-              .mul(
-                DecUtils.getTenExponentNInPrecisionRange(
-                  tokenIn.currency.coinDecimals
-                )
-              )
-              .truncate()
-              .toString(),
-          },
-          poolRoutes,
-          this.chainGetter.getChain(this.chainId).stakeCurrency.coinMinimalDenom
-        );
-        const maxSlippageDec = new Dec(maxSlippage).quo(
-          DecUtils.getTenExponentNInPrecisionRange(2)
-        );
-
-        const tokenOutMinAmount = maxSlippageDec.equals(new Dec(0))
-          ? new Int(1)
-          : PoolMath.calcPriceImpactWithAmount(
-              estimated.spotPriceBeforeRaw,
-              new Dec(tokenIn.amount)
-                .mul(
-                  DecUtils.getTenExponentNInPrecisionRange(
-                    tokenIn.currency.coinDecimals
-                  )
-                )
-                .truncate(),
-              maxSlippageDec
-            );
-
         const amount = new Dec(tokenIn.amount)
           .mul(
             DecUtils.getTenExponentNInPrecisionRange(
@@ -714,7 +679,7 @@ export class OsmosisAccountImpl {
    * @param poolId Id of pool to swap within.
    * @param tokenIn Token being swapped in. `tokenIn.amount` is NOT in micro.
    * @param tokenOutCurrency Currency of outgoing token.
-   * @param maxSlippage Max tolerated slippage.
+   * @param tokenOutMinAmount Min amount of out token.
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fullfillment.
    */
@@ -722,7 +687,7 @@ export class OsmosisAccountImpl {
     poolId: string,
     tokenIn: { currency: Currency; amount: string },
     tokenOutCurrency: Currency,
-    maxSlippage: string = "0",
+    tokenOutMinAmount: string,
     memo: string = "",
     stdFee: Partial<StdFee> = {},
     signOptions?: KeplrSignOptions,
@@ -744,23 +709,6 @@ export class OsmosisAccountImpl {
           throw new Error("Unknown pool");
         }
 
-        // reconcile weighted and stable pool asset data
-        const inPoolAsset = queryPool.getPoolAsset(
-          tokenIn.currency.coinMinimalDenom
-        );
-        const outPoolAsset = queryPool.getPoolAsset(
-          tokenOutCurrency.coinMinimalDenom
-        );
-        const inPoolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
-          ({ denom }) => denom === inPoolAsset.amount.currency.coinMinimalDenom
-        )?.weight;
-        const outPoolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
-          ({ denom }) => denom === outPoolAsset.amount.currency.coinMinimalDenom
-        )?.weight;
-        const poolAssets = queryPool.stableSwapInfo
-          ? queryPool.stableSwapInfo.assets
-          : [];
-
         const inUAmount = new Dec(tokenIn.amount)
           .mul(
             DecUtils.getTenExponentNInPrecisionRange(
@@ -769,40 +717,6 @@ export class OsmosisAccountImpl {
           )
           .truncate();
         const coin = new Coin(tokenIn.currency.coinMinimalDenom, inUAmount);
-
-        const estimated = PoolMath.estimateSwapExactAmountIn(
-          {
-            // ...pool, <= does not work w/ getters
-            swapFee: pool.swapFee,
-            inPoolAsset: {
-              ...inPoolAsset.amount.currency,
-              amount: new Int(inPoolAsset.amount.toCoin().amount),
-              weight: inPoolAssetWeight
-                ? new Int(inPoolAssetWeight.toDec().truncate().toString())
-                : undefined,
-            },
-            outPoolAsset: {
-              denom: outPoolAsset.amount.currency.coinMinimalDenom,
-              amount: new Int(outPoolAsset.amount.toCoin().amount),
-              weight: outPoolAssetWeight
-                ? new Int(outPoolAssetWeight.toDec().truncate().toString())
-                : undefined,
-            },
-            poolAssets,
-          },
-          coin,
-          tokenOutCurrency
-        );
-        const maxSlippageDec = new Dec(maxSlippage).quo(
-          DecUtils.getTenExponentNInPrecisionRange(2)
-        );
-        const tokenOutMinAmount = maxSlippageDec.equals(new Dec(0))
-          ? new Int(1)
-          : PoolMath.calcPriceImpactWithAmount(
-              estimated.raw.spotPriceBefore,
-              inUAmount,
-              maxSlippageDec
-            );
 
         const msg = this.msgOpts.swapExactAmountIn.messageComposer({
           routes: [

@@ -422,26 +422,9 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       return new IntPretty(0).ready(false);
     }
 
-    const multiplicationInOverOut = DecUtils.getTenExponentN(
-      this.outCurrency.coinDecimals - this.sendCurrency.coinDecimals
-    );
-    const beforeSpotPriceWithoutSwapFeeInOverOutDec =
-      result.beforeSpotPriceInOverOut.mulTruncate(
-        new Dec(1).sub(result.swapFee)
-      );
-
-    // low price vs in asset
-    if (
-      beforeSpotPriceWithoutSwapFeeInOverOutDec.isZero() ||
-      multiplicationInOverOut.isZero()
-    ) {
-      return new IntPretty(0).ready(false);
-    }
-
-    return new IntPretty(
-      new Dec(1)
-        .quoTruncate(beforeSpotPriceWithoutSwapFeeInOverOutDec)
-        .quoTruncate(multiplicationInOverOut)
+    // convert to out over in
+    return new IntPretty(result.amount).moveDecimalPointLeft(
+      this.outCurrency.coinDecimals
     );
   }
 
