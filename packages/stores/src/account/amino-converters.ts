@@ -19,16 +19,6 @@ const osmosisAminoConverters: Record<
   }
 > = {
   ...originalOsmosisAminoConverters,
-  /**
-   * Override swap exact amount amino name since name does not match in osmosis node.
-   * @see https://github.com/osmosis-labs/osmosis/blob/main/proto/osmosis/gamm/v1beta1/tx.proto#L85
-   */
-  "/osmosis.gamm.v1beta1.MsgSwapExactAmountIn": {
-    ...originalOsmosisAminoConverters[
-      "/osmosis.gamm.v1beta1.MsgSwapExactAmountIn"
-    ],
-    aminoType: "osmosis/gamm/swap-exact-amount-in",
-  },
   "/osmosis.lockup.MsgBeginUnlocking": {
     ...originalOsmosisAminoConverters["/osmosis.lockup.MsgBeginUnlocking"],
     // The amino type in telescope is not compatible with our nodes.

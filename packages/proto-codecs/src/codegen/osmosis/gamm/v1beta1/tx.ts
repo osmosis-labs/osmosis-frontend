@@ -138,7 +138,7 @@ export interface MsgSwapExactAmountInAmino {
   token_out_min_amount: string;
 }
 export interface MsgSwapExactAmountInAminoMsg {
-  type: "osmosis/gamm/exit-pool";
+  type: "osmosis/gamm/swap-exact-amount-in";
   value: MsgSwapExactAmountInAmino;
 }
 /** ===================== MsgSwapExactAmountIn */
@@ -897,7 +897,7 @@ export const MsgSwapExactAmountIn = {
   },
   toAminoMsg(message: MsgSwapExactAmountIn): MsgSwapExactAmountInAminoMsg {
     return {
-      type: "osmosis/gamm/exit-pool",
+      type: "osmosis/gamm/swap-exact-amount-in",
       value: MsgSwapExactAmountIn.toAmino(message),
     };
   },
