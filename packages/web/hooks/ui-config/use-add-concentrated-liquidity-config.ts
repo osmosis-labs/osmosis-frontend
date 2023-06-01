@@ -53,7 +53,7 @@ export function useAddConcentratedLiquidityConfig(
   const addLiquidity = useCallback(async () => {
     return new Promise<void>(async (resolve, reject) => {
       try {
-        await account.osmosis.createConcentratedLiquidityPosition(
+        await account.osmosis.sendCreateConcentratedLiquidityPositionMsg(
           config.poolId,
           {
             currency: config.baseDepositAmountIn.sendCurrency,
