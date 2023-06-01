@@ -18,8 +18,8 @@ import React, {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
+import ClientOnly from "~/components/client-only";
 import SkeletonLoader from "~/components/skeleton-loader";
 import { WalletRegistry } from "~/config";
 import { useWindowSize } from "~/hooks";
@@ -109,34 +109,37 @@ export const WalletSelectModal: FunctionComponent<
     <ModalBase
       isOpen={isOpen}
       onRequestClose={onClose}
-      onRequestBack={
-        modalView !== "list"
-          ? () => {
-              if (
-                walletStatus === WalletStatus.Connecting ||
-                walletStatus === WalletStatus.Rejected ||
-                walletStatus === WalletStatus.Error
-              ) {
-                walletRepo?.disconnect();
-                walletRepo?.activate();
-              }
-              setModalView("list");
-            }
-          : undefined
-      }
-      className="max-h-screen w-full max-w-[896px] overflow-auto"
-      title={t("connectWallet")}
+      hideCloseButton
+      // onRequestBack={
+      //   modalView !== "list"
+      //     ? () => {
+      //         if (
+      //           walletStatus === WalletStatus.Connecting ||
+      //           walletStatus === WalletStatus.Rejected ||
+      //           walletStatus === WalletStatus.Error
+      //         ) {
+      //           walletRepo?.disconnect();
+      //           walletRepo?.activate();
+      //         }
+      //         setModalView("list");
+      //       }
+      //     : undefined
+      // }
+      className="max-h-screen w-full max-w-[896px] overflow-auto px-0 py-0"
+      // title={t("connectWallet")}
     >
-      <div className="pt-8">
-        <div className="w-3/12">
-          <LeftModalContent
-            {...props}
-            onRequestClose={onClose}
-            modalView={modalView}
-            setModalView={setModalView}
-          />
+      <div className="flex min-h-[50vh]">
+        <div className="w-full max-w-[284px] bg-[rgba(20,15,52,0.2)] py-8 pl-8 pr-5">
+          <ClientOnly>
+            <LeftModalContent
+              {...props}
+              onRequestClose={onClose}
+              modalView={modalView}
+              setModalView={setModalView}
+            />
+          </ClientOnly>
         </div>
-        <div className="w-8/12">
+        <div className="w-full pt-8">
           <RightModalContent
             {...props}
             onRequestClose={onClose}
@@ -154,140 +157,139 @@ const LeftModalContent: FunctionComponent<
     ComponentPropsWithoutRef<typeof WalletSelectModal>,
     "walletRepo" | "onRequestClose" | "onConnect"
   > & { modalView: ModalView; setModalView: (view: ModalView) => void }
-> = observer(
-  ({
-    walletRepo,
-    onRequestClose,
-    modalView,
-    onConnect: onConnectProp,
-    setModalView,
-  }) => {
-    const { accountStore } = useStore();
-    const t = useTranslation();
-    const { isMobile } = useWindowSize();
+> = observer(({ walletRepo, onConnect: onConnectProp, setModalView }) => {
+  const { accountStore } = useStore();
+  const { isMobile } = useWindowSize();
+  const t = useTranslation();
 
-    const [lazyWalletInfo, setLazyWalletInfo] =
-      useState<(typeof WalletRegistry)[number]>();
+  const [_lazyWalletInfo, setLazyWalletInfo] =
+    useState<(typeof WalletRegistry)[number]>();
 
-    const currentWallet = walletRepo?.current;
-    const walletInfo = currentWallet?.walletInfo ?? lazyWalletInfo;
-
-    const onConnect = async (
-      sync: boolean,
-      wallet?: ChainWalletBase | (typeof WalletRegistry)[number]
-    ) => {
-      if (!wallet) return;
-      if (!("lazyInstall" in wallet)) {
-        wallet
-          .connect(sync)
-          .then(() => {
-            onConnectProp?.();
-          })
-          .catch((e) =>
-            console.error(
-              "Error while connecting to direct wallet. Details: ",
-              e
-            )
-          );
-        return;
-      }
-
-      const installedWallet = walletRepo?.wallets.find(
-        ({ walletName }) => walletName === wallet.name
-      );
-
-      // if wallet is not installed, install it
-      if (!installedWallet && "lazyInstall" in wallet) {
-        setLazyWalletInfo(wallet);
-        setModalView("connecting");
-
-        // wallet is now walletInfo
-        const walletInfo = wallet;
-        const WalletClass = await wallet.lazyInstall();
-
-        const walletManager = accountStore.addWallet(
-          new WalletClass(walletInfo)
+  const onConnect = async (
+    sync: boolean,
+    wallet?: ChainWalletBase | (typeof WalletRegistry)[number]
+  ) => {
+    if (!wallet) return;
+    if (!("lazyInstall" in wallet)) {
+      wallet
+        .connect(sync)
+        .then(() => {
+          onConnectProp?.();
+        })
+        .catch((e) =>
+          console.error("Error while connecting to direct wallet. Details: ", e)
         );
-        walletManager.onMounted();
+      return;
+    }
 
-        return walletManager
-          .getMainWallet(wallet.name)
-          .connect(sync)
-          .then(() => {
-            setLazyWalletInfo(undefined);
-            onConnectProp?.();
-          })
-          .catch((e) =>
-            console.error(
-              "Error while connecting to newly installed wallet. Details: ",
-              e
-            )
-          );
-      } else {
-        installedWallet
-          ?.connect(sync)
-          .then(() => {
-            onConnectProp?.();
-          })
-          .catch((e) =>
-            console.error(
-              "Error while connecting to installed wallet. Details: ",
-              e
-            )
-          );
+    const installedWallet = walletRepo?.wallets.find(
+      ({ walletName }) => walletName === wallet.name
+    );
+
+    // if wallet is not installed, install it
+    if (!installedWallet && "lazyInstall" in wallet) {
+      setLazyWalletInfo(wallet);
+      setModalView("connecting");
+
+      // wallet is now walletInfo
+      const walletInfo = wallet;
+      const WalletClass = await wallet.lazyInstall();
+
+      const walletManager = accountStore.addWallet(new WalletClass(walletInfo));
+      walletManager.onMounted();
+
+      return walletManager
+        .getMainWallet(wallet.name)
+        .connect(sync)
+        .then(() => {
+          setLazyWalletInfo(undefined);
+          onConnectProp?.();
+        })
+        .catch((e) =>
+          console.error(
+            "Error while connecting to newly installed wallet. Details: ",
+            e
+          )
+        );
+    } else {
+      installedWallet
+        ?.connect(sync)
+        .then(() => {
+          onConnectProp?.();
+        })
+        .catch((e) =>
+          console.error(
+            "Error while connecting to installed wallet. Details: ",
+            e
+          )
+        );
+    }
+  };
+
+  const wallets = [...WalletRegistry]
+    // If mobile, filter out browser wallets
+    .filter((w) => (isMobile ? !w.mobileDisabled : true));
+
+  const categories = wallets.reduce(
+    (acc, wallet) => {
+      if (wallet.mode === "wallet-connect") {
+        acc["Mobile Wallets"].push(wallet);
+        return acc;
       }
-    };
 
-    const wallets = [...WalletRegistry]
-      // If mobile, filter out browser wallets
-      .filter((w) => (isMobile ? !w.mobileDisabled : true))
-      // Wallet connect should be last
-      .sort((a, b) => {
-        if (a.mode === b.mode) {
-          return 0;
-        } else if (a.mode !== "wallet-connect") {
-          return -1;
-        } else {
-          // Move wallet-connect to the end
-          return 1;
-        }
-      });
+      if (wallet.windowPropertyName && wallet.windowPropertyName in window) {
+        acc["Installed Wallets"].push(wallet);
+        return acc;
+      }
 
-    return (
-      <div className="flex flex-col gap-2">
-        <div className="grid max-h-[50vh] grid-cols-2 gap-3 overflow-auto">
-          {wallets?.map((wallet) => {
+      acc["Other Wallets"].push(wallet);
+      return acc;
+    },
+    {
+      "Installed Wallets": [] as (typeof WalletRegistry)[number][],
+      "Mobile Wallets": [] as (typeof WalletRegistry)[number][],
+      "Other Wallets": [] as (typeof WalletRegistry)[number][],
+    }
+  );
+
+  return (
+    <section className="flex max-h-[50vh] flex-col gap-8 overflow-auto">
+      <h1 className="text-h6 font-h6 tracking-wider">{t("connectWallet")}</h1>
+      <div className="flex  flex-col gap-8">
+        {Object.entries(categories)
+          .filter(([_, wallets]) => wallets.length > 0)
+          .map(([categoryName, wallets]) => {
             return (
-              <button
-                className={classNames(
-                  "flex items-center gap-3 rounded-xl bg-osmoverse-900 px-3 text-h6 font-h6 transition-colors hover:bg-osmoverse-700",
-                  "col-span-2 py-3 font-normal"
-                )}
-                key={wallet.name}
-                onClick={() => onConnect(true, wallet)}
-              >
-                <img className="h-16 w-16" src={wallet.logo} alt="" />
-                <div className="flex flex-col gap-1 text-left">
-                  <span>{wallet.prettyName}</span>
-                  <span className="text-body2 font-body2 text-osmoverse-500">
-                    {wallet.mode === "wallet-connect"
-                      ? "Mobile wallet"
-                      : "Browser extension"}
-                  </span>
+              <div key={categoryName} className="flex flex-col">
+                <h2 className="subtitle1 text-osmoverse-300">{categoryName}</h2>
+
+                <div className="flex flex-col">
+                  {wallets.map((wallet) => (
+                    <button
+                      className={classNames(
+                        "button flex w-full items-center gap-3 rounded-xl px-3 font-bold text-osmoverse-100 transition-colors hover:bg-osmoverse-700",
+                        "col-span-2 py-3 font-normal"
+                      )}
+                      key={wallet.name}
+                      onClick={() => onConnect(true, wallet)}
+                    >
+                      <Image
+                        src={wallet.logo ?? "/"}
+                        width={40}
+                        height={40}
+                        alt=""
+                      />
+                      <span>{wallet.prettyName}</span>
+                    </button>
+                  ))}
                 </div>
-                {wallet.mode === "wallet-connect" && (
-                  <div className="flex-1" title="WalletConnect">
-                    <Icon id="walletconnect" className="ml-auto" />
-                  </div>
-                )}
-              </button>
+              </div>
             );
           })}
-        </div>
       </div>
-    );
-  }
-);
+    </section>
+  );
+});
 
 const RightModalContent: FunctionComponent<
   Pick<
@@ -304,7 +306,6 @@ const RightModalContent: FunctionComponent<
   }) => {
     const { accountStore } = useStore();
     const t = useTranslation();
-    const { isMobile } = useWindowSize();
 
     const [lazyWalletInfo, setLazyWalletInfo] =
       useState<(typeof WalletRegistry)[number]>();
@@ -519,21 +520,6 @@ const RightModalContent: FunctionComponent<
     if (modalView === "qrCode") {
       return <QRCodeView wallet={currentWallet!} />;
     }
-
-    const wallets = [...WalletRegistry]
-      // If mobile, filter out browser wallets
-      .filter((w) => (isMobile ? !w.mobileDisabled : true))
-      // Wallet connect should be last
-      .sort((a, b) => {
-        if (a.mode === b.mode) {
-          return 0;
-        } else if (a.mode !== "wallet-connect") {
-          return -1;
-        } else {
-          // Move wallet-connect to the end
-          return 1;
-        }
-      });
 
     return <div className="flex flex-col gap-2"></div>;
   }
