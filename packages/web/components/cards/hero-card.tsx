@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { EventName } from "~/config";
@@ -21,27 +21,14 @@ export const HeroCard: React.FunctionComponent<{
   title,
   subtitle,
   imageUrl,
-  fallbackImageUrl,
   label,
   githubUrl,
   externalUrl,
   mediumUrl,
   twitterUrl,
 }) => {
-  const [backgroundImageUrl, setBackgroundImageUrl] = useState<
-    string | undefined
-  >(imageUrl);
-
   const t = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
-
-  useEffect(() => {
-    const image = new Image();
-    image.src = imageUrl;
-    image.onerror = () => {
-      setBackgroundImageUrl(fallbackImageUrl);
-    };
-  }, [imageUrl, fallbackImageUrl]);
 
   const handleAppClicked = () => {
     logEvent([
@@ -60,12 +47,13 @@ export const HeroCard: React.FunctionComponent<{
         onClick={handleAppClicked}
         className="heroImage relative flex h-[400px] cursor-pointer items-end overflow-hidden rounded-lg"
       >
-        <div
+        <img
           className="backgroundImage absolute top-0 left-0 z-10 h-full w-full bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${backgroundImageUrl})` }}
-        ></div>
+          src={imageUrl}
+          alt="hero image"
+        />
         <div className="gradient absolute top-0 left-0 z-20 h-full w-full bg-gradient-hero-card"></div>
-        <div className="content text-white relative z-30 ml-9 mb-9 max-w-35">
+        <div className="content text-white relative z-30 m-9 max-w-35 sm:max-w-full">
           <div className="flex items-center space-x-6">
             <h4 className="pb-2 text-h4 font-h4">{title}</h4>
             {!!twitterUrl && (
