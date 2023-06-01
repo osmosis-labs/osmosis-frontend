@@ -28,7 +28,7 @@ const TokenPairHistoricalChart = dynamic(
   { ssr: false }
 );
 
-const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
+export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
   observer(({ poolId }) => {
     const { chainStore, accountStore, queriesStore } = useStore();
     const { chainId } = chainStore.osmosis;
@@ -39,6 +39,8 @@ const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
 
     const [queryAddress, setQueryAddress] =
       useState<ObservableQueryLiquidityPositionsByAddress | null>(null);
+
+    console.log("render concetntrated pool");
 
     useEffect(() => {
       (async () => {
@@ -228,8 +230,6 @@ const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       </main>
     );
   });
-
-export default ConcentratedLiquidityPool;
 
 function PoolDataGroup(props: { label: string; value: string }): ReactElement {
   return (
