@@ -1,4 +1,4 @@
-import { DeliverTxResponse, StdFee } from "@cosmjs/stargate";
+import { StdFee } from "@cosmjs/stargate";
 import {
   ChainGetter,
   CoinPrimitive,
@@ -8,7 +8,12 @@ import {
 import deepmerge from "deepmerge";
 import { DeepPartial, Optional } from "utility-types";
 
-import { AccountStore, CosmosAccount, OsmosisAccount } from "../../account";
+import {
+  AccountStore,
+  CosmosAccount,
+  DeliverTxResponse,
+  OsmosisAccount,
+} from "../../account";
 import { OsmosisQueries } from "../../queries";
 import { cosmwasmMsgOpts } from "./types";
 
@@ -92,7 +97,7 @@ export class CosmwasmAccountImpl {
       funds,
     });
 
-    await this.base.sign(
+    await this.base.signAndBroadcast(
       this.chainId,
       type,
       [msg],

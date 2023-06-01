@@ -47,10 +47,12 @@
   "dependencies": {
     "@cosmjs/amino": "0.29.0",
     "@cosmjs/cosmwasm-stargate": "0.29.0",
+    "@cosmjs/encoding": "0.29.0",
+    "@cosmjs/math": "0.29.0",
     "@cosmjs/proto-signing": "0.29.0",
     "@cosmjs/stargate": "0.29.0",
-    "@cosmjs/tendermint-rpc": "^0.29.0",
-    "@cosmos-kit/core": "1.5.1",
+    "@cosmjs/tendermint-rpc": "0.29.0",
+    "@cosmos-kit/core": "1.5.3",
     "@keplr-wallet/common": "^0.10.24",
     "@keplr-wallet/cosmos": "0.10.24",
     "@keplr-wallet/crypto": "^0.10.24",
@@ -60,6 +62,7 @@
     "@keplr-wallet/unit": "^0.10.24",
     "@osmosis-labs/math": "^4.0.0",
     "@osmosis-labs/pools": "^4.0.0",
+    "@osmosis-labs/proto-codecs": "0.0.1",
     "axios": "^0.27.2",
     "buffer": "^6.0.3",
     "cosmjs-types": "^0.5.2",
@@ -68,7 +71,6 @@
     "long": "^5.2.0",
     "mobx": "^6.3.10",
     "mobx-utils": "^6.0.4",
-    "@osmosis-labs/proto-codecs": "0.0.1",
     "protobufjs": "^6.11.2",
     "utility-types": "^3.10.0"
   }

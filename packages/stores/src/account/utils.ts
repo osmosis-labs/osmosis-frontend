@@ -1,5 +1,10 @@
 import type { Chain } from "@chain-registry/types";
-import { ChainName, Endpoints, Logger } from "@cosmos-kit/core";
+import {
+  ChainName,
+  Endpoints,
+  ExtendedHttpEndpoint,
+  Logger,
+} from "@cosmos-kit/core";
 
 interface AccountMsgOpt {
   shareCoinDecimals?: number;
@@ -27,6 +32,14 @@ export function getWalletEndpoints(chains: Chain[]) {
     };
     return newEndpoints;
   }, {} as Record<ChainName, Endpoints>);
+}
+
+export function removeLastSlash(str: string) {
+  return str.endsWith("/") ? str.slice(0, -1) : str;
+}
+
+export function getEndpointString(endpoint: string | ExtendedHttpEndpoint) {
+  return typeof endpoint === "string" ? endpoint : endpoint.url;
 }
 
 export const CosmosKitAccountsLocalStorageKey = "cosmos-kit@1:core//accounts";

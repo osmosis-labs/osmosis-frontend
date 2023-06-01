@@ -1,4 +1,3 @@
-import { DeliverTxResponse } from "@cosmjs/stargate";
 import { ChainIdHelper } from "@keplr-wallet/cosmos";
 import {
   ChainGetter,
@@ -12,7 +11,12 @@ import deepmerge from "deepmerge";
 import Long from "long";
 import { DeepPartial } from "utility-types";
 
-import { AccountStore, CosmwasmAccount, OsmosisAccount } from "../../account";
+import {
+  AccountStore,
+  CosmwasmAccount,
+  DeliverTxResponse,
+  OsmosisAccount,
+} from "../../account";
 import { OsmosisQueries } from "../../queries";
 import { cosmosMsgOpts } from "./types";
 
@@ -139,7 +143,7 @@ export class CosmosAccountImpl {
       memo: "",
     });
 
-    await this.base.sign(
+    await this.base.signAndBroadcast(
       this.chainId,
       "sendIbcTransfer",
       [msg],
