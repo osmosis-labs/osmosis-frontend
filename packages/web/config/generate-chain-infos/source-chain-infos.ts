@@ -302,8 +302,8 @@ const testnetChainInfos: SimplifiedChainInfo[] = [
 
 const mainnetChainInfos: SimplifiedChainInfo[] = [
   {
-    rpc: OSMOSIS_RPC_OVERWRITE ?? "https://rpc.osmosis.zone/",
-    rest: OSMOSIS_REST_OVERWRITE ?? "https://lcd.osmosis.zone/",
+    rpc: OSMOSIS_RPC_OVERWRITE ?? "https://rpc-osmosis.keplr.app/",
+    rest: OSMOSIS_REST_OVERWRITE ?? "https://lcd-osmosis.keplr.app/",
     chainId: OSMOSIS_CHAIN_ID_OVERWRITE ?? "osmosis-1",
     chainName: OSMOSIS_CHAIN_NAME_OVERWRITE ?? "Osmosis",
     bip44: {
