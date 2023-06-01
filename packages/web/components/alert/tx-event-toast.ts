@@ -63,7 +63,7 @@ export function toastOnFulfill(
           message: "transactionSuccessful",
           learnMoreUrl: chainInfo.raw.explorerUrlToTx.replace(
             "{txHash}",
-            tx.hash.toUpperCase()
+            tx.transactionHash.toUpperCase()
           ),
           learnMoreUrlCaption: "viewExplorer",
         },

@@ -1,10 +1,11 @@
-import { WalletStatus } from "@keplr-wallet/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { Fragment, FunctionComponent, useEffect, useRef } from "react";
 import { useTranslation } from "react-multi-lang";
+
+import { useWalletSelect } from "~/hooks/wallet-select";
 
 import { Announcement, EventName, IS_FRONTIER } from "../../config";
 import {
@@ -20,8 +21,10 @@ import { formatICNSName, getShortAddress } from "../../utils/string";
 import { Icon } from "../assets";
 import { Button, buttonCVA } from "../buttons";
 import IconButton from "../buttons/icon-button";
+import ClientOnly from "../client-only";
 import { MainMenu } from "../main-menu";
 import { Popover } from "../popover";
+import SkeletonLoader from "../skeleton-loader";
 import { CustomClasses, MainLayoutMenu } from "../types";
 
 export const NavBar: FunctionComponent<
@@ -54,6 +57,7 @@ export const NavBar: FunctionComponent<
 
   const closeMobileMenuRef = useRef(noop);
   const router = useRouter();
+  const { isLoading: isWalletLoading } = useWalletSelect();
 
   useEffect(() => {
     const handler = () => {
@@ -64,9 +68,9 @@ export const NavBar: FunctionComponent<
     return () => router.events.off("routeChangeComplete", handler);
   }, [router.events]);
 
-  const account = accountStore.getAccount(chainId);
+  const account = accountStore.getWallet(chainId);
   const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(
-    account.bech32Address
+    account?.address ?? ""
   );
 
   // announcement banner
@@ -129,7 +133,11 @@ export const NavBar: FunctionComponent<
                         ),
                       })}
                     />
-                    <WalletInfo onOpenProfile={onOpenProfile} />
+                    <ClientOnly>
+                      <SkeletonLoader isLoaded={!isWalletLoading}>
+                        <WalletInfo onOpenProfile={onOpenProfile} />
+                      </SkeletonLoader>
+                    </ClientOnly>
                   </Popover.Panel>
                 </>
               );
@@ -164,11 +172,15 @@ export const NavBar: FunctionComponent<
             isOpen={isSettingsOpen}
             onRequestClose={onCloseSettings}
           />
-          <WalletInfo
-            className="md:hidden"
-            icnsName={icnsQuery?.primaryName}
-            onOpenProfile={onOpenProfile}
-          />
+          <ClientOnly>
+            <SkeletonLoader isLoaded={!isWalletLoading}>
+              <WalletInfo
+                className="md:hidden"
+                icnsName={icnsQuery?.primaryName}
+                onOpenProfile={onOpenProfile}
+              />
+            </SkeletonLoader>
+          </ClientOnly>
         </div>
       </div>
       {/* Back-layer element to occupy space for the caller */}
@@ -205,13 +217,14 @@ const WalletInfo: FunctionComponent<
     navBarStore,
     profileStore,
   } = useStore();
+  const { onOpenWalletSelect } = useWalletSelect();
 
   const t = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
 
   // wallet
-  const account = accountStore.getAccount(chainId);
-  const walletConnected = account.walletStatus === WalletStatus.Loaded;
+  const wallet = accountStore.getWallet(chainId);
+  const walletConnected = Boolean(wallet?.isWalletConnected);
 
   return (
     <div className={className}>
@@ -220,7 +233,7 @@ const WalletInfo: FunctionComponent<
           className="!h-10 w-40 lg:w-36 md:w-full"
           onClick={() => {
             logEvent([EventName.Topnav.connectWalletClicked]);
-            account.init();
+            onOpenWalletSelect(chainId);
           }}
         >
           <span className="button mx-auto">{t("connectWallet")}</span>
@@ -255,7 +268,7 @@ const WalletInfo: FunctionComponent<
             <span className="body2 font-bold leading-4" title={icnsName}>
               {Boolean(icnsName)
                 ? formatICNSName(icnsName)
-                : getShortAddress(account.bech32Address)}
+                : getShortAddress(wallet?.address!)}
             </span>
             <span className="caption font-medium tracking-wider text-osmoverse-200">
               {navBarStore.walletInfo.balance.toString()}

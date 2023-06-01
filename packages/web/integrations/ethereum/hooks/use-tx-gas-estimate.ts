@@ -41,7 +41,7 @@ export function useTxGasEstimate(
     } else if (cost && !memoedCurrency) {
       setCost(null);
     }
-  }, [sendFn, memoedParams, memoedCurrency]);
+  }, [sendFn, memoedParams, memoedCurrency, cost, costMultiplier]);
 
   return cost;
 }

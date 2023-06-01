@@ -152,9 +152,9 @@ export class ObservablePoolsWithMetric {
         // Clone the array to prevent the original array from being sorted, and triggering a re-render.
         const sortedPools = [...pools];
         return sortedPools.sort((a, b) => {
-          let valueToCompareA: typeof a[keyof typeof a] | number =
+          let valueToCompareA: (typeof a)[keyof typeof a] | number =
             a[sortingColumn];
-          let valueToCompareB: typeof b[keyof typeof b] | number =
+          let valueToCompareB: (typeof b)[keyof typeof b] | number =
             b[sortingColumn];
 
           // If user is sorting by pool, then sort by pool id

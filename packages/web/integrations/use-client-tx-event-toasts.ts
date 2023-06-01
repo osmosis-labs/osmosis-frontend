@@ -31,7 +31,7 @@ export function useTxEventToasts(
           ? ToastType.SUCCESS
           : ToastType.ERROR
       ),
-    [client?.makeExplorerUrl]
+    [client]
   );
 
   const { handlePending, handleConfirmed, handleFailed } = useMemo(
@@ -65,5 +65,5 @@ export function useTxEventToasts(
       );
       client?.txStatusEventEmitter?.removeListener("failed", handleFailed);
     };
-  }, [client]);
+  }, [client, handleConfirmed, handleFailed, handlePending]);
 }
