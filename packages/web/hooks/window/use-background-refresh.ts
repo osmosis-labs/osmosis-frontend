@@ -1,4 +1,5 @@
 import { ObservableQuery } from "@keplr-wallet/stores";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { debounce } from "debounce";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -78,13 +79,8 @@ export function useBackgroundRefresh(
     } else {
       setRefreshInterval(intervals_.background);
     }
-  }, [
-    refresh,
-    setRefreshInterval,
-    intervals_.active,
-    intervals_.background,
-    windowActive,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refresh, setRefreshInterval, windowActive]);
 
   // refresh on an interval
   useEffect(() => {

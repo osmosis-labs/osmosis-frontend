@@ -9,6 +9,7 @@
 *.png
 *.jpg
 *.env
+*.local
 
 yarn.lock
 .DS_Store

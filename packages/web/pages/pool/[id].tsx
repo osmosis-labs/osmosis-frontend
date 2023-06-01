@@ -6,6 +6,7 @@ import {
 } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { Duration } from "dayjs/plugin/duration";
+import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import Head from "next/head";
 import Image from "next/image";
@@ -60,6 +61,7 @@ const Pool: FunctionComponent = observer(() => {
   } = useStore();
   const t = useTranslation();
   const { isMobile } = useWindowSize();
+  const featureFlags = useFlags();
 
   const [poolDetailsContainerRef, { y: poolDetailsContainerOffset }] =
     useMeasure<HTMLDivElement>();
@@ -98,6 +100,17 @@ const Pool: FunctionComponent = observer(() => {
         };
   const pool = poolDetail?.pool;
   const { superfluidDelegateToValidator } = useSuperfluidPool();
+
+  // feature flag check
+  useEffect(() => {
+    // redirect if CL pool and CL feature is off
+    if (
+      poolDetail?.pool?.type === "concentrated" &&
+      !featureFlags.concentratedLiquidity
+    ) {
+      router.push("/pools");
+    }
+  }, [poolDetail?.pool?.type, featureFlags.concentratedLiquidity, router]);
 
   // user analytics
   const { poolName, poolWeight } = useMemo(
@@ -337,6 +350,8 @@ const Pool: FunctionComponent = observer(() => {
     []
   );
 
+  const tradePools = useMemo(() => (pool ? [pool] : []), [pool]);
+
   return (
     <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
       <Head>
@@ -366,7 +381,7 @@ const Pool: FunctionComponent = observer(() => {
           hideCloseButton={isMobile}
           isOpen={showTradeTokenModal}
           onRequestClose={setShowModal(setShowTradeTokenModal, false)}
-          pools={[pool]}
+          memoedPools={tradePools}
         />
       )}
       {lockLPTokensConfig && showLockLPTokenModal && (

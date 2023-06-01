@@ -35,8 +35,8 @@ import {
   PENDING,
   REJECTED,
 } from "mobx-utils";
-import { IPriceStore } from "src/price";
 
+import { IPriceStore } from "../price";
 import { ObservableQueryPool, OsmosisQueries } from "../queries";
 import { InsufficientBalanceError, NoSendCurrencyError } from "./errors";
 
