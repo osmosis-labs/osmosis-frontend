@@ -9,7 +9,6 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import Link from "next/link";
 import React, {
   ComponentPropsWithoutRef,
   FunctionComponent,
@@ -125,22 +124,26 @@ export const WalletSelectModal: FunctionComponent<
             }
           : undefined
       }
-      className="max-h-screen max-w-[30.625rem] overflow-auto"
+      className="max-h-screen w-full max-w-[896px] overflow-auto"
       title={t("connectWallet")}
     >
       <div className="pt-8">
-        <LeftModalContent
-          {...props}
-          onRequestClose={onClose}
-          modalView={modalView}
-          setModalView={setModalView}
-        />
-        <RightModalContent
-          {...props}
-          onRequestClose={onClose}
-          modalView={modalView}
-          setModalView={setModalView}
-        />
+        <div className="w-3/12">
+          <LeftModalContent
+            {...props}
+            onRequestClose={onClose}
+            modalView={modalView}
+            setModalView={setModalView}
+          />
+        </div>
+        <div className="w-8/12">
+          <RightModalContent
+            {...props}
+            onRequestClose={onClose}
+            modalView={modalView}
+            setModalView={setModalView}
+          />
+        </div>
       </div>
     </ModalBase>
   );
@@ -280,21 +283,6 @@ const LeftModalContent: FunctionComponent<
               </button>
             );
           })}
-        </div>
-        <div className="mt-5 rounded-2xl bg-osmoverse-700 p-5">
-          <p className="caption text-white-mid">
-            {t("connectDisclaimer")}{" "}
-            <Link href="/disclaimer" passHref>
-              <a
-                className="underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {t("protocolDisclaimer")}
-              </a>
-            </Link>
-            .
-          </p>
         </div>
       </div>
     );
