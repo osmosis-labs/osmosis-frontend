@@ -2,6 +2,7 @@ import React, { ErrorInfo, ReactNode } from "react";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
+  fallback: ReactNode;
 }
 
 interface ErrorBoundaryState {
@@ -18,6 +19,7 @@ class ErrorBoundary extends React.Component<
   }
 
   static getDerivedStateFromError(_: Error): ErrorBoundaryState {
+    console.log("getDerivedStateFromError triggered");
     return { hasError: true };
   }
 
@@ -29,17 +31,7 @@ class ErrorBoundary extends React.Component<
   render() {
     console.log("hasError", this.state.hasError);
     if (this.state.hasError) {
-      return (
-        <div>
-          <h2>Oops, there is an error!</h2>
-          <button
-            type="button"
-            onClick={() => this.setState({ hasError: false })}
-          >
-            Try again?
-          </button>
-        </div>
-      );
+      return this.props.fallback;
     }
 
     return this.props.children;

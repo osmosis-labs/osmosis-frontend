@@ -20,6 +20,7 @@ import { Bounce, ToastContainer } from "react-toastify";
 
 import { Icon } from "~/components/assets";
 import ErrorBoundary from "~/components/error/error-boundary";
+import ErrorFallback from "~/components/error/error-fallback";
 
 import { MainLayout } from "../components/layouts";
 import { OgpMeta } from "../components/ogp-meta";
@@ -128,7 +129,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   useAmplitudeAnalytics({ init: true });
 
   return (
-    <ErrorBoundary>
+    <ErrorBoundary fallback={ErrorFallback}>
       <GetKeplrProvider>
         <StoreProvider>
           <Head>
@@ -150,7 +151,10 @@ function MyApp({ Component, pageProps }: AppProps) {
             transition={Bounce}
           />
           <MainLayout menus={menus}>
-            {Component && <Component {...pageProps} />}
+            <>
+              <button>hello World</button>
+              {Component && <Component {...pageProps} />}
+            </>
           </MainLayout>
         </StoreProvider>
       </GetKeplrProvider>
