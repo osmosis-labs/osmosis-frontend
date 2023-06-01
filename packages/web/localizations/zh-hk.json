@@ -234,7 +234,8 @@
     "stake": "質押",
     "store": "應用",
     "swap": "兌換",
-    "vote": "投票"
+    "vote": "投票",
+    "new": "新的"
   },
   "pool": {
     "24hrTradingVolume": "24小時交易量",

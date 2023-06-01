@@ -31,6 +31,7 @@ export const AppDisplayCard: FunctionComponent<{
       EventName.AppStore.appClicked,
       { appName: title, isFeatured: false, isBanner: false, position: index },
     ]);
+    window.open(externalUrl, "_blank", "noopener noreferrer");
   };
   return (
     <>
@@ -42,17 +43,16 @@ export const AppDisplayCard: FunctionComponent<{
           background-image: url(${imageUrl});
         }
       `}</style>
-      <a
-        href={externalUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={handleAppClicked}
-      >
-        <div className="app-display-card bg-white overflow-hidden rounded-lg bg-osmoverse-800 shadow-md">
+      <div className="cursor-pointer" onClick={handleAppClicked}>
+        <div className="app-display-card bg-white h-[280px] overflow-hidden rounded-2xl bg-osmoverse-800 shadow-md lg:h-[300px]">
           <div className="overflow-hidden">
-            <div className="card-image h-40 overflow-hidden bg-cover bg-center transition-transform duration-300 ease-in"></div>
+            <img
+              className="card-image inset-0 h-40 w-full overflow-hidden rounded-2xl bg-cover bg-center transition-transform duration-300 ease-in"
+              src={imageUrl}
+              alt="card image"
+            />
           </div>
-          <div className="min-h-[120px] p-4">
+          <div className="flex min-h-[120px] flex-col px-6 pt-4 pb-8">
             <div className="flex items-center space-x-3">
               <h6 className="font-semibold">{title}</h6>
               {!!twitterUrl && (
@@ -79,9 +79,7 @@ export const AppDisplayCard: FunctionComponent<{
             <p className="pt-3 text-xs text-osmoverse-200">{subtitle}</p>
           </div>
         </div>
-      </a>
+      </div>
     </>
   );
 };
-
-export default AppDisplayCard;
