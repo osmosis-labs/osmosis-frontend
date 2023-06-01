@@ -2,6 +2,8 @@
 import { GeneratedType, Registry } from "@cosmjs/proto-signing";
 
 import {
+  MsgAddToConcentratedLiquiditySuperfluidPosition,
+  MsgCreateFullRangePositionAndSuperfluidDelegate,
   MsgLockAndSuperfluidDelegate,
   MsgSuperfluidDelegate,
   MsgSuperfluidUnbondLock,
@@ -22,10 +24,18 @@ export const registry: ReadonlyArray<[string, GeneratedType]> = [
     "/osmosis.superfluid.MsgLockAndSuperfluidDelegate",
     MsgLockAndSuperfluidDelegate,
   ],
+  [
+    "/osmosis.superfluid.MsgCreateFullRangePositionAndSuperfluidDelegate",
+    MsgCreateFullRangePositionAndSuperfluidDelegate,
+  ],
   ["/osmosis.superfluid.MsgUnPoolWhitelistedPool", MsgUnPoolWhitelistedPool],
   [
     "/osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition",
     MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition,
+  ],
+  [
+    "/osmosis.superfluid.MsgAddToConcentratedLiquiditySuperfluidPosition",
+    MsgAddToConcentratedLiquiditySuperfluidPosition,
   ],
 ];
 export const load = (protoRegistry: Registry) => {
@@ -67,6 +77,18 @@ export const MessageComposer = {
         value: MsgLockAndSuperfluidDelegate.encode(value).finish(),
       };
     },
+    createFullRangePositionAndSuperfluidDelegate(
+      value: MsgCreateFullRangePositionAndSuperfluidDelegate
+    ) {
+      return {
+        typeUrl:
+          "/osmosis.superfluid.MsgCreateFullRangePositionAndSuperfluidDelegate",
+        value:
+          MsgCreateFullRangePositionAndSuperfluidDelegate.encode(
+            value
+          ).finish(),
+      };
+    },
     unPoolWhitelistedPool(value: MsgUnPoolWhitelistedPool) {
       return {
         typeUrl: "/osmosis.superfluid.MsgUnPoolWhitelistedPool",
@@ -81,6 +103,18 @@ export const MessageComposer = {
           "/osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition",
         value:
           MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition.encode(
+            value
+          ).finish(),
+      };
+    },
+    addToConcentratedLiquiditySuperfluidPosition(
+      value: MsgAddToConcentratedLiquiditySuperfluidPosition
+    ) {
+      return {
+        typeUrl:
+          "/osmosis.superfluid.MsgAddToConcentratedLiquiditySuperfluidPosition",
+        value:
+          MsgAddToConcentratedLiquiditySuperfluidPosition.encode(
             value
           ).finish(),
       };
@@ -119,6 +153,15 @@ export const MessageComposer = {
         value,
       };
     },
+    createFullRangePositionAndSuperfluidDelegate(
+      value: MsgCreateFullRangePositionAndSuperfluidDelegate
+    ) {
+      return {
+        typeUrl:
+          "/osmosis.superfluid.MsgCreateFullRangePositionAndSuperfluidDelegate",
+        value,
+      };
+    },
     unPoolWhitelistedPool(value: MsgUnPoolWhitelistedPool) {
       return {
         typeUrl: "/osmosis.superfluid.MsgUnPoolWhitelistedPool",
@@ -131,6 +174,15 @@ export const MessageComposer = {
       return {
         typeUrl:
           "/osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition",
+        value,
+      };
+    },
+    addToConcentratedLiquiditySuperfluidPosition(
+      value: MsgAddToConcentratedLiquiditySuperfluidPosition
+    ) {
+      return {
+        typeUrl:
+          "/osmosis.superfluid.MsgAddToConcentratedLiquiditySuperfluidPosition",
         value,
       };
     },
@@ -168,6 +220,16 @@ export const MessageComposer = {
         value: MsgLockAndSuperfluidDelegate.fromPartial(value),
       };
     },
+    createFullRangePositionAndSuperfluidDelegate(
+      value: MsgCreateFullRangePositionAndSuperfluidDelegate
+    ) {
+      return {
+        typeUrl:
+          "/osmosis.superfluid.MsgCreateFullRangePositionAndSuperfluidDelegate",
+        value:
+          MsgCreateFullRangePositionAndSuperfluidDelegate.fromPartial(value),
+      };
+    },
     unPoolWhitelistedPool(value: MsgUnPoolWhitelistedPool) {
       return {
         typeUrl: "/osmosis.superfluid.MsgUnPoolWhitelistedPool",
@@ -184,6 +246,16 @@ export const MessageComposer = {
           MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition.fromPartial(
             value
           ),
+      };
+    },
+    addToConcentratedLiquiditySuperfluidPosition(
+      value: MsgAddToConcentratedLiquiditySuperfluidPosition
+    ) {
+      return {
+        typeUrl:
+          "/osmosis.superfluid.MsgAddToConcentratedLiquiditySuperfluidPosition",
+        value:
+          MsgAddToConcentratedLiquiditySuperfluidPosition.fromPartial(value),
       };
     },
   },

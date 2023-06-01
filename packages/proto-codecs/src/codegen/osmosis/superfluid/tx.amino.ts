@@ -1,5 +1,7 @@
 //@ts-nocheck
 import {
+  MsgAddToConcentratedLiquiditySuperfluidPosition,
+  MsgCreateFullRangePositionAndSuperfluidDelegate,
   MsgLockAndSuperfluidDelegate,
   MsgSuperfluidDelegate,
   MsgSuperfluidUnbondLock,
@@ -34,6 +36,11 @@ export const AminoConverter = {
     toAmino: MsgLockAndSuperfluidDelegate.toAmino,
     fromAmino: MsgLockAndSuperfluidDelegate.fromAmino,
   },
+  "/osmosis.superfluid.MsgCreateFullRangePositionAndSuperfluidDelegate": {
+    aminoType: "osmosis/create-full-range-position-and-superfluid-delegate",
+    toAmino: MsgCreateFullRangePositionAndSuperfluidDelegate.toAmino,
+    fromAmino: MsgCreateFullRangePositionAndSuperfluidDelegate.fromAmino,
+  },
   "/osmosis.superfluid.MsgUnPoolWhitelistedPool": {
     aminoType: "osmosis/unpool-whitelisted-pool",
     toAmino: MsgUnPoolWhitelistedPool.toAmino,
@@ -47,4 +54,9 @@ export const AminoConverter = {
       fromAmino:
         MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition.fromAmino,
     },
+  "/osmosis.superfluid.MsgAddToConcentratedLiquiditySuperfluidPosition": {
+    aminoType: "osmosis/add-to-concentrated-liquidity-superfluid-position",
+    toAmino: MsgAddToConcentratedLiquiditySuperfluidPosition.toAmino,
+    fromAmino: MsgAddToConcentratedLiquiditySuperfluidPosition.fromAmino,
+  },
 };

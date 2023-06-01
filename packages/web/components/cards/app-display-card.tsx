@@ -31,6 +31,7 @@ export const AppDisplayCard: FunctionComponent<{
       EventName.AppStore.appClicked,
       { appName: title, isFeatured: false, isBanner: false, position: index },
     ]);
+    window.open(externalUrl, "_blank", "noopener noreferrer");
   };
   return (
     <>
@@ -40,19 +41,17 @@ export const AppDisplayCard: FunctionComponent<{
         }
         .card-image {
           background-image: url(${imageUrl});
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
         }
       `}</style>
-      <a
-        href={externalUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={handleAppClicked}
-      >
-        <div className="app-display-card bg-white overflow-hidden rounded-lg bg-osmoverse-800 shadow-md">
-          <div className="overflow-hidden">
-            <div className="card-image h-40 overflow-hidden bg-cover bg-center transition-transform duration-300 ease-in"></div>
+      <div className="cursor-pointer" onClick={handleAppClicked}>
+        <div className="app-display-card bg-white min-h-[320px] overflow-hidden rounded-2xl bg-osmoverse-800 shadow-md xl:min-h-[320px] lg:min-h-[320px] md:min-h-[360px] sm:min-h-[290px] xs:min-h-[330px]">
+          <div className="overflow-hidden rounded-2xl">
+            <div className="card-image  min-h-[190px] xl:min-h-[180px] lg:min-h-[140px] md:min-h-[210px]  sm:min-h-[160px]  xs:min-h-[210px]"></div>
           </div>
-          <div className="min-h-[120px] p-4">
+          <div className="flex min-h-[120px] flex-col px-6 pt-4 pb-8 xl:min-h-[160px] lg:min-h-[150px] md:min-h-[140px] sm:min-h-[120px]">
             <div className="flex items-center space-x-3">
               <h6 className="font-semibold">{title}</h6>
               {!!twitterUrl && (
@@ -79,9 +78,7 @@ export const AppDisplayCard: FunctionComponent<{
             <p className="pt-3 text-xs text-osmoverse-200">{subtitle}</p>
           </div>
         </div>
-      </a>
+      </div>
     </>
   );
 };
-
-export default AppDisplayCard;

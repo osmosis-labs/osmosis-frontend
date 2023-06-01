@@ -159,5 +159,6 @@ export const EventName = {
   AppStore: {
     appClicked: "App Store: App clicked",
     applyClicked: "App Store: Apply CTA clicked",
+    pageViewed: "App Store: Page Viewed",
   },
 };

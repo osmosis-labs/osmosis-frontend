@@ -125,17 +125,33 @@ export interface MsgSuperfluidUndelegateAndUnbondLockSDKType {
   lock_id: Long;
   coin?: CoinSDKType;
 }
-export interface MsgSuperfluidUndelegateAndUnbondLockResponse {}
+export interface MsgSuperfluidUndelegateAndUnbondLockResponse {
+  /**
+   * lock id of the new lock created for the remaining amount.
+   * returns the original lockid if the unlocked amount is equal to the
+   * original lock's amount.
+   */
+  lockId: Long;
+}
 export interface MsgSuperfluidUndelegateAndUnbondLockResponseProtoMsg {
   typeUrl: "/osmosis.superfluid.MsgSuperfluidUndelegateAndUnbondLockResponse";
   value: Uint8Array;
 }
-export interface MsgSuperfluidUndelegateAndUnbondLockResponseAmino {}
+export interface MsgSuperfluidUndelegateAndUnbondLockResponseAmino {
+  /**
+   * lock id of the new lock created for the remaining amount.
+   * returns the original lockid if the unlocked amount is equal to the
+   * original lock's amount.
+   */
+  lock_id: string;
+}
 export interface MsgSuperfluidUndelegateAndUnbondLockResponseAminoMsg {
   type: "osmosis/superfluid-undelegate-and-unbond-lock-response";
   value: MsgSuperfluidUndelegateAndUnbondLockResponseAmino;
 }
-export interface MsgSuperfluidUndelegateAndUnbondLockResponseSDKType {}
+export interface MsgSuperfluidUndelegateAndUnbondLockResponseSDKType {
+  lock_id: Long;
+}
 /**
  * MsgLockAndSuperfluidDelegate locks coins with the unbonding period duration,
  * and then does a superfluid lock from the newly created lockup, to the
@@ -190,6 +206,64 @@ export interface MsgLockAndSuperfluidDelegateResponseAminoMsg {
 }
 export interface MsgLockAndSuperfluidDelegateResponseSDKType {
   ID: Long;
+}
+/**
+ * MsgCreateFullRangePositionAndSuperfluidDelegate creates a full range position
+ * in a concentrated liquidity pool, then superfluid delegates.
+ */
+export interface MsgCreateFullRangePositionAndSuperfluidDelegate {
+  sender: string;
+  coins: Coin[];
+  valAddr: string;
+  poolId: Long;
+}
+export interface MsgCreateFullRangePositionAndSuperfluidDelegateProtoMsg {
+  typeUrl: "/osmosis.superfluid.MsgCreateFullRangePositionAndSuperfluidDelegate";
+  value: Uint8Array;
+}
+/**
+ * MsgCreateFullRangePositionAndSuperfluidDelegate creates a full range position
+ * in a concentrated liquidity pool, then superfluid delegates.
+ */
+export interface MsgCreateFullRangePositionAndSuperfluidDelegateAmino {
+  sender: string;
+  coins: CoinAmino[];
+  val_addr: string;
+  pool_id: string;
+}
+export interface MsgCreateFullRangePositionAndSuperfluidDelegateAminoMsg {
+  type: "osmosis/create-full-range-position-and-superfluid-delegate";
+  value: MsgCreateFullRangePositionAndSuperfluidDelegateAmino;
+}
+/**
+ * MsgCreateFullRangePositionAndSuperfluidDelegate creates a full range position
+ * in a concentrated liquidity pool, then superfluid delegates.
+ */
+export interface MsgCreateFullRangePositionAndSuperfluidDelegateSDKType {
+  sender: string;
+  coins: CoinSDKType[];
+  val_addr: string;
+  pool_id: Long;
+}
+export interface MsgCreateFullRangePositionAndSuperfluidDelegateResponse {
+  lockID: Long;
+  positionID: Long;
+}
+export interface MsgCreateFullRangePositionAndSuperfluidDelegateResponseProtoMsg {
+  typeUrl: "/osmosis.superfluid.MsgCreateFullRangePositionAndSuperfluidDelegateResponse";
+  value: Uint8Array;
+}
+export interface MsgCreateFullRangePositionAndSuperfluidDelegateResponseAmino {
+  lockID: string;
+  positionID: string;
+}
+export interface MsgCreateFullRangePositionAndSuperfluidDelegateResponseAminoMsg {
+  type: "osmosis/create-full-range-position-and-superfluid-delegate-response";
+  value: MsgCreateFullRangePositionAndSuperfluidDelegateResponseAmino;
+}
+export interface MsgCreateFullRangePositionAndSuperfluidDelegateResponseSDKType {
+  lockID: Long;
+  positionID: Long;
 }
 /**
  * MsgUnPoolWhitelistedPool Unpools every lock the sender has, that is
@@ -266,6 +340,8 @@ export interface MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition {
   sender: string;
   lockId: Long;
   sharesToMigrate?: Coin;
+  /** token_out_mins indicates minimum token to exit Balancer pool with. */
+  tokenOutMins: Coin[];
 }
 export interface MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionProtoMsg {
   typeUrl: "/osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition";
@@ -279,6 +355,8 @@ export interface MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionAmino {
   sender: string;
   lock_id: string;
   shares_to_migrate?: CoinAmino;
+  /** token_out_mins indicates minimum token to exit Balancer pool with. */
+  token_out_mins: CoinAmino[];
 }
 export interface MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionAminoMsg {
   type: "osmosis/unlock-and-migrate-shares-to-full-range-concentrated-position";
@@ -292,6 +370,7 @@ export interface MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionSDKType
   sender: string;
   lock_id: Long;
   shares_to_migrate?: CoinSDKType;
+  token_out_mins: CoinSDKType[];
 }
 export interface MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse {
   amount0: string;
@@ -318,6 +397,74 @@ export interface MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionRespons
   amount1: string;
   liquidity_created: string;
   join_time?: Date;
+}
+/** ===================== MsgAddToConcentratedLiquiditySuperfluidPosition */
+export interface MsgAddToConcentratedLiquiditySuperfluidPosition {
+  positionId: Long;
+  sender: string;
+  tokenDesired0?: Coin;
+  tokenDesired1?: Coin;
+}
+export interface MsgAddToConcentratedLiquiditySuperfluidPositionProtoMsg {
+  typeUrl: "/osmosis.superfluid.MsgAddToConcentratedLiquiditySuperfluidPosition";
+  value: Uint8Array;
+}
+/** ===================== MsgAddToConcentratedLiquiditySuperfluidPosition */
+export interface MsgAddToConcentratedLiquiditySuperfluidPositionAmino {
+  position_id: string;
+  sender: string;
+  token_desired0?: CoinAmino;
+  token_desired1?: CoinAmino;
+}
+export interface MsgAddToConcentratedLiquiditySuperfluidPositionAminoMsg {
+  type: "osmosis/add-to-concentrated-liquidity-superfluid-position";
+  value: MsgAddToConcentratedLiquiditySuperfluidPositionAmino;
+}
+/** ===================== MsgAddToConcentratedLiquiditySuperfluidPosition */
+export interface MsgAddToConcentratedLiquiditySuperfluidPositionSDKType {
+  position_id: Long;
+  sender: string;
+  token_desired0?: CoinSDKType;
+  token_desired1?: CoinSDKType;
+}
+export interface MsgAddToConcentratedLiquiditySuperfluidPositionResponse {
+  positionId: Long;
+  amount0: string;
+  amount1: string;
+  /**
+   * new_liquidity is the final liquidity after the add.
+   * It includes the liquidity that existed before in the position
+   * and the new liquidity that was added to the position.
+   */
+  newLiquidity: string;
+  lockId: Long;
+}
+export interface MsgAddToConcentratedLiquiditySuperfluidPositionResponseProtoMsg {
+  typeUrl: "/osmosis.superfluid.MsgAddToConcentratedLiquiditySuperfluidPositionResponse";
+  value: Uint8Array;
+}
+export interface MsgAddToConcentratedLiquiditySuperfluidPositionResponseAmino {
+  position_id: string;
+  amount0: string;
+  amount1: string;
+  /**
+   * new_liquidity is the final liquidity after the add.
+   * It includes the liquidity that existed before in the position
+   * and the new liquidity that was added to the position.
+   */
+  new_liquidity: string;
+  lock_id: string;
+}
+export interface MsgAddToConcentratedLiquiditySuperfluidPositionResponseAminoMsg {
+  type: "osmosis/add-to-concentrated-liquidity-superfluid-position-response";
+  value: MsgAddToConcentratedLiquiditySuperfluidPositionResponseAmino;
+}
+export interface MsgAddToConcentratedLiquiditySuperfluidPositionResponseSDKType {
+  position_id: Long;
+  amount0: string;
+  amount1: string;
+  new_liquidity: string;
+  lock_id: Long;
 }
 function createBaseMsgSuperfluidDelegate(): MsgSuperfluidDelegate {
   return {
@@ -946,14 +1093,19 @@ export const MsgSuperfluidUndelegateAndUnbondLock = {
   },
 };
 function createBaseMsgSuperfluidUndelegateAndUnbondLockResponse(): MsgSuperfluidUndelegateAndUnbondLockResponse {
-  return {};
+  return {
+    lockId: Long.UZERO,
+  };
 }
 export const MsgSuperfluidUndelegateAndUnbondLockResponse = {
   typeUrl: "/osmosis.superfluid.MsgSuperfluidUndelegateAndUnbondLockResponse",
   encode(
-    _: MsgSuperfluidUndelegateAndUnbondLockResponse,
+    message: MsgSuperfluidUndelegateAndUnbondLockResponse,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
+    if (!message.lockId.isZero()) {
+      writer.uint32(8).uint64(message.lockId);
+    }
     return writer;
   },
   decode(
@@ -966,6 +1118,9 @@ export const MsgSuperfluidUndelegateAndUnbondLockResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.lockId = reader.uint64() as Long;
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -974,20 +1129,27 @@ export const MsgSuperfluidUndelegateAndUnbondLockResponse = {
     return message;
   },
   fromPartial(
-    _: Partial<MsgSuperfluidUndelegateAndUnbondLockResponse>
+    object: Partial<MsgSuperfluidUndelegateAndUnbondLockResponse>
   ): MsgSuperfluidUndelegateAndUnbondLockResponse {
     const message = createBaseMsgSuperfluidUndelegateAndUnbondLockResponse();
+    message.lockId =
+      object.lockId !== undefined && object.lockId !== null
+        ? Long.fromValue(object.lockId)
+        : Long.UZERO;
     return message;
   },
   fromAmino(
-    _: MsgSuperfluidUndelegateAndUnbondLockResponseAmino
+    object: MsgSuperfluidUndelegateAndUnbondLockResponseAmino
   ): MsgSuperfluidUndelegateAndUnbondLockResponse {
-    return {};
+    return {
+      lockId: Long.fromString(object.lock_id),
+    };
   },
   toAmino(
-    _: MsgSuperfluidUndelegateAndUnbondLockResponse
+    message: MsgSuperfluidUndelegateAndUnbondLockResponse
   ): MsgSuperfluidUndelegateAndUnbondLockResponseAmino {
     const obj: any = {};
+    obj.lock_id = message.lockId ? message.lockId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(
@@ -1227,6 +1389,268 @@ export const MsgLockAndSuperfluidDelegateResponse = {
     };
   },
 };
+function createBaseMsgCreateFullRangePositionAndSuperfluidDelegate(): MsgCreateFullRangePositionAndSuperfluidDelegate {
+  return {
+    sender: "",
+    coins: [],
+    valAddr: "",
+    poolId: Long.UZERO,
+  };
+}
+export const MsgCreateFullRangePositionAndSuperfluidDelegate = {
+  typeUrl:
+    "/osmosis.superfluid.MsgCreateFullRangePositionAndSuperfluidDelegate",
+  encode(
+    message: MsgCreateFullRangePositionAndSuperfluidDelegate,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.sender !== "") {
+      writer.uint32(10).string(message.sender);
+    }
+    for (const v of message.coins) {
+      Coin.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.valAddr !== "") {
+      writer.uint32(26).string(message.valAddr);
+    }
+    if (!message.poolId.isZero()) {
+      writer.uint32(32).uint64(message.poolId);
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): MsgCreateFullRangePositionAndSuperfluidDelegate {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgCreateFullRangePositionAndSuperfluidDelegate();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.sender = reader.string();
+          break;
+        case 2:
+          message.coins.push(Coin.decode(reader, reader.uint32()));
+          break;
+        case 3:
+          message.valAddr = reader.string();
+          break;
+        case 4:
+          message.poolId = reader.uint64() as Long;
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<MsgCreateFullRangePositionAndSuperfluidDelegate>
+  ): MsgCreateFullRangePositionAndSuperfluidDelegate {
+    const message = createBaseMsgCreateFullRangePositionAndSuperfluidDelegate();
+    message.sender = object.sender ?? "";
+    message.coins = object.coins?.map((e) => Coin.fromPartial(e)) || [];
+    message.valAddr = object.valAddr ?? "";
+    message.poolId =
+      object.poolId !== undefined && object.poolId !== null
+        ? Long.fromValue(object.poolId)
+        : Long.UZERO;
+    return message;
+  },
+  fromAmino(
+    object: MsgCreateFullRangePositionAndSuperfluidDelegateAmino
+  ): MsgCreateFullRangePositionAndSuperfluidDelegate {
+    return {
+      sender: object.sender,
+      coins: Array.isArray(object?.coins)
+        ? object.coins.map((e: any) => Coin.fromAmino(e))
+        : [],
+      valAddr: object.val_addr,
+      poolId: Long.fromString(object.pool_id),
+    };
+  },
+  toAmino(
+    message: MsgCreateFullRangePositionAndSuperfluidDelegate
+  ): MsgCreateFullRangePositionAndSuperfluidDelegateAmino {
+    const obj: any = {};
+    obj.sender = message.sender;
+    if (message.coins) {
+      obj.coins = message.coins.map((e) => (e ? Coin.toAmino(e) : undefined));
+    } else {
+      obj.coins = [];
+    }
+    obj.val_addr = message.valAddr;
+    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    return obj;
+  },
+  fromAminoMsg(
+    object: MsgCreateFullRangePositionAndSuperfluidDelegateAminoMsg
+  ): MsgCreateFullRangePositionAndSuperfluidDelegate {
+    return MsgCreateFullRangePositionAndSuperfluidDelegate.fromAmino(
+      object.value
+    );
+  },
+  toAminoMsg(
+    message: MsgCreateFullRangePositionAndSuperfluidDelegate
+  ): MsgCreateFullRangePositionAndSuperfluidDelegateAminoMsg {
+    return {
+      type: "osmosis/create-full-range-position-and-superfluid-delegate",
+      value: MsgCreateFullRangePositionAndSuperfluidDelegate.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: MsgCreateFullRangePositionAndSuperfluidDelegateProtoMsg
+  ): MsgCreateFullRangePositionAndSuperfluidDelegate {
+    return MsgCreateFullRangePositionAndSuperfluidDelegate.decode(
+      message.value
+    );
+  },
+  toProto(
+    message: MsgCreateFullRangePositionAndSuperfluidDelegate
+  ): Uint8Array {
+    return MsgCreateFullRangePositionAndSuperfluidDelegate.encode(
+      message
+    ).finish();
+  },
+  toProtoMsg(
+    message: MsgCreateFullRangePositionAndSuperfluidDelegate
+  ): MsgCreateFullRangePositionAndSuperfluidDelegateProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.superfluid.MsgCreateFullRangePositionAndSuperfluidDelegate",
+      value:
+        MsgCreateFullRangePositionAndSuperfluidDelegate.encode(
+          message
+        ).finish(),
+    };
+  },
+};
+function createBaseMsgCreateFullRangePositionAndSuperfluidDelegateResponse(): MsgCreateFullRangePositionAndSuperfluidDelegateResponse {
+  return {
+    lockID: Long.UZERO,
+    positionID: Long.UZERO,
+  };
+}
+export const MsgCreateFullRangePositionAndSuperfluidDelegateResponse = {
+  typeUrl:
+    "/osmosis.superfluid.MsgCreateFullRangePositionAndSuperfluidDelegateResponse",
+  encode(
+    message: MsgCreateFullRangePositionAndSuperfluidDelegateResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (!message.lockID.isZero()) {
+      writer.uint32(8).uint64(message.lockID);
+    }
+    if (!message.positionID.isZero()) {
+      writer.uint32(16).uint64(message.positionID);
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): MsgCreateFullRangePositionAndSuperfluidDelegateResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message =
+      createBaseMsgCreateFullRangePositionAndSuperfluidDelegateResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.lockID = reader.uint64() as Long;
+          break;
+        case 2:
+          message.positionID = reader.uint64() as Long;
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<MsgCreateFullRangePositionAndSuperfluidDelegateResponse>
+  ): MsgCreateFullRangePositionAndSuperfluidDelegateResponse {
+    const message =
+      createBaseMsgCreateFullRangePositionAndSuperfluidDelegateResponse();
+    message.lockID =
+      object.lockID !== undefined && object.lockID !== null
+        ? Long.fromValue(object.lockID)
+        : Long.UZERO;
+    message.positionID =
+      object.positionID !== undefined && object.positionID !== null
+        ? Long.fromValue(object.positionID)
+        : Long.UZERO;
+    return message;
+  },
+  fromAmino(
+    object: MsgCreateFullRangePositionAndSuperfluidDelegateResponseAmino
+  ): MsgCreateFullRangePositionAndSuperfluidDelegateResponse {
+    return {
+      lockID: Long.fromString(object.lockID),
+      positionID: Long.fromString(object.positionID),
+    };
+  },
+  toAmino(
+    message: MsgCreateFullRangePositionAndSuperfluidDelegateResponse
+  ): MsgCreateFullRangePositionAndSuperfluidDelegateResponseAmino {
+    const obj: any = {};
+    obj.lockID = message.lockID ? message.lockID.toString() : undefined;
+    obj.positionID = message.positionID
+      ? message.positionID.toString()
+      : undefined;
+    return obj;
+  },
+  fromAminoMsg(
+    object: MsgCreateFullRangePositionAndSuperfluidDelegateResponseAminoMsg
+  ): MsgCreateFullRangePositionAndSuperfluidDelegateResponse {
+    return MsgCreateFullRangePositionAndSuperfluidDelegateResponse.fromAmino(
+      object.value
+    );
+  },
+  toAminoMsg(
+    message: MsgCreateFullRangePositionAndSuperfluidDelegateResponse
+  ): MsgCreateFullRangePositionAndSuperfluidDelegateResponseAminoMsg {
+    return {
+      type: "osmosis/create-full-range-position-and-superfluid-delegate-response",
+      value:
+        MsgCreateFullRangePositionAndSuperfluidDelegateResponse.toAmino(
+          message
+        ),
+    };
+  },
+  fromProtoMsg(
+    message: MsgCreateFullRangePositionAndSuperfluidDelegateResponseProtoMsg
+  ): MsgCreateFullRangePositionAndSuperfluidDelegateResponse {
+    return MsgCreateFullRangePositionAndSuperfluidDelegateResponse.decode(
+      message.value
+    );
+  },
+  toProto(
+    message: MsgCreateFullRangePositionAndSuperfluidDelegateResponse
+  ): Uint8Array {
+    return MsgCreateFullRangePositionAndSuperfluidDelegateResponse.encode(
+      message
+    ).finish();
+  },
+  toProtoMsg(
+    message: MsgCreateFullRangePositionAndSuperfluidDelegateResponse
+  ): MsgCreateFullRangePositionAndSuperfluidDelegateResponseProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.superfluid.MsgCreateFullRangePositionAndSuperfluidDelegateResponse",
+      value:
+        MsgCreateFullRangePositionAndSuperfluidDelegateResponse.encode(
+          message
+        ).finish(),
+    };
+  },
+};
 function createBaseMsgUnPoolWhitelistedPool(): MsgUnPoolWhitelistedPool {
   return {
     sender: "",
@@ -1431,6 +1855,7 @@ function createBaseMsgUnlockAndMigrateSharesToFullRangeConcentratedPosition(): M
     sender: "",
     lockId: Long.UZERO,
     sharesToMigrate: undefined,
+    tokenOutMins: [],
   };
 }
 export const MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition = {
@@ -1448,6 +1873,9 @@ export const MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition = {
     }
     if (message.sharesToMigrate !== undefined) {
       Coin.encode(message.sharesToMigrate, writer.uint32(26).fork()).ldelim();
+    }
+    for (const v of message.tokenOutMins) {
+      Coin.encode(v!, writer.uint32(34).fork()).ldelim();
     }
     return writer;
   },
@@ -1471,6 +1899,9 @@ export const MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition = {
         case 3:
           message.sharesToMigrate = Coin.decode(reader, reader.uint32());
           break;
+        case 4:
+          message.tokenOutMins.push(Coin.decode(reader, reader.uint32()));
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -1492,6 +1923,8 @@ export const MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition = {
       object.sharesToMigrate !== undefined && object.sharesToMigrate !== null
         ? Coin.fromPartial(object.sharesToMigrate)
         : undefined;
+    message.tokenOutMins =
+      object.tokenOutMins?.map((e) => Coin.fromPartial(e)) || [];
     return message;
   },
   fromAmino(
@@ -1503,6 +1936,9 @@ export const MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition = {
       sharesToMigrate: object?.shares_to_migrate
         ? Coin.fromAmino(object.shares_to_migrate)
         : undefined,
+      tokenOutMins: Array.isArray(object?.token_out_mins)
+        ? object.token_out_mins.map((e: any) => Coin.fromAmino(e))
+        : [],
     };
   },
   toAmino(
@@ -1514,6 +1950,13 @@ export const MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition = {
     obj.shares_to_migrate = message.sharesToMigrate
       ? Coin.toAmino(message.sharesToMigrate)
       : undefined;
+    if (message.tokenOutMins) {
+      obj.token_out_mins = message.tokenOutMins.map((e) =>
+        e ? Coin.toAmino(e) : undefined
+      );
+    } else {
+      obj.token_out_mins = [];
+    }
     return obj;
   },
   fromAminoMsg(
@@ -1707,3 +2150,305 @@ export const MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse =
       };
     },
   };
+function createBaseMsgAddToConcentratedLiquiditySuperfluidPosition(): MsgAddToConcentratedLiquiditySuperfluidPosition {
+  return {
+    positionId: Long.UZERO,
+    sender: "",
+    tokenDesired0: undefined,
+    tokenDesired1: undefined,
+  };
+}
+export const MsgAddToConcentratedLiquiditySuperfluidPosition = {
+  typeUrl:
+    "/osmosis.superfluid.MsgAddToConcentratedLiquiditySuperfluidPosition",
+  encode(
+    message: MsgAddToConcentratedLiquiditySuperfluidPosition,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (!message.positionId.isZero()) {
+      writer.uint32(8).uint64(message.positionId);
+    }
+    if (message.sender !== "") {
+      writer.uint32(18).string(message.sender);
+    }
+    if (message.tokenDesired0 !== undefined) {
+      Coin.encode(message.tokenDesired0, writer.uint32(26).fork()).ldelim();
+    }
+    if (message.tokenDesired1 !== undefined) {
+      Coin.encode(message.tokenDesired1, writer.uint32(34).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): MsgAddToConcentratedLiquiditySuperfluidPosition {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgAddToConcentratedLiquiditySuperfluidPosition();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.positionId = reader.uint64() as Long;
+          break;
+        case 2:
+          message.sender = reader.string();
+          break;
+        case 3:
+          message.tokenDesired0 = Coin.decode(reader, reader.uint32());
+          break;
+        case 4:
+          message.tokenDesired1 = Coin.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<MsgAddToConcentratedLiquiditySuperfluidPosition>
+  ): MsgAddToConcentratedLiquiditySuperfluidPosition {
+    const message = createBaseMsgAddToConcentratedLiquiditySuperfluidPosition();
+    message.positionId =
+      object.positionId !== undefined && object.positionId !== null
+        ? Long.fromValue(object.positionId)
+        : Long.UZERO;
+    message.sender = object.sender ?? "";
+    message.tokenDesired0 =
+      object.tokenDesired0 !== undefined && object.tokenDesired0 !== null
+        ? Coin.fromPartial(object.tokenDesired0)
+        : undefined;
+    message.tokenDesired1 =
+      object.tokenDesired1 !== undefined && object.tokenDesired1 !== null
+        ? Coin.fromPartial(object.tokenDesired1)
+        : undefined;
+    return message;
+  },
+  fromAmino(
+    object: MsgAddToConcentratedLiquiditySuperfluidPositionAmino
+  ): MsgAddToConcentratedLiquiditySuperfluidPosition {
+    return {
+      positionId: Long.fromString(object.position_id),
+      sender: object.sender,
+      tokenDesired0: object?.token_desired0
+        ? Coin.fromAmino(object.token_desired0)
+        : undefined,
+      tokenDesired1: object?.token_desired1
+        ? Coin.fromAmino(object.token_desired1)
+        : undefined,
+    };
+  },
+  toAmino(
+    message: MsgAddToConcentratedLiquiditySuperfluidPosition
+  ): MsgAddToConcentratedLiquiditySuperfluidPositionAmino {
+    const obj: any = {};
+    obj.position_id = message.positionId
+      ? message.positionId.toString()
+      : undefined;
+    obj.sender = message.sender;
+    obj.token_desired0 = message.tokenDesired0
+      ? Coin.toAmino(message.tokenDesired0)
+      : undefined;
+    obj.token_desired1 = message.tokenDesired1
+      ? Coin.toAmino(message.tokenDesired1)
+      : undefined;
+    return obj;
+  },
+  fromAminoMsg(
+    object: MsgAddToConcentratedLiquiditySuperfluidPositionAminoMsg
+  ): MsgAddToConcentratedLiquiditySuperfluidPosition {
+    return MsgAddToConcentratedLiquiditySuperfluidPosition.fromAmino(
+      object.value
+    );
+  },
+  toAminoMsg(
+    message: MsgAddToConcentratedLiquiditySuperfluidPosition
+  ): MsgAddToConcentratedLiquiditySuperfluidPositionAminoMsg {
+    return {
+      type: "osmosis/add-to-concentrated-liquidity-superfluid-position",
+      value: MsgAddToConcentratedLiquiditySuperfluidPosition.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: MsgAddToConcentratedLiquiditySuperfluidPositionProtoMsg
+  ): MsgAddToConcentratedLiquiditySuperfluidPosition {
+    return MsgAddToConcentratedLiquiditySuperfluidPosition.decode(
+      message.value
+    );
+  },
+  toProto(
+    message: MsgAddToConcentratedLiquiditySuperfluidPosition
+  ): Uint8Array {
+    return MsgAddToConcentratedLiquiditySuperfluidPosition.encode(
+      message
+    ).finish();
+  },
+  toProtoMsg(
+    message: MsgAddToConcentratedLiquiditySuperfluidPosition
+  ): MsgAddToConcentratedLiquiditySuperfluidPositionProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.superfluid.MsgAddToConcentratedLiquiditySuperfluidPosition",
+      value:
+        MsgAddToConcentratedLiquiditySuperfluidPosition.encode(
+          message
+        ).finish(),
+    };
+  },
+};
+function createBaseMsgAddToConcentratedLiquiditySuperfluidPositionResponse(): MsgAddToConcentratedLiquiditySuperfluidPositionResponse {
+  return {
+    positionId: Long.UZERO,
+    amount0: "",
+    amount1: "",
+    newLiquidity: "",
+    lockId: Long.UZERO,
+  };
+}
+export const MsgAddToConcentratedLiquiditySuperfluidPositionResponse = {
+  typeUrl:
+    "/osmosis.superfluid.MsgAddToConcentratedLiquiditySuperfluidPositionResponse",
+  encode(
+    message: MsgAddToConcentratedLiquiditySuperfluidPositionResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (!message.positionId.isZero()) {
+      writer.uint32(8).uint64(message.positionId);
+    }
+    if (message.amount0 !== "") {
+      writer.uint32(18).string(message.amount0);
+    }
+    if (message.amount1 !== "") {
+      writer.uint32(26).string(message.amount1);
+    }
+    if (message.newLiquidity !== "") {
+      writer.uint32(42).string(message.newLiquidity);
+    }
+    if (!message.lockId.isZero()) {
+      writer.uint32(32).uint64(message.lockId);
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): MsgAddToConcentratedLiquiditySuperfluidPositionResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message =
+      createBaseMsgAddToConcentratedLiquiditySuperfluidPositionResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.positionId = reader.uint64() as Long;
+          break;
+        case 2:
+          message.amount0 = reader.string();
+          break;
+        case 3:
+          message.amount1 = reader.string();
+          break;
+        case 5:
+          message.newLiquidity = reader.string();
+          break;
+        case 4:
+          message.lockId = reader.uint64() as Long;
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<MsgAddToConcentratedLiquiditySuperfluidPositionResponse>
+  ): MsgAddToConcentratedLiquiditySuperfluidPositionResponse {
+    const message =
+      createBaseMsgAddToConcentratedLiquiditySuperfluidPositionResponse();
+    message.positionId =
+      object.positionId !== undefined && object.positionId !== null
+        ? Long.fromValue(object.positionId)
+        : Long.UZERO;
+    message.amount0 = object.amount0 ?? "";
+    message.amount1 = object.amount1 ?? "";
+    message.newLiquidity = object.newLiquidity ?? "";
+    message.lockId =
+      object.lockId !== undefined && object.lockId !== null
+        ? Long.fromValue(object.lockId)
+        : Long.UZERO;
+    return message;
+  },
+  fromAmino(
+    object: MsgAddToConcentratedLiquiditySuperfluidPositionResponseAmino
+  ): MsgAddToConcentratedLiquiditySuperfluidPositionResponse {
+    return {
+      positionId: Long.fromString(object.position_id),
+      amount0: object.amount0,
+      amount1: object.amount1,
+      newLiquidity: object.new_liquidity,
+      lockId: Long.fromString(object.lock_id),
+    };
+  },
+  toAmino(
+    message: MsgAddToConcentratedLiquiditySuperfluidPositionResponse
+  ): MsgAddToConcentratedLiquiditySuperfluidPositionResponseAmino {
+    const obj: any = {};
+    obj.position_id = message.positionId
+      ? message.positionId.toString()
+      : undefined;
+    obj.amount0 = message.amount0;
+    obj.amount1 = message.amount1;
+    obj.new_liquidity = message.newLiquidity;
+    obj.lock_id = message.lockId ? message.lockId.toString() : undefined;
+    return obj;
+  },
+  fromAminoMsg(
+    object: MsgAddToConcentratedLiquiditySuperfluidPositionResponseAminoMsg
+  ): MsgAddToConcentratedLiquiditySuperfluidPositionResponse {
+    return MsgAddToConcentratedLiquiditySuperfluidPositionResponse.fromAmino(
+      object.value
+    );
+  },
+  toAminoMsg(
+    message: MsgAddToConcentratedLiquiditySuperfluidPositionResponse
+  ): MsgAddToConcentratedLiquiditySuperfluidPositionResponseAminoMsg {
+    return {
+      type: "osmosis/add-to-concentrated-liquidity-superfluid-position-response",
+      value:
+        MsgAddToConcentratedLiquiditySuperfluidPositionResponse.toAmino(
+          message
+        ),
+    };
+  },
+  fromProtoMsg(
+    message: MsgAddToConcentratedLiquiditySuperfluidPositionResponseProtoMsg
+  ): MsgAddToConcentratedLiquiditySuperfluidPositionResponse {
+    return MsgAddToConcentratedLiquiditySuperfluidPositionResponse.decode(
+      message.value
+    );
+  },
+  toProto(
+    message: MsgAddToConcentratedLiquiditySuperfluidPositionResponse
+  ): Uint8Array {
+    return MsgAddToConcentratedLiquiditySuperfluidPositionResponse.encode(
+      message
+    ).finish();
+  },
+  toProtoMsg(
+    message: MsgAddToConcentratedLiquiditySuperfluidPositionResponse
+  ): MsgAddToConcentratedLiquiditySuperfluidPositionResponseProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.superfluid.MsgAddToConcentratedLiquiditySuperfluidPositionResponse",
+      value:
+        MsgAddToConcentratedLiquiditySuperfluidPositionResponse.encode(
+          message
+        ).finish(),
+    };
+  },
+};

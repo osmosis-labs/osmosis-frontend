@@ -242,6 +242,46 @@ export interface MsgForceUnlockResponseAminoMsg {
 export interface MsgForceUnlockResponseSDKType {
   success: boolean;
 }
+export interface MsgSetRewardReceiverAddress {
+  owner: string;
+  lockID: Long;
+  rewardReceiver: string;
+}
+export interface MsgSetRewardReceiverAddressProtoMsg {
+  typeUrl: "/osmosis.lockup.MsgSetRewardReceiverAddress";
+  value: Uint8Array;
+}
+export interface MsgSetRewardReceiverAddressAmino {
+  owner: string;
+  lockID: string;
+  reward_receiver: string;
+}
+export interface MsgSetRewardReceiverAddressAminoMsg {
+  type: "osmosis/lockup/set-reward-receiver-address";
+  value: MsgSetRewardReceiverAddressAmino;
+}
+export interface MsgSetRewardReceiverAddressSDKType {
+  owner: string;
+  lockID: Long;
+  reward_receiver: string;
+}
+export interface MsgSetRewardReceiverAddressResponse {
+  success: boolean;
+}
+export interface MsgSetRewardReceiverAddressResponseProtoMsg {
+  typeUrl: "/osmosis.lockup.MsgSetRewardReceiverAddressResponse";
+  value: Uint8Array;
+}
+export interface MsgSetRewardReceiverAddressResponseAmino {
+  success: boolean;
+}
+export interface MsgSetRewardReceiverAddressResponseAminoMsg {
+  type: "osmosis/lockup/set-reward-receiver-address-response";
+  value: MsgSetRewardReceiverAddressResponseAmino;
+}
+export interface MsgSetRewardReceiverAddressResponseSDKType {
+  success: boolean;
+}
 function createBaseMsgLockTokens(): MsgLockTokens {
   return {
     owner: "",
@@ -1141,6 +1181,203 @@ export const MsgForceUnlockResponse = {
     return {
       typeUrl: "/osmosis.lockup.MsgForceUnlockResponse",
       value: MsgForceUnlockResponse.encode(message).finish(),
+    };
+  },
+};
+function createBaseMsgSetRewardReceiverAddress(): MsgSetRewardReceiverAddress {
+  return {
+    owner: "",
+    lockID: Long.UZERO,
+    rewardReceiver: "",
+  };
+}
+export const MsgSetRewardReceiverAddress = {
+  typeUrl: "/osmosis.lockup.MsgSetRewardReceiverAddress",
+  encode(
+    message: MsgSetRewardReceiverAddress,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.owner !== "") {
+      writer.uint32(10).string(message.owner);
+    }
+    if (!message.lockID.isZero()) {
+      writer.uint32(16).uint64(message.lockID);
+    }
+    if (message.rewardReceiver !== "") {
+      writer.uint32(26).string(message.rewardReceiver);
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): MsgSetRewardReceiverAddress {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgSetRewardReceiverAddress();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.owner = reader.string();
+          break;
+        case 2:
+          message.lockID = reader.uint64() as Long;
+          break;
+        case 3:
+          message.rewardReceiver = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<MsgSetRewardReceiverAddress>
+  ): MsgSetRewardReceiverAddress {
+    const message = createBaseMsgSetRewardReceiverAddress();
+    message.owner = object.owner ?? "";
+    message.lockID =
+      object.lockID !== undefined && object.lockID !== null
+        ? Long.fromValue(object.lockID)
+        : Long.UZERO;
+    message.rewardReceiver = object.rewardReceiver ?? "";
+    return message;
+  },
+  fromAmino(
+    object: MsgSetRewardReceiverAddressAmino
+  ): MsgSetRewardReceiverAddress {
+    return {
+      owner: object.owner,
+      lockID: Long.fromString(object.lockID),
+      rewardReceiver: object.reward_receiver,
+    };
+  },
+  toAmino(
+    message: MsgSetRewardReceiverAddress
+  ): MsgSetRewardReceiverAddressAmino {
+    const obj: any = {};
+    obj.owner = message.owner;
+    obj.lockID = message.lockID ? message.lockID.toString() : undefined;
+    obj.reward_receiver = message.rewardReceiver;
+    return obj;
+  },
+  fromAminoMsg(
+    object: MsgSetRewardReceiverAddressAminoMsg
+  ): MsgSetRewardReceiverAddress {
+    return MsgSetRewardReceiverAddress.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: MsgSetRewardReceiverAddress
+  ): MsgSetRewardReceiverAddressAminoMsg {
+    return {
+      type: "osmosis/lockup/set-reward-receiver-address",
+      value: MsgSetRewardReceiverAddress.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: MsgSetRewardReceiverAddressProtoMsg
+  ): MsgSetRewardReceiverAddress {
+    return MsgSetRewardReceiverAddress.decode(message.value);
+  },
+  toProto(message: MsgSetRewardReceiverAddress): Uint8Array {
+    return MsgSetRewardReceiverAddress.encode(message).finish();
+  },
+  toProtoMsg(
+    message: MsgSetRewardReceiverAddress
+  ): MsgSetRewardReceiverAddressProtoMsg {
+    return {
+      typeUrl: "/osmosis.lockup.MsgSetRewardReceiverAddress",
+      value: MsgSetRewardReceiverAddress.encode(message).finish(),
+    };
+  },
+};
+function createBaseMsgSetRewardReceiverAddressResponse(): MsgSetRewardReceiverAddressResponse {
+  return {
+    success: false,
+  };
+}
+export const MsgSetRewardReceiverAddressResponse = {
+  typeUrl: "/osmosis.lockup.MsgSetRewardReceiverAddressResponse",
+  encode(
+    message: MsgSetRewardReceiverAddressResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.success === true) {
+      writer.uint32(8).bool(message.success);
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): MsgSetRewardReceiverAddressResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgSetRewardReceiverAddressResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.success = reader.bool();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<MsgSetRewardReceiverAddressResponse>
+  ): MsgSetRewardReceiverAddressResponse {
+    const message = createBaseMsgSetRewardReceiverAddressResponse();
+    message.success = object.success ?? false;
+    return message;
+  },
+  fromAmino(
+    object: MsgSetRewardReceiverAddressResponseAmino
+  ): MsgSetRewardReceiverAddressResponse {
+    return {
+      success: object.success,
+    };
+  },
+  toAmino(
+    message: MsgSetRewardReceiverAddressResponse
+  ): MsgSetRewardReceiverAddressResponseAmino {
+    const obj: any = {};
+    obj.success = message.success;
+    return obj;
+  },
+  fromAminoMsg(
+    object: MsgSetRewardReceiverAddressResponseAminoMsg
+  ): MsgSetRewardReceiverAddressResponse {
+    return MsgSetRewardReceiverAddressResponse.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: MsgSetRewardReceiverAddressResponse
+  ): MsgSetRewardReceiverAddressResponseAminoMsg {
+    return {
+      type: "osmosis/lockup/set-reward-receiver-address-response",
+      value: MsgSetRewardReceiverAddressResponse.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: MsgSetRewardReceiverAddressResponseProtoMsg
+  ): MsgSetRewardReceiverAddressResponse {
+    return MsgSetRewardReceiverAddressResponse.decode(message.value);
+  },
+  toProto(message: MsgSetRewardReceiverAddressResponse): Uint8Array {
+    return MsgSetRewardReceiverAddressResponse.encode(message).finish();
+  },
+  toProtoMsg(
+    message: MsgSetRewardReceiverAddressResponse
+  ): MsgSetRewardReceiverAddressResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.lockup.MsgSetRewardReceiverAddressResponse",
+      value: MsgSetRewardReceiverAddressResponse.encode(message).finish(),
     };
   },
 };

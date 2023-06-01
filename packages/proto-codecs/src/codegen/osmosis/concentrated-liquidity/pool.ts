@@ -9,21 +9,23 @@ export interface Pool {
   address: string;
   /** address holding the incentives liquidity. */
   incentivesAddress: string;
+  /** address holding spread rewards from swaps. */
+  spreadRewardsAddress: string;
   id: Long;
   /** Amount of total liquidity */
   currentTickLiquidity: string;
   token0: string;
   token1: string;
   currentSqrtPrice: string;
-  currentTick: string;
+  currentTick: Long;
   /**
    * tick_spacing must be one of the authorized_tick_spacing values set in the
    * concentrated-liquidity parameters
    */
   tickSpacing: Long;
-  exponentAtPriceOne: string;
-  /** swap_fee is the ratio that is charged on the amount of token in. */
-  swapFee: string;
+  exponentAtPriceOne: Long;
+  /** spread_factor is the ratio that is charged on the amount of token in. */
+  spreadFactor: string;
   /**
    * last_liquidity_update is the last time either the pool liquidity or the
    * active tick changed
@@ -39,6 +41,8 @@ export interface PoolAmino {
   address: string;
   /** address holding the incentives liquidity. */
   incentives_address: string;
+  /** address holding spread rewards from swaps. */
+  spread_rewards_address: string;
   id: string;
   /** Amount of total liquidity */
   current_tick_liquidity: string;
@@ -52,8 +56,8 @@ export interface PoolAmino {
    */
   tick_spacing: string;
   exponent_at_price_one: string;
-  /** swap_fee is the ratio that is charged on the amount of token in. */
-  swap_fee: string;
+  /** spread_factor is the ratio that is charged on the amount of token in. */
+  spread_factor: string;
   /**
    * last_liquidity_update is the last time either the pool liquidity or the
    * active tick changed
@@ -68,15 +72,16 @@ export interface PoolSDKType {
   $typeUrl?: string;
   address: string;
   incentives_address: string;
+  spread_rewards_address: string;
   id: Long;
   current_tick_liquidity: string;
   token0: string;
   token1: string;
   current_sqrt_price: string;
-  current_tick: string;
+  current_tick: Long;
   tick_spacing: Long;
-  exponent_at_price_one: string;
-  swap_fee: string;
+  exponent_at_price_one: Long;
+  spread_factor: string;
   last_liquidity_update?: Date;
 }
 function createBasePool(): Pool {
@@ -84,15 +89,16 @@ function createBasePool(): Pool {
     $typeUrl: "/osmosis.concentratedliquidity.v1beta1.Pool",
     address: "",
     incentivesAddress: "",
+    spreadRewardsAddress: "",
     id: Long.UZERO,
     currentTickLiquidity: "",
     token0: "",
     token1: "",
     currentSqrtPrice: "",
-    currentTick: "",
+    currentTick: Long.ZERO,
     tickSpacing: Long.UZERO,
-    exponentAtPriceOne: "",
-    swapFee: "",
+    exponentAtPriceOne: Long.ZERO,
+    spreadFactor: "",
     lastLiquidityUpdate: undefined,
   };
 }
@@ -105,37 +111,40 @@ export const Pool = {
     if (message.incentivesAddress !== "") {
       writer.uint32(18).string(message.incentivesAddress);
     }
+    if (message.spreadRewardsAddress !== "") {
+      writer.uint32(26).string(message.spreadRewardsAddress);
+    }
     if (!message.id.isZero()) {
-      writer.uint32(24).uint64(message.id);
+      writer.uint32(32).uint64(message.id);
     }
     if (message.currentTickLiquidity !== "") {
-      writer.uint32(34).string(message.currentTickLiquidity);
+      writer.uint32(42).string(message.currentTickLiquidity);
     }
     if (message.token0 !== "") {
-      writer.uint32(42).string(message.token0);
+      writer.uint32(50).string(message.token0);
     }
     if (message.token1 !== "") {
-      writer.uint32(50).string(message.token1);
+      writer.uint32(58).string(message.token1);
     }
     if (message.currentSqrtPrice !== "") {
-      writer.uint32(58).string(message.currentSqrtPrice);
+      writer.uint32(66).string(message.currentSqrtPrice);
     }
-    if (message.currentTick !== "") {
-      writer.uint32(66).string(message.currentTick);
+    if (!message.currentTick.isZero()) {
+      writer.uint32(72).int64(message.currentTick);
     }
     if (!message.tickSpacing.isZero()) {
-      writer.uint32(72).uint64(message.tickSpacing);
+      writer.uint32(80).uint64(message.tickSpacing);
     }
-    if (message.exponentAtPriceOne !== "") {
-      writer.uint32(82).string(message.exponentAtPriceOne);
+    if (!message.exponentAtPriceOne.isZero()) {
+      writer.uint32(88).int64(message.exponentAtPriceOne);
     }
-    if (message.swapFee !== "") {
-      writer.uint32(90).string(message.swapFee);
+    if (message.spreadFactor !== "") {
+      writer.uint32(98).string(message.spreadFactor);
     }
     if (message.lastLiquidityUpdate !== undefined) {
       Timestamp.encode(
         toTimestamp(message.lastLiquidityUpdate),
-        writer.uint32(98).fork()
+        writer.uint32(106).fork()
       ).ldelim();
     }
     return writer;
@@ -154,33 +163,36 @@ export const Pool = {
           message.incentivesAddress = reader.string();
           break;
         case 3:
-          message.id = reader.uint64() as Long;
+          message.spreadRewardsAddress = reader.string();
           break;
         case 4:
-          message.currentTickLiquidity = reader.string();
+          message.id = reader.uint64() as Long;
           break;
         case 5:
-          message.token0 = reader.string();
+          message.currentTickLiquidity = reader.string();
           break;
         case 6:
-          message.token1 = reader.string();
+          message.token0 = reader.string();
           break;
         case 7:
-          message.currentSqrtPrice = reader.string();
+          message.token1 = reader.string();
           break;
         case 8:
-          message.currentTick = reader.string();
+          message.currentSqrtPrice = reader.string();
           break;
         case 9:
-          message.tickSpacing = reader.uint64() as Long;
+          message.currentTick = reader.int64() as Long;
           break;
         case 10:
-          message.exponentAtPriceOne = reader.string();
+          message.tickSpacing = reader.uint64() as Long;
           break;
         case 11:
-          message.swapFee = reader.string();
+          message.exponentAtPriceOne = reader.int64() as Long;
           break;
         case 12:
+          message.spreadFactor = reader.string();
+          break;
+        case 13:
           message.lastLiquidityUpdate = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
@@ -196,6 +208,7 @@ export const Pool = {
     const message = createBasePool();
     message.address = object.address ?? "";
     message.incentivesAddress = object.incentivesAddress ?? "";
+    message.spreadRewardsAddress = object.spreadRewardsAddress ?? "";
     message.id =
       object.id !== undefined && object.id !== null
         ? Long.fromValue(object.id)
@@ -204,13 +217,20 @@ export const Pool = {
     message.token0 = object.token0 ?? "";
     message.token1 = object.token1 ?? "";
     message.currentSqrtPrice = object.currentSqrtPrice ?? "";
-    message.currentTick = object.currentTick ?? "";
+    message.currentTick =
+      object.currentTick !== undefined && object.currentTick !== null
+        ? Long.fromValue(object.currentTick)
+        : Long.ZERO;
     message.tickSpacing =
       object.tickSpacing !== undefined && object.tickSpacing !== null
         ? Long.fromValue(object.tickSpacing)
         : Long.UZERO;
-    message.exponentAtPriceOne = object.exponentAtPriceOne ?? "";
-    message.swapFee = object.swapFee ?? "";
+    message.exponentAtPriceOne =
+      object.exponentAtPriceOne !== undefined &&
+      object.exponentAtPriceOne !== null
+        ? Long.fromValue(object.exponentAtPriceOne)
+        : Long.ZERO;
+    message.spreadFactor = object.spreadFactor ?? "";
     message.lastLiquidityUpdate = object.lastLiquidityUpdate ?? undefined;
     return message;
   },
@@ -218,15 +238,16 @@ export const Pool = {
     return {
       address: object.address,
       incentivesAddress: object.incentives_address,
+      spreadRewardsAddress: object.spread_rewards_address,
       id: Long.fromString(object.id),
       currentTickLiquidity: object.current_tick_liquidity,
       token0: object.token0,
       token1: object.token1,
       currentSqrtPrice: object.current_sqrt_price,
-      currentTick: object.current_tick,
+      currentTick: Long.fromString(object.current_tick),
       tickSpacing: Long.fromString(object.tick_spacing),
-      exponentAtPriceOne: object.exponent_at_price_one,
-      swapFee: object.swap_fee,
+      exponentAtPriceOne: Long.fromString(object.exponent_at_price_one),
+      spreadFactor: object.spread_factor,
       lastLiquidityUpdate: object?.last_liquidity_update
         ? Timestamp.fromAmino(object.last_liquidity_update)
         : undefined,
@@ -236,17 +257,22 @@ export const Pool = {
     const obj: any = {};
     obj.address = message.address;
     obj.incentives_address = message.incentivesAddress;
+    obj.spread_rewards_address = message.spreadRewardsAddress;
     obj.id = message.id ? message.id.toString() : undefined;
     obj.current_tick_liquidity = message.currentTickLiquidity;
     obj.token0 = message.token0;
     obj.token1 = message.token1;
     obj.current_sqrt_price = message.currentSqrtPrice;
-    obj.current_tick = message.currentTick;
+    obj.current_tick = message.currentTick
+      ? message.currentTick.toString()
+      : undefined;
     obj.tick_spacing = message.tickSpacing
       ? message.tickSpacing.toString()
       : undefined;
-    obj.exponent_at_price_one = message.exponentAtPriceOne;
-    obj.swap_fee = message.swapFee;
+    obj.exponent_at_price_one = message.exponentAtPriceOne
+      ? message.exponentAtPriceOne.toString()
+      : undefined;
+    obj.spread_factor = message.spreadFactor;
     obj.last_liquidity_update = message.lastLiquidityUpdate
       ? Timestamp.toAmino(message.lastLiquidityUpdate)
       : undefined;

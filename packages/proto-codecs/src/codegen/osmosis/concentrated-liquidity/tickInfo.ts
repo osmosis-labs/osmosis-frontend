@@ -9,7 +9,7 @@ import {
 export interface TickInfo {
   liquidityGross: string;
   liquidityNet: string;
-  feeGrowthOutside: DecCoin[];
+  spreadRewardGrowthOppositeDirectionOfLastTraversal: DecCoin[];
   uptimeTrackers: UptimeTracker[];
 }
 export interface TickInfoProtoMsg {
@@ -19,7 +19,7 @@ export interface TickInfoProtoMsg {
 export interface TickInfoAmino {
   liquidity_gross: string;
   liquidity_net: string;
-  fee_growth_outside: DecCoinAmino[];
+  spread_reward_growth_opposite_direction_of_last_traversal: DecCoinAmino[];
   uptime_trackers: UptimeTrackerAmino[];
 }
 export interface TickInfoAminoMsg {
@@ -29,7 +29,7 @@ export interface TickInfoAminoMsg {
 export interface TickInfoSDKType {
   liquidity_gross: string;
   liquidity_net: string;
-  fee_growth_outside: DecCoinSDKType[];
+  spread_reward_growth_opposite_direction_of_last_traversal: DecCoinSDKType[];
   uptime_trackers: UptimeTrackerSDKType[];
 }
 export interface UptimeTracker {
@@ -53,7 +53,7 @@ function createBaseTickInfo(): TickInfo {
   return {
     liquidityGross: "",
     liquidityNet: "",
-    feeGrowthOutside: [],
+    spreadRewardGrowthOppositeDirectionOfLastTraversal: [],
     uptimeTrackers: [],
   };
 }
@@ -69,7 +69,7 @@ export const TickInfo = {
     if (message.liquidityNet !== "") {
       writer.uint32(18).string(message.liquidityNet);
     }
-    for (const v of message.feeGrowthOutside) {
+    for (const v of message.spreadRewardGrowthOppositeDirectionOfLastTraversal) {
       DecCoin.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     for (const v of message.uptimeTrackers) {
@@ -91,7 +91,7 @@ export const TickInfo = {
           message.liquidityNet = reader.string();
           break;
         case 3:
-          message.feeGrowthOutside.push(
+          message.spreadRewardGrowthOppositeDirectionOfLastTraversal.push(
             DecCoin.decode(reader, reader.uint32())
           );
           break;
@@ -111,8 +111,10 @@ export const TickInfo = {
     const message = createBaseTickInfo();
     message.liquidityGross = object.liquidityGross ?? "";
     message.liquidityNet = object.liquidityNet ?? "";
-    message.feeGrowthOutside =
-      object.feeGrowthOutside?.map((e) => DecCoin.fromPartial(e)) || [];
+    message.spreadRewardGrowthOppositeDirectionOfLastTraversal =
+      object.spreadRewardGrowthOppositeDirectionOfLastTraversal?.map((e) =>
+        DecCoin.fromPartial(e)
+      ) || [];
     message.uptimeTrackers =
       object.uptimeTrackers?.map((e) => UptimeTracker.fromPartial(e)) || [];
     return message;
@@ -121,8 +123,12 @@ export const TickInfo = {
     return {
       liquidityGross: object.liquidity_gross,
       liquidityNet: object.liquidity_net,
-      feeGrowthOutside: Array.isArray(object?.fee_growth_outside)
-        ? object.fee_growth_outside.map((e: any) => DecCoin.fromAmino(e))
+      spreadRewardGrowthOppositeDirectionOfLastTraversal: Array.isArray(
+        object?.spread_reward_growth_opposite_direction_of_last_traversal
+      )
+        ? object.spread_reward_growth_opposite_direction_of_last_traversal.map(
+            (e: any) => DecCoin.fromAmino(e)
+          )
         : [],
       uptimeTrackers: Array.isArray(object?.uptime_trackers)
         ? object.uptime_trackers.map((e: any) => UptimeTracker.fromAmino(e))
@@ -133,12 +139,13 @@ export const TickInfo = {
     const obj: any = {};
     obj.liquidity_gross = message.liquidityGross;
     obj.liquidity_net = message.liquidityNet;
-    if (message.feeGrowthOutside) {
-      obj.fee_growth_outside = message.feeGrowthOutside.map((e) =>
-        e ? DecCoin.toAmino(e) : undefined
-      );
+    if (message.spreadRewardGrowthOppositeDirectionOfLastTraversal) {
+      obj.spread_reward_growth_opposite_direction_of_last_traversal =
+        message.spreadRewardGrowthOppositeDirectionOfLastTraversal.map((e) =>
+          e ? DecCoin.toAmino(e) : undefined
+        );
     } else {
-      obj.fee_growth_outside = [];
+      obj.spread_reward_growth_opposite_direction_of_last_traversal = [];
     }
     if (message.uptimeTrackers) {
       obj.uptime_trackers = message.uptimeTrackers.map((e) =>

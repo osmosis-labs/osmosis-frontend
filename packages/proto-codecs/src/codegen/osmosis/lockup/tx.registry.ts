@@ -7,6 +7,7 @@ import {
   MsgExtendLockup,
   MsgForceUnlock,
   MsgLockTokens,
+  MsgSetRewardReceiverAddress,
 } from "./tx";
 export const registry: ReadonlyArray<[string, GeneratedType]> = [
   ["/osmosis.lockup.MsgLockTokens", MsgLockTokens],
@@ -14,6 +15,7 @@ export const registry: ReadonlyArray<[string, GeneratedType]> = [
   ["/osmosis.lockup.MsgBeginUnlocking", MsgBeginUnlocking],
   ["/osmosis.lockup.MsgExtendLockup", MsgExtendLockup],
   ["/osmosis.lockup.MsgForceUnlock", MsgForceUnlock],
+  ["/osmosis.lockup.MsgSetRewardReceiverAddress", MsgSetRewardReceiverAddress],
 ];
 export const load = (protoRegistry: Registry) => {
   registry.forEach(([typeUrl, mod]) => {
@@ -52,6 +54,12 @@ export const MessageComposer = {
         value: MsgForceUnlock.encode(value).finish(),
       };
     },
+    setRewardReceiverAddress(value: MsgSetRewardReceiverAddress) {
+      return {
+        typeUrl: "/osmosis.lockup.MsgSetRewardReceiverAddress",
+        value: MsgSetRewardReceiverAddress.encode(value).finish(),
+      };
+    },
   },
   withTypeUrl: {
     lockTokens(value: MsgLockTokens) {
@@ -81,6 +89,12 @@ export const MessageComposer = {
     forceUnlock(value: MsgForceUnlock) {
       return {
         typeUrl: "/osmosis.lockup.MsgForceUnlock",
+        value,
+      };
+    },
+    setRewardReceiverAddress(value: MsgSetRewardReceiverAddress) {
+      return {
+        typeUrl: "/osmosis.lockup.MsgSetRewardReceiverAddress",
         value,
       };
     },
@@ -114,6 +128,12 @@ export const MessageComposer = {
       return {
         typeUrl: "/osmosis.lockup.MsgForceUnlock",
         value: MsgForceUnlock.fromPartial(value),
+      };
+    },
+    setRewardReceiverAddress(value: MsgSetRewardReceiverAddress) {
+      return {
+        typeUrl: "/osmosis.lockup.MsgSetRewardReceiverAddress",
+        value: MsgSetRewardReceiverAddress.fromPartial(value),
       };
     },
   },

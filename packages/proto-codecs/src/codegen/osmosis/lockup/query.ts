@@ -426,6 +426,7 @@ export interface NextLockIDResponseAminoMsg {
 export interface NextLockIDResponseSDKType {
   lock_id: Long;
 }
+/** @deprecated */
 export interface SyntheticLockupsByLockupIDRequest {
   lockId: Long;
 }
@@ -433,6 +434,7 @@ export interface SyntheticLockupsByLockupIDRequestProtoMsg {
   typeUrl: "/osmosis.lockup.SyntheticLockupsByLockupIDRequest";
   value: Uint8Array;
 }
+/** @deprecated */
 export interface SyntheticLockupsByLockupIDRequestAmino {
   lock_id: string;
 }
@@ -440,9 +442,11 @@ export interface SyntheticLockupsByLockupIDRequestAminoMsg {
   type: "osmosis/lockup/synthetic-lockups-by-lockup-id-request";
   value: SyntheticLockupsByLockupIDRequestAmino;
 }
+/** @deprecated */
 export interface SyntheticLockupsByLockupIDRequestSDKType {
   lock_id: Long;
 }
+/** @deprecated */
 export interface SyntheticLockupsByLockupIDResponse {
   syntheticLocks: SyntheticLock[];
 }
@@ -450,6 +454,7 @@ export interface SyntheticLockupsByLockupIDResponseProtoMsg {
   typeUrl: "/osmosis.lockup.SyntheticLockupsByLockupIDResponse";
   value: Uint8Array;
 }
+/** @deprecated */
 export interface SyntheticLockupsByLockupIDResponseAmino {
   synthetic_locks: SyntheticLockAmino[];
 }
@@ -457,8 +462,43 @@ export interface SyntheticLockupsByLockupIDResponseAminoMsg {
   type: "osmosis/lockup/synthetic-lockups-by-lockup-id-response";
   value: SyntheticLockupsByLockupIDResponseAmino;
 }
+/** @deprecated */
 export interface SyntheticLockupsByLockupIDResponseSDKType {
   synthetic_locks: SyntheticLockSDKType[];
+}
+export interface SyntheticLockupByLockupIDRequest {
+  lockId: Long;
+}
+export interface SyntheticLockupByLockupIDRequestProtoMsg {
+  typeUrl: "/osmosis.lockup.SyntheticLockupByLockupIDRequest";
+  value: Uint8Array;
+}
+export interface SyntheticLockupByLockupIDRequestAmino {
+  lock_id: string;
+}
+export interface SyntheticLockupByLockupIDRequestAminoMsg {
+  type: "osmosis/lockup/synthetic-lockup-by-lockup-id-request";
+  value: SyntheticLockupByLockupIDRequestAmino;
+}
+export interface SyntheticLockupByLockupIDRequestSDKType {
+  lock_id: Long;
+}
+export interface SyntheticLockupByLockupIDResponse {
+  syntheticLock?: SyntheticLock;
+}
+export interface SyntheticLockupByLockupIDResponseProtoMsg {
+  typeUrl: "/osmosis.lockup.SyntheticLockupByLockupIDResponse";
+  value: Uint8Array;
+}
+export interface SyntheticLockupByLockupIDResponseAmino {
+  synthetic_lock?: SyntheticLockAmino;
+}
+export interface SyntheticLockupByLockupIDResponseAminoMsg {
+  type: "osmosis/lockup/synthetic-lockup-by-lockup-id-response";
+  value: SyntheticLockupByLockupIDResponseAmino;
+}
+export interface SyntheticLockupByLockupIDResponseSDKType {
+  synthetic_lock?: SyntheticLockSDKType;
 }
 export interface AccountLockedLongerDurationRequest {
   owner: string;
@@ -2920,6 +2960,193 @@ export const SyntheticLockupsByLockupIDResponse = {
     return {
       typeUrl: "/osmosis.lockup.SyntheticLockupsByLockupIDResponse",
       value: SyntheticLockupsByLockupIDResponse.encode(message).finish(),
+    };
+  },
+};
+function createBaseSyntheticLockupByLockupIDRequest(): SyntheticLockupByLockupIDRequest {
+  return {
+    lockId: Long.UZERO,
+  };
+}
+export const SyntheticLockupByLockupIDRequest = {
+  typeUrl: "/osmosis.lockup.SyntheticLockupByLockupIDRequest",
+  encode(
+    message: SyntheticLockupByLockupIDRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (!message.lockId.isZero()) {
+      writer.uint32(8).uint64(message.lockId);
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): SyntheticLockupByLockupIDRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSyntheticLockupByLockupIDRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.lockId = reader.uint64() as Long;
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<SyntheticLockupByLockupIDRequest>
+  ): SyntheticLockupByLockupIDRequest {
+    const message = createBaseSyntheticLockupByLockupIDRequest();
+    message.lockId =
+      object.lockId !== undefined && object.lockId !== null
+        ? Long.fromValue(object.lockId)
+        : Long.UZERO;
+    return message;
+  },
+  fromAmino(
+    object: SyntheticLockupByLockupIDRequestAmino
+  ): SyntheticLockupByLockupIDRequest {
+    return {
+      lockId: Long.fromString(object.lock_id),
+    };
+  },
+  toAmino(
+    message: SyntheticLockupByLockupIDRequest
+  ): SyntheticLockupByLockupIDRequestAmino {
+    const obj: any = {};
+    obj.lock_id = message.lockId ? message.lockId.toString() : undefined;
+    return obj;
+  },
+  fromAminoMsg(
+    object: SyntheticLockupByLockupIDRequestAminoMsg
+  ): SyntheticLockupByLockupIDRequest {
+    return SyntheticLockupByLockupIDRequest.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: SyntheticLockupByLockupIDRequest
+  ): SyntheticLockupByLockupIDRequestAminoMsg {
+    return {
+      type: "osmosis/lockup/synthetic-lockup-by-lockup-id-request",
+      value: SyntheticLockupByLockupIDRequest.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: SyntheticLockupByLockupIDRequestProtoMsg
+  ): SyntheticLockupByLockupIDRequest {
+    return SyntheticLockupByLockupIDRequest.decode(message.value);
+  },
+  toProto(message: SyntheticLockupByLockupIDRequest): Uint8Array {
+    return SyntheticLockupByLockupIDRequest.encode(message).finish();
+  },
+  toProtoMsg(
+    message: SyntheticLockupByLockupIDRequest
+  ): SyntheticLockupByLockupIDRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.lockup.SyntheticLockupByLockupIDRequest",
+      value: SyntheticLockupByLockupIDRequest.encode(message).finish(),
+    };
+  },
+};
+function createBaseSyntheticLockupByLockupIDResponse(): SyntheticLockupByLockupIDResponse {
+  return {
+    syntheticLock: undefined,
+  };
+}
+export const SyntheticLockupByLockupIDResponse = {
+  typeUrl: "/osmosis.lockup.SyntheticLockupByLockupIDResponse",
+  encode(
+    message: SyntheticLockupByLockupIDResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.syntheticLock !== undefined) {
+      SyntheticLock.encode(
+        message.syntheticLock,
+        writer.uint32(10).fork()
+      ).ldelim();
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): SyntheticLockupByLockupIDResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSyntheticLockupByLockupIDResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.syntheticLock = SyntheticLock.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<SyntheticLockupByLockupIDResponse>
+  ): SyntheticLockupByLockupIDResponse {
+    const message = createBaseSyntheticLockupByLockupIDResponse();
+    message.syntheticLock =
+      object.syntheticLock !== undefined && object.syntheticLock !== null
+        ? SyntheticLock.fromPartial(object.syntheticLock)
+        : undefined;
+    return message;
+  },
+  fromAmino(
+    object: SyntheticLockupByLockupIDResponseAmino
+  ): SyntheticLockupByLockupIDResponse {
+    return {
+      syntheticLock: object?.synthetic_lock
+        ? SyntheticLock.fromAmino(object.synthetic_lock)
+        : undefined,
+    };
+  },
+  toAmino(
+    message: SyntheticLockupByLockupIDResponse
+  ): SyntheticLockupByLockupIDResponseAmino {
+    const obj: any = {};
+    obj.synthetic_lock = message.syntheticLock
+      ? SyntheticLock.toAmino(message.syntheticLock)
+      : undefined;
+    return obj;
+  },
+  fromAminoMsg(
+    object: SyntheticLockupByLockupIDResponseAminoMsg
+  ): SyntheticLockupByLockupIDResponse {
+    return SyntheticLockupByLockupIDResponse.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: SyntheticLockupByLockupIDResponse
+  ): SyntheticLockupByLockupIDResponseAminoMsg {
+    return {
+      type: "osmosis/lockup/synthetic-lockup-by-lockup-id-response",
+      value: SyntheticLockupByLockupIDResponse.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: SyntheticLockupByLockupIDResponseProtoMsg
+  ): SyntheticLockupByLockupIDResponse {
+    return SyntheticLockupByLockupIDResponse.decode(message.value);
+  },
+  toProto(message: SyntheticLockupByLockupIDResponse): Uint8Array {
+    return SyntheticLockupByLockupIDResponse.encode(message).finish();
+  },
+  toProtoMsg(
+    message: SyntheticLockupByLockupIDResponse
+  ): SyntheticLockupByLockupIDResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.lockup.SyntheticLockupByLockupIDResponse",
+      value: SyntheticLockupByLockupIDResponse.encode(message).finish(),
     };
   },
 };

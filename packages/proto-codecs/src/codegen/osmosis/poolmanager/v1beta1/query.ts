@@ -2,6 +2,11 @@
 import * as _m0 from "protobufjs/minimal";
 
 import {
+  Coin,
+  CoinAmino,
+  CoinSDKType,
+} from "../../../cosmos/base/v1beta1/coin";
+import {
   Any,
   AnyAmino,
   AnyProtoMsg,
@@ -278,25 +283,19 @@ export interface PoolResponseSDKType {
     | undefined;
 }
 /** =============================== AllPools */
-export interface AllPoolsRequest {
-  poolId: Long;
-}
+export interface AllPoolsRequest {}
 export interface AllPoolsRequestProtoMsg {
   typeUrl: "/osmosis.poolmanager.v1beta1.AllPoolsRequest";
   value: Uint8Array;
 }
 /** =============================== AllPools */
-export interface AllPoolsRequestAmino {
-  pool_id: string;
-}
+export interface AllPoolsRequestAmino {}
 export interface AllPoolsRequestAminoMsg {
   type: "osmosis/poolmanager/all-pools-request";
   value: AllPoolsRequestAmino;
 }
 /** =============================== AllPools */
-export interface AllPoolsRequestSDKType {
-  pool_id: Long;
-}
+export interface AllPoolsRequestSDKType {}
 export interface AllPoolsResponse {
   pools: (Pool1 & CosmWasmPool & Pool2 & Pool3 & Any)[] | Any[];
 }
@@ -394,6 +393,43 @@ export interface SpotPriceResponseAminoMsg {
  */
 export interface SpotPriceResponseSDKType {
   spot_price: string;
+}
+/** =============================== PoolLiquidity */
+export interface TotalPoolLiquidityRequest {
+  poolId: Long;
+}
+export interface TotalPoolLiquidityRequestProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.TotalPoolLiquidityRequest";
+  value: Uint8Array;
+}
+/** =============================== PoolLiquidity */
+export interface TotalPoolLiquidityRequestAmino {
+  pool_id: string;
+}
+export interface TotalPoolLiquidityRequestAminoMsg {
+  type: "osmosis/poolmanager/total-pool-liquidity-request";
+  value: TotalPoolLiquidityRequestAmino;
+}
+/** =============================== PoolLiquidity */
+export interface TotalPoolLiquidityRequestSDKType {
+  pool_id: Long;
+}
+export interface TotalPoolLiquidityResponse {
+  liquidity: Coin[];
+}
+export interface TotalPoolLiquidityResponseProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.TotalPoolLiquidityResponse";
+  value: Uint8Array;
+}
+export interface TotalPoolLiquidityResponseAmino {
+  liquidity: CoinAmino[];
+}
+export interface TotalPoolLiquidityResponseAminoMsg {
+  type: "osmosis/poolmanager/total-pool-liquidity-response";
+  value: TotalPoolLiquidityResponseAmino;
+}
+export interface TotalPoolLiquidityResponseSDKType {
+  liquidity: CoinSDKType[];
 }
 function createBaseParamsRequest(): ParamsRequest {
   return {};
@@ -1447,19 +1483,14 @@ export const PoolResponse = {
   },
 };
 function createBaseAllPoolsRequest(): AllPoolsRequest {
-  return {
-    poolId: Long.UZERO,
-  };
+  return {};
 }
 export const AllPoolsRequest = {
   typeUrl: "/osmosis.poolmanager.v1beta1.AllPoolsRequest",
   encode(
-    message: AllPoolsRequest,
+    _: AllPoolsRequest,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
-    if (!message.poolId.isZero()) {
-      writer.uint32(8).uint64(message.poolId);
-    }
     return writer;
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): AllPoolsRequest {
@@ -1469,9 +1500,6 @@ export const AllPoolsRequest = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 1:
-          message.poolId = reader.uint64() as Long;
-          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -1479,22 +1507,15 @@ export const AllPoolsRequest = {
     }
     return message;
   },
-  fromPartial(object: Partial<AllPoolsRequest>): AllPoolsRequest {
+  fromPartial(_: Partial<AllPoolsRequest>): AllPoolsRequest {
     const message = createBaseAllPoolsRequest();
-    message.poolId =
-      object.poolId !== undefined && object.poolId !== null
-        ? Long.fromValue(object.poolId)
-        : Long.UZERO;
     return message;
   },
-  fromAmino(object: AllPoolsRequestAmino): AllPoolsRequest {
-    return {
-      poolId: Long.fromString(object.pool_id),
-    };
+  fromAmino(_: AllPoolsRequestAmino): AllPoolsRequest {
+    return {};
   },
-  toAmino(message: AllPoolsRequest): AllPoolsRequestAmino {
+  toAmino(_: AllPoolsRequest): AllPoolsRequestAmino {
     const obj: any = {};
-    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: AllPoolsRequestAminoMsg): AllPoolsRequest {
@@ -1757,6 +1778,187 @@ export const SpotPriceResponse = {
     return {
       typeUrl: "/osmosis.poolmanager.v1beta1.SpotPriceResponse",
       value: SpotPriceResponse.encode(message).finish(),
+    };
+  },
+};
+function createBaseTotalPoolLiquidityRequest(): TotalPoolLiquidityRequest {
+  return {
+    poolId: Long.UZERO,
+  };
+}
+export const TotalPoolLiquidityRequest = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.TotalPoolLiquidityRequest",
+  encode(
+    message: TotalPoolLiquidityRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (!message.poolId.isZero()) {
+      writer.uint32(8).uint64(message.poolId);
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): TotalPoolLiquidityRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTotalPoolLiquidityRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.poolId = reader.uint64() as Long;
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<TotalPoolLiquidityRequest>
+  ): TotalPoolLiquidityRequest {
+    const message = createBaseTotalPoolLiquidityRequest();
+    message.poolId =
+      object.poolId !== undefined && object.poolId !== null
+        ? Long.fromValue(object.poolId)
+        : Long.UZERO;
+    return message;
+  },
+  fromAmino(object: TotalPoolLiquidityRequestAmino): TotalPoolLiquidityRequest {
+    return {
+      poolId: Long.fromString(object.pool_id),
+    };
+  },
+  toAmino(message: TotalPoolLiquidityRequest): TotalPoolLiquidityRequestAmino {
+    const obj: any = {};
+    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    return obj;
+  },
+  fromAminoMsg(
+    object: TotalPoolLiquidityRequestAminoMsg
+  ): TotalPoolLiquidityRequest {
+    return TotalPoolLiquidityRequest.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: TotalPoolLiquidityRequest
+  ): TotalPoolLiquidityRequestAminoMsg {
+    return {
+      type: "osmosis/poolmanager/total-pool-liquidity-request",
+      value: TotalPoolLiquidityRequest.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: TotalPoolLiquidityRequestProtoMsg
+  ): TotalPoolLiquidityRequest {
+    return TotalPoolLiquidityRequest.decode(message.value);
+  },
+  toProto(message: TotalPoolLiquidityRequest): Uint8Array {
+    return TotalPoolLiquidityRequest.encode(message).finish();
+  },
+  toProtoMsg(
+    message: TotalPoolLiquidityRequest
+  ): TotalPoolLiquidityRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.TotalPoolLiquidityRequest",
+      value: TotalPoolLiquidityRequest.encode(message).finish(),
+    };
+  },
+};
+function createBaseTotalPoolLiquidityResponse(): TotalPoolLiquidityResponse {
+  return {
+    liquidity: [],
+  };
+}
+export const TotalPoolLiquidityResponse = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.TotalPoolLiquidityResponse",
+  encode(
+    message: TotalPoolLiquidityResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    for (const v of message.liquidity) {
+      Coin.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): TotalPoolLiquidityResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTotalPoolLiquidityResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.liquidity.push(Coin.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<TotalPoolLiquidityResponse>
+  ): TotalPoolLiquidityResponse {
+    const message = createBaseTotalPoolLiquidityResponse();
+    message.liquidity = object.liquidity?.map((e) => Coin.fromPartial(e)) || [];
+    return message;
+  },
+  fromAmino(
+    object: TotalPoolLiquidityResponseAmino
+  ): TotalPoolLiquidityResponse {
+    return {
+      liquidity: Array.isArray(object?.liquidity)
+        ? object.liquidity.map((e: any) => Coin.fromAmino(e))
+        : [],
+    };
+  },
+  toAmino(
+    message: TotalPoolLiquidityResponse
+  ): TotalPoolLiquidityResponseAmino {
+    const obj: any = {};
+    if (message.liquidity) {
+      obj.liquidity = message.liquidity.map((e) =>
+        e ? Coin.toAmino(e) : undefined
+      );
+    } else {
+      obj.liquidity = [];
+    }
+    return obj;
+  },
+  fromAminoMsg(
+    object: TotalPoolLiquidityResponseAminoMsg
+  ): TotalPoolLiquidityResponse {
+    return TotalPoolLiquidityResponse.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: TotalPoolLiquidityResponse
+  ): TotalPoolLiquidityResponseAminoMsg {
+    return {
+      type: "osmosis/poolmanager/total-pool-liquidity-response",
+      value: TotalPoolLiquidityResponse.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: TotalPoolLiquidityResponseProtoMsg
+  ): TotalPoolLiquidityResponse {
+    return TotalPoolLiquidityResponse.decode(message.value);
+  },
+  toProto(message: TotalPoolLiquidityResponse): Uint8Array {
+    return TotalPoolLiquidityResponse.encode(message).finish();
+  },
+  toProtoMsg(
+    message: TotalPoolLiquidityResponse
+  ): TotalPoolLiquidityResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.TotalPoolLiquidityResponse",
+      value: TotalPoolLiquidityResponse.encode(message).finish(),
     };
   },
 };
