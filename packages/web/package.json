@@ -13,9 +13,9 @@
     "lint:fix": "prettier --write \"**/*\" && next lint --fix",
     "pre-commit": "lint-staged",
     "generate": "yarn generate:chain-info && yarn generate:wallet-assets && yarn generate:wallet-registry",
-    "generate:chain-info": "dotenv -e .env -e .env.local -- ts-node --esm config/generate-chain-infos/index.ts",
-    "generate:wallet-assets": "dotenv -e .env -e .env.local -- ts-node --esm config/generate-wallet-assets/index.ts",
-    "generate:wallet-registry": "dotenv -e .env -e .env.local -- ts-node --esm config/generate-wallet-registry.ts"
+    "generate:chain-info": "dotenv -c -- ts-node --esm config/generate-chain-infos/index.ts",
+    "generate:wallet-assets": "dotenv -c -- ts-node --esm config/generate-wallet-assets/index.ts",
+    "generate:wallet-registry": "dotenv -c -- ts-node --esm config/generate-wallet-registry.ts"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^1.2.3",
