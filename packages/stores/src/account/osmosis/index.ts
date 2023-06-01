@@ -10,7 +10,6 @@ import { Currency, KeplrSignOptions } from "@keplr-wallet/types";
 import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import * as WeightedPoolEstimates from "@osmosis-labs/math";
 import * as PoolMath from "@osmosis-labs/math";
-import { Pool } from "@osmosis-labs/pools";
 import deepmerge from "deepmerge";
 import Long from "long";
 import { DeepPartial } from "utility-types";
@@ -524,111 +523,20 @@ export class OsmosisAccountImpl {
     signOptions?: KeplrSignOptions,
     onFulfill?: (tx: any) => void
   ) {
-    const queries = this.queries;
-
     await this.base.signAndBroadcast(
       this.chainId,
       "swapExactAmountIn",
       async () => {
-        const pools: Pool[] = [];
-        for (const route of routes) {
-          const queryPool = queries.queryGammPools.getPool(route.poolId);
-
-          if (!queryPool) {
-            throw new Error(
-              `Pool #${route.poolId} of route with ${route.tokenOutCurrency.coinMinimalDenom} not found`
-            );
-          }
-
-          const pool = queryPool.pool;
-          if (!pool) {
-            throw new Error("Unknown pool");
-          }
-
-          pools.push(pool);
-        }
-
-        const poolRoutes = pools.map((pool, i) => {
-          const queryPool = queries.queryGammPools.getPool(pool.id);
-          const isIncentivized = queries.queryIncentivizedPools.isIncentivized(
-            pool.id
-          );
-          const tokenOutCurrency = routes[i].tokenOutCurrency;
-
-          if (!queryPool) {
-            throw new Error(`Pool #${pool.id} not found for route`);
-          }
-
-          if (i !== 0 && typeof routes[i - 1] === "undefined") {
-            throw new Error("Previous route not found");
-          }
-
-          // reconcile weighted and stable pool asset data
-          const inPoolAsset = queryPool.getPoolAsset(
-            i === 0
-              ? tokenIn.currency.coinMinimalDenom
-              : routes[i - 1].tokenOutCurrency.coinMinimalDenom
-          );
-          const outPoolAsset = queryPool.getPoolAsset(
-            tokenOutCurrency.coinMinimalDenom
-          );
-          const inPoolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
-            ({ denom }) =>
-              denom === inPoolAsset.amount.currency.coinMinimalDenom
-          )?.weight;
-          const outPoolAssetWeight = queryPool.weightedPoolInfo?.assets.find(
-            ({ denom }) =>
-              denom === outPoolAsset.amount.currency.coinMinimalDenom
-          )?.weight;
-
-          const poolAssets = queryPool?.stableSwapInfo
-            ? queryPool.stableSwapInfo.assets
-            : [];
-
-          return {
-            pool: {
-              id: pool.id,
-              swapFee: pool.swapFee,
-              inPoolAsset: {
-                ...inPoolAsset.amount.currency,
-                amount: new Int(inPoolAsset.amount.toCoin().amount),
-                weight: inPoolAssetWeight
-                  ? new Int(inPoolAssetWeight.toDec().truncate().toString())
-                  : undefined,
-              },
-              outPoolAsset: {
-                denom: outPoolAsset.amount.currency.coinMinimalDenom,
-                amount: new Int(outPoolAsset.amount.toCoin().amount),
-                weight: outPoolAssetWeight
-                  ? new Int(outPoolAssetWeight.toDec().truncate().toString())
-                  : undefined,
-              },
-              isIncentivized,
-              poolAssets,
-            },
-            tokenOutCurrency,
-          };
-        });
-
-        const amount = new Dec(tokenIn.amount)
-          .mul(
-            DecUtils.getTenExponentNInPrecisionRange(
-              tokenIn.currency.coinDecimals
-            )
-          )
-          .truncate();
-        const coin = new Coin(tokenIn.currency.coinMinimalDenom, amount);
-
         const msg = this.msgOpts.swapExactAmountIn.messageComposer({
           sender: this.address,
-          routes: poolRoutes.map((route) => ({
-            poolId: Long.fromString(route.pool.id),
+          routes: routes.map((route) => ({
+            poolId: Long.fromString(route.poolId),
             tokenOutDenom: route.tokenOutCurrency.coinMinimalDenom,
           })),
           tokenOutMinAmount: tokenOutMinAmount.toString(),
           tokenIn: {
-            denom: coin.denom,
-            amount: coin.amount.toString(),
+            denom: tokenIn.currency.coinMinimalDenom,
+            amount: tokenIn.amount.toString(),
           },
         });
 
@@ -693,41 +601,20 @@ export class OsmosisAccountImpl {
     signOptions?: KeplrSignOptions,
     onFulfill?: (tx: any) => void
   ) {
-    const queries = this.queries;
-
     await this.base.signAndBroadcast(
       this.chainId,
       "swapExactAmountIn",
       async () => {
-        // get pool info and refetch
-        const queryPool = queries.queryGammPools.getPool(poolId);
-        if (!queryPool) {
-          throw new Error(`Pool #${poolId} not found`);
-        }
-        const pool = queryPool.pool;
-        if (!pool) {
-          throw new Error("Unknown pool");
-        }
-
-        const inUAmount = new Dec(tokenIn.amount)
-          .mul(
-            DecUtils.getTenExponentNInPrecisionRange(
-              tokenIn.currency.coinDecimals
-            )
-          )
-          .truncate();
-        const coin = new Coin(tokenIn.currency.coinMinimalDenom, inUAmount);
-
         const msg = this.msgOpts.swapExactAmountIn.messageComposer({
           routes: [
             {
-              poolId: Long.fromString(pool.id),
+              poolId: Long.fromString(poolId),
               tokenOutDenom: tokenOutCurrency.coinMinimalDenom,
             },
           ],
           tokenIn: {
-            denom: coin.denom,
-            amount: coin.amount.toString(),
+            denom: tokenIn.currency.coinMinimalDenom,
+            amount: tokenIn.amount.toString(),
           },
           sender: this.address,
           tokenOutMinAmount: tokenOutMinAmount.toString(),
