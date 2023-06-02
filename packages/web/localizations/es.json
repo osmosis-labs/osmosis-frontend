@@ -462,9 +462,5 @@
   "unknownError": "Error desconocido",
   "viewExplorer": "Ver Explorador",
   "waitingForTransaction": "Esperando que la transacción se incluya en el bloque",
-  "highPoolInflationWarning": "Los APRs altos pueden ser resultado de recompensas inflacionarias. Proceda con precaución.",
-  "autonomy": {
-    "description": "Explora Órdenes de Límite y Stop presentadas por Autonomy: ",
-    "link": "osmosis.autoswap.trade"
-  }
+  "highPoolInflationWarning": "Los APRs altos pueden ser resultado de recompensas inflacionarias. Proceda con precaución."
 }

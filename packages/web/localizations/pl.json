@@ -462,9 +462,5 @@
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",
   "waitingForTransaction": "Oczekiwanie na dołączenie transakcji do bloku",
-  "highPoolInflationWarning": "Wysokie APR-y mogą wynikać z nagród inflacyjnych. Postępuj ostrożnie.",
-  "autonomy": {
-    "description": "Poznaj Limity i Zlecenia Stop oferowane przez Autonomy: ",
-    "link": "osmosis.autoswap.trade"
-  }
+  "highPoolInflationWarning": "Wysokie APR-y mogą wynikać z nagród inflacyjnych. Postępuj ostrożnie."
 }
