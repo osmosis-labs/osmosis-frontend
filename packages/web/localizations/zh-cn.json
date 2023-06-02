@@ -222,7 +222,12 @@
     "notInitialized": "未初始化",
     "percentageSum": "百分比总和不是 100",
     "scalingFactorTooLow": "比例因子太低",
-    "zeroAmount": "数量为零"
+    "zeroAmount": "数量为零",
+    "fallbackText1": "发生错误",
+    "fallbackText2": "请提交一个",
+    "fallbackBugReport": "错误报告",
+    "fallbackText3": "或得到",
+    "fallbackSupport": "支持"
   },
   "keplr": {
     "extension": "Keplr 浏览器扩展",
@@ -461,10 +466,5 @@
   "autonomy": {
     "description": "通过 Autonomy 探索限价和止损订单: ",
     "link": "osmosis.autoswap.trade"
-  },
-  "errors.fallbackText1": "发生错误",
-  "errors.fallbackText2": "请提交一个",
-  "errors.fallbackBugReport": "错误报告",
-  "errors.fallbackText3": "或得到",
-  "errors.fallbackSupport": "支持"
+  }
 }
