@@ -24,7 +24,7 @@ class ErrorBoundary extends React.Component<
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     console.log({ error, errorInfo });
-    // TODO log error to Amplitude in follow up PR
+    // TODO log error to Sentry in follow up PR
   }
 
   render() {
