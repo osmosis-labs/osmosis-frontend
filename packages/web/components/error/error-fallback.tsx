@@ -20,7 +20,7 @@ const ErrorFallback = () => {
           href="https://bugs.osmosis.zone"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-500 underline"
+          className="underline"
         >
           {t("errors.fallbackBugReport")}
         </a>{" "}
@@ -29,7 +29,7 @@ const ErrorFallback = () => {
           href="https://support.osmosis.zone"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-500 underline"
+          className="underline"
         >
           {t("errors.fallbackSupport")}
         </a>
