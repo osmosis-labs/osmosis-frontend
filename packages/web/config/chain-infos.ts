@@ -3528,8 +3528,8 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
       "https://bd.explorer.net.bluzelle.com/transactions/{txHash}",
   },
   {
-    rpc: "https://gitopia-rpc.polkachu.com",
-    rest: "https://gitopia-api.polkachu.com",
+    rpc: "https://rpc-gitopia.keplr.app",
+    rest: "https://lcd-gitopia.keplr.app",
     chainId: "gitopia",
     chainName: "Gitopia",
     bip44: {
