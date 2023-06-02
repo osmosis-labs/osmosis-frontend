@@ -3,6 +3,7 @@ import { MsgOpt } from "@keplr-wallet/stores";
 export interface OsmosisMsgOpts {
   readonly createBalancerPool: MsgOpt;
   readonly createStableswapPool: MsgOpt;
+  readonly createConcentratedPool: MsgOpt;
   readonly joinPool: MsgOpt & {
     shareCoinDecimals: number;
   };
@@ -33,6 +34,10 @@ export const defaultMsgOpts: OsmosisMsgOpts = {
   },
   createStableswapPool: {
     type: "osmosis/gamm/create-stableswap-pool",
+    gas: 350000,
+  },
+  createConcentratedPool: {
+    type: "osmosis/cl-create-pool",
     gas: 350000,
   },
   joinPool: {

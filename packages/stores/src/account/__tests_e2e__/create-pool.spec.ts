@@ -16,7 +16,7 @@ describe("Create Pool Tx", () => {
     await waitAccountLoaded(account);
   });
 
-  test("should fail with 0 assets", async () => {
+  test("weighted - should fail with 0 assets", async () => {
     const account = accountStore.getAccount(chainId);
 
     await expect(
@@ -24,7 +24,7 @@ describe("Create Pool Tx", () => {
     ).rejects.not.toBeNull();
   });
 
-  test("should fail with 1 assets", async () => {
+  test("weighted - should fail with 1 assets", async () => {
     const account = accountStore.getAccount(chainId);
 
     await expect(
@@ -44,7 +44,7 @@ describe("Create Pool Tx", () => {
     ).rejects.not.toBeNull();
   });
 
-  test("should fail with duplicated assets", async () => {
+  test("weighted - should fail with duplicated assets", async () => {
     const account = accountStore.getAccount(chainId);
 
     await expect(
@@ -80,7 +80,7 @@ describe("Create Pool Tx", () => {
     ).rejects.not.toBeNull();
   });
 
-  test("with 0 swap fee", async () => {
+  test("weighted - with 0 swap fee", async () => {
     const account = accountStore.getAccount(chainId);
 
     const tx = await new Promise<any>((resolve) => {
@@ -145,7 +145,7 @@ describe("Create Pool Tx", () => {
     );
   });
 
-  test("with swap fee", async () => {
+  test("weighted - with swap fee", async () => {
     const account = accountStore.getAccount(chainId);
 
     const tx = await new Promise<any>((resolve) => {
@@ -208,5 +208,28 @@ describe("Create Pool Tx", () => {
       },
       getEventFromTx(tx, "transfer")
     );
+  });
+
+  test("concentrated - base creation", async () => {
+    const account = accountStore.getAccount(chainId);
+
+    await expect(
+      new Promise<any>((resolve, reject) => {
+        account.osmosis
+          .sendCreateConcentratedPoolMsg(
+            "uosmo",
+            "uion",
+            1,
+            0.01,
+            undefined,
+            (tx) => {
+              if (tx.code) reject();
+              else resolve(tx);
+            }
+          )
+          .then(resolve)
+          .catch(reject);
+      })
+    ).rejects.toBeUndefined();
   });
 });

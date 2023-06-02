@@ -188,6 +188,86 @@ export class OsmosisAccountImpl {
   }
 
   /**
+   * Create concentrated liquidity pool, with no positions.
+   *
+   * @param denom0 Base denom in pool.
+   * @param denom1 Quote denom in pool.
+   * @param tickSpacing Tick spacing.
+   * @param spreadFactor Spread factor.
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
+   */
+  async sendCreateConcentratedPoolMsg(
+    denom0: string,
+    denom1: string,
+    tickSpacing: number,
+    spreadFactor: number,
+    memo: string = "",
+    onFulfill?: (tx: any) => void
+  ) {
+    const msg = {
+      type: this._msgOpts.createConcentratedPool.type,
+      value: {
+        sender: this.base.bech32Address,
+        denom0,
+        denom1,
+        tick_spacing: tickSpacing.toString(),
+        spread_factor: new Dec(spreadFactor).toString(),
+      },
+    };
+
+    console.log(msg);
+
+    await this.base.cosmos.sendMsgs(
+      "createConcentratedPool",
+      {
+        aminoMsgs: [msg],
+        protoMsgs: [
+          {
+            typeUrl:
+              "/osmosis.concentratedliquidity.v1beta1.MsgCreateConcentratedPool",
+            value:
+              osmosis.concentratedliquidity.v1beta1.MsgCreateConcentratedPool.encode(
+                {
+                  sender: msg.value.sender,
+                  denom0: msg.value.denom0,
+                  denom1: msg.value.denom1,
+                  tickSpacing: new Long(Number(msg.value.tick_spacing)),
+                  spreadFactor: msg.value.spread_factor,
+                }
+              ).finish(),
+          },
+        ],
+      },
+      memo,
+      {
+        amount: [],
+        gas: this._msgOpts.createConcentratedPool.gas.toString(),
+      },
+      undefined,
+      (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+          this.queries.queryGammPools.waitFreshResponse();
+          queries.queryBalances
+            .getQueryBech32Address(this.base.bech32Address)
+            .balances.forEach((bal) => {
+              if (
+                bal.currency.coinMinimalDenom === denom0 ||
+                bal.currency.coinMinimalDenom === denom1
+              ) {
+                bal.waitFreshResponse();
+              }
+            });
+        }
+
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
    * Create stableswap pool.
    * @param swapFee The swap fee of the pool. Should set as the percentage. (Ex. 10% -> 10)
    * @param assets Assets that will be provided to the pool initially, with scaling factors. Token can be parsed as to primitive by convenience. `amount`s are not in micro.
