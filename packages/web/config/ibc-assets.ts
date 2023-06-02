@@ -1502,6 +1502,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-522",
         destChannelId: "channel-2",
         coinMinimalDenom: "uqstars",
+        isVerified: true,
       },
       {
         // WYND
@@ -1543,6 +1544,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-522",
         destChannelId: "channel-2",
         coinMinimalDenom: "uqatom",
+        isVerified: true,
       },
       {
         counterpartyChainId: "comdex-1",
@@ -1555,6 +1557,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-522",
         destChannelId: "channel-2",
         coinMinimalDenom: "uqregen",
+        isVerified: true,
       },
       {
         //JunoFox
@@ -1584,6 +1587,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-522",
         destChannelId: "channel-2",
         coinMinimalDenom: "uqosmo",
+        isVerified: true,
       },
       {
         counterpartyChainId: "noble-1",
