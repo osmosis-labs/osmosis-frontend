@@ -162,6 +162,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
       const quoteAmountWithDecimals = quoteCoin
         .hideDenom(true)
         .locale(false)
+        .trim(true)
         .toString();
       this.quoteDepositAmountIn.setAmount(quoteAmountWithDecimals.toString());
     });
@@ -193,6 +194,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
       const baseAmountWithDecimals = baseCoin
         .hideDenom(true)
         .locale(false)
+        .trim(true)
         .toString();
       this.baseDepositAmountIn.setAmount(baseAmountWithDecimals.toString());
     });
