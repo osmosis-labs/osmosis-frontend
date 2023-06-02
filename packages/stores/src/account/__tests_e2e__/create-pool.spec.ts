@@ -218,9 +218,9 @@ describe("Create Pool Tx", () => {
         account.osmosis
           .sendCreateConcentratedPoolMsg(
             "uosmo",
-            "uion",
+            "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858", // whitelisted IBC asset
             1,
-            0.01,
+            0,
             undefined,
             (tx) => {
               if (tx.code) reject();
@@ -230,6 +230,6 @@ describe("Create Pool Tx", () => {
           .then(resolve)
           .catch(reject);
       })
-    ).rejects.toBeUndefined();
+    ).resolves.toBeUndefined();
   });
 });

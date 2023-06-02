@@ -233,7 +233,9 @@ export class OsmosisAccountImpl {
                   denom0: msg.value.denom0,
                   denom1: msg.value.denom1,
                   tickSpacing: new Long(Number(msg.value.tick_spacing)),
-                  spreadFactor: msg.value.spread_factor,
+                  spreadFactor: this.changeDecStringToProtoBz(
+                    msg.value.spread_factor
+                  ),
                 }
               ).finish(),
           },
