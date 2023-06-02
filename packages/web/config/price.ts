@@ -1756,14 +1756,14 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     ),
     destCoinId: "pool:weth-wei",
   },
-  // {
-  //   alternativeCoinId: "pool:ulore",
-  //   poolId: "1036",
-  //   spotPriceSourceDenom: DenomHelper.ibcDenom(
-  //     [{ portId: "transfer", channelId: "channel-781" }],
-  //     "ulore"
-  //   ),
-  //   spotPriceDestDenom: "uosmo",
-  //   destCoinId: "pool:uosmo",
-  // },
+  {
+    alternativeCoinId: "pool:ulore",
+    poolId: "1036",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-781" }],
+      "ulore"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
 ];

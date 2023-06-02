@@ -3542,7 +3542,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinMinimalDenom: "ulore",
         coinDecimals: 6,
         coinImageUrl: "/tokens/lore.svg",
-        // coinGeckoId: "pool:ulore",
+        coinGeckoId: "pool:ulore",
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {
