@@ -3527,6 +3527,34 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx:
       "https://bd.explorer.net.bluzelle.com/transactions/{txHash}",
   },
+  {
+    rpc: "https://rpc-gitopia.keplr.app",
+    rest: "https://lcd-gitopia.keplr.app",
+    chainId: "gitopia",
+    chainName: "Gitopia",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("gitopia"),
+    currencies: [
+      {
+        coinDenom: "LORE",
+        coinMinimalDenom: "ulore",
+        coinDecimals: 6,
+        coinImageUrl: "/tokens/lore.svg",
+        coinGeckoId: "pool:ulore",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.0012,
+          average: 0.0016,
+          high: 0.0024,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://ping.pub/gitopia/tx/{txHash}",
+  },
 ];
 
 const chainInfos = IS_TESTNET
