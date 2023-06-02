@@ -462,5 +462,10 @@
   "autonomy": {
     "description": "Explorează Ordinele Limită și Ordinele de Oprire aduse de Autonomy: ",
     "link": "osmosis.autoswap.trade"
-  }
+  },
+  "errors.fallbackText1": "A aparut o eroare",
+  "errors.fallbackText2": "Vă rugăm să trimiteți un",
+  "errors.fallbackBugReport": "raport de eroare",
+  "errors.fallbackText3": "sau obține",
+  "errors.fallbackSupport": "a sustine"
 }

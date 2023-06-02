@@ -222,7 +222,12 @@
     "notInitialized": "Not initialized",
     "percentageSum": "Sum of percentages is not 100",
     "scalingFactorTooLow": "Scaling factor too low",
-    "zeroAmount": "Amount is zero"
+    "zeroAmount": "Amount is zero",
+    "fallbackText1": "An error occurred",
+    "fallbackText2": "Please submit a",
+    "fallbackBugReport": "bug report",
+    "fallbackText3": "or get",
+    "fallbackSupport": "support"
   },
   "keplr": {
     "extension": "Keplr Browser Extension",

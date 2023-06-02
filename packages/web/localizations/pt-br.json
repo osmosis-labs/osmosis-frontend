@@ -461,5 +461,10 @@
   "autonomy": {
     "description": "Explore Ordens de Limite e Stop oferecidas pela Autonomy: ",
     "link": "osmosis.autoswap.trade"
-  }
+  },
+  "errors.fallbackText1": "Um erro ocorreu",
+  "errors.fallbackText2": "Por favor envie um",
+  "errors.fallbackBugReport": "relatório de erro",
+  "errors.fallbackText3": "ou obter",
+  "errors.fallbackSupport": "apoiar"
 }

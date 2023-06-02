@@ -461,5 +461,10 @@
   "autonomy": {
     "description": "通过 Autonomy 探索限价和止损订单: ",
     "link": "osmosis.autoswap.trade"
-  }
+  },
+  "errors.fallbackText1": "发生错误",
+  "errors.fallbackText2": "请提交一个",
+  "errors.fallbackBugReport": "错误报告",
+  "errors.fallbackText3": "或得到",
+  "errors.fallbackSupport": "支持"
 }
