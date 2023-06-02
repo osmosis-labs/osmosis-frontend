@@ -129,6 +129,8 @@ export class OsmosisAccountImpl {
       },
     };
 
+    console.log(msg);
+
     await this.base.cosmos.sendMsgs(
       "createBalancerPool",
       {
@@ -198,21 +200,21 @@ export class OsmosisAccountImpl {
    * @param onFulfill Callback to handle tx fulfillment given raw response.
    */
   async sendCreateConcentratedPoolMsg(
-    denom0: string,
-    denom1: string,
+    _denom0: string,
+    _denom1: string,
     tickSpacing: number,
-    spreadFactor: number,
-    memo: string = "",
+    _spreadFactor: number,
+    _memo: string = "",
     onFulfill?: (tx: any) => void
   ) {
     const msg = {
       type: this._msgOpts.createConcentratedPool.type,
       value: {
         sender: this.base.bech32Address,
-        denom0,
-        denom1,
+        denom0: 'uion',
+        denom1: 'uosmo',
         tick_spacing: tickSpacing.toString(),
-        spread_factor: new Dec(spreadFactor).toString(),
+        spread_factor: '0.000000000000000000',
       },
     };
 
@@ -232,20 +234,22 @@ export class OsmosisAccountImpl {
                   sender: msg.value.sender,
                   denom0: msg.value.denom0,
                   denom1: msg.value.denom1,
-                  tickSpacing: new Long(Number(msg.value.tick_spacing)),
-                  spreadFactor: msg.value.spread_factor,
+                  tickSpacing: new Long(tickSpacing),
+                  spreadFactor: this.changeDecStringToProtoBz(msg.value.spread_factor),
                 }
               ).finish(),
           },
         ],
       },
-      memo,
+      "",
       {
         amount: [],
         gas: this._msgOpts.createConcentratedPool.gas.toString(),
       },
       undefined,
       (tx) => {
+        console.log(tx);
+
         if (tx.code == null || tx.code === 0) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
@@ -254,8 +258,8 @@ export class OsmosisAccountImpl {
             .getQueryBech32Address(this.base.bech32Address)
             .balances.forEach((bal) => {
               if (
-                bal.currency.coinMinimalDenom === denom0 ||
-                bal.currency.coinMinimalDenom === denom1
+                bal.currency.coinMinimalDenom === "uosmo" ||
+                bal.currency.coinMinimalDenom === "uion"
               ) {
                 bal.waitFreshResponse();
               }

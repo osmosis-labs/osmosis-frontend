@@ -27,8 +27,8 @@ export const chainId = "localosmosis";
 
 export const TestChainInfos: ChainInfo[] = [
   {
-    rpc: "http://127.0.0.1:26657",
-    rest: "http://127.0.0.1:1317",
+    rpc: "http://207.154.252.194:26657",
+    rest: "http://207.154.252.194:1317",
     chainId: chainId,
     chainName: "OSMOSIS",
     stakeCurrency: {
