@@ -4,7 +4,7 @@ import {
   IQueriesStore,
   ObservableQueryBalances,
 } from "@keplr-wallet/stores";
-import { Dec, Int, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, Int, RatePretty } from "@keplr-wallet/unit";
 import {
   ActiveLiquidityPerTickRange,
   calculateDepositAmountForBase,
@@ -146,6 +146,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
       if (baseAmount.isZero()) this.quoteDepositAmountIn.setAmount("0");
 
+      // calculate proportional amount of other amount
       const [lowerTick, upperTick] = this.tickRange;
       const quoteAmount = calculateDepositAmountForQuote(
         this.pool.currentSqrtPrice,
@@ -153,7 +154,16 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
         upperTick,
         baseAmount
       );
-      this.quoteDepositAmountIn.setAmount(quoteAmount.toString());
+      // include decimals, as is displayed to user
+      const quoteCoin = new CoinPretty(
+        this._quoteDepositAmountIn.sendCurrency,
+        quoteAmount
+      );
+      const quoteAmountWithDecimals = quoteCoin
+        .hideDenom(true)
+        .locale(false)
+        .toString();
+      this.quoteDepositAmountIn.setAmount(quoteAmountWithDecimals.toString());
     });
 
     // Calculate base amount when quote amount is input and anchor is quote
@@ -167,6 +177,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
       if (quoteAmount.isZero()) this.baseDepositAmountIn.setAmount("0");
 
+      // calculate proportional amount of other amount
       const [lowerTick, upperTick] = this.tickRange;
       const baseDeposit = calculateDepositAmountForBase(
         this.pool.currentSqrtPrice,
@@ -174,7 +185,16 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
         upperTick,
         quoteAmount
       );
-      this.baseDepositAmountIn.setAmount(baseDeposit.toString());
+      // include decimals, as is displayed to user
+      const baseCoin = new CoinPretty(
+        this._baseDepositAmountIn.sendCurrency,
+        baseDeposit
+      );
+      const baseAmountWithDecimals = baseCoin
+        .hideDenom(true)
+        .locale(false)
+        .toString();
+      this.baseDepositAmountIn.setAmount(baseAmountWithDecimals.toString());
     });
 
     makeObservable(this);
