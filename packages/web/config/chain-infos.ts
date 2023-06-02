@@ -214,10 +214,10 @@ const testnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://testnet.mintscan.io/noble-testnet/txs/{txHash}",
   },
   {
-    rpc: "https://net-rila.nolus.io:26657",
-    rest: "https://net-rila.nolus.io:1317",
-    chainId: "nolus-rila",
-    chainName: "Rila Testnet",
+    rpc: "https://rila-cl.nolus.network:26657",
+    rest: "https://rila-cl.nolus.network:1317",
+    chainId: "rila-1",
+    chainName: "Nolus Testnet",
     bip44: {
       coinType: 118,
     },
@@ -232,9 +232,9 @@ const testnetChainInfos: SimplifiedChainInfo[] = [
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {
-          low: 0,
-          average: 0,
-          high: 0.025,
+          low: 0.01,
+          average: 0.025,
+          high: 0.05,
         },
       },
     ],
