@@ -1787,7 +1787,6 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-781",
         destChannelId: "channel-0",
         coinMinimalDenom: "ulore",
-        isVerified: true,
       },
     ].filter((ibcAsset) => {
       // validate IBC asset config
