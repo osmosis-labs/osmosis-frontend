@@ -19,7 +19,6 @@ import {
 import { Bounce, ToastContainer } from "react-toastify";
 
 import { Icon } from "~/components/assets";
-import ErrorBoundary from "~/components/error/error-boundary";
 import ErrorFallback from "~/components/error/error-fallback";
 
 import { MainLayout } from "../components/layouts";
@@ -129,36 +128,34 @@ function MyApp({ Component, pageProps }: AppProps) {
   useAmplitudeAnalytics({ init: true });
 
   return (
-    <ErrorBoundary fallback={ErrorFallback}>
-      <GetKeplrProvider>
-        <StoreProvider>
-          <Head>
-            {/* metamask Osmosis app icon */}
-            <link
-              rel="shortcut icon"
-              href={`${
-                typeof window !== "undefined" ? window.origin : ""
-              }/osmosis-logo-wc.png`}
-            />
-            <link rel="preload" as="image/svg+xml" href={spriteSVGURL} />
-          </Head>
-          <OgpMeta />
-          <IbcNotifier />
-          <ToastContainer
-            toastStyle={{
-              backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
-            }}
-            transition={Bounce}
+    <GetKeplrProvider>
+      <StoreProvider>
+        <Head>
+          {/* metamask Osmosis app icon */}
+          <link
+            rel="shortcut icon"
+            href={`${
+              typeof window !== "undefined" ? window.origin : ""
+            }/osmosis-logo-wc.png`}
           />
-          <MainLayout menus={menus}>
-            <>
-              <button>hello World</button>
-              {Component && <Component {...pageProps} />}
-            </>
-          </MainLayout>
-        </StoreProvider>
-      </GetKeplrProvider>
-    </ErrorBoundary>
+          <link rel="preload" as="image/svg+xml" href={spriteSVGURL} />
+        </Head>
+        <OgpMeta />
+        <IbcNotifier />
+        <ToastContainer
+          toastStyle={{
+            backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
+          }}
+          transition={Bounce}
+        />
+        <MainLayout menus={menus}>
+          <ErrorFallback />
+          {/* <ErrorBoundary fallback="an error occurred">
+            {Component && <Component {...pageProps} />}
+          </ErrorBoundary> */}
+        </MainLayout>
+      </StoreProvider>
+    </GetKeplrProvider>
   );
 }
 
