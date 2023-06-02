@@ -461,5 +461,10 @@
   "autonomy": {
     "description": "Autonomy tarafından sunulan Sınırlama ve Durdurma Emirlerini Keşfedin: ",
     "link": "osmosis.autoswap.trade"
-  }
+  },
+  "errors.fallbackText1": "Bir hata oluştu",
+  "errors.fallbackText2": "Lütfen bir gönderin",
+  "errors.fallbackBugReport": "hata raporu",
+  "errors.fallbackText3": "ya da al",
+  "errors.fallbackSupport": "Destek"
 }

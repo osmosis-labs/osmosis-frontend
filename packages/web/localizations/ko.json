@@ -461,5 +461,10 @@
   "autonomy": {
     "description": "Autonomy가 제공하는 한정 및 중지 주문을 살펴보세요: ",
     "link": "osmosis.autoswap.trade"
-  }
+  },
+  "errors.fallbackText1": "에러 발생됨",
+  "errors.fallbackText2": "제출해주세요",
+  "errors.fallbackBugReport": "버그 보고서",
+  "errors.fallbackText3": "또는 얻을",
+  "errors.fallbackSupport": "지원하다"
 }

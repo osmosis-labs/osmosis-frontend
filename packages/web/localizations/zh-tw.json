@@ -461,5 +461,10 @@
   "autonomy": {
     "description": "探索由 Autonomy 提供的限價和停損訂單: ",
     "link": "osmosis.autoswap.trade"
-  }
+  },
+  "errors.fallbackText1": "發生錯誤",
+  "errors.fallbackText2": "請提交一個",
+  "errors.fallbackBugReport": "錯誤報告",
+  "errors.fallbackText3": "或得到",
+  "errors.fallbackSupport": "支持"
 }

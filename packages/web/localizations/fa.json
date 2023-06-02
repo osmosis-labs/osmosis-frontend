@@ -461,5 +461,10 @@
   "autonomy": {
     "description": "تحقیق در حد و سفارش‌های توقفی که توسط Autonomy ارائه شده‌اند: ",
     "link": "osmosis.autoswap.trade"
-  }
+  },
+  "errors.fallbackText1": "خطایی رخ داد",
+  "errors.fallbackText2": "لطفا یک",
+  "errors.fallbackBugReport": "گزارش اشکال",
+  "errors.fallbackText3": "یا دریافت کنید",
+  "errors.fallbackSupport": "حمایت کردن"
 }

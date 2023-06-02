@@ -461,5 +461,10 @@
   "autonomy": {
     "description": "Découvrez les ordres à cours limité et les ordres stop proposés par Autonomy: ",
     "link": "osmosis.autoswap.trade"
-  }
+  },
+  "errors.fallbackText1": "Une erreur s'est produite",
+  "errors.fallbackText2": "Veuillez soumettre un",
+  "errors.fallbackBugReport": "rapport d'erreur",
+  "errors.fallbackText3": "ou obtenir",
+  "errors.fallbackSupport": "soutien"
 }

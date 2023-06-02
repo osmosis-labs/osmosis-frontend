@@ -461,5 +461,10 @@
   "autonomy": {
     "description": "Poznaj Limity i Zlecenia Stop oferowane przez Autonomy: ",
     "link": "osmosis.autoswap.trade"
-  }
+  },
+  "errors.fallbackText1": "Wystąpił błąd",
+  "errors.fallbackText2": "Proszę złożyć a",
+  "errors.fallbackBugReport": "Zgłoszenie błędu",
+  "errors.fallbackText3": "lub dostać",
+  "errors.fallbackSupport": "wsparcie"
 }
