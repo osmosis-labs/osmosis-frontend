@@ -19,6 +19,7 @@ import {
 import { Bounce, ToastContainer } from "react-toastify";
 
 import { Icon } from "~/components/assets";
+import ErrorBoundary from "~/components/error/error-boundary";
 import ErrorFallback from "~/components/error/error-fallback";
 
 import { MainLayout } from "../components/layouts";
@@ -149,10 +150,9 @@ function MyApp({ Component, pageProps }: AppProps) {
           transition={Bounce}
         />
         <MainLayout menus={menus}>
-          <ErrorFallback />
-          {/* <ErrorBoundary fallback="an error occurred">
+          <ErrorBoundary fallback={ErrorFallback}>
             {Component && <Component {...pageProps} />}
-          </ErrorBoundary> */}
+          </ErrorBoundary>
         </MainLayout>
       </StoreProvider>
     </GetKeplrProvider>
