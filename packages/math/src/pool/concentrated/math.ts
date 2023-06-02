@@ -293,20 +293,29 @@ export function convertTokenInGivenOutToTokenOutGivenIn(
   return new Dec(specifiedTokenOut.amount).quo(currentPrice).truncate();
 }
 
+// add liquidity
+// docs ref: https://github.com/osmosis-labs/osmosis/blob/b764323ce7702185d2089b9e76a0115c7058f37e/x/concentrated-liquidity/README.md#L573
+
 export function calculateDepositAmountForQuote(
   curSqrtPrice: Dec,
   lowerTick: Int,
   upperTick: Int,
   baseDeposit: Int
 ): Int {
-  const lowerPriceSqrt = tickToSqrtPrice(lowerTick);
-  const upperPriceSqrt = tickToSqrtPrice(upperTick);
-  const liquidityY = new Dec(baseDeposit).quo(curSqrtPrice.sub(lowerPriceSqrt));
-  return liquidityY
-    .mul(upperPriceSqrt.sub(curSqrtPrice))
-    .quo(upperPriceSqrt)
-    .quo(curSqrtPrice)
-    .truncate();
+  const sqrtPu = tickToSqrtPrice(upperTick);
+  const sqrtPl = tickToSqrtPrice(lowerTick);
+  const sqrtPc = curSqrtPrice;
+
+  // calculate liquidity needed for token0
+  const L = new Dec(baseDeposit)
+    .mul(sqrtPu)
+    .mul(sqrtPl)
+    .quo(sqrtPu.sub(sqrtPl));
+
+  // calculate delta y
+  const deltaY = L.mul(sqrtPc.sub(sqrtPl));
+
+  return deltaY.truncate();
 }
 
 export function calculateDepositAmountForBase(
@@ -315,11 +324,15 @@ export function calculateDepositAmountForBase(
   upperTick: Int,
   quoteDeposit: Int
 ): Int {
-  const lowerPriceSqrt = tickToSqrtPrice(lowerTick);
-  const upperPriceSqrt = tickToSqrtPrice(upperTick);
-  const liquidityX = new Dec(quoteDeposit)
-    .mul(curSqrtPrice)
-    .mul(upperPriceSqrt)
-    .quo(upperPriceSqrt.sub(curSqrtPrice));
-  return liquidityX.mul(curSqrtPrice.sub(lowerPriceSqrt)).truncate();
+  const sqrtPu = tickToSqrtPrice(upperTick);
+  const sqrtPl = tickToSqrtPrice(lowerTick);
+  const sqrtPc = curSqrtPrice;
+
+  // calculate liquidity needed for token1
+  const L = new Dec(quoteDeposit).quo(sqrtPu.sub(sqrtPl));
+
+  // calculate delta x
+  const deltaX = L.mul(sqrtPu.sub(sqrtPc)).quo(sqrtPu.mul(sqrtPc));
+
+  return deltaX.truncate();
 }
