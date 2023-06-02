@@ -8,30 +8,30 @@ const ErrorFallback = () => {
       <div className="flex gap-2">
         <Image
           src="/icons/error-x.svg"
-          alt={t("505.title")}
+          alt={t("500.title")}
           height={25}
           width={25}
         />
-        <p className="text-lg font-bold">An error occurred</p>
+        <p className="text-lg font-bold">{t("errors.fallbackText1")}</p>
       </div>
       <p>
-        Please submit a{" "}
+        {t("errors.fallbackText2")}{" "}
         <a
           href="https://bugs.osmosis.zone"
           target="_blank"
           rel="noopener noreferrer"
           className="text-blue-500 underline"
         >
-          bug report
+          {t("errors.fallbackBugReport")}
         </a>{" "}
-        or get{" "}
+        {t("errors.fallbackText3")}{" "}
         <a
           href="https://support.osmosis.zone"
           target="_blank"
           rel="noopener noreferrer"
           className="text-blue-500 underline"
         >
-          support
+          {t("errors.fallbackSupport")}
         </a>
       </p>
     </div>

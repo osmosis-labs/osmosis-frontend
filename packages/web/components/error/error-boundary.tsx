@@ -25,12 +25,10 @@ class ErrorBoundary extends React.Component<
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     console.log({ error, errorInfo });
-    // TODO log error to Apmlitude (or like service) in follow up PR
+    // TODO log error to Apmlitude in follow up PR
   }
 
   render() {
-    console.log("hasError", this.state.hasError);
-    console.log("fallback", this.props.fallback);
     if (this.state.hasError) {
       return this.props.fallback;
     }
