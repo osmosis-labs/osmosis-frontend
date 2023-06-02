@@ -222,7 +222,12 @@
     "notInitialized": "ساخته نشده است",
     "percentageSum": "جمع درصد ها 100 نیست",
     "scalingFactorTooLow": "فاکتور تبدیل کوچک است",
-    "zeroAmount": "مقدار صفر است"
+    "zeroAmount": "مقدار صفر است",
+    "fallbackText1": "خطایی رخ داد",
+    "fallbackText2": "لطفا یک",
+    "fallbackBugReport": "گزارش اشکال",
+    "fallbackText3": "یا دریافت کنید",
+    "fallbackSupport": "حمایت کردن"
   },
   "keplr": {
     "extension": "Keplr مرورگر",
@@ -461,10 +466,5 @@
   "autonomy": {
     "description": "تحقیق در حد و سفارش‌های توقفی که توسط Autonomy ارائه شده‌اند: ",
     "link": "osmosis.autoswap.trade"
-  },
-  "errors.fallbackText1": "خطایی رخ داد",
-  "errors.fallbackText2": "لطفا یک",
-  "errors.fallbackBugReport": "گزارش اشکال",
-  "errors.fallbackText3": "یا دریافت کنید",
-  "errors.fallbackSupport": "حمایت کردن"
+  }
 }

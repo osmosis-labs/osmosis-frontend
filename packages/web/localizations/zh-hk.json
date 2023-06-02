@@ -222,7 +222,12 @@
     "notInitialized": "未初始化",
     "percentageSum": "所有百份比值總和非100",
     "scalingFactorTooLow": "縮放因數過低",
-    "zeroAmount": "未提供幣額"
+    "zeroAmount": "未提供幣額",
+    "fallbackText1": "發生錯誤",
+    "fallbackText2": "請提交一個",
+    "fallbackBugReport": "錯誤報告",
+    "fallbackText3": "或得到",
+    "fallbackSupport": "支持"
   },
   "keplr": {
     "extension": "Keplr 瀏覽器插件",
@@ -461,10 +466,5 @@
   "autonomy": {
     "description": "探索由 Autonomy 提供的限價和止損訂單: ",
     "link": "osmosis.autoswap.trade"
-  },
-  "errors.fallbackText1": "發生錯誤",
-  "errors.fallbackText2": "請提交一個",
-  "errors.fallbackBugReport": "錯誤報告",
-  "errors.fallbackText3": "或得到",
-  "errors.fallbackSupport": "支持"
+  }
 }

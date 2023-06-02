@@ -222,7 +222,12 @@
     "notInitialized": "Non initialisé",
     "percentageSum": "La somme des pourcentages n'est pas égale à 100",
     "scalingFactorTooLow": "Facteur d'échelle trop faible",
-    "zeroAmount": "Le montant est zéro"
+    "zeroAmount": "Le montant est zéro",
+    "fallbackText1": "Une erreur s'est produite",
+    "fallbackText2": "Veuillez soumettre un",
+    "fallbackBugReport": "rapport d'erreur",
+    "fallbackText3": "ou obtenir",
+    "fallbackSupport": "soutien"
   },
   "keplr": {
     "extension": "Extension de navigateur Keplr",
@@ -461,10 +466,5 @@
   "autonomy": {
     "description": "Découvrez les ordres à cours limité et les ordres stop proposés par Autonomy: ",
     "link": "osmosis.autoswap.trade"
-  },
-  "errors.fallbackText1": "Une erreur s'est produite",
-  "errors.fallbackText2": "Veuillez soumettre un",
-  "errors.fallbackBugReport": "rapport d'erreur",
-  "errors.fallbackText3": "ou obtenir",
-  "errors.fallbackSupport": "soutien"
+  }
 }

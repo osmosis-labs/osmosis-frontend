@@ -222,7 +222,12 @@
     "notInitialized": "초기화되지 않았습니다",
     "percentageSum": "퍼센티지의 합이 100이 아닙니다",
     "scalingFactorTooLow": "단위조정인수가 너무 낮습니다",
-    "zeroAmount": "수량이 0입니다."
+    "zeroAmount": "수량이 0입니다.",
+    "fallbackText1": "에러 발생됨",
+    "fallbackText2": "제출해주세요",
+    "fallbackBugReport": "버그 보고서",
+    "fallbackText3": "또는 얻을",
+    "fallbackSupport": "지원하다"
   },
   "keplr": {
     "extension": "Keplr 브라우저 익스텐션",
@@ -461,10 +466,5 @@
   "autonomy": {
     "description": "Autonomy가 제공하는 한정 및 중지 주문을 살펴보세요: ",
     "link": "osmosis.autoswap.trade"
-  },
-  "errors.fallbackText1": "에러 발생됨",
-  "errors.fallbackText2": "제출해주세요",
-  "errors.fallbackBugReport": "버그 보고서",
-  "errors.fallbackText3": "또는 얻을",
-  "errors.fallbackSupport": "지원하다"
+  }
 }
