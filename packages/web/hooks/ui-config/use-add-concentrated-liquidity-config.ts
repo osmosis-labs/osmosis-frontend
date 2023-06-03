@@ -70,7 +70,10 @@ export function useAddConcentratedLiquidityConfig(
           config.tickRange[0],
           config.tickRange[1],
           undefined,
-          resolve
+          (tx) => {
+            if (tx.code) reject();
+            resolve();
+          }
         );
       } catch (e: any) {
         console.error(e);
