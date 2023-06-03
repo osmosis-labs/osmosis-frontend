@@ -498,7 +498,7 @@ const AddConcLiqView: FunctionComponent<
             )}
             currentValue={baseDepositAmountIn.amount}
             outOfRange={quoteDepositOnly}
-            percentage={depositPercentages[0].toString()}
+            percentage={depositPercentages[0].maxDecimals(0).toString()}
           />
           <DepositAmountGroup
             getFiatValue={getFiatValue}
@@ -513,7 +513,7 @@ const AddConcLiqView: FunctionComponent<
             )}
             currentValue={quoteDepositAmountIn.amount}
             outOfRange={baseDepositOnly}
-            percentage={depositPercentages[1].toString()}
+            percentage={depositPercentages[1].maxDecimals(0).toString()}
           />
         </div>
       </section>
