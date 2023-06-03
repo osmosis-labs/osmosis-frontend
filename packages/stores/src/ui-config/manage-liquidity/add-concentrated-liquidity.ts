@@ -15,6 +15,7 @@ import {
   minTick,
   priceToTick,
   roundPriceToNearestTick,
+  tickToSqrtPrice,
 } from "@osmosis-labs/math";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
@@ -136,28 +137,46 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     this.fetchHistoricalChartData();
 
     // Calculate quote amount when base amount is input and anchor is base
+    // Calculate an amount0 given an amount1
     autorun(() => {
       const baseAmountRaw =
         this.baseDepositAmountIn.getAmountPrimitive().amount;
-      const baseAmount = new Int(baseAmountRaw);
+      const amount1 = new Int(baseAmountRaw);
       const anchor = this._anchorAsset;
 
-      if (anchor !== "base" || baseAmount.lt(new Int(0))) return;
+      if (anchor !== "base" || amount1.lt(new Int(0))) return;
 
-      if (baseAmount.isZero()) this.quoteDepositAmountIn.setAmount("0");
+      if (amount1.isZero()) this.quoteDepositAmountIn.setAmount("0");
+
+      // Have amount 0
+      // First, determine liquidity0
+
+      const [lowerTick, upperTick] = this.tickRange;
+      const upperTickSqrt = tickToSqrtPrice(upperTick);
+
+      let sqrtPriceA = this.pool.currentSqrtPrice;
+      let sqrtPriceB = upperTickSqrt;
+
+      if (sqrtPriceA.gt(sqrtPriceB)) {
+        sqrtPriceA = upperTickSqrt;
+        sqrtPriceB = this.pool.currentSqrtPrice;
+      }
+
+      const liquidity0 = amount1
+        .toDec()
+        .mul(sqrtPriceA.mul(sqrtPriceB))
+        .quo(sqrtPriceB.sub(sqrtPriceA));
 
       // calculate proportional amount of other amount
-      const [lowerTick, upperTick] = this.tickRange;
-      const quoteAmount = calculateDepositAmountForQuote(
-        this.pool.currentSqrtPrice,
+      const amount0 = calculateDepositAmountForBase(
         lowerTick,
-        upperTick,
-        baseAmount
+        this.pool.currentSqrtPrice,
+        liquidity0
       );
       // include decimals, as is displayed to user
       const quoteCoin = new CoinPretty(
         this._quoteDepositAmountIn.sendCurrency,
-        quoteAmount
+        amount0
       );
       const quoteAmountWithDecimals = quoteCoin
         .hideDenom(true)
@@ -168,28 +187,43 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     });
 
     // Calculate base amount when quote amount is input and anchor is quote
+    // calculate amount1 given an amount0
     autorun(() => {
       const quoteAmountRaw =
         this.quoteDepositAmountIn.getAmountPrimitive().amount;
-      const quoteAmount = new Int(quoteAmountRaw);
+      const amount0 = new Int(quoteAmountRaw);
       const anchor = this._anchorAsset;
 
-      if (anchor !== "quote" || quoteAmount.lt(new Int(0))) return;
+      if (anchor !== "quote" || amount0.lt(new Int(0))) return;
 
-      if (quoteAmount.isZero()) this.baseDepositAmountIn.setAmount("0");
+      if (amount0.isZero()) this.baseDepositAmountIn.setAmount("0");
+
+      // Have amount 1
+      // First, determine liquidity1
+
+      const [lowerTick, upperTick] = this.tickRange;
+      const lowerTickSqrt = tickToSqrtPrice(lowerTick);
+
+      let sqrtPriceA = this.pool.currentSqrtPrice;
+      let sqrtPriceB = lowerTickSqrt;
+
+      if (sqrtPriceA.gt(sqrtPriceB)) {
+        sqrtPriceA = lowerTickSqrt;
+        sqrtPriceB = this.pool.currentSqrtPrice;
+      }
+
+      const liquidity1 = amount0.toDec().quo(sqrtPriceB.sub(sqrtPriceA));
 
       // calculate proportional amount of other amount
-      const [lowerTick, upperTick] = this.tickRange;
-      const baseDeposit = calculateDepositAmountForBase(
-        this.pool.currentSqrtPrice,
-        lowerTick,
+      const amount1 = calculateDepositAmountForQuote(
         upperTick,
-        quoteAmount
+        this.pool.currentSqrtPrice,
+        liquidity1
       );
       // include decimals, as is displayed to user
       const baseCoin = new CoinPretty(
         this._baseDepositAmountIn.sendCurrency,
-        baseDeposit
+        amount1
       );
       const baseAmountWithDecimals = baseCoin
         .hideDenom(true)
@@ -275,19 +309,32 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     if (this.baseDepositOnly) return [new RatePretty(1), new RatePretty(0)];
     if (this.quoteDepositOnly) return [new RatePretty(0), new RatePretty(1)];
 
-    const quoteDeposit = new Int(1);
+    const amount0 = new Int(1);
+
     const [lowerTick, upperTick] = this.tickRange;
-    const baseDeposit = calculateDepositAmountForBase(
-      this.pool.currentSqrtPrice,
-      lowerTick,
+    const lowerTickSqrt = tickToSqrtPrice(lowerTick);
+
+    let sqrtPriceA = this.pool.currentSqrtPrice;
+    let sqrtPriceB = lowerTickSqrt;
+
+    if (sqrtPriceA.gt(sqrtPriceB)) {
+      sqrtPriceA = lowerTickSqrt;
+      sqrtPriceB = this.pool.currentSqrtPrice;
+    }
+
+    const liquidity1 = amount0.toDec().quo(sqrtPriceB.sub(sqrtPriceA));
+
+    // calculate proportional amount of other amount
+    const amount1 = calculateDepositAmountForQuote(
       upperTick,
-      quoteDeposit
+      this.pool.currentSqrtPrice,
+      liquidity1
     );
 
-    const totalDeposit = new Dec(baseDeposit.add(this.currentPrice.truncate()));
+    const totalDeposit = amount1.add(this.currentPrice);
 
     return [
-      new RatePretty(new Dec(baseDeposit).quo(totalDeposit)),
+      new RatePretty(amount1).quo(totalDeposit),
       new RatePretty(this.currentPrice.quo(totalDeposit)),
     ];
   }
