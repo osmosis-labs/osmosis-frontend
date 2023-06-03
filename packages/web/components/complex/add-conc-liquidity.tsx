@@ -21,6 +21,7 @@ import React, {
 import { useTranslation } from "react-multi-lang";
 
 import IconButton from "~/components/buttons/icon-button";
+import { useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "../assets";
@@ -279,6 +280,8 @@ const AddConcLiqView: FunctionComponent<
     getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
   } & CustomClasses
 > = observer(({ addLiquidityConfig, actionButton, getFiatValue, pool }) => {
+  const { isMobile } = useWindowSize();
+
   const baseDenom = pool?.poolAssets[0]?.amount.denom || "";
   const quoteDenom = pool?.poolAssets[1]?.amount.denom || "";
   const {
@@ -366,25 +369,27 @@ const AddConcLiqView: FunctionComponent<
           {t("addConcentratedLiquidity.priceRange")}
         </span>
         <div className="flex flex-row gap-1">
-          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
-            <PriceChartHeader addLiquidityConfig={addLiquidityConfig} />
-            <TokenPairHistoricalChart
-              data={historicalChartData}
-              annotations={
-                fullRange
-                  ? [new Dec(yRange[0] * 1.05), new Dec(yRange[1] * 0.95)]
-                  : range
-              }
-              domain={yRange}
-              onPointerHover={setHoverPrice}
-              onPointerOut={
-                lastChartData
-                  ? () => setHoverPrice(lastChartData.close)
-                  : undefined
-              }
-            />
-          </div>
-          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-row rounded-r-2xl bg-osmoverse-700">
+          {!isMobile && (
+            <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
+              <PriceChartHeader addLiquidityConfig={addLiquidityConfig} />
+              <TokenPairHistoricalChart
+                data={historicalChartData}
+                annotations={
+                  fullRange
+                    ? [new Dec(yRange[0] * 1.05), new Dec(yRange[1] * 0.95)]
+                    : range
+                }
+                domain={yRange}
+                onPointerHover={setHoverPrice}
+                onPointerOut={
+                  lastChartData
+                    ? () => setHoverPrice(lastChartData.close)
+                    : undefined
+                }
+              />
+            </div>
+          )}
+          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-row rounded-r-2xl bg-osmoverse-700 md:rounded-2xl">
             <div className="flex flex-1 flex-col">
               <div className="mt-7 mr-6 mb-8 flex h-6 flex-row justify-end gap-1">
                 <SelectorWrapper
@@ -484,7 +489,7 @@ const AddConcLiqView: FunctionComponent<
         <div className="subtitle1 px-4 pb-3">
           {t("addConcentratedLiquidity.amountToDeposit")}
         </div>
-        <div className="flex flex-row justify-center gap-3">
+        <div className="flex flex-row justify-center gap-3 md:flex-col">
           <DepositAmountGroup
             getFiatValue={getFiatValue}
             coin={pool?.poolAssets[0]?.amount}
@@ -529,6 +534,7 @@ const StrategySelectorGroup: FunctionComponent<
   } & CustomClasses
 > = observer((props) => {
   const t = useTranslation();
+  const { isMobile } = useWindowSize();
   const { currentStrategy } = props.addLiquidityConfig;
 
   let descriptionText = t(
@@ -550,7 +556,7 @@ const StrategySelectorGroup: FunctionComponent<
   }
 
   return (
-    <section className="flex flex-row">
+    <section className="flex flex-row md:flex-col md:gap-4">
       <div className="mx-4 flex flex-col gap-2">
         <span className="subtitle1">
           {t("addConcentratedLiquidity.selectVolatilityRange")}
@@ -567,36 +573,47 @@ const StrategySelectorGroup: FunctionComponent<
           </a>
         </span>
       </div>
-      <div className="flex flex-1 flex-row justify-end gap-2">
-        <PresetStrategyCard
-          type={null}
-          src="/images/small-vial.svg"
-          updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
-          addLiquidityConfig={props.addLiquidityConfig}
-          label="Custom"
-        />
+      <div className="flex flex-1 flex-row justify-end gap-2 md:justify-between">
+        {!isMobile && (
+          <PresetStrategyCard
+            type={null}
+            imageSrc="/images/small-vial.svg"
+            updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
+            addLiquidityConfig={props.addLiquidityConfig}
+            label="Custom"
+          />
+        )}
         <PresetStrategyCard
           type="passive"
-          src="/images/small-vial.svg"
+          imageSrc="/images/small-vial.svg"
           updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
           addLiquidityConfig={props.addLiquidityConfig}
           label="Passive"
         />
         <PresetStrategyCard
           type="moderate"
-          src="/images/medium-vial.svg"
+          imageSrc="/images/medium-vial.svg"
           updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
           addLiquidityConfig={props.addLiquidityConfig}
           label="Moderate"
         />
         <PresetStrategyCard
           type="aggressive"
-          src="/images/large-vial.svg"
+          imageSrc="/images/large-vial.svg"
           updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
           addLiquidityConfig={props.addLiquidityConfig}
           label="Aggressive"
         />
       </div>
+      {isMobile && (
+        <PresetStrategyCard
+          className="!w-full"
+          type={null}
+          updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
+          addLiquidityConfig={props.addLiquidityConfig}
+          label="Custom"
+        />
+      )}
     </section>
   );
 });
@@ -739,7 +756,7 @@ const DepositAmountGroup: FunctionComponent<{
     }
 
     return (
-      <div className="flex flex-1 flex-shrink-0 flex-row items-center rounded-[20px] bg-osmoverse-700 p-6">
+      <div className="flex flex-1 flex-shrink-0 flex-row items-center rounded-[20px] bg-osmoverse-700 p-6 md:flex-col">
         <div className="flex w-full flex-row items-center">
           <div
             className={classNames(
@@ -761,7 +778,14 @@ const DepositAmountGroup: FunctionComponent<{
             <span className="subtitle1 text-osmoverse-400">{percentage}</span>
           </div>
           <div className="relative flex flex-1 flex-col gap-0.5">
-            <span className="caption absolute right-0 top-[-16px] mb-[2px] text-right text-wosmongton-300">
+            <span
+              onClick={() => {
+                if (walletBalance) {
+                  onUpdate(walletBalance.toDec().toString());
+                }
+              }}
+              className="caption absolute right-0 top-[-16px] mb-[2px] text-right text-wosmongton-300"
+            >
               {walletBalance ? walletBalance.toString() : ""}
             </span>
             <div className="flex h-16 w-[158px] flex-col items-end justify-center self-end rounded-[12px] bg-osmoverse-800">
@@ -787,7 +811,7 @@ const DepositAmountGroup: FunctionComponent<{
 const PresetStrategyCard: FunctionComponent<
   {
     type: null | "passive" | "moderate" | "aggressive";
-    src: string;
+    imageSrc?: string;
     updateInputAndRangeMinMax: (min: number, max: number) => void;
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     label: string;
@@ -796,8 +820,9 @@ const PresetStrategyCard: FunctionComponent<
   } & CustomClasses
 > = observer(
   ({
+    className,
     type,
-    src,
+    imageSrc,
     width,
     height,
     label,
@@ -842,23 +867,26 @@ const PresetStrategyCard: FunctionComponent<
           {
             "bg-supercharged-gradient": isSelected,
             "hover:bg-supercharged-gradient cursor-pointer": type !== null,
-          }
+          },
+          className
         )}
         onClick={onClick}
       >
         <div className="flex h-full w-full flex-col rounded-2xlinset bg-osmoverse-700 p-3">
-          <div
-            className={classNames("mx-auto transform transition-transform", {
-              "scale-110": isSelected,
-            })}
-          >
-            <Image
-              alt="volatility-selection"
-              src={src}
-              width={width || 64}
-              height={height || 64}
-            />
-          </div>
+          {imageSrc && (
+            <div
+              className={classNames("mx-auto transform transition-transform", {
+                "scale-110": isSelected,
+              })}
+            >
+              <Image
+                alt="volatility-selection"
+                src={imageSrc}
+                width={width || 64}
+                height={height || 64}
+              />
+            </div>
+          )}
           <span
             className={classNames("body2 text-center", {
               "text-osmoverse-200": !isSelected,
