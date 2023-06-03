@@ -75,8 +75,8 @@
   .text-gradient-positive {
     @apply bg-gradient-positive bg-clip-text text-transparent;
   }
-  .bg-supercharged-gradient {
-    background: linear-gradient(270deg, #64c5ee 0%, #ee64e8 100%);
+  .text-supercharged-gradient {
+    @apply bg-supercharged bg-clip-text text-transparent;
   }
 
   input::-webkit-outer-spin-button,
