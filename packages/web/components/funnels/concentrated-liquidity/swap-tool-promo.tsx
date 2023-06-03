@@ -3,15 +3,45 @@ import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { useFlags } from "launchdarkly-react-client-sdk";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useMemo } from "react";
+import { useTranslation } from "react-multi-lang";
 
 import { Button } from "~/components/buttons";
 
 /** Show link to pools page in promo drawer if the send or out currency in swap tool is in the given list of pools.
  *  Returns null if no pools are found containing the send or out currency.
  */
-export const SwapToolPromo: FunctionComponent = () => {
+export const SwapToolPromo: FunctionComponent<{
+  pools: ObservableQueryPool[];
+  sendCurrency: AppCurrency;
+  outCurrency: AppCurrency;
+}> = ({ pools, sendCurrency, outCurrency }) => {
   const router = useRouter();
+  const t = useTranslation();
+
+  // get the first denom to be found in CL pool
+  const denomInClPool = useMemo(() => {
+    const concentratedLiquidityPools = pools.filter(
+      ({ type }) => type === "concentrated"
+    );
+    const concentratedLiquidityPoolAssetDenoms =
+      concentratedLiquidityPools.flatMap((pool) => pool.poolAssetDenoms);
+    //
+    if (
+      concentratedLiquidityPoolAssetDenoms.includes(
+        sendCurrency.coinMinimalDenom
+      )
+    ) {
+      return sendCurrency.coinDenom;
+    }
+    if (
+      concentratedLiquidityPoolAssetDenoms.includes(
+        outCurrency.coinMinimalDenom
+      )
+    ) {
+      return outCurrency.coinDenom;
+    }
+  }, [pools, sendCurrency, outCurrency]);
 
   return (
     <div className="flex place-content-start items-center gap-5">
@@ -22,9 +52,11 @@ export const SwapToolPromo: FunctionComponent = () => {
         height={64}
       />
       <div className="flex flex-col gap-1">
-        <span className="subtitle1 text-osmoverse-100">
-          New opportunity to earn with ATOM
-        </span>
+        {denomInClPool && (
+          <span className="subtitle1 text-osmoverse-100">
+            {t("swap.promo.newOpportunity", { denom: denomInClPool })}
+          </span>
+        )}
         <Button
           size="sm"
           mode="secondary"
@@ -39,7 +71,7 @@ export const SwapToolPromo: FunctionComponent = () => {
             width={11}
             height={22}
           />
-          Discover supercharged pools
+          {t("swap.promo.discoverSuperchargedPools")}
         </Button>
       </div>
     </div>

@@ -307,7 +307,11 @@ export const SwapTool: FunctionComponent<{
               tradeTokenInConfig.outCurrency
             )}
           >
-            <ConcentratedLiquidityPromo />
+            <ConcentratedLiquidityPromo
+              pools={pools}
+              sendCurrency={tradeTokenInConfig.sendCurrency}
+              outCurrency={tradeTokenInConfig.outCurrency}
+            />
           </PromoDrawer>
         )}
         <div className="relative flex flex-col gap-8 overflow-hidden rounded-3xl bg-osmoverse-800 px-6 py-8 md:gap-6 md:px-3 md:pt-4 md:pb-4">
