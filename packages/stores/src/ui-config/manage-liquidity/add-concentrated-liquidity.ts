@@ -148,7 +148,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
       if (amount1.isZero()) this.quoteDepositAmountIn.setAmount("0");
 
-      // Have amount 0
+      // Have amount 1
       // First, determine liquidity0
 
       const [lowerTick, upperTick] = this.tickRange;
@@ -171,7 +171,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
       const amount0 = calculateDepositAmountForBase(
         lowerTick,
         this.pool.currentSqrtPrice,
-        liquidity0
+        liquidity0.roundUp().toDec()
       );
       // include decimals, as is displayed to user
       const quoteCoin = new CoinPretty(
@@ -198,7 +198,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
       if (amount0.isZero()) this.baseDepositAmountIn.setAmount("0");
 
-      // Have amount 1
+      // Have amount 0
       // First, determine liquidity1
 
       const [lowerTick, upperTick] = this.tickRange;
@@ -309,33 +309,35 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     if (this.baseDepositOnly) return [new RatePretty(1), new RatePretty(0)];
     if (this.quoteDepositOnly) return [new RatePretty(0), new RatePretty(1)];
 
-    const amount0 = new Int(1);
+    const amount0 = new Dec(1);
 
     const [lowerTick, upperTick] = this.tickRange;
-    const lowerTickSqrt = tickToSqrtPrice(lowerTick);
+    const upperTickSqrt = tickToSqrtPrice(upperTick);
 
     let sqrtPriceA = this.pool.currentSqrtPrice;
-    let sqrtPriceB = lowerTickSqrt;
+    let sqrtPriceB = upperTickSqrt;
 
     if (sqrtPriceA.gt(sqrtPriceB)) {
-      sqrtPriceA = lowerTickSqrt;
+      sqrtPriceA = upperTickSqrt;
       sqrtPriceB = this.pool.currentSqrtPrice;
     }
 
-    const liquidity1 = amount0.toDec().quo(sqrtPriceB.sub(sqrtPriceA));
+    const liquidity0 = amount0
+      .mul(sqrtPriceA.mul(sqrtPriceB))
+      .quo(sqrtPriceB.sub(sqrtPriceA));
 
     // calculate proportional amount of other amount
-    const amount1 = calculateDepositAmountForQuote(
-      upperTick,
+    const amount1 = calculateDepositAmountForBase(
+      lowerTick,
       this.pool.currentSqrtPrice,
-      liquidity1
+      liquidity0
     );
 
-    const totalDeposit = amount1.add(this.currentPrice);
+    const totalDeposit = amount0.add(amount1);
 
     return [
-      new RatePretty(amount1).quo(totalDeposit),
-      new RatePretty(this.currentPrice.quo(totalDeposit)),
+      new RatePretty(amount1.quo(totalDeposit)),
+      new RatePretty(amount0.quo(totalDeposit)),
     ];
   }
 
