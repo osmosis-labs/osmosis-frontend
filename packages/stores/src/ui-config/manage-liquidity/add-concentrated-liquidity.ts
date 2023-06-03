@@ -309,7 +309,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     if (this.baseDepositOnly) return [new RatePretty(1), new RatePretty(0)];
     if (this.quoteDepositOnly) return [new RatePretty(0), new RatePretty(1)];
 
-    const amount0 = new Dec(1);
+    const amount1 = new Dec(1);
 
     const [lowerTick, upperTick] = this.tickRange;
     const upperTickSqrt = tickToSqrtPrice(upperTick);
@@ -322,12 +322,12 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
       sqrtPriceB = this.pool.currentSqrtPrice;
     }
 
-    const liquidity0 = amount0
+    const liquidity0 = amount1
       .mul(sqrtPriceA.mul(sqrtPriceB))
       .quo(sqrtPriceB.sub(sqrtPriceA));
 
     // calculate proportional amount of other amount
-    const amount1 = calculateDepositAmountForBase(
+    const amount0 = calculateDepositAmountForBase(
       lowerTick,
       this.pool.currentSqrtPrice,
       liquidity0
