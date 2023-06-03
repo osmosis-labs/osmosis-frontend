@@ -1,4 +1,4 @@
-import { ObservableQueryLiquidityPositionsByAddress } from "@osmosis-labs/stores";
+import { Int } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Head from "next/head";
@@ -18,6 +18,7 @@ import MyPositionCard from "~/components/my-position-card";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { AddLiquidityModal } from "~/modals";
 import { useStore } from "~/stores";
+import { ObservableMergedPositionByAddress } from "~/stores/derived-data";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -30,7 +31,7 @@ const TokenPairHistoricalChart = dynamic(
 
 const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
   observer(({ poolId }) => {
-    const { chainStore, accountStore, queriesStore } = useStore();
+    const { chainStore, accountStore, derivedDataStore } = useStore();
     const { chainId } = chainStore.osmosis;
     const account = accountStore.getAccount(chainId);
     const config = useHistoricalAndLiquidityData(chainId, poolId);
@@ -38,18 +39,14 @@ const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const [showAddLiquidityModal, setShowAddLiquidityModal] = useState(false);
 
     const [queryAddress, setQueryAddress] =
-      useState<ObservableQueryLiquidityPositionsByAddress | null>(null);
+      useState<ObservableMergedPositionByAddress | null>(null);
 
     useEffect(() => {
       (async () => {
         if (!account.bech32Address) return;
 
         setQueryAddress(
-          await queriesStore
-            .get(chainId)
-            .osmosis!.queryLiquidityPositions.getForAddress(
-              account.bech32Address
-            )
+          derivedDataStore.mergedPositionsByAddress.get(account.bech32Address)
         );
       })();
     }, [account.bech32Address]);
@@ -71,14 +68,11 @@ const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       baseDenom,
       quoteDenom,
       hoverPrice,
-      // setRange,
-      // baseCurrency,
-      // quoteCurrency,
     } = config;
 
     if (!queryAddress) return null;
 
-    const len = Object.keys(queryAddress.mergedPositionIds).length;
+    const len = Object.keys(queryAddress.mergedRanges).length;
 
     if (!len) return null;
 
@@ -220,8 +214,26 @@ const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
             </div>
           </div>
           <div className="flex flex-col gap-3">
-            {queryAddress.mergedPositionIds.map((positionIds, index) => {
-              return <MyPositionCard key={index} positionIds={positionIds} />;
+            {queryAddress.mergedRanges.map((mergedId, index) => {
+              const [poolId, lowerTick, upperTick] = mergedId.split("_");
+              const { positionIds, baseAmount, quoteAmount, passive } =
+                queryAddress?.calculateMergedPosition(
+                  poolId,
+                  lowerTick,
+                  upperTick
+                );
+              return (
+                <MyPositionCard
+                  key={index}
+                  poolId={poolId}
+                  lowerTick={new Int(lowerTick)}
+                  upperTick={new Int(upperTick)}
+                  positionIds={positionIds}
+                  baseAmount={baseAmount}
+                  quoteAmount={quoteAmount}
+                  passive={passive}
+                />
+              );
             })}
           </div>
         </section>
