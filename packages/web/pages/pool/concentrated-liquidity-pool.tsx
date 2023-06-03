@@ -112,14 +112,20 @@ const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 </div>
                 <div>
                   <span className="text-supercharged-gradient text-body2 font-body2 ">
-                    Supercharged
+                    {t("clPositions.supercharged")}
                   </span>
                 </div>
               </div>
               <div className="flex flex-grow flex-row justify-end gap-10">
-                <PoolDataGroup label="Pool Liquidity" value="$109,540,231" />
-                <PoolDataGroup label="24hr Trading Volume" value="$1,540,231" />
-                <PoolDataGroup label="Swap Fee" value="0.5%" />
+                <PoolDataGroup label={t("pool.liquidity")} value="$0.00" />
+                <PoolDataGroup
+                  label={t("pool.24hrTradingVolume")}
+                  value="$0.00"
+                />
+                <PoolDataGroup
+                  label={t("pool.swapFee")}
+                  value={pool?.swapFee ? pool.swapFee.toString() : "0%"}
+                />
               </div>
             </div>
             <div className="flex h-[340px] flex-row">
@@ -186,10 +192,10 @@ const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
           <div className="flex flex-col gap-8">
             <div className="flex flex-row">
               <div className="flex flex-grow flex-col gap-3">
-                <h6>Your Positions</h6>
+                <h6>{t("clPositions.yourPositions")}</h6>
                 <div className="flex flex-row items-center text-body2 font-body2">
                   <span className="text-wosmongton-200">
-                    Put your assets to work and earn fees on every swap.
+                    {t("clPositions.yourPositionsDesc")}
                   </span>
                   <span className="flex flex-row">
                     <a
@@ -198,7 +204,7 @@ const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Learn more about pools
+                      {t("clPositions.learnMoreAboutPools")}
                     </a>
                     <img src="/icons/arrow-right.svg" alt="learn more" />
                   </span>
@@ -209,7 +215,7 @@ const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 size="sm"
                 onClick={() => setShowAddLiquidityModal(true)}
               >
-                Create a position
+                {t("clPositions.createAPosition")}
               </Button>
             </div>
           </div>

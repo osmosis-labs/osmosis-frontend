@@ -63,7 +63,10 @@
     "yourPositions": "Your Positions",
     "yourPositionsDesc": "Put your assets to work and earn fees on every swap.",
     "learnMoreAboutPools": "Learn more about pools",
-    "viewAll": "View All"
+    "viewAll": "View All",
+    "supercharged": "Supercharged",
+    "createAPosition": "Create a position",
+    "fee": "Fee"
   },
   "app": {
     "banner": {

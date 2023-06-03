@@ -128,7 +128,7 @@ const MyPositionCard: FunctionComponent<{
                 )}
               />
               <span className="px-2 py-1 text-subtitle1 text-osmoverse-100">
-                {pool?.swapFee.toString()} Fee
+                {pool?.swapFee.toString()} {t("clPositions.fee")}
               </span>
             </div>
             <MyPositionStatus
