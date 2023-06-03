@@ -275,8 +275,16 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   @computed
   get moderatePriceRange(): [Dec, Dec] {
     return [
-      roundPriceToNearestTick(this.currentPrice.mul(new Dec(0.75))),
-      roundPriceToNearestTick(this.currentPrice.mul(new Dec(1.25))),
+      roundPriceToNearestTick(
+        this.currentPrice.mul(new Dec(0.75)),
+        this.pool.tickSpacing,
+        true
+      ),
+      roundPriceToNearestTick(
+        this.currentPrice.mul(new Dec(1.25)),
+        this.pool.tickSpacing,
+        false
+      ),
     ];
   }
 
@@ -291,8 +299,16 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   @computed
   get aggressivePriceRange(): [Dec, Dec] {
     return [
-      roundPriceToNearestTick(this.currentPrice.mul(new Dec(0.5))),
-      roundPriceToNearestTick(this.currentPrice.mul(new Dec(1.5))),
+      roundPriceToNearestTick(
+        this.currentPrice.mul(new Dec(0.5)),
+        this.pool.tickSpacing,
+        true
+      ),
+      roundPriceToNearestTick(
+        this.currentPrice.mul(new Dec(1.5)),
+        this.pool.tickSpacing,
+        false
+      ),
     ];
   }
 
@@ -390,7 +406,11 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   @action
   setMinRange = (min: Dec | number) => {
     this._priceRange = [
-      roundPriceToNearestTick(typeof min === "number" ? new Dec(min) : min),
+      roundPriceToNearestTick(
+        typeof min === "number" ? new Dec(min) : min,
+        this.pool.tickSpacing,
+        true
+      ),
       this._priceRange[1],
     ];
   };
@@ -399,7 +419,11 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   setMaxRange = (max: Dec | number) => {
     this._priceRange = [
       this._priceRange[0],
-      roundPriceToNearestTick(typeof max === "number" ? new Dec(max) : max),
+      roundPriceToNearestTick(
+        typeof max === "number" ? new Dec(max) : max,
+        this.pool.tickSpacing,
+        false
+      ),
     ];
   };
 
