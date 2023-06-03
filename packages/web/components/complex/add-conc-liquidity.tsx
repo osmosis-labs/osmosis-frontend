@@ -27,7 +27,7 @@ import { useStore } from "~/stores";
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "../assets";
 import { Button } from "../buttons";
 import { InputBox } from "../input";
-import { CustomClasses } from "../types";
+import { CustomClasses, Disableable } from "../types";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -147,7 +147,7 @@ const Overview: FunctionComponent<
             />
           </div>
         </div>
-        <div className="flex flex-row rounded-[1rem] bg-osmoverse-700/[.3] px-[28px] py-4">
+        <div className="flex flex-row rounded-[1rem] bg-osmoverse-700/[.3] px-[28px] py-4 md:hidden">
           <div className="flex flex-1 flex-col gap-1">
             <div className="flex flex-row flex-nowrap items-center gap-2">
               {pool && (
@@ -204,22 +204,21 @@ const Overview: FunctionComponent<
             </div>
           </div>
         </div>
-        <div className="flex flex-col">
-          <div className="flex flex-row justify-center gap-[12px]">
-            <StrategySelector
-              title={t("addConcentratedLiquidity.managed")}
-              description={t("addConcentratedLiquidity.managedDescription")}
-              selected={selected === "add_managed"}
-              imgSrc="/images/managed_liquidity_mock.png"
-            />
-            <StrategySelector
-              title={t("addConcentratedLiquidity.manual")}
-              description={t("addConcentratedLiquidity.manualDescription")}
-              selected={selected === "add_manual"}
-              onClick={() => selectView("add_manual")}
-              imgSrc="/images/conliq_mock_range.png"
-            />
-          </div>
+        <div className="flex flex-row justify-center gap-3 md:flex-col">
+          <StrategySelector
+            title={t("addConcentratedLiquidity.managed")}
+            description={t("addConcentratedLiquidity.managedDescription")}
+            selected={selected === "add_managed"}
+            imgSrc="/images/managed_liquidity_mock.png"
+            disabled={true}
+          />
+          <StrategySelector
+            title={t("addConcentratedLiquidity.manual")}
+            description={t("addConcentratedLiquidity.manualDescription")}
+            selected={selected === "add_manual"}
+            onClick={() => selectView("add_manual")}
+            imgSrc="/images/conliq_mock_range.png"
+          />
         </div>
         <div className="flex w-full items-center justify-center">
           <Button
@@ -234,43 +233,41 @@ const Overview: FunctionComponent<
   }
 );
 
-const StrategySelector: FunctionComponent<{
-  title: string;
-  description: string;
-  selected: boolean;
-  onClick?: () => void;
-  imgSrc: string;
-}> = (props) => {
-  const { selected, onClick, title, description, imgSrc } = props;
-  return (
+const StrategySelector: FunctionComponent<
+  {
+    title: string;
+    description: string;
+    selected: boolean;
+    onClick?: () => void;
+    imgSrc: string;
+  } & Disableable
+> = ({ selected, onClick, title, description, imgSrc, disabled }) => (
+  <div
+    className={classNames(
+      "flex flex-1 flex-col items-center justify-center gap-4 rounded-[20px] bg-osmoverse-700/[.6] p-[2px] md:gap-2",
+      {
+        "bg-supercharged-gradient": selected,
+        "hover:bg-supercharged-gradient cursor-pointer": onClick,
+        "cursor-not-allowed opacity-80": disabled,
+      }
+    )}
+    onClick={onClick}
+  >
     <div
       className={classNames(
-        "flex flex-1 flex-col items-center justify-center gap-4 rounded-[20px] bg-osmoverse-700/[.6] p-[2px]",
+        "flex h-full w-full flex-col items-center justify-center gap-[20px] rounded-[19px] py-8 px-4 md:py-4 md:px-2",
         {
-          "bg-supercharged-gradient": selected,
-          "hover:bg-supercharged-gradient cursor-pointer": onClick,
+          "bg-osmoverse-700": selected,
+          "hover:bg-osmoverse-700": Boolean(onClick),
         }
       )}
-      onClick={onClick}
     >
-      <div
-        className={classNames(
-          "flex h-full w-full flex-col items-center justify-center gap-[20px] rounded-[19px] py-8 px-4",
-          {
-            "bg-osmoverse-700": selected,
-            "hover:bg-osmoverse-700": Boolean(onClick),
-          }
-        )}
-      >
-        <div className="mb-16 text-h6 font-h6">{title}</div>
-        <Image alt="" src={imgSrc} width={255} height={145} />
-        <div className="body2 text-center text-osmoverse-200">
-          {description}
-        </div>
-      </div>
+      <div className="mb-16 text-h6 font-h6 md:mb-4">{title}</div>
+      <Image alt="" src={imgSrc} width={255} height={145} />
+      <div className="body2 text-center text-osmoverse-200">{description}</div>
     </div>
-  );
-};
+  </div>
+);
 
 const AddConcLiqView: FunctionComponent<
   {
@@ -357,7 +354,7 @@ const AddConcLiqView: FunctionComponent<
           </span>
         </button>
         <h6 className="mx-auto">{t("addConcentratedLiquidity.step2Title")}</h6>
-        <span className="caption absolute right-0 flex h-full items-center text-osmoverse-200">
+        <span className="caption absolute right-12 flex h-full items-center text-osmoverse-200 lg:hidden">
           {t("addConcentratedLiquidity.priceShownIn", {
             base: baseDenom,
             quote: quoteDenom,

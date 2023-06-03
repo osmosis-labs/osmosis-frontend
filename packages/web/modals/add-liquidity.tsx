@@ -91,7 +91,6 @@ export const AddLiquidityModal: FunctionComponent<
       <ModalBase
         {...props}
         isOpen={props.isOpen && showModalBase}
-        hideCloseButton
         className="!max-w-[57.5rem]"
       >
         <AddConcLiquidity
