@@ -67,7 +67,8 @@
     "viewAll": "View All",
     "supercharged": "Supercharged",
     "createAPosition": "Create a position",
-    "addMoreLiquidity": "Add more liquidity"
+    "addMoreLiquidity": "Add more liquidity",
+    "pendingRewards": "Pending rewards"
   },
   "app": {
     "banner": {
