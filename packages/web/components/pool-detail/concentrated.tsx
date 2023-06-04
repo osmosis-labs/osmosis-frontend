@@ -16,7 +16,7 @@ import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import ChartButton from "~/components/chart-button";
 import MyPositionCard from "~/components/my-position-card";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
-import { AddLiquidityModal } from "~/modals";
+import { AddLiquidityModal, TradeTokens } from "~/modals";
 import { useStore } from "~/stores";
 import { ObservableMergedPositionByAddress } from "~/stores/derived-data";
 
@@ -29,14 +29,16 @@ const TokenPairHistoricalChart = dynamic(
   { ssr: false }
 );
 
-const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
+export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
   observer(({ poolId }) => {
     const { chainStore, accountStore, derivedDataStore } = useStore();
     const { chainId } = chainStore.osmosis;
     const account = accountStore.getAccount(chainId);
     const config = useHistoricalAndLiquidityData(chainId, poolId);
     const t = useTranslation();
-    const [showAddLiquidityModal, setShowAddLiquidityModal] = useState(false);
+    const [activeModal, setActiveModal] = useState<
+      "trade" | "add-liquidity" | null
+    >(null);
 
     const [queryAddress, setQueryAddress] =
       useState<ObservableMergedPositionByAddress | null>(null);
@@ -83,11 +85,19 @@ const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
             {t("pool.title", { id: poolId ? poolId.toString() : "-" })}
           </title>
         </Head>
-        {pool && showAddLiquidityModal && (
+        {pool && activeModal === "add-liquidity" && (
           <AddLiquidityModal
             isOpen={true}
             poolId={pool.id}
-            onRequestClose={() => setShowAddLiquidityModal(false)}
+            onRequestClose={() => setActiveModal(null)}
+          />
+        )}
+        {pool && activeModal === "trade" && (
+          <TradeTokens
+            className="md:!p-0"
+            isOpen={true}
+            onRequestClose={() => setActiveModal(null)}
+            memoedPools={[pool]}
           />
         )}
         <section className="flex flex-col gap-8">
@@ -213,7 +223,10 @@ const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
               <Button
                 className="w-fit text-subtitle1 font-subtitle1"
                 size="sm"
-                onClick={() => setShowAddLiquidityModal(true)}
+                onClick={() => {
+                  // TODO: add create position modal
+                  setActiveModal(null);
+                }}
               >
                 {t("clPositions.createAPosition")}
               </Button>
@@ -246,8 +259,6 @@ const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       </main>
     );
   });
-
-export default ConcentratedLiquidityPool;
 
 function PoolDataGroup(props: { label: string; value: string }): ReactElement {
   return (
