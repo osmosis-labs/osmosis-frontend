@@ -4,7 +4,7 @@ import {
   IQueriesStore,
   ObservableQueryBalances,
 } from "@keplr-wallet/stores";
-import { CoinPretty, Dec, Int, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, Int, RatePretty } from "@keplr-wallet/unit";
 import {
   calcAmount0,
   calcAmount1,
@@ -249,7 +249,14 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     if (this.baseDepositOnly) return [new RatePretty(1), new RatePretty(0)];
     if (this.quoteDepositOnly) return [new RatePretty(0), new RatePretty(1)];
 
-    let amount1 = new Int(1000000);
+    const amount1 = new Int(1)
+      .toDec()
+      .mul(
+        DecUtils.getTenExponentNInPrecisionRange(
+          this._quoteDepositAmountIn.sendCurrency.coinDecimals
+        )
+      )
+      .truncate();
 
     const [lowerTick, upperTick] = this.tickRange;
 
@@ -260,9 +267,6 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
       upperTick,
       this.pool.currentSqrtPrice
     );
-
-    // normalize amt1
-    amount1 = amount1.toDec().quo(this.currentPrice).truncate();
 
     const totalDeposit = amount0.add(amount1);
 
