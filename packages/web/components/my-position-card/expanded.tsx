@@ -84,11 +84,21 @@ const MyPositionCardExpandedSection: FunctionComponent<{
 
     const fiatPerBase =
       baseCurrency &&
-      priceStore.calculatePrice(new CoinPretty(baseCurrency, baseAmount));
+      priceStore.calculatePrice(
+        new CoinPretty(
+          baseCurrency,
+          baseAmount.mul(new Dec(10 ** baseCurrency.coinDecimals))
+        )
+      );
 
     const fiatPerQuote =
       quoteCurrency &&
-      priceStore.calculatePrice(new CoinPretty(quoteCurrency, quoteAmount));
+      priceStore.calculatePrice(
+        new CoinPretty(
+          quoteCurrency,
+          quoteAmount.mul(new Dec(10 ** quoteCurrency.coinDecimals))
+        )
+      );
 
     const fiatCurrency =
       priceStore.supportedVsCurrencies[priceStore.defaultVsCurrency];
@@ -327,16 +337,11 @@ const AssetPairAmountDetail: FunctionComponent<{
     fiatPerBase,
     fiatPerQuote,
   }) => {
-    const fiatBase =
-      fiatPerBase && baseAmount
-        ? baseAmount.mul(fiatPerBase.toDec())
-        : new Dec(0);
-    const fiatQuote =
-      fiatPerQuote && quoteAmount
-        ? quoteAmount.mul(fiatPerQuote.toDec())
-        : new Dec(0);
     const totalFiat =
-      fiatCurrency && new PricePretty(fiatCurrency, fiatBase.add(fiatQuote));
+      fiatCurrency &&
+      fiatPerBase &&
+      fiatPerQuote &&
+      new PricePretty(fiatCurrency, fiatPerBase.add(fiatPerQuote));
 
     if (!baseAmount || !quoteAmount) return null;
 

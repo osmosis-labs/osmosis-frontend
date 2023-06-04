@@ -1,4 +1,4 @@
-import { TxChainSetter } from "@keplr-wallet/hooks";
+import { EmptyAmountError, TxChainSetter } from "@keplr-wallet/hooks";
 import {
   ChainGetter,
   IQueriesStore,
@@ -58,6 +58,10 @@ export class ObservableRemoveConcentratedLiquidityConfig extends TxChainSetter {
 
   @computed
   get error(): Error | undefined {
-    return undefined;
+    if (!this._percentage) {
+      return new EmptyAmountError("percentage is zero");
+    }
+
+    return;
   }
 }

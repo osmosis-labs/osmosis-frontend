@@ -1,4 +1,4 @@
-import { Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -7,6 +7,8 @@ import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import IconButton from "~/components/buttons/icon-button";
+import { Slider } from "~/components/control";
+import { tError } from "~/components/localization";
 import MyPositionStatus from "~/components/my-position-card/position-status";
 import { useConnectWalletModalRedirect } from "~/hooks";
 import { useRemoveConcentratedLiquidityConfig } from "~/hooks/ui-config/use-remove-concentrated-liquidity-config";
@@ -28,8 +30,13 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   const { lowerPrice, upperPrice, poolId, baseAmount, quoteAmount } = props;
 
   const t = useTranslation();
-  const { chainStore, accountStore, derivedDataStore, queriesStore } =
-    useStore();
+  const {
+    chainStore,
+    accountStore,
+    derivedDataStore,
+    queriesStore,
+    priceStore,
+  } = useStore();
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getAccount(chainId);
@@ -44,11 +51,13 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
-      disabled: isSendingMsg,
+      disabled: config.error !== undefined || isSendingMsg,
       onClick: () => {
         return removeLiquidity().finally(() => props.onRequestClose());
       },
-      children: t("clPositions.removeLiquidity"),
+      children: config.error
+        ? t(...tError(config.error))
+        : t("clPositions.removeLiquidity"),
     },
     props.onRequestClose
   );
@@ -68,6 +77,35 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   const quoteCurrency = chainStore
     .getChain(chainId)
     .findCurrency(clPool.poolAssetDenoms[1]);
+
+  const fiatBase =
+    baseCurrency &&
+    priceStore.calculatePrice(
+      new CoinPretty(
+        baseCurrency,
+        baseAmount.mul(new Dec(10 ** baseCurrency.coinDecimals))
+      )
+    );
+
+  const fiatQuote =
+    quoteCurrency &&
+    priceStore.calculatePrice(
+      new CoinPretty(
+        quoteCurrency,
+        quoteAmount.mul(new Dec(10 ** quoteCurrency.coinDecimals))
+      )
+    );
+
+  const fiatCurrency =
+    priceStore.supportedVsCurrencies[priceStore.defaultVsCurrency];
+
+  const totalFiat =
+    fiatCurrency &&
+    fiatBase &&
+    fiatQuote &&
+    new PricePretty(fiatCurrency, fiatBase.add(fiatQuote)).mul(
+      new Dec(config.percentage)
+    );
 
   return (
     <ModalBase
@@ -131,18 +169,23 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
         </div>
       </div>
       <div className="flex w-full flex-col items-center gap-9">
-        <h2>$17,365</h2>
+        <h2>
+          {fiatCurrency?.symbol}
+          {totalFiat?.toDec().toString(2) ?? "0"}
+        </h2>
         <div className="flex w-full flex-col items-center gap-6">
-          <div className="relative flex w-[360px] flex-row items-center justify-center">
-            <div className="h-2 w-[360px] rounded-[6px] bg-osmoverse-700" />
-            <div
-              className={classNames(
-                "absolute h-6 w-6 cursor-pointer rounded-full bg-osmoverse-100"
-              )}
-              style={{ left: `${config.percentage * 360 - 12}px` }}
-              draggable
-            />
-          </div>
+          <Slider
+            className="w-[360px]"
+            inputClassName="!w-[360px]"
+            currentValue={Math.round(config.percentage * 100)}
+            onInput={(value) => {
+              config.setPercentage(Number((value / 100).toFixed(2)));
+            }}
+            min={0}
+            max={100}
+            step={1}
+            useSuperchargedGradient
+          />
           <div className="flex w-full flex-row gap-2 px-5">
             <PresetPercentageButton onClick={() => config.setPercentage(0.25)}>
               25%
