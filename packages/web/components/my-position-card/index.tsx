@@ -1,4 +1,5 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
+import { tickToSqrtPrice } from "@osmosis-labs/math";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -37,137 +38,152 @@ export type PositionWithAssets = {
 
 const MyPositionCard: FunctionComponent<{
   positionIds: string[];
-}> = observer(({ positionIds }) => {
-  const t = useTranslation();
-  const { chainStore, priceStore, queriesStore } = useStore();
-  const [collapsed, setCollapsed] = useState(true);
+  baseAmount: Dec;
+  quoteAmount: Dec;
+  lowerTick: Int;
+  upperTick: Int;
+  poolId: string;
+  passive: boolean;
+}> = observer(
+  ({
+    positionIds,
+    baseAmount,
+    quoteAmount,
+    passive,
+    lowerTick,
+    upperTick,
+    poolId,
+  }) => {
+    const t = useTranslation();
+    const { chainStore, priceStore } = useStore();
+    const [collapsed, setCollapsed] = useState(true);
 
-  const { chainId } = chainStore.osmosis;
-  const queryPositions =
-    queriesStore.get(chainId).osmosis!.queryLiquidityPositions;
+    const { chainId } = chainStore.osmosis;
 
-  const { poolId, baseAmount, quoteAmount, priceRange } =
-    queryPositions.getMergedPositions(positionIds);
+    const config = useHistoricalAndLiquidityData(chainId, poolId);
 
-  const config = useHistoricalAndLiquidityData(chainId, poolId);
+    const { pool, quoteCurrency, baseCurrency, priceDecimal } = config;
 
-  const { pool, quoteCurrency, baseCurrency, priceDecimal } = config;
+    const fiatBase =
+      baseCurrency &&
+      priceStore.calculatePrice(new CoinPretty(baseCurrency, baseAmount));
 
-  const [lowerPrice, upperPrice] = priceRange;
+    const fiatQuote =
+      quoteCurrency &&
+      priceStore.calculatePrice(new CoinPretty(quoteCurrency, quoteAmount));
 
-  const fiatBase =
-    baseCurrency &&
-    priceStore.calculatePrice(new CoinPretty(baseCurrency, baseAmount));
+    const fiatCurrency =
+      priceStore.supportedVsCurrencies[priceStore.defaultVsCurrency];
 
-  const fiatQuote =
-    quoteCurrency &&
-    priceStore.calculatePrice(new CoinPretty(quoteCurrency, quoteAmount));
+    const liquidityValue =
+      fiatBase &&
+      fiatQuote &&
+      fiatCurrency &&
+      new PricePretty(fiatCurrency, fiatBase.add(fiatQuote));
 
-  const fiatCurrency =
-    priceStore.supportedVsCurrencies[priceStore.defaultVsCurrency];
+    const clPool = pool?.pool as ConcentratedLiquidityPool;
 
-  const liquidityValue =
-    fiatBase &&
-    fiatQuote &&
-    fiatCurrency &&
-    new PricePretty(fiatCurrency, fiatBase.add(fiatQuote));
+    if (!clPool) return null;
 
-  const clPool = pool?.pool as ConcentratedLiquidityPool;
+    const currentSqrtPrice = clPool.currentSqrtPrice;
+    const currentPrice = currentSqrtPrice.mul(currentSqrtPrice);
+    const lowerPriceSqrt = tickToSqrtPrice(lowerTick);
+    const upperPriceSqrt = tickToSqrtPrice(upperTick);
+    const lowerPrice = lowerPriceSqrt.mul(lowerPriceSqrt);
+    const upperPrice = upperPriceSqrt.mul(upperPriceSqrt);
+    const inRange = lowerPrice.lt(currentPrice) && upperPrice.gt(currentPrice);
 
-  if (!clPool) return null;
+    const diff = new Dec(
+      Math.min(
+        Number(currentPrice.sub(lowerPrice).toString()),
+        Number(upperPrice.sub(currentPrice).toString())
+      )
+    );
 
-  const currentSqrtPrice = clPool.currentSqrtPrice;
-  const currentPrice = currentSqrtPrice.mul(currentSqrtPrice);
+    const diffPercentage = diff.quo(currentPrice).mul(new Dec(100));
 
-  const inRange = lowerPrice.lt(currentPrice) && upperPrice.gt(currentPrice);
-
-  const diff = new Dec(
-    Math.min(
-      Number(currentPrice.sub(lowerPrice).toString()),
-      Number(upperPrice.sub(currentPrice).toString())
-    )
-  );
-
-  const diffPercentage = diff.quo(currentPrice).mul(new Dec(100));
-
-  return (
-    <div
-      className={classNames(
-        "flex cursor-pointer flex-col gap-8 overflow-hidden rounded-[20px] bg-osmoverse-800 p-8"
-      )}
-      onClick={() => setCollapsed(!collapsed)}
-    >
-      <div className="flex flex-row items-center gap-[52px]">
-        <div>
-          <PoolAssetsIcon
-            className="!w-[78px]"
-            assets={pool?.poolAssets.map((poolAsset) => ({
-              coinImageUrl: poolAsset.amount.currency.coinImageUrl,
-              coinDenom: poolAsset.amount.currency.coinDenom,
-            }))}
-          />
-        </div>
-        <div className="flex flex-shrink-0 flex-grow flex-col gap-[6px]">
-          <div className="flex flex-row items-center gap-[6px]">
-            <PoolAssetsName
-              size="md"
-              assetDenoms={pool?.poolAssets.map(
-                (asset) => asset.amount.currency.coinDenom
-              )}
+    return (
+      <div
+        className={classNames(
+          "flex cursor-pointer flex-col gap-8 overflow-hidden rounded-[20px] bg-osmoverse-800 p-8"
+        )}
+        onClick={() => setCollapsed(!collapsed)}
+      >
+        <div className="flex flex-row items-center gap-[52px]">
+          <div>
+            <PoolAssetsIcon
+              className="!w-[78px]"
+              assets={pool?.poolAssets.map((poolAsset) => ({
+                coinImageUrl: poolAsset.amount.currency.coinImageUrl,
+                coinDenom: poolAsset.amount.currency.coinDenom,
+              }))}
             />
-            <span className="px-2 py-1 text-subtitle1 text-osmoverse-100">
-              {pool?.swapFee.toString()} Fee
-            </span>
           </div>
-          <MyPositionStatus
-            status={
-              inRange
-                ? diffPercentage.lte(new Dec(10))
-                  ? PositionStatus.NearBounds
-                  : PositionStatus.InRange
-                : PositionStatus.outOfRange
-            }
-          />
+          <div className="flex flex-shrink-0 flex-grow flex-col gap-[6px]">
+            <div className="flex flex-row items-center gap-[6px]">
+              <PoolAssetsName
+                size="md"
+                assetDenoms={pool?.poolAssets.map(
+                  (asset) => asset.amount.currency.coinDenom
+                )}
+              />
+              <span className="px-2 py-1 text-subtitle1 text-osmoverse-100">
+                {pool?.swapFee.toString()} {t("clPositions.fee")}
+              </span>
+            </div>
+            <MyPositionStatus
+              status={
+                inRange
+                  ? diffPercentage.lte(new Dec(10))
+                    ? PositionStatus.NearBounds
+                    : PositionStatus.InRange
+                  : PositionStatus.outOfRange
+              }
+            />
+          </div>
+          <div className="flex flex-row gap-[52px] self-start">
+            {/* TODO: use actual ROI */}
+            <PositionDataGroup label={t("clPositions.roi")} value="-" />
+            <RangeDataGroup
+              lowerPrice={
+                quoteCurrency &&
+                new CoinPretty(
+                  quoteCurrency,
+                  lowerPrice.mul(new Dec(10 ** quoteCurrency.coinDecimals))
+                )
+              }
+              upperPrice={
+                quoteCurrency &&
+                new CoinPretty(
+                  quoteCurrency,
+                  upperPrice.mul(new Dec(10 ** quoteCurrency.coinDecimals))
+                )
+              }
+              decimal={priceDecimal}
+            />
+            <PositionDataGroup
+              label={t("clPositions.myLiquidity")}
+              value={liquidityValue ? formatPretty(liquidityValue) : "$0"}
+            />
+            <PositionDataGroup label={t("clPositions.incentives")} value="-" />
+          </div>
         </div>
-        <div className="flex flex-row gap-[52px] self-start">
-          {/* TODO: use actual ROI */}
-          <PositionDataGroup label={t("clPositions.roi")} value="0.18%" />
-          <RangeDataGroup
-            lowerPrice={
-              quoteCurrency &&
-              new CoinPretty(
-                quoteCurrency,
-                lowerPrice.mul(new Dec(10 ** quoteCurrency.coinDecimals))
-              )
-            }
-            upperPrice={
-              quoteCurrency &&
-              new CoinPretty(
-                quoteCurrency,
-                upperPrice.mul(new Dec(10 ** quoteCurrency.coinDecimals))
-              )
-            }
-            decimal={priceDecimal}
+        {!collapsed && (
+          <MyPositionCardExpandedSection
+            chartConfig={config}
+            positionIds={positionIds}
+            poolId={poolId}
+            lowerPrice={lowerPrice}
+            upperPrice={upperPrice}
+            baseAmount={baseAmount}
+            quoteAmount={quoteAmount}
+            passive={passive}
           />
-          <PositionDataGroup
-            label={t("clPositions.myLiquidity")}
-            value={liquidityValue ? formatPretty(liquidityValue) : "$0"}
-          />
-          <PositionDataGroup
-            label={t("clPositions.incentives")}
-            value="25% APR"
-          />
-        </div>
+        )}
       </div>
-      {!collapsed && (
-        <MyPositionCardExpandedSection
-          chartConfig={config}
-          positionIds={positionIds}
-        />
-      )}
-    </div>
-  );
-});
+    );
+  }
+);
 
 export default MyPositionCard;
 

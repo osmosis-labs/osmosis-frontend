@@ -1,4 +1,4 @@
-import { ObservableQueryLiquidityPositionsByAddress } from "@osmosis-labs/stores";
+import { Int } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Head from "next/head";
@@ -16,8 +16,9 @@ import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import ChartButton from "~/components/chart-button";
 import MyPositionCard from "~/components/my-position-card";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
-import { AddLiquidityModal } from "~/modals";
+import { AddLiquidityModal, TradeTokens } from "~/modals";
 import { useStore } from "~/stores";
+import { ObservableMergedPositionByAddress } from "~/stores/derived-data";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -30,28 +31,24 @@ const TokenPairHistoricalChart = dynamic(
 
 export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
   observer(({ poolId }) => {
-    const { chainStore, accountStore, queriesStore } = useStore();
+    const { chainStore, accountStore, derivedDataStore } = useStore();
     const { chainId } = chainStore.osmosis;
     const account = accountStore.getAccount(chainId);
     const config = useHistoricalAndLiquidityData(chainId, poolId);
     const t = useTranslation();
-    const [showAddLiquidityModal, setShowAddLiquidityModal] = useState(false);
+    const [activeModal, setActiveModal] = useState<
+      "trade" | "add-liquidity" | null
+    >(null);
 
     const [queryAddress, setQueryAddress] =
-      useState<ObservableQueryLiquidityPositionsByAddress | null>(null);
-
-    console.log("render concetntrated pool");
+      useState<ObservableMergedPositionByAddress | null>(null);
 
     useEffect(() => {
       (async () => {
         if (!account.bech32Address) return;
 
         setQueryAddress(
-          await queriesStore
-            .get(chainId)
-            .osmosis!.queryLiquidityPositions.getForAddress(
-              account.bech32Address
-            )
+          derivedDataStore.mergedPositionsByAddress.get(account.bech32Address)
         );
       })();
     }, [account.bech32Address]);
@@ -73,14 +70,11 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       baseDenom,
       quoteDenom,
       hoverPrice,
-      // setRange,
-      // baseCurrency,
-      // quoteCurrency,
     } = config;
 
     if (!queryAddress) return null;
 
-    const len = Object.keys(queryAddress.mergedPositionIds).length;
+    const len = Object.keys(queryAddress.mergedRanges).length;
 
     if (!len) return null;
 
@@ -91,11 +85,19 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
             {t("pool.title", { id: poolId ? poolId.toString() : "-" })}
           </title>
         </Head>
-        {pool && showAddLiquidityModal && (
+        {pool && activeModal === "add-liquidity" && (
           <AddLiquidityModal
             isOpen={true}
             poolId={pool.id}
-            onRequestClose={() => setShowAddLiquidityModal(false)}
+            onRequestClose={() => setActiveModal(null)}
+          />
+        )}
+        {pool && activeModal === "trade" && (
+          <TradeTokens
+            className="md:!p-0"
+            isOpen={true}
+            onRequestClose={() => setActiveModal(null)}
+            memoedPools={[pool]}
           />
         )}
         <section className="flex flex-col gap-8">
@@ -120,14 +122,20 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 </div>
                 <div>
                   <span className="text-supercharged-gradient text-body2 font-body2 ">
-                    Supercharged
+                    {t("clPositions.supercharged")}
                   </span>
                 </div>
               </div>
               <div className="flex flex-grow flex-row justify-end gap-10">
-                <PoolDataGroup label="Pool Liquidity" value="$109,540,231" />
-                <PoolDataGroup label="24hr Trading Volume" value="$1,540,231" />
-                <PoolDataGroup label="Swap Fee" value="0.5%" />
+                <PoolDataGroup label={t("pool.liquidity")} value="$0.00" />
+                <PoolDataGroup
+                  label={t("pool.24hrTradingVolume")}
+                  value="$0.00"
+                />
+                <PoolDataGroup
+                  label={t("pool.swapFee")}
+                  value={pool?.swapFee ? pool.swapFee.toString() : "0%"}
+                />
               </div>
             </div>
             <div className="flex h-[340px] flex-row">
@@ -194,10 +202,10 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
           <div className="flex flex-col gap-8">
             <div className="flex flex-row">
               <div className="flex flex-grow flex-col gap-3">
-                <h6>Your Positions</h6>
+                <h6>{t("clPositions.yourPositions")}</h6>
                 <div className="flex flex-row items-center text-body2 font-body2">
                   <span className="text-wosmongton-200">
-                    Put your assets to work and earn fees on every swap.
+                    {t("clPositions.yourPositionsDesc")}
                   </span>
                   <span className="flex flex-row">
                     <a
@@ -206,7 +214,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Learn more about pools
+                      {t("clPositions.learnMoreAboutPools")}
                     </a>
                     <img src="/icons/arrow-right.svg" alt="learn more" />
                   </span>
@@ -215,15 +223,36 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
               <Button
                 className="w-fit text-subtitle1 font-subtitle1"
                 size="sm"
-                onClick={() => setShowAddLiquidityModal(true)}
+                onClick={() => {
+                  // TODO: add create position modal
+                  setActiveModal(null);
+                }}
               >
-                Create a position
+                {t("clPositions.createAPosition")}
               </Button>
             </div>
           </div>
           <div className="flex flex-col gap-3">
-            {queryAddress.mergedPositionIds.map((positionIds, index) => {
-              return <MyPositionCard key={index} positionIds={positionIds} />;
+            {queryAddress.mergedRanges.map((mergedId, index) => {
+              const [poolId, lowerTick, upperTick] = mergedId.split("_");
+              const { positionIds, baseAmount, quoteAmount, passive } =
+                queryAddress?.calculateMergedPosition(
+                  poolId,
+                  lowerTick,
+                  upperTick
+                );
+              return (
+                <MyPositionCard
+                  key={index}
+                  poolId={poolId}
+                  lowerTick={new Int(lowerTick)}
+                  upperTick={new Int(upperTick)}
+                  positionIds={positionIds}
+                  baseAmount={baseAmount}
+                  quoteAmount={quoteAmount}
+                  passive={passive}
+                />
+              );
             })}
           </div>
         </section>

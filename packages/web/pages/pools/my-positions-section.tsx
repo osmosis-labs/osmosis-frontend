@@ -1,4 +1,4 @@
-import { ObservableQueryLiquidityPositionsByAddress } from "@osmosis-labs/stores";
+import { Int } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import React, { useCallback, useEffect, useState } from "react";
@@ -6,24 +6,23 @@ import { useTranslation } from "react-multi-lang";
 
 import MyPositionCard from "~/components/my-position-card";
 import { useStore } from "~/stores";
+import { ObservableMergedPositionByAddress } from "~/stores/derived-data";
 
 const MyPositionsSection = observer(() => {
   const t = useTranslation();
-  const { accountStore, chainStore, queriesStore } = useStore();
+  const { accountStore, chainStore, derivedDataStore } = useStore();
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getAccount(chainId);
   const [viewMore, setViewMore] = useState(false);
   const [queryAddress, setQueryAddress] =
-    useState<ObservableQueryLiquidityPositionsByAddress | null>(null);
+    useState<ObservableMergedPositionByAddress | null>(null);
 
   useEffect(() => {
     (async () => {
       if (!account.bech32Address) return;
 
       setQueryAddress(
-        await queriesStore
-          .get(chainId)
-          .osmosis!.queryLiquidityPositions.getForAddress(account.bech32Address)
+        derivedDataStore.mergedPositionsByAddress.get(account.bech32Address)
       );
     })();
   }, [account.bech32Address]);
@@ -36,7 +35,7 @@ const MyPositionsSection = observer(() => {
     return null;
   }
 
-  const len = Object.keys(queryAddress.mergedPositionIds).length;
+  const len = Object.keys(queryAddress.mergedRanges).length;
 
   if (!len) return null;
 
@@ -45,10 +44,24 @@ const MyPositionsSection = observer(() => {
       <h6 className="pl-6">{t("clPositions.yourPositions")}</h6>
       <div className="flex flex-col gap-3">
         {(viewMore
-          ? queryAddress.mergedPositionIds
-          : queryAddress.mergedPositionIds.slice(0, 3)
-        ).map((positionIds, index) => {
-          return <MyPositionCard key={index} positionIds={positionIds} />;
+          ? queryAddress.mergedRanges
+          : queryAddress.mergedRanges.slice(0, 3)
+        ).map((mergedId, index) => {
+          const [poolId, lowerTick, upperTick] = mergedId.split("_");
+          const { positionIds, baseAmount, quoteAmount, passive } =
+            queryAddress?.calculateMergedPosition(poolId, lowerTick, upperTick);
+          return (
+            <MyPositionCard
+              key={index}
+              poolId={poolId}
+              lowerTick={new Int(lowerTick)}
+              upperTick={new Int(upperTick)}
+              positionIds={positionIds}
+              baseAmount={baseAmount}
+              quoteAmount={quoteAmount}
+              passive={passive}
+            />
+          );
         })}
       </div>
       {len > 3 && !viewMore && (

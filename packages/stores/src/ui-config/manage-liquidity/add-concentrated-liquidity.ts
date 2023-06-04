@@ -116,7 +116,10 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   @computed
   get currentPrice(): Dec {
-    return this._pool.currentSqrtPrice.mul(this._pool.currentSqrtPrice);
+    return (
+      this._pool.currentSqrtPrice?.mul(this._pool.currentSqrtPrice) ??
+      new Dec(0)
+    );
   }
 
   @computed
