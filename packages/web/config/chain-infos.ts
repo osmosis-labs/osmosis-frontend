@@ -2511,8 +2511,8 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://ping.pub/genesisL1/tx/{txHash}",
   },
   {
-    rpc: "https://rpc.kaiyo.kujira.setten.io",
-    rest: "https://lcd.kaiyo.kujira.setten.io",
+    rpc: "https://rpc-kujira-ia.cosmosia.notional.ventures",
+    rest: "https://api-kujira-ia.cosmosia.notional.ventures",
     chainId: "kaiyo-1",
     chainName: "Kujira",
     bip44: {
