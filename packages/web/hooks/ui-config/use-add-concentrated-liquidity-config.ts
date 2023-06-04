@@ -53,21 +53,18 @@ export function useAddConcentratedLiquidityConfig(
   const addLiquidity = useCallback(async () => {
     return new Promise<void>(async (resolve, reject) => {
       try {
-        let quoteDepositValue;
-        let baseDepositValue;
-
-        if (!config.quoteDepositOnly) {
-          quoteDepositValue = {
-            currency: config.quoteDepositAmountIn.sendCurrency,
-            amount: config.quoteDepositAmountIn.amount,
-          };
-        }
-        if (!config.baseDepositOnly) {
-          baseDepositValue = {
-            currency: config.baseDepositAmountIn.sendCurrency,
-            amount: config.baseDepositAmountIn.amount,
-          };
-        }
+        let quoteDepositValue = config.quoteDepositOnly
+          ? undefined
+          : {
+              currency: config.quoteDepositAmountIn.sendCurrency,
+              amount: config.quoteDepositAmountIn.amount,
+            };
+        let baseDepositValue = config.baseDepositOnly
+          ? undefined
+          : {
+              currency: config.baseDepositAmountIn.sendCurrency,
+              amount: config.baseDepositAmountIn.amount,
+            };
 
         await account.osmosis.sendCreateConcentratedLiquidityPositionMsg(
           config.poolId,
