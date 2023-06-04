@@ -357,13 +357,21 @@ const Pool: FunctionComponent = observer(() => {
   if (pool?.type === "concentrated") {
     return (
       <>
+        {pool && showAddLiquidityModal && (
+          <AddLiquidityModal
+            isOpen={true}
+            poolId={pool.id}
+            onRequestClose={setShowModal(setShowAddLiquidityModal, false)}
+            onAddLiquidity={onAddLiquidity}
+          />
+        )}
         {pool && showTradeTokenModal && (
           <TradeTokens
             className="md:!p-0"
             hideCloseButton={isMobile}
             isOpen={showTradeTokenModal}
             onRequestClose={setShowModal(setShowTradeTokenModal, false)}
-            pools={[pool]}
+            memoedPools={tradePools}
           />
         )}
         <ConcentratedLiquidityPool poolId={poolId} />
