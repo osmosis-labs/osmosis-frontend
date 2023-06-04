@@ -220,7 +220,7 @@ const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
             </div>
           </div>
           <div className="flex flex-col gap-3">
-            {queryAddress.mergedRanges.map((mergedId, index) => {
+            {queryAddress.mergedRanges.slice(0, 5).map((mergedId, index) => {
               const [poolId, lowerTick, upperTick] = mergedId.split("_");
               const { positionIds, baseAmount, quoteAmount, passive } =
                 queryAddress?.calculateMergedPosition(
