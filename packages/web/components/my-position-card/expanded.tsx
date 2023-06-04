@@ -100,6 +100,11 @@ const MyPositionCardExpandedSection: FunctionComponent<{
             poolId={poolId}
             isOpen={showIncreaseLiquidityModal}
             positionIds={positionIds}
+            lowerPrice={lowerPrice}
+            upperPrice={upperPrice}
+            baseAmount={baseAmount}
+            quoteAmount={quoteAmount}
+            passive={passive}
             onRequestClose={() => updateShowIncreaseLiqModal(false)}
           />
         )}

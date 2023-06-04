@@ -12,8 +12,9 @@ export default function MyPositionStatus(props: {
   currentPrice: Dec;
   lowerPrice: Dec;
   upperPrice: Dec;
+  negative?: boolean;
 }): ReactElement {
-  const { currentPrice, lowerPrice, upperPrice } = props;
+  const { currentPrice, lowerPrice, upperPrice, negative } = props;
   const t = useTranslation();
 
   const inRange = lowerPrice.lt(currentPrice) && upperPrice.gt(currentPrice);
@@ -47,9 +48,10 @@ export default function MyPositionStatus(props: {
       className={classNames(
         "flex w-fit flex-row items-center gap-[10px] rounded-[12px] px-3 py-1",
         {
-          "bg-bullish-600/30": status === PositionStatus.InRange,
-          "bg-ammelia-600/30": status === PositionStatus.NearBounds,
-          "bg-rust-600/30": status === PositionStatus.OutOfRange,
+          "bg-bullish-600/30": !negative && status === PositionStatus.InRange,
+          "bg-ammelia-600/30":
+            !negative && status === PositionStatus.NearBounds,
+          "bg-rust-600/30": !negative && status === PositionStatus.OutOfRange,
         }
       )}
     >

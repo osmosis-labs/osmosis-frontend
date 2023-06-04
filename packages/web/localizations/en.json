@@ -61,12 +61,13 @@
     "removeLiquidity": "Remove Liquidity",
     "increaseLiquidity": "Increase Liquidity",
     "yourPositions": "Your Positions",
+    "yourPosition": "Your position",
     "yourPositionsDesc": "Put your assets to work and earn fees on every swap.",
     "learnMoreAboutPools": "Learn more about pools",
     "viewAll": "View All",
     "supercharged": "Supercharged",
     "createAPosition": "Create a position",
-    "fee": "Fee"
+    "addMoreLiquidity": "Add more liquidity"
   },
   "app": {
     "banner": {

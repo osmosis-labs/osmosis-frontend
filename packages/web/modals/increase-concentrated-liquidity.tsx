@@ -1,23 +1,35 @@
-import { Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import {
+  calculateDepositAmountForBase,
+  calculateDepositAmountForQuote,
+} from "@osmosis-labs/math";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import React, { FunctionComponent, useEffect } from "react";
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import IconButton from "~/components/buttons/icon-button";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import ChartButton from "~/components/chart-button";
+import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
 import MyPositionStatus from "~/components/my-position-card/position-status";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
+import { formatPretty } from "~/utils/formatter";
 
-import { useConnectWalletModalRedirect } from "../hooks";
+import {
+  useAddConcentratedLiquidityConfig,
+  useConnectWalletModalRedirect,
+} from "../hooks";
 import { useStore } from "../stores";
 import { ModalBase, ModalBaseProps } from "./base";
-// import classNames from "classnames";
-// import { InputBox } from "~/components/input";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -32,36 +44,27 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   {
     poolId: string;
     positionIds: string[];
+    baseAmount: Dec;
+    quoteAmount: Dec;
+    lowerPrice: Dec;
+    upperPrice: Dec;
+    passive: boolean;
   } & ModalBaseProps
 > = observer((props) => {
-  const { positionIds } = props;
+  const { lowerPrice, upperPrice, poolId, baseAmount, quoteAmount, passive } =
+    props;
   const {
     chainStore,
     accountStore,
-    queriesStore,
-    // priceStore,
     derivedDataStore,
+    priceStore,
+    queriesStore,
   } = useStore();
   const t = useTranslation();
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getAccount(chainId);
   const isSendingMsg = account.txTypeInProgress !== "";
-
-  const queryPositions =
-    queriesStore.get(chainId).osmosis!.queryLiquidityPositions;
-
-  const {
-    priceRange,
-    passive,
-    poolId,
-    baseAmount,
-    baseDenom,
-    quoteAmount,
-    quoteDenom,
-  } = queryPositions.getMergedPositions(positionIds);
-
-  const [lowerPrice, upperPrice] = priceRange;
 
   const {
     quoteCurrency,
@@ -83,12 +86,23 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     setRange,
   } = useHistoricalAndLiquidityData(chainId, poolId);
 
+  const [baseDepositInput, setBaseDepositInput] = useState("0");
+  const [quoteDepositInput, setQuoteDepositInput] = useState("0");
+  const [anchorAsset, setAchorAsset] = useState<"base" | "quote" | "">("");
+
+  const { config } = useAddConcentratedLiquidityConfig(
+    chainStore,
+    chainId,
+    poolId,
+    queriesStore
+  );
+
   // initialize pool data stores once root pool store is loaded
   const { poolDetail } = derivedDataStore.getForPool(poolId as string);
-  const pool = poolDetail?.pool?.pool;
+  const pool = poolDetail?.pool;
+  const clPool = poolDetail?.pool?.pool as ConcentratedLiquidityPool;
   const isConcLiq = pool?.type === "concentrated";
-  const currentSqrtPrice =
-    isConcLiq && (pool as ConcentratedLiquidityPool).currentSqrtPrice;
+  const currentSqrtPrice = isConcLiq && clPool.currentSqrtPrice;
   const currentPrice = currentSqrtPrice
     ? currentSqrtPrice.mul(currentSqrtPrice)
     : new Dec(0);
@@ -105,11 +119,93 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     props.onRequestClose
   );
 
+  const getFiatValue = useCallback(
+    (coin) => priceStore.calculatePrice(coin),
+    [priceStore]
+  );
+
+  const calculateQuoteDeposit = useCallback(
+    (amount: number) => {
+      const amt = new Dec(amount);
+      let quoteDeposit: Dec;
+
+      const [lowerTick, upperTick] = config.tickRange;
+      quoteDeposit = calculateDepositAmountForQuote(
+        currentPrice,
+        lowerTick,
+        upperTick,
+        amt
+      );
+
+      config.setQuoteDepositAmountIn(quoteDeposit);
+      setQuoteDepositInput(quoteDeposit.toString());
+    },
+    [
+      currentPrice,
+      config.tickRange,
+      config.setQuoteDepositAmountIn,
+      config.fullRange,
+      currentPrice,
+    ]
+  );
+
+  const calculateBaseDeposit = useCallback(
+    (amount: number) => {
+      const amt = new Dec(amount);
+      const [lowerTick, upperTick] = config.tickRange;
+      const baseDeposit = calculateDepositAmountForBase(
+        currentPrice,
+        lowerTick,
+        upperTick,
+        amt
+      );
+
+      config.setBaseDepositAmountIn(baseDeposit);
+      setBaseDepositInput(baseDeposit.toString());
+    },
+    [
+      currentPrice,
+      config.tickRange,
+      config.setBaseDepositAmountIn,
+      config.fullRange,
+      currentPrice,
+    ]
+  );
+
+  const rangeMin = Number(config.range[0].toString());
+  const rangeMax = Number(config.range[1].toString());
+
+  useEffect(() => {
+    if (anchorAsset === "base") {
+      calculateQuoteDeposit(+config.baseDepositAmountIn.amount);
+    }
+  }, [
+    rangeMin,
+    rangeMax,
+    anchorAsset,
+    config.baseDepositAmountIn,
+    calculateQuoteDeposit,
+  ]);
+
+  useEffect(() => {
+    if (anchorAsset === "quote") {
+      calculateBaseDeposit(+config.quoteDepositAmountIn.amount);
+    }
+  }, [
+    rangeMin,
+    rangeMax,
+    anchorAsset,
+    config.quoteDepositAmountIn,
+    calculateBaseDeposit,
+  ]);
+
   useEffect(() => {
     setRange([lowerPrice, upperPrice]);
+    config.setMinRange(lowerPrice);
+    config.setMaxRange(upperPrice);
   }, [lowerPrice.toString(), upperPrice.toString()]);
 
-  if (pool?.type !== "concentrated") return null;
+  if (pool?.type !== "concentrated" || !baseCurrency) return null;
 
   return (
     <ModalBase
@@ -121,8 +217,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
       <div className="align-center relative mb-8 flex flex-row">
         <div className="absolute left-0 flex h-full items-center text-sm" />
         <h6 className="flex-1 text-center">
-          {/* TODO: use translation */}
-          Increase Liquidity
+          {t("clPositions.increaseLiquidity")}
         </h6>
         <div className="absolute right-0">
           <IconButton
@@ -143,15 +238,18 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
         </div>
       </div>
       <div className="flex flex-col gap-3">
-        <div className="flex flex-row justify-between">
-          <div className="text-subtitle1 font-subtitle1">Your position</div>
+        <div className="flex flex-row items-center justify-between">
+          <div className="pl-4 text-subtitle1 font-subtitle1">
+            {t("clPositions.yourPosition")}
+          </div>
           <MyPositionStatus
             currentPrice={currentPrice}
             lowerPrice={lowerPrice}
             upperPrice={upperPrice}
+            negative
           />
         </div>
-        <div className="mb-8 flex flex-row justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5">
+        <div className="mb-8 flex flex-row justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100">
           {baseCurrency && (
             <div className="flex flex-row items-center gap-2 text-subtitle1 font-subtitle1">
               <img
@@ -185,22 +283,29 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             </div>
           )}
         </div>
-        <div className="flex flex-col">
-          <div className="flex flex-row justify-between">
-            <div className="text-subtitle1 font-subtitle1">Selected range</div>
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-row gap-2 pl-4">
             <div className="text-subtitle1 font-subtitle1">
-              {`in ${baseDenom} per ${quoteDenom}`}
+              {t("clPositions.selectedRange")}
+            </div>
+            <div className="text-subtitle1 font-subtitle1 text-osmoverse-300">
+              {t("addConcentratedLiquidity.basePerQuote", {
+                base: baseCurrency?.coinDenom || "",
+                quote: quoteCurrency?.coinDenom || "",
+              })}
             </div>
           </div>
           <div className="flex flex-row gap-1">
-            <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
+            <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-6 pl-6">
               <PriceChartHeader
+                priceHeaderClass="text-h5 font-h5 text-osmoverse-200"
                 historicalRange={historicalRange}
                 setHistoricalRange={setHistoricalRange}
-                baseDenom={baseDenom}
-                quoteDenom={quoteDenom}
+                baseDenom={baseCurrency?.coinDenom || ""}
+                quoteDenom={quoteCurrency?.coinDenom || ""}
                 hoverPrice={hoverPrice}
                 decimal={priceDecimal}
+                hideButtons
               />
               <TokenPairHistoricalChart
                 data={historicalChartData}
@@ -225,7 +330,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
               <div className="mt-[84px] flex flex-1 flex-col">
                 <ConcentratedLiquidityDepthChart
                   yRange={yRange}
-                  xRange={xRange}
+                  xRange={[xRange[0], xRange[1] * 1.1]}
                   data={depthChartData}
                   annotationDatum={{
                     price: lastChartData?.close || 0,
@@ -247,7 +352,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                 />
               </div>
               <div className="absolute right-0 top-0 mb-8 flex h-full flex-col">
-                <div className="mt-7 mr-2 flex h-6 flex-row gap-1">
+                <div className="mt-[25px] mr-[22px] flex h-6 flex-row gap-1">
                   <ChartButton
                     alt="refresh"
                     src="/icons/refresh-ccw.svg"
@@ -267,17 +372,37 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                     onClick={zoomOut}
                   />
                 </div>
-                <div className="flex h-full flex-col justify-between py-4">
+                <div className="mr-[22px] mb-4 flex h-full flex-col items-end justify-between py-4 ">
                   <PriceBox
                     currentValue={
-                      passive ? "0" : upperPrice.toString(priceDecimal)
+                      passive
+                        ? "0"
+                        : formatPretty(
+                            new CoinPretty(
+                              baseCurrency,
+                              upperPrice.mul(
+                                new Dec(10 ** baseCurrency.coinDecimals)
+                              )
+                            ),
+                            { hideCoinDenom: true }
+                          )
                     }
                     label={t("clPositions.maxPrice")}
                     infinity={passive}
                   />
                   <PriceBox
                     currentValue={
-                      passive ? "0" : lowerPrice.toString(priceDecimal)
+                      passive
+                        ? "0"
+                        : formatPretty(
+                            new CoinPretty(
+                              baseCurrency,
+                              lowerPrice.mul(
+                                new Dec(10 ** baseCurrency.coinDecimals)
+                              )
+                            ),
+                            { hideCoinDenom: true }
+                          )
                     }
                     label={t("clPositions.minPrice")}
                   />
@@ -287,149 +412,58 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-3">
+      <div className="mt-8 flex flex-col gap-3">
         <div className="flex flex-row justify-between">
-          <div className="text-subtitle1 font-subtitle1">
-            Add more liquidity
+          <div className="pl-4 text-subtitle1 font-subtitle1">
+            {t("clPositions.addMoreLiquidity")}
           </div>
         </div>
-        <div className="flex flex-col">
-          {/*<DepositAmountGroup*/}
-          {/*  getFiatValue={() => null}*/}
-          {/*  // coin={pool?.poolAssets[0]?.amount}*/}
-          {/*  coinIsToken0={true}*/}
-          {/*  onUpdate={() => null}*/}
-          {/*  currentValue={baseDepositInput}*/}
-          {/*  outOfRange={quoteDepositOnly}*/}
-          {/*  percentage={Number(depositPercentages[0].toString())}*/}
-          {/*/>*/}
-          {/*<DepositAmountGroup*/}
-          {/*  getFiatValue={getFiatValue}*/}
-          {/*  coin={pool?.poolAssets[1]?.amount}*/}
-          {/*  coinIsToken0={false}*/}
-          {/*  onUpdate={useCallback(*/}
-          {/*    (amount) => {*/}
-          {/*      setAchorAsset("quote");*/}
-          {/*      setQuoteDepositInput("" + amount);*/}
-          {/*      setQuoteDepositAmountIn(amount);*/}
-          {/*      calculateBaseDeposit(amount);*/}
-          {/*    },*/}
-          {/*    [calculateBaseDeposit, setQuoteDepositAmountIn]*/}
-          {/*  )}*/}
-          {/*  currentValue={quoteDepositInput}*/}
-          {/*  outOfRange={baseDepositOnly}*/}
-          {/*  percentage={Number(depositPercentages[1].toString())}*/}
-          {/*/>*/}
+        <div className="flex flex-col gap-2">
+          <DepositAmountGroup
+            className="mt-4 bg-transparent !p-0"
+            outOfRangeClassName="!bg-osmoverse-900"
+            priceInputClass="!bg-osmoverse-900 !w-full"
+            getFiatValue={getFiatValue}
+            coin={pool?.poolAssets[0]?.amount}
+            coinIsToken0={true}
+            onUpdate={useCallback(
+              (amount) => {
+                setAchorAsset("base");
+                setBaseDepositInput("" + amount);
+                config.setBaseDepositAmountIn(amount);
+                calculateQuoteDeposit(amount);
+              },
+              [calculateQuoteDeposit, config.setBaseDepositAmountIn]
+            )}
+            currentValue={baseDepositInput}
+            outOfRange={config.quoteDepositOnly}
+            percentage={Number(config.depositPercentages[0].toString())}
+          />
+          <DepositAmountGroup
+            className="mt-4 bg-transparent !px-0"
+            priceInputClass="!bg-osmoverse-900 !w-full"
+            outOfRangeClassName="!bg-osmoverse-900"
+            getFiatValue={getFiatValue}
+            coin={pool?.poolAssets[1]?.amount}
+            coinIsToken0={false}
+            onUpdate={useCallback(
+              (amount) => {
+                setAchorAsset("quote");
+                setQuoteDepositInput("" + amount);
+                config.setQuoteDepositAmountIn(amount);
+                calculateBaseDeposit(amount);
+              },
+              [calculateBaseDeposit, config.setQuoteDepositAmountIn]
+            )}
+            currentValue={quoteDepositInput}
+            outOfRange={config.baseDepositOnly}
+            percentage={Number(config.depositPercentages[1].toString())}
+          />
         </div>
       </div>
     </ModalBase>
   );
 });
-
-// const DepositAmountGroup: FunctionComponent<{
-//   getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
-//   coin?: CoinPretty;
-//   coinIsToken0: boolean;
-//   onUpdate: (amount: number) => void;
-//   currentValue: string;
-//   percentage: number;
-//   outOfRange?: boolean;
-// }> = observer(
-//   ({
-//     getFiatValue,
-//     coin,
-//     percentage,
-//     onUpdate,
-//     coinIsToken0,
-//     currentValue,
-//     outOfRange,
-//   }) => {
-//     const { chainStore, queriesStore, accountStore } = useStore();
-//     const t = useTranslation();
-//     const { chainId } = chainStore.osmosis;
-//     const { bech32Address } = accountStore.getAccount(chainId);
-//
-//     const fiatPer = coin && getFiatValue ? getFiatValue(coin) : 0;
-//
-//     const walletBalance = coin?.currency
-//       ? queriesStore
-//           .get(chainId)
-//           .queryBalances.getQueryBech32Address(bech32Address)
-//           .getBalanceFromCurrency(coin.currency)
-//       : null;
-//
-//     const updateValue = useCallback(
-//       (val: string) => {
-//         const newVal = Number(val);
-//         onUpdate(newVal);
-//       },
-//       [onUpdate]
-//     );
-//
-//     if (outOfRange) {
-//       return (
-//         <div className="flex flex-1 flex-shrink-0 flex-row items-center gap-3 rounded-[20px] bg-osmoverse-700 px-6 py-7">
-//           <Image
-//             className="flex-shrink-0 flex-grow"
-//             alt=""
-//             src="/icons/lock.svg"
-//             height={24}
-//             width={24}
-//           />
-//           <div className="flex-shrink-1 caption w-0 flex-1 text-osmoverse-300">
-//             {t("addConcentratedLiquidity.outOfRangeWarning")}
-//           </div>
-//         </div>
-//       );
-//     }
-//
-//     return (
-//       <div className="flex flex-1 flex-shrink-0 flex-row items-center rounded-[20px] bg-osmoverse-700 p-6">
-//         <div className="flex w-full flex-row items-center">
-//           <div
-//             className={classNames(
-//               "flex overflow-clip rounded-full border-4 p-1",
-//               coinIsToken0 ? "border-wosmongton-500" : "border-bullish-500"
-//             )}
-//           >
-//             {coin?.currency.coinImageUrl && (
-//               <Image
-//                 alt=""
-//                 src={coin?.currency.coinImageUrl}
-//                 height={58}
-//                 width={58}
-//               />
-//             )}
-//           </div>
-//           <div className="ml-[.75rem] mr-[2.75rem] flex flex-col">
-//             <h6>{coin?.denom ?? ""}</h6>
-//             <span className="subtitle1 text-osmoverse-400">
-//               {Math.round(percentage).toFixed(0)}%
-//             </span>
-//           </div>
-//           <div className="relative flex flex-1 flex-col gap-0.5">
-//             <span className="caption absolute right-0 top-[-16px] mb-[2px] text-right text-wosmongton-300">
-//               {walletBalance ? walletBalance.toString() : ""}
-//             </span>
-//             <div className="flex h-16 w-[158px] flex-col items-end justify-center self-end rounded-[12px] bg-osmoverse-800">
-//               <InputBox
-//                 className="border-0 bg-transparent text-h5 font-h5"
-//                 inputClassName="!leading-4"
-//                 type="number"
-//                 currentValue={currentValue}
-//                 onInput={updateValue}
-//                 rightEntry
-//               />
-//               <div className="caption pr-3 text-osmoverse-400">
-//                 {fiatPer && `~${fiatPer.toString()}`}
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     );
-//   }
-// );
 
 function PriceBox(props: {
   label: string;
@@ -437,12 +471,12 @@ function PriceBox(props: {
   infinity?: boolean;
 }) {
   return (
-    <div className="flex w-full max-w-[9.75rem] flex-col gap-1">
-      <span className="pt-2 text-caption text-osmoverse-400">
+    <div className="flex max-w-[6.25rem] flex-col gap-1">
+      <span className="pt-2 text-body2 font-body2 text-osmoverse-300">
         {props.label}
       </span>
       {props.infinity ? (
-        <div className="flex h-[41px] flex-row items-center">
+        <div className="flex h-[20px] flex-row items-center">
           <Image
             alt="infinity"
             src="/icons/infinity.svg"
@@ -451,7 +485,7 @@ function PriceBox(props: {
           />
         </div>
       ) : (
-        <h6 className="overflow-hidden text-ellipsis border-0 bg-transparent text-subtitle1 leading-tight">
+        <h6 className="overflow-hidden text-ellipsis border-0 bg-transparent text-subtitle1 font-subtitle1 leading-tight">
           {props.currentValue}
         </h6>
       )}
