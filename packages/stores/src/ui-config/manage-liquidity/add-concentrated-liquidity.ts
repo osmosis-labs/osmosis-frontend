@@ -7,8 +7,8 @@ import {
 import { CoinPretty, Dec, Int, RatePretty } from "@keplr-wallet/unit";
 import {
   ActiveLiquidityPerTickRange,
-  calculateDepositAmountForBase,
-  calculateDepositAmountForQuote,
+  calcAmount0,
+  calcAmount1,
   maxSpotPrice,
   maxTick,
   minSpotPrice,
@@ -136,22 +136,22 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     this.fetchHistoricalChartData();
 
     // Calculate quote amount when base amount is input and anchor is base
-    // Calculate an amount0 given an amount1
+    // Calculate an amount1 given an amount0
     autorun(() => {
       const baseAmountRaw =
         this.baseDepositAmountIn.getAmountPrimitive().amount;
-      const amount1 = new Int(baseAmountRaw);
+      const amount0 = new Int(baseAmountRaw);
       const anchor = this._anchorAsset;
 
-      if (anchor !== "base" || amount1.lt(new Int(0))) return;
+      if (anchor !== "base" || amount0.lt(new Int(0))) return;
 
-      if (amount1.isZero()) this.quoteDepositAmountIn.setAmount("0");
+      if (amount0.isZero()) this.quoteDepositAmountIn.setAmount("0");
 
       const [lowerTick, upperTick] = this.tickRange;
 
       // calculate proportional amount of other amount
-      const amount0 = calculateDepositAmountForBase(
-        amount1,
+      const amount1 = calcAmount1(
+        amount0,
         lowerTick,
         upperTick,
         this.pool.currentSqrtPrice
@@ -159,7 +159,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
       // include decimals, as is displayed to user
       const quoteCoin = new CoinPretty(
         this._quoteDepositAmountIn.sendCurrency,
-        amount0
+        amount1
       );
       const quoteAmountWithDecimals = quoteCoin
         .hideDenom(true)
@@ -170,22 +170,22 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     });
 
     // Calculate base amount when quote amount is input and anchor is quote
-    // calculate amount1 given an amount0
+    // calculate amount0 given an amount1
     autorun(() => {
       const quoteAmountRaw =
         this.quoteDepositAmountIn.getAmountPrimitive().amount;
-      const amount0 = new Int(quoteAmountRaw);
+      const amount1 = new Int(quoteAmountRaw);
       const anchor = this._anchorAsset;
 
-      if (anchor !== "quote" || amount0.lt(new Int(0))) return;
+      if (anchor !== "quote" || amount1.lt(new Int(0))) return;
 
-      if (amount0.isZero()) this.baseDepositAmountIn.setAmount("0");
+      if (amount1.isZero()) this.baseDepositAmountIn.setAmount("0");
 
       const [lowerTick, upperTick] = this.tickRange;
 
       // calculate proportional amount of other amount
-      const amount1 = calculateDepositAmountForQuote(
-        amount0,
+      const amount0 = calcAmount0(
+        amount1,
         lowerTick,
         upperTick,
         this.pool.currentSqrtPrice
@@ -193,7 +193,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
       // include decimals, as is displayed to user
       const baseCoin = new CoinPretty(
         this._baseDepositAmountIn.sendCurrency,
-        amount1
+        amount0
       );
       const baseAmountWithDecimals = baseCoin
         .hideDenom(true)
@@ -300,7 +300,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     const [lowerTick, upperTick] = this.tickRange;
 
     // calculate proportional amount of other amount
-    const amount0 = calculateDepositAmountForBase(
+    const amount0 = calcAmount1(
       amount1,
       lowerTick,
       upperTick,
