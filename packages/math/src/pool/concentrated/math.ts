@@ -302,7 +302,7 @@ export function calculateDepositAmountForQuote(
   lowerTick: Int,
   upperTick: Int,
   currentSqrtPrice: Dec
-): Dec {
+): Int {
   const upperTickSqrt = tickToSqrtPrice(upperTick);
   const lowerTickSqrt = tickToSqrtPrice(lowerTick);
 
@@ -327,7 +327,7 @@ export function calculateDepositAmountForQuote(
   const numerator = liquidity1.mul(sqrtPriceB.sub(sqrtPriceA));
   const denominator = sqrtPriceB.mul(sqrtPriceA);
 
-  return numerator.quo(denominator);
+  return numerator.quo(denominator).truncate();
 }
 
 // calcAmount0
@@ -336,9 +336,8 @@ export function calculateDepositAmountForBase(
   lowerTick: Int,
   upperTick: Int,
   currentSqrtPrice: Dec
-): Dec {
+): Int {
   const lowerTickSqrt = tickToSqrtPrice(lowerTick);
-
   const upperTickSqrt = tickToSqrtPrice(upperTick);
 
   let sqrtPriceA = currentSqrtPrice;
@@ -364,5 +363,5 @@ export function calculateDepositAmountForBase(
 
   liquidity0 = liquidity0.roundUp().toDec();
 
-  return liquidity0.mul(sqrtPriceB.sub(sqrtPriceA));
+  return liquidity0.mul(sqrtPriceB.sub(sqrtPriceA)).truncate();
 }

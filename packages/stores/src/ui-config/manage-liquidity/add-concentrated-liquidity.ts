@@ -295,7 +295,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     if (this.baseDepositOnly) return [new RatePretty(1), new RatePretty(0)];
     if (this.quoteDepositOnly) return [new RatePretty(0), new RatePretty(1)];
 
-    const amount1 = new Int(1);
+    let amount1 = new Int(1000000);
 
     const [lowerTick, upperTick] = this.tickRange;
 
@@ -308,15 +308,13 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     );
 
     // normalize amt1
-    const amount1Dec = amount1
-      .toDec()
-      .quo(this.pool.currentSqrtPrice.mul(this.pool.currentSqrtPrice));
+    amount1 = amount1.toDec().quo(this.currentPrice).truncate();
 
-    const totalDeposit = amount0.add(amount1Dec);
+    const totalDeposit = amount0.add(amount1);
 
     return [
-      new RatePretty(amount1Dec.quo(totalDeposit)),
-      new RatePretty(amount0.quo(totalDeposit)),
+      new RatePretty(amount1.toDec().quo(totalDeposit.toDec())),
+      new RatePretty(amount0.toDec().quo(totalDeposit.toDec())),
     ];
   }
 
