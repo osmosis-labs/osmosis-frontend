@@ -293,34 +293,46 @@ export function convertTokenInGivenOutToTokenOutGivenIn(
   return new Dec(specifiedTokenOut.amount).quo(currentPrice).truncate();
 }
 
+// add liquidity
+// docs ref: https://github.com/osmosis-labs/osmosis/blob/b764323ce7702185d2089b9e76a0115c7058f37e/x/concentrated-liquidity/README.md#L573
+
 export function calculateDepositAmountForQuote(
-  curPrice: Dec,
+  curSqrtPrice: Dec,
   lowerTick: Int,
   upperTick: Int,
-  baseDeposit: Dec
-): Dec {
-  const lowerPriceSqrt = tickToSqrtPrice(lowerTick);
-  const upperPriceSqrt = tickToSqrtPrice(upperTick);
-  const curPriceSqrt = approxSqrt(curPrice);
-  const liquidityY = baseDeposit.quo(curPriceSqrt.sub(lowerPriceSqrt));
-  return liquidityY
-    .mul(upperPriceSqrt.sub(curPriceSqrt))
-    .quo(upperPriceSqrt)
-    .quo(curPriceSqrt);
+  baseDeposit: Int
+): Int {
+  const sqrtPu = tickToSqrtPrice(upperTick);
+  const sqrtPl = tickToSqrtPrice(lowerTick);
+  const sqrtPc = curSqrtPrice;
+
+  // calculate liquidity needed for token0
+  const L = new Dec(baseDeposit)
+    .mul(sqrtPu)
+    .mul(sqrtPl)
+    .quo(sqrtPu.sub(sqrtPl));
+
+  // calculate delta y
+  const deltaY = L.mul(sqrtPc.sub(sqrtPl));
+
+  return deltaY.truncate();
 }
 
 export function calculateDepositAmountForBase(
-  curPrice: Dec,
+  curSqrtPrice: Dec,
   lowerTick: Int,
   upperTick: Int,
-  quoteDeposit: Dec
-): Dec {
-  const lowerPriceSqrt = tickToSqrtPrice(lowerTick);
-  const upperPriceSqrt = tickToSqrtPrice(upperTick);
-  const curPriceSqrt = approxSqrt(curPrice);
-  const liquidity = quoteDeposit
-    .mul(curPriceSqrt)
-    .mul(upperPriceSqrt)
-    .quo(upperPriceSqrt.sub(curPriceSqrt));
-  return liquidity.mul(curPriceSqrt.sub(lowerPriceSqrt));
+  quoteDeposit: Int
+): Int {
+  const sqrtPu = tickToSqrtPrice(upperTick);
+  const sqrtPl = tickToSqrtPrice(lowerTick);
+  const sqrtPc = curSqrtPrice;
+
+  // calculate liquidity needed for token1
+  const L = new Dec(quoteDeposit).quo(sqrtPu.sub(sqrtPl));
+
+  // calculate delta x
+  const deltaX = L.mul(sqrtPu.sub(sqrtPc)).quo(sqrtPu.mul(sqrtPc));
+
+  return deltaX.truncate();
 }

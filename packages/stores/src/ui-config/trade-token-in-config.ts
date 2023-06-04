@@ -1,5 +1,9 @@
 import { AmountConfig, IFeeConfig } from "@keplr-wallet/hooks";
-import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
+import {
+  ChainGetter,
+  CosmosQueries,
+  IQueriesStore,
+} from "@keplr-wallet/stores";
 import { AppCurrency } from "@keplr-wallet/types";
 import {
   CoinPretty,
@@ -372,6 +376,14 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       }
     };
 
+    // Multi route message is only available in v16+
+    const nodeVersion = Number(
+      this.queriesStore.get(this.initialChainId).cosmos.queryRPCStatus.response
+        ?.data?.result?.node_info?.protocol_version?.app
+    );
+    const isV16Plus = !isNaN(nodeVersion) && nodeVersion >= 16;
+    const maxSplit = isV16Plus ? 2 : 1;
+
     return new OptimizedRoutes({
       pools: this._pools.map((pool) => pool.pool),
       preferredPoolIds: this._pools.reduce((preferredIds, pool) => {
@@ -395,12 +407,15 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       incentivizedPoolIds: this._incentivizedPoolIds,
       stakeCurrencyMinDenom,
       getPoolTotalValueLocked,
+      maxSplit,
     });
   }
 
   constructor(
     chainGetter: ChainGetter,
-    protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
+    protected readonly queriesStore: IQueriesStore<
+      OsmosisQueries & CosmosQueries
+    >,
     protected readonly priceStore: IPriceStore,
     protected readonly initialChainId: string,
     sender: string,
