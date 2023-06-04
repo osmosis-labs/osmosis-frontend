@@ -13,6 +13,7 @@ import { useTranslation } from "react-multi-lang";
 
 import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import MyPositionCardExpandedSection from "~/components/my-position-card/expanded";
+import MyPositionStatus from "~/components/my-position-card/position-status";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -91,16 +92,6 @@ const MyPositionCard: FunctionComponent<{
     const upperPriceSqrt = tickToSqrtPrice(upperTick);
     const lowerPrice = lowerPriceSqrt.mul(lowerPriceSqrt);
     const upperPrice = upperPriceSqrt.mul(upperPriceSqrt);
-    const inRange = lowerPrice.lt(currentPrice) && upperPrice.gt(currentPrice);
-
-    const diff = new Dec(
-      Math.min(
-        Number(currentPrice.sub(lowerPrice).toString()),
-        Number(upperPrice.sub(currentPrice).toString())
-      )
-    );
-
-    const diffPercentage = diff.quo(currentPrice).mul(new Dec(100));
 
     return (
       <div
@@ -120,26 +111,24 @@ const MyPositionCard: FunctionComponent<{
             />
           </div>
           <div className="flex flex-shrink-0 flex-grow flex-col gap-[6px]">
-            <div className="flex flex-row items-center gap-[6px]">
-              <PoolAssetsName
-                size="md"
-                assetDenoms={pool?.poolAssets.map(
-                  (asset) => asset.amount.currency.coinDenom
-                )}
+            <div className="flex flex-shrink-0 flex-grow flex-col gap-[6px]">
+              <div className="flex flex-row items-center gap-[6px]">
+                <PoolAssetsName
+                  size="md"
+                  assetDenoms={pool?.poolAssets.map(
+                    (asset) => asset.amount.currency.coinDenom
+                  )}
+                />
+                <span className="px-2 py-1 text-subtitle1 text-osmoverse-100">
+                  {pool?.swapFee.toString()} {t("clPositions.fee")}
+                </span>
+              </div>
+              <MyPositionStatus
+                currentPrice={currentPrice}
+                lowerPrice={lowerPrice}
+                upperPrice={upperPrice}
               />
-              <span className="px-2 py-1 text-subtitle1 text-osmoverse-100">
-                {pool?.swapFee.toString()} {t("clPositions.fee")}
-              </span>
             </div>
-            <MyPositionStatus
-              status={
-                inRange
-                  ? diffPercentage.lte(new Dec(10))
-                    ? PositionStatus.NearBounds
-                    : PositionStatus.InRange
-                  : PositionStatus.outOfRange
-              }
-            />
           </div>
           <div className="flex flex-row gap-[52px] self-start">
             {/* TODO: use actual ROI */}
@@ -237,41 +226,5 @@ function RangeDataGroup(props: {
         </div>
       }
     />
-  );
-}
-
-enum PositionStatus {
-  InRange,
-  NearBounds,
-  outOfRange,
-}
-function MyPositionStatus(props: { status: PositionStatus }): ReactElement {
-  const t = useTranslation();
-  let label = t("clPositions.inRange");
-  if (props.status === PositionStatus.NearBounds)
-    label = t("clPositions.nearBounds");
-  if (props.status === PositionStatus.outOfRange)
-    label = t("clPositions.outOfRange");
-
-  return (
-    <div
-      className={classNames(
-        "flex w-fit flex-row items-center gap-[10px] rounded-[12px] px-3 py-1",
-        {
-          "bg-bullish-600/30": props.status === PositionStatus.InRange,
-          "bg-ammelia-600/30": props.status === PositionStatus.NearBounds,
-          "bg-rust-600/30": props.status === PositionStatus.outOfRange,
-        }
-      )}
-    >
-      <div
-        className={classNames("h-3 w-3 rounded-full", {
-          "bg-bullish-500": props.status === PositionStatus.InRange,
-          "bg-ammelia-600": props.status === PositionStatus.NearBounds,
-          "bg-rust-500": props.status === PositionStatus.outOfRange,
-        })}
-      />
-      <div className="text-subtitle1">{label}</div>
-    </div>
   );
 }

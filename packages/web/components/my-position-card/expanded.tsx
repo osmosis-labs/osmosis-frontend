@@ -4,12 +4,18 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import React, { FunctionComponent, ReactNode, useEffect } from "react";
+import React, {
+  FunctionComponent,
+  ReactNode,
+  useEffect,
+  useState,
+} from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Button } from "~/components/buttons";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import ChartButton from "~/components/chart-button";
+import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
 import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/charts/historical-and-liquidity-data";
 import { formatPretty } from "~/utils/formatter";
@@ -40,6 +46,8 @@ const MyPositionCardExpandedSection: FunctionComponent<{
     lowerPrice,
     upperPrice,
     passive,
+    poolId,
+    positionIds,
   }) => {
     const {
       historicalChartData,
@@ -67,6 +75,9 @@ const MyPositionCardExpandedSection: FunctionComponent<{
 
     const t = useTranslation();
 
+    const [showIncreaseLiquidityModal, updateShowIncreaseLiqModal] =
+      useState<boolean>(false);
+
     const fiatPerBase =
       baseCurrency &&
       priceStore.calculatePrice(new CoinPretty(baseCurrency, baseAmount));
@@ -84,6 +95,19 @@ const MyPositionCardExpandedSection: FunctionComponent<{
 
     return (
       <div className="flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
+        {showIncreaseLiquidityModal && (
+          <IncreaseConcentratedLiquidityModal
+            poolId={poolId}
+            isOpen={showIncreaseLiquidityModal}
+            positionIds={positionIds}
+            lowerPrice={lowerPrice}
+            upperPrice={upperPrice}
+            baseAmount={baseAmount}
+            quoteAmount={quoteAmount}
+            passive={passive}
+            onRequestClose={() => updateShowIncreaseLiqModal(false)}
+          />
+        )}
         <div className="flex flex-row gap-1">
           <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
             <PriceChartHeader
@@ -232,9 +256,15 @@ const MyPositionCardExpandedSection: FunctionComponent<{
           </div>
         </div>
         <div className="mt-4 flex flex-row justify-end gap-5">
-          <PositionButton>{t("clPositions.collectRewards")}</PositionButton>
-          <PositionButton>{t("clPositions.removeLiquidity")}</PositionButton>
-          <PositionButton>{t("clPositions.increaseLiquidity")}</PositionButton>
+          <PositionButton onClick={() => null}>
+            {t("clPositions.collectRewards")}
+          </PositionButton>
+          <PositionButton onClick={() => null}>
+            {t("clPositions.removeLiquidity")}
+          </PositionButton>
+          <PositionButton onClick={() => updateShowIncreaseLiqModal(true)}>
+            {t("clPositions.increaseLiquidity")}
+          </PositionButton>
         </div>
       </div>
     );
@@ -243,12 +273,13 @@ const MyPositionCardExpandedSection: FunctionComponent<{
 
 export default MyPositionCardExpandedSection;
 
-function PositionButton(props: { children: ReactNode }) {
+function PositionButton(props: { children: ReactNode; onClick: () => void }) {
   return (
     <Button
       mode="unstyled"
       size="sm"
       className="text-white w-fit whitespace-nowrap rounded-[10px] border-2 border-wosmongton-400 bg-transparent py-4 px-5 text-subtitle1 font-subtitle1 hover:border-wosmongton-300 disabled:border-osmoverse-600 disabled:text-osmoverse-400"
+      onClick={props.onClick}
     >
       {props.children}
     </Button>
