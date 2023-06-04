@@ -20,6 +20,7 @@ import IconButton from "~/components/buttons/icon-button";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import ChartButton from "~/components/chart-button";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
+import { tError } from "~/components/localization";
 import MyPositionStatus from "~/components/my-position-card/position-status";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { formatPretty } from "~/utils/formatter";
@@ -90,7 +91,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   const [quoteDepositInput, setQuoteDepositInput] = useState("0");
   const [anchorAsset, setAchorAsset] = useState<"base" | "quote" | "">("");
 
-  const { config } = useAddConcentratedLiquidityConfig(
+  const { config, addLiquidity } = useAddConcentratedLiquidityConfig(
     chainStore,
     chainId,
     poolId,
@@ -107,14 +108,15 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     ? currentSqrtPrice.mul(currentSqrtPrice)
     : new Dec(0);
 
-  const {
-    showModalBase,
-    // accountActionButton
-  } = useConnectWalletModalRedirect(
+  const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
-      disabled: isSendingMsg,
-      onClick: () => {},
-      children: t("addLiquidity.title"),
+      disabled: config.error !== undefined || isSendingMsg,
+      onClick: () => {
+        return addLiquidity().finally(() => props.onRequestClose());
+      },
+      children: config.error
+        ? t(...tError(config.error))
+        : t("clPositions.addMoreLiquidity"),
     },
     props.onRequestClose
   );
@@ -145,7 +147,6 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
       config.tickRange,
       config.setQuoteDepositAmountIn,
       config.fullRange,
-      currentPrice,
     ]
   );
 
@@ -168,7 +169,6 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
       config.tickRange,
       config.setBaseDepositAmountIn,
       config.fullRange,
-      currentPrice,
     ]
   );
 
@@ -460,6 +460,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             percentage={Number(config.depositPercentages[1].toString())}
           />
         </div>
+        {accountActionButton}
       </div>
     </ModalBase>
   );
