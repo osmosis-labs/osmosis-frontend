@@ -1799,6 +1799,16 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-0",
         coinMinimalDenom: "ulore",
       },
+      {
+        //ROAR
+        counterpartyChainId: "phoenix-1",
+        sourceChannelId: "channel-341",
+        destChannelId: "channel-26",
+        coinMinimalDenom:
+          "cw20:terra1lxx40s29qvkrcj8fsa3yzyehy7w50umdvvnls2r830rys6lu2zns63eelv",
+        ics20ContractAddress:
+          "terra1e0mrzy8077druuu42vs0hu7ugguade0cj65dgtauyaw4gsl4kv0qtdf2au",
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (
