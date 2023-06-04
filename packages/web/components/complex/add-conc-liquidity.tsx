@@ -24,9 +24,9 @@ import React, {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { ChartButton } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
-import ChartButton from "~/components/chart-button";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";

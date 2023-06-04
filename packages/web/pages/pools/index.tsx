@@ -267,12 +267,8 @@ const Pools: NextPage = observer(function () {
 Learn how it works in 30 seconds, or upgrade your position in a few clicks. "
           primaryCta="Upgrade to supercharged"
           secondaryCta="Learn in 30 seconds"
-          onCtaClick={() => {
-            console.log("CTA");
-          }}
-          onSecondaryClick={() => {
-            console.log("Secondary");
-          }}
+          onCtaClick={() => {}}
+          onSecondaryClick={() => {}}
         />
       </section>
       <section ref={myPositionsRef}>

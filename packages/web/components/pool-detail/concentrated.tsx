@@ -12,9 +12,9 @@ import { useTranslation } from "react-multi-lang";
 
 import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { Button } from "~/components/buttons";
+import { ChartButton } from "~/components/buttons";
+import { MyPositionCard } from "~/components/cards";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
-import ChartButton from "~/components/chart-button";
-import MyPositionCard from "~/components/my-position-card";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { AddLiquidityModal, TradeTokens } from "~/modals";
 import { useStore } from "~/stores";

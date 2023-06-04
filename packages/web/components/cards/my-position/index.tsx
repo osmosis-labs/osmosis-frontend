@@ -12,11 +12,12 @@ import React, {
 import { useTranslation } from "react-multi-lang";
 
 import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
-import MyPositionCardExpandedSection from "~/components/my-position-card/expanded";
-import MyPositionStatus from "~/components/my-position-card/position-status";
+import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
+
+import { MyPositionCardExpandedSection } from "./expanded";
 
 export type Asset = {
   amount: string;
@@ -37,7 +38,8 @@ export type PositionWithAssets = {
   };
 };
 
-const MyPositionCard: FunctionComponent<{
+/** User's concentrated liquidity position.  */
+export const MyPositionCard: FunctionComponent<{
   positionIds: string[];
   baseAmount: Dec;
   quoteAmount: Dec;
@@ -173,8 +175,6 @@ const MyPositionCard: FunctionComponent<{
     );
   }
 );
-
-export default MyPositionCard;
 
 function PositionDataGroup(props: {
   label: string;

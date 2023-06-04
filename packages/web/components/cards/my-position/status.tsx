@@ -1,6 +1,6 @@
 import { Dec } from "@keplr-wallet/unit";
 import classNames from "classnames";
-import React, { ReactElement } from "react";
+import React, { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
 export enum PositionStatus {
@@ -8,12 +8,12 @@ export enum PositionStatus {
   NearBounds,
   OutOfRange,
 }
-export default function MyPositionStatus(props: {
+export const MyPositionStatus: FunctionComponent<{
   currentPrice: Dec;
   lowerPrice: Dec;
   upperPrice: Dec;
   negative?: boolean;
-}): ReactElement {
+}> = (props) => {
   const { currentPrice, lowerPrice, upperPrice, negative } = props;
   const t = useTranslation();
 
@@ -65,4 +65,4 @@ export default function MyPositionStatus(props: {
       <div className="text-subtitle1">{label}</div>
     </div>
   );
-}
+};

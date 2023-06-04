@@ -2,14 +2,15 @@ import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import Image from "next/image";
 import React, { FunctionComponent, ReactNode } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import IconButton from "~/components/buttons/icon-button";
+import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { Slider } from "~/components/control";
 import { tError } from "~/components/localization";
-import MyPositionStatus from "~/components/my-position-card/position-status";
 import { useConnectWalletModalRedirect } from "~/hooks";
 import { useRemoveConcentratedLiquidityConfig } from "~/hooks/ui-config/use-remove-concentrated-liquidity-config";
 import { useStore } from "~/stores";
@@ -268,7 +269,14 @@ function AssetAmountGroup(props: {
         props.className
       )}
     >
-      <img className="h-[1.5rem] w-[1.5rem]" src={props.coinImageUrl} />
+      {props.coinImageUrl && (
+        <Image
+          alt="coin image"
+          src={props.coinImageUrl}
+          height={24}
+          width={24}
+        />
+      )}
       <span>
         {props.amount.toString(
           props.coinMinimalDenom ? 2 : Number(props.coinMinimalDenom)

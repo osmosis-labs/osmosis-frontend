@@ -13,8 +13,8 @@ import React, {
 import { useTranslation } from "react-multi-lang";
 
 import { Button } from "~/components/buttons";
+import { ChartButton } from "~/components/buttons";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
-import ChartButton from "~/components/chart-button";
 import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
 import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-liquidity";
 import { useStore } from "~/stores";
@@ -30,7 +30,7 @@ const TokenPairHistoricalChart = dynamic(
   { ssr: false }
 );
 
-const MyPositionCardExpandedSection: FunctionComponent<{
+export const MyPositionCardExpandedSection: FunctionComponent<{
   chartConfig: ObservableHistoricalAndLiquidityData;
   positionIds: string[];
   baseAmount: Dec;
@@ -298,8 +298,6 @@ const MyPositionCardExpandedSection: FunctionComponent<{
   }
 );
 
-export default MyPositionCardExpandedSection;
-
 function PositionButton(props: { children: ReactNode; onClick: () => void }) {
   return (
     <Button
@@ -356,20 +354,28 @@ const AssetPairAmountDetail: FunctionComponent<{
         <div className="flex flex-row items-center gap-5">
           {baseCurrency && (
             <div className="flex flex-row items-center gap-2">
-              <img
-                className="h-[1.5rem] w-[1.5rem]"
-                src={baseCurrency.coinImageUrl}
-              />
+              {baseCurrency.coinImageUrl && (
+                <Image
+                  alt="base currency"
+                  src={baseCurrency.coinImageUrl}
+                  height={24}
+                  width={24}
+                />
+              )}
               <span>{baseAmount.toString(baseCurrency.coinDecimals)}</span>
               <span>{baseCurrency.coinDenom}</span>
             </div>
           )}
           {quoteCurrency && (
             <div className="flex flex-row items-center gap-2">
-              <img
-                className="h-[1.5rem] w-[1.5rem]"
-                src={quoteCurrency.coinImageUrl}
-              />
+              {quoteCurrency.coinImageUrl && (
+                <Image
+                  alt="quote currency"
+                  src={quoteCurrency.coinImageUrl}
+                  height={24}
+                  width={24}
+                />
+              )}
               <span>{quoteAmount.toString(quoteCurrency.coinDecimals)}</span>
               <span>{quoteCurrency.coinDenom}</span>
               <span>({totalFiat ? formatPretty(totalFiat) : "$0"})</span>

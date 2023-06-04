@@ -4,7 +4,7 @@ import Image from "next/image";
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import MyPositionCard from "~/components/my-position-card";
+import { MyPositionCard } from "~/components/cards";
 import { useStore } from "~/stores";
 import { ObservableMergedPositionByAddress } from "~/stores/derived-data";
 

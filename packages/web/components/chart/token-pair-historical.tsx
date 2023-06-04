@@ -19,7 +19,7 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import ChartButton from "~/components/chart-button";
+import { ChartButton } from "~/components/buttons";
 import { theme } from "~/tailwind.config";
 
 const TokenPairHistoricalChart: FunctionComponent<{

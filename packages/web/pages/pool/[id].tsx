@@ -25,8 +25,6 @@ const Pool: FunctionComponent = observer(() => {
     }
   }, [poolExists, router]);
 
-  console.log({ poolId, poolExists });
-
   if (poolExists === undefined) return null; // TODO: use skeleton loader page
 
   const queryPool = queryOsmosis.queryGammPools.getPool(poolId);

@@ -1,14 +1,14 @@
 import classNames from "classnames";
 import Image from "next/image";
-import React, { ReactElement } from "react";
+import React, { FunctionComponent } from "react";
 
-export default function ChartButton(props: {
+export const ChartButton: FunctionComponent<{
   src?: string;
   alt?: string;
   label?: string;
   selected: boolean;
   onClick: () => void;
-}): ReactElement {
+}> = (props) => {
   const isImage = !!props.src && !props.label;
   const isLabel = !!props.label && !props.src;
 
@@ -35,4 +35,4 @@ export default function ChartButton(props: {
       {isLabel && props.label}
     </button>
   );
-}
+};

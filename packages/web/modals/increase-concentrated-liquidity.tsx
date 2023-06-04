@@ -16,12 +16,12 @@ import React, {
 import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
+import { ChartButton } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
+import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
-import ChartButton from "~/components/chart-button";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
 import { tError } from "~/components/localization";
-import MyPositionStatus from "~/components/my-position-card/position-status";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { formatPretty } from "~/utils/formatter";
 
