@@ -16,6 +16,7 @@ import { Button } from "~/components/buttons";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import ChartButton from "~/components/chart-button";
 import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
+import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-liquidity";
 import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/charts/historical-and-liquidity-data";
 import { formatPretty } from "~/utils/formatter";
@@ -78,13 +79,26 @@ const MyPositionCardExpandedSection: FunctionComponent<{
     const [showIncreaseLiquidityModal, updateShowIncreaseLiqModal] =
       useState<boolean>(false);
 
+    const [showRemoveLiquidityModal, updateShowRemoveLiqModal] =
+      useState<boolean>(false);
+
     const fiatPerBase =
       baseCurrency &&
-      priceStore.calculatePrice(new CoinPretty(baseCurrency, baseAmount));
+      priceStore.calculatePrice(
+        new CoinPretty(
+          baseCurrency,
+          baseAmount.mul(new Dec(10 ** baseCurrency.coinDecimals))
+        )
+      );
 
     const fiatPerQuote =
       quoteCurrency &&
-      priceStore.calculatePrice(new CoinPretty(quoteCurrency, quoteAmount));
+      priceStore.calculatePrice(
+        new CoinPretty(
+          quoteCurrency,
+          quoteAmount.mul(new Dec(10 ** quoteCurrency.coinDecimals))
+        )
+      );
 
     const fiatCurrency =
       priceStore.supportedVsCurrencies[priceStore.defaultVsCurrency];
@@ -106,6 +120,19 @@ const MyPositionCardExpandedSection: FunctionComponent<{
             quoteAmount={quoteAmount}
             passive={passive}
             onRequestClose={() => updateShowIncreaseLiqModal(false)}
+          />
+        )}
+        {showRemoveLiquidityModal && (
+          <RemoveConcentratedLiquidityModal
+            poolId={poolId}
+            isOpen={showRemoveLiquidityModal}
+            positionIds={positionIds}
+            lowerPrice={lowerPrice}
+            upperPrice={upperPrice}
+            baseAmount={baseAmount}
+            quoteAmount={quoteAmount}
+            passive={passive}
+            onRequestClose={() => updateShowRemoveLiqModal(false)}
           />
         )}
         <div className="flex flex-row gap-1">
@@ -259,7 +286,7 @@ const MyPositionCardExpandedSection: FunctionComponent<{
           <PositionButton onClick={() => null}>
             {t("clPositions.collectRewards")}
           </PositionButton>
-          <PositionButton onClick={() => null}>
+          <PositionButton onClick={() => updateShowRemoveLiqModal(true)}>
             {t("clPositions.removeLiquidity")}
           </PositionButton>
           <PositionButton onClick={() => updateShowIncreaseLiqModal(true)}>
@@ -310,16 +337,11 @@ const AssetPairAmountDetail: FunctionComponent<{
     fiatPerBase,
     fiatPerQuote,
   }) => {
-    const fiatBase =
-      fiatPerBase && baseAmount
-        ? baseAmount.mul(fiatPerBase.toDec())
-        : new Dec(0);
-    const fiatQuote =
-      fiatPerQuote && quoteAmount
-        ? quoteAmount.mul(fiatPerQuote.toDec())
-        : new Dec(0);
     const totalFiat =
-      fiatCurrency && new PricePretty(fiatCurrency, fiatBase.add(fiatQuote));
+      fiatCurrency &&
+      fiatPerBase &&
+      fiatPerQuote &&
+      new PricePretty(fiatCurrency, fiatPerBase.add(fiatPerQuote));
 
     if (!baseAmount || !quoteAmount) return null;
 
