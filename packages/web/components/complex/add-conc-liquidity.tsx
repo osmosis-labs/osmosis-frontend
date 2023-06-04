@@ -20,7 +20,11 @@ import React, {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { ChartButton } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
+import { PriceChartHeader } from "~/components/chart/token-pair-historical";
+import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
+import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "../assets";
@@ -279,16 +283,10 @@ const AddConcLiqView: FunctionComponent<
     getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
   } & CustomClasses
 > = observer(({ addLiquidityConfig, actionButton, getFiatValue, pool }) => {
-  const baseDenom = pool?.poolAssets[0]?.amount.denom || "";
-  const quoteDenom = pool?.poolAssets[1]?.amount.denom || "";
   const {
-    yRange,
     range,
     fullRange,
-    historicalChartData,
-    lastChartData,
     currentPrice,
-    priceDecimal,
     baseDepositAmountIn,
     quoteDepositAmountIn,
     moderatePriceRange,
@@ -298,7 +296,7 @@ const AddConcLiqView: FunctionComponent<
     setModalView,
     setMaxRange,
     setMinRange,
-    setHoverPrice,
+    poolId,
     setAnchorAsset,
   } = addLiquidityConfig;
 
@@ -307,6 +305,21 @@ const AddConcLiqView: FunctionComponent<
   const [inputMax, setInputMax] = useState("0");
   const rangeMin = Number(range[0].toString());
   const rangeMax = Number(range[1].toString());
+
+  const { chainStore } = useStore();
+  const { chainId } = chainStore.osmosis;
+  const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
+
+  const {
+    historicalRange,
+    setHistoricalRange,
+    hoverPrice,
+    priceDecimal,
+    yRange,
+    historicalChartData,
+    lastChartData,
+    setHoverPrice,
+  } = chartConfig;
 
   const updateInputAndRangeMinMax = useCallback(
     (_min: number, _max: number) => {
@@ -356,8 +369,8 @@ const AddConcLiqView: FunctionComponent<
         <h6 className="mx-auto">{t("addConcentratedLiquidity.step2Title")}</h6>
         <span className="caption absolute right-0 flex h-full items-center text-osmoverse-200">
           {t("addConcentratedLiquidity.priceShownIn", {
-            base: baseDenom,
-            quote: quoteDenom,
+            base: baseDepositAmountIn.sendCurrency.coinDenom,
+            quote: quoteDepositAmountIn.sendCurrency.coinDenom,
           })}
         </span>
       </div>
@@ -367,7 +380,14 @@ const AddConcLiqView: FunctionComponent<
         </span>
         <div className="flex flex-row gap-1">
           <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
-            <PriceChartHeader addLiquidityConfig={addLiquidityConfig} />
+            <PriceChartHeader
+              historicalRange={historicalRange}
+              setHistoricalRange={setHistoricalRange}
+              baseDenom={baseDepositAmountIn.sendCurrency.coinDenom}
+              quoteDenom={quoteDepositAmountIn.sendCurrency.coinDenom}
+              hoverPrice={hoverPrice}
+              decimal={priceDecimal}
+            />
             <TokenPairHistoricalChart
               data={historicalChartData}
               annotations={
@@ -387,37 +407,37 @@ const AddConcLiqView: FunctionComponent<
           <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-row rounded-r-2xl bg-osmoverse-700">
             <div className="flex flex-1 flex-col">
               <div className="mt-7 mr-6 mb-8 flex h-6 flex-row justify-end gap-1">
-                <SelectorWrapper
+                <ChartButton
                   alt="refresh"
                   src="/icons/refresh-ccw.svg"
                   selected={false}
-                  onClick={() => addLiquidityConfig.setZoom(1)}
+                  onClick={() => chartConfig.setZoom(1)}
                 />
-                <SelectorWrapper
+                <ChartButton
                   alt="zoom in"
                   src="/icons/zoom-in.svg"
                   selected={false}
-                  onClick={addLiquidityConfig.zoomIn}
+                  onClick={chartConfig.zoomIn}
                 />
-                <SelectorWrapper
+                <ChartButton
                   alt="zoom out"
                   src="/icons/zoom-out.svg"
                   selected={false}
-                  onClick={addLiquidityConfig.zoomOut}
+                  onClick={chartConfig.zoomOut}
                 />
               </div>
               <ConcentratedLiquidityDepthChart
                 min={rangeMin}
                 max={rangeMax}
                 yRange={yRange}
-                xRange={addLiquidityConfig.xRange}
-                data={addLiquidityConfig.depthChartData}
+                xRange={chartConfig.xRange}
+                data={chartConfig.depthChartData}
                 annotationDatum={useMemo(
                   () => ({
                     price: lastChartData?.close || 0,
-                    depth: addLiquidityConfig.xRange[1],
+                    depth: chartConfig.xRange[1],
                   }),
-                  [addLiquidityConfig.xRange, lastChartData]
+                  [chartConfig.xRange, lastChartData]
                 )}
                 // eslint-disable-next-line react-hooks/exhaustive-deps
                 onMoveMax={useCallback(
@@ -492,13 +512,13 @@ const AddConcLiqView: FunctionComponent<
             onUpdate={useCallback(
               (amount) => {
                 setAnchorAsset("base");
-                baseDepositAmountIn.setAmount(amount);
+                baseDepositAmountIn.setAmount(amount.toString());
               },
               [baseDepositAmountIn, setAnchorAsset]
             )}
             currentValue={baseDepositAmountIn.amount}
             outOfRange={quoteDepositOnly}
-            percentage={depositPercentages[0].maxDecimals(0).toString()}
+            percentage={depositPercentages[0]}
           />
           <DepositAmountGroup
             getFiatValue={getFiatValue}
@@ -507,13 +527,13 @@ const AddConcLiqView: FunctionComponent<
             onUpdate={useCallback(
               (amount) => {
                 setAnchorAsset("quote");
-                quoteDepositAmountIn.setAmount(amount);
+                quoteDepositAmountIn.setAmount(amount.toString());
               },
               [quoteDepositAmountIn, setAnchorAsset]
             )}
             currentValue={quoteDepositAmountIn.amount}
             outOfRange={baseDepositOnly}
-            percentage={depositPercentages[1].maxDecimals(0).toString()}
+            percentage={depositPercentages[1]}
           />
         </div>
       </section>
@@ -600,189 +620,6 @@ const StrategySelectorGroup: FunctionComponent<
     </section>
   );
 });
-
-const SelectorWrapper: FunctionComponent<{
-  src?: string;
-  alt?: string;
-  label?: string;
-  selected: boolean;
-  onClick: () => void;
-}> = (props) => {
-  const isImage = !!props.src && !props.label;
-  const isLabel = !!props.label && !props.src;
-
-  return (
-    <div
-      className={classNames(
-        "flex h-6 cursor-pointer flex-row items-center justify-center",
-        "caption rounded-lg bg-osmoverse-800 px-2 hover:bg-osmoverse-900",
-        "whitespace-nowrap",
-        {
-          "!bg-osmoverse-600": props.selected,
-        }
-      )}
-      onClick={props.onClick}
-    >
-      {isImage && (
-        <Image
-          alt={props.alt}
-          src={props.src as string}
-          width={16}
-          height={16}
-        />
-      )}
-      {isLabel && props.label}
-    </div>
-  );
-};
-
-const PriceChartHeader: FunctionComponent<{
-  addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-}> = observer(({ addLiquidityConfig }) => {
-  const {
-    historicalRange,
-    setHistoricalRange,
-    baseDepositAmountIn,
-    quoteDepositAmountIn,
-    hoverPrice,
-    priceDecimal,
-  } = addLiquidityConfig;
-
-  const t = useTranslation();
-
-  return (
-    <div className="flex flex-row">
-      <div className="flex flex-1 flex-row">
-        <h4 className="row-span-2 pr-1 font-caption">
-          {hoverPrice.toFixed(priceDecimal) || ""}
-        </h4>
-        <div className="flex flex-col justify-center font-caption">
-          <div className="caption text-osmoverse-300">
-            {t("addConcentratedLiquidity.currentPrice")}
-          </div>
-          <div className="caption whitespace-nowrap text-osmoverse-300">
-            {t("addConcentratedLiquidity.basePerQuote", {
-              base: baseDepositAmountIn.sendCurrency.coinDenom,
-              quote: quoteDepositAmountIn.sendCurrency.coinDenom,
-            })}
-          </div>
-        </div>
-      </div>
-      <div className="flex flex-1 flex-row justify-end gap-1 pr-2">
-        <SelectorWrapper
-          label="7 day"
-          onClick={() => setHistoricalRange("7d")}
-          selected={historicalRange === "7d"}
-        />
-        <SelectorWrapper
-          label="30 day"
-          onClick={() => setHistoricalRange("1mo")}
-          selected={historicalRange === "1mo"}
-        />
-        <SelectorWrapper
-          label="1 year"
-          onClick={() => setHistoricalRange("1y")}
-          selected={historicalRange === "1y"}
-        />
-      </div>
-    </div>
-  );
-});
-
-const DepositAmountGroup: FunctionComponent<{
-  getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
-  coin?: CoinPretty;
-  coinIsToken0: boolean;
-  onUpdate: (amount: string) => void;
-  currentValue: string;
-  percentage: string;
-  outOfRange?: boolean;
-}> = observer(
-  ({
-    getFiatValue,
-    coin,
-    onUpdate,
-    coinIsToken0,
-    currentValue,
-    percentage,
-    outOfRange,
-  }) => {
-    const { chainStore, queriesStore, accountStore } = useStore();
-    const t = useTranslation();
-    const { chainId } = chainStore.osmosis;
-    const { bech32Address } = accountStore.getAccount(chainId);
-
-    const fiatPer = coin && getFiatValue ? getFiatValue(coin) : 0;
-
-    const walletBalance = coin?.currency
-      ? queriesStore
-          .get(chainId)
-          .queryBalances.getQueryBech32Address(bech32Address)
-          .getBalanceFromCurrency(coin.currency)
-      : null;
-
-    if (outOfRange) {
-      return (
-        <div className="flex flex-1 flex-shrink-0 flex-row items-center gap-3 rounded-[20px] bg-osmoverse-700 px-6 py-7">
-          <Image
-            className="flex-shrink-0 flex-grow"
-            alt=""
-            src="/icons/lock.svg"
-            height={24}
-            width={24}
-          />
-          <div className="flex-shrink-1 caption w-0 flex-1 text-osmoverse-300">
-            {t("addConcentratedLiquidity.outOfRangeWarning")}
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <div className="flex flex-1 flex-shrink-0 flex-row items-center rounded-[20px] bg-osmoverse-700 p-6">
-        <div className="flex w-full flex-row items-center">
-          <div
-            className={classNames(
-              "flex overflow-clip rounded-full border-4 p-1",
-              coinIsToken0 ? "border-wosmongton-500" : "border-bullish-500"
-            )}
-          >
-            {coin?.currency.coinImageUrl && (
-              <Image
-                alt=""
-                src={coin?.currency.coinImageUrl}
-                height={58}
-                width={58}
-              />
-            )}
-          </div>
-          <div className="ml-[.75rem] mr-[2.75rem] flex flex-col">
-            <h6>{coin?.denom ?? ""}</h6>
-            <span className="subtitle1 text-osmoverse-400">{percentage}</span>
-          </div>
-          <div className="relative flex flex-1 flex-col gap-0.5">
-            <span className="caption absolute right-0 top-[-16px] mb-[2px] text-right text-wosmongton-300">
-              {walletBalance ? walletBalance.toString() : ""}
-            </span>
-            <div className="flex h-16 w-[158px] flex-col items-end justify-center self-end rounded-[12px] bg-osmoverse-800">
-              <InputBox
-                className="border-0 bg-transparent text-h5 font-h5"
-                inputClassName="!leading-4"
-                type="number"
-                currentValue={currentValue}
-                onInput={onUpdate}
-                rightEntry
-              />
-              <div className="caption pr-3 text-osmoverse-400">
-                {fiatPer && `~${fiatPer.toString()}`}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-);
 
 const PresetStrategyCard: FunctionComponent<
   {

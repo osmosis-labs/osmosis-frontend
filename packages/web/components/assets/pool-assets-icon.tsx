@@ -6,11 +6,13 @@ import { PoolAssetInfo } from "./types";
 interface Props {
   assets: PoolAssetInfo[] | undefined;
   size?: "sm" | "md";
+  className?: string;
 }
 
 export const PoolAssetsIcon: FunctionComponent<Props> = ({
   assets,
   size = "md",
+  className,
 }) => {
   if (!assets) return null;
   return (
@@ -18,7 +20,8 @@ export const PoolAssetsIcon: FunctionComponent<Props> = ({
       style={{ width: `${assets.slice(undefined, 4).length * 30}px` }}
       className={classNames(
         "relative flex h-fit items-center",
-        size === "md" ? "h-[50px]" : "h-[40px]"
+        size === "md" ? "h-[50px]" : "h-[40px]",
+        className
       )}
     >
       {assets.map(({ coinDenom, coinImageUrl }, index) =>

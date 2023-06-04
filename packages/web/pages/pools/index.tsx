@@ -30,6 +30,7 @@ import {
   RemoveLiquidityModal,
   SuperfluidValidatorModal,
 } from "~/modals";
+import MyPositionsSection from "~/pages/pools/my-positions-section";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
@@ -48,6 +49,9 @@ const Pools: NextPage = observer(function () {
     useDimension<HTMLDivElement>();
 
   const [myPoolsRef, { height: myPoolsHeight }] =
+    useDimension<HTMLDivElement>();
+
+  const [myPositionsRef, { height: myPositionsHeight }] =
     useDimension<HTMLDivElement>();
 
   // create pool dialog
@@ -263,13 +267,12 @@ const Pools: NextPage = observer(function () {
 Learn how it works in 30 seconds, or upgrade your position in a few clicks. "
           primaryCta="Upgrade to supercharged"
           secondaryCta="Learn in 30 seconds"
-          onCtaClick={() => {
-            console.log("CTA");
-          }}
-          onSecondaryClick={() => {
-            console.log("Secondary");
-          }}
+          onCtaClick={() => {}}
+          onSecondaryClick={() => {}}
         />
+      </section>
+      <section ref={myPositionsRef}>
+        <MyPositionsSection />
       </section>
       <section ref={myPoolsRef}>
         <MyPoolsSection />
@@ -277,7 +280,7 @@ Learn how it works in 30 seconds, or upgrade your position in a few clicks. "
 
       <section>
         <AllPoolsTable
-          topOffset={myPoolsHeight + poolsOverviewHeight}
+          topOffset={myPositionsHeight + myPoolsHeight + poolsOverviewHeight}
           {...quickActionProps}
         />
       </section>

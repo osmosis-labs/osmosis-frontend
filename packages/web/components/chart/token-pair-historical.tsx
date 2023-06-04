@@ -1,4 +1,5 @@
 import { Dec } from "@keplr-wallet/unit";
+import { PriceRange } from "@osmosis-labs/stores";
 import { curveNatural } from "@visx/curve";
 import { ParentSize } from "@visx/responsive";
 import {
@@ -13,8 +14,12 @@ import {
   Tooltip,
   XYChart,
 } from "@visx/xychart";
+import classNames from "classnames";
+import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
+import { useTranslation } from "react-multi-lang";
 
+import { ChartButton } from "~/components/buttons";
 import { theme } from "~/tailwind.config";
 
 const TokenPairHistoricalChart: FunctionComponent<{
@@ -131,3 +136,79 @@ const TokenPairHistoricalChart: FunctionComponent<{
 };
 
 export default TokenPairHistoricalChart;
+
+export const PriceChartHeader: FunctionComponent<{
+  historicalRange: PriceRange;
+  setHistoricalRange: (pr: PriceRange) => void;
+  baseDenom: string;
+  quoteDenom: string;
+  hoverPrice: number;
+  decimal: number;
+  hideButtons?: boolean;
+  priceHeaderClass?: string;
+  priceSubheaderClass?: string;
+}> = observer(
+  ({
+    historicalRange,
+    setHistoricalRange,
+    baseDenom,
+    quoteDenom,
+    hoverPrice,
+    decimal,
+    hideButtons,
+    priceHeaderClass,
+    priceSubheaderClass,
+  }) => {
+    const t = useTranslation();
+
+    return (
+      <div className="flex flex-row">
+        <div className="flex flex-1 flex-row">
+          <h4
+            className={classNames(
+              "row-span-2 pr-1 font-caption",
+              priceHeaderClass
+            )}
+          >
+            {hoverPrice.toFixed(decimal) || ""}
+          </h4>
+          <div
+            className={classNames(
+              "flex flex-col justify-center font-caption",
+              priceSubheaderClass
+            )}
+          >
+            <div className="text-caption text-osmoverse-300">
+              {t("addConcentratedLiquidity.currentPrice")}
+            </div>
+            <div className="whitespace-nowrap text-caption text-osmoverse-300">
+              {t("addConcentratedLiquidity.basePerQuote", {
+                base: baseDenom,
+                quote: quoteDenom,
+              })}
+            </div>
+          </div>
+        </div>
+        {!hideButtons && (
+          <div className="flex flex-1 flex-row justify-end gap-1 pr-2">
+            <ChartButton
+              label="7 day"
+              onClick={() => setHistoricalRange("7d")}
+              selected={historicalRange === "7d"}
+            />
+            <ChartButton
+              label="30 day"
+              onClick={() => setHistoricalRange("1mo")}
+              selected={historicalRange === "1mo"}
+            />
+            <ChartButton
+              label="1 year"
+              onClick={() => setHistoricalRange("1y")}
+              selected={historicalRange === "1y"}
+            />
+          </div>
+        )}
+      </div>
+    );
+  }
+);

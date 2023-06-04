@@ -6,7 +6,6 @@ import {
 } from "@keplr-wallet/stores";
 import { CoinPretty, Dec, Int, RatePretty } from "@keplr-wallet/unit";
 import {
-  ActiveLiquidityPerTickRange,
   calculateDepositAmountForBase,
   calculateDepositAmountForQuote,
   maxSpotPrice,
@@ -18,14 +17,7 @@ import {
 } from "@osmosis-labs/math";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
-import { DeepReadonly } from "utility-types";
 
-import { ObservableQueryLiquidityPerTickRange } from "../../queries";
-import {
-  ObservableQueryTokensPairHistoricalChart,
-  PriceRange,
-  TokenPairHistoricalPrice,
-} from "../../queries-external";
 import { InvalidRangeError } from "./errors";
 
 /** Use to config user input UI for eventually sending a valid add concentrated liquidity msg.
@@ -44,24 +36,6 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   protected _modalView: "overview" | "add_manual" | "add_managed" = "overview";
 
   /*
-   Used to get historical range for price chart
-   */
-  @observable
-  protected _historicalRange: PriceRange = "7d";
-
-  /*
-    Used to get historical data for price chart
-  */
-  @observable
-  protected _historicalChartData: TokenPairHistoricalPrice[] = [];
-
-  /*
-    Used to get active liquidity data
-  */
-  @observable
-  protected _activeLiquidity: ActiveLiquidityPerTickRange[] = [];
-
-  /*
    Used to get min and max range for adding concentrated liquidity
    */
   @observable
@@ -69,12 +43,6 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   @observable
   protected _fullRange: boolean = false;
-
-  @observable
-  protected _zoom: number = 1;
-
-  @observable
-  protected _hoverPrice: number = 0;
 
   /*
    Used to get base and quote asset deposit for adding concentrated liquidity
@@ -95,8 +63,6 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     sender: string,
     protected readonly queriesStore: IQueriesStore,
     protected readonly queryBalances: ObservableQueryBalances,
-    protected readonly queryRange: ObservableQueryLiquidityPerTickRange,
-    protected readonly queryHistorical: DeepReadonly<ObservableQueryTokensPairHistoricalChart>,
     pool: ConcentratedLiquidityPool
   ) {
     super(chainGetter, initialChainId);
@@ -132,8 +98,6 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     this._quoteDepositAmountIn.setSendCurrency(quoteCurrency);
     this._baseDepositAmountIn.setAmount("0");
     this._quoteDepositAmountIn.setAmount("0");
-
-    this.fetchHistoricalChartData();
 
     // Calculate quote amount when base amount is input and anchor is base
     autorun(() => {
@@ -202,19 +166,6 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     makeObservable(this);
   }
 
-  private fetchHistoricalChartData() {
-    const query = this.queryHistorical.get(
-      this.poolId,
-      this.historicalRange,
-      this.baseDenom,
-      this.quoteDenom
-    );
-
-    query.waitResponse().then(() => {
-      this.setHistoricalChartData(query.getChartPrices);
-    });
-  }
-
   setChain(chainId: string) {
     super.setChain(chainId);
     const [baseDenom, quoteDenom] = this.pool.poolAssetDenoms;
@@ -235,7 +186,10 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   @computed
   get currentPrice(): Dec {
-    return this._pool.currentSqrtPrice.mul(this._pool.currentSqrtPrice);
+    return (
+      this._pool.currentSqrtPrice?.mul(this._pool.currentSqrtPrice) ??
+      new Dec(0)
+    );
   }
 
   @computed
@@ -324,16 +278,6 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   };
 
   @action
-  setHistoricalRange = (range: PriceRange) => {
-    this._historicalRange = range;
-    this.fetchHistoricalChartData();
-  };
-
-  get historicalRange(): PriceRange {
-    return this._historicalRange;
-  }
-
-  @action
   setMinRange = (min: Dec | number) => {
     this._priceRange = [
       roundPriceToNearestTick(typeof min === "number" ? new Dec(min) : min),
@@ -376,135 +320,6 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   get quoteDepositAmountIn(): AmountConfig {
     return this._quoteDepositAmountIn;
-  }
-
-  get zoom(): number {
-    return this._zoom;
-  }
-
-  @action
-  readonly setZoom = (zoom: number) => {
-    this._zoom = zoom;
-  };
-
-  @action
-  readonly zoomIn = () => {
-    this._zoom = Math.max(1, this._zoom - 0.2);
-  };
-
-  @action
-  readonly zoomOut = () => {
-    this._zoom = this._zoom + 0.2;
-  };
-
-  get historicalChartData(): TokenPairHistoricalPrice[] {
-    return this._historicalChartData;
-  }
-
-  @computed
-  get lastChartData(): TokenPairHistoricalPrice | null {
-    return (
-      this._historicalChartData[this._historicalChartData.length - 1] || null
-    );
-  }
-
-  @computed
-  get priceDecimal(): number {
-    if (!this.lastChartData) return 2;
-    if (this.lastChartData.close <= 0.001) return 5;
-    if (this.lastChartData.close <= 0.01) return 4;
-    if (this.lastChartData.close <= 0.1) return 3;
-    return 2;
-  }
-
-  @action
-  readonly setHistoricalChartData = (
-    historicalData: TokenPairHistoricalPrice[]
-  ) => {
-    this._historicalChartData = historicalData;
-  };
-
-  @computed
-  get activeLiquidity(): ActiveLiquidityPerTickRange[] {
-    return this.queryRange.activeLiquidity;
-  }
-
-  @action
-  readonly setHoverPrice = (price: number) => {
-    this._hoverPrice = price;
-  };
-
-  get hoverPrice(): number {
-    return this._hoverPrice;
-  }
-
-  @computed
-  get yRange(): [number, number] {
-    const data = this.historicalChartData.map(({ time, close }) => ({
-      time,
-      price: close,
-    }));
-    const zoom = this.zoom;
-    const min = Number(this.range[0].toString());
-    const max = Number(this.range[1].toString());
-    const padding = 0.2;
-    const prices = data.map((d) => d.price);
-
-    const chartMin = Math.max(0, Math.min(...prices));
-    const chartMax = Math.max(...prices);
-
-    if (this.fullRange && prices.length) {
-      return [chartMin * 0.8, chartMax * 1.2];
-    }
-
-    const absMax = Math.max(max, chartMax);
-    const absMin = Math.min(min, chartMin);
-
-    const delta = Math.abs(absMax - absMin);
-
-    const minWithPadding = Math.max(0, absMin - delta * padding);
-    const maxWithPadding = absMax + delta * padding;
-
-    const zoomAdjustedMin = zoom > 1 ? chartMin / zoom : chartMin * zoom;
-    const zoomAdjustedMax = chartMax * zoom;
-
-    let finalMin = minWithPadding;
-    let finalMax = maxWithPadding;
-
-    if (zoomAdjustedMin < minWithPadding) finalMin = zoomAdjustedMin;
-    if (zoomAdjustedMax > maxWithPadding) finalMax = zoomAdjustedMax;
-
-    return [finalMin, finalMax];
-  }
-
-  @computed
-  get depthChartData(): { price: number; depth: number }[] {
-    const data = this.activeLiquidity;
-    const [min, max] = this.yRange;
-
-    if (min === max) return [];
-
-    const depths: { price: number; depth: number }[] = [];
-
-    for (let price = min; price <= max; price += (max - min) / 20) {
-      const spotPrice = Math.min(
-        Math.max(Number(minSpotPrice.toString()), price),
-        Number(maxSpotPrice.toString())
-      );
-      depths.push({
-        price,
-        depth: getLiqFrom(priceToTick(new Dec(spotPrice)), data),
-      });
-    }
-
-    return depths;
-  }
-
-  @computed
-  get xRange(): [number, number] {
-    if (!this.depthChartData.length) return [0, 0];
-
-    return [0, Math.max(...this.depthChartData.map((d) => d.depth)) * 1.2];
   }
 
   @computed
@@ -561,13 +376,4 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
     return this._baseDepositAmountIn.error || this._quoteDepositAmountIn.error;
   }
-}
-
-function getLiqFrom(target: Int, list: ActiveLiquidityPerTickRange[]): number {
-  for (let i = 0; i < list.length; i++) {
-    if (list[i].lowerTick.lte(target) && list[i].upperTick.gte(target)) {
-      return Number(list[i].liquidityAmount.toString());
-    }
-  }
-  return 0;
 }
