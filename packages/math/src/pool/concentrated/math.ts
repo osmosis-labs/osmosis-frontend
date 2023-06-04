@@ -298,32 +298,12 @@ export function convertTokenInGivenOutToTokenOutGivenIn(
 
 // calcAmount1
 export function calculateDepositAmountForQuote(
+  amount0: Int,
+  lowerTick: Int,
   upperTick: Int,
-  currentSqrtPrice: Dec,
-  baseDeposit: Dec
+  currentSqrtPrice: Dec
 ): Dec {
   const upperTickSqrt = tickToSqrtPrice(upperTick);
-
-  let sqrtPriceA = currentSqrtPrice;
-  let sqrtPriceB = upperTickSqrt;
-
-  if (sqrtPriceA.gt(sqrtPriceB)) {
-    sqrtPriceA = upperTickSqrt;
-    sqrtPriceB = currentSqrtPrice;
-  }
-
-  const numerator = baseDeposit.mul(sqrtPriceB.sub(sqrtPriceA));
-  const denominator = sqrtPriceB.mul(sqrtPriceA);
-
-  return numerator.quo(denominator);
-}
-
-// calcAmount0
-export function calculateDepositAmountForBase(
-  lowerTick: Int,
-  currentSqrtPrice: Dec,
-  quoteDeposit: Dec
-): Dec {
   const lowerTickSqrt = tickToSqrtPrice(lowerTick);
 
   let sqrtPriceA = currentSqrtPrice;
@@ -334,5 +314,55 @@ export function calculateDepositAmountForBase(
     sqrtPriceB = currentSqrtPrice;
   }
 
-  return quoteDeposit.mul(sqrtPriceB.sub(sqrtPriceA));
+  const liquidity1 = amount0.toDec().quo(sqrtPriceB.sub(sqrtPriceA));
+
+  sqrtPriceA = currentSqrtPrice;
+  sqrtPriceB = upperTickSqrt;
+
+  if (sqrtPriceA.gt(sqrtPriceB)) {
+    sqrtPriceA = upperTickSqrt;
+    sqrtPriceB = currentSqrtPrice;
+  }
+
+  const numerator = liquidity1.mul(sqrtPriceB.sub(sqrtPriceA));
+  const denominator = sqrtPriceB.mul(sqrtPriceA);
+
+  return numerator.quo(denominator);
+}
+
+// calcAmount0
+export function calculateDepositAmountForBase(
+  amount1: Int,
+  lowerTick: Int,
+  upperTick: Int,
+  currentSqrtPrice: Dec
+): Dec {
+  const lowerTickSqrt = tickToSqrtPrice(lowerTick);
+
+  const upperTickSqrt = tickToSqrtPrice(upperTick);
+
+  let sqrtPriceA = currentSqrtPrice;
+  let sqrtPriceB = upperTickSqrt;
+
+  if (sqrtPriceA.gt(sqrtPriceB)) {
+    sqrtPriceA = upperTickSqrt;
+    sqrtPriceB = currentSqrtPrice;
+  }
+
+  let liquidity0 = amount1
+    .toDec()
+    .mul(sqrtPriceA.mul(sqrtPriceB))
+    .quo(sqrtPriceB.sub(sqrtPriceA));
+
+  sqrtPriceA = currentSqrtPrice;
+  sqrtPriceB = lowerTickSqrt;
+
+  if (sqrtPriceA.gt(sqrtPriceB)) {
+    sqrtPriceA = lowerTickSqrt;
+    sqrtPriceB = currentSqrtPrice;
+  }
+
+  liquidity0 = liquidity0.roundUp().toDec();
+
+  return liquidity0.mul(sqrtPriceB.sub(sqrtPriceA));
 }
