@@ -18,7 +18,7 @@ import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
 import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-liquidity";
 import { useStore } from "~/stores";
-import { ObservableHistoricalAndLiquidityData } from "~/stores/charts/historical-and-liquidity-data";
+import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data/concentrated-liquidity/historical-and-liquidity-data";
 import { formatPretty } from "~/utils/formatter";
 
 const ConcentratedLiquidityDepthChart = dynamic(

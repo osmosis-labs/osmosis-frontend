@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { useStore } from "~/stores";
-import { ObservableHistoricalAndLiquidityData } from "~/stores/charts/historical-and-liquidity-data";
+import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data/concentrated-liquidity";
 
 export function useHistoricalAndLiquidityData(
   osmosisChainId: string,

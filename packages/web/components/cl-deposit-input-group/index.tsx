@@ -1,4 +1,4 @@
-import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -14,7 +14,7 @@ export const DepositAmountGroup: FunctionComponent<{
   coinIsToken0: boolean;
   onUpdate: (amount: number) => void;
   currentValue: string;
-  percentage: number;
+  percentage: RatePretty;
   outOfRange?: boolean;
   className?: string;
   priceInputClass?: string;
@@ -102,7 +102,7 @@ export const DepositAmountGroup: FunctionComponent<{
           <div className="ml-[.75rem] mr-[2.75rem] flex flex-col">
             <h6>{coin?.denom ?? ""}</h6>
             <span className="subtitle1 text-osmoverse-400">
-              {Math.round(percentage).toFixed(0)}%
+              {percentage.maxDecimals(0).toString()}
             </span>
           </div>
           <div className="relative flex flex-1 flex-col gap-0.5">

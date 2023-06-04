@@ -20,6 +20,8 @@ import { AddLiquidityModal, TradeTokens } from "~/modals";
 import { useStore } from "~/stores";
 import { ObservableMergedPositionByAddress } from "~/stores/derived-data";
 
+import { ShowMoreButton } from "../buttons/show-more";
+
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
   { ssr: false }
@@ -28,6 +30,8 @@ const TokenPairHistoricalChart = dynamic(
   () => import("~/components/chart/token-pair-historical"),
   { ssr: false }
 );
+
+const INITIAL_POSITIONS_VIEW_COUNT_LIMIT = 3;
 
 export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
   observer(({ poolId }) => {
@@ -39,6 +43,8 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const [activeModal, setActiveModal] = useState<
       "trade" | "add-liquidity" | null
     >(null);
+
+    const [showAllPositions, setShowAllPositions] = useState(false);
 
     const [queryAddress, setQueryAddress] =
       useState<ObservableMergedPositionByAddress | null>(null);
@@ -224,8 +230,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 className="w-fit text-subtitle1 font-subtitle1"
                 size="sm"
                 onClick={() => {
-                  // TODO: add create position modal
-                  setActiveModal(null);
+                  setActiveModal("add-liquidity");
                 }}
               >
                 {t("clPositions.createAPosition")}
@@ -233,27 +238,40 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
             </div>
           </div>
           <div className="flex flex-col gap-3">
-            {queryAddress.mergedRanges.map((mergedId, index) => {
-              const [poolId, lowerTick, upperTick] = mergedId.split("_");
-              const { positionIds, baseAmount, quoteAmount, passive } =
-                queryAddress?.calculateMergedPosition(
-                  poolId,
-                  lowerTick,
-                  upperTick
+            {queryAddress.mergedRanges
+              .slice(
+                0,
+                showAllPositions
+                  ? undefined
+                  : INITIAL_POSITIONS_VIEW_COUNT_LIMIT
+              )
+              .map((mergedId, index) => {
+                const [poolId, lowerTick, upperTick] = mergedId.split("_");
+                const { positionIds, baseAmount, quoteAmount, passive } =
+                  queryAddress?.calculateMergedPosition(
+                    poolId,
+                    lowerTick,
+                    upperTick
+                  );
+                return (
+                  <MyPositionCard
+                    key={index}
+                    poolId={poolId}
+                    lowerTick={new Int(lowerTick)}
+                    upperTick={new Int(upperTick)}
+                    positionIds={positionIds}
+                    baseAmount={baseAmount}
+                    quoteAmount={quoteAmount}
+                    passive={passive}
+                  />
                 );
-              return (
-                <MyPositionCard
-                  key={index}
-                  poolId={poolId}
-                  lowerTick={new Int(lowerTick)}
-                  upperTick={new Int(upperTick)}
-                  positionIds={positionIds}
-                  baseAmount={baseAmount}
-                  quoteAmount={quoteAmount}
-                  passive={passive}
-                />
-              );
-            })}
+              })}
+            <div className="mx-auto w-fit">
+              <ShowMoreButton
+                isOn={showAllPositions}
+                onToggle={() => setShowAllPositions((val) => !val)}
+              />
+            </div>
           </div>
         </section>
       </main>

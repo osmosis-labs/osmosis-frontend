@@ -1,18 +1,9 @@
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import {
-  calculateDepositAmountForBase,
-  calculateDepositAmountForQuote,
-} from "@osmosis-labs/math";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import React, { FunctionComponent, useCallback, useEffect } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
@@ -87,10 +78,6 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     setRange,
   } = useHistoricalAndLiquidityData(chainId, poolId);
 
-  const [baseDepositInput, setBaseDepositInput] = useState("0");
-  const [quoteDepositInput, setQuoteDepositInput] = useState("0");
-  const [anchorAsset, setAchorAsset] = useState<"base" | "quote" | "">("");
-
   const { config, addLiquidity } = useAddConcentratedLiquidityConfig(
     chainStore,
     chainId,
@@ -125,79 +112,6 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     (coin) => priceStore.calculatePrice(coin),
     [priceStore]
   );
-
-  const calculateQuoteDeposit = useCallback(
-    (amount: number) => {
-      const amt = new Dec(amount);
-      let quoteDeposit: Dec;
-
-      const [lowerTick, upperTick] = config.tickRange;
-      quoteDeposit = calculateDepositAmountForQuote(
-        currentPrice,
-        lowerTick,
-        upperTick,
-        amt
-      );
-
-      config.setQuoteDepositAmountIn(quoteDeposit);
-      setQuoteDepositInput(quoteDeposit.toString());
-    },
-    [
-      currentPrice,
-      config.tickRange,
-      config.setQuoteDepositAmountIn,
-      config.fullRange,
-    ]
-  );
-
-  const calculateBaseDeposit = useCallback(
-    (amount: number) => {
-      const amt = new Dec(amount);
-      const [lowerTick, upperTick] = config.tickRange;
-      const baseDeposit = calculateDepositAmountForBase(
-        currentPrice,
-        lowerTick,
-        upperTick,
-        amt
-      );
-
-      config.setBaseDepositAmountIn(baseDeposit);
-      setBaseDepositInput(baseDeposit.toString());
-    },
-    [
-      currentPrice,
-      config.tickRange,
-      config.setBaseDepositAmountIn,
-      config.fullRange,
-    ]
-  );
-
-  const rangeMin = Number(config.range[0].toString());
-  const rangeMax = Number(config.range[1].toString());
-
-  useEffect(() => {
-    if (anchorAsset === "base") {
-      calculateQuoteDeposit(+config.baseDepositAmountIn.amount);
-    }
-  }, [
-    rangeMin,
-    rangeMax,
-    anchorAsset,
-    config.baseDepositAmountIn,
-    calculateQuoteDeposit,
-  ]);
-
-  useEffect(() => {
-    if (anchorAsset === "quote") {
-      calculateBaseDeposit(+config.quoteDepositAmountIn.amount);
-    }
-  }, [
-    rangeMin,
-    rangeMax,
-    anchorAsset,
-    config.quoteDepositAmountIn,
-    calculateBaseDeposit,
-  ]);
 
   useEffect(() => {
     setRange([lowerPrice, upperPrice]);
@@ -252,10 +166,14 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
         <div className="mb-8 flex flex-row justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100">
           {baseCurrency && (
             <div className="flex flex-row items-center gap-2 text-subtitle1 font-subtitle1">
-              <img
-                className="h-[1.5rem] w-[1.5rem]"
-                src={baseCurrency.coinImageUrl}
-              />
+              {baseCurrency.coinImageUrl && (
+                <Image
+                  alt="base currency"
+                  src={baseCurrency.coinImageUrl}
+                  height={24}
+                  width={24}
+                />
+              )}
               <span>
                 {baseAmount.toString(
                   baseCurrency.coinMinimalDenom
@@ -268,10 +186,14 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
           )}
           {quoteCurrency && (
             <div className="flex flex-row items-center gap-2 text-subtitle1 font-subtitle1">
-              <img
-                className="h-[1.5rem] w-[1.5rem]"
-                src={quoteCurrency.coinImageUrl}
-              />
+              {quoteCurrency.coinImageUrl && (
+                <Image
+                  alt="base currency"
+                  src={quoteCurrency.coinImageUrl}
+                  height={24}
+                  width={24}
+                />
+              )}
               <span>
                 {quoteAmount.toString(
                   quoteCurrency.coinMinimalDenom
@@ -428,16 +350,14 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             coinIsToken0={true}
             onUpdate={useCallback(
               (amount) => {
-                setAchorAsset("base");
-                setBaseDepositInput("" + amount);
-                config.setBaseDepositAmountIn(amount);
-                calculateQuoteDeposit(amount);
+                config.setAnchorAsset("base");
+                config.baseDepositAmountIn.setAmount(amount.toString());
               },
-              [calculateQuoteDeposit, config.setBaseDepositAmountIn]
+              [config]
             )}
-            currentValue={baseDepositInput}
+            currentValue={config.quoteDepositAmountIn.amount}
             outOfRange={config.quoteDepositOnly}
-            percentage={Number(config.depositPercentages[0].toString())}
+            percentage={config.depositPercentages[0]}
           />
           <DepositAmountGroup
             className="mt-4 bg-transparent !px-0"
@@ -448,16 +368,14 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             coinIsToken0={false}
             onUpdate={useCallback(
               (amount) => {
-                setAchorAsset("quote");
-                setQuoteDepositInput("" + amount);
-                config.setQuoteDepositAmountIn(amount);
-                calculateBaseDeposit(amount);
+                config.setAnchorAsset("quote");
+                config.quoteDepositAmountIn.setAmount(amount.toString());
               },
-              [calculateBaseDeposit, config.setQuoteDepositAmountIn]
+              [config]
             )}
-            currentValue={quoteDepositInput}
+            currentValue={config.quoteDepositAmountIn.amount}
             outOfRange={config.baseDepositOnly}
-            percentage={Number(config.depositPercentages[1].toString())}
+            percentage={config.depositPercentages[1]}
           />
         </div>
         {accountActionButton}
@@ -466,30 +384,28 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   );
 });
 
-function PriceBox(props: {
+const PriceBox: FunctionComponent<{
   label: string;
   currentValue: string;
   infinity?: boolean;
-}) {
-  return (
-    <div className="flex max-w-[6.25rem] flex-col gap-1">
-      <span className="pt-2 text-body2 font-body2 text-osmoverse-300">
-        {props.label}
-      </span>
-      {props.infinity ? (
-        <div className="flex h-[20px] flex-row items-center">
-          <Image
-            alt="infinity"
-            src="/icons/infinity.svg"
-            width={16}
-            height={16}
-          />
-        </div>
-      ) : (
-        <h6 className="overflow-hidden text-ellipsis border-0 bg-transparent text-subtitle1 font-subtitle1 leading-tight">
-          {props.currentValue}
-        </h6>
-      )}
-    </div>
-  );
-}
+}> = ({ label, currentValue, infinity }) => (
+  <div className="flex max-w-[6.25rem] flex-col gap-1">
+    <span className="pt-2 text-body2 font-body2 text-osmoverse-300">
+      {label}
+    </span>
+    {infinity ? (
+      <div className="flex h-[20px] flex-row items-center">
+        <Image
+          alt="infinity"
+          src="/icons/infinity.svg"
+          width={16}
+          height={16}
+        />
+      </div>
+    ) : (
+      <h6 className="overflow-hidden text-ellipsis border-0 bg-transparent text-subtitle1 font-subtitle1 leading-tight">
+        {currentValue}
+      </h6>
+    )}
+  </div>
+);

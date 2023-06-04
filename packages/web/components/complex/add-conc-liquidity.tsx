@@ -369,8 +369,8 @@ const AddConcLiqView: FunctionComponent<
         <h6 className="mx-auto">{t("addConcentratedLiquidity.step2Title")}</h6>
         <span className="caption absolute right-0 flex h-full items-center text-osmoverse-200">
           {t("addConcentratedLiquidity.priceShownIn", {
-            base: baseDenom,
-            quote: quoteDenom,
+            base: baseDepositAmountIn.sendCurrency.coinDenom,
+            quote: quoteDepositAmountIn.sendCurrency.coinDenom,
           })}
         </span>
       </div>
@@ -383,8 +383,8 @@ const AddConcLiqView: FunctionComponent<
             <PriceChartHeader
               historicalRange={historicalRange}
               setHistoricalRange={setHistoricalRange}
-              baseDenom={baseDenom}
-              quoteDenom={quoteDenom}
+              baseDenom={baseDepositAmountIn.sendCurrency.coinDenom}
+              quoteDenom={quoteDepositAmountIn.sendCurrency.coinDenom}
               hoverPrice={hoverPrice}
               decimal={priceDecimal}
             />
@@ -512,13 +512,13 @@ const AddConcLiqView: FunctionComponent<
             onUpdate={useCallback(
               (amount) => {
                 setAnchorAsset("base");
-                baseDepositAmountIn.setAmount(amount);
+                baseDepositAmountIn.setAmount(amount.toString());
               },
               [baseDepositAmountIn, setAnchorAsset]
             )}
             currentValue={baseDepositAmountIn.amount}
             outOfRange={quoteDepositOnly}
-            percentage={depositPercentages[0].maxDecimals(0).toString()}
+            percentage={depositPercentages[0]}
           />
           <DepositAmountGroup
             getFiatValue={getFiatValue}
@@ -527,13 +527,13 @@ const AddConcLiqView: FunctionComponent<
             onUpdate={useCallback(
               (amount) => {
                 setAnchorAsset("quote");
-                quoteDepositAmountIn.setAmount(amount);
+                quoteDepositAmountIn.setAmount(amount.toString());
               },
               [quoteDepositAmountIn, setAnchorAsset]
             )}
             currentValue={quoteDepositAmountIn.amount}
             outOfRange={baseDepositOnly}
-            percentage={depositPercentages[1].maxDecimals(0).toString()}
+            percentage={depositPercentages[1]}
           />
         </div>
       </section>
