@@ -102,6 +102,12 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     return new Dec(this.raw.current_tick_liquidity);
   }
 
+  get currentTickLiquidityXY(): [Dec, Dec] {
+    const baseAmount = this.currentTickLiquidity.quo(this.currentSqrtPrice);
+    const quoteAmount = this.currentTickLiquidity.mul(this.currentSqrtPrice);
+    return [baseAmount, quoteAmount];
+  }
+
   get tickSpacing(): number {
     const ts = parseInt(this.raw.tick_spacing);
     if (isNaN(ts)) {

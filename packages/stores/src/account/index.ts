@@ -688,7 +688,6 @@ export class OsmosisAccountImpl {
     onFulfill?: (tx: any) => void
   ) {
     const queries = this.queries;
-    this.queriesStore;
 
     await this.base.cosmos.sendMsgs(
       "clCreatePosition",

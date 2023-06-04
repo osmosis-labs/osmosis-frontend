@@ -25,7 +25,7 @@ export function useAddConcentratedLiquidityConfig(
   config: ObservableAddConcentratedLiquidityConfig;
   addLiquidity: () => Promise<void>;
 } {
-  const { accountStore, derivedDataStore, queriesExternalStore } = useStore();
+  const { accountStore, derivedDataStore } = useStore();
 
   const account = accountStore.getAccount(osmosisChainId);
   const { bech32Address } = account;
@@ -42,10 +42,6 @@ export function useAddConcentratedLiquidityConfig(
         bech32Address,
         queriesStore,
         queriesStore.get(osmosisChainId).queryBalances,
-        queriesStore
-          .get(osmosisChainId)
-          .osmosis!.queryLiquiditiesPerTickRange.getForPoolId(poolId),
-        queriesExternalStore.queryTokenPairHistoricalChart,
         pool
       )
   );
@@ -73,7 +69,10 @@ export function useAddConcentratedLiquidityConfig(
           baseDepositValue,
           quoteDepositValue,
           undefined,
-          resolve
+          (tx) => {
+            if (tx.code) reject();
+            resolve();
+          }
         );
       } catch (e: any) {
         console.error(e);

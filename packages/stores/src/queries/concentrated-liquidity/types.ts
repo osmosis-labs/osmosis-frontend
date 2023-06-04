@@ -1,3 +1,5 @@
+import { Dec, Int } from "@keplr-wallet/unit";
+
 export type LiquidityNetInDirection = {
   liquidity_depths: {
     liquidity_net: string;
@@ -13,4 +15,47 @@ export type LiquidityPerTickRange = {
     lower_tick: string;
     upper_tick: string;
   }[];
+};
+
+export type PositionAsset = {
+  amount: string;
+  denom: string;
+};
+
+export type PositionData = {
+  address: string;
+  joinTime: Date;
+  liquidity: Dec;
+  lowerTick: Int;
+  poolId: string;
+  positionId: string;
+  upperTick: Int;
+};
+
+export type LiquidityPosition = {
+  asset0: PositionAsset;
+  asset1: PositionAsset;
+  position: {
+    address: string;
+    join_time: string;
+    liquidity: string;
+    lower_tick: string;
+    pool_id: string;
+    position_id: string;
+    upper_tick: string;
+  };
+};
+
+export type MergedLiquidityPositionData = {
+  asset0: PositionAsset;
+  asset1: PositionAsset;
+  position: {
+    address: string;
+    join_time: string;
+    liquidity: string;
+    lower_tick: string;
+    pool_id: string;
+    position_id: string;
+    upper_tick: string;
+  };
 };

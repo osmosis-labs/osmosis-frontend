@@ -13,6 +13,8 @@ import {
 } from "@osmosis-labs/stores";
 import { DeepReadonly } from "utility-types";
 
+import { ObservableMergedPositionsByAddress } from "~/stores/derived-data/concentrated-liquidity";
+
 import { ObservableAssets } from "../assets";
 import {
   ObservablePoolsWithMetrics,
@@ -24,6 +26,7 @@ export class DerivedDataStore extends BaseDerivedDataStore {
   public readonly poolsWithMetrics: DeepReadonly<ObservablePoolsWithMetrics>;
   public readonly verifiedPoolsStore: DeepReadonly<ObservableVerifiedPoolsStoreMap>;
 
+  public readonly mergedPositionsByAddress: DeepReadonly<ObservableMergedPositionsByAddress>;
   constructor(
     protected readonly osmosisChainId: string,
     protected readonly queriesStore: IQueriesStore<
@@ -61,6 +64,10 @@ export class DerivedDataStore extends BaseDerivedDataStore {
       this.chainGetter,
       this.externalQueries,
       this.priceStore
+    );
+    this.mergedPositionsByAddress = new ObservableMergedPositionsByAddress(
+      this.osmosisChainId,
+      this.queriesStore
     );
   }
 }

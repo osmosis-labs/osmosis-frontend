@@ -8,14 +8,21 @@ import {
 /** Formats a pretty object as compact by default. i.e. $7.53M or $265K, or 2K%. Validate handled by pretty object. */
 export function formatPretty(
   prettyValue: PricePretty | CoinPretty | RatePretty,
-  opts?: Partial<Intl.NumberFormatOptions>
+  opts?: Partial<Intl.NumberFormatOptions> & {
+    hideCoinDenom?: boolean;
+    maxDecimals?: number;
+  }
 ) {
+  const { hideCoinDenom, maxDecimals, ...formatOpts } = opts || {};
   if (prettyValue instanceof PricePretty) {
-    return priceFormatter(prettyValue, opts);
+    return priceFormatter(prettyValue, opts ?? formatOpts);
   } else if (prettyValue instanceof CoinPretty) {
-    return coinFormatter(prettyValue, opts);
+    return coinFormatter(
+      prettyValue,
+      opts ?? { ...formatOpts, hideCoinDenom, maxDecimals }
+    );
   } else if (prettyValue instanceof RatePretty) {
-    return rateFormatter(prettyValue, opts);
+    return rateFormatter(prettyValue, opts ?? formatOpts);
   } else {
     throw new Error("Unknown pretty value");
   }
@@ -45,19 +52,28 @@ function priceFormatter(
 /** Formats a coin as compact by default. i.e. $7.53 ATOM or $265 OSMO. Validate handled by `CoinPretty`. */
 function coinFormatter(
   coin: CoinPretty,
-  opts?: Partial<Intl.NumberFormatOptions>
+  opts?: Partial<Intl.NumberFormatOptions> & {
+    hideCoinDenom?: boolean;
+    maxDecimals?: number;
+  }
 ): string {
+  const { hideCoinDenom, maxDecimals = 2, ...formatOpts } = opts || {};
   const options: Intl.NumberFormatOptions = {
     maximumSignificantDigits: 3,
     notation: "compact",
     compactDisplay: "short",
     style: "decimal",
-    ...opts,
+    ...formatOpts,
   };
-  let num = Number(new IntPretty(coin).maxDecimals(2).locale(false).toString());
+  let num = Number(
+    new IntPretty(coin).maxDecimals(maxDecimals).locale(false).toString()
+  );
   num = isNaN(num) ? 0 : num;
   const formatter = new Intl.NumberFormat("en-US", options);
-  return `${formatter.format(num)} ${coin.currency.coinDenom.toUpperCase()}`;
+  return [
+    formatter.format(num),
+    hideCoinDenom ? "" : coin.currency.coinDenom.toUpperCase(),
+  ].join(" ");
 }
 
 /** Formats a coin as compact by default. i.e. $7.53 ATOM or $265 OSMO. Validate handled by `CoinPretty`. */

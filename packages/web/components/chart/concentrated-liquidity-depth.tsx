@@ -10,7 +10,7 @@ import {
   buildChartTheme,
   XYChart,
 } from "@visx/xychart";
-import { FunctionComponent } from "react";
+import React, { FunctionComponent } from "react";
 
 import { theme } from "~/tailwind.config";
 
@@ -20,8 +20,8 @@ export type DepthData = {
 };
 
 const ConcentratedLiquidityDepthChart: FunctionComponent<{
-  min: number;
-  max: number;
+  min?: number;
+  max?: number;
   yRange: [number, number];
   xRange: [number, number];
   data: DepthData[];
@@ -38,6 +38,7 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
   };
   horizontal?: boolean;
   fullRange?: boolean;
+  rangeAnnotation?: DepthData[];
 }> = ({
   data,
   min,
@@ -45,6 +46,7 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
   yRange,
   xRange,
   annotationDatum,
+  rangeAnnotation = [],
   onMoveMin,
   onMoveMax,
   onSubmitMin,
@@ -54,8 +56,10 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
   fullRange = false,
 }) => {
   const xMax = xRange[1];
-  const showMinDragHandler = !!onMoveMin && !!onSubmitMin;
-  const showMaxDragHandler = !!onMoveMax && !!onSubmitMax;
+  const showMinDragHandler =
+    typeof min !== "undefined" && !!onMoveMin && !!onSubmitMin;
+  const showMaxDragHandler =
+    typeof max !== "undefined" && !!onMoveMax && !!onSubmitMax;
 
   const { top = 0, right = 0, bottom = 0, left = 0 } = offset || {};
 
@@ -141,8 +145,27 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
                 />
               </Annotation>
             )}
+            {!!rangeAnnotation.length &&
+              rangeAnnotation.map((datum, i) => (
+                <Annotation
+                  key={i}
+                  dataKey="depth"
+                  xAccessor={(d: DepthData) => d.depth}
+                  yAccessor={(d: DepthData) => d.price}
+                  datum={datum}
+                >
+                  <AnnotationConnector />
+                  <AnnotationLineSubject
+                    orientation="horizontal"
+                    stroke={theme.colors.wosmongton["200"]}
+                    strokeWidth={2}
+                    strokeDasharray={4}
+                  />
+                </Annotation>
+              ))}
             {showMaxDragHandler && (
               <DragContainer
+                key={"max:" + yRange.join("_")}
                 defaultValue={fullRange ? yRange[1] * 0.95 : max}
                 length={xMax}
                 scale={yScale}
@@ -153,6 +176,7 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
             )}
             {showMinDragHandler && (
               <DragContainer
+                key={"min:" + yRange.join("_")}
                 defaultValue={fullRange ? yRange[0] * 1.05 : min}
                 length={xMax}
                 scale={yScale}
