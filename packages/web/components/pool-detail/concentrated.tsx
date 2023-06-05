@@ -16,7 +16,7 @@ import { ChartButton } from "~/components/buttons";
 import { MyPositionCard } from "~/components/cards";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
-import { AddLiquidityModal, TradeTokens } from "~/modals";
+import { AddLiquidityModal } from "~/modals";
 import { useStore } from "~/stores";
 import { ObservableMergedPositionByAddress } from "~/stores/derived-data";
 
@@ -40,9 +40,9 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const account = accountStore.getAccount(chainId);
     const config = useHistoricalAndLiquidityData(chainId, poolId);
     const t = useTranslation();
-    const [activeModal, setActiveModal] = useState<
-      "trade" | "add-liquidity" | null
-    >(null);
+    const [activeModal, setActiveModal] = useState<"add-liquidity" | null>(
+      null
+    );
 
     const [showAllPositions, setShowAllPositions] = useState(false);
 
@@ -96,14 +96,6 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
             isOpen={true}
             poolId={pool.id}
             onRequestClose={() => setActiveModal(null)}
-          />
-        )}
-        {pool && activeModal === "trade" && (
-          <TradeTokens
-            className="md:!p-0"
-            isOpen={true}
-            onRequestClose={() => setActiveModal(null)}
-            memoedPools={[pool]}
           />
         )}
         <section className="flex flex-col gap-8">

@@ -39,7 +39,6 @@ import {
   LockTokensModal,
   RemoveLiquidityModal,
   SuperfluidValidatorModal,
-  TradeTokens,
 } from "~/modals";
 import { useStore } from "~/stores";
 
@@ -328,8 +327,6 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
       []
     );
 
-    const tradePools = useMemo(() => (pool ? [pool] : []), [pool]);
-
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
         <Head>
@@ -351,15 +348,6 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
             poolId={pool.id}
             onRequestClose={setShowModal(setShowRemoveLiquidityModal, false)}
             onRemoveLiquidity={onRemoveLiquidity}
-          />
-        )}
-        {pool && showTradeTokenModal && (
-          <TradeTokens
-            className="md:!p-0"
-            hideCloseButton={isMobile}
-            isOpen={showTradeTokenModal}
-            onRequestClose={setShowModal(setShowTradeTokenModal, false)}
-            memoedPools={tradePools}
           />
         )}
         {lockLPTokensConfig && showLockLPTokenModal && (
