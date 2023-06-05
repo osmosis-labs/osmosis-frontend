@@ -216,8 +216,6 @@ export class OsmosisAccountImpl {
       },
     };
 
-    console.log(msg);
-
     await this.base.cosmos.sendMsgs(
       "createConcentratedPool",
       {
@@ -697,8 +695,6 @@ export class OsmosisAccountImpl {
         if (!queryPool) {
           throw new Error(`Pool #${poolId} not found`);
         }
-
-        await queryPool.waitFreshResponse();
 
         const type = queryPool.pool.type;
         if (type !== "concentrated") {

@@ -70,11 +70,19 @@ export class ObservableHistoricalAndLiquidityData {
   }
 
   get baseDenom(): string {
-    return this.pool?.poolAssetDenoms ? this.pool.poolAssetDenoms[0] : "";
+    return this.pool?.poolAssetDenoms
+      ? this.chainGetter
+          .getChain(this.chainId)
+          .forceFindCurrency(this.pool.poolAssetDenoms[0]).coinDenom
+      : "";
   }
 
   get quoteDenom(): string {
-    return this.pool?.poolAssetDenoms ? this.pool.poolAssetDenoms[1] : "";
+    return this.pool?.poolAssetDenoms
+      ? this.chainGetter
+          .getChain(this.chainId)
+          .forceFindCurrency(this.pool.poolAssetDenoms[1]).coinDenom
+      : "";
   }
 
   get baseCurrency(): AppCurrency | undefined {
@@ -134,10 +142,12 @@ export class ObservableHistoricalAndLiquidityData {
 
   @action
   readonly setHoverPrice = (price: number) => {
+    console.log("set hover price");
     this._hoverPrice = price;
   };
 
   get hoverPrice(): number {
+    console.log(this._hoverPrice);
     return this._hoverPrice;
   }
 

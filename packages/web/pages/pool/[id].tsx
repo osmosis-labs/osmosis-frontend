@@ -28,9 +28,6 @@ const Pool: FunctionComponent = observer(() => {
     if (poolExists === false) {
       router.push("/pools");
     }
-    return () => {
-      console.log("unmount");
-    };
   }, [poolExists, router]);
 
   const queryPool = queryOsmosis.queryGammPools.getPool(poolId);
@@ -54,7 +51,6 @@ const Pool: FunctionComponent = observer(() => {
           className="md:!p-0"
           isOpen={showTradeModal}
           onRequestClose={() => {
-            console.log("show false");
             setShowTradeModal(false);
           }}
           memoedPools={[queryPool]}
