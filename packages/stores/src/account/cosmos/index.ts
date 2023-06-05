@@ -145,8 +145,6 @@ export class CosmosAccountImpl {
       memo: "",
     });
 
-    console.log(msg);
-
     await this.base.signAndBroadcast(
       this.chainId,
       "sendIbcTransfer",
