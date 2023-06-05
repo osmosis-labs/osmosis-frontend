@@ -142,12 +142,10 @@ export class ObservableHistoricalAndLiquidityData {
 
   @action
   readonly setHoverPrice = (price: number) => {
-    console.log("set hover price");
     this._hoverPrice = price;
   };
 
   get hoverPrice(): number {
-    console.log(this._hoverPrice);
     return this._hoverPrice;
   }
 

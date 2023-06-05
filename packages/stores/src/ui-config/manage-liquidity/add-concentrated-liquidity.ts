@@ -109,6 +109,11 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
       if (anchor !== "base" || amount0.lt(new Int(0))) return;
 
+      // special case: likely no positions created yet in pool
+      if (this.pool.currentSqrtPrice.isZero()) {
+        return;
+      }
+
       if (amount0.isZero()) this.quoteDepositAmountIn.setAmount("0");
 
       const [lowerTick, upperTick] = this.tickRange;
@@ -142,6 +147,11 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
       const anchor = this._anchorAsset;
 
       if (anchor !== "quote" || amount1.lt(new Int(0))) return;
+
+      // special case: likely no positions created yet in pool
+      if (this.pool.currentSqrtPrice.isZero()) {
+        return;
+      }
 
       if (amount1.isZero()) this.baseDepositAmountIn.setAmount("0");
 
@@ -362,6 +372,8 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   @computed
   get baseDepositOnly(): boolean {
+    if (this.currentPrice.isZero()) return false;
+
     return (
       !this.fullRange &&
       this.currentPrice.gt(this.range[0]) &&
@@ -371,6 +383,8 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   @computed
   get quoteDepositOnly(): boolean {
+    if (this.currentPrice.isZero()) return false;
+
     return (
       !this.fullRange &&
       this.currentPrice.lt(this.range[0]) &&
@@ -412,6 +426,6 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
       return this._baseDepositAmountIn.error;
     }
 
-    return this._baseDepositAmountIn.error || this._quoteDepositAmountIn.error;
+    // return this._baseDepositAmountIn.error || this._quoteDepositAmountIn.error;
   }
 }

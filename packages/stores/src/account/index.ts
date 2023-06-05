@@ -682,6 +682,7 @@ export class OsmosisAccountImpl {
     upperTick: Int,
     baseDeposit?: { currency: Currency; amount: string },
     quoteDeposit?: { currency: Currency; amount: string },
+    maxSlippage = "2.5",
     memo: string = "",
     onFulfill?: (tx: any) => void
   ) {
@@ -737,8 +738,29 @@ export class OsmosisAccountImpl {
           .sort((a, b) => a?.denom.localeCompare(b?.denom))
           .map(({ denom, amount }) => ({ denom, amount: amount.toString() }));
 
-        const token_min_amount0 = baseCoin ? baseCoin.amount.toString() : "0";
-        const token_min_amount1 = quoteCoin ? quoteCoin.amount.toString() : "0";
+        const token_min_amount0 =
+          baseCoin &&
+          // full tolerance if 0 sqrt price so no positions
+          !queryPool.concentratedLiquidityPoolInfo?.currentSqrtPrice.isZero()
+            ? new Dec(baseCoin.amount)
+                .mul(new Dec(1).sub(new Dec(maxSlippage).quo(new Dec(100))))
+                .truncate()
+                .toString()
+            : "0";
+        const token_min_amount1 =
+          quoteCoin &&
+          // full tolerance if 0 sqrt price so no positions
+          !queryPool.concentratedLiquidityPoolInfo?.currentSqrtPrice.isZero()
+            ? new Dec(quoteCoin.amount)
+                .mul(new Dec(1).sub(new Dec(maxSlippage).quo(new Dec(100))))
+                .truncate()
+                .toString()
+            : "0";
+
+        console.log({
+          token_min_amount0,
+          token_min_amount1,
+        });
 
         const msg = {
           type: this._msgOpts.clCreatePosition.type,
@@ -788,6 +810,9 @@ export class OsmosisAccountImpl {
               bal.waitFreshResponse();
             });
           this.queries.queryGammPools.getPool(poolId)?.waitFreshResponse();
+          this.queries.queryLiquidityPositionsByAddress
+            .getForAddress(this.base.bech32Address)
+            ?.waitFreshResponse();
         }
 
         onFulfill?.(tx);
