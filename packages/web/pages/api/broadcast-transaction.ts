@@ -5,9 +5,9 @@ import { ChainInfos } from "~/config";
 /**
  * Broadcasts a transaction to the chain.
  *
- * We require this endpoint since many nodes do not have CORS enabled. if a node does not
- * have CORS enabled, it means that it can't communicate with browsers without updating the
- * nodes to add necessary CORS headers. Therefore, by having this endpoint, we can ensure that
+ * We require this endpoint since many nodes do not have CORS enabled. Without CORS,
+ * a node is unable to interact directly with browsers unless it's updated to incorporate
+ * the CORS headers. Therefore, by having this endpoint, we can ensure that
  * users can still broadcast their transactions to the network.
  */
 export default async function handler(
