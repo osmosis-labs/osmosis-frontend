@@ -296,43 +296,72 @@ export function convertTokenInGivenOutToTokenOutGivenIn(
 // add liquidity
 // docs ref: https://github.com/osmosis-labs/osmosis/blob/b764323ce7702185d2089b9e76a0115c7058f37e/x/concentrated-liquidity/README.md#L573
 
-export function calculateDepositAmountForQuote(
-  curSqrtPrice: Dec,
+// calcAmount0
+export function calcAmount0(
+  amount1: Int,
   lowerTick: Int,
   upperTick: Int,
-  baseDeposit: Int
+  currentSqrtPrice: Dec
 ): Int {
-  const sqrtPu = tickToSqrtPrice(upperTick);
-  const sqrtPl = tickToSqrtPrice(lowerTick);
-  const sqrtPc = curSqrtPrice;
+  const upperTickSqrt = tickToSqrtPrice(upperTick);
+  const lowerTickSqrt = tickToSqrtPrice(lowerTick);
 
-  // calculate liquidity needed for token0
-  const L = new Dec(baseDeposit)
-    .mul(sqrtPu)
-    .mul(sqrtPl)
-    .quo(sqrtPu.sub(sqrtPl));
+  let sqrtPriceA = currentSqrtPrice;
+  let sqrtPriceB = lowerTickSqrt;
 
-  // calculate delta y
-  const deltaY = L.mul(sqrtPc.sub(sqrtPl));
+  if (sqrtPriceA.gt(sqrtPriceB)) {
+    sqrtPriceA = lowerTickSqrt;
+    sqrtPriceB = currentSqrtPrice;
+  }
 
-  return deltaY.truncate();
+  const liquidity1 = amount1.toDec().quo(sqrtPriceB.sub(sqrtPriceA));
+
+  sqrtPriceA = currentSqrtPrice;
+  sqrtPriceB = upperTickSqrt;
+
+  if (sqrtPriceA.gt(sqrtPriceB)) {
+    sqrtPriceA = upperTickSqrt;
+    sqrtPriceB = currentSqrtPrice;
+  }
+
+  const numerator = liquidity1.mul(sqrtPriceB.sub(sqrtPriceA));
+  const denominator = sqrtPriceB.mul(sqrtPriceA);
+
+  return numerator.quo(denominator).roundUp();
 }
 
-export function calculateDepositAmountForBase(
-  curSqrtPrice: Dec,
+// calcAmount1
+export function calcAmount1(
+  amount0: Int,
   lowerTick: Int,
   upperTick: Int,
-  quoteDeposit: Int
+  currentSqrtPrice: Dec
 ): Int {
-  const sqrtPu = tickToSqrtPrice(upperTick);
-  const sqrtPl = tickToSqrtPrice(lowerTick);
-  const sqrtPc = curSqrtPrice;
+  const lowerTickSqrt = tickToSqrtPrice(lowerTick);
+  const upperTickSqrt = tickToSqrtPrice(upperTick);
 
-  // calculate liquidity needed for token1
-  const L = new Dec(quoteDeposit).quo(sqrtPu.sub(sqrtPl));
+  let sqrtPriceA = currentSqrtPrice;
+  let sqrtPriceB = upperTickSqrt;
 
-  // calculate delta x
-  const deltaX = L.mul(sqrtPu.sub(sqrtPc)).quo(sqrtPu.mul(sqrtPc));
+  if (sqrtPriceA.gt(sqrtPriceB)) {
+    sqrtPriceA = upperTickSqrt;
+    sqrtPriceB = currentSqrtPrice;
+  }
 
-  return deltaX.truncate();
+  let liquidity0 = amount0
+    .toDec()
+    .mul(sqrtPriceA.mul(sqrtPriceB))
+    .quo(sqrtPriceB.sub(sqrtPriceA));
+
+  sqrtPriceA = currentSqrtPrice;
+  sqrtPriceB = lowerTickSqrt;
+
+  if (sqrtPriceA.gt(sqrtPriceB)) {
+    sqrtPriceA = lowerTickSqrt;
+    sqrtPriceB = currentSqrtPrice;
+  }
+
+  liquidity0 = liquidity0.roundUp().toDec();
+
+  return liquidity0.mul(sqrtPriceB.sub(sqrtPriceA)).truncate();
 }

@@ -224,10 +224,37 @@ export function estimateInitialTickBound({
   };
 }
 
-export function roundPriceToNearestTick(price: Dec): Dec {
+export function roundPriceToNearestTick(
+  price: Dec,
+  tickSpacing: number,
+  isLowerTick: boolean
+): Dec {
   if (price.gt(maxSpotPrice)) return maxSpotPrice;
   if (price.lt(minSpotPrice)) return minSpotPrice;
-  const tick = priceToTick(price);
+  let tick = priceToTick(price);
+  const tickSpacingInt = new Int(tickSpacing);
+
+  if (!tickSpacingInt.equals(new Int(0))) {
+    const tickRemainder = tick.mod(tickSpacingInt);
+
+    // Negative tick remainder
+    if (tickRemainder.lt(new Int(0))) {
+      tick = tick.sub(tickRemainder);
+      if (isLowerTick) {
+        tick = tick.add(tickSpacingInt);
+      } else {
+        tick = tick.sub(tickSpacingInt);
+      }
+
+      // Positive tick remainder
+    } else if (tickRemainder.gt(new Int(0))) {
+      tick = tick.sub(tickRemainder);
+      if (isLowerTick) {
+        tick = tick.add(tickSpacingInt);
+      }
+    }
+  }
+
   const sqrtPrice = tickToSqrtPrice(tick);
   return sqrtPrice.mul(sqrtPrice);
 }

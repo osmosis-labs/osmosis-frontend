@@ -680,10 +680,10 @@ export class OsmosisAccountImpl {
    */
   async sendCreateConcentratedLiquidityPositionMsg(
     poolId: string,
-    baseDeposit: { currency: Currency; amount: string },
-    quoteDeposit: { currency: Currency; amount: string },
     lowerTick: Int,
     upperTick: Int,
+    baseDeposit?: { currency: Currency; amount: string },
+    quoteDeposit?: { currency: Currency; amount: string },
     memo: string = "",
     onFulfill?: (tx: any) => void
   ) {
@@ -705,33 +705,44 @@ export class OsmosisAccountImpl {
           throw new Error("Must be concentrated pool");
         }
 
-        const baseAmount = new Dec(baseDeposit.amount)
-          .mul(
-            DecUtils.getTenExponentNInPrecisionRange(
-              baseDeposit.currency.coinDecimals
-            )
-          )
-          .truncate();
-        const baseCoin = new Coin(
-          baseDeposit.currency.coinMinimalDenom,
-          baseAmount
-        );
+        let baseCoin: Coin | undefined;
+        let quoteCoin: Coin | undefined;
 
-        const quoteAmount = new Dec(quoteDeposit.amount)
-          .mul(
-            DecUtils.getTenExponentNInPrecisionRange(
-              quoteDeposit.currency.coinDecimals
+        if (baseDeposit !== undefined && baseDeposit.amount !== undefined) {
+          const baseAmount = new Dec(baseDeposit.amount)
+            .mul(
+              DecUtils.getTenExponentNInPrecisionRange(
+                baseDeposit.currency.coinDecimals
+              )
             )
-          )
-          .truncate();
-        const quoteCoin = new Coin(
-          quoteDeposit.currency.coinMinimalDenom,
-          quoteAmount
-        );
+            .truncate();
+          baseCoin = new Coin(
+            baseDeposit.currency.coinMinimalDenom,
+            baseAmount
+          );
+        }
+
+        if (quoteDeposit !== undefined && quoteDeposit.amount !== undefined) {
+          const quoteAmount = new Dec(quoteDeposit.amount)
+            .mul(
+              DecUtils.getTenExponentNInPrecisionRange(
+                quoteDeposit.currency.coinDecimals
+              )
+            )
+            .truncate();
+          quoteCoin = new Coin(
+            quoteDeposit.currency.coinMinimalDenom,
+            quoteAmount
+          );
+        }
 
         const sortedCoins = [baseCoin, quoteCoin]
-          .sort((a, b) => a.denom.localeCompare(b.denom))
+          .filter((coin): coin is Coin => coin !== undefined)
+          .sort((a, b) => a?.denom.localeCompare(b?.denom))
           .map(({ denom, amount }) => ({ denom, amount: amount.toString() }));
+
+        const token_min_amount0 = baseCoin ? baseCoin.amount.toString() : "0";
+        const token_min_amount1 = quoteCoin ? quoteCoin.amount.toString() : "0";
 
         const msg = {
           type: this._msgOpts.clCreatePosition.type,
@@ -741,8 +752,8 @@ export class OsmosisAccountImpl {
             lower_tick: lowerTick.toString(),
             upper_tick: upperTick.toString(),
             tokens_provided: sortedCoins,
-            token_min_amount0: baseCoin.amount.toString(),
-            token_min_amount1: quoteCoin.amount.toString(),
+            token_min_amount0: token_min_amount0,
+            token_min_amount1: token_min_amount1,
           },
         };
 
@@ -759,8 +770,8 @@ export class OsmosisAccountImpl {
                   lowerTick: Long.fromString(lowerTick.toString()),
                   upperTick: Long.fromString(upperTick.toString()),
                   tokensProvided: sortedCoins,
-                  tokenMinAmount0: baseCoin.amount.toString(),
-                  tokenMinAmount1: quoteCoin.amount.toString(),
+                  tokenMinAmount0: token_min_amount0,
+                  tokenMinAmount1: token_min_amount1,
                 }).finish(),
             },
           ],
