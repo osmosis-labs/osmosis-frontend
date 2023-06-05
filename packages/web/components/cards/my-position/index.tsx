@@ -42,8 +42,6 @@ export const MyPositionCard: FunctionComponent<{
 
     const { pool, quoteCurrency, baseCurrency, priceDecimal } = config;
 
-    console.log({ priceDecimal });
-
     const fiatBase =
       baseCurrency &&
       priceStore.calculatePrice(new CoinPretty(baseCurrency, baseAmount));

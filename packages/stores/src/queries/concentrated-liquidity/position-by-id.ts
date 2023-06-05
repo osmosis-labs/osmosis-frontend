@@ -86,6 +86,30 @@ export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<L
       return new Dec(this._raw?.position.liquidity);
   }
 
+  @computed
+  get claimableFees(): CoinPretty[] {
+    if (!this._raw?.claimable_fees) return [];
+    return this._raw?.claimable_fees.map(
+      ({ denom, amount }) =>
+        new CoinPretty(
+          this.chainGetter.getChain(this.chainId).forceFindCurrency(denom),
+          amount
+        )
+    );
+  }
+
+  @computed
+  get claimableIncentives(): CoinPretty[] {
+    if (!this._raw?.claimable_incentives) return [];
+    return this._raw?.claimable_fees.map(
+      ({ denom, amount }) =>
+        new CoinPretty(
+          this.chainGetter.getChain(this.chainId).forceFindCurrency(denom),
+          amount
+        )
+    );
+  }
+
   constructor(
     kvStore: KVStore,
     chainId: string,
@@ -118,7 +142,9 @@ export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<L
       .getChain(this.chainId)
       .addUnknownCurrencies(
         response.data.asset0.denom,
-        response.data.asset1.denom
+        response.data.asset1.denom,
+        ...response.data.claimable_fees.map(({ denom }) => denom),
+        ...response.data.claimable_incentives.map(({ denom }) => denom)
       );
   }
 

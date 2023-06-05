@@ -32,6 +32,14 @@ export type LiquidityPosition = {
     position_id: string;
     upper_tick: string;
   };
+  claimable_fees: {
+    denom: string;
+    amount: string;
+  }[];
+  claimable_incentives: {
+    denom: string;
+    amount: string;
+  }[];
 };
 
 export type MergedLiquidityPositionData = {
