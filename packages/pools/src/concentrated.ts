@@ -16,7 +16,7 @@ export interface ConcentratedLiquidityPoolRaw {
   current_tick: string;
   tick_spacing: string;
   exponent_at_price_one: string;
-  swap_fee: string;
+  spread_factor: string;
 }
 
 export type TickDepths = {
@@ -82,7 +82,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
   }
 
   get swapFee(): Dec {
-    return new Dec(this.raw.swap_fee);
+    return new Dec(this.raw.spread_factor);
   }
 
   get exitFee(): Dec {
