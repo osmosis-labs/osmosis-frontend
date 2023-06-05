@@ -269,9 +269,9 @@ const AxelarTransfer: FunctionComponent<
         }
       },
       [
-        inputAmountRaw,
         nonIbcBridgeHistoryStore,
         originCurrency,
+        inputAmountRaw,
         inputAmount,
         isWithdraw,
         osmosisAccount?.address,

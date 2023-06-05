@@ -394,7 +394,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           timestamp: string;
           events: unknown[];
         };
-      }>(`${removeLastSlash(restEndpoint)}/cosmos/tx/v1beta1/txs`, {
+      }>("/api/broadcast-transaction", {
+        restEndpoint: removeLastSlash(restEndpoint),
         tx_bytes: Buffer.from(encodedTx).toString("base64"),
         mode: "BROADCAST_MODE_SYNC",
       });
@@ -433,7 +434,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
             txTracer.close();
 
             return {
-              transactionHash: broadcasted.txhash,
+              transactionHash: broadcasted.txhash.toLowerCase(),
               code: tx?.code ?? 0,
               height: tx?.height,
               rawLog: tx?.log || "",
