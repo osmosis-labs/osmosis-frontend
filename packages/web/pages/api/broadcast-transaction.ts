@@ -1,5 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
+import { ChainInfos } from "~/config";
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -14,6 +16,25 @@ export default async function handler(
     mode: string;
     restEndpoint: string;
   };
+
+  const isEndpointInChainConfig = ChainInfos.some(({ apis }) =>
+    apis?.rest?.some(({ address }) => address === body.restEndpoint)
+  );
+
+  if (!isEndpointInChainConfig) {
+    res.status(400).json({ error: "Invalid rest endpoint" });
+    return;
+  }
+
+  if (
+    !body.tx_bytes ||
+    !body.mode ||
+    typeof body.tx_bytes !== "string" ||
+    typeof body.mode !== "string"
+  ) {
+    res.status(400).json({ error: "Invalid tx_bytes or mode" });
+    return;
+  }
 
   try {
     const response = await fetch(`${body.restEndpoint}/cosmos/tx/v1beta1/txs`, {
@@ -51,10 +72,8 @@ export default async function handler(
 
     res.status(200).json(result);
   } catch (e) {
-    const error = e as { message?: string };
     res.status(500).json({
-      error:
-        error?.message ?? "An unexpected error occurred. Please try again.",
+      error: "An unexpected error occurred. Please try again.",
     });
   }
 }
