@@ -615,7 +615,7 @@ const AxelarTransfer: FunctionComponent<
                 { "opacity-30": isDepositAddressLoading }
               )}
               disabled={
-                !userCanInteract ||
+                (!userCanInteract && !userDisconnectedEthWallet) ||
                 (!isWithdraw &&
                   !userDisconnectedEthWallet &&
                   inputAmountRaw === "") ||
