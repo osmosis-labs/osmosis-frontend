@@ -7,13 +7,15 @@ import type { NextPage } from "next";
 import { ComponentProps, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { Button } from "~/components/buttons";
 import { ShowMoreButton } from "~/components/buttons/show-more";
 import { PoolCard } from "~/components/cards";
 import { AllPoolsTable } from "~/components/complex";
+import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { SuperchargeDaiOsmoPool } from "~/components/funnels/concentrated-liquidity/supercharge-dai-osmo-pool";
 import { MetricLoader } from "~/components/loaders";
 import { PoolsOverview } from "~/components/overview/pools";
-import { EventName } from "~/config";
+import { EventName, IS_TESTNET } from "~/config";
 import {
   useAmplitudeAnalytics,
   useCreatePoolConfig,
@@ -30,7 +32,6 @@ import {
   RemoveLiquidityModal,
   SuperfluidValidatorModal,
 } from "~/modals";
-import MyPositionsSection from "~/pages/pools/my-positions-section";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
@@ -272,11 +273,31 @@ Learn how it works in 30 seconds, or upgrade your position in a few clicks. "
         />
       </section>
       <section ref={myPositionsRef}>
-        <MyPositionsSection />
+        <div className="flex w-full flex-col flex-nowrap gap-5 pb-[3.75rem]">
+          <h6 className="pl-6">{t("clPositions.yourPositions")}</h6>
+          <MyPositionsSection />
+        </div>
       </section>
       <section ref={myPoolsRef}>
         <MyPoolsSection />
       </section>
+
+      {IS_TESTNET && (
+        <div>
+          <Button
+            onClick={() => {
+              account.osmosis.sendCreateConcentratedPoolMsg(
+                "uion",
+                "uosmo",
+                100,
+                0
+              );
+            }}
+          >
+            Create test 100 OSMO / 100 ION CL pool
+          </Button>
+        </div>
+      )}
 
       <section>
         <AllPoolsTable

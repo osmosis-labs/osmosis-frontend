@@ -146,9 +146,6 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
     const [showPoolDetails, setShowPoolDetails] = useState(false);
     const bondDurations = pool ? poolBonding?.bondDurations ?? [] : [];
 
-    // swap modal
-    const [showTradeTokenModal, setShowTradeTokenModal] = useState(false);
-
     const highestAPRBondableDuration = bondDurations[bondDurations?.length - 1];
 
     const highestAPRDailyPeriodicRate =

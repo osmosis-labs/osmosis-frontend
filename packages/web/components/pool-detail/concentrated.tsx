@@ -1,4 +1,3 @@
-import { Int } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Head from "next/head";
@@ -13,14 +12,12 @@ import { useTranslation } from "react-multi-lang";
 import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { ChartButton } from "~/components/buttons";
-import { MyPositionCard } from "~/components/cards";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
+import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { AddLiquidityModal } from "~/modals";
 import { useStore } from "~/stores";
 import { ObservableMergedPositionByAddress } from "~/stores/derived-data";
-
-import { ShowMoreButton } from "../buttons/show-more";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -30,8 +27,6 @@ const TokenPairHistoricalChart = dynamic(
   () => import("~/components/chart/token-pair-historical"),
   { ssr: false }
 );
-
-const INITIAL_POSITIONS_VIEW_COUNT_LIMIT = 3;
 
 export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
   observer(({ poolId }) => {
@@ -43,8 +38,6 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const [activeModal, setActiveModal] = useState<"add-liquidity" | null>(
       null
     );
-
-    const [showAllPositions, setShowAllPositions] = useState(false);
 
     const [queryAddress, setQueryAddress] =
       useState<ObservableMergedPositionByAddress | null>(null);
@@ -219,7 +212,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 </div>
               </div>
               <Button
-                className="w-fit text-subtitle1 font-subtitle1"
+                className="subtitle1 w-fit"
                 size="sm"
                 onClick={() => {
                   setActiveModal("add-liquidity");
@@ -228,45 +221,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 {t("clPositions.createAPosition")}
               </Button>
             </div>
-          </div>
-          <div className="flex flex-col gap-3">
-            {queryAddress.mergedRanges
-              .slice(
-                0,
-                showAllPositions
-                  ? undefined
-                  : INITIAL_POSITIONS_VIEW_COUNT_LIMIT
-              )
-              .map((mergedId, index) => {
-                const [poolId, lowerTick, upperTick] = mergedId.split("_");
-                const merged = queryAddress?.calculateMergedPosition(
-                  poolId,
-                  lowerTick,
-                  upperTick
-                );
-
-                if (!merged) return;
-                const { positionIds, baseAmount, quoteAmount, passive } =
-                  merged;
-                return (
-                  <MyPositionCard
-                    key={index}
-                    poolId={poolId}
-                    lowerTick={new Int(lowerTick)}
-                    upperTick={new Int(upperTick)}
-                    positionIds={positionIds}
-                    baseAmount={baseAmount}
-                    quoteAmount={quoteAmount}
-                    passive={passive}
-                  />
-                );
-              })}
-            <div className="mx-auto w-fit">
-              <ShowMoreButton
-                isOn={showAllPositions}
-                onToggle={() => setShowAllPositions((val) => !val)}
-              />
-            </div>
+            <MyPositionsSection forPoolId={poolId} />
           </div>
         </section>
       </main>

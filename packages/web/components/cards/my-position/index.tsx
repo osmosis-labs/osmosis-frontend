@@ -40,7 +40,7 @@ export const MyPositionCard: FunctionComponent<{
 
     const config = useHistoricalAndLiquidityData(chainId, poolId);
 
-    const { pool, quoteCurrency, baseCurrency, priceDecimal } = config;
+    const { pool, quoteCurrency, baseCurrency } = config;
 
     const fiatBase =
       baseCurrency &&
