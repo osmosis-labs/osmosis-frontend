@@ -214,10 +214,10 @@ const testnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://testnet.mintscan.io/noble-testnet/txs/{txHash}",
   },
   {
-    rpc: "https://net-rila.nolus.io:26657",
-    rest: "https://net-rila.nolus.io:1317",
-    chainId: "nolus-rila",
-    chainName: "Rila Testnet",
+    rpc: "https://rila-cl.nolus.network:26657",
+    rest: "https://rila-cl.nolus.network:1317",
+    chainId: "rila-1",
+    chainName: "Nolus Testnet",
     bip44: {
       coinType: 118,
     },
@@ -232,9 +232,9 @@ const testnetChainInfos: SimplifiedChainInfo[] = [
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {
-          low: 0,
-          average: 0,
-          high: 0.025,
+          low: 0.01,
+          average: 0.025,
+          high: 0.05,
         },
       },
     ],
@@ -2511,8 +2511,8 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://ping.pub/genesisL1/tx/{txHash}",
   },
   {
-    rpc: "https://rpc.kaiyo.kujira.setten.io",
-    rest: "https://lcd.kaiyo.kujira.setten.io",
+    rpc: "https://rpc-kujira-ia.cosmosia.notional.ventures",
+    rest: "https://api-kujira-ia.cosmosia.notional.ventures",
     chainId: "kaiyo-1",
     chainName: "Kujira",
     bip44: {
@@ -3526,6 +3526,34 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx:
       "https://bd.explorer.net.bluzelle.com/transactions/{txHash}",
+  },
+  {
+    rpc: "https://rpc-gitopia.keplr.app",
+    rest: "https://lcd-gitopia.keplr.app",
+    chainId: "gitopia",
+    chainName: "Gitopia",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("gitopia"),
+    currencies: [
+      {
+        coinDenom: "LORE",
+        coinMinimalDenom: "ulore",
+        coinDecimals: 6,
+        coinImageUrl: "/tokens/lore.svg",
+        coinGeckoId: "pool:ulore",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.0012,
+          average: 0.0016,
+          high: 0.0024,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://ping.pub/gitopia/tx/{txHash}",
   },
 ];
 
