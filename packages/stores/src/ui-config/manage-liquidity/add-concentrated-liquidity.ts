@@ -4,10 +4,10 @@ import {
   IQueriesStore,
   ObservableQueryBalances,
 } from "@keplr-wallet/stores";
-import { CoinPretty, Dec, Int, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, Int, RatePretty } from "@keplr-wallet/unit";
 import {
-  calculateDepositAmountForBase,
-  calculateDepositAmountForQuote,
+  calcAmount0,
+  calcAmount1,
   maxSpotPrice,
   maxTick,
   minSpotPrice,
@@ -100,28 +100,30 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     this._quoteDepositAmountIn.setAmount("0");
 
     // Calculate quote amount when base amount is input and anchor is base
+    // Calculate an amount1 given an amount0
     autorun(() => {
       const baseAmountRaw =
         this.baseDepositAmountIn.getAmountPrimitive().amount;
-      const baseAmount = new Int(baseAmountRaw);
+      const amount0 = new Int(baseAmountRaw);
       const anchor = this._anchorAsset;
 
-      if (anchor !== "base" || baseAmount.lt(new Int(0))) return;
+      if (anchor !== "base" || amount0.lt(new Int(0))) return;
 
-      if (baseAmount.isZero()) this.quoteDepositAmountIn.setAmount("0");
+      if (amount0.isZero()) this.quoteDepositAmountIn.setAmount("0");
+
+      const [lowerTick, upperTick] = this.tickRange;
 
       // calculate proportional amount of other amount
-      const [lowerTick, upperTick] = this.tickRange;
-      const quoteAmount = calculateDepositAmountForQuote(
-        this.pool.currentSqrtPrice,
+      const amount1 = calcAmount1(
+        amount0,
         lowerTick,
         upperTick,
-        baseAmount
+        this.pool.currentSqrtPrice
       );
       // include decimals, as is displayed to user
       const quoteCoin = new CoinPretty(
         this._quoteDepositAmountIn.sendCurrency,
-        quoteAmount
+        amount1
       );
       const quoteAmountWithDecimals = quoteCoin
         .hideDenom(true)
@@ -132,28 +134,30 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     });
 
     // Calculate base amount when quote amount is input and anchor is quote
+    // calculate amount0 given an amount1
     autorun(() => {
       const quoteAmountRaw =
         this.quoteDepositAmountIn.getAmountPrimitive().amount;
-      const quoteAmount = new Int(quoteAmountRaw);
+      const amount1 = new Int(quoteAmountRaw);
       const anchor = this._anchorAsset;
 
-      if (anchor !== "quote" || quoteAmount.lt(new Int(0))) return;
+      if (anchor !== "quote" || amount1.lt(new Int(0))) return;
 
-      if (quoteAmount.isZero()) this.baseDepositAmountIn.setAmount("0");
+      if (amount1.isZero()) this.baseDepositAmountIn.setAmount("0");
+
+      const [lowerTick, upperTick] = this.tickRange;
 
       // calculate proportional amount of other amount
-      const [lowerTick, upperTick] = this.tickRange;
-      const baseDeposit = calculateDepositAmountForBase(
-        this.pool.currentSqrtPrice,
+      const amount0 = calcAmount0(
+        amount1,
         lowerTick,
         upperTick,
-        quoteAmount
+        this.pool.currentSqrtPrice
       );
       // include decimals, as is displayed to user
       const baseCoin = new CoinPretty(
         this._baseDepositAmountIn.sendCurrency,
-        baseDeposit
+        amount0
       );
       const baseAmountWithDecimals = baseCoin
         .hideDenom(true)
@@ -195,8 +199,16 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   @computed
   get moderatePriceRange(): [Dec, Dec] {
     return [
-      roundPriceToNearestTick(this.currentPrice.mul(new Dec(0.75))),
-      roundPriceToNearestTick(this.currentPrice.mul(new Dec(1.25))),
+      roundPriceToNearestTick(
+        this.currentPrice.mul(new Dec(0.75)),
+        this.pool.tickSpacing,
+        true
+      ),
+      roundPriceToNearestTick(
+        this.currentPrice.mul(new Dec(1.25)),
+        this.pool.tickSpacing,
+        false
+      ),
     ];
   }
 
@@ -211,8 +223,16 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   @computed
   get aggressivePriceRange(): [Dec, Dec] {
     return [
-      roundPriceToNearestTick(this.currentPrice.mul(new Dec(0.5))),
-      roundPriceToNearestTick(this.currentPrice.mul(new Dec(1.5))),
+      roundPriceToNearestTick(
+        this.currentPrice.mul(new Dec(0.5)),
+        this.pool.tickSpacing,
+        true
+      ),
+      roundPriceToNearestTick(
+        this.currentPrice.mul(new Dec(1.5)),
+        this.pool.tickSpacing,
+        false
+      ),
     ];
   }
 
@@ -229,20 +249,30 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     if (this.baseDepositOnly) return [new RatePretty(1), new RatePretty(0)];
     if (this.quoteDepositOnly) return [new RatePretty(0), new RatePretty(1)];
 
-    const quoteDeposit = new Int(1);
+    const amount1 = new Int(1)
+      .toDec()
+      .mul(
+        DecUtils.getTenExponentNInPrecisionRange(
+          this._quoteDepositAmountIn.sendCurrency.coinDecimals
+        )
+      )
+      .truncate();
+
     const [lowerTick, upperTick] = this.tickRange;
-    const baseDeposit = calculateDepositAmountForBase(
-      this.pool.currentSqrtPrice,
+
+    // calculate proportional amount of other amount
+    const amount0 = calcAmount1(
+      amount1,
       lowerTick,
       upperTick,
-      quoteDeposit
+      this.pool.currentSqrtPrice
     );
 
-    const totalDeposit = new Dec(baseDeposit.add(this.currentPrice.truncate()));
+    const totalDeposit = amount0.add(amount1);
 
     return [
-      new RatePretty(new Dec(baseDeposit).quo(totalDeposit)),
-      new RatePretty(this.currentPrice.quo(totalDeposit)),
+      new RatePretty(amount1.toDec().quo(totalDeposit.toDec())),
+      new RatePretty(amount0.toDec().quo(totalDeposit.toDec())),
     ];
   }
 
@@ -280,7 +310,11 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   @action
   setMinRange = (min: Dec | number) => {
     this._priceRange = [
-      roundPriceToNearestTick(typeof min === "number" ? new Dec(min) : min),
+      roundPriceToNearestTick(
+        typeof min === "number" ? new Dec(min) : min,
+        this.pool.tickSpacing,
+        true
+      ),
       this._priceRange[1],
     ];
   };
@@ -289,7 +323,11 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   setMaxRange = (max: Dec | number) => {
     this._priceRange = [
       this._priceRange[0],
-      roundPriceToNearestTick(typeof max === "number" ? new Dec(max) : max),
+      roundPriceToNearestTick(
+        typeof max === "number" ? new Dec(max) : max,
+        this.pool.tickSpacing,
+        false
+      ),
     ];
   };
 
