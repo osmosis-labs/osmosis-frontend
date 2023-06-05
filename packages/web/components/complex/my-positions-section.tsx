@@ -31,13 +31,22 @@ export const MyPositionsSection: FunctionComponent<{ forPoolId?: string }> =
       return null;
     }
 
+    const filteredRanges = queryAddress.mergedRanges.filter((rangeKey) => {
+      const [poolId] = rangeKey.split("_");
+
+      if (forPoolId && forPoolId !== poolId) {
+        return false;
+      }
+
+      return true;
+    });
+
     const visiblePositions = viewMore
-      ? queryAddress.mergedRanges
-      : queryAddress.mergedRanges.slice(0, INITIAL_POSITION_CNT);
+      ? filteredRanges
+      : filteredRanges.slice(0, INITIAL_POSITION_CNT);
     const mergedPositions = visiblePositions
       .map((rangeKey) => {
         const [poolId, lowerTick, upperTick] = rangeKey.split("_");
-        if (forPoolId && forPoolId !== poolId) return;
         return queryAddress.calculateMergedPosition(
           poolId,
           lowerTick,
@@ -50,6 +59,8 @@ export const MyPositionsSection: FunctionComponent<{ forPoolId?: string }> =
         ): range is ReturnType<typeof queryAddress.calculateMergedPosition> =>
           range !== undefined
       );
+
+    console.log("mergedPositions", mergedPositions);
 
     return (
       <div className="flex flex-col gap-3">
@@ -79,7 +90,7 @@ export const MyPositionsSection: FunctionComponent<{ forPoolId?: string }> =
             />
           );
         })}
-        {mergedPositions.length > INITIAL_POSITION_CNT && !viewMore && (
+        {mergedPositions.length >= INITIAL_POSITION_CNT && !viewMore && (
           <ShowMoreButton
             className="mx-auto"
             isOn={viewMore}
