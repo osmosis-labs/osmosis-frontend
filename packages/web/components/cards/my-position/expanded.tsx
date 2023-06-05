@@ -1,5 +1,4 @@
-import { AppCurrency, FiatCurrency } from "@keplr-wallet/types";
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
@@ -33,8 +32,8 @@ const TokenPairHistoricalChart = dynamic(
 export const MyPositionCardExpandedSection: FunctionComponent<{
   chartConfig: ObservableHistoricalAndLiquidityData;
   positionIds: string[];
-  baseAmount: Dec;
-  quoteAmount: Dec;
+  baseAmount: CoinPretty;
+  quoteAmount: CoinPretty;
   lowerPrice: Dec;
   upperPrice: Dec;
   poolId: string;
@@ -68,40 +67,13 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
       quoteDenom,
       hoverPrice,
       setRange,
-      baseCurrency,
-      quoteCurrency,
     } = chartConfig;
-
-    const { priceStore } = useStore();
 
     const t = useTranslation();
 
-    const [showIncreaseLiquidityModal, updateShowIncreaseLiqModal] =
-      useState<boolean>(false);
-
-    const [showRemoveLiquidityModal, updateShowRemoveLiqModal] =
-      useState<boolean>(false);
-
-    const fiatPerBase =
-      baseCurrency &&
-      priceStore.calculatePrice(
-        new CoinPretty(
-          baseCurrency,
-          baseAmount.mul(new Dec(10 ** baseCurrency.coinDecimals))
-        )
-      );
-
-    const fiatPerQuote =
-      quoteCurrency &&
-      priceStore.calculatePrice(
-        new CoinPretty(
-          quoteCurrency,
-          quoteAmount.mul(new Dec(10 ** quoteCurrency.coinDecimals))
-        )
-      );
-
-    const fiatCurrency =
-      priceStore.supportedVsCurrencies[priceStore.defaultVsCurrency];
+    const [activeModal, setActiveModal] = useState<
+      "increase" | "remove" | null
+    >(null);
 
     useEffect(() => {
       setRange([lowerPrice, upperPrice]);
@@ -109,30 +81,30 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
 
     return (
       <div className="flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
-        {showIncreaseLiquidityModal && (
+        {activeModal === "increase" && (
           <IncreaseConcentratedLiquidityModal
             poolId={poolId}
-            isOpen={showIncreaseLiquidityModal}
+            isOpen={true}
             positionIds={positionIds}
             lowerPrice={lowerPrice}
             upperPrice={upperPrice}
             baseAmount={baseAmount}
             quoteAmount={quoteAmount}
             passive={passive}
-            onRequestClose={() => updateShowIncreaseLiqModal(false)}
+            onRequestClose={() => setActiveModal(null)}
           />
         )}
-        {showRemoveLiquidityModal && (
+        {activeModal === "remove" && (
           <RemoveConcentratedLiquidityModal
             poolId={poolId}
-            isOpen={showRemoveLiquidityModal}
+            isOpen={true}
             positionIds={positionIds}
             lowerPrice={lowerPrice}
             upperPrice={upperPrice}
             baseAmount={baseAmount}
             quoteAmount={quoteAmount}
             passive={passive}
-            onRequestClose={() => updateShowRemoveLiqModal(false)}
+            onRequestClose={() => setActiveModal(null)}
           />
         )}
         <div className="flex flex-row gap-1">
@@ -232,52 +204,30 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           <div className="flex w-full flex-col gap-4">
             <div className="flex flex-row justify-between">
               <AssetPairAmountDetail
-                fiatPerBase={fiatPerBase}
-                fiatPerQuote={fiatPerQuote}
-                fiatCurrency={fiatCurrency}
                 className="w-0 flex-shrink flex-grow"
                 title={t("clPositions.currentAssets")}
-                baseCurrency={baseCurrency}
-                quoteCurrency={quoteCurrency}
                 baseAmount={baseAmount}
                 quoteAmount={quoteAmount}
-                baseDenom={baseDenom}
-                quoteDenom={quoteDenom}
               />
               <AssetPairAmountDetail
-                fiatPerBase={fiatPerBase}
-                fiatPerQuote={fiatPerQuote}
-                fiatCurrency={fiatCurrency}
                 className="w-0 flex-shrink flex-grow"
                 title={t("clPositions.totalFeesEarned")}
-                baseCurrency={baseCurrency}
-                quoteCurrency={quoteCurrency}
-                baseDenom={baseDenom}
-                quoteDenom={quoteDenom}
+                baseAmount={baseAmount}
+                quoteAmount={quoteAmount}
               />
             </div>
             <div className="flex flex-row justify-between">
               <AssetPairAmountDetail
-                fiatPerBase={fiatPerBase}
-                fiatPerQuote={fiatPerQuote}
-                fiatCurrency={fiatCurrency}
                 className="w-0 flex-shrink flex-grow"
                 title={t("clPositions.principleAssets")}
-                baseCurrency={baseCurrency}
-                quoteCurrency={quoteCurrency}
-                baseDenom={baseDenom}
-                quoteDenom={quoteDenom}
+                baseAmount={baseAmount}
+                quoteAmount={quoteAmount}
               />
               <AssetPairAmountDetail
-                fiatPerBase={fiatPerBase}
-                fiatPerQuote={fiatPerQuote}
-                fiatCurrency={fiatCurrency}
                 className="w-0 flex-shrink flex-grow"
                 title={t("clPositions.unclaimedFees")}
-                baseCurrency={baseCurrency}
-                quoteCurrency={quoteCurrency}
-                baseDenom={baseDenom}
-                quoteDenom={quoteDenom}
+                baseAmount={baseAmount}
+                quoteAmount={quoteAmount}
               />
             </div>
           </div>
@@ -286,10 +236,10 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           <PositionButton onClick={() => null}>
             {t("clPositions.collectRewards")}
           </PositionButton>
-          <PositionButton onClick={() => updateShowRemoveLiqModal(true)}>
+          <PositionButton onClick={() => setActiveModal("remove")}>
             {t("clPositions.removeLiquidity")}
           </PositionButton>
-          <PositionButton onClick={() => updateShowIncreaseLiqModal(true)}>
+          <PositionButton onClick={() => setActiveModal("increase")}>
             {t("clPositions.increaseLiquidity")}
           </PositionButton>
         </div>
@@ -314,78 +264,63 @@ function PositionButton(props: { children: ReactNode; onClick: () => void }) {
 const AssetPairAmountDetail: FunctionComponent<{
   className?: string;
   title: string;
-  baseCurrency?: AppCurrency;
-  quoteCurrency?: AppCurrency;
-  baseAmount?: Dec;
-  baseDenom?: string;
-  quoteAmount?: Dec;
-  quoteDenom?: string;
-  fiatPerBase?: PricePretty;
-  fiatPerQuote?: PricePretty;
-  fiatCurrency?: FiatCurrency;
-}> = observer(
-  ({
-    className,
-    title,
-    fiatCurrency,
-    baseCurrency,
-    quoteCurrency,
-    baseAmount,
-    quoteAmount,
-    fiatPerBase,
-    fiatPerQuote,
-  }) => {
-    const totalFiat =
-      fiatCurrency &&
-      fiatPerBase &&
-      fiatPerQuote &&
-      new PricePretty(fiatCurrency, fiatPerBase.add(fiatPerQuote));
+  baseAmount: CoinPretty;
+  quoteAmount: CoinPretty;
+}> = observer(({ className, title, baseAmount, quoteAmount }) => {
+  const { priceStore } = useStore();
 
-    if (!baseAmount || !quoteAmount) return null;
+  if (!baseAmount || !quoteAmount) return null;
 
-    return (
-      <div
-        className={classNames(
-          "flex flex-col gap-2 text-osmoverse-400",
-          className
+  const fiat = priceStore.defaultVsCurrency;
+  const baseFiatValue = priceStore.calculatePrice(baseAmount, fiat);
+  const quoteFiatValue = priceStore.calculatePrice(quoteAmount, fiat);
+  const totalFiat =
+    baseFiatValue && quoteFiatValue
+      ? baseFiatValue?.add(quoteFiatValue)
+      : undefined;
+
+  return (
+    <div
+      className={classNames(
+        "flex flex-col gap-2 text-osmoverse-400",
+        className
+      )}
+    >
+      <div className="text-subtitle1">{title}</div>
+      <div className="flex flex-row items-center gap-5">
+        {baseAmount && (
+          <div className="flex flex-row items-center gap-2">
+            {baseAmount.currency.coinImageUrl && (
+              <Image
+                alt="base currency"
+                src={baseAmount.currency.coinImageUrl}
+                height={24}
+                width={24}
+              />
+            )}
+            <span>{baseAmount.hideDenom(true).toString()}</span>
+            <span>{baseAmount.denom}</span>
+          </div>
         )}
-      >
-        <div className="text-subtitle1">{title}</div>
-        <div className="flex flex-row items-center gap-5">
-          {baseCurrency && (
-            <div className="flex flex-row items-center gap-2">
-              {baseCurrency.coinImageUrl && (
-                <Image
-                  alt="base currency"
-                  src={baseCurrency.coinImageUrl}
-                  height={24}
-                  width={24}
-                />
-              )}
-              <span>{baseAmount.toString(baseCurrency.coinDecimals)}</span>
-              <span>{baseCurrency.coinDenom}</span>
-            </div>
-          )}
-          {quoteCurrency && (
-            <div className="flex flex-row items-center gap-2">
-              {quoteCurrency.coinImageUrl && (
-                <Image
-                  alt="quote currency"
-                  src={quoteCurrency.coinImageUrl}
-                  height={24}
-                  width={24}
-                />
-              )}
-              <span>{quoteAmount.toString(quoteCurrency.coinDecimals)}</span>
-              <span>{quoteCurrency.coinDenom}</span>
-              <span>({totalFiat ? formatPretty(totalFiat) : "$0"})</span>
-            </div>
-          )}
-        </div>
+        {quoteAmount && (
+          <div className="flex flex-row items-center gap-2">
+            {quoteAmount.currency.coinImageUrl && (
+              <Image
+                alt="quote currency"
+                src={quoteAmount.currency.coinImageUrl}
+                height={24}
+                width={24}
+              />
+            )}
+            <span>{quoteAmount.hideDenom(true).toString()}</span>
+            <span>{quoteAmount.denom}</span>
+            <span>({totalFiat ? formatPretty(totalFiat) : "0"})</span>
+          </div>
+        )}
       </div>
-    );
-  }
-);
+    </div>
+  );
+});
 
 function PriceBox(props: {
   label: string;

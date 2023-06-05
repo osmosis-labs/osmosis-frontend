@@ -1,5 +1,3 @@
-import { Dec, Int } from "@keplr-wallet/unit";
-
 export type LiquidityNetInDirection = {
   liquidity_depths: {
     liquidity_net: string;
@@ -20,16 +18,6 @@ export type LiquidityPerTickRange = {
 export type PositionAsset = {
   amount: string;
   denom: string;
-};
-
-export type PositionData = {
-  address: string;
-  joinTime: Date;
-  liquidity: Dec;
-  lowerTick: Int;
-  poolId: string;
-  positionId: string;
-  upperTick: Int;
 };
 
 export type LiquidityPosition = {

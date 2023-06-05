@@ -1,9 +1,9 @@
 import { Int } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { ShowMoreButton } from "~/components/buttons/show-more";
 import { MyPositionCard } from "~/components/cards";
 import { useStore } from "~/stores";
 import { ObservableMergedPositionByAddress } from "~/stores/derived-data";
@@ -27,10 +27,6 @@ const MyPositionsSection = observer(() => {
     })();
   }, [account.bech32Address]);
 
-  const onViewMore = useCallback(() => {
-    setViewMore(true);
-  }, []);
-
   if (!queryAddress) {
     return null;
   }
@@ -48,8 +44,15 @@ const MyPositionsSection = observer(() => {
           : queryAddress.mergedRanges.slice(0, 3)
         ).map((mergedId, index) => {
           const [poolId, lowerTick, upperTick] = mergedId.split("_");
-          const { positionIds, baseAmount, quoteAmount, passive } =
-            queryAddress?.calculateMergedPosition(poolId, lowerTick, upperTick);
+          const merge = queryAddress?.calculateMergedPosition(
+            poolId,
+            lowerTick,
+            upperTick
+          );
+
+          if (!merge) return null;
+
+          const { positionIds, baseAmount, quoteAmount, passive } = merge;
           return (
             <MyPositionCard
               key={index}
@@ -65,15 +68,10 @@ const MyPositionsSection = observer(() => {
         })}
       </div>
       {len > 3 && !viewMore && (
-        <div
-          className="inline-flex cursor-pointer flex-col items-center justify-center"
-          onClick={onViewMore}
-        >
-          <div className="text-subtitle1 font-subtitle1 text-wosmongton-200">
-            {t("clPositions.viewAll")}
-          </div>
-          <Image src="/icons/caret-down.svg" alt="" width={16} height={16} />
-        </div>
+        <ShowMoreButton
+          isOn={viewMore}
+          onToggle={() => setViewMore((v) => !v)}
+        />
       )}
     </div>
   );

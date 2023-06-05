@@ -8,19 +8,13 @@ import {
 /** Formats a pretty object as compact by default. i.e. $7.53M or $265K, or 2K%. Validate handled by pretty object. */
 export function formatPretty(
   prettyValue: PricePretty | CoinPretty | RatePretty,
-  opts?: Partial<Intl.NumberFormatOptions> & {
-    hideCoinDenom?: boolean;
-    maxDecimals?: number;
-  }
+  opts?: Partial<Intl.NumberFormatOptions>
 ) {
-  const { hideCoinDenom, maxDecimals, ...formatOpts } = opts || {};
+  const { ...formatOpts } = opts || {};
   if (prettyValue instanceof PricePretty) {
     return priceFormatter(prettyValue, opts ?? formatOpts);
   } else if (prettyValue instanceof CoinPretty) {
-    return coinFormatter(
-      prettyValue,
-      opts ?? { ...formatOpts, hideCoinDenom, maxDecimals }
-    );
+    return coinFormatter(prettyValue, opts ?? { ...formatOpts });
   } else if (prettyValue instanceof RatePretty) {
     return rateFormatter(prettyValue, opts ?? formatOpts);
   } else {
@@ -57,7 +51,7 @@ function coinFormatter(
     maxDecimals?: number;
   }
 ): string {
-  const { hideCoinDenom, maxDecimals = 2, ...formatOpts } = opts || {};
+  const { ...formatOpts } = opts || {};
   const options: Intl.NumberFormatOptions = {
     maximumSignificantDigits: 3,
     notation: "compact",
@@ -65,15 +59,12 @@ function coinFormatter(
     style: "decimal",
     ...formatOpts,
   };
-  let num = Number(
-    new IntPretty(coin).maxDecimals(maxDecimals).locale(false).toString()
-  );
+  let num = Number(new IntPretty(coin).maxDecimals(2).locale(false).toString());
   num = isNaN(num) ? 0 : num;
   const formatter = new Intl.NumberFormat("en-US", options);
-  return [
-    formatter.format(num),
-    hideCoinDenom ? "" : coin.currency.coinDenom.toUpperCase(),
-  ].join(" ");
+  return [formatter.format(num), coin.currency.coinDenom.toUpperCase()].join(
+    " "
+  );
 }
 
 /** Formats a coin as compact by default. i.e. $7.53 ATOM or $265 OSMO. Validate handled by `CoinPretty`. */

@@ -6,15 +6,12 @@ import Image from "next/image";
 import React, { FunctionComponent, useCallback, useEffect } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { Icon } from "~/components/assets";
 import { ChartButton } from "~/components/buttons";
-import IconButton from "~/components/buttons/icon-button";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
 import { tError } from "~/components/localization";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
-import { formatPretty } from "~/utils/formatter";
 
 import {
   useAddConcentratedLiquidityConfig,
@@ -36,8 +33,8 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   {
     poolId: string;
     positionIds: string[];
-    baseAmount: Dec;
-    quoteAmount: Dec;
+    baseAmount: CoinPretty;
+    quoteAmount: CoinPretty;
     lowerPrice: Dec;
     upperPrice: Dec;
     passive: boolean;
@@ -99,7 +96,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     {
       disabled: config.error !== undefined || isSendingMsg,
       onClick: () => {
-        return addLiquidity().finally(() => props.onRequestClose());
+        addLiquidity().finally(() => props.onRequestClose());
       },
       children: config.error
         ? t(...tError(config.error))
@@ -125,32 +122,9 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     <ModalBase
       {...props}
       isOpen={props.isOpen && showModalBase}
-      hideCloseButton
+      title={t("clPositions.increaseLiquidity")}
       className="!max-w-[500px]"
     >
-      <div className="align-center relative mb-8 flex flex-row">
-        <div className="absolute left-0 flex h-full items-center text-sm" />
-        <h6 className="flex-1 text-center">
-          {t("clPositions.increaseLiquidity")}
-        </h6>
-        <div className="absolute right-0">
-          <IconButton
-            aria-label="Close"
-            mode="unstyled"
-            size="unstyled"
-            className="!p-0"
-            icon={
-              <Icon
-                id="close-thin"
-                className="text-wosmongton-400 hover:text-wosmongton-100"
-                height={24}
-                width={24}
-              />
-            }
-            onClick={props.onRequestClose}
-          />
-        </div>
-      </div>
       <div className="flex flex-col gap-3">
         <div className="flex flex-row items-center justify-between">
           <div className="pl-4 text-subtitle1 font-subtitle1">
@@ -163,7 +137,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             negative
           />
         </div>
-        <div className="mb-8 flex flex-row justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100">
+        <div className="mb-2 flex flex-row justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100">
           {baseCurrency && (
             <div className="flex flex-row items-center gap-2 text-subtitle1 font-subtitle1">
               {baseCurrency.coinImageUrl && (
@@ -174,14 +148,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                   width={24}
                 />
               )}
-              <span>
-                {baseAmount.toString(
-                  baseCurrency.coinMinimalDenom
-                    ? 2
-                    : Number(baseCurrency.coinMinimalDenom)
-                )}
-              </span>
-              <span>{baseCurrency.coinDenom}</span>
+              <span>{baseAmount.trim(true).toString()}</span>
             </div>
           )}
           {quoteCurrency && (
@@ -194,14 +161,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                   width={24}
                 />
               )}
-              <span>
-                {quoteAmount.toString(
-                  quoteCurrency.coinMinimalDenom
-                    ? 2
-                    : Number(quoteCurrency.coinMinimalDenom)
-                )}
-              </span>
-              <span>{quoteCurrency.coinDenom}</span>
+              <span>{quoteAmount.trim(true).toString()}</span>
             </div>
           )}
         </div>
@@ -273,7 +233,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                   fullRange={passive}
                 />
               </div>
-              <div className="absolute right-0 top-0 mb-8 flex h-full flex-col">
+              <div className="flex h-full flex-col">
                 <div className="mt-[25px] mr-[22px] flex h-6 flex-row gap-1">
                   <ChartButton
                     alt="refresh"
@@ -296,36 +256,12 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                 </div>
                 <div className="mr-[22px] mb-4 flex h-full flex-col items-end justify-between py-4 ">
                   <PriceBox
-                    currentValue={
-                      passive
-                        ? "0"
-                        : formatPretty(
-                            new CoinPretty(
-                              baseCurrency,
-                              upperPrice.mul(
-                                new Dec(10 ** baseCurrency.coinDecimals)
-                              )
-                            ),
-                            { hideCoinDenom: true }
-                          )
-                    }
+                    currentValue={passive ? "0" : upperPrice.toString()}
                     label={t("clPositions.maxPrice")}
                     infinity={passive}
                   />
                   <PriceBox
-                    currentValue={
-                      passive
-                        ? "0"
-                        : formatPretty(
-                            new CoinPretty(
-                              baseCurrency,
-                              lowerPrice.mul(
-                                new Dec(10 ** baseCurrency.coinDecimals)
-                              )
-                            ),
-                            { hideCoinDenom: true }
-                          )
-                    }
+                    currentValue={passive ? "0" : lowerPrice.toString()}
                     label={t("clPositions.minPrice")}
                   />
                 </div>
@@ -335,10 +271,8 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
         </div>
       </div>
       <div className="mt-8 flex flex-col gap-3">
-        <div className="flex flex-row justify-between">
-          <div className="pl-4 text-subtitle1 font-subtitle1">
-            {t("clPositions.addMoreLiquidity")}
-          </div>
+        <div className="pl-4 text-subtitle1 font-subtitle1">
+          {t("clPositions.addMoreLiquidity")}
         </div>
         <div className="flex flex-col gap-2">
           <DepositAmountGroup

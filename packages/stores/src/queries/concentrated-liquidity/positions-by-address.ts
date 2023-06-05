@@ -7,7 +7,7 @@ import {
 } from "@keplr-wallet/stores";
 import { computed, makeObservable } from "mobx";
 
-import { ObservableQueryLiquidityPositionsById } from "./positions-by-id";
+import { ObservableQueryLiquidityPositionsById } from "./position-by-id";
 import { LiquidityPosition } from "./types";
 
 type QueryStoreParams = {

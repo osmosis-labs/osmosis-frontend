@@ -247,12 +247,15 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
               )
               .map((mergedId, index) => {
                 const [poolId, lowerTick, upperTick] = mergedId.split("_");
+                const merged = queryAddress?.calculateMergedPosition(
+                  poolId,
+                  lowerTick,
+                  upperTick
+                );
+
+                if (!merged) return;
                 const { positionIds, baseAmount, quoteAmount, passive } =
-                  queryAddress?.calculateMergedPosition(
-                    poolId,
-                    lowerTick,
-                    upperTick
-                  );
+                  merged;
                 return (
                   <MyPositionCard
                     key={index}

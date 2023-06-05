@@ -21,8 +21,8 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   {
     poolId: string;
     positionIds: string[];
-    baseAmount: Dec;
-    quoteAmount: Dec;
+    baseAmount: CoinPretty;
+    quoteAmount: CoinPretty;
     lowerPrice: Dec;
     upperPrice: Dec;
     passive: boolean;
@@ -151,22 +151,8 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
           />
         </div>
         <div className="mb-8 flex flex-row justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100">
-          {baseCurrency && (
-            <AssetAmountGroup
-              amount={baseAmount}
-              coinImageUrl={baseCurrency.coinImageUrl}
-              coinMinimalDenom={baseCurrency.coinMinimalDenom}
-              coinDenom={baseCurrency.coinDenom}
-            />
-          )}
-          {quoteCurrency && (
-            <AssetAmountGroup
-              amount={quoteAmount}
-              coinImageUrl={quoteCurrency.coinImageUrl}
-              coinMinimalDenom={quoteCurrency.coinMinimalDenom}
-              coinDenom={quoteCurrency.coinDenom}
-            />
-          )}
+          {baseCurrency && <AssetAmount amount={baseAmount} />}
+          {quoteCurrency && <AssetAmount amount={quoteAmount} />}
         </div>
       </div>
       <div className="flex w-full flex-col items-center gap-9">
@@ -198,7 +184,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
               75%
             </PresetPercentageButton>
             <PresetPercentageButton onClick={() => config.setPercentage(1)}>
-              MAX
+              {t("components.MAX")}
             </PresetPercentageButton>
           </div>
         </div>
@@ -209,21 +195,15 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
         </div>
         <div className="flex flex-row justify-between gap-3 rounded-[12px] border-[1.5px]  border-osmoverse-700 px-5 py-3">
           {baseCurrency && (
-            <AssetAmountGroup
+            <AssetAmount
               className="!text-body2 !font-body2"
               amount={baseAmount.mul(new Dec(config.percentage))}
-              coinImageUrl={baseCurrency.coinImageUrl}
-              coinMinimalDenom={baseCurrency.coinMinimalDenom}
-              coinDenom={baseCurrency.coinDenom}
             />
           )}
           {quoteCurrency && (
-            <AssetAmountGroup
+            <AssetAmount
               className="!text-body2 !font-body2"
               amount={quoteAmount.mul(new Dec(config.percentage))}
-              coinImageUrl={quoteCurrency.coinImageUrl}
-              coinMinimalDenom={quoteCurrency.coinMinimalDenom}
-              coinDenom={quoteCurrency.coinDenom}
             />
           )}
         </div>
@@ -255,34 +235,24 @@ function PresetPercentageButton(props: {
   );
 }
 
-function AssetAmountGroup(props: {
-  coinImageUrl?: string;
-  coinMinimalDenom?: string;
-  coinDenom: string;
-  amount: Dec;
+export const AssetAmount: FunctionComponent<{
+  amount: CoinPretty;
   className?: string;
-}) {
-  return (
-    <div
-      className={classNames(
-        "flex flex-row items-center gap-2 text-subtitle1 font-subtitle1",
-        props.className
-      )}
-    >
-      {props.coinImageUrl && (
-        <Image
-          alt="coin image"
-          src={props.coinImageUrl}
-          height={24}
-          width={24}
-        />
-      )}
-      <span>
-        {props.amount.toString(
-          props.coinMinimalDenom ? 2 : Number(props.coinMinimalDenom)
-        )}
-      </span>
-      <span>{props.coinDenom}</span>
-    </div>
-  );
-}
+}> = (props) => (
+  <div
+    className={classNames(
+      "flex flex-row items-center gap-2 text-subtitle1 font-subtitle1",
+      props.className
+    )}
+  >
+    {props.amount.currency.coinImageUrl && (
+      <Image
+        alt="coin image"
+        src={props.amount.currency.coinImageUrl}
+        height={24}
+        width={24}
+      />
+    )}
+    <span>{props.amount.trim(true).toString()}</span>
+  </div>
+);
