@@ -269,9 +269,9 @@ const AxelarTransfer: FunctionComponent<
         }
       },
       [
-        inputAmountRaw,
         nonIbcBridgeHistoryStore,
         originCurrency,
+        inputAmountRaw,
         inputAmount,
         isWithdraw,
         osmosisAccount?.address,
@@ -615,7 +615,7 @@ const AxelarTransfer: FunctionComponent<
                 { "opacity-30": isDepositAddressLoading }
               )}
               disabled={
-                (!userCanInteract && !userDisconnectedEthWallet) ||
+                !userCanInteract ||
                 (!isWithdraw &&
                   !userDisconnectedEthWallet &&
                   inputAmountRaw === "") ||

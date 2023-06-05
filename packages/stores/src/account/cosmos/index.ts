@@ -58,7 +58,9 @@ export const CosmosAccount = {
 
 export class CosmosAccountImpl {
   constructor(
-    protected readonly base: AccountStore<any>,
+    protected readonly base: AccountStore<
+      [OsmosisAccount, CosmosAccount, CosmwasmAccount]
+    >,
     protected readonly chainGetter: ChainGetter,
     protected readonly chainId: string,
     protected readonly queriesStore: IQueriesStore<
@@ -142,6 +144,8 @@ export class CosmosAccountImpl {
       timeoutTimestamp: Long.fromNumber(0),
       memo: "",
     });
+
+    console.log(msg);
 
     await this.base.signAndBroadcast(
       this.chainId,

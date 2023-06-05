@@ -5502,13 +5502,6 @@
   dependencies:
     "@types/node" "*"
 
-"@types/http-proxy@1.17.3":
-  version "1.17.3"
-  resolved "https://registry.yarnpkg.com/@types/http-proxy/-/http-proxy-1.17.3.tgz#348e1b808ff9585423cb909e9992d89ccdbf4c14"
-  integrity sha512-wIPqXANye5BbORbuh74exbwNzj+UWCwWyeEFJzUQ7Fq3W2NSAy+7x7nX1fgbEypr2/TdKqpeuxLnXWgzN533/Q==
-  dependencies:
-    "@types/node" "*"
-
 "@types/istanbul-lib-coverage@*", "@types/istanbul-lib-coverage@^2.0.0", "@types/istanbul-lib-coverage@^2.0.1":
   version "2.0.4"
   resolved "https://registry.npmjs.org/@types/istanbul-lib-coverage/-/istanbul-lib-coverage-2.0.4.tgz"
@@ -7631,22 +7624,6 @@ core-util-is@~1.0.0:
   resolved "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.3.tgz"
   integrity sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==
 
-cors-anywhere@^0.4.4:
-  version "0.4.4"
-  resolved "https://registry.yarnpkg.com/cors-anywhere/-/cors-anywhere-0.4.4.tgz#98892fcab55f408fff13a63e125135c18dc22ca8"
-  integrity sha512-8OBFwnzMgR4mNrAeAyOLB2EruS2z7u02of2bOu7i9kKYlZG+niS7CTHLPgEXKWW2NAOJWRry9RRCaL9lJRjNqg==
-  dependencies:
-    http-proxy "1.11.1"
-    proxy-from-env "0.0.1"
-
-cors@^2.8.5:
-  version "2.8.5"
-  resolved "https://registry.yarnpkg.com/cors/-/cors-2.8.5.tgz#eac11da51592dd86b9f06f6e7ac293b3df875d29"
-  integrity sha512-KIHbLJqu73RGr/hnbrO9uBeixNGuvSQjul/jdFvS/KFSIH1hWVd1ng7zOHx+YrEfInLG7q4n6GHQ9cDtxv/P6g==
-  dependencies:
-    object-assign "^4"
-    vary "^1"
-
 cosmiconfig@^7.0.0:
   version "7.0.1"
   resolved "https://registry.npmjs.org/cosmiconfig/-/cosmiconfig-7.0.1.tgz"
@@ -8742,12 +8719,7 @@ event-emitter@^0.3.5:
     d "1"
     es5-ext "~0.10.14"
 
-eventemitter3@1.x.x:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-1.2.0.tgz#1c86991d816ad1e504750e73874224ecf3bec508"
-  integrity sha512-DOFqA1MF46fmZl2xtzXR3MPCRsXqgoFqdXcrCVYM3JNnfUeHTm/fh/v/iU7gBFpwkuBmoJPAm5GuhdDfSEJMJA==
-
-eventemitter3@^4.0.0, eventemitter3@^4.0.4, eventemitter3@^4.0.7:
+eventemitter3@^4.0.4, eventemitter3@^4.0.7:
   version "4.0.7"
   resolved "https://registry.npmjs.org/eventemitter3/-/eventemitter3-4.0.7.tgz"
   integrity sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==
@@ -9017,11 +8989,6 @@ focus-trap@^7.2.0:
   integrity sha512-v4wY6HDDYvzkBy4735kW5BUEuw6Yz9ABqMYLuTNbzAFPcBOGiGHwwcNVMvUz4G0kgSYh13wa/7TG3XwTeT4O/A==
   dependencies:
     tabbable "^6.0.1"
-
-follow-redirects@^1.0.0:
-  version "1.15.2"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.2.tgz#b460864144ba63f2681096f274c4e57026da2c13"
-  integrity sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==
 
 follow-redirects@^1.10.0, follow-redirects@^1.14.0:
   version "1.14.7"
@@ -9585,23 +9552,6 @@ http-proxy-agent@^5.0.0:
     "@tootallnate/once" "2"
     agent-base "6"
     debug "4"
-
-http-proxy@1.11.1:
-  version "1.11.1"
-  resolved "https://registry.yarnpkg.com/http-proxy/-/http-proxy-1.11.1.tgz#71df55757e802d58ea810df2244019dda05ae85d"
-  integrity sha512-qz7jZarkVG3G6GMq+4VRJPSN4NkIjL4VMTNhKGd8jc25BumeJjWWvnY3A7OkCGa8W1TTxbaK3dcE0ijFalITVA==
-  dependencies:
-    eventemitter3 "1.x.x"
-    requires-port "0.x.x"
-
-http-proxy@^1.18.1:
-  version "1.18.1"
-  resolved "https://registry.yarnpkg.com/http-proxy/-/http-proxy-1.18.1.tgz#401541f0534884bbf95260334e72f88ee3976549"
-  integrity sha512-7mz/721AbnJwIVbnaSv1Cz3Am0ZLT/UBwkC92VlxhXv/k/BBQfM2fXElQNC27BVGr0uwUpplYPQM9LnaBMR5NQ==
-  dependencies:
-    eventemitter3 "^4.0.0"
-    follow-redirects "^1.0.0"
-    requires-port "^1.0.0"
 
 http-signature@~1.2.0:
   version "1.2.0"
@@ -12148,14 +12098,6 @@ neo-async@^2.6.0:
   resolved "https://registry.npmjs.org/neo-async/-/neo-async-2.6.2.tgz"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
-next-http-proxy-middleware@^1.2.5:
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/next-http-proxy-middleware/-/next-http-proxy-middleware-1.2.5.tgz#d4e974108120d88db7fc7e2ea5fd4f67d037df70"
-  integrity sha512-ni73cl1FKC3s1aTD1aziIhV07TiG5ZrtyCkw8S0yqBRvTIJ2tqII1R+aEgxRav42W2Ht8yTpy96gQuaDJwNOMQ==
-  dependencies:
-    "@types/http-proxy" "1.17.3"
-    http-proxy "^1.18.1"
-
 next-tick@1, next-tick@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/next-tick/-/next-tick-1.1.0.tgz#1836ee30ad56d67ef281b22bd199f709449b35eb"
@@ -12444,7 +12386,7 @@ oauth-sign@~0.9.0:
   resolved "https://registry.npmjs.org/oauth-sign/-/oauth-sign-0.9.0.tgz"
   integrity sha512-fexhUFFPTGV8ybAtSIGbV6gOkSv8UtRbDBnAyLQw4QPKkgNlsH2ByPGtMUqdWkos6YCRmAqViwgZrJc/mRDzZQ==
 
-object-assign@^4, object-assign@^4.0.1, object-assign@^4.1.0, object-assign@^4.1.1:
+object-assign@^4.0.1, object-assign@^4.1.0, object-assign@^4.1.1:
   version "4.1.1"
   resolved "https://registry.npmjs.org/object-assign/-/object-assign-4.1.1.tgz"
   integrity sha1-IQmtx5ZYh8/AXLvUQsrIv7s2CGM=
@@ -13188,11 +13130,6 @@ protocols@^1.1.0, protocols@^1.4.0:
   resolved "https://registry.npmjs.org/protocols/-/protocols-1.4.8.tgz"
   integrity sha512-IgjKyaUSjsROSO8/D49Ab7hP8mJgTYcqApOqdPhLoPxAplXmkp+zRvsrSQjFn5by0rhm4VH0GAUELIPpx7B1yg==
 
-proxy-from-env@0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/proxy-from-env/-/proxy-from-env-0.0.1.tgz#b27c4946e9e6d5dbadb7598a6435d3014c4cfd49"
-  integrity sha512-B9Hnta3CATuMS0q6kt5hEezOPM+V3dgaRewkFtFoaRQYTVNsHqUvFXmndH06z3QO1ZdDnRELv5vfY6zAj/gG7A==
-
 pseudomap@^1.0.2:
   version "1.0.2"
   resolved "https://registry.npmjs.org/pseudomap/-/pseudomap-1.0.2.tgz"
@@ -13708,11 +13645,6 @@ require-directory@^2.1.1:
   version "2.1.1"
   resolved "https://registry.npmjs.org/require-directory/-/require-directory-2.1.1.tgz"
   integrity sha1-jGStX9MNqxyXbiNE/+f3kqam30I=
-
-requires-port@0.x.x:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/requires-port/-/requires-port-0.0.1.tgz#4b4414411d9df7c855995dd899a8c78a2951c16d"
-  integrity sha512-AzPDCliPoWDSvEVYRQmpzuPhGGEnPrQz9YiOEvn+UdB9ixBpw+4IOZWtwctmpzySLZTy7ynpn47V14H4yaowtA==
 
 requires-port@^1.0.0:
   version "1.0.0"
@@ -15499,11 +15431,6 @@ value-equal@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/value-equal/-/value-equal-1.0.1.tgz"
   integrity sha512-NOJ6JZCAWr0zlxZt+xqCHNTEKOsrks2HQd4MqhP1qy4z1SkbEP467eNx6TgDKXMvUOb+OENfJCZwM+16n7fRfw==
-
-vary@^1:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
-  integrity sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==
 
 verror@1.10.0:
   version "1.10.0"

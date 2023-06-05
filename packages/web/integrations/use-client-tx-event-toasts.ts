@@ -31,7 +31,8 @@ export function useTxEventToasts(
           ? ToastType.SUCCESS
           : ToastType.ERROR
       ),
-    [client]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [client?.makeExplorerUrl]
   );
 
   const { handlePending, handleConfirmed, handleFailed } = useMemo(
@@ -65,5 +66,6 @@ export function useTxEventToasts(
       );
       client?.txStatusEventEmitter?.removeListener("failed", handleFailed);
     };
-  }, [client, handleConfirmed, handleFailed, handlePending]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [client]);
 }
