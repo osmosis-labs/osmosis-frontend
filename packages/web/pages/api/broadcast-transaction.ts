@@ -26,7 +26,7 @@ export default async function handler(
   };
 
   const isEndpointInChainConfig = ChainInfos.some(({ apis }) =>
-    apis?.rest?.some(({ address }) => address === body.restEndpoint)
+    apis?.rest?.some(({ address }) => address.startsWith(body.restEndpoint))
   );
 
   if (!isEndpointInChainConfig) {
