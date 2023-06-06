@@ -43,7 +43,7 @@ import { formatICNSName, getShortAddress } from "../utils/string";
 import { ModalBase, ModalBaseProps } from "./base";
 import { FiatOnrampSelectionModal } from "./fiat-on-ramp-selection";
 
-const QRCode = dynamic(() => import("qrcode.react"));
+const QRCode = dynamic(() => import("~/components/qrcode"));
 
 export const ProfileModal: FunctionComponent<
   ModalBaseProps & { icnsName?: string }
