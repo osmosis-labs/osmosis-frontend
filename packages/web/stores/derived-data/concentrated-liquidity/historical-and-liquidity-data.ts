@@ -25,12 +25,6 @@ export class ObservableHistoricalAndLiquidityData {
   protected _historicalRange: PriceRange = "7d";
 
   /*
-    Used to get historical data for price chart
-  */
-  @observable
-  protected _historicalChartData: TokenPairHistoricalPrice[] = [];
-
-  /*
     Used to get active liquidity data
   */
   @observable
@@ -51,9 +45,8 @@ export class ObservableHistoricalAndLiquidityData {
     readonly poolId: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly queryRange: ObservableQueryLiquidityPerTickRange,
-    protected readonly queryHistorical: DeepReadonly<ObservableQueryTokensPairHistoricalChart>
+    protected readonly queryTokenPairHistoricalPrice: DeepReadonly<ObservableQueryTokensPairHistoricalChart>
   ) {
-    this.fetchHistoricalChartData();
     makeObservable(this);
   }
 
@@ -99,40 +92,16 @@ export class ObservableHistoricalAndLiquidityData {
       .findCurrency(this.quoteDenom);
   }
 
-  private fetchHistoricalChartData() {
-    const query = this.queryHistorical.get(
-      this.poolId,
-      this.historicalRange,
-      this.baseDenom,
-      this.quoteDenom
-    );
-
-    query.waitResponse().then(() => {
-      this.setHistoricalChartData(query.getChartPrices);
-      if (this.lastChartData) {
-        this.setHoverPrice(this.lastChartData?.close);
-      }
-    });
-  }
-
   @computed
   get lastChartData(): TokenPairHistoricalPrice | null {
     return (
-      this._historicalChartData[this._historicalChartData.length - 1] || null
+      this.historicalChartData[this.historicalChartData.length - 1] || null
     );
   }
-
-  @action
-  readonly setHistoricalChartData = (
-    historicalData: TokenPairHistoricalPrice[]
-  ) => {
-    this._historicalChartData = historicalData;
-  };
 
   @action
   setHistoricalRange = (range: PriceRange) => {
     this._historicalRange = range;
-    this.fetchHistoricalChartData();
   };
 
   get historicalRange(): PriceRange {
@@ -182,12 +151,20 @@ export class ObservableHistoricalAndLiquidityData {
   };
 
   @action
-  readonly setRange = (range?: [Dec, Dec]) => {
+  readonly setPriceRange = (range?: [Dec, Dec]) => {
     this._priceRange = range;
   };
 
+  @computed
   get historicalChartData(): TokenPairHistoricalPrice[] {
-    return this._historicalChartData;
+    const query = this.queryTokenPairHistoricalPrice.get(
+      this.poolId,
+      this.historicalRange,
+      this.baseDenom,
+      this.quoteDenom
+    );
+
+    return query.getChartPrices;
   }
 
   get range(): [Dec, Dec] | undefined {
