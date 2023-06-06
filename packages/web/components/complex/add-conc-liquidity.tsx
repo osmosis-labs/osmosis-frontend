@@ -250,8 +250,8 @@ const StrategySelector: FunctionComponent<{
       className={classNames(
         "flex flex-1 flex-col items-center justify-center gap-4 rounded-[20px] bg-osmoverse-700/[.6] p-[2px]",
         {
-          "bg-supercharged-gradient": selected,
-          "hover:bg-supercharged-gradient cursor-pointer": onClick,
+          "bg-supercharged": selected,
+          "cursor-pointer hover:bg-supercharged": onClick,
         }
       )}
       onClick={onClick}
@@ -677,8 +677,8 @@ const PresetStrategyCard: FunctionComponent<
         className={classNames(
           "flex w-[114px] flex-row items-center justify-center gap-2 rounded-2xl p-[2px]",
           {
-            "bg-supercharged-gradient": isSelected,
-            "hover:bg-supercharged-gradient cursor-pointer": type !== null,
+            "bg-supercharged": isSelected,
+            "cursor-pointer hover:bg-supercharged": type !== null,
           }
         )}
         onClick={onClick}

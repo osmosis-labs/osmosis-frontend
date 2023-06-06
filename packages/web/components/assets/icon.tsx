@@ -30,7 +30,8 @@ export type SpriteIconId =
   | "github"
   | "twitter"
   | "medium"
-  | "alert-triangle";
+  | "alert-triangle"
+  | "lightning";
 
 /**
  * It takes an icon id and returns an svg element with the corresponding icon defined in /public/icons/sprite.svg.
