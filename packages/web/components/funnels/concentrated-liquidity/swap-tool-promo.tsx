@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { FunctionComponent, useMemo } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 
 /** Show link to pools page in promo drawer if the send or out currency in swap tool is in the given list of pools.
@@ -51,7 +52,7 @@ export const SwapToolPromo: FunctionComponent<{
         width={42}
         height={64}
       />
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-0.5">
         {denomInClPool && (
           <span className="subtitle1 text-osmoverse-100">
             {t("swap.promo.newOpportunity", { denom: denomInClPool })}
@@ -60,17 +61,12 @@ export const SwapToolPromo: FunctionComponent<{
         <Button
           size="sm"
           mode="secondary"
-          className="text-supercharged-gradient !h-fit gap-3 rounded-lg border-supercharged py-0.5"
+          className="text-supercharged-gradient subtitle1 !h-fit gap-3 rounded-lg border-supercharged py-1"
           onClick={() => {
             router.push("/pools?pool=concentrated");
           }}
         >
-          <Image
-            alt="lightining bolt"
-            src="/icons/lightning.svg"
-            width={11}
-            height={22}
-          />
+          <Icon id="lightning" height="22" />
           {t("swap.promo.discoverSuperchargedPools")}
         </Button>
       </div>
