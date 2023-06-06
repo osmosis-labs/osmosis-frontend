@@ -72,7 +72,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     priceDecimal,
     setHistoricalRange,
     hoverPrice,
-    setRange,
+    setPriceRange,
   } = useHistoricalAndLiquidityData(chainId, poolId);
 
   const { config, addLiquidity } = useAddConcentratedLiquidityConfig(
@@ -111,7 +111,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   );
 
   useEffect(() => {
-    setRange([lowerPrice, upperPrice]);
+    setPriceRange([lowerPrice, upperPrice]);
     config.setMinRange(lowerPrice);
     config.setMaxRange(upperPrice);
   }, [lowerPrice.toString(), upperPrice.toString()]);

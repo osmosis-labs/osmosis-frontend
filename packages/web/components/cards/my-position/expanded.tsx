@@ -66,7 +66,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
       baseDenom,
       quoteDenom,
       hoverPrice,
-      setRange,
+      setPriceRange,
     } = chartConfig;
 
     const t = useTranslation();
@@ -76,7 +76,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     >(null);
 
     useEffect(() => {
-      setRange([lowerPrice, upperPrice]);
+      setPriceRange([lowerPrice, upperPrice]);
     }, [lowerPrice.toString(), upperPrice.toString()]);
 
     return (
