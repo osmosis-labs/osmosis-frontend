@@ -207,7 +207,9 @@ export class RootStore {
         : IS_FRONTIER
         ? "https://frontier.osmosis.zone"
         : "https://app.osmosis.zone",
-      IS_TESTNET ? "https://api.osmotest5.osmosis.zone/" : undefined
+      IS_TESTNET ? "https://api.osmotest5.osmosis.zone/" : undefined,
+      undefined,
+      IS_TESTNET
     );
 
     this.assetsStore = new ObservableAssets(

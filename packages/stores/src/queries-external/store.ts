@@ -38,7 +38,8 @@ export class QueriesExternalStore {
     incentivizedPools: ObservableQueryIncentivizedPools,
     webApiBaseUrl: string,
     feeMetricsBaseURL = IMPERATOR_HISTORICAL_DATA_BASEURL,
-    poolRewardsBaseUrl = IMPERATOR_TX_REWARD_BASEURL
+    poolRewardsBaseUrl = IMPERATOR_TX_REWARD_BASEURL,
+    isTestnet = false
   ) {
     this.queryGammPoolFeeMetrics = new ObservableQueryPoolFeesMetrics(
       kvStore,
@@ -63,7 +64,8 @@ export class QueriesExternalStore {
       new ObservableQueryTokensPairHistoricalChart(
         kvStore,
         priceStore,
-        feeMetricsBaseURL
+        feeMetricsBaseURL,
+        isTestnet
       );
     this.queryTokenData = new ObservableQueryTokensData(
       kvStore,
