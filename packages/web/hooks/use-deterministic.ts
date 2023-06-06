@@ -1,6 +1,6 @@
-import { sha256 } from "sha.js";
 import { Buffer } from "buffer";
 import { useMemo } from "react";
+import { sha256 } from "sha.js";
 
 /**
  * useDeterministicIntegerFromString returns the deterministic 32bit integer from string

@@ -58,7 +58,9 @@ export const CosmosAccount = {
 
 export class CosmosAccountImpl {
   constructor(
-    protected readonly base: AccountStore<any>,
+    protected readonly base: AccountStore<
+      [OsmosisAccount, CosmosAccount, CosmwasmAccount]
+    >,
     protected readonly chainGetter: ChainGetter,
     protected readonly chainId: string,
     protected readonly queriesStore: IQueriesStore<

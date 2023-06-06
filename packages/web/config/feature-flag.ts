@@ -37,10 +37,10 @@ export const Announcement:
       isWarning: true,
     }
   : {
-      enTextOrLocalizationPath: "ibcx.description",
+      enTextOrLocalizationPath: "autonomy.description",
       link: {
-        enTextOrLocalizationKey: "ibcx.link",
-        url: "https://index.ion.wtf/",
+        enTextOrLocalizationKey: "autonomy.link",
+        url: "https://osmosis.autoswap.trade/",
         isExternal: true,
       },
     };

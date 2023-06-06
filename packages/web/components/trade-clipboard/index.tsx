@@ -415,9 +415,8 @@ export const TradeClipboard: FunctionComponent<{
 
         const tokenIn = {
           currency: tokenInCurrency,
-          amount: tradeTokenInConfig.amount,
+          amount: tradeTokenInConfig.getAmountPrimitive().amount,
         };
-        const maxSlippage = slippageConfig.slippage.symbol("").toString();
 
         try {
           logEvent([
@@ -435,7 +434,7 @@ export const TradeClipboard: FunctionComponent<{
               routePools[0].poolId,
               tokenIn,
               routePools[0].tokenOutCurrency,
-              maxSlippage,
+              minOutAmountLessSlippage.toCoin().amount,
               "",
               {
                 amount: [
@@ -463,7 +462,7 @@ export const TradeClipboard: FunctionComponent<{
             await account.osmosis.sendMultihopSwapExactAmountInMsg(
               routePools,
               tokenIn,
-              maxSlippage,
+              minOutAmountLessSlippage.toCoin().amount,
               "",
               {
                 amount: [

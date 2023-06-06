@@ -135,7 +135,7 @@ export interface EmptyStructSDKType {}
 export interface GetTotalPoolLiquidityQueryMsg {
   /**
    * get_total_pool_liquidity is the structure containing request field of the
-   * spot price query message.
+   * total pool liquidity query message.
    */
   getTotalPoolLiquidity?: EmptyStruct;
 }
@@ -146,7 +146,7 @@ export interface GetTotalPoolLiquidityQueryMsgProtoMsg {
 export interface GetTotalPoolLiquidityQueryMsgAmino {
   /**
    * get_total_pool_liquidity is the structure containing request field of the
-   * spot price query message.
+   * total pool liquidity query message.
    */
   get_total_pool_liquidity?: EmptyStructAmino;
 }
@@ -181,6 +181,53 @@ export interface GetTotalPoolLiquidityQueryMsgResponseAminoMsg {
 }
 export interface GetTotalPoolLiquidityQueryMsgResponseSDKType {
   total_pool_liquidity: CoinSDKType[];
+}
+/** ===================== GetTotalSharesQueryMsg */
+export interface GetTotalSharesQueryMsg {
+  /**
+   * get_total_shares is the structure containing request field of the
+   * total shares query message.
+   */
+  getTotalShares?: EmptyStruct;
+}
+export interface GetTotalSharesQueryMsgProtoMsg {
+  typeUrl: "/osmosis.cosmwasmpool.v1beta1.GetTotalSharesQueryMsg";
+  value: Uint8Array;
+}
+/** ===================== GetTotalSharesQueryMsg */
+export interface GetTotalSharesQueryMsgAmino {
+  /**
+   * get_total_shares is the structure containing request field of the
+   * total shares query message.
+   */
+  get_total_shares?: EmptyStructAmino;
+}
+export interface GetTotalSharesQueryMsgAminoMsg {
+  type: "osmosis/cosmwasmpool/get-total-shares-query-msg";
+  value: GetTotalSharesQueryMsgAmino;
+}
+/** ===================== GetTotalSharesQueryMsg */
+export interface GetTotalSharesQueryMsgSDKType {
+  get_total_shares?: EmptyStructSDKType;
+}
+export interface GetTotalSharesQueryMsgResponse {
+  /** total_shares is the amount of shares returned. */
+  totalShares: string;
+}
+export interface GetTotalSharesQueryMsgResponseProtoMsg {
+  typeUrl: "/osmosis.cosmwasmpool.v1beta1.GetTotalSharesQueryMsgResponse";
+  value: Uint8Array;
+}
+export interface GetTotalSharesQueryMsgResponseAmino {
+  /** total_shares is the amount of shares returned. */
+  total_shares: string;
+}
+export interface GetTotalSharesQueryMsgResponseAminoMsg {
+  type: "osmosis/cosmwasmpool/get-total-shares-query-msg-response";
+  value: GetTotalSharesQueryMsgResponseAmino;
+}
+export interface GetTotalSharesQueryMsgResponseSDKType {
+  total_shares: string;
 }
 function createBaseGetSwapFeeQueryMsg(): GetSwapFeeQueryMsg {
   return {
@@ -837,6 +884,178 @@ export const GetTotalPoolLiquidityQueryMsgResponse = {
       typeUrl:
         "/osmosis.cosmwasmpool.v1beta1.GetTotalPoolLiquidityQueryMsgResponse",
       value: GetTotalPoolLiquidityQueryMsgResponse.encode(message).finish(),
+    };
+  },
+};
+function createBaseGetTotalSharesQueryMsg(): GetTotalSharesQueryMsg {
+  return {
+    getTotalShares: undefined,
+  };
+}
+export const GetTotalSharesQueryMsg = {
+  typeUrl: "/osmosis.cosmwasmpool.v1beta1.GetTotalSharesQueryMsg",
+  encode(
+    message: GetTotalSharesQueryMsg,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.getTotalShares !== undefined) {
+      EmptyStruct.encode(
+        message.getTotalShares,
+        writer.uint32(10).fork()
+      ).ldelim();
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): GetTotalSharesQueryMsg {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetTotalSharesQueryMsg();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.getTotalShares = EmptyStruct.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<GetTotalSharesQueryMsg>): GetTotalSharesQueryMsg {
+    const message = createBaseGetTotalSharesQueryMsg();
+    message.getTotalShares =
+      object.getTotalShares !== undefined && object.getTotalShares !== null
+        ? EmptyStruct.fromPartial(object.getTotalShares)
+        : undefined;
+    return message;
+  },
+  fromAmino(object: GetTotalSharesQueryMsgAmino): GetTotalSharesQueryMsg {
+    return {
+      getTotalShares: object?.get_total_shares
+        ? EmptyStruct.fromAmino(object.get_total_shares)
+        : undefined,
+    };
+  },
+  toAmino(message: GetTotalSharesQueryMsg): GetTotalSharesQueryMsgAmino {
+    const obj: any = {};
+    obj.get_total_shares = message.getTotalShares
+      ? EmptyStruct.toAmino(message.getTotalShares)
+      : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: GetTotalSharesQueryMsgAminoMsg): GetTotalSharesQueryMsg {
+    return GetTotalSharesQueryMsg.fromAmino(object.value);
+  },
+  toAminoMsg(message: GetTotalSharesQueryMsg): GetTotalSharesQueryMsgAminoMsg {
+    return {
+      type: "osmosis/cosmwasmpool/get-total-shares-query-msg",
+      value: GetTotalSharesQueryMsg.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: GetTotalSharesQueryMsgProtoMsg
+  ): GetTotalSharesQueryMsg {
+    return GetTotalSharesQueryMsg.decode(message.value);
+  },
+  toProto(message: GetTotalSharesQueryMsg): Uint8Array {
+    return GetTotalSharesQueryMsg.encode(message).finish();
+  },
+  toProtoMsg(message: GetTotalSharesQueryMsg): GetTotalSharesQueryMsgProtoMsg {
+    return {
+      typeUrl: "/osmosis.cosmwasmpool.v1beta1.GetTotalSharesQueryMsg",
+      value: GetTotalSharesQueryMsg.encode(message).finish(),
+    };
+  },
+};
+function createBaseGetTotalSharesQueryMsgResponse(): GetTotalSharesQueryMsgResponse {
+  return {
+    totalShares: "",
+  };
+}
+export const GetTotalSharesQueryMsgResponse = {
+  typeUrl: "/osmosis.cosmwasmpool.v1beta1.GetTotalSharesQueryMsgResponse",
+  encode(
+    message: GetTotalSharesQueryMsgResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.totalShares !== "") {
+      writer.uint32(10).string(message.totalShares);
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): GetTotalSharesQueryMsgResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetTotalSharesQueryMsgResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.totalShares = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<GetTotalSharesQueryMsgResponse>
+  ): GetTotalSharesQueryMsgResponse {
+    const message = createBaseGetTotalSharesQueryMsgResponse();
+    message.totalShares = object.totalShares ?? "";
+    return message;
+  },
+  fromAmino(
+    object: GetTotalSharesQueryMsgResponseAmino
+  ): GetTotalSharesQueryMsgResponse {
+    return {
+      totalShares: object.total_shares,
+    };
+  },
+  toAmino(
+    message: GetTotalSharesQueryMsgResponse
+  ): GetTotalSharesQueryMsgResponseAmino {
+    const obj: any = {};
+    obj.total_shares = message.totalShares;
+    return obj;
+  },
+  fromAminoMsg(
+    object: GetTotalSharesQueryMsgResponseAminoMsg
+  ): GetTotalSharesQueryMsgResponse {
+    return GetTotalSharesQueryMsgResponse.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: GetTotalSharesQueryMsgResponse
+  ): GetTotalSharesQueryMsgResponseAminoMsg {
+    return {
+      type: "osmosis/cosmwasmpool/get-total-shares-query-msg-response",
+      value: GetTotalSharesQueryMsgResponse.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: GetTotalSharesQueryMsgResponseProtoMsg
+  ): GetTotalSharesQueryMsgResponse {
+    return GetTotalSharesQueryMsgResponse.decode(message.value);
+  },
+  toProto(message: GetTotalSharesQueryMsgResponse): Uint8Array {
+    return GetTotalSharesQueryMsgResponse.encode(message).finish();
+  },
+  toProtoMsg(
+    message: GetTotalSharesQueryMsgResponse
+  ): GetTotalSharesQueryMsgResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.cosmwasmpool.v1beta1.GetTotalSharesQueryMsgResponse",
+      value: GetTotalSharesQueryMsgResponse.encode(message).finish(),
     };
   },
 };

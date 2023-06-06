@@ -398,6 +398,40 @@ export interface LockedResponseAminoMsg {
 export interface LockedResponseSDKType {
   lock?: PeriodLockSDKType;
 }
+export interface LockRewardReceiverRequest {
+  lockId: Long;
+}
+export interface LockRewardReceiverRequestProtoMsg {
+  typeUrl: "/osmosis.lockup.LockRewardReceiverRequest";
+  value: Uint8Array;
+}
+export interface LockRewardReceiverRequestAmino {
+  lock_id: string;
+}
+export interface LockRewardReceiverRequestAminoMsg {
+  type: "osmosis/lockup/lock-reward-receiver-request";
+  value: LockRewardReceiverRequestAmino;
+}
+export interface LockRewardReceiverRequestSDKType {
+  lock_id: Long;
+}
+export interface LockRewardReceiverResponse {
+  rewardReceiver: string;
+}
+export interface LockRewardReceiverResponseProtoMsg {
+  typeUrl: "/osmosis.lockup.LockRewardReceiverResponse";
+  value: Uint8Array;
+}
+export interface LockRewardReceiverResponseAmino {
+  reward_receiver: string;
+}
+export interface LockRewardReceiverResponseAminoMsg {
+  type: "osmosis/lockup/lock-reward-receiver-response";
+  value: LockRewardReceiverResponseAmino;
+}
+export interface LockRewardReceiverResponseSDKType {
+  reward_receiver: string;
+}
 export interface NextLockIDRequest {}
 export interface NextLockIDRequestProtoMsg {
   typeUrl: "/osmosis.lockup.NextLockIDRequest";
@@ -2641,6 +2675,179 @@ export const LockedResponse = {
     return {
       typeUrl: "/osmosis.lockup.LockedResponse",
       value: LockedResponse.encode(message).finish(),
+    };
+  },
+};
+function createBaseLockRewardReceiverRequest(): LockRewardReceiverRequest {
+  return {
+    lockId: Long.UZERO,
+  };
+}
+export const LockRewardReceiverRequest = {
+  typeUrl: "/osmosis.lockup.LockRewardReceiverRequest",
+  encode(
+    message: LockRewardReceiverRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (!message.lockId.isZero()) {
+      writer.uint32(8).uint64(message.lockId);
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): LockRewardReceiverRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseLockRewardReceiverRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.lockId = reader.uint64() as Long;
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<LockRewardReceiverRequest>
+  ): LockRewardReceiverRequest {
+    const message = createBaseLockRewardReceiverRequest();
+    message.lockId =
+      object.lockId !== undefined && object.lockId !== null
+        ? Long.fromValue(object.lockId)
+        : Long.UZERO;
+    return message;
+  },
+  fromAmino(object: LockRewardReceiverRequestAmino): LockRewardReceiverRequest {
+    return {
+      lockId: Long.fromString(object.lock_id),
+    };
+  },
+  toAmino(message: LockRewardReceiverRequest): LockRewardReceiverRequestAmino {
+    const obj: any = {};
+    obj.lock_id = message.lockId ? message.lockId.toString() : undefined;
+    return obj;
+  },
+  fromAminoMsg(
+    object: LockRewardReceiverRequestAminoMsg
+  ): LockRewardReceiverRequest {
+    return LockRewardReceiverRequest.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: LockRewardReceiverRequest
+  ): LockRewardReceiverRequestAminoMsg {
+    return {
+      type: "osmosis/lockup/lock-reward-receiver-request",
+      value: LockRewardReceiverRequest.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: LockRewardReceiverRequestProtoMsg
+  ): LockRewardReceiverRequest {
+    return LockRewardReceiverRequest.decode(message.value);
+  },
+  toProto(message: LockRewardReceiverRequest): Uint8Array {
+    return LockRewardReceiverRequest.encode(message).finish();
+  },
+  toProtoMsg(
+    message: LockRewardReceiverRequest
+  ): LockRewardReceiverRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.lockup.LockRewardReceiverRequest",
+      value: LockRewardReceiverRequest.encode(message).finish(),
+    };
+  },
+};
+function createBaseLockRewardReceiverResponse(): LockRewardReceiverResponse {
+  return {
+    rewardReceiver: "",
+  };
+}
+export const LockRewardReceiverResponse = {
+  typeUrl: "/osmosis.lockup.LockRewardReceiverResponse",
+  encode(
+    message: LockRewardReceiverResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.rewardReceiver !== "") {
+      writer.uint32(10).string(message.rewardReceiver);
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): LockRewardReceiverResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseLockRewardReceiverResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.rewardReceiver = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<LockRewardReceiverResponse>
+  ): LockRewardReceiverResponse {
+    const message = createBaseLockRewardReceiverResponse();
+    message.rewardReceiver = object.rewardReceiver ?? "";
+    return message;
+  },
+  fromAmino(
+    object: LockRewardReceiverResponseAmino
+  ): LockRewardReceiverResponse {
+    return {
+      rewardReceiver: object.reward_receiver,
+    };
+  },
+  toAmino(
+    message: LockRewardReceiverResponse
+  ): LockRewardReceiverResponseAmino {
+    const obj: any = {};
+    obj.reward_receiver = message.rewardReceiver;
+    return obj;
+  },
+  fromAminoMsg(
+    object: LockRewardReceiverResponseAminoMsg
+  ): LockRewardReceiverResponse {
+    return LockRewardReceiverResponse.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: LockRewardReceiverResponse
+  ): LockRewardReceiverResponseAminoMsg {
+    return {
+      type: "osmosis/lockup/lock-reward-receiver-response",
+      value: LockRewardReceiverResponse.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: LockRewardReceiverResponseProtoMsg
+  ): LockRewardReceiverResponse {
+    return LockRewardReceiverResponse.decode(message.value);
+  },
+  toProto(message: LockRewardReceiverResponse): Uint8Array {
+    return LockRewardReceiverResponse.encode(message).finish();
+  },
+  toProtoMsg(
+    message: LockRewardReceiverResponse
+  ): LockRewardReceiverResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.lockup.LockRewardReceiverResponse",
+      value: LockRewardReceiverResponse.encode(message).finish(),
     };
   },
 };

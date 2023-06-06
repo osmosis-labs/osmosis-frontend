@@ -3,54 +3,42 @@ import * as _m0 from "protobufjs/minimal";
 
 import { Long } from "../../helpers";
 /**
- * CreateConcentratedLiquidityPoolProposal is a gov Content type for creating a
- * concentrated liquidity pool. If a CreateConcentratedLiquidityPoolProposal
- * passes, pool is created via pool manager module account.
+ * CreateConcentratedLiquidityPoolsProposal is a gov Content type for creating
+ * concentrated liquidity pools. If a CreateConcentratedLiquidityPoolsProposal
+ * passes, the pools are created via pool manager module account.
  */
-export interface CreateConcentratedLiquidityPoolProposal {
+export interface CreateConcentratedLiquidityPoolsProposal {
   title: string;
   description: string;
-  denom0: string;
-  denom1: string;
-  tickSpacing: Long;
-  exponentAtPriceOne: string;
-  spreadFactor: string;
+  poolRecords: PoolRecord[];
 }
-export interface CreateConcentratedLiquidityPoolProposalProtoMsg {
-  typeUrl: "/osmosis.concentratedliquidity.v1beta1.CreateConcentratedLiquidityPoolProposal";
+export interface CreateConcentratedLiquidityPoolsProposalProtoMsg {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.CreateConcentratedLiquidityPoolsProposal";
   value: Uint8Array;
 }
 /**
- * CreateConcentratedLiquidityPoolProposal is a gov Content type for creating a
- * concentrated liquidity pool. If a CreateConcentratedLiquidityPoolProposal
- * passes, pool is created via pool manager module account.
+ * CreateConcentratedLiquidityPoolsProposal is a gov Content type for creating
+ * concentrated liquidity pools. If a CreateConcentratedLiquidityPoolsProposal
+ * passes, the pools are created via pool manager module account.
  */
-export interface CreateConcentratedLiquidityPoolProposalAmino {
+export interface CreateConcentratedLiquidityPoolsProposalAmino {
   title: string;
   description: string;
-  denom0: string;
-  denom1: string;
-  tick_spacing: string;
-  exponent_at_price_one: string;
-  spread_factor: string;
+  pool_records: PoolRecordAmino[];
 }
-export interface CreateConcentratedLiquidityPoolProposalAminoMsg {
-  type: "osmosis/concentratedliquidity/create-concentrated-liquidity-pool-proposal";
-  value: CreateConcentratedLiquidityPoolProposalAmino;
+export interface CreateConcentratedLiquidityPoolsProposalAminoMsg {
+  type: "osmosis/concentratedliquidity/create-concentrated-liquidity-pools-proposal";
+  value: CreateConcentratedLiquidityPoolsProposalAmino;
 }
 /**
- * CreateConcentratedLiquidityPoolProposal is a gov Content type for creating a
- * concentrated liquidity pool. If a CreateConcentratedLiquidityPoolProposal
- * passes, pool is created via pool manager module account.
+ * CreateConcentratedLiquidityPoolsProposal is a gov Content type for creating
+ * concentrated liquidity pools. If a CreateConcentratedLiquidityPoolsProposal
+ * passes, the pools are created via pool manager module account.
  */
-export interface CreateConcentratedLiquidityPoolProposalSDKType {
+export interface CreateConcentratedLiquidityPoolsProposalSDKType {
   title: string;
   description: string;
-  denom0: string;
-  denom1: string;
-  tick_spacing: Long;
-  exponent_at_price_one: string;
-  spread_factor: string;
+  pool_records: PoolRecordSDKType[];
 }
 /**
  * TickSpacingDecreaseProposal is a gov Content type for proposing a tick
@@ -125,22 +113,47 @@ export interface PoolIdToTickSpacingRecordSDKType {
   pool_id: Long;
   new_tick_spacing: Long;
 }
-function createBaseCreateConcentratedLiquidityPoolProposal(): CreateConcentratedLiquidityPoolProposal {
+export interface PoolRecord {
+  denom0: string;
+  denom1: string;
+  tickSpacing: Long;
+  exponentAtPriceOne: string;
+  spreadFactor: string;
+}
+export interface PoolRecordProtoMsg {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.PoolRecord";
+  value: Uint8Array;
+}
+export interface PoolRecordAmino {
+  denom0: string;
+  denom1: string;
+  tick_spacing: string;
+  exponent_at_price_one: string;
+  spread_factor: string;
+}
+export interface PoolRecordAminoMsg {
+  type: "osmosis/concentratedliquidity/pool-record";
+  value: PoolRecordAmino;
+}
+export interface PoolRecordSDKType {
+  denom0: string;
+  denom1: string;
+  tick_spacing: Long;
+  exponent_at_price_one: string;
+  spread_factor: string;
+}
+function createBaseCreateConcentratedLiquidityPoolsProposal(): CreateConcentratedLiquidityPoolsProposal {
   return {
     title: "",
     description: "",
-    denom0: "",
-    denom1: "",
-    tickSpacing: Long.UZERO,
-    exponentAtPriceOne: "",
-    spreadFactor: "",
+    poolRecords: [],
   };
 }
-export const CreateConcentratedLiquidityPoolProposal = {
+export const CreateConcentratedLiquidityPoolsProposal = {
   typeUrl:
-    "/osmosis.concentratedliquidity.v1beta1.CreateConcentratedLiquidityPoolProposal",
+    "/osmosis.concentratedliquidity.v1beta1.CreateConcentratedLiquidityPoolsProposal",
   encode(
-    message: CreateConcentratedLiquidityPoolProposal,
+    message: CreateConcentratedLiquidityPoolsProposal,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
     if (message.title !== "") {
@@ -149,30 +162,18 @@ export const CreateConcentratedLiquidityPoolProposal = {
     if (message.description !== "") {
       writer.uint32(18).string(message.description);
     }
-    if (message.denom0 !== "") {
-      writer.uint32(26).string(message.denom0);
-    }
-    if (message.denom1 !== "") {
-      writer.uint32(34).string(message.denom1);
-    }
-    if (!message.tickSpacing.isZero()) {
-      writer.uint32(40).uint64(message.tickSpacing);
-    }
-    if (message.exponentAtPriceOne !== "") {
-      writer.uint32(50).string(message.exponentAtPriceOne);
-    }
-    if (message.spreadFactor !== "") {
-      writer.uint32(58).string(message.spreadFactor);
+    for (const v of message.poolRecords) {
+      PoolRecord.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
   decode(
     input: _m0.Reader | Uint8Array,
     length?: number
-  ): CreateConcentratedLiquidityPoolProposal {
+  ): CreateConcentratedLiquidityPoolsProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseCreateConcentratedLiquidityPoolProposal();
+    const message = createBaseCreateConcentratedLiquidityPoolsProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -183,19 +184,7 @@ export const CreateConcentratedLiquidityPoolProposal = {
           message.description = reader.string();
           break;
         case 3:
-          message.denom0 = reader.string();
-          break;
-        case 4:
-          message.denom1 = reader.string();
-          break;
-        case 5:
-          message.tickSpacing = reader.uint64() as Long;
-          break;
-        case 6:
-          message.exponentAtPriceOne = reader.string();
-          break;
-        case 7:
-          message.spreadFactor = reader.string();
+          message.poolRecords.push(PoolRecord.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -205,77 +194,69 @@ export const CreateConcentratedLiquidityPoolProposal = {
     return message;
   },
   fromPartial(
-    object: Partial<CreateConcentratedLiquidityPoolProposal>
-  ): CreateConcentratedLiquidityPoolProposal {
-    const message = createBaseCreateConcentratedLiquidityPoolProposal();
+    object: Partial<CreateConcentratedLiquidityPoolsProposal>
+  ): CreateConcentratedLiquidityPoolsProposal {
+    const message = createBaseCreateConcentratedLiquidityPoolsProposal();
     message.title = object.title ?? "";
     message.description = object.description ?? "";
-    message.denom0 = object.denom0 ?? "";
-    message.denom1 = object.denom1 ?? "";
-    message.tickSpacing =
-      object.tickSpacing !== undefined && object.tickSpacing !== null
-        ? Long.fromValue(object.tickSpacing)
-        : Long.UZERO;
-    message.exponentAtPriceOne = object.exponentAtPriceOne ?? "";
-    message.spreadFactor = object.spreadFactor ?? "";
+    message.poolRecords =
+      object.poolRecords?.map((e) => PoolRecord.fromPartial(e)) || [];
     return message;
   },
   fromAmino(
-    object: CreateConcentratedLiquidityPoolProposalAmino
-  ): CreateConcentratedLiquidityPoolProposal {
+    object: CreateConcentratedLiquidityPoolsProposalAmino
+  ): CreateConcentratedLiquidityPoolsProposal {
     return {
       title: object.title,
       description: object.description,
-      denom0: object.denom0,
-      denom1: object.denom1,
-      tickSpacing: Long.fromString(object.tick_spacing),
-      exponentAtPriceOne: object.exponent_at_price_one,
-      spreadFactor: object.spread_factor,
+      poolRecords: Array.isArray(object?.pool_records)
+        ? object.pool_records.map((e: any) => PoolRecord.fromAmino(e))
+        : [],
     };
   },
   toAmino(
-    message: CreateConcentratedLiquidityPoolProposal
-  ): CreateConcentratedLiquidityPoolProposalAmino {
+    message: CreateConcentratedLiquidityPoolsProposal
+  ): CreateConcentratedLiquidityPoolsProposalAmino {
     const obj: any = {};
     obj.title = message.title;
     obj.description = message.description;
-    obj.denom0 = message.denom0;
-    obj.denom1 = message.denom1;
-    obj.tick_spacing = message.tickSpacing
-      ? message.tickSpacing.toString()
-      : undefined;
-    obj.exponent_at_price_one = message.exponentAtPriceOne;
-    obj.spread_factor = message.spreadFactor;
+    if (message.poolRecords) {
+      obj.pool_records = message.poolRecords.map((e) =>
+        e ? PoolRecord.toAmino(e) : undefined
+      );
+    } else {
+      obj.pool_records = [];
+    }
     return obj;
   },
   fromAminoMsg(
-    object: CreateConcentratedLiquidityPoolProposalAminoMsg
-  ): CreateConcentratedLiquidityPoolProposal {
-    return CreateConcentratedLiquidityPoolProposal.fromAmino(object.value);
+    object: CreateConcentratedLiquidityPoolsProposalAminoMsg
+  ): CreateConcentratedLiquidityPoolsProposal {
+    return CreateConcentratedLiquidityPoolsProposal.fromAmino(object.value);
   },
   toAminoMsg(
-    message: CreateConcentratedLiquidityPoolProposal
-  ): CreateConcentratedLiquidityPoolProposalAminoMsg {
+    message: CreateConcentratedLiquidityPoolsProposal
+  ): CreateConcentratedLiquidityPoolsProposalAminoMsg {
     return {
-      type: "osmosis/concentratedliquidity/create-concentrated-liquidity-pool-proposal",
-      value: CreateConcentratedLiquidityPoolProposal.toAmino(message),
+      type: "osmosis/concentratedliquidity/create-concentrated-liquidity-pools-proposal",
+      value: CreateConcentratedLiquidityPoolsProposal.toAmino(message),
     };
   },
   fromProtoMsg(
-    message: CreateConcentratedLiquidityPoolProposalProtoMsg
-  ): CreateConcentratedLiquidityPoolProposal {
-    return CreateConcentratedLiquidityPoolProposal.decode(message.value);
+    message: CreateConcentratedLiquidityPoolsProposalProtoMsg
+  ): CreateConcentratedLiquidityPoolsProposal {
+    return CreateConcentratedLiquidityPoolsProposal.decode(message.value);
   },
-  toProto(message: CreateConcentratedLiquidityPoolProposal): Uint8Array {
-    return CreateConcentratedLiquidityPoolProposal.encode(message).finish();
+  toProto(message: CreateConcentratedLiquidityPoolsProposal): Uint8Array {
+    return CreateConcentratedLiquidityPoolsProposal.encode(message).finish();
   },
   toProtoMsg(
-    message: CreateConcentratedLiquidityPoolProposal
-  ): CreateConcentratedLiquidityPoolProposalProtoMsg {
+    message: CreateConcentratedLiquidityPoolsProposal
+  ): CreateConcentratedLiquidityPoolsProposalProtoMsg {
     return {
       typeUrl:
-        "/osmosis.concentratedliquidity.v1beta1.CreateConcentratedLiquidityPoolProposal",
-      value: CreateConcentratedLiquidityPoolProposal.encode(message).finish(),
+        "/osmosis.concentratedliquidity.v1beta1.CreateConcentratedLiquidityPoolsProposal",
+      value: CreateConcentratedLiquidityPoolsProposal.encode(message).finish(),
     };
   },
 };
@@ -504,6 +485,121 @@ export const PoolIdToTickSpacingRecord = {
       typeUrl:
         "/osmosis.concentratedliquidity.v1beta1.PoolIdToTickSpacingRecord",
       value: PoolIdToTickSpacingRecord.encode(message).finish(),
+    };
+  },
+};
+function createBasePoolRecord(): PoolRecord {
+  return {
+    denom0: "",
+    denom1: "",
+    tickSpacing: Long.UZERO,
+    exponentAtPriceOne: "",
+    spreadFactor: "",
+  };
+}
+export const PoolRecord = {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.PoolRecord",
+  encode(
+    message: PoolRecord,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.denom0 !== "") {
+      writer.uint32(10).string(message.denom0);
+    }
+    if (message.denom1 !== "") {
+      writer.uint32(18).string(message.denom1);
+    }
+    if (!message.tickSpacing.isZero()) {
+      writer.uint32(24).uint64(message.tickSpacing);
+    }
+    if (message.exponentAtPriceOne !== "") {
+      writer.uint32(34).string(message.exponentAtPriceOne);
+    }
+    if (message.spreadFactor !== "") {
+      writer.uint32(42).string(message.spreadFactor);
+    }
+    return writer;
+  },
+  decode(input: _m0.Reader | Uint8Array, length?: number): PoolRecord {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePoolRecord();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.denom0 = reader.string();
+          break;
+        case 2:
+          message.denom1 = reader.string();
+          break;
+        case 3:
+          message.tickSpacing = reader.uint64() as Long;
+          break;
+        case 4:
+          message.exponentAtPriceOne = reader.string();
+          break;
+        case 5:
+          message.spreadFactor = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<PoolRecord>): PoolRecord {
+    const message = createBasePoolRecord();
+    message.denom0 = object.denom0 ?? "";
+    message.denom1 = object.denom1 ?? "";
+    message.tickSpacing =
+      object.tickSpacing !== undefined && object.tickSpacing !== null
+        ? Long.fromValue(object.tickSpacing)
+        : Long.UZERO;
+    message.exponentAtPriceOne = object.exponentAtPriceOne ?? "";
+    message.spreadFactor = object.spreadFactor ?? "";
+    return message;
+  },
+  fromAmino(object: PoolRecordAmino): PoolRecord {
+    return {
+      denom0: object.denom0,
+      denom1: object.denom1,
+      tickSpacing: Long.fromString(object.tick_spacing),
+      exponentAtPriceOne: object.exponent_at_price_one,
+      spreadFactor: object.spread_factor,
+    };
+  },
+  toAmino(message: PoolRecord): PoolRecordAmino {
+    const obj: any = {};
+    obj.denom0 = message.denom0;
+    obj.denom1 = message.denom1;
+    obj.tick_spacing = message.tickSpacing
+      ? message.tickSpacing.toString()
+      : undefined;
+    obj.exponent_at_price_one = message.exponentAtPriceOne;
+    obj.spread_factor = message.spreadFactor;
+    return obj;
+  },
+  fromAminoMsg(object: PoolRecordAminoMsg): PoolRecord {
+    return PoolRecord.fromAmino(object.value);
+  },
+  toAminoMsg(message: PoolRecord): PoolRecordAminoMsg {
+    return {
+      type: "osmosis/concentratedliquidity/pool-record",
+      value: PoolRecord.toAmino(message),
+    };
+  },
+  fromProtoMsg(message: PoolRecordProtoMsg): PoolRecord {
+    return PoolRecord.decode(message.value);
+  },
+  toProto(message: PoolRecord): Uint8Array {
+    return PoolRecord.encode(message).finish();
+  },
+  toProtoMsg(message: PoolRecord): PoolRecordProtoMsg {
+    return {
+      typeUrl: "/osmosis.concentratedliquidity.v1beta1.PoolRecord",
+      value: PoolRecord.encode(message).finish(),
     };
   },
 };

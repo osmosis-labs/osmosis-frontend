@@ -41,7 +41,8 @@ export function useTxGasEstimate(
     } else if (cost && !memoedCurrency) {
       setCost(null);
     }
-  }, [sendFn, memoedParams, memoedCurrency, cost, costMultiplier]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sendFn, memoedParams, memoedCurrency]);
 
   return cost;
 }

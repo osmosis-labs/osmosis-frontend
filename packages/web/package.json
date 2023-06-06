@@ -13,9 +13,9 @@
     "lint:fix": "prettier --write \"**/*\" && next lint --fix",
     "pre-commit": "lint-staged",
     "generate": "yarn generate:chain-info && yarn generate:wallet-assets && yarn generate:wallet-registry",
-    "generate:chain-info": "dotenv -e .env -e .env.local -- ts-node --esm config/generate-chain-infos/index.ts",
-    "generate:wallet-assets": "dotenv -e .env -e .env.local -- ts-node --esm config/generate-wallet-assets/index.ts",
-    "generate:wallet-registry": "dotenv -e .env -e .env.local -- ts-node --esm config/generate-wallet-registry.ts"
+    "generate:chain-info": "dotenv -c -- ts-node --esm config/generate-chain-infos/index.ts",
+    "generate:wallet-assets": "dotenv -c -- ts-node --esm config/generate-wallet-assets/index.ts",
+    "generate:wallet-registry": "dotenv -c -- ts-node --esm config/generate-wallet-registry.ts"
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^1.2.3",
@@ -25,10 +25,10 @@
     "@cosmjs/cosmwasm-stargate": "0.29.0",
     "@cosmjs/proto-signing": "0.29.0",
     "@cosmjs/stargate": "0.29.0",
-    "@cosmos-kit/core": "1.5.3",
-    "@cosmos-kit/cosmostation": "0.15.30",
-    "@cosmos-kit/keplr": "0.33.32",
-    "@cosmos-kit/leap": "0.15.2",
+    "@cosmos-kit/core": "1.5.5",
+    "@cosmos-kit/cosmostation": "0.15.32",
+    "@cosmos-kit/keplr": "0.33.34",
+    "@cosmos-kit/leap": "0.15.4",
     "@ethersproject/abi": "^5.7.0",
     "@headlessui/react": "^1.7.8",
     "@keplr-wallet/common": "^0.10.24",
