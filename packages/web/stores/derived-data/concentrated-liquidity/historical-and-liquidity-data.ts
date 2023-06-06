@@ -86,7 +86,11 @@ export class ObservableHistoricalAndLiquidityData {
   }
 
   get baseCurrency(): AppCurrency | undefined {
-    return this.chainGetter.getChain(this.chainId).findCurrency(this.baseDenom);
+    const baseDenom = this.pool?.poolAssetDenoms[0];
+
+    if (!baseDenom) return undefined;
+
+    return this.chainGetter.getChain(this.chainId).findCurrency(baseDenom);
   }
 
   get quoteCurrency(): AppCurrency | undefined {
