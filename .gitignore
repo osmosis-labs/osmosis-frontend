@@ -11,3 +11,5 @@ yarn-error.log
 src/styles/index.scss
 .vercel
 .turbo
+
+.env.local
