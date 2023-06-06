@@ -60,8 +60,6 @@ export const MyPositionsSection: FunctionComponent<{ forPoolId?: string }> =
           range !== undefined
       );
 
-    console.log("mergedPositions", mergedPositions);
-
     return (
       <div className="flex flex-col gap-3">
         {mergedPositions.map((position, index) => {

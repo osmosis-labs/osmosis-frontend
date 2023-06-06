@@ -757,11 +757,6 @@ export class OsmosisAccountImpl {
                 .toString()
             : "0";
 
-        console.log({
-          token_min_amount0,
-          token_min_amount1,
-        });
-
         const msg = {
           type: this._msgOpts.clCreatePosition.type,
           value: {
