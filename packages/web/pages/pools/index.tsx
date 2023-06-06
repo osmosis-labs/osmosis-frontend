@@ -7,7 +7,6 @@ import type { NextPage } from "next";
 import { ComponentProps, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { Button } from "~/components/buttons";
 import { ShowMoreButton } from "~/components/buttons/show-more";
 import { PoolCard } from "~/components/cards";
 import { AllPoolsTable } from "~/components/complex";
@@ -15,7 +14,7 @@ import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { SuperchargeDaiOsmoPool } from "~/components/funnels/concentrated-liquidity/supercharge-dai-osmo-pool";
 import { MetricLoader } from "~/components/loaders";
 import { PoolsOverview } from "~/components/overview/pools";
-import { EventName, IS_TESTNET } from "~/config";
+import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
   useCreatePoolConfig,
@@ -281,23 +280,6 @@ Learn how it works in 30 seconds, or upgrade your position in a few clicks. "
       <section ref={myPoolsRef}>
         <MyPoolsSection />
       </section>
-
-      {IS_TESTNET && (
-        <div>
-          <Button
-            onClick={() => {
-              account.osmosis.sendCreateConcentratedPoolMsg(
-                "uion",
-                "uosmo",
-                100,
-                0
-              );
-            }}
-          >
-            Create test 100 OSMO / 100 ION CL pool
-          </Button>
-        </div>
-      )}
 
       <section>
         <AllPoolsTable
