@@ -5,8 +5,9 @@ import Image from "next/image";
 import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { useStore } from "../../../../stores";
-import { Button } from "../../../buttons";
+import { Button } from "~/components/buttons";
+import { IS_TESTNET } from "~/config";
+import { useStore } from "~/stores";
 
 export type PoolType = ObservableQueryPool["type"];
 
@@ -68,6 +69,22 @@ export const SelectType: FunctionComponent<{
           </button>
         ))}
       </div>
+      {IS_TESTNET && (
+        <div>
+          <Button
+            onClick={() => {
+              account.osmosis.sendCreateConcentratedPoolMsg(
+                "uion",
+                "uosmo",
+                100,
+                0
+              );
+            }}
+          >
+            Create test 100 OSMO / 100 ION CL pool
+          </Button>
+        </div>
+      )}
       <Button
         className="w-full"
         onClick={() => {

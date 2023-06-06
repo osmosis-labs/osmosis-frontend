@@ -765,8 +765,8 @@ export class OsmosisAccountImpl {
             lower_tick: lowerTick.toString(),
             upper_tick: upperTick.toString(),
             tokens_provided: sortedCoins,
-            token_min_amount0: token_min_amount0,
-            token_min_amount1: token_min_amount1,
+            token_min_amount0,
+            token_min_amount1,
           },
         };
 
@@ -797,6 +797,7 @@ export class OsmosisAccountImpl {
       },
       undefined,
       (tx) => {
+        console.log({ tx });
         if (tx.code == null || tx.code === 0) {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
