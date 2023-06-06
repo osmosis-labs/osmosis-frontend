@@ -626,10 +626,6 @@ const RightModalContent: FunctionComponent<
             </div>
           </Step>
         </Stepper>
-
-        <div className="w-full max-w-xs self-center">
-          <Button>Create a wallet</Button>
-        </div>
       </div>
     );
   }
