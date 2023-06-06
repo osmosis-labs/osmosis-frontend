@@ -71,12 +71,6 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       hoverPrice,
     } = config;
 
-    if (!queryAddress) return null;
-
-    const len = Object.keys(queryAddress.mergedRanges).length;
-
-    if (!len) return null;
-
     return (
       <main className="m-auto flex min-h-screen max-w-[1221px] flex-col gap-8 bg-osmoverse-900 p-8 md:gap-4 md:p-4">
         <Head>
