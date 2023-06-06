@@ -78,9 +78,6 @@
   .text-supercharged-gradient {
     @apply bg-supercharged bg-clip-text text-transparent;
   }
-  .text-supercharged-gradient {
-    @apply bg-supercharged-gradient bg-clip-text text-transparent;
-  }
 
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
