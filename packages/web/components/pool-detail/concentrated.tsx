@@ -1,3 +1,4 @@
+import { Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Head from "next/head";
@@ -57,6 +58,12 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
         priceStore
       ).volume24h;
     const poolLiquidity = pool?.computeTotalValueLocked(priceStore);
+
+    const currentPrice = pool?.concentratedLiquidityPoolInfo
+      ? pool.concentratedLiquidityPoolInfo.currentSqrtPrice.mul(
+          pool.concentratedLiquidityPoolInfo.currentSqrtPrice
+        )
+      : undefined;
 
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
@@ -136,28 +143,26 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                   }
                 />
               </div>
-              <div className="flex-shrink-1 flex w-[229px] flex-col">
-                <div className="flex flex-col pr-8">
-                  <div className="mt-7 flex h-6 justify-end gap-1">
-                    <ChartButton
-                      alt="refresh"
-                      src="/icons/refresh-ccw.svg"
-                      selected={false}
-                      onClick={() => setZoom(1)}
-                    />
-                    <ChartButton
-                      alt="zoom in"
-                      src="/icons/zoom-in.svg"
-                      selected={false}
-                      onClick={zoomIn}
-                    />
-                    <ChartButton
-                      alt="zoom out"
-                      src="/icons/zoom-out.svg"
-                      selected={false}
-                      onClick={zoomOut}
-                    />
-                  </div>
+              <div className="flex-shrink-1 relative flex w-[229px] flex-col">
+                <div className="mt-7 flex h-6 justify-end gap-1 pr-8">
+                  <ChartButton
+                    alt="refresh"
+                    src="/icons/refresh-ccw.svg"
+                    selected={false}
+                    onClick={() => setZoom(1)}
+                  />
+                  <ChartButton
+                    alt="zoom in"
+                    src="/icons/zoom-in.svg"
+                    selected={false}
+                    onClick={zoomIn}
+                  />
+                  <ChartButton
+                    alt="zoom out"
+                    src="/icons/zoom-out.svg"
+                    selected={false}
+                    onClick={zoomOut}
+                  />
                 </div>
                 <div className="mt-[32px] flex flex-1 flex-col">
                   <ConcentratedLiquidityDepthChart
@@ -168,10 +173,26 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                       price: lastChartData?.close || 0,
                       depth: xRange[1],
                     }}
-                    offset={{ top: 0, right: 36, bottom: 24 + 28, left: 0 }}
+                    offset={{
+                      top: 0,
+                      right: currentPrice
+                        ? currentPrice.gt(new Dec(100))
+                          ? 120
+                          : 56
+                        : 36,
+                      bottom: 24 + 28,
+                      left: 0,
+                    }}
                     horizontal
                   />
                 </div>
+                {currentPrice && (
+                  <h6 className="absolute right-0 top-[51%]">
+                    {currentPrice.toString(
+                      currentPrice.gt(new Dec(100)) ? 0 : 2
+                    )}
+                  </h6>
+                )}
               </div>
             </div>
           </div>

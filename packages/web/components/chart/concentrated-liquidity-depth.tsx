@@ -198,50 +198,49 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
   );
 };
 
-function DragContainer(props: {
+const DragContainer: FunctionComponent<{
   defaultValue?: number;
   length?: number;
   scale: any;
   onMove?: (value: number) => void;
   onSubmit?: (value: number) => void;
   stroke: string;
-}) {
-  return (
-    <Annotation
-      dataKey="depth"
-      xAccessor={(d: any) => d?.depth}
-      yAccessor={(d: any) => d?.tick}
-      datum={{ tick: props.defaultValue, depth: props.length }}
-      canEditSubject
-      canEditLabel={false}
-      onDragMove={({ event, ...nextPos }) => {
-        if (props.onMove) {
-          const val = props.scale.invert(nextPos.y);
-          props.onMove(+Math.max(0, val));
-        }
-      }}
-      onDragEnd={({ event, ...nextPos }) => {
-        if (props.onSubmit) {
-          const val = props.scale.invert(nextPos.y);
-          props.onSubmit(+Math.max(0, val));
-        }
-      }}
-      editable
-    >
-      <AnnotationConnector />
-      <AnnotationCircleSubject
-        stroke={props.stroke}
-        // @ts-ignore
-        strokeWidth={8}
-        radius={2}
-      />
-      <AnnotationLineSubject
-        orientation="horizontal"
-        stroke={props.stroke}
-        strokeWidth={3}
-      />
-    </Annotation>
-  );
-}
+}> = (props) => (
+  <Annotation
+    dataKey="depth"
+    xAccessor={(d: any) => d?.depth}
+    yAccessor={(d: any) => d?.tick}
+    datum={{ tick: props.defaultValue, depth: props.length }}
+    canEditSubject
+    canEditLabel={false}
+    onDragMove={({ event, ...nextPos }) => {
+      if (props.onMove) {
+        const val = props.scale.invert(nextPos.y);
+        props.onMove(+Math.max(0, val));
+      }
+    }}
+    onDragEnd={({ event, ...nextPos }) => {
+      if (props.onSubmit) {
+        const val = props.scale.invert(nextPos.y);
+        props.onSubmit(+Math.max(0, val));
+      }
+    }}
+    editable
+  >
+    <AnnotationConnector />
+    <AnnotationCircleSubject
+      stroke={props.stroke}
+      // @ts-ignore
+      strokeWidth={8}
+      radius={2}
+    />
+    <AnnotationLineSubject
+      orientation="horizontal"
+      stroke={props.stroke}
+      strokeWidth={3}
+    />
+  </Annotation>
+);
 
+// needed for next/dynamic to avoid including visx in main bundle
 export default ConcentratedLiquidityDepthChart;
