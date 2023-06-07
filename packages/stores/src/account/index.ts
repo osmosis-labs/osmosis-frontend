@@ -820,6 +820,8 @@ export class OsmosisAccountImpl {
    * Also collects incentive rewards by default if rewards are available.
    * Constructs a multi msg as necessary.
    *
+   * Rejects without sending a tx if no rewards are available.
+   *
    * @param positionIds Position IDs to collect rewards from.
    * @param alsoCollectIncentiveRewards Whether to also collect incentive rewards.
    * @param memo Memo.
@@ -832,9 +834,8 @@ export class OsmosisAccountImpl {
     onFulfill?: (tx: any) => void
   ) {
     // refresh positions
-    const queryPositions = positionIds.map((id) =>
-      this.queries.queryLiquidityPositionsById.getForPositionId(id)
-    );
+    const queryPositions =
+      this.queries.queryLiquidityPositionsById.getForPositionIds(positionIds);
     await Promise.all(queryPositions.map((q) => q.waitFreshResponse()));
 
     // only collect rewards from positions that have rewards to save gas
@@ -883,6 +884,14 @@ export class OsmosisAccountImpl {
         position_ids: positionIdsWithIncentiveRewards,
       },
     };
+
+    // reject if no rewards to collect
+    if (
+      positionIdsWithSpreadRewards.length === 0 &&
+      positionIdsWithIncentiveRewards.length === 0
+    ) {
+      return Promise.reject("No rewards to collect");
+    }
 
     await this.base.cosmos.sendMsgs(
       "collectAllPositionsRewards",
