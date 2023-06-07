@@ -19,6 +19,7 @@ import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import { CustomClasses } from "~/components/types";
 import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
 import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-liquidity";
+import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data/concentrated-liquidity/historical-and-liquidity-data";
 
 const ConcentratedLiquidityDepthChart = dynamic(
@@ -294,7 +295,7 @@ const AssetsInfo: FunctionComponent<
                   width={24}
                 />
               )}
-              <span>{asset.toString()}</span>
+              <span>{asset.trim(true).toString()}</span>
             </div>
           ))
         ) : (

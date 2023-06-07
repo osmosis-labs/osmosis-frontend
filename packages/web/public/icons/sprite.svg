@@ -369,5 +369,14 @@
         <path d="M7.21334 1.95066C7.26031 1.57498 6.74735 1.41966 6.57803 1.7583L1.26328 12.3878C1.0767 12.7609 1.34805 13.2 1.76526 13.2H6.35718L5.50101 20.0493C5.45405 20.425 5.96701 20.5803 6.13633 20.2417L11.4511 9.61221C11.6377 9.23905 11.3663 8.8 10.9491 8.8H6.35718L7.21334 1.95066Z" stroke="#EE65E9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </symbol>
+
+    <symbol id="left-right-arrow" viewBox="0 0 24 24">
+      <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15.9854 7.75781L20.228 12.0005L15.9854 16.2431" stroke="#E4E1FB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M9.01465 16.2431L4.77201 12.0005L9.01465 7.75781" stroke="#E4E1FB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M20.2281 11.9996H12.3286" stroke="#E4E1FB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M6.77193 11.9996H13.6714" stroke="#E4E1FB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </symbol>
   </defs>
 </svg>

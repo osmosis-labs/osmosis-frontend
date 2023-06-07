@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, ReactNode, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
+import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
@@ -17,7 +17,15 @@ export const MyPositionCard: FunctionComponent<{
   position: ObservableQueryLiquidityPositionById;
 }> = observer((props) => {
   const {
-    position: { poolId, baseAsset, quoteAsset, lowerPrices, upperPrices },
+    position: {
+      poolId,
+      baseAsset,
+      quoteAsset,
+      lowerTick,
+      upperTick,
+      lowerPrices,
+      upperPrices,
+    },
   } = props;
   const t = useTranslation();
   const {
@@ -26,6 +34,7 @@ export const MyPositionCard: FunctionComponent<{
     },
     priceStore,
     queriesStore,
+    queriesExternalStore,
   } = useStore();
   const [collapsed, setCollapsed] = useState(true);
 
@@ -38,17 +47,23 @@ export const MyPositionCard: FunctionComponent<{
     : undefined;
 
   const baseAssetValue = baseAsset && priceStore.calculatePrice(baseAsset);
-
   const quoteAssetValue = quoteAsset && priceStore.calculatePrice(quoteAsset);
-
   const fiatCurrency =
     priceStore.supportedVsCurrencies[priceStore.defaultVsCurrency];
-
   const liquidityValue =
     baseAssetValue &&
     quoteAssetValue &&
     fiatCurrency &&
     new PricePretty(fiatCurrency, baseAssetValue.add(quoteAssetValue));
+
+  const incentivesApr =
+    poolId && lowerTick && upperTick
+      ? queriesExternalStore.queryPositionsRangeApr.get(
+          poolId,
+          Number(lowerTick.toString()),
+          Number(upperTick.toString())
+        )
+      : undefined;
 
   return (
     <div className="flex flex-col gap-8 overflow-hidden rounded-[20px] bg-osmoverse-800 p-8">
@@ -61,7 +76,7 @@ export const MyPositionCard: FunctionComponent<{
             className="!w-[78px]"
             assets={queryPool?.poolAssets.map((poolAsset) => ({
               coinImageUrl: poolAsset.amount.currency.coinImageUrl,
-              coinDenom: poolAsset.amount.currency.coinDenom,
+              coinDenom: poolAsset.amount.denom,
             }))}
           />
         </div>
@@ -71,7 +86,7 @@ export const MyPositionCard: FunctionComponent<{
               <PoolAssetsName
                 size="md"
                 assetDenoms={queryPool?.poolAssets.map(
-                  (asset) => asset.amount.currency.coinDenom
+                  (asset) => asset.amount.denom
                 )}
               />
               <span className="px-2 py-1 text-subtitle1 text-osmoverse-100">
@@ -101,9 +116,12 @@ export const MyPositionCard: FunctionComponent<{
           )}
           <PositionDataGroup
             label={t("clPositions.myLiquidity")}
-            value={liquidityValue ? formatPretty(liquidityValue) : "$0"}
+            value={liquidityValue ? formatPretty(liquidityValue) : "-"}
           />
-          <PositionDataGroup label={t("clPositions.incentives")} value="-" />
+          <PositionDataGroup
+            label={t("clPositions.incentives")}
+            value={incentivesApr?.apr?.maxDecimals(0).toString() ?? "-"}
+          />
         </div>
       </div>
       {!collapsed && poolId && config && (
@@ -141,9 +159,9 @@ const RangeDataGroup: FunctionComponent<{
       label={t("clPositions.selectedRange")}
       value={
         <div className="flex w-full justify-end gap-1 overflow-hidden">
-          <h6>{lowerPrice.toString()}</h6>
-          <img alt="" src="/icons/left-right-arrow.svg" className="h-6 w-6" />
-          <h6>{upperPrice.toString()}</h6>
+          <h6>{lowerPrice.toString(2)}</h6>
+          <Icon id="left-right-arrow" />
+          <h6>{upperPrice.toString(2)}</h6>
         </div>
       }
     />
