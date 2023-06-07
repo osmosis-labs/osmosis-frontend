@@ -1,100 +1,48 @@
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent, useState } from "react";
 
 import { ShowMoreButton } from "~/components/buttons/show-more";
 import { MyPositionCard } from "~/components/cards";
 import { useStore } from "~/stores";
-import { ObservableMergedPositionByAddress } from "~/stores/derived-data";
 
 const INITIAL_POSITION_CNT = 3;
 
+/** List of position cards for a user. Optionally show positions only for a give pool ID via `forPoolId` prop. */
 export const MyPositionsSection: FunctionComponent<{ forPoolId?: string }> =
   observer(({ forPoolId }) => {
-    const { accountStore, chainStore, derivedDataStore } = useStore();
+    const { accountStore, chainStore, queriesStore } = useStore();
     const { chainId } = chainStore.osmosis;
     const account = accountStore.getAccount(chainId);
+    const osmosisQueries = queriesStore.get(chainId).osmosis!;
     const [viewMore, setViewMore] = useState(false);
-    const [queryAddress, setQueryAddress] =
-      useState<ObservableMergedPositionByAddress | null>(null);
 
-    useEffect(() => {
-      (async () => {
-        if (!account.bech32Address) return;
+    const positions = osmosisQueries.queryAccountsPositions
+      .get(account.bech32Address)
+      .positions.filter((position) => {
+        if (Boolean(forPoolId) && position.poolId !== forPoolId) {
+          return false;
+        }
+        return true;
+      });
 
-        setQueryAddress(
-          derivedDataStore.mergedPositionsByAddress.get(account.bech32Address)
-        );
-      })();
-    }, [account.bech32Address]);
-
-    if (!queryAddress) {
-      return null;
-    }
-
-    const filteredRanges = queryAddress.mergedRanges.filter((rangeKey) => {
-      const [poolId] = rangeKey.split("_");
-
-      if (forPoolId && forPoolId !== poolId) {
-        return false;
-      }
-
-      return true;
-    });
-
-    const visiblePositions = viewMore
-      ? filteredRanges
-      : filteredRanges.slice(0, INITIAL_POSITION_CNT);
-    const mergedPositions = visiblePositions
-      .map((rangeKey) => {
-        const [poolId, lowerTick, upperTick] = rangeKey.split("_");
-        return queryAddress.calculateMergedPosition(
-          poolId,
-          lowerTick,
-          upperTick
-        );
-      })
-      .filter(
-        (
-          range
-        ): range is ReturnType<typeof queryAddress.calculateMergedPosition> =>
-          range !== undefined
-      );
+    const visiblePositions = positions.slice(
+      0,
+      viewMore ? undefined : INITIAL_POSITION_CNT
+    );
 
     return (
       <div className="flex flex-col gap-3">
-        {mergedPositions.map((position, index) => {
-          if (!position) return null;
-
-          const {
-            poolId,
-            positionIds,
-            baseAmount,
-            quoteAmount,
-            passive,
-            lowerTick,
-            upperTick,
-          } = position;
-
-          return (
-            <MyPositionCard
-              key={index}
-              poolId={poolId}
-              lowerTick={lowerTick}
-              upperTick={upperTick}
-              positionIds={positionIds}
-              baseAmount={baseAmount}
-              quoteAmount={quoteAmount}
-              passive={passive}
+        {visiblePositions.map((position) => (
+          <MyPositionCard key={position.id} position={position} />
+        ))}
+        {visiblePositions.length > 0 &&
+          visiblePositions.length > INITIAL_POSITION_CNT && (
+            <ShowMoreButton
+              className="mx-auto"
+              isOn={viewMore}
+              onToggle={() => setViewMore((v) => !v)}
             />
-          );
-        })}
-        {mergedPositions.length >= INITIAL_POSITION_CNT && !viewMore && (
-          <ShowMoreButton
-            className="mx-auto"
-            isOn={viewMore}
-            onToggle={() => setViewMore((v) => !v)}
-          />
-        )}
+          )}
       </div>
     );
   });

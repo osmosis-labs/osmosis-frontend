@@ -5,9 +5,9 @@ import { DeepReadonly } from "utility-types";
 
 import { ObservableQueryFilteredPools } from "../queries-external/filtered-pools/filtered-pools";
 import {
+  ObservableQueryAccountsPositions,
   ObservableQueryLiquiditiesNetInDirection,
   ObservableQueryLiquiditiesPerTickRange,
-  ObservableQueryLiquidityPositionsByAddress,
   ObservableQueryLiquidityPositionsById,
 } from "./concentrated-liquidity";
 import { ObservableQueryEpochs } from "./epochs";
@@ -87,7 +87,7 @@ export class OsmosisQueriesImpl {
   public readonly queryLiquiditiesInNetDirection: DeepReadonly<ObservableQueryLiquiditiesNetInDirection>;
   public readonly queryLiquiditiesPerTickRange: DeepReadonly<ObservableQueryLiquiditiesPerTickRange>;
   public readonly queryLiquidityPositionsById: DeepReadonly<ObservableQueryLiquidityPositionsById>;
-  public readonly queryLiquidityPositionsByAddress: DeepReadonly<ObservableQueryLiquidityPositionsByAddress>;
+  public readonly queryAccountsPositions: DeepReadonly<ObservableQueryAccountsPositions>;
 
   protected _queryGammPools: DeepReadonly<ObservableQueryPoolGetter>;
   public readonly queryGammNumPools: DeepReadonly<ObservableQueryNumPools>;
@@ -169,13 +169,12 @@ export class OsmosisQueriesImpl {
     this.queryLiquidityPositionsById =
       new ObservableQueryLiquidityPositionsById(kvStore, chainId, chainGetter);
 
-    this.queryLiquidityPositionsByAddress =
-      new ObservableQueryLiquidityPositionsByAddress(
-        kvStore,
-        chainId,
-        this.queryLiquidityPositionsById,
-        chainGetter
-      );
+    this.queryAccountsPositions = new ObservableQueryAccountsPositions(
+      kvStore,
+      chainId,
+      this.queryLiquidityPositionsById,
+      chainGetter
+    );
 
     /** Contains a reference to the currently responsive pool store. */
     const poolsQueryFallbacks = new FallbackStore(

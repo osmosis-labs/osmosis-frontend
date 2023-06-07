@@ -1,6 +1,5 @@
-import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
-import { tickToSqrtPrice } from "@osmosis-labs/math";
-import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { ObservableQueryLiquidityPositionById } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, ReactNode, useState } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -15,123 +14,108 @@ import { MyPositionCardExpandedSection } from "./expanded";
 
 /** User's concentrated liquidity position.  */
 export const MyPositionCard: FunctionComponent<{
-  positionIds: string[];
-  baseAmount: CoinPretty;
-  quoteAmount: CoinPretty;
-  lowerTick: Int;
-  upperTick: Int;
-  poolId: string;
-  passive: boolean;
-}> = observer(
-  ({
-    positionIds,
-    baseAmount,
-    quoteAmount,
-    passive,
-    lowerTick,
-    upperTick,
-    poolId,
-  }) => {
-    const t = useTranslation();
-    const { chainStore, priceStore } = useStore();
-    const [collapsed, setCollapsed] = useState(true);
+  position: ObservableQueryLiquidityPositionById;
+}> = observer((props) => {
+  const {
+    position: { poolId, baseAsset, quoteAsset, lowerPrices, upperPrices },
+  } = props;
+  const t = useTranslation();
+  const {
+    chainStore: {
+      osmosis: { chainId },
+    },
+    priceStore,
+    queriesStore,
+  } = useStore();
+  const [collapsed, setCollapsed] = useState(true);
 
-    const { chainId } = chainStore.osmosis;
+  const queryPool = poolId
+    ? queriesStore.get(chainId).osmosis!.queryGammPools.getPool(poolId)
+    : undefined;
 
-    const config = useHistoricalAndLiquidityData(chainId, poolId);
+  const config = poolId
+    ? useHistoricalAndLiquidityData(chainId, poolId)
+    : undefined;
 
-    const { pool, quoteCurrency, baseCurrency } = config;
+  const baseAssetValue = baseAsset && priceStore.calculatePrice(baseAsset);
 
-    const fiatBase =
-      baseCurrency &&
-      priceStore.calculatePrice(new CoinPretty(baseCurrency, baseAmount));
+  const quoteAssetValue = quoteAsset && priceStore.calculatePrice(quoteAsset);
 
-    const fiatQuote =
-      quoteCurrency &&
-      priceStore.calculatePrice(new CoinPretty(quoteCurrency, quoteAmount));
+  const fiatCurrency =
+    priceStore.supportedVsCurrencies[priceStore.defaultVsCurrency];
 
-    const fiatCurrency =
-      priceStore.supportedVsCurrencies[priceStore.defaultVsCurrency];
+  const liquidityValue =
+    baseAssetValue &&
+    quoteAssetValue &&
+    fiatCurrency &&
+    new PricePretty(fiatCurrency, baseAssetValue.add(quoteAssetValue));
 
-    const liquidityValue =
-      fiatBase &&
-      fiatQuote &&
-      fiatCurrency &&
-      new PricePretty(fiatCurrency, fiatBase.add(fiatQuote));
-
-    const clPool = pool?.pool as ConcentratedLiquidityPool;
-
-    if (!clPool) return null;
-
-    const currentSqrtPrice = clPool.currentSqrtPrice;
-    const currentPrice = currentSqrtPrice.mul(currentSqrtPrice);
-    const lowerPriceSqrt = tickToSqrtPrice(lowerTick);
-    const upperPriceSqrt = tickToSqrtPrice(upperTick);
-    const lowerPrice = lowerPriceSqrt.mul(lowerPriceSqrt);
-    const upperPrice = upperPriceSqrt.mul(upperPriceSqrt);
-
-    return (
-      <div className="flex flex-col gap-8 overflow-hidden rounded-[20px] bg-osmoverse-800 p-8">
-        <div
-          className="flex cursor-pointer flex-row items-center gap-[52px]"
-          onClick={() => setCollapsed(!collapsed)}
-        >
-          <div>
-            <PoolAssetsIcon
-              className="!w-[78px]"
-              assets={pool?.poolAssets.map((poolAsset) => ({
-                coinImageUrl: poolAsset.amount.currency.coinImageUrl,
-                coinDenom: poolAsset.amount.currency.coinDenom,
-              }))}
-            />
-          </div>
+  return (
+    <div className="flex flex-col gap-8 overflow-hidden rounded-[20px] bg-osmoverse-800 p-8">
+      <div
+        className="flex cursor-pointer flex-row items-center gap-[52px]"
+        onClick={() => setCollapsed(!collapsed)}
+      >
+        <div>
+          <PoolAssetsIcon
+            className="!w-[78px]"
+            assets={queryPool?.poolAssets.map((poolAsset) => ({
+              coinImageUrl: poolAsset.amount.currency.coinImageUrl,
+              coinDenom: poolAsset.amount.currency.coinDenom,
+            }))}
+          />
+        </div>
+        <div className="flex flex-shrink-0 flex-grow flex-col gap-[6px]">
           <div className="flex flex-shrink-0 flex-grow flex-col gap-[6px]">
-            <div className="flex flex-shrink-0 flex-grow flex-col gap-[6px]">
-              <div className="flex flex-row items-center gap-[6px]">
-                <PoolAssetsName
-                  size="md"
-                  assetDenoms={pool?.poolAssets.map(
-                    (asset) => asset.amount.currency.coinDenom
-                  )}
-                />
-                <span className="px-2 py-1 text-subtitle1 text-osmoverse-100">
-                  {pool?.swapFee.toString()} {t("clPositions.fee")}
-                </span>
-              </div>
-              <MyPositionStatus
-                currentPrice={currentPrice}
-                lowerPrice={lowerPrice}
-                upperPrice={upperPrice}
+            <div className="flex flex-row items-center gap-[6px]">
+              <PoolAssetsName
+                size="md"
+                assetDenoms={queryPool?.poolAssets.map(
+                  (asset) => asset.amount.currency.coinDenom
+                )}
               />
+              <span className="px-2 py-1 text-subtitle1 text-osmoverse-100">
+                {queryPool?.swapFee.toString()} {t("clPositions.fee")}
+              </span>
             </div>
-          </div>
-          <div className="flex flex-row gap-[52px] self-start">
-            {/* TODO: use actual ROI */}
-            <PositionDataGroup label={t("clPositions.roi")} value="-" />
-            <RangeDataGroup lowerPrice={lowerPrice} upperPrice={upperPrice} />
-            <PositionDataGroup
-              label={t("clPositions.myLiquidity")}
-              value={liquidityValue ? formatPretty(liquidityValue) : "$0"}
-            />
-            <PositionDataGroup label={t("clPositions.incentives")} value="-" />
+            {queryPool?.concentratedLiquidityPoolInfo?.currentSqrtPrice &&
+              lowerPrices &&
+              upperPrices && (
+                <MyPositionStatus
+                  currentPrice={queryPool.concentratedLiquidityPoolInfo.currentSqrtPrice.mul(
+                    queryPool.concentratedLiquidityPoolInfo.currentSqrtPrice
+                  )}
+                  lowerPrice={lowerPrices.price}
+                  upperPrice={upperPrices.price}
+                />
+              )}
           </div>
         </div>
-        {!collapsed && (
-          <MyPositionCardExpandedSection
-            chartConfig={config}
-            positionIds={positionIds}
-            poolId={poolId}
-            lowerPrice={lowerPrice}
-            upperPrice={upperPrice}
-            baseAmount={baseAmount}
-            quoteAmount={quoteAmount}
-            passive={passive}
+        <div className="flex flex-row gap-[52px] self-start">
+          <PositionDataGroup label={t("clPositions.roi")} value="-" />
+          {lowerPrices && upperPrices && (
+            <RangeDataGroup
+              lowerPrice={lowerPrices.price}
+              upperPrice={upperPrices.price}
+            />
+          )}
+          <PositionDataGroup
+            label={t("clPositions.myLiquidity")}
+            value={liquidityValue ? formatPretty(liquidityValue) : "$0"}
           />
-        )}
+          <PositionDataGroup label={t("clPositions.incentives")} value="-" />
+        </div>
       </div>
-    );
-  }
-);
+      {!collapsed && poolId && config && (
+        <MyPositionCardExpandedSection
+          poolId={poolId}
+          chartConfig={config}
+          position={props.position}
+        />
+      )}
+    </div>
+  );
+});
 
 const PositionDataGroup: FunctionComponent<{
   label: string;

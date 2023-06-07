@@ -805,8 +805,8 @@ export class OsmosisAccountImpl {
               bal.waitFreshResponse();
             });
           this.queries.queryGammPools.getPool(poolId)?.waitFreshResponse();
-          this.queries.queryLiquidityPositionsByAddress
-            .getForAddress(this.base.bech32Address)
+          this.queries.queryAccountsPositions
+            .get(this.base.bech32Address)
             ?.waitFreshResponse();
         }
 

@@ -1,5 +1,6 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
+import { ObservableQueryLiquidityPositionById } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -20,15 +21,10 @@ import { ModalBase, ModalBaseProps } from "./base";
 export const RemoveConcentratedLiquidityModal: FunctionComponent<
   {
     poolId: string;
-    positionIds: string[];
-    baseAmount: CoinPretty;
-    quoteAmount: CoinPretty;
-    lowerPrice: Dec;
-    upperPrice: Dec;
-    passive: boolean;
+    position: ObservableQueryLiquidityPositionById;
   } & ModalBaseProps
 > = observer((props) => {
-  const { lowerPrice, upperPrice, poolId, baseAmount, quoteAmount } = props;
+  const { lowerPrices, upperPrices, baseAsset, quoteAsset } = props.position;
 
   const t = useTranslation();
   const {
@@ -46,7 +42,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   const { config, removeLiquidity } = useRemoveConcentratedLiquidityConfig(
     chainStore,
     chainId,
-    poolId,
+    props.poolId,
     queriesStore
   );
 
@@ -63,50 +59,31 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     props.onRequestClose
   );
 
-  const { poolDetail } = derivedDataStore.getForPool(poolId as string);
-  const pool = poolDetail?.pool;
-  const clPool = poolDetail?.pool?.pool as ConcentratedLiquidityPool;
+  const {
+    poolDetail: { pool },
+  } = derivedDataStore.getForPool(props.poolId);
+  const clPool = pool?.pool as ConcentratedLiquidityPool;
   const isConcLiq = pool?.type === "concentrated";
   const currentSqrtPrice = isConcLiq && clPool.currentSqrtPrice;
   const currentPrice = currentSqrtPrice
     ? currentSqrtPrice.mul(currentSqrtPrice)
     : new Dec(0);
 
-  const baseCurrency = chainStore
-    .getChain(chainId)
-    .findCurrency(clPool.poolAssetDenoms[0]);
-  const quoteCurrency = chainStore
-    .getChain(chainId)
-    .findCurrency(clPool.poolAssetDenoms[1]);
+  const baseAssetValue = baseAsset
+    ? priceStore.calculatePrice(baseAsset)
+    : undefined;
 
-  const fiatBase =
-    baseCurrency &&
-    priceStore.calculatePrice(
-      new CoinPretty(
-        baseCurrency,
-        baseAmount.mul(new Dec(10 ** baseCurrency.coinDecimals))
-      )
-    );
-
-  const fiatQuote =
-    quoteCurrency &&
-    priceStore.calculatePrice(
-      new CoinPretty(
-        quoteCurrency,
-        quoteAmount.mul(new Dec(10 ** quoteCurrency.coinDecimals))
-      )
-    );
+  const quoteAssetValue = quoteAsset
+    ? priceStore.calculatePrice(quoteAsset)
+    : undefined;
 
   const fiatCurrency =
     priceStore.supportedVsCurrencies[priceStore.defaultVsCurrency];
 
   const totalFiat =
-    fiatCurrency &&
-    fiatBase &&
-    fiatQuote &&
-    new PricePretty(fiatCurrency, fiatBase.add(fiatQuote)).mul(
-      new Dec(config.percentage)
-    );
+    baseAssetValue && quoteAssetValue
+      ? baseAssetValue.add(quoteAssetValue)
+      : undefined;
 
   return (
     <ModalBase
@@ -143,16 +120,18 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
           <div className="pl-4 text-subtitle1 font-subtitle1">
             {t("clPositions.yourPosition")}
           </div>
-          <MyPositionStatus
-            currentPrice={currentPrice}
-            lowerPrice={lowerPrice}
-            upperPrice={upperPrice}
-            negative
-          />
+          {lowerPrices && upperPrices && (
+            <MyPositionStatus
+              currentPrice={currentPrice}
+              lowerPrice={lowerPrices.price}
+              upperPrice={upperPrices.price}
+              negative
+            />
+          )}
         </div>
         <div className="mb-8 flex flex-row justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100">
-          {baseCurrency && <AssetAmount amount={baseAmount} />}
-          {quoteCurrency && <AssetAmount amount={quoteAmount} />}
+          {baseAsset && <AssetAmount amount={baseAsset} />}
+          {quoteAsset && <AssetAmount amount={quoteAsset} />}
         </div>
       </div>
       <div className="flex w-full flex-col items-center gap-9">
@@ -194,16 +173,16 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
           {t("clPositions.pendingRewards")}
         </div>
         <div className="flex flex-row justify-between gap-3 rounded-[12px] border-[1.5px]  border-osmoverse-700 px-5 py-3">
-          {baseCurrency && (
+          {baseAsset && (
             <AssetAmount
               className="!text-body2 !font-body2"
-              amount={baseAmount.mul(new Dec(config.percentage))}
+              amount={baseAsset.mul(new Dec(config.percentage))}
             />
           )}
-          {quoteCurrency && (
+          {quoteAsset && (
             <AssetAmount
               className="!text-body2 !font-body2"
-              amount={quoteAmount.mul(new Dec(config.percentage))}
+              amount={quoteAsset.mul(new Dec(config.percentage))}
             />
           )}
         </div>
@@ -213,11 +192,11 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   );
 });
 
-function PresetPercentageButton(props: {
+const PresetPercentageButton: FunctionComponent<{
   children: ReactNode;
   selected?: boolean;
   onClick: () => void;
-}) {
+}> = ({ selected, children, onClick }) => {
   return (
     <button
       className={classNames(
@@ -225,15 +204,15 @@ function PresetPercentageButton(props: {
         "rounded-[8px] bg-osmoverse-700 px-5 py-2 text-h6 font-h6 hover:bg-osmoverse-600",
         "whitespace-nowrap",
         {
-          "!bg-osmoverse-600": props.selected,
+          "!bg-osmoverse-600": selected,
         }
       )}
-      onClick={props.onClick}
+      onClick={onClick}
     >
-      {props.children}
+      {children}
     </button>
   );
-}
+};
 
 export const AssetAmount: FunctionComponent<{
   amount: CoinPretty;

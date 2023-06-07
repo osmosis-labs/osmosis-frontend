@@ -1,5 +1,6 @@
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
+import { ObservableQueryLiquidityPositionById } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -32,16 +33,13 @@ const TokenPairHistoricalChart = dynamic(
 export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   {
     poolId: string;
-    positionIds: string[];
-    baseAmount: CoinPretty;
-    quoteAmount: CoinPretty;
-    lowerPrice: Dec;
-    upperPrice: Dec;
-    passive: boolean;
+    position: ObservableQueryLiquidityPositionById;
   } & ModalBaseProps
 > = observer((props) => {
-  const { lowerPrice, upperPrice, poolId, baseAmount, quoteAmount, passive } =
-    props;
+  const {
+    poolId,
+    position: { lowerPrices, upperPrices, baseAsset, quoteAsset, isFullRange },
+  } = props;
   const {
     chainStore,
     accountStore,
@@ -111,12 +109,14 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   );
 
   useEffect(() => {
-    setPriceRange([lowerPrice, upperPrice]);
-    config.setMinRange(lowerPrice);
-    config.setMaxRange(upperPrice);
-  }, [lowerPrice.toString(), upperPrice.toString()]);
+    if (lowerPrices?.price && upperPrices?.price) {
+      setPriceRange([lowerPrices.price, upperPrices.price]);
+      config.setMinRange(lowerPrices.price);
+      config.setMaxRange(upperPrices.price);
+    }
+  }, [config, setPriceRange, lowerPrices, upperPrices]);
 
-  if (pool?.type !== "concentrated" || !baseCurrency) return null;
+  console.log({ baseAsset, quoteAsset });
 
   return (
     <ModalBase
@@ -130,38 +130,40 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
           <div className="pl-4 text-subtitle1 font-subtitle1">
             {t("clPositions.yourPosition")}
           </div>
-          <MyPositionStatus
-            currentPrice={currentPrice}
-            lowerPrice={lowerPrice}
-            upperPrice={upperPrice}
-            negative
-          />
+          {lowerPrices && upperPrices && (
+            <MyPositionStatus
+              currentPrice={currentPrice}
+              lowerPrice={lowerPrices.price}
+              upperPrice={upperPrices.price}
+              negative
+            />
+          )}
         </div>
         <div className="mb-2 flex flex-row justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100">
-          {baseCurrency && (
+          {baseAsset && (
             <div className="flex flex-row items-center gap-2 text-subtitle1 font-subtitle1">
-              {baseCurrency.coinImageUrl && (
+              {baseAsset.currency.coinImageUrl && (
                 <Image
                   alt="base currency"
-                  src={baseCurrency.coinImageUrl}
+                  src={baseAsset.currency.coinImageUrl}
                   height={24}
                   width={24}
                 />
               )}
-              <span>{baseAmount.trim(true).toString()}</span>
+              <span>{baseAsset?.trim(true).toString() ?? ""}</span>
             </div>
           )}
-          {quoteCurrency && (
+          {quoteAsset && (
             <div className="flex flex-row items-center gap-2 text-subtitle1 font-subtitle1">
-              {quoteCurrency.coinImageUrl && (
+              {quoteAsset.currency.coinImageUrl && (
                 <Image
                   alt="base currency"
-                  src={quoteCurrency.coinImageUrl}
+                  src={quoteAsset.currency.coinImageUrl}
                   height={24}
                   width={24}
                 />
               )}
-              <span>{quoteAmount.trim(true).toString()}</span>
+              <span>{quoteAsset?.trim(true).toString() ?? ""}</span>
             </div>
           )}
         </div>
@@ -192,7 +194,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
               <TokenPairHistoricalChart
                 data={historicalChartData}
                 annotations={
-                  passive
+                  isFullRange
                     ? [
                         new Dec((yRange[0] || 0) * 1.05),
                         new Dec((yRange[1] || 0) * 0.95),
@@ -220,17 +222,17 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                   }}
                   rangeAnnotation={[
                     {
-                      price: Number(lowerPrice.toString()),
+                      price: Number(lowerPrices?.price.toString() ?? 0),
                       depth: xRange[1],
                     },
                     {
-                      price: Number(upperPrice.toString()),
+                      price: Number(upperPrices?.price.toString() ?? 0),
                       depth: xRange[1],
                     },
                   ]}
                   offset={{ top: 0, right: 32, bottom: 24 + 28, left: 0 }}
                   horizontal
-                  fullRange={passive}
+                  fullRange={isFullRange}
                 />
               </div>
               <div className="flex h-full flex-col">
@@ -254,17 +256,23 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                     onClick={zoomOut}
                   />
                 </div>
-                <div className="mr-[22px] mb-4 flex h-full flex-col items-end justify-between py-4 ">
-                  <PriceBox
-                    currentValue={passive ? "0" : upperPrice.toString()}
-                    label={t("clPositions.maxPrice")}
-                    infinity={passive}
-                  />
-                  <PriceBox
-                    currentValue={passive ? "0" : lowerPrice.toString()}
-                    label={t("clPositions.minPrice")}
-                  />
-                </div>
+                {lowerPrices && upperPrices && (
+                  <div className="mr-[22px] mb-4 flex h-full flex-col items-end justify-between py-4 ">
+                    <PriceBox
+                      currentValue={
+                        isFullRange ? "0" : upperPrices.price.toString()
+                      }
+                      label={t("clPositions.maxPrice")}
+                      infinity={isFullRange}
+                    />
+                    <PriceBox
+                      currentValue={
+                        isFullRange ? "0" : lowerPrices.price.toString()
+                      }
+                      label={t("clPositions.minPrice")}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -328,7 +336,7 @@ const PriceBox: FunctionComponent<{
       {label}
     </span>
     {infinity ? (
-      <div className="flex h-[20px] flex-row items-center">
+      <div className="flex h-5 flex-row items-center">
         <Image
           alt="infinity"
           src="/icons/infinity.svg"
