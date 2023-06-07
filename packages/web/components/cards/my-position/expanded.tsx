@@ -1,4 +1,5 @@
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { ObservableQueryLiquidityPositionById } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
@@ -30,223 +31,205 @@ const TokenPairHistoricalChart = dynamic(
 );
 
 export const MyPositionCardExpandedSection: FunctionComponent<{
-  chartConfig: ObservableHistoricalAndLiquidityData;
-  positionIds: string[];
-  baseAmount: CoinPretty;
-  quoteAmount: CoinPretty;
-  lowerPrice: Dec;
-  upperPrice: Dec;
   poolId: string;
-  passive: boolean;
-}> = observer(
-  ({
-    chartConfig,
-    baseAmount,
-    quoteAmount,
-    lowerPrice,
-    upperPrice,
-    passive,
-    poolId,
-    positionIds,
-  }) => {
-    const {
-      historicalChartData,
-      historicalRange,
-      xRange,
-      yRange,
-      setHoverPrice,
-      lastChartData,
-      depthChartData,
-      setZoom,
-      zoomIn,
-      zoomOut,
-      range,
-      priceDecimal,
-      setHistoricalRange,
-      baseDenom,
-      quoteDenom,
-      hoverPrice,
-      setPriceRange,
-    } = chartConfig;
+  chartConfig: ObservableHistoricalAndLiquidityData;
+  position: ObservableQueryLiquidityPositionById;
+}> = observer(({ poolId, chartConfig, position }) => {
+  const {
+    historicalChartData,
+    historicalRange,
+    xRange,
+    yRange,
+    setHoverPrice,
+    lastChartData,
+    depthChartData,
+    setZoom,
+    zoomIn,
+    zoomOut,
+    range,
+    priceDecimal,
+    setHistoricalRange,
+    baseDenom,
+    quoteDenom,
+    hoverPrice,
+    setPriceRange,
+  } = chartConfig;
+  const { baseAsset, quoteAsset, lowerPrices, upperPrices, isFullRange } =
+    position;
 
-    const t = useTranslation();
+  const t = useTranslation();
 
-    const [activeModal, setActiveModal] = useState<
-      "increase" | "remove" | null
-    >(null);
+  const [activeModal, setActiveModal] = useState<"increase" | "remove" | null>(
+    null
+  );
 
-    useEffect(() => {
-      setPriceRange([lowerPrice, upperPrice]);
-    }, [lowerPrice.toString(), upperPrice.toString()]);
+  useEffect(() => {
+    if (lowerPrices?.price && upperPrices?.price) {
+      setPriceRange([lowerPrices.price, upperPrices.price]);
+    }
+  }, [lowerPrices, upperPrices, setPriceRange]);
 
-    return (
-      <div className="flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
-        {activeModal === "increase" && (
-          <IncreaseConcentratedLiquidityModal
-            poolId={poolId}
-            isOpen={true}
-            positionIds={positionIds}
-            lowerPrice={lowerPrice}
-            upperPrice={upperPrice}
-            baseAmount={baseAmount}
-            quoteAmount={quoteAmount}
-            passive={passive}
-            onRequestClose={() => setActiveModal(null)}
+  return (
+    <div className="flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
+      {activeModal === "increase" && (
+        <IncreaseConcentratedLiquidityModal
+          isOpen={true}
+          poolId={poolId}
+          position={position}
+          onRequestClose={() => setActiveModal(null)}
+        />
+      )}
+      {activeModal === "remove" && (
+        <RemoveConcentratedLiquidityModal
+          isOpen={true}
+          poolId={poolId}
+          position={position}
+          onRequestClose={() => setActiveModal(null)}
+        />
+      )}
+      <div className="flex flex-row gap-1">
+        <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
+          <PriceChartHeader
+            historicalRange={historicalRange}
+            setHistoricalRange={setHistoricalRange}
+            baseDenom={baseDenom}
+            quoteDenom={quoteDenom}
+            hoverPrice={hoverPrice}
+            decimal={priceDecimal}
           />
-        )}
-        {activeModal === "remove" && (
-          <RemoveConcentratedLiquidityModal
-            poolId={poolId}
-            isOpen={true}
-            positionIds={positionIds}
-            lowerPrice={lowerPrice}
-            upperPrice={upperPrice}
-            baseAmount={baseAmount}
-            quoteAmount={quoteAmount}
-            passive={passive}
-            onRequestClose={() => setActiveModal(null)}
+          <TokenPairHistoricalChart
+            data={historicalChartData}
+            annotations={
+              isFullRange
+                ? [
+                    new Dec((yRange[0] || 0) * 1.05),
+                    new Dec((yRange[1] || 0) * 0.95),
+                  ]
+                : range || []
+            }
+            domain={yRange}
+            onPointerHover={setHoverPrice}
+            onPointerOut={
+              lastChartData
+                ? () => setHoverPrice(lastChartData.close)
+                : undefined
+            }
           />
-        )}
-        <div className="flex flex-row gap-1">
-          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
-            <PriceChartHeader
-              historicalRange={historicalRange}
-              setHistoricalRange={setHistoricalRange}
-              baseDenom={baseDenom}
-              quoteDenom={quoteDenom}
-              hoverPrice={hoverPrice}
-              decimal={priceDecimal}
-            />
-            <TokenPairHistoricalChart
-              data={historicalChartData}
-              annotations={
-                passive
-                  ? [
-                      new Dec((yRange[0] || 0) * 1.05),
-                      new Dec((yRange[1] || 0) * 0.95),
-                    ]
-                  : range || []
-              }
-              domain={yRange}
-              onPointerHover={setHoverPrice}
-              onPointerOut={
-                lastChartData
-                  ? () => setHoverPrice(lastChartData.close)
-                  : undefined
-              }
-            />
-          </div>
-          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-row rounded-r-2xl bg-osmoverse-700">
-            <div className="mt-[84px] flex flex-1 flex-col">
-              <ConcentratedLiquidityDepthChart
-                yRange={yRange}
-                xRange={xRange}
-                data={depthChartData}
-                annotationDatum={{
-                  price: lastChartData?.close || 0,
+        </div>
+        <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-row rounded-r-2xl bg-osmoverse-700">
+          <div className="mt-[84px] flex flex-1 flex-col">
+            <ConcentratedLiquidityDepthChart
+              yRange={yRange}
+              xRange={xRange}
+              data={depthChartData}
+              annotationDatum={{
+                price: lastChartData?.close || 0,
+                depth: xRange[1],
+              }}
+              rangeAnnotation={[
+                {
+                  price: Number(lowerPrices?.price.toString() ?? 0),
                   depth: xRange[1],
-                }}
-                rangeAnnotation={[
-                  {
-                    price: Number(lowerPrice.toString()),
-                    depth: xRange[1],
-                  },
-                  {
-                    price: Number(upperPrice.toString()),
-                    depth: xRange[1],
-                  },
-                ]}
-                offset={{ top: 0, right: 36, bottom: 24 + 28, left: 0 }}
-                horizontal
-                fullRange={passive}
-              />
-            </div>
-            <div className="mb-8 flex flex-col pr-8">
-              <div className="mt-7 mr-6 flex h-6 flex-row gap-1">
-                <ChartButton
-                  alt="refresh"
-                  src="/icons/refresh-ccw.svg"
-                  selected={false}
-                  onClick={() => setZoom(1)}
-                />
-                <ChartButton
-                  alt="zoom in"
-                  src="/icons/zoom-in.svg"
-                  selected={false}
-                  onClick={zoomIn}
-                />
-                <ChartButton
-                  alt="zoom out"
-                  src="/icons/zoom-out.svg"
-                  selected={false}
-                  onClick={zoomOut}
-                />
-              </div>
-              <div className="flex h-full flex-col justify-between py-4">
-                <PriceBox
-                  currentValue={
-                    passive ? "0" : upperPrice.toString(priceDecimal)
-                  }
-                  label={t("clPositions.maxPrice")}
-                  infinity={passive}
-                />
-                <PriceBox
-                  currentValue={
-                    passive ? "0" : lowerPrice.toString(priceDecimal)
-                  }
-                  label={t("clPositions.minPrice")}
-                />
-              </div>
-            </div>
+                },
+                {
+                  price: Number(upperPrices?.price.toString() ?? 0),
+                  depth: xRange[1],
+                },
+              ]}
+              offset={{ top: 0, right: 36, bottom: 24 + 28, left: 0 }}
+              horizontal
+              fullRange={isFullRange}
+            />
           </div>
-        </div>
-        <div className="flex flex-row">
-          <div className="flex w-full flex-col gap-4">
-            <div className="flex flex-row justify-between">
-              <AssetPairAmountDetail
-                className="w-0 flex-shrink flex-grow"
-                title={t("clPositions.currentAssets")}
-                baseAmount={baseAmount}
-                quoteAmount={quoteAmount}
+          <div className="mb-8 flex flex-col pr-8">
+            <div className="mt-7 mr-6 flex h-6 flex-row gap-1">
+              <ChartButton
+                alt="refresh"
+                src="/icons/refresh-ccw.svg"
+                selected={false}
+                onClick={() => setZoom(1)}
               />
-              <AssetPairAmountDetail
-                className="w-0 flex-shrink flex-grow"
-                title={t("clPositions.totalFeesEarned")}
-                baseAmount={baseAmount}
-                quoteAmount={quoteAmount}
+              <ChartButton
+                alt="zoom in"
+                src="/icons/zoom-in.svg"
+                selected={false}
+                onClick={zoomIn}
+              />
+              <ChartButton
+                alt="zoom out"
+                src="/icons/zoom-out.svg"
+                selected={false}
+                onClick={zoomOut}
               />
             </div>
-            <div className="flex flex-row justify-between">
-              <AssetPairAmountDetail
-                className="w-0 flex-shrink flex-grow"
-                title={t("clPositions.principleAssets")}
-                baseAmount={baseAmount}
-                quoteAmount={quoteAmount}
+            <div className="flex h-full flex-col justify-between py-4">
+              <PriceBox
+                currentValue={
+                  isFullRange ? "0" : upperPrices?.price.toString() ?? "0"
+                }
+                label={t("clPositions.maxPrice")}
+                infinity={isFullRange}
               />
-              <AssetPairAmountDetail
-                className="w-0 flex-shrink flex-grow"
-                title={t("clPositions.unclaimedFees")}
-                baseAmount={baseAmount}
-                quoteAmount={quoteAmount}
+              <PriceBox
+                currentValue={
+                  isFullRange ? "0" : lowerPrices?.price.toString() ?? "0"
+                }
+                label={t("clPositions.minPrice")}
               />
             </div>
           </div>
-        </div>
-        <div className="mt-4 flex flex-row justify-end gap-5">
-          <PositionButton onClick={() => null}>
-            {t("clPositions.collectRewards")}
-          </PositionButton>
-          <PositionButton onClick={() => setActiveModal("remove")}>
-            {t("clPositions.removeLiquidity")}
-          </PositionButton>
-          <PositionButton onClick={() => setActiveModal("increase")}>
-            {t("clPositions.increaseLiquidity")}
-          </PositionButton>
         </div>
       </div>
-    );
-  }
-);
+      <div className="flex flex-row">
+        <div className="flex w-full flex-col gap-4">
+          {baseAsset && quoteAsset && (
+            <>
+              <div className="flex flex-row justify-between">
+                <AssetPairAmountDetail
+                  className="w-0 flex-shrink flex-grow"
+                  title={t("clPositions.currentAssets")}
+                  baseAsset={baseAsset}
+                  quoteAsset={quoteAsset}
+                />
+                <AssetPairAmountDetail
+                  className="w-0 flex-shrink flex-grow"
+                  title={t("clPositions.totalFeesEarned")}
+                  baseAsset={baseAsset}
+                  quoteAsset={quoteAsset}
+                />
+              </div>
+              <div className="flex flex-row justify-between">
+                <AssetPairAmountDetail
+                  className="w-0 flex-shrink flex-grow"
+                  title={t("clPositions.principleAssets")}
+                  baseAsset={baseAsset}
+                  quoteAsset={quoteAsset}
+                />
+                <AssetPairAmountDetail
+                  className="w-0 flex-shrink flex-grow"
+                  title={t("clPositions.unclaimedFees")}
+                  baseAsset={baseAsset}
+                  quoteAsset={quoteAsset}
+                />
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+      <div className="mt-4 flex flex-row justify-end gap-5">
+        <PositionButton onClick={() => null}>
+          {t("clPositions.collectRewards")}
+        </PositionButton>
+        <PositionButton onClick={() => setActiveModal("remove")}>
+          {t("clPositions.removeLiquidity")}
+        </PositionButton>
+        <PositionButton onClick={() => setActiveModal("increase")}>
+          {t("clPositions.increaseLiquidity")}
+        </PositionButton>
+      </div>
+    </div>
+  );
+});
 
 function PositionButton(props: { children: ReactNode; onClick: () => void }) {
   return (
@@ -264,19 +247,19 @@ function PositionButton(props: { children: ReactNode; onClick: () => void }) {
 const AssetPairAmountDetail: FunctionComponent<{
   className?: string;
   title: string;
-  baseAmount: CoinPretty;
-  quoteAmount: CoinPretty;
-}> = observer(({ className, title, baseAmount, quoteAmount }) => {
+  baseAsset: CoinPretty;
+  quoteAsset: CoinPretty;
+}> = observer(({ className, title, baseAsset, quoteAsset }) => {
   const { priceStore } = useStore();
 
-  if (!baseAmount || !quoteAmount) return null;
+  if (!baseAsset || !quoteAsset) return null;
 
   const fiat = priceStore.defaultVsCurrency;
-  const baseFiatValue = priceStore.calculatePrice(baseAmount, fiat);
-  const quoteFiatValue = priceStore.calculatePrice(quoteAmount, fiat);
+  const baseFiatValue = priceStore.calculatePrice(baseAsset, fiat);
+  const quoteFiatValue = priceStore.calculatePrice(quoteAsset, fiat);
   const totalFiat =
     baseFiatValue && quoteFiatValue
-      ? baseFiatValue?.add(quoteFiatValue)
+      ? baseFiatValue.add(quoteFiatValue)
       : undefined;
 
   return (
@@ -288,32 +271,30 @@ const AssetPairAmountDetail: FunctionComponent<{
     >
       <div className="text-subtitle1">{title}</div>
       <div className="flex flex-row items-center gap-5">
-        {baseAmount && (
+        {baseAsset && (
           <div className="flex flex-row items-center gap-2">
-            {baseAmount.currency.coinImageUrl && (
+            {baseAsset.currency.coinImageUrl && (
               <Image
                 alt="base currency"
-                src={baseAmount.currency.coinImageUrl}
+                src={baseAsset.currency.coinImageUrl}
                 height={24}
                 width={24}
               />
             )}
-            <span>{baseAmount.hideDenom(true).toString()}</span>
-            <span>{baseAmount.denom}</span>
+            <span>{baseAsset.toString()}</span>
           </div>
         )}
-        {quoteAmount && (
+        {quoteAsset && (
           <div className="flex flex-row items-center gap-2">
-            {quoteAmount.currency.coinImageUrl && (
+            {quoteAsset.currency.coinImageUrl && (
               <Image
                 alt="quote currency"
-                src={quoteAmount.currency.coinImageUrl}
+                src={quoteAsset.currency.coinImageUrl}
                 height={24}
                 width={24}
               />
             )}
-            <span>{quoteAmount.hideDenom(true).toString()}</span>
-            <span>{quoteAmount.denom}</span>
+            <span>{quoteAsset.toString()}</span>
             <span>({totalFiat ? formatPretty(totalFiat) : "0"})</span>
           </div>
         )}

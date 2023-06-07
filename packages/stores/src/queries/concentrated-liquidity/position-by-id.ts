@@ -6,11 +6,17 @@ import {
   QueryResponse,
 } from "@keplr-wallet/stores";
 import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
+import { maxTick, minTick, tickToSqrtPrice } from "@osmosis-labs/math";
 import { action, computed, makeObservable, observable } from "mobx";
 
 import { LiquidityPosition } from "./types";
 
 const URL_BASE = "/osmosis/concentratedliquidity/v1beta1";
+
+export type PositionPrices = {
+  sqrtPrice: Dec;
+  price: Dec;
+};
 
 /** Stores liquidity data for a single pool. */
 export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<LiquidityPosition> {
@@ -70,9 +76,29 @@ export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<L
   }
 
   @computed
+  get lowerPrices(): PositionPrices | undefined {
+    if (!this.lowerTick) return;
+    const sqrtPrice = tickToSqrtPrice(this.lowerTick);
+    return {
+      sqrtPrice,
+      price: sqrtPrice.mul(sqrtPrice),
+    };
+  }
+
+  @computed
   get upperTick(): Int | undefined {
     if (this._raw?.position.upper_tick)
       return new Int(this._raw?.position.upper_tick);
+  }
+
+  @computed
+  get upperPrices(): PositionPrices | undefined {
+    if (!this.upperTick) return;
+    const sqrtPrice = tickToSqrtPrice(this.upperTick);
+    return {
+      sqrtPrice,
+      price: sqrtPrice.mul(sqrtPrice),
+    };
   }
 
   @computed
@@ -108,6 +134,15 @@ export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<L
           amount
         )
     );
+  }
+
+  @computed
+  get isFullRange(): boolean {
+    if (this.lowerTick?.equals(minTick) && this.upperTick?.equals(maxTick)) {
+      return true;
+    }
+
+    return false;
   }
 
   constructor(
