@@ -81,7 +81,7 @@ export const SelectType: FunctionComponent<{
               );
             }}
           >
-            Create test 100 OSMO / 100 ION CL pool (1% spread)
+            Create test 100 OSMO / 100 ION CL pool (0.01% spread)
           </Button>
         </div>
       )}
