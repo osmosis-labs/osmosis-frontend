@@ -77,11 +77,11 @@ export const SelectType: FunctionComponent<{
                 "uion",
                 "uosmo",
                 100,
-                0
+                0.0001
               );
             }}
           >
-            Create test 100 OSMO / 100 ION CL pool
+            Create test 100 OSMO / 100 ION CL pool (0.01% spread)
           </Button>
         </div>
       )}

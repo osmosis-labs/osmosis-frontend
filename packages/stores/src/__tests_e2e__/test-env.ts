@@ -306,6 +306,10 @@ export async function getLatestQueryPool(
     () => Boolean(queryNumPools.response) && Boolean(queryGammPools.response)
   );
 
+  if (queryNumPools.numPools === 0) {
+    throw new Error("No pool exists");
+  }
+
   // set poolId
   const numPools = osmosisQueries.queryGammNumPools.numPools;
   const poolId = numPools.toString(); // most recent pool id

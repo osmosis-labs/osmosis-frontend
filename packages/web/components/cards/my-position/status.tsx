@@ -26,7 +26,9 @@ export const MyPositionStatus: FunctionComponent<{
     )
   );
 
-  const diffPercentage = diff.quo(currentPrice).mul(new Dec(100));
+  const diffPercentage = currentPrice.isZero()
+    ? new Dec(0)
+    : diff.quo(currentPrice).mul(new Dec(100));
 
   let label, status;
 

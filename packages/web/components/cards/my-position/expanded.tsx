@@ -5,8 +5,8 @@ import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import React, {
+  ComponentProps,
   FunctionComponent,
-  ReactNode,
   useEffect,
   useMemo,
   useState,
@@ -35,6 +35,15 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
   chartConfig: ObservableHistoricalAndLiquidityData;
   position: ObservableQueryLiquidityPositionById;
 }> = observer(({ poolId, chartConfig, position }) => {
+  const {
+    chainStore: {
+      osmosis: { chainId },
+    },
+    accountStore,
+  } = useStore();
+
+  const account = accountStore.getAccount(chainId);
+
   const {
     historicalChartData,
     historicalRange,
@@ -219,8 +228,15 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           </div>
         </div>
       </div>
-      <div className="mt-4 flex justify-end gap-5">
-        <PositionButton onClick={() => null}>
+      <div className="mt-4 flex flex-row justify-end gap-5">
+        <PositionButton
+          disabled={!position.hasRewardsAvailable}
+          onClick={() => {
+            account.osmosis
+              .sendCollectAllPositionsRewardsMsgs([position.id])
+              .catch(console.error);
+          }}
+        >
           {t("clPositions.collectRewards")}
         </PositionButton>
         <PositionButton onClick={() => setActiveModal("remove")}>
@@ -234,18 +250,21 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
   );
 });
 
-function PositionButton(props: { children: ReactNode; onClick: () => void }) {
+const PositionButton: FunctionComponent<ComponentProps<typeof Button>> = (
+  props
+) => {
   return (
     <Button
       mode="unstyled"
       size="sm"
       className="text-white w-fit whitespace-nowrap rounded-[10px] border-2 border-wosmongton-400 bg-transparent py-4 px-5 text-subtitle1 font-subtitle1 hover:border-wosmongton-300 disabled:border-osmoverse-600 disabled:text-osmoverse-400"
       onClick={props.onClick}
+      {...props}
     >
       {props.children}
     </Button>
   );
-}
+};
 
 const AssetsInfo: FunctionComponent<
   {

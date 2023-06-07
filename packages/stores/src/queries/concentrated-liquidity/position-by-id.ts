@@ -238,6 +238,7 @@ export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<{
     );
 
     queryPosition.setRaw(position);
+    queryPosition.allowFetch();
     return queryPosition;
   }
 }
@@ -255,6 +256,10 @@ export class ObservableQueryLiquidityPositionsById extends ObservableChainQueryM
         positionId
       );
     });
+  }
+
+  getForPositionIds(positionIds: string[]) {
+    return positionIds.map((positionId) => this.getForPositionId(positionId));
   }
 
   getForPositionId(positionId: string) {
