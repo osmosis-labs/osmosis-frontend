@@ -1,4 +1,4 @@
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { ObservableQueryLiquidityPositionById } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -273,40 +273,61 @@ const AssetsInfo: FunctionComponent<
     assets?: CoinPretty[];
     emptyText?: string;
   } & CustomClasses
-> = ({ className, title, assets = [], emptyText }) => {
+> = observer(({ className, title, assets = [], emptyText }) => {
   const t = useTranslation();
+  const { priceStore } = useStore();
+
+  const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+  const totalValue =
+    assets.length > 0 && fiat
+      ? assets.reduce(
+          (sum, asset) =>
+            sum.add(
+              priceStore.calculatePrice(asset) ?? new PricePretty(fiat, 0)
+            ),
+          new PricePretty(fiat, 0)
+        )
+      : undefined;
+
   return (
     <div
       className={classNames(
-        "flex flex-col gap-2 text-osmoverse-400",
+        "subtitle1 flex flex-col gap-2 text-osmoverse-400",
         className
       )}
     >
-      <div className="text-subtitle1">{title}</div>
-      <div className="flex items-center gap-5">
-        {assets.length > 0 ? (
-          assets.map((asset) => (
-            <div key={asset.denom} className="flex items-center gap-2">
-              {asset.currency.coinImageUrl && (
-                <Image
-                  alt="base currency"
-                  src={asset.currency.coinImageUrl}
-                  height={24}
-                  width={24}
-                />
-              )}
-              <span>{asset.trim(true).toString()}</span>
-            </div>
-          ))
-        ) : (
-          <span className="italic">
-            {emptyText ?? t("errors.notAvailable")}
-          </span>
-        )}
+      <div>{title}</div>
+      <div className="grid grid-cols-3 gap-3">
+        <div className="col-span-2 grid grid-cols-2 gap-2">
+          {assets.length > 0 ? (
+            assets.map((asset) => (
+              <div key={asset.denom} className="flex items-center gap-2">
+                {asset.currency.coinImageUrl && (
+                  <Image
+                    alt="base currency"
+                    src={asset.currency.coinImageUrl}
+                    height={24}
+                    width={24}
+                  />
+                )}
+                <span>{asset.trim(true).toString()}</span>
+              </div>
+            ))
+          ) : (
+            <span className="italic">
+              {emptyText ?? t("errors.notAvailable")}
+            </span>
+          )}
+        </div>
+        <div className="col-start-3">
+          {totalValue && (
+            <div className="text-white-full">({totalValue.toString()})</div>
+          )}
+        </div>
       </div>
     </div>
   );
-};
+});
 
 const PriceBox: FunctionComponent<{
   label: string;
