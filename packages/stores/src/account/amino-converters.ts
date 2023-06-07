@@ -124,7 +124,7 @@ const ibcAminoConverters: Record<
       source_channel: sourceChannel,
       token: {
         denom: token?.denom,
-        amount: token?.amount ? Long.fromValue(token.amount).toString() : "0",
+        amount: token?.amount ?? "0",
       },
       sender,
       receiver,
