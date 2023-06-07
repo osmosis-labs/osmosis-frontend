@@ -923,8 +923,8 @@ export class OsmosisAccountImpl {
         };
 
         // only accumulate collection msgs that have rewards
-        const aminoMsgs: any[] = [];
-        const protoMsgs: any[] = [];
+        const aminoMsgs: { type: string; value: Record<string, any> }[] = [];
+        const protoMsgs: { typeUrl: string; value: any }[] = [];
         if (positionIdsWithSpreadRewards.length > 0) {
           aminoMsgs.push(spreadRewardsMsgAmino);
           protoMsgs.push(spreadRewardsMsgProto);
