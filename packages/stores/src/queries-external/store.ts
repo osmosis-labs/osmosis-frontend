@@ -10,6 +10,7 @@ import {
   IMPERATOR_TX_REWARD_BASEURL,
 } from ".";
 import { ObservableQueryActiveGauges } from "./active-gauges";
+import { ObservableQueryPositionsRangeApr } from "./concentrated-liquidity";
 import { ObservableQueryIbcChainsStatus } from "./ibc";
 import { ObservableQueryICNSNames } from "./icns";
 import { ObservableQueryPoolFeesMetrics } from "./pool-fees";
@@ -25,6 +26,7 @@ export class QueriesExternalStore {
   public readonly queryChainStatus: DeepReadonly<ObservableQueryIbcChainsStatus>;
   public readonly queryTokenHistoricalChart: DeepReadonly<ObservableQueryTokensHistoricalChart>;
   public readonly queryTokenPairHistoricalChart: DeepReadonly<ObservableQueryTokensPairHistoricalChart>;
+  public readonly queryPositionsRangeApr: DeepReadonly<ObservableQueryPositionsRangeApr>;
   public readonly queryTokenData: DeepReadonly<ObservableQueryTokensData>;
   public readonly queryActiveGauges: DeepReadonly<ObservableQueryActiveGauges>;
   public readonly queryICNSNames: DeepReadonly<ObservableQueryICNSNames>;
@@ -67,6 +69,10 @@ export class QueriesExternalStore {
         feeMetricsBaseURL,
         isTestnet
       );
+    this.queryPositionsRangeApr = new ObservableQueryPositionsRangeApr(
+      kvStore,
+      poolRewardsBaseUrl
+    );
     this.queryTokenData = new ObservableQueryTokensData(
       kvStore,
       feeMetricsBaseURL
