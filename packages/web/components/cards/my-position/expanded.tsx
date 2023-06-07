@@ -8,6 +8,7 @@ import React, {
   FunctionComponent,
   ReactNode,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -15,11 +16,10 @@ import { useTranslation } from "react-multi-lang";
 import { Button } from "~/components/buttons";
 import { ChartButton } from "~/components/buttons";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
+import { CustomClasses } from "~/components/types";
 import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
 import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-liquidity";
-import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data/concentrated-liquidity/historical-and-liquidity-data";
-import { formatPretty } from "~/utils/formatter";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -54,8 +54,14 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     hoverPrice,
     setPriceRange,
   } = chartConfig;
-  const { baseAsset, quoteAsset, lowerPrices, upperPrices, isFullRange } =
-    position;
+  const {
+    baseAsset,
+    quoteAsset,
+    lowerPrices,
+    upperPrices,
+    isFullRange,
+    totalClaimableRewards,
+  } = position;
 
   const t = useTranslation();
 
@@ -182,38 +188,35 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
       </div>
       <div className="flex flex-row">
         <div className="flex w-full flex-col gap-4">
-          {baseAsset && quoteAsset && (
-            <>
-              <div className="flex flex-row justify-between">
-                <AssetPairAmountDetail
-                  className="w-0 flex-shrink flex-grow"
-                  title={t("clPositions.currentAssets")}
-                  baseAsset={baseAsset}
-                  quoteAsset={quoteAsset}
-                />
-                <AssetPairAmountDetail
-                  className="w-0 flex-shrink flex-grow"
-                  title={t("clPositions.totalFeesEarned")}
-                  baseAsset={baseAsset}
-                  quoteAsset={quoteAsset}
-                />
-              </div>
-              <div className="flex flex-row justify-between">
-                <AssetPairAmountDetail
-                  className="w-0 flex-shrink flex-grow"
-                  title={t("clPositions.principleAssets")}
-                  baseAsset={baseAsset}
-                  quoteAsset={quoteAsset}
-                />
-                <AssetPairAmountDetail
-                  className="w-0 flex-shrink flex-grow"
-                  title={t("clPositions.unclaimedFees")}
-                  baseAsset={baseAsset}
-                  quoteAsset={quoteAsset}
-                />
-              </div>
-            </>
-          )}
+          <div className="flex flex-row justify-between">
+            <AssetsInfo
+              className="w-0 flex-shrink flex-grow"
+              title={t("clPositions.currentAssets")}
+              assets={useMemo(
+                () =>
+                  [baseAsset, quoteAsset].filter((asset): asset is CoinPretty =>
+                    Boolean(asset)
+                  ),
+                [baseAsset, quoteAsset]
+              )}
+            />
+            <AssetsInfo
+              className="w-0 flex-shrink flex-grow"
+              title={t("clPositions.totalFeesEarned")}
+            />
+          </div>
+          <div className="flex flex-row justify-between">
+            <AssetsInfo
+              className="w-0 flex-shrink flex-grow"
+              title={t("clPositions.principleAssets")}
+            />
+            <AssetsInfo
+              className="w-0 flex-shrink flex-grow"
+              title={t("clPositions.unclaimedRewards")}
+              assets={totalClaimableRewards}
+              emptyText={t("clPositions.noRewards")}
+            />
+          </div>
         </div>
       </div>
       <div className="mt-4 flex flex-row justify-end gap-5">
@@ -244,24 +247,14 @@ function PositionButton(props: { children: ReactNode; onClick: () => void }) {
   );
 }
 
-const AssetPairAmountDetail: FunctionComponent<{
-  className?: string;
-  title: string;
-  baseAsset: CoinPretty;
-  quoteAsset: CoinPretty;
-}> = observer(({ className, title, baseAsset, quoteAsset }) => {
-  const { priceStore } = useStore();
-
-  if (!baseAsset || !quoteAsset) return null;
-
-  const fiat = priceStore.defaultVsCurrency;
-  const baseFiatValue = priceStore.calculatePrice(baseAsset, fiat);
-  const quoteFiatValue = priceStore.calculatePrice(quoteAsset, fiat);
-  const totalFiat =
-    baseFiatValue && quoteFiatValue
-      ? baseFiatValue.add(quoteFiatValue)
-      : undefined;
-
+const AssetsInfo: FunctionComponent<
+  {
+    title: string;
+    assets?: CoinPretty[];
+    emptyText?: string;
+  } & CustomClasses
+> = ({ className, title, assets = [], emptyText }) => {
+  const t = useTranslation();
   return (
     <div
       className={classNames(
@@ -271,62 +264,50 @@ const AssetPairAmountDetail: FunctionComponent<{
     >
       <div className="text-subtitle1">{title}</div>
       <div className="flex flex-row items-center gap-5">
-        {baseAsset && (
-          <div className="flex flex-row items-center gap-2">
-            {baseAsset.currency.coinImageUrl && (
-              <Image
-                alt="base currency"
-                src={baseAsset.currency.coinImageUrl}
-                height={24}
-                width={24}
-              />
-            )}
-            <span>{baseAsset.toString()}</span>
-          </div>
-        )}
-        {quoteAsset && (
-          <div className="flex flex-row items-center gap-2">
-            {quoteAsset.currency.coinImageUrl && (
-              <Image
-                alt="quote currency"
-                src={quoteAsset.currency.coinImageUrl}
-                height={24}
-                width={24}
-              />
-            )}
-            <span>{quoteAsset.toString()}</span>
-            <span>({totalFiat ? formatPretty(totalFiat) : "0"})</span>
-          </div>
+        {assets.length > 0 ? (
+          assets.map((asset) => (
+            <div key={asset.denom} className="flex flex-row items-center gap-2">
+              {asset.currency.coinImageUrl && (
+                <Image
+                  alt="base currency"
+                  src={asset.currency.coinImageUrl}
+                  height={24}
+                  width={24}
+                />
+              )}
+              <span>{asset.toString()}</span>
+            </div>
+          ))
+        ) : (
+          <span className="italic">
+            {emptyText ?? t("errors.notAvailable")}
+          </span>
         )}
       </div>
     </div>
   );
-});
+};
 
-function PriceBox(props: {
+const PriceBox: FunctionComponent<{
   label: string;
   currentValue: string;
   infinity?: boolean;
-}) {
-  return (
-    <div className="flex w-full max-w-[9.75rem] flex-col gap-1">
-      <span className="pt-2 text-caption text-osmoverse-400">
-        {props.label}
-      </span>
-      {props.infinity ? (
-        <div className="flex h-[41px] flex-row items-center">
-          <Image
-            alt="infinity"
-            src="/icons/infinity.svg"
-            width={16}
-            height={16}
-          />
-        </div>
-      ) : (
-        <h6 className="overflow-hidden text-ellipsis border-0 bg-transparent text-subtitle1 leading-tight">
-          {props.currentValue}
-        </h6>
-      )}
-    </div>
-  );
-}
+}> = ({ label, currentValue, infinity }) => (
+  <div className="flex w-full max-w-[9.75rem] flex-col gap-1">
+    <span className="pt-2 text-caption text-osmoverse-400">{label}</span>
+    {infinity ? (
+      <div className="flex h-[41px] flex-row items-center">
+        <Image
+          alt="infinity"
+          src="/icons/infinity.svg"
+          width={16}
+          height={16}
+        />
+      </div>
+    ) : (
+      <h6 className="overflow-hidden text-ellipsis border-0 bg-transparent text-subtitle1 leading-tight">
+        {currentValue}
+      </h6>
+    )}
+  </div>
+);
