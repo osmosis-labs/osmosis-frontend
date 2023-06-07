@@ -19,7 +19,9 @@ export type PositionPrices = {
 };
 
 /** Stores liquidity data for a single pool. */
-export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<LiquidityPosition> {
+export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<{
+  position: LiquidityPosition;
+}> {
   @observable.ref
   protected _raw?: LiquidityPosition;
 
@@ -113,9 +115,16 @@ export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<L
   }
 
   @computed
-  get claimableFees(): CoinPretty[] {
-    if (!this._raw?.claimable_fees) return [];
-    return this._raw?.claimable_fees.map(
+  get hasRewardsAvailable(): boolean {
+    return (
+      this.claimableIncentiveRewards.length > 0 ||
+      this.claimableSpreadRewards.length > 0
+    );
+  }
+
+  get claimableSpreadRewards(): CoinPretty[] {
+    if (!this._raw?.claimable_spread_rewards) return [];
+    return this._raw?.claimable_spread_rewards.map(
       ({ denom, amount }) =>
         new CoinPretty(
           this.chainGetter.getChain(this.chainId).forceFindCurrency(denom),
@@ -124,8 +133,7 @@ export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<L
     );
   }
 
-  @computed
-  get claimableIncentives(): CoinPretty[] {
+  get claimableIncentiveRewards(): CoinPretty[] {
     if (!this._raw?.claimable_incentives) return [];
     return this._raw?.claimable_fees.map(
       ({ denom, amount }) =>
@@ -170,16 +178,24 @@ export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<L
     return this._canFetch;
   }
 
-  protected setResponse(response: Readonly<QueryResponse<LiquidityPosition>>) {
+  protected setResponse(
+    response: Readonly<QueryResponse<{ position: LiquidityPosition }>>
+  ) {
     super.setResponse(response);
-    this.setRaw(response.data);
+    this.setRaw(response.data.position);
+    const rewardDenoms = Array.from(
+      new Set(
+        response.data.position.claimable_incentives
+          .concat(response.data.position.claimable_spread_rewards)
+          .map(({ denom }) => denom)
+      )
+    );
     this.chainGetter
       .getChain(this.chainId)
       .addUnknownCurrencies(
-        response.data.asset0.denom,
-        response.data.asset1.denom,
-        ...response.data.claimable_fees.map(({ denom }) => denom),
-        ...response.data.claimable_incentives.map(({ denom }) => denom)
+        response.data.position.asset0.denom,
+        response.data.position.asset1.denom,
+        ...rewardDenoms
       );
   }
 
@@ -206,7 +222,9 @@ export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<L
   }
 }
 
-export class ObservableQueryLiquidityPositionsById extends ObservableChainQueryMap<LiquidityPosition> {
+export class ObservableQueryLiquidityPositionsById extends ObservableChainQueryMap<{
+  position: LiquidityPosition;
+}> {
   protected _fetchingPositionIds: Set<string> = new Set();
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
     super(kvStore, chainId, chainGetter, (positionId: string) => {
