@@ -797,7 +797,7 @@ export class OsmosisAccountImpl {
       },
       undefined,
       (tx) => {
-        console.log({ tx });
+        this.sendBeginUnlockingMsg;
         if (tx.code == null || tx.code === 0) {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
