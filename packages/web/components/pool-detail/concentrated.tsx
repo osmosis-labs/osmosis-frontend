@@ -1,12 +1,7 @@
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Head from "next/head";
-import React, {
-  FunctionComponent,
-  ReactElement,
-  useEffect,
-  useState,
-} from "react";
+import React, { FunctionComponent, ReactElement, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
@@ -17,7 +12,6 @@ import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { AddLiquidityModal } from "~/modals";
 import { useStore } from "~/stores";
-import { ObservableMergedPositionByAddress } from "~/stores/derived-data";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -30,27 +24,13 @@ const TokenPairHistoricalChart = dynamic(
 
 export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
   observer(({ poolId }) => {
-    const { chainStore, accountStore, derivedDataStore } = useStore();
+    const { chainStore } = useStore();
     const { chainId } = chainStore.osmosis;
-    const account = accountStore.getAccount(chainId);
     const config = useHistoricalAndLiquidityData(chainId, poolId);
     const t = useTranslation();
     const [activeModal, setActiveModal] = useState<"add-liquidity" | null>(
       null
     );
-
-    const [queryAddress, setQueryAddress] =
-      useState<ObservableMergedPositionByAddress | null>(null);
-
-    useEffect(() => {
-      (async () => {
-        if (!account.bech32Address) return;
-
-        setQueryAddress(
-          derivedDataStore.mergedPositionsByAddress.get(account.bech32Address)
-        );
-      })();
-    }, [account.bech32Address]);
 
     const {
       pool,
