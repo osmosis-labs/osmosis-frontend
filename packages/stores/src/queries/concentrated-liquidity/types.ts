@@ -32,7 +32,7 @@ export type LiquidityPosition = {
     position_id: string;
     upper_tick: string;
   };
-  claimable_fees: {
+  claimable_spread_rewards: {
     denom: string;
     amount: string;
   }[];

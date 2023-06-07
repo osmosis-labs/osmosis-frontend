@@ -25,6 +25,10 @@ export interface OsmosisMsgOpts {
   readonly unlockPeriodLock: MsgOpt;
   readonly unPoolWhitelistedPool: MsgOpt;
   readonly clCreatePosition: MsgOpt;
+  readonly clCollectPositionsSpreadRewards: (numPositions: number) => MsgOpt;
+  readonly clCollectPositionsIncentivesRewards: (
+    numPositions: number
+  ) => MsgOpt;
 }
 
 export const defaultMsgOpts: OsmosisMsgOpts = {
@@ -106,4 +110,12 @@ export const defaultMsgOpts: OsmosisMsgOpts = {
     type: "osmosis/cl-create-position",
     gas: 3000000,
   },
+  clCollectPositionsSpreadRewards: (numPositions: number) => ({
+    type: "osmosis/cl-col-sp-rewards",
+    gas: 120_000 * numPositions,
+  }),
+  clCollectPositionsIncentivesRewards: (numPositions: number) => ({
+    type: "osmosis/cl-collect-incentives",
+    gas: 300_000 * numPositions,
+  }),
 };

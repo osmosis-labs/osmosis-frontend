@@ -797,7 +797,6 @@ export class OsmosisAccountImpl {
       },
       undefined,
       (tx) => {
-        console.log({ tx });
         if (tx.code == null || tx.code === 0) {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
@@ -809,6 +808,156 @@ export class OsmosisAccountImpl {
           this.queries.queryLiquidityPositionsByAddress
             .getForAddress(this.base.bech32Address)
             ?.waitFreshResponse();
+        }
+
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
+   * Collects rewards from given positions by ID if rewards are available.
+   * Also collects incentive rewards by default if rewards are available.
+   * Constructs a multi msg as necessary.
+   *
+   * @param positionIds Position IDs to collect rewards from.
+   * @param alsoCollectIncentiveRewards Whether to also collect incentive rewards.
+   * @param memo Memo.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
+   */
+  async sendCollectAllPositionsRewardsMsgs(
+    positionIds: string[],
+    alsoCollectIncentiveRewards = true,
+    memo: string = "",
+    onFulfill?: (tx: any) => void
+  ) {
+    // refresh positions
+    const queryPositions = positionIds.map((id) =>
+      this.queries.queryLiquidityPositionsById.getForPositionId(id)
+    );
+    await Promise.all(queryPositions.map((q) => q.waitFreshResponse()));
+
+    // only collect rewards from positions that have rewards to save gas
+    type PositionsIdsWithRewards = {
+      positionIdsWithSpreadRewards: string[];
+      positionIdsWithIncentiveRewards: string[];
+    };
+    const { positionIdsWithSpreadRewards, positionIdsWithIncentiveRewards } =
+      queryPositions.reduce<PositionsIdsWithRewards>(
+        (accumulator, position) => {
+          if (position.claimableSpreadRewards.length > 0) {
+            accumulator.positionIdsWithSpreadRewards.push(position.id);
+          }
+          if (position.claimableIncentiveRewards.length > 0) {
+            accumulator.positionIdsWithIncentiveRewards.push(position.id);
+          }
+          return accumulator;
+        },
+        {
+          positionIdsWithSpreadRewards: [],
+          positionIdsWithIncentiveRewards: [],
+        }
+      );
+
+    // get msgs info, calculate estimated gas amount based on the number of positions
+    const spreadRewardsMsgOpts = this._msgOpts.clCollectPositionsSpreadRewards(
+      positionIdsWithSpreadRewards.length
+    );
+    const incentiveRewardsMsgOpts =
+      this._msgOpts.clCollectPositionsIncentivesRewards(
+        positionIdsWithIncentiveRewards.length
+      );
+
+    // construct amino msgs for legacy purposes
+    const spreadRewardsMsgAmino = {
+      type: spreadRewardsMsgOpts.type,
+      value: {
+        sender: this.base.bech32Address,
+        position_ids: positionIdsWithSpreadRewards,
+      },
+    };
+    const incentiveRewardsMsgAmino = {
+      type: incentiveRewardsMsgOpts.type,
+      value: {
+        sender: this.base.bech32Address,
+        position_ids: positionIdsWithIncentiveRewards,
+      },
+    };
+
+    await this.base.cosmos.sendMsgs(
+      "collectAllPositionsRewards",
+      () => {
+        // construct proto msgs
+        const spreadRewardsMsgProto = {
+          typeUrl:
+            "/osmosis.concentratedliquidity.v1beta1.MsgCollectSpreadRewards",
+          value:
+            osmosis.concentratedliquidity.v1beta1.MsgCollectSpreadRewards.encode(
+              {
+                sender: this.base.bech32Address,
+                positionIds: positionIdsWithSpreadRewards.map((id) =>
+                  Long.fromString(id)
+                ),
+              }
+            ).finish(),
+        };
+        const incentiveRewardsMsgProto = {
+          typeUrl:
+            "/osmosis.concentratedliquidity.v1beta1.MsgCollectIncentives",
+          value:
+            osmosis.concentratedliquidity.v1beta1.MsgCollectIncentives.encode({
+              sender: this.base.bech32Address,
+              positionIds: positionIdsWithIncentiveRewards.map((id) =>
+                Long.fromString(id)
+              ),
+            }).finish(),
+        };
+
+        // only accumulate collection msgs that have rewards
+        const aminoMsgs: any[] = [];
+        const protoMsgs: any[] = [];
+        if (positionIdsWithSpreadRewards.length > 0) {
+          aminoMsgs.push(spreadRewardsMsgAmino);
+          protoMsgs.push(spreadRewardsMsgProto);
+        }
+        if (
+          positionIdsWithIncentiveRewards.length > 0 &&
+          alsoCollectIncentiveRewards
+        ) {
+          aminoMsgs.push(incentiveRewardsMsgAmino);
+          protoMsgs.push(incentiveRewardsMsgProto);
+        }
+
+        return {
+          aminoMsgs,
+          protoMsgs,
+        };
+      },
+      memo,
+      {
+        amount: [],
+        gas: (
+          spreadRewardsMsgOpts.gas + incentiveRewardsMsgOpts.gas
+        ).toString(),
+      },
+      undefined,
+      (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.base.bech32Address)
+            .balances.forEach((bal) => {
+              bal.waitFreshResponse();
+            });
+          this.queries.queryLiquidityPositionsByAddress
+            .getForAddress(this.base.bech32Address)
+            ?.waitFreshResponse();
+
+          positionIds.forEach((id) => {
+            this.queries.queryLiquidityPositionsById
+              .getForPositionId(id)
+              ?.waitFreshResponse();
+          });
         }
 
         onFulfill?.(tx);
@@ -914,6 +1063,10 @@ export class OsmosisAccountImpl {
                 .getPool(poolId)
                 ?.waitFreshResponse();
             });
+
+          queries.osmosis?.queryLiquidityPositionsByAddress
+            .getForAddress(this.base.bech32Address)
+            .waitFreshResponse();
         }
 
         onFulfill?.(tx);
@@ -1009,6 +1162,10 @@ export class OsmosisAccountImpl {
               .getPool(poolId)
               ?.waitFreshResponse();
           });
+
+          queries.osmosis?.queryLiquidityPositionsByAddress
+            .getForAddress(this.base.bech32Address)
+            .waitFreshResponse();
         }
 
         onFulfill?.(tx);
@@ -1101,6 +1258,10 @@ export class OsmosisAccountImpl {
           pools.forEach(({ id }) =>
             this.queries.queryGammPools.getPool(id)?.waitFreshResponse()
           );
+
+          queries.osmosis?.queryLiquidityPositionsByAddress
+            .getForAddress(this.base.bech32Address)
+            .waitFreshResponse();
         }
 
         onFulfill?.(tx);

@@ -4,8 +4,8 @@ import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import React, {
+  ComponentProps,
   FunctionComponent,
-  ReactNode,
   useEffect,
   useState,
 } from "react";
@@ -50,6 +50,16 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     positionIds,
   }) => {
     const {
+      chainStore: {
+        osmosis: { chainId },
+      },
+      accountStore,
+      queriesStore,
+    } = useStore();
+
+    const account = accountStore.getAccount(chainId);
+
+    const {
       historicalChartData,
       historicalRange,
       xRange,
@@ -70,6 +80,10 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     } = chartConfig;
 
     const t = useTranslation();
+
+    const queryPositions = queriesStore
+      .get(chainId)
+      .osmosis!.queryLiquidityPositionsById.getForPositionIds(positionIds);
 
     const [activeModal, setActiveModal] = useState<
       "increase" | "remove" | null
@@ -233,7 +247,14 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           </div>
         </div>
         <div className="mt-4 flex flex-row justify-end gap-5">
-          <PositionButton onClick={() => null}>
+          <PositionButton
+            disabled={!queryPositions.some((p) => p.hasRewardsAvailable)}
+            onClick={() => {
+              account.osmosis
+                .sendCollectAllPositionsRewardsMsgs(positionIds)
+                .catch(console.error);
+            }}
+          >
             {t("clPositions.collectRewards")}
           </PositionButton>
           <PositionButton onClick={() => setActiveModal("remove")}>
@@ -248,18 +269,21 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
   }
 );
 
-function PositionButton(props: { children: ReactNode; onClick: () => void }) {
+const PositionButton: FunctionComponent<ComponentProps<typeof Button>> = (
+  props
+) => {
   return (
     <Button
       mode="unstyled"
       size="sm"
       className="text-white w-fit whitespace-nowrap rounded-[10px] border-2 border-wosmongton-400 bg-transparent py-4 px-5 text-subtitle1 font-subtitle1 hover:border-wosmongton-300 disabled:border-osmoverse-600 disabled:text-osmoverse-400"
       onClick={props.onClick}
+      {...props}
     >
       {props.children}
     </Button>
   );
-}
+};
 
 const AssetPairAmountDetail: FunctionComponent<{
   className?: string;

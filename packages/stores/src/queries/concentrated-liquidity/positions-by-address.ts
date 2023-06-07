@@ -30,7 +30,7 @@ export class ObservableQueryLiquidityPositionByAddress extends ObservableChainQu
       kvStore,
       chainId,
       chainGetter,
-      `${URL_BASE}/positions/${params.address}`
+      `${URL_BASE}/positions/${params.address}?pagination.limit=10000`
     );
 
     makeObservable(this);

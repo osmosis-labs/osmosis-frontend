@@ -87,9 +87,17 @@ export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<L
   }
 
   @computed
-  get claimableFees(): CoinPretty[] {
-    if (!this._raw?.claimable_fees) return [];
-    return this._raw?.claimable_fees.map(
+  get hasRewardsAvailable(): boolean {
+    return (
+      this.claimableIncentiveRewards.length > 0 ||
+      this.claimableSpreadRewards.length > 0
+    );
+  }
+
+  @computed
+  get claimableSpreadRewards(): CoinPretty[] {
+    if (!this._raw?.claimable_spread_rewards) return [];
+    return this._raw?.claimable_spread_rewards.map(
       ({ denom, amount }) =>
         new CoinPretty(
           this.chainGetter.getChain(this.chainId).forceFindCurrency(denom),
@@ -99,9 +107,9 @@ export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<L
   }
 
   @computed
-  get claimableIncentives(): CoinPretty[] {
+  get claimableIncentiveRewards(): CoinPretty[] {
     if (!this._raw?.claimable_incentives) return [];
-    return this._raw?.claimable_fees.map(
+    return this._raw?.claimable_incentives.map(
       ({ denom, amount }) =>
         new CoinPretty(
           this.chainGetter.getChain(this.chainId).forceFindCurrency(denom),
@@ -138,13 +146,19 @@ export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<L
   protected setResponse(response: Readonly<QueryResponse<LiquidityPosition>>) {
     super.setResponse(response);
     this.setRaw(response.data);
+    const rewardDenoms = Array.from(
+      new Set(
+        response.data.claimable_incentives
+          .concat(response.data.claimable_spread_rewards)
+          .map(({ denom }) => denom)
+      )
+    );
     this.chainGetter
       .getChain(this.chainId)
       .addUnknownCurrencies(
         response.data.asset0.denom,
         response.data.asset1.denom,
-        ...response.data.claimable_fees.map(({ denom }) => denom),
-        ...response.data.claimable_incentives.map(({ denom }) => denom)
+        ...rewardDenoms
       );
   }
 
@@ -167,6 +181,7 @@ export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<L
     );
 
     queryPosition.setRaw(position);
+    queryPosition.allowFetch();
     return queryPosition;
   }
 }
@@ -182,6 +197,10 @@ export class ObservableQueryLiquidityPositionsById extends ObservableChainQueryM
         positionId
       );
     });
+  }
+
+  getForPositionIds(positionIds: string[]) {
+    return positionIds.map((positionId) => this.getForPositionId(positionId));
   }
 
   getForPositionId(positionId: string) {
