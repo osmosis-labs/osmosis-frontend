@@ -370,6 +370,12 @@
       </svg>
     </symbol>
 
+    <symbol id="lightning-small" viewBox="0 0 16 16">
+      <svg width="9" height="16" viewBox="0 0 9 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5.15617 0.950664C5.20313 0.574976 4.69017 0.419663 4.52085 0.758303L0.406106 8.98779C0.219526 9.36095 0.490876 9.8 0.90808 9.8H4.5L3.84383 15.0493C3.79687 15.425 4.30983 15.5803 4.47915 15.2417L8.59389 7.01221C8.78047 6.63905 8.50912 6.2 8.09192 6.2H4.5L5.15617 0.950664Z" fill="#EC66E9"/>
+      </svg>
+    </symbol>
+
     <symbol id="left-right-arrow" viewBox="0 0 24 24">
       <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M15.9854 7.75781L20.228 12.0005L15.9854 16.2431" stroke="#E4E1FB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>

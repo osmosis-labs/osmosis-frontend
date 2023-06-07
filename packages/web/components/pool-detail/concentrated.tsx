@@ -1,10 +1,10 @@
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Head from "next/head";
-import React, { FunctionComponent, ReactElement, useState } from "react";
+import React, { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
+import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { ChartButton } from "~/components/buttons";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
@@ -24,7 +24,7 @@ const TokenPairHistoricalChart = dynamic(
 
 export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
   observer(({ poolId }) => {
-    const { chainStore } = useStore();
+    const { chainStore, queriesExternalStore, priceStore } = useStore();
     const { chainId } = chainStore.osmosis;
     const config = useHistoricalAndLiquidityData(chainId, poolId);
     const t = useTranslation();
@@ -51,11 +51,18 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       hoverPrice,
     } = config;
 
+    const volume24h =
+      queriesExternalStore.queryGammPoolFeeMetrics.getPoolFeesMetrics(
+        poolId,
+        priceStore
+      ).volume24h;
+    const poolLiquidity = pool?.computeTotalValueLocked(priceStore);
+
     return (
-      <main className="m-auto flex min-h-screen max-w-[1221px] flex-col gap-8 bg-osmoverse-900 p-8 md:gap-4 md:p-4">
+      <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
         <Head>
           <title>
-            {t("pool.title", { id: poolId ? poolId.toString() : "-" })}
+            {t("pool.title", { id: poolId ? poolId.toString() : "" })}
           </title>
         </Head>
         {pool && activeModal === "add-liquidity" && (
@@ -85,17 +92,21 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     )}
                   />
                 </div>
-                <div>
-                  <span className="text-supercharged-gradient text-body2 font-body2 ">
+                <div className="flex items-center">
+                  <Icon id="lightning-small" height={18} width={18} />
+                  <span className="text-supercharged-gradient body2">
                     {t("clPositions.supercharged")}
                   </span>
                 </div>
               </div>
               <div className="flex flex-grow justify-end gap-10">
-                <PoolDataGroup label={t("pool.liquidity")} value="$0.00" />
+                <PoolDataGroup
+                  label={t("pool.liquidity")}
+                  value={poolLiquidity?.toString() ?? "0"}
+                />
                 <PoolDataGroup
                   label={t("pool.24hrTradingVolume")}
-                  value="$0.00"
+                  value={volume24h.toString()}
                 />
                 <PoolDataGroup
                   label={t("pool.swapFee")}
@@ -181,7 +192,6 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     >
                       {t("clPositions.learnMoreAboutPools")}
                     </a>
-                    <img src="/icons/arrow-right.svg" alt="learn more" />
                   </span>
                 </div>
               </div>
@@ -202,13 +212,12 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     );
   });
 
-function PoolDataGroup(props: { label: string; value: string }): ReactElement {
-  return (
-    <div className="flex flex-col gap-2">
-      <div className="text-body2 font-body2 text-osmoverse-400">
-        {props.label}
-      </div>
-      <h4 className="text-osmoverse-100">{props.value}</h4>
-    </div>
-  );
-}
+const PoolDataGroup: FunctionComponent<{ label: string; value: string }> = ({
+  label,
+  value,
+}) => (
+  <div className="flex flex-col gap-2">
+    <div className="text-body2 font-body2 text-osmoverse-400">{label}</div>
+    <h4 className="text-osmoverse-100">{value}</h4>
+  </div>
+);

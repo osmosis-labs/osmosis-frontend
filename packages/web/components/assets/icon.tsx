@@ -32,6 +32,7 @@ export type SpriteIconId =
   | "medium"
   | "alert-triangle"
   | "lightning"
+  | "lightning-small"
   | "left-right-arrow";
 
 /**
