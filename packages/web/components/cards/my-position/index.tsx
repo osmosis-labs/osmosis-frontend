@@ -46,6 +46,8 @@ export const MyPositionCard: FunctionComponent<{
     ? useHistoricalAndLiquidityData(chainId, poolId)
     : undefined;
 
+  const roi = undefined; // TODO: calculate APR (stretch)
+
   const baseAssetValue = baseAsset && priceStore.calculatePrice(baseAsset);
   const quoteAssetValue = quoteAsset && priceStore.calculatePrice(quoteAsset);
   const fiatCurrency =
@@ -62,16 +64,16 @@ export const MyPositionCard: FunctionComponent<{
           poolId,
           Number(lowerTick.toString()),
           Number(upperTick.toString())
-        )
+        )?.apr
       : undefined;
 
   return (
     <div className="flex flex-col gap-8 overflow-hidden rounded-[20px] bg-osmoverse-800 p-8">
       <div
-        className="flex cursor-pointer items-center gap-[52px]"
+        className="flex cursor-pointer place-content-between items-center gap-[52px]"
         onClick={() => setCollapsed(!collapsed)}
       >
-        <div>
+        <div className="flex items-center gap-9">
           <PoolAssetsIcon
             className="!w-[78px]"
             assets={queryPool?.poolAssets.map((poolAsset) => ({
@@ -79,8 +81,6 @@ export const MyPositionCard: FunctionComponent<{
               coinDenom: poolAsset.amount.denom,
             }))}
           />
-        </div>
-        <div className="flex flex-shrink-0 flex-grow flex-col gap-[6px]">
           <div className="flex flex-shrink-0 flex-grow flex-col gap-[6px]">
             <div className="flex items-center gap-[6px]">
               <PoolAssetsName
@@ -107,21 +107,27 @@ export const MyPositionCard: FunctionComponent<{
           </div>
         </div>
         <div className="flex gap-[52px] self-start">
-          <PositionDataGroup label={t("clPositions.roi")} value="-" />
+          {roi && (
+            <PositionDataGroup label={t("clPositions.roi")} value={roi} />
+          )}
           {lowerPrices && upperPrices && (
             <RangeDataGroup
               lowerPrice={lowerPrices.price}
               upperPrice={upperPrices.price}
             />
           )}
-          <PositionDataGroup
-            label={t("clPositions.myLiquidity")}
-            value={liquidityValue ? formatPretty(liquidityValue) : "-"}
-          />
-          <PositionDataGroup
-            label={t("clPositions.incentives")}
-            value={incentivesApr?.apr?.maxDecimals(0).toString() ?? "-"}
-          />
+          {liquidityValue && (
+            <PositionDataGroup
+              label={t("clPositions.myLiquidity")}
+              value={formatPretty(liquidityValue)}
+            />
+          )}
+          {incentivesApr && (
+            <PositionDataGroup
+              label={t("clPositions.incentives")}
+              value={incentivesApr.maxDecimals(0).toString()}
+            />
+          )}
         </div>
       </div>
       {!collapsed && poolId && config && (
