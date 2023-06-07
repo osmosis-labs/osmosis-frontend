@@ -150,9 +150,9 @@ const Overview: FunctionComponent<
             />
           </div>
         </div>
-        <div className="flex flex-row rounded-[1rem] bg-osmoverse-700/[.3] px-[28px] py-4">
+        <div className="flex rounded-[1rem] bg-osmoverse-700/[.3] px-[28px] py-4">
           <div className="flex flex-1 flex-col gap-1">
-            <div className="flex flex-row flex-nowrap items-center gap-2">
+            <div className="flex flex-nowrap items-center gap-2">
               {pool && (
                 <>
                   <PoolAssetsIcon
@@ -208,7 +208,7 @@ const Overview: FunctionComponent<
           </div>
         </div>
         <div className="flex flex-col">
-          <div className="flex flex-row justify-center gap-[12px]">
+          <div className="flex justify-center gap-[12px]">
             <StrategySelector
               title={t("addConcentratedLiquidity.managed")}
               description={t("addConcentratedLiquidity.managedDescription")}
@@ -378,7 +378,7 @@ const AddConcLiqView: FunctionComponent<
         <span className="subtitle1 px-4 pb-3">
           {t("addConcentratedLiquidity.priceRange")}
         </span>
-        <div className="flex flex-row gap-1">
+        <div className="flex gap-1">
           <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
             <PriceChartHeader
               historicalRange={historicalRange}
@@ -404,9 +404,9 @@ const AddConcLiqView: FunctionComponent<
               }
             />
           </div>
-          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-row rounded-r-2xl bg-osmoverse-700">
+          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 rounded-r-2xl bg-osmoverse-700">
             <div className="flex flex-1 flex-col">
-              <div className="mt-7 mr-6 mb-8 flex h-6 flex-row justify-end gap-1">
+              <div className="mt-7 mr-6 mb-8 flex h-6 justify-end gap-1">
                 <ChartButton
                   alt="refresh"
                   src="/icons/refresh-ccw.svg"
@@ -504,7 +504,7 @@ const AddConcLiqView: FunctionComponent<
         <div className="subtitle1 px-4 pb-3">
           {t("addConcentratedLiquidity.amountToDeposit")}
         </div>
-        <div className="flex flex-row justify-center gap-3">
+        <div className="flex justify-center gap-3">
           <DepositAmountGroup
             getFiatValue={getFiatValue}
             coin={pool?.poolAssets[0]?.amount}
@@ -578,7 +578,7 @@ const StrategySelectorGroup: FunctionComponent<
         <span className="caption text-osmoverse-200">
           {descriptionText}
           <a
-            className="caption mx-1 inline-flex flex-row items-center text-wosmongton-300 underline"
+            className="caption mx-1 inline-flex items-center text-wosmongton-300 underline"
             href="#"
             target="_blank"
             rel="noopener noreferrer"
@@ -587,7 +587,7 @@ const StrategySelectorGroup: FunctionComponent<
           </a>
         </span>
       </div>
-      <div className="flex flex-1 flex-row justify-end gap-2">
+      <div className="flex flex-1 justify-end gap-2">
         <PresetStrategyCard
           type={null}
           src="/images/small-vial.svg"
@@ -675,7 +675,7 @@ const PresetStrategyCard: FunctionComponent<
     return (
       <div
         className={classNames(
-          "flex w-[114px] flex-row items-center justify-center gap-2 rounded-2xl p-[2px]",
+          "flex w-[114px] items-center justify-center gap-2 rounded-2xl p-[2px]",
           {
             "bg-supercharged": isSelected,
             "cursor-pointer hover:bg-supercharged": type !== null,
@@ -719,7 +719,7 @@ const PriceInputBox: FunctionComponent<{
   <div className="flex w-full max-w-[9.75rem] flex-col items-end rounded-xl bg-osmoverse-800 px-2">
     <span className="caption px-2 pt-2 text-osmoverse-400">{label}</span>
     {infinity ? (
-      <div className="flex h-[41px] flex-row items-center px-2">
+      <div className="flex h-[41px] items-center px-2">
         <Image
           alt="infinity"
           src="/icons/infinity.svg"

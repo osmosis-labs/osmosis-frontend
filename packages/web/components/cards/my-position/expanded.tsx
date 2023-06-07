@@ -93,7 +93,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           onRequestClose={() => setActiveModal(null)}
         />
       )}
-      <div className="flex flex-row gap-1">
+      <div className="flex gap-1">
         <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
           <PriceChartHeader
             historicalRange={historicalRange}
@@ -122,7 +122,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             }
           />
         </div>
-        <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-row rounded-r-2xl bg-osmoverse-700">
+        <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 rounded-r-2xl bg-osmoverse-700">
           <div className="mt-[84px] flex flex-1 flex-col">
             <ConcentratedLiquidityDepthChart
               yRange={yRange}
@@ -148,7 +148,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             />
           </div>
           <div className="mb-8 flex flex-col pr-8">
-            <div className="mt-7 mr-6 flex h-6 flex-row gap-1">
+            <div className="mt-7 mr-6 flex h-6 gap-1">
               <ChartButton
                 alt="refresh"
                 src="/icons/refresh-ccw.svg"
@@ -188,7 +188,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
       </div>
       <div className="flex flex-row">
         <div className="flex w-full flex-col gap-4">
-          <div className="flex flex-row justify-between">
+          <div className="flex justify-between">
             <AssetsInfo
               className="w-0 flex-shrink flex-grow"
               title={t("clPositions.currentAssets")}
@@ -205,7 +205,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
               title={t("clPositions.totalFeesEarned")}
             />
           </div>
-          <div className="flex flex-row justify-between">
+          <div className="flex justify-between">
             <AssetsInfo
               className="w-0 flex-shrink flex-grow"
               title={t("clPositions.principleAssets")}
@@ -219,7 +219,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           </div>
         </div>
       </div>
-      <div className="mt-4 flex flex-row justify-end gap-5">
+      <div className="mt-4 flex justify-end gap-5">
         <PositionButton onClick={() => null}>
           {t("clPositions.collectRewards")}
         </PositionButton>
@@ -263,10 +263,10 @@ const AssetsInfo: FunctionComponent<
       )}
     >
       <div className="text-subtitle1">{title}</div>
-      <div className="flex flex-row items-center gap-5">
+      <div className="flex items-center gap-5">
         {assets.length > 0 ? (
           assets.map((asset) => (
-            <div key={asset.denom} className="flex flex-row items-center gap-2">
+            <div key={asset.denom} className="flex items-center gap-2">
               {asset.currency.coinImageUrl && (
                 <Image
                   alt="base currency"
@@ -296,7 +296,7 @@ const PriceBox: FunctionComponent<{
   <div className="flex w-full max-w-[9.75rem] flex-col gap-1">
     <span className="pt-2 text-caption text-osmoverse-400">{label}</span>
     {infinity ? (
-      <div className="flex h-[41px] flex-row items-center">
+      <div className="flex h-[41px] items-center">
         <Image
           alt="infinity"
           src="/icons/infinity.svg"

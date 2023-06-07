@@ -100,7 +100,7 @@ const Palette = ({
         {maxColors < 5 ? (
           <div className="relative">
             <a
-              className="absolute bottom-[6px] flex w-full flex-row items-center justify-center rounded-lg py-[8px] text-center text-subtitle1 text-xs tracking-tighter"
+              className="absolute bottom-[6px] flex w-full items-center justify-center rounded-lg py-[8px] text-center text-subtitle1 text-xs tracking-tighter"
               href="https://wallet.keplr.app/chains/osmosis"
               target="_blank"
               rel="noopener noreferrer"

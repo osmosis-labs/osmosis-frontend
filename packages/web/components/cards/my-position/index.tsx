@@ -53,7 +53,7 @@ export const MyPositionCard: FunctionComponent<{
   return (
     <div className="flex flex-col gap-8 overflow-hidden rounded-[20px] bg-osmoverse-800 p-8">
       <div
-        className="flex cursor-pointer flex-row items-center gap-[52px]"
+        className="flex cursor-pointer items-center gap-[52px]"
         onClick={() => setCollapsed(!collapsed)}
       >
         <div>
@@ -67,7 +67,7 @@ export const MyPositionCard: FunctionComponent<{
         </div>
         <div className="flex flex-shrink-0 flex-grow flex-col gap-[6px]">
           <div className="flex flex-shrink-0 flex-grow flex-col gap-[6px]">
-            <div className="flex flex-row items-center gap-[6px]">
+            <div className="flex items-center gap-[6px]">
               <PoolAssetsName
                 size="md"
                 assetDenoms={queryPool?.poolAssets.map(
@@ -91,7 +91,7 @@ export const MyPositionCard: FunctionComponent<{
               )}
           </div>
         </div>
-        <div className="flex flex-row gap-[52px] self-start">
+        <div className="flex gap-[52px] self-start">
           <PositionDataGroup label={t("clPositions.roi")} value="-" />
           {lowerPrices && upperPrices && (
             <RangeDataGroup
@@ -140,7 +140,7 @@ const RangeDataGroup: FunctionComponent<{
     <PositionDataGroup
       label={t("clPositions.selectedRange")}
       value={
-        <div className="flex w-full flex-row justify-end gap-1 overflow-hidden">
+        <div className="flex w-full justify-end gap-1 overflow-hidden">
           <h6>{lowerPrice.toString()}</h6>
           <img alt="" src="/icons/left-right-arrow.svg" className="h-6 w-6" />
           <h6>{upperPrice.toString()}</h6>

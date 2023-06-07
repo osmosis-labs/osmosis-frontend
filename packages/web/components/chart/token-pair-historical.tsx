@@ -190,7 +190,7 @@ export const PriceChartHeader: FunctionComponent<{
           </div>
         </div>
         {!hideButtons && (
-          <div className="flex flex-1 flex-row justify-end gap-1 pr-2">
+          <div className="flex flex-1 justify-end gap-1 pr-2">
             <ChartButton
               label="7 day"
               onClick={() => setHistoricalRange("7d")}

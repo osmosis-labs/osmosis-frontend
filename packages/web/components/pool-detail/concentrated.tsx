@@ -69,7 +69,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
           <div className="flex flex-col rounded-[28px] bg-osmoverse-1000 p-8">
             <div className="flex flex-row">
               <div className="flex flex-col gap-3">
-                <div className="flex flex-row items-center gap-2">
+                <div className="flex items-center gap-2">
                   <PoolAssetsIcon
                     className="!w-[78px]"
                     assets={pool?.poolAssets.map((poolAsset) => ({
@@ -91,7 +91,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                   </span>
                 </div>
               </div>
-              <div className="flex flex-grow flex-row justify-end gap-10">
+              <div className="flex flex-grow justify-end gap-10">
                 <PoolDataGroup label={t("pool.liquidity")} value="$0.00" />
                 <PoolDataGroup
                   label={t("pool.24hrTradingVolume")}
@@ -127,7 +127,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
               </div>
               <div className="flex-shrink-1 flex w-[229px] flex-col">
                 <div className="flex flex-col pr-8">
-                  <div className="mt-7 flex h-6 flex-row justify-end gap-1">
+                  <div className="mt-7 flex h-6 justify-end gap-1">
                     <ChartButton
                       alt="refresh"
                       src="/icons/refresh-ccw.svg"
@@ -168,13 +168,13 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
             <div className="flex flex-row">
               <div className="flex flex-grow flex-col gap-3">
                 <h6>{t("clPositions.yourPositions")}</h6>
-                <div className="flex flex-row items-center text-body2 font-body2">
+                <div className="flex items-center text-body2 font-body2">
                   <span className="text-wosmongton-200">
                     {t("clPositions.yourPositionsDesc")}
                   </span>
                   <span className="flex flex-row">
                     <a
-                      className="mx-1 inline-flex flex-row items-center text-wosmongton-300 underline"
+                      className="mx-1 inline-flex items-center text-wosmongton-300 underline"
                       href="#"
                       target="_blank"
                       rel="noopener noreferrer"
