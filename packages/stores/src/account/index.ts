@@ -958,8 +958,8 @@ export class OsmosisAccountImpl {
             .balances.forEach((bal) => {
               bal.waitFreshResponse();
             });
-          this.queries.queryLiquidityPositionsByAddress
-            .getForAddress(this.base.bech32Address)
+          this.queries.queryAccountsPositions
+            .get(this.base.bech32Address)
             ?.waitFreshResponse();
 
           positionIds.forEach((id) => {
@@ -1073,8 +1073,8 @@ export class OsmosisAccountImpl {
                 ?.waitFreshResponse();
             });
 
-          queries.osmosis?.queryLiquidityPositionsByAddress
-            .getForAddress(this.base.bech32Address)
+          queries.osmosis?.queryAccountsPositions
+            .get(this.base.bech32Address)
             .waitFreshResponse();
         }
 
@@ -1172,8 +1172,8 @@ export class OsmosisAccountImpl {
               ?.waitFreshResponse();
           });
 
-          queries.osmosis?.queryLiquidityPositionsByAddress
-            .getForAddress(this.base.bech32Address)
+          queries.osmosis?.queryAccountsPositions
+            .get(this.base.bech32Address)
             .waitFreshResponse();
         }
 
@@ -1268,8 +1268,8 @@ export class OsmosisAccountImpl {
             this.queries.queryGammPools.getPool(id)?.waitFreshResponse()
           );
 
-          queries.osmosis?.queryLiquidityPositionsByAddress
-            .getForAddress(this.base.bech32Address)
+          queries.osmosis?.queryAccountsPositions
+            .get(this.base.bech32Address)
             .waitFreshResponse();
         }
 
