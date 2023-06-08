@@ -33,3 +33,16 @@ Components:
 ### Troubleshooting
 
 - Account sequence mismatch errors: go to the sendTx function passed to `MockKeplrWithFee` in `test-env.ts` and increase the timeout to allow for more time for the transaction to be processed (depends on the Docker VM and the host machine). If that doesn't fix it, you likely have a promise somewhere around a send function that is not resolving and is causing a test case to timeout.
+
+### Tips
+
+Say you want to create add a new message to the frontend; the fastest approach is to:
+
+1. Write the message in the account layer
+2. Add any needed queries in the query layer
+3. Add test cases, in a file that makes sense to categorize it in
+4. To avoid waiting for all of the tests to run you can:
+   - Isolate just the test file. Example: `yarn test:e2e positions`
+   - Isolate further to just the test case, with a fuzzy search param: `yarn test:e2e positions -t "should fail"`
+
+Writing e2e tests help identify gas amount errors and message encoding issues.
