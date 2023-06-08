@@ -30,12 +30,20 @@ export const HeroCard: React.FunctionComponent<{
   const t = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
 
+  const utmParams = new URLSearchParams({
+    utm_source: "OsmosisAppStore",
+    utm_medium: "AppCard",
+    utm_campaign: title || "UntitledApp",
+  }).toString();
+
+  const externalUrlWithUTM = externalUrl + utmParams;
+
   const handleAppClicked = () => {
     logEvent([
       EventName.AppStore.appClicked,
       { appName: title, isFeatured: true, isBanner: true },
     ]);
-    window.open(externalUrl, "_blank", "noopener noreferrer");
+    window.open(externalUrlWithUTM, "_blank", "noopener noreferrer");
   };
 
   return (
@@ -48,7 +56,7 @@ export const HeroCard: React.FunctionComponent<{
         className="heroImage relative flex h-[400px]  cursor-pointer items-end overflow-hidden rounded-2xl sm:h-[300px]"
       >
         <div
-          className="absolute top-0 left-0 z-10 h-full w-full  bg-cover bg-center bg-no-repeat"
+          className="backgroundImage absolute top-0 left-0 z-10 h-full w-full  bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage: `url(${imageUrl})`,
           }}
