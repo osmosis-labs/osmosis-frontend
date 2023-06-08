@@ -1,10 +1,11 @@
+import { Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Head from "next/head";
-import React, { FunctionComponent, ReactElement, useState } from "react";
+import React, { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
+import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { ChartButton } from "~/components/buttons";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
@@ -24,7 +25,7 @@ const TokenPairHistoricalChart = dynamic(
 
 export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
   observer(({ poolId }) => {
-    const { chainStore } = useStore();
+    const { chainStore, queriesExternalStore, priceStore } = useStore();
     const { chainId } = chainStore.osmosis;
     const config = useHistoricalAndLiquidityData(chainId, poolId);
     const t = useTranslation();
@@ -51,11 +52,24 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       hoverPrice,
     } = config;
 
+    const volume24h =
+      queriesExternalStore.queryGammPoolFeeMetrics.getPoolFeesMetrics(
+        poolId,
+        priceStore
+      ).volume24h;
+    const poolLiquidity = pool?.computeTotalValueLocked(priceStore);
+
+    const currentPrice = pool?.concentratedLiquidityPoolInfo
+      ? pool.concentratedLiquidityPoolInfo.currentSqrtPrice.mul(
+          pool.concentratedLiquidityPoolInfo.currentSqrtPrice
+        )
+      : undefined;
+
     return (
-      <main className="m-auto flex min-h-screen max-w-[1221px] flex-col gap-8 bg-osmoverse-900 p-8 md:gap-4 md:p-4">
+      <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
         <Head>
           <title>
-            {t("pool.title", { id: poolId ? poolId.toString() : "-" })}
+            {t("pool.title", { id: poolId ? poolId.toString() : "" })}
           </title>
         </Head>
         {pool && activeModal === "add-liquidity" && (
@@ -69,7 +83,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
           <div className="flex flex-col rounded-[28px] bg-osmoverse-1000 p-8">
             <div className="flex flex-row">
               <div className="flex flex-col gap-3">
-                <div className="flex flex-row items-center gap-2">
+                <div className="flex items-center gap-2">
                   <PoolAssetsIcon
                     className="!w-[78px]"
                     assets={pool?.poolAssets.map((poolAsset) => ({
@@ -85,17 +99,21 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     )}
                   />
                 </div>
-                <div>
-                  <span className="text-supercharged-gradient text-body2 font-body2 ">
+                <div className="flex items-center">
+                  <Icon id="lightning-small" height={18} width={18} />
+                  <span className="text-supercharged-gradient body2">
                     {t("clPositions.supercharged")}
                   </span>
                 </div>
               </div>
-              <div className="flex flex-grow flex-row justify-end gap-10">
-                <PoolDataGroup label={t("pool.liquidity")} value="$0.00" />
+              <div className="flex flex-grow justify-end gap-10">
+                <PoolDataGroup
+                  label={t("pool.liquidity")}
+                  value={poolLiquidity?.toString() ?? "0"}
+                />
                 <PoolDataGroup
                   label={t("pool.24hrTradingVolume")}
-                  value="$0.00"
+                  value={volume24h.toString()}
                 />
                 <PoolDataGroup
                   label={t("pool.swapFee")}
@@ -125,28 +143,26 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                   }
                 />
               </div>
-              <div className="flex-shrink-1 flex w-[229px] flex-col">
-                <div className="flex flex-col pr-8">
-                  <div className="mt-7 flex h-6 flex-row justify-end gap-1">
-                    <ChartButton
-                      alt="refresh"
-                      src="/icons/refresh-ccw.svg"
-                      selected={false}
-                      onClick={() => setZoom(1)}
-                    />
-                    <ChartButton
-                      alt="zoom in"
-                      src="/icons/zoom-in.svg"
-                      selected={false}
-                      onClick={zoomIn}
-                    />
-                    <ChartButton
-                      alt="zoom out"
-                      src="/icons/zoom-out.svg"
-                      selected={false}
-                      onClick={zoomOut}
-                    />
-                  </div>
+              <div className="flex-shrink-1 relative flex w-[229px] flex-col">
+                <div className="mt-7 flex h-6 justify-end gap-1 pr-8">
+                  <ChartButton
+                    alt="refresh"
+                    src="/icons/refresh-ccw.svg"
+                    selected={false}
+                    onClick={() => setZoom(1)}
+                  />
+                  <ChartButton
+                    alt="zoom in"
+                    src="/icons/zoom-in.svg"
+                    selected={false}
+                    onClick={zoomIn}
+                  />
+                  <ChartButton
+                    alt="zoom out"
+                    src="/icons/zoom-out.svg"
+                    selected={false}
+                    onClick={zoomOut}
+                  />
                 </div>
                 <div className="mt-[32px] flex flex-1 flex-col">
                   <ConcentratedLiquidityDepthChart
@@ -157,10 +173,26 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                       price: lastChartData?.close || 0,
                       depth: xRange[1],
                     }}
-                    offset={{ top: 0, right: 36, bottom: 24 + 28, left: 0 }}
+                    offset={{
+                      top: 0,
+                      right: currentPrice
+                        ? currentPrice.gt(new Dec(100))
+                          ? 120
+                          : 56
+                        : 36,
+                      bottom: 24 + 28,
+                      left: 0,
+                    }}
                     horizontal
                   />
                 </div>
+                {currentPrice && (
+                  <h6 className="absolute right-0 top-[51%]">
+                    {currentPrice.toString(
+                      currentPrice.gt(new Dec(100)) ? 0 : 2
+                    )}
+                  </h6>
+                )}
               </div>
             </div>
           </div>
@@ -168,20 +200,19 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
             <div className="flex flex-row">
               <div className="flex flex-grow flex-col gap-3">
                 <h6>{t("clPositions.yourPositions")}</h6>
-                <div className="flex flex-row items-center text-body2 font-body2">
+                <div className="flex items-center text-body2 font-body2">
                   <span className="text-wosmongton-200">
                     {t("clPositions.yourPositionsDesc")}
                   </span>
                   <span className="flex flex-row">
                     <a
-                      className="mx-1 inline-flex flex-row items-center text-wosmongton-300 underline"
+                      className="mx-1 inline-flex items-center text-wosmongton-300 underline"
                       href="#"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       {t("clPositions.learnMoreAboutPools")}
                     </a>
-                    <img src="/icons/arrow-right.svg" alt="learn more" />
                   </span>
                 </div>
               </div>
@@ -202,13 +233,12 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     );
   });
 
-function PoolDataGroup(props: { label: string; value: string }): ReactElement {
-  return (
-    <div className="flex flex-col gap-2">
-      <div className="text-body2 font-body2 text-osmoverse-400">
-        {props.label}
-      </div>
-      <h4 className="text-osmoverse-100">{props.value}</h4>
-    </div>
-  );
-}
+const PoolDataGroup: FunctionComponent<{ label: string; value: string }> = ({
+  label,
+  value,
+}) => (
+  <div className="flex flex-col gap-2">
+    <div className="text-body2 font-body2 text-osmoverse-400">{label}</div>
+    <h4 className="text-osmoverse-100">{value}</h4>
+  </div>
+);

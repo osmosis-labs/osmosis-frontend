@@ -49,7 +49,7 @@
     "currentAssets": "Current Assets",
     "principleAssets": "Principle Assets",
     "totalFeesEarned": "Total Fees Earned",
-    "unclaimedFees": "Unclaimed Fees",
+    "unclaimedRewards": "Unclaimed Rewards",
     "roi": "ROI",
     "selectedRange": "Selected Range",
     "myLiquidity": "My Liquidity",
@@ -58,6 +58,7 @@
     "maxPrice": "Max price",
     "minPrice": "Min price",
     "collectRewards": "Collect Rewards",
+    "noRewards": "No rewards to collect",
     "removeLiquidity": "Remove Liquidity",
     "increaseLiquidity": "Increase Liquidity",
     "yourPositions": "Your Positions",
@@ -278,7 +279,8 @@
     "percentageSum": "Sum of percentages is not 100",
     "scalingFactorTooLow": "Scaling factor too low",
     "zeroAmount": "Amount is zero",
-    "invalidRange": "Invalid price range"
+    "invalidRange": "Invalid price range",
+    "notAvailable": "Not available"
   },
   "keplr": {
     "extension": "Keplr Browser Extension",

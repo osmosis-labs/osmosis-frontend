@@ -150,7 +150,7 @@ const SynthesisItem: FunctionComponent<{
             width={80}
           />
         </div>
-        <div className="flex flex-col justify-between md:w-full md:flex-row md:items-center">
+        <div className="flex flex-col justify-between md:w-full md:md:items-center">
           <div className="mr-2 mb-3 flex flex-col md:mb-0">
             <p className="mb-2 text-sm font-semibold text-white-mid">
               {pool.smoothWeightChange.initialPoolWeights

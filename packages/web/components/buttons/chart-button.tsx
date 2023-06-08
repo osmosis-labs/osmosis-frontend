@@ -15,7 +15,7 @@ export const ChartButton: FunctionComponent<{
   return (
     <button
       className={classNames(
-        "flex h-6 cursor-pointer flex-row items-center justify-center",
+        "flex h-6 cursor-pointer items-center justify-center",
         "rounded-lg bg-osmoverse-800 px-2 text-caption hover:bg-osmoverse-900",
         "whitespace-nowrap",
         {
