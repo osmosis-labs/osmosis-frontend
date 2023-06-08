@@ -222,7 +222,12 @@
     "notInitialized": "Not initialized",
     "percentageSum": "Sum of percentages is not 100",
     "scalingFactorTooLow": "Scaling factor too low",
-    "zeroAmount": "Amount is zero"
+    "zeroAmount": "Amount is zero",
+    "fallbackText1": "An error occurred",
+    "fallbackText2": "Please submit a",
+    "fallbackBugReport": "bug report",
+    "fallbackText3": "or get",
+    "fallbackSupport": "support"
   },
   "keplr": {
     "extension": "Keplr Browser Extension",
@@ -477,9 +482,5 @@
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",
   "waitingForTransaction": "Waiting for transaction to be included in the block",
-  "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution.",
-  "autonomy": {
-    "description": "Explore Limit and Stop Orders brought to you by Autonomy: ",
-    "link": "osmosis.autoswap.trade"
-  }
+  "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution."
 }

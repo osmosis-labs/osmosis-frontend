@@ -222,7 +222,12 @@
     "notInitialized": "Nie zinicjalizowane",
     "percentageSum": "Suma procentów nie jest równa 100",
     "scalingFactorTooLow": "Zbyt niski współczynnik skalowania",
-    "zeroAmount": "Ilość jest zerowa"
+    "zeroAmount": "Ilość jest zerowa",
+    "fallbackText1": "Wystąpił błąd",
+    "fallbackText2": "Proszę złożyć a",
+    "fallbackBugReport": "Zgłoszenie błędu",
+    "fallbackText3": "lub dostać",
+    "fallbackSupport": "wsparcie"
   },
   "keplr": {
     "extension": "Keplr Rozszerzenie Przeglądarki",
@@ -477,9 +482,5 @@
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",
   "waitingForTransaction": "Oczekiwanie na dołączenie transakcji do bloku",
-  "highPoolInflationWarning": "Wysokie APR-y mogą wynikać z nagród inflacyjnych. Postępuj ostrożnie.",
-  "autonomy": {
-    "description": "Poznaj Limity i Zlecenia Stop oferowane przez Autonomy: ",
-    "link": "osmosis.autoswap.trade"
-  }
+  "highPoolInflationWarning": "Wysokie APR-y mogą wynikać z nagród inflacyjnych. Postępuj ostrożnie."
 }
