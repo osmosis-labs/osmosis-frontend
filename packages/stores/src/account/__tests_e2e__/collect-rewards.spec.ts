@@ -143,9 +143,8 @@ describe("Collect Cl Fees Txs", () => {
     const osmosisQueries = queriesStore.get(chainId).osmosis!;
 
     const positions =
-      osmosisQueries.queryLiquidityPositionsByAddress.getForAddress(
-        account.bech32Address
-      ).positionIds ?? [];
+      osmosisQueries.queryAccountsPositions.get(account.bech32Address)
+        .positionIds ?? [];
 
     return positions;
   }
