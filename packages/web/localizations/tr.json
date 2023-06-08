@@ -222,7 +222,12 @@
     "notInitialized": "Başlatılmadı",
     "percentageSum": "Yüzdeler toplamı 100'e eşit değil",
     "scalingFactorTooLow": "Ölçeklendirme faktörü çok düşük",
-    "zeroAmount": "Miktar sıfır"
+    "zeroAmount": "Miktar sıfır",
+    "fallbackText1": "Bir hata oluştu",
+    "fallbackText2": "Lütfen bir gönderin",
+    "fallbackBugReport": "hata raporu",
+    "fallbackText3": "ya da al",
+    "fallbackSupport": "Destek"
   },
   "keplr": {
     "extension": "Keplr Tarayıcı Uzantısı",
@@ -477,9 +482,5 @@
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",
   "waitingForTransaction": "İşlemin bloğa eklenmesi bekleniyor",
-  "highPoolInflationWarning": "Yüksek APR'ler enflasyonist ödüllerden kaynaklanabilir. Dikkatli ilerleyin.",
-  "autonomy": {
-    "description": "Autonomy tarafından sunulan Sınırlama ve Durdurma Emirlerini Keşfedin: ",
-    "link": "osmosis.autoswap.trade"
-  }
+  "highPoolInflationWarning": "Yüksek APR'ler enflasyonist ödüllerden kaynaklanabilir. Dikkatli ilerleyin."
 }

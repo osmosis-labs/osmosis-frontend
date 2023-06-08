@@ -19,6 +19,8 @@ import {
 import { Bounce, ToastContainer } from "react-toastify";
 
 import { Icon } from "~/components/assets";
+import ErrorBoundary from "~/components/error/error-boundary";
+import ErrorFallback from "~/components/error/error-fallback";
 import { WalletSelectProvider } from "~/hooks/wallet-select";
 
 import { MainLayout } from "../components/layouts";
@@ -125,6 +127,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   }, [t]);
 
   useAmplitudeAnalytics({ init: true });
+
   return (
     <StoreProvider>
       <WalletSelectProvider>
@@ -147,7 +150,9 @@ function MyApp({ Component, pageProps }: AppProps) {
           transition={Bounce}
         />
         <MainLayout menus={menus}>
-          {Component && <Component {...pageProps} />}
+          <ErrorBoundary fallback={ErrorFallback}>
+            {Component && <Component {...pageProps} />}
+          </ErrorBoundary>
         </MainLayout>
       </WalletSelectProvider>
     </StoreProvider>

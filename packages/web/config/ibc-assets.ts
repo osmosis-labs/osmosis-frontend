@@ -92,10 +92,24 @@ export const IBCAssetInfos: (IBCAsset & {
         isVerified: true,
       },
       {
+        counterpartyChainId: "babajaga-1",
+        sourceChannelId: "channel-111",
+        destChannelId: "channel-0",
+        coinMinimalDenom: "uc4e",
+        isVerified: true,
+      },
+      {
         counterpartyChainId: "rhye-1",
         sourceChannelId: "channel-13",
         destChannelId: "channel-20",
         coinMinimalDenom: "uqck",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "rila-1",
+        sourceChannelId: "channel-110",
+        destChannelId: "channel-0",
+        coinMinimalDenom: "unls",
         isVerified: true,
       },
     ]
@@ -1502,6 +1516,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-522",
         destChannelId: "channel-2",
         coinMinimalDenom: "uqstars",
+        isVerified: true,
       },
       {
         // WYND
@@ -1543,6 +1558,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-522",
         destChannelId: "channel-2",
         coinMinimalDenom: "uqatom",
+        isVerified: true,
       },
       {
         counterpartyChainId: "comdex-1",
@@ -1555,6 +1571,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-522",
         destChannelId: "channel-2",
         coinMinimalDenom: "uqregen",
+        isVerified: true,
       },
       {
         //JunoFox
@@ -1584,6 +1601,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-522",
         destChannelId: "channel-2",
         coinMinimalDenom: "uqosmo",
+        isVerified: true,
       },
       {
         counterpartyChainId: "noble-1",
@@ -1781,6 +1799,12 @@ export const IBCAssetInfos: (IBCAsset & {
           "cw20:juno1epxnvge53c4hkcmqzlxryw5fp7eae2utyk6ehjcfpwajwp48km3sgxsh9k",
         ics20ContractAddress:
           "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+      },
+      {
+        counterpartyChainId: "gitopia",
+        sourceChannelId: "channel-781",
+        destChannelId: "channel-0",
+        coinMinimalDenom: "ulore",
       },
     ].filter((ibcAsset) => {
       // validate IBC asset config
