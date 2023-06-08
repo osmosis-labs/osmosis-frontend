@@ -71,9 +71,19 @@ function makeKey(
 function parseKey(key: string) {
   const [poolId, lowerTickIndex, upperTickIndex] = key.split(":");
 
+  const lowerTickIndexNum = parseInt(lowerTickIndex);
+  const upperTickIndexNum = parseInt(upperTickIndex);
+
+  if (isNaN(lowerTickIndexNum)) {
+    throw new Error(`Invalid lower tick index: ${lowerTickIndex}`);
+  }
+  if (isNaN(upperTickIndexNum)) {
+    throw new Error(`Invalid upper tick index: ${upperTickIndex}`);
+  }
+
   return {
     poolId,
-    lowerTickIndex: parseInt(lowerTickIndex),
-    upperTickIndex: parseInt(upperTickIndex),
+    lowerTickIndex: lowerTickIndexNum,
+    upperTickIndex: upperTickIndexNum,
   };
 }
