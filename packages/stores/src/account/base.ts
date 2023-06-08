@@ -31,6 +31,7 @@ import {
   WalletManager,
   WalletStatus,
 } from "@cosmos-kit/core";
+import { BaseAccount } from "@keplr-wallet/cosmos";
 import {
   ChainedFunctionifyTuple,
   ChainGetter,
@@ -684,19 +685,18 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         throw new Error("Endpoint is not provided");
       }
 
-      const res = await axios.get<{
-        account: {
-          "@type": string;
-          address: string;
-          pub_key: { "@type": string; key: string };
-          account_number: string;
-          sequence: string;
-        };
-      }>(
-        `${removeLastSlash(endpoint)}/cosmos/auth/v1beta1/accounts/${address}`
+      const account = await BaseAccount.fetchFromRest(
+        axios.create({
+          baseURL: removeLastSlash(endpoint),
+        }),
+        address,
+        true
       );
 
-      return res.data.account;
+      return {
+        accountNumber: account.getAccountNumber(),
+        sequence: account.getSequence(),
+      };
     } catch (error: any) {
       throw error;
     }
@@ -713,8 +713,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     }
 
     return {
-      accountNumber: Number(account.account_number),
-      sequence: Number(account.sequence),
+      accountNumber: Number(account.accountNumber.toString()),
+      sequence: Number(account.sequence.toString()),
     };
   }
 }
