@@ -7,11 +7,11 @@ import {
 } from "@cosmos-kit/core";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import React, {
   ComponentPropsWithoutRef,
   FunctionComponent,
+  Suspense,
   useEffect,
   useMemo,
   useState,
@@ -30,7 +30,7 @@ import { useStore } from "~/stores";
 
 import { ModalBase, ModalBaseProps } from "./base";
 
-const QRCode = dynamic(() => import("~/components/qrcode"));
+const QRCode = React.lazy(() => import("~/components/qrcode"));
 
 type ModalView =
   | "list"
@@ -69,12 +69,21 @@ function getModalView(qrState: State, walletStatus?: WalletStatus): ModalView {
 
 export const WalletSelectModal: FunctionComponent<
   ModalBaseProps & { walletRepo: WalletRepo; onConnect?: () => void }
-> = (props) => {
-  const { isOpen, onRequestClose, walletRepo } = props;
+> = observer((props) => {
+  const {
+    isOpen,
+    onRequestClose,
+    walletRepo,
+    onConnect: onConnectProp,
+  } = props;
+  const { accountStore } = useStore();
+
   // const t = useTranslation();
   const [qrState, setQRState] = useState<State>(State.Init);
   const [qrMessage, setQRMessage] = useState<string>("");
   const [modalView, setModalView] = useState<ModalView>("list");
+  const [lazyWalletInfo, setLazyWalletInfo] =
+    useState<(typeof WalletRegistry)[number]>();
 
   const current = walletRepo?.current;
   const walletStatus = current?.walletStatus;
@@ -107,65 +116,6 @@ export const WalletSelectModal: FunctionComponent<
       walletRepo?.disconnect();
     }
   };
-
-  return (
-    <ModalBase
-      isOpen={isOpen}
-      onRequestClose={onClose}
-      hideCloseButton
-      // onRequestBack={
-      //   modalView !== "list"
-      //     ? () => {
-      //         if (
-      //           walletStatus === WalletStatus.Connecting ||
-      //           walletStatus === WalletStatus.Rejected ||
-      //           walletStatus === WalletStatus.Error
-      //         ) {
-      //           walletRepo?.disconnect();
-      //           walletRepo?.activate();
-      //         }
-      //         setModalView("list");
-      //       }
-      //     : undefined
-      // }
-      className="max-h-screen w-full max-w-[896px] overflow-auto px-0 py-0"
-    >
-      <div className="flex min-h-[50vh]">
-        <div className="w-full max-w-[284px] bg-[rgba(20,15,52,0.2)] py-8 pl-8 pr-5">
-          <ClientOnly>
-            <LeftModalContent
-              {...props}
-              onRequestClose={onClose}
-              modalView={modalView}
-              setModalView={setModalView}
-            />
-          </ClientOnly>
-        </div>
-        <div className="w-full py-8">
-          <RightModalContent
-            {...props}
-            onRequestClose={onClose}
-            modalView={modalView}
-            setModalView={setModalView}
-          />
-        </div>
-      </div>
-    </ModalBase>
-  );
-};
-
-const LeftModalContent: FunctionComponent<
-  Pick<
-    ComponentPropsWithoutRef<typeof WalletSelectModal>,
-    "walletRepo" | "onRequestClose" | "onConnect"
-  > & { modalView: ModalView; setModalView: (view: ModalView) => void }
-> = observer(({ walletRepo, onConnect: onConnectProp, setModalView }) => {
-  const { accountStore } = useStore();
-  const { isMobile } = useWindowSize();
-  const t = useTranslation();
-
-  const [_lazyWalletInfo, setLazyWalletInfo] =
-    useState<(typeof WalletRegistry)[number]>();
 
   const onConnect = async (
     sync: boolean,
@@ -228,6 +178,75 @@ const LeftModalContent: FunctionComponent<
     }
   };
 
+  const onRequestBack =
+    modalView !== "list"
+      ? () => {
+          if (
+            walletStatus === WalletStatus.Connecting ||
+            walletStatus === WalletStatus.Rejected ||
+            walletStatus === WalletStatus.Error
+          ) {
+            walletRepo?.disconnect();
+            walletRepo?.activate();
+          }
+          setModalView("list");
+        }
+      : undefined;
+
+  return (
+    <ModalBase
+      isOpen={isOpen}
+      onRequestClose={onClose}
+      hideCloseButton
+      className="max-h-screen w-full max-w-[896px] overflow-auto !px-0 py-0"
+    >
+      <div className="flex min-h-[50vh] sm:flex-col">
+        <div className="w-full max-w-[284px] bg-[rgba(20,15,52,0.2)] py-8 pl-8 pr-5 sm:max-w-none">
+          <ClientOnly>
+            <LeftModalContent onConnect={onConnect} walletRepo={walletRepo} />
+          </ClientOnly>
+        </div>
+        <div className="relative w-full py-8 sm:static">
+          {onRequestBack && (
+            <IconButton
+              aria-label="Go Back"
+              icon={<Icon id="chevron-left" width={16} height={16} />}
+              mode="unstyled"
+              className="absolute left-0 top-[2.2rem] ml-5 h-auto w-fit py-0 text-osmoverse-400 hover:text-white-full"
+              onClick={onRequestBack}
+            />
+          )}
+          <RightModalContent
+            {...props}
+            onRequestClose={onClose}
+            modalView={modalView}
+            onConnect={onConnect}
+            lazyWalletInfo={lazyWalletInfo}
+          />
+          <IconButton
+            aria-label="Close"
+            icon={<Icon id="close" width={30} height={30} />}
+            mode="unstyled"
+            className="absolute right-0 top-[1.9rem] mr-5 h-auto w-fit py-0 text-osmoverse-400 hover:text-white-full"
+            onClick={onClose}
+          />
+        </div>
+      </div>
+    </ModalBase>
+  );
+});
+
+const LeftModalContent: FunctionComponent<
+  Pick<ComponentPropsWithoutRef<typeof WalletSelectModal>, "walletRepo"> & {
+    onConnect: (
+      sync: boolean,
+      wallet?: ChainWalletBase | (typeof WalletRegistry)[number]
+    ) => void;
+  }
+> = observer(({ walletRepo, onConnect }) => {
+  const { isMobile } = useWindowSize();
+  const t = useTranslation();
+
   const wallets = [...WalletRegistry]
     // If mobile, filter out browser wallets
     .filter((w) => (isMobile ? !w.mobileDisabled : true));
@@ -256,14 +275,18 @@ const LeftModalContent: FunctionComponent<
 
   return (
     <section className="flex max-h-[50vh] flex-col gap-8 overflow-auto">
-      <h1 className="text-h6 font-h6 tracking-wider">{t("connectWallet")}</h1>
+      <h1 className="text-h6 font-h6 tracking-wider sm:text-center">
+        {t("connectWallet")}
+      </h1>
       <div className="flex  flex-col gap-8">
         {Object.entries(categories)
           .filter(([_, wallets]) => wallets.length > 0)
           .map(([categoryName, wallets]) => {
             return (
               <div key={categoryName} className="flex flex-col">
-                <h2 className="subtitle1 text-osmoverse-300">{categoryName}</h2>
+                <h2 className="subtitle1 text-osmoverse-300 sm:hidden">
+                  {categoryName}
+                </h2>
 
                 <div className="flex flex-col">
                   {wallets.map((wallet) => (
@@ -271,6 +294,7 @@ const LeftModalContent: FunctionComponent<
                       className={classNames(
                         "button flex w-full items-center gap-3 rounded-xl px-3 font-bold text-osmoverse-100 transition-colors hover:bg-osmoverse-700",
                         "col-span-2 py-3 font-normal",
+                        "sm:w-fit sm:flex-col",
                         walletRepo?.current?.walletName === wallet.name &&
                           "bg-osmoverse-700"
                       )}
@@ -298,90 +322,21 @@ const LeftModalContent: FunctionComponent<
 const RightModalContent: FunctionComponent<
   Pick<
     ComponentPropsWithoutRef<typeof WalletSelectModal>,
-    "walletRepo" | "onRequestClose" | "onConnect"
-  > & { modalView: ModalView; setModalView: (view: ModalView) => void }
+    "walletRepo" | "onRequestClose"
+  > & {
+    modalView: ModalView;
+    lazyWalletInfo?: (typeof WalletRegistry)[number];
+    onConnect: (
+      sync: boolean,
+      wallet?: ChainWalletBase | (typeof WalletRegistry)[number]
+    ) => void;
+  }
 > = observer(
-  ({
-    walletRepo,
-    onRequestClose,
-    modalView,
-    onConnect: onConnectProp,
-    setModalView,
-  }) => {
-    const { accountStore } = useStore();
+  ({ walletRepo, onRequestClose, modalView, onConnect, lazyWalletInfo }) => {
     const t = useTranslation();
-
-    const [lazyWalletInfo, setLazyWalletInfo] =
-      useState<(typeof WalletRegistry)[number]>();
 
     const currentWallet = walletRepo?.current;
     const walletInfo = currentWallet?.walletInfo ?? lazyWalletInfo;
-
-    const onConnect = async (
-      sync: boolean,
-      wallet?: ChainWalletBase | (typeof WalletRegistry)[number]
-    ) => {
-      if (!wallet) return;
-      if (!("lazyInstall" in wallet)) {
-        wallet
-          .connect(sync)
-          .then(() => {
-            onConnectProp?.();
-          })
-          .catch((e) =>
-            console.error(
-              "Error while connecting to direct wallet. Details: ",
-              e
-            )
-          );
-        return;
-      }
-
-      const installedWallet = walletRepo?.wallets.find(
-        ({ walletName }) => walletName === wallet.name
-      );
-
-      // if wallet is not installed, install it
-      if (!installedWallet && "lazyInstall" in wallet) {
-        setLazyWalletInfo(wallet);
-        setModalView("connecting");
-
-        // wallet is now walletInfo
-        const walletInfo = wallet;
-        const WalletClass = await wallet.lazyInstall();
-
-        const walletManager = accountStore.addWallet(
-          new WalletClass(walletInfo)
-        );
-        walletManager.onMounted();
-
-        return walletManager
-          .getMainWallet(wallet.name)
-          .connect(sync)
-          .then(() => {
-            setLazyWalletInfo(undefined);
-            onConnectProp?.();
-          })
-          .catch((e) =>
-            console.error(
-              "Error while connecting to newly installed wallet. Details: ",
-              e
-            )
-          );
-      } else {
-        installedWallet
-          ?.connect(sync)
-          .then(() => {
-            onConnectProp?.();
-          })
-          .catch((e) =>
-            console.error(
-              "Error while connecting to installed wallet. Details: ",
-              e
-            )
-          );
-      }
-    };
 
     if (modalView === "connected") {
       onRequestClose();
@@ -389,7 +344,7 @@ const RightModalContent: FunctionComponent<
 
     if (modalView === "error") {
       return (
-        <div className="flex flex-col items-center justify-center gap-12 pt-6">
+        <div className="mx-auto flex h-full max-w-sm flex-col items-center justify-center gap-12 pt-6">
           <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:rounded-full after:border-2 after:border-error">
             <Image
               width={64}
@@ -417,7 +372,7 @@ const RightModalContent: FunctionComponent<
     if (modalView === "doesNotExist") {
       const downloadInfo = currentWallet?.downloadInfo;
       return (
-        <div className="flex flex-col items-center justify-center gap-12 pt-6">
+        <div className="mx-auto flex h-full max-w-sm flex-col items-center justify-center gap-12 pt-6">
           <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:rounded-full after:border-2 after:border-error">
             <Image
               width={64}
@@ -458,7 +413,7 @@ const RightModalContent: FunctionComponent<
 
     if (modalView === "rejected") {
       return (
-        <div className="flex flex-col items-center justify-center gap-12 pt-6">
+        <div className="mx-auto flex h-full max-w-sm flex-col items-center justify-center gap-12 pt-6">
           <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:rounded-full after:border-2 after:border-error">
             <Image
               width={64}
@@ -503,7 +458,7 @@ const RightModalContent: FunctionComponent<
       }
 
       return (
-        <div className="flex flex-col items-center justify-center gap-12 pt-3">
+        <div className="mx-auto flex h-full max-w-sm flex-col items-center justify-center gap-12 pt-3">
           <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:animate-spin-slow after:rounded-full after:border-2 after:border-t-transparent after:border-b-transparent after:border-l-wosmongton-300 after:border-r-wosmongton-300">
             <Image
               width={64}
@@ -527,24 +482,15 @@ const RightModalContent: FunctionComponent<
 
     return (
       <div className="flex flex-col px-8">
-        <div className="relative mb-10 flex items-center">
-          <h1 className="w-full text-center text-h6 font-h6 tracking-wider">
-            {t("Getting Started")}
-          </h1>
-          <IconButton
-            aria-label="Close"
-            icon={<Icon id="close" width={30} height={30} />}
-            mode="unstyled"
-            className="absolute right-0 h-auto w-fit py-0 text-osmoverse-400 hover:text-white-full"
-            onClick={onRequestClose}
-          />
-        </div>
+        <h1 className="mb-10 w-full text-center text-h6 font-h6 tracking-wider">
+          {t("Getting Started")}
+        </h1>
 
         <Stepper
           className="flex flex-col gap-2"
           autoplay={{ stopOnHover: true, delayInMs: 8000 }}
         >
-          <StepsIndicator className="order-1 my-16" />
+          <StepsIndicator className="order-1 mt-16" />
           <Step>
             <div className="flex flex-col items-center justify-center gap-10 text-center">
               <div className="h-[186px] w-[186px]">
@@ -631,6 +577,16 @@ const RightModalContent: FunctionComponent<
   }
 );
 
+const QRCodeLoader = () => (
+  <div className="mb-7">
+    <SkeletonLoader>
+      <div className="flex items-center justify-center rounded-xl p-3.5">
+        <div className="h-[280px] w-[280px]" />
+      </div>
+    </SkeletonLoader>
+  </div>
+);
+
 type QRCodeStatus = "pending" | "done" | "error" | "expired" | undefined;
 const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
   wallet,
@@ -695,27 +651,25 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
           </div>
         </>
       )}
-      {status === "pending" && (
-        <div className="mb-7">
-          <SkeletonLoader>
-            <div className="flex items-center justify-center rounded-xl p-3.5">
-              <div className="h-[260px] w-[260px]" />
-            </div>
-          </SkeletonLoader>
-        </div>
-      )}
+      {status === "pending" && <QRCodeLoader />}
       {status === "done" && (
         <div className="flex flex-col items-center">
           <div className="w-fit">
             {Boolean(qrUrl?.data) && (
-              <div className="mb-2 flex items-center justify-center rounded-xl bg-white-high p-3.5">
-                <QRCode
-                  logoSize={70}
-                  logoUrl={wallet?.walletInfo.logo}
-                  value={qrUrl?.data!}
-                  size={280}
-                />
-              </div>
+              <Suspense fallback={<QRCodeLoader />}>
+                <div
+                  className={classNames(
+                    "mb-2 flex items-center justify-center rounded-xl bg-white-high p-3.5"
+                  )}
+                >
+                  <QRCode
+                    logoSize={70}
+                    logoUrl={wallet?.walletInfo.logo}
+                    value={qrUrl?.data!}
+                    size={280}
+                  />
+                </div>
+              </Suspense>
             )}
           </div>
 
@@ -724,8 +678,10 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
               Don&apos;t have this wallet?
             </p>
             <a
-              href={wallet?.walletInfo.downloads?.[0].link}
+              href={wallet?.walletInfo.downloads?.find(({ os }) => !os)?.link}
+              target="_blank"
               className="button flex h-6 w-auto items-center rounded-xl bg-wosmongton-500 px-2"
+              rel="noreferrer"
             >
               Get {wallet?.walletPrettyName}
             </a>
