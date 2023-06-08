@@ -27,9 +27,11 @@ export const AppDisplayCard: FunctionComponent<{
 }) => {
   const { logEvent } = useAmplitudeAnalytics();
 
-  const utmParams = `?utm_source=OsmosisAppStore&utm_medium=AppCard&utm_campaign=${encodeURIComponent(
-    title || "UntitledApp"
-  )}`;
+  const utmParams = new URLSearchParams({
+    utm_source: "OsmosisAppStore",
+    utm_medium: "AppCard",
+    utm_campaign: title || "UntitledApp",
+  }).toString();
 
   const externalUrlWithUTM = externalUrl + utmParams;
 

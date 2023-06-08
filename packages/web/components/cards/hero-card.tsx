@@ -30,9 +30,11 @@ export const HeroCard: React.FunctionComponent<{
   const t = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
 
-  const utmParams = `?utm_source=OsmosisAppStore&utm_medium=AppCard&utm_campaign=${encodeURIComponent(
-    title || "UntitledApp"
-  )}`;
+  const utmParams = new URLSearchParams({
+    utm_source: "OsmosisAppStore",
+    utm_medium: "AppCard",
+    utm_campaign: title || "UntitledApp",
+  }).toString();
 
   const externalUrlWithUTM = externalUrl + utmParams;
 
