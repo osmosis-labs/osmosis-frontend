@@ -9,10 +9,7 @@
     "GitHub.vscode-pull-request-github",
     "ms-vsliveshare.vsliveshare",
     "jock.svg",
-    "wix.vscode-import-cost",
     "Orta.vscode-jest",
     "dbaeumer.vscode-eslint"
-  ],
-  // List of extensions recommended by VS Code that should not be recommended for users of this workspace.
-  "unwantedRecommendations": []
+  ]
 }
