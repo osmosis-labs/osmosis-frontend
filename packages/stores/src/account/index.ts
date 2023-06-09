@@ -889,8 +889,10 @@ export class OsmosisAccountImpl {
                 bal.waitFreshResponse();
             });
 
-          // refresh position
-          queryPosition.waitFreshResponse();
+          // refresh all user positions since IDs shift after adding to a position
+          queries.osmosis?.queryAccountsPositions
+            .get(this.base.bech32Address)
+            .waitFreshResponse();
         }
 
         onFulfill?.(tx);

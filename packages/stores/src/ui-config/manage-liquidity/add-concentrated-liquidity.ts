@@ -426,6 +426,6 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
       return this._baseDepositAmountIn.error;
     }
 
-    // return this._baseDepositAmountIn.error || this._quoteDepositAmountIn.error;
+    return this._baseDepositAmountIn.error || this._quoteDepositAmountIn.error;
   }
 }

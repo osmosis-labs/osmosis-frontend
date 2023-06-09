@@ -256,7 +256,14 @@ export function roundPriceToNearestTick(
   }
 
   const sqrtPrice = tickToSqrtPrice(tick);
-  return sqrtPrice.mul(sqrtPrice);
+  const ret = sqrtPrice.mul(sqrtPrice).roundDec();
+
+  if (ret.gt(maxSpotPrice)) {
+    return maxSpotPrice;
+  } else if (ret.lt(minSpotPrice)) {
+    return minSpotPrice;
+  }
+  return ret;
 }
 
 // TODO: consider moving
