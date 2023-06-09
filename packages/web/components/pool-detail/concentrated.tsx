@@ -13,6 +13,7 @@ import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { AddLiquidityModal } from "~/modals";
 import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -81,9 +82,9 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
         )}
         <section className="flex flex-col gap-8">
           <div className="flex flex-col rounded-[28px] bg-osmoverse-1000 p-8">
-            <div className="flex flex-row">
+            <div className="flex flex-row lg:flex-col lg:gap-3">
               <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <PoolAssetsIcon
                     className="!w-[78px]"
                     assets={pool?.poolAssets.map((poolAsset) => ({
@@ -91,13 +92,19 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                       coinDenom: poolAsset.amount.currency.coinDenom,
                     }))}
                   />
-                  <PoolAssetsName
-                    size="md"
-                    className="text-h5 font-h5"
-                    assetDenoms={pool?.poolAssets.map(
-                      (asset) => asset.amount.currency.coinDenom
-                    )}
-                  />
+                  <div className="flex flex-wrap gap-x-2">
+                    <PoolAssetsName
+                      size="md"
+                      className="text-h5 font-h5"
+                      assetDenoms={pool?.poolAssets.map(
+                        (asset) => asset.amount.currency.coinDenom
+                      )}
+                    />
+                    <span className="hidden py-1 text-subtitle1 text-osmoverse-100 lg:inline-block">
+                      {pool?.swapFee ? pool.swapFee.toString() : "0%"}{" "}
+                      {t("clPositions.fee")}
+                    </span>
+                  </div>
                 </div>
                 <div className="flex items-center">
                   <Icon id="lightning-small" height={18} width={18} />
@@ -106,23 +113,26 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                   </span>
                 </div>
               </div>
-              <div className="flex flex-grow justify-end gap-10">
+              <div className="flex flex-grow justify-end gap-10 lg:justify-start">
                 <PoolDataGroup
                   label={t("pool.liquidity")}
-                  value={poolLiquidity?.toString() ?? "0"}
+                  value={poolLiquidity ? formatPretty(poolLiquidity) : "0"}
                 />
                 <PoolDataGroup
                   label={t("pool.24hrTradingVolume")}
-                  value={volume24h.toString()}
+                  value={formatPretty(volume24h)}
                 />
-                <PoolDataGroup
-                  label={t("pool.swapFee")}
-                  value={pool?.swapFee ? pool.swapFee.toString() : "0%"}
-                />
+
+                <div className="lg:hidden">
+                  <PoolDataGroup
+                    label={t("pool.swapFee")}
+                    value={pool?.swapFee ? pool.swapFee.toString() : "0%"}
+                  />
+                </div>
               </div>
             </div>
             <div className="flex h-[340px] flex-row">
-              <div className="flex-shrink-1 flex w-0 flex-1 flex-col gap-[20px] py-7">
+              <div className="flex-shrink-1 flex w-0 flex-1 flex-col gap-[20px] py-7 sm:py-3">
                 <PriceChartHeader
                   historicalRange={historicalRange}
                   setHistoricalRange={setHistoricalRange}
@@ -130,6 +140,10 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                   quoteDenom={quoteDenom}
                   hoverPrice={hoverPrice}
                   decimal={priceDecimal}
+                  classes={{
+                    buttons: "sm:hidden",
+                    pricesHeaderContainerClass: "sm:flex-col",
+                  }}
                 />
                 <TokenPairHistoricalChart
                   data={historicalChartData}
@@ -144,7 +158,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 />
               </div>
               <div className="flex-shrink-1 relative flex w-[229px] flex-col">
-                <div className="mt-7 flex h-6 justify-end gap-1 pr-8">
+                <div className="mt-7 flex h-6 justify-end gap-1 pr-8 sm:pr-0">
                   <ChartButton
                     alt="refresh"
                     src="/icons/refresh-ccw.svg"
@@ -197,7 +211,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
             </div>
           </div>
           <div className="flex flex-col gap-8">
-            <div className="flex flex-row">
+            <div className="flex flex-row md:flex-wrap md:gap-y-4">
               <div className="flex flex-grow flex-col gap-3">
                 <h6>{t("clPositions.yourPositions")}</h6>
                 <div className="flex items-center text-body2 font-body2">

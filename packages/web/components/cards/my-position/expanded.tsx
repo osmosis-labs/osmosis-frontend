@@ -103,7 +103,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           onRequestClose={() => setActiveModal(null)}
         />
       )}
-      <div className="flex gap-1">
+      <div className="flex gap-1 xl:hidden">
         <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
           <PriceChartHeader
             historicalRange={historicalRange}
@@ -197,10 +197,10 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
         </div>
       </div>
       <div className="flex flex-row">
-        <div className="flex w-full flex-col gap-4">
-          <div className="flex justify-between">
+        <div className="flex w-full flex-col gap-4 sm:flex-col">
+          <div className="flex justify-between sm:flex-col sm:gap-3">
             <AssetsInfo
-              className="w-0 flex-shrink flex-grow"
+              className="w-0 flex-shrink flex-grow sm:w-full"
               title={t("clPositions.currentAssets")}
               assets={useMemo(
                 () =>
@@ -211,17 +211,17 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
               )}
             />
             <AssetsInfo
-              className="w-0 flex-shrink flex-grow"
+              className="w-0 flex-shrink flex-grow sm:w-full"
               title={t("clPositions.totalFeesEarned")}
             />
           </div>
-          <div className="flex justify-between">
+          <div className="flex justify-between sm:flex-col sm:gap-3">
             <AssetsInfo
-              className="w-0 flex-shrink flex-grow"
+              className="w-0 flex-shrink flex-grow sm:w-full"
               title={t("clPositions.principleAssets")}
             />
             <AssetsInfo
-              className="w-0 flex-shrink flex-grow"
+              className="w-0 flex-shrink flex-grow sm:w-full"
               title={t("clPositions.unclaimedRewards")}
               assets={totalClaimableRewards}
               emptyText={t("clPositions.noRewards")}
@@ -229,7 +229,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           </div>
         </div>
       </div>
-      <div className="mt-4 flex flex-row justify-end gap-5">
+      <div className="mt-4 flex flex-row justify-end gap-5 sm:flex-wrap sm:justify-start">
         <PositionButton
           disabled={!position.hasRewardsAvailable}
           onClick={() => {
@@ -300,19 +300,23 @@ const AssetsInfo: FunctionComponent<
       <div className="grid grid-cols-3 gap-3">
         <div className="col-span-2 grid grid-cols-2 gap-2">
           {assets.length > 0 ? (
-            assets.map((asset) => (
-              <div key={asset.denom} className="flex items-center gap-2">
-                {asset.currency.coinImageUrl && (
-                  <Image
-                    alt="base currency"
-                    src={asset.currency.coinImageUrl}
-                    height={24}
-                    width={24}
-                  />
-                )}
-                <span>{asset.trim(true).toString()}</span>
-              </div>
-            ))
+            <div className="col-span-2 flex flex-wrap gap-x-5 gap-y-3">
+              {assets.map((asset) => (
+                <div key={asset.denom} className="flex items-center gap-2">
+                  <div className="h-[24px] w-[24px] flex-shrink-0">
+                    {asset.currency.coinImageUrl && (
+                      <Image
+                        alt="base currency"
+                        src={asset.currency.coinImageUrl}
+                        height={24}
+                        width={24}
+                      />
+                    )}
+                  </div>
+                  <span>{asset.trim(true).toString()}</span>
+                </div>
+              ))}
+            </div>
           ) : (
             <span className="italic">
               {emptyText ?? t("errors.notAvailable")}
