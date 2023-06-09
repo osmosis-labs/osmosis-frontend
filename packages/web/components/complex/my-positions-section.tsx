@@ -23,6 +23,12 @@ export const MyPositionsSection: FunctionComponent<{ forPoolId?: string }> =
           return false;
         }
         return true;
+      })
+      .sort((a, b) => {
+        if (b.joinTime && a.joinTime) {
+          return b.joinTime.getTime() - a.joinTime.getTime();
+        }
+        return 0;
       });
 
     const visiblePositions = positions.slice(
