@@ -116,7 +116,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
         </div>
       </div>
       <div className="flex flex-col gap-3">
-        <div className="flex flex-row items-center justify-between">
+        <div className="flex items-center justify-between">
           <div className="pl-4 text-subtitle1 font-subtitle1">
             {t("clPositions.yourPosition")}
           </div>
@@ -129,7 +129,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
             />
           )}
         </div>
-        <div className="mb-8 flex flex-row justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100">
+        <div className="mb-8 flex justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100">
           {baseAsset && <AssetAmount amount={baseAsset} />}
           {quoteAsset && <AssetAmount amount={quoteAsset} />}
         </div>
@@ -152,7 +152,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
             step={1}
             useSuperchargedGradient
           />
-          <div className="flex w-full flex-row gap-2 px-5">
+          <div className="flex w-full gap-2 px-5">
             <PresetPercentageButton onClick={() => config.setPercentage(0.25)}>
               25%
             </PresetPercentageButton>
@@ -172,7 +172,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
         <div className="pl-4 text-subtitle1 font-subtitle1">
           {t("clPositions.pendingRewards")}
         </div>
-        <div className="flex flex-row justify-between gap-3 rounded-[12px] border-[1.5px]  border-osmoverse-700 px-5 py-3">
+        <div className="flex justify-between gap-3 rounded-[12px] border-[1.5px]  border-osmoverse-700 px-5 py-3">
           {baseAsset && (
             <AssetAmount
               className="!text-body2 !font-body2"
@@ -200,7 +200,7 @@ const PresetPercentageButton: FunctionComponent<{
   return (
     <button
       className={classNames(
-        "flex flex-1 cursor-pointer flex-row items-center justify-center",
+        "flex flex-1 cursor-pointer items-center justify-center",
         "rounded-[8px] bg-osmoverse-700 px-5 py-2 text-h6 font-h6 hover:bg-osmoverse-600",
         "whitespace-nowrap",
         {
@@ -220,7 +220,7 @@ export const AssetAmount: FunctionComponent<{
 }> = (props) => (
   <div
     className={classNames(
-      "flex flex-row items-center gap-2 text-subtitle1 font-subtitle1",
+      "flex items-center gap-2 text-subtitle1 font-subtitle1",
       props.className
     )}
   >

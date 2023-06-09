@@ -124,7 +124,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
       className="!max-w-[500px]"
     >
       <div className="flex flex-col gap-3">
-        <div className="flex flex-row items-center justify-between">
+        <div className="flex items-center justify-between">
           <div className="pl-4 text-subtitle1 font-subtitle1">
             {t("clPositions.yourPosition")}
           </div>
@@ -137,9 +137,9 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             />
           )}
         </div>
-        <div className="mb-2 flex flex-row justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100">
+        <div className="mb-2 flex justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100">
           {baseAsset && (
-            <div className="flex flex-row items-center gap-2 text-subtitle1 font-subtitle1">
+            <div className="flex items-center gap-2 text-subtitle1 font-subtitle1">
               {baseAsset.currency.coinImageUrl && (
                 <Image
                   alt="base currency"
@@ -152,7 +152,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             </div>
           )}
           {quoteAsset && (
-            <div className="flex flex-row items-center gap-2 text-subtitle1 font-subtitle1">
+            <div className="flex items-center gap-2 text-subtitle1 font-subtitle1">
               {quoteAsset.currency.coinImageUrl && (
                 <Image
                   alt="base currency"
@@ -166,7 +166,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
           )}
         </div>
         <div className="flex flex-col gap-3">
-          <div className="flex flex-row gap-2 pl-4">
+          <div className="flex gap-2 pl-4">
             <div className="text-subtitle1 font-subtitle1">
               {t("clPositions.selectedRange")}
             </div>
@@ -177,10 +177,12 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
               })}
             </div>
           </div>
-          <div className="flex flex-row gap-1">
+          <div className="flex gap-1">
             <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-6 pl-6">
               <PriceChartHeader
-                priceHeaderClass="text-h5 font-h5 text-osmoverse-200"
+                classes={{
+                  priceHeaderClass: "text-h5 font-h5 text-osmoverse-200",
+                }}
                 historicalRange={historicalRange}
                 setHistoricalRange={setHistoricalRange}
                 baseDenom={baseCurrency?.coinDenom || ""}
@@ -208,7 +210,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                 }
               />
             </div>
-            <div className="flex-shrink-1 relative flex h-[20.1875rem] w-0 flex-1 flex-row rounded-r-2xl bg-osmoverse-700">
+            <div className="flex-shrink-1 relative flex h-[20.1875rem] w-0 flex-1 rounded-r-2xl bg-osmoverse-700">
               <div className="mt-[84px] flex flex-1 flex-col">
                 <ConcentratedLiquidityDepthChart
                   yRange={yRange}
@@ -234,7 +236,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                 />
               </div>
               <div className="flex h-full flex-col">
-                <div className="mt-[25px] mr-[22px] flex h-6 flex-row gap-1">
+                <div className="mt-[25px] mr-[22px] flex h-6 gap-1">
                   <ChartButton
                     alt="refresh"
                     src="/icons/refresh-ccw.svg"
@@ -334,7 +336,7 @@ const PriceBox: FunctionComponent<{
       {label}
     </span>
     {infinity ? (
-      <div className="flex h-5 flex-row items-center">
+      <div className="flex h-5 items-center">
         <Image
           alt="infinity"
           src="/icons/infinity.svg"

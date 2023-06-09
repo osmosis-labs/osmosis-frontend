@@ -145,8 +145,12 @@ export const PriceChartHeader: FunctionComponent<{
   hoverPrice: number;
   decimal: number;
   hideButtons?: boolean;
-  priceHeaderClass?: string;
-  priceSubheaderClass?: string;
+  classes?: {
+    buttons?: string;
+    priceHeaderClass?: string;
+    priceSubheaderClass?: string;
+    pricesHeaderContainerClass?: string;
+  };
 }> = observer(
   ({
     historicalRange,
@@ -156,18 +160,22 @@ export const PriceChartHeader: FunctionComponent<{
     hoverPrice,
     decimal,
     hideButtons,
-    priceHeaderClass,
-    priceSubheaderClass,
+    classes,
   }) => {
     const t = useTranslation();
 
     return (
       <div className="flex flex-row">
-        <div className="flex flex-1 flex-row">
+        <div
+          className={classNames(
+            "flex flex-1 flex-row",
+            classes?.pricesHeaderContainerClass
+          )}
+        >
           <h4
             className={classNames(
-              "row-span-2 pr-1 font-caption",
-              priceHeaderClass
+              "row-span-2 pr-1 font-caption sm:text-h5",
+              classes?.priceHeaderClass
             )}
           >
             {hoverPrice.toFixed(decimal) || ""}
@@ -175,7 +183,7 @@ export const PriceChartHeader: FunctionComponent<{
           <div
             className={classNames(
               "flex flex-col justify-center font-caption",
-              priceSubheaderClass
+              classes?.priceSubheaderClass
             )}
           >
             <div className="text-caption text-osmoverse-300">
@@ -190,7 +198,12 @@ export const PriceChartHeader: FunctionComponent<{
           </div>
         </div>
         {!hideButtons && (
-          <div className="flex flex-1 flex-row justify-end gap-1 pr-2">
+          <div
+            className={classNames(
+              "flex flex-1 justify-end gap-1 pr-2",
+              classes?.buttons
+            )}
+          >
             <ChartButton
               label="7 day"
               onClick={() => setHistoricalRange("7d")}

@@ -48,7 +48,7 @@ export const MyPositionStatus: FunctionComponent<{
   return (
     <div
       className={classNames(
-        "flex w-fit flex-row items-center gap-[10px] rounded-[12px] px-3 py-1",
+        "flex w-fit items-center gap-[10px] rounded-[12px] px-3 py-1",
         {
           "bg-bullish-600/30": !negative && status === PositionStatus.InRange,
           "bg-ammelia-600/30":

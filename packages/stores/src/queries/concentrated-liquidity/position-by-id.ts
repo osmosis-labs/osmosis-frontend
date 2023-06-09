@@ -122,6 +122,7 @@ export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<{
     );
   }
 
+  @computed
   get claimableSpreadRewards(): CoinPretty[] {
     if (!this._raw?.claimable_spread_rewards) return [];
     return this._raw?.claimable_spread_rewards.map(
@@ -133,14 +134,33 @@ export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<{
     );
   }
 
+  @computed
   get claimableIncentiveRewards(): CoinPretty[] {
     if (!this._raw?.claimable_incentives) return [];
-    return this._raw?.claimable_incentives.map(
+    return this._raw?.claimable_incentives?.map(
       ({ denom, amount }) =>
         new CoinPretty(
           this.chainGetter.getChain(this.chainId).forceFindCurrency(denom),
           amount
         )
+    );
+  }
+
+  /** Aggregation of claimable rewards by coin denom. */
+  @computed
+  get totalClaimableRewards(): CoinPretty[] {
+    return Array.from(
+      [...this.claimableSpreadRewards, ...this.claimableIncentiveRewards]
+        .reduce<Map<string, CoinPretty>>((sumByDenoms, coin) => {
+          const current = sumByDenoms.get(coin.currency.coinMinimalDenom);
+          if (current) {
+            sumByDenoms.set(coin.currency.coinMinimalDenom, current.add(coin));
+          } else {
+            sumByDenoms.set(coin.currency.coinMinimalDenom, coin);
+          }
+          return sumByDenoms;
+        }, new Map())
+        .values()
     );
   }
 

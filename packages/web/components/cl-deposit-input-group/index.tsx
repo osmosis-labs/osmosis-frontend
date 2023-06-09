@@ -58,7 +58,7 @@ export const DepositAmountGroup: FunctionComponent<{
       return (
         <div
           className={classNames(
-            "flex flex-1 flex-shrink-0 flex-row items-center gap-3 rounded-[20px] bg-osmoverse-700 px-6 py-7",
+            "flex flex-1 flex-shrink-0 items-center gap-3 rounded-[20px] bg-osmoverse-700 px-6 py-7",
             outOfRangeClassName
           )}
         >
@@ -79,11 +79,11 @@ export const DepositAmountGroup: FunctionComponent<{
     return (
       <div
         className={classNames(
-          "flex flex-1 flex-shrink-0 flex-row items-center rounded-[20px] bg-osmoverse-700 p-6",
+          "flex flex-1 flex-shrink-0 items-center rounded-[20px] bg-osmoverse-700 p-6",
           className
         )}
       >
-        <div className="flex w-full flex-row items-center">
+        <div className="flex w-full items-center">
           <div
             className={classNames(
               "flex overflow-clip rounded-full border-4 p-1",
