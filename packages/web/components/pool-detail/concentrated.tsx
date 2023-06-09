@@ -1,4 +1,5 @@
 import { Dec } from "@keplr-wallet/unit";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Head from "next/head";
@@ -113,7 +114,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                   </span>
                 </div>
               </div>
-              <div className="flex flex-grow justify-end gap-10 lg:justify-start">
+              <div className="flex flex-grow justify-end gap-10 lg:justify-start xs:items-end xs:justify-between">
                 <PoolDataGroup
                   label={t("pool.liquidity")}
                   value={poolLiquidity ? formatPretty(poolLiquidity) : "0"}
@@ -121,6 +122,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 <PoolDataGroup
                   label={t("pool.24hrTradingVolume")}
                   value={formatPretty(volume24h)}
+                  className="xs:text-right"
                 />
 
                 <div className="lg:hidden">
@@ -247,11 +249,12 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     );
   });
 
-const PoolDataGroup: FunctionComponent<{ label: string; value: string }> = ({
-  label,
-  value,
-}) => (
-  <div className="flex flex-col gap-2">
+const PoolDataGroup: FunctionComponent<{
+  label: string;
+  value: string;
+  className?: string;
+}> = ({ label, value, className }) => (
+  <div className={classNames("flex flex-col gap-2", className)}>
     <div className="text-body2 font-body2 text-osmoverse-400">{label}</div>
     <h4 className="text-osmoverse-100">{value}</h4>
   </div>
