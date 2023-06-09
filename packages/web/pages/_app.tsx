@@ -7,6 +7,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import updateLocale from "dayjs/plugin/updateLocale";
 import utc from "dayjs/plugin/utc";
 import { withLDProvider } from "launchdarkly-react-client-sdk";
+import { useFlags } from "launchdarkly-react-client-sdk";
 import { enableStaticRendering } from "mobx-react-lite";
 import type { AppProps } from "next/app";
 import { ComponentType, useMemo } from "react";
@@ -52,8 +53,9 @@ setDefaultLanguage(DEFAULT_LANGUAGE);
 
 function MyApp({ Component, pageProps }: AppProps) {
   const t = useTranslation();
+  const flags = useFlags();
   const menus = useMemo(() => {
-    let m: MainLayoutMenu[] = [
+    let menuItems: MainLayoutMenu[] = [
       {
         label: t("menu.swap"),
         link: "/",
@@ -81,12 +83,12 @@ function MyApp({ Component, pageProps }: AppProps) {
         icon: "/icons/app-icon.svg",
         iconSelected: "/icons/app-icon.svg",
         selectionTest: /\/apps/,
-        isNew: true,
+        isNew: flags.staking ? false : true,
       },
     ];
 
     if (PromotedLBPPoolIds.length > 0) {
-      m.push({
+      menuItems.push({
         label: "Bootstrap",
         link: "/bootstrap",
         icon: "/icons/pool-white.svg",
@@ -94,7 +96,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       });
     }
 
-    m.push(
+    menuItems.push(
       {
         label: t("menu.stake"),
         link: "https://wallet.keplr.app/chains/osmosis",
@@ -121,8 +123,25 @@ function MyApp({ Component, pageProps }: AppProps) {
       }
     );
 
-    return m;
-  }, [t]);
+    if (flags.staking) {
+      menuItems = menuItems.map((item) => {
+        if (item.link === "https://wallet.keplr.app/chains/osmosis") {
+          return {
+            label: t("menu.stake"),
+            link: "/stake",
+            icon: "/icons/ticket-white.svg",
+            iconSelected: "/icons/ticket-white.svg",
+            selectionTest: /\/stake/,
+            isNew: true,
+          };
+        } else {
+          return item;
+        }
+      });
+    }
+
+    return menuItems;
+  }, [t, flags]);
 
   useAmplitudeAnalytics({ init: true });
 
