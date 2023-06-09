@@ -83,6 +83,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         icon: "/icons/app-icon.svg",
         iconSelected: "/icons/app-icon.svg",
         selectionTest: /\/apps/,
+        isNew: flags.staking ? false : true,
       },
     ];
 
