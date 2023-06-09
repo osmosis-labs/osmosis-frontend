@@ -68,20 +68,21 @@ export const MyPositionCard: FunctionComponent<{
       : undefined;
 
   return (
-    <div className="flex flex-col gap-8 overflow-hidden rounded-[20px] bg-osmoverse-800 p-8">
+    <div className="flex flex-col gap-8 overflow-hidden rounded-[20px] bg-osmoverse-800 p-8 sm:p-4">
       <div
-        className="flex cursor-pointer place-content-between items-center gap-[52px]"
+        className="flex cursor-pointer place-content-between items-center gap-6 xl:flex-col"
         onClick={() => setCollapsed(!collapsed)}
       >
-        <div className="flex items-center gap-9">
+        <div className="flex items-center gap-9 xl:w-full sm:flex-wrap sm:gap-3">
           <PoolAssetsIcon
-            className="!w-[78px]"
+            className="!w-[78px] sm:w-auto"
             assets={queryPool?.poolAssets.map((poolAsset) => ({
               coinImageUrl: poolAsset.amount.currency.coinImageUrl,
               coinDenom: poolAsset.amount.denom,
             }))}
           />
-          <div className="flex flex-shrink-0 flex-grow flex-col gap-[6px]">
+
+          <div className="flex flex-shrink-0 flex-grow flex-col gap-[6px] xl:flex-grow-0">
             <div className="flex items-center gap-[6px]">
               <PoolAssetsName
                 size="md"
@@ -106,7 +107,7 @@ export const MyPositionCard: FunctionComponent<{
               )}
           </div>
         </div>
-        <div className="flex gap-[52px] self-start">
+        <div className="flex gap-[52px] self-start xl:w-full xl:place-content-between xl:gap-0 sm:grid sm:grid-cols-2 sm:gap-2">
           {roi && (
             <PositionDataGroup label={t("clPositions.roi")} value={roi} />
           )}
@@ -125,7 +126,7 @@ export const MyPositionCard: FunctionComponent<{
           {incentivesApr && (
             <PositionDataGroup
               label={t("clPositions.incentives")}
-              value={incentivesApr.maxDecimals(0).toString()}
+              value={`${formatPretty(incentivesApr.maxDecimals(0))} APR`}
             />
           )}
         </div>
@@ -145,10 +146,12 @@ const PositionDataGroup: FunctionComponent<{
   label: string;
   value: string | ReactNode;
 }> = ({ label, value }) => (
-  <div className="flex-grow-1 flex max-w-[12rem] flex-shrink-0 flex-col items-end gap-2">
+  <div className="flex-grow-1 flex max-w-[12rem] flex-shrink-0 flex-col items-end gap-2 xl:items-start">
     <div className="text-subtitle1 text-osmoverse-400">{label}</div>
     {typeof value === "string" ? (
-      <h6 className="text-white w-full truncate text-right">{value}</h6>
+      <h6 className="text-white w-full truncate text-right xl:text-left">
+        {value}
+      </h6>
     ) : (
       value
     )}
@@ -164,10 +167,20 @@ const RangeDataGroup: FunctionComponent<{
     <PositionDataGroup
       label={t("clPositions.selectedRange")}
       value={
-        <div className="flex w-full justify-end gap-1 overflow-hidden">
-          <h6>{lowerPrice.toString(2)}</h6>
-          <Icon id="left-right-arrow" />
-          <h6>{upperPrice.toString(2)}</h6>
+        <div className="flex w-full justify-end gap-1 xl:justify-start sm:flex-wrap">
+          <h6 title={lowerPrice.toString(2)}>
+            {formatPretty(lowerPrice, {
+              maximumFractionDigits: 2,
+              maximumSignificantDigits: undefined,
+            })}
+          </h6>
+          <Icon id="left-right-arrow" className="flex-shrink-0" />
+          <h6 title={lowerPrice.toString(2)}>
+            {formatPretty(upperPrice, {
+              maximumFractionDigits: 2,
+              maximumSignificantDigits: undefined,
+            })}
+          </h6>
         </div>
       }
     />

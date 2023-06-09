@@ -1,5 +1,6 @@
 import {
   CoinPretty,
+  Dec,
   IntPretty,
   PricePretty,
   RatePretty,
@@ -7,7 +8,7 @@ import {
 
 /** Formats a pretty object as compact by default. i.e. $7.53M or $265K, or 2K%. Validate handled by pretty object. */
 export function formatPretty(
-  prettyValue: PricePretty | CoinPretty | RatePretty,
+  prettyValue: PricePretty | CoinPretty | RatePretty | Dec,
   opts?: Partial<Intl.NumberFormatOptions>
 ) {
   const { ...formatOpts } = opts || {};
@@ -17,9 +18,28 @@ export function formatPretty(
     return coinFormatter(prettyValue, opts ?? { ...formatOpts });
   } else if (prettyValue instanceof RatePretty) {
     return rateFormatter(prettyValue, opts ?? formatOpts);
+  } else if (prettyValue instanceof Dec) {
+    return decFormatter(prettyValue, opts ?? formatOpts);
   } else {
     throw new Error("Unknown pretty value");
   }
+}
+
+/** Formats a dec as compact by default. i.e. $7.53M or $265K. Validate handled by `Dec`. */
+function decFormatter(
+  dec: Dec,
+  opts?: Partial<Intl.NumberFormatOptions>
+): string {
+  const options: Intl.NumberFormatOptions = {
+    maximumSignificantDigits: 3,
+    notation: "compact",
+    compactDisplay: "short",
+    ...opts,
+  };
+  let num = Number(new IntPretty(dec).maxDecimals(2).locale(false).toString());
+  num = isNaN(num) ? 0 : num;
+  const formatter = new Intl.NumberFormat("en", options);
+  return formatter.format(num);
 }
 
 /** Formats a price as compact by default. i.e. $7.53M or $265K. Validate handled by `PricePretty`. */
