@@ -350,7 +350,28 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   @computed
   get tickRange(): [Int, Int] {
     if (this.fullRange) return [minTick, maxTick];
-    return [priceToTick(this._priceRange[0]), priceToTick(this._priceRange[1])];
+    try {
+      // account for precision issues from price <> tick conversion
+      const lowerTick = priceToTick(this._priceRange[0]);
+      const upperTick = priceToTick(this._priceRange[1]);
+
+      const lowerTickRounded = roundToNearestDivisible(
+        lowerTick,
+        new Int(this.pool.tickSpacing)
+      );
+      const upperTickRounded = roundToNearestDivisible(
+        upperTick,
+        new Int(this.pool.tickSpacing)
+      );
+
+      return [
+        lowerTickRounded.lt(minTick) ? minTick : lowerTickRounded,
+        upperTickRounded.gt(maxTick) ? maxTick : upperTickRounded,
+      ];
+    } catch (e) {
+      console.error(e);
+      return [minTick, maxTick];
+    }
   }
 
   @action
@@ -427,5 +448,15 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     }
 
     return this._baseDepositAmountIn.error || this._quoteDepositAmountIn.error;
+  }
+}
+
+function roundToNearestDivisible(int: Int, divisor: Int): Int {
+  const remainder = int.mod(divisor);
+
+  if (new Dec(remainder).gte(new Dec(divisor).quo(new Dec(2)))) {
+    return int.add(divisor.sub(remainder));
+  } else {
+    return int.sub(remainder);
   }
 }
