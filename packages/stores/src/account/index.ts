@@ -815,6 +815,89 @@ export class OsmosisAccountImpl {
     );
   }
 
+  async sendAddToConcentratedLiquidityPositionMsg(
+    positionId: string,
+    amount0: string,
+    amount1: string,
+    maxSlippage = "2.5",
+    memo: string = "",
+    onFulfill?: (tx: any) => void
+  ) {
+    // refresh position
+    const queryPosition =
+      this.queries.queryLiquidityPositionsById.getForPositionId(positionId);
+    await queryPosition.waitFreshResponse();
+
+    const amount0WithSlippage = new Dec(amount0)
+      .mul(new Dec(1).sub(new Dec(maxSlippage).quo(new Dec(100))))
+      .truncate()
+      .toString();
+    const amount1WithSlippage = new Dec(amount1)
+      .mul(new Dec(1).sub(new Dec(maxSlippage).quo(new Dec(100))))
+      .truncate()
+      .toString();
+
+    const aminoMsg = {
+      type: this._msgOpts.clAddToConcentratedPosition.type,
+      value: {
+        position_id: positionId,
+        sender: this.base.bech32Address,
+        amount0: amount0,
+        amount1: amount1,
+        token_min_amount0: amount0WithSlippage,
+        token_min_amount1: amount1WithSlippage,
+      },
+    };
+
+    const protoMsg = {
+      typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgAddToPosition",
+      value: osmosis.concentratedliquidity.v1beta1.MsgAddToPosition.encode({
+        positionId: Long.fromString(aminoMsg.value.position_id),
+        sender: aminoMsg.value.sender,
+        amount0: aminoMsg.value.amount0,
+        amount1: aminoMsg.value.amount1,
+        tokenMinAmount0: aminoMsg.value.token_min_amount0,
+        tokenMinAmount1: aminoMsg.value.token_min_amount1,
+      }).finish(),
+    };
+
+    await this.base.cosmos.sendMsgs(
+      "clAddToPosition",
+      {
+        aminoMsgs: [aminoMsg],
+        protoMsgs: [protoMsg],
+      },
+      memo,
+      {
+        amount: [],
+        gas: this._msgOpts.clAddToConcentratedPosition.gas.toString(),
+      },
+      undefined,
+      (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          // refresh relevant balances
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.base.bech32Address)
+            .balances.forEach((bal) => {
+              if (
+                bal.balance.currency.coinMinimalDenom ===
+                  queryPosition.baseAsset?.currency.coinMinimalDenom ||
+                bal.balance.currency.coinMinimalDenom ===
+                  queryPosition.quoteAsset?.currency.coinMinimalDenom
+              )
+                bal.waitFreshResponse();
+            });
+
+          // refresh position
+          queryPosition.waitFreshResponse();
+        }
+
+        onFulfill?.(tx);
+      }
+    );
+  }
+
   /**
    * Collects rewards from given positions by ID if rewards are available.
    * Also collects incentive rewards by default if rewards are available.

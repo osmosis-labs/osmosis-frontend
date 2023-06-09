@@ -116,8 +116,6 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     }
   }, [config, setPriceRange, lowerPrices, upperPrices]);
 
-  console.log({ baseAsset, quoteAsset });
-
   return (
     <ModalBase
       {...props}
