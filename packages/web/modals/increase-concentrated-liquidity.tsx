@@ -180,7 +180,9 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
           <div className="flex gap-1">
             <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-6 pl-6">
               <PriceChartHeader
-                priceHeaderClass="text-h5 font-h5 text-osmoverse-200"
+                classes={{
+                  priceHeaderClass: "text-h5 font-h5 text-osmoverse-200",
+                }}
                 historicalRange={historicalRange}
                 setHistoricalRange={setHistoricalRange}
                 baseDenom={baseCurrency?.coinDenom || ""}
