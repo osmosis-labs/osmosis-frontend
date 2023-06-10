@@ -139,7 +139,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             icon={
               <Icon
                 id="close-thin"
-                className="text-wosmongton-400 hover:text-wosmongton-100"
+                className="text-osmoverse-400 hover:text-wosmongton-100"
                 height={24}
                 width={24}
               />

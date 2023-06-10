@@ -106,7 +106,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
             icon={
               <Icon
                 id="close-thin"
-                className="text-wosmongton-400 hover:text-wosmongton-100"
+                className="text-osmoverse-400 hover:text-wosmongton-100"
                 height={24}
                 width={24}
               />
@@ -117,7 +117,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
       </div>
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <div className="pl-4 text-subtitle1 font-subtitle1">
+          <div className="pl-4 text-subtitle1 font-subtitle1 xs:pl-0">
             {t("clPositions.yourPosition")}
           </div>
           {lowerPrices && upperPrices && (
@@ -126,10 +126,11 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
               lowerPrice={lowerPrices.price}
               upperPrice={upperPrices.price}
               negative
+              className="xs:px-0"
             />
           )}
         </div>
-        <div className="mb-8 flex justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100">
+        <div className="mb-8 flex justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100 xs:flex-wrap xs:gap-y-2 xs:px-3">
           {baseAsset && <AssetAmount amount={baseAsset} />}
           {quoteAsset && <AssetAmount amount={quoteAsset} />}
         </div>
@@ -141,8 +142,8 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
         </h2>
         <div className="flex w-full flex-col items-center gap-6">
           <Slider
-            className="w-[360px]"
-            inputClassName="!w-[360px]"
+            className="w-[360px] xs:w-[280px]"
+            inputClassName="!w-[360px] xs:!w-[280px]"
             currentValue={Math.round(config.percentage * 100)}
             onInput={(value) => {
               config.setPercentage(Number((value / 100).toFixed(2)));
@@ -152,7 +153,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
             step={1}
             useSuperchargedGradient
           />
-          <div className="flex w-full gap-2 px-5">
+          <div className="flex gap-2 px-5">
             <PresetPercentageButton onClick={() => config.setPercentage(0.25)}>
               25%
             </PresetPercentageButton>
@@ -169,10 +170,10 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
         </div>
       </div>
       <div className="mt-8 flex flex-col gap-3 py-3">
-        <div className="pl-4 text-subtitle1 font-subtitle1">
+        <div className="pl-4 text-subtitle1 font-subtitle1 xl:pl-1">
           {t("clPositions.pendingRewards")}
         </div>
-        <div className="flex justify-between gap-3 rounded-[12px] border-[1.5px]  border-osmoverse-700 px-5 py-3">
+        <div className="flex justify-between gap-3 rounded-[12px] border-[1.5px]  border-osmoverse-700 px-5 py-3 xs:flex-wrap xs:gap-y-2 xs:px-3">
           {baseAsset && (
             <AssetAmount
               className="!text-body2 !font-body2"
@@ -201,7 +202,7 @@ const PresetPercentageButton: FunctionComponent<{
     <button
       className={classNames(
         "flex flex-1 cursor-pointer items-center justify-center",
-        "rounded-[8px] bg-osmoverse-700 px-5 py-2 text-h6 font-h6 hover:bg-osmoverse-600",
+        "rounded-[8px] bg-osmoverse-700 px-5 py-2 text-h6 font-h6 text-wosmongton-100 hover:bg-osmoverse-600 xs:px-3 xs:text-subtitle1",
         "whitespace-nowrap",
         {
           "!bg-osmoverse-600": selected,
@@ -220,7 +221,7 @@ export const AssetAmount: FunctionComponent<{
 }> = (props) => (
   <div
     className={classNames(
-      "flex items-center gap-2 text-subtitle1 font-subtitle1",
+      "flex items-center gap-2 text-subtitle1 font-subtitle1 xs:text-body2",
       props.className
     )}
   >
