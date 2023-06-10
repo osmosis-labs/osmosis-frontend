@@ -179,8 +179,8 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     const isTokenInSpotPriceDenominator = tokenIn.denom === this.raw.token0;
 
     const beforeSpotPriceInOverOut = isTokenInSpotPriceDenominator
-      ? this.getSpotPriceOutOverIn(tokenIn.denom, tokenOutDenom)
-      : this.getSpotPriceInOverOut(tokenIn.denom, tokenOutDenom);
+      ? this.getSpotPriceInOverOut(tokenIn.denom, tokenOutDenom)
+      : this.getSpotPriceOutOverIn(tokenOutDenom, tokenIn.denom);
 
     /** Fetch ticks and calculate the out amount */
     let calcResult = undefined;
@@ -263,9 +263,10 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     /** Reminder: currentSqrtPrice: amountToken1/amountToken0 or token 1 per token 0  */
     const isTokenInSpotPriceDenominator = tokenOut.denom !== this.raw.token0;
 
+    // reminder: the token being swapped, even though the token out is the amount specified
     const beforeSpotPriceInOverOut = isTokenInSpotPriceDenominator
-      ? this.getSpotPriceOutOverIn(tokenInDenom, tokenOut.denom)
-      : this.getSpotPriceInOverOut(tokenInDenom, tokenOut.denom);
+      ? this.getSpotPriceInOverOut(tokenInDenom, tokenOut.denom)
+      : this.getSpotPriceOutOverIn(tokenOut.denom, tokenInDenom);
 
     let calcResult = undefined;
     do {
