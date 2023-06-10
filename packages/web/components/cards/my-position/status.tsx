@@ -13,6 +13,7 @@ export const MyPositionStatus: FunctionComponent<{
   lowerPrice: Dec;
   upperPrice: Dec;
   negative?: boolean;
+  className?: string;
 }> = (props) => {
   const { currentPrice, lowerPrice, upperPrice, negative } = props;
   const t = useTranslation();
@@ -54,7 +55,8 @@ export const MyPositionStatus: FunctionComponent<{
           "bg-ammelia-600/30":
             !negative && status === PositionStatus.NearBounds,
           "bg-rust-600/30": !negative && status === PositionStatus.OutOfRange,
-        }
+        },
+        props?.className
       )}
     >
       <div
