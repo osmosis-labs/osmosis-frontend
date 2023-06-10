@@ -81,7 +81,7 @@ export function useAddConcentratedLiquidityConfig(
           undefined,
           (tx) => {
             if (tx.code) reject(tx.log);
-            resolve();
+            else resolve();
           }
         );
       } catch (e: any) {
@@ -107,19 +107,18 @@ export function useAddConcentratedLiquidityConfig(
         const amount0 = config.baseDepositAmountIn.getAmountPrimitive().amount;
         const amount1 = config.quoteDepositAmountIn.getAmountPrimitive().amount;
 
-        await account.osmosis.sendAddToConcentratedLiquidityPositionMsg(
-          positionId,
-          amount0,
-          amount1,
-          undefined,
-          undefined,
-          (tx) => {
-            if (tx.code) reject(tx.log);
-            resolve();
-          }
-        );
-
         try {
+          await account.osmosis.sendAddToConcentratedLiquidityPositionMsg(
+            positionId,
+            amount0,
+            amount1,
+            undefined,
+            undefined,
+            (tx) => {
+              if (tx.code) reject(tx.log);
+              else resolve();
+            }
+          );
         } catch (e: any) {
           console.error(e);
           reject(e.message);

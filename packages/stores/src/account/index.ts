@@ -815,6 +815,16 @@ export class OsmosisAccountImpl {
     );
   }
 
+  /**
+   * Adds to a concentrated liquidity position, if successful replacing the old position with a new position and ID.
+   *
+   * @param positionId Position ID.
+   * @param amount0 Integer amount of token0 to add to the position.
+   * @param amount1 Integer amount of token1 to add to the position.
+   * @param maxSlippage Max token amounts slippage as whole %. Default `2.5`, meaning 2.5%.
+   * @param memo Optional memo to add to the transaction.
+   * @param onFulfill Optional callback to be called when tx is fulfilled.
+   */
   async sendAddToConcentratedLiquidityPositionMsg(
     positionId: string,
     amount0: string,
