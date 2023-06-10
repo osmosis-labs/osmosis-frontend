@@ -7,8 +7,6 @@ import Image from "next/image";
 import React, { FunctionComponent, ReactNode } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { Icon } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { Slider } from "~/components/control";
 import { tError } from "~/components/localization";
@@ -89,106 +87,89 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     <ModalBase
       {...props}
       isOpen={props.isOpen && showModalBase}
-      hideCloseButton
       className="!max-w-[500px]"
+      title={t("clPositions.removeLiquidity")}
     >
-      <div className="align-center relative mb-8 flex flex-row">
-        <div className="absolute left-0 flex h-full items-center text-sm" />
-        <h6 className="flex-1 text-center">
-          {t("clPositions.removeLiquidity")}
-        </h6>
-        <div className="absolute right-0">
-          <IconButton
-            aria-label="Close"
-            mode="unstyled"
-            size="unstyled"
-            className="!p-0"
-            icon={
-              <Icon
-                id="close-thin"
-                className="text-osmoverse-400 hover:text-wosmongton-100"
-                height={24}
-                width={24}
+      <div className="pt-8">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <div className="pl-4 text-subtitle1 font-subtitle1 xs:pl-0">
+              {t("clPositions.yourPosition")}
+            </div>
+            {lowerPrices && upperPrices && (
+              <MyPositionStatus
+                currentPrice={currentPrice}
+                lowerPrice={lowerPrices.price}
+                upperPrice={upperPrices.price}
+                negative
+                className="xs:px-0"
               />
-            }
-            onClick={props.onRequestClose}
-          />
-        </div>
-      </div>
-      <div className="flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <div className="pl-4 text-subtitle1 font-subtitle1 xs:pl-0">
-            {t("clPositions.yourPosition")}
+            )}
           </div>
-          {lowerPrices && upperPrices && (
-            <MyPositionStatus
-              currentPrice={currentPrice}
-              lowerPrice={lowerPrices.price}
-              upperPrice={upperPrices.price}
-              negative
-              className="xs:px-0"
-            />
-          )}
-        </div>
-        <div className="mb-8 flex justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100 xs:flex-wrap xs:gap-y-2 xs:px-3">
-          {baseAsset && <AssetAmount amount={baseAsset} />}
-          {quoteAsset && <AssetAmount amount={quoteAsset} />}
-        </div>
-      </div>
-      <div className="flex w-full flex-col items-center gap-9">
-        <h2>
-          {fiatCurrency?.symbol}
-          {totalFiat?.toDec().toString(2) ?? "0"}
-        </h2>
-        <div className="flex w-full flex-col items-center gap-6">
-          <Slider
-            className="w-[360px] xs:w-[280px]"
-            inputClassName="!w-[360px] xs:!w-[280px]"
-            currentValue={Math.round(config.percentage * 100)}
-            onInput={(value) => {
-              config.setPercentage(Number((value / 100).toFixed(2)));
-            }}
-            min={0}
-            max={100}
-            step={1}
-            useSuperchargedGradient
-          />
-          <div className="flex gap-2 px-5">
-            <PresetPercentageButton onClick={() => config.setPercentage(0.25)}>
-              25%
-            </PresetPercentageButton>
-            <PresetPercentageButton onClick={() => config.setPercentage(0.5)}>
-              50%
-            </PresetPercentageButton>
-            <PresetPercentageButton onClick={() => config.setPercentage(0.75)}>
-              75%
-            </PresetPercentageButton>
-            <PresetPercentageButton onClick={() => config.setPercentage(1)}>
-              {t("components.MAX")}
-            </PresetPercentageButton>
+          <div className="mb-8 flex justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100 xs:flex-wrap xs:gap-y-2 xs:px-3">
+            {baseAsset && <AssetAmount amount={baseAsset} />}
+            {quoteAsset && <AssetAmount amount={quoteAsset} />}
           </div>
         </div>
-      </div>
-      <div className="mt-8 flex flex-col gap-3 py-3">
-        <div className="pl-4 text-subtitle1 font-subtitle1 xl:pl-1">
-          {t("clPositions.pendingRewards")}
-        </div>
-        <div className="flex justify-between gap-3 rounded-[12px] border-[1.5px]  border-osmoverse-700 px-5 py-3 xs:flex-wrap xs:gap-y-2 xs:px-3">
-          {baseAsset && (
-            <AssetAmount
-              className="!text-body2 !font-body2"
-              amount={baseAsset.mul(new Dec(config.percentage))}
+        <div className="flex w-full flex-col items-center gap-9">
+          <h2>
+            {fiatCurrency?.symbol}
+            {totalFiat?.toDec().toString(2) ?? "0"}
+          </h2>
+          <div className="flex w-full flex-col items-center gap-6">
+            <Slider
+              className="w-[360px] xs:w-[280px]"
+              inputClassName="!w-[360px] xs:!w-[280px]"
+              currentValue={Math.round(config.percentage * 100)}
+              onInput={(value) => {
+                config.setPercentage(Number((value / 100).toFixed(2)));
+              }}
+              min={0}
+              max={100}
+              step={1}
+              useSuperchargedGradient
             />
-          )}
-          {quoteAsset && (
-            <AssetAmount
-              className="!text-body2 !font-body2"
-              amount={quoteAsset.mul(new Dec(config.percentage))}
-            />
-          )}
+            <div className="flex gap-2 px-5">
+              <PresetPercentageButton
+                onClick={() => config.setPercentage(0.25)}
+              >
+                25%
+              </PresetPercentageButton>
+              <PresetPercentageButton onClick={() => config.setPercentage(0.5)}>
+                50%
+              </PresetPercentageButton>
+              <PresetPercentageButton
+                onClick={() => config.setPercentage(0.75)}
+              >
+                75%
+              </PresetPercentageButton>
+              <PresetPercentageButton onClick={() => config.setPercentage(1)}>
+                {t("components.MAX")}
+              </PresetPercentageButton>
+            </div>
+          </div>
         </div>
+        <div className="mt-8 flex flex-col gap-3 py-3">
+          <div className="pl-4 text-subtitle1 font-subtitle1 xl:pl-1">
+            {t("clPositions.pendingRewards")}
+          </div>
+          <div className="flex justify-between gap-3 rounded-[12px] border-[1.5px]  border-osmoverse-700 px-5 py-3 xs:flex-wrap xs:gap-y-2 xs:px-3">
+            {baseAsset && (
+              <AssetAmount
+                className="!text-body2 !font-body2"
+                amount={baseAsset.mul(new Dec(config.percentage))}
+              />
+            )}
+            {quoteAsset && (
+              <AssetAmount
+                className="!text-body2 !font-body2"
+                amount={quoteAsset.mul(new Dec(config.percentage))}
+              />
+            )}
+          </div>
+        </div>
+        {accountActionButton}
       </div>
-      {accountActionButton}
     </ModalBase>
   );
 });

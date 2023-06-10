@@ -7,9 +7,7 @@ import Image from "next/image";
 import React, { FunctionComponent, useCallback, useEffect } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { Icon } from "~/components/assets";
 import { ChartButton } from "~/components/buttons";
-import IconButton from "~/components/buttons/icon-button";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
@@ -122,33 +120,10 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     <ModalBase
       {...props}
       isOpen={props.isOpen && showModalBase}
-      hideCloseButton
       className="max-h-[95vh] !max-w-[500px] overflow-auto"
+      title={t("clPositions.increaseLiquidity")}
     >
-      <div className="align-center relative mb-8 flex flex-row">
-        <div className="absolute left-0 flex h-full items-center text-sm" />
-        <h6 className="flex-1 text-center">
-          {t("clPositions.increaseLiquidity")}
-        </h6>
-        <div className="absolute right-0">
-          <IconButton
-            aria-label="Close"
-            mode="unstyled"
-            size="unstyled"
-            className="!p-0"
-            icon={
-              <Icon
-                id="close-thin"
-                className="text-osmoverse-400 hover:text-wosmongton-100"
-                height={24}
-                width={24}
-              />
-            }
-            onClick={props.onRequestClose}
-          />
-        </div>
-      </div>
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 pt-8">
         <div className="flex items-center justify-between">
           <div className="pl-4 text-subtitle1 font-subtitle1 xs:pl-0">
             {t("clPositions.yourPosition")}

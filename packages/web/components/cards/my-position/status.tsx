@@ -3,18 +3,21 @@ import classNames from "classnames";
 import React, { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { CustomClasses } from "~/components/types";
+
 export enum PositionStatus {
   InRange,
   NearBounds,
   OutOfRange,
 }
-export const MyPositionStatus: FunctionComponent<{
-  currentPrice: Dec;
-  lowerPrice: Dec;
-  upperPrice: Dec;
-  negative?: boolean;
-  className?: string;
-}> = (props) => {
+export const MyPositionStatus: FunctionComponent<
+  {
+    currentPrice: Dec;
+    lowerPrice: Dec;
+    upperPrice: Dec;
+    negative?: boolean;
+  } & CustomClasses
+> = (props) => {
   const { currentPrice, lowerPrice, upperPrice, negative } = props;
   const t = useTranslation();
 
