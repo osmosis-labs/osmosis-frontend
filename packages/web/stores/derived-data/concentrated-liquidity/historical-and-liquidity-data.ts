@@ -24,12 +24,6 @@ export class ObservableHistoricalAndLiquidityData {
   @observable
   protected _historicalRange: PriceRange = "7d";
 
-  /*
-    Used to get active liquidity data
-  */
-  @observable
-  protected _activeLiquidity: ActiveLiquidityPerTickRange[] = [];
-
   @observable
   protected _zoom: number = 1;
 
@@ -37,14 +31,14 @@ export class ObservableHistoricalAndLiquidityData {
   protected _hoverPrice: number = 0;
 
   @observable
-  protected _priceRange?: [Dec, Dec];
+  protected _priceRange: [Dec, Dec] | null = null;
 
   constructor(
     protected readonly chainGetter: ChainGetter,
     readonly chainId: string,
     readonly poolId: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
-    protected readonly queryRange: ObservableQueryLiquidityPerTickRange,
+    protected readonly queryRange: DeepReadonly<ObservableQueryLiquidityPerTickRange>,
     protected readonly queryTokenPairHistoricalPrice: DeepReadonly<ObservableQueryTokensPairHistoricalChart>
   ) {
     makeObservable(this);
@@ -151,7 +145,7 @@ export class ObservableHistoricalAndLiquidityData {
   };
 
   @action
-  readonly setPriceRange = (range?: [Dec, Dec]) => {
+  readonly setPriceRange = (range: [Dec, Dec]) => {
     this._priceRange = range;
   };
 
@@ -167,7 +161,7 @@ export class ObservableHistoricalAndLiquidityData {
     return query.getChartPrices;
   }
 
-  get range(): [Dec, Dec] | undefined {
+  get range(): [Dec, Dec] | null {
     return this._priceRange;
   }
 
