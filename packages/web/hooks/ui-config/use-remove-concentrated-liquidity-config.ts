@@ -1,10 +1,8 @@
 import {
   ChainGetter,
   CosmosQueries,
-  CosmwasmQueries,
   IQueriesStore,
 } from "@keplr-wallet/stores";
-import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import {
   ObservableRemoveConcentratedLiquidityConfig,
   OsmosisQueries,
@@ -16,31 +14,25 @@ import { useStore } from "~/stores";
 export function useRemoveConcentratedLiquidityConfig(
   chainGetter: ChainGetter,
   osmosisChainId: string,
+  queriesStore: IQueriesStore<CosmosQueries & OsmosisQueries>,
   poolId: string,
-  queriesStore: IQueriesStore<CosmosQueries & CosmwasmQueries & OsmosisQueries>,
-  initialPercentage = 1
+  positionId: string
 ): {
   config: ObservableRemoveConcentratedLiquidityConfig;
   removeLiquidity: () => Promise<void>;
 } {
-  const { accountStore, derivedDataStore } = useStore();
+  const { accountStore } = useStore();
 
   const account = accountStore.getAccount(osmosisChainId);
-  const { bech32Address } = account;
-
-  const { poolDetail } = derivedDataStore.getForPool(poolId);
-  const pool = poolDetail!.pool!.pool as ConcentratedLiquidityPool;
 
   const [config] = useState(
     () =>
       new ObservableRemoveConcentratedLiquidityConfig(
         chainGetter,
         osmosisChainId,
-        bech32Address,
         queriesStore,
-        queriesStore.get(osmosisChainId).queryBalances,
-        pool,
-        initialPercentage
+        poolId,
+        positionId
       )
   );
 

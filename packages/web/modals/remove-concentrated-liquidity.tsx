@@ -24,7 +24,12 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     position: ObservableQueryLiquidityPositionById;
   } & ModalBaseProps
 > = observer((props) => {
-  const { lowerPrices, upperPrices, baseAsset, quoteAsset } = props.position;
+  const {
+    lowerPrices,
+    upperPrices,
+    baseAsset: positionBaseAsset,
+    quoteAsset: positionQuoteAsset,
+  } = props.position;
 
   const t = useTranslation();
   const {
@@ -42,8 +47,9 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   const { config, removeLiquidity } = useRemoveConcentratedLiquidityConfig(
     chainStore,
     chainId,
+    queriesStore,
     props.poolId,
-    queriesStore
+    props.position.id
   );
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
@@ -58,6 +64,9 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     },
     props.onRequestClose
   );
+
+  const baseAsset = config.effectiveLiquidityAmounts?.base;
+  const quoteAsset = config.effectiveLiquidityAmounts?.quote;
 
   const {
     poolDetail: { pool },
@@ -130,8 +139,8 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
           )}
         </div>
         <div className="mb-8 flex justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100">
-          {baseAsset && <AssetAmount amount={baseAsset} />}
-          {quoteAsset && <AssetAmount amount={quoteAsset} />}
+          {positionBaseAsset && <AssetAmount amount={positionBaseAsset} />}
+          {positionQuoteAsset && <AssetAmount amount={positionQuoteAsset} />}
         </div>
       </div>
       <div className="flex w-full flex-col items-center gap-9">
@@ -221,7 +230,10 @@ export const AssetAmount: FunctionComponent<{
   <div
     className={classNames(
       "flex items-center gap-2 text-subtitle1 font-subtitle1",
-      props.className
+      props.className,
+      {
+        "opacity-50": props.amount.toDec().isZero(),
+      }
     )}
   >
     {props.amount.currency.coinImageUrl && (
