@@ -370,6 +370,14 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:ibcx",
         coinImageUrl: "/tokens/ibcx.svg",
       },
+      {
+        coinDenom: "stIBCX",
+        coinMinimalDenom:
+          "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
+        coinDecimals: 6,
+        coinGeckoId: "pool:stibcx",
+        coinImageUrl: "/tokens/stibcx.svg",
+      },
     ],
     features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
     explorerUrlToTx:
