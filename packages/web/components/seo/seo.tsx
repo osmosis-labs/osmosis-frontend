@@ -5,8 +5,7 @@ const SEO_CONFIG = {
   SITE_DESCRIPTION:
     "Swap, earn, and build on the leading decentralized Cosmos exchange - The largest interchain DEX",
   TWITTER_HANDLE: "@osmosiszone",
-  IMAGE_PREVIEW:
-    "https://uploads-ssl.webflow.com/623a0c9828949e55356286f9/63901363f1ad117475ea565e_osmosis%20logo.svg",
+  IMAGE_PREVIEW: "/images/preview.jpg",
   FAVICON: "/favicon.ico",
 };
 
@@ -15,6 +14,12 @@ interface SEOProps {
   imagePreview?: string;
 }
 
+/**
+ * https://ogp.me/
+ *
+ * Head meta tags to provide preview images and text for sharing the app on iMessage, Twitter, etc.
+ * Picks a random preview image amongst a selection
+ */
 const SEO = ({ title, imagePreview = SEO_CONFIG.IMAGE_PREVIEW }: SEOProps) => {
   return (
     <Head>
