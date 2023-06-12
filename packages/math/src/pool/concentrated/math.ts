@@ -314,7 +314,7 @@ export function calcAmount0(
     sqrtPriceB = currentSqrtPrice;
   }
 
-  const liquidity1 = amount1.toDec().quo(sqrtPriceB.sub(sqrtPriceA));
+  const liquidity1 = calcLiquidityAmount1(sqrtPriceA, sqrtPriceB, amount1);
 
   sqrtPriceA = currentSqrtPrice;
   sqrtPriceB = upperTickSqrt;
@@ -348,10 +348,7 @@ export function calcAmount1(
     sqrtPriceB = currentSqrtPrice;
   }
 
-  let liquidity0 = amount0
-    .toDec()
-    .mul(sqrtPriceA.mul(sqrtPriceB))
-    .quo(sqrtPriceB.sub(sqrtPriceA));
+  let liquidity0 = calcLiquidityAmount0(sqrtPriceA, sqrtPriceB, amount0);
 
   sqrtPriceA = currentSqrtPrice;
   sqrtPriceB = lowerTickSqrt;
@@ -364,4 +361,25 @@ export function calcAmount1(
   liquidity0 = liquidity0.roundUp().toDec();
 
   return liquidity0.mul(sqrtPriceB.sub(sqrtPriceA)).truncate();
+}
+
+/** REF https://github.com/osmosis-labs/osmosis/blob/ac46d443f3fa1b4c59f93d45916615b54a0fbf61/x/concentrated-liquidity/README.md#L587 */
+export function calcLiquidityAmount1(
+  sqrtPriceA: Dec,
+  sqrtPriceB: Dec,
+  amount1: Int
+) {
+  return amount1.toDec().quo(sqrtPriceB.sub(sqrtPriceA));
+}
+
+/** REF https://github.com/osmosis-labs/osmosis/blob/ac46d443f3fa1b4c59f93d45916615b54a0fbf61/x/concentrated-liquidity/README.md#L584 */
+export function calcLiquidityAmount0(
+  sqrtPriceA: Dec,
+  sqrtPriceB: Dec,
+  amount0: Int
+) {
+  return amount0
+    .toDec()
+    .mul(sqrtPriceA.mul(sqrtPriceB))
+    .quo(sqrtPriceB.sub(sqrtPriceA));
 }
