@@ -292,6 +292,7 @@ const AddConcLiqView: FunctionComponent<
     baseDepositOnly,
     quoteDepositOnly,
     depositPercentages,
+    currentPrice,
     setModalView,
     setMaxRange,
     setMinRange,
@@ -415,17 +416,17 @@ const AddConcLiqView: FunctionComponent<
                 />
               </div>
               <ConcentratedLiquidityDepthChart
-                min={Number(inputRange[0].mul(new Dec(0.9)).toString())}
-                max={Number(inputRange[1].mul(new Dec(1.1)).toString())}
+                min={Number(inputRange[0].toString())}
+                max={Number(inputRange[1].toString())}
                 yRange={yRange}
                 xRange={xRange}
                 data={depthChartData}
                 annotationDatum={useMemo(
                   () => ({
-                    price: lastChartData?.close || 0,
+                    price: Number(currentPrice.toString()) || 0,
                     depth: chartConfig.xRange[1],
                   }),
-                  [chartConfig.xRange, lastChartData]
+                  [chartConfig.xRange, currentPrice]
                 )}
                 // eslint-disable-next-line react-hooks/exhaustive-deps
                 onMoveMax={useCallback(debounce(setMaxRange, 500), [
