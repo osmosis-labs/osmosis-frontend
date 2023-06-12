@@ -36,15 +36,35 @@ export function useRemoveConcentratedLiquidityConfig(
       )
   );
 
-  const removeLiquidity = useCallback(async () => {
-    return new Promise<void>(async (_, reject) => {
-      try {
-      } catch (e: any) {
-        console.error(e);
-        reject(e.message);
-      }
-    });
-  }, [account.osmosis]);
+  const removeLiquidity = useCallback(
+    () =>
+      new Promise<void>(async (resolve, reject) => {
+        try {
+          const liquidity = config.effectiveLiquidity;
+          if (!liquidity) {
+            return Promise.reject("Invalid liquidity");
+          }
+
+          account.osmosis
+            .sendWithdrawConcentratedLiquidityPositionMsg(
+              positionId,
+              liquidity,
+              undefined,
+              (tx) => {
+                if (tx.code) {
+                  reject(tx.log);
+                } else {
+                  resolve();
+                }
+              }
+            )
+            .catch(reject);
+        } catch (e: any) {
+          reject(e);
+        }
+      }),
+    [account.osmosis, positionId, config.effectiveLiquidity]
+  );
 
   return { config, removeLiquidity };
 }

@@ -19,9 +19,7 @@ export class ObservableRemoveConcentratedLiquidityConfig extends TxChainSetter {
   /** Gets the user-selected percentage of the position's liquidity. */
   @computed
   get effectiveLiquidity(): Dec | undefined {
-    return this.queryPosition.liquidity?.mul(
-      new Dec(1).sub(new Dec(this.percentage))
-    );
+    return this.queryPosition.liquidity?.mul(new Dec(this.percentage));
   }
 
   /** Get's the amount of each token in position given the position's liquidity and the user's
@@ -39,8 +37,6 @@ export class ObservableRemoveConcentratedLiquidityConfig extends TxChainSetter {
 
     if (!liquidity || !base || !quote) return;
 
-    const amountIncludePercent = new Dec(1).mul(new Dec(this.percentage));
-
     return {
       base: new CoinPretty(
         base.currency,
@@ -49,7 +45,7 @@ export class ObservableRemoveConcentratedLiquidityConfig extends TxChainSetter {
           .mul(
             DecUtils.getTenExponentNInPrecisionRange(base.currency.coinDecimals)
           )
-          .mul(amountIncludePercent)
+          .mul(new Dec(this.percentage))
       ),
       quote: new CoinPretty(
         quote.currency,
@@ -60,7 +56,7 @@ export class ObservableRemoveConcentratedLiquidityConfig extends TxChainSetter {
               quote.currency.coinDecimals
             )
           )
-          .mul(amountIncludePercent)
+          .mul(new Dec(this.percentage))
       ),
     };
   }

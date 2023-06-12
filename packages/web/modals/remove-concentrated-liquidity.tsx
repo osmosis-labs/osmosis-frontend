@@ -7,8 +7,6 @@ import Image from "next/image";
 import React, { FunctionComponent, ReactNode } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { Icon } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { Slider } from "~/components/control";
 import { tError } from "~/components/localization";
@@ -56,7 +54,9 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     {
       disabled: config.error !== undefined || isSendingMsg,
       onClick: () => {
-        return removeLiquidity().finally(() => props.onRequestClose());
+        return removeLiquidity()
+          .catch(console.error)
+          .finally(() => props.onRequestClose());
       },
       children: config.error
         ? t(...tError(config.error))
@@ -98,33 +98,10 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     <ModalBase
       {...props}
       isOpen={props.isOpen && showModalBase}
-      hideCloseButton
+      title={t("clPositions.removeLiquidity")}
       className="!max-w-[500px]"
     >
-      <div className="align-center relative mb-8 flex flex-row">
-        <div className="absolute left-0 flex h-full items-center text-sm" />
-        <h6 className="flex-1 text-center">
-          {t("clPositions.removeLiquidity")}
-        </h6>
-        <div className="absolute right-0">
-          <IconButton
-            aria-label="Close"
-            mode="unstyled"
-            size="unstyled"
-            className="!p-0"
-            icon={
-              <Icon
-                id="close-thin"
-                className="text-wosmongton-400 hover:text-wosmongton-100"
-                height={24}
-                width={24}
-              />
-            }
-            onClick={props.onRequestClose}
-          />
-        </div>
-      </div>
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 pt-10">
         <div className="flex items-center justify-between">
           <div className="pl-4 text-subtitle1 font-subtitle1">
             {t("clPositions.yourPosition")}
@@ -244,6 +221,6 @@ export const AssetAmount: FunctionComponent<{
         width={24}
       />
     )}
-    <span>{props.amount.trim(true).toString()}</span>
+    <span>{props.amount.trim(true).maxDecimals(8).toString()}</span>
   </div>
 );
