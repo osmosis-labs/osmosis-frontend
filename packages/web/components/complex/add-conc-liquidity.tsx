@@ -320,11 +320,6 @@ const AddConcLiqView: FunctionComponent<
     setHoverPrice,
   } = chartConfig;
 
-  console.log({
-    r0: inputRange[0].toString(),
-    r1: inputRange[1].toString(),
-  });
-
   const updateInputAndRangeMinMax = useCallback(
     (min: number, max: number) => {
       setMinRange(new Dec(min));
