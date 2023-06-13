@@ -5,6 +5,7 @@ import {
   CosmosAccount,
   CosmosQueries,
   IQueriesStore,
+  ProtoMsgsOrWithAminoMsgs,
 } from "@keplr-wallet/stores";
 import { BondStatus } from "@keplr-wallet/stores/build/query/cosmos/staking/types";
 import { Currency, KeplrSignOptions } from "@keplr-wallet/types";
@@ -1387,6 +1388,134 @@ export class OsmosisAccountImpl {
             .balances.forEach((balance) => balance.waitFreshResponse());
 
           this.queries.queryGammPools.getPool(poolId)?.waitFreshResponse();
+        }
+
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
+   */
+  async sendUnlockAndMigrateSharesToFullRangeConcentratedPositionMsg(
+    poolId: string,
+    lockIds: string[],
+    memo: string = "",
+    onFulfill?: (tx: any) => void
+  ) {
+    const queryPool = this.queries.queryGammPools.getPool(poolId);
+
+    if (!Boolean(queryPool)) {
+      throw new Error("Unknown pool");
+    }
+
+    const multiMsgs: ProtoMsgsOrWithAminoMsgs = {
+      aminoMsgs: [],
+      protoMsgs: [],
+    };
+
+    lockIds.forEach((lockId) => {
+      const accountLocked = this.queries.queryAccountLocked.get(
+        this.base.bech32Address
+      );
+
+      // ensure the lock ID is in the associated with the account, and that the coins locked are gamm shares
+      const poolGammShares = accountLocked.lockedCoins.filter(
+        ({ amount, lockIds }) =>
+          amount.denom.includes(`gamm/${poolId}`) && lockIds.includes(lockId)
+      );
+      if (poolGammShares.length === 0 || queryPool?.sharePool?.totalShare)
+        return;
+
+      const poolAssets = queryPool?.poolAssets.map(({ amount }) => ({
+        denom: amount.currency.coinMinimalDenom,
+        amount: new Int(amount.toCoin().amount),
+      }));
+      if (!poolAssets) throw new Error("Unknown pool assets");
+
+      // estimate exit pool for each locked share in pool
+      const estimated = WeightedPoolEstimates.estimateExitSwap(
+        {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          totalShare: queryPool!.sharePool!.totalShare,
+          poolAssets,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          exitFee: queryPool!.exitFee.toDec(),
+        },
+        this.makeCoinPretty,
+        poolGammShares[0].amount.toCoin().amount,
+        poolGammShares[0].amount.currency.coinDecimals
+      );
+
+      multiMsgs.aminoMsgs.push({
+        type: this._msgOpts.unlockAndMigrateSharesToFullRangeConcentratedPosition(
+          1
+        ).type,
+        value: {
+          sender: this.base.bech32Address,
+          lock_id: lockId,
+          shares_to_migrate: {
+            denom: poolGammShares[0].amount.currency.coinMinimalDenom,
+            amount: poolGammShares[0].amount.toCoin().amount,
+          },
+          token_out_mins: estimated.tokenOuts.map((tokenOut) => ({
+            denom: tokenOut.currency.coinMinimalDenom,
+            amount: tokenOut.toCoin().amount,
+          })),
+        },
+      });
+
+      multiMsgs.protoMsgs.push({
+        typeUrl:
+          "/osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition",
+        value:
+          osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition.encode(
+            {
+              lockId: Long.fromString(lockId),
+              sender: this.base.bech32Address,
+              sharesToMigrate: {
+                denom: poolGammShares[0].amount.currency.coinMinimalDenom,
+                amount: poolGammShares[0].amount.toCoin().amount,
+              },
+              tokenOutMins: estimated.tokenOuts.map((tokenOut) => ({
+                denom: tokenOut.currency.coinMinimalDenom,
+                amount: tokenOut.toCoin().amount,
+              })),
+            }
+          ).finish(),
+      });
+    });
+
+    await this.base.cosmos.sendMsgs(
+      "unlockAndMigrateToFullRangePosition",
+      multiMsgs,
+      memo,
+      {
+        amount: [],
+        gas: this._msgOpts
+          .unlockAndMigrateSharesToFullRangeConcentratedPosition(
+            multiMsgs.aminoMsgs.length
+          )
+          .gas.toString(),
+      },
+      undefined,
+      (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.base.bech32Address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
+
+          // refresh pool that was exited
+          queryPool?.waitFreshResponse();
+
+          // refresh removed locked coins and new account positions
+          this.queries.queryAccountLocked
+            .get(this.base.bech32Address)
+            .waitFreshResponse();
+          this.queries.queryAccountsPositions
+            .get(this.base.bech32Address)
+            .waitFreshResponse();
         }
 
         onFulfill?.(tx);
