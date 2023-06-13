@@ -267,8 +267,6 @@ const NestedPriceChart: FunctionComponent<{
   config: ObservableHistoricalAndLiquidityData;
 }> = observer(({ config }) => {
   const { historicalChartData, yRange, setHoverPrice, lastChartData } = config;
-  console.log("NestedChart");
-
   return (
     <TokenPairHistoricalChart
       data={historicalChartData}
