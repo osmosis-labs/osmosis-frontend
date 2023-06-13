@@ -1,15 +1,16 @@
-import { FunctionComponent } from "react";
-import { observer } from "mobx-react-lite";
 import { ObservableRemoveLiquidityConfig } from "@osmosis-labs/stores";
-import { useStore } from "../stores";
+import { observer } from "mobx-react-lite";
+import { FunctionComponent } from "react";
+import { useTranslation } from "react-multi-lang";
+
+import { RemoveLiquidity } from "../components/complex/remove-liquidity";
+import { tError } from "../components/localization";
 import {
   useConnectWalletModalRedirect,
   useRemoveLiquidityConfig,
 } from "../hooks";
-import { RemoveLiquidity } from "../components/complex/remove-liquidity";
+import { useStore } from "../stores";
 import { ModalBase, ModalBaseProps } from "./base";
-import { useTranslation } from "react-multi-lang";
-import { tError } from "../components/localization";
 
 export const RemoveLiquidityModal: FunctionComponent<
   {

@@ -14,6 +14,7 @@ import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { AddLiquidityModal } from "~/modals";
 import { useStore } from "~/stores";
+import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
 
 const ConcentratedLiquidityDepthChart = dynamic(
@@ -37,21 +38,13 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
 
     const {
       pool,
-      historicalChartData,
-      historicalRange,
       xRange,
       yRange,
-      setHoverPrice,
       lastChartData,
       depthChartData,
       setZoom,
       zoomIn,
       zoomOut,
-      priceDecimal,
-      setHistoricalRange,
-      baseDenom,
-      quoteDenom,
-      hoverPrice,
     } = config;
 
     const volume24h =
@@ -134,31 +127,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
               </div>
             </div>
             <div className="flex h-[340px] flex-row">
-              <div className="flex-shrink-1 flex w-0 flex-1 flex-col gap-[20px] py-7 sm:py-3">
-                <PriceChartHeader
-                  historicalRange={historicalRange}
-                  setHistoricalRange={setHistoricalRange}
-                  baseDenom={baseDenom}
-                  quoteDenom={quoteDenom}
-                  hoverPrice={hoverPrice}
-                  decimal={priceDecimal}
-                  classes={{
-                    buttons: "sm:hidden",
-                    pricesHeaderContainerClass: "sm:flex-col",
-                  }}
-                />
-                <TokenPairHistoricalChart
-                  data={historicalChartData}
-                  annotations={[]}
-                  domain={yRange}
-                  onPointerHover={setHoverPrice}
-                  onPointerOut={
-                    lastChartData
-                      ? () => setHoverPrice(lastChartData.close)
-                      : undefined
-                  }
-                />
-              </div>
+              <PriceChart config={config} />
               <div className="flex-shrink-1 relative flex w-[229px] flex-col">
                 <div className="mt-7 flex h-6 justify-end gap-1 pr-8 sm:pr-0">
                   <ChartButton
@@ -259,3 +228,56 @@ const PoolDataGroup: FunctionComponent<{
     <h4 className="text-osmoverse-100">{value}</h4>
   </div>
 );
+
+const PriceChart: FunctionComponent<{
+  config: ObservableHistoricalAndLiquidityData;
+}> = observer(({ config }) => {
+  const {
+    historicalRange,
+    priceDecimal,
+    setHistoricalRange,
+    baseDenom,
+    quoteDenom,
+    hoverPrice,
+  } = config;
+
+  return (
+    <div className="flex-shrink-1 flex w-0 flex-1 flex-col gap-[20px] py-7 sm:py-3">
+      <PriceChartHeader
+        historicalRange={historicalRange}
+        setHistoricalRange={setHistoricalRange}
+        baseDenom={baseDenom}
+        quoteDenom={quoteDenom}
+        hoverPrice={hoverPrice}
+        decimal={priceDecimal}
+        classes={{
+          buttons: "sm:hidden",
+          pricesHeaderContainerClass: "sm:flex-col",
+        }}
+      />
+      <NestedPriceChart config={config} />
+    </div>
+  );
+});
+
+/**
+ * Create a nested component to prevent unnecessary re-rendering whenever the hover price changes.
+ */
+const NestedPriceChart: FunctionComponent<{
+  config: ObservableHistoricalAndLiquidityData;
+}> = observer(({ config }) => {
+  const { historicalChartData, yRange, setHoverPrice, lastChartData } = config;
+  console.log("NestedChart");
+
+  return (
+    <TokenPairHistoricalChart
+      data={historicalChartData}
+      annotations={[]}
+      domain={yRange}
+      onPointerHover={setHoverPrice}
+      onPointerOut={
+        lastChartData ? () => setHoverPrice(lastChartData.close) : undefined
+      }
+    />
+  );
+});

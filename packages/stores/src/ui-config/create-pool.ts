@@ -367,7 +367,7 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
 
     const parsedScalingFactor = parseFloat(scalingFactor);
 
-    if (parsedScalingFactor !== NaN)
+    if (!Number.isNaN(parsedScalingFactor))
       this.assets[index] = {
         ...this.assets[index],
         scalingFactor: parsedScalingFactor,

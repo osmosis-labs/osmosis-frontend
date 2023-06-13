@@ -30,6 +30,7 @@ const TokenPairHistoricalChart: FunctionComponent<{
   onPointerHover?: (price: number) => void;
   onPointerOut?: () => void;
 }> = ({ data, annotations, domain, onPointerHover, onPointerOut }) => {
+  console.log("TokenPairHistoricalChart");
   return (
     <ParentSize className="flex-shrink-1 flex-1 overflow-hidden">
       {({ height, width }) => (
