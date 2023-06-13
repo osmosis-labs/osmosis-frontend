@@ -124,3 +124,5 @@ export const defaultMsgOpts: OsmosisMsgOpts = {
     gas: 900_000,
   },
 };
+
+export const DEFAULT_SLIPPAGE = "2.5";

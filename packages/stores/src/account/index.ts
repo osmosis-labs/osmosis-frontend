@@ -17,7 +17,7 @@ import { DeepPartial } from "utility-types";
 import { OsmosisQueries } from "../queries";
 import * as Msgs from "./msg/amino";
 import { osmosis } from "./msg/proto";
-import { defaultMsgOpts, OsmosisMsgOpts } from "./msg-opts";
+import { DEFAULT_SLIPPAGE, defaultMsgOpts, OsmosisMsgOpts } from "./msg-opts";
 
 export interface OsmosisAccount {
   osmosis: OsmosisAccountImpl;
@@ -422,7 +422,7 @@ export class OsmosisAccountImpl {
   async sendJoinPoolMsg(
     poolId: string,
     shareOutAmount: string,
-    maxSlippage: string = "2.5",
+    maxSlippage: string = DEFAULT_SLIPPAGE,
     memo: string = "",
     onFulfill?: (tx: any) => void
   ) {
@@ -547,7 +547,7 @@ export class OsmosisAccountImpl {
   async sendJoinSwapExternAmountInMsg(
     poolId: string,
     tokenIn: { currency: Currency; amount: string },
-    maxSlippage: string = "2.5",
+    maxSlippage: string = DEFAULT_SLIPPAGE,
     memo: string = "",
     onFulfill?: (tx: any) => void
   ) {
@@ -682,7 +682,7 @@ export class OsmosisAccountImpl {
     upperTick: Int,
     baseDeposit?: { currency: Currency; amount: string },
     quoteDeposit?: { currency: Currency; amount: string },
-    maxSlippage = "2.5",
+    maxSlippage = DEFAULT_SLIPPAGE,
     memo: string = "",
     onFulfill?: (tx: any) => void
   ) {
@@ -829,7 +829,7 @@ export class OsmosisAccountImpl {
     positionId: string,
     amount0: string,
     amount1: string,
-    maxSlippage = "2.5",
+    maxSlippage = DEFAULT_SLIPPAGE,
     memo: string = "",
     onFulfill?: (tx: any) => void
   ) {
@@ -1384,7 +1384,7 @@ export class OsmosisAccountImpl {
   async sendExitPoolMsg(
     poolId: string,
     shareInAmount: string,
-    maxSlippage: string = "2.5",
+    maxSlippage: string = DEFAULT_SLIPPAGE,
     memo: string = "",
     onFulfill?: (tx: any) => void
   ) {

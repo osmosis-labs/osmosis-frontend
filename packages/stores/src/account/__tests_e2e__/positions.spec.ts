@@ -83,6 +83,7 @@ describe("Create CL Positions Txs", () => {
     ).resolves.toBeDefined();
 
     // old position is replaced
+    // we can't rely on position IDs as other positions may have been globally created first in future tests
     await expect(
       getUserPositionsIdsForPool(queryPool!.id)
     ).resolves.toHaveLength(2);
