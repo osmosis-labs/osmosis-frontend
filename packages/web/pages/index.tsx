@@ -77,17 +77,19 @@ const Home: NextPage = observer(function () {
           <g>
             <ProgressiveSvgImage
               lowResXlinkHref={
-                IS_FRONTIER ? "/images/osmosis-cowboy-woz-low.png" : undefined
+                IS_FRONTIER
+                  ? "/images/osmosis-cowboy-woz-low.png"
+                  : "/images/supercharged-wosmongton-low.png"
               }
               xlinkHref={
                 IS_FRONTIER
                   ? "/images/osmosis-cowboy-woz.png"
-                  : "/images/ibcx-web-bg.png"
+                  : "/images/supercharged-wosmongton.png"
               }
-              x={IS_FRONTIER ? "-100" : "-140"}
-              y={IS_FRONTIER ? "100" : "0"}
-              width={IS_FRONTIER ? "800" : "130%"}
-              height={IS_FRONTIER ? "800" : "100%"}
+              x={IS_FRONTIER ? "-100" : "56"}
+              y={IS_FRONTIER ? "100" : "100"}
+              width={IS_FRONTIER ? "800" : "578.7462"}
+              height={IS_FRONTIER ? "800" : "725.6817"}
             />
           </g>
         </svg>
