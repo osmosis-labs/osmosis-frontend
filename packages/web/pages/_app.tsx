@@ -21,6 +21,7 @@ import { Bounce, ToastContainer } from "react-toastify";
 import { Icon } from "~/components/assets";
 import ErrorBoundary from "~/components/error/error-boundary";
 import ErrorFallback from "~/components/error/error-fallback";
+import { WalletSelectProvider } from "~/hooks/wallet-select";
 
 import { MainLayout } from "../components/layouts";
 import { OgpMeta } from "../components/ogp-meta";
@@ -31,7 +32,6 @@ import {
   IS_FRONTIER,
   PromotedLBPPoolIds,
 } from "../config";
-import { GetKeplrProvider } from "../hooks";
 import { useAmplitudeAnalytics } from "../hooks/use-amplitude-analytics";
 import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
 import dayjsLocaleKo from "../localizations/dayjs-locale-ko.js";
@@ -129,8 +129,8 @@ function MyApp({ Component, pageProps }: AppProps) {
   useAmplitudeAnalytics({ init: true });
 
   return (
-    <GetKeplrProvider>
-      <StoreProvider>
+    <StoreProvider>
+      <WalletSelectProvider>
         <Head>
           {/* metamask Osmosis app icon */}
           <link
@@ -154,8 +154,8 @@ function MyApp({ Component, pageProps }: AppProps) {
             {Component && <Component {...pageProps} />}
           </ErrorBoundary>
         </MainLayout>
-      </StoreProvider>
-    </GetKeplrProvider>
+      </WalletSelectProvider>
+    </StoreProvider>
   );
 }
 
