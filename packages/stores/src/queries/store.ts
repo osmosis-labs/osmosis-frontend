@@ -32,6 +32,7 @@ import {
 import { ObservableQueryDistrInfo } from "./pool-incentives/distr-info";
 import { ObservableQueryGammPoolShare } from "./pool-share";
 import {
+  ObservableQueryCfmmToConcentratedLiquidityPoolLinks,
   ObservableQueryNumPools,
   ObservableQueryPoolGetter,
   ObservableQueryPools,
@@ -91,6 +92,7 @@ export class OsmosisQueriesImpl {
 
   protected _queryGammPools: DeepReadonly<ObservableQueryPoolGetter>;
   public readonly queryGammNumPools: DeepReadonly<ObservableQueryNumPools>;
+  public readonly queryCfmmToConcentratedLiquidityPoolLinks: DeepReadonly<ObservableQueryCfmmToConcentratedLiquidityPoolLinks>;
   public readonly queryGammPoolShare: DeepReadonly<ObservableQueryGammPoolShare>;
 
   public readonly queryLockedCoins: DeepReadonly<ObservableQueryAccountLockedCoins>;
@@ -211,6 +213,13 @@ export class OsmosisQueriesImpl {
     autorun(() => {
       this._queryGammPools = poolsQueryFallbacks.responsiveStore;
     });
+
+    this.queryCfmmToConcentratedLiquidityPoolLinks =
+      new ObservableQueryCfmmToConcentratedLiquidityPoolLinks(
+        kvStore,
+        chainId,
+        chainGetter
+      );
 
     this.queryGammPoolShare = new ObservableQueryGammPoolShare(
       this._queryGammPools,
