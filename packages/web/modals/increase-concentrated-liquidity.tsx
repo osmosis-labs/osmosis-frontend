@@ -13,6 +13,7 @@ import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
 import { tError } from "~/components/localization";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
+import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 
 import {
   useAddConcentratedLiquidityConfig,
@@ -36,10 +37,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     position: ObservableQueryLiquidityPositionById;
   } & ModalBaseProps
 > = observer((props) => {
-  const {
-    poolId,
-    position: { lowerPrices, upperPrices, baseAsset, quoteAsset, isFullRange },
-  } = props;
+  const { poolId, position: positionConfig } = props;
   const {
     chainStore,
     accountStore,
@@ -53,25 +51,22 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   const account = accountStore.getAccount(chainId);
   const isSendingMsg = account.txTypeInProgress !== "";
 
+  const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
+
   const {
     quoteCurrency,
     baseCurrency,
-    historicalChartData,
-    historicalRange,
     xRange,
     yRange,
-    setHoverPrice,
     lastChartData,
     depthChartData,
     setZoom,
     zoomIn,
     zoomOut,
-    range,
-    priceDecimal,
-    setHistoricalRange,
-    hoverPrice,
     setPriceRange,
-  } = useHistoricalAndLiquidityData(chainId, poolId);
+  } = chartConfig;
+  const { lowerPrices, upperPrices, baseAsset, quoteAsset, isFullRange } =
+    positionConfig;
 
   const { config, addLiquidity } = useAddConcentratedLiquidityConfig(
     chainStore,
@@ -179,35 +174,10 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
           </div>
           <div className="flex gap-1">
             <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-6 pl-6">
-              <PriceChartHeader
-                classes={{
-                  priceHeaderClass: "text-h5 font-h5 text-osmoverse-200",
-                }}
-                historicalRange={historicalRange}
-                setHistoricalRange={setHistoricalRange}
-                baseDenom={baseCurrency?.coinDenom || ""}
-                quoteDenom={quoteCurrency?.coinDenom || ""}
-                hoverPrice={hoverPrice}
-                decimal={priceDecimal}
-                hideButtons
-              />
-              <TokenPairHistoricalChart
-                data={historicalChartData}
-                annotations={
-                  isFullRange
-                    ? [
-                        new Dec((yRange[0] || 0) * 1.05),
-                        new Dec((yRange[1] || 0) * 0.95),
-                      ]
-                    : range || []
-                }
-                domain={yRange}
-                onPointerHover={setHoverPrice}
-                onPointerOut={
-                  lastChartData
-                    ? () => setHoverPrice(lastChartData.close)
-                    : undefined
-                }
+              <ChartHeader chartConfig={chartConfig} />
+              <Chart
+                chartConfig={chartConfig}
+                positionConfig={positionConfig}
               />
             </div>
             <div className="flex-shrink-1 relative flex h-[20.1875rem] w-0 flex-1 rounded-r-2xl bg-osmoverse-700">
@@ -351,3 +321,62 @@ const PriceBox: FunctionComponent<{
     )}
   </div>
 );
+
+/**
+ * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
+ */
+const ChartHeader: FunctionComponent<{
+  chartConfig: ObservableHistoricalAndLiquidityData;
+}> = ({ chartConfig }) => {
+  const {
+    quoteCurrency,
+    baseCurrency,
+    historicalRange,
+    priceDecimal,
+    setHistoricalRange,
+    hoverPrice,
+  } = chartConfig;
+
+  return (
+    <PriceChartHeader
+      classes={{
+        priceHeaderClass: "text-h5 font-h5 text-osmoverse-200",
+      }}
+      historicalRange={historicalRange}
+      setHistoricalRange={setHistoricalRange}
+      baseDenom={baseCurrency?.coinDenom || ""}
+      quoteDenom={quoteCurrency?.coinDenom || ""}
+      hoverPrice={hoverPrice}
+      decimal={priceDecimal}
+      hideButtons
+    />
+  );
+};
+
+/**
+ * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
+ */
+const Chart: FunctionComponent<{
+  chartConfig: ObservableHistoricalAndLiquidityData;
+  positionConfig: ObservableQueryLiquidityPositionById;
+}> = ({ chartConfig, positionConfig }) => {
+  const { historicalChartData, yRange, setHoverPrice, lastChartData, range } =
+    chartConfig;
+  const { isFullRange } = positionConfig;
+
+  return (
+    <TokenPairHistoricalChart
+      data={historicalChartData}
+      annotations={
+        isFullRange
+          ? [new Dec((yRange[0] || 0) * 1.05), new Dec((yRange[1] || 0) * 0.95)]
+          : range || []
+      }
+      domain={yRange}
+      onPointerHover={setHoverPrice}
+      onPointerOut={
+        lastChartData ? () => setHoverPrice(lastChartData.close) : undefined
+      }
+    />
+  );
+};

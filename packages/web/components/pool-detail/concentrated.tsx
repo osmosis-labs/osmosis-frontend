@@ -127,7 +127,11 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
               </div>
             </div>
             <div className="flex h-[340px] flex-row">
-              <PriceChart config={config} />
+              <div className="flex-shrink-1 flex w-0 flex-1 flex-col gap-[20px] py-7 sm:py-3">
+                <ChartHeader config={config} />
+                <Chart config={config} />
+              </div>
+
               <div className="flex-shrink-1 relative flex w-[229px] flex-col">
                 <div className="mt-7 flex h-6 justify-end gap-1 pr-8 sm:pr-0">
                   <ChartButton
@@ -229,7 +233,10 @@ const PoolDataGroup: FunctionComponent<{
   </div>
 );
 
-const PriceChart: FunctionComponent<{
+/**
+ * Create a nested component to prevent unnecessary re-rendering whenever the hover price changes.
+ */
+const ChartHeader: FunctionComponent<{
   config: ObservableHistoricalAndLiquidityData;
 }> = observer(({ config }) => {
   const {
@@ -242,28 +249,25 @@ const PriceChart: FunctionComponent<{
   } = config;
 
   return (
-    <div className="flex-shrink-1 flex w-0 flex-1 flex-col gap-[20px] py-7 sm:py-3">
-      <PriceChartHeader
-        historicalRange={historicalRange}
-        setHistoricalRange={setHistoricalRange}
-        baseDenom={baseDenom}
-        quoteDenom={quoteDenom}
-        hoverPrice={hoverPrice}
-        decimal={priceDecimal}
-        classes={{
-          buttons: "sm:hidden",
-          pricesHeaderContainerClass: "sm:flex-col",
-        }}
-      />
-      <NestedPriceChart config={config} />
-    </div>
+    <PriceChartHeader
+      historicalRange={historicalRange}
+      setHistoricalRange={setHistoricalRange}
+      baseDenom={baseDenom}
+      quoteDenom={quoteDenom}
+      hoverPrice={hoverPrice}
+      decimal={priceDecimal}
+      classes={{
+        buttons: "sm:hidden",
+        pricesHeaderContainerClass: "sm:flex-col",
+      }}
+    />
   );
 });
 
 /**
  * Create a nested component to prevent unnecessary re-rendering whenever the hover price changes.
  */
-const NestedPriceChart: FunctionComponent<{
+const Chart: FunctionComponent<{
   config: ObservableHistoricalAndLiquidityData;
 }> = observer(({ config }) => {
   const { historicalChartData, yRange, setHoverPrice, lastChartData } = config;
