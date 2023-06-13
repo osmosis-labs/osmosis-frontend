@@ -26,6 +26,7 @@ import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "../assets";
 import { Button } from "../buttons";
@@ -284,27 +285,23 @@ const AddConcLiqView: FunctionComponent<
   } & CustomClasses
 > = observer(({ addLiquidityConfig, actionButton, getFiatValue, pool }) => {
   const {
-    range,
+    range: inputRange,
     fullRange,
-    currentPrice,
     baseDepositAmountIn,
     quoteDepositAmountIn,
-    moderatePriceRange,
     baseDepositOnly,
     quoteDepositOnly,
     depositPercentages,
+    currentPrice,
     setModalView,
     setMaxRange,
     setMinRange,
+    setFullRange,
     poolId,
     setAnchorAsset,
   } = addLiquidityConfig;
 
   const t = useTranslation();
-  const [inputMin, setInputMin] = useState("0");
-  const [inputMax, setInputMax] = useState("0");
-  const rangeMin = Number(range[0].toString());
-  const rangeMax = Number(range[1].toString());
 
   const { chainStore } = useStore();
   const { chainId } = chainStore.osmosis;
@@ -316,38 +313,25 @@ const AddConcLiqView: FunctionComponent<
     hoverPrice,
     priceDecimal,
     yRange,
+    xRange,
+    depthChartData,
     historicalChartData,
     lastChartData,
     setHoverPrice,
   } = chartConfig;
 
   const updateInputAndRangeMinMax = useCallback(
-    (_min: number, _max: number) => {
-      setInputMin("" + _min.toFixed(priceDecimal));
-      setInputMax("" + _max.toFixed(priceDecimal));
-      setMinRange(new Dec(_min));
-      setMaxRange(new Dec(_max));
+    (min: number, max: number) => {
+      setMinRange(new Dec(min));
+      setMaxRange(new Dec(max));
     },
-    [priceDecimal, setMinRange, setMaxRange]
+    [setMinRange, setMaxRange]
   );
 
+  // sync the price range of the add liq config and the chart config
   useEffect(() => {
-    if (currentPrice && inputMin === "0" && inputMax === "0") {
-      const last = Number(currentPrice.toString());
-      updateInputAndRangeMinMax(
-        Number(moderatePriceRange[0].toString()),
-        Number(moderatePriceRange[1].toString())
-      );
-      setHoverPrice(last);
-    }
-  }, [
-    currentPrice,
-    inputMax,
-    inputMin,
-    moderatePriceRange,
-    updateInputAndRangeMinMax,
-    setHoverPrice,
-  ]);
+    chartConfig.setPriceRange([inputRange[0], inputRange[1]]);
+  }, [chartConfig, inputRange]);
 
   return (
     <>
@@ -393,7 +377,7 @@ const AddConcLiqView: FunctionComponent<
               annotations={
                 fullRange
                   ? [new Dec(yRange[0] * 1.05), new Dec(yRange[1] * 0.95)]
-                  : range
+                  : inputRange
               }
               domain={yRange}
               onPointerHover={setHoverPrice}
@@ -427,51 +411,39 @@ const AddConcLiqView: FunctionComponent<
                 />
               </div>
               <ConcentratedLiquidityDepthChart
-                min={rangeMin}
-                max={rangeMax}
+                min={Number(inputRange[0].toString())}
+                max={Number(inputRange[1].toString())}
                 yRange={yRange}
-                xRange={chartConfig.xRange}
-                data={chartConfig.depthChartData}
+                xRange={xRange}
+                data={depthChartData}
                 annotationDatum={useMemo(
                   () => ({
-                    price: lastChartData?.close || 0,
+                    price: Number(currentPrice.toString()) || 0,
                     depth: chartConfig.xRange[1],
                   }),
-                  [chartConfig.xRange, lastChartData]
+                  [chartConfig.xRange, currentPrice]
                 )}
                 // eslint-disable-next-line react-hooks/exhaustive-deps
-                onMoveMax={useCallback(
-                  debounce(
-                    (val: number) =>
-                      setInputMax("" + val.toFixed(priceDecimal)),
-                    500
-                  ),
-                  [priceDecimal]
-                )}
+                onMoveMax={useCallback(debounce(setMaxRange, 500), [
+                  priceDecimal,
+                ])}
                 // eslint-disable-next-line react-hooks/exhaustive-deps
-                onMoveMin={useCallback(
-                  debounce(
-                    (val: number) =>
-                      setInputMin("" + val.toFixed(priceDecimal)),
-                    500
-                  ),
-                  [priceDecimal]
-                )}
+                onMoveMin={useCallback(debounce(setMinRange, 500), [
+                  priceDecimal,
+                ])}
                 onSubmitMin={useCallback(
                   (val) => {
-                    setInputMin("" + val.toFixed(priceDecimal));
                     setMinRange(val);
-                    addLiquidityConfig.setFullRange(false);
+                    setFullRange(false);
                   },
-                  [priceDecimal, setMinRange, addLiquidityConfig]
+                  [setMinRange, setFullRange]
                 )}
                 onSubmitMax={useCallback(
                   (val) => {
-                    setInputMax("" + val.toFixed(priceDecimal));
                     setMaxRange(val);
-                    addLiquidityConfig.setFullRange(false);
+                    setFullRange(false);
                   },
-                  [priceDecimal, setMaxRange, addLiquidityConfig]
+                  [setMaxRange, setFullRange]
                 )}
                 offset={{ top: 0, right: 36, bottom: 24 + 28, left: 0 }}
                 horizontal
@@ -480,16 +452,20 @@ const AddConcLiqView: FunctionComponent<
             </div>
             <div className="flex flex-col items-center justify-center gap-4 pr-8">
               <PriceInputBox
-                currentValue={fullRange ? "" : inputMax}
+                currentValue={
+                  fullRange ? "" : formatPretty(inputRange[1]).toString()
+                }
                 label={t("addConcentratedLiquidity.high")}
-                onChange={setInputMax}
+                onChange={(val) => setMaxRange(Number(val))}
                 onBlur={(e) => setMaxRange(+e.target.value)}
                 infinity={fullRange}
               />
               <PriceInputBox
-                currentValue={fullRange ? "0" : inputMin}
+                currentValue={
+                  fullRange ? "0" : formatPretty(inputRange[0]).toString()
+                }
                 label={t("addConcentratedLiquidity.low")}
-                onChange={setInputMin}
+                onChange={(val) => setMinRange(Number(val))}
                 onBlur={(e) => setMinRange(+e.target.value)}
               />
             </div>

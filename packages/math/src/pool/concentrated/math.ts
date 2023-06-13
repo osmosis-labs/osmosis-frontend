@@ -309,6 +309,10 @@ export function calcAmount0(
   let sqrtPriceA = currentSqrtPrice;
   let sqrtPriceB = lowerTickSqrt;
 
+  if (sqrtPriceA.equals(sqrtPriceB)) {
+    return new Int(0);
+  }
+
   if (sqrtPriceA.gt(sqrtPriceB)) {
     sqrtPriceA = lowerTickSqrt;
     sqrtPriceB = currentSqrtPrice;
@@ -342,6 +346,10 @@ export function calcAmount1(
 
   let sqrtPriceA = currentSqrtPrice;
   let sqrtPriceB = upperTickSqrt;
+
+  if (sqrtPriceA.equals(sqrtPriceB)) {
+    return new Int(0);
+  }
 
   if (sqrtPriceA.gt(sqrtPriceB)) {
     sqrtPriceA = upperTickSqrt;

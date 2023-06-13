@@ -55,8 +55,6 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   const isSendingMsg = account.txTypeInProgress !== "";
 
   const {
-    quoteCurrency,
-    baseCurrency,
     historicalChartData,
     historicalRange,
     xRange,
@@ -74,7 +72,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     setPriceRange,
   } = useHistoricalAndLiquidityData(chainId, poolId);
 
-  const { config, addLiquidity } = useAddConcentratedLiquidityConfig(
+  const { config, increaseLiquidity } = useAddConcentratedLiquidityConfig(
     chainStore,
     chainId,
     poolId,
@@ -95,7 +93,9 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     {
       disabled: config.error !== undefined || isSendingMsg,
       onClick: () => {
-        addLiquidity().finally(() => props.onRequestClose());
+        increaseLiquidity(props.position.id).finally(() =>
+          props.onRequestClose()
+        );
       },
       children: config.error
         ? t(...tError(config.error))
@@ -173,8 +173,8 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             </div>
             <div className="text-subtitle1 font-subtitle1 text-osmoverse-300">
               {t("addConcentratedLiquidity.basePerQuote", {
-                base: baseCurrency?.coinDenom || "",
-                quote: quoteCurrency?.coinDenom || "",
+                base: config.baseDepositAmountIn.sendCurrency.coinDenom,
+                quote: config.quoteDepositAmountIn.sendCurrency.coinDenom,
               })}
             </div>
           </div>
@@ -186,8 +186,8 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                 }}
                 historicalRange={historicalRange}
                 setHistoricalRange={setHistoricalRange}
-                baseDenom={baseCurrency?.coinDenom || ""}
-                quoteDenom={quoteCurrency?.coinDenom || ""}
+                baseDenom={config.baseDepositAmountIn.sendCurrency.coinDenom}
+                quoteDenom={config.quoteDepositAmountIn.sendCurrency.coinDenom}
                 hoverPrice={hoverPrice}
                 decimal={priceDecimal}
                 hideButtons
@@ -231,7 +231,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                       depth: xRange[1],
                     },
                   ]}
-                  offset={{ top: 0, right: 32, bottom: 24 + 28, left: 0 }}
+                  offset={{ top: 0, right: 32, bottom: 24 + 24, left: 0 }}
                   horizontal
                   fullRange={isFullRange}
                 />
@@ -302,7 +302,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
               },
               [config]
             )}
-            currentValue={config.quoteDepositAmountIn.amount}
+            currentValue={config.baseDepositAmountIn.amount}
             outOfRange={config.quoteDepositOnly}
             percentage={config.depositPercentages[0]}
           />
