@@ -848,7 +848,7 @@ export class OsmosisAccountImpl {
           new Dec(aminoMsg.value.liquidity_amount)
             .mul(
               DecUtils.getTenExponentNInPrecisionRange(
-                aminoMsg.value.liquidity_amount.split(".")[1].length
+                aminoMsg.value.liquidity_amount.split(".")[1]?.length ?? 0
               )
             )
             .truncate()
