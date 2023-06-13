@@ -159,6 +159,11 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
+const ldAnonymousContext = {
+  key: "SHARED-CONTEXT-KEY",
+  anonymous: true,
+};
+
 export default withLDProvider({
   clientSideID: process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID || "",
   user: {
@@ -167,4 +172,5 @@ export default withLDProvider({
   options: {
     bootstrap: "localStorage",
   },
+  context: ldAnonymousContext,
 })(MyApp as ComponentType<{}>);
