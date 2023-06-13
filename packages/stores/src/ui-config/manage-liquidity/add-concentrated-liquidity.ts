@@ -39,7 +39,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
    Used to get min and max range for adding concentrated liquidity
    */
   @observable
-  protected _priceRange: [Dec, Dec] = [minSpotPrice, minSpotPrice];
+  protected _priceRange: [Dec, Dec];
 
   @observable
   protected _fullRange: boolean = false;
@@ -98,6 +98,9 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     this._quoteDepositAmountIn.setSendCurrency(quoteCurrency);
     this._baseDepositAmountIn.setAmount("0");
     this._quoteDepositAmountIn.setAmount("0");
+
+    // Set the initial range to be the moderate range
+    this._priceRange = this.moderatePriceRange;
 
     // Calculate quote amount when base amount is input and anchor is base
     // Calculate an amount1 given an amount0
