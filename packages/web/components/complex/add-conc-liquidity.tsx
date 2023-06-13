@@ -311,16 +311,7 @@ const AddConcLiqView: FunctionComponent<
   const { chainId } = chainStore.osmosis;
   const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
 
-  const {
-    historicalRange,
-    setHistoricalRange,
-    hoverPrice,
-    priceDecimal,
-    yRange,
-    historicalChartData,
-    lastChartData,
-    setHoverPrice,
-  } = chartConfig;
+  const { priceDecimal, yRange, lastChartData, setHoverPrice } = chartConfig;
 
   const updateInputAndRangeMinMax = useCallback(
     (_min: number, _max: number) => {
