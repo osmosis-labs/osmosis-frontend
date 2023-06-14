@@ -149,45 +149,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
             </PresetPercentageButton>
           </div>
         </div>
-        <div className="flex w-full flex-col items-center gap-9">
-          <h2>
-            {fiatCurrency?.symbol}
-            {totalFiat?.toDec().toString(2) ?? "0"}
-          </h2>
-          <div className="flex w-full flex-col items-center gap-6">
-            <Slider
-              className="w-[360px] xs:w-[280px]"
-              inputClassName="!w-[360px] xs:!w-[280px]"
-              currentValue={Math.round(config.percentage * 100)}
-              onInput={(value) => {
-                config.setPercentage(Number((value / 100).toFixed(2)));
-              }}
-              min={0}
-              max={100}
-              step={1}
-              useSuperchargedGradient
-            />
-            <div className="flex gap-2 px-5">
-              <PresetPercentageButton
-                onClick={() => config.setPercentage(0.25)}
-              >
-                25%
-              </PresetPercentageButton>
-              <PresetPercentageButton onClick={() => config.setPercentage(0.5)}>
-                50%
-              </PresetPercentageButton>
-              <PresetPercentageButton
-                onClick={() => config.setPercentage(0.75)}
-              >
-                75%
-              </PresetPercentageButton>
-              <PresetPercentageButton onClick={() => config.setPercentage(1)}>
-                {t("components.MAX")}
-              </PresetPercentageButton>
-            </div>
-          </div>
-        </div>
-        <div className="mt-8 flex flex-col gap-3 py-3">
+        <div className="mt-8 flex w-full flex-col gap-3 py-3">
           <div className="pl-4 text-subtitle1 font-subtitle1 xl:pl-1">
             {t("clPositions.pendingRewards")}
           </div>
