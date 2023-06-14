@@ -7,7 +7,10 @@ const Custom500: NextPage = () => {
   const t = useTranslation();
   return (
     <div className="flex h-screen items-center justify-center gap-3 bg-osmoverse-900">
-      <NextSeo title="500 | Internal Server Error" />
+      <NextSeo
+        title={t("seo.500.title")}
+        description={t("seo.500.description")}
+      />
       <Image
         src="/icons/error-x.svg"
         alt={t("500.title")}

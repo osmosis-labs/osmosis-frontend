@@ -147,8 +147,8 @@ const Assets: NextPage = observer(() => {
   return (
     <main className="mx-auto flex max-w-container flex-col gap-20 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
       <NextSeo
-        title="Osmosis Assets"
-        description="Browse all of the assets available on Osmosis - the leading decentralized Cosmos exchange"
+        title={t("seo.assets.title")}
+        description={t("seo.assets.description")}
       />
       <AssetsOverview />
       {isMobile && preTransferModalProps && (

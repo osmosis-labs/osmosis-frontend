@@ -6,6 +6,7 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-multi-lang";
 import {
   ReactZoomPanPinchRef,
   TransformComponent,
@@ -295,11 +296,13 @@ const Pixels: NextPage = observer(function () {
 
   const status = queryOsmoPixels.queryStatus;
 
+  const t = useTranslation();
+
   return (
     <main>
       <NextSeo
-        title="Osmosis Pixels"
-        description="Play the pixels game on Osmosis - the leading decentralized Cosmos exchange"
+        title={t("seo.pixels.title")}
+        description={t("seo.pixels.description")}
       />
       <div className="h-screen w-full bg-osmoverse-900">
         <div className="pointer-events-none absolute top-10 left-1/2 z-[11]  flex items-center rounded-lg bg-wosmongton-200 py-2 px-8">

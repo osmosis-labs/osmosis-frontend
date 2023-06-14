@@ -9,7 +9,6 @@ import utc from "dayjs/plugin/utc";
 import { withLDProvider } from "launchdarkly-react-client-sdk";
 import { enableStaticRendering } from "mobx-react-lite";
 import type { AppProps } from "next/app";
-import { DefaultSeo } from "next-seo";
 import { ComponentType, useMemo } from "react";
 import {
   setDefaultLanguage,
@@ -21,7 +20,7 @@ import { Bounce, ToastContainer } from "react-toastify";
 import { Icon } from "~/components/assets";
 import ErrorBoundary from "~/components/error/error-boundary";
 import ErrorFallback from "~/components/error/error-fallback";
-import SEO from "~/next-seo.config";
+import DefaultSeo from "~/next-seo.config";
 
 import { MainLayout } from "../components/layouts";
 import { MainLayoutMenu } from "../components/types";
@@ -130,7 +129,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <GetKeplrProvider>
       <StoreProvider>
-        <DefaultSeo {...SEO} />
+        <DefaultSeo />
         <IbcNotifier />
         <ToastContainer
           toastStyle={{
