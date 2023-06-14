@@ -25,6 +25,7 @@ export const MyPositionCard: FunctionComponent<{
       upperTick,
       lowerPrices,
       upperPrices,
+      isFullRange,
     },
   } = props;
   const t = useTranslation();
@@ -115,6 +116,7 @@ export const MyPositionCard: FunctionComponent<{
             <RangeDataGroup
               lowerPrice={lowerPrices.price}
               upperPrice={upperPrices.price}
+              isFullRange={isFullRange}
             />
           )}
           {liquidityValue && (
@@ -161,7 +163,8 @@ const PositionDataGroup: FunctionComponent<{
 const RangeDataGroup: FunctionComponent<{
   lowerPrice: Dec;
   upperPrice: Dec;
-}> = ({ lowerPrice, upperPrice }) => {
+  isFullRange: boolean;
+}> = ({ lowerPrice, upperPrice, isFullRange }) => {
   const t = useTranslation();
   return (
     <PositionDataGroup
@@ -169,17 +172,21 @@ const RangeDataGroup: FunctionComponent<{
       value={
         <div className="flex w-full justify-end gap-1 xl:justify-start sm:flex-wrap">
           <h6 title={lowerPrice.toString(2)}>
-            {formatPretty(lowerPrice, {
-              maximumFractionDigits: 2,
-              maximumSignificantDigits: undefined,
-            })}
+            {isFullRange
+              ? "0"
+              : formatPretty(lowerPrice, {
+                  maximumFractionDigits: 2,
+                  maximumSignificantDigits: undefined,
+                })}
           </h6>
           <Icon id="left-right-arrow" className="flex-shrink-0" />
           <h6 title={lowerPrice.toString(2)}>
-            {formatPretty(upperPrice, {
-              maximumFractionDigits: 2,
-              maximumSignificantDigits: undefined,
-            })}
+            {isFullRange
+              ? "∞"
+              : formatPretty(upperPrice, {
+                  maximumFractionDigits: 2,
+                  maximumSignificantDigits: undefined,
+                })}
           </h6>
         </div>
       }

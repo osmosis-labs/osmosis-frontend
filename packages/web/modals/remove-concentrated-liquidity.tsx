@@ -22,16 +22,15 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     position: ObservableQueryLiquidityPositionById;
   } & ModalBaseProps
 > = observer((props) => {
-  const { lowerPrices, upperPrices, baseAsset, quoteAsset } = props.position;
+  const {
+    lowerPrices,
+    upperPrices,
+    baseAsset: positionBaseAsset,
+    quoteAsset: positionQuoteAsset,
+  } = props.position;
 
   const t = useTranslation();
-  const {
-    chainStore,
-    accountStore,
-    derivedDataStore,
-    queriesStore,
-    priceStore,
-  } = useStore();
+  const { chainStore, accountStore, derivedDataStore, priceStore } = useStore();
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getAccount(chainId);
@@ -41,14 +40,16 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     chainStore,
     chainId,
     props.poolId,
-    queriesStore
+    props.position.id
   );
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
       disabled: config.error !== undefined || isSendingMsg,
       onClick: () => {
-        return removeLiquidity().finally(() => props.onRequestClose());
+        return removeLiquidity()
+          .catch(console.error)
+          .finally(() => props.onRequestClose());
       },
       children: config.error
         ? t(...tError(config.error))
@@ -56,6 +57,9 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     },
     props.onRequestClose
   );
+
+  const baseAsset = config.effectiveLiquidityAmounts?.base;
+  const quoteAsset = config.effectiveLiquidityAmounts?.quote;
 
   const {
     poolDetail: { pool },
@@ -107,49 +111,45 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
             )}
           </div>
           <div className="mb-8 flex justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100 xs:flex-wrap xs:gap-y-2 xs:px-3">
-            {baseAsset && <AssetAmount amount={baseAsset} />}
-            {quoteAsset && <AssetAmount amount={quoteAsset} />}
+            {positionBaseAsset && <AssetAmount amount={positionBaseAsset} />}
+            {positionQuoteAsset && <AssetAmount amount={positionQuoteAsset} />}
           </div>
         </div>
-        <div className="flex w-full flex-col items-center gap-9">
-          <h2>
-            {fiatCurrency?.symbol}
-            {totalFiat?.toDec().toString(2) ?? "0"}
-          </h2>
-          <div className="flex w-full flex-col items-center gap-6">
-            <Slider
-              className="w-[360px] xs:w-[280px]"
-              inputClassName="!w-[360px] xs:!w-[280px]"
-              currentValue={Math.round(config.percentage * 100)}
-              onInput={(value) => {
-                config.setPercentage(Number((value / 100).toFixed(2)));
-              }}
-              min={0}
-              max={100}
-              step={1}
-              useSuperchargedGradient
-            />
-            <div className="flex gap-2 px-5">
-              <PresetPercentageButton
-                onClick={() => config.setPercentage(0.25)}
-              >
-                25%
-              </PresetPercentageButton>
-              <PresetPercentageButton onClick={() => config.setPercentage(0.5)}>
-                50%
-              </PresetPercentageButton>
-              <PresetPercentageButton
-                onClick={() => config.setPercentage(0.75)}
-              >
-                75%
-              </PresetPercentageButton>
-              <PresetPercentageButton onClick={() => config.setPercentage(1)}>
-                {t("components.MAX")}
-              </PresetPercentageButton>
-            </div>
+      </div>
+      <div className="flex w-full flex-col items-center gap-9">
+        <h2>
+          {fiatCurrency?.symbol}
+          {totalFiat?.toDec().toString(2) ?? "0"}
+        </h2>
+        <div className="flex w-full flex-col items-center gap-6">
+          <Slider
+            className="w-[360px]"
+            inputClassName="!w-[360px]"
+            currentValue={Math.round(config.percentage * 100)}
+            onInput={(value) => {
+              config.setPercentage(Number((value / 100).toFixed(2)));
+            }}
+            min={0}
+            max={100}
+            step={1}
+            useSuperchargedGradient
+          />
+          <div className="flex w-full gap-2 px-5">
+            <PresetPercentageButton onClick={() => config.setPercentage(0.25)}>
+              25%
+            </PresetPercentageButton>
+            <PresetPercentageButton onClick={() => config.setPercentage(0.5)}>
+              50%
+            </PresetPercentageButton>
+            <PresetPercentageButton onClick={() => config.setPercentage(0.75)}>
+              75%
+            </PresetPercentageButton>
+            <PresetPercentageButton onClick={() => config.setPercentage(1)}>
+              {t("components.MAX")}
+            </PresetPercentageButton>
           </div>
         </div>
-        <div className="mt-8 flex flex-col gap-3 py-3">
+        <div className="mt-8 flex w-full flex-col gap-3 py-3">
           <div className="pl-4 text-subtitle1 font-subtitle1 xl:pl-1">
             {t("clPositions.pendingRewards")}
           </div>
@@ -214,6 +214,6 @@ export const AssetAmount: FunctionComponent<{
         width={24}
       />
     )}
-    <span>{props.amount.trim(true).toString()}</span>
+    <span>{props.amount.trim(true).maxDecimals(8).toString()}</span>
   </div>
 );

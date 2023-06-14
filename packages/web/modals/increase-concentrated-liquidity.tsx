@@ -13,6 +13,7 @@ import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
 import { tError } from "~/components/localization";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
+import { formatPretty } from "~/utils/formatter";
 
 import {
   useAddConcentratedLiquidityConfig,
@@ -215,7 +216,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
               <div className="mt-[84px] flex flex-1 flex-col">
                 <ConcentratedLiquidityDepthChart
                   yRange={yRange}
-                  xRange={[xRange[0], xRange[1] * 1.1]}
+                  xRange={[xRange[0], xRange[1]]}
                   data={depthChartData}
                   annotationDatum={{
                     price: lastChartData?.close || 0,
@@ -261,14 +262,18 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                   <div className="mr-[22px] mb-4 flex h-full flex-col items-end justify-between py-4 ">
                     <PriceBox
                       currentValue={
-                        isFullRange ? "0" : upperPrices.price.toString()
+                        isFullRange
+                          ? "0"
+                          : formatPretty(upperPrices.price).toString()
                       }
                       label={t("clPositions.maxPrice")}
                       infinity={isFullRange}
                     />
                     <PriceBox
                       currentValue={
-                        isFullRange ? "0" : lowerPrices.price.toString()
+                        isFullRange
+                          ? "0"
+                          : formatPretty(lowerPrices.price).toString()
                       }
                       label={t("clPositions.minPrice")}
                     />

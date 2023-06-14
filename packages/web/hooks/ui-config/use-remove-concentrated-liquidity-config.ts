@@ -1,14 +1,5 @@
-import {
-  ChainGetter,
-  CosmosQueries,
-  CosmwasmQueries,
-  IQueriesStore,
-} from "@keplr-wallet/stores";
-import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
-import {
-  ObservableRemoveConcentratedLiquidityConfig,
-  OsmosisQueries,
-} from "@osmosis-labs/stores";
+import { ChainGetter } from "@keplr-wallet/stores";
+import { ObservableRemoveConcentratedLiquidityConfig } from "@osmosis-labs/stores";
 import { useCallback, useState } from "react";
 
 import { useStore } from "~/stores";
@@ -17,42 +8,66 @@ export function useRemoveConcentratedLiquidityConfig(
   chainGetter: ChainGetter,
   osmosisChainId: string,
   poolId: string,
-  queriesStore: IQueriesStore<CosmosQueries & CosmwasmQueries & OsmosisQueries>,
-  initialPercentage = 1
+  positionId: string
 ): {
   config: ObservableRemoveConcentratedLiquidityConfig;
   removeLiquidity: () => Promise<void>;
 } {
-  const { accountStore, derivedDataStore } = useStore();
+  const { accountStore, queriesStore } = useStore();
 
   const account = accountStore.getAccount(osmosisChainId);
-  const { bech32Address } = account;
-
-  const { poolDetail } = derivedDataStore.getForPool(poolId);
-  const pool = poolDetail!.pool!.pool as ConcentratedLiquidityPool;
 
   const [config] = useState(
     () =>
       new ObservableRemoveConcentratedLiquidityConfig(
         chainGetter,
         osmosisChainId,
-        bech32Address,
         queriesStore,
-        queriesStore.get(osmosisChainId).queryBalances,
-        pool,
-        initialPercentage
+        poolId,
+        positionId
       )
   );
 
-  const removeLiquidity = useCallback(async () => {
-    return new Promise<void>(async (_, reject) => {
-      try {
-      } catch (e: any) {
-        console.error(e);
-        reject(e.message);
-      }
-    });
-  }, [account.osmosis]);
+  const removeLiquidity = useCallback(
+    () =>
+      new Promise<void>(async (resolve, reject) => {
+        try {
+          const liquidity = config.effectiveLiquidity;
+          if (!liquidity) {
+            return Promise.reject("Invalid liquidity");
+          }
+
+          account.osmosis
+            .sendWithdrawConcentratedLiquidityPositionMsg(
+              positionId,
+              liquidity,
+              undefined,
+              (tx) => {
+                if (tx.code) {
+                  reject(tx.log);
+                } else {
+                  queriesStore
+                    .get(osmosisChainId)
+                    .osmosis!.queryLiquiditiesPerTickRange.getForPoolId(poolId)
+                    .waitFreshResponse();
+                  resolve();
+                }
+              }
+            )
+            .catch(reject);
+        } catch (e: any) {
+          reject(e);
+        }
+      }),
+    [
+      queriesStore,
+      poolId,
+      account.osmosis,
+      osmosisChainId,
+      positionId,
+      config.effectiveLiquidity,
+    ]
+  );
 
   return { config, removeLiquidity };
 }

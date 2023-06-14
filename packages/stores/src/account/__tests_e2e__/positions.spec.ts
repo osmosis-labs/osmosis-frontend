@@ -7,7 +7,7 @@ import {
   waitAccountLoaded,
 } from "../../__tests_e2e__/test-env";
 import { maxTick, minTick, priceToTick } from "@osmosis-labs/math";
-import { Int } from "@keplr-wallet/unit";
+import { Int, Dec } from "@keplr-wallet/unit";
 // import { Int } from "@keplr-wallet/unit";
 
 describe("Create CL Positions Txs", () => {
@@ -18,7 +18,6 @@ describe("Create CL Positions Txs", () => {
   let queryPool: ObservableQueryPool | undefined;
 
   beforeAll(async () => {
-    const account = accountStore.getAccount(chainId);
     account.cosmos.broadcastMode = "sync";
     await waitAccountLoaded(account);
   });
@@ -177,7 +176,7 @@ describe("Create CL Positions Txs", () => {
     ).resolves.toHaveLength(2);
   });
 
-  it("rejects adding liquidity to position if last position in pool", async () => {
+  it("rejects adding liquidity to position if last position in pool (edge case)", async () => {
     // create initial position
     await createFullRangePosition(queryPool!.id);
     const userPositionIds = await getUserPositionsIdsForPool(queryPool!.id);
@@ -204,6 +203,82 @@ describe("Create CL Positions Txs", () => {
           .catch(reject)
       )
     ).rejects.toBeDefined();
+  });
+
+  it("can have liquidity be partially removed from it", async () => {
+    await createFullRangePosition(queryPool!.id);
+
+    const userPositionIds = await getUserPositionsIdsForPool(queryPool!.id);
+    const lastPositionId = userPositionIds[userPositionIds.length - 1];
+
+    // get query position
+    const position = queriesStore
+      .get(chainId)
+      .osmosis!.queryAccountsPositions.get(account.bech32Address)
+      .positions.find(({ id }) => id === lastPositionId);
+    await position?.waitFreshResponse();
+
+    if (!position || !position.liquidity) throw new Error("Position not found");
+
+    const tx: any = await new Promise((resolve, reject) =>
+      account.osmosis.sendWithdrawConcentratedLiquidityPositionMsg(
+        lastPositionId,
+        position.liquidity!.mul(new Dec(0.5)),
+        undefined,
+        (tx) => {
+          if (tx.code) reject(tx.log);
+          else resolve(tx);
+        }
+      )
+    );
+
+    expect(tx).toBeDefined();
+
+    // old position is still there
+    const userPositionIds_after = await getUserPositionsIdsForPool(
+      queryPool!.id
+    );
+    const lastPositionId_after =
+      userPositionIds_after[userPositionIds_after.length - 1];
+    expect(lastPositionId_after).toBe(lastPositionId);
+  });
+
+  it("can have liquidity be entirely removed from it (deletes position)", async () => {
+    await createFullRangePosition(queryPool!.id);
+
+    const userPositionIds = await getUserPositionsIdsForPool(queryPool!.id);
+    const lastPositionId = userPositionIds[userPositionIds.length - 1];
+
+    // get query position
+    const position = queriesStore
+      .get(chainId)
+      .osmosis!.queryAccountsPositions.get(account.bech32Address)
+      .positions.find(({ id }) => id === lastPositionId);
+    await position?.waitFreshResponse();
+
+    if (!position || !position.liquidity) throw new Error("Position not found");
+
+    const tx: unknown = await new Promise((resolve, reject) =>
+      account.osmosis.sendWithdrawConcentratedLiquidityPositionMsg(
+        lastPositionId,
+        position.liquidity!,
+        undefined,
+        (tx) => {
+          if (tx.code) reject(tx.log);
+          else resolve(tx);
+        }
+      )
+    );
+
+    expect(tx).toBeDefined();
+
+    // old position is no longer there
+    const userPositionIds_after = await getUserPositionsIdsForPool(
+      queryPool!.id
+    );
+    const lastPositionId_after =
+      userPositionIds_after[userPositionIds_after.length - 1];
+    expect(lastPositionId_after).not.toBe(lastPositionId);
   });
 
   /** Leave `poolId` undefined to get all position IDs. */
