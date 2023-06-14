@@ -14,10 +14,12 @@ import { Gauge, GaugeById } from "./types";
 
 /** Individual gauge that can be fetched individually, as well as initialized with data statically (and later refreshed). */
 export class ObservableQueryGauge extends ObservableChainQuery<GaugeById> {
+  // Gauge data managed by child class instead of response member of base class
+  // since there are many gauge requests that may happen, we don't want to over fetch
+  // when it becomes un/observed since it rarely changes.
   @observable.ref
   protected _raw?: Gauge;
 
-  @observable
   protected _canFetch = false;
 
   constructor(
@@ -52,11 +54,6 @@ export class ObservableQueryGauge extends ObservableChainQuery<GaugeById> {
     return queryGauge;
   }
 
-  @action
-  allowFetch() {
-    this._canFetch = true;
-  }
-
   protected canFetch() {
     return this._canFetch;
   }
@@ -70,14 +67,16 @@ export class ObservableQueryGauge extends ObservableChainQuery<GaugeById> {
     return this._raw !== undefined;
   }
 
+  // manage the response ourselves, outside of the base store
   protected setResponse(response: Readonly<QueryResponse<GaugeById>>) {
     super.setResponse(response);
 
     for (const coin of response.data.gauge.coins) {
-      this.chainGetter.getChain(this.chainId).findCurrency(coin.denom);
+      this.chainGetter.getChain(this.chainId).addUnknownCurrencies(coin.denom);
     }
 
     this.setRaw(response.data.gauge);
+    this._canFetch = false;
   }
 
   get gauge() {
@@ -95,7 +94,7 @@ export class ObservableQueryGauge extends ObservableChainQuery<GaugeById> {
 
   @computed
   get lockupDuration(): Duration {
-    if ((this._canFetch && !this.response) || !this._raw) {
+    if (!this._raw) {
       return dayjs.duration({
         seconds: 0,
       });
@@ -156,6 +155,11 @@ export class ObservableQueryGauge extends ObservableChainQuery<GaugeById> {
       };
     });
   }
+
+  waitFreshResponse(): Promise<Readonly<QueryResponse<GaugeById>> | undefined> {
+    this._canFetch = true;
+    return super.waitFreshResponse();
+  }
 }
 
 export class ObservableQueryGauges extends ObservableChainQueryMap<GaugeById> {
@@ -177,8 +181,9 @@ export class ObservableQueryGauges extends ObservableChainQueryMap<GaugeById> {
     // If the requested gauge does not have data, fetch it.
     if (!gauge.hasData && !this._fetchingGaugeIds.has(id)) {
       this._fetchingGaugeIds.add(id);
-      gauge.allowFetch();
-      gauge.waitResponse().finally(() => this._fetchingGaugeIds.delete(id));
+      gauge
+        .waitFreshResponse()
+        .finally(() => this._fetchingGaugeIds.delete(id));
     }
 
     return gauge;
