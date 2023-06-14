@@ -1,5 +1,6 @@
 import { DefaultSeoProps } from "next-seo";
 
+import spriteSVGURL from "~/assets/images/sprite.svg";
 import { IS_FRONTIER } from "~/config/index";
 
 const SEO_SHARED_CONFIG = {
@@ -20,6 +21,17 @@ const config: DefaultSeoProps = {
     {
       rel: "icon",
       href: SEO_SHARED_CONFIG.FAVICON,
+    },
+    {
+      rel: "shortcut icon",
+      href: `${
+        typeof window !== "undefined" ? window.origin : ""
+      }/osmosis-logo-wc.png`,
+    },
+    {
+      rel: "preload",
+      as: "image/svg+xml",
+      href: spriteSVGURL,
     },
   ],
   additionalMetaTags: [

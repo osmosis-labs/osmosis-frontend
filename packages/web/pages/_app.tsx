@@ -131,16 +131,6 @@ function MyApp({ Component, pageProps }: AppProps) {
     <GetKeplrProvider>
       <StoreProvider>
         <DefaultSeo {...SEO} />
-        {/* <Head>
-          <link
-            rel="shortcut icon"
-            href={`${
-              typeof window !== "undefined" ? window.origin : ""
-            }/osmosis-logo-wc.png`}
-          />
-          <link rel="preload" as="image/svg+xml" href={spriteSVGURL} />
-        </Head>
-        */}
         <IbcNotifier />
         <ToastContainer
           toastStyle={{
