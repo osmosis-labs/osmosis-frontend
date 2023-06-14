@@ -8,7 +8,10 @@
 *.svg
 *.png
 *.jpg
+*.webp
+
 *.env
+*.env.local
 
 yarn.lock
 .DS_Store
