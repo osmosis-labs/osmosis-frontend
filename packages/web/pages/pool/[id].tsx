@@ -7,9 +7,9 @@ import {
 import classNames from "classnames";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
-import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { NextSeo } from "next-seo";
 import {
   FunctionComponent,
   useCallback,
@@ -335,11 +335,10 @@ const Pool: FunctionComponent = observer(() => {
 
   return (
     <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
-      <Head>
-        <title>
-          {t("pool.title", { id: poolId ? poolId.toString() : "-" })}
-        </title>
-      </Head>
+      <NextSeo
+        title={t("seo.pool.title", { id: poolId ? poolId.toString() : "-" })}
+        description={t("seo.pool.description")}
+      />
       {pool && showAddLiquidityModal && (
         <AddLiquidityModal
           isOpen={true}

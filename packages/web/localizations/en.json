@@ -482,5 +482,44 @@
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",
   "waitingForTransaction": "Waiting for transaction to be included in the block",
-  "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution."
+  "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution.",
+  "seo": {
+    "404": {
+      "title": "404 - Page not found",
+      "description": "The page you are looking for does not exist."
+    },
+    "500": {
+      "title": "500 - Internal server error",
+      "description": "An internal server error occurred."
+    },
+    "default": {
+      "title": "Trade on Osmosis Zone",
+      "titleFrontier": "The Osmosis Frontier",
+      "description": "Swap, earn, and build on the leading decentralized Cosmos exchange - The largest interchain DEX"
+    },
+    "apps": {
+      "title": "Osmosis App Store",
+      "description": "Trading is just the first step. Put your assets to work and accomplish so much more with leverage, vaults, and beyond"
+    },
+    "assets": {
+      "title": "Osmosis Assets",
+      "description": "Browse all of the assets available on Osmosis - the leading decentralized Cosmos exchange"
+    },
+    "bootstrap": {
+      "title": "Osmosis Bootstrap",
+      "description": "Liquidity Bootstrapping Pools on Osmosis, the leading decentralized Cosmos exchange"
+    },
+    "disclaimer": {
+      "title": "Osmosis Disclaimer",
+      "description": "Read the disclaimer and privacy policy for the Osmosis - the leading decentralized Cosmos exchange"
+    },
+    "pool": {
+      "title": "Pool #{id}",
+      "description": "Add your assets to this pool to unlock APRs. The longer your unbonding period, the more you make on Osmosis - the leading decentralized Cosmos exchange"
+    },
+    "pools": {
+      "title": "Osmosis Pools",
+      "description": "Discover liqudity pools on Osmosis - the leading decentralized Cosmos exchange"
+    }
+  }
 }

@@ -1,4 +1,5 @@
 import Fuse from "fuse.js";
+import { NextSeo } from "next-seo";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 import { useWindowSize } from "react-use";
@@ -96,6 +97,10 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
 
   return (
     <main className="mx-auto flex max-w-container flex-col bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
+      <NextSeo
+        title={t("seo.apps.title")}
+        description={t("seo.apps.description")}
+      />
       <div className="flex flex-row justify-between pl-6 md:flex-col">
         <div className="mb-0 basis-1/2 lg:mr-4 md:mb-4 md:mr-0">
           <h4 className="pb-2 text-wosmongton-100">{t("store.headerTitle")}</h4>
