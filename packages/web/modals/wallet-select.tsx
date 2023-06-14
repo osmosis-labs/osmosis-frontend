@@ -158,14 +158,14 @@ const ModalContent: FunctionComponent<
     const { isMobile } = useWindowSize();
 
     const [lazyWalletInfo, setLazyWalletInfo] =
-      useState<(typeof WalletRegistry)[number]>();
+      useState<typeof WalletRegistry[number]>();
 
     const currentWallet = walletRepo?.current;
     const walletInfo = currentWallet?.walletInfo ?? lazyWalletInfo;
 
     const onConnect = async (
       sync: boolean,
-      wallet?: ChainWalletBase | (typeof WalletRegistry)[number]
+      wallet?: ChainWalletBase | typeof WalletRegistry[number]
     ) => {
       if (!wallet) return;
       if (!("lazyInstall" in wallet)) {
