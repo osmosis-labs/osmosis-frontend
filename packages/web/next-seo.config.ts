@@ -1,7 +1,7 @@
 import { DefaultSeoProps } from "next-seo";
 
-import spriteSVGURL from "~/assets/images/sprite.svg";
 import { IS_FRONTIER } from "~/config/index";
+import spriteSVGURL from "~/public/icons/sprite.svg";
 
 const SEO_SHARED_CONFIG = {
   SITE_URL: "https://osmosis.zone/",
