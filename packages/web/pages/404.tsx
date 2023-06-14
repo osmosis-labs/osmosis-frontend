@@ -7,7 +7,7 @@ const Custom404: NextPage = () => {
   const t = useTranslation();
   return (
     <div className="flex h-screen items-center justify-center gap-3 bg-osmoverse-900">
-      <NextSeo title="404 | Error" />
+      <NextSeo title="404 | Page Not Found" />
       <Image
         src="/icons/warning.svg"
         alt={t("404.title")}
