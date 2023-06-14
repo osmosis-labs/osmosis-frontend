@@ -87,7 +87,7 @@ const Home: NextPage = observer(function () {
                   : "/images/supercharged-wosmongton.png"
               }
               x={IS_FRONTIER ? "-100" : "56"}
-              y={IS_FRONTIER ? "100" : "100"}
+              y={IS_FRONTIER ? "100" : "175"}
               width={IS_FRONTIER ? "800" : "578.7462"}
               height={IS_FRONTIER ? "800" : "725.6817"}
             />
