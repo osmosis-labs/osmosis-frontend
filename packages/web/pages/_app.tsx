@@ -20,7 +20,6 @@ import { Bounce, ToastContainer } from "react-toastify";
 import { Icon } from "~/components/assets";
 import ErrorBoundary from "~/components/error/error-boundary";
 import ErrorFallback from "~/components/error/error-fallback";
-import { WalletSelectProvider } from "~/hooks/wallet-select";
 import DefaultSeo from "~/next-seo.config";
 
 import { MainLayout } from "../components/layouts";
@@ -130,21 +129,19 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <GetKeplrProvider>
       <StoreProvider>
-        <WalletSelectProvider>
-          <DefaultSeo />
-          <IbcNotifier />
-          <ToastContainer
-            toastStyle={{
-              backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
-            }}
-            transition={Bounce}
-          />
-          <MainLayout menus={menus}>
-            <ErrorBoundary fallback={ErrorFallback}>
-              {Component && <Component {...pageProps} />}
-            </ErrorBoundary>
-          </MainLayout>
-        </WalletSelectProvider>
+        <DefaultSeo />
+        <IbcNotifier />
+        <ToastContainer
+          toastStyle={{
+            backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
+          }}
+          transition={Bounce}
+        />
+        <MainLayout menus={menus}>
+          <ErrorBoundary fallback={ErrorFallback}>
+            {Component && <Component {...pageProps} />}
+          </ErrorBoundary>
+        </MainLayout>
       </StoreProvider>
     </GetKeplrProvider>
   );
