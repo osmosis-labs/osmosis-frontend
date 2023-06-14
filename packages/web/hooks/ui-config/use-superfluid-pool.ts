@@ -65,7 +65,7 @@ export function useSuperfluidPool(): {
         }
       );
     },
-    []
+    [account?.osmosis]
   );
 
   return {
