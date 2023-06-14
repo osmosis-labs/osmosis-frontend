@@ -690,7 +690,7 @@ export class OsmosisAccountImpl {
 
     await this.base.cosmos.sendMsgs(
       "clCreatePosition",
-      async () => {
+      () => {
         const queryPool = queries.queryGammPools.getPool(poolId);
 
         if (!queryPool) {

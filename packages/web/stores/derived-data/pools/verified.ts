@@ -39,7 +39,7 @@ export class ObservableVerifiedPoolsStore
       .osmosis?.queryGammPools.fetchRemainingPools();
   }
 
-  getAllPools = computedFn((showUnverified?: boolean) => {
+  readonly getAllPools = computedFn((showUnverified?: boolean) => {
     const allPools = this.queriesStore
       .get(this.chainId)
       .osmosis?.queryGammPools.getAllPools();

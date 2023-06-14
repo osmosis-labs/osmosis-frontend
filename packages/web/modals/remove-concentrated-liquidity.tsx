@@ -30,13 +30,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   } = props.position;
 
   const t = useTranslation();
-  const {
-    chainStore,
-    accountStore,
-    derivedDataStore,
-    queriesStore,
-    priceStore,
-  } = useStore();
+  const { chainStore, accountStore, derivedDataStore, priceStore } = useStore();
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getAccount(chainId);
@@ -45,7 +39,6 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   const { config, removeLiquidity } = useRemoveConcentratedLiquidityConfig(
     chainStore,
     chainId,
-    queriesStore,
     props.poolId,
     props.position.id
   );
@@ -98,26 +91,29 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     <ModalBase
       {...props}
       isOpen={props.isOpen && showModalBase}
-      title={t("clPositions.removeLiquidity")}
       className="!max-w-[500px]"
+      title={t("clPositions.removeLiquidity")}
     >
-      <div className="flex flex-col gap-3 pt-10">
-        <div className="flex items-center justify-between">
-          <div className="pl-4 text-subtitle1 font-subtitle1">
-            {t("clPositions.yourPosition")}
+      <div className="pt-8">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <div className="pl-4 text-subtitle1 font-subtitle1 xs:pl-0">
+              {t("clPositions.yourPosition")}
+            </div>
+            {lowerPrices && upperPrices && (
+              <MyPositionStatus
+                currentPrice={currentPrice}
+                lowerPrice={lowerPrices.price}
+                upperPrice={upperPrices.price}
+                negative
+                className="xs:px-0"
+              />
+            )}
           </div>
-          {lowerPrices && upperPrices && (
-            <MyPositionStatus
-              currentPrice={currentPrice}
-              lowerPrice={lowerPrices.price}
-              upperPrice={upperPrices.price}
-              negative
-            />
-          )}
-        </div>
-        <div className="mb-8 flex justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100">
-          {positionBaseAsset && <AssetAmount amount={positionBaseAsset} />}
-          {positionQuoteAsset && <AssetAmount amount={positionQuoteAsset} />}
+          <div className="mb-8 flex justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100 xs:flex-wrap xs:gap-y-2 xs:px-3">
+            {positionBaseAsset && <AssetAmount amount={positionBaseAsset} />}
+            {positionQuoteAsset && <AssetAmount amount={positionQuoteAsset} />}
+          </div>
         </div>
       </div>
       <div className="flex w-full flex-col items-center gap-9">
@@ -153,27 +149,65 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
             </PresetPercentageButton>
           </div>
         </div>
-      </div>
-      <div className="mt-8 flex flex-col gap-3 py-3">
-        <div className="pl-4 text-subtitle1 font-subtitle1">
-          {t("clPositions.pendingRewards")}
-        </div>
-        <div className="flex justify-between gap-3 rounded-[12px] border-[1.5px]  border-osmoverse-700 px-5 py-3">
-          {baseAsset && (
-            <AssetAmount
-              className="!text-body2 !font-body2"
-              amount={baseAsset.mul(new Dec(config.percentage))}
+        <div className="flex w-full flex-col items-center gap-9">
+          <h2>
+            {fiatCurrency?.symbol}
+            {totalFiat?.toDec().toString(2) ?? "0"}
+          </h2>
+          <div className="flex w-full flex-col items-center gap-6">
+            <Slider
+              className="w-[360px] xs:w-[280px]"
+              inputClassName="!w-[360px] xs:!w-[280px]"
+              currentValue={Math.round(config.percentage * 100)}
+              onInput={(value) => {
+                config.setPercentage(Number((value / 100).toFixed(2)));
+              }}
+              min={0}
+              max={100}
+              step={1}
+              useSuperchargedGradient
             />
-          )}
-          {quoteAsset && (
-            <AssetAmount
-              className="!text-body2 !font-body2"
-              amount={quoteAsset.mul(new Dec(config.percentage))}
-            />
-          )}
+            <div className="flex gap-2 px-5">
+              <PresetPercentageButton
+                onClick={() => config.setPercentage(0.25)}
+              >
+                25%
+              </PresetPercentageButton>
+              <PresetPercentageButton onClick={() => config.setPercentage(0.5)}>
+                50%
+              </PresetPercentageButton>
+              <PresetPercentageButton
+                onClick={() => config.setPercentage(0.75)}
+              >
+                75%
+              </PresetPercentageButton>
+              <PresetPercentageButton onClick={() => config.setPercentage(1)}>
+                {t("components.MAX")}
+              </PresetPercentageButton>
+            </div>
+          </div>
         </div>
+        <div className="mt-8 flex flex-col gap-3 py-3">
+          <div className="pl-4 text-subtitle1 font-subtitle1 xl:pl-1">
+            {t("clPositions.pendingRewards")}
+          </div>
+          <div className="flex justify-between gap-3 rounded-[12px] border-[1.5px]  border-osmoverse-700 px-5 py-3 xs:flex-wrap xs:gap-y-2 xs:px-3">
+            {baseAsset && (
+              <AssetAmount
+                className="!text-body2 !font-body2"
+                amount={baseAsset.mul(new Dec(config.percentage))}
+              />
+            )}
+            {quoteAsset && (
+              <AssetAmount
+                className="!text-body2 !font-body2"
+                amount={quoteAsset.mul(new Dec(config.percentage))}
+              />
+            )}
+          </div>
+        </div>
+        {accountActionButton}
       </div>
-      {accountActionButton}
     </ModalBase>
   );
 });
@@ -187,7 +221,7 @@ const PresetPercentageButton: FunctionComponent<{
     <button
       className={classNames(
         "flex flex-1 cursor-pointer items-center justify-center",
-        "rounded-[8px] bg-osmoverse-700 px-5 py-2 text-h6 font-h6 hover:bg-osmoverse-600",
+        "rounded-[8px] bg-osmoverse-700 px-5 py-2 text-h6 font-h6 text-wosmongton-100 hover:bg-osmoverse-600 xs:px-3 xs:text-subtitle1",
         "whitespace-nowrap",
         {
           "!bg-osmoverse-600": selected,
@@ -206,11 +240,8 @@ export const AssetAmount: FunctionComponent<{
 }> = (props) => (
   <div
     className={classNames(
-      "flex items-center gap-2 text-subtitle1 font-subtitle1",
-      props.className,
-      {
-        "opacity-50": props.amount.toDec().isZero(),
-      }
+      "flex items-center gap-2 text-subtitle1 font-subtitle1 xs:text-body2",
+      props.className
     )}
   >
     {props.amount.currency.coinImageUrl && (

@@ -6,13 +6,15 @@ import {
   RootStore,
   waitAccountLoaded,
 } from "../../__tests_e2e__/test-env";
-import { maxTick, minTick } from "@osmosis-labs/math";
-import { Dec } from "@keplr-wallet/unit";
+import { maxTick, minTick, priceToTick } from "@osmosis-labs/math";
+import { Int, Dec } from "@keplr-wallet/unit";
 // import { Int } from "@keplr-wallet/unit";
 
 describe("Create CL Positions Txs", () => {
   const { accountStore, queriesStore, chainStore } = new RootStore();
   const account = accountStore.getAccount(chainId);
+  const osmosisQueries = queriesStore.get(chainId).osmosis!;
+
   let queryPool: ObservableQueryPool | undefined;
 
   beforeAll(async () => {
@@ -39,7 +41,7 @@ describe("Create CL Positions Txs", () => {
     queryPool = await getLatestQueryPool(chainId, queriesStore);
   });
 
-  it("should be able to be created", async () => {
+  it("should be able to be created - full range", async () => {
     await expect(createFullRangePosition(queryPool!.id)).resolves.toBeDefined();
     await expect(
       getUserPositionsIdsForPool(queryPool!.id)
@@ -48,6 +50,94 @@ describe("Create CL Positions Txs", () => {
     await expect(
       getUserPositionsIdsForPool(queryPool!.id)
     ).resolves.toHaveLength(2);
+  });
+
+  it("should be be able to be created - below current price", async () => {
+    // create initial position to move the price from 0 to 1 in fresh pool
+    await createFullRangePosition(queryPool!.id);
+
+    // refresh pool to get updated price
+    await queryPool!.waitFreshResponse();
+
+    // desired quote asset only, all tokens below current price consist of token1
+    const osmoCurrency = chainStore
+      .getChain(chainId)
+      .forceFindCurrency("uosmo");
+    const osmoSwapAmount = "10";
+
+    // get current tick, subtract to be below current price
+    const currentTick = priceToTick(
+      queryPool!.concentratedLiquidityPoolInfo!.currentSqrtPrice.mul(
+        queryPool!.concentratedLiquidityPoolInfo!.currentSqrtPrice
+      )
+    ).sub(new Int(1));
+
+    // create CL position
+    await expect(
+      new Promise<any>((resolve, reject) => {
+        account.osmosis
+          .sendCreateConcentratedLiquidityPositionMsg(
+            queryPool!.id,
+            minTick,
+            currentTick,
+            undefined,
+            {
+              currency: osmoCurrency,
+              amount: osmoSwapAmount,
+            },
+            undefined,
+            undefined,
+            (tx) => {
+              if (tx.code) reject(tx.log);
+              else resolve(tx);
+            }
+          )
+          .catch(reject);
+      })
+    ).resolves.toBeDefined();
+  });
+
+  it("should be be able to be created - above current price", async () => {
+    // create initial position to move the price from 0 to 1 in fresh pool
+    await createFullRangePosition(queryPool!.id);
+
+    // refresh pool to get updated price
+    await queryPool!.waitFreshResponse();
+
+    // desired base asset only, all tokens above current price consist of token0
+    const ionCurrency = chainStore.getChain(chainId).forceFindCurrency("uion");
+    const ionSwapAmount = "10";
+
+    // get current tick, add to be below above price
+    const currentTick = priceToTick(
+      queryPool!.concentratedLiquidityPoolInfo!.currentSqrtPrice.mul(
+        queryPool!.concentratedLiquidityPoolInfo!.currentSqrtPrice
+      )
+    ).add(new Int(1));
+
+    // create CL position
+    await expect(
+      new Promise<any>((resolve, reject) => {
+        account.osmosis
+          .sendCreateConcentratedLiquidityPositionMsg(
+            queryPool!.id,
+            currentTick,
+            maxTick,
+            {
+              currency: ionCurrency,
+              amount: ionSwapAmount,
+            },
+            undefined,
+            undefined,
+            undefined,
+            (tx) => {
+              if (tx.code) reject(tx.log);
+              else resolve(tx);
+            }
+          )
+          .catch(reject);
+      })
+    ).resolves.toBeDefined();
   });
 
   it("can have liquidity be added to it", async () => {
@@ -87,8 +177,6 @@ describe("Create CL Positions Txs", () => {
   });
 
   it("rejects adding liquidity to position if last position in pool (edge case)", async () => {
-    const account = accountStore.getAccount(chainId);
-
     // create initial position
     await createFullRangePosition(queryPool!.id);
     const userPositionIds = await getUserPositionsIdsForPool(queryPool!.id);
@@ -195,8 +283,6 @@ describe("Create CL Positions Txs", () => {
 
   /** Leave `poolId` undefined to get all position IDs. */
   async function getUserPositionsIdsForPool(poolId?: string) {
-    const osmosisQueries = queriesStore.get(chainId).osmosis!;
-
     const positions = osmosisQueries.queryAccountsPositions.get(
       account.bech32Address
     );
