@@ -1,4 +1,4 @@
-import { EmptyAmountError, TxChainSetter } from "@keplr-wallet/hooks";
+import { EmptyAmountError } from "@keplr-wallet/hooks";
 import {
   ChainGetter,
   IQueriesStore,
@@ -10,7 +10,7 @@ import { action, computed, makeObservable, observable } from "mobx";
 /** Use to config user input UI for eventually sending a valid exit pool msg.
  *  Included convenience functions for deriving pool asset amounts vs current input %.
  */
-export class ObservableRemoveConcentratedLiquidityConfig extends TxChainSetter {
+export class ObservableRemoveConcentratedLiquidityConfig {
   @observable
   protected _sender: string;
 
@@ -19,6 +19,9 @@ export class ObservableRemoveConcentratedLiquidityConfig extends TxChainSetter {
 
   @observable
   protected _percentage: number;
+
+  @observable
+  protected chainId: string;
 
   constructor(
     protected readonly chainGetter: ChainGetter,
@@ -29,8 +32,7 @@ export class ObservableRemoveConcentratedLiquidityConfig extends TxChainSetter {
     pool: ConcentratedLiquidityPool,
     initialPercentage: number
   ) {
-    super(chainGetter, initialChainId);
-
+    this.chainId = initialChainId;
     this._pool = pool;
     this._sender = sender;
     this._percentage = initialPercentage;

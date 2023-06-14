@@ -1,4 +1,4 @@
-import { AmountConfig, TxChainSetter } from "@keplr-wallet/hooks";
+import { AmountConfig } from "@keplr-wallet/hooks";
 import {
   ChainGetter,
   IQueriesStore,
@@ -22,7 +22,7 @@ import { InvalidRangeError } from "./errors";
 
 /** Use to config user input UI for eventually sending a valid add concentrated liquidity msg.
  */
-export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
+export class ObservableAddConcentratedLiquidityConfig {
   @observable
   protected _sender: string;
 
@@ -56,6 +56,9 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   @observable
   protected _anchorAsset: "base" | "quote" = "base";
 
+  @observable
+  protected chainId: string;
+
   constructor(
     protected readonly chainGetter: ChainGetter,
     initialChainId: string,
@@ -65,7 +68,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     protected readonly queryBalances: ObservableQueryBalances,
     pool: ConcentratedLiquidityPool
   ) {
-    super(chainGetter, initialChainId);
+    this.chainId = initialChainId;
 
     this._pool = pool;
     this._sender = sender;
@@ -181,7 +184,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   }
 
   setChain(chainId: string) {
-    super.setChain(chainId);
+    this.chainId = chainId;
     const [baseDenom, quoteDenom] = this.pool.poolAssetDenoms;
     const baseCurrency = this.chainGetter
       .getChain(this.chainId)
