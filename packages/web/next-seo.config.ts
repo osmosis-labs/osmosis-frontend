@@ -1,8 +1,10 @@
 import { DefaultSeoProps } from "next-seo";
 
+import { IS_FRONTIER } from "~/config/index";
+
 const SEO_SHARED_CONFIG = {
   SITE_URL: "https://osmosis.zone/",
-  SITE_TITLE: "Osmosis",
+  SITE_TITLE: IS_FRONTIER ? "The Osmosis Frontier" : "Trade on Osmosis Zone",
   SITE_DESCRIPTION:
     "Swap, earn, and build on the leading decentralized Cosmos exchange - The largest interchain DEX",
   TWITTER_HANDLE: "@osmosiszone",

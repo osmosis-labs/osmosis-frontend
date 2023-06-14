@@ -10,6 +10,8 @@ import { withLDProvider } from "launchdarkly-react-client-sdk";
 import { enableStaticRendering } from "mobx-react-lite";
 import type { AppProps } from "next/app";
 import { DefaultSeo } from "next-seo";
+import { DefaultSeo } from "next-seo";
+import { DefaultSeo } from "next-seo";
 import { ComponentType, useMemo } from "react";
 import {
   setDefaultLanguage,
@@ -140,7 +142,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           />
           <link rel="preload" as="image/svg+xml" href={spriteSVGURL} />
         </Head>
-        <OgpMeta /> */}
+        */}
         <IbcNotifier />
         <ToastContainer
           toastStyle={{
