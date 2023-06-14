@@ -464,11 +464,6 @@
   "waitingForTransaction": "Waiting for transaction to be included in the block",
   "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution.",
   "seo": {
-    "default": {
-      "title": "Trade on Osmosis Zone",
-      "titleFrontier": "The Osmosis Frontier",
-      "description": "Swap, earn, and build on the leading decentralized Cosmos exchange - The largest interchain DEX"
-    },
     "404": {
       "title": "404 - Page not found",
       "description": "The page you are looking for does not exist."
@@ -476,6 +471,11 @@
     "500": {
       "title": "500 - Internal server error",
       "description": "An internal server error occurred."
+    },
+    "default": {
+      "title": "Trade on Osmosis Zone",
+      "titleFrontier": "The Osmosis Frontier",
+      "description": "Swap, earn, and build on the leading decentralized Cosmos exchange - The largest interchain DEX"
     },
     "apps": {
       "title": "Osmosis App Store",
