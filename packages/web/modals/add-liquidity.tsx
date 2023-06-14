@@ -1,12 +1,23 @@
-import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
+import {
+  ObservableAddConcentratedLiquidityConfig,
+  ObservableAddLiquidityConfig,
+} from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useCallback } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { AddConcLiquidity } from "../components/complex/add-conc-liquidity";
 import { AddLiquidity } from "../components/complex/add-liquidity";
 import { tError } from "../components/localization";
 import { useAddLiquidityConfig, useConnectWalletModalRedirect } from "../hooks";
+import {
+  useAddConcentratedLiquidityConfig,
+  useAddLiquidityConfig,
+  useConnectWalletModalRedirect,
+} from "../hooks";
 import { useStore } from "../stores";
+import { useStore } from "../stores";
+import { ModalBase, ModalBaseProps } from "./base";
 import { ModalBase, ModalBaseProps } from "./base";
 
 export const AddLiquidityModal: FunctionComponent<
@@ -19,28 +30,52 @@ export const AddLiquidityModal: FunctionComponent<
   } & ModalBaseProps
 > = observer((props) => {
   const { poolId } = props;
-  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    priceStore,
+    derivedDataStore,
+  } = useStore();
   const t = useTranslation();
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(chainId);
   const isSendingMsg = account?.txTypeInProgress !== "";
 
-  const { config, addLiquidity } = useAddLiquidityConfig(
+  const { config: addLiquidityConfig, addLiquidity } = useAddLiquidityConfig(
     chainStore,
     chainId,
     poolId,
     queriesStore
   );
 
+  const { config: addConliqConfig, addLiquidity: addConLiquidity } =
+    useAddConcentratedLiquidityConfig(chainStore, chainId, poolId);
+
+  // initialize pool data stores once root pool store is loaded
+  const { poolDetail } = derivedDataStore.getForPool(poolId as string);
+  const pool = poolDetail?.pool?.pool;
+  const isConcLiq = pool?.type === "concentrated";
+  const config = isConcLiq ? addConliqConfig : addLiquidityConfig;
+
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
       disabled: config.error !== undefined || isSendingMsg,
       onClick: () => {
-        const addLiquidityResult = addLiquidity().finally(() =>
+        const addLiquidityPromise = isConcLiq
+          ? addConLiquidity()
+          : addLiquidity();
+        const addLiquidityResult = addLiquidityPromise.finally(() =>
           props.onRequestClose()
         );
-        props.onAddLiquidity?.(addLiquidityResult, config);
+
+        if (!isConcLiq) {
+          props.onAddLiquidity?.(
+            addLiquidityResult,
+            config as ObservableAddLiquidityConfig
+          );
+        }
       },
       children: config.error
         ? t(...tError(config.error))
@@ -48,6 +83,29 @@ export const AddLiquidityModal: FunctionComponent<
     },
     props.onRequestClose
   );
+
+  if (isConcLiq) {
+    return (
+      <ModalBase
+        {...props}
+        isOpen={props.isOpen && showModalBase}
+        hideCloseButton
+        className="!max-w-[57.5rem]"
+      >
+        <AddConcLiquidity
+          addLiquidityConfig={
+            addConliqConfig as ObservableAddConcentratedLiquidityConfig
+          }
+          actionButton={accountActionButton}
+          getFiatValue={useCallback(
+            (coin) => priceStore.calculatePrice(coin),
+            [priceStore]
+          )}
+          onRequestClose={props.onRequestClose}
+        />
+      </ModalBase>
+    );
+  }
 
   return (
     <ModalBase
@@ -57,7 +115,7 @@ export const AddLiquidityModal: FunctionComponent<
     >
       <AddLiquidity
         className="pt-4"
-        addLiquidityConfig={config}
+        addLiquidityConfig={config as ObservableAddLiquidityConfig}
         actionButton={accountActionButton}
         getFiatValue={(coin) => priceStore.calculatePrice(coin)}
       />

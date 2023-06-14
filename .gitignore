@@ -1,5 +1,6 @@
 .DS_Store
 .idea
+.vscode/settings.json
 node_modules
 dist
 prod

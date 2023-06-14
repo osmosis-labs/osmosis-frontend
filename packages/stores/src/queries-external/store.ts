@@ -10,12 +10,14 @@ import {
   IMPERATOR_TX_REWARD_BASEURL,
 } from ".";
 import { ObservableQueryActiveGauges } from "./active-gauges";
+import { ObservableQueryPositionsRangeApr } from "./concentrated-liquidity";
 import { ObservableQueryIbcChainsStatus } from "./ibc";
 import { ObservableQueryICNSNames } from "./icns";
 import { ObservableQueryPoolFeesMetrics } from "./pool-fees";
 import { ObservableQueryAccountsPoolRewards } from "./pool-rewards";
 import { ObservableQueryTokensData } from "./token-data";
 import { ObservableQueryTokensHistoricalChart } from "./token-historical-chart";
+import { ObservableQueryTokensPairHistoricalChart } from "./token-pair-historical-chart";
 
 /** Root store for queries external to any chain. */
 export class QueriesExternalStore {
@@ -23,6 +25,8 @@ export class QueriesExternalStore {
   public readonly queryAccountsPoolRewards: DeepReadonly<ObservableQueryAccountsPoolRewards>;
   public readonly queryChainStatus: DeepReadonly<ObservableQueryIbcChainsStatus>;
   public readonly queryTokenHistoricalChart: DeepReadonly<ObservableQueryTokensHistoricalChart>;
+  public readonly queryTokenPairHistoricalChart: DeepReadonly<ObservableQueryTokensPairHistoricalChart>;
+  public readonly queryPositionsRangeApr: DeepReadonly<ObservableQueryPositionsRangeApr>;
   public readonly queryTokenData: DeepReadonly<ObservableQueryTokensData>;
   public readonly queryActiveGauges: DeepReadonly<ObservableQueryActiveGauges>;
   public readonly queryICNSNames: DeepReadonly<ObservableQueryICNSNames>;
@@ -36,7 +40,8 @@ export class QueriesExternalStore {
     incentivizedPools: ObservableQueryIncentivizedPools,
     webApiBaseUrl: string,
     feeMetricsBaseURL = IMPERATOR_HISTORICAL_DATA_BASEURL,
-    poolRewardsBaseUrl = IMPERATOR_TX_REWARD_BASEURL
+    poolRewardsBaseUrl = IMPERATOR_TX_REWARD_BASEURL,
+    isTestnet = false
   ) {
     this.queryGammPoolFeeMetrics = new ObservableQueryPoolFeesMetrics(
       kvStore,
@@ -56,6 +61,17 @@ export class QueriesExternalStore {
       kvStore,
       priceStore,
       feeMetricsBaseURL
+    );
+    this.queryTokenPairHistoricalChart =
+      new ObservableQueryTokensPairHistoricalChart(
+        kvStore,
+        priceStore,
+        feeMetricsBaseURL,
+        isTestnet
+      );
+    this.queryPositionsRangeApr = new ObservableQueryPositionsRangeApr(
+      kvStore,
+      poolRewardsBaseUrl
     );
     this.queryTokenData = new ObservableQueryTokensData(
       kvStore,

@@ -2,9 +2,6 @@
   "404": {
     "title": "پیدا نشد"
   },
-  "500": {
-    "title": "خطای سرور"
-  },
   "addLiquidity": {
     "allAssets": "همه دارایی های شما",
     "autoswapCaption": "استفاده از تبدیل خودکار برای تبدیل یک دارایی به سایر دارایی ها",
@@ -26,9 +23,7 @@
       "externalLink": "شما Osmosis را ترک می کنید و به یک برنامه دیگر می روید",
       "externalLinkDisclaimer": "با کلیک کرد بر روی لینک شما تمام شرایط را پذیرفته و با اطلاع خودتان Osmosis را ترک می کنید.",
       "externalLinkModalTitle": "ترک Osmosis",
-      "goToSite": "بازگشت به سایت",
-      "linkText": "با کلیک بر روی این لینک به برنامه اصلی بازگردید.",
-      "title": "شما در حال مشاهده برنامه بدون کنترل هستید.."
+      "goToSite": "بازگشت به سایت"
     }
   },
   "store": {
@@ -65,25 +60,15 @@
       "title": "تاریخ چه انتقال"
     },
     "ibcTransfer": {
-      "amoutDeposit": "مقدار واریز وجه",
-      "amoutWithdraw": "مقدار برداشت وجه",
-      "availableBalance": "موجودی فعلی:",
       "buttonEdit": "ویرایش",
       "buttonEnter": "ورود",
-      "channelBlocked": "کانال مسدود",
-      "channelCongested": "کانال شلوغ",
       "channelCongestedDeposit": "واریز وجه(کانال شلوغ)",
       "channelCongestedWithdraw": "برداشت وجه(کانال شلوغ)",
       "checkboxVerify": "من تایید می کنم که این آدرس من است.",
-      "copied": "کپی شد",
       "estimatedTime": "زمان تقریبی انتقال",
-      "from": "از",
-      "IBCTransfer": "انتقال بین شبکه ای",
-      "MAX": "حداکثر",
       "selectAmount": "انتخاب مقدار",
       "titleDeposit": "واریز {coinDenom}",
       "titleWithdraw": "برداشت {coinDenom}",
-      "to": "به",
       "waitTime": "20 ثانیه",
       "warningLossFunds": "اخطار:انتقال وجه به صرافی های متمرکز ممکن است باعث از دست رفتن پول شما شود."
     },
@@ -142,9 +127,6 @@
       "titleWithdraw": "برداشت {coinDenom}",
       "to": "به",
       "transferFee": "کارمزد انتقال",
-      "useWrappedDeposit": "واریز  {wrapDenom} با Satellite ",
-      "useWrappedWithdraw": "برداشت {wrapDenom} با Satellite",
-      "via": "توسط",
       "waitTime": "{minutes} دقیقه",
       "warnDepositAddressDifferent": "هشدار: {address}  با آخرین آدرس برداشت و واریز شما متفاوت است."
     },
@@ -253,7 +235,6 @@
     "help": "پشتیبانی",
     "info": "آمار و اطلاعات",
     "pools": "استخرها",
-    "signOut": "خروج از سیستم",
     "stake": "سپرده گذاری",
     "store": "برنامه ها",
     "swap": "تبدیل",
@@ -310,43 +291,30 @@
     "yourStats": "موجودی استخر شما"
   },
   "pools": {
-    "all": "همه استخر ها",
     "allPools": {
-      "APR": "نرخ بازدهی",
-      "APRIncentivized": "حجم  هفت روز",
-      "displayLowLiquidity": "نمایش نقدینگی کمتر از < {value}",
-      "myLiquidity": "نقدینگی من",
       "search": "جستجوی استخرها",
       "sort": {
-        "APR": "نقدینگی من",
         "APRIncentivized": "نرخ بازدهی",
         "fees": "کارمزد (7 روز)",
         "liquidity": "نقدینگی",
-        "poolId": "شماره استخر",
         "poolName": "نام یا شماره استخر",
         "volume24h": "حجم (24 ساعت)"
       },
-      "title": "جستجو در استخرها",
-      "TVL": "حجم کل قفل شده"
+      "title": "جستجو در استخرها"
     },
-    "allTab": "همه",
     "APR": "نرخ بازدهی",
     "available": "کوجود",
     "bonded": "قفل شده",
     "createPool": {
       "amount": "مقدار",
       "available": "موجودی",
-      "button": "ایجاد استخر چدید",
       "buttonAddToken": "افزودن توکن جدید",
-      "buttonBack": "قبلی",
       "buttonCreate": "ایجاد استخر",
       "buttonNext": "بعدی",
       "infoCaption": "که به استخر شبکه Osmosis منتقل می شود.",
       "infoMessage": "هزینه ایجاد استخر",
-      "interestedCreate": "آیا می خواهید استخر جدید ایجاد کنید؟",
       "scalingFactorController": "تنظیم سیستم کنترل فاکتورهای اندازه گیری (اختیاری)",
       "stablePool": "استخر پایدار",
-      "startProcess": "برای انجام کار اینجا را بفشارید",
       "step": {
         "one": {
           "stable": "گام {step} / {nbStep} - تنظیم فاکتورها",
@@ -362,33 +330,13 @@
       "weightedPool": "وزن استخر"
     },
     "externalIncentivized": {
-      "APR": "نرخ بازده",
-      "search": "جسنجوی نماد",
-      "sort": {
-        "APR": "نرخ بازده",
-        "epochs": "تعداد مانده توزیع جایزه",
-        "liquidity": "نقدینگی من",
-        "myLiquidity": "نقدینگی من",
-        "poolName": "استخر شماره/نام"
-      },
-      "title": "مشوش های خارجی استخر",
       "TVL": "TVL"
     },
-    "incentivized": "مشوق ها - جایزه ها",
-    "liquidity": "نقدینگی",
     "myLiquidity": "نقدینگی های من",
     "myPools": "استخر های من",
     "poolId": "استخر #{id}",
     "priceOsmo": "قیمت OSMO",
-    "rewardDistribution": "زمان توزیع جوایز",
-    "superfluid": {
-      "APR": "نرخ بازده",
-      "fees7D": "کارمزد (هفت روزه)",
-      "liquidity": "نقدینگی",
-      "tab": "Superfluid",
-      "title": "استخر های Superfluid"
-    },
-    "title": "استخرهای فعال"
+    "rewardDistribution": "زمان توزیع جوایز"
   },
   "profile": {
     "balance": "موجودی",
@@ -409,9 +357,6 @@
     "title": "تنظیمات کلی",
     "titleHideDust": "مخفی سازی استخر با موجودی کمتر از < {fiatSymbol}0.01",
     "titleLanguage": "زبان"
-  },
-  "stablecoinTypes": {
-    "collateralized": "سپرده شده"
   },
   "superfluidValidator": {
     "bondedAmount": "میزان قفل کردن",
@@ -437,9 +382,6 @@
     "available": "موجود",
     "button": "تبدیل کن",
     "buttonError": "در هر شرایطی تبدیل کن",
-    "error": {
-      "findCurrency": "{currency} پیدا نشد."
-    },
     "expectedOutput": "خروجی مورد انتظار",
     "fee": "کارمزد تبدیل ({fee})",
     "HALF": "نصف",

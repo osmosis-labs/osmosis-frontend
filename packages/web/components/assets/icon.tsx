@@ -12,6 +12,7 @@ export type SpriteIconId =
   | "search"
   | "up-down-arrow"
   | "close"
+  | "close-thin"
   | "info"
   | "globe"
   | "dust-broom"
@@ -31,6 +32,9 @@ export type SpriteIconId =
   | "twitter"
   | "medium"
   | "alert-triangle"
+  | "lightning"
+  | "lightning-small"
+  | "left-right-arrow"
   | "wallet"
   | "left-right";
 

@@ -18,6 +18,7 @@ export interface InputProps<T> {
   onInput: (value: T) => void;
   autoFocus?: boolean;
   onFocus?: (e: any) => void;
+  onBlur?: (e: any) => void;
   placeholder?: T;
 }
 

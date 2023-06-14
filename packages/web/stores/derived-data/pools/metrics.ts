@@ -115,11 +115,12 @@ export class ObservablePoolsWithMetric {
     protected readonly priceStore: IPriceStore
   ) {}
 
-  getAllPools = computedFn(
+  readonly getAllPools = computedFn(
     (
       sortingColumn?: keyof ObservablePoolWithMetric,
       isSortingDesc?: boolean,
-      showUnverified?: boolean
+      showUnverified?: boolean,
+      concentratedLiquidityFeature?: boolean
     ) => {
       const allPools = this.verifiedPoolsStore
         .get(this.chainId)
@@ -147,7 +148,17 @@ export class ObservablePoolsWithMetric {
         }
       }
 
-      const pools = Array.from(poolsMap.values());
+      const pools = Array.from(poolsMap.values()).filter((pool) => {
+        // concentrated liquidity feature
+        if (
+          pool.pool.type === "concentrated" &&
+          !concentratedLiquidityFeature
+        ) {
+          return false;
+        }
+
+        return true;
+      });
       if (sortingColumn && isSortingDesc !== undefined) {
         // Clone the array to prevent the original array from being sorted, and triggering a re-render.
         const sortedPools = [...pools];

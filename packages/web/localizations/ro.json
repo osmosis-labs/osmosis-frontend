@@ -2,9 +2,6 @@
   "404": {
     "title": "Nu a fost gasit"
   },
-  "500": {
-    "title": "Eroare server"
-  },
   "addLiquidity": {
     "allAssets": "Toate activele",
     "autoswapCaption": "Utilizeaza schimbul automat pentru a adauga lichiditate cu un singur activ.",
@@ -26,9 +23,7 @@
       "externalLink": "Acum părăsiți aplicația Osmosis pentru a merge la",
       "externalLinkDisclaimer": "Prin apăsarea acestui link, recunoști că ai citit și înțeles că Osmosis nu garantează calitatea serviciului pentru pagini externe care pot avea Termeni de Serviciu diferiți.",
       "externalLinkModalTitle": "Părăsirea Osmosis",
-      "goToSite": "Du-te la site",
-      "linkText": "Click aici pentru a va intoarce la aplicatia principala",
-      "title": "Visualizati toate activele care nu necesita permisiuni."
+      "goToSite": "Du-te la site"
     }
   },
   "store": {
@@ -65,25 +60,15 @@
       "title": "Istoric Transferuri"
     },
     "ibcTransfer": {
-      "amoutDeposit": "Suma de Depozitat",
-      "amoutWithdraw": "Suma de Retras",
-      "availableBalance": "Balanta disponibila:",
       "buttonEdit": "Modifica",
       "buttonEnter": "Intra",
-      "channelBlocked": "Canal blocat",
-      "channelCongested": "Canal congestionat",
       "channelCongestedDeposit": "Depoziteaza (Channel congested)",
       "channelCongestedWithdraw": "Retrage (Channel congested)",
       "checkboxVerify": "Am verificat. Nu trimit catre o adresa a unui exchange.",
-      "copied": "Copiat!",
       "estimatedTime": "Timp estimat",
-      "from": "de la",
-      "IBCTransfer": "Transfer IBC",
-      "MAX": "MAX",
       "selectAmount": "Selecteaza suma",
       "titleDeposit": "Depoziteaza {coinDenom}",
       "titleWithdraw": "Retrage {coinDenom}",
-      "to": "catre",
       "waitTime": "20 secunde",
       "warningLossFunds": "Atentie: Retragerea intr-un exchange centralizat duce la pierderea fondurilor."
     },
@@ -142,9 +127,6 @@
       "titleWithdraw": "Retrage {coinDenom}",
       "to": "Catre",
       "transferFee": "Taxa transfer",
-      "useWrappedDeposit": "Depuneți {wrapDenom} pe Satellite",
-      "useWrappedWithdraw": "Retrageți {wrapDenom} din Satellite",
-      "via": "via",
       "waitTime": "{minutes} minute",
       "warnDepositAddressDifferent": "Atentie: Adresa selectata {address} difera de adresa de unde ai depozitat ultima oara."
     },
@@ -189,6 +171,7 @@
       "poolId": "Pool-ul #{id}",
       "stable": "Stableswap",
       "weighted": "Ponderat",
+      "concentrated": "Lichiditate concentrată",
       "internal": "Incentive interne",
       "external": "Incentive externe",
       "superfluid": "Superfluid",
@@ -253,7 +236,6 @@
     "help": "A sustine",
     "info": "Statistici",
     "pools": "Pool-uri",
-    "signOut": "Deconectare",
     "stake": "Actiuni",
     "store": "Aplicații",
     "swap": "Schimba",
@@ -278,6 +260,7 @@
     "commission": "comision",
     "currentDailyEarn": "Acum castigi",
     "dailyEarnAmount": "{amount} / zi",
+    "day": "zi",
     "delegated": "Delegate",
     "details": "Detalii",
     "earnMore": "Castiga mai mult prin blocare",
@@ -288,7 +271,6 @@
     "learnMore": "Citeste mai multe",
     "level": "Nivel {level}",
     "liquidity": "Lichiditatea",
-    "myLiquidity": "Lichiditatea mea",
     "numDaysRemaining": "{numDays} zile ramase",
     "putAssetsToWork": "Pune-ti activele la munca.",
     "putAssetsToWorkCaption": "Adauga-ti activele in acest pool pentru a debloca recompense captivante. Cu cat le blochezi mai mult timp, cu atat castigi mai mult.",
@@ -311,43 +293,30 @@
     "day": "zi"
   },
   "pools": {
-    "all": "Toate Pool-urile",
     "allPools": {
-      "APR": "APR",
-      "APRIncentivized": "7z Vol.",
-      "displayLowLiquidity": "Arata pool-uri < {value}",
-      "myLiquidity": "lichiditatea mea",
       "search": "Cauta pool-uri",
       "sort": {
-        "APR": "Lichiditatile mele",
         "APRIncentivized": "APR",
         "fees": "Taxe (7z)",
         "liquidity": "Lichiditate",
-        "poolId": "ID Pool",
         "poolName": "Nume Pool",
         "volume24h": "Volum (24H)"
       },
-      "title": "Toate pool-urile",
-      "TVL": "TVL"
+      "title": "Toate pool-urile"
     },
-    "allTab": "Toate",
     "APR": "APR",
     "available": "Disponibil",
     "bonded": "Blocate",
     "createPool": {
       "amount": "Suma",
       "available": "Disponibil",
-      "button": "Creeaza Pool Nou",
       "buttonAddToken": "Adauga token nou",
-      "buttonBack": "Anteriorul",
       "buttonCreate": "Creeaza Pool",
       "buttonNext": "Urmatorul",
       "infoCaption": "Transferat catre pool-ul comunitatii Osmosis",
       "infoMessage": "Taxa creeare pool",
-      "interestedCreate": "Interesat sa creezi un nou pool?",
       "scalingFactorController": "Seteaza factorul de scalare(optional)",
       "stablePool": "pool fix",
-      "startProcess": "Apasa aici pentru a incepe procesul",
       "step": {
         "one": {
           "stable": "Pas {step} / {nbStep} - Seteaza factorii de scalare",
@@ -363,33 +332,13 @@
       "weightedPool": "pool ponderat"
     },
     "externalIncentivized": {
-      "APR": "APR",
-      "search": "Cauta dupa simbol",
-      "sort": {
-        "APR": "APR",
-        "epochs": "Epoci ramase",
-        "liquidity": "Lichiditate",
-        "myLiquidity": "Lichiditatile mele",
-        "poolName": "Nume Pool"
-      },
-      "title": "Stimulente externe",
       "TVL": "TVL"
     },
-    "incentivized": "Stimulat",
-    "liquidity": "Lichiditate pool",
     "myLiquidity": "Lichiditatea mea",
     "myPools": "Pool-urile mele",
     "poolId": "Pool #{id}",
     "priceOsmo": "Pret OSMO",
-    "rewardDistribution": "Recompensele se distribuie in",
-    "superfluid": {
-      "APR": "APR",
-      "fees7D": "Taxe (7zile)",
-      "liquidity": "Lichiditate pool",
-      "tab": "Superfluid",
-      "title": "Pool-uri Superfluid"
-    },
-    "title": "Pool-uri active"
+    "rewardDistribution": "Recompensele se distribuie in"
   },
   "profile": {
     "balance": "Balanta",
@@ -410,9 +359,6 @@
     "title": "Setări globale",
     "titleHideDust": "Ascundeți pool-urile cu < {fiatSymbol}0,01",
     "titleLanguage": "Limba"
-  },
-  "stablecoinTypes": {
-    "collateralized": "colateralizat"
   },
   "superfluidValidator": {
     "bondedAmount": "Suma Blocata",
@@ -438,9 +384,6 @@
     "available": "Disponibil",
     "button": "Schimba",
     "buttonError": "Schibma oricum",
-    "error": {
-      "findCurrency": "Moneda {currency} nu a fost gasita"
-    },
     "expectedOutput": "Rezultat asteptat",
     "fee": "Taxa schimb ({fee})",
     "HALF": "JUMATATE",

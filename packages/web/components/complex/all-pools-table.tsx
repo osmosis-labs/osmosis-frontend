@@ -1,5 +1,6 @@
 import { Menu } from "@headlessui/react";
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import type { BasePool } from "@osmosis-labs/pools";
 import {
   CellContext,
   createColumnHelper,
@@ -9,6 +10,7 @@ import {
 } from "@tanstack/react-table";
 import classNames from "classnames";
 import EventEmitter from "eventemitter3";
+import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import {
@@ -22,7 +24,7 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { EventName } from "~/config";
+import { EventName, IS_TESTNET } from "~/config";
 import { useAmplitudeAnalytics, useFilteredData, useWindowSize } from "~/hooks";
 import { MenuOptionsModal } from "~/modals";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
@@ -38,7 +40,7 @@ import {
   PoolQuickActionCell,
 } from "../table/cells";
 import { Tooltip } from "../tooltip";
-import PaginatedTable from "./paginated-table";
+import { PaginatedTable } from "./paginated-table";
 
 const TVL_FILTER_THRESHOLD = 1000;
 
@@ -78,12 +80,21 @@ const searchPoolsMemoedKeys = [
 ];
 
 function getPoolFilters(
-  t: ReturnType<typeof useTranslation>
-): Record<"stable" | "weighted", string> {
-  return {
+  t: ReturnType<typeof useTranslation>,
+  concentratedLiquidityEnabled: boolean
+): Partial<Record<BasePool["type"], string>> {
+  const base = {
     stable: t("components.table.stable"),
     weighted: t("components.table.weighted"),
   };
+
+  if (concentratedLiquidityEnabled) {
+    return {
+      ...base,
+      concentrated: t("components.table.concentrated"),
+    };
+  }
+  return base;
 }
 
 function getIncentiveFilters(
@@ -108,9 +119,13 @@ export const AllPoolsTable: FunctionComponent<{
       useStore();
     const t = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
+    const featureFlags = useFlags();
 
     const router = useRouter();
-    const PoolFilters = useMemo(() => getPoolFilters(t), [t]);
+    const PoolFilters = useMemo(
+      () => getPoolFilters(t, featureFlags.concentratedLiquidity),
+      [t, featureFlags.concentratedLiquidity]
+    );
     const IncentiveFilters = useMemo(() => getIncentiveFilters(t), [t]);
     const poolFilterQuery = String(router.query?.pool ?? "")
       .split(",")
@@ -152,7 +167,6 @@ export const AllPoolsTable: FunctionComponent<{
       router.query.pools,
     ]);
 
-    const fetchedRemainingPoolsRef = useRef(false);
     const { isMobile } = useWindowSize();
 
     const { chainId } = chainStore.osmosis;
@@ -191,13 +205,21 @@ export const AllPoolsTable: FunctionComponent<{
 
     const allPoolsWithMetrics = derivedDataStore.poolsWithMetrics
       .get(chainId)
-      .getAllPools(sorting[0]?.id, sorting[0]?.desc, isSearching);
+      .getAllPools(
+        sorting[0]?.id,
+        sorting[0]?.desc,
+        isSearching,
+        featureFlags.concentratedLiquidity
+      );
 
     const initiallyFilteredPools = useMemo(
       () =>
         allPoolsWithMetrics.filter((p) => {
           // Filter out pools with low TVL.
-          if (!p.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))) {
+          if (
+            !IS_TESTNET &&
+            !p.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
+          ) {
             return false;
           }
 
@@ -256,13 +278,10 @@ export const AllPoolsTable: FunctionComponent<{
     );
     const setQuery = useCallback(
       (search: string) => {
-        if (search !== "" && !fetchedRemainingPoolsRef.current) {
-          queriesOsmosis.queryGammPools.fetchRemainingPools();
-          fetchedRemainingPoolsRef.current = true;
-        }
         if (search === "") {
           setIsSearching(false);
         } else {
+          queriesOsmosis.queryGammPools.fetchRemainingPools();
           setIsSearching(true);
         }
         setSorting([]);
@@ -388,7 +407,10 @@ export const AllPoolsTable: FunctionComponent<{
                   value={
                     // Only display warning when APR is too high
                     isAPRTooHigh ? (
-                      <Tooltip content={t("highPoolInflationWarning")}>
+                      <Tooltip
+                        className="w-5"
+                        content={t("highPoolInflationWarning")}
+                      >
                         <p className="flex items-center gap-1.5">
                           <Icon
                             id="alert-triangle"
@@ -488,6 +510,10 @@ export const AllPoolsTable: FunctionComponent<{
       () => queriesOsmosis.queryGammPools.fetchRemainingPools(),
       [queriesOsmosis.queryGammPools]
     );
+
+    const paginatePoolsQueryStore = useCallback(() => {
+      queriesOsmosis.queryGammPools.paginate();
+    }, [queriesOsmosis.queryGammPools]);
 
     const [mobileSortMenuIsOpen, setMobileSortMenuIsOpen] = useState(false);
 
@@ -680,7 +706,7 @@ export const AllPoolsTable: FunctionComponent<{
 
           <div className="h-auto overflow-auto">
             <PaginatedTable
-              paginate={handleFetchRemaining}
+              paginate={paginatePoolsQueryStore}
               mobileSize={170}
               size={69}
               table={table}

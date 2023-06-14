@@ -26,8 +26,7 @@ const testnetChainInfos: SimplifiedChainInfo[] = [
         coinDenom: "OSMO",
         coinMinimalDenom: "uosmo",
         coinDecimals: 6,
-        // coinGeckoId: "osmosis",
-        coinGeckoId: "usd-coin",
+        coinGeckoId: "osmosis",
         coinImageUrl: "/tokens/osmo.svg",
         isStakeCurrency: true,
         isFeeCurrency: true,
@@ -44,18 +43,27 @@ const testnetChainInfos: SimplifiedChainInfo[] = [
         // coinGeckoId: "ion",
         coinGeckoId: "usd-coin",
         coinImageUrl: "/tokens/ion.svg",
-      } /*
-      ...(IS_TESTNET
-        ? [
-            {
-              coinDenom: "IBCX",
-              coinMinimalDenom:
-                "factory/osmo13t90mkyvdnmn9wm8hfen6jk3hnlt8uqx8savlvjd5xghy5z6ye2qymy6cy/uibcx",
-              coinDecimals: 6,
-              coinImageUrl: "/tokens/ibcx.svg",
-            },
-          ]
-        : []),*/,
+      },
+      {
+        coinDenom: "IBCX",
+        coinMinimalDenom:
+          "factory/osmo13t90mkyvdnmn9wm8hfen6jk3hnlt8uqx8savlvjd5xghy5z6ye2qymy6cy/uibcx",
+        coinDecimals: 6,
+        coinImageUrl: "/tokens/ibcx.svg",
+      },
+      {
+        coinDenom: "tWETH",
+        coinMinimalDenom: "uweth",
+        coinDecimals: 18,
+        coinImageUrl: "/tokens/weth.svg",
+      },
+      {
+        coinDenom: "tUSDC",
+        coinMinimalDenom: "uusdc",
+        coinDecimals: 6,
+        coinGeckoId: "usd-coin",
+        coinImageUrl: "/tokens/usdc.svg",
+      },
     ],
     features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
     explorerUrlToTx:

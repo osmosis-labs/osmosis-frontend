@@ -1,6 +1,7 @@
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
 import { ObservablePoolDetail } from "@osmosis-labs/stores";
 import { Duration } from "dayjs/plugin/duration";
+import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { NextSeo } from "next-seo";
@@ -10,6 +11,8 @@ import { useTranslation } from "react-multi-lang";
 import { ShowMoreButton } from "~/components/buttons/show-more";
 import { PoolCard } from "~/components/cards";
 import { AllPoolsTable } from "~/components/complex";
+import { MyPositionsSection } from "~/components/complex/my-positions-section";
+import { SuperchargeDaiOsmoPool } from "~/components/funnels/concentrated-liquidity/supercharge-dai-osmo-pool";
 import { MetricLoader } from "~/components/loaders";
 import { PoolsOverview } from "~/components/overview/pools";
 import { EventName } from "~/config";
@@ -47,6 +50,9 @@ const Pools: NextPage = observer(function () {
     useDimension<HTMLDivElement>();
 
   const [myPoolsRef, { height: myPoolsHeight }] =
+    useDimension<HTMLDivElement>();
+
+  const [myPositionsRef, { height: myPositionsHeight }] =
     useDimension<HTMLDivElement>();
 
   // create pool dialog
@@ -259,13 +265,30 @@ const Pools: NextPage = observer(function () {
           setIsCreatingPool={useCallback(() => setIsCreatingPool(true), [])}
         />
       </section>
+      <section className="pt-8 pb-10 md:pt-4 md:pb-5">
+        <SuperchargeDaiOsmoPool
+          title="Supercharge you DAI/OSMO Pool"
+          caption="Supercharged positions allow you to earn 27.9% APR. 
+Learn how it works in 30 seconds, or upgrade your position in a few clicks. "
+          primaryCta="Upgrade to supercharged"
+          secondaryCta="Learn in 30 seconds"
+          onCtaClick={() => {}}
+          onSecondaryClick={() => {}}
+        />
+      </section>
+      <section ref={myPositionsRef}>
+        <div className="flex w-full flex-col flex-nowrap gap-5 pb-[3.75rem]">
+          <h6 className="pl-6">{t("clPositions.yourPositions")}</h6>
+          <MyPositionsSection />
+        </div>
+      </section>
       <section ref={myPoolsRef}>
         <MyPoolsSection />
       </section>
 
       <section>
         <AllPoolsTable
-          topOffset={myPoolsHeight + poolsOverviewHeight}
+          topOffset={myPositionsHeight + myPoolsHeight + poolsOverviewHeight}
           {...quickActionProps}
         />
       </section>
@@ -276,6 +299,7 @@ const Pools: NextPage = observer(function () {
 const MyPoolsSection = observer(() => {
   const { accountStore, derivedDataStore, queriesStore, chainStore } =
     useStore();
+  const featureFlags = useFlags();
 
   const t = useTranslation();
 
@@ -302,13 +326,25 @@ const MyPoolsSection = observer(() => {
         : myPoolIds
       )
         .map((myPoolId) => derivedDataStore.poolDetails.get(myPoolId))
-        .filter((pool): pool is ObservablePoolDetail => !!pool),
+        .filter((pool): pool is ObservablePoolDetail => {
+          if (pool === undefined) return false;
+
+          // concentrated liquidity liquidity feature flag
+          if (
+            !featureFlags.concentratedLiquidity &&
+            pool.pool?.type === "concentrated"
+          )
+            return false;
+
+          return true;
+        }),
     [
       isMobile,
       showMoreMyPools,
       myPoolIds,
       poolCountShowMoreThreshold,
       derivedDataStore.poolDetails,
+      featureFlags.concentratedLiquidity,
     ]
   );
 

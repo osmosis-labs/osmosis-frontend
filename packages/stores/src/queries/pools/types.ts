@@ -23,7 +23,3 @@ export type Pools = {
 export type NumPools = {
   num_pools: string;
 };
-
-export type Head<T extends any[]> = T extends [...infer Head, any]
-  ? Head
-  : any[];

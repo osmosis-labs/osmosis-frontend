@@ -27,9 +27,11 @@ export class ObservableQueryActiveGauges extends ObservableQueryExternalBase<Act
   }
 
   readonly get = computedFn((gaugeId: string) => {
+    const isInternalGauge =
+      this.incentivizedPools.isGaugeIdInternalIncentive(gaugeId);
     if (
       this.response?.data?.data.some(({ id }) => id === gaugeId) ||
-      this.incentivizedPools.isGaugeIdInternalIncentive(gaugeId)
+      isInternalGauge
     ) {
       return this.queryGauge.get(gaugeId);
     }

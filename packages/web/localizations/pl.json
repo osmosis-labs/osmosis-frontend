@@ -2,9 +2,6 @@
   "404": {
     "title": "Nie znaleziono"
   },
-  "500": {
-    "title": "Błąd serwera"
-  },
   "addLiquidity": {
     "allAssets": "Wszystkie tokeny",
     "autoswapCaption": "Użyj autowymiany, żeby dodać płynność jednym tokenem.",
@@ -26,9 +23,7 @@
       "externalLink": "Teraz opuszczasz aplikację Osmosis, aby pójść do",
       "externalLinkDisclaimer": "Klikając na link, potwierdzasz, że przeczytałeś i rozumiesz, że Osmosis nie gwarantuje jakości usług dla stron zewnętrznych, które mogą mieć inne warunki korzystania z usług.",
       "externalLinkModalTitle": "Opuszczanie Osmosis",
-      "goToSite": "Przejdź do strony",
-      "linkText": "Kliknij tutaj, aby wrócić do głównej aplikacji",
-      "title": "Przeglądasz środki nie wymagające uprawnień."
+      "goToSite": "Przejdź do strony"
     }
   },
   "store": {
@@ -65,25 +60,15 @@
       "title": "Historia Transferów"
     },
     "ibcTransfer": {
-      "amoutDeposit": "Ilość Do Wpłaty",
-      "amoutWithdraw": "Ilość Do Wypłaty",
-      "availableBalance": "Dostępna ilość:",
       "buttonEdit": "Edytuj",
       "buttonEnter": "Ok",
-      "channelBlocked": "Kanał zablokowany",
-      "channelCongested": "Kanał zmyślony",
       "channelCongestedDeposit": "Wpłać (Kanał zmyślony)",
       "channelCongestedWithdraw": "Wypłać (Kanał zmyślony)",
       "checkboxVerify": "Potwierdzam, że nie wysyłam na adres giełdy.",
-      "copied": "Skopiowane!",
       "estimatedTime": "Szacowany Czas",
-      "from": "od",
-      "IBCTransfer": "Transfer IBC",
-      "MAX": "MAKSIMUM",
       "selectAmount": "Wybierz Ilość",
       "titleDeposit": "Wpłać {coinDenom}",
       "titleWithdraw": "Wypłać {coinDenom}",
-      "to": "do",
       "waitTime": "20 sekund",
       "warningLossFunds": "Uwaga: Wypłata na adres giełdy spowoduje utratę środków."
     },
@@ -142,9 +127,6 @@
       "titleWithdraw": "Wypłać {coinDenom}",
       "to": "Do",
       "transferFee": "Prowizja za Transfer",
-      "useWrappedDeposit": "Wpłać {wrapDenom} na Satellite",
-      "useWrappedWithdraw": "Wypłać {wrapDenom} z Satellite",
-      "via": "przez",
       "waitTime": "{minutes} minut",
       "warnDepositAddressDifferent": "Uwaga: wybrane konto w {address} różni się od konta, na które ostatnio wpłacałeś/aś."
     },
@@ -189,6 +171,7 @@
       "poolId": "Pula #{id}",
       "stable": "Stableswap",
       "weighted": "Ważone",
+      "concentrated": "Skoncentrowana płynność",
       "internal": "Wewnętrzne zachęty",
       "external": "Zewnętrzne zachęty",
       "superfluid": "Superfluid",
@@ -253,7 +236,6 @@
     "help": "Wsparcie",
     "info": "Statystyki",
     "pools": "Pule",
-    "signOut": "Rozłącz",
     "stake": "Stakuj",
     "store": "Aplikacje",
     "swap": "Wymień",
@@ -310,43 +292,30 @@
     "yourStats": "Twoje saldo puli"
   },
   "pools": {
-    "all": "Wszystkie Pule",
     "allPools": {
-      "APR": "APR",
-      "APRIncentivized": "7d Wol.",
-      "displayLowLiquidity": "Pokaż pule < {value}",
-      "myLiquidity": "moja płynność",
       "search": "Wyszukaj pulę",
       "sort": {
-        "APR": "Moja Płynność",
         "APRIncentivized": "APR",
         "fees": "Prowizje (7D)",
         "liquidity": "Płynność",
-        "poolId": "ID Puli",
         "poolName": "Nazwa/numer puli",
         "volume24h": "Wolumen (24H)"
       },
-      "title": "Wszystkie Pule",
-      "TVL": "TVL"
+      "title": "Wszystkie Pule"
     },
-    "allTab": "Wszystkie",
     "APR": "APR",
     "available": "Dostępne",
     "bonded": "Związane",
     "createPool": {
       "amount": "Ilość",
       "available": "Dostępne",
-      "button": "Stwórz nową pulę",
       "buttonAddToken": "Dodaj nowy token",
-      "buttonBack": "Cofnij",
       "buttonCreate": "Stwórz Pulę",
       "buttonNext": "Dalej",
       "infoCaption": "Przeniesione do Puli Społecznośći Osmosis",
       "infoMessage": "Prowizja Tworzenia Puli",
-      "interestedCreate": "Zainteresowany tworzeniem nowej puli?",
       "scalingFactorController": "Ustaw regulator współczynnika skalowania (opcjonalnie)",
       "stablePool": "Stabilny basen",
-      "startProcess": "Kliknij tutaj, żeby zacząć proces",
       "step": {
         "one": {
           "stable": "Krok {step} / {nbStep} - Ustaw współczynniki skalowania",
@@ -362,33 +331,13 @@
       "weightedPool": "Basen ważony"
     },
     "externalIncentivized": {
-      "APR": "APR",
-      "search": "Wyszukaj po symbolu",
-      "sort": {
-        "APR": "APR",
-        "epochs": "Pozostało Epok",
-        "liquidity": "Płynność",
-        "myLiquidity": "Moja Płynność",
-        "poolName": "Nazwa/numer puli"
-      },
-      "title": "Baseny motywowane zewnętrznie",
       "TVL": "TVL"
     },
-    "incentivized": "Premiowane",
-    "liquidity": "Płynność",
     "myLiquidity": "Moja płynność",
     "myPools": "Moje Pule",
     "poolId": "Pula #{id}",
     "priceOsmo": "Cena OSMO",
-    "rewardDistribution": "Dystrybucja nagród za",
-    "superfluid": {
-      "APR": "APR",
-      "fees7D": "Prowizje (7D)",
-      "liquidity": "Płynność",
-      "tab": "Superpłynne",
-      "title": "Superpłynne Pule"
-    },
-    "title": "Aktywne pule"
+    "rewardDistribution": "Dystrybucja nagród za"
   },
   "profile": {
     "balance": "Balansować",
@@ -409,9 +358,6 @@
     "title": "Ustawienia ogólne",
     "titleHideDust": "Ukryj pule z < {fiatSymbol}0.01",
     "titleLanguage": "Język"
-  },
-  "stablecoinTypes": {
-    "collateralized": "zabezpieczone"
   },
   "superfluidValidator": {
     "bondedAmount": "Związana ilość",
@@ -437,9 +383,6 @@
     "available": "Dostępne",
     "button": "Wymień",
     "buttonError": "Wymień mimo to",
-    "error": {
-      "findCurrency": "Nie udało się znaleźć waluty {currency}"
-    },
     "expectedOutput": "Spodziewana wartość",
     "fee": "Prowizja ({fee})",
     "HALF": "POŁOWA",
