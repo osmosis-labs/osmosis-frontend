@@ -40,13 +40,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     poolId,
     position: { lowerPrices, upperPrices, baseAsset, quoteAsset, isFullRange },
   } = props;
-  const {
-    chainStore,
-    accountStore,
-    derivedDataStore,
-    priceStore,
-    queriesStore,
-  } = useStore();
+  const { chainStore, accountStore, derivedDataStore, priceStore } = useStore();
   const t = useTranslation();
 
   const { chainId } = chainStore.osmosis;
@@ -74,8 +68,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   const { config, increaseLiquidity } = useAddConcentratedLiquidityConfig(
     chainStore,
     chainId,
-    poolId,
-    queriesStore
+    poolId
   );
 
   // initialize pool data stores once root pool store is loaded

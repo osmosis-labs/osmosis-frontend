@@ -48,12 +48,7 @@ export const AddLiquidityModal: FunctionComponent<
   );
 
   const { config: addConliqConfig, addLiquidity: addConLiquidity } =
-    useAddConcentratedLiquidityConfig(
-      chainStore,
-      chainId,
-      poolId,
-      queriesStore
-    );
+    useAddConcentratedLiquidityConfig(chainStore, chainId, poolId);
 
   // initialize pool data stores once root pool store is loaded
   const { poolDetail } = derivedDataStore.getForPool(poolId as string);
