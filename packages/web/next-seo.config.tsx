@@ -16,6 +16,9 @@ const SEO: React.FC = () => {
     TWITTER_HANDLE: "@osmosiszone",
     IMAGE_PREVIEW: "/images/preview.jpg",
     FAVICON: "/favicon.ico",
+    SHORTCUT_ICON: `${
+      typeof window !== "undefined" ? window.origin : ""
+    }/osmosis-logo-wc.png`,
   };
 
   const config: DefaultSeoProps = {
@@ -29,9 +32,7 @@ const SEO: React.FC = () => {
       },
       {
         rel: "shortcut icon",
-        href: `${
-          typeof window !== "undefined" ? window.origin : ""
-        }/osmosis-logo-wc.png`,
+        href: SEO_VALUES.SHORTCUT_ICON,
       },
       {
         rel: "preload",
