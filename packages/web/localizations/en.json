@@ -513,10 +513,6 @@
       "title": "Osmosis Disclaimer",
       "description": "Read the disclaimer and privacy policy for the Osmosis - the leading decentralized Cosmos exchange"
     },
-    "pixels": {
-      "title": "Osmosis Pixels",
-      "description": "Play the pixels game on Osmosis - the leading decentralized Cosmos exchange"
-    },
     "pool": {
       "title": "Pool #{id}",
       "description": "Add your assets to this pool to unlock APRs. The longer your unbonding period, the more you make on Osmosis - the leading decentralized Cosmos exchange"
