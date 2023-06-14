@@ -4,14 +4,13 @@ import { Buffer } from "buffer";
 import { observer } from "mobx-react-lite";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
+import { NextSeo } from "next-seo";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ReactZoomPanPinchRef,
   TransformComponent,
   TransformWrapper,
 } from "react-zoom-pan-pinch";
-
-import SEO from "~/components/seo/seo";
 
 import { useStore } from "../../stores";
 
@@ -298,7 +297,7 @@ const Pixels: NextPage = observer(function () {
 
   return (
     <main>
-      <SEO
+      <NextSeo
         title="Osmosis Pixels"
         description="Play the pixels game on Osmosis"
       />

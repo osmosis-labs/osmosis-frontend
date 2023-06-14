@@ -5,9 +5,8 @@ import { observer } from "mobx-react-lite";
 import { NextPage } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { NextSeo } from "next-seo";
 import React, { FunctionComponent } from "react";
-
-import SEO from "~/components/seo/seo";
 
 import { PromotedLBPPoolIds } from "../../config";
 import { useStore } from "../../stores";
@@ -15,7 +14,7 @@ import { useStore } from "../../stores";
 const BootstrapPage: NextPage = observer(() => {
   return (
     <div className="h-full w-full bg-osmoverse-900">
-      <SEO
+      <NextSeo
         title="Osmosis Assets"
         description="Browse all of the assets available on Osmosis, the leading decentralized exchange in the Cosmos ecosystem!"
       />

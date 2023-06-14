@@ -1,10 +1,9 @@
 import type { NextPage } from "next";
-
-import SEO from "~/components/seo/seo";
+import { NextSeo } from "next-seo";
 
 const Disclaimer: NextPage = () => (
   <section className="bg-osmoverse-900 pt-20">
-    <SEO
+    <NextSeo
       title="Osmosis Disclaimer"
       description="Read the disclaimer and privacy policy for the Osmosis DEX"
     />

@@ -1,10 +1,10 @@
 import { Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
+import { NextSEO } from "next-seo";
 import { useMemo } from "react";
 
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
-import SEO from "~/components/seo/seo";
 import { TradeClipboard } from "~/components/trade-clipboard";
 import { useStore } from "~/stores";
 
@@ -48,7 +48,7 @@ const Home: NextPage = observer(function () {
 
   return (
     <main className="relative h-full bg-osmoverse-900">
-      <SEO
+      <NextSEO
         title="Osmosis Swap"
         description="Swap assets on Osmosis - the leading decentralized exchange in the Cosmos ecosystem"
       />

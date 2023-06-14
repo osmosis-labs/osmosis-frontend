@@ -2,6 +2,7 @@ import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
+import { NextSeo } from "next-seo";
 import {
   ComponentProps,
   FunctionComponent,
@@ -11,7 +12,6 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import SEO from "~/components/seo/seo";
 import { formatPretty } from "~/utils/formatter";
 
 import { ShowMoreButton } from "../../components/buttons/show-more";
@@ -146,7 +146,7 @@ const Assets: NextPage = observer(() => {
 
   return (
     <main className="mx-auto flex max-w-container flex-col gap-20 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
-      <SEO
+      <NextSeo
         title="Osmosis Assets"
         description="Browse all of the assets available on Osmosis, the leading decentralized exchange in the Cosmos ecosystem!"
       />

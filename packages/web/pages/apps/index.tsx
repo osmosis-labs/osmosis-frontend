@@ -1,4 +1,5 @@
 import Fuse from "fuse.js";
+import { NextSeo } from "next-seo";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 import { useWindowSize } from "react-use";
@@ -7,7 +8,6 @@ import { buttonCVA } from "~/components/buttons";
 import { HeroCard } from "~/components/cards";
 import { AppDisplayCard } from "~/components/cards/app-display-card";
 import { SearchBox } from "~/components/input";
-import SEO from "~/components/seo/seo";
 import { Breakpoint } from "~/components/types";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
@@ -97,7 +97,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
 
   return (
     <main className="mx-auto flex max-w-container flex-col bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
-      <SEO
+      <NextSeo
         title="Osmosis App Store"
         description="Trading is just the first step. Put your assets to work and accomplish so much more with leverage, vaults, and beyond."
       />

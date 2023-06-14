@@ -3,6 +3,7 @@ import { ObservablePoolDetail } from "@osmosis-labs/stores";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
+import { NextSeo } from "next-seo";
 import { ComponentProps, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
@@ -11,7 +12,6 @@ import { PoolCard } from "~/components/cards";
 import { AllPoolsTable } from "~/components/complex";
 import { MetricLoader } from "~/components/loaders";
 import { PoolsOverview } from "~/components/overview/pools";
-import SEO from "~/components/seo/seo";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
@@ -208,7 +208,7 @@ const Pools: NextPage = observer(function () {
 
   return (
     <main className="m-auto max-w-container bg-osmoverse-900 px-8 md:px-3">
-      <SEO
+      <NextSeo
         title="Osmosis Pools"
         description="Discover liqudity pools on Osmosis, the leading decentralized exchange on the Cosmos"
       />
