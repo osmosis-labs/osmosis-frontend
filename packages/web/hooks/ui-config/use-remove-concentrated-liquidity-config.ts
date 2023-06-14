@@ -1,12 +1,5 @@
-import {
-  ChainGetter,
-  CosmosQueries,
-  IQueriesStore,
-} from "@keplr-wallet/stores";
-import {
-  ObservableRemoveConcentratedLiquidityConfig,
-  OsmosisQueries,
-} from "@osmosis-labs/stores";
+import { ChainGetter } from "@keplr-wallet/stores";
+import { ObservableRemoveConcentratedLiquidityConfig } from "@osmosis-labs/stores";
 import { useCallback, useState } from "react";
 
 import { useStore } from "~/stores";
@@ -14,14 +7,13 @@ import { useStore } from "~/stores";
 export function useRemoveConcentratedLiquidityConfig(
   chainGetter: ChainGetter,
   osmosisChainId: string,
-  queriesStore: IQueriesStore<CosmosQueries & OsmosisQueries>,
   poolId: string,
   positionId: string
 ): {
   config: ObservableRemoveConcentratedLiquidityConfig;
   removeLiquidity: () => Promise<void>;
 } {
-  const { accountStore } = useStore();
+  const { accountStore, queriesStore } = useStore();
 
   const account = accountStore.getAccount(osmosisChainId);
 
@@ -54,6 +46,10 @@ export function useRemoveConcentratedLiquidityConfig(
                 if (tx.code) {
                   reject(tx.log);
                 } else {
+                  queriesStore
+                    .get(osmosisChainId)
+                    .osmosis!.queryLiquiditiesPerTickRange.getForPoolId(poolId)
+                    .waitFreshResponse();
                   resolve();
                 }
               }
@@ -63,7 +59,14 @@ export function useRemoveConcentratedLiquidityConfig(
           reject(e);
         }
       }),
-    [account.osmosis, positionId, config.effectiveLiquidity]
+    [
+      queriesStore,
+      poolId,
+      account.osmosis,
+      osmosisChainId,
+      positionId,
+      config.effectiveLiquidity,
+    ]
   );
 
   return { config, removeLiquidity };
