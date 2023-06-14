@@ -29,6 +29,7 @@ export interface OsmosisMsgOpts {
   readonly clCollectPositionsIncentivesRewards: (
     numPositions: number
   ) => MsgOpt;
+  readonly clAddToConcentratedPosition: MsgOpt;
 }
 
 export const defaultMsgOpts: OsmosisMsgOpts = {
@@ -108,7 +109,7 @@ export const defaultMsgOpts: OsmosisMsgOpts = {
   },
   clCreatePosition: {
     type: "osmosis/cl-create-position",
-    gas: 3000000,
+    gas: 3_000_000,
   },
   clCollectPositionsSpreadRewards: (numPositions: number) => ({
     type: "osmosis/cl-col-sp-rewards",
@@ -118,4 +119,10 @@ export const defaultMsgOpts: OsmosisMsgOpts = {
     type: "osmosis/cl-collect-incentives",
     gas: 300_000 * numPositions,
   }),
+  clAddToConcentratedPosition: {
+    type: "osmosis/cl-add-to-position",
+    gas: 900_000,
+  },
 };
+
+export const DEFAULT_SLIPPAGE = "2.5";

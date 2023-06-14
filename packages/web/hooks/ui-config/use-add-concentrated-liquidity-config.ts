@@ -15,6 +15,8 @@ import { useStore } from "~/stores";
 
 /** Maintains a single instance of `ObservableAddConcentratedLiquidityConfig` for React view lifecycle.
  *  Updates `osmosisChainId`, `poolId`, `bech32Address` on render.
+ *
+ *  Provides memoized callbacks for sending common messages associated with adding concentrated liquidity.
  */
 export function useAddConcentratedLiquidityConfig(
   chainGetter: ChainGetter,
@@ -24,6 +26,7 @@ export function useAddConcentratedLiquidityConfig(
 ): {
   config: ObservableAddConcentratedLiquidityConfig;
   addLiquidity: () => Promise<void>;
+  increaseLiquidity: (positionId: string) => Promise<void>;
 } {
   const { accountStore, derivedDataStore } = useStore();
 
@@ -46,7 +49,7 @@ export function useAddConcentratedLiquidityConfig(
       )
   );
 
-  const addLiquidity = useCallback(async () => {
+  const addLiquidity = useCallback(() => {
     return new Promise<void>(async (resolve, reject) => {
       try {
         const quoteCoin = {
@@ -77,8 +80,8 @@ export function useAddConcentratedLiquidityConfig(
           undefined,
           undefined,
           (tx) => {
-            if (tx.code) reject();
-            resolve();
+            if (tx.code) reject(tx.log);
+            else resolve();
           }
         );
       } catch (e: any) {
@@ -98,5 +101,32 @@ export function useAddConcentratedLiquidityConfig(
     config.poolId,
   ]);
 
-  return { config, addLiquidity };
+  const increaseLiquidity = useCallback(
+    (positionId: string) => {
+      return new Promise<void>(async (resolve, reject) => {
+        const amount0 = config.baseDepositAmountIn.getAmountPrimitive().amount;
+        const amount1 = config.quoteDepositAmountIn.getAmountPrimitive().amount;
+
+        try {
+          await account.osmosis.sendAddToConcentratedLiquidityPositionMsg(
+            positionId,
+            amount0,
+            amount1,
+            undefined,
+            undefined,
+            (tx) => {
+              if (tx.code) reject(tx.log);
+              else resolve();
+            }
+          );
+        } catch (e: any) {
+          console.error(e);
+          reject(e.message);
+        }
+      });
+    },
+    [config.baseDepositAmountIn, config.quoteDepositAmountIn, account.osmosis]
+  );
+
+  return { config, addLiquidity, increaseLiquidity };
 }
