@@ -1,29 +1,31 @@
 import { DefaultSeo, DefaultSeoProps } from "next-seo";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { IS_FRONTIER } from "~/config/index";
 import spriteSVGURL from "~/public/icons/sprite.svg";
 
+const SEO_VALUES = {
+  SITE_URL: "https://osmosis.zone/",
+  TWITTER_HANDLE: "@osmosiszone",
+  IMAGE_PREVIEW: "/images/preview.jpg",
+  FAVICON: "/favicon.ico",
+};
+
 const SEO: React.FC = () => {
   const t = useTranslation();
 
-  const SEO_VALUES = {
-    SITE_URL: "https://osmosis.zone/",
-    SITE_TITLE: IS_FRONTIER
-      ? t("seo.default.titleFrontier")
-      : t("seo.default.title"),
-    SITE_DESCRIPTION: t("seo.default.description"),
-    TWITTER_HANDLE: "@osmosiszone",
-    IMAGE_PREVIEW: "/images/preview.jpg",
-    FAVICON: "/favicon.ico",
-    SHORTCUT_ICON: `${
-      typeof window !== "undefined" ? window.origin : ""
-    }/osmosis-logo-wc.png`,
-  };
+  const [shortcutIcon, setShortcutIcon] = useState<string>("");
+
+  useEffect(() => {
+    setShortcutIcon(`${window?.origin || ""}/osmosis-logo-wc.png`);
+  }, []);
 
   const config: DefaultSeoProps = {
-    title: SEO_VALUES.SITE_TITLE,
-    description: SEO_VALUES.SITE_DESCRIPTION,
+    title: IS_FRONTIER
+      ? t("seo.default.titleFrontier")
+      : t("seo.default.title"),
+    description: t("seo.default.description"),
     canonical: SEO_VALUES.SITE_URL,
     additionalLinkTags: [
       {
@@ -32,7 +34,7 @@ const SEO: React.FC = () => {
       },
       {
         rel: "shortcut icon",
-        href: SEO_VALUES.SHORTCUT_ICON,
+        href: shortcutIcon,
       },
       {
         rel: "preload",
@@ -49,8 +51,10 @@ const SEO: React.FC = () => {
     openGraph: {
       type: "website",
       url: SEO_VALUES.SITE_URL,
-      title: SEO_VALUES.SITE_TITLE,
-      description: SEO_VALUES.SITE_DESCRIPTION,
+      title: IS_FRONTIER
+        ? t("seo.default.titleFrontier")
+        : t("seo.default.title"),
+      description: t("seo.default.description"),
       images: [
         {
           url: SEO_VALUES.IMAGE_PREVIEW,
