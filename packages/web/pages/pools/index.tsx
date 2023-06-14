@@ -210,7 +210,7 @@ const Pools: NextPage = observer(function () {
     <main className="m-auto max-w-container bg-osmoverse-900 px-8 md:px-3">
       <NextSeo
         title="Osmosis Pools"
-        description="Discover liqudity pools on Osmosis, the leading decentralized exchange on the Cosmos"
+        description="Discover liqudity pools on Osmosis - the leading decentralized Cosmos exchange"
       />
       <CreatePoolModal
         isOpen={isCreatingPool}

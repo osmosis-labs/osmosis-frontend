@@ -48,10 +48,7 @@ const Home: NextPage = observer(function () {
 
   return (
     <main className="relative h-full bg-osmoverse-900">
-      <NextSeo
-        title="Osmosis Swap"
-        description="Swap assets on Osmosis - the leading decentralized exchange in the Cosmos ecosystem"
-      />
+      <NextSeo title="Osmosis Swap" />
       <div className="absolute h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">
         <svg
           className="absolute h-full w-full lg:hidden"

@@ -336,7 +336,7 @@ const Pool: FunctionComponent = observer(() => {
     <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
       <NextSeo
         title={t("pool.title", { id: poolId ? poolId.toString() : "-" })}
-        description="Add your assets to this pool to unlock APRs. The longer your unbonding period, the more you make."
+        description="Add your assets to this pool to unlock APRs. The longer your unbonding period, the more you make on Osmosis - the leading decentralized Cosmos exchange"
       />
       {pool && showAddLiquidityModal && (
         <AddLiquidityModal

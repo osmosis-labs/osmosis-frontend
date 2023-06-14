@@ -299,7 +299,7 @@ const Pixels: NextPage = observer(function () {
     <main>
       <NextSeo
         title="Osmosis Pixels"
-        description="Play the pixels game on Osmosis"
+        description="Play the pixels game on Osmosis - the leading decentralized Cosmos exchange"
       />
       <div className="h-screen w-full bg-osmoverse-900">
         <div className="pointer-events-none absolute top-10 left-1/2 z-[11]  flex items-center rounded-lg bg-wosmongton-200 py-2 px-8">

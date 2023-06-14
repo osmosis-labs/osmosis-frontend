@@ -16,7 +16,7 @@ const BootstrapPage: NextPage = observer(() => {
     <div className="h-full w-full bg-osmoverse-900">
       <NextSeo
         title="Osmosis Assets"
-        description="Browse all of the assets available on Osmosis, the leading decentralized exchange in the Cosmos ecosystem!"
+        description="Browse all of the assets available on Osmosis, the leading decentralized Cosmos exchange"
       />
       <div className="px-5 pt-10 pb-5 md:p-10 md:pt-20">
         <div className="max-w-page mx-auto">

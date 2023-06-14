@@ -5,7 +5,7 @@ const Disclaimer: NextPage = () => (
   <section className="bg-osmoverse-900 pt-20">
     <NextSeo
       title="Osmosis Disclaimer"
-      description="Read the disclaimer and privacy policy for the Osmosis DEX"
+      description="Read the disclaimer and privacy policy for the Osmosis - the leading decentralized Cosmos exchange"
     />
     <div className="mx-auto max-w-container overflow-y-auto p-5 md:h-full">
       <div className="text-center">
