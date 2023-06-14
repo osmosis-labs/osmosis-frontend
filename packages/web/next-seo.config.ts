@@ -45,13 +45,12 @@ const config: DefaultSeoProps = {
     url: SEO_SHARED_CONFIG.SITE_URL,
     title: SEO_SHARED_CONFIG.SITE_TITLE,
     description: SEO_SHARED_CONFIG.SITE_DESCRIPTION,
-    locale: "en_US", // TODO add i18n,
     images: [
       {
         url: SEO_SHARED_CONFIG.IMAGE_PREVIEW,
         width: 1920,
         height: 1080,
-        alt: "Osmososis",
+        alt: "Osmosis",
         type: "image/jpeg",
       },
     ],
