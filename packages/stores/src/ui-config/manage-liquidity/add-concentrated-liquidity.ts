@@ -39,7 +39,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
    Used to get min and max range for adding concentrated liquidity
    */
   @observable
-  protected _priceRange: [Dec, Dec] = [minSpotPrice, minSpotPrice];
+  protected _priceRange: [Dec, Dec];
 
   @observable
   protected _fullRange: boolean = false;
@@ -98,6 +98,9 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     this._quoteDepositAmountIn.setSendCurrency(quoteCurrency);
     this._baseDepositAmountIn.setAmount("0");
     this._quoteDepositAmountIn.setAmount("0");
+
+    // Set the initial range to be the moderate range
+    this._priceRange = this.moderatePriceRange;
 
     // Calculate quote amount when base amount is input and anchor is base
     // Calculate an amount1 given an amount0
@@ -350,7 +353,28 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   @computed
   get tickRange(): [Int, Int] {
     if (this.fullRange) return [minTick, maxTick];
-    return [priceToTick(this._priceRange[0]), priceToTick(this._priceRange[1])];
+    try {
+      // account for precision issues from price <> tick conversion
+      const lowerTick = priceToTick(this._priceRange[0]);
+      const upperTick = priceToTick(this._priceRange[1]);
+
+      const lowerTickRounded = roundToNearestDivisible(
+        lowerTick,
+        new Int(this.pool.tickSpacing)
+      );
+      const upperTickRounded = roundToNearestDivisible(
+        upperTick,
+        new Int(this.pool.tickSpacing)
+      );
+
+      return [
+        lowerTickRounded.lt(minTick) ? minTick : lowerTickRounded,
+        upperTickRounded.gt(maxTick) ? maxTick : upperTickRounded,
+      ];
+    } catch (e) {
+      console.error(e);
+      return [minTick, maxTick];
+    }
   }
 
   @action
@@ -426,6 +450,16 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
       return this._baseDepositAmountIn.error;
     }
 
-    // return this._baseDepositAmountIn.error || this._quoteDepositAmountIn.error;
+    return this._baseDepositAmountIn.error || this._quoteDepositAmountIn.error;
+  }
+}
+
+function roundToNearestDivisible(int: Int, divisor: Int): Int {
+  const remainder = int.mod(divisor);
+
+  if (new Dec(remainder).gte(new Dec(divisor).quo(new Dec(2)))) {
+    return int.add(divisor.sub(remainder));
+  } else {
+    return int.sub(remainder);
   }
 }

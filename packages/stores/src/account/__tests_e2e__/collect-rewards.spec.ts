@@ -14,7 +14,7 @@ describe("Collect Cl Fees Txs", () => {
 
   beforeAll(async () => {
     const account = accountStore.getAccount(chainId);
-    account.cosmos.broadcastMode = "block";
+    account.cosmos.broadcastMode = "sync";
     await waitAccountLoaded(account);
   });
 
@@ -142,10 +142,11 @@ describe("Collect Cl Fees Txs", () => {
     const account = accountStore.getAccount(chainId);
     const osmosisQueries = queriesStore.get(chainId).osmosis!;
 
-    const positions =
-      osmosisQueries.queryAccountsPositions.get(account.bech32Address)
-        .positionIds ?? [];
+    const positions = osmosisQueries.queryAccountsPositions.get(
+      account.bech32Address
+    );
+    await positions.waitResponse();
 
-    return positions;
+    return positions.positionIds;
   }
 });

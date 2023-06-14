@@ -1,6 +1,9 @@
 import { Dec } from "@keplr-wallet/unit";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
-import { ObservableQueryLiquidityPositionById } from "@osmosis-labs/stores";
+import {
+  ObservableAddConcentratedLiquidityConfig,
+  ObservableQueryLiquidityPositionById,
+} from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -54,8 +57,6 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
 
   const {
-    quoteCurrency,
-    baseCurrency,
     xRange,
     yRange,
     lastChartData,
@@ -68,7 +69,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   const { lowerPrices, upperPrices, baseAsset, quoteAsset, isFullRange } =
     positionConfig;
 
-  const { config, addLiquidity } = useAddConcentratedLiquidityConfig(
+  const { config, increaseLiquidity } = useAddConcentratedLiquidityConfig(
     chainStore,
     chainId,
     poolId,
@@ -89,7 +90,9 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     {
       disabled: config.error !== undefined || isSendingMsg,
       onClick: () => {
-        addLiquidity().finally(() => props.onRequestClose());
+        increaseLiquidity(props.position.id).finally(() =>
+          props.onRequestClose()
+        );
       },
       children: config.error
         ? t(...tError(config.error))
@@ -167,14 +170,17 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             </div>
             <div className="text-subtitle1 font-subtitle1 text-osmoverse-300">
               {t("addConcentratedLiquidity.basePerQuote", {
-                base: baseCurrency?.coinDenom || "",
-                quote: quoteCurrency?.coinDenom || "",
+                base: config.baseDepositAmountIn.sendCurrency.coinDenom,
+                quote: config.quoteDepositAmountIn.sendCurrency.coinDenom,
               })}
             </div>
           </div>
           <div className="flex gap-1">
             <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-6 pl-6">
-              <ChartHeader chartConfig={chartConfig} />
+              <ChartHeader
+                chartConfig={chartConfig}
+                addLiquidityConfig={config}
+              />
               <Chart
                 chartConfig={chartConfig}
                 positionConfig={positionConfig}
@@ -200,7 +206,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                       depth: xRange[1],
                     },
                   ]}
-                  offset={{ top: 0, right: 32, bottom: 24 + 28, left: 0 }}
+                  offset={{ top: 0, right: 32, bottom: 24 + 24, left: 0 }}
                   horizontal
                   fullRange={isFullRange}
                 />
@@ -267,7 +273,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
               },
               [config]
             )}
-            currentValue={config.quoteDepositAmountIn.amount}
+            currentValue={config.baseDepositAmountIn.amount}
             outOfRange={config.quoteDepositOnly}
             percentage={config.depositPercentages[0]}
           />
@@ -326,16 +332,13 @@ const PriceBox: FunctionComponent<{
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
  */
 const ChartHeader: FunctionComponent<{
+  addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
   chartConfig: ObservableHistoricalAndLiquidityData;
-}> = ({ chartConfig }) => {
-  const {
-    quoteCurrency,
-    baseCurrency,
-    historicalRange,
-    priceDecimal,
-    setHistoricalRange,
-    hoverPrice,
-  } = chartConfig;
+}> = ({ chartConfig, addLiquidityConfig }) => {
+  const { historicalRange, priceDecimal, setHistoricalRange, hoverPrice } =
+    chartConfig;
+
+  const { baseDepositAmountIn, quoteDepositAmountIn } = addLiquidityConfig;
 
   return (
     <PriceChartHeader
@@ -344,8 +347,8 @@ const ChartHeader: FunctionComponent<{
       }}
       historicalRange={historicalRange}
       setHistoricalRange={setHistoricalRange}
-      baseDenom={baseCurrency?.coinDenom || ""}
-      quoteDenom={quoteCurrency?.coinDenom || ""}
+      baseDenom={baseDepositAmountIn.sendCurrency.coinDenom}
+      quoteDenom={quoteDepositAmountIn.sendCurrency.coinDenom}
       hoverPrice={hoverPrice}
       decimal={priceDecimal}
       hideButtons

@@ -57,9 +57,9 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
 }) => {
   const xMax = xRange[1];
   const showMinDragHandler =
-    typeof min !== "undefined" && !!onMoveMin && !!onSubmitMin;
+    Boolean(min) && Boolean(onMoveMin) && Boolean(onSubmitMin);
   const showMaxDragHandler =
-    typeof max !== "undefined" && !!onMoveMax && !!onSubmitMax;
+    Boolean(max) && Boolean(onMoveMax) && Boolean(onSubmitMax);
 
   const { top = 0, right = 0, bottom = 0, left = 0 } = offset || {};
 
