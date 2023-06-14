@@ -7,7 +7,6 @@ import {
 import classNames from "classnames";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
-import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import {
@@ -19,6 +18,8 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 import { useMeasure } from "react-use";
+
+import SEO from "~/components/seo/seo";
 
 import { Icon, PoolAssetsIcon } from "../../components/assets";
 import { ArrowButton, Button } from "../../components/buttons";
@@ -334,11 +335,10 @@ const Pool: FunctionComponent = observer(() => {
 
   return (
     <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
-      <Head>
-        <title>
-          {t("pool.title", { id: poolId ? poolId.toString() : "-" })}
-        </title>
-      </Head>
+      <SEO
+        title={t("pool.title", { id: poolId ? poolId.toString() : "-" })}
+        description="Add your assets to this pool to unlock APRs. The longer your unbonding period, the more you make."
+      />
       {pool && showAddLiquidityModal && (
         <AddLiquidityModal
           isOpen={true}

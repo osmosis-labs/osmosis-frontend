@@ -7,6 +7,7 @@ import { buttonCVA } from "~/components/buttons";
 import { HeroCard } from "~/components/cards";
 import { AppDisplayCard } from "~/components/cards/app-display-card";
 import { SearchBox } from "~/components/input";
+import SEO from "~/components/seo/seo";
 import { Breakpoint } from "~/components/types";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
@@ -96,6 +97,10 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
 
   return (
     <main className="mx-auto flex max-w-container flex-col bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
+      <SEO
+        title="Osmosis App Store"
+        description="Trading is just the first step. Put your assets to work and accomplish so much more with leverage, vaults, and beyond."
+      />
       <div className="flex flex-row justify-between pl-6 md:flex-col">
         <div className="mb-0 basis-1/2 lg:mr-4 md:mb-4 md:mr-0">
           <h4 className="pb-2 text-wosmongton-100">{t("store.headerTitle")}</h4>

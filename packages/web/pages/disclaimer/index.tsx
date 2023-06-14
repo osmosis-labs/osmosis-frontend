@@ -1,7 +1,13 @@
 import type { NextPage } from "next";
 
+import SEO from "~/components/seo/seo";
+
 const Disclaimer: NextPage = () => (
   <section className="bg-osmoverse-900 pt-20">
+    <SEO
+      title="Osmosis Disclaimer"
+      description="Read the disclaimer and privacy policy for the Osmosis DEX"
+    />
     <div className="mx-auto max-w-container overflow-y-auto p-5 md:h-full">
       <div className="text-center">
         <span>Osmosis Disclaimer</span>

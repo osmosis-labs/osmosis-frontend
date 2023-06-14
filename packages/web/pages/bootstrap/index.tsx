@@ -7,12 +7,18 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { FunctionComponent } from "react";
 
+import SEO from "~/components/seo/seo";
+
 import { PromotedLBPPoolIds } from "../../config";
 import { useStore } from "../../stores";
 
 const BootstrapPage: NextPage = observer(() => {
   return (
     <div className="h-full w-full bg-osmoverse-900">
+      <SEO
+        title="Osmosis Assets"
+        description="Browse all of the assets available on Osmosis, the leading decentralized exchange in the Cosmos ecosystem!"
+      />
       <div className="px-5 pt-10 pb-5 md:p-10 md:pt-20">
         <div className="max-w-page mx-auto">
           <LBPOverview

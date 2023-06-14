@@ -11,6 +11,7 @@ import { PoolCard } from "~/components/cards";
 import { AllPoolsTable } from "~/components/complex";
 import { MetricLoader } from "~/components/loaders";
 import { PoolsOverview } from "~/components/overview/pools";
+import SEO from "~/components/seo/seo";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
@@ -207,6 +208,10 @@ const Pools: NextPage = observer(function () {
 
   return (
     <main className="m-auto max-w-container bg-osmoverse-900 px-8 md:px-3">
+      <SEO
+        title="Osmosis Pools"
+        description="Discover liqudity pools on Osmosis, the leading decentralized exchange on the Cosmos"
+      />
       <CreatePoolModal
         isOpen={isCreatingPool}
         onRequestClose={useCallback(() => setIsCreatingPool(false), [])}

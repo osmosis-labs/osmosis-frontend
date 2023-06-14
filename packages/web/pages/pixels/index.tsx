@@ -11,6 +11,8 @@ import {
   TransformWrapper,
 } from "react-zoom-pan-pinch";
 
+import SEO from "~/components/seo/seo";
+
 import { useStore } from "../../stores";
 
 export const GAME_CONFIG = {
@@ -296,6 +298,10 @@ const Pixels: NextPage = observer(function () {
 
   return (
     <main>
+      <SEO
+        title="Osmosis Pixels"
+        description="Play the pixels game on Osmosis"
+      />
       <div className="h-screen w-full bg-osmoverse-900">
         <div className="pointer-events-none absolute top-10 left-1/2 z-[11]  flex items-center rounded-lg bg-wosmongton-200 py-2 px-8">
           {`${new IntPretty(
