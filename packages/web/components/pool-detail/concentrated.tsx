@@ -120,7 +120,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
 
                 <div className="lg:hidden">
                   <PoolDataGroup
-                    label={t("pool.swapFee")}
+                    label={t("clPositions.fee")}
                     value={pool?.swapFee ? pool.swapFee.toString() : "0%"}
                   />
                 </div>
