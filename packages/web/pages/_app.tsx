@@ -10,8 +10,6 @@ import { withLDProvider } from "launchdarkly-react-client-sdk";
 import { enableStaticRendering } from "mobx-react-lite";
 import type { AppProps } from "next/app";
 import { DefaultSeo } from "next-seo";
-import { DefaultSeo } from "next-seo";
-import { DefaultSeo } from "next-seo";
 import { ComponentType, useMemo } from "react";
 import {
   setDefaultLanguage,
