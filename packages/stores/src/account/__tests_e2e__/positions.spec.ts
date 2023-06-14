@@ -258,7 +258,7 @@ describe("Create CL Positions Txs", () => {
 
     if (!position || !position.liquidity) throw new Error("Position not found");
 
-    const tx: any = await new Promise((resolve, reject) =>
+    const tx: unknown = await new Promise((resolve, reject) =>
       account.osmosis.sendWithdrawConcentratedLiquidityPositionMsg(
         lastPositionId,
         position.liquidity!,
