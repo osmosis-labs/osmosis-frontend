@@ -37,10 +37,10 @@ export const TransferHistoryTable: FunctionComponent<CustomClasses> = observer(
     } = useStore();
     const t = useTranslation();
     const { chainId } = chainStore.osmosis;
-    const { bech32Address } = accountStore.getAccount(chainId);
+    const address = accountStore.getWallet(chainId)?.address ?? "";
 
     const histories: History[] = nonIbcBridgeHistoryStore
-      .getHistoriesByAccount(bech32Address)
+      .getHistoriesByAccount(address)
       .map(
         ({
           key,
@@ -64,7 +64,7 @@ export const TransferHistoryTable: FunctionComponent<CustomClasses> = observer(
       )
       .concat(
         ibcTransferHistoryStore
-          .getHistoriesAndUncommitedHistoriesByAccount(bech32Address)
+          .getHistoriesAndUncommitedHistoriesByAccount(address)
           .map((history) => {
             const { txHash, createdAt, amount, sourceChainId, destChainId } =
               history;

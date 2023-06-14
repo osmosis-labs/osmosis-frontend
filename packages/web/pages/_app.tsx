@@ -20,6 +20,7 @@ import { Bounce, ToastContainer } from "react-toastify";
 import { Icon } from "~/components/assets";
 import ErrorBoundary from "~/components/error/error-boundary";
 import ErrorFallback from "~/components/error/error-fallback";
+import { WalletSelectProvider } from "~/hooks/wallet-select";
 import DefaultSeo from "~/next-seo.config";
 
 import { MainLayout } from "../components/layouts";
@@ -30,7 +31,6 @@ import {
   IS_FRONTIER,
   PromotedLBPPoolIds,
 } from "../config";
-import { GetKeplrProvider } from "../hooks";
 import { useAmplitudeAnalytics } from "../hooks/use-amplitude-analytics";
 import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
 import dayjsLocaleKo from "../localizations/dayjs-locale-ko.js";
@@ -127,8 +127,8 @@ function MyApp({ Component, pageProps }: AppProps) {
   useAmplitudeAnalytics({ init: true });
 
   return (
-    <GetKeplrProvider>
-      <StoreProvider>
+    <StoreProvider>
+      <WalletSelectProvider>
         <DefaultSeo />
         <IbcNotifier />
         <ToastContainer
@@ -142,10 +142,15 @@ function MyApp({ Component, pageProps }: AppProps) {
             {Component && <Component {...pageProps} />}
           </ErrorBoundary>
         </MainLayout>
-      </StoreProvider>
-    </GetKeplrProvider>
+      </WalletSelectProvider>
+    </StoreProvider>
   );
 }
+
+const ldAnonymousContext = {
+  key: "SHARED-CONTEXT-KEY",
+  anonymous: true,
+};
 
 export default withLDProvider({
   clientSideID: process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID || "",
@@ -155,4 +160,5 @@ export default withLDProvider({
   options: {
     bootstrap: "localStorage",
   },
+  context: ldAnonymousContext,
 })(MyApp as ComponentType<{}>);

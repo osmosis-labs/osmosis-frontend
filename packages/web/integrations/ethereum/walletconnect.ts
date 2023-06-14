@@ -1,17 +1,18 @@
+import { KVStore } from "@keplr-wallet/common";
+import WalletConnect from "@walletconnect/client";
 import {
-  observable,
-  computed,
   action,
-  runInAction,
+  computed,
   makeObservable,
+  observable,
+  runInAction,
 } from "mobx";
 import { computedFn } from "mobx-utils";
-import WalletConnect from "@walletconnect/client";
-import { toHex, isAddress, numberToHex } from "web3-utils";
-import { KVStore } from "@keplr-wallet/common";
+import { isAddress, numberToHex, toHex } from "web3-utils";
+
+import { getKeyByValue } from "../../utils/object";
 import { WalletDisplay, WalletKey } from "../wallets";
 import { ChainNames, EthWallet } from "./types";
-import { getKeyByValue } from "../../utils/object";
 
 const CONNECTED_ACCOUNT_KEY = "wc-eth-connected-account";
 const CONNECTED_ACCOUNT_CHAINID = "wc-eth-connected-chainId";

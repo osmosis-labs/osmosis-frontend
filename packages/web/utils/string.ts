@@ -10,6 +10,7 @@ export function getShortAddress(
   address: string,
   opts?: { prefixLength?: number; suffixLength?: number }
 ) {
+  if (!address) return "";
   return (
     address.substring(0, opts?.prefixLength ?? 6) +
     "..." +

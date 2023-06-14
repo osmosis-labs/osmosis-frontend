@@ -1,0 +1,10 @@
+build/*
+types/*
+
+.prettierignore
+.eslintignore
+localnet
+
+chain-proto
+*.sh
+proto-dependencies
