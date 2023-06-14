@@ -2917,6 +2917,13 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:staevmos",
         coinImageUrl: "/tokens/stevmos.svg",
       },
+      {
+        coinDenom: "stUMEE",
+        coinMinimalDenom: "stuumee",
+        coinDecimals: 6,
+        coinGeckoId: "pool:stuumee",
+        coinImageUrl: "/tokens/stumee.svg",
+      },
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://explorer.stride.zone/stride/tx/{txHash}",
