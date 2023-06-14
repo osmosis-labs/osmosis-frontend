@@ -179,7 +179,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             />
             <AssetsInfo
               className="w-0 flex-shrink flex-grow sm:w-full"
-              title={t("clPositions.totalFeesEarned")}
+              title={t("clPositions.totalSpreadEarned")}
             />
           </div>
           <div className="flex justify-between sm:flex-col sm:gap-3">

@@ -96,7 +96,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     />
                     <span className="hidden py-1 text-subtitle1 text-osmoverse-100 lg:inline-block">
                       {pool?.swapFee ? pool.swapFee.toString() : "0%"}{" "}
-                      {t("clPositions.fee")}
+                      {t("clPositions.spreadFactor")}
                     </span>
                   </div>
                 </div>
@@ -120,7 +120,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
 
                 <div className="lg:hidden">
                   <PoolDataGroup
-                    label={t("clPositions.fee")}
+                    label={t("clPositions.spreadFactor")}
                     value={pool?.swapFee ? pool.swapFee.toString() : "0%"}
                   />
                 </div>

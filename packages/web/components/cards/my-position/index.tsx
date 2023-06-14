@@ -91,7 +91,7 @@ export const MyPositionCard: FunctionComponent<{
                 )}
               />
               <span className="px-2 py-1 text-subtitle1 text-osmoverse-100">
-                {queryPool?.swapFee.toString()} {t("clPositions.fee")}
+                {queryPool?.swapFee.toString()} {t("clPositions.spreadFactor")}
               </span>
             </div>
             {queryPool?.concentratedLiquidityPoolInfo?.currentSqrtPrice &&
