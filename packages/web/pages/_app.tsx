@@ -9,7 +9,6 @@ import utc from "dayjs/plugin/utc";
 import { withLDProvider } from "launchdarkly-react-client-sdk";
 import { enableStaticRendering } from "mobx-react-lite";
 import type { AppProps } from "next/app";
-import Head from "next/head";
 import { ComponentType, useMemo } from "react";
 import {
   setDefaultLanguage,
@@ -21,9 +20,10 @@ import { Bounce, ToastContainer } from "react-toastify";
 import { Icon } from "~/components/assets";
 import ErrorBoundary from "~/components/error/error-boundary";
 import ErrorFallback from "~/components/error/error-fallback";
+import { WalletSelectProvider } from "~/hooks/wallet-select";
+import DefaultSeo from "~/next-seo.config";
 
 import { MainLayout } from "../components/layouts";
-import { OgpMeta } from "../components/ogp-meta";
 import { MainLayoutMenu } from "../components/types";
 import {
   AmplitudeEvent,
@@ -36,7 +36,6 @@ import { useAmplitudeAnalytics } from "../hooks/use-amplitude-analytics";
 import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
 import dayjsLocaleKo from "../localizations/dayjs-locale-ko.js";
 import en from "../localizations/en.json";
-import spriteSVGURL from "../public/icons/sprite.svg";
 import { StoreProvider } from "../stores";
 import { IbcNotifier } from "../stores/ibc-notifier";
 
@@ -131,29 +130,21 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <GetKeplrProvider>
       <StoreProvider>
-        <Head>
-          {/* metamask Osmosis app icon */}
-          <link
-            rel="shortcut icon"
-            href={`${
-              typeof window !== "undefined" ? window.origin : ""
-            }/osmosis-logo-wc.png`}
+        <WalletSelectProvider>
+          <DefaultSeo />
+          <IbcNotifier />
+          <ToastContainer
+            toastStyle={{
+              backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
+            }}
+            transition={Bounce}
           />
-          <link rel="preload" as="image/svg+xml" href={spriteSVGURL} />
-        </Head>
-        <OgpMeta />
-        <IbcNotifier />
-        <ToastContainer
-          toastStyle={{
-            backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
-          }}
-          transition={Bounce}
-        />
-        <MainLayout menus={menus}>
-          <ErrorBoundary fallback={ErrorFallback}>
-            {Component && <Component {...pageProps} />}
-          </ErrorBoundary>
-        </MainLayout>
+          <MainLayout menus={menus}>
+            <ErrorBoundary fallback={ErrorFallback}>
+              {Component && <Component {...pageProps} />}
+            </ErrorBoundary>
+          </MainLayout>
+        </WalletSelectProvider>
       </StoreProvider>
     </GetKeplrProvider>
   );
