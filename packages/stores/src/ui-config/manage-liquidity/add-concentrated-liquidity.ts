@@ -399,23 +399,25 @@ export class ObservableAddConcentratedLiquidityConfig {
 
   @computed
   get baseDepositOnly(): boolean {
-    if (this.currentPrice.isZero()) return false;
-
-    return (
-      !this.fullRange &&
-      this.currentPrice.gt(this.range[0]) &&
-      this.currentPrice.gt(this.range[1])
-    );
-  }
-
-  @computed
-  get quoteDepositOnly(): boolean {
+    // can be 0 if no positions in pool
     if (this.currentPrice.isZero()) return false;
 
     return (
       !this.fullRange &&
       this.currentPrice.lt(this.range[0]) &&
       this.currentPrice.lt(this.range[1])
+    );
+  }
+
+  @computed
+  get quoteDepositOnly(): boolean {
+    // can be 0 if no positions in pool
+    if (this.currentPrice.isZero()) return false;
+
+    return (
+      !this.fullRange &&
+      this.currentPrice.gt(this.range[0]) &&
+      this.currentPrice.gt(this.range[1])
     );
   }
 

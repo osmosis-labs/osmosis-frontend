@@ -115,7 +115,7 @@ export class ObservablePoolsWithMetric {
     protected readonly priceStore: IPriceStore
   ) {}
 
-  getAllPools = computedFn(
+  readonly getAllPools = computedFn(
     (
       sortingColumn?: keyof ObservablePoolWithMetric,
       isSortingDesc?: boolean,

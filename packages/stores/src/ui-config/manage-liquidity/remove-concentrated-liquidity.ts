@@ -1,61 +1,67 @@
 import { EmptyAmountError } from "@keplr-wallet/hooks";
-import {
-  ChainGetter,
-  IQueriesStore,
-  ObservableQueryBalances,
-} from "@keplr-wallet/stores";
-import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
+import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { action, computed, makeObservable, observable } from "mobx";
 
-/** Use to config user input UI for eventually sending a valid exit pool msg.
- *  Included convenience functions for deriving pool asset amounts vs current input %.
- */
+import {
+  ObservableQueryLiquidityPositionById,
+  OsmosisQueries,
+} from "../../queries";
+
 export class ObservableRemoveConcentratedLiquidityConfig {
-  @observable
-  protected _sender: string;
-
-  @observable
-  protected _pool: ConcentratedLiquidityPool;
-
   @observable
   protected _percentage: number;
 
   @observable
-  protected chainId: string;
-
-  constructor(
-    protected readonly chainGetter: ChainGetter,
-    initialChainId: string,
-    sender: string,
-    protected readonly queriesStore: IQueriesStore,
-    protected readonly queryBalances: ObservableQueryBalances,
-    pool: ConcentratedLiquidityPool,
-    initialPercentage: number
-  ) {
-    this.chainId = initialChainId;
-    this._pool = pool;
-    this._sender = sender;
-    this._percentage = initialPercentage;
-
-    makeObservable(this);
-  }
-
-  @action
-  setSender(sender: string) {
-    this._sender = sender;
-  }
-
-  get sender(): string {
-    return this._sender;
-  }
+  chainId: string;
 
   get percentage(): number {
     return this._percentage;
   }
 
-  @action
-  setPercentage(percentage: number) {
-    this._percentage = percentage;
+  /** Gets the user-selected percentage of the position's liquidity. */
+  @computed
+  get effectiveLiquidity(): Dec | undefined {
+    return this.queryPosition.liquidity?.mul(new Dec(this.percentage));
+  }
+
+  /** Get's the amount of each token in position given the position's liquidity and the user's
+   *  selected percentage of the position to remove. */
+  @computed
+  get effectiveLiquidityAmounts():
+    | {
+        base: CoinPretty;
+        quote: CoinPretty;
+      }
+    | undefined {
+    const liquidity = this.effectiveLiquidity;
+    const base = this.queryPosition.baseAsset;
+    const quote = this.queryPosition.quoteAsset;
+
+    if (!liquidity || !base || !quote) return;
+
+    return {
+      base: new CoinPretty(
+        base.currency,
+        base
+          .toDec()
+          .mul(
+            DecUtils.getTenExponentNInPrecisionRange(base.currency.coinDecimals)
+          )
+          .mul(new Dec(this.percentage))
+      ),
+      quote: new CoinPretty(
+        quote.currency,
+        quote
+          .toDec()
+          .mul(
+            DecUtils.getTenExponentNInPrecisionRange(
+              quote.currency.coinDecimals
+            )
+          )
+          .mul(new Dec(this.percentage))
+      ),
+    };
   }
 
   @computed
@@ -65,5 +71,31 @@ export class ObservableRemoveConcentratedLiquidityConfig {
     }
 
     return;
+  }
+
+  protected get queryPosition(): ObservableQueryLiquidityPositionById {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.queriesStore
+      .get(this.chainId)
+      .osmosis!.queryLiquidityPositionsById.getForPositionId(this.positionId);
+  }
+
+  constructor(
+    protected readonly chainGetter: ChainGetter,
+    initialChainId: string,
+    protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
+    protected readonly poolId: string,
+    protected readonly positionId: string,
+    initialPercentage: number = 1
+  ) {
+    this.chainId = initialChainId;
+    this._percentage = initialPercentage;
+
+    makeObservable(this);
+  }
+
+  @action
+  setPercentage(percentage: number) {
+    this._percentage = percentage;
   }
 }

@@ -1,14 +1,6 @@
-import {
-  ChainGetter,
-  CosmosQueries,
-  CosmwasmQueries,
-  IQueriesStore,
-} from "@keplr-wallet/stores";
+import { ChainGetter } from "@keplr-wallet/stores";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
-import {
-  ObservableAddConcentratedLiquidityConfig,
-  OsmosisQueries,
-} from "@osmosis-labs/stores";
+import { ObservableAddConcentratedLiquidityConfig } from "@osmosis-labs/stores";
 import { useCallback, useState } from "react";
 
 import { useStore } from "~/stores";
@@ -21,14 +13,14 @@ import { useStore } from "~/stores";
 export function useAddConcentratedLiquidityConfig(
   chainGetter: ChainGetter,
   osmosisChainId: string,
-  poolId: string,
-  queriesStore: IQueriesStore<CosmosQueries & CosmwasmQueries & OsmosisQueries>
+  poolId: string
 ): {
   config: ObservableAddConcentratedLiquidityConfig;
   addLiquidity: () => Promise<void>;
   increaseLiquidity: (positionId: string) => Promise<void>;
 } {
-  const { accountStore, derivedDataStore } = useStore();
+  const { accountStore, derivedDataStore, queriesStore } = useStore();
+  const osmosisQueries = queriesStore.get(osmosisChainId).osmosis!;
 
   const account = accountStore.getAccount(osmosisChainId);
   const { bech32Address } = account;
@@ -81,7 +73,12 @@ export function useAddConcentratedLiquidityConfig(
           undefined,
           (tx) => {
             if (tx.code) reject(tx.log);
-            else resolve();
+            else {
+              osmosisQueries.queryLiquiditiesPerTickRange
+                .getForPoolId(poolId)
+                .waitFreshResponse();
+              resolve();
+            }
           }
         );
       } catch (e: any) {
@@ -90,7 +87,9 @@ export function useAddConcentratedLiquidityConfig(
       }
     });
   }, [
+    poolId,
     account.osmosis,
+    osmosisQueries.queryLiquiditiesPerTickRange,
     config.baseDepositAmountIn.sendCurrency,
     config.baseDepositAmountIn.amount,
     config.quoteDepositAmountIn.sendCurrency,
@@ -116,7 +115,12 @@ export function useAddConcentratedLiquidityConfig(
             undefined,
             (tx) => {
               if (tx.code) reject(tx.log);
-              else resolve();
+              else {
+                osmosisQueries.queryLiquiditiesPerTickRange
+                  .getForPoolId(poolId)
+                  .waitFreshResponse();
+                resolve();
+              }
             }
           );
         } catch (e: any) {
@@ -125,7 +129,13 @@ export function useAddConcentratedLiquidityConfig(
         }
       });
     },
-    [config.baseDepositAmountIn, config.quoteDepositAmountIn, account.osmosis]
+    [
+      poolId,
+      osmosisQueries.queryLiquiditiesPerTickRange,
+      config.baseDepositAmountIn,
+      config.quoteDepositAmountIn,
+      account.osmosis,
+    ]
   );
 
   return { config, addLiquidity, increaseLiquidity };

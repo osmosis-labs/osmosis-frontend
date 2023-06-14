@@ -72,7 +72,7 @@ export class ObservableSuperfluidPoolDetail {
       return {
         ...gaugeInfo,
         superfluidApr:
-          gaugeInfo.duration.asSeconds() === lastDuration.asSeconds() &&
+          gaugeInfo.duration.asSeconds() === lastDuration?.asSeconds() &&
           this.osmosisQueries.querySuperfluidPools.isSuperfluidPool(this.poolId)
             ? new RatePretty(
                 this.cosmosQueries.queryInflation.inflation
@@ -170,7 +170,10 @@ export class ObservableSuperfluidPoolDetail {
                   )
                 );
 
-              if (this.queryPoolDetails.lockableDurations.length > 0) {
+              if (
+                this.queryPoolDetails.lockableDurations.length > 0 &&
+                this.queryPoolDetails.longestDuration
+              ) {
                 const poolApr =
                   this.osmosisQueries.queryIncentivizedPools.computeApr(
                     this.poolId,

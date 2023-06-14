@@ -690,7 +690,7 @@ export class OsmosisAccountImpl {
 
     await this.base.cosmos.sendMsgs(
       "clCreatePosition",
-      async () => {
+      () => {
         const queryPool = queries.queryGammPools.getPool(poolId);
 
         if (!queryPool) {
@@ -900,6 +900,86 @@ export class OsmosisAccountImpl {
             });
 
           // refresh all user positions since IDs shift after adding to a position
+          queries.osmosis?.queryAccountsPositions
+            .get(this.base.bech32Address)
+            .waitFreshResponse();
+        }
+
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
+   * Withdraw all or some liquidity from a position.
+   *
+   * @param positionId ID of the position to withdraw from.
+   * @param liquidityAmount L value of liquidity to withdraw, can be derived from liquidity of position.
+   * @param memo Memo of the transaction.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
+   * @returns
+   */
+  async sendWithdrawConcentratedLiquidityPositionMsg(
+    positionId: string,
+    liquidityAmount: Dec,
+    memo: string = "",
+    onFulfill?: (tx: any) => void
+  ) {
+    const aminoMsg = {
+      type: this._msgOpts.clWithdrawPosition.type,
+      value: {
+        position_id: positionId,
+        sender: this.base.bech32Address,
+        liquidity_amount: liquidityAmount.toString(),
+      },
+    };
+
+    const protoMsg = {
+      typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition",
+      value: osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition.encode({
+        positionId: Long.fromString(aminoMsg.value.position_id),
+        sender: aminoMsg.value.sender,
+        liquidityAmount: this.changeDecStringToProtoBz(
+          new Dec(aminoMsg.value.liquidity_amount)
+            .mul(
+              DecUtils.getTenExponentNInPrecisionRange(
+                aminoMsg.value.liquidity_amount.split(".")[1]?.length ?? 0
+              )
+            )
+            .truncate()
+            .toString()
+        ),
+      }).finish(),
+    };
+
+    return this.base.cosmos.sendMsgs(
+      "clWithdrawPosition",
+      { aminoMsgs: [aminoMsg], protoMsgs: [protoMsg] },
+      memo,
+      {
+        amount: [],
+        gas: this._msgOpts.clWithdrawPosition.gas.toString(),
+      },
+      undefined,
+      (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          const queries = this.queriesStore.get(this.chainId);
+          const queryPosition =
+            this.queries.queryLiquidityPositionsById.getForPositionId(
+              positionId
+            );
+          queries.queryBalances
+            .getQueryBech32Address(this.base.bech32Address)
+            .balances.forEach((bal) => {
+              if (
+                queryPosition.baseAsset?.currency.coinMinimalDenom ===
+                  bal.currency.coinMinimalDenom ||
+                queryPosition.quoteAsset?.currency.coinMinimalDenom ===
+                  bal.currency.coinMinimalDenom
+              )
+                bal.waitFreshResponse();
+            });
+
           queries.osmosis?.queryAccountsPositions
             .get(this.base.bech32Address)
             .waitFreshResponse();

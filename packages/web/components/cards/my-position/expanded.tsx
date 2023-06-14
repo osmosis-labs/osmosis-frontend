@@ -264,9 +264,16 @@ const AssetsInfo: FunctionComponent<
       )}
     >
       <div>{title}</div>
-      <div className="grid grid-cols-3 gap-3">
-        <div className="col-span-2 grid grid-cols-2 gap-2">
-          {assets.length > 0 ? (
+      {assets.length > 0 ? (
+        <div className="grid grid-cols-3 gap-3">
+          <div
+            className={classNames(
+              "grid gap-2",
+              assets.length > 1
+                ? "col-span-2 grid-cols-2"
+                : "grid-cols col-span-1"
+            )}
+          >
             <div className="col-span-2 flex flex-wrap gap-x-5 gap-y-3">
               {assets.map((asset) => (
                 <div key={asset.denom} className="flex items-center gap-2">
@@ -284,18 +291,16 @@ const AssetsInfo: FunctionComponent<
                 </div>
               ))}
             </div>
-          ) : (
-            <span className="italic">
-              {emptyText ?? t("errors.notAvailable")}
-            </span>
-          )}
+          </div>
+          <div className="col-start-3">
+            {totalValue && (
+              <div className="text-white-full">({totalValue.toString()})</div>
+            )}
+          </div>
         </div>
-        <div className="col-start-3">
-          {totalValue && (
-            <div className="text-white-full">({totalValue.toString()})</div>
-          )}
-        </div>
-      </div>
+      ) : (
+        <span className="italic">{emptyText ?? t("errors.notAvailable")}</span>
+      )}
     </div>
   );
 });

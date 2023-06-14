@@ -17,6 +17,7 @@ import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
 import { tError } from "~/components/localization";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
+import { formatPretty } from "~/utils/formatter";
 
 import {
   useAddConcentratedLiquidityConfig,
@@ -41,13 +42,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   } & ModalBaseProps
 > = observer((props) => {
   const { poolId, position: positionConfig } = props;
-  const {
-    chainStore,
-    accountStore,
-    derivedDataStore,
-    priceStore,
-    queriesStore,
-  } = useStore();
+  const { chainStore, accountStore, derivedDataStore, priceStore } = useStore();
   const t = useTranslation();
 
   const { chainId } = chainStore.osmosis;
@@ -72,8 +67,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   const { config, increaseLiquidity } = useAddConcentratedLiquidityConfig(
     chainStore,
     chainId,
-    poolId,
-    queriesStore
+    poolId
   );
 
   // initialize pool data stores once root pool store is loaded
@@ -118,12 +112,12 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     <ModalBase
       {...props}
       isOpen={props.isOpen && showModalBase}
+      className="max-h-[95vh] !max-w-[500px] overflow-auto"
       title={t("clPositions.increaseLiquidity")}
-      className="!max-w-[500px]"
     >
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 pt-8">
         <div className="flex items-center justify-between">
-          <div className="pl-4 text-subtitle1 font-subtitle1">
+          <div className="pl-4 text-subtitle1 font-subtitle1 xs:pl-0">
             {t("clPositions.yourPosition")}
           </div>
           {lowerPrices && upperPrices && (
@@ -132,12 +126,13 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
               lowerPrice={lowerPrices.price}
               upperPrice={upperPrices.price}
               negative
+              className="xs:px-0"
             />
           )}
         </div>
-        <div className="mb-2 flex justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100">
+        <div className="mb-2 flex justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100 xs:flex-wrap xs:gap-y-2 xs:px-3">
           {baseAsset && (
-            <div className="flex items-center gap-2 text-subtitle1 font-subtitle1">
+            <div className="flex items-center gap-2 text-subtitle1 font-subtitle1 xs:text-body2">
               {baseAsset.currency.coinImageUrl && (
                 <Image
                   alt="base currency"
@@ -150,7 +145,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             </div>
           )}
           {quoteAsset && (
-            <div className="flex items-center gap-2 text-subtitle1 font-subtitle1">
+            <div className="flex items-center gap-2 text-subtitle1 font-subtitle1 xs:text-body2">
               {quoteAsset.currency.coinImageUrl && (
                 <Image
                   alt="base currency"
@@ -164,11 +159,11 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
           )}
         </div>
         <div className="flex flex-col gap-3">
-          <div className="flex gap-2 pl-4">
+          <div className="flex items-center gap-2 pl-4 xs:pl-1">
             <div className="text-subtitle1 font-subtitle1">
               {t("clPositions.selectedRange")}
             </div>
-            <div className="text-subtitle1 font-subtitle1 text-osmoverse-300">
+            <div className="text-subtitle1 font-subtitle1 text-osmoverse-300 xs:text-body2">
               {t("addConcentratedLiquidity.basePerQuote", {
                 base: config.baseDepositAmountIn.sendCurrency.coinDenom,
                 quote: config.quoteDepositAmountIn.sendCurrency.coinDenom,
@@ -176,7 +171,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             </div>
           </div>
           <div className="flex gap-1">
-            <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-6 pl-6">
+            <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-6 pl-6 xs:hidden">
               <ChartHeader
                 chartConfig={chartConfig}
                 addLiquidityConfig={config}
@@ -186,11 +181,11 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                 positionConfig={positionConfig}
               />
             </div>
-            <div className="flex-shrink-1 relative flex h-[20.1875rem] w-0 flex-1 rounded-r-2xl bg-osmoverse-700">
+            <div className="flex-shrink-1 relative flex h-[20.1875rem] w-0 flex-1 rounded-r-2xl bg-osmoverse-700 xs:rounded-l-2xl">
               <div className="mt-[84px] flex flex-1 flex-col">
                 <ConcentratedLiquidityDepthChart
                   yRange={yRange}
-                  xRange={[xRange[0], xRange[1] * 1.1]}
+                  xRange={[xRange[0], xRange[1]]}
                   data={depthChartData}
                   annotationDatum={{
                     price: lastChartData?.close || 0,
@@ -236,14 +231,18 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                   <div className="mr-[22px] mb-4 flex h-full flex-col items-end justify-between py-4 ">
                     <PriceBox
                       currentValue={
-                        isFullRange ? "0" : upperPrices.price.toString()
+                        isFullRange
+                          ? "0"
+                          : formatPretty(upperPrices.price).toString()
                       }
                       label={t("clPositions.maxPrice")}
                       infinity={isFullRange}
                     />
                     <PriceBox
                       currentValue={
-                        isFullRange ? "0" : lowerPrices.price.toString()
+                        isFullRange
+                          ? "0"
+                          : formatPretty(lowerPrices.price).toString()
                       }
                       label={t("clPositions.minPrice")}
                     />
@@ -255,7 +254,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
         </div>
       </div>
       <div className="mt-8 flex flex-col gap-3">
-        <div className="pl-4 text-subtitle1 font-subtitle1">
+        <div className="pl-4 text-subtitle1 font-subtitle1 xs:pl-1">
           {t("clPositions.addMoreLiquidity")}
         </div>
         <div className="flex flex-col gap-2">
