@@ -72,7 +72,13 @@ export const AddConcLiquidity: FunctionComponent<
     const pool = poolDetail?.pool;
 
     return (
-      <div className={classNames("flex flex-col gap-8", className)}>
+      <div
+        className={classNames(
+          "flex flex-col",
+          addLiquidityConfig.modalView === "overview" ? "gap-8" : "gap-5",
+          className
+        )}
+      >
         {(() => {
           switch (addLiquidityConfig.modalView) {
             case "overview":
