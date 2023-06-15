@@ -41,6 +41,7 @@ const Pools: NextPage = observer(function () {
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Pools.pageViewed],
   });
+  const featureFlags = useFlags();
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
@@ -264,24 +265,26 @@ const Pools: NextPage = observer(function () {
           setIsCreatingPool={useCallback(() => setIsCreatingPool(true), [])}
         />
       </section>
-      <section className="pt-8 pb-10 md:pt-4 md:pb-5">
-        <SuperchargeDaiOsmoPool
-          title={t("addConcentratedLiquidityPoolCta.title")}
-          caption={t("addConcentratedLiquidityPoolCta.caption")}
-          primaryCta={t("addConcentratedLiquidityPoolCta.primaryCta")}
-          secondaryCta={t("addConcentratedLiquidityPoolCta.secondaryCta")}
-          onCtaClick={() => {}}
-          onSecondaryClick={() => {
-            setShowConcentratedLiqIntro(true);
-          }}
-        />
-        {showConcentratedLiqIntro && (
-          <ConcentratedLiquidityLearnMoreModal
-            isOpen={true}
-            onRequestClose={() => setShowConcentratedLiqIntro(false)}
+      {featureFlags.concentratedLiquidity && (
+        <section className="pt-8 pb-10 md:pt-4 md:pb-5">
+          <SuperchargeDaiOsmoPool
+            title={t("addConcentratedLiquidityPoolCta.title")}
+            caption={t("addConcentratedLiquidityPoolCta.caption")}
+            primaryCta={t("addConcentratedLiquidityPoolCta.primaryCta")}
+            secondaryCta={t("addConcentratedLiquidityPoolCta.secondaryCta")}
+            onCtaClick={() => {}}
+            onSecondaryClick={() => {
+              setShowConcentratedLiqIntro(true);
+            }}
           />
-        )}
-      </section>
+          {showConcentratedLiqIntro && (
+            <ConcentratedLiquidityLearnMoreModal
+              isOpen={true}
+              onRequestClose={() => setShowConcentratedLiqIntro(false)}
+            />
+          )}
+        </section>
+      )}
       <section ref={myPositionsRef}>
         <div className="flex w-full flex-col flex-nowrap gap-5 pb-[3.75rem]">
           <h6 className="pl-6">{t("clPositions.yourPositions")}</h6>
