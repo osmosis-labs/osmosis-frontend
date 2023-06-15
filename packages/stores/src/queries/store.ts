@@ -89,7 +89,7 @@ export class OsmosisQueriesImpl {
   public readonly queryLiquidityPositionsById: DeepReadonly<ObservableQueryLiquidityPositionsById>;
   public readonly queryAccountsPositions: DeepReadonly<ObservableQueryAccountsPositions>;
 
-  protected _queryGammPools: DeepReadonly<ObservableQueryPoolGetter>;
+  protected _queryPools: DeepReadonly<ObservableQueryPoolGetter>;
   public readonly queryGammNumPools: DeepReadonly<ObservableQueryNumPools>;
   public readonly queryGammPoolShare: DeepReadonly<ObservableQueryGammPoolShare>;
 
@@ -119,7 +119,7 @@ export class OsmosisQueriesImpl {
   public readonly querySuperfluidOsmoEquivalent: DeepReadonly<ObservableQuerySuperfluidOsmoEquivalent>;
 
   get queryPools(): ObservableQueryPoolGetter {
-    return this._queryGammPools;
+    return this._queryPools;
   }
 
   constructor(
@@ -206,14 +206,14 @@ export class OsmosisQueriesImpl {
             ),
           ]
     );
-    this._queryGammPools = poolsQueryFallbacks.responsiveStore;
+    this._queryPools = poolsQueryFallbacks.responsiveStore;
     // hot swap the pools query store any time the fallback store changes
     autorun(() => {
-      this._queryGammPools = poolsQueryFallbacks.responsiveStore;
+      this._queryPools = poolsQueryFallbacks.responsiveStore;
     });
 
     this.queryGammPoolShare = new ObservableQueryGammPoolShare(
-      this._queryGammPools,
+      this._queryPools,
       queries.queryBalances,
       this.queryAccountLocked,
       this.queryLockedCoins,
@@ -251,7 +251,7 @@ export class OsmosisQueriesImpl {
       chainGetter,
       this.queryLockableDurations,
       this.queryDistrInfo,
-      this._queryGammPools,
+      this._queryPools,
       this.queryMintParams,
       this.queryEpochProvisions,
       this.queryEpochs,
@@ -298,7 +298,7 @@ export class OsmosisQueriesImpl {
         chainGetter,
         this.querySuperfluidParams,
         this.querySuperfluidAssetMultiplier,
-        this._queryGammPools
+        this._queryPools
       );
   }
 }
