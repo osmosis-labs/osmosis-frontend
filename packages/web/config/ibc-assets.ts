@@ -1813,6 +1813,12 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-0",
         coinMinimalDenom: "ulore",
       },
+      {
+        counterpartyChainId: "pirin-1",
+        sourceChannelId: "channel-783",
+        destChannelId: "channel-0",
+        coinMinimalDenom: "unls",
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (
