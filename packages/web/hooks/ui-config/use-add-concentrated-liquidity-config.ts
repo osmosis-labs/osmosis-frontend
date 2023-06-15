@@ -19,14 +19,13 @@ export function useAddConcentratedLiquidityConfig(
   addLiquidity: () => Promise<void>;
   increaseLiquidity: (positionId: string) => Promise<void>;
 } {
-  const { accountStore, derivedDataStore, queriesStore } = useStore();
+  const { accountStore, queriesStore } = useStore();
   const osmosisQueries = queriesStore.get(osmosisChainId).osmosis!;
 
   const account = accountStore.getAccount(osmosisChainId);
   const { bech32Address } = account;
 
-  const { poolDetail } = derivedDataStore.getForPool(poolId);
-  const pool = poolDetail!.pool!.pool as ConcentratedLiquidityPool;
+  const queryPool = osmosisQueries.queryGammPools.getPool(poolId);
 
   const [config] = useState(
     () =>
@@ -36,10 +35,12 @@ export function useAddConcentratedLiquidityConfig(
         poolId,
         bech32Address,
         queriesStore,
-        queriesStore.get(osmosisChainId).queryBalances,
-        pool
+        queriesStore.get(osmosisChainId).queryBalances
       )
   );
+
+  if (queryPool && queryPool.pool instanceof ConcentratedLiquidityPool)
+    config.setPool(queryPool.pool);
 
   const addLiquidity = useCallback(() => {
     return new Promise<void>(async (resolve, reject) => {

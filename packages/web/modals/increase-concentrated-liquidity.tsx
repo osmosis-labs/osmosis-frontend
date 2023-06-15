@@ -41,12 +41,14 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     poolId,
     position: { lowerPrices, upperPrices, baseAsset, quoteAsset, isFullRange },
   } = props;
-  const { chainStore, accountStore, derivedDataStore, priceStore } = useStore();
+  const { chainStore, accountStore, priceStore, queriesStore } = useStore();
   const t = useTranslation();
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getAccount(chainId);
   const isSendingMsg = account.txTypeInProgress !== "";
+
+  const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
   const {
     historicalChartData,
@@ -73,11 +75,12 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   );
 
   // initialize pool data stores once root pool store is loaded
-  const { poolDetail } = derivedDataStore.getForPool(poolId as string);
-  const pool = poolDetail?.pool;
-  const clPool = poolDetail?.pool?.pool as ConcentratedLiquidityPool;
-  const isConcLiq = pool?.type === "concentrated";
-  const currentSqrtPrice = isConcLiq && clPool.currentSqrtPrice;
+  const queryPool = osmosisQueries.queryGammPools.getPool(poolId);
+  const clPool =
+    queryPool?.pool && queryPool.pool instanceof ConcentratedLiquidityPool
+      ? queryPool.pool
+      : undefined;
+  const currentSqrtPrice = clPool ? clPool.currentSqrtPrice : undefined;
   const currentPrice = currentSqrtPrice
     ? currentSqrtPrice.mul(currentSqrtPrice)
     : new Dec(0);
@@ -287,7 +290,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             outOfRangeClassName="!bg-osmoverse-900"
             priceInputClass="!bg-osmoverse-900 !w-full"
             getFiatValue={getFiatValue}
-            coin={pool?.poolAssets[0]?.amount}
+            coin={queryPool?.poolAssets[0]?.amount}
             coinIsToken0={true}
             onUpdate={useCallback(
               (amount) => {
@@ -305,7 +308,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             priceInputClass="!bg-osmoverse-900 !w-full"
             outOfRangeClassName="!bg-osmoverse-900"
             getFiatValue={getFiatValue}
-            coin={pool?.poolAssets[1]?.amount}
+            coin={queryPool?.poolAssets[1]?.amount}
             coinIsToken0={false}
             onUpdate={useCallback(
               (amount) => {

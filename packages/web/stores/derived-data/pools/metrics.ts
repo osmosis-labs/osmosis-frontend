@@ -3,11 +3,11 @@ import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import {
   ChainStore,
   IPriceStore,
-  ObservablePoolDetails,
   ObservablePoolsBonding,
   ObservableQueryActiveGauges,
   ObservableQueryPool,
   ObservableQueryPoolFeesMetrics,
+  ObservableSharePoolDetails,
   OsmosisQueries,
 } from "@osmosis-labs/stores";
 import { action, makeObservable, observable } from "mobx";
@@ -21,7 +21,7 @@ export class ObservablePoolWithMetric {
 
   constructor(
     pool: ObservableQueryPool,
-    protected readonly poolDetails: ObservablePoolDetails,
+    protected readonly poolDetails: ObservableSharePoolDetails,
     protected readonly poolsBonding: ObservablePoolsBonding,
     protected readonly chainStore: ChainStore,
     protected readonly externalQueries: {
@@ -105,7 +105,7 @@ export class ObservablePoolsWithMetric {
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly verifiedPoolsStore: ObservableVerifiedPoolsStoreMap,
     readonly chainId: string,
-    protected readonly poolDetails: ObservablePoolDetails,
+    protected readonly poolDetails: ObservableSharePoolDetails,
     protected readonly poolsBonding: ObservablePoolsBonding,
     protected readonly chainStore: ChainStore,
     protected readonly externalQueries: {
@@ -208,7 +208,7 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
     protected readonly osmosisChainId: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly verifiedPoolsStore: ObservableVerifiedPoolsStoreMap,
-    protected readonly poolDetails: ObservablePoolDetails,
+    protected readonly poolDetails: ObservableSharePoolDetails,
     protected readonly poolsBonding: ObservablePoolsBonding,
     protected readonly chainStore: ChainStore,
     protected readonly externalQueries: {

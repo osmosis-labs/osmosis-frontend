@@ -56,7 +56,7 @@ export class DerivedDataStore extends BaseDerivedDataStore {
       this.osmosisChainId,
       this.queriesStore,
       this.verifiedPoolsStore,
-      this.poolDetails,
+      this.sharePoolDetails,
       this.poolsBonding,
       this.chainGetter,
       this.externalQueries,

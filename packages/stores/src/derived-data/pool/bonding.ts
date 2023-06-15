@@ -17,16 +17,16 @@ import {
   ObservableQueryActiveGauges,
   ObservableQueryPoolFeesMetrics,
 } from "../../queries-external";
-import { ObservablePoolDetails } from "./details";
+import { ObservableSharePoolDetails } from "./share-pool-details";
 import { ObservableSuperfluidPoolDetails } from "./superfluid";
 import { BondDuration } from "./types";
 
 /** Provides info for the current account's bonding status in a pool. */
-export class ObservablePoolBonding {
+export class ObservableSharePoolBonding {
   constructor(
     protected readonly poolId: string,
     protected readonly osmosisChainId: string,
-    protected readonly poolDetails: ObservablePoolDetails,
+    protected readonly sharePoolDetails: ObservableSharePoolDetails,
     protected readonly superfluidPoolDetails: ObservableSuperfluidPoolDetails,
     protected readonly chainGetter: ChainGetter,
     protected readonly priceStore: IPriceStore,
@@ -51,12 +51,16 @@ export class ObservablePoolBonding {
     return osmosisQueries;
   }
 
-  protected get queryPool() {
-    return this.queries.queryGammPools.getPool(this.poolId);
+  @computed
+  protected get querySharePool() {
+    const pool = this.queries.queryGammPools.getPool(this.poolId);
+
+    if (Boolean(pool?.sharePool)) return pool;
   }
 
-  protected get poolDetail() {
-    return this.poolDetails.get(this.poolId);
+  /** Information about share pools. */
+  protected get sharePoolDetail() {
+    return this.sharePoolDetails.get(this.poolId);
   }
 
   protected get superfluidPoolDetail() {
@@ -71,12 +75,12 @@ export class ObservablePoolBonding {
   readonly calculateBondLevel = computedFn(
     (bondDurations: BondDuration[]): 1 | 2 | undefined => {
       if (
-        this.poolDetail.userAvailableShares.toDec().gt(new Dec(0)) &&
+        this.sharePoolDetail.userAvailableShares.toDec().gt(new Dec(0)) &&
         bondDurations.some((duration) => duration.bondable)
       )
         return 2;
 
-      if (this.poolDetail.userAvailableShares.toDec().isZero()) return 1;
+      if (this.sharePoolDetail.userAvailableShares.toDec().isZero()) return 1;
     }
   );
 
@@ -85,6 +89,8 @@ export class ObservablePoolBonding {
    *  Internal OSMO incentives & swap fees included in breakdown. */
   @computed
   get bondDurations(): BondDuration[] {
+    if (!this.querySharePool) return [];
+
     const internalGauges = this.superfluidPoolDetail.gaugesWithSuperfluidApr;
 
     const queryLockedCoin = this.queries.queryAccountLocked.get(
@@ -110,7 +116,7 @@ export class ObservablePoolBonding {
       .forEach((coin) => {
         if (
           coin.amount.currency.coinMinimalDenom ===
-          this.poolDetail.poolShareCurrency.coinMinimalDenom
+          this.sharePoolDetail.poolShareCurrency.coinMinimalDenom
         ) {
           durationsMsSet.add(coin.duration.asMilliseconds());
         }
@@ -137,10 +143,10 @@ export class ObservablePoolBonding {
 
   /** Highest APR that can be earned in this share pool. */
   get highestBondDuration(): BondDuration | undefined {
-    if (!this.poolDetail.longestDuration) return;
+    if (!this.sharePoolDetail.longestDuration) return;
 
     return this.getBondDuration(
-      this.poolDetail.longestDuration.asMilliseconds()
+      this.sharePoolDetail.longestDuration.asMilliseconds()
     );
   }
 
@@ -157,7 +163,7 @@ export class ObservablePoolBonding {
         this.bech32Address
       );
 
-      const _queryPool = this.queryPool;
+      const _queryPool = this.querySharePool;
       if (!_queryPool) return;
 
       const curDuration = dayjs.duration({
@@ -165,11 +171,11 @@ export class ObservablePoolBonding {
       });
 
       const lockedUserShares = queryLockedCoin.getLockedCoinWithDuration(
-        this.poolDetail.poolShareCurrency,
+        this.sharePoolDetail.poolShareCurrency,
         curDuration
       ).amount;
 
-      const userLockedShareValue = this.poolDetail.totalValueLocked.mul(
+      const userLockedShareValue = this.sharePoolDetail.totalValueLocked.mul(
         new IntPretty(lockedUserShares.quo(_queryPool.totalShare))
       );
 
@@ -187,7 +193,7 @@ export class ObservablePoolBonding {
       }, []);
 
       const unlockingUserShares = queryLockedCoin.getUnlockingCoinWithDuration(
-        this.poolDetail.poolShareCurrency,
+        this.sharePoolDetail.poolShareCurrency,
         curDuration
       );
       const userUnlockingShares =
@@ -196,7 +202,7 @@ export class ObservablePoolBonding {
               // only return soonest unlocking shares
               shares:
                 unlockingUserShares[0].amount ??
-                new CoinPretty(this.poolDetail.poolShareCurrency, 0),
+                new CoinPretty(this.sharePoolDetail.poolShareCurrency, 0),
               endTime: unlockingUserShares[0].endTime,
             }
           : undefined;
@@ -262,7 +268,7 @@ export class ObservablePoolBonding {
       });
 
       // add superfluid data if highest duration
-      const sfsDuration = this.poolDetail.longestDuration;
+      const sfsDuration = this.sharePoolDetail.longestDuration;
       let superfluid: BondDuration["superfluid"] | undefined;
       if (
         this.superfluidPoolDetail.isSuperfluid &&
@@ -299,7 +305,7 @@ export class ObservablePoolBonding {
         (sum, { apr }) => sum.add(apr),
         new RatePretty(0)
       );
-      aggregateApr = aggregateApr.add(this.poolDetail.swapFeeApr);
+      aggregateApr = aggregateApr.add(this.sharePoolDetail.swapFeeApr);
       if (superfluid) aggregateApr = aggregateApr.add(superfluid.apr);
 
       return {
@@ -311,7 +317,7 @@ export class ObservablePoolBonding {
         userLockedShareValue,
         userUnlockingShares,
         aggregateApr,
-        swapFeeApr: this.poolDetail.swapFeeApr,
+        swapFeeApr: this.sharePoolDetail.swapFeeApr,
         swapFeeDailyReward: this.externalQueries.queryGammPoolFeeMetrics
           .getPoolFeesMetrics(this.poolId, this.priceStore)
           .feesSpent7d.quo(new Dec(7)),
@@ -323,10 +329,10 @@ export class ObservablePoolBonding {
 }
 
 /** Map of current accounts bonding info for all pools by pool ID. */
-export class ObservablePoolsBonding extends HasMapStore<ObservablePoolBonding> {
+export class ObservablePoolsBonding extends HasMapStore<ObservableSharePoolBonding> {
   constructor(
     protected readonly osmosisChainId: string,
-    protected readonly poolDetails: ObservablePoolDetails,
+    protected readonly poolDetails: ObservableSharePoolDetails,
     protected readonly superfluidPoolDetails: ObservableSuperfluidPoolDetails,
     protected readonly priceStore: IPriceStore,
     protected readonly chainGetter: ChainGetter,
@@ -339,7 +345,7 @@ export class ObservablePoolsBonding extends HasMapStore<ObservablePoolBonding> {
   ) {
     super(
       (poolId) =>
-        new ObservablePoolBonding(
+        new ObservableSharePoolBonding(
           poolId,
           this.osmosisChainId,
           this.poolDetails,
@@ -353,7 +359,7 @@ export class ObservablePoolsBonding extends HasMapStore<ObservablePoolBonding> {
     );
   }
 
-  get(poolId: string): ObservablePoolBonding {
+  get(poolId: string): ObservableSharePoolBonding {
     return super.get(poolId);
   }
 }

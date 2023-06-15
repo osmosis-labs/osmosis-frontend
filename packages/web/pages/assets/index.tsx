@@ -390,9 +390,9 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
 
     const pools = poolIds
       .map((poolId) => {
-        const poolDetail = derivedDataStore.poolDetails.get(poolId);
+        const sharePoolDetail = derivedDataStore.sharePoolDetails.get(poolId);
         const poolBonding = derivedDataStore.poolsBonding.get(poolId);
-        const pool = poolDetail.pool;
+        const pool = sharePoolDetail.querySharePool;
 
         const apr =
           poolBonding.highestBondDuration?.aggregateApr ?? new RatePretty(0);
@@ -406,7 +406,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
 
         return [
           pool,
-          poolDetail.userShareValue,
+          sharePoolDetail.userShareValue,
           [
             queryOsmosis.queryIncentivizedPools.isIncentivized(poolId)
               ? {
@@ -427,20 +427,22 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                     poolBonding.highestBondDuration?.swapFeeApr
                       .maxDecimals(0)
                       .toString() ??
-                    poolDetail.swapFeeApr.maxDecimals(0).toString(),
+                    sharePoolDetail.swapFeeApr.maxDecimals(0).toString(),
                 },
             {
               label: t("assets.poolCards.liquidity"),
-              value: poolDetail.userAvailableValue.maxDecimals(2).toString(),
+              value: sharePoolDetail.userAvailableValue
+                .maxDecimals(2)
+                .toString(),
             },
             queryOsmosis.queryIncentivizedPools.isIncentivized(poolId)
               ? {
                   label: t("assets.poolCards.bonded"),
-                  value: poolDetail.userBondedValue.toString(),
+                  value: sharePoolDetail.userBondedValue.toString(),
                 }
               : {
                   label: t("pools.externalIncentivized.TVL"),
-                  value: formatPretty(poolDetail.totalValueLocked),
+                  value: formatPretty(sharePoolDetail.totalValueLocked),
                 },
           ],
         ] as [ObservableQueryPool, PricePretty, Metric[]];

@@ -87,19 +87,19 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
             superfluidPoolDetail: undefined,
             poolBonding: undefined,
           };
-    const pool = poolDetail?.pool;
+    const pool = poolDetail?.querySharePool;
     const { superfluidDelegateToValidator } = useSuperfluidPool();
 
     // feature flag check
     useEffect(() => {
       // redirect if CL pool and CL feature is off
       if (
-        poolDetail?.pool?.type === "concentrated" &&
+        pool?.type === "concentrated" &&
         !featureFlags.concentratedLiquidity
       ) {
         router.push("/pools");
       }
-    }, [poolDetail?.pool?.type, featureFlags.concentratedLiquidity, router]);
+    }, [pool?.type, featureFlags.concentratedLiquidity, router]);
 
     // user analytics
     const { poolName, poolWeight } = useMemo(
@@ -138,7 +138,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
       unlockTokens,
     } = useLockTokenConfig(
       pool
-        ? queryOsmosis.queryGammPoolShare.getShareCurrency(pool.id)
+        ? queryOsmosis.queryGammPoolShare.makeShareCurrency(pool.id)
         : undefined
     );
     const [showSuperfluidValidatorModal, setShowSuperfluidValidatorsModal] =
