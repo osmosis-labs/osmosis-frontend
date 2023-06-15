@@ -64,6 +64,13 @@ const testnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "usd-coin",
         coinImageUrl: "/tokens/usdc.svg",
       },
+      {
+        coinDenom: "tDAI",
+        coinMinimalDenom: "dai-wei",
+        coinDecimals: 18,
+        coinGeckoId: "dai",
+        coinImageUrl: "/tokens/dai.svg",
+      },
     ],
     features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
     explorerUrlToTx:
