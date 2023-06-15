@@ -16,6 +16,7 @@ export function useRemoveConcentratedLiquidityConfig(
   const { accountStore, queriesStore } = useStore();
 
   const account = accountStore.getAccount(osmosisChainId);
+  const osmosisQueries = queriesStore.get(osmosisChainId).osmosis!;
 
   const [config] = useState(
     () =>
@@ -46,10 +47,14 @@ export function useRemoveConcentratedLiquidityConfig(
                 if (tx.code) {
                   reject(tx.log);
                 } else {
-                  queriesStore
-                    .get(osmosisChainId)
-                    .osmosis!.queryLiquiditiesPerTickRange.getForPoolId(poolId)
+                  // get latest liquidity depths for charts
+                  osmosisQueries.queryLiquiditiesPerTickRange
+                    .getForPoolId(poolId)
                     .waitFreshResponse();
+                  // get latest price, if position removed
+                  osmosisQueries.queryPools
+                    .getPool(poolId)
+                    ?.waitFreshResponse();
                   resolve();
                 }
               }
@@ -60,10 +65,9 @@ export function useRemoveConcentratedLiquidityConfig(
         }
       }),
     [
-      queriesStore,
+      osmosisQueries,
       poolId,
       account.osmosis,
-      osmosisChainId,
       positionId,
       config.effectiveLiquidity,
     ]
