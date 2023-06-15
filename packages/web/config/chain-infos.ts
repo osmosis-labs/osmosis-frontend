@@ -66,7 +66,8 @@ const testnetChainInfos: SimplifiedChainInfo[] = [
       },
       {
         coinDenom: "tDAI",
-        coinMinimalDenom: "dai-wei",
+        coinMinimalDenom:
+          "ibc/0CD3A0285E1341859B5E86B6AB7682F023D03E97607CCC1DC95706411D866DF7",
         coinDecimals: 18,
         coinGeckoId: "dai",
         coinImageUrl: "/tokens/dai.svg",
