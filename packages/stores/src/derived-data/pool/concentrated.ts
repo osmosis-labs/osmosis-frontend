@@ -127,16 +127,19 @@ export class ObservableConcentratedPoolDetail {
   }
 
   @computed
+  get userPositions() {
+    return this.osmosisQueries.queryAccountsPositions
+      .get(this.bech32Address)
+      .positions.filter((position) => position.poolId === this.poolId);
+  }
+
+  @computed
   get userPoolAssets(): { asset: CoinPretty }[] {
     const queryPool = this.queryConcentratedPool;
-    const userPositions = this.osmosisQueries.queryAccountsPositions
-      .get(this.bech32Address)
-      .positions.filter((position) => position.poolId === queryPool?.id);
-
     if (!queryPool) return [];
 
     // reduce to a summed map of coins by coin denom
-    const coinSumsMap = userPositions.reduce<Map<string, CoinPretty>>(
+    const coinSumsMap = this.userPositions.reduce<Map<string, CoinPretty>>(
       (coins, position) => {
         [position.baseAsset, position.quoteAsset]
           .filter((coin): coin is CoinPretty => Boolean(coin))

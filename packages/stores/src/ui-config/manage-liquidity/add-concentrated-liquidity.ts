@@ -203,7 +203,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   @computed
   get moderatePriceRange(): [Dec, Dec] {
-    if (!this.pool) return [new Dec(0), new Dec(100)];
+    if (!this.pool) return [new Dec(0.1), new Dec(100)];
 
     return [
       roundPriceToNearestTick(
@@ -229,7 +229,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   @computed
   get aggressivePriceRange(): [Dec, Dec] {
-    if (!this.pool) return [new Dec(0), new Dec(100)];
+    if (!this.pool) return [new Dec(0.1), new Dec(100)];
 
     return [
       roundPriceToNearestTick(
