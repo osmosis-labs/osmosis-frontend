@@ -254,7 +254,7 @@ export class ObservableSuperfluidPoolDetails extends HasMapStore<ObservableSuper
       CosmosQueries & OsmosisQueries
     >,
     protected readonly accountStore: IAccountStore,
-    protected readonly poolDetails: ObservableSharePoolDetails,
+    protected readonly sharePoolDetails: ObservableSharePoolDetails,
     protected readonly priceStore: IPriceStore
   ) {
     super(
@@ -264,7 +264,7 @@ export class ObservableSuperfluidPoolDetails extends HasMapStore<ObservableSuper
           this.osmosisChainId,
           this.queriesStore,
           this.accountStore,
-          this.poolDetails,
+          this.sharePoolDetails,
           this.priceStore
         )
     );

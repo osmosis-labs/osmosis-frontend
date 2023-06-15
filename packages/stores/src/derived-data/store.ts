@@ -13,6 +13,7 @@ import {
   ObservableQueryPoolFeesMetrics,
 } from "../queries-external";
 import {
+  ObservableConcentratedPoolDetails,
   ObservablePoolsBonding,
   ObservableSharePoolDetails,
   ObservableSuperfluidPoolDetails,
@@ -21,6 +22,7 @@ import {
 /** Contains stores that compute on the lower level stores. */
 export class DerivedDataStore {
   public readonly sharePoolDetails: DeepReadonly<ObservableSharePoolDetails>;
+  public readonly concentratedPoolDetails: DeepReadonly<ObservableConcentratedPoolDetails>;
   public readonly superfluidPoolDetails: DeepReadonly<ObservableSuperfluidPoolDetails>;
   public readonly poolsBonding: DeepReadonly<ObservablePoolsBonding>;
 
@@ -38,6 +40,13 @@ export class DerivedDataStore {
     protected readonly chainGetter: ChainStore
   ) {
     this.sharePoolDetails = new ObservableSharePoolDetails(
+      this.osmosisChainId,
+      this.queriesStore,
+      this.externalQueries,
+      this.accountStore,
+      this.priceStore
+    );
+    this.concentratedPoolDetails = new ObservableConcentratedPoolDetails(
       this.osmosisChainId,
       this.queriesStore,
       this.externalQueries,
@@ -65,7 +74,8 @@ export class DerivedDataStore {
 
   getForPool(poolId: string) {
     return {
-      poolDetail: this.sharePoolDetails.get(poolId),
+      sharePoolDetail: this.sharePoolDetails.get(poolId),
+      concentratedPoolDetail: this.concentratedPoolDetails.get(poolId),
       superfluidPoolDetail: this.superfluidPoolDetails.get(poolId),
       poolBonding: this.poolsBonding.get(poolId),
     };

@@ -3,6 +3,7 @@ import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import {
   ChainStore,
   IPriceStore,
+  ObservableConcentratedPoolDetails,
   ObservablePoolsBonding,
   ObservableQueryActiveGauges,
   ObservableQueryPool,
@@ -17,11 +18,12 @@ import { ObservableVerifiedPoolsStoreMap } from "./verified";
 
 export class ObservablePoolWithMetric {
   @observable
-  pool: ObservableQueryPool;
+  queryPool: ObservableQueryPool;
 
   constructor(
     pool: ObservableQueryPool,
-    protected readonly poolDetails: ObservableSharePoolDetails,
+    protected readonly sharePoolDetails: ObservableSharePoolDetails,
+    protected readonly concentratedPoolDetails: ObservableConcentratedPoolDetails,
     protected readonly poolsBonding: ObservablePoolsBonding,
     protected readonly chainStore: ChainStore,
     protected readonly externalQueries: {
@@ -30,39 +32,54 @@ export class ObservablePoolWithMetric {
     },
     protected readonly priceStore: IPriceStore
   ) {
-    this.pool = pool;
+    this.queryPool = pool;
     makeObservable(this);
   }
 
   @action
-  setPool(pool: ObservableQueryPool) {
-    this.pool = pool;
+  setPool(queryPool: ObservableQueryPool) {
+    this.queryPool = queryPool;
   }
 
-  get poolDetail() {
-    return this.poolDetails.get(this.pool.id);
+  get sharePoolDetail() {
+    if (Boolean(this.queryPool.sharePool))
+      return this.sharePoolDetails.get(this.queryPool.id);
+  }
+
+  get concentratedPoolDetail() {
+    if (Boolean(this.queryPool.concentratedLiquidityPoolInfo))
+      return this.concentratedPoolDetails.get(this.queryPool.id);
   }
 
   get liquidity() {
-    return this.poolDetail.totalValueLocked;
+    return this.queryPool.computeTotalValueLocked(this.priceStore);
   }
 
   get myLiquidity() {
-    return this.poolDetail.userShareValue;
+    return (
+      this.sharePoolDetail?.userShareValue ??
+      this.queryPool.computeTotalValueLocked(this.priceStore)
+    );
   }
 
   get myAvailableLiquidity() {
-    return this.poolDetail.userAvailableValue;
+    return (
+      this.sharePoolDetail?.userAvailableValue ??
+      new PricePretty(
+        this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)!,
+        0
+      )
+    );
   }
 
   get poolName() {
-    return this.pool.poolAssets
+    return this.queryPool.poolAssets
       .map((asset) => asset.amount.currency.coinDenom)
       .join("/");
   }
 
   get networkNames() {
-    return this.pool.poolAssets
+    return this.queryPool.poolAssets
       .map(
         (asset) =>
           this.chainStore.getChainFromCurrency(asset.amount.denom)?.chainName ??
@@ -74,15 +91,16 @@ export class ObservablePoolWithMetric {
   get apr() {
     return (
       this.poolsBonding
-        .get(this.pool.id)
+        .get(this.queryPool.id)
         ?.highestBondDuration?.aggregateApr.maxDecimals(0) ??
-      this.poolDetail.swapFeeApr.maxDecimals(0)
+      this.sharePoolDetail?.swapFeeApr.maxDecimals(0) ??
+      new RatePretty("0")
     );
   }
 
   get feePoolMetrics() {
     return this.externalQueries.queryGammPoolFeeMetrics.getPoolFeesMetrics(
-      this.pool.id,
+      this.queryPool.id,
       this.priceStore
     );
   }
@@ -105,7 +123,8 @@ export class ObservablePoolsWithMetric {
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly verifiedPoolsStore: ObservableVerifiedPoolsStoreMap,
     readonly chainId: string,
-    protected readonly poolDetails: ObservableSharePoolDetails,
+    protected readonly sharePoolDetails: ObservableSharePoolDetails,
+    protected readonly concentratedPoolDetails: ObservableConcentratedPoolDetails,
     protected readonly poolsBonding: ObservablePoolsBonding,
     protected readonly chainStore: ChainStore,
     protected readonly externalQueries: {
@@ -138,7 +157,8 @@ export class ObservablePoolsWithMetric {
             pool.id,
             new ObservablePoolWithMetric(
               pool,
-              this.poolDetails,
+              this.sharePoolDetails,
+              this.concentratedPoolDetails,
               this.poolsBonding,
               this.chainStore,
               this.externalQueries,
@@ -151,7 +171,7 @@ export class ObservablePoolsWithMetric {
       const pools = Array.from(poolsMap.values()).filter((pool) => {
         // concentrated liquidity feature
         if (
-          pool.pool.type === "concentrated" &&
+          pool.queryPool.type === "concentrated" &&
           !concentratedLiquidityFeature
         ) {
           return false;
@@ -169,9 +189,9 @@ export class ObservablePoolsWithMetric {
             b[sortingColumn];
 
           // If user is sorting by pool, then sort by pool id
-          if (sortingColumn === "pool") {
-            valueToCompareA = Number(a.pool.id);
-            valueToCompareB = Number(b.pool.id);
+          if (sortingColumn === "queryPool") {
+            valueToCompareA = Number(a.queryPool.id);
+            valueToCompareB = Number(b.queryPool.id);
           }
 
           if (
@@ -188,9 +208,19 @@ export class ObservablePoolsWithMetric {
             valueToCompareB = Number(valueToCompareB.toDec().toString());
           }
 
-          if (valueToCompareA > valueToCompareB) {
+          if (
+            (typeof valueToCompareA !== "number" || isNaN(valueToCompareA)) &&
+            (typeof valueToCompareB !== "number" || isNaN(valueToCompareB))
+          ) {
+            return 0;
+          }
+
+          const aNum = valueToCompareA as number;
+          const bNum = valueToCompareB as number;
+
+          if (aNum > bNum) {
             return isSortingDesc ? -1 : 1;
-          } else if (valueToCompareA < valueToCompareB) {
+          } else if (aNum < bNum) {
             return isSortingDesc ? 1 : -1;
           } else {
             return 0;
@@ -208,7 +238,8 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
     protected readonly osmosisChainId: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly verifiedPoolsStore: ObservableVerifiedPoolsStoreMap,
-    protected readonly poolDetails: ObservableSharePoolDetails,
+    protected readonly sharePoolDetails: ObservableSharePoolDetails,
+    protected readonly concentratedPoolDetails: ObservableConcentratedPoolDetails,
     protected readonly poolsBonding: ObservablePoolsBonding,
     protected readonly chainStore: ChainStore,
     protected readonly externalQueries: {
@@ -223,7 +254,8 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
           queriesStore,
           verifiedPoolsStore,
           chainId,
-          poolDetails,
+          sharePoolDetails,
+          concentratedPoolDetails,
           poolsBonding,
           chainStore,
           externalQueries,

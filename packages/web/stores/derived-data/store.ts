@@ -57,6 +57,7 @@ export class DerivedDataStore extends BaseDerivedDataStore {
       this.queriesStore,
       this.verifiedPoolsStore,
       this.sharePoolDetails,
+      this.concentratedPoolDetails,
       this.poolsBonding,
       this.chainGetter,
       this.externalQueries,
