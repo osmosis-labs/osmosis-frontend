@@ -1,4 +1,4 @@
-import { EmptyAmountError, TxChainSetter } from "@keplr-wallet/hooks";
+import { EmptyAmountError } from "@keplr-wallet/hooks";
 import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { action, computed, makeObservable, observable } from "mobx";
@@ -8,9 +8,12 @@ import {
   OsmosisQueries,
 } from "../../queries";
 
-export class ObservableRemoveConcentratedLiquidityConfig extends TxChainSetter {
+export class ObservableRemoveConcentratedLiquidityConfig {
   @observable
   protected _percentage: number;
+
+  @observable
+  chainId: string;
 
   get percentage(): number {
     return this._percentage;
@@ -85,8 +88,7 @@ export class ObservableRemoveConcentratedLiquidityConfig extends TxChainSetter {
     protected readonly positionId: string,
     initialPercentage: number = 1
   ) {
-    super(chainGetter, initialChainId);
-
+    this.chainId = initialChainId;
     this._percentage = initialPercentage;
 
     makeObservable(this);
