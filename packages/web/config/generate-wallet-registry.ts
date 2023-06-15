@@ -89,7 +89,7 @@ function isObject(value: any): value is Record<any, any> {
  *  lazyInstall: () => import("wallet-lazy-install-url").then(m => m.wallets),
  * }
  */
-const getStringifiedWallet = (wallet: (typeof WalletRegistry)[number]) => {
+const getStringifiedWallet = (wallet: typeof WalletRegistry[number]) => {
   const stringifyObject = (obj: any) => {
     let val: any[] = [];
     Object.entries(obj).forEach(([key, value]) => {
