@@ -239,7 +239,7 @@ const testnetChainInfos: SimplifiedChainInfo[] = [
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
-    explorerUrlToTx: "https://explorer-rila.nolus.io/nolus-rila/tx/{txHash}",
+    explorerUrlToTx: "https://explorer-rila.nolus.io/rila-1/tx/{txHash}",
   },
   {
     rpc: "https://rpc-eu-1.kaon.kyve.network",
@@ -3597,6 +3597,34 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://ping.pub/gitopia/tx/{txHash}",
+  },
+  {
+    rpc: "https://pirin-cl.nolus.network:26657",
+    rest: "https://pirin-cl.nolus.network:1317",
+    chainId: "pirin-1",
+    chainName: "Nolus",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("nolus"),
+    currencies: [
+      {
+        coinDenom: "NLS",
+        coinMinimalDenom: "unls",
+        coinDecimals: 6,
+        coinGeckoId: "pool:unls",
+        coinImageUrl: "/tokens/nolus.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.01,
+          average: 0.025,
+          high: 0.05,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://explorer.nolus.io/pirin-1/tx/{txHash}",
   },
 ];
 
