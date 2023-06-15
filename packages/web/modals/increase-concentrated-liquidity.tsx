@@ -1,5 +1,8 @@
 import { Dec } from "@keplr-wallet/unit";
-import { ObservableQueryLiquidityPositionById } from "@osmosis-labs/stores";
+import {
+  ObservableAddConcentratedLiquidityConfig,
+  ObservableQueryLiquidityPositionById,
+} from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -12,6 +15,7 @@ import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
 import { tError } from "~/components/localization";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
+import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
 
 import {
@@ -36,10 +40,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     position: ObservableQueryLiquidityPositionById;
   } & ModalBaseProps
 > = observer((props) => {
-  const {
-    poolId,
-    position: { lowerPrices, upperPrices, baseAsset, quoteAsset, isFullRange },
-  } = props;
+  const { poolId, position: positionConfig } = props;
   const { chainStore, accountStore, priceStore, queriesStore } = useStore();
   const t = useTranslation();
 
@@ -49,23 +50,20 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
 
   const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
+  const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
   const {
-    historicalChartData,
-    historicalRange,
     xRange,
     yRange,
-    setHoverPrice,
     lastChartData,
     depthChartData,
     setZoom,
     zoomIn,
     zoomOut,
-    range,
-    priceDecimal,
-    setHistoricalRange,
-    hoverPrice,
     setPriceRange,
-  } = useHistoricalAndLiquidityData(chainId, poolId);
+  } = chartConfig;
+
+  const { lowerPrices, upperPrices, baseAsset, quoteAsset, isFullRange } =
+    positionConfig;
 
   const { config, increaseLiquidity } = useAddConcentratedLiquidityConfig(
     chainStore,
@@ -168,35 +166,13 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
           </div>
           <div className="flex gap-1">
             <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-6 pl-6 xs:hidden">
-              <PriceChartHeader
-                classes={{
-                  priceHeaderClass: "text-h5 font-h5 text-osmoverse-200",
-                }}
-                historicalRange={historicalRange}
-                setHistoricalRange={setHistoricalRange}
-                baseDenom={config.baseDepositAmountIn.sendCurrency.coinDenom}
-                quoteDenom={config.quoteDepositAmountIn.sendCurrency.coinDenom}
-                hoverPrice={hoverPrice}
-                decimal={priceDecimal}
-                hideButtons
+              <ChartHeader
+                chartConfig={chartConfig}
+                addLiquidityConfig={config}
               />
-              <TokenPairHistoricalChart
-                data={historicalChartData}
-                annotations={
-                  isFullRange
-                    ? [
-                        new Dec((yRange[0] || 0) * 1.05),
-                        new Dec((yRange[1] || 0) * 0.95),
-                      ]
-                    : range || []
-                }
-                domain={yRange}
-                onPointerHover={setHoverPrice}
-                onPointerOut={
-                  lastChartData
-                    ? () => setHoverPrice(lastChartData.close)
-                    : undefined
-                }
+              <Chart
+                chartConfig={chartConfig}
+                positionConfig={positionConfig}
               />
             </div>
             <div className="flex-shrink-1 relative flex h-[20.1875rem] w-0 flex-1 rounded-r-2xl bg-osmoverse-700 xs:rounded-l-2xl">
@@ -347,3 +323,59 @@ const PriceBox: FunctionComponent<{
     )}
   </div>
 );
+
+/**
+ * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
+ */
+const ChartHeader: FunctionComponent<{
+  addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+  chartConfig: ObservableHistoricalAndLiquidityData;
+}> = ({ chartConfig, addLiquidityConfig }) => {
+  const { historicalRange, priceDecimal, setHistoricalRange, hoverPrice } =
+    chartConfig;
+
+  const { baseDepositAmountIn, quoteDepositAmountIn } = addLiquidityConfig;
+
+  return (
+    <PriceChartHeader
+      classes={{
+        priceHeaderClass: "text-h5 font-h5 text-osmoverse-200",
+      }}
+      historicalRange={historicalRange}
+      setHistoricalRange={setHistoricalRange}
+      baseDenom={baseDepositAmountIn.sendCurrency.coinDenom}
+      quoteDenom={quoteDepositAmountIn.sendCurrency.coinDenom}
+      hoverPrice={hoverPrice}
+      decimal={priceDecimal}
+      hideButtons
+    />
+  );
+};
+
+/**
+ * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
+ */
+const Chart: FunctionComponent<{
+  chartConfig: ObservableHistoricalAndLiquidityData;
+  positionConfig: ObservableQueryLiquidityPositionById;
+}> = ({ chartConfig, positionConfig }) => {
+  const { historicalChartData, yRange, setHoverPrice, lastChartData, range } =
+    chartConfig;
+  const { isFullRange } = positionConfig;
+
+  return (
+    <TokenPairHistoricalChart
+      data={historicalChartData}
+      annotations={
+        isFullRange
+          ? [new Dec((yRange[0] || 0) * 1.05), new Dec((yRange[1] || 0) * 0.95)]
+          : range || []
+      }
+      domain={yRange}
+      onPointerHover={setHoverPrice}
+      onPointerOut={
+        lastChartData ? () => setHoverPrice(lastChartData.close) : undefined
+      }
+    />
+  );
+};

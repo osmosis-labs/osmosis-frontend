@@ -83,7 +83,7 @@ export const AddLiquidityModal: FunctionComponent<
         {...props}
         isOpen={props.isOpen && showModalBase}
         hideCloseButton
-        className="!max-w-[57.5rem]"
+        className="max-h-[98vh] !max-w-[57.5rem] overflow-auto"
       >
         <AddConcLiquidity
           addLiquidityConfig={addConliqConfig}
