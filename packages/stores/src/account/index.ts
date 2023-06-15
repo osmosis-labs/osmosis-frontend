@@ -1396,6 +1396,13 @@ export class OsmosisAccountImpl {
   }
 
   /**
+   * Automatically migrates locked shares to full range concentrated position.
+   * Accounts for superfluid stake status.
+   *
+   * @param poolId Id of pool to exit.
+   * @param lockIds Locks to migrate.
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
   async sendUnlockAndMigrateSharesToFullRangeConcentratedPositionMsg(
     poolId: string,
