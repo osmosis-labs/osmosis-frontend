@@ -63,7 +63,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   const baseAsset = config.effectiveLiquidityAmounts?.base;
   const quoteAsset = config.effectiveLiquidityAmounts?.quote;
 
-  const queryPool = osmosisQueries.queryGammPools.getPool(props.poolId);
+  const queryPool = osmosisQueries.queryPools.getPool(props.poolId);
   const clPool =
     queryPool?.pool && queryPool.pool instanceof ConcentratedLiquidityPool
       ? queryPool.pool

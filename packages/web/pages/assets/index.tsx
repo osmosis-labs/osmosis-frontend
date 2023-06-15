@@ -319,7 +319,7 @@ const PoolAssets: FunctionComponent = observer(() => {
   }, [ownedPoolIds.length, setUserProperty]);
 
   const dustedPoolIds = useHideDustUserSetting(ownedPoolIds, (poolId) =>
-    queryOsmosis.queryGammPools
+    queryOsmosis.queryPools
       .getPool(poolId)
       ?.computeTotalValueLocked(priceStore)
       .mul(

@@ -46,7 +46,7 @@ export class ObservableSharePoolDetail {
 
   @computed
   get querySharePool() {
-    const pool = this.queries.queryGammPools.getPool(this.poolId);
+    const pool = this.queries.queryPools.getPool(this.poolId);
 
     if (Boolean(pool?.sharePool)) return pool;
   }
@@ -88,7 +88,7 @@ export class ObservableSharePoolDetail {
 
   @computed
   get swapFeeApr(): RatePretty {
-    const queryPool = this.queries.queryGammPools.getPool(this.poolId);
+    const queryPool = this.queries.queryPools.getPool(this.poolId);
     if (!queryPool) return new RatePretty(0);
 
     return this.externalQueries.queryGammPoolFeeMetrics.get7dPoolFeeApr(

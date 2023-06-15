@@ -89,7 +89,7 @@ export class OsmosisQueriesImpl {
   public readonly queryLiquidityPositionsById: DeepReadonly<ObservableQueryLiquidityPositionsById>;
   public readonly queryAccountsPositions: DeepReadonly<ObservableQueryAccountsPositions>;
 
-  protected _queryPools: DeepReadonly<ObservableQueryPoolGetter>;
+  protected _queryGammPools: DeepReadonly<ObservableQueryPoolGetter>;
   public readonly queryGammNumPools: DeepReadonly<ObservableQueryNumPools>;
   public readonly queryGammPoolShare: DeepReadonly<ObservableQueryGammPoolShare>;
 
@@ -118,8 +118,8 @@ export class OsmosisQueriesImpl {
   public readonly querySuperfluidAssetMultiplier: DeepReadonly<ObservableQuerySuperfluidAssetMultiplier>;
   public readonly querySuperfluidOsmoEquivalent: DeepReadonly<ObservableQuerySuperfluidOsmoEquivalent>;
 
-  get queryGammPools(): ObservableQueryPoolGetter {
-    return this._queryPools;
+  get queryPools(): ObservableQueryPoolGetter {
+    return this._queryGammPools;
   }
 
   constructor(
@@ -206,14 +206,14 @@ export class OsmosisQueriesImpl {
             ),
           ]
     );
-    this._queryPools = poolsQueryFallbacks.responsiveStore;
+    this._queryGammPools = poolsQueryFallbacks.responsiveStore;
     // hot swap the pools query store any time the fallback store changes
     autorun(() => {
-      this._queryPools = poolsQueryFallbacks.responsiveStore;
+      this._queryGammPools = poolsQueryFallbacks.responsiveStore;
     });
 
     this.queryGammPoolShare = new ObservableQueryGammPoolShare(
-      this._queryPools,
+      this._queryGammPools,
       queries.queryBalances,
       this.queryAccountLocked,
       this.queryLockedCoins,
@@ -251,7 +251,7 @@ export class OsmosisQueriesImpl {
       chainGetter,
       this.queryLockableDurations,
       this.queryDistrInfo,
-      this._queryPools,
+      this._queryGammPools,
       this.queryMintParams,
       this.queryEpochProvisions,
       this.queryEpochs,
@@ -298,7 +298,7 @@ export class OsmosisQueriesImpl {
         chainGetter,
         this.querySuperfluidParams,
         this.querySuperfluidAssetMultiplier,
-        this._queryPools
+        this._queryGammPools
       );
   }
 }

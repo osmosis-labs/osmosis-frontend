@@ -45,7 +45,7 @@ export const AddLiquidityModal: FunctionComponent<
     useAddConcentratedLiquidityConfig(chainStore, chainId, poolId);
 
   // initialize pool data stores once root pool store is loaded
-  const queryPool = osmosisQueries.queryGammPools.getPool(poolId);
+  const queryPool = osmosisQueries.queryPools.getPool(poolId);
   const clPool =
     queryPool?.pool && queryPool.pool instanceof ConcentratedLiquidityPool
       ? queryPool.pool

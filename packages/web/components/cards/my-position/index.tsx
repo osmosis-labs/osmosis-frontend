@@ -40,7 +40,7 @@ export const MyPositionCard: FunctionComponent<{
   const [collapsed, setCollapsed] = useState(true);
 
   const queryPool = poolId
-    ? queriesStore.get(chainId).osmosis!.queryGammPools.getPool(poolId)
+    ? queriesStore.get(chainId).osmosis!.queryPools.getPool(poolId)
     : undefined;
 
   const config = poolId

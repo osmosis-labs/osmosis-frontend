@@ -53,7 +53,7 @@ export class ObservableSharePoolBonding {
 
   @computed
   protected get querySharePool() {
-    const pool = this.queries.queryGammPools.getPool(this.poolId);
+    const pool = this.queries.queryPools.getPool(this.poolId);
 
     if (Boolean(pool?.sharePool)) return pool;
   }

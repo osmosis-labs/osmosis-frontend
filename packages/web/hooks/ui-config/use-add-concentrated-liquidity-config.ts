@@ -25,7 +25,7 @@ export function useAddConcentratedLiquidityConfig(
   const account = accountStore.getAccount(osmosisChainId);
   const { bech32Address } = account;
 
-  const queryPool = osmosisQueries.queryGammPools.getPool(poolId);
+  const queryPool = osmosisQueries.queryPools.getPool(poolId);
 
   const [config] = useState(
     () =>

@@ -64,9 +64,7 @@ export const AddConcLiquidity: FunctionComponent<
     } = useStore();
 
     // initialize pool data stores once root pool store is loaded
-    const pool = queriesStore
-      .get(chainId)
-      .osmosis!.queryGammPools.getPool(poolId);
+    const pool = queriesStore.get(chainId).osmosis!.queryPools.getPool(poolId);
 
     return (
       <div className={classNames("flex flex-col gap-8", className)}>

@@ -17,14 +17,13 @@ export function useTokenSwapQueryParams(
     chainStore: { osmosis },
     queriesStore,
   } = useStore();
-  const queryGammPools = queriesStore.get(osmosis.chainId).osmosis!
-    .queryGammPools;
+  const queryPools = queriesStore.get(osmosis.chainId).osmosis!.queryPools;
 
   // Set query params to trade config.
   // Loads remaining pools to register remaining currencies if a currency isn't in Osmosis's chainInfo (populated from browser cache).
   // Blocks effect to set browser query params until currencies are loaded (from pools).
   useEffect(() => {
-    if (isInModal || !tradeConfig || !Boolean(queryGammPools.response)) {
+    if (isInModal || !tradeConfig || !Boolean(queryPools.response)) {
       return;
     }
 
@@ -58,7 +57,7 @@ export function useTokenSwapQueryParams(
         );
 
       if (!fromCurrency || !toCurrency) {
-        queryGammPools.fetchRemainingPools();
+        queryPools.fetchRemainingPools();
         return;
       }
 
@@ -72,8 +71,8 @@ export function useTokenSwapQueryParams(
     setFromQueryParams.current = true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    queryGammPools,
-    queryGammPools.response,
+    queryPools,
+    queryPools.response,
     router.query.from,
     router.query.to,
     tradeConfig?.sendableCurrencies,
@@ -81,14 +80,14 @@ export function useTokenSwapQueryParams(
 
   // Set browser query params from trade config.
   useEffect(() => {
-    if (isInModal || !tradeConfig || !Boolean(queryGammPools.response)) {
+    if (isInModal || !tradeConfig || !Boolean(queryPools.response)) {
       return;
     }
 
     // Update current in and out currency to query string.
     // The first effect should be ignored because the query string set when visiting the web page for the first time must be processed.
     if (setFromQueryParams.current) {
-      queryGammPools
+      queryPools
         .waitResponse() // wait for gamm pools to load
         .then(() => {
           if (

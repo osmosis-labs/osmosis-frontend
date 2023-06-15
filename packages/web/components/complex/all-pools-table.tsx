@@ -281,13 +281,13 @@ export const AllPoolsTable: FunctionComponent<{
         if (search === "") {
           setIsSearching(false);
         } else {
-          queriesOsmosis.queryGammPools.fetchRemainingPools();
+          queriesOsmosis.queryPools.fetchRemainingPools();
           setIsSearching(true);
         }
         setSorting([]);
         _setQuery(search);
       },
-      [_setQuery, queriesOsmosis.queryGammPools, setSorting]
+      [_setQuery, queriesOsmosis.queryPools, setSorting]
     );
 
     const columnHelper = createColumnHelper<ObservablePoolWithMetric>();
@@ -484,7 +484,7 @@ export const AllPoolsTable: FunctionComponent<{
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: getSortedRowModel(),
       onSortingChange: (updaterOrValue) => {
-        queriesOsmosis.queryGammPools.fetchRemainingPools();
+        queriesOsmosis.queryPools.fetchRemainingPools();
 
         const nextState = runIfFn(updaterOrValue, sorting);
         const nextId: string | undefined = nextState[0]?.id;
@@ -507,13 +507,13 @@ export const AllPoolsTable: FunctionComponent<{
     });
 
     const handleFetchRemaining = useCallback(
-      () => queriesOsmosis.queryGammPools.fetchRemainingPools(),
-      [queriesOsmosis.queryGammPools]
+      () => queriesOsmosis.queryPools.fetchRemainingPools(),
+      [queriesOsmosis.queryPools]
     );
 
     const paginatePoolsQueryStore = useCallback(() => {
-      queriesOsmosis.queryGammPools.paginate();
-    }, [queriesOsmosis.queryGammPools]);
+      queriesOsmosis.queryPools.paginate();
+    }, [queriesOsmosis.queryPools]);
 
     const [mobileSortMenuIsOpen, setMobileSortMenuIsOpen] = useState(false);
 
