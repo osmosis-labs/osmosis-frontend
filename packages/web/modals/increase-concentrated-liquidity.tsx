@@ -1,5 +1,4 @@
 import { Dec } from "@keplr-wallet/unit";
-import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { ObservableQueryLiquidityPositionById } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
@@ -76,14 +75,6 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
 
   // initialize pool data stores once root pool store is loaded
   const queryPool = osmosisQueries.queryPools.getPool(poolId);
-  const clPool =
-    queryPool?.pool && queryPool.pool instanceof ConcentratedLiquidityPool
-      ? queryPool.pool
-      : undefined;
-  const currentSqrtPrice = clPool ? clPool.currentSqrtPrice : undefined;
-  const currentPrice = currentSqrtPrice
-    ? currentSqrtPrice.mul(currentSqrtPrice)
-    : new Dec(0);
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
@@ -127,7 +118,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
           </div>
           {lowerPrices && upperPrices && (
             <MyPositionStatus
-              currentPrice={currentPrice}
+              currentPrice={config.currentPrice}
               lowerPrice={lowerPrices.price}
               upperPrice={upperPrices.price}
               negative
@@ -215,7 +206,10 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                   xRange={[xRange[0], xRange[1]]}
                   data={depthChartData}
                   annotationDatum={{
-                    price: lastChartData?.close || 0,
+                    price:
+                      Number(config.currentPrice.toString()) ??
+                      lastChartData?.close ??
+                      0,
                     depth: xRange[1],
                   }}
                   rangeAnnotation={[

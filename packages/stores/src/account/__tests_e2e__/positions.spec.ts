@@ -67,9 +67,7 @@ describe("Create CL Positions Txs", () => {
 
     // get current tick, subtract to be below current price
     const currentTick = priceToTick(
-      queryPool!.concentratedLiquidityPoolInfo!.currentSqrtPrice.mul(
-        queryPool!.concentratedLiquidityPoolInfo!.currentSqrtPrice
-      )
+      queryPool!.concentratedLiquidityPoolInfo!.currentPrice
     ).sub(new Int(1));
 
     // create CL position
@@ -110,9 +108,7 @@ describe("Create CL Positions Txs", () => {
 
     // get current tick, add to be below above price
     const currentTick = priceToTick(
-      queryPool!.concentratedLiquidityPoolInfo!.currentSqrtPrice.mul(
-        queryPool!.concentratedLiquidityPoolInfo!.currentSqrtPrice
-      )
+      queryPool!.concentratedLiquidityPoolInfo!.currentPrice
     ).add(new Int(1));
 
     // create CL position
