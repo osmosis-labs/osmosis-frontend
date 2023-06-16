@@ -218,7 +218,7 @@ module.exports = {
     extend: {
       height: {
         navbar: "72px",
-        "navbar-mobile": "58px",
+        "navbar-mobile": "65px",
         content: "calc(100vh - 72px)",
         "content-mobile": "calc(100vh - 58px)",
       },

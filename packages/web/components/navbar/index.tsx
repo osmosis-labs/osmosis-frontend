@@ -12,6 +12,7 @@ import {
   useAmplitudeAnalytics,
   useDisclosure,
   useLocalStorageState,
+  useWindowSize,
 } from "../../hooks";
 import { ModalBase, ModalBaseProps, SettingsModal } from "../../modals";
 import { ProfileModal } from "../../modals/profile";
@@ -54,6 +55,8 @@ export const NavBar: FunctionComponent<
     onOpen: onOpenProfile,
     onClose: onCloseProfile,
   } = useDisclosure();
+
+  const { isMobile } = useWindowSize();
 
   const closeMobileMenuRef = useRef(noop);
   const router = useRouter();
@@ -154,6 +157,7 @@ export const NavBar: FunctionComponent<
                 className="h-fit w-[180px] lg:w-fit lg:px-2"
                 mode={index > 0 ? "secondary" : undefined}
                 key={index}
+                size={isMobile ? "sm" : undefined}
                 {...button}
               >
                 <span className="subtitle1 mx-auto">{button.label}</span>
