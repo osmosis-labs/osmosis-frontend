@@ -11,7 +11,12 @@ interface AccountMsgOpt {
   gas: number;
 }
 
-export const createMsgOpts = <Dict extends Record<string, AccountMsgOpt>>(
+export const createMsgOpts = <
+  Dict extends Record<
+    string,
+    AccountMsgOpt | ((param: number) => AccountMsgOpt)
+  >
+>(
   dict: Dict
 ) => dict;
 

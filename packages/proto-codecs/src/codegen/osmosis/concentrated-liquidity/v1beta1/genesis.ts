@@ -6,8 +6,8 @@ import {
   AnyAmino,
   AnyProtoMsg,
   AnySDKType,
-} from "../../google/protobuf/any";
-import { Long } from "../../helpers";
+} from "../../../google/protobuf/any";
+import { Long } from "../../../helpers";
 import {
   AccumulatorContent,
   AccumulatorContentAmino,
@@ -15,18 +15,18 @@ import {
   Record,
   RecordAmino,
   RecordSDKType,
-} from "../accum/v1beta1/accum";
+} from "../../accum/v1beta1/accum";
 import {
   CosmWasmPool,
   CosmWasmPoolProtoMsg,
   CosmWasmPoolSDKType,
-} from "../cosmwasmpool/v1beta1/model/pool";
-import { Pool as Pool2 } from "../gamm/pool-models/balancer/balancerPool";
-import { PoolProtoMsg as Pool2ProtoMsg } from "../gamm/pool-models/balancer/balancerPool";
-import { PoolSDKType as Pool2SDKType } from "../gamm/pool-models/balancer/balancerPool";
-import { Pool as Pool3 } from "../gamm/pool-models/stableswap/stableswap_pool";
-import { PoolProtoMsg as Pool3ProtoMsg } from "../gamm/pool-models/stableswap/stableswap_pool";
-import { PoolSDKType as Pool3SDKType } from "../gamm/pool-models/stableswap/stableswap_pool";
+} from "../../cosmwasmpool/v1beta1/model/pool";
+import { Pool as Pool2 } from "../../gamm/pool-models/balancer/balancerPool";
+import { PoolProtoMsg as Pool2ProtoMsg } from "../../gamm/pool-models/balancer/balancerPool";
+import { PoolSDKType as Pool2SDKType } from "../../gamm/pool-models/balancer/balancerPool";
+import { Pool as Pool3 } from "../../gamm/pool-models/stableswap/stableswap_pool";
+import { PoolProtoMsg as Pool3ProtoMsg } from "../../gamm/pool-models/stableswap/stableswap_pool";
+import { PoolSDKType as Pool3SDKType } from "../../gamm/pool-models/stableswap/stableswap_pool";
 import {
   IncentiveRecord,
   IncentiveRecordAmino,

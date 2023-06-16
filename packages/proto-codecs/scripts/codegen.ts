@@ -41,6 +41,8 @@ const includedPackages: AvailablePackages[] = [
   "tendermint.types",
   "tendermint.crypto",
   "tendermint.version",
+  "osmosis.concentratedliquidity.v1beta1",
+  "osmosis.concentratedliquidity.poolmodels.concentrated.v1beta1",
 ];
 
 telescope({
@@ -51,7 +53,6 @@ telescope({
     tsDisable: {
       disableAll: true,
     },
-    experimentalGlobalProtoNamespace: true, //  [ 'v1beta1' ] concentratedliquidity
     prototypes: {
       addTypeUrlToDecoders: true,
       addTypeUrlToObjects: true,

@@ -8,7 +8,7 @@ import {
   PageResponse,
   PageResponseAmino,
   PageResponseSDKType,
-} from "../../cosmos/base/query/v1beta1/pagination";
+} from "../../../cosmos/base/query/v1beta1/pagination";
 import {
   Coin,
   CoinAmino,
@@ -16,25 +16,25 @@ import {
   DecCoin,
   DecCoinAmino,
   DecCoinSDKType,
-} from "../../cosmos/base/v1beta1/coin";
+} from "../../../cosmos/base/v1beta1/coin";
 import {
   Any,
   AnyAmino,
   AnyProtoMsg,
   AnySDKType,
-} from "../../google/protobuf/any";
-import { Long } from "../../helpers";
+} from "../../../google/protobuf/any";
+import { Long } from "../../../helpers";
 import {
   CosmWasmPool,
   CosmWasmPoolProtoMsg,
   CosmWasmPoolSDKType,
-} from "../cosmwasmpool/v1beta1/model/pool";
-import { Pool as Pool2 } from "../gamm/pool-models/balancer/balancerPool";
-import { PoolProtoMsg as Pool2ProtoMsg } from "../gamm/pool-models/balancer/balancerPool";
-import { PoolSDKType as Pool2SDKType } from "../gamm/pool-models/balancer/balancerPool";
-import { Pool as Pool3 } from "../gamm/pool-models/stableswap/stableswap_pool";
-import { PoolProtoMsg as Pool3ProtoMsg } from "../gamm/pool-models/stableswap/stableswap_pool";
-import { PoolSDKType as Pool3SDKType } from "../gamm/pool-models/stableswap/stableswap_pool";
+} from "../../cosmwasmpool/v1beta1/model/pool";
+import { Pool as Pool2 } from "../../gamm/pool-models/balancer/balancerPool";
+import { PoolProtoMsg as Pool2ProtoMsg } from "../../gamm/pool-models/balancer/balancerPool";
+import { PoolSDKType as Pool2SDKType } from "../../gamm/pool-models/balancer/balancerPool";
+import { Pool as Pool3 } from "../../gamm/pool-models/stableswap/stableswap_pool";
+import { PoolProtoMsg as Pool3ProtoMsg } from "../../gamm/pool-models/stableswap/stableswap_pool";
+import { PoolSDKType as Pool3SDKType } from "../../gamm/pool-models/stableswap/stableswap_pool";
 import { Params, ParamsAmino, ParamsSDKType } from "./params";
 import { Pool as Pool1 } from "./pool";
 import { PoolProtoMsg as Pool1ProtoMsg } from "./pool";

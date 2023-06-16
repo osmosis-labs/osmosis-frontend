@@ -5,8 +5,8 @@ import {
   Duration,
   DurationAmino,
   DurationSDKType,
-} from "../../google/protobuf/duration";
-import { Long } from "../../helpers";
+} from "../../../google/protobuf/duration";
+import { Long } from "../../../helpers";
 export interface Params {
   /**
    * authorized_tick_spacing is an array of uint64s that represents the tick

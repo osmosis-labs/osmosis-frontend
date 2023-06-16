@@ -7,8 +7,10 @@ import {
 } from "@cosmjs/stargate";
 import { HttpEndpoint } from "@cosmjs/tendermint-rpc";
 
-import * as osmosisConcentratedliquidityTxAmino from "./concentrated-liquidity/tx.amino";
-import * as osmosisConcentratedliquidityTxRegistry from "./concentrated-liquidity/tx.registry";
+import * as osmosisConcentratedliquidityPoolmodelsConcentratedTxAmino from "./concentrated-liquidity/pool-models/concentrated/tx.amino";
+import * as osmosisConcentratedliquidityPoolmodelsConcentratedTxRegistry from "./concentrated-liquidity/pool-models/concentrated/tx.registry";
+import * as osmosisConcentratedliquidityV1beta1TxAmino from "./concentrated-liquidity/v1beta1/tx.amino";
+import * as osmosisConcentratedliquidityV1beta1TxRegistry from "./concentrated-liquidity/v1beta1/tx.registry";
 import * as osmosisGammPoolmodelsBalancerTxTxAmino from "./gamm/pool-models/balancer/tx/tx.amino";
 import * as osmosisGammPoolmodelsBalancerTxTxRegistry from "./gamm/pool-models/balancer/tx/tx.registry";
 import * as osmosisGammPoolmodelsStableswapTxAmino from "./gamm/pool-models/stableswap/tx.amino";
@@ -22,7 +24,8 @@ import * as osmosisPoolmanagerV1beta1TxRegistry from "./poolmanager/v1beta1/tx.r
 import * as osmosisSuperfluidTxAmino from "./superfluid/tx.amino";
 import * as osmosisSuperfluidTxRegistry from "./superfluid/tx.registry";
 export const osmosisAminoConverters = {
-  ...osmosisConcentratedliquidityTxAmino.AminoConverter,
+  ...osmosisConcentratedliquidityPoolmodelsConcentratedTxAmino.AminoConverter,
+  ...osmosisConcentratedliquidityV1beta1TxAmino.AminoConverter,
   ...osmosisGammPoolmodelsBalancerTxTxAmino.AminoConverter,
   ...osmosisGammPoolmodelsStableswapTxAmino.AminoConverter,
   ...osmosisGammV1beta1TxAmino.AminoConverter,
@@ -31,7 +34,8 @@ export const osmosisAminoConverters = {
   ...osmosisSuperfluidTxAmino.AminoConverter,
 };
 export const osmosisProtoRegistry: ReadonlyArray<[string, GeneratedType]> = [
-  ...osmosisConcentratedliquidityTxRegistry.registry,
+  ...osmosisConcentratedliquidityPoolmodelsConcentratedTxRegistry.registry,
+  ...osmosisConcentratedliquidityV1beta1TxRegistry.registry,
   ...osmosisGammPoolmodelsBalancerTxTxRegistry.registry,
   ...osmosisGammPoolmodelsStableswapTxRegistry.registry,
   ...osmosisGammV1beta1TxRegistry.registry,

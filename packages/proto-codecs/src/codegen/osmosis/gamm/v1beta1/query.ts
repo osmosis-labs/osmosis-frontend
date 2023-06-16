@@ -21,9 +21,9 @@ import {
   AnySDKType,
 } from "../../../google/protobuf/any";
 import { Long } from "../../../helpers";
-import { Pool as Pool1 } from "../../concentrated-liquidity/pool";
-import { PoolProtoMsg as Pool1ProtoMsg } from "../../concentrated-liquidity/pool";
-import { PoolSDKType as Pool1SDKType } from "../../concentrated-liquidity/pool";
+import { Pool as Pool1 } from "../../concentrated-liquidity/v1beta1/pool";
+import { PoolProtoMsg as Pool1ProtoMsg } from "../../concentrated-liquidity/v1beta1/pool";
+import { PoolSDKType as Pool1SDKType } from "../../concentrated-liquidity/v1beta1/pool";
 import {
   CosmWasmPool,
   CosmWasmPoolProtoMsg,

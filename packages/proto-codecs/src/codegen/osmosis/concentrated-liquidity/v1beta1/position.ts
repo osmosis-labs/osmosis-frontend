@@ -1,9 +1,13 @@
 //@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
 
-import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
-import { Timestamp } from "../../google/protobuf/timestamp";
-import { fromTimestamp, Long, toTimestamp } from "../../helpers";
+import {
+  Coin,
+  CoinAmino,
+  CoinSDKType,
+} from "../../../cosmos/base/v1beta1/coin";
+import { Timestamp } from "../../../google/protobuf/timestamp";
+import { fromTimestamp, Long, toTimestamp } from "../../../helpers";
 /**
  * Position contains position's id, address, pool id, lower tick, upper tick
  * join time, and liquidity.

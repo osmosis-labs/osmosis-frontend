@@ -1,7 +1,7 @@
 //@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
 
-import { Long } from "../../../helpers";
+import { Long } from "../../../../helpers";
 /** ===================== MsgCreateConcentratedPool */
 export interface MsgCreateConcentratedPool {
   sender: string;
@@ -11,7 +11,7 @@ export interface MsgCreateConcentratedPool {
   spreadFactor: string;
 }
 export interface MsgCreateConcentratedPoolProtoMsg {
-  typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCreateConcentratedPool";
+  typeUrl: "/osmosis.concentratedliquidity.poolmodels.concentrated.v1beta1.MsgCreateConcentratedPool";
   value: Uint8Array;
 }
 /** ===================== MsgCreateConcentratedPool */
@@ -23,7 +23,7 @@ export interface MsgCreateConcentratedPoolAmino {
   spread_factor: string;
 }
 export interface MsgCreateConcentratedPoolAminoMsg {
-  type: "osmosis/concentratedliquidity/create-concentrated-pool";
+  type: "osmosis/concentratedliquidity/poolmodels/concentrated/create-concentrated-pool";
   value: MsgCreateConcentratedPoolAmino;
 }
 /** ===================== MsgCreateConcentratedPool */
@@ -39,7 +39,7 @@ export interface MsgCreateConcentratedPoolResponse {
   poolId: Long;
 }
 export interface MsgCreateConcentratedPoolResponseProtoMsg {
-  typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCreateConcentratedPoolResponse";
+  typeUrl: "/osmosis.concentratedliquidity.poolmodels.concentrated.v1beta1.MsgCreateConcentratedPoolResponse";
   value: Uint8Array;
 }
 /** Returns a unique poolID to identify the pool with. */
@@ -47,7 +47,7 @@ export interface MsgCreateConcentratedPoolResponseAmino {
   pool_id: string;
 }
 export interface MsgCreateConcentratedPoolResponseAminoMsg {
-  type: "osmosis/concentratedliquidity/create-concentrated-pool-response";
+  type: "osmosis/concentratedliquidity/poolmodels/concentrated/create-concentrated-pool-response";
   value: MsgCreateConcentratedPoolResponseAmino;
 }
 /** Returns a unique poolID to identify the pool with. */
@@ -64,7 +64,8 @@ function createBaseMsgCreateConcentratedPool(): MsgCreateConcentratedPool {
   };
 }
 export const MsgCreateConcentratedPool = {
-  typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCreateConcentratedPool",
+  typeUrl:
+    "/osmosis.concentratedliquidity.poolmodels.concentrated.v1beta1.MsgCreateConcentratedPool",
   encode(
     message: MsgCreateConcentratedPool,
     writer: _m0.Writer = _m0.Writer.create()
@@ -161,7 +162,7 @@ export const MsgCreateConcentratedPool = {
     message: MsgCreateConcentratedPool
   ): MsgCreateConcentratedPoolAminoMsg {
     return {
-      type: "osmosis/concentratedliquidity/create-concentrated-pool",
+      type: "osmosis/concentratedliquidity/poolmodels/concentrated/create-concentrated-pool",
       value: MsgCreateConcentratedPool.toAmino(message),
     };
   },
@@ -178,7 +179,7 @@ export const MsgCreateConcentratedPool = {
   ): MsgCreateConcentratedPoolProtoMsg {
     return {
       typeUrl:
-        "/osmosis.concentratedliquidity.v1beta1.MsgCreateConcentratedPool",
+        "/osmosis.concentratedliquidity.poolmodels.concentrated.v1beta1.MsgCreateConcentratedPool",
       value: MsgCreateConcentratedPool.encode(message).finish(),
     };
   },
@@ -190,7 +191,7 @@ function createBaseMsgCreateConcentratedPoolResponse(): MsgCreateConcentratedPoo
 }
 export const MsgCreateConcentratedPoolResponse = {
   typeUrl:
-    "/osmosis.concentratedliquidity.v1beta1.MsgCreateConcentratedPoolResponse",
+    "/osmosis.concentratedliquidity.poolmodels.concentrated.v1beta1.MsgCreateConcentratedPoolResponse",
   encode(
     message: MsgCreateConcentratedPoolResponse,
     writer: _m0.Writer = _m0.Writer.create()
@@ -253,7 +254,7 @@ export const MsgCreateConcentratedPoolResponse = {
     message: MsgCreateConcentratedPoolResponse
   ): MsgCreateConcentratedPoolResponseAminoMsg {
     return {
-      type: "osmosis/concentratedliquidity/create-concentrated-pool-response",
+      type: "osmosis/concentratedliquidity/poolmodels/concentrated/create-concentrated-pool-response",
       value: MsgCreateConcentratedPoolResponse.toAmino(message),
     };
   },
@@ -270,7 +271,7 @@ export const MsgCreateConcentratedPoolResponse = {
   ): MsgCreateConcentratedPoolResponseProtoMsg {
     return {
       typeUrl:
-        "/osmosis.concentratedliquidity.v1beta1.MsgCreateConcentratedPoolResponse",
+        "/osmosis.concentratedliquidity.poolmodels.concentrated.v1beta1.MsgCreateConcentratedPoolResponse",
       value: MsgCreateConcentratedPoolResponse.encode(message).finish(),
     };
   },

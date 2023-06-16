@@ -5,9 +5,9 @@ import {
   Duration,
   DurationAmino,
   DurationSDKType,
-} from "../../google/protobuf/duration";
-import { Timestamp } from "../../google/protobuf/timestamp";
-import { fromTimestamp, Long, toTimestamp } from "../../helpers";
+} from "../../../google/protobuf/duration";
+import { Timestamp } from "../../../google/protobuf/timestamp";
+import { fromTimestamp, Long, toTimestamp } from "../../../helpers";
 /**
  * IncentiveRecord is the high-level struct we use to deal with an independent
  * incentive being distributed on a pool. Note that PoolId, Denom, and MinUptime

@@ -1,7 +1,7 @@
 //@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
 
-import { Long } from "../../helpers";
+import { Long } from "../../../helpers";
 /**
  * CreateConcentratedLiquidityPoolsProposal is a gov Content type for creating
  * concentrated liquidity pools. If a CreateConcentratedLiquidityPoolsProposal

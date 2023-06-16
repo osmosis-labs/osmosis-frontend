@@ -1,9 +1,13 @@
 //@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
 
-import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
-import { Timestamp } from "../../google/protobuf/timestamp";
-import { fromTimestamp, Long, toTimestamp } from "../../helpers";
+import {
+  Coin,
+  CoinAmino,
+  CoinSDKType,
+} from "../../../cosmos/base/v1beta1/coin";
+import { Timestamp } from "../../../google/protobuf/timestamp";
+import { fromTimestamp, Long, toTimestamp } from "../../../helpers";
 /** ===================== MsgCreatePosition */
 export interface MsgCreatePosition {
   poolId: Long;

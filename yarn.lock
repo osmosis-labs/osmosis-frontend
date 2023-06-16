@@ -2082,10 +2082,10 @@
   resolved "https://registry.yarnpkg.com/@cosmostation/extension-client/-/extension-client-0.1.11.tgz#d6b447cfd9cf7613ec485b57327819b14735cf13"
   integrity sha512-CkmNPmYn07UhP0z3PxGRRpgTcBJ/gS1ay/J2jfYsBi/4gnXvpQ3xOZdMU0qdxhFOjh1Xt7kflYsztk9ljMnJcw==
 
-"@cosmwasm/ts-codegen@0.26.0":
-  version "0.26.0"
-  resolved "https://registry.yarnpkg.com/@cosmwasm/ts-codegen/-/ts-codegen-0.26.0.tgz#f1aef0c2194be5d775a9300940adefc461ceccd9"
-  integrity sha512-bALTObAlsPBNZHvCGBdYH7RUu+v563fvbbVgwN/WTok5tFnvB9klEQa3DtEZUOuczD20rqfsDxAC8Q17v2hhlw==
+"@cosmwasm/ts-codegen@0.30.1":
+  version "0.30.1"
+  resolved "https://registry.yarnpkg.com/@cosmwasm/ts-codegen/-/ts-codegen-0.30.1.tgz#8b8a635273065261c608a76f8a50cb5045e23980"
+  integrity sha512-6ATbmtuK2MwG9fJxIi0M+Rwd0SQhsko2nA8qVXC9MRHpZJKNaXYYcof1fel/L5HJCjotmQVsoxons3rGg6dRnw==
   dependencies:
     "@babel/core" "7.18.10"
     "@babel/generator" "7.18.12"
@@ -2113,7 +2113,7 @@
     parse-package-name "1.0.0"
     rimraf "3.0.2"
     shelljs "0.8.5"
-    wasm-ast-types "^0.19.0"
+    wasm-ast-types "^0.23.1"
 
 "@cspotcode/source-map-support@^0.8.0":
   version "0.8.1"
@@ -4816,21 +4816,21 @@
   dependencies:
     "@octokit/openapi-types" "^11.2.0"
 
-"@osmonauts/ast@^0.80.0":
-  version "0.80.0"
-  resolved "https://registry.yarnpkg.com/@osmonauts/ast/-/ast-0.80.0.tgz#2b1ec91be005a4d1808950190d1e7044f79e1a59"
-  integrity sha512-DLlwC3+e/lV3/m5PiiHggwP7pytvw3QymTxRcwZa6AKEZSJ9vT76wuJ3cx2/EZwckbxp6sovsQFUXbQ5INaEbg==
+"@osmonauts/ast@^0.83.0":
+  version "0.83.0"
+  resolved "https://registry.yarnpkg.com/@osmonauts/ast/-/ast-0.83.0.tgz#9f53f31b56362b046da28454456b22b8a48c3458"
+  integrity sha512-xrkx7OgRh3bK8jGtmgvJErBhl2dbpsZSjHA2vRHqiJBEhUlO30XM+12eMU6eqpCV/BRP8uRj2sP9vrV2kDAnMA==
   dependencies:
     "@babel/parser" "^7.21.4"
     "@babel/runtime" "^7.21.0"
     "@babel/types" "7.21.4"
-    "@osmonauts/proto-parser" "^0.42.0"
-    "@osmonauts/types" "^0.34.0"
+    "@osmonauts/proto-parser" "^0.43.0"
+    "@osmonauts/types" "^0.35.0"
     "@osmonauts/utils" "^0.11.1"
     case "1.6.3"
     dotty "0.1.2"
 
-"@osmonauts/proto-parser@0.42.0", "@osmonauts/proto-parser@^0.42.0":
+"@osmonauts/proto-parser@0.42.0":
   version "0.42.0"
   resolved "https://registry.yarnpkg.com/@osmonauts/proto-parser/-/proto-parser-0.42.0.tgz#f6128f8d60cdc164ec062ff54f5ed42fff32ea4d"
   integrity sha512-NbAipJ6Nor9QIgWTRDB0JoH9mJ8LkXdCX7zESD1CGyet9RdqPVHzgiaGyQML6Trh298+8HjofRWrsAznhWgdRA==
@@ -4843,10 +4843,23 @@
     minimatch "5.1.0"
     mkdirp "3.0.0"
 
-"@osmonauts/telescope@0.94.0":
-  version "0.94.0"
-  resolved "https://registry.yarnpkg.com/@osmonauts/telescope/-/telescope-0.94.0.tgz#773ede82a621a32b2a6bfc1644c567914d7afaba"
-  integrity sha512-8mRJ0G9UvY+9Iod163XM67rjHmwzW2ujaqeutK0noP624Wnhg+rarGOuIm11+jQVIDupgRuMwKqxki3je8BP4w==
+"@osmonauts/proto-parser@^0.43.0":
+  version "0.43.0"
+  resolved "https://registry.yarnpkg.com/@osmonauts/proto-parser/-/proto-parser-0.43.0.tgz#58918fd39ac02e9dfef288579098d7b260944255"
+  integrity sha512-TJZaAEsFreRAbGoaBpRlK5nzFS5Hyglb4xypX1lMP1M9KkTMK64BMGofK44keQFjSfzm7+jmBJw20U35fpFb6g==
+  dependencies:
+    "@babel/runtime" "^7.21.0"
+    "@osmonauts/types" "^0.35.0"
+    "@pyramation/protobufjs" "6.11.5"
+    dotty "0.1.2"
+    glob "8.0.3"
+    minimatch "5.1.0"
+    mkdirp "3.0.0"
+
+"@osmonauts/telescope@0.97.0":
+  version "0.97.0"
+  resolved "https://registry.yarnpkg.com/@osmonauts/telescope/-/telescope-0.97.0.tgz#10557732e1d387edf49102cb6465a43fc543efdd"
+  integrity sha512-TJdnYQYCYPOCmZ94Tuy9S/yw+UsMkDy7jnrmsnz+qYLC6j4H20RbjamwfkXxkqLQNiRGmvNWggiW9ndIgZpaKg==
   dependencies:
     "@babel/core" "7.21.4"
     "@babel/generator" "7.21.4"
@@ -4860,10 +4873,10 @@
     "@babel/runtime" "^7.21.0"
     "@babel/traverse" "7.21.4"
     "@babel/types" "7.21.4"
-    "@cosmwasm/ts-codegen" "0.26.0"
-    "@osmonauts/ast" "^0.80.0"
-    "@osmonauts/proto-parser" "^0.42.0"
-    "@osmonauts/types" "^0.34.0"
+    "@cosmwasm/ts-codegen" "0.30.1"
+    "@osmonauts/ast" "^0.83.0"
+    "@osmonauts/proto-parser" "^0.43.0"
+    "@osmonauts/types" "^0.35.0"
     "@osmonauts/utils" "^0.11.1"
     "@types/parse-package-name" "0.1.0"
     case "1.6.3"
@@ -4885,6 +4898,15 @@
   version "0.34.0"
   resolved "https://registry.yarnpkg.com/@osmonauts/types/-/types-0.34.0.tgz#c90f526b1c43b9de8f322316d1b4d7a06b6f6f14"
   integrity sha512-v3hmHEPQ/Q2lhfPEmeHumRb5DJNYoHo+BwWthoLby82ENLts69gu/d9g4vja0EMAcNcc1SHUFRqHP/OFvTPCww==
+  dependencies:
+    "@babel/runtime" "^7.21.0"
+    "@osmonauts/utils" "^0.11.1"
+    case "1.6.3"
+
+"@osmonauts/types@^0.35.0":
+  version "0.35.0"
+  resolved "https://registry.yarnpkg.com/@osmonauts/types/-/types-0.35.0.tgz#1a1d2b1588e017fb9c04227d01a97be9c3b416ce"
+  integrity sha512-RHjc/hGpZ9Q0okWiRMO98V8NduFAB4YQIb0BwP9jQJC39R6uSBtYUGKuk6CxnMyitmA6JeMV0EslOoh/OX0Dyg==
   dependencies:
     "@babel/runtime" "^7.21.0"
     "@osmonauts/utils" "^0.11.1"
@@ -16230,10 +16252,10 @@ warning@^4.0.3:
   dependencies:
     loose-envify "^1.0.0"
 
-wasm-ast-types@^0.19.0:
-  version "0.19.0"
-  resolved "https://registry.yarnpkg.com/wasm-ast-types/-/wasm-ast-types-0.19.0.tgz#d3e71ae91d48ddbdc23560bad5e10660f3c0d0da"
-  integrity sha512-SELRqjXMi7U3pB0jslvP0IrafJS9iN/VvySriiBITptBstwuzglhDTj3KFRpb/8LI4mG2ewC4a0/HxSQewQ/3g==
+wasm-ast-types@^0.23.1:
+  version "0.23.1"
+  resolved "https://registry.yarnpkg.com/wasm-ast-types/-/wasm-ast-types-0.23.1.tgz#b849629aa9f7a56dbb52c581ddbcb6b5ed7e2a07"
+  integrity sha512-igLcEk8VHZq62ZEwn4Jp+WRTp2D9yvTeiQd2Pc+s7LZouzSn3CwRpD42sHK2wV0UlSt2/cNbV6QywFm9Z6eM/A==
   dependencies:
     "@babel/runtime" "^7.18.9"
     "@babel/types" "7.18.10"

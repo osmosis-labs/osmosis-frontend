@@ -15,6 +15,11 @@ export const osmosisMsgOpts = createMsgOpts({
       osmosis.gamm.poolmodels.stableswap.v1beta1.MessageComposer.withTypeUrl
         .createStableswapPool,
   },
+  createConcentratedPool: {
+    type: osmosis.concentratedliquidity.poolmodels.concentrated.v1beta1
+      .MessageComposer.withTypeUrl.createConcentratedPool,
+    gas: 350000,
+  },
   joinPool: {
     gas: 240000,
     shareCoinDecimals: 18,
@@ -31,16 +36,21 @@ export const osmosisMsgOpts = createMsgOpts({
     shareCoinDecimals: 18,
     messageComposer: osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.exitPool,
   },
-  swapExactAmountIn: {
-    gas: 250000,
+  splitRouteSwapExactAmountIn: (numPools: number) => ({
+    type: osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl
+      .splitRouteSwapExactAmountIn,
+    gas: 110_000 * numPools,
+  }),
+  swapExactAmountIn: (numPools: number) => ({
     messageComposer:
       osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.swapExactAmountIn,
-  },
-  swapExactAmountOut: {
-    gas: 250000,
+    gas: 25_0000 * numPools,
+  }),
+  swapExactAmountOut: (numPools: number) => ({
     messageComposer:
       osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.swapExactAmountOut,
-  },
+    gas: 25_0000 * numPools,
+  }),
   lockTokens: {
     gas: 450000,
     messageComposer: osmosis.lockup.MessageComposer.withTypeUrl.lockTokens,
@@ -79,5 +89,30 @@ export const osmosisMsgOpts = createMsgOpts({
     gas: 3000000,
     messageComposer:
       osmosis.superfluid.MessageComposer.withTypeUrl.unPoolWhitelistedPool,
+  },
+  clCreatePosition: {
+    type: osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
+      .createPosition,
+    gas: 3_000_000,
+  },
+  clCollectPositionsSpreadRewards: (numPositions: number) => ({
+    type: osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
+      .collectSpreadRewards,
+    gas: 120_000 * numPositions,
+  }),
+  clCollectPositionsIncentivesRewards: (numPositions: number) => ({
+    type: osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
+      .collectIncentives,
+    gas: 300_000 * numPositions,
+  }),
+  clWithdrawPosition: {
+    type: osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
+      .withdrawPosition,
+    gas: 3000000,
+  },
+  clAddToConcentratedPosition: {
+    type: osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
+      .addToPosition,
+    gas: 900_000,
   },
 });

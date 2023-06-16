@@ -1,8 +1,8 @@
 //@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
 
-import { Timestamp } from "../../google/protobuf/timestamp";
-import { fromTimestamp, Long, toTimestamp } from "../../helpers";
+import { Timestamp } from "../../../google/protobuf/timestamp";
+import { fromTimestamp, Long, toTimestamp } from "../../../helpers";
 export interface Pool {
   $typeUrl?: string;
   /** pool's address holding all liquidity tokens. */

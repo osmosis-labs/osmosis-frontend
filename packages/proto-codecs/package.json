@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "@osmonauts/proto-parser": "0.42.0",
-    "@osmonauts/telescope": "0.94.0",
+    "@osmonauts/telescope": "0.97.0",
     "@swc/core": "^1.3.55",
     "@swc/helpers": "^0.5.1",
     "@types/node": "^18.16.3",
