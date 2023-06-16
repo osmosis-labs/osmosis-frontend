@@ -13,8 +13,11 @@ import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { AddLiquidityModal } from "~/modals";
+import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
+
+import { SuperchargeDaiOsmoPool } from "../funnels/concentrated-liquidity";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -27,13 +30,23 @@ const TokenPairHistoricalChart = dynamic(
 
 export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
   observer(({ poolId }) => {
-    const { chainStore, queriesExternalStore, priceStore } = useStore();
+    const {
+      chainStore,
+      queriesExternalStore,
+      priceStore,
+      queriesStore,
+      accountStore,
+    } = useStore();
     const { chainId } = chainStore.osmosis;
     const config = useHistoricalAndLiquidityData(chainId, poolId);
     const t = useTranslation();
-    const [activeModal, setActiveModal] = useState<"add-liquidity" | null>(
-      null
-    );
+    const [activeModal, setActiveModal] = useState<
+      "add-liquidity" | "learn-more" | null
+    >(null);
+
+    const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId)
+      .osmosis!;
+    const account = accountStore.getAccount(chainStore.osmosis.chainId);
 
     const {
       pool,
@@ -66,6 +79,11 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
           pool.concentratedLiquidityPoolInfo.currentSqrtPrice
         )
       : undefined;
+
+    const userHasPositionInPool =
+      osmosisQueries.queryAccountsPositions
+        .get(account.bech32Address)
+        .positions.filter((position) => position.poolId === poolId).length > 0;
 
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
@@ -242,6 +260,26 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 {t("clPositions.createAPosition")}
               </Button>
             </div>
+            {!userHasPositionInPool && (
+              <>
+                <SuperchargeDaiOsmoPool
+                  title={t("createFirstPositionCta.title")}
+                  caption={t("createFirstPositionCta.caption")}
+                  primaryCta={t("createFirstPositionCta.primaryCta")}
+                  secondaryCta={t("createFirstPositionCta.secondaryCta")}
+                  onCtaClick={() => {
+                    setActiveModal("add-liquidity");
+                  }}
+                  onSecondaryClick={() => {
+                    setActiveModal("learn-more");
+                  }}
+                />
+                <ConcentratedLiquidityLearnMoreModal
+                  isOpen={activeModal === "learn-more"}
+                  onRequestClose={() => setActiveModal(null)}
+                />
+              </>
+            )}
             <MyPositionsSection forPoolId={poolId} />
           </div>
         </section>
