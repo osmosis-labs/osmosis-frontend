@@ -11,7 +11,7 @@ import { ShowMoreButton } from "~/components/buttons/show-more";
 import { PoolCard } from "~/components/cards";
 import { AllPoolsTable } from "~/components/complex";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
-import { SuperchargeDaiOsmoPool } from "~/components/funnels/concentrated-liquidity/supercharge-dai-osmo-pool";
+import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
 import { MetricLoader } from "~/components/loaders";
 import { PoolsOverview } from "~/components/overview/pools";
 import { EventName } from "~/config";
@@ -267,7 +267,7 @@ const Pools: NextPage = observer(function () {
       </section>
       {featureFlags.concentratedLiquidity && (
         <section className="pt-8 pb-10 md:pt-4 md:pb-5">
-          <SuperchargeDaiOsmoPool
+          <SuperchargePool
             title={t("addConcentratedLiquidityPoolCta.title")}
             caption={t("addConcentratedLiquidityPoolCta.caption")}
             primaryCta={t("addConcentratedLiquidityPoolCta.primaryCta")}

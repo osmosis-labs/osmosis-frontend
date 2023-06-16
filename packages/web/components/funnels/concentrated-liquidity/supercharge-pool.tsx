@@ -15,7 +15,8 @@ interface Props extends CustomClasses {
   onSecondaryClick: () => void;
 }
 
-export const SuperchargeDaiOsmoPool: FunctionComponent<Props> = (props) => {
+/** CTA card showing nice CL graphics, with a primary and secondary CTA. */
+export const SuperchargePool: FunctionComponent<Props> = (props) => {
   const { isMobile } = useWindowSize();
 
   return (
