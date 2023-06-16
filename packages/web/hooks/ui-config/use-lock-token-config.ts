@@ -115,6 +115,7 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
       queryOsmosis,
       queryOsmosis.querySyntheticLockupsByLockId,
       queryOsmosis.queryLockableDurations.response,
+      account?.osmosis,
     ]
   );
 

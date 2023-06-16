@@ -66,7 +66,7 @@ export function useRemoveLiquidityConfig(
         reject();
       }
     });
-  }, []);
+  }, [account?.osmosis]);
 
   return { config, removeLiquidity };
 }
