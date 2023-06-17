@@ -6,8 +6,8 @@ import {
   AnyAmino,
   AnyProtoMsg,
   AnySDKType,
-} from "../../../google/protobuf/any";
-import { Long } from "../../../helpers";
+} from "../../google/protobuf/any";
+import { Long } from "../../helpers";
 import {
   AccumulatorContent,
   AccumulatorContentAmino,
@@ -15,18 +15,18 @@ import {
   Record,
   RecordAmino,
   RecordSDKType,
-} from "../../accum/v1beta1/accum";
+} from "../accum/v1beta1/accum";
 import {
   CosmWasmPool,
   CosmWasmPoolProtoMsg,
   CosmWasmPoolSDKType,
-} from "../../cosmwasmpool/v1beta1/model/pool";
-import { Pool as Pool2 } from "../../gamm/pool-models/balancer/balancerPool";
-import { PoolProtoMsg as Pool2ProtoMsg } from "../../gamm/pool-models/balancer/balancerPool";
-import { PoolSDKType as Pool2SDKType } from "../../gamm/pool-models/balancer/balancerPool";
-import { Pool as Pool3 } from "../../gamm/pool-models/stableswap/stableswap_pool";
-import { PoolProtoMsg as Pool3ProtoMsg } from "../../gamm/pool-models/stableswap/stableswap_pool";
-import { PoolSDKType as Pool3SDKType } from "../../gamm/pool-models/stableswap/stableswap_pool";
+} from "../cosmwasmpool/v1beta1/model/pool";
+import { Pool as Pool2 } from "../gamm/pool-models/balancer/balancerPool";
+import { PoolProtoMsg as Pool2ProtoMsg } from "../gamm/pool-models/balancer/balancerPool";
+import { PoolSDKType as Pool2SDKType } from "../gamm/pool-models/balancer/balancerPool";
+import { Pool as Pool3 } from "../gamm/pool-models/stableswap/stableswap_pool";
+import { PoolProtoMsg as Pool3ProtoMsg } from "../gamm/pool-models/stableswap/stableswap_pool";
+import { PoolSDKType as Pool3SDKType } from "../gamm/pool-models/stableswap/stableswap_pool";
 import {
   IncentiveRecord,
   IncentiveRecordAmino,
@@ -145,6 +145,7 @@ export interface PositionData {
   position?: Position;
   lockId: Long;
   spreadRewardAccumRecord?: Record;
+  uptimeAccumRecords: Record[];
 }
 export interface PositionDataProtoMsg {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.PositionData";
@@ -154,6 +155,7 @@ export interface PositionDataAmino {
   position?: PositionAmino;
   lock_id: string;
   spread_reward_accum_record?: RecordAmino;
+  uptime_accum_records: RecordAmino[];
 }
 export interface PositionDataAminoMsg {
   type: "osmosis/concentratedliquidity/position-data";
@@ -163,6 +165,7 @@ export interface PositionDataSDKType {
   position?: PositionSDKType;
   lock_id: Long;
   spread_reward_accum_record?: RecordSDKType;
+  uptime_accum_records: RecordSDKType[];
 }
 /** GenesisState defines the concentrated liquidity module's genesis state. */
 export interface GenesisState {
@@ -172,6 +175,7 @@ export interface GenesisState {
   poolData: PoolData[];
   positionData: PositionData[];
   nextPositionId: Long;
+  nextIncentiveRecordId: Long;
 }
 export interface GenesisStateProtoMsg {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.GenesisState";
@@ -185,6 +189,7 @@ export interface GenesisStateAmino {
   pool_data: PoolDataAmino[];
   position_data: PositionDataAmino[];
   next_position_id: string;
+  next_incentive_record_id: string;
 }
 export interface GenesisStateAminoMsg {
   type: "osmosis/concentratedliquidity/genesis-state";
@@ -196,6 +201,7 @@ export interface GenesisStateSDKType {
   pool_data: PoolDataSDKType[];
   position_data: PositionDataSDKType[];
   next_position_id: Long;
+  next_incentive_record_id: Long;
 }
 export interface AccumObject {
   /** Accumulator's name (pulled from AccumulatorContent) */
@@ -485,6 +491,7 @@ function createBasePositionData(): PositionData {
     position: undefined,
     lockId: Long.UZERO,
     spreadRewardAccumRecord: undefined,
+    uptimeAccumRecords: [],
   };
 }
 export const PositionData = {
@@ -505,6 +512,9 @@ export const PositionData = {
         writer.uint32(26).fork()
       ).ldelim();
     }
+    for (const v of message.uptimeAccumRecords) {
+      Record.encode(v!, writer.uint32(34).fork()).ldelim();
+    }
     return writer;
   },
   decode(input: _m0.Reader | Uint8Array, length?: number): PositionData {
@@ -524,6 +534,11 @@ export const PositionData = {
           message.spreadRewardAccumRecord = Record.decode(
             reader,
             reader.uint32()
+          );
+          break;
+        case 4:
+          message.uptimeAccumRecords.push(
+            Record.decode(reader, reader.uint32())
           );
           break;
         default:
@@ -548,6 +563,8 @@ export const PositionData = {
       object.spreadRewardAccumRecord !== null
         ? Record.fromPartial(object.spreadRewardAccumRecord)
         : undefined;
+    message.uptimeAccumRecords =
+      object.uptimeAccumRecords?.map((e) => Record.fromPartial(e)) || [];
     return message;
   },
   fromAmino(object: PositionDataAmino): PositionData {
@@ -559,6 +576,9 @@ export const PositionData = {
       spreadRewardAccumRecord: object?.spread_reward_accum_record
         ? Record.fromAmino(object.spread_reward_accum_record)
         : undefined,
+      uptimeAccumRecords: Array.isArray(object?.uptime_accum_records)
+        ? object.uptime_accum_records.map((e: any) => Record.fromAmino(e))
+        : [],
     };
   },
   toAmino(message: PositionData): PositionDataAmino {
@@ -570,6 +590,13 @@ export const PositionData = {
     obj.spread_reward_accum_record = message.spreadRewardAccumRecord
       ? Record.toAmino(message.spreadRewardAccumRecord)
       : undefined;
+    if (message.uptimeAccumRecords) {
+      obj.uptime_accum_records = message.uptimeAccumRecords.map((e) =>
+        e ? Record.toAmino(e) : undefined
+      );
+    } else {
+      obj.uptime_accum_records = [];
+    }
     return obj;
   },
   fromAminoMsg(object: PositionDataAminoMsg): PositionData {
@@ -600,6 +627,7 @@ function createBaseGenesisState(): GenesisState {
     poolData: [],
     positionData: [],
     nextPositionId: Long.UZERO,
+    nextIncentiveRecordId: Long.UZERO,
   };
 }
 export const GenesisState = {
@@ -619,6 +647,9 @@ export const GenesisState = {
     }
     if (!message.nextPositionId.isZero()) {
       writer.uint32(32).uint64(message.nextPositionId);
+    }
+    if (!message.nextIncentiveRecordId.isZero()) {
+      writer.uint32(40).uint64(message.nextIncentiveRecordId);
     }
     return writer;
   },
@@ -643,6 +674,9 @@ export const GenesisState = {
         case 4:
           message.nextPositionId = reader.uint64() as Long;
           break;
+        case 5:
+          message.nextIncentiveRecordId = reader.uint64() as Long;
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -664,6 +698,11 @@ export const GenesisState = {
       object.nextPositionId !== undefined && object.nextPositionId !== null
         ? Long.fromValue(object.nextPositionId)
         : Long.UZERO;
+    message.nextIncentiveRecordId =
+      object.nextIncentiveRecordId !== undefined &&
+      object.nextIncentiveRecordId !== null
+        ? Long.fromValue(object.nextIncentiveRecordId)
+        : Long.UZERO;
     return message;
   },
   fromAmino(object: GenesisStateAmino): GenesisState {
@@ -676,6 +715,7 @@ export const GenesisState = {
         ? object.position_data.map((e: any) => PositionData.fromAmino(e))
         : [],
       nextPositionId: Long.fromString(object.next_position_id),
+      nextIncentiveRecordId: Long.fromString(object.next_incentive_record_id),
     };
   },
   toAmino(message: GenesisState): GenesisStateAmino {
@@ -697,6 +737,9 @@ export const GenesisState = {
     }
     obj.next_position_id = message.nextPositionId
       ? message.nextPositionId.toString()
+      : undefined;
+    obj.next_incentive_record_id = message.nextIncentiveRecordId
+      ? message.nextIncentiveRecordId.toString()
       : undefined;
     return obj;
   },

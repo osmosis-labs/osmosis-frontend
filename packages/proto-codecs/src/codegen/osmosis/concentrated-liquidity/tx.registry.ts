@@ -6,7 +6,6 @@ import {
   MsgCollectIncentives,
   MsgCollectSpreadRewards,
   MsgCreatePosition,
-  MsgFungifyChargedPositions,
   MsgWithdrawPosition,
 } from "./tx";
 export const registry: ReadonlyArray<[string, GeneratedType]> = [
@@ -26,10 +25,6 @@ export const registry: ReadonlyArray<[string, GeneratedType]> = [
   [
     "/osmosis.concentratedliquidity.v1beta1.MsgCollectIncentives",
     MsgCollectIncentives,
-  ],
-  [
-    "/osmosis.concentratedliquidity.v1beta1.MsgFungifyChargedPositions",
-    MsgFungifyChargedPositions,
   ],
 ];
 export const load = (protoRegistry: Registry) => {
@@ -70,13 +65,6 @@ export const MessageComposer = {
         value: MsgCollectIncentives.encode(value).finish(),
       };
     },
-    fungifyChargedPositions(value: MsgFungifyChargedPositions) {
-      return {
-        typeUrl:
-          "/osmosis.concentratedliquidity.v1beta1.MsgFungifyChargedPositions",
-        value: MsgFungifyChargedPositions.encode(value).finish(),
-      };
-    },
   },
   withTypeUrl: {
     createPosition(value: MsgCreatePosition) {
@@ -107,13 +95,6 @@ export const MessageComposer = {
     collectIncentives(value: MsgCollectIncentives) {
       return {
         typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCollectIncentives",
-        value,
-      };
-    },
-    fungifyChargedPositions(value: MsgFungifyChargedPositions) {
-      return {
-        typeUrl:
-          "/osmosis.concentratedliquidity.v1beta1.MsgFungifyChargedPositions",
         value,
       };
     },
@@ -148,13 +129,6 @@ export const MessageComposer = {
       return {
         typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCollectIncentives",
         value: MsgCollectIncentives.fromPartial(value),
-      };
-    },
-    fungifyChargedPositions(value: MsgFungifyChargedPositions) {
-      return {
-        typeUrl:
-          "/osmosis.concentratedliquidity.v1beta1.MsgFungifyChargedPositions",
-        value: MsgFungifyChargedPositions.fromPartial(value),
       };
     },
   },

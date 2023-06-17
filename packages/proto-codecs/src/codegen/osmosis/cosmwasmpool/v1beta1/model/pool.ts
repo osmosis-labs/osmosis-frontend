@@ -4,7 +4,6 @@ import * as _m0 from "protobufjs/minimal";
 import { Long } from "../../../../helpers";
 export interface CosmWasmPool {
   $typeUrl?: string;
-  poolAddress: string;
   contractAddress: string;
   poolId: Long;
   codeId: Long;
@@ -15,7 +14,6 @@ export interface CosmWasmPoolProtoMsg {
   value: Uint8Array;
 }
 export interface CosmWasmPoolAmino {
-  pool_address: string;
   contract_address: string;
   pool_id: string;
   code_id: string;
@@ -27,7 +25,6 @@ export interface CosmWasmPoolAminoMsg {
 }
 export interface CosmWasmPoolSDKType {
   $typeUrl?: string;
-  pool_address: string;
   contract_address: string;
   pool_id: Long;
   code_id: Long;
@@ -36,7 +33,6 @@ export interface CosmWasmPoolSDKType {
 function createBaseCosmWasmPool(): CosmWasmPool {
   return {
     $typeUrl: "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool",
-    poolAddress: "",
     contractAddress: "",
     poolId: Long.UZERO,
     codeId: Long.UZERO,
@@ -49,20 +45,17 @@ export const CosmWasmPool = {
     message: CosmWasmPool,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
-    if (message.poolAddress !== "") {
-      writer.uint32(10).string(message.poolAddress);
-    }
     if (message.contractAddress !== "") {
-      writer.uint32(18).string(message.contractAddress);
+      writer.uint32(10).string(message.contractAddress);
     }
     if (!message.poolId.isZero()) {
-      writer.uint32(24).uint64(message.poolId);
+      writer.uint32(16).uint64(message.poolId);
     }
     if (!message.codeId.isZero()) {
-      writer.uint32(32).uint64(message.codeId);
+      writer.uint32(24).uint64(message.codeId);
     }
     if (message.instantiateMsg.length !== 0) {
-      writer.uint32(42).bytes(message.instantiateMsg);
+      writer.uint32(34).bytes(message.instantiateMsg);
     }
     return writer;
   },
@@ -74,18 +67,15 @@ export const CosmWasmPool = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.poolAddress = reader.string();
-          break;
-        case 2:
           message.contractAddress = reader.string();
           break;
-        case 3:
+        case 2:
           message.poolId = reader.uint64() as Long;
           break;
-        case 4:
+        case 3:
           message.codeId = reader.uint64() as Long;
           break;
-        case 5:
+        case 4:
           message.instantiateMsg = reader.bytes();
           break;
         default:
@@ -97,7 +87,6 @@ export const CosmWasmPool = {
   },
   fromPartial(object: Partial<CosmWasmPool>): CosmWasmPool {
     const message = createBaseCosmWasmPool();
-    message.poolAddress = object.poolAddress ?? "";
     message.contractAddress = object.contractAddress ?? "";
     message.poolId =
       object.poolId !== undefined && object.poolId !== null
@@ -112,7 +101,6 @@ export const CosmWasmPool = {
   },
   fromAmino(object: CosmWasmPoolAmino): CosmWasmPool {
     return {
-      poolAddress: object.pool_address,
       contractAddress: object.contract_address,
       poolId: Long.fromString(object.pool_id),
       codeId: Long.fromString(object.code_id),
@@ -121,7 +109,6 @@ export const CosmWasmPool = {
   },
   toAmino(message: CosmWasmPool): CosmWasmPoolAmino {
     const obj: any = {};
-    obj.pool_address = message.poolAddress;
     obj.contract_address = message.contractAddress;
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     obj.code_id = message.codeId ? message.codeId.toString() : undefined;

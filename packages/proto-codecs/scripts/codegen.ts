@@ -42,7 +42,7 @@ const includedPackages: AvailablePackages[] = [
   "tendermint.crypto",
   "tendermint.version",
   "osmosis.concentratedliquidity.v1beta1",
-  "osmosis.concentratedliquidity.poolmodels.concentrated.v1beta1",
+  "osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1",
 ];
 
 telescope({

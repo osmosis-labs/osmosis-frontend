@@ -1,19 +1,7 @@
 //@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
-/** Params holds parameters for the cosmwasmpool module */
-export interface Params {}
-export interface ParamsProtoMsg {
-  typeUrl: "/osmosis.cosmwasmpool.v1beta1.Params";
-  value: Uint8Array;
-}
-/** Params holds parameters for the cosmwasmpool module */
-export interface ParamsAmino {}
-export interface ParamsAminoMsg {
-  type: "osmosis/cosmwasmpool/params";
-  value: ParamsAmino;
-}
-/** Params holds parameters for the cosmwasmpool module */
-export interface ParamsSDKType {}
+
+import { Params, ParamsAmino, ParamsSDKType } from "./params";
 /** GenesisState defines the cosmwasmpool module's genesis state. */
 export interface GenesisState {
   /** params is the container of cosmwasmpool parameters. */
@@ -36,61 +24,6 @@ export interface GenesisStateAminoMsg {
 export interface GenesisStateSDKType {
   params?: ParamsSDKType;
 }
-function createBaseParams(): Params {
-  return {};
-}
-export const Params = {
-  typeUrl: "/osmosis.cosmwasmpool.v1beta1.Params",
-  encode(_: Params, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    return writer;
-  },
-  decode(input: _m0.Reader | Uint8Array, length?: number): Params {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseParams();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromPartial(_: Partial<Params>): Params {
-    const message = createBaseParams();
-    return message;
-  },
-  fromAmino(_: ParamsAmino): Params {
-    return {};
-  },
-  toAmino(_: Params): ParamsAmino {
-    const obj: any = {};
-    return obj;
-  },
-  fromAminoMsg(object: ParamsAminoMsg): Params {
-    return Params.fromAmino(object.value);
-  },
-  toAminoMsg(message: Params): ParamsAminoMsg {
-    return {
-      type: "osmosis/cosmwasmpool/params",
-      value: Params.toAmino(message),
-    };
-  },
-  fromProtoMsg(message: ParamsProtoMsg): Params {
-    return Params.decode(message.value);
-  },
-  toProto(message: Params): Uint8Array {
-    return Params.encode(message).finish();
-  },
-  toProtoMsg(message: Params): ParamsProtoMsg {
-    return {
-      typeUrl: "/osmosis.cosmwasmpool.v1beta1.Params",
-      value: Params.encode(message).finish(),
-    };
-  },
-};
 function createBaseGenesisState(): GenesisState {
   return {
     params: undefined,

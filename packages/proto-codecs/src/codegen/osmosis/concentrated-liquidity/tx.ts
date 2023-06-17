@@ -1,13 +1,8 @@
 //@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
 
-import {
-  Coin,
-  CoinAmino,
-  CoinSDKType,
-} from "../../../cosmos/base/v1beta1/coin";
-import { Timestamp } from "../../../google/protobuf/timestamp";
-import { fromTimestamp, Long, toTimestamp } from "../../../helpers";
+import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
+import { Long } from "../../helpers";
 /** ===================== MsgCreatePosition */
 export interface MsgCreatePosition {
   poolId: Long;
@@ -62,7 +57,6 @@ export interface MsgCreatePositionResponse {
   positionId: Long;
   amount0: string;
   amount1: string;
-  joinTime?: Date;
   liquidityCreated: string;
   /**
    * the lower and upper tick are in the response because there are
@@ -81,7 +75,6 @@ export interface MsgCreatePositionResponseAmino {
   position_id: string;
   amount0: string;
   amount1: string;
-  join_time?: Date;
   liquidity_created: string;
   /**
    * the lower and upper tick are in the response because there are
@@ -100,7 +93,6 @@ export interface MsgCreatePositionResponseSDKType {
   position_id: Long;
   amount0: string;
   amount1: string;
-  join_time?: Date;
   liquidity_created: string;
   lower_tick: Long;
   upper_tick: Long;
@@ -116,15 +108,15 @@ export interface MsgAddToPosition {
   /**
    * token_min_amount0 represents the minimum amount of token0 desired from the
    * new position being created. Note that this field indicates the min amount0
-   * corresponding to the total liquidity of the position, not just the
-   * liquidity that is being added.
+   * corresponding to the liquidity that is being added, not the total
+   * liquidity of the position.
    */
   tokenMinAmount0: string;
   /**
    * token_min_amount1 represents the minimum amount of token1 desired from the
    * new position being created. Note that this field indicates the min amount1
-   * corresponding to the total liquidity of the position, not just the
-   * liquidity that is being added.
+   * corresponding to the liquidity that is being added, not the total
+   * liquidity of the position.
    */
   tokenMinAmount1: string;
 }
@@ -143,15 +135,15 @@ export interface MsgAddToPositionAmino {
   /**
    * token_min_amount0 represents the minimum amount of token0 desired from the
    * new position being created. Note that this field indicates the min amount0
-   * corresponding to the total liquidity of the position, not just the
-   * liquidity that is being added.
+   * corresponding to the liquidity that is being added, not the total
+   * liquidity of the position.
    */
   token_min_amount0: string;
   /**
    * token_min_amount1 represents the minimum amount of token1 desired from the
    * new position being created. Note that this field indicates the min amount1
-   * corresponding to the total liquidity of the position, not just the
-   * liquidity that is being added.
+   * corresponding to the liquidity that is being added, not the total
+   * liquidity of the position.
    */
   token_min_amount1: string;
 }
@@ -517,7 +509,6 @@ function createBaseMsgCreatePositionResponse(): MsgCreatePositionResponse {
     positionId: Long.UZERO,
     amount0: "",
     amount1: "",
-    joinTime: undefined,
     liquidityCreated: "",
     lowerTick: Long.ZERO,
     upperTick: Long.ZERO,
@@ -537,12 +528,6 @@ export const MsgCreatePositionResponse = {
     }
     if (message.amount1 !== "") {
       writer.uint32(26).string(message.amount1);
-    }
-    if (message.joinTime !== undefined) {
-      Timestamp.encode(
-        toTimestamp(message.joinTime),
-        writer.uint32(34).fork()
-      ).ldelim();
     }
     if (message.liquidityCreated !== "") {
       writer.uint32(42).string(message.liquidityCreated);
@@ -574,11 +559,6 @@ export const MsgCreatePositionResponse = {
         case 3:
           message.amount1 = reader.string();
           break;
-        case 4:
-          message.joinTime = fromTimestamp(
-            Timestamp.decode(reader, reader.uint32())
-          );
-          break;
         case 5:
           message.liquidityCreated = reader.string();
           break;
@@ -605,7 +585,6 @@ export const MsgCreatePositionResponse = {
         : Long.UZERO;
     message.amount0 = object.amount0 ?? "";
     message.amount1 = object.amount1 ?? "";
-    message.joinTime = object.joinTime ?? undefined;
     message.liquidityCreated = object.liquidityCreated ?? "";
     message.lowerTick =
       object.lowerTick !== undefined && object.lowerTick !== null
@@ -622,9 +601,6 @@ export const MsgCreatePositionResponse = {
       positionId: Long.fromString(object.position_id),
       amount0: object.amount0,
       amount1: object.amount1,
-      joinTime: object?.join_time
-        ? Timestamp.fromAmino(object.join_time)
-        : undefined,
       liquidityCreated: object.liquidity_created,
       lowerTick: Long.fromString(object.lower_tick),
       upperTick: Long.fromString(object.upper_tick),
@@ -637,9 +613,6 @@ export const MsgCreatePositionResponse = {
       : undefined;
     obj.amount0 = message.amount0;
     obj.amount1 = message.amount1;
-    obj.join_time = message.joinTime
-      ? Timestamp.toAmino(message.joinTime)
-      : undefined;
     obj.liquidity_created = message.liquidityCreated;
     obj.lower_tick = message.lowerTick
       ? message.lowerTick.toString()

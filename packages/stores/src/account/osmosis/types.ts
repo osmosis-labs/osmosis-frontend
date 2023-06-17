@@ -16,8 +16,9 @@ export const osmosisMsgOpts = createMsgOpts({
         .createStableswapPool,
   },
   createConcentratedPool: {
-    type: osmosis.concentratedliquidity.poolmodels.concentrated.v1beta1
-      .MessageComposer.withTypeUrl.createConcentratedPool,
+    messageComposer:
+      osmosis.concentratedliquidity.poolmodels.concentrated.v1beta1
+        .MessageComposer.withTypeUrl.createConcentratedPool,
     gas: 350000,
   },
   joinPool: {
@@ -37,8 +38,9 @@ export const osmosisMsgOpts = createMsgOpts({
     messageComposer: osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.exitPool,
   },
   splitRouteSwapExactAmountIn: (numPools: number) => ({
-    type: osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl
-      .splitRouteSwapExactAmountIn,
+    messageComposer:
+      osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl
+        .splitRouteSwapExactAmountIn,
     gas: 110_000 * numPools,
   }),
   swapExactAmountIn: (numPools: number) => ({
@@ -91,28 +93,35 @@ export const osmosisMsgOpts = createMsgOpts({
       osmosis.superfluid.MessageComposer.withTypeUrl.unPoolWhitelistedPool,
   },
   clCreatePosition: {
-    type: osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
-      .createPosition,
+    messageComposer:
+      osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
+        .createPosition,
     gas: 3_000_000,
   },
   clCollectPositionsSpreadRewards: (numPositions: number) => ({
-    type: osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
-      .collectSpreadRewards,
+    messageComposer:
+      osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
+        .collectSpreadRewards,
     gas: 120_000 * numPositions,
   }),
   clCollectPositionsIncentivesRewards: (numPositions: number) => ({
-    type: osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
-      .collectIncentives,
+    messageComposer:
+      osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
+        .collectIncentives,
     gas: 300_000 * numPositions,
   }),
   clWithdrawPosition: {
-    type: osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
-      .withdrawPosition,
+    messageComposer:
+      osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
+        .withdrawPosition,
     gas: 3000000,
   },
   clAddToConcentratedPosition: {
-    type: osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
-      .addToPosition,
+    messageComposer:
+      osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
+        .addToPosition,
     gas: 900_000,
   },
 });
+
+export const DEFAULT_SLIPPAGE = "2.5";

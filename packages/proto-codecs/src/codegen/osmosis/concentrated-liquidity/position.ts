@@ -1,13 +1,9 @@
 //@ts-nocheck
 import * as _m0 from "protobufjs/minimal";
 
-import {
-  Coin,
-  CoinAmino,
-  CoinSDKType,
-} from "../../../cosmos/base/v1beta1/coin";
-import { Timestamp } from "../../../google/protobuf/timestamp";
-import { fromTimestamp, Long, toTimestamp } from "../../../helpers";
+import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
+import { Timestamp } from "../../google/protobuf/timestamp";
+import { fromTimestamp, Long, toTimestamp } from "../../helpers";
 /**
  * Position contains position's id, address, pool id, lower tick, upper tick
  * join time, and liquidity.
@@ -68,7 +64,7 @@ export interface FullPositionBreakdown {
   position?: Position;
   asset0?: Coin;
   asset1?: Coin;
-  claimableFees: Coin[];
+  claimableSpreadRewards: Coin[];
   claimableIncentives: Coin[];
   forfeitedIncentives: Coin[];
 }
@@ -89,7 +85,7 @@ export interface FullPositionBreakdownAmino {
   position?: PositionAmino;
   asset0?: CoinAmino;
   asset1?: CoinAmino;
-  claimable_fees: CoinAmino[];
+  claimable_spread_rewards: CoinAmino[];
   claimable_incentives: CoinAmino[];
   forfeited_incentives: CoinAmino[];
 }
@@ -110,7 +106,7 @@ export interface FullPositionBreakdownSDKType {
   position?: PositionSDKType;
   asset0?: CoinSDKType;
   asset1?: CoinSDKType;
-  claimable_fees: CoinSDKType[];
+  claimable_spread_rewards: CoinSDKType[];
   claimable_incentives: CoinSDKType[];
   forfeited_incentives: CoinSDKType[];
 }
@@ -276,7 +272,7 @@ function createBaseFullPositionBreakdown(): FullPositionBreakdown {
     position: undefined,
     asset0: undefined,
     asset1: undefined,
-    claimableFees: [],
+    claimableSpreadRewards: [],
     claimableIncentives: [],
     forfeitedIncentives: [],
   };
@@ -296,7 +292,7 @@ export const FullPositionBreakdown = {
     if (message.asset1 !== undefined) {
       Coin.encode(message.asset1, writer.uint32(26).fork()).ldelim();
     }
-    for (const v of message.claimableFees) {
+    for (const v of message.claimableSpreadRewards) {
       Coin.encode(v!, writer.uint32(34).fork()).ldelim();
     }
     for (const v of message.claimableIncentives) {
@@ -327,7 +323,9 @@ export const FullPositionBreakdown = {
           message.asset1 = Coin.decode(reader, reader.uint32());
           break;
         case 4:
-          message.claimableFees.push(Coin.decode(reader, reader.uint32()));
+          message.claimableSpreadRewards.push(
+            Coin.decode(reader, reader.uint32())
+          );
           break;
         case 5:
           message.claimableIncentives.push(
@@ -360,8 +358,8 @@ export const FullPositionBreakdown = {
       object.asset1 !== undefined && object.asset1 !== null
         ? Coin.fromPartial(object.asset1)
         : undefined;
-    message.claimableFees =
-      object.claimableFees?.map((e) => Coin.fromPartial(e)) || [];
+    message.claimableSpreadRewards =
+      object.claimableSpreadRewards?.map((e) => Coin.fromPartial(e)) || [];
     message.claimableIncentives =
       object.claimableIncentives?.map((e) => Coin.fromPartial(e)) || [];
     message.forfeitedIncentives =
@@ -375,8 +373,8 @@ export const FullPositionBreakdown = {
         : undefined,
       asset0: object?.asset0 ? Coin.fromAmino(object.asset0) : undefined,
       asset1: object?.asset1 ? Coin.fromAmino(object.asset1) : undefined,
-      claimableFees: Array.isArray(object?.claimable_fees)
-        ? object.claimable_fees.map((e: any) => Coin.fromAmino(e))
+      claimableSpreadRewards: Array.isArray(object?.claimable_spread_rewards)
+        ? object.claimable_spread_rewards.map((e: any) => Coin.fromAmino(e))
         : [],
       claimableIncentives: Array.isArray(object?.claimable_incentives)
         ? object.claimable_incentives.map((e: any) => Coin.fromAmino(e))
@@ -393,12 +391,12 @@ export const FullPositionBreakdown = {
       : undefined;
     obj.asset0 = message.asset0 ? Coin.toAmino(message.asset0) : undefined;
     obj.asset1 = message.asset1 ? Coin.toAmino(message.asset1) : undefined;
-    if (message.claimableFees) {
-      obj.claimable_fees = message.claimableFees.map((e) =>
+    if (message.claimableSpreadRewards) {
+      obj.claimable_spread_rewards = message.claimableSpreadRewards.map((e) =>
         e ? Coin.toAmino(e) : undefined
       );
     } else {
-      obj.claimable_fees = [];
+      obj.claimable_spread_rewards = [];
     }
     if (message.claimableIncentives) {
       obj.claimable_incentives = message.claimableIncentives.map((e) =>

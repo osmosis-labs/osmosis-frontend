@@ -4,7 +4,7 @@ import { GeneratedType, Registry } from "@cosmjs/proto-signing";
 import { MsgCreateConcentratedPool } from "./tx";
 export const registry: ReadonlyArray<[string, GeneratedType]> = [
   [
-    "/osmosis.concentratedliquidity.poolmodels.concentrated.v1beta1.MsgCreateConcentratedPool",
+    "/osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MsgCreateConcentratedPool",
     MsgCreateConcentratedPool,
   ],
 ];
@@ -18,7 +18,7 @@ export const MessageComposer = {
     createConcentratedPool(value: MsgCreateConcentratedPool) {
       return {
         typeUrl:
-          "/osmosis.concentratedliquidity.poolmodels.concentrated.v1beta1.MsgCreateConcentratedPool",
+          "/osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MsgCreateConcentratedPool",
         value: MsgCreateConcentratedPool.encode(value).finish(),
       };
     },
@@ -27,7 +27,7 @@ export const MessageComposer = {
     createConcentratedPool(value: MsgCreateConcentratedPool) {
       return {
         typeUrl:
-          "/osmosis.concentratedliquidity.poolmodels.concentrated.v1beta1.MsgCreateConcentratedPool",
+          "/osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MsgCreateConcentratedPool",
         value,
       };
     },
@@ -36,7 +36,7 @@ export const MessageComposer = {
     createConcentratedPool(value: MsgCreateConcentratedPool) {
       return {
         typeUrl:
-          "/osmosis.concentratedliquidity.poolmodels.concentrated.v1beta1.MsgCreateConcentratedPool",
+          "/osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MsgCreateConcentratedPool",
         value: MsgCreateConcentratedPool.fromPartial(value),
       };
     },
