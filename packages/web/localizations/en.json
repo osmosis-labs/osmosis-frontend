@@ -119,6 +119,7 @@
       "title": "Upgrade your position",
       "availableSharesTitle": "Migrate available shares",
       "availableSharesDescription": "Migrate unbonded shares to the new pool. Shares will automatically be converted into the underlying assets and deposited into the new pool as a full range position",
+      "balance": "Your balance:",
       "bondedSharesTitle": "Migrate bonded shares",
       "bondedSharesDescription": "Migrate bonded or superfluid staked shares to the new pool. If shares are only bonded they will be unbonded, converted into the underlying assets, and deposited into the new pool as a full range position. Otherwise if they are superfluid staked, they will be converted into a superfluid staked full range position."
     }
