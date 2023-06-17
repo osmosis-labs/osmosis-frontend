@@ -166,7 +166,7 @@ export class OsmosisAccountImpl {
         if (tx.code == null || tx.code === 0) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
-          this.queries.queryGammPools.waitFreshResponse();
+          this.queries.queryPools.waitFreshResponse();
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
             .balances.forEach((bal) => {
@@ -249,7 +249,7 @@ export class OsmosisAccountImpl {
         if (tx.code == null || tx.code === 0) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
-          this.queries.queryGammPools.waitFreshResponse();
+          this.queries.queryPools.waitFreshResponse();
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
             .balances.forEach((bal) => {
@@ -388,7 +388,7 @@ export class OsmosisAccountImpl {
         if (tx.code == null || tx.code === 0) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
-          this.queries.queryGammPools.waitFreshResponse();
+          this.queries.queryPools.waitFreshResponse();
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
             .balances.forEach((bal) => {
@@ -432,7 +432,7 @@ export class OsmosisAccountImpl {
     await this.base.cosmos.sendMsgs(
       "joinPool",
       async () => {
-        const queryPool = queries.queryGammPools.getPool(poolId);
+        const queryPool = queries.queryPools.getPool(poolId);
 
         if (!queryPool) {
           throw new Error(`Pool #${poolId} not found`);
@@ -526,7 +526,7 @@ export class OsmosisAccountImpl {
               bal.waitFreshResponse();
             });
 
-          this.queries.queryGammPools.getPool(poolId)?.waitFreshResponse();
+          this.queries.queryPools.getPool(poolId)?.waitFreshResponse();
         }
 
         onFulfill?.(tx);
@@ -556,7 +556,7 @@ export class OsmosisAccountImpl {
     await this.base.cosmos.sendMsgs(
       "joinPool",
       async () => {
-        const queryPool = queries.queryGammPools.getPool(poolId);
+        const queryPool = queries.queryPools.getPool(poolId);
 
         if (!queryPool) {
           throw new Error(`Pool #${poolId} not found`);
@@ -657,7 +657,7 @@ export class OsmosisAccountImpl {
             .balances.forEach((bal) => {
               bal.waitFreshResponse();
             });
-          this.queries.queryGammPools.getPool(poolId)?.waitFreshResponse();
+          this.queries.queryPools.getPool(poolId)?.waitFreshResponse();
         }
 
         onFulfill?.(tx);
@@ -691,7 +691,7 @@ export class OsmosisAccountImpl {
     await this.base.cosmos.sendMsgs(
       "clCreatePosition",
       () => {
-        const queryPool = queries.queryGammPools.getPool(poolId);
+        const queryPool = queries.queryPools.getPool(poolId);
 
         if (!queryPool) {
           throw new Error(`Pool #${poolId} not found`);
@@ -804,7 +804,7 @@ export class OsmosisAccountImpl {
             .balances.forEach((bal) => {
               bal.waitFreshResponse();
             });
-          this.queries.queryGammPools.getPool(poolId)?.waitFreshResponse();
+          this.queries.queryPools.getPool(poolId)?.waitFreshResponse();
           this.queries.queryAccountsPositions
             .get(this.base.bech32Address)
             ?.waitFreshResponse();
@@ -1243,9 +1243,7 @@ export class OsmosisAccountImpl {
           routes
             .flatMap(({ pools }) => pools)
             .forEach(({ id: poolId }) => {
-              queries.osmosis?.queryGammPools
-                .getPool(poolId)
-                ?.waitFreshResponse();
+              queries.osmosis?.queryPools.getPool(poolId)?.waitFreshResponse();
             });
 
           queries.osmosis?.queryAccountsPositions
@@ -1342,9 +1340,7 @@ export class OsmosisAccountImpl {
             });
 
           pools.forEach(({ id: poolId }) => {
-            queries.osmosis?.queryGammPools
-              .getPool(poolId)
-              ?.waitFreshResponse();
+            queries.osmosis?.queryPools.getPool(poolId)?.waitFreshResponse();
           });
 
           queries.osmosis?.queryAccountsPositions
@@ -1440,7 +1436,7 @@ export class OsmosisAccountImpl {
             });
 
           pools.forEach(({ id }) =>
-            this.queries.queryGammPools.getPool(id)?.waitFreshResponse()
+            this.queries.queryPools.getPool(id)?.waitFreshResponse()
           );
 
           queries.osmosis?.queryAccountsPositions
@@ -1474,7 +1470,7 @@ export class OsmosisAccountImpl {
     await this.base.cosmos.sendMsgs(
       "exitPool",
       async () => {
-        const queryPool = queries.queryGammPools.getPool(poolId);
+        const queryPool = queries.queryPools.getPool(poolId);
 
         if (!queryPool) {
           throw new Error(`Pool #${poolId} not found`);
@@ -1561,7 +1557,7 @@ export class OsmosisAccountImpl {
             .getQueryBech32Address(this.base.bech32Address)
             .balances.forEach((balance) => balance.waitFreshResponse());
 
-          this.queries.queryGammPools.getPool(poolId)?.waitFreshResponse();
+          this.queries.queryPools.getPool(poolId)?.waitFreshResponse();
         }
 
         onFulfill?.(tx);

@@ -30,11 +30,13 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   } = props.position;
 
   const t = useTranslation();
-  const { chainStore, accountStore, derivedDataStore, priceStore } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getAccount(chainId);
   const isSendingMsg = account.txTypeInProgress !== "";
+
+  const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
   const { config, removeLiquidity } = useRemoveConcentratedLiquidityConfig(
     chainStore,
@@ -61,12 +63,12 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   const baseAsset = config.effectiveLiquidityAmounts?.base;
   const quoteAsset = config.effectiveLiquidityAmounts?.quote;
 
-  const {
-    poolDetail: { pool },
-  } = derivedDataStore.getForPool(props.poolId);
-  const clPool = pool?.pool as ConcentratedLiquidityPool;
-  const isConcLiq = pool?.type === "concentrated";
-  const currentSqrtPrice = isConcLiq && clPool.currentSqrtPrice;
+  const queryPool = osmosisQueries.queryPools.getPool(props.poolId);
+  const clPool =
+    queryPool?.pool && queryPool.pool instanceof ConcentratedLiquidityPool
+      ? queryPool.pool
+      : undefined;
+  const currentSqrtPrice = clPool ? clPool.currentSqrtPrice : undefined;
   const currentPrice = currentSqrtPrice
     ? currentSqrtPrice.mul(currentSqrtPrice)
     : new Dec(0);

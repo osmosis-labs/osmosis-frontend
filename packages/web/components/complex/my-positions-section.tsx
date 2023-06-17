@@ -16,6 +16,7 @@ export const MyPositionsSection: FunctionComponent<{ forPoolId?: string }> =
     const osmosisQueries = queriesStore.get(chainId).osmosis!;
     const [viewMore, setViewMore] = useState(false);
 
+    // positions filtered by pool ID if forPoolId is given
     const positions = osmosisQueries.queryAccountsPositions
       .get(account.bech32Address)
       .positions.filter((position) => {

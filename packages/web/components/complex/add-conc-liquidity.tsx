@@ -1,9 +1,7 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import {
   ObservableAddConcentratedLiquidityConfig,
-  ObservablePoolDetail,
   ObservableQueryPool,
-  ObservableSuperfluidPoolDetail,
 } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import debounce from "debounce";
@@ -59,17 +57,15 @@ export const AddConcLiquidity: FunctionComponent<
     onRequestClose,
   }) => {
     const { poolId } = addLiquidityConfig;
-    const { derivedDataStore } = useStore();
+    const {
+      queriesStore,
+      chainStore: {
+        osmosis: { chainId },
+      },
+    } = useStore();
 
     // initialize pool data stores once root pool store is loaded
-    const { poolDetail, superfluidPoolDetail } =
-      typeof poolId === "string"
-        ? derivedDataStore.getForPool(poolId as string)
-        : {
-            poolDetail: undefined,
-            superfluidPoolDetail: undefined,
-          };
-    const pool = poolDetail?.pool;
+    const pool = queriesStore.get(chainId).osmosis!.queryPools.getPool(poolId);
 
     return (
       <div
@@ -85,8 +81,6 @@ export const AddConcLiquidity: FunctionComponent<
               return (
                 <Overview
                   pool={pool}
-                  poolDetail={poolDetail}
-                  superfluidPoolDetail={superfluidPoolDetail}
                   addLiquidityConfig={addLiquidityConfig}
                   onRequestClose={onRequestClose}
                 />
@@ -112,138 +106,130 @@ export const AddConcLiquidity: FunctionComponent<
 const Overview: FunctionComponent<
   {
     pool?: ObservableQueryPool;
-    poolDetail?: ObservablePoolDetail;
-    superfluidPoolDetail?: ObservableSuperfluidPoolDetail;
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     onRequestClose: () => void;
   } & CustomClasses
-> = observer(
-  ({
-    addLiquidityConfig,
-    pool,
-    superfluidPoolDetail,
-    poolDetail,
-    onRequestClose,
-  }) => {
-    const { priceStore, queriesExternalStore } = useStore();
-    const { poolId } = addLiquidityConfig;
-    const t = useTranslation();
-    const [selected, selectView] =
-      useState<typeof addLiquidityConfig.modalView>("add_manual");
-    const queryGammPoolFeeMetrics =
-      queriesExternalStore.queryGammPoolFeeMetrics;
+> = observer(({ addLiquidityConfig, pool, onRequestClose }) => {
+  const { priceStore, queriesExternalStore, derivedDataStore } = useStore();
+  const t = useTranslation();
+  const [selected, selectView] =
+    useState<typeof addLiquidityConfig.modalView>("add_manual");
+  const queryGammPoolFeeMetrics = queriesExternalStore.queryGammPoolFeeMetrics;
 
-    return (
-      <>
-        <div className="align-center relative flex flex-row">
-          <div className="absolute left-0 flex h-full items-center text-sm" />
-          <h6 className="flex-1 text-center">
-            {t("addConcentratedLiquidity.step1Title")}
-          </h6>
-          <div className="absolute right-0">
-            <IconButton
-              aria-label="Close"
-              mode="unstyled"
-              size="unstyled"
-              className="!p-0"
-              icon={
-                <Icon
-                  id="close-thin"
-                  className="text-wosmongton-400 hover:text-wosmongton-100"
-                  height={24}
-                  width={24}
-                />
-              }
-              onClick={onRequestClose}
-            />
-          </div>
+  const superfluidPoolDetail = derivedDataStore.superfluidPoolDetails.get(
+    addLiquidityConfig.poolId
+  );
+
+  return (
+    <>
+      <div className="align-center relative flex flex-row">
+        <div className="absolute left-0 flex h-full items-center text-sm" />
+        <h6 className="flex-1 text-center">
+          {t("addConcentratedLiquidity.step1Title")}
+        </h6>
+        <div className="absolute right-0">
+          <IconButton
+            aria-label="Close"
+            mode="unstyled"
+            size="unstyled"
+            className="!p-0"
+            icon={
+              <Icon
+                id="close-thin"
+                className="text-wosmongton-400 hover:text-wosmongton-100"
+                height={24}
+                width={24}
+              />
+            }
+            onClick={onRequestClose}
+          />
         </div>
-        <div className="flex rounded-[1rem] bg-osmoverse-700/[.3] px-[28px] py-4">
-          <div className="flex flex-1 flex-col gap-1">
-            <div className="flex flex-nowrap items-center gap-2">
-              {pool && (
-                <>
-                  <PoolAssetsIcon
-                    assets={pool.poolAssets.map(
-                      (asset: { amount: CoinPretty }) => ({
-                        coinDenom: asset.amount.denom,
-                        coinImageUrl: asset.amount.currency.coinImageUrl,
-                      })
-                    )}
-                    size="sm"
-                  />
-                  <PoolAssetsName
-                    size="md"
-                    className="max-w-xs truncate"
-                    assetDenoms={pool.poolAssets.map(
-                      (asset: { amount: CoinPretty }) => asset.amount.denom
-                    )}
-                  />
-                </>
-              )}
-            </div>
-            {!superfluidPoolDetail?.isSuperfluid && (
-              <span className="body2 text-superfluid-gradient">
-                {t("pool.superfluidEnabled")}
-              </span>
+      </div>
+      <div className="flex rounded-[1rem] bg-osmoverse-700/[.3] px-[28px] py-4">
+        <div className="flex flex-1 flex-col gap-1">
+          <div className="flex flex-nowrap items-center gap-2">
+            {pool && (
+              <>
+                <PoolAssetsIcon
+                  assets={pool.poolAssets.map(
+                    (asset: { amount: CoinPretty }) => ({
+                      coinDenom: asset.amount.denom,
+                      coinImageUrl: asset.amount.currency.coinImageUrl,
+                    })
+                  )}
+                  size="sm"
+                />
+                <PoolAssetsName
+                  size="md"
+                  className="max-w-xs truncate"
+                  assetDenoms={pool.poolAssets.map(
+                    (asset: { amount: CoinPretty }) => asset.amount.denom
+                  )}
+                />
+              </>
             )}
           </div>
-          <div className="flex items-center gap-10">
-            <div className="gap-[3px]">
-              <span className="body2 text-osmoverse-400">
-                {t("pool.liquidity")}
-              </span>
-              <h6 className="text-osmoverse-100">
-                {poolDetail?.totalValueLocked.toString()}
-              </h6>
-            </div>
-            <div className="gap-[3px]">
-              <span className="body2 text-osmoverse-400">
-                {t("pool.24hrTradingVolume")}
-              </span>
-              <h6 className="text-osmoverse-100">
-                {queryGammPoolFeeMetrics
-                  .getPoolFeesMetrics(poolId, priceStore)
-                  .volume24h.toString()}
-              </h6>
-            </div>
-            <div className="gap-[3px]">
-              <span className="body2 text-osmoverse-400">
-                {t("pool.swapFee")}
-              </span>
-              <h6 className="text-osmoverse-100">{pool?.swapFee.toString()}</h6>
-            </div>
+          {!superfluidPoolDetail?.isSuperfluid && (
+            <span className="body2 text-superfluid-gradient">
+              {t("pool.superfluidEnabled")}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-10">
+          <div className="gap-[3px]">
+            <span className="body2 text-osmoverse-400">
+              {t("pool.liquidity")}
+            </span>
+            <h6 className="text-osmoverse-100">
+              {pool?.computeTotalValueLocked(priceStore).toString()}
+            </h6>
+          </div>
+          <div className="gap-[3px]">
+            <span className="body2 text-osmoverse-400">
+              {t("pool.24hrTradingVolume")}
+            </span>
+            <h6 className="text-osmoverse-100">
+              {queryGammPoolFeeMetrics
+                .getPoolFeesMetrics(addLiquidityConfig.poolId, priceStore)
+                .volume24h.toString()}
+            </h6>
+          </div>
+          <div className="gap-[3px]">
+            <span className="body2 text-osmoverse-400">
+              {t("pool.swapFee")}
+            </span>
+            <h6 className="text-osmoverse-100">{pool?.swapFee.toString()}</h6>
           </div>
         </div>
-        <div className="flex flex-col">
-          <div className="flex justify-center gap-[12px]">
-            <StrategySelector
-              title={t("addConcentratedLiquidity.managed")}
-              description={t("addConcentratedLiquidity.managedDescription")}
-              selected={selected === "add_managed"}
-              imgSrc="/images/managed_liquidity_mock.png"
-            />
-            <StrategySelector
-              title={t("addConcentratedLiquidity.manual")}
-              description={t("addConcentratedLiquidity.manualDescription")}
-              selected={selected === "add_manual"}
-              onClick={() => selectView("add_manual")}
-              imgSrc="/images/conliq_mock_range.png"
-            />
-          </div>
+      </div>
+      <div className="flex flex-col">
+        <div className="flex justify-center gap-[12px]">
+          <StrategySelector
+            title={t("addConcentratedLiquidity.managed")}
+            description={t("addConcentratedLiquidity.managedDescription")}
+            selected={selected === "add_managed"}
+            imgSrc="/images/managed_liquidity_mock.png"
+          />
+          <StrategySelector
+            title={t("addConcentratedLiquidity.manual")}
+            description={t("addConcentratedLiquidity.manualDescription")}
+            selected={selected === "add_manual"}
+            onClick={() => selectView("add_manual")}
+            imgSrc="/images/conliq_mock_range.png"
+          />
         </div>
-        <div className="flex w-full items-center justify-center">
-          <Button
-            className="w-[25rem]"
-            onClick={() => addLiquidityConfig.setModalView(selected)}
-          >
-            {t("pools.createPool.buttonNext")}
-          </Button>
-        </div>
-      </>
-    );
-  }
-);
+      </div>
+      <div className="flex w-full items-center justify-center">
+        <Button
+          className="w-[25rem]"
+          onClick={() => addLiquidityConfig.setModalView(selected)}
+        >
+          {t("pools.createPool.buttonNext")}
+        </Button>
+      </div>
+    </>
+  );
+});
 
 const StrategySelector: FunctionComponent<{
   title: string;

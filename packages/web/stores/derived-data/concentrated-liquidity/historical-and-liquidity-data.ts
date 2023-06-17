@@ -53,7 +53,7 @@ export class ObservableHistoricalAndLiquidityData {
 
   @computed
   get pool() {
-    return this.queries.queryGammPools.getPool(this.poolId);
+    return this.queries.queryPools.getPool(this.poolId);
   }
 
   get baseDenom(): string {

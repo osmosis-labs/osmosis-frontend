@@ -187,7 +187,7 @@ export class RootStore {
       "usd",
       this.queriesStore.get(
         this.chainStore.osmosis.chainId
-      ).osmosis!.queryGammPools,
+      ).osmosis!.queryPools,
       PoolPriceRoutes
     );
 

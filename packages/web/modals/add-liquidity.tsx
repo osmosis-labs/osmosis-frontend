@@ -1,7 +1,5 @@
-import {
-  ObservableAddConcentratedLiquidityConfig,
-  ObservableAddLiquidityConfig,
-} from "@osmosis-labs/stores";
+import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
+import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useCallback } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -27,18 +25,14 @@ export const AddLiquidityModal: FunctionComponent<
   } & ModalBaseProps
 > = observer((props) => {
   const { poolId } = props;
-  const {
-    chainStore,
-    accountStore,
-    queriesStore,
-    priceStore,
-    derivedDataStore,
-  } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
   const t = useTranslation();
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getAccount(chainId);
   const isSendingMsg = account.txTypeInProgress !== "";
+
+  const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
   const { config: addLiquidityConfig, addLiquidity } = useAddLiquidityConfig(
     chainStore,
@@ -51,23 +45,25 @@ export const AddLiquidityModal: FunctionComponent<
     useAddConcentratedLiquidityConfig(chainStore, chainId, poolId);
 
   // initialize pool data stores once root pool store is loaded
-  const { poolDetail } = derivedDataStore.getForPool(poolId as string);
-  const pool = poolDetail?.pool?.pool;
-  const isConcLiq = pool?.type === "concentrated";
-  const config = isConcLiq ? addConliqConfig : addLiquidityConfig;
+  const queryPool = osmosisQueries.queryPools.getPool(poolId);
+  const clPool =
+    queryPool?.pool && queryPool.pool instanceof ConcentratedLiquidityPool
+      ? queryPool.pool
+      : undefined;
+  const config = clPool ? addConliqConfig : addLiquidityConfig;
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
       disabled: config.error !== undefined || isSendingMsg,
       onClick: () => {
-        const addLiquidityPromise = isConcLiq
+        const addLiquidityPromise = Boolean(clPool)
           ? addConLiquidity()
           : addLiquidity();
         const addLiquidityResult = addLiquidityPromise.finally(() =>
           props.onRequestClose()
         );
 
-        if (!isConcLiq) {
+        if (!Boolean(clPool)) {
           props.onAddLiquidity?.(
             addLiquidityResult,
             config as ObservableAddLiquidityConfig
@@ -81,7 +77,7 @@ export const AddLiquidityModal: FunctionComponent<
     props.onRequestClose
   );
 
-  if (isConcLiq) {
+  if (Boolean(clPool)) {
     return (
       <ModalBase
         {...props}
@@ -90,9 +86,7 @@ export const AddLiquidityModal: FunctionComponent<
         className="max-h-[98vh] !max-w-[57.5rem] overflow-auto"
       >
         <AddConcLiquidity
-          addLiquidityConfig={
-            addConliqConfig as ObservableAddConcentratedLiquidityConfig
-          }
+          addLiquidityConfig={addConliqConfig}
           actionButton={accountActionButton}
           getFiatValue={useCallback(
             (coin) => priceStore.calculatePrice(coin),
