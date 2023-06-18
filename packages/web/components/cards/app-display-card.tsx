@@ -33,7 +33,7 @@ export const AppDisplayCard: FunctionComponent<{
     utm_campaign: title || "UntitledApp",
   }).toString();
 
-  const externalUrlWithUTM = externalUrl + utmParams;
+  const externalUrlWithUTM = externalUrl + `?${utmParams}`;
 
   const handleAppClicked = () => {
     logEvent([
