@@ -239,7 +239,7 @@ const testnetChainInfos: SimplifiedChainInfo[] = [
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
-    explorerUrlToTx: "https://explorer-rila.nolus.io/nolus-rila/tx/{txHash}",
+    explorerUrlToTx: "https://explorer-rila.nolus.io/rila-1/tx/{txHash}",
   },
   {
     rpc: "https://rpc-eu-1.kaon.kyve.network",
@@ -369,6 +369,14 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDecimals: 6,
         coinGeckoId: "pool:ibcx",
         coinImageUrl: "/tokens/ibcx.svg",
+      },
+      {
+        coinDenom: "stIBCX",
+        coinMinimalDenom:
+          "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
+        coinDecimals: 6,
+        coinGeckoId: "pool:stibcx",
+        coinImageUrl: "/tokens/stibcx.svg",
       },
     ],
     features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
@@ -2909,6 +2917,13 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:staevmos",
         coinImageUrl: "/tokens/stevmos.svg",
       },
+      {
+        coinDenom: "stUMEE",
+        coinMinimalDenom: "stuumee",
+        coinDecimals: 6,
+        coinGeckoId: "pool:stuumee",
+        coinImageUrl: "/tokens/stumee.svg",
+      },
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://explorer.stride.zone/stride/tx/{txHash}",
@@ -3582,6 +3597,34 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://ping.pub/gitopia/tx/{txHash}",
+  },
+  {
+    rpc: "https://pirin-cl.nolus.network:26657",
+    rest: "https://pirin-cl.nolus.network:1317",
+    chainId: "pirin-1",
+    chainName: "Nolus",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("nolus"),
+    currencies: [
+      {
+        coinDenom: "NLS",
+        coinMinimalDenom: "unls",
+        coinDecimals: 6,
+        coinGeckoId: "pool:unls",
+        coinImageUrl: "/tokens/nolus.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.01,
+          average: 0.025,
+          high: 0.05,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://explorer.nolus.io/pirin-1/tx/{txHash}",
   },
 ];
 
