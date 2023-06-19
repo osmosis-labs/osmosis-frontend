@@ -51,22 +51,24 @@ export function useRemoveLiquidityConfig(
   config.setPoolId(poolId);
   config.setQueryPoolShare(queryOsmosis.queryGammPoolShare);
 
-  const removeLiquidity = useCallback(() => {
-    return new Promise<void>(async (resolve, reject) => {
-      try {
-        await account.osmosis.sendExitPoolMsg(
-          config.poolId,
-          config.poolShareWithPercentage.toDec().toString(),
-          undefined,
-          undefined,
-          resolve
-        );
-      } catch (e) {
-        console.error(e);
-        reject();
-      }
-    });
-  }, []);
+  const removeLiquidity = useCallback(
+    () =>
+      new Promise<void>((resolve, reject) => {
+        account.osmosis
+          .sendExitPoolMsg(
+            config.poolId,
+            config.poolShareWithPercentage.toDec().toString(),
+            undefined,
+            undefined,
+            (tx) => {
+              if (tx.code) reject();
+              else resolve();
+            }
+          )
+          .catch(reject);
+      }),
+    [account.osmosis, config.poolId, config.poolShareWithPercentage]
+  );
 
   return { config, removeLiquidity };
 }
