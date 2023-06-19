@@ -12,20 +12,19 @@ import { Int, Dec } from "@keplr-wallet/unit";
 
 describe("Create CL Positions Txs", () => {
   const { accountStore, queriesStore, chainStore } = new RootStore();
-  const account = accountStore.getAccount(chainId);
+  const account = accountStore.getWallet(chainId);
   const osmosisQueries = queriesStore.get(chainId).osmosis!;
 
   let queryPool: ObservableQueryPool | undefined;
 
   beforeAll(async () => {
-    account.cosmos.broadcastMode = "sync";
     await waitAccountLoaded(account);
   });
 
   beforeEach(async () => {
     // prepare CL pool
     await new Promise((resolve, reject) =>
-      account.osmosis.sendCreateConcentratedPoolMsg(
+      account?.osmosis.sendCreateConcentratedPoolMsg(
         "uion",
         "uosmo",
         1,
@@ -75,7 +74,7 @@ describe("Create CL Positions Txs", () => {
     // create CL position
     await expect(
       new Promise<any>((resolve, reject) => {
-        account.osmosis
+        account?.osmosis
           .sendCreateConcentratedLiquidityPositionMsg(
             queryPool!.id,
             minTick,
@@ -88,7 +87,7 @@ describe("Create CL Positions Txs", () => {
             undefined,
             undefined,
             (tx) => {
-              if (tx.code) reject(tx.log);
+              if (tx.code) reject(tx.rawLog);
               else resolve(tx);
             }
           )
@@ -118,7 +117,7 @@ describe("Create CL Positions Txs", () => {
     // create CL position
     await expect(
       new Promise<any>((resolve, reject) => {
-        account.osmosis
+        account?.osmosis
           .sendCreateConcentratedLiquidityPositionMsg(
             queryPool!.id,
             currentTick,
@@ -131,7 +130,7 @@ describe("Create CL Positions Txs", () => {
             undefined,
             undefined,
             (tx) => {
-              if (tx.code) reject(tx.log);
+              if (tx.code) reject(tx.rawLog);
               else resolve(tx);
             }
           )
@@ -153,7 +152,7 @@ describe("Create CL Positions Txs", () => {
 
     await expect(
       new Promise((resolve, reject) =>
-        account.osmosis
+        account?.osmosis
           .sendAddToConcentratedLiquidityPositionMsg(
             lastPositionId,
             specifiedAmount0,
@@ -161,7 +160,7 @@ describe("Create CL Positions Txs", () => {
             undefined,
             undefined,
             (tx) => {
-              if (tx.code) reject(tx.log);
+              if (tx.code) reject(tx.rawLog);
               else resolve(tx);
             }
           )
@@ -188,7 +187,7 @@ describe("Create CL Positions Txs", () => {
 
     await expect(
       new Promise((resolve, reject) =>
-        account.osmosis
+        account?.osmosis
           .sendAddToConcentratedLiquidityPositionMsg(
             lastPositionId,
             specifiedAmount0,
@@ -196,7 +195,7 @@ describe("Create CL Positions Txs", () => {
             undefined,
             undefined,
             (tx) => {
-              if (tx.code) reject(tx.log);
+              if (tx.code) reject(tx.rawLog);
               else resolve(tx);
             }
           )
@@ -214,19 +213,19 @@ describe("Create CL Positions Txs", () => {
     // get query position
     const position = queriesStore
       .get(chainId)
-      .osmosis!.queryAccountsPositions.get(account.bech32Address)
+      .osmosis!.queryAccountsPositions.get(account?.address ?? "")
       .positions.find(({ id }) => id === lastPositionId);
     await position?.waitFreshResponse();
 
     if (!position || !position.liquidity) throw new Error("Position not found");
 
     const tx: any = await new Promise((resolve, reject) =>
-      account.osmosis.sendWithdrawConcentratedLiquidityPositionMsg(
+      account?.osmosis.sendWithdrawConcentratedLiquidityPositionMsg(
         lastPositionId,
         position.liquidity!.mul(new Dec(0.5)),
         undefined,
         (tx) => {
-          if (tx.code) reject(tx.log);
+          if (tx.code) reject(tx.rawLog);
           else resolve(tx);
         }
       )
@@ -252,19 +251,19 @@ describe("Create CL Positions Txs", () => {
     // get query position
     const position = queriesStore
       .get(chainId)
-      .osmosis!.queryAccountsPositions.get(account.bech32Address)
+      .osmosis!.queryAccountsPositions.get(account?.address ?? "")
       .positions.find(({ id }) => id === lastPositionId);
     await position?.waitFreshResponse();
 
     if (!position || !position.liquidity) throw new Error("Position not found");
 
     const tx: unknown = await new Promise((resolve, reject) =>
-      account.osmosis.sendWithdrawConcentratedLiquidityPositionMsg(
+      account?.osmosis.sendWithdrawConcentratedLiquidityPositionMsg(
         lastPositionId,
         position.liquidity!,
         undefined,
         (tx) => {
-          if (tx.code) reject(tx.log);
+          if (tx.code) reject(tx.rawLog);
           else resolve(tx);
         }
       )
@@ -284,7 +283,7 @@ describe("Create CL Positions Txs", () => {
   /** Leave `poolId` undefined to get all position IDs. */
   async function getUserPositionsIdsForPool(poolId?: string) {
     const positions = osmosisQueries.queryAccountsPositions.get(
-      account.bech32Address
+      account?.address ?? ""
     );
     await positions.waitFreshResponse();
 
@@ -304,7 +303,7 @@ describe("Create CL Positions Txs", () => {
 
     // prepare CL position
     return new Promise<any>((resolve, reject) => {
-      account.osmosis.sendCreateConcentratedLiquidityPositionMsg(
+      account?.osmosis.sendCreateConcentratedLiquidityPositionMsg(
         poolId,
         minTick,
         maxTick,
@@ -319,7 +318,7 @@ describe("Create CL Positions Txs", () => {
         undefined,
         undefined,
         (tx) => {
-          if (tx.code) reject(tx.log);
+          if (tx.code) reject(tx.rawLog);
           else resolve(tx);
         }
       );

@@ -17,12 +17,11 @@ describe("Join Pool Tx", () => {
 
   beforeEach(async () => {
     // Init new localnet per test
-    const account = accountStore.getAccount(chainId);
-    account.cosmos.broadcastMode = "sync";
+    const account = accountStore.getWallet(chainId);
     await waitAccountLoaded(account);
 
     // And prepare the pool
-    await account.osmosis.sendCreateBalancerPoolMsg(
+    await account?.osmosis.sendCreateBalancerPoolMsg(
       "0",
       [
         {
@@ -55,7 +54,7 @@ describe("Join Pool Tx", () => {
   });
 
   test("with no max slippage", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
 
     const shareOutAmount = "1";
     const maxSlippage = "0";
@@ -77,7 +76,7 @@ describe("Join Pool Tx", () => {
     );
 
     const tx = await new Promise<any>((resolve, rejects) => {
-      account.osmosis
+      account?.osmosis
         .sendJoinPoolMsg(
           queryPool!.id,
           shareOutAmount,
@@ -98,7 +97,7 @@ describe("Join Pool Tx", () => {
           { key: "module", value: "gamm" },
           {
             key: "sender",
-            value: account.bech32Address,
+            value: account?.address,
           },
         ],
       },
@@ -141,7 +140,7 @@ describe("Join Pool Tx", () => {
   });
 
   test("with slippage", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
 
     const shareOutAmount = "1";
     const maxSlippage = "0.1";
@@ -165,7 +164,7 @@ describe("Join Pool Tx", () => {
     );
 
     const tx = await new Promise<any>((resolve, rejects) => {
-      account.osmosis
+      account?.osmosis
         .sendJoinPoolMsg(
           queryPool!.id,
           shareOutAmount,
@@ -186,7 +185,7 @@ describe("Join Pool Tx", () => {
           { key: "module", value: "gamm" },
           {
             key: "sender",
-            value: account.bech32Address,
+            value: account?.address,
           },
         ],
       },

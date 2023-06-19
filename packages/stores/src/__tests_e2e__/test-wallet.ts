@@ -12,16 +12,15 @@ import {
   Wallet,
   WalletClient,
 } from "@cosmos-kit/core";
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { MockKeplr } from "@keplr-wallet/provider-mock";
 import Axios from "axios";
 
+import { MockKeplrWithFee } from "./mock-keplr-with-fee";
 import { TestChainInfos } from "./test-env";
 
 function getMockKeplr(
   mnemonic = "notice oak worry limit wrap speak medal online prefer cluster roof addict wrist behave treat actual wasp year salad speed social layer crew genius"
 ) {
-  return new MockKeplr(
+  return new MockKeplrWithFee(
     async (chainId: string, tx: StdTx | Uint8Array) => {
       const chainInfo = TestChainInfos.find((info) => info.chainId === chainId);
       if (!chainInfo) {
@@ -87,9 +86,9 @@ export const testWalletInfo: Wallet = {
 };
 
 export class MockKeplrClient implements WalletClient {
-  readonly client: MockKeplr;
+  readonly client: MockKeplrWithFee;
 
-  constructor(client: MockKeplr) {
+  constructor(client: MockKeplrWithFee) {
     this.client = client;
   }
 
@@ -134,7 +133,7 @@ export class MockKeplrClient implements WalletClient {
 
   getOfflineSignerAmino(
     chainId: string
-  ): ReturnType<MockKeplr["getOfflineSignerOnlyAmino"]> {
+  ): ReturnType<MockKeplrWithFee["getOfflineSignerOnlyAmino"]> {
     return this.client.getOfflineSignerOnlyAmino(chainId);
   }
 
@@ -155,7 +154,7 @@ export class MockKeplrClient implements WalletClient {
     signer: string,
     signDoc: StdSignDoc,
     signOptions?: SignOptions
-  ): ReturnType<MockKeplr["signAmino"]> {
+  ): ReturnType<MockKeplrWithFee["signAmino"]> {
     return await this.client.signAmino(chainId, signer, signDoc, signOptions);
   }
 
@@ -164,7 +163,7 @@ export class MockKeplrClient implements WalletClient {
     signer: string,
     signDoc: DirectSignDoc,
     signOptions?: SignOptions
-  ): ReturnType<MockKeplr["signDirect"]> {
+  ): ReturnType<MockKeplrWithFee["signDirect"]> {
     return await this.client.signDirect(chainId, signer, signDoc, signOptions);
   }
 
