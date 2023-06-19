@@ -123,6 +123,12 @@
       "bondedSharesDescription": "Migrate bonded or superfluid staked shares to the new pool. If shares are only bonded they will be unbonded, converted into the underlying assets, and deposited into the new pool as a full range position. Otherwise if they are superfluid staked, they will be converted into a superfluid staked full range position."
     }
   },
+  "createFirstPositionCta": {
+    "title": "Create your first supercharged position",
+    "caption": "This long awaited upgrade allows you to earn more with less capital. \n Get up and running in minutes, regardless of your level of experience.",
+    "primaryCta": "Create a position",
+    "secondaryCta": "Learn in 30 seconds"
+  },
   "assets": {
     "bondedAssets": "Bonded",
     "historyTable": {
