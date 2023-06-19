@@ -1,4 +1,4 @@
-import { AmountConfig, TxChainSetter } from "@keplr-wallet/hooks";
+import { AmountConfig } from "@keplr-wallet/hooks";
 import {
   ChainGetter,
   IQueriesStore,
@@ -22,12 +22,12 @@ import { InvalidRangeError } from "./errors";
 
 /** Use to config user input UI for eventually sending a valid add concentrated liquidity msg.
  */
-export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
+export class ObservableAddConcentratedLiquidityConfig {
   @observable
   protected _sender: string;
 
   @observable
-  protected _pool: ConcentratedLiquidityPool;
+  protected _pool: ConcentratedLiquidityPool | null = null;
 
   /*
 	 Used to get current view type of AddConcLiquidity modal
@@ -39,7 +39,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
    Used to get min and max range for adding concentrated liquidity
    */
   @observable
-  protected _priceRange: [Dec, Dec] = [minSpotPrice, minSpotPrice];
+  protected _priceRange: [Dec, Dec];
 
   @observable
   protected _fullRange: boolean = false;
@@ -56,18 +56,19 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   @observable
   protected _anchorAsset: "base" | "quote" = "base";
 
+  @observable
+  protected chainId: string;
+
   constructor(
     protected readonly chainGetter: ChainGetter,
     initialChainId: string,
     readonly poolId: string,
     sender: string,
     protected readonly queriesStore: IQueriesStore,
-    protected readonly queryBalances: ObservableQueryBalances,
-    pool: ConcentratedLiquidityPool
+    protected readonly queryBalances: ObservableQueryBalances
   ) {
-    super(chainGetter, initialChainId);
+    this.chainId = initialChainId;
 
-    this._pool = pool;
     this._sender = sender;
 
     this._baseDepositAmountIn = new AmountConfig(
@@ -86,18 +87,11 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
       undefined
     );
 
-    const [baseDenom, quoteDenom] = pool.poolAssetDenoms;
-    const baseCurrency = chainGetter
-      .getChain(this.chainId)
-      .findCurrency(baseDenom);
-    const quoteCurrency = chainGetter
-      .getChain(this.chainId)
-      .findCurrency(quoteDenom);
-
-    this._baseDepositAmountIn.setSendCurrency(baseCurrency);
-    this._quoteDepositAmountIn.setSendCurrency(quoteCurrency);
     this._baseDepositAmountIn.setAmount("0");
     this._quoteDepositAmountIn.setAmount("0");
+
+    // Set the initial range to be the moderate range
+    this._priceRange = this.moderatePriceRange;
 
     // Calculate quote amount when base amount is input and anchor is base
     // Calculate an amount1 given an amount0
@@ -110,7 +104,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
       if (anchor !== "base" || amount0.lt(new Int(0))) return;
 
       // special case: likely no positions created yet in pool
-      if (this.pool.currentSqrtPrice.isZero()) {
+      if (!this.pool || this.pool.currentSqrtPrice.isZero()) {
         return;
       }
 
@@ -149,7 +143,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
       if (anchor !== "quote" || amount1.lt(new Int(0))) return;
 
       // special case: likely no positions created yet in pool
-      if (this.pool.currentSqrtPrice.isZero()) {
+      if (!this.pool || this.pool.currentSqrtPrice.isZero()) {
         return;
       }
 
@@ -180,9 +174,11 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     makeObservable(this);
   }
 
-  setChain(chainId: string) {
-    super.setChain(chainId);
-    const [baseDenom, quoteDenom] = this.pool.poolAssetDenoms;
+  @action
+  setPool(pool: ConcentratedLiquidityPool) {
+    this._pool = pool;
+
+    const [baseDenom, quoteDenom] = pool.poolAssetDenoms;
     const baseCurrency = this.chainGetter
       .getChain(this.chainId)
       .findCurrency(baseDenom);
@@ -194,12 +190,14 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
     this._quoteDepositAmountIn.setSendCurrency(quoteCurrency);
   }
 
-  get pool(): ConcentratedLiquidityPool {
+  get pool(): ConcentratedLiquidityPool | null {
     return this._pool;
   }
 
   @computed
   get currentPrice(): Dec {
+    if (!this._pool) return new Dec(0);
+
     return (
       this._pool.currentSqrtPrice?.mul(this._pool.currentSqrtPrice) ??
       new Dec(0)
@@ -208,6 +206,8 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   @computed
   get moderatePriceRange(): [Dec, Dec] {
+    if (!this.pool) return [new Dec(0.1), new Dec(100)];
+
     return [
       roundPriceToNearestTick(
         this.currentPrice.mul(new Dec(0.75)),
@@ -232,6 +232,8 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   @computed
   get aggressivePriceRange(): [Dec, Dec] {
+    if (!this.pool) return [new Dec(0.1), new Dec(100)];
+
     return [
       roundPriceToNearestTick(
         this.currentPrice.mul(new Dec(0.5)),
@@ -256,6 +258,7 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   @computed
   get depositPercentages(): [RatePretty, RatePretty] {
+    if (!this.pool) return [new RatePretty(0), new RatePretty(0)];
     if (this.baseDepositOnly) return [new RatePretty(1), new RatePretty(0)];
     if (this.quoteDepositOnly) return [new RatePretty(0), new RatePretty(1)];
 
@@ -287,11 +290,11 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
   }
 
   get baseDenom(): string {
-    return this._pool.poolAssetDenoms[0];
+    return this._pool?.poolAssetDenoms[0] ?? "";
   }
 
   get quoteDenom(): string {
-    return this._pool.poolAssetDenoms[1];
+    return this._pool?.poolAssetDenoms[1] ?? "";
   }
 
   @action
@@ -319,6 +322,8 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   @action
   setMinRange = (min: Dec | number) => {
+    if (!this.pool) return;
+
     this._priceRange = [
       roundPriceToNearestTick(
         typeof min === "number" ? new Dec(min) : min,
@@ -331,6 +336,8 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   @action
   setMaxRange = (max: Dec | number) => {
+    if (!this.pool) return;
+
     this._priceRange = [
       this._priceRange[0],
       roundPriceToNearestTick(
@@ -349,8 +356,29 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   @computed
   get tickRange(): [Int, Int] {
-    if (this.fullRange) return [minTick, maxTick];
-    return [priceToTick(this._priceRange[0]), priceToTick(this._priceRange[1])];
+    if (this.fullRange || !this.pool) return [minTick, maxTick];
+    try {
+      // account for precision issues from price <> tick conversion
+      const lowerTick = priceToTick(this._priceRange[0]);
+      const upperTick = priceToTick(this._priceRange[1]);
+
+      const lowerTickRounded = roundToNearestDivisible(
+        lowerTick,
+        new Int(this.pool.tickSpacing)
+      );
+      const upperTickRounded = roundToNearestDivisible(
+        upperTick,
+        new Int(this.pool.tickSpacing)
+      );
+
+      return [
+        lowerTickRounded.lt(minTick) ? minTick : lowerTickRounded,
+        upperTickRounded.gt(maxTick) ? maxTick : upperTickRounded,
+      ];
+    } catch (e) {
+      console.error(e);
+      return [minTick, maxTick];
+    }
   }
 
   @action
@@ -372,23 +400,25 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
 
   @computed
   get baseDepositOnly(): boolean {
-    if (this.currentPrice.isZero()) return false;
-
-    return (
-      !this.fullRange &&
-      this.currentPrice.gt(this.range[0]) &&
-      this.currentPrice.gt(this.range[1])
-    );
-  }
-
-  @computed
-  get quoteDepositOnly(): boolean {
+    // can be 0 if no positions in pool
     if (this.currentPrice.isZero()) return false;
 
     return (
       !this.fullRange &&
       this.currentPrice.lt(this.range[0]) &&
       this.currentPrice.lt(this.range[1])
+    );
+  }
+
+  @computed
+  get quoteDepositOnly(): boolean {
+    // can be 0 if no positions in pool
+    if (this.currentPrice.isZero()) return false;
+
+    return (
+      !this.fullRange &&
+      this.currentPrice.gt(this.range[0]) &&
+      this.currentPrice.gt(this.range[1])
     );
   }
 
@@ -426,6 +456,16 @@ export class ObservableAddConcentratedLiquidityConfig extends TxChainSetter {
       return this._baseDepositAmountIn.error;
     }
 
-    // return this._baseDepositAmountIn.error || this._quoteDepositAmountIn.error;
+    return this._baseDepositAmountIn.error || this._quoteDepositAmountIn.error;
+  }
+}
+
+function roundToNearestDivisible(int: Int, divisor: Int): Int {
+  const remainder = int.mod(divisor);
+
+  if (new Dec(remainder).gte(new Dec(divisor).quo(new Dec(2)))) {
+    return int.add(divisor.sub(remainder));
+  } else {
+    return int.sub(remainder);
   }
 }

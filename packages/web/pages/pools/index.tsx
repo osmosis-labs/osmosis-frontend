@@ -1,5 +1,5 @@
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
-import { ObservablePoolDetail } from "@osmosis-labs/stores";
+import { ObservableSharePoolDetail } from "@osmosis-labs/stores";
 import { Duration } from "dayjs/plugin/duration";
 import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
@@ -98,7 +98,7 @@ const Pools: NextPage = observer(function () {
   // lock tokens (& possibly select sfs validator) quick action state
   const { superfluidDelegateToValidator } = useSuperfluidPool();
   const selectedPoolShareCurrency = lockLpTokenModalPoolId
-    ? queryOsmosis.queryGammPoolShare.getShareCurrency(lockLpTokenModalPoolId)
+    ? queryOsmosis.queryGammPoolShare.makeShareCurrency(lockLpTokenModalPoolId)
     : undefined;
   const { config: lockLpTokenConfig, lockToken } = useLockTokenConfig(
     selectedPoolShareCurrency
@@ -334,14 +334,14 @@ const MyPoolsSection = observer(() => {
         ? myPoolIds.slice(0, poolCountShowMoreThreshold)
         : myPoolIds
       )
-        .map((myPoolId) => derivedDataStore.poolDetails.get(myPoolId))
-        .filter((pool): pool is ObservablePoolDetail => {
+        .map((myPoolId) => derivedDataStore.sharePoolDetails.get(myPoolId))
+        .filter((pool): pool is ObservableSharePoolDetail => {
           if (pool === undefined) return false;
 
           // concentrated liquidity liquidity feature flag
           if (
             !featureFlags.concentratedLiquidity &&
-            pool.pool?.type === "concentrated"
+            !Boolean(pool.querySharePool)
           )
             return false;
 
@@ -352,7 +352,7 @@ const MyPoolsSection = observer(() => {
       showMoreMyPools,
       myPoolIds,
       poolCountShowMoreThreshold,
-      derivedDataStore.poolDetails,
+      derivedDataStore.sharePoolDetails,
       featureFlags.concentratedLiquidity,
     ]
   );
@@ -361,7 +361,7 @@ const MyPoolsSection = observer(() => {
     myPools,
     useCallback(
       (pool) => {
-        const _queryPool = pool.pool;
+        const _queryPool = pool.querySharePool;
         if (!_queryPool) return;
         return pool.totalValueLocked.mul(
           queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
@@ -382,7 +382,7 @@ const MyPoolsSection = observer(() => {
       <div className="flex flex-col gap-4">
         <div className="grid-cards mt-5 grid md:gap-3">
           {dustFilteredPools.map((myPool) => {
-            const _queryPool = myPool.pool;
+            const _queryPool = myPool.querySharePool;
 
             if (!_queryPool) return null;
 

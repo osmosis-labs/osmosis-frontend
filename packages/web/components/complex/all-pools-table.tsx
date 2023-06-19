@@ -40,7 +40,7 @@ import {
   PoolQuickActionCell,
 } from "../table/cells";
 import { Tooltip } from "../tooltip";
-import PaginatedTable from "./paginated-table";
+import { PaginatedTable } from "./paginated-table";
 
 const TVL_FILTER_THRESHOLD = 1000;
 
@@ -167,7 +167,6 @@ export const AllPoolsTable: FunctionComponent<{
       router.query.pools,
     ]);
 
-    const fetchedRemainingPoolsRef = useRef(false);
     const { isMobile } = useWindowSize();
 
     const { chainId } = chainStore.osmosis;
@@ -225,25 +224,29 @@ export const AllPoolsTable: FunctionComponent<{
           }
 
           // Filter out pools that do not match the pool filter.
-          if (poolFilterQuery && !poolFilterQuery.includes(p.pool.type)) {
+          if (poolFilterQuery && !poolFilterQuery.includes(p.queryPool.type)) {
             return false;
           }
 
           if (incentiveFilterQuery.includes("superfluid")) {
             const isSuperfluid =
-              queriesOsmosis.querySuperfluidPools.isSuperfluidPool(p.pool.id);
+              queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
+                p.queryPool.id
+              );
             if (isSuperfluid) return true;
           }
 
           if (incentiveFilterQuery.includes("internal")) {
             const isInternallyIncentivized =
-              queriesOsmosis.queryIncentivizedPools.isIncentivized(p.pool.id);
+              queriesOsmosis.queryIncentivizedPools.isIncentivized(
+                p.queryPool.id
+              );
             if (isInternallyIncentivized) return true;
           }
 
           if (incentiveFilterQuery.includes("external")) {
             const gauges = queryActiveGauges.getExternalGaugesForPool(
-              p.pool.id
+              p.queryPool.id
             );
             const isExternallyIncentivized = gauges && gauges.length > 0;
             if (isExternallyIncentivized) return true;
@@ -251,10 +254,12 @@ export const AllPoolsTable: FunctionComponent<{
 
           if (incentiveFilterQuery.includes("noIncentives")) {
             const gauges = queryActiveGauges.getExternalGaugesForPool(
-              p.pool.id
+              p.queryPool.id
             );
             const isInternallyIncentivized =
-              queriesOsmosis.queryIncentivizedPools.isIncentivized(p.pool.id);
+              queriesOsmosis.queryIncentivizedPools.isIncentivized(
+                p.queryPool.id
+              );
 
             const hasNoIncentives =
               !(gauges && gauges.length > 0) && !isInternallyIncentivized;
@@ -279,19 +284,16 @@ export const AllPoolsTable: FunctionComponent<{
     );
     const setQuery = useCallback(
       (search: string) => {
-        if (search !== "" && !fetchedRemainingPoolsRef.current) {
-          queriesOsmosis.queryGammPools.fetchRemainingPools();
-          fetchedRemainingPoolsRef.current = true;
-        }
         if (search === "") {
           setIsSearching(false);
         } else {
+          queriesOsmosis.queryPools.fetchRemainingPools();
           setIsSearching(true);
         }
         setSorting([]);
         _setQuery(search);
       },
-      [_setQuery, queriesOsmosis.queryGammPools, setSorting]
+      [_setQuery, queriesOsmosis.queryPools, setSorting]
     );
 
     const columnHelper = createColumnHelper<ObservablePoolWithMetric>();
@@ -307,7 +309,7 @@ export const AllPoolsTable: FunctionComponent<{
                 ObservablePoolWithMetric
               >
             ) => {
-              const poolAssets = props.row.original.pool.poolAssets.map(
+              const poolAssets = props.row.original.queryPool.poolAssets.map(
                 (poolAsset) => ({
                   coinImageUrl: poolAsset.amount.currency.coinImageUrl,
                   coinDenom: poolAsset.amount.currency.coinDenom,
@@ -317,8 +319,10 @@ export const AllPoolsTable: FunctionComponent<{
               return (
                 <PoolCompositionCell
                   poolAssets={poolAssets}
-                  poolId={props.row.original.pool.id}
-                  stableswapPool={props.row.original.pool.type === "stable"}
+                  poolId={props.row.original.queryPool.id}
+                  stableswapPool={
+                    props.row.original.queryPool.type === "stable"
+                  }
                 />
               );
             }
@@ -411,7 +415,10 @@ export const AllPoolsTable: FunctionComponent<{
                   value={
                     // Only display warning when APR is too high
                     isAPRTooHigh ? (
-                      <Tooltip content={t("highPoolInflationWarning")}>
+                      <Tooltip
+                        className="w-5"
+                        content={t("highPoolInflationWarning")}
+                      >
                         <p className="flex items-center gap-1.5">
                           <Icon
                             id="alert-triangle"
@@ -440,7 +447,7 @@ export const AllPoolsTable: FunctionComponent<{
               >
             ) => {
               const poolWithMetrics = props.row.original;
-              const poolId = poolWithMetrics.pool.id;
+              const poolId = poolWithMetrics.queryPool.id;
               return (
                 <PoolQuickActionCell
                   poolId={poolId}
@@ -485,13 +492,13 @@ export const AllPoolsTable: FunctionComponent<{
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: getSortedRowModel(),
       onSortingChange: (updaterOrValue) => {
-        queriesOsmosis.queryGammPools.fetchRemainingPools();
+        queriesOsmosis.queryPools.fetchRemainingPools();
 
         const nextState = runIfFn(updaterOrValue, sorting);
         const nextId: string | undefined = nextState[0]?.id;
 
         const accessors: Record<string, keyof ObservablePoolWithMetric> = {
-          pool: "pool",
+          queryPool: "queryPool",
           liquidity: "liquidity",
           volume24h: "volume24h",
           feesSpent7d: "feesSpent7d",
@@ -508,9 +515,13 @@ export const AllPoolsTable: FunctionComponent<{
     });
 
     const handleFetchRemaining = useCallback(
-      () => queriesOsmosis.queryGammPools.fetchRemainingPools(),
-      [queriesOsmosis.queryGammPools]
+      () => queriesOsmosis.queryPools.fetchRemainingPools(),
+      [queriesOsmosis.queryPools]
     );
+
+    const paginatePoolsQueryStore = useCallback(() => {
+      queriesOsmosis.queryPools.paginate();
+    }, [queriesOsmosis.queryPools]);
 
     const [mobileSortMenuIsOpen, setMobileSortMenuIsOpen] = useState(false);
 
@@ -703,7 +714,7 @@ export const AllPoolsTable: FunctionComponent<{
 
           <div className="h-auto overflow-auto">
             <PaginatedTable
-              paginate={handleFetchRemaining}
+              paginate={paginatePoolsQueryStore}
               mobileSize={170}
               size={69}
               table={table}

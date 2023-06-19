@@ -1,9 +1,5 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import {
-  IFeeConfig,
-  InvalidNumberAmountError,
-  TxChainSetter,
-} from "@keplr-wallet/hooks";
+import { IFeeConfig, InvalidNumberAmountError } from "@keplr-wallet/hooks";
 import { AmountConfig } from "@keplr-wallet/hooks";
 import {
   ChainGetter,
@@ -39,7 +35,7 @@ export interface CreatePoolConfigOpts {
   maxAssetsCount: number;
 }
 
-export class ObservableCreatePoolConfig extends TxChainSetter {
+export class ObservableCreatePoolConfig {
   @observable
   protected _sender: string;
 
@@ -73,8 +69,11 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
 
   protected _opts: CreatePoolConfigOpts;
 
+  @observable
+  protected chainId: string;
+
   constructor(
-    chainGetter: ChainGetter,
+    readonly chainGetter: ChainGetter,
     initialChainId: string,
     sender: string,
     queriesStore: IQueriesStore,
@@ -85,7 +84,7 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
       maxAssetsCount: 4,
     }
   ) {
-    super(chainGetter, initialChainId);
+    this.chainId = initialChainId;
 
     this._sender = sender;
     this._queriesStore = queriesStore;
@@ -106,6 +105,11 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
     amountConfig: AmountConfig;
   }[] {
     return this._assets;
+  }
+
+  @action
+  setChain(chainId: string) {
+    this.chainId = chainId;
   }
 
   @computed
@@ -367,7 +371,7 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
 
     const parsedScalingFactor = parseFloat(scalingFactor);
 
-    if (parsedScalingFactor !== NaN)
+    if (!Number.isNaN(parsedScalingFactor))
       this.assets[index] = {
         ...this.assets[index],
         scalingFactor: parsedScalingFactor,

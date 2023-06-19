@@ -39,7 +39,7 @@ export const LBPOverview: FunctionComponent<{
   const queries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
   const pools = poolIds
     .map((poolId) => {
-      return queries.queryGammPools.getPool(poolId);
+      return queries.queryPools.getPool(poolId);
     })
     .filter((pool): pool is ObservableQueryPool => pool !== undefined);
 
@@ -120,7 +120,7 @@ const SynthesisItem: FunctionComponent<{
 
   const queries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
-  const pool = queries.queryGammPools.getPool(poolId);
+  const pool = queries.queryPools.getPool(poolId);
 
   const router = useRouter();
 

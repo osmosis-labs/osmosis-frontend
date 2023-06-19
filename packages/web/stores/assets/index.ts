@@ -223,7 +223,7 @@ export class ObservableAssets {
           "gamm/pool/",
           ""
         );
-        const pool = this.queries.osmosis?.queryGammPools.getPool(poolId);
+        const pool = this.queries.osmosis?.queryPools.getPool(poolId);
         if (pool) {
           const tvl = pool.computeTotalValueLocked(this.priceStore);
           const totalShare = pool.totalShare;

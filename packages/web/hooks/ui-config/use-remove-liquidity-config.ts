@@ -1,4 +1,3 @@
-import { useState, useCallback } from "react";
 import {
   ChainGetter,
   CosmosQueries,
@@ -6,9 +5,11 @@ import {
   IQueriesStore,
 } from "@keplr-wallet/stores";
 import {
-  OsmosisQueries,
   ObservableRemoveLiquidityConfig,
+  OsmosisQueries,
 } from "@osmosis-labs/stores";
+import { useCallback, useState } from "react";
+
 import { useStore } from "../../stores";
 
 /** Maintains a single instance of `ObservableRemoveLiquidityConfig` for React view lifecycle.
@@ -39,7 +40,7 @@ export function useRemoveLiquidityConfig(
       bech32Address,
       queriesStore,
       queryOsmosis.queryGammPoolShare,
-      queryOsmosis.queryGammPools,
+      queryOsmosis.queryPools,
       initialPercent
     );
     c.setPercentage(initialPercent);

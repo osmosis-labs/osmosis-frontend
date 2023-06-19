@@ -35,33 +35,29 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
   poolId: string;
   chartConfig: ObservableHistoricalAndLiquidityData;
   position: ObservableQueryLiquidityPositionById;
-}> = observer(({ poolId, chartConfig, position }) => {
+}> = observer(({ poolId, chartConfig, position: positionConfig }) => {
   const {
     chainStore: {
       osmosis: { chainId },
     },
     accountStore,
+    queriesStore,
   } = useStore();
 
   const account = accountStore.getAccount(chainId);
+  const osmosisQueries = queriesStore.get(chainId).osmosis!;
+  const queryPool = osmosisQueries.queryPools.getPool(poolId);
+
+  const currentPrice = queryPool?.concentratedLiquidityPoolInfo?.currentPrice;
 
   const {
-    historicalChartData,
-    historicalRange,
     xRange,
     yRange,
-    setHoverPrice,
     lastChartData,
     depthChartData,
     setZoom,
     zoomIn,
     zoomOut,
-    range,
-    priceDecimal,
-    setHistoricalRange,
-    baseDenom,
-    quoteDenom,
-    hoverPrice,
     setPriceRange,
   } = chartConfig;
   const {
@@ -71,7 +67,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     upperPrices,
     isFullRange,
     totalClaimableRewards,
-  } = position;
+  } = positionConfig;
 
   const t = useTranslation();
 
@@ -91,7 +87,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
         <IncreaseConcentratedLiquidityModal
           isOpen={true}
           poolId={poolId}
-          position={position}
+          position={positionConfig}
           onRequestClose={() => setActiveModal(null)}
         />
       )}
@@ -99,38 +95,14 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
         <RemoveConcentratedLiquidityModal
           isOpen={true}
           poolId={poolId}
-          position={position}
+          position={positionConfig}
           onRequestClose={() => setActiveModal(null)}
         />
       )}
       <div className="flex gap-1 xl:hidden">
         <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
-          <PriceChartHeader
-            historicalRange={historicalRange}
-            setHistoricalRange={setHistoricalRange}
-            baseDenom={baseDenom}
-            quoteDenom={quoteDenom}
-            hoverPrice={hoverPrice}
-            decimal={priceDecimal}
-          />
-          <TokenPairHistoricalChart
-            data={historicalChartData}
-            annotations={
-              isFullRange
-                ? [
-                    new Dec((yRange[0] || 0) * 1.05),
-                    new Dec((yRange[1] || 0) * 0.95),
-                  ]
-                : range || []
-            }
-            domain={yRange}
-            onPointerHover={setHoverPrice}
-            onPointerOut={
-              lastChartData
-                ? () => setHoverPrice(lastChartData.close)
-                : undefined
-            }
-          />
+          <ChartHeader config={chartConfig} />
+          <Chart config={chartConfig} positionConfig={positionConfig} />
         </div>
         <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 rounded-r-2xl bg-osmoverse-700">
           <div className="mt-[84px] flex flex-1 flex-col">
@@ -139,7 +111,9 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
               xRange={xRange}
               data={depthChartData}
               annotationDatum={{
-                price: lastChartData?.close || 0,
+                price: currentPrice
+                  ? Number(currentPrice.toString())
+                  : lastChartData?.close || 0,
                 depth: xRange[1],
               }}
               rangeAnnotation={[
@@ -212,7 +186,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             />
             <AssetsInfo
               className="w-0 flex-shrink flex-grow sm:w-full"
-              title={t("clPositions.totalFeesEarned")}
+              title={t("clPositions.totalSpreadEarned")}
             />
           </div>
           <div className="flex justify-between sm:flex-col sm:gap-3">
@@ -231,10 +205,10 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
       </div>
       <div className="mt-4 flex flex-row justify-end gap-5 sm:flex-wrap sm:justify-start">
         <PositionButton
-          disabled={!position.hasRewardsAvailable}
+          disabled={!positionConfig.hasRewardsAvailable}
           onClick={() => {
             account.osmosis
-              .sendCollectAllPositionsRewardsMsgs([position.id])
+              .sendCollectAllPositionsRewardsMsgs([positionConfig.id])
               .catch(console.error);
           }}
         >
@@ -297,9 +271,16 @@ const AssetsInfo: FunctionComponent<
       )}
     >
       <div>{title}</div>
-      <div className="grid grid-cols-3 gap-3">
-        <div className="col-span-2 grid grid-cols-2 gap-2">
-          {assets.length > 0 ? (
+      {assets.length > 0 ? (
+        <div className="grid grid-cols-3 gap-3">
+          <div
+            className={classNames(
+              "grid gap-2",
+              assets.length > 1
+                ? "col-span-2 grid-cols-2"
+                : "grid-cols col-span-1"
+            )}
+          >
             <div className="col-span-2 flex flex-wrap gap-x-5 gap-y-3">
               {assets.map((asset) => (
                 <div key={asset.denom} className="flex items-center gap-2">
@@ -317,18 +298,16 @@ const AssetsInfo: FunctionComponent<
                 </div>
               ))}
             </div>
-          ) : (
-            <span className="italic">
-              {emptyText ?? t("errors.notAvailable")}
-            </span>
-          )}
+          </div>
+          <div className="col-start-3">
+            {totalValue && (
+              <div className="text-white-full">({totalValue.toString()})</div>
+            )}
+          </div>
         </div>
-        <div className="col-start-3">
-          {totalValue && (
-            <div className="text-white-full">({totalValue.toString()})</div>
-          )}
-        </div>
-      </div>
+      ) : (
+        <span className="italic">{emptyText ?? t("errors.notAvailable")}</span>
+      )}
     </div>
   );
 });
@@ -356,3 +335,58 @@ const PriceBox: FunctionComponent<{
     )}
   </div>
 );
+
+/**
+ * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
+ */
+const ChartHeader: FunctionComponent<{
+  config: ObservableHistoricalAndLiquidityData;
+}> = ({ config }) => {
+  const {
+    historicalRange,
+    priceDecimal,
+    setHistoricalRange,
+    baseDenom,
+    quoteDenom,
+    hoverPrice,
+  } = config;
+  return (
+    <PriceChartHeader
+      historicalRange={historicalRange}
+      setHistoricalRange={setHistoricalRange}
+      baseDenom={baseDenom}
+      quoteDenom={quoteDenom}
+      hoverPrice={hoverPrice}
+      decimal={priceDecimal}
+    />
+  );
+};
+
+/**
+ * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
+ */
+const Chart: FunctionComponent<{
+  config: ObservableHistoricalAndLiquidityData;
+  positionConfig: ObservableQueryLiquidityPositionById;
+}> = ({ config, positionConfig }) => {
+  const { historicalChartData, yRange, setHoverPrice, lastChartData, range } =
+    config;
+
+  const { isFullRange } = positionConfig;
+
+  return (
+    <TokenPairHistoricalChart
+      data={historicalChartData}
+      annotations={
+        isFullRange
+          ? [new Dec((yRange[0] || 0) * 1.05), new Dec((yRange[1] || 0) * 0.95)]
+          : range || []
+      }
+      domain={yRange}
+      onPointerHover={setHoverPrice}
+      onPointerOut={
+        lastChartData ? () => setHoverPrice(lastChartData.close) : undefined
+      }
+    />
+  );
+};

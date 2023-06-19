@@ -94,12 +94,12 @@ export const DepositAmountGroup: FunctionComponent<{
               <Image
                 alt=""
                 src={coin?.currency.coinImageUrl}
-                height={58}
-                width={58}
+                height={47}
+                width={47}
               />
             )}
           </div>
-          <div className="ml-[.75rem] mr-[2.75rem] flex flex-col">
+          <div className="ml-[.75rem] mr-[2.75rem] flex flex-col xs:mr-8">
             <h6>{coin?.denom ?? ""}</h6>
             <span className="subtitle1 text-osmoverse-400">
               {percentage.maxDecimals(0).toString()}
@@ -107,7 +107,9 @@ export const DepositAmountGroup: FunctionComponent<{
           </div>
           <div className="relative flex flex-1 flex-col gap-0.5">
             <span className="absolute right-0 top-[-16px] mb-[2px] mr-2 text-right text-caption font-caption text-wosmongton-300">
-              {walletBalance ? walletBalance.toString() : ""}
+              {walletBalance
+                ? walletBalance.trim(true).maxDecimals(8).toString()
+                : ""}
             </span>
             <div
               className={classNames(

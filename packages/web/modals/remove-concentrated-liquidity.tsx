@@ -7,8 +7,6 @@ import Image from "next/image";
 import React, { FunctionComponent, ReactNode } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { Icon } from "~/components/assets";
-import IconButton from "~/components/buttons/icon-button";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { Slider } from "~/components/control";
 import { tError } from "~/components/localization";
@@ -24,33 +22,36 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     position: ObservableQueryLiquidityPositionById;
   } & ModalBaseProps
 > = observer((props) => {
-  const { lowerPrices, upperPrices, baseAsset, quoteAsset } = props.position;
+  const {
+    lowerPrices,
+    upperPrices,
+    baseAsset: positionBaseAsset,
+    quoteAsset: positionQuoteAsset,
+  } = props.position;
 
   const t = useTranslation();
-  const {
-    chainStore,
-    accountStore,
-    derivedDataStore,
-    queriesStore,
-    priceStore,
-  } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getAccount(chainId);
   const isSendingMsg = account.txTypeInProgress !== "";
 
+  const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
+
   const { config, removeLiquidity } = useRemoveConcentratedLiquidityConfig(
     chainStore,
     chainId,
     props.poolId,
-    queriesStore
+    props.position.id
   );
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
       disabled: config.error !== undefined || isSendingMsg,
       onClick: () => {
-        return removeLiquidity().finally(() => props.onRequestClose());
+        return removeLiquidity()
+          .catch(console.error)
+          .finally(() => props.onRequestClose());
       },
       children: config.error
         ? t(...tError(config.error))
@@ -59,12 +60,15 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     props.onRequestClose
   );
 
-  const {
-    poolDetail: { pool },
-  } = derivedDataStore.getForPool(props.poolId);
-  const clPool = pool?.pool as ConcentratedLiquidityPool;
-  const isConcLiq = pool?.type === "concentrated";
-  const currentSqrtPrice = isConcLiq && clPool.currentSqrtPrice;
+  const baseAsset = config.effectiveLiquidityAmounts?.base;
+  const quoteAsset = config.effectiveLiquidityAmounts?.quote;
+
+  const queryPool = osmosisQueries.queryPools.getPool(props.poolId);
+  const clPool =
+    queryPool?.pool && queryPool.pool instanceof ConcentratedLiquidityPool
+      ? queryPool.pool
+      : undefined;
+  const currentSqrtPrice = clPool ? clPool.currentSqrtPrice : undefined;
   const currentPrice = currentSqrtPrice
     ? currentSqrtPrice.mul(currentSqrtPrice)
     : new Dec(0);
@@ -89,49 +93,29 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     <ModalBase
       {...props}
       isOpen={props.isOpen && showModalBase}
-      hideCloseButton
       className="!max-w-[500px]"
+      title={t("clPositions.removeLiquidity")}
     >
-      <div className="align-center relative mb-8 flex flex-row">
-        <div className="absolute left-0 flex h-full items-center text-sm" />
-        <h6 className="flex-1 text-center">
-          {t("clPositions.removeLiquidity")}
-        </h6>
-        <div className="absolute right-0">
-          <IconButton
-            aria-label="Close"
-            mode="unstyled"
-            size="unstyled"
-            className="!p-0"
-            icon={
-              <Icon
-                id="close-thin"
-                className="text-wosmongton-400 hover:text-wosmongton-100"
-                height={24}
-                width={24}
+      <div className="pt-8">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <div className="pl-4 text-subtitle1 font-subtitle1 xs:pl-0">
+              {t("clPositions.yourPosition")}
+            </div>
+            {lowerPrices && upperPrices && (
+              <MyPositionStatus
+                currentPrice={currentPrice}
+                lowerPrice={lowerPrices.price}
+                upperPrice={upperPrices.price}
+                negative
+                className="xs:px-0"
               />
-            }
-            onClick={props.onRequestClose}
-          />
-        </div>
-      </div>
-      <div className="flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <div className="pl-4 text-subtitle1 font-subtitle1">
-            {t("clPositions.yourPosition")}
+            )}
           </div>
-          {lowerPrices && upperPrices && (
-            <MyPositionStatus
-              currentPrice={currentPrice}
-              lowerPrice={lowerPrices.price}
-              upperPrice={upperPrices.price}
-              negative
-            />
-          )}
-        </div>
-        <div className="mb-8 flex justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100">
-          {baseAsset && <AssetAmount amount={baseAsset} />}
-          {quoteAsset && <AssetAmount amount={quoteAsset} />}
+          <div className="mb-8 flex justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100 xs:flex-wrap xs:gap-y-2 xs:px-3">
+            {positionBaseAsset && <AssetAmount amount={positionBaseAsset} />}
+            {positionQuoteAsset && <AssetAmount amount={positionQuoteAsset} />}
+          </div>
         </div>
       </div>
       <div className="flex w-full flex-col items-center gap-9">
@@ -167,27 +151,27 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
             </PresetPercentageButton>
           </div>
         </div>
-      </div>
-      <div className="mt-8 flex flex-col gap-3 py-3">
-        <div className="pl-4 text-subtitle1 font-subtitle1">
-          {t("clPositions.pendingRewards")}
+        <div className="mt-8 flex w-full flex-col gap-3 py-3">
+          <div className="pl-4 text-subtitle1 font-subtitle1 xl:pl-1">
+            {t("clPositions.pendingRewards")}
+          </div>
+          <div className="flex justify-between gap-3 rounded-[12px] border-[1.5px]  border-osmoverse-700 px-5 py-3 xs:flex-wrap xs:gap-y-2 xs:px-3">
+            {baseAsset && (
+              <AssetAmount
+                className="!text-body2 !font-body2"
+                amount={baseAsset.mul(new Dec(config.percentage))}
+              />
+            )}
+            {quoteAsset && (
+              <AssetAmount
+                className="!text-body2 !font-body2"
+                amount={quoteAsset.mul(new Dec(config.percentage))}
+              />
+            )}
+          </div>
         </div>
-        <div className="flex justify-between gap-3 rounded-[12px] border-[1.5px]  border-osmoverse-700 px-5 py-3">
-          {baseAsset && (
-            <AssetAmount
-              className="!text-body2 !font-body2"
-              amount={baseAsset.mul(new Dec(config.percentage))}
-            />
-          )}
-          {quoteAsset && (
-            <AssetAmount
-              className="!text-body2 !font-body2"
-              amount={quoteAsset.mul(new Dec(config.percentage))}
-            />
-          )}
-        </div>
+        {accountActionButton}
       </div>
-      {accountActionButton}
     </ModalBase>
   );
 });
@@ -201,7 +185,7 @@ const PresetPercentageButton: FunctionComponent<{
     <button
       className={classNames(
         "flex flex-1 cursor-pointer items-center justify-center",
-        "rounded-[8px] bg-osmoverse-700 px-5 py-2 text-h6 font-h6 hover:bg-osmoverse-600",
+        "rounded-[8px] bg-osmoverse-700 px-5 py-2 text-h6 font-h6 text-wosmongton-100 hover:bg-osmoverse-600 xs:px-3 xs:text-subtitle1",
         "whitespace-nowrap",
         {
           "!bg-osmoverse-600": selected,
@@ -220,7 +204,7 @@ export const AssetAmount: FunctionComponent<{
 }> = (props) => (
   <div
     className={classNames(
-      "flex items-center gap-2 text-subtitle1 font-subtitle1",
+      "flex items-center gap-2 text-subtitle1 font-subtitle1 xs:text-body2",
       props.className
     )}
   >
@@ -232,6 +216,6 @@ export const AssetAmount: FunctionComponent<{
         width={24}
       />
     )}
-    <span>{props.amount.trim(true).toString()}</span>
+    <span>{props.amount.trim(true).maxDecimals(8).toString()}</span>
   </div>
 );

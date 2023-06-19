@@ -15,6 +15,7 @@ import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-
 import { AddLiquidityModal } from "~/modals";
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
 import { useStore } from "~/stores";
+import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
 
 import { SuperchargeDaiOsmoPool } from "../funnels/concentrated-liquidity";
@@ -50,21 +51,13 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
 
     const {
       pool,
-      historicalChartData,
-      historicalRange,
       xRange,
       yRange,
-      setHoverPrice,
       lastChartData,
       depthChartData,
       setZoom,
       zoomIn,
       zoomOut,
-      priceDecimal,
-      setHistoricalRange,
-      baseDenom,
-      quoteDenom,
-      hoverPrice,
     } = config;
 
     const volume24h =
@@ -75,9 +68,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const poolLiquidity = pool?.computeTotalValueLocked(priceStore);
 
     const currentPrice = pool?.concentratedLiquidityPoolInfo
-      ? pool.concentratedLiquidityPoolInfo.currentSqrtPrice.mul(
-          pool.concentratedLiquidityPoolInfo.currentSqrtPrice
-        )
+      ? pool.concentratedLiquidityPoolInfo.currentPrice
       : undefined;
 
     const userHasPositionInPool =
@@ -121,7 +112,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     />
                     <span className="hidden py-1 text-subtitle1 text-osmoverse-100 lg:inline-block">
                       {pool?.swapFee ? pool.swapFee.toString() : "0%"}{" "}
-                      {t("clPositions.fee")}
+                      {t("clPositions.spreadFactor")}
                     </span>
                   </div>
                 </div>
@@ -145,7 +136,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
 
                 <div className="lg:hidden">
                   <PoolDataGroup
-                    label={t("pool.swapFee")}
+                    label={t("clPositions.spreadFactor")}
                     value={pool?.swapFee ? pool.swapFee.toString() : "0%"}
                   />
                 </div>
@@ -153,30 +144,10 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
             </div>
             <div className="flex h-[340px] flex-row">
               <div className="flex-shrink-1 flex w-0 flex-1 flex-col gap-[20px] py-7 sm:py-3">
-                <PriceChartHeader
-                  historicalRange={historicalRange}
-                  setHistoricalRange={setHistoricalRange}
-                  baseDenom={baseDenom}
-                  quoteDenom={quoteDenom}
-                  hoverPrice={hoverPrice}
-                  decimal={priceDecimal}
-                  classes={{
-                    buttons: "sm:hidden",
-                    pricesHeaderContainerClass: "sm:flex-col",
-                  }}
-                />
-                <TokenPairHistoricalChart
-                  data={historicalChartData}
-                  annotations={[]}
-                  domain={yRange}
-                  onPointerHover={setHoverPrice}
-                  onPointerOut={
-                    lastChartData
-                      ? () => setHoverPrice(lastChartData.close)
-                      : undefined
-                  }
-                />
+                <ChartHeader config={config} />
+                <Chart config={config} />
               </div>
+
               <div className="flex-shrink-1 relative flex w-[229px] flex-col">
                 <div className="mt-7 flex h-6 justify-end gap-1 pr-8 sm:pr-0">
                   <ChartButton
@@ -204,7 +175,9 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     xRange={xRange}
                     data={depthChartData}
                     annotationDatum={{
-                      price: lastChartData?.close || 0,
+                      price: currentPrice
+                        ? Number(currentPrice.toString())
+                        : lastChartData?.close ?? 0,
                       depth: xRange[1],
                     }}
                     offset={{
@@ -297,3 +270,54 @@ const PoolDataGroup: FunctionComponent<{
     <h4 className="text-osmoverse-100">{value}</h4>
   </div>
 );
+
+/**
+ * Create a nested component to prevent unnecessary re-rendering whenever the hover price changes.
+ */
+const ChartHeader: FunctionComponent<{
+  config: ObservableHistoricalAndLiquidityData;
+}> = observer(({ config }) => {
+  const {
+    historicalRange,
+    priceDecimal,
+    setHistoricalRange,
+    baseDenom,
+    quoteDenom,
+    hoverPrice,
+  } = config;
+
+  return (
+    <PriceChartHeader
+      historicalRange={historicalRange}
+      setHistoricalRange={setHistoricalRange}
+      baseDenom={baseDenom}
+      quoteDenom={quoteDenom}
+      hoverPrice={hoverPrice}
+      decimal={priceDecimal}
+      classes={{
+        buttons: "sm:hidden",
+        pricesHeaderContainerClass: "sm:flex-col",
+      }}
+    />
+  );
+});
+
+/**
+ * Create a nested component to prevent unnecessary re-rendering whenever the hover price changes.
+ */
+const Chart: FunctionComponent<{
+  config: ObservableHistoricalAndLiquidityData;
+}> = observer(({ config }) => {
+  const { historicalChartData, yRange, setHoverPrice, lastChartData } = config;
+  return (
+    <TokenPairHistoricalChart
+      data={historicalChartData}
+      annotations={[]}
+      domain={yRange}
+      onPointerHover={setHoverPrice}
+      onPointerOut={
+        lastChartData ? () => setHoverPrice(lastChartData.close) : undefined
+      }
+    />
+  );
+});

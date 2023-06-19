@@ -18,7 +18,7 @@ import { DeepPartial } from "utility-types";
 import { OsmosisQueries } from "../queries";
 import * as Msgs from "./msg/amino";
 import { osmosis } from "./msg/proto";
-import { defaultMsgOpts, OsmosisMsgOpts } from "./msg-opts";
+import { DEFAULT_SLIPPAGE, defaultMsgOpts, OsmosisMsgOpts } from "./msg-opts";
 
 export interface OsmosisAccount {
   osmosis: OsmosisAccountImpl;
@@ -167,7 +167,7 @@ export class OsmosisAccountImpl {
         if (tx.code == null || tx.code === 0) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
-          this.queries.queryGammPools.waitFreshResponse();
+          this.queries.queryPools.waitFreshResponse();
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
             .balances.forEach((bal) => {
@@ -250,7 +250,7 @@ export class OsmosisAccountImpl {
         if (tx.code == null || tx.code === 0) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
-          this.queries.queryGammPools.waitFreshResponse();
+          this.queries.queryPools.waitFreshResponse();
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
             .balances.forEach((bal) => {
@@ -389,7 +389,7 @@ export class OsmosisAccountImpl {
         if (tx.code == null || tx.code === 0) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
-          this.queries.queryGammPools.waitFreshResponse();
+          this.queries.queryPools.waitFreshResponse();
           queries.queryBalances
             .getQueryBech32Address(this.base.bech32Address)
             .balances.forEach((bal) => {
@@ -423,7 +423,7 @@ export class OsmosisAccountImpl {
   async sendJoinPoolMsg(
     poolId: string,
     shareOutAmount: string,
-    maxSlippage: string = "2.5",
+    maxSlippage: string = DEFAULT_SLIPPAGE,
     memo: string = "",
     onFulfill?: (tx: any) => void
   ) {
@@ -433,7 +433,7 @@ export class OsmosisAccountImpl {
     await this.base.cosmos.sendMsgs(
       "joinPool",
       async () => {
-        const queryPool = queries.queryGammPools.getPool(poolId);
+        const queryPool = queries.queryPools.getPool(poolId);
 
         if (!queryPool) {
           throw new Error(`Pool #${poolId} not found`);
@@ -527,7 +527,7 @@ export class OsmosisAccountImpl {
               bal.waitFreshResponse();
             });
 
-          this.queries.queryGammPools.getPool(poolId)?.waitFreshResponse();
+          this.queries.queryPools.getPool(poolId)?.waitFreshResponse();
         }
 
         onFulfill?.(tx);
@@ -548,7 +548,7 @@ export class OsmosisAccountImpl {
   async sendJoinSwapExternAmountInMsg(
     poolId: string,
     tokenIn: { currency: Currency; amount: string },
-    maxSlippage: string = "2.5",
+    maxSlippage: string = DEFAULT_SLIPPAGE,
     memo: string = "",
     onFulfill?: (tx: any) => void
   ) {
@@ -557,7 +557,7 @@ export class OsmosisAccountImpl {
     await this.base.cosmos.sendMsgs(
       "joinPool",
       async () => {
-        const queryPool = queries.queryGammPools.getPool(poolId);
+        const queryPool = queries.queryPools.getPool(poolId);
 
         if (!queryPool) {
           throw new Error(`Pool #${poolId} not found`);
@@ -658,7 +658,7 @@ export class OsmosisAccountImpl {
             .balances.forEach((bal) => {
               bal.waitFreshResponse();
             });
-          this.queries.queryGammPools.getPool(poolId)?.waitFreshResponse();
+          this.queries.queryPools.getPool(poolId)?.waitFreshResponse();
         }
 
         onFulfill?.(tx);
@@ -683,7 +683,7 @@ export class OsmosisAccountImpl {
     upperTick: Int,
     baseDeposit?: { currency: Currency; amount: string },
     quoteDeposit?: { currency: Currency; amount: string },
-    maxSlippage = "2.5",
+    maxSlippage = DEFAULT_SLIPPAGE,
     memo: string = "",
     onFulfill?: (tx: any) => void
   ) {
@@ -691,8 +691,8 @@ export class OsmosisAccountImpl {
 
     await this.base.cosmos.sendMsgs(
       "clCreatePosition",
-      async () => {
-        const queryPool = queries.queryGammPools.getPool(poolId);
+      () => {
+        const queryPool = queries.queryPools.getPool(poolId);
 
         if (!queryPool) {
           throw new Error(`Pool #${poolId} not found`);
@@ -805,10 +805,185 @@ export class OsmosisAccountImpl {
             .balances.forEach((bal) => {
               bal.waitFreshResponse();
             });
-          this.queries.queryGammPools.getPool(poolId)?.waitFreshResponse();
+          this.queries.queryPools.getPool(poolId)?.waitFreshResponse();
           this.queries.queryAccountsPositions
             .get(this.base.bech32Address)
             ?.waitFreshResponse();
+        }
+
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
+   * Adds to a concentrated liquidity position, if successful replacing the old position with a new position and ID.
+   *
+   * @param positionId Position ID.
+   * @param amount0 Integer amount of token0 to add to the position.
+   * @param amount1 Integer amount of token1 to add to the position.
+   * @param maxSlippage Max token amounts slippage as whole %. Default `2.5`, meaning 2.5%.
+   * @param memo Optional memo to add to the transaction.
+   * @param onFulfill Optional callback to be called when tx is fulfilled.
+   */
+  async sendAddToConcentratedLiquidityPositionMsg(
+    positionId: string,
+    amount0: string,
+    amount1: string,
+    maxSlippage = DEFAULT_SLIPPAGE,
+    memo: string = "",
+    onFulfill?: (tx: any) => void
+  ) {
+    // refresh position
+    const queryPosition =
+      this.queries.queryLiquidityPositionsById.getForPositionId(positionId);
+    await queryPosition.waitFreshResponse();
+
+    const amount0WithSlippage = new Dec(amount0)
+      .mul(new Dec(1).sub(new Dec(maxSlippage).quo(new Dec(100))))
+      .truncate()
+      .toString();
+    const amount1WithSlippage = new Dec(amount1)
+      .mul(new Dec(1).sub(new Dec(maxSlippage).quo(new Dec(100))))
+      .truncate()
+      .toString();
+
+    const aminoMsg = {
+      type: this._msgOpts.clAddToConcentratedPosition.type,
+      value: {
+        position_id: positionId,
+        sender: this.base.bech32Address,
+        amount0: amount0,
+        amount1: amount1,
+        token_min_amount0: amount0WithSlippage,
+        token_min_amount1: amount1WithSlippage,
+      },
+    };
+
+    const protoMsg = {
+      typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgAddToPosition",
+      value: osmosis.concentratedliquidity.v1beta1.MsgAddToPosition.encode({
+        positionId: Long.fromString(aminoMsg.value.position_id),
+        sender: aminoMsg.value.sender,
+        amount0: aminoMsg.value.amount0,
+        amount1: aminoMsg.value.amount1,
+        tokenMinAmount0: aminoMsg.value.token_min_amount0,
+        tokenMinAmount1: aminoMsg.value.token_min_amount1,
+      }).finish(),
+    };
+
+    await this.base.cosmos.sendMsgs(
+      "clAddToPosition",
+      {
+        aminoMsgs: [aminoMsg],
+        protoMsgs: [protoMsg],
+      },
+      memo,
+      {
+        amount: [],
+        gas: this._msgOpts.clAddToConcentratedPosition.gas.toString(),
+      },
+      undefined,
+      (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          // refresh relevant balances
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.base.bech32Address)
+            .balances.forEach((bal) => {
+              if (
+                bal.balance.currency.coinMinimalDenom ===
+                  queryPosition.baseAsset?.currency.coinMinimalDenom ||
+                bal.balance.currency.coinMinimalDenom ===
+                  queryPosition.quoteAsset?.currency.coinMinimalDenom
+              )
+                bal.waitFreshResponse();
+            });
+
+          // refresh all user positions since IDs shift after adding to a position
+          queries.osmosis?.queryAccountsPositions
+            .get(this.base.bech32Address)
+            .waitFreshResponse();
+        }
+
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
+   * Withdraw all or some liquidity from a position.
+   *
+   * @param positionId ID of the position to withdraw from.
+   * @param liquidityAmount L value of liquidity to withdraw, can be derived from liquidity of position.
+   * @param memo Memo of the transaction.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
+   * @returns
+   */
+  async sendWithdrawConcentratedLiquidityPositionMsg(
+    positionId: string,
+    liquidityAmount: Dec,
+    memo: string = "",
+    onFulfill?: (tx: any) => void
+  ) {
+    const aminoMsg = {
+      type: this._msgOpts.clWithdrawPosition.type,
+      value: {
+        position_id: positionId,
+        sender: this.base.bech32Address,
+        liquidity_amount: liquidityAmount.toString(),
+      },
+    };
+
+    const protoMsg = {
+      typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition",
+      value: osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition.encode({
+        positionId: Long.fromString(aminoMsg.value.position_id),
+        sender: aminoMsg.value.sender,
+        liquidityAmount: this.changeDecStringToProtoBz(
+          new Dec(aminoMsg.value.liquidity_amount)
+            .mul(
+              DecUtils.getTenExponentNInPrecisionRange(
+                aminoMsg.value.liquidity_amount.split(".")[1]?.length ?? 0
+              )
+            )
+            .truncate()
+            .toString()
+        ),
+      }).finish(),
+    };
+
+    return this.base.cosmos.sendMsgs(
+      "clWithdrawPosition",
+      { aminoMsgs: [aminoMsg], protoMsgs: [protoMsg] },
+      memo,
+      {
+        amount: [],
+        gas: this._msgOpts.clWithdrawPosition.gas.toString(),
+      },
+      undefined,
+      (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          const queries = this.queriesStore.get(this.chainId);
+          const queryPosition =
+            this.queries.queryLiquidityPositionsById.getForPositionId(
+              positionId
+            );
+          queries.queryBalances
+            .getQueryBech32Address(this.base.bech32Address)
+            .balances.forEach((bal) => {
+              if (
+                queryPosition.baseAsset?.currency.coinMinimalDenom ===
+                  bal.currency.coinMinimalDenom ||
+                queryPosition.quoteAsset?.currency.coinMinimalDenom ===
+                  bal.currency.coinMinimalDenom
+              )
+                bal.waitFreshResponse();
+            });
+
+          queries.osmosis?.queryAccountsPositions
+            .get(this.base.bech32Address)
+            .waitFreshResponse();
         }
 
         onFulfill?.(tx);
@@ -1069,9 +1244,7 @@ export class OsmosisAccountImpl {
           routes
             .flatMap(({ pools }) => pools)
             .forEach(({ id: poolId }) => {
-              queries.osmosis?.queryGammPools
-                .getPool(poolId)
-                ?.waitFreshResponse();
+              queries.osmosis?.queryPools.getPool(poolId)?.waitFreshResponse();
             });
 
           queries.osmosis?.queryAccountsPositions
@@ -1168,9 +1341,7 @@ export class OsmosisAccountImpl {
             });
 
           pools.forEach(({ id: poolId }) => {
-            queries.osmosis?.queryGammPools
-              .getPool(poolId)
-              ?.waitFreshResponse();
+            queries.osmosis?.queryPools.getPool(poolId)?.waitFreshResponse();
           });
 
           queries.osmosis?.queryAccountsPositions
@@ -1266,7 +1437,7 @@ export class OsmosisAccountImpl {
             });
 
           pools.forEach(({ id }) =>
-            this.queries.queryGammPools.getPool(id)?.waitFreshResponse()
+            this.queries.queryPools.getPool(id)?.waitFreshResponse()
           );
 
           queries.osmosis?.queryAccountsPositions
@@ -1290,7 +1461,7 @@ export class OsmosisAccountImpl {
   async sendExitPoolMsg(
     poolId: string,
     shareInAmount: string,
-    maxSlippage: string = "2.5",
+    maxSlippage: string = DEFAULT_SLIPPAGE,
     memo: string = "",
     onFulfill?: (tx: any) => void
   ) {
@@ -1300,7 +1471,7 @@ export class OsmosisAccountImpl {
     await this.base.cosmos.sendMsgs(
       "exitPool",
       async () => {
-        const queryPool = queries.queryGammPools.getPool(poolId);
+        const queryPool = queries.queryPools.getPool(poolId);
 
         if (!queryPool) {
           throw new Error(`Pool #${poolId} not found`);
@@ -1387,7 +1558,7 @@ export class OsmosisAccountImpl {
             .getQueryBech32Address(this.base.bech32Address)
             .balances.forEach((balance) => balance.waitFreshResponse());
 
-          this.queries.queryGammPools.getPool(poolId)?.waitFreshResponse();
+          this.queries.queryPools.getPool(poolId)?.waitFreshResponse();
         }
 
         onFulfill?.(tx);

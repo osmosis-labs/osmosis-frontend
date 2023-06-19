@@ -22,7 +22,7 @@ const Pool: FunctionComponent = observer(() => {
   // eject to pools page if pool does not exist
   const poolExists =
     poolId && typeof poolId === "string"
-      ? queryOsmosis.queryGammPools.poolExists(poolId)
+      ? queryOsmosis.queryPools.poolExists(poolId)
       : undefined;
   useEffect(() => {
     if (poolExists === false) {
@@ -30,7 +30,7 @@ const Pool: FunctionComponent = observer(() => {
     }
   }, [poolExists, router]);
 
-  const queryPool = queryOsmosis.queryGammPools.getPool(poolId);
+  const queryPool = queryOsmosis.queryPools.getPool(poolId);
 
   useNavBar(
     useMemo(

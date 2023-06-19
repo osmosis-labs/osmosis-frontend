@@ -1,9 +1,7 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import {
   ObservableAddConcentratedLiquidityConfig,
-  ObservablePoolDetail,
   ObservableQueryPool,
-  ObservableSuperfluidPoolDetail,
 } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import debounce from "debounce";
@@ -26,6 +24,8 @@ import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
+import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
+import { formatPretty } from "~/utils/formatter";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "../assets";
 import { Button } from "../buttons";
@@ -57,28 +57,30 @@ export const AddConcLiquidity: FunctionComponent<
     onRequestClose,
   }) => {
     const { poolId } = addLiquidityConfig;
-    const { derivedDataStore } = useStore();
+    const {
+      queriesStore,
+      chainStore: {
+        osmosis: { chainId },
+      },
+    } = useStore();
 
     // initialize pool data stores once root pool store is loaded
-    const { poolDetail, superfluidPoolDetail } =
-      typeof poolId === "string"
-        ? derivedDataStore.getForPool(poolId as string)
-        : {
-            poolDetail: undefined,
-            superfluidPoolDetail: undefined,
-          };
-    const pool = poolDetail?.pool;
+    const pool = queriesStore.get(chainId).osmosis!.queryPools.getPool(poolId);
 
     return (
-      <div className={classNames("flex flex-col gap-8", className)}>
+      <div
+        className={classNames(
+          "flex flex-col",
+          addLiquidityConfig.modalView === "overview" ? "gap-8" : "gap-5",
+          className
+        )}
+      >
         {(() => {
           switch (addLiquidityConfig.modalView) {
             case "overview":
               return (
                 <Overview
                   pool={pool}
-                  poolDetail={poolDetail}
-                  superfluidPoolDetail={superfluidPoolDetail}
                   addLiquidityConfig={addLiquidityConfig}
                   onRequestClose={onRequestClose}
                 />
@@ -104,138 +106,130 @@ export const AddConcLiquidity: FunctionComponent<
 const Overview: FunctionComponent<
   {
     pool?: ObservableQueryPool;
-    poolDetail?: ObservablePoolDetail;
-    superfluidPoolDetail?: ObservableSuperfluidPoolDetail;
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     onRequestClose: () => void;
   } & CustomClasses
-> = observer(
-  ({
-    addLiquidityConfig,
-    pool,
-    superfluidPoolDetail,
-    poolDetail,
-    onRequestClose,
-  }) => {
-    const { priceStore, queriesExternalStore } = useStore();
-    const { poolId } = addLiquidityConfig;
-    const t = useTranslation();
-    const [selected, selectView] =
-      useState<typeof addLiquidityConfig.modalView>("add_manual");
-    const queryGammPoolFeeMetrics =
-      queriesExternalStore.queryGammPoolFeeMetrics;
+> = observer(({ addLiquidityConfig, pool, onRequestClose }) => {
+  const { priceStore, queriesExternalStore, derivedDataStore } = useStore();
+  const t = useTranslation();
+  const [selected, selectView] =
+    useState<typeof addLiquidityConfig.modalView>("add_manual");
+  const queryGammPoolFeeMetrics = queriesExternalStore.queryGammPoolFeeMetrics;
 
-    return (
-      <>
-        <div className="align-center relative flex flex-row">
-          <div className="absolute left-0 flex h-full items-center text-sm" />
-          <h6 className="flex-1 text-center">
-            {t("addConcentratedLiquidity.step1Title")}
-          </h6>
-          <div className="absolute right-0">
-            <IconButton
-              aria-label="Close"
-              mode="unstyled"
-              size="unstyled"
-              className="!p-0"
-              icon={
-                <Icon
-                  id="close-thin"
-                  className="text-wosmongton-400 hover:text-wosmongton-100"
-                  height={24}
-                  width={24}
-                />
-              }
-              onClick={onRequestClose}
-            />
-          </div>
+  const superfluidPoolDetail = derivedDataStore.superfluidPoolDetails.get(
+    addLiquidityConfig.poolId
+  );
+
+  return (
+    <>
+      <div className="align-center relative flex flex-row">
+        <div className="absolute left-0 flex h-full items-center text-sm" />
+        <h6 className="flex-1 text-center">
+          {t("addConcentratedLiquidity.step1Title")}
+        </h6>
+        <div className="absolute right-0">
+          <IconButton
+            aria-label="Close"
+            mode="unstyled"
+            size="unstyled"
+            className="!p-0"
+            icon={
+              <Icon
+                id="close-thin"
+                className="text-wosmongton-400 hover:text-wosmongton-100"
+                height={24}
+                width={24}
+              />
+            }
+            onClick={onRequestClose}
+          />
         </div>
-        <div className="flex rounded-[1rem] bg-osmoverse-700/[.3] px-[28px] py-4">
-          <div className="flex flex-1 flex-col gap-1">
-            <div className="flex flex-nowrap items-center gap-2">
-              {pool && (
-                <>
-                  <PoolAssetsIcon
-                    assets={pool.poolAssets.map(
-                      (asset: { amount: CoinPretty }) => ({
-                        coinDenom: asset.amount.denom,
-                        coinImageUrl: asset.amount.currency.coinImageUrl,
-                      })
-                    )}
-                    size="sm"
-                  />
-                  <PoolAssetsName
-                    size="md"
-                    className="max-w-xs truncate"
-                    assetDenoms={pool.poolAssets.map(
-                      (asset: { amount: CoinPretty }) => asset.amount.denom
-                    )}
-                  />
-                </>
-              )}
-            </div>
-            {!superfluidPoolDetail?.isSuperfluid && (
-              <span className="body2 text-superfluid-gradient">
-                {t("pool.superfluidEnabled")}
-              </span>
+      </div>
+      <div className="flex rounded-[1rem] bg-osmoverse-700/[.3] px-[28px] py-4">
+        <div className="flex flex-1 flex-col gap-1">
+          <div className="flex flex-nowrap items-center gap-2">
+            {pool && (
+              <>
+                <PoolAssetsIcon
+                  assets={pool.poolAssets.map(
+                    (asset: { amount: CoinPretty }) => ({
+                      coinDenom: asset.amount.denom,
+                      coinImageUrl: asset.amount.currency.coinImageUrl,
+                    })
+                  )}
+                  size="sm"
+                />
+                <PoolAssetsName
+                  size="md"
+                  className="max-w-xs truncate"
+                  assetDenoms={pool.poolAssets.map(
+                    (asset: { amount: CoinPretty }) => asset.amount.denom
+                  )}
+                />
+              </>
             )}
           </div>
-          <div className="flex items-center gap-10">
-            <div className="gap-[3px]">
-              <span className="body2 text-osmoverse-400">
-                {t("pool.liquidity")}
-              </span>
-              <h6 className="text-osmoverse-100">
-                {poolDetail?.totalValueLocked.toString()}
-              </h6>
-            </div>
-            <div className="gap-[3px]">
-              <span className="body2 text-osmoverse-400">
-                {t("pool.24hrTradingVolume")}
-              </span>
-              <h6 className="text-osmoverse-100">
-                {queryGammPoolFeeMetrics
-                  .getPoolFeesMetrics(poolId, priceStore)
-                  .volume24h.toString()}
-              </h6>
-            </div>
-            <div className="gap-[3px]">
-              <span className="body2 text-osmoverse-400">
-                {t("pool.swapFee")}
-              </span>
-              <h6 className="text-osmoverse-100">{pool?.swapFee.toString()}</h6>
-            </div>
+          {!superfluidPoolDetail?.isSuperfluid && (
+            <span className="body2 text-superfluid-gradient">
+              {t("pool.superfluidEnabled")}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-10">
+          <div className="gap-[3px]">
+            <span className="body2 text-osmoverse-400">
+              {t("pool.liquidity")}
+            </span>
+            <h6 className="text-osmoverse-100">
+              {pool?.computeTotalValueLocked(priceStore).toString()}
+            </h6>
+          </div>
+          <div className="gap-[3px]">
+            <span className="body2 text-osmoverse-400">
+              {t("pool.24hrTradingVolume")}
+            </span>
+            <h6 className="text-osmoverse-100">
+              {queryGammPoolFeeMetrics
+                .getPoolFeesMetrics(addLiquidityConfig.poolId, priceStore)
+                .volume24h.toString()}
+            </h6>
+          </div>
+          <div className="gap-[3px]">
+            <span className="body2 text-osmoverse-400">
+              {t("pool.swapFee")}
+            </span>
+            <h6 className="text-osmoverse-100">{pool?.swapFee.toString()}</h6>
           </div>
         </div>
-        <div className="flex flex-col">
-          <div className="flex justify-center gap-[12px]">
-            <StrategySelector
-              title={t("addConcentratedLiquidity.managed")}
-              description={t("addConcentratedLiquidity.managedDescription")}
-              selected={selected === "add_managed"}
-              imgSrc="/images/managed_liquidity_mock.png"
-            />
-            <StrategySelector
-              title={t("addConcentratedLiquidity.manual")}
-              description={t("addConcentratedLiquidity.manualDescription")}
-              selected={selected === "add_manual"}
-              onClick={() => selectView("add_manual")}
-              imgSrc="/images/conliq_mock_range.png"
-            />
-          </div>
+      </div>
+      <div className="flex flex-col">
+        <div className="flex justify-center gap-[12px]">
+          <StrategySelector
+            title={t("addConcentratedLiquidity.managed")}
+            description={t("addConcentratedLiquidity.managedDescription")}
+            selected={selected === "add_managed"}
+            imgSrc="/images/managed_liquidity_mock.png"
+          />
+          <StrategySelector
+            title={t("addConcentratedLiquidity.manual")}
+            description={t("addConcentratedLiquidity.manualDescription")}
+            selected={selected === "add_manual"}
+            onClick={() => selectView("add_manual")}
+            imgSrc="/images/conliq_mock_range.png"
+          />
         </div>
-        <div className="flex w-full items-center justify-center">
-          <Button
-            className="w-[25rem]"
-            onClick={() => addLiquidityConfig.setModalView(selected)}
-          >
-            {t("pools.createPool.buttonNext")}
-          </Button>
-        </div>
-      </>
-    );
-  }
-);
+      </div>
+      <div className="flex w-full items-center justify-center">
+        <Button
+          className="w-[25rem]"
+          onClick={() => addLiquidityConfig.setModalView(selected)}
+        >
+          {t("pools.createPool.buttonNext")}
+        </Button>
+      </div>
+    </>
+  );
+});
 
 const StrategySelector: FunctionComponent<{
   title: string;
@@ -284,70 +278,42 @@ const AddConcLiqView: FunctionComponent<
   } & CustomClasses
 > = observer(({ addLiquidityConfig, actionButton, getFiatValue, pool }) => {
   const {
-    range,
+    range: inputRange,
     fullRange,
-    currentPrice,
     baseDepositAmountIn,
     quoteDepositAmountIn,
-    moderatePriceRange,
     baseDepositOnly,
     quoteDepositOnly,
     depositPercentages,
+    currentPrice,
     setModalView,
     setMaxRange,
     setMinRange,
+    setFullRange,
     poolId,
     setAnchorAsset,
   } = addLiquidityConfig;
 
   const t = useTranslation();
-  const [inputMin, setInputMin] = useState("0");
-  const [inputMax, setInputMax] = useState("0");
-  const rangeMin = Number(range[0].toString());
-  const rangeMax = Number(range[1].toString());
 
   const { chainStore } = useStore();
   const { chainId } = chainStore.osmosis;
   const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
 
-  const {
-    historicalRange,
-    setHistoricalRange,
-    hoverPrice,
-    priceDecimal,
-    yRange,
-    historicalChartData,
-    lastChartData,
-    setHoverPrice,
-  } = chartConfig;
+  const { priceDecimal, yRange, xRange, depthChartData } = chartConfig;
 
   const updateInputAndRangeMinMax = useCallback(
-    (_min: number, _max: number) => {
-      setInputMin("" + _min.toFixed(priceDecimal));
-      setInputMax("" + _max.toFixed(priceDecimal));
-      setMinRange(new Dec(_min));
-      setMaxRange(new Dec(_max));
+    (min: number, max: number) => {
+      setMinRange(new Dec(min));
+      setMaxRange(new Dec(max));
     },
-    [priceDecimal, setMinRange, setMaxRange]
+    [setMinRange, setMaxRange]
   );
 
+  // sync the price range of the add liq config and the chart config
   useEffect(() => {
-    if (currentPrice && inputMin === "0" && inputMax === "0") {
-      const last = Number(currentPrice.toString());
-      updateInputAndRangeMinMax(
-        Number(moderatePriceRange[0].toString()),
-        Number(moderatePriceRange[1].toString())
-      );
-      setHoverPrice(last);
-    }
-  }, [
-    currentPrice,
-    inputMax,
-    inputMin,
-    moderatePriceRange,
-    updateInputAndRangeMinMax,
-    setHoverPrice,
-  ]);
+    chartConfig.setPriceRange([inputRange[0], inputRange[1]]);
+  }, [chartConfig, inputRange]);
 
   return (
     <>
@@ -380,28 +346,13 @@ const AddConcLiqView: FunctionComponent<
         </span>
         <div className="flex gap-1">
           <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
-            <PriceChartHeader
-              historicalRange={historicalRange}
-              setHistoricalRange={setHistoricalRange}
-              baseDenom={baseDepositAmountIn.sendCurrency.coinDenom}
-              quoteDenom={quoteDepositAmountIn.sendCurrency.coinDenom}
-              hoverPrice={hoverPrice}
-              decimal={priceDecimal}
+            <ChartHeader
+              chartConfig={chartConfig}
+              addLiquidityConfig={addLiquidityConfig}
             />
-            <TokenPairHistoricalChart
-              data={historicalChartData}
-              annotations={
-                fullRange
-                  ? [new Dec(yRange[0] * 1.05), new Dec(yRange[1] * 0.95)]
-                  : range
-              }
-              domain={yRange}
-              onPointerHover={setHoverPrice}
-              onPointerOut={
-                lastChartData
-                  ? () => setHoverPrice(lastChartData.close)
-                  : undefined
-              }
+            <Chart
+              chartConfig={chartConfig}
+              addLiquidityConfig={addLiquidityConfig}
             />
           </div>
           <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 rounded-r-2xl bg-osmoverse-700">
@@ -427,51 +378,39 @@ const AddConcLiqView: FunctionComponent<
                 />
               </div>
               <ConcentratedLiquidityDepthChart
-                min={rangeMin}
-                max={rangeMax}
+                min={Number(inputRange[0].toString())}
+                max={Number(inputRange[1].toString())}
                 yRange={yRange}
-                xRange={chartConfig.xRange}
-                data={chartConfig.depthChartData}
+                xRange={xRange}
+                data={depthChartData}
                 annotationDatum={useMemo(
                   () => ({
-                    price: lastChartData?.close || 0,
+                    price: Number(currentPrice.toString()) || 0,
                     depth: chartConfig.xRange[1],
                   }),
-                  [chartConfig.xRange, lastChartData]
+                  [chartConfig.xRange, currentPrice]
                 )}
                 // eslint-disable-next-line react-hooks/exhaustive-deps
-                onMoveMax={useCallback(
-                  debounce(
-                    (val: number) =>
-                      setInputMax("" + val.toFixed(priceDecimal)),
-                    500
-                  ),
-                  [priceDecimal]
-                )}
+                onMoveMax={useCallback(debounce(setMaxRange, 500), [
+                  priceDecimal,
+                ])}
                 // eslint-disable-next-line react-hooks/exhaustive-deps
-                onMoveMin={useCallback(
-                  debounce(
-                    (val: number) =>
-                      setInputMin("" + val.toFixed(priceDecimal)),
-                    500
-                  ),
-                  [priceDecimal]
-                )}
+                onMoveMin={useCallback(debounce(setMinRange, 500), [
+                  priceDecimal,
+                ])}
                 onSubmitMin={useCallback(
                   (val) => {
-                    setInputMin("" + val.toFixed(priceDecimal));
                     setMinRange(val);
-                    addLiquidityConfig.setFullRange(false);
+                    setFullRange(false);
                   },
-                  [priceDecimal, setMinRange, addLiquidityConfig]
+                  [setMinRange, setFullRange]
                 )}
                 onSubmitMax={useCallback(
                   (val) => {
-                    setInputMax("" + val.toFixed(priceDecimal));
                     setMaxRange(val);
-                    addLiquidityConfig.setFullRange(false);
+                    setFullRange(false);
                   },
-                  [priceDecimal, setMaxRange, addLiquidityConfig]
+                  [setMaxRange, setFullRange]
                 )}
                 offset={{ top: 0, right: 36, bottom: 24 + 28, left: 0 }}
                 horizontal
@@ -480,16 +419,20 @@ const AddConcLiqView: FunctionComponent<
             </div>
             <div className="flex flex-col items-center justify-center gap-4 pr-8">
               <PriceInputBox
-                currentValue={fullRange ? "" : inputMax}
+                currentValue={
+                  fullRange ? "" : formatPretty(inputRange[1]).toString()
+                }
                 label={t("addConcentratedLiquidity.high")}
-                onChange={setInputMax}
+                onChange={(val) => setMaxRange(Number(val))}
                 onBlur={(e) => setMaxRange(+e.target.value)}
                 infinity={fullRange}
               />
               <PriceInputBox
-                currentValue={fullRange ? "0" : inputMin}
+                currentValue={
+                  fullRange ? "0" : formatPretty(inputRange[0]).toString()
+                }
                 label={t("addConcentratedLiquidity.low")}
-                onChange={setInputMin}
+                onChange={(val) => setMinRange(Number(val))}
                 onBlur={(e) => setMinRange(+e.target.value)}
               />
             </div>
@@ -541,6 +484,58 @@ const AddConcLiqView: FunctionComponent<
     </>
   );
 });
+
+/**
+ * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
+ */
+const ChartHeader: FunctionComponent<{
+  chartConfig: ObservableHistoricalAndLiquidityData;
+
+  addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+}> = ({ addLiquidityConfig, chartConfig }) => {
+  const { baseDepositAmountIn, quoteDepositAmountIn } = addLiquidityConfig;
+  const { historicalRange, setHistoricalRange, hoverPrice, priceDecimal } =
+    chartConfig;
+
+  return (
+    <PriceChartHeader
+      historicalRange={historicalRange}
+      setHistoricalRange={setHistoricalRange}
+      baseDenom={baseDepositAmountIn.sendCurrency.coinDenom}
+      quoteDenom={quoteDepositAmountIn.sendCurrency.coinDenom}
+      hoverPrice={hoverPrice}
+      decimal={priceDecimal}
+    />
+  );
+};
+
+/**
+ * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
+ */
+const Chart: FunctionComponent<{
+  chartConfig: ObservableHistoricalAndLiquidityData;
+  addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+}> = ({ addLiquidityConfig, chartConfig }) => {
+  const { fullRange, range } = addLiquidityConfig;
+  const { yRange, historicalChartData, lastChartData, setHoverPrice } =
+    chartConfig;
+
+  return (
+    <TokenPairHistoricalChart
+      data={historicalChartData}
+      annotations={
+        fullRange
+          ? [new Dec(yRange[0] * 1.05), new Dec(yRange[1] * 0.95)]
+          : range
+      }
+      domain={yRange}
+      onPointerHover={setHoverPrice}
+      onPointerOut={
+        lastChartData ? () => setHoverPrice(lastChartData.close) : undefined
+      }
+    />
+  );
+};
 
 const StrategySelectorGroup: FunctionComponent<
   {

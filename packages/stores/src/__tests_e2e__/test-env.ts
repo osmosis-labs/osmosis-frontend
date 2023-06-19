@@ -296,14 +296,14 @@ export async function getLatestQueryPool(
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const osmosisQueries = queryStore.get(chainId).osmosis!;
   const queryNumPools = osmosisQueries.queryGammNumPools;
-  const queryGammPools = osmosisQueries.queryGammPools;
+  const queryPools = osmosisQueries.queryPools;
 
   await queryNumPools.waitFreshResponse();
-  await queryGammPools.waitFreshResponse();
+  await queryPools.waitFreshResponse();
 
   // wait for desired observable state
   await when(
-    () => Boolean(queryNumPools.response) && Boolean(queryGammPools.response)
+    () => Boolean(queryNumPools.response) && Boolean(queryPools.response)
   );
 
   if (queryNumPools.numPools === 0) {
@@ -317,5 +317,5 @@ export async function getLatestQueryPool(
   // get query pool
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  return osmosisQueries.queryGammPools.getPool(poolId)!;
+  return osmosisQueries.queryPools.getPool(poolId)!;
 }
