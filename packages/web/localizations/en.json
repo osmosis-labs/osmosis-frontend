@@ -110,6 +110,12 @@
       "6": "Finally, the longer you keep your position open, the more incentives you might get. There are no bonding periods and you’re free to remove your liquidity at any time."
     }
   },
+  "addConcentratedLiquidityPoolCta": {
+    "title": "Supercharge you DAI/OSMO Pool",
+    "caption": "Supercharged positions allow you to earn 27.9% APR. Learn how it works in 30 seconds, or upgrade your position in a few clicks.",
+    "primaryCta": "Upgrade to supercharged",
+    "secondaryCta": "Learn in 30 seconds"
+  },
   "assets": {
     "bondedAssets": "Bonded",
     "historyTable": {
