@@ -48,14 +48,8 @@ export const SelectCffmToClMigration: FunctionComponent<
             )}
             onClick={() => {
               migrate({ cfmmShares: sharePoolDetail.userAvailableShares })
-                .catch((e) => {
-                  console.log("reject");
-                  console.error(e);
-                })
-                .then((t) => {
-                  console.log("then", t);
-                  props.onSuccessfulMigrate();
-                })
+                .then(() => props.onSuccessfulMigrate())
+                .catch(console.error)
                 .finally(() => props.onRequestClose());
             }}
           >
@@ -87,8 +81,8 @@ export const SelectCffmToClMigration: FunctionComponent<
                   )
                 ),
             })
-              .catch(console.error)
               .then(() => props.onSuccessfulMigrate())
+              .catch(console.error)
               .finally(() => props.onRequestClose());
           }}
         >
