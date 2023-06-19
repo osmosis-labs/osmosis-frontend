@@ -1585,7 +1585,7 @@ export class OsmosisAccountImpl {
     onFulfill?: (tx: any) => void
   ) {
     // update and verify the pool, that it is a share pool
-    const queryPool = this.queries.queryGammPools.getPool(poolId);
+    const queryPool = this.queries.queryPools.getPool(poolId);
     await queryPool?.waitFreshResponse();
     if (!queryPool || !queryPool.sharePool)
       throw new Error(`Unknown pool: ${poolId}`);
@@ -1702,7 +1702,7 @@ export class OsmosisAccountImpl {
 
     // -- 2. Create full range position
 
-    const queryClPool = this.queries.queryGammPools.getPool(clPoolId);
+    const queryClPool = this.queries.queryPools.getPool(clPoolId);
     if (!queryClPool) throw new Error("Unknown CL pool");
     if (
       queryClPool.type !== "concentrated" ||
@@ -1844,7 +1844,7 @@ export class OsmosisAccountImpl {
     memo: string = "",
     onFulfill?: (tx: any) => void
   ) {
-    const queryPool = this.queries.queryGammPools.getPool(poolId);
+    const queryPool = this.queries.queryPools.getPool(poolId);
 
     if (!Boolean(queryPool)) {
       throw new Error("Unknown pool");

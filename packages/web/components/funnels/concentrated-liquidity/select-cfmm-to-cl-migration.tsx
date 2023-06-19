@@ -17,7 +17,7 @@ export const SelectCffmToClMigration: FunctionComponent<
 
   const { derivedDataStore } = useStore();
 
-  const { poolDetail } = derivedDataStore.getForPool(cfmmPoolId);
+  const { sharePoolDetail } = derivedDataStore.getForPool(cfmmPoolId);
 
   const { isLinked, migrate } = useCfmmToClMigration(cfmmPoolId);
 
@@ -29,7 +29,7 @@ export const SelectCffmToClMigration: FunctionComponent<
       {...props}
     >
       <div className="flex flex-col gap-3 p-3">
-        {!poolDetail.userAvailableShares.toDec().isZero() && (
+        {!sharePoolDetail.userAvailableShares.toDec().isZero() && (
           <OptionButton
             title={t(
               "addConcentratedLiquidityPoolCta.migration.availableSharesTitle"
@@ -38,7 +38,7 @@ export const SelectCffmToClMigration: FunctionComponent<
               "addConcentratedLiquidityPoolCta.migration.availableSharesDescription"
             )}
             onClick={() => {
-              migrate({ cfmmShares: poolDetail.userAvailableShares })
+              migrate({ cfmmShares: sharePoolDetail.userAvailableShares })
                 .catch(console.error)
                 .then(() => props.onSuccessfulMigrate())
                 .finally(() => props.onRequestClose());
@@ -46,13 +46,13 @@ export const SelectCffmToClMigration: FunctionComponent<
           >
             <span className="caption ml-auto text-osmoverse-100">
               {t("addConcentratedLiquidityPoolCta.migration.balance")}{" "}
-              {poolDetail.userAvailableShares.trim(true).toString() ?? ""} (
-              {poolDetail.userAvailableValue.toString() ?? ""})
+              {sharePoolDetail.userAvailableShares.trim(true).toString() ?? ""}{" "}
+              ({sharePoolDetail.userAvailableValue.toString() ?? ""})
             </span>
           </OptionButton>
         )}
         <OptionButton
-          disabled={poolDetail.userBondedShares.toDec().isZero()}
+          disabled={sharePoolDetail.userBondedShares.toDec().isZero()}
           title={t(
             "addConcentratedLiquidityPoolCta.migration.bondedSharesTitle"
           )}
@@ -61,10 +61,10 @@ export const SelectCffmToClMigration: FunctionComponent<
           )}
           onClick={() => {
             migrate({
-              lockIds: poolDetail.userLockedAssets
+              lockIds: sharePoolDetail.userLockedAssets
                 .flatMap(({ lockIds }) => lockIds)
                 .concat(
-                  poolDetail.userUnlockingAssets.flatMap(
+                  sharePoolDetail.userUnlockingAssets.flatMap(
                     ({ lockIds }) => lockIds
                   )
                 ),
@@ -76,8 +76,8 @@ export const SelectCffmToClMigration: FunctionComponent<
         >
           <span className="caption ml-auto text-osmoverse-100">
             {t("addConcentratedLiquidityPoolCta.migration.available")}{" "}
-            {poolDetail.userBondedShares.trim(true).toString() ?? ""} (
-            {poolDetail.userBondedValue.toString() ?? ""})
+            {sharePoolDetail.userBondedShares.trim(true).toString() ?? ""} (
+            {sharePoolDetail.userBondedValue.toString() ?? ""})
           </span>
         </OptionButton>
       </div>

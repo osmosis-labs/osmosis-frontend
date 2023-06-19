@@ -25,12 +25,14 @@ export function useCfmmToClMigration(cfmmPoolId: string): {
 
   const osmosisAccount = accountStore.getAccount(chainId).osmosis;
   const osmosisQueries = queriesStore.get(chainId).osmosis!;
-  const { poolDetail } = derivedDataStore.getForPool(cfmmPoolId);
+  const { sharePoolDetail } = derivedDataStore.getForPool(cfmmPoolId);
 
   const userCanMigrate =
-    !poolDetail.userAvailableShares.toDec().isZero() ||
-    poolDetail.userLockedAssets.flatMap(({ lockIds }) => lockIds).length > 0 ||
-    poolDetail.userUnlockingAssets.flatMap(({ lockIds }) => lockIds).length > 0;
+    !sharePoolDetail.userAvailableShares.toDec().isZero() ||
+    sharePoolDetail.userLockedAssets.flatMap(({ lockIds }) => lockIds).length >
+      0 ||
+    sharePoolDetail.userUnlockingAssets.flatMap(({ lockIds }) => lockIds)
+      .length > 0;
 
   const concentratedPoolLink =
     osmosisQueries.queryCfmmToConcentratedLiquidityPoolLinks.get(

@@ -161,7 +161,7 @@ export class ObservableSharePoolDetail {
 
   @computed
   get userBondedShares(): CoinPretty {
-    return this.queries.queryGammPoolShare.getLockedGammShare(
+    return this.osmosisQueries.queryGammPoolShare.getLockedGammShare(
       this.bech32Address,
       this.poolId
     );
