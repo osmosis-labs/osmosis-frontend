@@ -111,10 +111,17 @@
     }
   },
   "addConcentratedLiquidityPoolCta": {
-    "title": "Supercharge you DAI/OSMO Pool",
-    "caption": "Supercharged positions allow you to earn 27.9% APR. Learn how it works in 30 seconds, or upgrade your position in a few clicks.",
+    "title": "Supercharge your {pair}",
+    "caption": "Supercharged positions allow you to earn additional yield. Learn how it works in 30 seconds, or upgrade your position in a few clicks.",
     "primaryCta": "Upgrade to supercharged",
-    "secondaryCta": "Learn in 30 seconds"
+    "secondaryCta": "Learn in 30 seconds",
+    "migration": {
+      "title": "Upgrade your position",
+      "availableSharesTitle": "Migrate available shares",
+      "availableSharesDescription": "Migrate unbonded shares to the new pool. Shares will automatically be converted into the underlying assets and deposited into the new pool as a full range position",
+      "bondedSharesTitle": "Migrate bonded shares",
+      "bondedSharesDescription": "Migrate bonded or superfluid staked shares to the new pool. If shares are only bonded they will be unbonded, converted into the underlying assets, and deposited into the new pool as a full range position. Otherwise if they are superfluid staked, they will be converted into a superfluid staked full range position."
+    }
   },
   "assets": {
     "bondedAssets": "Bonded",
