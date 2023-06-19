@@ -643,6 +643,8 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                 isOpen={showMigrateToClModal}
                 onRequestClose={() => {
                   setShowMigrateToClModal(false);
+                }}
+                onSuccessfulMigrate={() => {
                   router.push("/pool/" + linkedClPoolId);
                 }}
               />

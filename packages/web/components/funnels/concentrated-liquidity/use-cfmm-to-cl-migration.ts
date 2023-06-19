@@ -30,7 +30,8 @@ export function useCfmmToClMigration(cfmmPoolId: string): {
 
   const userCanMigrate =
     !poolDetail.userAvailableShares.toDec().isZero() ||
-    poolDetail.userLockedAssets.length > 0;
+    poolDetail.userLockedAssets.flatMap(({ lockIds }) => lockIds).length > 0 ||
+    poolDetail.userUnlockingAssets.flatMap(({ lockIds }) => lockIds).length > 0;
 
   const concentratedPoolLink =
     osmosisQueries.queryCfmmToConcentratedLiquidityPoolLinks.get(
