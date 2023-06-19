@@ -1653,7 +1653,7 @@ export class OsmosisAccountImpl {
         exitFee: queryPool.exitFee.toDec(),
       },
       this.makeCoinPretty,
-      gammShareBalance.toCoin().amount,
+      gammShareBalance.toDec().toString(),
       gammShareBalance.currency.coinDecimals
     );
 
@@ -1710,34 +1710,75 @@ export class OsmosisAccountImpl {
     )
       throw new Error("Pool is not CL pool");
 
-    const baseCoin = exitPoolEstimate.tokenOuts
-      .find(
-        (token) =>
-          token.currency.coinMinimalDenom ===
-          queryClPool.poolAssets[0].amount.currency.coinMinimalDenom
-      )
-      ?.toCoin();
-    const quoteCoin = exitPoolEstimate.tokenOuts
-      .find(
-        (token) =>
-          token.currency.coinMinimalDenom ===
-          queryClPool.poolAssets[1].amount.currency.coinMinimalDenom
-      )
-      ?.toCoin();
+    /** token0 */
+    let baseCoin = exitPoolEstimate.tokenOuts.find(
+      (token) =>
+        token.currency.coinMinimalDenom ===
+        queryClPool.poolAssets[0].amount.currency.coinMinimalDenom
+    );
+    /** token1 */
+    let quoteCoin = exitPoolEstimate.tokenOuts.find(
+      (token) =>
+        token.currency.coinMinimalDenom ===
+        queryClPool.poolAssets[1].amount.currency.coinMinimalDenom
+    );
 
     if (!baseCoin || !quoteCoin)
       throw new Error(
         `CL pool ${clPoolId} does not share the assets with linked CFMM pool ${poolId}`
       );
 
-    const sortedCoins = [baseCoin, quoteCoin]
-      .sort((a, b) => a?.denom.localeCompare(b?.denom))
-      .map(({ denom, amount }) => ({ denom, amount: amount.toString() }));
+    const liquidityAmount0 = OsmosisMath.calcLiquidityAmount0(
+      OsmosisMath.maxTick,
+      queryClPool.concentratedLiquidityPoolInfo.currentSqrtPrice,
+      new Int(baseCoin.toCoin().amount)
+    );
+    const liquidityAmount1 = OsmosisMath.calcLiquidityAmount1(
+      OsmosisMath.minTick,
+      queryClPool.concentratedLiquidityPoolInfo.currentSqrtPrice,
+      new Int(quoteCoin.toCoin().amount)
+    );
 
+    /** Uses the lower liqidity amount to calculate the other amount
+     *  to ensure totals are less than user's balance. */
+    const anchorAsset = liquidityAmount0.lt(liquidityAmount1)
+      ? "token0"
+      : "token1";
+
+    if (anchorAsset === "token0") {
+      // calc new amount for token1
+      const amount0 = new Int(baseCoin.toCoin().amount);
+      const newAmount1 = OsmosisMath.calcAmount1(
+        amount0,
+        OsmosisMath.minTick,
+        OsmosisMath.maxTick,
+        queryClPool.concentratedLiquidityPoolInfo.currentSqrtPrice
+      );
+      quoteCoin = new CoinPretty(quoteCoin.currency, newAmount1);
+    } else if (anchorAsset === "token1") {
+      // calc new amount for token0
+      const amount1 = new Int(quoteCoin.toCoin().amount);
+      const newAmount0 = OsmosisMath.calcAmount0(
+        amount1,
+        OsmosisMath.minTick,
+        OsmosisMath.maxTick,
+        queryClPool.concentratedLiquidityPoolInfo.currentSqrtPrice
+      );
+      baseCoin = new CoinPretty(baseCoin.currency, newAmount0);
+    }
+
+    // sort coins by denom to satisfy amino/protobuf encoding on chain (alphabetical)
+    const sortedCoins = [baseCoin, quoteCoin]
+      .sort((a, b) =>
+        a.currency.coinMinimalDenom.localeCompare(b.currency.coinMinimalDenom)
+      )
+      .map((coinPretty) => coinPretty.toCoin());
+
+    // add slippage tolerance to min amounts
     const token_min_amount0 =
       // full tolerance if 0 sqrt price so no positions
       !queryClPool.concentratedLiquidityPoolInfo.currentSqrtPrice.isZero()
-        ? new Dec(baseCoin.amount)
+        ? new Dec(baseCoin.toCoin().amount)
             .mul(new Dec(1).sub(new Dec(maxSlippage).quo(new Dec(100))))
             .truncate()
             .toString()
@@ -1745,7 +1786,7 @@ export class OsmosisAccountImpl {
     const token_min_amount1 =
       // full tolerance if 0 sqrt price so no positions
       !queryClPool.concentratedLiquidityPoolInfo.currentSqrtPrice.isZero()
-        ? new Dec(quoteCoin.amount)
+        ? new Dec(quoteCoin.toCoin().amount)
             .mul(new Dec(1).sub(new Dec(maxSlippage).quo(new Dec(100))))
             .truncate()
             .toString()
