@@ -55,7 +55,9 @@ export class ObservableQueryCfmmToConcentratedLiquidityPoolLinks extends Observa
     });
   }
 
-  get(cfmmPoolId: string) {
-    return super.get(cfmmPoolId);
+  get(cfmmPoolId: string): ObservableQueryCfmmToConcentratedLiquidityPoolLink {
+    return super.get(
+      cfmmPoolId
+    ) as ObservableQueryCfmmToConcentratedLiquidityPoolLink;
   }
 }
