@@ -3,10 +3,9 @@ import { useCallback, useMemo } from "react";
 
 import { useStore } from "~/stores";
 
-export type MigrationParams = Partial<{
-  cfmmShares: CoinPretty;
-  lockIds: string[];
-}>;
+export type MigrationParams =
+  | { cfmmShares: CoinPretty }
+  | { lockIds: string[] };
 
 /** Use for sending CFMM to CL migration messages if applicable. */
 export function useCfmmToClMigration(cfmmPoolId: string): {
@@ -39,18 +38,18 @@ export function useCfmmToClMigration(cfmmPoolId: string): {
     ).concentratedLiquidityPoolId;
 
   const migrate = useCallback(
-    ({ cfmmShares, lockIds }: MigrationParams) => {
+    (params: MigrationParams) => {
       if (!userCanMigrate) throw new Error("User cannot migrate");
 
-      if (cfmmShares) {
+      if ("cfmmShares" in params) {
         return new Promise<void>(
           (resolve, reject) =>
             osmosisAccount
               .sendMigrateUnlockedSharesToFullRangeConcentratedPositionMultiMsg(
                 cfmmPoolId,
                 {
-                  currency: cfmmShares.currency,
-                  amount: cfmmShares.toCoin().amount,
+                  currency: params.cfmmShares.currency,
+                  amount: params.cfmmShares.toCoin().amount,
                 },
                 undefined,
                 undefined,
@@ -62,13 +61,13 @@ export function useCfmmToClMigration(cfmmPoolId: string): {
               )
               .catch(reject) // broadcast error
         );
-      } else if (lockIds) {
+      } else if ("lockIds" in params) {
         return new Promise<void>(
           (resolve, reject) =>
             osmosisAccount
               .sendUnlockAndMigrateSharesToFullRangeConcentratedPositionMsg(
                 cfmmPoolId,
-                lockIds,
+                params.lockIds,
                 undefined,
                 (tx) => {
                   // fullfilled
