@@ -164,7 +164,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
             className={buttonCVA({
               mode: "secondary",
             })}
-            href="https://cosmos-ecosystem.webflow.io/submit"
+            href="https://tally.so/r/wge9xO"
             target="_blank"
             rel="noreferrer noopener"
             onClick={handleApplyClick}
@@ -194,5 +194,6 @@ export async function getStaticProps() {
     props: {
       apps,
     },
+    revalidate: 86400,
   };
 }

@@ -1,4 +1,3 @@
-import { useState, useCallback } from "react";
 import {
   ChainGetter,
   CosmosQueries,
@@ -6,9 +5,11 @@ import {
   IQueriesStore,
 } from "@keplr-wallet/stores";
 import {
-  OsmosisQueries,
   ObservableAddLiquidityConfig,
+  OsmosisQueries,
 } from "@osmosis-labs/stores";
+import { useCallback, useState } from "react";
+
 import { useStore } from "../../stores";
 
 /** Maintains a single instance of `ObservableAddLiquidityConfig` for React view lifecycle.
@@ -25,8 +26,8 @@ export function useAddLiquidityConfig(
 } {
   const { accountStore } = useStore();
 
-  const account = accountStore.getAccount(osmosisChainId);
-  const { bech32Address } = account;
+  const account = accountStore.getWallet(osmosisChainId);
+  const address = account?.address ?? "";
 
   const queryOsmosis = queriesStore.get(osmosisChainId).osmosis!;
   const [config] = useState(
@@ -35,7 +36,7 @@ export function useAddLiquidityConfig(
         chainGetter,
         osmosisChainId,
         poolId,
-        bech32Address,
+        address,
         queriesStore,
         queryOsmosis.queryGammPoolShare,
         queryOsmosis.queryGammPools,
@@ -43,7 +44,7 @@ export function useAddLiquidityConfig(
       )
   );
   config.setChain(osmosisChainId);
-  config.setSender(bech32Address);
+  config.setSender(address);
   config.setPoolId(poolId);
   config.setQueryPoolShare(queryOsmosis.queryGammPoolShare);
 
@@ -51,7 +52,7 @@ export function useAddLiquidityConfig(
     return new Promise<void>(async (resolve, reject) => {
       try {
         if (config.isSingleAmountIn && config.singleAmountInConfig) {
-          await account.osmosis.sendJoinSwapExternAmountInMsg(
+          await account?.osmosis.sendJoinSwapExternAmountInMsg(
             config.poolId,
             {
               currency: config.singleAmountInConfig.sendCurrency,
@@ -62,7 +63,7 @@ export function useAddLiquidityConfig(
             resolve
           );
         } else if (config.shareOutAmount) {
-          await account.osmosis.sendJoinPoolMsg(
+          await account?.osmosis.sendJoinPoolMsg(
             config.poolId,
             config.shareOutAmount.toDec().toString(),
             undefined,
@@ -76,7 +77,7 @@ export function useAddLiquidityConfig(
       }
     });
   }, [
-    account.osmosis,
+    account?.osmosis,
     config.isSingleAmountIn,
     config.singleAmountInConfig,
     config.sender,

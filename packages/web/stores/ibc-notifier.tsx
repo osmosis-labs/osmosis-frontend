@@ -74,10 +74,10 @@ export const IbcNotifier: FunctionComponent = observer(() => {
             );
           }
 
-          const account = accountStore.getAccount(chainId);
+          const account = accountStore.getWallet(chainId);
           if (
-            history.sender === account.bech32Address ||
-            history.recipient === account.bech32Address
+            history.sender === account?.address ||
+            history.recipient === account?.address
           ) {
             if (history.status === "complete") {
               queriesStore
