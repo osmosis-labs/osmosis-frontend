@@ -28,7 +28,7 @@ import { AssetBreakdownChart, PriceBreakdownChart } from "~/components/chart";
 import PoolComposition from "~/components/chart/pool-composition";
 import {
   SelectCffmToClMigration,
-  SuperchargeDaiOsmoPool,
+  SuperchargePool,
   useCfmmToClMigration,
 } from "~/components/funnels/concentrated-liquidity";
 import { Disableable } from "~/components/types";
@@ -616,7 +616,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
           userCanMigrate &&
           pool && (
             <section>
-              <SuperchargeDaiOsmoPool
+              <SuperchargePool
                 title={t("addConcentratedLiquidityPoolCta.title", {
                   pair: pool.poolAssets
                     .map((asset) => asset.amount.denom)

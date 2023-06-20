@@ -18,7 +18,7 @@ import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
 
-import { SuperchargeDaiOsmoPool } from "../funnels/concentrated-liquidity";
+import { SuperchargePool } from "../funnels/concentrated-liquidity";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -235,7 +235,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
             </div>
             {!userHasPositionInPool && (
               <>
-                <SuperchargeDaiOsmoPool
+                <SuperchargePool
                   title={t("createFirstPositionCta.title")}
                   caption={t("createFirstPositionCta.caption")}
                   primaryCta={t("createFirstPositionCta.primaryCta")}
