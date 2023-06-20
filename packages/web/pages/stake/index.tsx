@@ -52,13 +52,13 @@ export const Staking: React.FC = () => {
               active={activeTab === "Stake"}
               onClick={() => setActiveTab("Stake")}
             >
-              Stake OSMO
+              {t("stake.stake")}
             </StakeTab>
             <StakeTab
               active={activeTab === "Unstake"}
               onClick={() => setActiveTab("Unstake")}
             >
-              Unstake OSMO
+              {t("stake.unstake")}
             </StakeTab>
           </div>
           <StakeInfoCard />

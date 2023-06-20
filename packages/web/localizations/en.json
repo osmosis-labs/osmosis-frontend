@@ -419,7 +419,9 @@
     "HALF": "HALF",
     "MAX": "MAX",
     "validatorHeader": "Validator squad",
-    "edit": "edit"
+    "edit": "edit",
+    "stake": "Stake OSMO",
+    "unstake": "Unstake OSMO"
   },
   "superfluidValidator": {
     "bondedAmount": "Bonded Amount",
