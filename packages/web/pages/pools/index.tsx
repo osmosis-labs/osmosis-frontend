@@ -4,6 +4,7 @@ import { Duration } from "dayjs/plugin/duration";
 import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
+import { useRouter } from "next/router";
 import { ComponentProps, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
@@ -38,6 +39,7 @@ import { formatPretty } from "~/utils/formatter";
 const Pools: NextPage = observer(function () {
   const { chainStore, accountStore, queriesStore } = useStore();
   const t = useTranslation();
+  const router = useRouter();
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Pools.pageViewed],
   });
@@ -216,8 +218,20 @@ const Pools: NextPage = observer(function () {
     }
   }, [createPoolConfig, account]);
 
+  // CL funnel
   const [showConcentratedLiqIntro, setShowConcentratedLiqIntro] =
     useState(false);
+  const userMigrateableClPoolId = queryOsmosis.queryGammPoolShare
+    .getOwnPools(account.bech32Address)
+    .map((poolId) =>
+      queryOsmosis.queryCfmmToConcentratedLiquidityPoolLinks.get(poolId)
+    )
+    .find((queryLink) =>
+      Boolean(queryLink.concentratedLiquidityPoolId)
+    )?.concentratedLiquidityPoolId;
+  const migrateableClPool = userMigrateableClPoolId
+    ? queryOsmosis.queryPools.getPool(userMigrateableClPoolId)
+    : undefined;
 
   return (
     <main className="m-auto max-w-container bg-osmoverse-900 px-8 md:px-3">
@@ -268,17 +282,25 @@ const Pools: NextPage = observer(function () {
           setIsCreatingPool={useCallback(() => setIsCreatingPool(true), [])}
         />
       </section>
-      {featureFlags.concentratedLiquidity && (
+      {featureFlags.concentratedLiquidity && migrateableClPool && (
         <section
           ref={superchargeLiquidityRef}
           className="pt-8 pb-10 md:pt-4 md:pb-5"
         >
           <SuperchargePool
-            title={t("addConcentratedLiquidityPoolCta.title")}
+            title={t("addConcentratedLiquidityPoolCta.title", {
+              pair: migrateableClPool.poolAssets
+                .map(({ amount }) => amount.denom)
+                .join("/"),
+            })}
             caption={t("addConcentratedLiquidityPoolCta.caption")}
             primaryCta={t("addConcentratedLiquidityPoolCta.primaryCta")}
             secondaryCta={t("addConcentratedLiquidityPoolCta.secondaryCta")}
-            onCtaClick={() => {}}
+            onCtaClick={() => {
+              if (userMigrateableClPoolId) {
+                router.push("/pool/" + userMigrateableClPoolId);
+              }
+            }}
             onSecondaryClick={() => {
               setShowConcentratedLiqIntro(true);
             }}
