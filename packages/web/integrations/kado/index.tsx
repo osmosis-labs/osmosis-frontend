@@ -1,4 +1,4 @@
-import { WalletStatus } from "@cosmos-kit/core";
+import { WalletStatus } from "@keplr-wallet/stores";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 
@@ -11,13 +11,13 @@ export const Kado: FunctionComponent<
 > = observer(({ assetKey }) => {
   const { chainStore, accountStore } = useStore();
 
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
+  const account = accountStore.getAccount(chainStore.osmosis.chainId);
 
-  if (!(account?.walletStatus === WalletStatus.Connected)) return null;
+  if (!(account.walletStatus === WalletStatus.Loaded)) return null;
 
   return (
     <iframe
-      src={`https://app.kado.money/?onPayCurrency=USD&onPayAmount=200&onRevCurrency=OSMO&offPayCurrency=${assetKey}&offRevCurrency=USD&network=OSMOSIS&onToAddress=${account?.address}&offFromAddress=X&cryptoList=OSMO,USDC&networkList=OSMOSIS&apiKey=67a2aaad-a2a5-4412-be40-e3a70aa7b53d&product=BUY`}
+      src={`https://app.kado.money/?onPayCurrency=USD&onPayAmount=200&onRevCurrency=OSMO&offPayCurrency=${assetKey}&offRevCurrency=USD&network=OSMOSIS&onToAddress=${account.bech32Address}&offFromAddress=X&cryptoList=OSMO,USDC&networkList=OSMOSIS&apiKey=67a2aaad-a2a5-4412-be40-e3a70aa7b53d&product=BUY`}
       width="420"
       height="700"
     />

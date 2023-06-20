@@ -1,5 +1,5 @@
+import { useState, useCallback } from "react";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { useCallback, useState } from "react";
 
 /**
  * Store state for using a custom & validated Bech32 address. Address starts as `""`.

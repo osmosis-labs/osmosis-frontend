@@ -1,3 +1,4 @@
+import { useState, useCallback } from "react";
 import {
   ChainGetter,
   CosmosQueries,
@@ -5,11 +6,9 @@ import {
   IQueriesStore,
 } from "@keplr-wallet/stores";
 import {
-  ObservableRemoveLiquidityConfig,
   OsmosisQueries,
+  ObservableRemoveLiquidityConfig,
 } from "@osmosis-labs/stores";
-import { useCallback, useState } from "react";
-
 import { useStore } from "../../stores";
 
 /** Maintains a single instance of `ObservableRemoveLiquidityConfig` for React view lifecycle.
@@ -28,8 +27,8 @@ export function useRemoveLiquidityConfig(
 } {
   const { accountStore } = useStore();
 
-  const account = accountStore.getWallet(osmosisChainId);
-  const address = account?.address ?? "";
+  const account = accountStore.getAccount(osmosisChainId);
+  const { bech32Address } = account;
 
   const queryOsmosis = queriesStore.get(osmosisChainId).osmosis!;
   const [config] = useState(() => {
@@ -37,7 +36,7 @@ export function useRemoveLiquidityConfig(
       chainGetter,
       osmosisChainId,
       poolId,
-      address,
+      bech32Address,
       queriesStore,
       queryOsmosis.queryGammPoolShare,
       queryOsmosis.queryGammPools,
@@ -47,14 +46,14 @@ export function useRemoveLiquidityConfig(
     return c;
   });
   config.setChain(osmosisChainId);
-  config.setSender(address);
+  config.setSender(bech32Address);
   config.setPoolId(poolId);
   config.setQueryPoolShare(queryOsmosis.queryGammPoolShare);
 
   const removeLiquidity = useCallback(() => {
     return new Promise<void>(async (resolve, reject) => {
       try {
-        await account?.osmosis.sendExitPoolMsg(
+        await account.osmosis.sendExitPoolMsg(
           config.poolId,
           config.poolShareWithPercentage.toDec().toString(),
           undefined,
@@ -66,7 +65,7 @@ export function useRemoveLiquidityConfig(
         reject();
       }
     });
-  }, [account?.osmosis]);
+  }, []);
 
   return { config, removeLiquidity };
 }

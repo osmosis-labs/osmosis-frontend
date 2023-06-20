@@ -20,9 +20,9 @@ export const DepoolingTable: FunctionComponent<
   const { isMobile } = useWindowSize();
 
   const queriesOsmosis = queriesStore.get(chainId).osmosis!;
-  const account = accountStore.getWallet(chainId);
+  const account = accountStore.getAccount(chainId);
   const accountLockedResponse = queriesOsmosis.queryAccountLocked.get(
-    account?.address ?? ""
+    account.bech32Address
   ).response;
 
   const showDepoolingTable =
@@ -43,7 +43,7 @@ export const DepoolingTable: FunctionComponent<
   }
 
   const unlockingTokensExceptLPShares = queriesOsmosis.queryAccountLocked
-    .get(account?.address ?? "")
+    .get(account.bech32Address)
     .unlockingCoins.filter(
       (unlocking) =>
         !unlocking.amount.currency.coinMinimalDenom.startsWith("gamm/pool/")

@@ -20,7 +20,6 @@ import { Bounce, ToastContainer } from "react-toastify";
 import { Icon } from "~/components/assets";
 import ErrorBoundary from "~/components/error/error-boundary";
 import ErrorFallback from "~/components/error/error-fallback";
-import { WalletSelectProvider } from "~/hooks/wallet-select";
 import DefaultSeo from "~/next-seo.config";
 
 import { MainLayout } from "../components/layouts";
@@ -31,6 +30,7 @@ import {
   IS_FRONTIER,
   PromotedLBPPoolIds,
 } from "../config";
+import { GetKeplrProvider } from "../hooks";
 import { useAmplitudeAnalytics } from "../hooks/use-amplitude-analytics";
 import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
 import dayjsLocaleKo from "../localizations/dayjs-locale-ko.js";
@@ -127,8 +127,8 @@ function MyApp({ Component, pageProps }: AppProps) {
   useAmplitudeAnalytics({ init: true });
 
   return (
-    <StoreProvider>
-      <WalletSelectProvider>
+    <GetKeplrProvider>
+      <StoreProvider>
         <DefaultSeo />
         <IbcNotifier />
         <ToastContainer
@@ -142,8 +142,8 @@ function MyApp({ Component, pageProps }: AppProps) {
             {Component && <Component {...pageProps} />}
           </ErrorBoundary>
         </MainLayout>
-      </WalletSelectProvider>
-    </StoreProvider>
+      </StoreProvider>
+    </GetKeplrProvider>
   );
 }
 

@@ -1,6 +1,9 @@
-import { CosmosQueries, IQueriesStore } from "@keplr-wallet/stores";
 import {
-  AccountStore,
+  CosmosQueries,
+  IAccountStore,
+  IQueriesStore,
+} from "@keplr-wallet/stores";
+import {
   ChainStore,
   DerivedDataStore as BaseDerivedDataStore,
   IPriceStore,
@@ -30,7 +33,7 @@ export class DerivedDataStore extends BaseDerivedDataStore {
       queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
-    protected readonly accountStore: AccountStore<any>,
+    protected readonly accountStore: IAccountStore,
     protected readonly priceStore: IPriceStore,
     protected readonly chainGetter: ChainStore,
     protected readonly assetStore: ObservableAssets

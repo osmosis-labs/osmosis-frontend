@@ -2,19 +2,12 @@
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
     "build": {
-      "outputs": [
-        "build/**",
-        ".next/**",
-        "!.next/cache/**",
-        "src/codegen/**",
-        "scripts/generated/**",
-        "config/generated/**"
-      ],
+      "outputs": ["build/**", ".next/**", "!.next/cache/**"],
       "dependsOn": ["^build"]
     },
     "lint": {},
     "lint:fix": {},
-    "dev": { "dependsOn": ["build"], "persistent": true },
+    "dev": { "dependsOn": ["build"] },
     "start": { "dependsOn": ["build"] },
     "clean": { "cache": false },
     "test": { "dependsOn": ["build"] },

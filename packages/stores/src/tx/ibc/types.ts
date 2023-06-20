@@ -1,14 +1,18 @@
-import { AccountStore, CosmosAccount, CosmwasmAccount } from "src";
+import {
+  AccountSetBase,
+  CosmosAccount,
+  CosmwasmAccount,
+} from "@keplr-wallet/stores";
 
 export interface IbcTransferSender {
-  account: ReturnType<AccountStore<[CosmosAccount]>["getWallet"]>;
+  account: AccountSetBase & CosmosAccount;
   chainId: string;
   channelId: string;
 
   /** If provided, the transfer is assumed to be CW20 token. */
   contractTransfer?: {
     contractAddress: string;
-    cosmwasmAccount: ReturnType<AccountStore<[CosmwasmAccount]>["getWallet"]>;
+    cosmwasmAccount: AccountSetBase & CosmwasmAccount;
     ics20ContractAddress: string;
   };
 }
@@ -18,5 +22,5 @@ export type IbcTransferCounterparty = Omit<
   "account" | "contractTransfer"
 > & {
   /** If provided, will override the counterparty account address. */
-  account: ReturnType<AccountStore<[CosmosAccount]>["getWallet"]> | string;
+  account: (AccountSetBase & CosmosAccount) | string;
 };
