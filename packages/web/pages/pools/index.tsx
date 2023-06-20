@@ -3,6 +3,7 @@ import { ObservablePoolDetail } from "@osmosis-labs/stores";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
+import { NextSeo } from "next-seo";
 import { ComponentProps, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
@@ -207,6 +208,10 @@ const Pools: NextPage = observer(function () {
 
   return (
     <main className="m-auto max-w-container bg-osmoverse-900 px-8 md:px-3">
+      <NextSeo
+        title={t("seo.pools.title")}
+        description={t("seo.pools.description")}
+      />
       <CreatePoolModal
         isOpen={isCreatingPool}
         onRequestClose={useCallback(() => setIsCreatingPool(false), [])}

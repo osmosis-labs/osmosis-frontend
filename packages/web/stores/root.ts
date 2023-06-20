@@ -36,7 +36,6 @@ import { ObservableAssets } from "./assets";
 import { DerivedDataStore } from "./derived-data";
 import { makeIndexedKVStore, makeLocalStorageKVStore } from "./kv-store";
 import { NavBarStore } from "./nav-bar";
-import { OsmoPixelsQueries } from "./pixels";
 import { ProfileStore } from "./profile";
 import {
   HideDustUserSetting,
@@ -70,8 +69,6 @@ export class RootStore {
 
   protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar<ChainInfoWithExplorer>;
   protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar<ChainInfoWithExplorer>;
-
-  public readonly queryOsmoPixels: OsmoPixelsQueries;
 
   public readonly navBarStore: NavBarStore;
 
@@ -284,11 +281,6 @@ export class RootStore {
             : "Unknown"
         })`;
       }
-    );
-
-    this.queryOsmoPixels = new OsmoPixelsQueries(
-      makeIndexedKVStore("query_osmo_pixels"),
-      "https://pixels-osmosis.keplr.app"
     );
 
     this.navBarStore = new NavBarStore(

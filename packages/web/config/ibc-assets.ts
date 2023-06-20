@@ -92,6 +92,13 @@ export const IBCAssetInfos: (IBCAsset & {
         isVerified: true,
       },
       {
+        counterpartyChainId: "babajaga-1",
+        sourceChannelId: "channel-111",
+        destChannelId: "channel-0",
+        coinMinimalDenom: "uc4e",
+        isVerified: true,
+      },
+      {
         counterpartyChainId: "rhye-1",
         sourceChannelId: "channel-13",
         destChannelId: "channel-20",
@@ -783,6 +790,13 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-326",
         destChannelId: "channel-5",
         coinMinimalDenom: "staevmos",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "stride-1",
+        sourceChannelId: "channel-326",
+        destChannelId: "channel-5",
+        coinMinimalDenom: "stuumee",
         isVerified: true,
       },
       {
@@ -1798,6 +1812,12 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-781",
         destChannelId: "channel-0",
         coinMinimalDenom: "ulore",
+      },
+      {
+        counterpartyChainId: "pirin-1",
+        sourceChannelId: "channel-783",
+        destChannelId: "channel-0",
+        coinMinimalDenom: "unls",  
       },
       {
         //ROAR
