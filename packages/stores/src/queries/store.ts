@@ -44,6 +44,7 @@ import {
   ObservableQuerySuperfluidPools,
   ObservableQuerySuperfluidUndelegations,
 } from "./superfluid-pools";
+import { ObservableQueryNodeInfo } from "./tendermint/node-info";
 
 export interface OsmosisQueries {
   osmosis?: OsmosisQueriesImpl;
@@ -118,6 +119,8 @@ export class OsmosisQueriesImpl {
   public readonly querySuperfluidAssetMultiplier: DeepReadonly<ObservableQuerySuperfluidAssetMultiplier>;
   public readonly querySuperfluidOsmoEquivalent: DeepReadonly<ObservableQuerySuperfluidOsmoEquivalent>;
 
+  public readonly queryNodeInfo: DeepReadonly<ObservableQueryNodeInfo>;
+
   get queryPools(): ObservableQueryPoolGetter {
     return this._queryPools;
   }
@@ -129,6 +132,12 @@ export class OsmosisQueriesImpl {
     chainGetter: ChainGetter,
     isTestnet = false
   ) {
+    this.queryNodeInfo = new ObservableQueryNodeInfo(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+
     this.queryLockedCoins = new ObservableQueryAccountLockedCoins(
       kvStore,
       chainId,
