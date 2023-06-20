@@ -56,6 +56,9 @@ const Pools: NextPage = observer(function () {
   const [myPositionsRef, { height: myPositionsHeight }] =
     useDimension<HTMLDivElement>();
 
+  const [superchargeLiquidityRef, { height: superchargeLiquidityHeight }] =
+    useDimension<HTMLDivElement>();
+
   // create pool dialog
   const [isCreatingPool, setIsCreatingPool] = useState(false);
 
@@ -266,7 +269,10 @@ const Pools: NextPage = observer(function () {
         />
       </section>
       {featureFlags.concentratedLiquidity && (
-        <section className="pt-8 pb-10 md:pt-4 md:pb-5">
+        <section
+          ref={superchargeLiquidityRef}
+          className="pt-8 pb-10 md:pt-4 md:pb-5"
+        >
           <SuperchargeDaiOsmoPool
             title={t("addConcentratedLiquidityPoolCta.title")}
             caption={t("addConcentratedLiquidityPoolCta.caption")}
@@ -297,7 +303,12 @@ const Pools: NextPage = observer(function () {
 
       <section>
         <AllPoolsTable
-          topOffset={myPositionsHeight + myPoolsHeight + poolsOverviewHeight}
+          topOffset={
+            myPositionsHeight +
+            myPoolsHeight +
+            poolsOverviewHeight +
+            superchargeLiquidityHeight
+          }
           {...quickActionProps}
         />
       </section>
