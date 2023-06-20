@@ -1,4 +1,4 @@
-import { WalletStatus } from "@keplr-wallet/stores";
+import { WalletStatus } from "@cosmos-kit/core";
 import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
@@ -29,6 +29,7 @@ import {
   useTradeTokenInConfig,
   useWindowSize,
 } from "~/hooks";
+import { useWalletSelect } from "~/hooks/wallet-select";
 import { useStore } from "~/stores";
 
 import { Icon } from "../assets";
@@ -73,13 +74,14 @@ export const SwapTool: FunctionComponent<{
     const { chainId } = chainStore.osmosis;
     const { isMobile } = useWindowSize();
     const { logEvent } = useAmplitudeAnalytics();
+    const { onOpenWalletSelect } = useWalletSelect();
 
     const tradeableCurrencies = chainStore.getChain(
       chainStore.osmosis.chainId
     ).currencies;
     const tradeableCurrenciesRef = useLatest(tradeableCurrencies);
 
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
     const queries = queriesStore.get(chainId);
 
     const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
@@ -251,8 +253,8 @@ export const SwapTool: FunctionComponent<{
 
     // user action
     const swap = () => {
-      if (account.walletStatus !== WalletStatus.Loaded) {
-        return account.init();
+      if (account?.walletStatus !== WalletStatus.Connected) {
+        return onOpenWalletSelect(chainId);
       }
 
       if (tradeTokenInConfig.isEmptyInput) return;
@@ -505,7 +507,7 @@ export const SwapTool: FunctionComponent<{
                   </span>
                   <span className="caption ml-1.5 text-sm text-wosmongton-300 md:text-xs">
                     {queries.queryBalances
-                      .getQueryBech32Address(account.bech32Address)
+                      .getQueryBech32Address(account?.address ?? "")
                       .getBalanceFromCurrency(tradeTokenInConfig.sendCurrency)
                       .trim(true)
                       .hideDenom(true)
@@ -966,19 +968,19 @@ export const SwapTool: FunctionComponent<{
             <Button
               mode={
                 showPriceImpactWarning &&
-                account.walletStatus === WalletStatus.Loaded
+                account?.walletStatus === WalletStatus.Connected
                   ? "primary-warning"
                   : "primary"
               }
               disabled={
                 tradeTokenInConfig.isEmptyInput ||
                 Boolean(tradeTokenInConfig.error) ||
-                account.txTypeInProgress !== "" ||
+                account?.txTypeInProgress !== "" ||
                 tradeTokenInConfig.isQuoteLoading
               }
               onClick={swap}
             >
-              {account.walletStatus === WalletStatus.Loaded ? (
+              {account?.walletStatus === WalletStatus.Connected ? (
                 Boolean(tradeTokenInConfig.error) ? (
                   t(...tError(tradeTokenInConfig.error))
                 ) : showPriceImpactWarning ? (

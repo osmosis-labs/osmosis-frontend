@@ -12,12 +12,12 @@ export const MyPositionsSection: FunctionComponent<{ forPoolId?: string }> =
   observer(({ forPoolId }) => {
     const { accountStore, chainStore, queriesStore } = useStore();
     const { chainId } = chainStore.osmosis;
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
     const osmosisQueries = queriesStore.get(chainId).osmosis!;
     const [viewMore, setViewMore] = useState(false);
 
     const positions = osmosisQueries.queryAccountsPositions
-      .get(account.bech32Address)
+      .get(account?.address ?? "")
       .positions.filter((position) => {
         if (Boolean(forPoolId) && position.poolId !== forPoolId) {
           return false;

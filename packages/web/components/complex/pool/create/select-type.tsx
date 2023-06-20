@@ -73,7 +73,7 @@ export const SelectType: FunctionComponent<{
         <div>
           <Button
             onClick={() => {
-              account.osmosis.sendCreateConcentratedPoolMsg(
+              account?.osmosis.sendCreateConcentratedPoolMsg(
                 "uion",
                 "uosmo",
                 100,

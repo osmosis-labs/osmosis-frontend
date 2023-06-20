@@ -15,7 +15,7 @@ export function useRemoveConcentratedLiquidityConfig(
 } {
   const { accountStore, queriesStore } = useStore();
 
-  const account = accountStore.getAccount(osmosisChainId);
+  const account = accountStore.getWallet(osmosisChainId);
 
   const [config] = useState(
     () =>
@@ -37,14 +37,14 @@ export function useRemoveConcentratedLiquidityConfig(
             return Promise.reject("Invalid liquidity");
           }
 
-          account.osmosis
+          account?.osmosis
             .sendWithdrawConcentratedLiquidityPositionMsg(
               positionId,
               liquidity,
               undefined,
               (tx) => {
                 if (tx.code) {
-                  reject(tx.log);
+                  reject(tx.rawLog);
                 } else {
                   queriesStore
                     .get(osmosisChainId)
@@ -62,7 +62,7 @@ export function useRemoveConcentratedLiquidityConfig(
     [
       queriesStore,
       poolId,
-      account.osmosis,
+      account?.osmosis,
       osmosisChainId,
       positionId,
       config.effectiveLiquidity,

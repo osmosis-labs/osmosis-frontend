@@ -17,7 +17,7 @@ export const osmosisMsgOpts = createMsgOpts({
   },
   createConcentratedPool: {
     messageComposer:
-      osmosis.concentratedliquidity.poolmodels.concentrated.v1beta1
+      osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1
         .MessageComposer.withTypeUrl.createConcentratedPool,
     gas: 350000,
   },

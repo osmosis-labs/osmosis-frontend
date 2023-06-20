@@ -46,8 +46,8 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   const t = useTranslation();
 
   const { chainId } = chainStore.osmosis;
-  const account = accountStore.getAccount(chainId);
-  const isSendingMsg = account.txTypeInProgress !== "";
+  const account = accountStore.getWallet(chainId);
+  const isSendingMsg = account?.txTypeInProgress !== "";
 
   const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
 

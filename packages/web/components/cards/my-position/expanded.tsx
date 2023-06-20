@@ -43,7 +43,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     accountStore,
   } = useStore();
 
-  const account = accountStore.getAccount(chainId);
+  const account = accountStore.getWallet(chainId);
 
   const {
     xRange,
@@ -200,7 +200,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
         <PositionButton
           disabled={!positionConfig.hasRewardsAvailable}
           onClick={() => {
-            account.osmosis
+            account?.osmosis
               .sendCollectAllPositionsRewardsMsgs([positionConfig.id])
               .catch(console.error);
           }}

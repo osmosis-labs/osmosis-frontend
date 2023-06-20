@@ -9,15 +9,12 @@ import { useTranslation } from "react-multi-lang";
 import { AddConcLiquidity } from "../components/complex/add-conc-liquidity";
 import { AddLiquidity } from "../components/complex/add-liquidity";
 import { tError } from "../components/localization";
-import { useAddLiquidityConfig, useConnectWalletModalRedirect } from "../hooks";
 import {
   useAddConcentratedLiquidityConfig,
   useAddLiquidityConfig,
   useConnectWalletModalRedirect,
 } from "../hooks";
 import { useStore } from "../stores";
-import { useStore } from "../stores";
-import { ModalBase, ModalBaseProps } from "./base";
 import { ModalBase, ModalBaseProps } from "./base";
 
 export const AddLiquidityModal: FunctionComponent<

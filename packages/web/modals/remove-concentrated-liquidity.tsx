@@ -33,8 +33,8 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   const { chainStore, accountStore, derivedDataStore, priceStore } = useStore();
 
   const { chainId } = chainStore.osmosis;
-  const account = accountStore.getAccount(chainId);
-  const isSendingMsg = account.txTypeInProgress !== "";
+  const account = accountStore.getWallet(chainId);
+  const isSendingMsg = account?.txTypeInProgress !== "";
 
   const { config, removeLiquidity } = useRemoveConcentratedLiquidityConfig(
     chainStore,
