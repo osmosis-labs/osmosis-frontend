@@ -194,7 +194,9 @@ export class OsmosisQueriesImpl {
               chainId,
               chainGetter,
               this.queryLiquiditiesInNetDirection,
-              queries.queryBalances
+              queries.queryBalances,
+              this.queryNodeInfo,
+              this.queryGammNumPools
             ),
           ]
         : [
@@ -211,7 +213,9 @@ export class OsmosisQueriesImpl {
               chainId,
               chainGetter,
               this.queryLiquiditiesInNetDirection,
-              queries.queryBalances
+              queries.queryBalances,
+              this.queryNodeInfo,
+              this.queryGammNumPools
             ),
           ]
     );

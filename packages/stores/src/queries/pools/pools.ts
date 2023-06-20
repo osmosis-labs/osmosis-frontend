@@ -5,10 +5,12 @@ import {
   ObservableQueryBalances,
   QueryResponse,
 } from "@keplr-wallet/stores";
-import { makeObservable } from "mobx";
+import { autorun, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
 import { ObservableQueryLiquiditiesNetInDirection } from "../concentrated-liquidity";
+import { ObservableQueryNodeInfo } from "../tendermint/node-info";
+import { ObservableQueryNumPools } from "./num-pools";
 import { ObservableQueryPool } from "./pool";
 import { ObservableQueryPoolGetter, Pools } from "./types";
 
@@ -28,16 +30,31 @@ export class ObservableQueryPools
     chainId: string,
     chainGetter: ChainGetter,
     readonly queryLiquiditiesInNetDirection: ObservableQueryLiquiditiesNetInDirection,
-    readonly queryBalances: ObservableQueryBalances
+    readonly queryBalances: ObservableQueryBalances,
+    readonly queryNodeInfo: ObservableQueryNodeInfo,
+    readonly queryNumPools: ObservableQueryNumPools
   ) {
-    super(
-      kvStore,
-      chainId,
-      chainGetter,
-      "/osmosis/poolmanager/v1beta1/all-pools"
-    );
+    super(kvStore, chainId, chainGetter, "");
 
     makeObservable(this);
+
+    let limit = 1000;
+    autorun(() => {
+      const nodeVersion = Number(queryNodeInfo.nodeVersion);
+      if (isNaN(nodeVersion)) return;
+
+      this.setUrl(
+        nodeVersion >= 16
+          ? "/osmosis/poolmanager/v1beta1/all-pools"
+          : `/osmosis/gamm/v1beta1/pools?pagination.limit=${limit}`
+      );
+
+      const numPools = queryNumPools.numPools;
+      if (numPools > limit && nodeVersion < 16) {
+        limit = numPools;
+        this.setUrl(`/osmosis/gamm/v1beta1/pools?pagination.limit=${limit}`);
+      }
+    });
   }
 
   protected setResponse(response: Readonly<QueryResponse<Pools>>) {
