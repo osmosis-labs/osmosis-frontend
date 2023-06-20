@@ -279,7 +279,7 @@ const Pools: NextPage = observer(function () {
           />
           {showConcentratedLiqIntro && (
             <ConcentratedLiquidityLearnMoreModal
-              isOpen={true}
+              isOpen
               onRequestClose={() => setShowConcentratedLiqIntro(false)}
             />
           )}
