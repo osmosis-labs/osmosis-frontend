@@ -59,7 +59,7 @@ export const AppDisplayCard: FunctionComponent<{
         }
       `}</style>
       <div className="cursor-pointer" onClick={handleAppClicked}>
-        <div className="app-display-card bg-white h-[320px] overflow-hidden rounded-2xl bg-osmoverse-800 shadow-md xl:h-[330px] lg:h-[330px] md:h-[360px] sm:h-[290px] xs:h-[330px]">
+        <div className="app-display-card bg-white h-[320px] overflow-hidden rounded-2xl bg-osmoverse-800 shadow-md xl:h-[330px] lg:h-[360px] md:h-[360px] sm:h-[320px] xs:h-[330px]">
           <div className="overflow-hidden rounded-2xl">
             <div className="card-image  min-h-[190px] xl:min-h-[180px] lg:min-h-[140px] md:min-h-[210px]  sm:min-h-[160px]  xs:min-h-[210px]"></div>
           </div>
