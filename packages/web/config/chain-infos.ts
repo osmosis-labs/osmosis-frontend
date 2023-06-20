@@ -2432,6 +2432,14 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
           high: 0.04,
         },
       },
+      {
+        coinDenom: "ROAR",
+        coinMinimalDenom:
+          "cw20:terra1lxx40s29qvkrcj8fsa3yzyehy7w50umdvvnls2r830rys6lu2zns63eelv",
+        coinDecimals: 6,
+        coinGeckoId: "pool:roar",
+        coinImageUrl: "/tokens/roar.png",
+      },
     ],
     features: ["ibc-transfer"],
     explorerUrlToTx: "https://finder.terra.money/phoenix-1/tx/{txHash}",
