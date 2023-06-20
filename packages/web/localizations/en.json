@@ -413,6 +413,16 @@
   "stablecoinTypes": {
     "collateralized": "collateralized"
   },
+  "stake": {
+    "title": "Stake",
+    "available": "Available",
+    "HALF": "HALF",
+    "MAX": "MAX",
+    "validatorHeader": "Validator squad",
+    "edit": "edit",
+    "stake": "Stake OSMO",
+    "unstake": "Unstake OSMO"
+  },
   "superfluidValidator": {
     "bondedAmount": "Bonded Amount",
     "buttonBond": "Bond & Stake",

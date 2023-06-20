@@ -30,6 +30,7 @@ export type SpriteIconId =
   | "github"
   | "twitter"
   | "medium"
+  | "sandbox"
   | "alert-triangle"
   | "wallet"
   | "left-right";
