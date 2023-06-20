@@ -40,13 +40,13 @@ export class ObservableQueryPools
 
     let limit = 1000;
     autorun(() => {
-      const nodeVersion = Number(queryNodeInfo.nodeVersion);
-      if (isNaN(nodeVersion)) return;
+      const nodeVersion = queryNodeInfo.nodeVersion;
+      if (!nodeVersion) return;
 
       this.setUrl(
-        nodeVersion >= 16
-          ? "/osmosis/poolmanager/v1beta1/all-pools"
-          : `/osmosis/gamm/v1beta1/pools?pagination.limit=${limit}`
+        nodeVersion < 16
+          ? `/osmosis/gamm/v1beta1/pools?pagination.limit=${limit}`
+          : "/osmosis/poolmanager/v1beta1/all-pools"
       );
 
       const numPools = queryNumPools.numPools;

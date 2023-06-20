@@ -17,10 +17,15 @@ export class ObservableQueryNodeInfo extends ObservableChainQuery<NodeInfoRespon
     makeObservable(this);
   }
 
-  get nodeVersion(): string | undefined {
+  get nodeVersion(): number | undefined {
     if (!this.response) {
       return undefined;
     }
-    return this.response.data.application_version.version;
+
+    const version = Number(
+      this.response.data.default_node_info.protocol_version.app
+    );
+
+    return isNaN(version) ? undefined : version;
   }
 }
