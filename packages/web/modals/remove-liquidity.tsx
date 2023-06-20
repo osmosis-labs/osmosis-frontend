@@ -1,16 +1,15 @@
-import { ObservableRemoveLiquidityConfig } from "@osmosis-labs/stores";
-import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
-
-import { RemoveLiquidity } from "../components/complex/remove-liquidity";
-import { tError } from "../components/localization";
+import { observer } from "mobx-react-lite";
+import { ObservableRemoveLiquidityConfig } from "@osmosis-labs/stores";
+import { useStore } from "../stores";
 import {
   useConnectWalletModalRedirect,
   useRemoveLiquidityConfig,
 } from "../hooks";
-import { useStore } from "../stores";
+import { RemoveLiquidity } from "../components/complex/remove-liquidity";
 import { ModalBase, ModalBaseProps } from "./base";
+import { useTranslation } from "react-multi-lang";
+import { tError } from "../components/localization";
 
 export const RemoveLiquidityModal: FunctionComponent<
   {
@@ -26,8 +25,8 @@ export const RemoveLiquidityModal: FunctionComponent<
   const t = useTranslation();
 
   const { chainId } = chainStore.osmosis;
-  const account = accountStore.getWallet(chainId);
-  const isSendingMsg = account?.txTypeInProgress !== "";
+  const account = accountStore.getAccount(chainId);
+  const isSendingMsg = account.txTypeInProgress !== "";
 
   const { config, removeLiquidity } = useRemoveLiquidityConfig(
     chainStore,

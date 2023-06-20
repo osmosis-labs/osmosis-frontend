@@ -1,18 +1,17 @@
+import { FunctionComponent, useState, useMemo } from "react";
+import { observer } from "mobx-react-lite";
 import { Staking } from "@keplr-wallet/stores";
 import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
-import { observer } from "mobx-react-lite";
-import { FunctionComponent, useMemo, useState } from "react";
-import { useTranslation } from "react-multi-lang";
-
-import { Button } from "../components/buttons";
+import { ModalBase, ModalBaseProps } from "./base";
+import { useStore } from "../stores";
 import { SearchBox } from "../components/input";
+import { Button } from "../components/buttons";
 import { Table } from "../components/table";
 import { ValidatorInfoCell } from "../components/table/cells/";
 import { InfoTooltip } from "../components/tooltip";
 import { useFilteredData, useSortedData } from "../hooks/data";
 import { useWindowSize } from "../hooks/window";
-import { useStore } from "../stores";
-import { ModalBase, ModalBaseProps } from "./base";
+import { useTranslation } from "react-multi-lang";
 
 interface Props extends ModalBaseProps {
   availableBondAmount: CoinPretty;
@@ -27,7 +26,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
     const { isMobile } = useWindowSize();
 
     const { chainId } = chainStore.osmosis;
-    const account = accountStore.getWallet(chainId);
+    const account = accountStore.getAccount(chainId);
     const queries = queriesStore.get(chainId);
     const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
       Staking.BondStatus.Bonded
@@ -36,9 +35,9 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
     const activeValidators = queryValidators.validators;
     const userValidatorDelegations =
       queries.cosmos.queryDelegations.getQueryBech32Address(
-        account?.address ?? ""
+        account.bech32Address
       ).delegations;
-    const isSendingMsg = account?.txTypeInProgress !== "";
+    const isSendingMsg = account.txTypeInProgress !== "";
 
     // vals from 0..<1 used to initially & randomly sort validators in `isDelegated` key
     const randomSortVals = useMemo(

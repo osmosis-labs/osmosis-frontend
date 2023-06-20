@@ -1,14 +1,13 @@
-import {
-  isAndroid,
-  isMobile as isMobileWC,
-  saveMobileLinkInfo,
-} from "@walletconnect/browser-utils";
 import dynamic from "next/dynamic";
 import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
-
-import { Button } from "../components/buttons";
-import { useWindowSize } from "../hooks";
 import { ModalBase, ModalBaseProps } from "./base";
+import { useWindowSize } from "../hooks";
+import {
+  isMobile as isMobileWC,
+  isAndroid,
+  saveMobileLinkInfo,
+} from "@walletconnect/browser-utils";
+import { Button } from "../components/buttons";
 
 export const WalletConnectQRModal: FunctionComponent<
   ModalBaseProps & {

@@ -1,3 +1,4 @@
+export * from "./check-mark-icon";
 export * from "./copy-icon";
 export * from "./denom-image";
 export * from "./external-link-icon";

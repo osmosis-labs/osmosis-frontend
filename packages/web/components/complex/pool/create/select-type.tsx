@@ -1,4 +1,4 @@
-import { WalletStatus } from "@cosmos-kit/core";
+import { WalletStatus } from "@keplr-wallet/stores";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import Image from "next/image";
@@ -17,12 +17,12 @@ export const SelectType: FunctionComponent<{
   const { chainStore, accountStore } = useStore();
   const t = useTranslation();
 
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
+  const account = accountStore.getAccount(chainStore.osmosis.chainId);
 
   const [selectedType, setSelectedType] = useState<PoolType | null>(null);
 
   const disableNext =
-    account?.walletStatus !== WalletStatus.Connected || !selectedType;
+    account.walletStatus !== WalletStatus.Loaded || !selectedType;
 
   return (
     <div className="flex flex-col gap-8 pt-8">

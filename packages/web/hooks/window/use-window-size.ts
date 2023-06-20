@@ -12,7 +12,7 @@ export interface WindowSize {
  * Hook into window size, with added check for mobile screen sizes.
  *
  * @param maxMobileWidth Min width to be considered mobile screen. Default: 768.
- * @returns '{ width: number, height: number, isMobile: boolean }'
+ * @returns [isMobile, windowSize]
  */
 export function useWindowSize(
   maxMobileWidth: Breakpoint = Breakpoint.MD

@@ -31,7 +31,6 @@ export function useTxEventToasts(
           ? ToastType.SUCCESS
           : ToastType.ERROR
       ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [client?.makeExplorerUrl]
   );
 
@@ -66,6 +65,5 @@ export function useTxEventToasts(
       );
       client?.txStatusEventEmitter?.removeListener("failed", handleFailed);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [client]);
 }

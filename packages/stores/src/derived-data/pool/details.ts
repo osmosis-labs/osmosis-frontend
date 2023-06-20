@@ -1,11 +1,14 @@
-import { HasMapStore, IQueriesStore } from "@keplr-wallet/stores";
+import {
+  HasMapStore,
+  IAccountStore,
+  IQueriesStore,
+} from "@keplr-wallet/stores";
 import { FiatCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { computed, makeObservable } from "mobx";
 
-import { AccountStore } from "../../account";
 import { IPriceStore } from "../../price";
 import { OsmosisQueries } from "../../queries/store";
 import {
@@ -26,7 +29,7 @@ export class ObservablePoolDetail {
       queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
-    protected readonly accountStore: AccountStore,
+    protected readonly accountStore: IAccountStore,
     protected readonly priceStore: IPriceStore
   ) {
     const fiat = this.priceStore.getFiatCurrency(
@@ -46,7 +49,7 @@ export class ObservablePoolDetail {
   }
 
   protected get bech32Address() {
-    return this.accountStore.getWallet(this.osmosisChainId)?.address ?? "";
+    return this.accountStore.getAccount(this.osmosisChainId).bech32Address;
   }
 
   @computed
@@ -380,7 +383,7 @@ export class ObservablePoolDetails extends HasMapStore<ObservablePoolDetail> {
       queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
-    protected readonly accountStore: AccountStore,
+    protected readonly accountStore: IAccountStore,
     protected readonly priceStore: IPriceStore
   ) {
     super(
