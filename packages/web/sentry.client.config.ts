@@ -4,6 +4,8 @@
 
 import * as Sentry from "@sentry/nextjs";
 
+import { IS_TESTNET } from "./config";
+
 Sentry.init({
   dsn: "https://c696452bb7ce4cc98150142ebea1c32f@o4505285755600896.ingest.sentry.io/4505285757698048",
 
@@ -19,7 +21,7 @@ Sentry.init({
   // in development and sample at a lower rate in production
   replaysSessionSampleRate: 0.1,
 
-  environment: process.env.NODE_ENV || "development",
+  environment: IS_TESTNET ? "testnet" : "mainnet",
 
   // You can remove this option if you're not planning to use the Sentry Session Replay feature:
   integrations: [
