@@ -1,5 +1,4 @@
 import { Dec } from "@keplr-wallet/unit";
-import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import {
   ObservableAddConcentratedLiquidityConfig,
   ObservableQueryLiquidityPositionById,
@@ -42,15 +41,16 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   } & ModalBaseProps
 > = observer((props) => {
   const { poolId, position: positionConfig } = props;
-  const { chainStore, accountStore, derivedDataStore, priceStore } = useStore();
+  const { chainStore, accountStore, priceStore, queriesStore } = useStore();
   const t = useTranslation();
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(chainId);
   const isSendingMsg = account?.txTypeInProgress !== "";
 
-  const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
+  const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
+  const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
   const {
     xRange,
     yRange,
@@ -61,6 +61,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     zoomOut,
     setPriceRange,
   } = chartConfig;
+
   const { lowerPrices, upperPrices, baseAsset, quoteAsset, isFullRange } =
     positionConfig;
 
@@ -71,14 +72,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   );
 
   // initialize pool data stores once root pool store is loaded
-  const { poolDetail } = derivedDataStore.getForPool(poolId as string);
-  const pool = poolDetail?.pool;
-  const clPool = poolDetail?.pool?.pool as ConcentratedLiquidityPool;
-  const isConcLiq = pool?.type === "concentrated";
-  const currentSqrtPrice = isConcLiq && clPool.currentSqrtPrice;
-  const currentPrice = currentSqrtPrice
-    ? currentSqrtPrice.mul(currentSqrtPrice)
-    : new Dec(0);
+  const queryPool = osmosisQueries.queryPools.getPool(poolId);
 
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
@@ -122,7 +116,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
           </div>
           {lowerPrices && upperPrices && (
             <MyPositionStatus
-              currentPrice={currentPrice}
+              currentPrice={config.currentPrice}
               lowerPrice={lowerPrices.price}
               upperPrice={upperPrices.price}
               negative
@@ -188,7 +182,10 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                   xRange={[xRange[0], xRange[1]]}
                   data={depthChartData}
                   annotationDatum={{
-                    price: lastChartData?.close || 0,
+                    price:
+                      Number(config.currentPrice.toString()) ??
+                      lastChartData?.close ??
+                      0,
                     depth: xRange[1],
                   }}
                   rangeAnnotation={[
@@ -263,7 +260,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             outOfRangeClassName="!bg-osmoverse-900"
             priceInputClass="!bg-osmoverse-900 !w-full"
             getFiatValue={getFiatValue}
-            coin={pool?.poolAssets[0]?.amount}
+            coin={queryPool?.poolAssets[0]?.amount}
             coinIsToken0={true}
             onUpdate={useCallback(
               (amount) => {
@@ -281,7 +278,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             priceInputClass="!bg-osmoverse-900 !w-full"
             outOfRangeClassName="!bg-osmoverse-900"
             getFiatValue={getFiatValue}
-            coin={pool?.poolAssets[1]?.amount}
+            coin={queryPool?.poolAssets[1]?.amount}
             coinIsToken0={false}
             onUpdate={useCallback(
               (amount) => {

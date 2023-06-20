@@ -17,7 +17,7 @@ const Home: NextPage = observer(function () {
   const { chainId } = chainStore.osmosis;
 
   const queries = queriesStore.get(chainId);
-  const queryPools = queries.osmosis!.queryGammPools;
+  const queryPools = queries.osmosis!.queryPools;
 
   const allPools = queryPools.getAllPools();
 

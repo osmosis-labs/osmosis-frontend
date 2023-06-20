@@ -33,7 +33,7 @@ export const LockTokensModal: FunctionComponent<
   const address = account?.address ?? "";
 
   // initialize pool data stores once root pool store is loaded
-  const { poolDetail, superfluidPoolDetail, poolBonding } =
+  const { sharePoolDetail, superfluidPoolDetail, poolBonding } =
     derivedDataStore.getForPool(poolId);
 
   const bondDurations = useMemo(
@@ -62,7 +62,7 @@ export const LockTokensModal: FunctionComponent<
   /** Superfluid duration assumed to be longest duration in lockableDurations
    *  chain parameter.
    */
-  const longestDuration = poolDetail?.longestDuration;
+  const longestDuration = sharePoolDetail?.longestDuration;
   const superfluidDurationSelected =
     selectedDurationIndex !== null &&
     bondDurations.length > selectedDurationIndex &&
@@ -179,10 +179,12 @@ export const LockTokensModal: FunctionComponent<
                 {t("lockToken.superfluidStake")}{" "}
                 {superfluidApr && `(+${superfluidApr.maxDecimals(0)} APR)`}
               </h6>
-              {poolDetail?.longestDuration && (
+              {sharePoolDetail?.longestDuration && (
                 <span className="caption text-osmoverse-300">
                   {t("lockToken.bondingRequirement", {
-                    numDays: poolDetail.longestDuration.asDays().toString(),
+                    numDays: sharePoolDetail.longestDuration
+                      .asDays()
+                      .toString(),
                   })}
                 </span>
               )}

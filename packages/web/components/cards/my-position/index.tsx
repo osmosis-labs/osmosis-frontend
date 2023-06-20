@@ -40,7 +40,7 @@ export const MyPositionCard: FunctionComponent<{
   const [collapsed, setCollapsed] = useState(true);
 
   const queryPool = poolId
-    ? queriesStore.get(chainId).osmosis!.queryGammPools.getPool(poolId)
+    ? queriesStore.get(chainId).osmosis!.queryPools.getPool(poolId)
     : undefined;
 
   const config = poolId
@@ -99,9 +99,9 @@ export const MyPositionCard: FunctionComponent<{
               lowerPrices &&
               upperPrices && (
                 <MyPositionStatus
-                  currentPrice={queryPool.concentratedLiquidityPoolInfo.currentSqrtPrice.mul(
-                    queryPool.concentratedLiquidityPoolInfo.currentSqrtPrice
-                  )}
+                  currentPrice={
+                    queryPool.concentratedLiquidityPoolInfo.currentPrice
+                  }
                   lowerPrice={lowerPrices.price}
                   upperPrice={upperPrices.price}
                 />

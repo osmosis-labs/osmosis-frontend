@@ -55,9 +55,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const poolLiquidity = pool?.computeTotalValueLocked(priceStore);
 
     const currentPrice = pool?.concentratedLiquidityPoolInfo
-      ? pool.concentratedLiquidityPoolInfo.currentSqrtPrice.mul(
-          pool.concentratedLiquidityPoolInfo.currentSqrtPrice
-        )
+      ? pool.concentratedLiquidityPoolInfo.currentPrice
       : undefined;
 
     return (
@@ -159,7 +157,9 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     xRange={xRange}
                     data={depthChartData}
                     annotationDatum={{
-                      price: lastChartData?.close || 0,
+                      price: currentPrice
+                        ? Number(currentPrice.toString())
+                        : lastChartData?.close ?? 0,
                       depth: xRange[1],
                     }}
                     offset={{

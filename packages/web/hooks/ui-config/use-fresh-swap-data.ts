@@ -16,7 +16,7 @@ export function useFreshSwapData(
   const { chainStore, queriesStore, priceStore } = useStore();
 
   const queriesOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
-  const queryPools = queriesOsmosis.queryGammPools;
+  const queryPools = queriesOsmosis.queryPools;
 
   // stores to otherwise refresh
   const stores: ObservableQuery[] = useMemo(

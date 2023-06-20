@@ -69,8 +69,8 @@ export const PaginatedTable = ({
           const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
           return (
             <Link
-              key={row.original.pool.id}
-              href={`/pool/${row.original.pool.id}`}
+              key={row.original.queryPool.id}
+              href={`/pool/${row.original.queryPool.id}`}
             >
               <a
                 style={{
@@ -156,19 +156,22 @@ export const PaginatedTable = ({
             <tr
               key={row.id}
               className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
-              onClick={() => router.push(`/pool/${row.original.pool.id}`)}
+              onClick={() => router.push(`/pool/${row.original.queryPool.id}`)}
             >
               {row.getVisibleCells().map((cell) => {
                 return (
-                  <td key={cell.id} onClick={(e) => e.stopPropagation()}>
+                  <td key={cell.id}>
                     <Link
-                      href={`/pool/${row.original.pool.id}`}
+                      href={`/pool/${row.original.queryPool.id}`}
                       key={virtualRow.index}
+                      passHref
                     >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      <a onClick={(e) => e.stopPropagation()}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </a>
                     </Link>
                   </td>
                 );
@@ -188,7 +191,7 @@ export const PaginatedTable = ({
 
 const MobileTableRow = observer(
   ({ row }: { row: Row<ObservablePoolWithMetric> }) => {
-    const poolAssets = row.original.pool.poolAssets.map((poolAsset) => ({
+    const poolAssets = row.original.queryPool.poolAssets.map((poolAsset) => ({
       coinImageUrl: poolAsset.amount.currency.coinImageUrl,
       coinDenom: poolAsset.amount.currency.coinDenom,
     }));

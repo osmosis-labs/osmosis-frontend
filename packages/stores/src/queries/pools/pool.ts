@@ -134,6 +134,9 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     if (this.pool instanceof ConcentratedLiquidityPool) {
       return {
         currentSqrtPrice: this.pool.currentSqrtPrice,
+        currentPrice: this.pool.currentSqrtPrice.mul(
+          this.pool.currentSqrtPrice
+        ),
         currentTickLiquidity: this.pool.currentTickLiquidity,
         tickSpacing: this.pool.tickSpacing,
         exponentAtPriceOne: this.pool.exponentAtPriceOne,

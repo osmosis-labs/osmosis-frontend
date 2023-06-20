@@ -12,10 +12,10 @@ import {
   ObservableQueryActiveGauges,
   ObservableQueryPoolFeesMetrics,
 } from "../../queries-external";
-import { ExternalGauge } from "./types";
+import { ExternalSharesGauge } from "./types";
 
-/** Convenience store for getting common details of a pool via many other lower-level query stores. */
-export class ObservablePoolDetail {
+/** Convenience store for getting common details of a share pool (balancer or stable) via many other lower-level query stores. */
+export class ObservableSharePoolDetail {
   protected readonly _fiatCurrency: FiatCurrency;
 
   constructor(
@@ -41,8 +41,11 @@ export class ObservablePoolDetail {
     makeObservable(this);
   }
 
-  get pool() {
-    return this.queries.queryGammPools.getPool(this.poolId);
+  @computed
+  get querySharePool() {
+    const pool = this.osmosisQueries.queryPools.getPool(this.poolId);
+
+    if (Boolean(pool?.sharePool)) return pool;
   }
 
   protected get bech32Address() {
@@ -50,40 +53,43 @@ export class ObservablePoolDetail {
   }
 
   @computed
-  protected get queries() {
+  protected get osmosisQueries() {
     const osmosisQueries = this.queriesStore.get(this.osmosisChainId).osmosis;
     if (!osmosisQueries) throw Error("Did not supply Osmosis chain ID");
     return osmosisQueries;
   }
 
   get poolShareCurrency() {
-    return this.queries.queryGammPoolShare.getShareCurrency(this.poolId);
+    return this.osmosisQueries.queryGammPoolShare.makeShareCurrency(
+      this.poolId
+    );
   }
 
   get isIncentivized() {
-    return this.queries.queryIncentivizedPools.isIncentivized(this.poolId);
+    return this.osmosisQueries.queryIncentivizedPools.isIncentivized(
+      this.poolId
+    );
   }
 
   @computed
   get totalValueLocked(): PricePretty {
     return (
-      this.pool?.computeTotalValueLocked(this.priceStore) ??
+      this.querySharePool?.computeTotalValueLocked(this.priceStore) ??
       new PricePretty(this._fiatCurrency, 0)
     );
   }
 
   get lockableDurations(): Duration[] {
-    return this.queries.queryLockableDurations.lockableDurations;
+    return this.osmosisQueries.queryLockableDurations.lockableDurations;
   }
 
-  @computed
   get longestDuration(): Duration | undefined {
     return this.lockableDurations[this.lockableDurations.length - 1];
   }
 
   @computed
   get swapFeeApr(): RatePretty {
-    const queryPool = this.queries.queryGammPools.getPool(this.poolId);
+    const queryPool = this.osmosisQueries.queryPools.getPool(this.poolId);
     if (!queryPool) return new RatePretty(0);
 
     return this.externalQueries.queryGammPoolFeeMetrics.get7dPoolFeeApr(
@@ -94,10 +100,10 @@ export class ObservablePoolDetail {
 
   @computed
   get internalGauges() {
-    return this.queries.queryLockableDurations.lockableDurations
+    return this.osmosisQueries.queryLockableDurations.lockableDurations
       .map((duration) => {
         const gaugeId =
-          this.queries.queryIncentivizedPools.getIncentivizedGaugeId(
+          this.osmosisQueries.queryIncentivizedPools.getIncentivizedGaugeId(
             this.poolId,
             duration
           );
@@ -106,7 +112,7 @@ export class ObservablePoolDetail {
           gaugeId ?? "1"
         );
 
-        const apr = this.queries.queryIncentivizedPools.computeApr(
+        const apr = this.osmosisQueries.queryIncentivizedPools.computeApr(
           this.poolId,
           duration,
           this.priceStore,
@@ -132,19 +138,17 @@ export class ObservablePoolDetail {
       );
   }
 
-  @computed
   get userShareValue(): PricePretty {
     return this.totalValueLocked.mul(
-      this.queries.queryGammPoolShare.getAllGammShareRatio(
+      this.osmosisQueries.queryGammPoolShare.getAllGammShareRatio(
         this.bech32Address,
         this.poolId
       )
     );
   }
 
-  @computed
   get userBondedValue(): PricePretty {
-    return this.queries.queryGammPoolShare.getLockedGammShareValue(
+    return this.osmosisQueries.queryGammPoolShare.getLockedGammShareValue(
       this.bech32Address,
       this.poolId,
       this.totalValueLocked,
@@ -154,22 +158,21 @@ export class ObservablePoolDetail {
 
   @computed
   get userAvailableValue(): PricePretty {
-    const queryPool = this.pool;
+    const queryPool = this.querySharePool;
 
     return queryPool &&
       queryPool.totalShare &&
       !queryPool.totalShare.toDec().equals(new Dec(0))
       ? this.totalValueLocked.mul(
-          this.queries.queryGammPoolShare
+          this.osmosisQueries.queryGammPoolShare
             .getAvailableGammShare(this.bech32Address, this.poolId)
             .quo(queryPool.totalShare)
         )
       : new PricePretty(this._fiatCurrency, new Dec(0));
   }
 
-  @computed
   get userAvailableShares(): CoinPretty {
-    return this.queries.queryGammPoolShare.getAvailableGammShare(
+    return this.osmosisQueries.queryGammPoolShare.getAvailableGammShare(
       this.bech32Address,
       this.poolId
     );
@@ -177,7 +180,7 @@ export class ObservablePoolDetail {
 
   @computed
   get userPoolAssets() {
-    const queryPool = this.pool;
+    const queryPool = this.querySharePool;
     if (!queryPool) return [];
 
     return (
@@ -194,7 +197,7 @@ export class ObservablePoolDetail {
               : new RatePretty(0),
           asset: asset.amount
             .mul(
-              this.queries.queryGammPoolShare.getAllGammShareRatio(
+              this.osmosisQueries.queryGammPoolShare.getAllGammShareRatio(
                 this.bech32Address,
                 this.poolId
               )
@@ -210,16 +213,16 @@ export class ObservablePoolDetail {
   get userLockedAssets() {
     // aggregate user-applicable durations
     const durationMap = new Map<number, Duration>();
-    this.queries.queryLockableDurations.lockableDurations.forEach((d) =>
+    this.osmosisQueries.queryLockableDurations.lockableDurations.forEach((d) =>
       durationMap.set(d.asMilliseconds(), d)
     );
-    this.queries.queryAccountLocked
+    this.osmosisQueries.queryAccountLocked
       .get(this.bech32Address)
       .lockedCoins.forEach(({ duration: d }) =>
         durationMap.set(d.asMilliseconds(), d)
       );
 
-    return this.queries.queryGammPoolShare
+    return this.osmosisQueries.queryGammPoolShare
       .getShareLockedAssets(
         this.bech32Address,
         this.poolId,
@@ -229,9 +232,11 @@ export class ObservablePoolDetail {
         // calculate APR% for this pool asset
         ({
           ...lockedAsset,
-          apr: this.queries.queryIncentivizedPools.isIncentivized(this.poolId)
+          apr: this.osmosisQueries.queryIncentivizedPools.isIncentivized(
+            this.poolId
+          )
             ? new RatePretty(
-                this.queries.queryIncentivizedPools.computeApr(
+                this.osmosisQueries.queryIncentivizedPools.computeApr(
                   this.poolId,
                   lockedAsset.duration,
                   this.priceStore,
@@ -247,22 +252,21 @@ export class ObservablePoolDetail {
   get userUnlockingAssets() {
     // aggregate user-applicable durations
     const durationMap = new Map<number, Duration>();
-    this.queries.queryLockableDurations.lockableDurations.forEach((d) =>
+    this.osmosisQueries.queryLockableDurations.lockableDurations.forEach((d) =>
       durationMap.set(d.asMilliseconds(), d)
     );
-    this.queries.queryAccountLocked
+    this.osmosisQueries.queryAccountLocked
       .get(this.bech32Address)
       .unlockingCoins.forEach(({ duration: d }) =>
         durationMap.set(d.asMilliseconds(), d)
       );
 
-    const poolShareCurrency = this.queries.queryGammPoolShare.getShareCurrency(
-      this.poolId
-    );
+    const poolShareCurrency =
+      this.osmosisQueries.queryGammPoolShare.makeShareCurrency(this.poolId);
     return Array.from(durationMap.values())
       .map(
         (duration) => {
-          const unlockings = this.queries.queryAccountLocked
+          const unlockings = this.osmosisQueries.queryAccountLocked
             .get(this.bech32Address)
             .getUnlockingCoinWithDuration(poolShareCurrency, duration);
 
@@ -283,7 +287,7 @@ export class ObservablePoolDetail {
   @computed
   get userCanDepool() {
     if (
-      this.queries.queryLockedCoins
+      this.osmosisQueries.queryLockedCoins
         .get(this.bech32Address)
         .lockedCoins.find(
           (coin) =>
@@ -294,7 +298,7 @@ export class ObservablePoolDetail {
     }
 
     if (
-      this.queries.queryUnlockingCoins
+      this.osmosisQueries.queryUnlockingCoins
         .get(this.bech32Address)
         .unlockingCoins.find(
           (coin) =>
@@ -308,8 +312,10 @@ export class ObservablePoolDetail {
   }
 
   @computed
-  get allExternalGauges(): ExternalGauge[] {
-    const queryPoolGuageIds = this.queries.queryPoolsGaugeIds.get(this.poolId);
+  get allExternalGauges(): ExternalSharesGauge[] {
+    const queryPoolGuageIds = this.osmosisQueries.queryPoolsGaugeIds.get(
+      this.poolId
+    );
 
     return (
       queryPoolGuageIds.gaugeIdsWithDuration
@@ -318,7 +324,7 @@ export class ObservablePoolDetail {
           if (!gauge) return;
 
           const isInternalGauge =
-            this.queries.queryIncentivizedPools.getIncentivizedGaugeId(
+            this.osmosisQueries.queryIncentivizedPools.getIncentivizedGaugeId(
               this.poolId,
               gauge.lockupDuration
             ) !== undefined;
@@ -340,7 +346,8 @@ export class ObservablePoolDetail {
             remainingEpochs: gauge.remainingEpoch,
           };
         })
-        .filter((gauge): gauge is ExternalGauge => gauge !== undefined) ?? []
+        .filter((gauge): gauge is ExternalSharesGauge => gauge !== undefined) ??
+      []
     );
   }
 
@@ -353,7 +360,7 @@ export class ObservablePoolDetail {
         unbondedValue: PricePretty;
       }
     | undefined {
-    const totalShares = this.queries.queryGammPoolShare.getAllGammShare(
+    const totalShares = this.osmosisQueries.queryGammPoolShare.getAllGammShare(
       this.bech32Address,
       this.poolId
     );
@@ -369,8 +376,8 @@ export class ObservablePoolDetail {
   }
 }
 
-/** Stores a map of additional details for each pool ID. */
-export class ObservablePoolDetails extends HasMapStore<ObservablePoolDetail> {
+/** Stores a map of additional details for each share pool (balancer or stable) ID. */
+export class ObservableSharePoolDetails extends HasMapStore<ObservableSharePoolDetail> {
   constructor(
     protected readonly osmosisChainId: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
@@ -383,7 +390,7 @@ export class ObservablePoolDetails extends HasMapStore<ObservablePoolDetail> {
   ) {
     super(
       (poolId: string) =>
-        new ObservablePoolDetail(
+        new ObservableSharePoolDetail(
           poolId,
           this.osmosisChainId,
           this.queriesStore,
@@ -394,7 +401,7 @@ export class ObservablePoolDetails extends HasMapStore<ObservablePoolDetail> {
     );
   }
 
-  get(poolId: string): ObservablePoolDetail {
+  get(poolId: string): ObservableSharePoolDetail {
     return super.get(poolId);
   }
 }

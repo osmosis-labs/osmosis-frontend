@@ -140,9 +140,9 @@ export const SwapTool: FunctionComponent<{
     const fetchRemainingPoolsOnce = useCallback(() => {
       if (!fetchedRemainingPoolsRef.current) {
         fetchedRemainingPoolsRef.current = true;
-        queries.osmosis?.queryGammPools.fetchRemainingPools();
+        queries.osmosis?.queryPools.fetchRemainingPools();
       }
-    }, [queries.osmosis?.queryGammPools]);
+    }, [queries.osmosis?.queryPools]);
     const [showFromTokenSelectDropdown, _setFromTokenSelectDropdownLocal] =
       useState(false);
     const setFromTokenSelectDropdownLocal = useCallback(

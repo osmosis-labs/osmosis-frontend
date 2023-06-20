@@ -41,9 +41,14 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
       osmosis: { chainId },
     },
     accountStore,
+    queriesStore,
   } = useStore();
 
   const account = accountStore.getWallet(chainId);
+  const osmosisQueries = queriesStore.get(chainId).osmosis!;
+  const queryPool = osmosisQueries.queryPools.getPool(poolId);
+
+  const currentPrice = queryPool?.concentratedLiquidityPoolInfo?.currentPrice;
 
   const {
     xRange,
@@ -106,7 +111,9 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
               xRange={xRange}
               data={depthChartData}
               annotationDatum={{
-                price: lastChartData?.close || 0,
+                price: currentPrice
+                  ? Number(currentPrice.toString())
+                  : lastChartData?.close || 0,
                 depth: xRange[1],
               }}
               rangeAnnotation={[

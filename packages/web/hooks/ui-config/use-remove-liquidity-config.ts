@@ -40,7 +40,7 @@ export function useRemoveLiquidityConfig(
       address,
       queriesStore,
       queryOsmosis.queryGammPoolShare,
-      queryOsmosis.queryGammPools,
+      queryOsmosis.queryPools,
       initialPercent
     );
     c.setPercentage(initialPercent);
