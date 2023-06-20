@@ -59,7 +59,6 @@ export const Staking: React.FC = () => {
               onClick={() => setActiveTab("Unstake")}
             >
               {t("stake.unstake")}
-             
             </StakeTab>
           </div>
           <StakeInfoCard />
