@@ -5,9 +5,7 @@ import React, {
   useState,
 } from "react";
 
-import { useKeplr } from "../hooks";
 import { useVisibilityState } from "../hooks/use-visibility-state";
-import { AccountInitManagement } from "./account-init-management";
 import { RootStore } from "./root";
 
 const storeContext = React.createContext<RootStore | null>(null);
@@ -20,9 +18,7 @@ const refreshIntervalOnVisible = 30 * 1000;
 const refreshIntervalOnHidden = 5 * 60 * 1000;
 
 export const StoreProvider: FunctionComponent = ({ children }) => {
-  const keplr = useKeplr();
-
-  const [rootStore] = useState(() => new RootStore(keplr.getKeplr));
+  const [rootStore] = useState(() => new RootStore());
 
   const visibilityState = useVisibilityState();
   const [refreshInterval, setRefreshInterval] = useState(
@@ -70,10 +66,7 @@ export const StoreProvider: FunctionComponent = ({ children }) => {
   }, [refresh, refreshInterval]);
 
   return (
-    <storeContext.Provider value={rootStore}>
-      <AccountInitManagement />
-      {children}
-    </storeContext.Provider>
+    <storeContext.Provider value={rootStore}>{children}</storeContext.Provider>
   );
 };
 

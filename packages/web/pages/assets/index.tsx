@@ -310,12 +310,12 @@ const PoolAssets: FunctionComponent = observer(() => {
   const t = useTranslation();
 
   const { chainId } = chainStore.osmosis;
-  const { bech32Address } = accountStore.getAccount(chainId);
+  const address = accountStore.getWallet(chainId)?.address ?? "";
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
 
   const ownedPoolIds = queriesStore
     .get(chainId)
-    .osmosis!.queryGammPoolShare.getOwnPools(bech32Address);
+    .osmosis!.queryGammPoolShare.getOwnPools(address);
   const [showAllPools, setShowAllPools] = useState(false);
 
   useEffect(() => {
@@ -327,10 +327,7 @@ const PoolAssets: FunctionComponent = observer(() => {
       .getPool(poolId)
       ?.computeTotalValueLocked(priceStore)
       .mul(
-        queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
-          bech32Address,
-          poolId
-        )
+        queryOsmosis.queryGammPoolShare.getAllGammShareRatio(address, poolId)
       )
   );
 

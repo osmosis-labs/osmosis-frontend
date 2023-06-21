@@ -4,7 +4,12 @@ import {
   IQueriesStore,
 } from "@keplr-wallet/stores";
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
-import { ChainStore, IPriceStore, OsmosisQueries } from "@osmosis-labs/stores";
+import {
+  AccountStore,
+  ChainStore,
+  IPriceStore,
+  OsmosisQueries,
+} from "@osmosis-labs/stores";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
@@ -33,33 +38,29 @@ export class ObservableAssets {
       sourceChainNameOverride?: string;
     })[],
     protected readonly chainStore: ChainStore,
-    protected readonly accountStore: {
-      getAccount: (chainId: string) => {
-        bech32Address: string;
-      };
-    },
+    protected readonly accountStore: Pick<AccountStore, "getWallet">,
     protected readonly queriesStore: IQueriesStore<
       CosmosQueries & CosmwasmQueries & OsmosisQueries
     >,
     protected readonly priceStore: IPriceStore,
-    protected readonly chainId: string
+    protected readonly osmosisChainId: string
   ) {
     makeObservable(this);
   }
 
   @computed
   get queries() {
-    return this.queriesStore.get(this.chainId);
+    return this.queriesStore.get(this.osmosisChainId);
   }
 
   @computed
-  get account() {
-    return this.accountStore.getAccount(this.chainId);
+  get address() {
+    return this.accountStore.getWallet(this.osmosisChainId)?.address;
   }
 
   @computed
   get chain() {
-    return this.chainStore.getChain(this.chainId);
+    return this.chainStore.getChain(this.osmosisChainId);
   }
 
   @computed
@@ -72,7 +73,7 @@ export class ObservableAssets {
       )
       .map((currency) => {
         const bal = this.queries.queryBalances
-          .getQueryBech32Address(this.account.bech32Address)
+          .getQueryBech32Address(this.address ?? "")
           .getBalanceFromCurrency(currency);
 
         return {
@@ -126,7 +127,7 @@ export class ObservableAssets {
         }
 
         const balance = this.queries.queryBalances
-          .getQueryBech32Address(this.account.bech32Address)
+          .getQueryBech32Address(this.address ?? "")
           .getBalanceFromCurrency({
             coinDecimals: originCurrency.coinDecimals,
             coinGeckoId: originCurrency.coinGeckoId,
@@ -184,14 +185,14 @@ export class ObservableAssets {
   @computed
   get availableBalance(): CoinPretty[] {
     return this.queries.queryBalances
-      .getQueryBech32Address(this.account.bech32Address)
+      .getQueryBech32Address(this.address ?? "")
       .balances.map((queryBalance) => queryBalance.balance);
   }
 
   @computed
   get lockedCoins(): CoinPretty[] {
     return (
-      this.queries.osmosis?.queryLockedCoins.get(this.account.bech32Address)
+      this.queries.osmosis?.queryLockedCoins.get(this.address ?? "")
         .lockedCoins ?? []
     );
   }
@@ -199,14 +200,13 @@ export class ObservableAssets {
   @computed
   get stakedBalance(): CoinPretty {
     return this.queries.cosmos.queryDelegations.getQueryBech32Address(
-      this.account.bech32Address
+      this.address ?? ""
     ).total;
   }
 
   @computed
   get unstakingBalance(): CoinPretty {
-    const { chainId } = this.chainStore.getChain(this.chainId);
-    const { bech32Address } = this.accountStore.getAccount(chainId);
+    const bech32Address = this?.address ?? "";
     return this.queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
       bech32Address
     ).total;
