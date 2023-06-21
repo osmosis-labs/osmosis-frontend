@@ -535,7 +535,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     const forceSignDirect =
       isWalletOfflineDirectSigner(signer, walletWindowName) &&
       isChainWithHotfix &&
-      !(wallet.walletInfo.mode === "wallet-connect");
+      wallet.walletInfo.mode !== "wallet-connect" &&
+      wallet.walletName !== "keplr-mobile";
 
     if (
       isChainWithHotfix &&

@@ -108,7 +108,8 @@ export const AssetsTable: FunctionComponent<Props> = observer(
     const currentWalletSupportsDirectSigning =
       !currentWalletName?.startsWith("cosmostation") &&
       !isCurrentWalletALedger &&
-      !(currentWallet?.walletInfo?.mode === "wallet-connect");
+      currentWallet?.walletInfo?.mode !== "wallet-connect" &&
+      currentWalletName !== "keplr-mobile";
 
     const onDeposit = useCallback(
       (...depositParams: Parameters<typeof _onDeposit>) => {
