@@ -8,8 +8,8 @@ import {
   OSMOSIS_EXPLORER_URL_OVERWRITE,
   OSMOSIS_REST_OVERWRITE,
   OSMOSIS_RPC_OVERWRITE,
-} from "./env";
-import { createKeplrChainInfos, SimplifiedChainInfo } from "./utils";
+} from "../env";
+import { createKeplrChainInfos, SimplifiedChainInfo } from "../utils";
 
 const testnetChainInfos: SimplifiedChainInfo[] = [
   {
@@ -2949,7 +2949,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinImageUrl: "/tokens/stumee.svg",
       },
     ],
-    features: ["ibc-transfer", "ibc-go"],
+    features: ["ibc-transfer", "ibc-go", "ibc-go-v7-hot-fix"],
     explorerUrlToTx: "https://explorer.stride.zone/stride/tx/{txHash}",
   },
   {
