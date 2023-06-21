@@ -94,8 +94,7 @@ const Pools: NextPage = observer(function () {
   };
 
   // lock tokens (& possibly select sfs validator) quick action state
-  const { delegateSharesToValidator: superfluidDelegateToValidator } =
-    useSuperfluidPool();
+  const { delegateSharesToValidator } = useSuperfluidPool();
   const selectedPoolShareCurrency = lockLpTokenModalPoolId
     ? queryOsmosis.queryGammPoolShare.makeShareCurrency(lockLpTokenModalPoolId)
     : undefined;
@@ -122,7 +121,7 @@ const Pools: NextPage = observer(function () {
               return;
             }
 
-            superfluidDelegateToValidator(
+            delegateSharesToValidator(
               lockLpTokenModalPoolId,
               address,
               lockLpTokenConfig
@@ -146,7 +145,7 @@ const Pools: NextPage = observer(function () {
       selectedPoolShareCurrency,
       lockLpTokenConfig,
       lockLpTokenModalPoolId,
-      superfluidDelegateToValidator,
+      delegateSharesToValidator,
       lockToken,
     ]
   );

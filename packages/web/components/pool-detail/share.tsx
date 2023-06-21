@@ -88,8 +88,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
             poolBonding: undefined,
           };
     const pool = sharePoolDetail?.querySharePool;
-    const { delegateSharesToValidator: superfluidDelegateToValidator } =
-      useSuperfluidPool();
+    const { delegateSharesToValidator } = useSuperfluidPool();
 
     // feature flag check
     useEffect(() => {
@@ -292,11 +291,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
 
         logEvent([E.superfluidStakeStarted, poolInfo]);
 
-        superfluidDelegateToValidator(
-          poolId,
-          validatorAddress,
-          lockLPTokensConfig
-        )
+        delegateSharesToValidator(poolId, validatorAddress, lockLPTokensConfig)
           .then(() => logEvent([E.superfluidStakeCompleted, poolInfo]))
           .finally(() => setShowSuperfluidValidatorsModal(false));
       },
@@ -306,7 +301,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
         queryCosmos.queryValidators,
         isSuperfluidEnabled,
         logEvent,
-        superfluidDelegateToValidator,
+        delegateSharesToValidator,
         lockLPTokensConfig,
       ]
     );
