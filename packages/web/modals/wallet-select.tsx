@@ -394,7 +394,7 @@ const ModalContent: FunctionComponent<
               <button
                 className={classNames(
                   "flex items-center gap-3 rounded-xl bg-osmoverse-900 px-3 text-h6 font-h6 transition-colors hover:bg-osmoverse-700",
-                  " py-3 font-normal"
+                  "py-3 font-normal"
                 )}
                 key={wallet.name}
                 onClick={() => onConnect(true, wallet)}
