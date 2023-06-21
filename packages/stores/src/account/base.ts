@@ -534,7 +534,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     const forceSignDirect =
       isWalletOfflineDirectSigner(signer, walletWindowName) &&
-      isChainWithHotfix;
+      isChainWithHotfix &&
+      !(wallet.walletInfo.mode === "wallet-connect");
 
     if (
       isChainWithHotfix &&
