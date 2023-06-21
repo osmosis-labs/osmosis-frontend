@@ -26,8 +26,8 @@ export function useAddLiquidityConfig(
 } {
   const { accountStore } = useStore();
 
-  const account = accountStore.getWallet(osmosisChainId);
-  const address = account?.address ?? "";
+  const account = accountStore.getAccount(osmosisChainId);
+  const { bech32Address } = account;
 
   const queryOsmosis = queriesStore.get(osmosisChainId).osmosis!;
   const [config] = useState(
@@ -36,7 +36,7 @@ export function useAddLiquidityConfig(
         chainGetter,
         osmosisChainId,
         poolId,
-        address,
+        bech32Address,
         queriesStore,
         queryOsmosis.queryGammPoolShare,
         queryOsmosis.queryGammPools,
@@ -44,7 +44,7 @@ export function useAddLiquidityConfig(
       )
   );
   config.setChain(osmosisChainId);
-  config.setSender(address);
+  config.setSender(bech32Address);
   config.setPoolId(poolId);
   config.setQueryPoolShare(queryOsmosis.queryGammPoolShare);
 
@@ -52,7 +52,7 @@ export function useAddLiquidityConfig(
     return new Promise<void>(async (resolve, reject) => {
       try {
         if (config.isSingleAmountIn && config.singleAmountInConfig) {
-          await account?.osmosis.sendJoinSwapExternAmountInMsg(
+          await account.osmosis.sendJoinSwapExternAmountInMsg(
             config.poolId,
             {
               currency: config.singleAmountInConfig.sendCurrency,
@@ -63,7 +63,7 @@ export function useAddLiquidityConfig(
             resolve
           );
         } else if (config.shareOutAmount) {
-          await account?.osmosis.sendJoinPoolMsg(
+          await account.osmosis.sendJoinPoolMsg(
             config.poolId,
             config.shareOutAmount.toDec().toString(),
             undefined,
@@ -77,7 +77,7 @@ export function useAddLiquidityConfig(
       }
     });
   }, [
-    account?.osmosis,
+    account.osmosis,
     config.isSingleAmountIn,
     config.singleAmountInConfig,
     config.sender,

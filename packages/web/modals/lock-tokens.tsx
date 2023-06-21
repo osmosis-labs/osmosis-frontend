@@ -2,7 +2,7 @@ import { AmountConfig } from "@keplr-wallet/hooks";
 import classNames from "classnames";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useEffect, useMemo, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { CheckBox } from "../components/control";
@@ -29,22 +29,19 @@ export const LockTokensModal: FunctionComponent<
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
-  const account = accountStore.getWallet(chainId);
-  const address = account?.address ?? "";
+  const account = accountStore.getAccount(chainId);
+  const { bech32Address } = account;
 
   // initialize pool data stores once root pool store is loaded
   const { poolDetail, superfluidPoolDetail, poolBonding } =
     derivedDataStore.getForPool(poolId);
 
-  const bondDurations = useMemo(
-    () => poolBonding?.bondDurations ?? [],
-    [poolBonding?.bondDurations]
-  );
+  const bondDurations = poolBonding?.bondDurations ?? [];
   const availableToken = queryOsmosis.queryGammPoolShare.getAvailableGammShare(
-    address,
+    bech32Address,
     poolId
   );
-  const isSendingMsg = account?.txTypeInProgress !== "";
+  const isSendingMsg = account.txTypeInProgress !== "";
   /** If they have a superfluid validator already, they will automatically SFS stake if they select the highest gauge. (Cant be undone)
    *  TODO: perhaps we should display this in the view somehow
    */

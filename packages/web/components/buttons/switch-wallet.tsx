@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { FunctionComponent } from "react";
 
-import { Icon } from "../assets";
 import { Disableable } from "../types";
 import { ButtonProps } from "./types";
 
@@ -19,6 +18,11 @@ export const SwitchWalletButton: FunctionComponent<
       height={14}
       width={14}
     />
-    <Icon id="left-right" className="h-[14px] w-[14px] text-superfluid" />
+    <Image
+      alt="switch icon"
+      src="/icons/left-right.svg"
+      height={14}
+      width={14}
+    />
   </button>
 );

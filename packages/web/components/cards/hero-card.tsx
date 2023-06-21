@@ -30,20 +30,12 @@ export const HeroCard: React.FunctionComponent<{
   const t = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
 
-  const utmParams = new URLSearchParams({
-    utm_source: "OsmosisAppStore",
-    utm_medium: "AppCard",
-    utm_campaign: title || "UntitledApp",
-  }).toString();
-
-  const externalUrlWithUTM = externalUrl + `?${utmParams}`;
-
   const handleAppClicked = () => {
     logEvent([
       EventName.AppStore.appClicked,
       { appName: title, isFeatured: true, isBanner: true },
     ]);
-    window.open(externalUrlWithUTM, "_blank", "noopener noreferrer");
+    window.open(externalUrl, "_blank", "noopener noreferrer");
   };
 
   return (
@@ -53,17 +45,17 @@ export const HeroCard: React.FunctionComponent<{
       </div>
       <div
         onClick={handleAppClicked}
-        className="heroImage relative flex h-[400px]  cursor-pointer items-end overflow-hidden rounded-2xl sm:h-[300px]"
+        className="heroImage relative flex h-[400px]  cursor-pointer items-end overflow-hidden rounded-lg sm:h-[300px]"
       >
         <div
-          className="backgroundImage absolute top-0 left-0 z-10 h-full w-full  bg-cover bg-center bg-no-repeat"
+          className="absolute top-0 left-0 z-10 h-full w-full  bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage: `url(${imageUrl})`,
           }}
         ></div>
 
         <div className="gradient absolute top-0 left-0 z-20 h-full w-full bg-gradient-hero-card"></div>
-        <div className="content text-white relative z-30 m-9 max-w-[45%] sm:max-w-full">
+        <div className="content text-white relative z-30 m-9 max-w-35 sm:max-w-full">
           <div className="flex items-center space-x-6">
             <h4 className="pb-2 text-h4 font-h4">{title}</h4>
             {!!twitterUrl && (

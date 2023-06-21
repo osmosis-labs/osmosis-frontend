@@ -1,7 +1,6 @@
 import { ChainInfoInner } from "@keplr-wallet/stores";
 import {
   ChainInfoWithExplorer,
-  DeliverTxResponse,
   isSlippageError,
   prettifyTxError,
 } from "@osmosis-labs/stores";
@@ -46,7 +45,7 @@ export function toastOnBroadcast() {
 export function toastOnFulfill(
   getChain: (chainId: string) => ChainInfoInner<ChainInfoWithExplorer>
 ) {
-  return (chainId: string, tx: DeliverTxResponse) => {
+  return (chainId: string, tx: any) => {
     const chainInfo = getChain(chainId);
     if (tx.code) {
       displayToast(
@@ -54,8 +53,7 @@ export function toastOnFulfill(
           message: "transactionFailed",
           caption: isSlippageError(tx)
             ? "swapFailed"
-            : prettifyTxError(tx.rawLog ?? "", chainInfo.currencies) ??
-              tx.rawLog,
+            : prettifyTxError(tx.log, chainInfo.currencies) ?? tx.log,
         },
         ToastType.ERROR
       );
@@ -65,7 +63,7 @@ export function toastOnFulfill(
           message: "transactionSuccessful",
           learnMoreUrl: chainInfo.raw.explorerUrlToTx.replace(
             "{txHash}",
-            tx.transactionHash.toUpperCase()
+            tx.hash.toUpperCase()
           ),
           learnMoreUrlCaption: "viewExplorer",
         },

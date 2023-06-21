@@ -1,4 +1,5 @@
 import classNames from "classnames";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, {
@@ -11,7 +12,6 @@ import React, {
 import { IS_FRONTIER } from "../../config";
 import { useWindowSize } from "../../hooks";
 import { replaceAt } from "../../utils/array";
-import { Icon } from "../assets";
 import { InfoTooltip } from "../tooltip";
 import { CustomClasses } from "../types";
 import { BaseCell, ColumnDef, RowDef } from "./types";
@@ -97,24 +97,26 @@ export const Table = <TCell extends BaseCell>({
                     {colDef?.sort && (
                       <div className="inline pl-1 align-middle">
                         {colDef?.sort?.currentDirection === "ascending" ? (
-                          <Icon
-                            id="sort-up"
-                            className={classNames(
-                              "h-[16px] w-[16px]",
+                          <Image
+                            alt="ascending"
+                            src={
                               IS_FRONTIER
-                                ? "text-white-full"
-                                : "text-osmoverse-300"
-                            )}
+                                ? "/icons/sort-up-white.svg"
+                                : "/icons/sort-up.svg"
+                            }
+                            height={16}
+                            width={16}
                           />
                         ) : colDef?.sort?.currentDirection === "descending" ? (
-                          <Icon
-                            id="sort-down"
-                            className={classNames(
-                              "h-[16px] w-[16px]",
+                          <Image
+                            alt="descending"
+                            src={
                               IS_FRONTIER
-                                ? "text-white-full"
-                                : "text-osmoverse-300"
-                            )}
+                                ? "/icons/sort-down-white.svg"
+                                : "/icons/sort-down.svg"
+                            }
+                            height={16}
+                            width={16}
                           />
                         ) : undefined}
                       </div>
