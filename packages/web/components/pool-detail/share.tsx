@@ -421,8 +421,8 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                       <Image
                         alt=""
                         src="/icons/superfluid-osmo.svg"
-                        height={20}
-                        width={20}
+                        height={18}
+                        width={18}
                       />
                       {t("pool.superfluidEnabled")}
                     </span>
@@ -432,8 +432,8 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                       <Image
                         alt=""
                         src="/icons/stableswap-pool.svg"
-                        height={20}
-                        width={20}
+                        height={18}
+                        width={18}
                       />
                       <span>{t("pool.stableswapEnabled")}</span>
                     </div>
