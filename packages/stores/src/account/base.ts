@@ -522,6 +522,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     const walletWindowName = getWalletWindowName(wallet.walletName);
 
+    /**
+     * Remove once ibc-go-v7 fix is released.
+     * @see https://github.com/osmosis-labs/osmosis-frontend/pull/1691
+     */
     const currentChain = this.chains.find((c) => c.chain_id === chainId);
     const isChainWithHotfix =
       chainId.startsWith("injective") ||
