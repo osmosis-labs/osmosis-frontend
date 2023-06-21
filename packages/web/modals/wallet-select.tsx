@@ -388,13 +388,13 @@ const ModalContent: FunctionComponent<
 
     return (
       <div className="flex flex-col gap-2">
-        <div className="grid max-h-[50vh] grid-cols-2 gap-3 overflow-auto">
+        <div className="flex max-h-[50vh] flex-col gap-3 overflow-auto">
           {wallets?.map((wallet) => {
             return (
               <button
                 className={classNames(
                   "flex items-center gap-3 rounded-xl bg-osmoverse-900 px-3 text-h6 font-h6 transition-colors hover:bg-osmoverse-700",
-                  "col-span-2 py-3 font-normal"
+                  " py-3 font-normal"
                 )}
                 key={wallet.name}
                 onClick={() => onConnect(true, wallet)}
