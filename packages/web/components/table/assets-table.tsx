@@ -87,7 +87,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
             ? (
                 await (window as Record<string, any>)[
                   getWalletWindowName(currentWalletName ?? "")
-                ]?.getKey(chainStore.osmosis.chainId)
+                ]?.getKey?.(chainStore.osmosis.chainId)
               )?.isNanoLedger
             : false
         );
