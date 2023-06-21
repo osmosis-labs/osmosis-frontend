@@ -2440,6 +2440,22 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:roar",
         coinImageUrl: "/tokens/roar.png",
       },
+      {
+        coinDenom: "CUB",
+        coinMinimalDenom:
+          "cw20:terra1lalvk0r6nhruel7fvzdppk3tup3mh5j4d4eadrqzfhle4zrf52as58hh9t",
+        coinDecimals: 6,
+        coinGeckoId: "pool:cub",
+        coinImageUrl: "/tokens/cub.png",
+      },
+      {
+        coinDenom: "BLUE",
+        coinMinimalDenom:
+          "cw20:terra1gwrz9xzhqsygyr5asrgyq3pu0ewpn00mv2zenu86yvx2nlwpe8lqppv584",
+        coinDecimals: 6,
+        coinGeckoId: "pool:blue",
+        coinImageUrl: "/tokens/blue.png",
+      },
     ],
     features: ["ibc-transfer"],
     explorerUrlToTx: "https://finder.terra.money/phoenix-1/tx/{txHash}",
