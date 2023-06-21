@@ -1,6 +1,7 @@
 import { AmountConfig } from "@keplr-wallet/hooks";
 import { Buffer } from "buffer";
 
+import { DeliverTxResponse, TxEvent } from "../../account";
 import { IBCTransferHistory, UncommitedHistory } from "../../ibc-history";
 import { IbcTransferCounterparty, IbcTransferSender } from "./types";
 
@@ -19,16 +20,16 @@ export async function basicIbcTransfer(
   onFailure?: (txHash: string, code: number) => void
 ) {
   if (
-    !sender.account.isReadyToSendTx ||
+    !sender.account?.isReadyToSendTx ||
     (!(typeof counterparty.account === "string") &&
-      !counterparty.account.bech32Address)
+      !counterparty.account?.address)
   )
     return;
 
   const recipient =
     typeof counterparty.account === "string"
       ? counterparty.account
-      : counterparty.account.bech32Address;
+      : counterparty.account?.address ?? "";
 
   // process & report ibc transfer events
   const decodedTxEvents = {
@@ -41,64 +42,56 @@ export async function basicIbcTransfer(
           amount: amountConfig.amount,
           currency: amountConfig.sendCurrency,
         },
-        sender: sender.account.bech32Address,
+        sender: sender.account?.address ?? "",
         recipient,
       }),
-    onFulfill: (tx: any) => {
+    onFulfill: (tx: DeliverTxResponse) => {
       if (!tx.code) {
-        const events = tx?.events as Event[] | undefined;
+        const events = JSON.parse(tx?.rawLog ?? "{}")[0]?.events as
+          | TxEvent[]
+          | undefined;
+
         for (const event of events ?? []) {
           if (event.type === "send_packet") {
             const attributes = event.attributes;
             const sourceChannelAttr = attributes.find(
-              (attr) =>
-                attr.key ===
-                Buffer.from("packet_src_channel").toString("base64")
+              (attr) => attr.key === "packet_src_channel"
             );
             const sourceChannel = sourceChannelAttr
-              ? Buffer.from(sourceChannelAttr.value, "base64").toString()
+              ? sourceChannelAttr.value.toString()
               : undefined;
             const destChannelAttr = attributes.find(
-              (attr) =>
-                attr.key ===
-                Buffer.from("packet_dst_channel").toString("base64")
+              (attr) => attr.key === "packet_dst_channel"
             );
             const destChannel = destChannelAttr
-              ? Buffer.from(destChannelAttr.value, "base64").toString()
+              ? destChannelAttr.value
               : undefined;
             const sequenceAttr = attributes.find(
-              (attr) =>
-                attr.key === Buffer.from("packet_sequence").toString("base64")
+              (attr) => attr.key === "packet_sequence"
             );
-            const sequence = sequenceAttr
-              ? Buffer.from(sequenceAttr.value, "base64").toString()
-              : undefined;
+            const sequence = sequenceAttr ? sequenceAttr.value : undefined;
             const timeoutHeightAttr = attributes.find(
-              (attr) =>
-                attr.key ===
-                Buffer.from("packet_timeout_height").toString("base64")
+              (attr) => attr.key === "packet_timeout_height"
             );
             const timeoutHeight = timeoutHeightAttr
-              ? Buffer.from(timeoutHeightAttr.value, "base64").toString()
+              ? timeoutHeightAttr.value
               : undefined;
             const timeoutTimestampAttr = attributes.find(
-              (attr) =>
-                attr.key ===
-                Buffer.from("packet_timeout_timestamp").toString("base64")
+              (attr) => attr.key === "packet_timeout_timestamp"
             );
             const timeoutTimestamp = timeoutTimestampAttr
-              ? Buffer.from(timeoutTimestampAttr.value, "base64").toString()
+              ? timeoutTimestampAttr.value
               : undefined;
 
             if (sourceChannel && destChannel && sequence) {
               onFulfill?.({
-                txHash: tx.hash,
+                txHash: tx.transactionHash,
                 sourceChainId: sender.chainId,
                 sourceChannelId: sourceChannel,
                 destChainId: counterparty.chainId,
                 destChannelId: destChannel,
                 sequence,
-                sender: sender.account.bech32Address,
+                sender: sender.account?.address ?? "",
                 recipient,
                 amount: {
                   amount: amountConfig.amount,
@@ -111,7 +104,7 @@ export async function basicIbcTransfer(
           }
         }
       } else {
-        onFailure?.(tx.hash, tx.code as number);
+        onFailure?.(tx.transactionHash, tx.code as number);
       }
     },
   };
@@ -128,7 +121,7 @@ export async function basicIbcTransfer(
       timeout: 900,
     };
 
-    await cosmwasmAccount.cosmwasm.sendExecuteContractMsg(
+    await cosmwasmAccount?.cosmwasm.sendExecuteContractMsg(
       "ibcTransfer" as any,
       contractAddress,
       {
@@ -139,16 +132,14 @@ export async function basicIbcTransfer(
         },
       },
       [],
-      "",
       {
         gas: "350000",
       },
-      undefined,
       decodedTxEvents
     );
   } else {
     // perform standard IBC token transfer
-    await sender.account.cosmos.sendIBCTransferMsg(
+    await sender.account?.cosmos.sendIBCTransferMsg(
       {
         portId: "transfer",
         channelId: sender.channelId,
@@ -157,18 +148,7 @@ export async function basicIbcTransfer(
       amountConfig.amount,
       amountConfig.sendCurrency,
       recipient,
-      "",
-      undefined,
-      undefined,
       decodedTxEvents
     );
   }
 }
-
-type Event = {
-  type: string;
-  attributes: {
-    key: string;
-    value: string;
-  }[];
-};

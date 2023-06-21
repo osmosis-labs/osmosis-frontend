@@ -14,7 +14,7 @@ const config = {
     });
 
     /**
-     * Avoid using next-image-loader for sprite.svg as it cannot be compiled as successfully given
+     * Avoid using next-image-loader for sprite.svg as it cannot be compiled successfully given
      * it uses a different svg syntax.
      */
     const fileLoaderRule = config.module.rules.find(

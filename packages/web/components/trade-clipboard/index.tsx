@@ -1,4 +1,4 @@
-import { WalletStatus } from "@keplr-wallet/stores";
+import { WalletStatus } from "@cosmos-kit/core";
 import { AppCurrency, Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { Pool } from "@osmosis-labs/pools";
@@ -17,6 +17,8 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 import { useLatest, useMeasure } from "react-use";
+
+import { useWalletSelect } from "~/hooks/wallet-select";
 
 import { EventName } from "../../config";
 import {
@@ -65,13 +67,15 @@ export const TradeClipboard: FunctionComponent<{
     const { chainId } = chainStore.osmosis;
     const { isMobile } = useWindowSize();
     const { logEvent } = useAmplitudeAnalytics();
+    const { onOpenWalletSelect } = useWalletSelect();
 
     const tradeableCurrencies = chainStore.getChain(
       chainStore.osmosis.chainId
     ).currencies;
     const tradeableCurrenciesRef = useLatest(tradeableCurrencies);
 
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
+    const address = account?.address ?? "";
     const queries = queriesStore.get(chainId);
 
     const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
@@ -84,7 +88,7 @@ export const TradeClipboard: FunctionComponent<{
     const tradeTokenInConfig = useTradeTokenInConfig(
       chainStore,
       chainId,
-      account.bech32Address,
+      address,
       queriesStore,
       pools
     );
@@ -352,8 +356,8 @@ export const TradeClipboard: FunctionComponent<{
 
     // user action
     const swap = async () => {
-      if (account.walletStatus !== WalletStatus.Loaded) {
-        return account.init();
+      if (account?.walletStatus !== WalletStatus.Connected) {
+        return onOpenWalletSelect(chainStore.osmosis.chainId);
       }
       if (tradeTokenInConfig.optimizedRoutePaths.length > 0) {
         const routePools: {
@@ -449,7 +453,6 @@ export const TradeClipboard: FunctionComponent<{
                     tokenAmount: Number(tokenIn.amount),
                     toToken: tradeTokenInConfig.outCurrency.coinDenom,
                     isOnHome: !isInModal,
-
                     isMultiHop: false,
                   },
                 ]);
@@ -687,7 +690,7 @@ export const TradeClipboard: FunctionComponent<{
                 </span>
                 <span className="caption ml-1.5 text-sm text-wosmongton-300 md:text-xs">
                   {queries.queryBalances
-                    .getQueryBech32Address(account.bech32Address)
+                    .getQueryBech32Address(address)
                     .getBalanceFromCurrency(tradeTokenInConfig.sendCurrency)
                     .trim(true)
                     .hideDenom(true)
@@ -1132,19 +1135,19 @@ export const TradeClipboard: FunctionComponent<{
           <Button
             mode={
               showPriceImpactWarning &&
-              account.walletStatus === WalletStatus.Loaded
+              account?.walletStatus === WalletStatus.Connected
                 ? "primary-warning"
                 : "primary"
             }
             disabled={
-              account.walletStatus === WalletStatus.Loaded &&
+              account?.walletStatus === WalletStatus.Connected &&
               (tradeTokenInConfig.error !== undefined ||
                 tradeTokenInConfig.optimizedRoutePaths.length === 0 ||
-                account.txTypeInProgress !== "")
+                account?.txTypeInProgress !== "")
             }
             onClick={swap}
           >
-            {account.walletStatus === WalletStatus.Loaded ? (
+            {account?.walletStatus === WalletStatus.Connected ? (
               tradeTokenInConfig.error ? (
                 t(...tError(tradeTokenInConfig.error))
               ) : showPriceImpactWarning ? (
@@ -1154,12 +1157,7 @@ export const TradeClipboard: FunctionComponent<{
               )
             ) : (
               <h6 className="flex items-center gap-3">
-                <Image
-                  alt="wallet"
-                  src="/icons/wallet.svg"
-                  height={24}
-                  width={24}
-                />
+                <Icon id="wallet" className="text-white h-[24px] w-[24px]" />
                 {t("connectWallet")}
               </h6>
             )}

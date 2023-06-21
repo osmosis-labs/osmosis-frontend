@@ -1,14 +1,10 @@
 import {
-  AccountSetBase,
-  AccountStore,
-  CosmosAccount,
   CosmosQueries,
-  CosmwasmAccount,
   CosmwasmQueries,
   IQueriesStore,
 } from "@keplr-wallet/stores";
 import { CoinPretty } from "@keplr-wallet/unit";
-import { OsmosisAccount, OsmosisQueries } from "@osmosis-labs/stores";
+import { AccountStore, OsmosisQueries } from "@osmosis-labs/stores";
 import { computed, makeObservable, observable, runInAction } from "mobx";
 
 export type CallToAction = {
@@ -24,10 +20,7 @@ export class NavBarStore {
 
   constructor(
     protected readonly chainId: string,
-    protected readonly accountStore: AccountStore<
-      [CosmosAccount, CosmwasmAccount, OsmosisAccount],
-      AccountSetBase & CosmosAccount & CosmwasmAccount & OsmosisAccount
-    >,
+    protected readonly accountStore: Pick<AccountStore, "getWallet">,
     protected readonly queriesStore: IQueriesStore<
       CosmosQueries & CosmwasmQueries & OsmosisQueries
     >
@@ -58,18 +51,19 @@ export class NavBarStore {
     logoUrl: string;
     balance: CoinPretty;
   } {
-    const { bech32Address, name } = this.accountStore.getAccount(this.chainId);
+    const wallet = this.accountStore.getWallet(this.chainId);
+
     const balance = this.queriesStore
       .get(this.chainId)
-      .queryBalances.getQueryBech32Address(bech32Address)
+      .queryBalances.getQueryBech32Address(wallet?.address ?? "")
       .stakable.balance.trim(true)
       .maxDecimals(2)
       .shrink(true)
       .upperCase(true);
 
     return {
-      name,
-      logoUrl: "/images/keplr-logo.svg", // TODO: add to future wallet abstraction to use leap wallet
+      name: wallet?.walletName ?? "",
+      logoUrl: wallet?.walletInfo.logo ?? "/", // TODO: Get from wallet registry
       balance,
     };
   }

@@ -20,15 +20,15 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
 
   const { chainId } = chainStore.osmosis;
 
-  const account = accountStore.getAccount(chainId);
+  const account = accountStore.getWallet(chainId);
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
-  const { bech32Address } = account;
+  const address = account?.address ?? "";
 
   const config = useAmountConfig(
     chainStore,
     queriesStore,
     chainId,
-    bech32Address,
+    address,
     undefined,
     sendCurrency
   );
@@ -40,7 +40,7 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
           if (!config.sendCurrency.coinMinimalDenom.startsWith("gamm")) {
             throw new Error("Tried to lock non-gamm token");
           }
-          await account.osmosis.sendLockTokensMsg(
+          await account?.osmosis.sendLockTokensMsg(
             lockDuration.asSeconds(),
             [
               {
@@ -92,14 +92,14 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
             isSuperfluidDuration ||
             locks.some((lock) => lock.isSyntheticLock)
           ) {
-            await account.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
+            await account?.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
               locks,
               undefined,
               () => resolve("synthetic")
             );
           } else {
             const blockGasLimitLockIds = lockIds.slice(0, 10);
-            await account.osmosis.sendBeginUnlockingMsg(
+            await account?.osmosis.sendBeginUnlockingMsg(
               blockGasLimitLockIds,
               undefined,
               () => resolve("normal")
@@ -115,19 +115,20 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
       queryOsmosis,
       queryOsmosis.querySyntheticLockupsByLockId,
       queryOsmosis.queryLockableDurations.response,
+      account?.osmosis,
     ]
   );
 
   // refresh query stores when an unbonding token happens to unbond with window open
   useEffect(() => {
     if (
-      queryOsmosis.queryAccountLocked.get(bech32Address).isFetching ||
-      bech32Address === ""
+      queryOsmosis.queryAccountLocked.get(address).isFetching ||
+      address === ""
     )
       return;
 
     const unlockingTokens =
-      queryOsmosis.queryAccountLocked.get(bech32Address).unlockingCoins;
+      queryOsmosis.queryAccountLocked.get(address).unlockingCoins;
     const now = dayjs().utc();
     let timeoutIds: NodeJS.Timeout[] = [];
 
@@ -138,7 +139,7 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
 
       timeoutIds.push(
         setTimeout(() => {
-          queryOsmosis.queryGammPoolShare.fetch(bech32Address);
+          queryOsmosis.queryGammPoolShare.fetch(address);
         }, diffMs + blockTime)
       );
     });
@@ -146,10 +147,7 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
     return () => {
       timeoutIds.forEach((timeout) => clearTimeout(timeout));
     };
-  }, [
-    queryOsmosis.queryAccountLocked.get(bech32Address).response,
-    bech32Address,
-  ]);
+  }, [queryOsmosis.queryAccountLocked.get(address).response, address]);
 
   return { config, lockToken, unlockTokens };
 }

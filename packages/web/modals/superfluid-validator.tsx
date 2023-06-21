@@ -27,7 +27,7 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
     const { isMobile } = useWindowSize();
 
     const { chainId } = chainStore.osmosis;
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
     const queries = queriesStore.get(chainId);
     const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
       Staking.BondStatus.Bonded
@@ -36,9 +36,9 @@ export const SuperfluidValidatorModal: FunctionComponent<Props> = observer(
     const activeValidators = queryValidators.validators;
     const userValidatorDelegations =
       queries.cosmos.queryDelegations.getQueryBech32Address(
-        account.bech32Address
+        account?.address ?? ""
       ).delegations;
-    const isSendingMsg = account.txTypeInProgress !== "";
+    const isSendingMsg = account?.txTypeInProgress !== "";
 
     // vals from 0..<1 used to initially & randomly sort validators in `isDelegated` key
     const randomSortVals = useMemo(
