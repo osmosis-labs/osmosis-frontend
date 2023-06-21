@@ -88,7 +88,8 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
             poolBonding: undefined,
           };
     const pool = sharePoolDetail?.querySharePool;
-    const { superfluidDelegateToValidator } = useSuperfluidPool();
+    const { delegateSharesToValidator: superfluidDelegateToValidator } =
+      useSuperfluidPool();
 
     // feature flag check
     useEffect(() => {
@@ -357,7 +358,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
             onLockToken={onLockToken}
           />
         )}
-        {superfluidPoolDetail?.superfluid &&
+        {superfluidPoolDetail?.isSuperfluid &&
           pool &&
           lockLPTokensConfig &&
           showSuperfluidValidatorModal && (
@@ -368,8 +369,8 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                   : t("superfluidValidator.title")
               }
               availableBondAmount={
-                superfluidPoolDetail?.superfluid.upgradeableLpLockIds
-                  ? superfluidPoolDetail.superfluid.upgradeableLpLockIds.amount // is delegating amount from existing lockup
+                superfluidPoolDetail?.userUpgradeableSharePoolLockIds
+                  ? superfluidPoolDetail.userUpgradeableSharePoolLockIds.amount // is delegating amount from existing lockup
                   : new CoinPretty(
                       pool.shareCurrency, // is delegating amount from new/pending lockup
                       lockLPTokensConfig.amount !== ""

@@ -272,28 +272,27 @@ export class ObservableSharePoolBonding {
       let superfluid: BondDuration["superfluid"] | undefined;
       if (
         this.superfluidPoolDetail.isSuperfluid &&
-        this.superfluidPoolDetail.superfluid &&
         sfsDuration &&
         curDuration.asSeconds() === sfsDuration.asSeconds()
       ) {
         const delegation =
-          (this.superfluidPoolDetail.superfluid.delegations?.length ?? 0) > 0
-            ? this.superfluidPoolDetail.superfluid.delegations?.[0]
+          (this.superfluidPoolDetail.userSharesDelegations?.length ?? 0) > 0
+            ? this.superfluidPoolDetail.userSharesDelegations?.[0]
             : undefined;
         const undelegation =
-          (this.superfluidPoolDetail.superfluid.undelegations?.length ?? 0) > 0
-            ? this.superfluidPoolDetail.superfluid.undelegations?.[0]
+          (this.superfluidPoolDetail.userSharesUndelegations?.length ?? 0) > 0
+            ? this.superfluidPoolDetail.userSharesUndelegations?.[0]
             : undefined;
 
         superfluid = {
           duration: sfsDuration,
           apr: this.superfluidPoolDetail.superfluidApr,
           commission: delegation?.validatorCommission,
-          delegated: !this.superfluidPoolDetail.superfluid.upgradeableLpLockIds
-            ? delegation?.amount
+          delegated: !this.superfluidPoolDetail.userUpgradeableSharePoolLockIds
+            ? delegation?.equivalentOsmoAmount
             : undefined,
-          undelegating: !this.superfluidPoolDetail.superfluid
-            .upgradeableLpLockIds
+          undelegating: !this.superfluidPoolDetail
+            .userUpgradeableSharePoolLockIds
             ? undelegation?.amount
             : undefined,
           validatorMoniker: delegation?.validatorName,
