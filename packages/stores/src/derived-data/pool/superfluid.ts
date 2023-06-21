@@ -11,6 +11,7 @@ import { computed, makeObservable } from "mobx";
 
 import { IPriceStore } from "../../price";
 import { OsmosisQueries } from "../../queries/store";
+import { ObservableConcentratedPoolDetails } from "./concentrated";
 import { ObservableSharePoolDetails } from "./share-pool-details";
 
 /** Convenience store getting common superfluid data for a pool via superfluid stores. */
@@ -25,6 +26,7 @@ export class ObservableSuperfluidPoolDetail {
     >,
     protected readonly accountStore: IAccountStore,
     protected readonly sharePoolDetails: ObservableSharePoolDetails,
+    protected readonly concentratedPoolDetails: ObservableConcentratedPoolDetails,
     protected readonly priceStore: IPriceStore
   ) {
     const fiat = this.priceStore.getFiatCurrency(
@@ -45,6 +47,10 @@ export class ObservableSuperfluidPoolDetail {
 
   protected get querySharePoolDetails() {
     return this.sharePoolDetails.get(this.poolId);
+  }
+
+  protected get queryConcentratedPoolDetails() {
+    return this.concentratedPoolDetails.get(this.poolId);
   }
 
   protected get cosmosQueries() {
@@ -255,6 +261,7 @@ export class ObservableSuperfluidPoolDetails extends HasMapStore<ObservableSuper
     >,
     protected readonly accountStore: IAccountStore,
     protected readonly sharePoolDetails: ObservableSharePoolDetails,
+    protected readonly concentratedPoolDetails: ObservableConcentratedPoolDetails,
     protected readonly priceStore: IPriceStore
   ) {
     super(
@@ -265,6 +272,7 @@ export class ObservableSuperfluidPoolDetails extends HasMapStore<ObservableSuper
           this.queriesStore,
           this.accountStore,
           this.sharePoolDetails,
+          this.concentratedPoolDetails,
           this.priceStore
         )
     );
