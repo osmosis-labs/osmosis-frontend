@@ -158,14 +158,14 @@ const ModalContent: FunctionComponent<
     const { isMobile } = useWindowSize();
 
     const [lazyWalletInfo, setLazyWalletInfo] =
-      useState<typeof WalletRegistry[number]>();
+      useState<(typeof WalletRegistry)[number]>();
 
     const currentWallet = walletRepo?.current;
     const walletInfo = currentWallet?.walletInfo ?? lazyWalletInfo;
 
     const onConnect = async (
       sync: boolean,
-      wallet?: ChainWalletBase | typeof WalletRegistry[number]
+      wallet?: ChainWalletBase | (typeof WalletRegistry)[number]
     ) => {
       if (!wallet) return;
       if (!("lazyInstall" in wallet)) {
@@ -199,7 +199,7 @@ const ModalContent: FunctionComponent<
         const walletManager = accountStore.addWallet(
           new WalletClass(walletInfo)
         );
-        walletManager.onMounted();
+        await walletManager.onMounted();
 
         return walletManager
           .getMainWallet(wallet.name)
@@ -388,13 +388,13 @@ const ModalContent: FunctionComponent<
 
     return (
       <div className="flex flex-col gap-2">
-        <div className="grid max-h-[50vh] grid-cols-2 gap-3 overflow-auto">
+        <div className="flex max-h-[50vh] flex-col gap-3 overflow-auto">
           {wallets?.map((wallet) => {
             return (
               <button
                 className={classNames(
                   "flex items-center gap-3 rounded-xl bg-osmoverse-900 px-3 text-h6 font-h6 transition-colors hover:bg-osmoverse-700",
-                  "col-span-2 py-3 font-normal"
+                  " py-3 font-normal"
                 )}
                 key={wallet.name}
                 onClick={() => onConnect(true, wallet)}
