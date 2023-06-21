@@ -559,8 +559,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                          */
                         const isUnstable =
                           !currentWalletSupportsDirectSigning &&
-                          (cell.chainId?.startsWith("injective") ||
-                            cell.chainId?.startsWith("stride") ||
+                          (cell.chainId?.startsWith("stride") ||
                             chainStore
                               .getChain(cell?.chainId ?? "")
                               .features?.includes("ibc-go-v7-hot-fix"));
@@ -588,8 +587,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                          */
                         const isUnstable =
                           !currentWalletSupportsDirectSigning &&
-                          (cell.chainId?.startsWith("injective") ||
-                            cell.chainId?.startsWith("stride") ||
+                          (cell.chainId?.startsWith("stride") ||
                             chainStore
                               .getChain(cell?.chainId ?? "")
                               .features?.includes("ibc-go-v7-hot-fix"));
