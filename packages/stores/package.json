@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@chain-registry/types": "^0.16.0",
-    "@keplr-wallet/provider-mock": "0.10.24-ibc.go.v7.hot.fix",
+    "@keplr-wallet/provider-mock": "0.12.12",
     "@types/ws": "^7.4.1",
     "chain-registry": "^1.13.0",
     "ws": "^7.4.5"
