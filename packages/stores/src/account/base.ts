@@ -62,6 +62,8 @@ import {
   CosmosKitAccountsLocalStorageKey,
   getEndpointString,
   getWalletEndpoints,
+  getWalletWindowName,
+  isWalletOfflineDirectSigner,
   logger,
   removeLastSlash,
 } from "./utils";
@@ -87,7 +89,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   private _wallets: MainWalletBase[] = [];
 
   constructor(
-    protected readonly chains: Chain[],
+    public readonly chains: (Chain & { features?: string[] })[],
     protected readonly assets: AssetList[],
     protected readonly wallets: MainWalletBase[],
     protected readonly queriesStore: QueriesStore<
@@ -518,7 +520,30 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: chainId,
     };
 
-    return isOfflineDirectSigner(signer)
+    const walletWindowName = getWalletWindowName(wallet.walletName);
+
+    const currentChain = this.chains.find((c) => c.chain_id === chainId);
+    const isChainWithHotfix =
+      chainId.startsWith("injective") ||
+      chainId.startsWith("stride") ||
+      currentChain?.features?.includes("ibc-go-v7-hot-fix");
+
+    const forceSignDirect =
+      isWalletOfflineDirectSigner(signer, walletWindowName) &&
+      isChainWithHotfix;
+
+    if (
+      isChainWithHotfix &&
+      !isWalletOfflineDirectSigner(signer, walletWindowName)
+    ) {
+      throw new Error(
+        `${
+          currentChain?.pretty_name ?? chainId
+        } chain is currently unavailable for ${wallet.walletPrettyName}.`
+      );
+    }
+
+    return isOfflineDirectSigner(signer) || forceSignDirect
       ? this.signDirect(
           wallet,
           signer,
@@ -526,7 +551,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           messages,
           fee,
           memo,
-          signerData
+          signerData,
+          forceSignDirect
         )
       : this.signAmino(
           wallet,
@@ -623,9 +649,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     messages: readonly EncodeObject[],
     fee: StdFee,
     memo: string,
-    { accountNumber, sequence, chainId }: SignerData
+    { accountNumber, sequence, chainId }: SignerData,
+    forceSignDirect = false
   ): Promise<TxRaw> {
-    if (!isOfflineDirectSigner(signer)) {
+    if (!isOfflineDirectSigner(signer) && !forceSignDirect) {
       throw new Error("Signer has to be OfflineDirectSigner");
     }
 
@@ -662,9 +689,24 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId,
       accountNumber
     );
-    const { signature, signed } = await (
-      signer as unknown as OfflineDirectSigner
-    ).signDirect(signerAddress, signDoc);
+
+    const walletWindowName = getWalletWindowName(wallet.walletName);
+
+    const { signature, signed } = isWalletOfflineDirectSigner(
+      signer,
+      walletWindowName
+    )
+      ? await signer[walletWindowName].signDirect.call(
+          signer[walletWindowName],
+          wallet.chainId,
+          signerAddress,
+          signDoc
+        )
+      : await (signer as unknown as OfflineDirectSigner).signDirect(
+          signerAddress,
+          signDoc
+        );
+
     return TxRaw.fromPartial({
       bodyBytes: signed.bodyBytes,
       authInfoBytes: signed.authInfoBytes,
