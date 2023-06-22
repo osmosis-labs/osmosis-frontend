@@ -373,7 +373,54 @@ const ModalContent: FunctionComponent<
 
     const wallets = [...WalletRegistry]
       // If mobile, filter out browser wallets
-      .filter((w) => (isMobile ? !w.mobileDisabled : true))
+      .reduce((acc, w, _index, array) => {
+        if (isMobile) {
+          /**
+           * If an extension wallet is found in mobile, this means that we are inside an app browser.
+           * Therefore, we should only show that compatible extension wallet.
+           * */
+          if (acc.length > 0 && acc[0].name.endsWith("-extension")) {
+            return acc;
+          }
+
+          const windowAsRecord = window as Record<string, any>;
+
+          /**
+           * If on mobile and `leap` is in `window`, it means that user enters
+           * frontend from Leap's app in app browser. So, there is no need
+           * to use wallet connect, and it resembles extension's usages.
+           */
+          if (
+            windowAsRecord?.leap &&
+            windowAsRecord?.leap?.mode === "mobile-web"
+          ) {
+            return array
+              .filter((w) => w.name === "leap-extension")
+              .map((w) => ({ ...w, mobileDisabled: false }));
+          }
+
+          /**
+           * If on mobile and `keplr` is in `window`, it means that user enters
+           * frontend from Keplr's app in app browser. So, there is no need
+           * to use wallet connect, and it resembles extension's usages.
+           */
+          if (
+            windowAsRecord?.keplr &&
+            windowAsRecord?.keplr?.mode === "mobile-wallet"
+          ) {
+            return array
+              .filter((w) => w.name === "keplr-extension")
+              .map((w) => ({ ...w, mobileDisabled: false }));
+          }
+
+          /**
+           * If user is in a normal mobile browser, we should only show wallet connect
+           */
+          return !w.mobileDisabled ? [...acc, w] : acc;
+        }
+
+        return [...acc, w];
+      }, [] as (typeof WalletRegistry)[number][])
       // Wallet connect should be last
       .sort((a, b) => {
         if (a.mode === b.mode) {
