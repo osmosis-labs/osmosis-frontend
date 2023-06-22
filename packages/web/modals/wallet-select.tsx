@@ -406,7 +406,7 @@ const ModalContent: FunctionComponent<
            */
           if (
             windowAsRecord?.keplr &&
-            windowAsRecord?.keplr?.mode === "mobile-wallet"
+            windowAsRecord?.keplr?.mode === "mobile-web"
           ) {
             return array
               .filter((w) => w.name === "keplr-extension")
