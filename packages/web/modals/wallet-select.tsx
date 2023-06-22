@@ -22,7 +22,7 @@ import { useTranslation } from "react-multi-lang";
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import SkeletonLoader from "~/components/skeleton-loader";
-import { WalletRegistry } from "~/config";
+import { AvailableWallets, WalletRegistry } from "~/config";
 import { useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 
@@ -373,7 +373,7 @@ const ModalContent: FunctionComponent<
 
     const wallets = [...WalletRegistry]
       // If mobile, filter out browser wallets
-      .reduce((acc, w, _index, array) => {
+      .reduce((acc, wallet, _index, array) => {
         if (isMobile) {
           /**
            * If an extension wallet is found in mobile, this means that we are inside an app browser.
@@ -383,7 +383,7 @@ const ModalContent: FunctionComponent<
             return acc;
           }
 
-          const windowAsRecord = window as Record<string, any>;
+          const _window = window as Record<string, any>;
           const mobileWebModeName = "mobile-web";
 
           /**
@@ -391,13 +391,10 @@ const ModalContent: FunctionComponent<
            * the frontend from Leap's app in app browser. So, there is no need
            * to use wallet connect, as it resembles the extension's usage.
            */
-          if (
-            windowAsRecord?.leap &&
-            windowAsRecord?.leap?.mode === mobileWebModeName
-          ) {
+          if (_window?.leap && _window?.leap?.mode === mobileWebModeName) {
             return array
-              .filter((w) => w.name === "leap-extension")
-              .map((w) => ({ ...w, mobileDisabled: false }));
+              .filter((wallet) => wallet.name === AvailableWallets.Leap)
+              .map((wallet) => ({ ...wallet, mobileDisabled: false }));
           }
 
           /**
@@ -405,22 +402,19 @@ const ModalContent: FunctionComponent<
            * the frontend from Keplr's app in app browser. So, there is no need
            * to use wallet connect, as it resembles the extension's usage.
            */
-          if (
-            windowAsRecord?.keplr &&
-            windowAsRecord?.keplr?.mode === mobileWebModeName
-          ) {
+          if (_window?.keplr && _window?.keplr?.mode === mobileWebModeName) {
             return array
-              .filter((w) => w.name === "keplr-extension")
-              .map((w) => ({ ...w, mobileDisabled: false }));
+              .filter((wallet) => wallet.name === AvailableWallets.Keplr)
+              .map((wallet) => ({ ...wallet, mobileDisabled: false }));
           }
 
           /**
            * If user is in a normal mobile browser, show only wallet connect
            */
-          return w.name.endsWith("mobile") ? [...acc, w] : acc;
+          return wallet.name.endsWith("mobile") ? [...acc, wallet] : acc;
         }
 
-        return [...acc, w];
+        return [...acc, wallet];
       }, [] as (typeof WalletRegistry)[number][])
       // Wallet connect should be last
       .sort((a, b) => {

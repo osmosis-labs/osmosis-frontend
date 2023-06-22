@@ -129,6 +129,9 @@ async function generateWalletRegistry() {
       export const WalletRegistry: (Wallet & { lazyInstall: Function })[] = [${WalletRegistry.map(
         getStringifiedWallet
       ).join(",")}];
+      export enum AvailableWallets {${WalletRegistry.map(
+        (wallet) => `${wallet.prettyName.replace(/\s/g, "")} = "${wallet.name}"`
+      ).join(",")}}
     `;
 
   const prettierConfig = await prettier.resolveConfig("./");
