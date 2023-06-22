@@ -47,12 +47,8 @@ export function useCfmmToClMigration(cfmmPoolId: string): {
         return new Promise<void>(
           (resolve, reject) =>
             osmosisAccount
-              .sendMigrateUnlockedSharesToFullRangeConcentratedPositionMultiMsg(
+              .sendMigrateSharesToFullRangeConcentratedPositionMsgs(
                 cfmmPoolId,
-                {
-                  currency: params.cfmmShares.currency,
-                  amount: params.cfmmShares.toCoin().amount,
-                },
                 undefined,
                 undefined,
                 (tx) => {
@@ -67,7 +63,7 @@ export function useCfmmToClMigration(cfmmPoolId: string): {
         return new Promise<void>(
           (resolve, reject) =>
             osmosisAccount
-              .sendUnlockAndMigrateSharesToFullRangeConcentratedPositionMsg(
+              .sendMigrateSharesToFullRangeConcentratedPositionMsgs(
                 cfmmPoolId,
                 params.lockIds,
                 undefined,

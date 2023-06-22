@@ -1567,327 +1567,24 @@ export class OsmosisAccountImpl {
   }
 
   /**
-   * Migrates **unlocked** shares to full range concentrated position.
+   * Automatically migrates **locked OR unlocked** shares to full range concentrated position.
+   * With lock IDs, will send a separate migrate message per given ID.
+   * Handles superfluid stake status.
    *
    * @param poolId Id of pool to exit.
-   * @param gammShares Amount of gamm shares to migrate.
+   * @param lockIds Locks to migrate. If migrating unlocked shares, leave undefined.
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
-  async sendMigrateUnlockedSharesToFullRangeConcentratedPositionMultiMsg(
+  async sendMigrateSharesToFullRangeConcentratedPositionMsgs(
     poolId: string,
-    gammShares: {
-      currency: Currency;
-      amount: string;
-    },
-    maxSlippage: string = "2.5",
-    memo: string = "",
-    onFulfill?: (tx: any) => void
-  ) {
-    // update and verify the pool, that it is a share pool
-    const queryPool = this.queries.queryPools.getPool(poolId);
-    await queryPool?.waitFreshResponse();
-    if (!queryPool || !queryPool.sharePool)
-      throw new Error(`Unknown pool: ${poolId}`);
-    if (!Boolean(queryPool.shareCurrency.coinMinimalDenom))
-      throw new Error(
-        `Unknown share currency ${gammShares.currency.coinMinimalDenom} for pool ${poolId}`
-      );
-
-    // find the officially linked CL pool to move shares into
-    const queryPoolLink =
-      this.queries.queryCfmmToConcentratedLiquidityPoolLinks.get(poolId);
-    await queryPoolLink?.waitFreshResponse();
-    if (
-      !Boolean(queryPoolLink) ||
-      queryPoolLink.concentratedLiquidityPoolId === false
-    )
-      throw new Error(`No pool link exists for CFMM pool ${poolId}`);
-    if (typeof queryPoolLink.concentratedLiquidityPoolId !== "string")
-      throw new Error(`Link not found from CFMM pool (${poolId}) to CL pool`);
-    const clPoolId = queryPoolLink.concentratedLiquidityPoolId;
-
-    // fetch and verify the available gamm shares in the user's bank
-    const queryAccountBalances = this.queriesStore
-      .get(this.chainId)
-      .queryBalances.getQueryBech32Address(this.base.bech32Address).balances;
-    const queryGammShareBalance = queryAccountBalances.find(
-      ({ balance }) =>
-        balance.currency.coinMinimalDenom ===
-        gammShares.currency.coinMinimalDenom
-    );
-    if (!queryGammShareBalance)
-      throw new Error(
-        `Could not find a gamm share balance for ${gammShares.currency.coinMinimalDenom}`
-      );
-    await queryGammShareBalance.waitFreshResponse();
-    const gammShareBalance = queryGammShareBalance.balance;
-    if (gammShareBalance.toDec().isZero())
-      throw new Error(
-        `No gamm shares balance for ${gammShares.currency.coinMinimalDenom}`
-      );
-
-    const poolAssets = queryPool?.poolAssets.map(({ amount }) => ({
-      denom: amount.currency.coinMinimalDenom,
-      amount: new Int(amount.toCoin().amount),
-    }));
-    if (!poolAssets) throw new Error("Unknown pool assets");
-
-    // Compose the multi message consisting of 2 messages:
-    // 1. Exit CMMM pool
-    // 2. Create full range position in linked pool
-    const multiMsgs: ProtoMsgsOrWithAminoMsgs = {
-      aminoMsgs: [],
-      protoMsgs: [],
-    };
-
-    // -- 1. Exit CFMM pool
-
-    // estimate exit pool for each share in pool
-    const exitPoolEstimate = OsmosisMath.estimateExitSwap(
-      {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        totalShare: queryPool.sharePool.totalShare,
-        poolAssets,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        exitFee: queryPool.exitFee.toDec(),
-      },
-      this.makeCoinPretty,
-      gammShareBalance.toDec().toString(),
-      gammShareBalance.currency.coinDecimals
-    );
-
-    const maxSlippageDec = new Dec(maxSlippage).quo(
-      DecUtils.getTenExponentNInPrecisionRange(2)
-    );
-
-    const tokenOutMins = maxSlippageDec.equals(new Dec(0))
-      ? null
-      : exitPoolEstimate.tokenOuts.map((tokenOut) => {
-          return {
-            denom: tokenOut.currency.coinMinimalDenom,
-            amount: tokenOut
-              .toDec()
-              .mul(new Dec(1).sub(maxSlippageDec))
-              .mul(
-                DecUtils.getTenExponentNInPrecisionRange(
-                  tokenOut.currency.coinDecimals
-                )
-              )
-              .truncate()
-              .toString(),
-          };
-        });
-
-    const aminoExitPoolMsg = {
-      type: this._msgOpts.exitPool.type,
-      value: {
-        sender: this.base.bech32Address,
-        pool_id: poolId,
-        share_in_amount: gammShareBalance.toCoin().amount,
-        token_out_mins: tokenOutMins,
-      },
-    };
-    multiMsgs.aminoMsgs.push(aminoExitPoolMsg);
-
-    multiMsgs.protoMsgs.push({
-      typeUrl: "/osmosis.gamm.v1beta1.MsgExitPool",
-      value: osmosis.gamm.v1beta1.MsgExitPool.encode({
-        sender: aminoExitPoolMsg.value.sender,
-        poolId: Long.fromString(aminoExitPoolMsg.value.pool_id),
-        shareInAmount: aminoExitPoolMsg.value.share_in_amount,
-        tokenOutMins: aminoExitPoolMsg.value.token_out_mins,
-      }).finish(),
-    });
-
-    // -- 2. Create full range position
-
-    const queryClPool = this.queries.queryPools.getPool(clPoolId);
-    if (!queryClPool) throw new Error("Unknown CL pool");
-    if (
-      queryClPool.type !== "concentrated" ||
-      !queryClPool.concentratedLiquidityPoolInfo
-    )
-      throw new Error("Pool is not CL pool");
-
-    /** token0 */
-    let baseCoin = exitPoolEstimate.tokenOuts.find(
-      (token) =>
-        token.currency.coinMinimalDenom ===
-        queryClPool.poolAssets[0].amount.currency.coinMinimalDenom
-    );
-    /** token1 */
-    let quoteCoin = exitPoolEstimate.tokenOuts.find(
-      (token) =>
-        token.currency.coinMinimalDenom ===
-        queryClPool.poolAssets[1].amount.currency.coinMinimalDenom
-    );
-
-    if (!baseCoin || !quoteCoin)
-      throw new Error(
-        `CL pool ${clPoolId} does not share the assets with linked CFMM pool ${poolId}`
-      );
-
-    const liquidityAmount0 = OsmosisMath.calcLiquidityAmount0(
-      OsmosisMath.maxTick,
-      queryClPool.concentratedLiquidityPoolInfo.currentSqrtPrice,
-      new Int(baseCoin.toCoin().amount)
-    );
-    const liquidityAmount1 = OsmosisMath.calcLiquidityAmount1(
-      OsmosisMath.minTick,
-      queryClPool.concentratedLiquidityPoolInfo.currentSqrtPrice,
-      new Int(quoteCoin.toCoin().amount)
-    );
-
-    /** Uses the lower liqidity amount to calculate the other amount
-     *  to ensure totals are less than user's balance. */
-    const anchorAsset = liquidityAmount0.lt(liquidityAmount1)
-      ? "token0"
-      : "token1";
-
-    if (anchorAsset === "token0") {
-      // calc new amount for token1
-      const amount0 = new Int(baseCoin.toCoin().amount);
-      const newAmount1 = OsmosisMath.calcAmount1(
-        amount0,
-        OsmosisMath.minTick,
-        OsmosisMath.maxTick,
-        queryClPool.concentratedLiquidityPoolInfo.currentSqrtPrice
-      );
-      quoteCoin = new CoinPretty(quoteCoin.currency, newAmount1);
-    } else if (anchorAsset === "token1") {
-      // calc new amount for token0
-      const amount1 = new Int(quoteCoin.toCoin().amount);
-      const newAmount0 = OsmosisMath.calcAmount0(
-        amount1,
-        OsmosisMath.minTick,
-        OsmosisMath.maxTick,
-        queryClPool.concentratedLiquidityPoolInfo.currentSqrtPrice
-      );
-      baseCoin = new CoinPretty(baseCoin.currency, newAmount0);
-    }
-
-    // sort coins by denom to satisfy amino/protobuf encoding on chain (alphabetical)
-    const sortedCoins = [baseCoin, quoteCoin]
-      .sort((a, b) =>
-        a.currency.coinMinimalDenom.localeCompare(b.currency.coinMinimalDenom)
-      )
-      .map((coinPretty) => coinPretty.toCoin());
-
-    // add slippage tolerance to min amounts
-    const token_min_amount0 =
-      // full tolerance if 0 sqrt price so no positions
-      !queryClPool.concentratedLiquidityPoolInfo.currentSqrtPrice.isZero()
-        ? new Dec(baseCoin.toCoin().amount)
-            .mul(new Dec(1).sub(new Dec(maxSlippage).quo(new Dec(100))))
-            .truncate()
-            .toString()
-        : "0";
-    const token_min_amount1 =
-      // full tolerance if 0 sqrt price so no positions
-      !queryClPool.concentratedLiquidityPoolInfo.currentSqrtPrice.isZero()
-        ? new Dec(quoteCoin.toCoin().amount)
-            .mul(new Dec(1).sub(new Dec(maxSlippage).quo(new Dec(100))))
-            .truncate()
-            .toString()
-        : "0";
-
-    const aminoFullRangeConcentratedPositionMsg = {
-      type: this._msgOpts.clCreatePosition.type,
-      value: {
-        pool_id: clPoolId,
-        sender: this.base.bech32Address,
-        lower_tick: OsmosisMath.minTick.toString(),
-        upper_tick: OsmosisMath.maxTick.toString(),
-        tokens_provided: sortedCoins,
-        token_min_amount0,
-        token_min_amount1,
-      },
-    };
-    multiMsgs.aminoMsgs.push(aminoFullRangeConcentratedPositionMsg);
-
-    multiMsgs.protoMsgs.push({
-      typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCreatePosition",
-      value: osmosis.concentratedliquidity.v1beta1.MsgCreatePosition.encode({
-        sender: aminoFullRangeConcentratedPositionMsg.value.sender,
-        poolId: Long.fromString(
-          aminoFullRangeConcentratedPositionMsg.value.pool_id
-        ),
-        lowerTick: Long.fromString(OsmosisMath.minTick.toString()),
-        upperTick: Long.fromString(OsmosisMath.maxTick.toString()),
-        tokensProvided: sortedCoins,
-        tokenMinAmount0: token_min_amount0,
-        tokenMinAmount1: token_min_amount1,
-      }).finish(),
-    });
-
-    const totalGas =
-      this._msgOpts.exitPool.gas + this._msgOpts.clCreatePosition.gas;
-    await this.base.cosmos.sendMsgs(
-      "migrateUnlockedSharesToFullRangeConcentratedPosition",
-      multiMsgs,
-      memo,
-      {
-        amount: [],
-        gas: totalGas.toString(),
-      },
-      undefined,
-      (tx) => {
-        if (tx.code == null || tx.code === 0) {
-          const queries = this.queriesStore.get(this.chainId);
-
-          // refresh relevant token balances
-          const relevantCoinDenoms = [
-            gammShares.currency,
-            ...exitPoolEstimate.tokenOuts.map(
-              (token) => token.currency.coinMinimalDenom
-            ),
-          ];
-          queries.queryBalances
-            .getQueryBech32Address(this.base.bech32Address)
-            .balances.forEach((balance) => {
-              if (
-                relevantCoinDenoms.includes(balance.currency.coinMinimalDenom)
-              )
-                balance.waitFreshResponse();
-            });
-
-          // refresh pool that was exited and new pool
-          queryPool.waitFreshResponse();
-          queryClPool.waitFreshResponse();
-
-          // refresh removed coins and new account position
-          this.queries.queryAccountLocked
-            .get(this.base.bech32Address)
-            .waitFreshResponse();
-          this.queries.queryAccountsPositions
-            .get(this.base.bech32Address)
-            .waitFreshResponse();
-        }
-
-        onFulfill?.(tx);
-      }
-    );
-  }
-
-  /**
-   * Automatically migrates **locked** shares to full range concentrated position.
-   * Accounts for superfluid stake status.
-   *
-   * @param poolId Id of pool to exit.
-   * @param lockIds Locks to migrate.
-   * @param memo Transaction memo.
-   * @param onFulfill Callback to handle tx fullfillment given raw response.
-   */
-  async sendUnlockAndMigrateSharesToFullRangeConcentratedPositionMsg(
-    poolId: string,
-    lockIds: string[],
+    lockIds: string[] | undefined,
     memo: string = "",
     onFulfill?: (tx: any) => void
   ) {
     const queryPool = this.queries.queryPools.getPool(poolId);
 
-    if (!Boolean(queryPool)) {
+    if (!Boolean(queryPool) || !queryPool) {
       throw new Error("Unknown pool");
     }
 
@@ -1896,19 +1593,29 @@ export class OsmosisAccountImpl {
       protoMsgs: [],
     };
 
+    // refresh data
     const accountLocked = this.queries.queryAccountLocked.get(
       this.base.bech32Address
     );
     await accountLocked.waitFreshResponse();
+    await queryPool.waitFreshResponse();
 
-    lockIds.forEach((lockId) => {
-      // ensure the lock ID is in the associated with the account, and that the coins locked are gamm shares
-      const poolGammShares = accountLocked.lockedCoins.filter(
-        ({ amount, lockIds }) =>
-          amount.denom.includes(`gamm/${poolId}`) && lockIds.includes(lockId)
-      );
-      if (poolGammShares.length === 0 || queryPool?.sharePool?.totalShare)
-        return;
+    const queryBalances = this.queriesStore
+      .get(this.chainId)
+      .queryBalances.getQueryBech32Address(this.base.bech32Address);
+
+    (lockIds ?? ["0"]).forEach((lockId) => {
+      // ensure the lock ID is associated with the account, and that the coins locked are gamm shares
+      // if lock is 0, the shares are not unlocked and are in bank
+      const poolGammShares =
+        lockId === "0"
+          ? queryBalances.getBalanceFromCurrency(queryPool.shareCurrency)
+          : accountLocked.lockedCoins.filter(
+              ({ amount, lockIds }) =>
+                amount.denom.includes(`gamm/${poolId}`) &&
+                lockIds.includes(lockId)
+            )?.[0].amount;
+      if (!poolGammShares || queryPool?.sharePool?.totalShare) return;
 
       const poolAssets = queryPool?.poolAssets.map(({ amount }) => ({
         denom: amount.currency.coinMinimalDenom,
@@ -1926,8 +1633,8 @@ export class OsmosisAccountImpl {
           exitFee: queryPool!.exitFee.toDec(),
         },
         this.makeCoinPretty,
-        poolGammShares[0].amount.toCoin().amount,
-        poolGammShares[0].amount.currency.coinDecimals
+        poolGammShares.toCoin().amount,
+        poolGammShares.currency.coinDecimals
       );
 
       multiMsgs.aminoMsgs.push({
@@ -1938,8 +1645,8 @@ export class OsmosisAccountImpl {
           sender: this.base.bech32Address,
           lock_id: lockId,
           shares_to_migrate: {
-            denom: poolGammShares[0].amount.currency.coinMinimalDenom,
-            amount: poolGammShares[0].amount.toCoin().amount,
+            denom: poolGammShares.currency.coinMinimalDenom,
+            amount: poolGammShares.toCoin().amount,
           },
           token_out_mins: estimated.tokenOuts.map((tokenOut) => ({
             denom: tokenOut.currency.coinMinimalDenom,
@@ -1957,8 +1664,8 @@ export class OsmosisAccountImpl {
               lockId: Long.fromString(lockId),
               sender: this.base.bech32Address,
               sharesToMigrate: {
-                denom: poolGammShares[0].amount.currency.coinMinimalDenom,
-                amount: poolGammShares[0].amount.toCoin().amount,
+                denom: poolGammShares.currency.coinMinimalDenom,
+                amount: poolGammShares.toCoin().amount,
               },
               tokenOutMins: estimated.tokenOuts.map((tokenOut) => ({
                 denom: tokenOut.currency.coinMinimalDenom,
