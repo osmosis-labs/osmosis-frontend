@@ -188,7 +188,7 @@ export class KeplrWCClient implements WalletClient {
       if (!this.connector.connected) {
         await this.connector.createSession();
       } else {
-        this.restoreSession();
+        this.client = this.createKeplrClient();
         return;
       }
 
