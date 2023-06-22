@@ -104,6 +104,8 @@ export const MyPositionCard: FunctionComponent<{
                   }
                   lowerPrice={lowerPrices.price}
                   upperPrice={upperPrices.price}
+                  fullRange={isFullRange}
+                  superfluidStaked
                 />
               )}
           </div>

@@ -65,6 +65,8 @@
     "inRange": "IN RANGE",
     "nearBounds": "NEAR BOUNDS",
     "outOfRange": "OUT OF RANGE",
+    "fullRange": "FULL RANGE",
+    "superfluidStaked": "SUPERFLUID STAKED",
     "currentAssets": "Current Assets",
     "principleAssets": "Principle Assets",
     "totalSpreadEarned": "Total Spread Earned",
