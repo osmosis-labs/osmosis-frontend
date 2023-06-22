@@ -15,6 +15,7 @@ const WalletRegistry: (Wallet & {
 })[] = [
   {
     ...keplrExtensionInfo,
+    mobileDisabled: false,
     logo: "/wallets/keplr.svg",
     lazyInstallUrl: "@cosmos-kit/keplr-extension",
     walletClassName: "KeplrExtensionWallet",
@@ -28,6 +29,7 @@ const WalletRegistry: (Wallet & {
   {
     ...leapExtensionInfo,
     logo: "/wallets/leap.png",
+    mobileDisabled: false,
     lazyInstallUrl: "@cosmos-kit/leap-extension",
     walletClassName: "LeapExtensionWallet",
   },
@@ -127,6 +129,9 @@ async function generateWalletRegistry() {
       export const WalletRegistry: (Wallet & { lazyInstall: Function })[] = [${WalletRegistry.map(
         getStringifiedWallet
       ).join(",")}];
+      export enum AvailableWallets {${WalletRegistry.map(
+        (wallet) => `${wallet.prettyName.replace(/\s/g, "")} = "${wallet.name}"`
+      ).join(",")}}
     `;
 
   const prettierConfig = await prettier.resolveConfig("./");
