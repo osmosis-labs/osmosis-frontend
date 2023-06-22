@@ -384,6 +384,7 @@ const ModalContent: FunctionComponent<
           }
 
           const windowAsRecord = window as Record<string, any>;
+          const mobileWebModeName = "mobile-web";
 
           /**
            * If on mobile and `leap` is in `window`, it means that the user enters
@@ -392,7 +393,7 @@ const ModalContent: FunctionComponent<
            */
           if (
             windowAsRecord?.leap &&
-            windowAsRecord?.leap?.mode === "mobile-web"
+            windowAsRecord?.leap?.mode === mobileWebModeName
           ) {
             return array
               .filter((w) => w.name === "leap-extension")
@@ -406,7 +407,7 @@ const ModalContent: FunctionComponent<
            */
           if (
             windowAsRecord?.keplr &&
-            windowAsRecord?.keplr?.mode === "mobile-web"
+            windowAsRecord?.keplr?.mode === mobileWebModeName
           ) {
             return array
               .filter((w) => w.name === "keplr-extension")
