@@ -386,9 +386,9 @@ const ModalContent: FunctionComponent<
           const windowAsRecord = window as Record<string, any>;
 
           /**
-           * If on mobile and `leap` is in `window`, it means that user enters
-           * frontend from Leap's app in app browser. So, there is no need
-           * to use wallet connect, and it resembles extension's usages.
+           * If on mobile and `leap` is in `window`, it means that the user enters
+           * the frontend from Leap's app in app browser. So, there is no need
+           * to use wallet connect, as it resembles the extension's usage.
            */
           if (
             windowAsRecord?.leap &&
@@ -400,9 +400,9 @@ const ModalContent: FunctionComponent<
           }
 
           /**
-           * If on mobile and `keplr` is in `window`, it means that user enters
-           * frontend from Keplr's app in app browser. So, there is no need
-           * to use wallet connect, and it resembles extension's usages.
+           * If on mobile and `keplr` is in `window`, it means that the user enters
+           * the frontend from Keplr's app in app browser. So, there is no need
+           * to use wallet connect, as it resembles the extension's usage.
            */
           if (
             windowAsRecord?.keplr &&
@@ -414,7 +414,7 @@ const ModalContent: FunctionComponent<
           }
 
           /**
-           * If user is in a normal mobile browser, we should only show wallet connect
+           * If user is in a normal mobile browser, show only wallet connect
            */
           return !w.mobileDisabled ? [...acc, w] : acc;
         }
