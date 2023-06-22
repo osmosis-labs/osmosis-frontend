@@ -15,6 +15,7 @@ const WalletRegistry: (Wallet & {
 })[] = [
   {
     ...keplrExtensionInfo,
+    mobileDisabled: false,
     logo: "/wallets/keplr.svg",
     lazyInstallUrl: "@cosmos-kit/keplr-extension",
     walletClassName: "KeplrExtensionWallet",
@@ -28,6 +29,7 @@ const WalletRegistry: (Wallet & {
   {
     ...leapExtensionInfo,
     logo: "/wallets/leap.png",
+    mobileDisabled: false,
     lazyInstallUrl: "@cosmos-kit/leap-extension",
     walletClassName: "LeapExtensionWallet",
   },
