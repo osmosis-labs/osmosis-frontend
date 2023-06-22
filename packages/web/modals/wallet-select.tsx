@@ -416,7 +416,7 @@ const ModalContent: FunctionComponent<
           /**
            * If user is in a normal mobile browser, show only wallet connect
            */
-          return !w.name.endsWith("mobile") ? [...acc, w] : acc;
+          return w.name.endsWith("mobile") ? [...acc, w] : acc;
         }
 
         return [...acc, w];
