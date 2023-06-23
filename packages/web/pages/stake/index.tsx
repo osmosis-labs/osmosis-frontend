@@ -17,7 +17,7 @@ export const Staking: React.FC = () => {
   const { isMobile } = useWindowSize();
   const [activeTab, setActiveTab] = useState("Stake");
 
-  const [showValidatorModal, setShowValidatorModal] = useState(true);
+  const [showValidatorModal, setShowValidatorModal] = useState(false);
 
   return (
     <main className="relative flex h-screen items-center justify-center">

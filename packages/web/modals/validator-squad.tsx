@@ -11,12 +11,13 @@ import { FunctionComponent } from "react";
 import { useMemo } from "react";
 
 import { Icon } from "~/components/assets";
+import { CloseButton } from "~/components/buttons";
 import { SearchBox } from "~/components/input";
 import { IS_FRONTIER } from "~/config/index";
 import { ModalBaseProps } from "~/modals/base";
 
 export const ValidatorSquadModal: FunctionComponent<ModalBaseProps> = observer(
-  () => <ValidatorSquadContent />
+  (props) => <ValidatorSquadContent {...props} />
 );
 
 const data = [
@@ -39,165 +40,175 @@ type Validator = {
   comissions: number;
 };
 
-const ValidatorSquadContent = observer(() => {
-  const columnHelper = createColumnHelper<Validator>();
+interface ValidatorSquadContentProps {
+  onRequestClose: () => void;
+  isOpen: boolean;
+}
 
-  const virtualRows = data;
-  const rows = data;
+const ValidatorSquadContent = observer(
+  ({ onRequestClose, isOpen }: ValidatorSquadContentProps) => {
+    const columnHelper = createColumnHelper<Validator>();
 
-  const columns = useMemo(
-    () => [
-      columnHelper.accessor((row) => row, {
-        cell: "hello world",
-        header: "Validator",
-        id: "validator",
-        sortDescFirst: false,
-      }),
-      columnHelper.accessor((row) => row, {
-        cell: "hello world",
-        header: "My stake",
-        id: "myStake",
-        sortDescFirst: false,
-      }),
-      columnHelper.accessor((row) => row, {
-        cell: "hello world",
-        header: "Voting power",
-        id: "votingPower",
-        sortDescFirst: false,
-      }),
-      columnHelper.accessor((row) => row, {
-        cell: "hello world",
-        header: "Commissions",
-        id: "comissions",
-        sortDescFirst: false,
-      }),
-    ],
-    [columnHelper]
-  );
+    const virtualRows = data;
+    const rows = data;
 
-  const table = useReactTable({
-    data,
-    // @ts-ignore
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    manualSorting: true,
-  });
+    const columns = useMemo(
+      () => [
+        columnHelper.accessor((row) => row, {
+          cell: "hello world",
+          header: "Validator",
+          id: "validator",
+          sortDescFirst: false,
+        }),
+        columnHelper.accessor((row) => row, {
+          cell: "hello world",
+          header: "My stake",
+          id: "myStake",
+          sortDescFirst: false,
+        }),
+        columnHelper.accessor((row) => row, {
+          cell: "hello world",
+          header: "Voting power",
+          id: "votingPower",
+          sortDescFirst: false,
+        }),
+        columnHelper.accessor((row) => row, {
+          cell: "hello world",
+          header: "Commissions",
+          id: "comissions",
+          sortDescFirst: false,
+        }),
+      ],
+      [columnHelper]
+    );
 
-  const paddingTop = 0;
-  const topOffset = 324;
+    const table = useReactTable({
+      data,
+      // @ts-ignore
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+      manualSorting: true,
+    });
 
-  // const t = useTranslation();
-  const handleSearchInput = () => console.log("search");
+    const paddingTop = 0;
+    const topOffset = 324;
 
-  return (
-    <div className="absolute z-50 max-h-[938px] w-full max-w-[1168px] rounded-[20px] bg-osmoverse-800 px-[62px] pt-8 pb-[54px]">
-      <div className="relative flex flex-col overflow-auto">
-        <div className="mx-auto mb-9 flex max-w-[500px] flex-col items-center justify-center">
-          <h6>Validator Squad</h6>
-          <div className="mt-7 mb-3 font-medium">
-            Select the validators you’d like to delegate to. Once complete,
-            continue to stake. You may edit your validator set at any time.
+    const handleSearchInput = () => console.log("search");
+
+    return isOpen ? (
+      <div className="absolute z-50 max-h-[938px] w-full max-w-[1168px] rounded-[20px] bg-osmoverse-800 px-[62px] pt-8 pb-[54px]">
+        <CloseButton
+          className="relative top-0 right-0"
+          onClick={() => onRequestClose()}
+        />
+        <div className="relative flex flex-col overflow-auto">
+          <div className="mx-auto mb-9 flex max-w-[500px] flex-col items-center justify-center">
+            <h6>Validator Squad</h6>
+            <div className="mt-7 mb-3 font-medium">
+              Select the validators you’d like to delegate to. Once complete,
+              continue to stake. You may edit your validator set at any time.
+            </div>
+            <SearchBox
+              placeholder="Search for a validator"
+              onInput={handleSearchInput}
+              className="self-end"
+              size="full"
+            />
           </div>
-          <SearchBox
-            placeholder="Search for a validator"
-            onInput={handleSearchInput}
-            className="self-end"
-            size="full"
-          />
-        </div>
-        <table className="w-full">
-          <thead className="z-[51] m-0">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="!bg-osmoverse-700">
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <th key={header.id} colSpan={header.colSpan}>
-                      {header.isPlaceholder ? null : (
-                        <div
-                          {...{
-                            className: header.column.getCanSort()
-                              ? "cursor-pointer select-none flex items-center gap-2"
-                              : "",
-                            onClick: header.column.getToggleSortingHandler(),
-                          }}
-                        >
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                          {{
-                            asc: (
-                              <Icon
-                                id="sort-up"
-                                className={classNames(
-                                  "h-[16px] w-[7px]",
-                                  IS_FRONTIER
-                                    ? "text-white-full"
-                                    : "text-osmoverse-300"
-                                )}
-                              />
-                            ),
-                            desc: (
-                              <Icon
-                                id="sort-down"
-                                className={classNames(
-                                  "h-[16px] w-[7px]",
-                                  IS_FRONTIER
-                                    ? "text-white-full"
-                                    : "text-osmoverse-300"
-                                )}
-                              />
-                            ),
-                          }[header.column.getIsSorted() as string] ?? null}
-                        </div>
-                      )}
-                    </th>
-                  );
-                })}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {paddingTop > 0 && (
-              <tr>
-                <td style={{ height: `${paddingTop - topOffset}px` }} />
-              </tr>
-            )}
-            {/* update to virtual rows */}
-            {virtualRows.map((virtualRow, i) => {
-              // const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
-              const row = rows[i];
-              console.log("virtual row: ", virtualRow);
-              return (
-                <tr
-                  // key={row.id}
-                  key={i}
-                  className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
-                  // ref={i === virtualRows.length - 1 ? intersectionRef : null}
-                >
-                  {row.map((cell) => {
+          <table className="w-full">
+            <thead className="z-[51] m-0">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id} className="!bg-osmoverse-700">
+                  {headerGroup.headers.map((header) => {
                     return (
-                      <td key={i} onClick={(e) => e.stopPropagation()}>
-                        {cell}
-                        {/* {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )} */}
-                      </td>
+                      <th key={header.id} colSpan={header.colSpan}>
+                        {header.isPlaceholder ? null : (
+                          <div
+                            {...{
+                              className: header.column.getCanSort()
+                                ? "cursor-pointer select-none flex items-center gap-2"
+                                : "",
+                              onClick: header.column.getToggleSortingHandler(),
+                            }}
+                          >
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                            {{
+                              asc: (
+                                <Icon
+                                  id="sort-up"
+                                  className={classNames(
+                                    "h-[16px] w-[7px]",
+                                    IS_FRONTIER
+                                      ? "text-white-full"
+                                      : "text-osmoverse-300"
+                                  )}
+                                />
+                              ),
+                              desc: (
+                                <Icon
+                                  id="sort-down"
+                                  className={classNames(
+                                    "h-[16px] w-[7px]",
+                                    IS_FRONTIER
+                                      ? "text-white-full"
+                                      : "text-osmoverse-300"
+                                  )}
+                                />
+                              ),
+                            }[header.column.getIsSorted() as string] ?? null}
+                          </div>
+                        )}
+                      </th>
                     );
                   })}
                 </tr>
-              );
-            })}
-            {/* {paddingBottom > 0 && (
+              ))}
+            </thead>
+            <tbody>
+              {paddingTop > 0 && (
+                <tr>
+                  <td style={{ height: `${paddingTop - topOffset}px` }} />
+                </tr>
+              )}
+              {/* update to virtual rows */}
+              {virtualRows.map((virtualRow, i) => {
+                // const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
+                const row = rows[i];
+                console.log("virtual row: ", virtualRow);
+                return (
+                  <tr
+                    // key={row.id}
+                    key={i}
+                    className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
+                    // ref={i === virtualRows.length - 1 ? intersectionRef : null}
+                  >
+                    {row.map((cell) => {
+                      return (
+                        <td key={i} onClick={(e) => e.stopPropagation()}>
+                          {cell}
+                          {/* {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )} */}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+              {/* {paddingBottom > 0 && (
               <tr>
                 <td style={{ height: `${paddingBottom - topOffset}px` }} />
               </tr>
             )} */}
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
-  );
-});
+    ) : null;
+  }
+);
