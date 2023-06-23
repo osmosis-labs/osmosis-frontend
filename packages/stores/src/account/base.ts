@@ -531,15 +531,18 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId.startsWith("injective") ||
       chainId.startsWith("stride") ||
       currentChain?.features?.includes("ibc-go-v7-hot-fix");
+    const isMobile =
+      wallet.walletInfo.mode === "wallet-connect" ||
+      wallet.walletName === "keplr-mobile";
 
     const forceSignDirect =
       isWalletOfflineDirectSigner(signer, walletWindowName) &&
       isChainWithHotfix &&
-      !(wallet.walletInfo.mode === "wallet-connect");
+      !isMobile;
 
     if (
       isChainWithHotfix &&
-      !isWalletOfflineDirectSigner(signer, walletWindowName)
+      (!isWalletOfflineDirectSigner(signer, walletWindowName) || isMobile)
     ) {
       throw new Error(
         `${
