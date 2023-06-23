@@ -6,11 +6,9 @@ import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import { StakeInfoCard } from "~/components/cards/stake-info-card";
-import { ValidatorSquad } from "~/components/cards/validator-squad";
 import { StakeTab } from "~/components/control/stake-tab";
+import { useWindowSize } from "~/hooks";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
-
-import { useWindowSize } from "../../hooks";
 
 export const Staking: React.FC = () => {
   const t = useTranslation();
@@ -67,7 +65,6 @@ export const Staking: React.FC = () => {
             </StakeTab>
           </div>
           <StakeInfoCard />
-          <ValidatorSquad />
           <Button
             className={classNames(
               "button group relative flex h-11 items-center justify-center gap-2 overflow-hidden rounded-xl border-2 !border-osmoverse-700 bg-gradient-positive !py-1 font-bold text-osmoverse-100 transition-all duration-300 ease-in-out"
