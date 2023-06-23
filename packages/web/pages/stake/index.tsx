@@ -1,4 +1,3 @@
-import classNames from "classnames";
 import React, { useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
@@ -65,12 +64,7 @@ export const Staking: React.FC = () => {
             </StakeTab>
           </div>
           <StakeInfoCard />
-          <Button
-            className={classNames(
-              "button group relative flex h-11 items-center justify-center gap-2 overflow-hidden rounded-xl border-2 !border-osmoverse-700 bg-gradient-positive !py-1 font-bold text-osmoverse-100 transition-all duration-300 ease-in-out"
-            )}
-            onClick={() => setShowValidatorModal(true)}
-          >
+          <Button mode="special-1" onClick={() => setShowValidatorModal(true)}>
             Stake
           </Button>
         </div>
