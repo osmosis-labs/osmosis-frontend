@@ -1662,7 +1662,7 @@ export class OsmosisAccountImpl {
             .truncate()
             .toString(),
         }))
-        .sort((a, b) => b.denom.localeCompare(a.denom));
+        .sort((a, b) => a.denom.localeCompare(b.denom));
 
       multiMsgs.aminoMsgs.push({
         type: this._msgOpts.unlockAndMigrateSharesToFullRangeConcentratedPosition(
