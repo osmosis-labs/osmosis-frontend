@@ -1,4 +1,5 @@
 export * from "./asset-multiplier";
+export * from "./concentrated-positions";
 export * from "./delegations";
 export * from "./osmo-equivalent";
 export * from "./params";

@@ -87,3 +87,21 @@ export type SuperfluidUndelegation = {
   end_time: Date;
   lock_id: string;
 };
+
+export type ConcentratedPoolUserPositionRecord = {
+  validator_address: string;
+  position_id: string;
+  lock_id: string;
+  delegation_amount: {
+    denom: string;
+    amount: string;
+  };
+  equivalent_staked_amount: {
+    amount: string;
+    denom: string;
+  };
+};
+
+export type UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse = {
+  cl_pool_user_position_records: ConcentratedPoolUserPositionRecord[];
+};
