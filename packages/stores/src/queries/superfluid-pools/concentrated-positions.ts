@@ -26,13 +26,16 @@ export class ObservableQueryUserSuperfluidPositionsPerPool extends ObservableCha
     chainGetter: ChainGetter,
     protected readonly key: string
   ) {
-    const { delegatorBech32Address, concentratedPoolId } = parseKey(key);
     super(
       kvStore,
       chainId,
       chainGetter,
-      `/osmosis/superfluid/v1beta1/user_superfluid_positions_per_pool/${delegatorBech32Address}/${concentratedPoolId}`
+      `/osmosis/superfluid/v1beta1/user_superfluid_positions_per_pool/${
+        parseKey(key).delegatorBech32Address
+      }/${parseKey(key).concentratedPoolId}`
     );
+
+    const { delegatorBech32Address, concentratedPoolId } = parseKey(key);
 
     this.delegatorBech32Address = delegatorBech32Address;
     this.concentratedPoolId = concentratedPoolId;
@@ -45,7 +48,7 @@ export class ObservableQueryUserSuperfluidPositionsPerPool extends ObservableCha
   }
 
   @computed
-  get superfluidPositionIds(): string[] {
+  get stakedPositionIds(): string[] {
     return (
       this.response?.data.cl_pool_user_position_records.map(
         ({ position_id }) => position_id
@@ -54,7 +57,7 @@ export class ObservableQueryUserSuperfluidPositionsPerPool extends ObservableCha
   }
 
   @computed
-  get stakedPositionRecords(): (StakedPositionInfo & {
+  get stakedPositions(): (StakedPositionInfo & {
     positionId: string;
   })[] {
     const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
@@ -120,7 +123,7 @@ export class ObservableQueryUserSuperfluidPositionsPerPools extends ObservableCh
     delegatorBech32Address: string,
     concentratedPoolId: string
   ): ObservableQueryUserSuperfluidPositionsPerPool {
-    return this.get(
+    return super.get(
       makeKey(delegatorBech32Address, concentratedPoolId)
     ) as ObservableQueryUserSuperfluidPositionsPerPool;
   }

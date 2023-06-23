@@ -8,6 +8,7 @@ import {
 import { FiatCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
 import { computed, makeObservable } from "mobx";
+import { computedFn } from "mobx-utils";
 
 import { IPriceStore } from "../../price";
 import { OsmosisQueries } from "../../queries/store";
@@ -69,6 +70,37 @@ export class ObservableSuperfluidPoolDetail {
       this.poolId
     );
   }
+
+  /** Superfluid staked positions, with API and relevant validator info. */
+  @computed
+  get superfluidStakedPositionInfos() {
+    return this.osmosisQueries.querySuperfluidPositionsPerPools
+      .getQueryUserPositionsPerPool(this.bech32Address, this.poolId)
+      .stakedPositions.map((stakedPositionInfo) => {
+        const superfluidApr = new RatePretty(
+          this.cosmosQueries.queryInflation.inflation
+            .mul(
+              this.osmosisQueries.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
+                this.poolId
+              )
+            )
+            .moveDecimalPointLeft(2)
+        );
+
+        return {
+          ...stakedPositionInfo,
+          superfluidApr,
+          ...this.getValidatorInfo(stakedPositionInfo.validatorAddress),
+        };
+      });
+  }
+
+  /** Superfluid staked position by ID, with API and relevant validator info. */
+  readonly getSuperfluidStakedPositionInfo = computedFn((positionId) => {
+    return this.superfluidStakedPositionInfos.find(
+      (info) => info.positionId === positionId
+    );
+  });
 
   /** Wraps `gauges` member of pool detail store with potential superfluid APR info. */
   @computed
@@ -166,31 +198,6 @@ export class ObservableSuperfluidPoolDetail {
         .getQuerySuperfluidDelegations(this.bech32Address)
         .getDelegations(this.querySharePoolDetails.poolShareCurrency)
         ?.map(({ validator_address, amount }) => {
-          let jailed = false;
-          let inactive = false;
-          let validator = this.cosmosQueries.queryValidators
-            .getQueryStatus(Staking.BondStatus.Bonded)
-            .getValidator(validator_address);
-
-          if (!validator) {
-            validator = this.cosmosQueries.queryValidators
-              .getQueryStatus(Staking.BondStatus.Unbonded)
-              .getValidator(validator_address);
-            inactive = true;
-            if (validator?.jailed) jailed = true;
-          }
-
-          let thumbnail: string | undefined;
-          if (validator) {
-            thumbnail = this.cosmosQueries.queryValidators
-              .getQueryStatus(
-                inactive
-                  ? Staking.BondStatus.Unbonded
-                  : Staking.BondStatus.Bonded
-              )
-              .getValidatorThumbnail(validator_address);
-          }
-
           let superfluidApr = this.cosmosQueries.queryInflation.inflation.mul(
             this.osmosisQueries.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
               this.poolId
@@ -213,15 +220,8 @@ export class ObservableSuperfluidPoolDetail {
             );
           }
 
-          const commissionRateRaw = validator?.commission.commission_rates.rate;
-
           return {
-            validatorName: validator?.description.moniker,
-            validatorCommission: commissionRateRaw
-              ? new RatePretty(new Dec(commissionRateRaw))
-              : undefined,
-            validatorImgSrc: thumbnail,
-            inactive: jailed ? "jailed" : inactive ? "inactive" : undefined,
+            ...this.getValidatorInfo(validator_address),
             apr: new RatePretty(superfluidApr.moveDecimalPointLeft(2)),
             equivalentOsmoAmount:
               this.osmosisQueries.querySuperfluidOsmoEquivalent.calculateOsmoEquivalent(
@@ -246,42 +246,58 @@ export class ObservableSuperfluidPoolDetail {
       return this.osmosisQueries.querySuperfluidUndelegations
         .getQuerySuperfluidDelegations(this.bech32Address)
         .getUndelegations(this.querySharePoolDetails.poolShareCurrency)
-        ?.map(({ validator_address, amount, end_time }) => {
-          let jailed = false;
-          let inactive = false;
-          let validator = this.cosmosQueries.queryValidators
-            .getQueryStatus(Staking.BondStatus.Bonded)
-            .getValidator(validator_address);
-
-          if (!validator) {
-            validator = this.cosmosQueries.queryValidators
-              .getQueryStatus(Staking.BondStatus.Unbonded)
-              .getValidator(validator_address);
-            inactive = true;
-            if (validator?.jailed) jailed = true;
-          }
-
-          return {
-            validatorName: validator?.description.moniker,
-            inactive: jailed ? "jailed" : inactive ? "inactive" : undefined,
-            amount,
-            endTime: end_time,
-          };
-        });
+        ?.map(({ validator_address, amount, end_time }) => ({
+          ...this.getValidatorInfo(validator_address),
+          amount,
+          endTime: end_time,
+        }));
     }
   }
 
-  /** For a share pool, the currently superfluid staked (delegated) LP shares. */
-  // @computed
-  // get userSuperfluidLpShares() {
-  //   if (this.querySharePoolDetails.longestDuration)
-  //     return this.osmosisQueries.queryAccountLocked
-  //       .get(this.bech32Address)
-  //       .getLockedCoinWithDuration(
-  //         this.querySharePoolDetails.poolShareCurrency,
-  //         this.querySharePoolDetails.longestDuration
-  //       );
-  // }
+  readonly getValidatorInfo = computedFn(
+    (
+      validatorBech32Address: string
+    ): {
+      validatorName: string | undefined;
+      validatorCommission: RatePretty | undefined;
+      validatorImgSrc: string | undefined;
+      inactive: "jailed" | "inactive" | undefined;
+    } => {
+      let jailed = false;
+      let inactive = false;
+      let validator = this.cosmosQueries.queryValidators
+        .getQueryStatus(Staking.BondStatus.Bonded)
+        .getValidator(validatorBech32Address);
+
+      if (!validator) {
+        validator = this.cosmosQueries.queryValidators
+          .getQueryStatus(Staking.BondStatus.Unbonded)
+          .getValidator(validatorBech32Address);
+        inactive = true;
+        if (validator?.jailed) jailed = true;
+      }
+
+      let thumbnail: string | undefined;
+      if (validator) {
+        thumbnail = this.cosmosQueries.queryValidators
+          .getQueryStatus(
+            inactive ? Staking.BondStatus.Unbonded : Staking.BondStatus.Bonded
+          )
+          .getValidatorThumbnail(validatorBech32Address);
+      }
+
+      const commissionRateRaw = validator?.commission.commission_rates.rate;
+
+      return {
+        validatorName: validator?.description.moniker,
+        validatorCommission: commissionRateRaw
+          ? new RatePretty(new Dec(commissionRateRaw))
+          : undefined,
+        validatorImgSrc: thumbnail,
+        inactive: jailed ? "jailed" : inactive ? "inactive" : undefined,
+      };
+    }
+  );
 }
 
 export class ObservableSuperfluidPoolDetails extends HasMapStore<ObservableSuperfluidPoolDetail> {
