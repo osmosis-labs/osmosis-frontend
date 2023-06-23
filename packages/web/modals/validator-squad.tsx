@@ -14,34 +14,25 @@ import { useTranslation } from "react-multi-lang";
 import { Icon } from "~/components/assets";
 import { SearchBox } from "~/components/input";
 import { IS_FRONTIER } from "~/config/index";
-
-import { ModalBaseProps } from "./base";
+import { ModalBaseProps } from "~/modals/base";
 
 export const ValidatorSquadModal: FunctionComponent<ModalBaseProps> = observer(
   (props) => {
-    const t = useTranslation();
-
-    return (
-      // <ModalBase
-      //   {...props}
-      //   title={
-      //     <h1 className="w-full text-center text-h6 font-h6">
-      //       Validator Squad
-      //     </h1>
-      //   }
-      //   // onRequestBack={languageSetting.state.isControlOpen ? noop : undefined}
-      // >
-      <ValidatorSquadContent />
-      // </ModalBase>
-    );
+    return <ValidatorSquadContent />;
   }
 );
 
-// const columns = [["Validator", "My stake", "Voting power", "Comission"]];
 const data = [
-  ["Cosmostation", 0.0, 0.0844, 0.05],
-  ["Figment", 0.0, 0.0458, 0.04],
-  ["Stargaze", 0.0, 0.0321, 0.05],
+  ["Cosmostation", "0.00", "8.44%", "5%"],
+  ["Figment", "0.00", "8.44%", "5%"],
+  ["Stargaze", "0.00", "8.44%", "5%"],
+  ["Frens", "0.00", "8.44%", "5%"],
+  ["Figment", "0.00", "8.44%", "5%"],
+  ["interchain.fm", "0.00", "8.44%", "5%"],
+  ["imperator.co", "0.00", "8.44%", "5%"],
+  ["Chorus One", "0.00", "8.44%", "5%"],
+  ["Electric", "0.00", "8.44%", "5%"],
+  ["wosmongton", "0.00", "8.44%", "5%"],
 ];
 
 type Validator = {
@@ -102,7 +93,7 @@ const ValidatorSquadContent = observer(() => {
   const handleSearchInput = () => console.log("search");
 
   return (
-    <div className="absolute max-h-[938px] w-full max-w-[1168px] rounded-[20px] bg-osmoverse-800 px-[62px] pt-8">
+    <div className="absolute z-50 max-h-[938px] w-full max-w-[1168px] rounded-[20px] bg-osmoverse-800 px-[62px] pt-8">
       <div className="relative flex flex-col overflow-auto">
         <div className="mx-auto mb-9 flex max-w-[500px] flex-col items-center justify-center">
           <h6>Validator Squad</h6>
