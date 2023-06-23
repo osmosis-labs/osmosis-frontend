@@ -755,7 +755,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDecimals: 8,
         // coinGeckoId: "crypto-com-chain",
         coinGeckoId: "pool:basecro",
-        coinImageUrl: "/tokens/cro.svg",
+        coinImageUrl: "/tokens/cro-bg-white.svg",
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {
