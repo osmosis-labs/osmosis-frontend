@@ -9,7 +9,6 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 import { useMemo } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { SearchBox } from "~/components/input";
@@ -17,9 +16,7 @@ import { IS_FRONTIER } from "~/config/index";
 import { ModalBaseProps } from "~/modals/base";
 
 export const ValidatorSquadModal: FunctionComponent<ModalBaseProps> = observer(
-  (props) => {
-    return <ValidatorSquadContent />;
-  }
+  () => <ValidatorSquadContent />
 );
 
 const data = [
@@ -80,6 +77,7 @@ const ValidatorSquadContent = observer(() => {
 
   const table = useReactTable({
     data,
+    // @ts-ignore
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -89,11 +87,11 @@ const ValidatorSquadContent = observer(() => {
   const paddingTop = 0;
   const topOffset = 324;
 
-  const t = useTranslation();
+  // const t = useTranslation();
   const handleSearchInput = () => console.log("search");
 
   return (
-    <div className="absolute z-50 max-h-[938px] w-full max-w-[1168px] rounded-[20px] bg-osmoverse-800 px-[62px] pt-8">
+    <div className="absolute z-50 max-h-[938px] w-full max-w-[1168px] rounded-[20px] bg-osmoverse-800 px-[62px] pt-8 pb-[54px]">
       <div className="relative flex flex-col overflow-auto">
         <div className="mx-auto mb-9 flex max-w-[500px] flex-col items-center justify-center">
           <h6>Validator Squad</h6>
@@ -170,6 +168,7 @@ const ValidatorSquadContent = observer(() => {
             {virtualRows.map((virtualRow, i) => {
               // const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
               const row = rows[i];
+              console.log("virtual row: ", virtualRow);
               return (
                 <tr
                   // key={row.id}
@@ -192,10 +191,10 @@ const ValidatorSquadContent = observer(() => {
               );
             })}
             {/* {paddingBottom > 0 && (
-            <tr>
-              <td style={{ height: `${paddingBottom - topOffset}px` }} />
-            </tr>
-          )} */}
+              <tr>
+                <td style={{ height: `${paddingBottom - topOffset}px` }} />
+              </tr>
+            )} */}
           </tbody>
         </table>
       </div>
