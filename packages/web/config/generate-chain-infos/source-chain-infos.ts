@@ -2739,8 +2739,8 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://www.mintscan.io/crescent/txs/{txHash}",
   },
   {
-    rpc: "https://rpc.lumenx.chaintools.tech",
-    rest: "https://api.lumenx.chaintools.tech",
+    rpc: "https://rpc-lumenx.cryptonet.pl/",
+    rest: "https://api-lumenx.cryptonet.pl/",
     chainId: "LumenX",
     chainName: "LumenX",
     bip44: {
@@ -2764,7 +2764,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
-    explorerUrlToTx: "https://explorer.chaintools.tech/lumenx/tx/{txHash}",
+    explorerUrlToTx: "https://ping.pub/lumenx/tx/{txHash}",
   },
   {
     rpc: "https://rpc.orai.io",
