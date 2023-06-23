@@ -51,6 +51,7 @@ export function useCfmmToClMigration(cfmmPoolId: string): {
                 cfmmPoolId,
                 undefined,
                 undefined,
+                undefined,
                 (tx) => {
                   // fullfilled
                   if (tx.code) reject(tx.log);
@@ -66,6 +67,7 @@ export function useCfmmToClMigration(cfmmPoolId: string): {
               .sendMigrateSharesToFullRangeConcentratedPositionMsgs(
                 cfmmPoolId,
                 params.lockIds,
+                undefined,
                 undefined,
                 (tx) => {
                   // fullfilled

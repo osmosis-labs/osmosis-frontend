@@ -1579,6 +1579,7 @@ export class OsmosisAccountImpl {
   async sendMigrateSharesToFullRangeConcentratedPositionMsgs(
     poolId: string,
     lockIds: string[] | undefined,
+    maxSlippage: string = DEFAULT_SLIPPAGE,
     memo: string = "",
     onFulfill?: (tx: any) => void
   ) {
@@ -1600,22 +1601,29 @@ export class OsmosisAccountImpl {
     await accountLocked.waitFreshResponse();
     await queryPool.waitFreshResponse();
 
-    const queryBalances = this.queriesStore
+    const queryAccountBalances = this.queriesStore
       .get(this.chainId)
       .queryBalances.getQueryBech32Address(this.base.bech32Address);
+    const queryPoolShares = queryAccountBalances.balances.find(
+      (balance) =>
+        balance.currency.coinMinimalDenom ===
+        queryPool.shareCurrency.coinMinimalDenom
+    );
+    await queryPoolShares?.waitFreshResponse();
 
     (lockIds ?? ["0"]).forEach((lockId) => {
       // ensure the lock ID is associated with the account, and that the coins locked are gamm shares
       // if lock is 0, the shares are not unlocked and are in bank
       const poolGammShares =
         lockId === "0"
-          ? queryBalances.getBalanceFromCurrency(queryPool.shareCurrency)
-          : accountLocked.lockedCoins.filter(
+          ? queryPoolShares?.balance
+          : accountLocked.lockedCoins.find(
               ({ amount, lockIds }) =>
-                amount.denom.includes(`gamm/${poolId}`) &&
+                amount.denom === queryPool.shareCurrency.coinMinimalDenom &&
                 lockIds.includes(lockId)
-            )?.[0].amount;
-      if (!poolGammShares || queryPool?.sharePool?.totalShare) return;
+            )?.amount;
+
+      if (!poolGammShares || !queryPool?.sharePool?.totalShare) return;
 
       const poolAssets = queryPool?.poolAssets.map(({ amount }) => ({
         denom: amount.currency.coinMinimalDenom,
@@ -1627,15 +1635,34 @@ export class OsmosisAccountImpl {
       const estimated = OsmosisMath.estimateExitSwap(
         {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          totalShare: queryPool!.sharePool!.totalShare,
+          totalShare: queryPool.sharePool.totalShare,
           poolAssets,
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           exitFee: queryPool!.exitFee.toDec(),
         },
         this.makeCoinPretty,
-        poolGammShares.toCoin().amount,
+        poolGammShares.toDec().toString(),
         poolGammShares.currency.coinDecimals
       );
+
+      const maxSlippageDec = new Dec(maxSlippage).quo(
+        DecUtils.getTenExponentNInPrecisionRange(2)
+      );
+      const sortedSlippageTokenOuts = estimated.tokenOuts
+        .map((tokenOut) => ({
+          denom: tokenOut.currency.coinMinimalDenom,
+          amount: tokenOut
+            .toDec()
+            .mul(new Dec(1).sub(maxSlippageDec))
+            .mul(
+              DecUtils.getTenExponentNInPrecisionRange(
+                tokenOut.currency.coinDecimals
+              )
+            )
+            .truncate()
+            .toString(),
+        }))
+        .sort((a, b) => b.denom.localeCompare(a.denom));
 
       multiMsgs.aminoMsgs.push({
         type: this._msgOpts.unlockAndMigrateSharesToFullRangeConcentratedPosition(
@@ -1648,10 +1675,7 @@ export class OsmosisAccountImpl {
             denom: poolGammShares.currency.coinMinimalDenom,
             amount: poolGammShares.toCoin().amount,
           },
-          token_out_mins: estimated.tokenOuts.map((tokenOut) => ({
-            denom: tokenOut.currency.coinMinimalDenom,
-            amount: tokenOut.toCoin().amount,
-          })),
+          token_out_mins: sortedSlippageTokenOuts,
         },
       });
 
@@ -1661,16 +1685,13 @@ export class OsmosisAccountImpl {
         value:
           osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition.encode(
             {
-              lockId: Long.fromString(lockId),
               sender: this.base.bech32Address,
+              lockId: Long.fromString(lockId),
               sharesToMigrate: {
                 denom: poolGammShares.currency.coinMinimalDenom,
                 amount: poolGammShares.toCoin().amount,
               },
-              tokenOutMins: estimated.tokenOuts.map((tokenOut) => ({
-                denom: tokenOut.currency.coinMinimalDenom,
-                amount: tokenOut.toCoin().amount,
-              })),
+              tokenOutMins: sortedSlippageTokenOuts,
             }
           ).finish(),
       });
