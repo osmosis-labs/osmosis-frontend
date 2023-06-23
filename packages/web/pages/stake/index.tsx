@@ -20,7 +20,7 @@ export const Staking: React.FC = () => {
   const [showValidatorModal, setShowValidatorModal] = useState(true);
 
   return (
-    <main className="flex h-screen items-center justify-center">
+    <main className="relative flex h-screen items-center justify-center">
       <div className="relative flex w-[27rem] flex-col gap-8 overflow-hidden rounded-[24px] bg-osmoverse-800 px-1 py-1 lg:mx-auto md:mt-mobile-header md:gap-6 md:px-3 md:pt-4 md:pb-4">
         <div className="relative flex flex-col gap-8 overflow-hidden rounded-[24px] bg-osmoverse-800 px-6 pt-8 pb-8 md:gap-6 md:px-3 md:pt-4 md:pb-4">
           <div className="relative flex w-full items-center justify-between">
@@ -76,12 +76,12 @@ export const Staking: React.FC = () => {
           >
             Stake
           </Button>
-          <ValidatorSquadModal
-            isOpen={showValidatorModal}
-            onRequestClose={() => setShowValidatorModal(false)}
-          />
         </div>
       </div>
+      <ValidatorSquadModal
+        isOpen={showValidatorModal}
+        onRequestClose={() => setShowValidatorModal(false)}
+      />
     </main>
   );
 };
