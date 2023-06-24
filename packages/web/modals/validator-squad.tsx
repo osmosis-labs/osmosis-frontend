@@ -100,7 +100,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
 
     return (
       <ModalBase
-        title={t("staking.validatorSquad.title")}
+        title={t("stake.validatorSquad.title")}
         isOpen={isOpen}
         onRequestClose={onRequestClose}
         className="!max-h-[938px] !max-w-[1168px]"
@@ -108,10 +108,10 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
         <div className="flex flex-col overflow-auto">
           <div className="mx-auto mb-9 flex max-w-[500px] flex-col items-center justify-center">
             <div className="mt-7 mb-3 font-medium">
-              {t("staking.validatorSquad.description")}
+              {t("stake.validatorSquad.description")}
             </div>
             <SearchBox
-              placeholder={t("staking.validatorSquad.searchPlaceholder")}
+              placeholder={t("stake.validatorSquad.searchPlaceholder")}
               onInput={handleSearchInput}
               className="self-end"
               size="full"
