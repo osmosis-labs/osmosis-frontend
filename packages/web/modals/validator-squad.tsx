@@ -21,7 +21,7 @@ export const ValidatorSquadModal: FunctionComponent<ModalBaseProps> = observer(
   (props) => <ValidatorSquadContent {...props} />
 );
 
-const data = [
+const data: Validator[] = [
   {
     validatorName: "Cosmostation",
     myStake: "0.01",
@@ -85,10 +85,10 @@ const data = [
 ];
 
 type Validator = {
-  validator: string;
+  validatorName: string;
   myStake: string;
-  votingPower: number;
-  comissions: number;
+  votingPower: string;
+  commissions: string;
 };
 
 interface ValidatorSquadContentProps {
@@ -102,7 +102,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
 
     const [sorting, setSorting] = useState<SortingState>([]);
 
-    const columns = useMemo<ColumnDef<Validator>[]>(
+    const columns = useMemo<ColumnDef<Validator, any>[]>(
       () => [
         {
           id: "validatorSquadTable",
@@ -131,7 +131,6 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
 
     const table = useReactTable({
       data,
-      // @ts-ignore
       columns,
       state: {
         sorting,
