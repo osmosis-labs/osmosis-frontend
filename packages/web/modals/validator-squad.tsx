@@ -102,7 +102,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
 
     const [sorting, setSorting] = useState<SortingState>([]);
 
-    const columns = useMemo<ColumnDef<Validator, any>[]>(
+    const columns = useMemo<ColumnDef<Validator>[]>(
       () => [
         {
           id: "validatorSquadTable",
