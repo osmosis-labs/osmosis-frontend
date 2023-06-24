@@ -34,7 +34,7 @@ export type EventProperties = {
   tokenAmount: number;
   bridge: string;
   hasExternalUrl: boolean;
-  avatar: "ammelia" | "wosmongton";
+  avatar: "ammelia" | "wosmongton" | "stargaze-pfp";
 };
 
 export type UserProperties = {
