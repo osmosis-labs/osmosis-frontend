@@ -2,7 +2,11 @@
 const config = {
   reactStrictMode: true,
   images: {
-    domains: ["app.osmosis.zone"],
+    domains: [
+      "app.osmosis.zone",
+      "ipfs-gw.stargaze-apis.com",
+      "res.cloudinary.com",
+    ],
   },
   webpack(config) {
     /**
