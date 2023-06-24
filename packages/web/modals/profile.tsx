@@ -1,4 +1,7 @@
+import { Listbox } from "@headlessui/react";
+import { Bech32Address } from "@keplr-wallet/cosmos";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
+import axios from "axios";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
@@ -77,8 +80,15 @@ export const ProfileModal: FunctionComponent<
     onOpen: onOpenFiatOnrampSelection,
     onClose: onCloseFiatOnrampSelection,
   } = useDisclosure();
+  const {
+    isOpen: isStargazePfpSelectOpen,
+    onClose: onCloseStargazePfpSelect,
+    onOpen: onOpenStargazePfpSelect,
+  } = useDisclosure();
 
   const account = accountStore.getAccount(chainId);
+  const address = account.bech32Address;
+  const endpoint = "https://graphql.mainnet.stargaze-apis.com/graphql";
 
   const [hasCopied, setHasCopied] = useState(false);
   const [_state, copyToClipboard] = useCopyToClipboard();
@@ -86,6 +96,11 @@ export const ProfileModal: FunctionComponent<
     () => setHasCopied(false),
     2000
   );
+  const [stargazeAddress, setStargazeAddress] = useState("");
+  const [stargazeNFTs, setStargazeNFTs] = useState<any[]>([]);
+  const [stargazeCollections, setStargazeCollections] = useState<any[]>([]);
+  const [selectedNFT, setSelectedNFT] = useState<any>(null);
+  const [selectedCollection, setSelectedCollection] = useState<any>(null);
 
   const onCopyAddress = () => {
     copyToClipboard(account.bech32Address);
@@ -101,7 +116,89 @@ export const ProfileModal: FunctionComponent<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const address = account.bech32Address;
+  useEffect(() => {
+    if (address.length > 0) {
+      setStargazeAddress(
+        Bech32Address.fromBech32(address, "osmo").toBech32("stars")
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [address]);
+
+  const fetchStargazeNFTs = async () => {
+    if (selectedCollection && stargazeAddress.length > 0) {
+      axios({
+        url: endpoint,
+        method: "post",
+        data: {
+          query: `
+            query Image {
+              tokens(collectionAddr: "${selectedCollection.collection.contractAddress}", owner: "${stargazeAddress}", limit: 100) {
+                tokens {
+                  media {
+                    image(size: MD) {
+                      jpgLink
+                    }
+                  }
+                  name
+                }
+              }
+            }
+            `,
+        },
+      }).then((result) => {
+        console.log("Result: ", result);
+        //console.log("Collections:", result.data.data.collections);
+        setStargazeNFTs(result?.data?.data?.tokens?.tokens);
+        console.log(stargazeNFTs);
+        console.log(selectedNFT);
+        setSelectedNFT(stargazeNFTs[0]);
+      });
+    }
+  };
+
+  const fetchStargazeCollections = async () => {
+    if (stargazeAddress.length > 0) {
+      console.log("stars   address: ", stargazeAddress);
+      axios({
+        url: endpoint,
+        method: "post",
+        data: {
+          query: `
+            query Collections {
+              ownedCollections(owner: "${stargazeAddress.toString()}") {
+                collection {
+                  contractAddress
+                  name
+                }
+              }
+            }
+            `,
+        },
+      }).then((result) => {
+        console.log(result);
+        if (result?.data?.data?.ownedCollections !== null) {
+          console.log("Collections:", result?.data?.data?.ownedCollections);
+          setStargazeCollections(result?.data?.data?.ownedCollections);
+          console.log(stargazeCollections);
+        }
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (stargazeAddress.length > 0) {
+      fetchStargazeCollections();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stargazeAddress]);
+
+  useEffect(() => {
+    if (stargazeAddress.length > 0) {
+      fetchStargazeNFTs();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCollection]);
 
   return (
     <>
@@ -111,10 +208,12 @@ export const ProfileModal: FunctionComponent<
         isOpen={props.isOpen}
         onRequestClose={() => {
           // Do not close the modal if the drawers are open
-          if (!isQROpen && !isAvatarSelectOpen) return props.onRequestClose?.();
+          if (!isQROpen && !isAvatarSelectOpen && !isStargazePfpSelectOpen)
+            return props.onRequestClose?.();
 
           // Close the drawers
           onCloseAvatarSelect();
+          onCloseStargazePfpSelect();
           onCloseQR();
         }}
         className="relative max-h-screen overflow-hidden"
@@ -123,15 +222,26 @@ export const ProfileModal: FunctionComponent<
           <Drawer
             isOpen={isAvatarSelectOpen}
             onOpen={onOpenAvatarSelect}
-            onClose={onCloseAvatarSelect}
+            onClose={() => {
+              onCloseAvatarSelect();
+              onCloseStargazePfpSelect();
+            }}
           >
             <DrawerButton className="transform transition-transform duration-300 ease-in-out hover:scale-105">
-              {profileStore.currentAvatar === "ammelia" ? (
+              {profileStore.currentAvatar === "ammelia" && (
                 <AmmeliaAvatar className="mt-10" aria-label="Select avatar" />
-              ) : (
+              )}
+              {profileStore.currentAvatar === "wosmongton" && (
                 <WosmongtonAvatar
                   className="mt-10"
                   aria-label="Select avatar"
+                />
+              )}
+              {profileStore.currentAvatar === "stargaze-pfp" && (
+                <StargazeAvatar
+                  className="mt-10"
+                  aria-label="Select avatar"
+                  customurl={profileStore.stargazeAvatarUri}
                 />
               )}
             </DrawerButton>
@@ -177,6 +287,117 @@ export const ProfileModal: FunctionComponent<
                     <p className="subtitle1 mt-4 tracking-wide text-osmoverse-300">
                       Ammelia
                     </p>
+                  </div>
+
+                  <div className="text-center">
+                    <Drawer
+                      isOpen={isStargazePfpSelectOpen}
+                      onOpen={onOpenStargazePfpSelect}
+                      onClose={onCloseStargazePfpSelect}
+                    >
+                      <DrawerButton>
+                        <div>
+                          <SelectNewAvatar
+                            isSelectable
+                            isSelected={
+                              profileStore.currentAvatar === "stargaze-pfp"
+                            }
+                            onSelect={() => {
+                              onOpenStargazePfpSelect();
+                              logEvent([
+                                EventName.ProfileModal.selectAvatarClicked,
+                                { avatar: "stargaze-pfp" },
+                              ]);
+                              console.log(
+                                "Get URI: ",
+                                profileStore.stargazeAvatarUri
+                              );
+                            }}
+                            className="outline-none"
+                          />
+                          <p className="subtitle1 mt-4 tracking-wide text-osmoverse-300">
+                            Select a Stargaze PFP
+                          </p>
+                        </div>
+                      </DrawerButton>
+                      <DrawerContent>
+                        <DrawerOverlay />
+                        <DrawerPanel className="flex h-80 items-center justify-center pt-7 pb-7">
+                          <div className="flex gap-8 xs:gap-3">
+                            <Listbox
+                              value={selectedCollection?.collection?.name}
+                              onChange={(value) => {
+                                setSelectedCollection(
+                                  stargazeCollections.find(
+                                    (collection) =>
+                                      collection?.collection?.name === value
+                                  )
+                                );
+                              }}
+                            >
+                              <div className="relative">
+                                <Listbox.Button className="border border-osmoverse-700">
+                                  {selectedCollection?.collection?.name
+                                    ? selectedCollection?.collection?.name
+                                    : "Select Collection"}
+                                </Listbox.Button>
+                                <Listbox.Options className="max-h-48 overflow-auto rounded border border-osmoverse-600">
+                                  {stargazeCollections?.map((collection) => (
+                                    <Listbox.Option
+                                      key={collection.collection.name}
+                                      value={collection.collection.name}
+                                    >
+                                      <div className="text-center">
+                                        <p className="subtitle1 mt-4 tracking-wide text-osmoverse-300">
+                                          {collection.collection.name}
+                                        </p>
+                                      </div>
+                                    </Listbox.Option>
+                                  ))}
+                                </Listbox.Options>
+                              </div>
+                            </Listbox>
+                            <div className="relative">
+                              <div className="mt-4 grid max-h-16 grid-cols-2 overflow-auto rounded-md border border-osmoverse-500">
+                                {stargazeNFTs?.map((nft) => (
+                                  <div
+                                    key={nft?.media?.image?.jpgLink}
+                                    className="text-center"
+                                  >
+                                    <StargazeAvatar
+                                      isSelectable
+                                      isSelected={
+                                        profileStore.currentAvatar ===
+                                        "stargaze-pfp"
+                                      }
+                                      customurl={nft?.media?.image?.jpgLink}
+                                      onSelect={() => {
+                                        onCloseStargazePfpSelect();
+                                        logEvent([
+                                          EventName.ProfileModal
+                                            .selectAvatarClicked,
+                                          { avatar: "stargaze-pfp" },
+                                        ]);
+                                        profileStore.setCurrentAvatar(
+                                          "stargaze-pfp"
+                                        );
+                                        profileStore.setStargazeAvatarUri(
+                                          nft?.media?.image?.jpgLink
+                                        );
+                                      }}
+                                      className="outline-none"
+                                    />
+                                    <p className="subtitle1 mt-4 tracking-wide text-osmoverse-300">
+                                      {nft?.name}
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </DrawerPanel>
+                      </DrawerContent>
+                    </Drawer>
                   </div>
                 </div>
               </DrawerPanel>
@@ -456,6 +677,7 @@ const BaseAvatar = forwardRef<
     isSelectable?: boolean;
     isSelected?: boolean;
     onSelect?: () => void;
+    customurl?: string;
   }
 >(({ isSelectable, isSelected, ...props }, ref) => {
   return (
@@ -468,6 +690,40 @@ const BaseAvatar = forwardRef<
           "group transition-all duration-300 ease-in-out active:border-[2px] active:border-wosmongton-200":
             isSelectable,
           "border-[2px] border-wosmongton-200": isSelected,
+        },
+        props.className
+      )}
+      onClick={() => props.onSelect?.()}
+    >
+      <div
+        className={classNames({
+          "transform transition-transform duration-300 ease-in-out group-hover:scale-[1.13]":
+            isSelectable,
+        })}
+      >
+        {props.children}
+      </div>
+    </button>
+  );
+});
+
+const SelectStargazePFP = forwardRef<
+  any,
+  HTMLAttributes<HTMLButtonElement> & {
+    isSelectable?: boolean;
+    isSelected?: boolean;
+    onSelect?: () => void;
+    customurl?: string;
+  }
+>(({ isSelectable, isSelected, ...props }, ref) => {
+  return (
+    <button
+      {...props}
+      ref={ref}
+      className={classNames(
+        "h-[140px] w-[140px] overflow-hidden rounded-[40px]",
+        {
+          "group transition-all duration-300 ease-in-out": isSelectable,
         },
         props.className
       )}
@@ -523,12 +779,57 @@ const AmmeliaAvatar = forwardRef<any, ComponentProps<typeof BaseAvatar>>(
         )}
       >
         <Image
-          alt="Wosmongton profile avatar"
+          alt="Ammelia profile avatar"
           src="/images/profile-ammelia.png"
           width={140}
           height={140}
         />
       </BaseAvatar>
+    );
+  }
+);
+
+const StargazeAvatar = forwardRef<any, ComponentProps<typeof BaseAvatar>>(
+  (props, ref) => {
+    return (
+      <BaseAvatar
+        {...props}
+        ref={ref}
+        className={classNames(
+          "bg-transparent",
+          props.isSelectable &&
+            "hover:bg-[linear-gradient(139.12deg,#F35DC7_7.8%,#7B0DE2_88.54%)] hover:shadow-[0px_4px_20px_4px_#AA4990] focus:bg-[linear-gradient(139.12deg,#F35DC7_7.8%,#7B0DE2_88.54%)]",
+          props.className
+        )}
+      >
+        <img
+          alt="Stargaze profile avatar"
+          src={
+            props.customurl ? props.customurl : "/images/profile-stargaze.png"
+          }
+          width={140}
+          height={140}
+        />
+      </BaseAvatar>
+    );
+  }
+);
+
+const SelectNewAvatar = forwardRef<any, ComponentProps<typeof BaseAvatar>>(
+  (props, ref) => {
+    return (
+      <SelectStargazePFP
+        {...props}
+        ref={ref}
+        className={classNames("bg-transparent", props.className)}
+      >
+        <img
+          alt="Select New Avatar"
+          src={"/images/profile-stargaze.png"}
+          width={140}
+          height={140}
+        />
+      </SelectStargazePFP>
     );
   }
 );
