@@ -234,17 +234,31 @@ const WalletInfo: FunctionComponent<
           className="group flex place-content-between items-center gap-[13px] rounded-xl border border-osmoverse-700 px-1.5 py-1 hover:border-[1.3px] hover:border-wosmongton-300 hover:bg-osmoverse-800 md:w-full"
         >
           <div className="h-8 w-8 shrink-0 overflow-hidden rounded-[7px] bg-osmoverse-700 group-hover:bg-gradient-positive">
-            {profileStore.currentAvatar === "ammelia" ? (
+            {profileStore.currentAvatar === "ammelia" && (
               <Image
                 alt="Wosmongton profile"
                 src="/images/profile-ammelia.png"
                 height={32}
                 width={32}
               />
-            ) : (
+            )}
+
+            {profileStore.currentAvatar === "wosmongton" && (
               <Image
                 alt="Wosmongton profile"
                 src="/images/profile-woz.png"
+                height={32}
+                width={32}
+              />
+            )}
+            {profileStore.currentAvatar === "stargaze-pfp" && (
+              <Image
+                alt="Stargaze PFP"
+                src={
+                  profileStore.stargazeAvatarUri
+                    ? profileStore.stargazeAvatarUri
+                    : "/images/profile-stargaze.png"
+                }
                 height={32}
                 width={32}
               />
