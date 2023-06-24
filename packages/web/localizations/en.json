@@ -531,5 +531,19 @@
       "title": "Osmosis Pools",
       "description": "Discover liqudity pools on Osmosis - the leading decentralized Cosmos exchange"
     }
+  },
+  "staking": {
+    "validatorSquad": {
+      "title": "Validator Squad",
+      "description": "Select the validators you’d like to delegate to. Once complete, continue to stake. You may edit your validator set at any time.",
+      "searchPlaceholder": "Search for a validator",
+      "button": "Set Squad",
+      "column": {
+        "validator": "Validator",
+        "myStake": "My Stake",
+        "votingPower": "Voting Power",
+        "commission": "Commission"
+      }
+    }
   }
 }
