@@ -88,9 +88,9 @@ export const ProfileModal: FunctionComponent<
   } = useDisclosure();
 
   const wallet = accountStore.getWallet(chainId);
-  const address = wallet.bech32Address;
+  const osmoAddress = wallet.bech32Address;
   const endpoint = "https://graphql.mainnet.stargaze-apis.com/graphql";
- 
+
   const [hasCopied, setHasCopied] = useState(false);
   const [_state, copyToClipboard] = useCopyToClipboard();
   const [_isReady, _cancel, reset] = useTimeoutFn(
@@ -141,13 +141,13 @@ export const ProfileModal: FunctionComponent<
   }, []);
 
   useEffect(() => {
-    if (address.length > 0) {
+    if (osmoAddress.length > 0) {
       setStargazeAddress(
-        Bech32Address.fromBech32(address, "osmo").toBech32("stars")
+        Bech32Address.fromBech32(osmoAddress, "osmo").toBech32("stars")
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address]);
+  }, [osmoAddress]);
 
   const fetchStargazeNFTs = async () => {
     if (selectedCollection && stargazeAddress.length > 0) {
