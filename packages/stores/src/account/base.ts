@@ -177,9 +177,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     this._refreshRequests++;
   }
 
-  addWallet(wallet: MainWalletBase) {
+  async addWallet(wallet: MainWalletBase) {
     this._wallets = [...this._wallets, wallet];
     this._walletManager = this.createWalletManager(this._wallets);
+    await this._walletManager.onMounted();
     this.refresh();
     return this._walletManager;
   }

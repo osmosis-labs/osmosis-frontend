@@ -5,6 +5,10 @@ import {
   WalletRepo,
   WalletStatus,
 } from "@cosmos-kit/core";
+import {
+  CosmosKitAccountsLocalStorageKey,
+  CosmosKitWalletLocalStorageKey,
+} from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
@@ -168,18 +172,20 @@ const ModalContent: FunctionComponent<
       wallet?: ChainWalletBase | (typeof WalletRegistry)[number]
     ) => {
       if (!wallet) return;
+
+      const handleConnectError = (e: Error) => {
+        console.error("Error while connecting to direct wallet. Details: ", e);
+        localStorage.removeItem(CosmosKitWalletLocalStorageKey);
+        localStorage.removeItem(CosmosKitAccountsLocalStorageKey);
+      };
+
       if (!("lazyInstall" in wallet)) {
         wallet
           .connect(sync)
           .then(() => {
             onConnectProp?.();
           })
-          .catch((e) =>
-            console.error(
-              "Error while connecting to direct wallet. Details: ",
-              e
-            )
-          );
+          .catch(handleConnectError);
         return;
       }
 
@@ -196,10 +202,9 @@ const ModalContent: FunctionComponent<
         const walletInfo = wallet;
         const WalletClass = await wallet.lazyInstall();
 
-        const walletManager = accountStore.addWallet(
+        const walletManager = await accountStore.addWallet(
           new WalletClass(walletInfo)
         );
-        await walletManager.onMounted();
 
         return walletManager
           .getMainWallet(wallet.name)
@@ -208,24 +213,14 @@ const ModalContent: FunctionComponent<
             setLazyWalletInfo(undefined);
             onConnectProp?.();
           })
-          .catch((e) =>
-            console.error(
-              "Error while connecting to newly installed wallet. Details: ",
-              e
-            )
-          );
+          .catch(handleConnectError);
       } else {
         installedWallet
           ?.connect(sync)
           .then(() => {
             onConnectProp?.();
           })
-          .catch((e) =>
-            console.error(
-              "Error while connecting to installed wallet. Details: ",
-              e
-            )
-          );
+          .catch(handleConnectError);
       }
     };
 
@@ -487,6 +482,8 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
 
   const walletInfo = wallet?.walletInfo;
   const qrUrl = wallet?.qrUrl;
+
+  console.log(qrUrl);
 
   const [description, errorTitle, errorDesc, status] = useMemo(() => {
     const isExpired = qrUrl?.message === ExpiredError.message;
