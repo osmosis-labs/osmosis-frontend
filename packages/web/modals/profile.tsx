@@ -174,7 +174,6 @@ export const ProfileModal: FunctionComponent<
         },
       })
         .then((result) => {
-          console.log("Result: ", result);
           setStargazeNFTs(result?.data?.data?.tokens?.tokens);
         })
         .catch((error) => {
@@ -208,7 +207,6 @@ export const ProfileModal: FunctionComponent<
         },
       })
         .then((result) => {
-          console.log("Result: ", result);
           setStargazeNFTs(result?.data?.data?.badges?.tokens);
         })
         .catch((error) => {
@@ -223,7 +221,6 @@ export const ProfileModal: FunctionComponent<
       setStargazeCollections([]);
       setStargazeNFTs([]);
       setSelectedCollection(null);
-      console.log("stars   address: ", stargazeAddress);
       axios({
         url: endpoint,
         method: "post",
@@ -241,9 +238,7 @@ export const ProfileModal: FunctionComponent<
         },
       })
         .then((result) => {
-          console.log(result);
           if (result?.data?.data?.ownedCollections !== null) {
-            console.log("Collections:", result?.data?.data?.ownedCollections);
             setStargazeCollections(result?.data?.data?.ownedCollections);
           }
         })
@@ -378,10 +373,6 @@ export const ProfileModal: FunctionComponent<
                                 EventName.ProfileModal.selectAvatarClicked,
                                 { avatar: "stargaze-pfp" },
                               ]);
-                              console.log(
-                                "Get URI: ",
-                                profileStore.stargazeAvatarUri
-                              );
                             }}
                             className="outline-none sm:w-full"
                           />
