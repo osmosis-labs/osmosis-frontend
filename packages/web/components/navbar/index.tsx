@@ -242,7 +242,6 @@ const WalletInfo: FunctionComponent<
                 width={32}
               />
             )}
-
             {profileStore.currentAvatar === "wosmongton" && (
               <Image
                 alt="Wosmongton profile"
@@ -261,6 +260,7 @@ const WalletInfo: FunctionComponent<
                 }
                 height={32}
                 width={32}
+                objectFit="none"
               />
             )}
           </div>
