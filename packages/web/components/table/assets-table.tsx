@@ -1,7 +1,14 @@
 import { Dec } from "@keplr-wallet/unit";
+import { getWalletWindowName } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { FunctionComponent, useCallback, useMemo, useState } from "react";
+import {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useTranslation } from "react-multi-lang";
 
 import {
@@ -56,7 +63,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
     onDeposit: _onDeposit,
     onWithdraw: _onWithdraw,
   }) => {
-    const { chainStore } = useStore();
+    const { chainStore, accountStore } = useStore();
     const { width, isMobile } = useWindowSize();
     const t = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
@@ -64,6 +71,42 @@ export const AssetsTable: FunctionComponent<Props> = observer(
       "favoritesList",
       ["OSMO", "ATOM"]
     );
+
+    const currentWallet = accountStore.getWallet(chainStore.osmosis.chainId);
+    const currentWalletName = currentWallet?.walletName;
+
+    /**
+     * Remove once ibc-go-v7 fix is released.
+     * @see https://github.com/osmosis-labs/osmosis-frontend/pull/1691
+     */
+    const [isCurrentWalletALedger, setIsCurrentWalletALedger] = useState(false);
+    useEffect(() => {
+      const main = async () => {
+        setIsCurrentWalletALedger(
+          currentWalletName
+            ? (
+                await (window as Record<string, any>)[
+                  getWalletWindowName(currentWalletName ?? "")
+                ]?.getKey?.(chainStore.osmosis.chainId)
+              )?.isNanoLedger
+            : false
+        );
+      };
+
+      main();
+
+      // Whenever wallet changes, check if it's a ledger wallet.
+      accountStore.walletManager.on("refresh_connection", main);
+      return () => {
+        accountStore.walletManager.off("refresh_connection", main);
+      };
+    }, [
+      accountStore.walletManager,
+      chainStore.osmosis.chainId,
+      currentWalletName,
+    ]);
+    const currentWalletSupportsDirectSigning =
+      !currentWalletName?.startsWith("cosmostation") && !isCurrentWalletALedger;
 
     const onDeposit = useCallback(
       (...depositParams: Parameters<typeof _onDeposit>) => {
@@ -509,21 +552,54 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                 ? ([
                     {
                       display: t("assets.table.columns.transfer"),
-                      displayCell: (cell) => (
-                        <div>
-                          <TransferButtonCell type="deposit" {...cell} />
-                          <TransferButtonCell type="withdraw" {...cell} />
-                        </div>
-                      ),
+                      displayCell: (cell) => {
+                        /**
+                         * Remove once ibc-go-v7 fix is released.
+                         * @see https://github.com/osmosis-labs/osmosis-frontend/pull/1691
+                         */
+                        const isUnstable =
+                          !currentWalletSupportsDirectSigning &&
+                          (cell.chainId?.startsWith("stride") ||
+                            chainStore
+                              .getChain(cell?.chainId ?? "")
+                              .features?.includes("ibc-go-v7-hot-fix"));
+                        return (
+                          <div>
+                            <TransferButtonCell
+                              type="deposit"
+                              {...cell}
+                              isUnstable={isUnstable ? true : undefined}
+                            />
+                            <TransferButtonCell type="withdraw" {...cell} />
+                          </div>
+                        );
+                      },
                       className: "text-left max-w-[5rem]",
                     },
                   ] as ColumnDef<TableCell>[])
                 : ([
                     {
                       display: t("assets.table.columns.deposit"),
-                      displayCell: (cell) => (
-                        <TransferButtonCell type="deposit" {...cell} />
-                      ),
+                      displayCell: (cell) => {
+                        /**
+                         * Remove once ibc-go-v7 fix is released.
+                         * @see https://github.com/osmosis-labs/osmosis-frontend/pull/1691
+                         */
+                        const isUnstable =
+                          !currentWalletSupportsDirectSigning &&
+                          (cell.chainId?.startsWith("stride") ||
+                            chainStore
+                              .getChain(cell?.chainId ?? "")
+                              .features?.includes("ibc-go-v7-hot-fix"));
+
+                        return (
+                          <TransferButtonCell
+                            type="deposit"
+                            {...cell}
+                            isUnstable={isUnstable ? true : undefined}
+                          />
+                        );
+                      },
                       className: "text-left max-w-[5rem]",
                     },
                     {
