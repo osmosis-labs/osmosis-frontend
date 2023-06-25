@@ -104,13 +104,13 @@ export const ProfileModal: FunctionComponent<
   const [searchCollectionValue, setSearchCollectionValue] = useState("");
   const [searchTokenValue, setSearchTokenValue] = useState("");
 
-  const filteredCollections = stargazeCollections.filter((collection) =>
+  const filteredCollections = stargazeCollections?.filter((collection) =>
     collection.collection.name
       .toLowerCase()
       .includes(searchCollectionValue.toLowerCase())
   );
 
-  const sortedFilteredCollections = filteredCollections.sort((a, b) => {
+  const sortedFilteredCollections = filteredCollections?.sort((a, b) => {
     if (a.collection.name < b.collection.name) {
       return -1;
     }
@@ -120,7 +120,7 @@ export const ProfileModal: FunctionComponent<
     return 0;
   });
 
-  const filteredTokens = stargazeNFTs.filter((token) =>
+  const filteredTokens = stargazeNFTs?.filter((token) =>
     token.name.toLowerCase().includes(searchTokenValue.toLowerCase())
   );
 
@@ -184,6 +184,40 @@ export const ProfileModal: FunctionComponent<
     }
   };
 
+  const fetchStargazeBadges = async () => {
+    if (selectedCollection && stargazeAddress.length > 0) {
+      axios({
+        url: endpoint,
+        method: "post",
+        data: {
+          query: `
+            query Badges {
+              badges(owner: "${stargazeAddress}") {
+                tokens {
+                  media {
+                    image {
+                      jpgLink
+                    }
+                    type
+                  }
+                  name
+                }
+              }
+            }
+            `,
+        },
+      })
+        .then((result) => {
+          console.log("Result: ", result);
+          setStargazeNFTs(result?.data?.data?.badges?.tokens);
+        })
+        .catch((error) => {
+          console.log("Error: ", error);
+          setStargazeNFTs([]);
+        });
+    }
+  };
+
   const fetchStargazeCollections = async () => {
     if (stargazeAddress.length > 0) {
       setStargazeCollections([]);
@@ -229,7 +263,9 @@ export const ProfileModal: FunctionComponent<
 
   useEffect(() => {
     if (stargazeAddress.length > 0) {
-      fetchStargazeNFTs();
+      if (selectedCollection?.collection?.name === "Badges")
+        fetchStargazeBadges();
+      else fetchStargazeNFTs();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCollection]);
@@ -369,6 +405,7 @@ export const ProfileModal: FunctionComponent<
                                       collection?.collection?.name === value
                                   )
                                 );
+                                setSearchCollectionValue("");
                               }}
                             >
                               <div className="ml-2 pt-2">
@@ -447,7 +484,7 @@ export const ProfileModal: FunctionComponent<
                               {filteredTokens?.filter(
                                 (nft) => nft?.media?.type === "image"
                               ).length > 0 && (
-                                <div className="max-w-64 relative mt-4 w-64 cursor-default rounded-lg bg-osmoverse-600 py-2 pl-4 pr-10 text-left shadow-md focus:outline-none focus-visible:border-osmoverse-300 focus-visible:ring-2 focus-visible:ring-white-full focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-wosmongton-300 sm:w-full sm:text-sm">
+                                <div className="max-w-64 relative mt-4 w-full cursor-default rounded-lg bg-osmoverse-600 py-2 pl-4 pr-10 text-left shadow-md focus:outline-none focus-visible:border-osmoverse-300 focus-visible:ring-2 focus-visible:ring-white-full focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-wosmongton-300 sm:w-full sm:text-sm">
                                   <input
                                     type="text"
                                     value={searchTokenValue}
@@ -461,6 +498,14 @@ export const ProfileModal: FunctionComponent<
                                     className="w-full bg-transparent placeholder-osmoverse-200 outline-none"
                                     placeholder={"Type to search for a token"}
                                   />
+                                  <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                                    <Icon
+                                      className="flex shrink-0 items-center text-white-full"
+                                      id={"search"}
+                                      height={12}
+                                      width={12}
+                                    />
+                                  </span>
                                 </div>
                               )}
                               {filteredTokens?.length > 0 &&
