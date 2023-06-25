@@ -22,7 +22,6 @@ import {
 import { useTranslation } from "react-multi-lang";
 import { useCopyToClipboard, useTimeoutFn } from "react-use";
 
-import { Icon } from "../../../packages/web/components/assets";
 import {
   CopyIcon,
   ExternalLinkIcon,
