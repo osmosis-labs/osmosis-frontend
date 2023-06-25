@@ -101,6 +101,28 @@ export const ProfileModal: FunctionComponent<
   const [stargazeNFTs, setStargazeNFTs] = useState<any[]>([]);
   const [stargazeCollections, setStargazeCollections] = useState<any[]>([]);
   const [selectedCollection, setSelectedCollection] = useState<any>(null);
+  const [searchCollectionValue, setSearchCollectionValue] = useState("");
+  const [searchTokenValue, setSearchTokenValue] = useState("");
+
+  const filteredCollections = stargazeCollections.filter((collection) =>
+    collection.collection.name
+      .toLowerCase()
+      .includes(searchCollectionValue.toLowerCase())
+  );
+
+  const sortedFilteredCollections = filteredCollections.sort((a, b) => {
+    if (a.collection.name < b.collection.name) {
+      return -1;
+    }
+    if (a.collection.name > b.collection.name) {
+      return 1;
+    }
+    return 0;
+  });
+
+  const filteredTokens = stargazeNFTs.filter((token) =>
+    token.name.toLowerCase().includes(searchTokenValue.toLowerCase())
+  );
 
   const onCopyAddress = () => {
     copyToClipboard(account.bech32Address);
@@ -260,7 +282,7 @@ export const ProfileModal: FunctionComponent<
 
             <DrawerContent>
               <DrawerOverlay />
-              <DrawerPanel className="flex h-fit items-center justify-center pt-7 pb-7">
+              <DrawerPanel className="flex h-[55%] items-center justify-center pt-7 pb-7">
                 <h6 className="mb-8">Select an avatar</h6>
                 <div className="flex gap-8 xs:gap-3">
                   <div className="text-center">
@@ -334,7 +356,7 @@ export const ProfileModal: FunctionComponent<
                       </DrawerButton>
                       <DrawerContent>
                         <DrawerOverlay />
-                        <DrawerPanel className="flex h-80 items-center justify-center pt-7 pb-7">
+                        <DrawerPanel className="mt-4 flex items-center justify-center pt-8 pb-8">
                           <div className="flex flex-row gap-4">
                             <Listbox
                               defaultValue={
@@ -349,24 +371,36 @@ export const ProfileModal: FunctionComponent<
                                 );
                               }}
                             >
-                              <div className="ml-2 p-2">
+                              <div className="ml-2 pt-2">
                                 <Listbox.Button className="max-w-64 relative mt-4 w-64 cursor-default rounded-lg bg-osmoverse-600 py-2 pl-4 pr-10 text-left shadow-md focus:outline-none focus-visible:border-osmoverse-300 focus-visible:ring-2 focus-visible:ring-white-full focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-wosmongton-300 sm:w-full sm:text-sm">
-                                  <span className="block truncate">
-                                    {selectedCollection?.collection?.name
-                                      ? selectedCollection?.collection?.name
-                                      : "Select a Collection"}
-                                  </span>
+                                  <input
+                                    type="text"
+                                    value={searchCollectionValue}
+                                    onChange={(e) =>
+                                      setSearchCollectionValue(e.target.value)
+                                    }
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                    }}
+                                    className="w-full bg-transparent placeholder-osmoverse-200 outline-none"
+                                    placeholder={
+                                      selectedCollection?.collection?.name
+                                        ? selectedCollection?.collection?.name
+                                        : "Select a collection"
+                                    }
+                                  />
                                   <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                     <Icon
-                                      className="flex shrink-0 items-center text-osmoverse-200"
+                                      className="flex shrink-0 items-center text-white-full"
                                       id={"chevron-down"}
                                       height={12}
                                       width={12}
                                     />
                                   </span>
                                 </Listbox.Button>
-                                <Listbox.Options className="relative mt-1 max-h-48 w-64 overflow-auto rounded-md bg-osmoverse-600 text-base shadow-lg ring-1 ring-black ring-opacity-50 focus:outline-none sm:w-full sm:text-sm">
-                                  {stargazeCollections?.length === 0 && (
+                                <Listbox.Options className="relative mt-1 max-h-64 w-64 overflow-auto rounded-md bg-osmoverse-600 text-base shadow-lg ring-1 ring-black ring-opacity-50 focus:outline-none sm:w-full sm:text-sm">
+                                  {sortedFilteredCollections?.length === 0 && (
                                     <Listbox.Option
                                       className={({ active }) =>
                                         `relative m-1 ml-1 cursor-default select-none rounded-lg py-1 ${
@@ -385,42 +419,63 @@ export const ProfileModal: FunctionComponent<
                                       </div>
                                     </Listbox.Option>
                                   )}
-                                  {stargazeCollections?.map((collection) => (
-                                    <Listbox.Option
-                                      className={({ active }) =>
-                                        `relative m-1 ml-2 cursor-default select-none rounded-lg py-1 ${
-                                          active
-                                            ? "bg-osmoverse-800 text-white-full"
-                                            : "text-osmoverse-300"
-                                        }`
-                                      }
-                                      key={collection.collection.name}
-                                      value={collection.collection.name}
-                                    >
-                                      <div className="text-center">
-                                        <p className="subtitle1 tracking-wide text-osmoverse-300">
-                                          {collection.collection.name}
-                                        </p>
-                                      </div>
-                                    </Listbox.Option>
-                                  ))}
+                                  {sortedFilteredCollections?.map(
+                                    (collection) => (
+                                      <Listbox.Option
+                                        className={({ active }) =>
+                                          `relative m-1 ml-3 cursor-default select-none rounded-md py-1 ${
+                                            active
+                                              ? "bg-osmoverse-800 text-white-full"
+                                              : "text-osmoverse-300"
+                                          }`
+                                        }
+                                        key={collection.collection.name}
+                                        value={collection.collection.name}
+                                      >
+                                        <div className="text-center">
+                                          <p className="subtitle1 tracking-wide text-osmoverse-300">
+                                            {collection.collection.name}
+                                          </p>
+                                        </div>
+                                      </Listbox.Option>
+                                    )
+                                  )}
                                 </Listbox.Options>
                               </div>
                             </Listbox>
-                            <div className="relative mt-2 flex pr-4">
-                              {stargazeNFTs?.length > 0 &&
-                                stargazeNFTs?.filter(
+                            <div className="relative mt-2 flex flex-col pr-4">
+                              {filteredTokens?.filter(
+                                (nft) => nft?.media?.type === "image"
+                              ).length > 0 && (
+                                <div className="max-w-64 relative mt-4 w-64 cursor-default rounded-lg bg-osmoverse-600 py-2 pl-4 pr-10 text-left shadow-md focus:outline-none focus-visible:border-osmoverse-300 focus-visible:ring-2 focus-visible:ring-white-full focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-wosmongton-300 sm:w-full sm:text-sm">
+                                  <input
+                                    type="text"
+                                    value={searchTokenValue}
+                                    onChange={(e) =>
+                                      setSearchTokenValue(e.target.value)
+                                    }
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                    }}
+                                    className="w-full bg-transparent placeholder-osmoverse-200 outline-none"
+                                    placeholder={"Type to search for a token"}
+                                  />
+                                </div>
+                              )}
+                              {filteredTokens?.length > 0 &&
+                                filteredTokens?.filter(
                                   (nft) => nft?.media?.type === "image"
                                 ).length === 0 && (
                                   <div className="mt-6 text-sm">
                                     No suitable token to be used as a PFP.
                                   </div>
                                 )}
-                              {stargazeNFTs?.filter(
+                              {filteredTokens?.filter(
                                 (nft) => nft?.media?.type === "image"
                               ).length > 0 && (
-                                <div className="mt-4 grid h-64 max-h-64 w-[340px] grid-cols-2 overflow-auto rounded-md border border-osmoverse-500 p-2 sm:w-full sm:grid-cols-1">
-                                  {stargazeNFTs
+                                <div className="mt-1 grid h-64 max-h-64 w-[340px] grid-cols-2 overflow-auto rounded-md border border-osmoverse-500 p-2 sm:w-full xs:grid-cols-1">
+                                  {filteredTokens
                                     ?.filter(
                                       (nft) => nft?.media?.type === "image"
                                     )
