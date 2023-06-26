@@ -9,7 +9,8 @@
       "iconImageAlt": "Variable chart decreasing to the lower right, then increasing to the upper right with dollar signs",
       "gradient": "linear-gradient(136deg, #3B154F 0%, #10061C 47.66%, #0E2654 100%)",
       "fontColor": "#E4E1FB",
-      "arrowColor": "#BAF3FF"
+      "arrowColor": "#BAF3FF",
+      "featured": true
     },
     {
       "name": "Dollar Cost Averaging",
@@ -20,7 +21,8 @@
       "iconImageAlt": "Chart increasing to the upper right with dollar signs",
       "gradient": "linear-gradient(136deg, #543E17 0%, #161A24 47.66%, #183B5B 100%)",
       "fontColor": "#FFF5C7",
-      "arrowColor": "#EED75F"
+      "arrowColor": "#EED75F",
+      "featured": true
     }
   ]
 }

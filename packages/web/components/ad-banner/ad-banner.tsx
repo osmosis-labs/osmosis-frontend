@@ -11,7 +11,11 @@ const shuffleArray = (array: any[]): any[] =>
   array.sort(() => 0.5 - Math.random());
 
 export const AdBanner = memo(() => {
-  const ads = useMemo(() => shuffleArray(adCMS.banners), []);
+  const featuredAds = useMemo(
+    () => adCMS.banners.filter(({ featured }) => featured),
+    []
+  );
+  const ads = useMemo(() => shuffleArray(featuredAds), [featuredAds]);
 
   return (
     <Stepper autoplay={{ delayInMs: 12000, stopOnHover: true }}>

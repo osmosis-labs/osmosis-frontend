@@ -14,6 +14,7 @@ export interface AdBannerProps {
   gradient: string;
   fontColor: string;
   arrowColor: string;
+  featured: boolean;
 }
 
 export const AdBannerContent: React.FC<AdBannerProps> = memo(

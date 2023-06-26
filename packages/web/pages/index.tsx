@@ -1,4 +1,5 @@
 import { Dec } from "@keplr-wallet/unit";
+import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { useMemo } from "react";
@@ -45,6 +46,8 @@ const Home: NextPage = observer(function () {
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
   });
+
+  const flags = useFlags();
 
   return (
     <main className="relative h-full bg-osmoverse-900">
