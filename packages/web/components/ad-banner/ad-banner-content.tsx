@@ -30,8 +30,6 @@ export const AdBannerContent: React.FC<AdBannerProps> = memo(
     const gradientStyle = { backgroundImage: gradient };
     const textContainerStyle = { color: fontColor };
 
-    console.log("gradientStyle: ", gradientStyle);
-
     return (
       <a
         className="z-50 flex w-full gap-5 rounded-[24px] py-3 px-4 hover:cursor-pointer"
