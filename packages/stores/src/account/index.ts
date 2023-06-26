@@ -1589,7 +1589,7 @@ export class OsmosisAccountImpl {
       throw new Error("Unknown pool");
     }
 
-    const multiMsgs: ProtoMsgsOrWithAminoMsgs = {
+    const multiMsgs: Required<ProtoMsgsOrWithAminoMsgs> = {
       aminoMsgs: [],
       protoMsgs: [],
     };
