@@ -12,10 +12,9 @@ export const ArrowButton = forwardRef<
   ButtonHTMLAttributes<HTMLButtonElement> &
     AnchorHTMLAttributes<HTMLAnchorElement> & {
       isLink?: boolean;
-      shouldInherit?: boolean;
     }
 >((props, ref) => {
-  const { isLink, shouldInherit = false, ...rest } = props;
+  const { isLink, ...rest } = props;
   const Component = (isLink ? "a" : "button") as ElementType<typeof props>;
 
   return (
