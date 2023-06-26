@@ -10,9 +10,7 @@ import {
 export const ArrowButton = forwardRef<
   HTMLButtonElement | HTMLAnchorElement,
   ButtonHTMLAttributes<HTMLButtonElement> &
-    AnchorHTMLAttributes<HTMLAnchorElement> & {
-      isLink?: boolean;
-    }
+    AnchorHTMLAttributes<HTMLAnchorElement> & { isLink?: boolean }
 >((props, ref) => {
   const { isLink, ...rest } = props;
   const Component = (isLink ? "a" : "button") as ElementType<typeof props>;
@@ -29,7 +27,7 @@ export const ArrowButton = forwardRef<
       {props.children}
       <Image
         alt="earn more"
-        src={"/icons/arrow-right.svg"}
+        src="/icons/arrow-right.svg"
         height={24}
         width={24}
       />
