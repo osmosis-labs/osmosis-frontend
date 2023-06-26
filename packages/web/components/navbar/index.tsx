@@ -273,7 +273,7 @@ const WalletInfo: FunctionComponent<
                 }
                 height={32}
                 width={32}
-                objectFit="none"
+                objectFit="scale-down"
               />
             )}
           </div>

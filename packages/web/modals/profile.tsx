@@ -16,6 +16,7 @@ import {
   forwardRef,
   FunctionComponent,
   HTMLAttributes,
+  useCallback,
   useEffect,
   useState,
 } from "react";
@@ -38,7 +39,7 @@ import {
   DrawerOverlay,
   DrawerPanel,
 } from "../components/drawers";
-import { EventName } from "../config";
+import { EventName, STARGAZE_GRAPHQL_API } from "../config";
 import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "../hooks";
 import { useStore } from "../stores";
 import { formatPretty } from "../utils/formatter";
@@ -47,6 +48,23 @@ import { ModalBase, ModalBaseProps } from "./base";
 import { FiatOnrampSelectionModal } from "./fiat-on-ramp-selection";
 
 const QRCode = dynamic(() => import("qrcode.react"));
+
+type Collection = {
+  collection: {
+    name: string;
+    contractAddress: string;
+  };
+};
+
+type Token = {
+  name: string;
+  media: {
+    image: {
+      jpgLink: string;
+    };
+    type: string;
+  };
+};
 
 export const ProfileModal: FunctionComponent<
   ModalBaseProps & { icnsName?: string }
@@ -88,7 +106,10 @@ export const ProfileModal: FunctionComponent<
 
   const wallet = accountStore.getWallet(chainId);
   const address = wallet?.address ?? "";
-  const endpoint = "https://graphql.mainnet.stargaze-apis.com/graphql";
+  const stargazeAddress =
+    address.length > 0
+      ? Bech32Address.fromBech32(address, "osmo").toBech32("stars")
+      : "";
 
   const [hasCopied, setHasCopied] = useState(false);
   const [_state, copyToClipboard] = useCopyToClipboard();
@@ -96,12 +117,17 @@ export const ProfileModal: FunctionComponent<
     () => setHasCopied(false),
     2000
   );
-  const [stargazeAddress, setStargazeAddress] = useState("");
-  const [stargazeNFTs, setStargazeNFTs] = useState<any[]>([]);
-  const [stargazeCollections, setStargazeCollections] = useState<any[]>([]);
-  const [selectedCollection, setSelectedCollection] = useState<any>(null);
+  const [stargazeNFTs, setStargazeNFTs] = useState<Token[]>([]);
+  const [stargazeCollections, setStargazeCollections] = useState<Collection[]>(
+    []
+  );
+  const [selectedCollection, setSelectedCollection] = useState<
+    Collection | undefined
+  >(undefined);
   const [searchCollectionValue, setSearchCollectionValue] = useState("");
   const [searchTokenValue, setSearchTokenValue] = useState("");
+  const [loadingCollections, setLoadingCollections] = useState(false);
+  const [loadingNFTs, setLoadingNFTs] = useState(false);
 
   const filteredCollections = stargazeCollections?.filter((collection) =>
     collection.collection.name
@@ -123,6 +149,10 @@ export const ProfileModal: FunctionComponent<
     token.name.toLowerCase().includes(searchTokenValue.toLowerCase())
   );
 
+  const tokensWithImage = filteredTokens?.filter(
+    (nft) => nft?.media?.type === "image"
+  );
+
   const onCopyAddress = () => {
     copyToClipboard(address);
     logEvent([EventName.ProfileModal.copyWalletAddressClicked]);
@@ -137,55 +167,11 @@ export const ProfileModal: FunctionComponent<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (address.length > 0) {
-      setStargazeAddress(
-        Bech32Address.fromBech32(address, "osmo").toBech32("stars")
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address]);
-
-  const fetchStargazeNFTs = async () => {
+  const fetchStargazeBadges = useCallback(async () => {
     if (selectedCollection && stargazeAddress.length > 0) {
+      setLoadingNFTs(true);
       axios({
-        url: endpoint,
-        method: "post",
-        data: {
-          query: `
-            query Image {
-              tokens(collectionAddr: "${selectedCollection.collection.contractAddress}", owner: "${stargazeAddress}", limit: 100) {
-                tokens {
-                  media {
-                    image(size: MD) {
-                      jpgLink
-                      height
-                      width
-                    }
-                    type
-                    url
-                  }
-                  name
-                }
-              }
-            }
-            `,
-        },
-      })
-        .then((result) => {
-          setStargazeNFTs(result?.data?.data?.tokens?.tokens);
-        })
-        .catch((error) => {
-          console.log("Error: ", error);
-          setStargazeNFTs([]);
-        });
-    }
-  };
-
-  const fetchStargazeBadges = async () => {
-    if (selectedCollection && stargazeAddress.length > 0) {
-      axios({
-        url: endpoint,
+        url: STARGAZE_GRAPHQL_API,
         method: "post",
         data: {
           query: `
@@ -206,29 +192,35 @@ export const ProfileModal: FunctionComponent<
         },
       })
         .then((result) => {
+          console.log("Badges:", result?.data?.data?.badges?.tokens);
           setStargazeNFTs(result?.data?.data?.badges?.tokens);
+          setLoadingNFTs(false);
         })
         .catch((error) => {
           console.log("Error: ", error);
           setStargazeNFTs([]);
+          setLoadingNFTs(false);
         });
     }
-  };
+  }, [selectedCollection, stargazeAddress]);
 
-  const fetchStargazeCollections = async () => {
-    if (stargazeAddress.length > 0) {
-      setStargazeCollections([]);
-      setStargazeNFTs([]);
-      setSelectedCollection(null);
+  const fetchStargazeNFTs = useCallback(async () => {
+    if (selectedCollection && stargazeAddress.length > 0) {
+      setLoadingNFTs(true);
       axios({
-        url: endpoint,
+        url: STARGAZE_GRAPHQL_API,
         method: "post",
         data: {
           query: `
-            query Collections {
-              ownedCollections(owner: "${stargazeAddress.toString()}") {
-                collection {
-                  contractAddress
+            query Image {
+              tokens(collectionAddr: "${selectedCollection.collection.contractAddress}", owner: "${stargazeAddress}", limit: 100) {
+                tokens {
+                  media {
+                    image(size: MD) {
+                      jpgLink
+                    }
+                    type
+                  }
                   name
                 }
               }
@@ -237,32 +229,75 @@ export const ProfileModal: FunctionComponent<
         },
       })
         .then((result) => {
+          console.log("Tokens: ", result?.data?.data?.tokens?.tokens);
+          setStargazeNFTs(result?.data?.data?.tokens?.tokens);
+          setLoadingNFTs(false);
+        })
+        .catch((error) => {
+          console.log("Error: ", error);
+          setStargazeNFTs([]);
+          setLoadingNFTs(false);
+        });
+    }
+  }, [selectedCollection, stargazeAddress]);
+
+  const fetchStargazeCollections = useCallback(async () => {
+    if (stargazeAddress.length > 0) {
+      setLoadingCollections(true);
+      setStargazeCollections([]);
+      setStargazeNFTs([]);
+      setSelectedCollection(undefined);
+      axios({
+        url: STARGAZE_GRAPHQL_API,
+        method: "post",
+        data: {
+          query: `
+              query Collections {
+                ownedCollections(owner: "${stargazeAddress.toString()}") {
+                  collection {
+                    contractAddress
+                    name
+                  }
+                }
+              }
+              `,
+        },
+      })
+        .then((result) => {
+          console.log("Collections: ", result?.data?.data?.ownedCollections);
           if (result?.data?.data?.ownedCollections !== null) {
             setStargazeCollections(result?.data?.data?.ownedCollections);
+            setLoadingCollections(false);
           }
         })
         .catch((error) => {
           console.log("Error: ", error);
           setStargazeCollections([]);
+          setLoadingCollections(false);
         });
     }
-  };
+  }, [stargazeAddress]);
 
   useEffect(() => {
     if (stargazeAddress.length > 0) {
       fetchStargazeCollections();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stargazeAddress]);
+  }, [fetchStargazeCollections, stargazeAddress]);
 
   useEffect(() => {
     if (stargazeAddress.length > 0) {
-      if (selectedCollection?.collection?.name === "Badges")
+      if (selectedCollection?.collection?.name === "Badges") {
         fetchStargazeBadges();
-      else fetchStargazeNFTs();
+      } else {
+        fetchStargazeNFTs();
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCollection]);
+  }, [
+    fetchStargazeBadges,
+    fetchStargazeNFTs,
+    selectedCollection,
+    stargazeAddress,
+  ]);
 
   return (
     <>
@@ -292,22 +327,22 @@ export const ProfileModal: FunctionComponent<
             }}
           >
             <DrawerButton className="transform transition-transform duration-300 ease-in-out hover:scale-105">
-              {profileStore.currentAvatar === "ammelia" && (
+              {profileStore.currentAvatar === "ammelia" ? (
                 <AmmeliaAvatar className="mt-10" aria-label="Select avatar" />
-              )}
-              {profileStore.currentAvatar === "wosmongton" && (
+              ) : null}
+              {profileStore.currentAvatar === "wosmongton" ? (
                 <WosmongtonAvatar
                   className="mt-10"
                   aria-label="Select avatar"
                 />
-              )}
-              {profileStore.currentAvatar === "stargaze-pfp" && (
+              ) : null}
+              {profileStore.currentAvatar === "stargaze-pfp" ? (
                 <StargazeAvatar
                   className="mt-10"
                   aria-label="Select avatar"
                   customurl={profileStore.stargazeAvatarUri}
                 />
-              )}
+              ) : null}
             </DrawerButton>
 
             <DrawerContent>
@@ -402,7 +437,11 @@ export const ProfileModal: FunctionComponent<
                                 <Listbox.Button className="max-w-64 relative mt-4 w-64 cursor-default rounded-lg bg-osmoverse-600 py-2 pl-4 pr-10 text-left shadow-md focus:outline-none focus-visible:border-osmoverse-300 focus-visible:ring-2 focus-visible:ring-white-full focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-wosmongton-300 sm:w-full sm:text-sm">
                                   <input
                                     type="text"
-                                    value={searchCollectionValue}
+                                    value={
+                                      loadingCollections
+                                        ? "Loading collections..."
+                                        : searchCollectionValue
+                                    }
                                     onChange={(e) =>
                                       setSearchCollectionValue(e.target.value)
                                     }
@@ -470,86 +509,89 @@ export const ProfileModal: FunctionComponent<
                                 </Listbox.Options>
                               </div>
                             </Listbox>
-                            <div className="relative mt-2 flex flex-col pr-4">
-                              {filteredTokens?.filter(
-                                (nft) => nft?.media?.type === "image"
-                              ).length > 0 && (
-                                <div className="max-w-64 relative mt-4 w-full cursor-default rounded-lg bg-osmoverse-600 py-2 pl-4 pr-10 text-left shadow-md focus:outline-none focus-visible:border-osmoverse-300 focus-visible:ring-2 focus-visible:ring-white-full focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-wosmongton-300 sm:w-full sm:text-sm">
-                                  <input
-                                    type="text"
-                                    value={searchTokenValue}
-                                    onChange={(e) =>
-                                      setSearchTokenValue(e.target.value)
-                                    }
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                    }}
-                                    className="w-full bg-transparent placeholder-osmoverse-200 outline-none"
-                                    placeholder={"Type to search for a token"}
-                                  />
-                                  <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                                    <Icon
-                                      className="flex shrink-0 items-center text-white-full"
-                                      id={"search"}
-                                      height={12}
-                                      width={12}
+                            {loadingNFTs ? (
+                              <div className="relative mt-8 text-osmoverse-300">
+                                {" "}
+                                Loading tokens...{" "}
+                              </div>
+                            ) : (
+                              <div className="relative mt-2 flex flex-col pr-4">
+                                {tokensWithImage.length > 0 && (
+                                  <div className="max-w-64 relative mt-4 w-full cursor-default rounded-lg bg-osmoverse-600 py-2 pl-4 pr-10 text-left shadow-md focus:outline-none focus-visible:border-osmoverse-300 focus-visible:ring-2 focus-visible:ring-white-full focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-wosmongton-300 sm:w-full sm:text-sm">
+                                    <input
+                                      type="text"
+                                      value={searchTokenValue}
+                                      onChange={(e) =>
+                                        setSearchTokenValue(e.target.value)
+                                      }
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                      }}
+                                      className="w-full bg-transparent placeholder-osmoverse-200 outline-none"
+                                      placeholder={"Type to search for a token"}
                                     />
-                                  </span>
-                                </div>
-                              )}
-                              {filteredTokens?.length > 0 &&
-                                filteredTokens?.filter(
-                                  (nft) => nft?.media?.type === "image"
-                                ).length === 0 && (
-                                  <div className="mt-6 text-sm">
-                                    No suitable token to be used as a PFP.
+                                    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                                      <Icon
+                                        className="flex shrink-0 items-center text-white-full"
+                                        id={"search"}
+                                        height={12}
+                                        width={12}
+                                      />
+                                    </span>
                                   </div>
                                 )}
-                              {filteredTokens?.filter(
-                                (nft) => nft?.media?.type === "image"
-                              ).length > 0 && (
-                                <div className="mt-1 grid h-64 max-h-64 w-[340px] grid-cols-2 overflow-auto rounded-md border border-osmoverse-500 p-2 sm:w-full xs:grid-cols-1">
-                                  {filteredTokens
-                                    ?.filter(
-                                      (nft) => nft?.media?.type === "image"
-                                    )
-                                    .map((nft) => (
-                                      <div
-                                        key={nft?.media?.image?.jpgLink}
-                                        className="text-center"
-                                      >
-                                        <StargazeAvatar
-                                          isSelectable
-                                          isSelected={
-                                            profileStore.currentAvatar ===
-                                            "stargaze-pfp"
-                                          }
-                                          customurl={nft?.media?.image?.jpgLink}
-                                          onSelect={() => {
-                                            onCloseStargazePfpSelect();
-                                            logEvent([
-                                              EventName.ProfileModal
-                                                .selectAvatarClicked,
-                                              { avatar: "stargaze-pfp" },
-                                            ]);
-                                            profileStore.setCurrentAvatar(
+                                {filteredTokens?.length > 0 &&
+                                  tokensWithImage.length === 0 && (
+                                    <div className="mt-6 text-sm">
+                                      No suitable token to be used as a PFP.
+                                    </div>
+                                  )}
+                                {tokensWithImage.length > 0 && (
+                                  <div className="mt-1 grid h-64 max-h-64 w-[340px] grid-cols-2 overflow-auto rounded-md border border-osmoverse-500 p-2 sm:w-full xs:grid-cols-1">
+                                    {filteredTokens
+                                      ?.filter(
+                                        (nft) => nft?.media?.type === "image"
+                                      )
+                                      .map((nft) => (
+                                        <div
+                                          key={nft?.media?.image?.jpgLink}
+                                          className="text-center"
+                                        >
+                                          <StargazeAvatar
+                                            isSelectable
+                                            isSelected={
+                                              profileStore.currentAvatar ===
                                               "stargaze-pfp"
-                                            );
-                                            profileStore.setStargazeAvatarUri(
+                                            }
+                                            customurl={
                                               nft?.media?.image?.jpgLink
-                                            );
-                                          }}
-                                          className="outline-none sm:w-full"
-                                        />
-                                        <p className="subtitle1 mb-2 tracking-wide text-osmoverse-300">
-                                          {nft?.name}
-                                        </p>
-                                      </div>
-                                    ))}
-                                </div>
-                              )}
-                            </div>
+                                            }
+                                            onSelect={() => {
+                                              onCloseStargazePfpSelect();
+                                              logEvent([
+                                                EventName.ProfileModal
+                                                  .selectAvatarClicked,
+                                                { avatar: "stargaze-pfp" },
+                                              ]);
+                                              profileStore.setCurrentAvatar(
+                                                "stargaze-pfp"
+                                              );
+                                              profileStore.setStargazeAvatarUri(
+                                                nft?.media?.image?.jpgLink
+                                              );
+                                            }}
+                                            className="outline-none sm:w-full"
+                                          />
+                                          <p className="subtitle1 mb-2 tracking-wide text-osmoverse-300">
+                                            {nft?.name}
+                                          </p>
+                                        </div>
+                                      ))}
+                                  </div>
+                                )}
+                              </div>
+                            )}
                           </div>
                         </DrawerPanel>
                       </DrawerContent>
