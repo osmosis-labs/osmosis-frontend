@@ -1,14 +1,16 @@
 import {
+  ColumnDef,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
+  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
@@ -20,24 +22,74 @@ export const ValidatorSquadModal: FunctionComponent<ModalBaseProps> = observer(
   (props) => <ValidatorSquadContent {...props} />
 );
 
-const data = [
-  ["Cosmostation", "0.00", "8.44%", "5%"],
-  ["Figment", "0.00", "8.44%", "5%"],
-  ["Stargaze", "0.00", "8.44%", "5%"],
-  ["Frens", "0.00", "8.44%", "5%"],
-  ["Figment", "0.00", "8.44%", "5%"],
-  ["interchain.fm", "0.00", "8.44%", "5%"],
-  ["imperator.co", "0.00", "8.44%", "5%"],
-  ["Chorus One", "0.00", "8.44%", "5%"],
-  ["Electric", "0.00", "8.44%", "5%"],
-  ["wosmongton", "0.00", "8.44%", "5%"],
+const data: Validator[] = [
+  {
+    validatorName: "Cosmostation",
+    myStake: "0.01",
+    votingPower: "1.44%",
+    commissions: "1%",
+  },
+  {
+    validatorName: "Figment",
+    myStake: "0.02",
+    votingPower: "2.44%",
+    commissions: "2%",
+  },
+  {
+    validatorName: "Stargaze",
+    myStake: "0.03",
+    votingPower: "3.44%",
+    commissions: "3%",
+  },
+  {
+    validatorName: "Frens",
+    myStake: "0.04",
+    votingPower: "4.44%",
+    commissions: "4%",
+  },
+  {
+    validatorName: "Figment",
+    myStake: "0.05",
+    votingPower: "5.44%",
+    commissions: "5%",
+  },
+  {
+    validatorName: "interchain.fm",
+    myStake: "0.06",
+    votingPower: "6.44%",
+    commissions: "6%",
+  },
+  {
+    validatorName: "imperator.co",
+    myStake: "0.07",
+    votingPower: "7.44%",
+    commissions: "7%",
+  },
+  {
+    validatorName: "Chorus One",
+    myStake: "0.08",
+    votingPower: "8.44%",
+    commissions: "8%",
+  },
+  {
+    validatorName: "Electric",
+    myStake: "0.09",
+    votingPower: "9.44%",
+    commissions: "9%",
+  },
+  {
+    validatorName: "wosmongton",
+    myStake: "0.10",
+    votingPower: "10.44%",
+    commissions: "10%",
+  },
 ];
 
 type Validator = {
-  validator: string;
-  myStake: number;
-  votingPower: number;
-  comissions: number;
+  validatorName: string;
+  myStake: string;
+  votingPower: string;
+  commissions: string;
 };
 
 interface ValidatorSquadContentProps {
@@ -51,50 +103,45 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
 
     const columnHelper = createColumnHelper<Validator>();
 
-    const virtualRows = data;
-    const rows = data;
+    const [sorting, setSorting] = useState<SortingState>([]);
 
-    const columns = useMemo(
+    const columns = useMemo<ColumnDef<Validator>[]>(
       () => [
-        columnHelper.accessor((row) => row, {
-          cell: "hello world",
-          header: "Validator",
-          id: "validator",
-          sortDescFirst: false,
-        }),
-        columnHelper.accessor((row) => row, {
-          cell: "hello world",
-          header: "My stake",
-          id: "myStake",
-          sortDescFirst: false,
-        }),
-        columnHelper.accessor((row) => row, {
-          cell: "hello world",
-          header: "Voting power",
-          id: "votingPower",
-          sortDescFirst: false,
-        }),
-        columnHelper.accessor((row) => row, {
-          cell: "hello world",
-          header: "Commissions",
-          id: "comissions",
-          sortDescFirst: false,
-        }),
+        {
+          id: "validatorSquadTable",
+          columns: [
+            {
+              accessorKey: "validatorName",
+              header: () => "Validator",
+            },
+            {
+              accessorKey: "myStake",
+              header: () => "My Stake",
+            },
+            {
+              accessorKey: "votingPower",
+              header: () => "Voting Power",
+            },
+            {
+              accessorKey: "commissions",
+              header: () => "Commissions",
+            },
+          ],
+        },
       ],
       [columnHelper]
     );
 
     const table = useReactTable({
       data,
-      // @ts-ignore
       columns,
+      state: {
+        sorting,
+      },
+      onSortingChange: setSorting,
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: getSortedRowModel(),
-      manualSorting: true,
     });
-
-    const paddingTop = 0;
-    const topOffset = 324;
 
     const handleSearchInput = () => console.log("search");
 
@@ -119,93 +166,80 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
           </div>
           <table className="w-full">
             <thead className="z-[51] m-0">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id} className="!bg-osmoverse-700">
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <th key={header.id} colSpan={header.colSpan}>
-                        {header.isPlaceholder ? null : (
-                          <div
-                            {...{
-                              className: header.column.getCanSort()
-                                ? "cursor-pointer select-none flex items-center gap-2"
-                                : "",
-                              onClick: header.column.getToggleSortingHandler(),
-                            }}
-                          >
-                            {flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                            {{
-                              asc: (
-                                <Icon
-                                  id="sort-up"
-                                  className={classNames(
-                                    "h-[16px] w-[7px]",
-                                    IS_FRONTIER
-                                      ? "text-white-full"
-                                      : "text-osmoverse-300"
-                                  )}
-                                />
-                              ),
-                              desc: (
-                                <Icon
-                                  id="sort-down"
-                                  className={classNames(
-                                    "h-[16px] w-[7px]",
-                                    IS_FRONTIER
-                                      ? "text-white-full"
-                                      : "text-osmoverse-300"
-                                  )}
-                                />
-                              ),
-                            }[header.column.getIsSorted() as string] ?? null}
-                          </div>
-                        )}
-                      </th>
-                    );
-                  })}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {paddingTop > 0 && (
-                <tr>
-                  <td style={{ height: `${paddingTop - topOffset}px` }} />
-                </tr>
-              )}
-              {/* update to virtual rows */}
-              {virtualRows.map((virtualRow, i) => {
-                // const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
-                const row = rows[i];
-                console.log("virtual row: ", virtualRow);
-                return (
-                  <tr
-                    // key={row.id}
-                    key={i}
-                    className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
-                    // ref={i === virtualRows.length - 1 ? intersectionRef : null}
-                  >
-                    {row.map((cell) => {
+              {table
+                .getHeaderGroups()
+                .slice(1)
+                .map((headerGroup) => (
+                  <tr key={headerGroup.id} className="!bg-osmoverse-700">
+                    {headerGroup.headers.map((header) => {
                       return (
-                        <td key={i} onClick={(e) => e.stopPropagation()}>
-                          {cell}
-                          {/* {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )} */}
-                        </td>
+                        <th key={header.id} colSpan={header.colSpan}>
+                          {header.isPlaceholder ? null : (
+                            <div
+                              {...{
+                                className: header.column.getCanSort()
+                                  ? "cursor-pointer select-none flex items-center gap-2"
+                                  : "",
+                                onClick:
+                                  header.column.getToggleSortingHandler(),
+                              }}
+                            >
+                              {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                              {{
+                                asc: (
+                                  <Icon
+                                    id="sort-up"
+                                    className={classNames(
+                                      "h-[16px] w-[7px]",
+                                      IS_FRONTIER
+                                        ? "text-white-full"
+                                        : "text-osmoverse-300"
+                                    )}
+                                  />
+                                ),
+                                desc: (
+                                  <Icon
+                                    id="sort-down"
+                                    className={classNames(
+                                      "h-[16px] w-[7px]",
+                                      IS_FRONTIER
+                                        ? "text-white-full"
+                                        : "text-osmoverse-300"
+                                    )}
+                                  />
+                                ),
+                              }[header.column.getIsSorted() as string] ?? null}
+                            </div>
+                          )}
+                        </th>
                       );
                     })}
                   </tr>
-                );
-              })}
-              {/* {paddingBottom > 0 && (
-              <tr>
-                <td style={{ height: `${paddingBottom - topOffset}px` }} />
-              </tr>
-            )} */}
+                ))}
+            </thead>
+            <tbody>
+              {table
+                .getRowModel()
+                .rows.slice(0, 10)
+                .map((row) => {
+                  return (
+                    <tr key={row.id}>
+                      {row.getVisibleCells().map((cell) => {
+                        return (
+                          <td key={cell.id}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>
