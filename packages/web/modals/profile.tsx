@@ -192,7 +192,6 @@ export const ProfileModal: FunctionComponent<
         },
       })
         .then((result) => {
-          console.log("Badges:", result?.data?.data?.badges?.tokens);
           setStargazeNFTs(result?.data?.data?.badges?.tokens);
           setLoadingNFTs(false);
         })
@@ -229,7 +228,6 @@ export const ProfileModal: FunctionComponent<
         },
       })
         .then((result) => {
-          console.log("Tokens: ", result?.data?.data?.tokens?.tokens);
           setStargazeNFTs(result?.data?.data?.tokens?.tokens);
           setLoadingNFTs(false);
         })
@@ -264,7 +262,6 @@ export const ProfileModal: FunctionComponent<
         },
       })
         .then((result) => {
-          console.log("Collections: ", result?.data?.data?.ownedCollections);
           if (result?.data?.data?.ownedCollections !== null) {
             setStargazeCollections(result?.data?.data?.ownedCollections);
             setLoadingCollections(false);
