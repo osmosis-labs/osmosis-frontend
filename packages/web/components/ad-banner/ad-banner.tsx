@@ -1,20 +1,11 @@
 import { memo, useMemo } from "react";
 
 import adCMS from "~/components/ad-banner/ad-banner-cms.json";
-import { AdBannerContent } from "~/components/ad-banner/ad-banner-content";
+import {
+  AdBannerContent,
+  AdBannerProps,
+} from "~/components/ad-banner/ad-banner-content";
 import { Step, Stepper, StepsIndicator } from "~/components/stepper/index";
-
-interface AdBannerProps {
-  name: string;
-  header: string;
-  subheader: string;
-  externalUrl: string;
-  iconImageUrl: string;
-  iconImageAlt: string;
-  gradient: string;
-  fontColor: string;
-  arrowColor: string;
-}
 
 const shuffleArray = (array: any[]): any[] =>
   array.sort(() => 0.5 - Math.random());

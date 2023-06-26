@@ -4,7 +4,7 @@ import { memo } from "react";
 
 import { ArrowRightIcon } from "~/public/icons/arrow-right-icon";
 
-interface AdBannerProps {
+export interface AdBannerProps {
   name: string;
   header: string;
   subheader: string;
