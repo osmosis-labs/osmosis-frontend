@@ -106,7 +106,9 @@ export const AssetsTable: FunctionComponent<Props> = observer(
       currentWalletName,
     ]);
     const currentWalletSupportsDirectSigning =
-      !currentWalletName?.startsWith("cosmostation") && !isCurrentWalletALedger;
+      !currentWalletName?.startsWith("cosmostation") &&
+      !isCurrentWalletALedger &&
+      !(currentWallet?.walletInfo?.mode === "wallet-connect");
 
     const onDeposit = useCallback(
       (...depositParams: Parameters<typeof _onDeposit>) => {
