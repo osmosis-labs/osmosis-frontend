@@ -1,15 +1,22 @@
 import { Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
+import dynamic from "next/dynamic";
 import { useMemo } from "react";
 
-import { AdBannerContainer } from "~/components/ad-banner";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { TradeClipboard } from "~/components/trade-clipboard";
 import { useStore } from "~/stores";
 
 import { EventName, IS_FRONTIER, IS_TESTNET } from "../config";
 import { useAmplitudeAnalytics } from "../hooks";
+
+const DynamicAdBanner = dynamic(
+  () => import("../components/ad-banner/ad-banner"),
+  {
+    ssr: false,
+  }
+);
 
 const Home: NextPage = observer(function () {
   const { chainStore, queriesStore, priceStore } = useStore();
@@ -88,7 +95,8 @@ const Home: NextPage = observer(function () {
       </div>
       <div className="ml-auto mr-[15%] flex h-full w-full items-center justify-center overflow-y-auto overflow-x-hidden lg:mx-auto md:mt-mobile-header">
         <div className="flex w-[27rem] flex-col gap-4">
-          <AdBannerContainer />
+          <DynamicAdBanner />
+          {/* <AdBanner /> */}
           <TradeClipboard containerClassName="w-full" pools={pools} />
         </div>
       </div>
