@@ -1,0 +1,17 @@
+{
+  "banners": [
+    {
+      "name": "limit orders",
+      "header": "Place limit orders",
+      "subheader": "New trading options with Autonomy",
+      "external_URL": "https://osmosis.zone",
+      "icon_image_URL": "./place-limit-order.svg",
+      "gradient": "linear-gradient(136deg, #3B154F 0%, #10061C 47.66%, #0E2654 100%);",
+      "featured": true,
+      "internal_data": {
+        "icon_size": 585918,
+        "project_listing_date": "2023-05-30T15:32:59.804Z"
+      }
+    }
+  ]
+}
