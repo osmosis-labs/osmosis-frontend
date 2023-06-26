@@ -19,7 +19,7 @@ interface AdBannerProps {
 const shuffleArray = (array: any[]): any[] =>
   array.sort(() => 0.5 - Math.random());
 
-const Container = memo(() => {
+export const AdBanner = memo(() => {
   const ads = useMemo(() => shuffleArray(adCMS.banners), []);
 
   return (
@@ -33,5 +33,3 @@ const Container = memo(() => {
     </Stepper>
   );
 });
-
-export default Container;
