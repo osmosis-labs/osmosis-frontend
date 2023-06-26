@@ -1,17 +1,26 @@
 {
   "banners": [
     {
-      "name": "limit orders",
+      "name": "Limit Orders",
       "header": "Place limit orders",
       "subheader": "New trading options with Autonomy",
-      "external_URL": "https://osmosis.zone",
-      "icon_image_URL": "./place-limit-order.svg",
+      "externalUrl": "https://autonomynetwork.io/autoswap",
+      "iconImageUrl": "/images/place-limit-order.svg",
+      "iconImageAlt": "Variable chart decreasing to the lower right, then increasing to the upper right with dollar signs",
       "gradient": "linear-gradient(136deg, #3B154F 0%, #10061C 47.66%, #0E2654 100%);",
-      "featured": true,
-      "internal_data": {
-        "icon_size": 585918,
-        "project_listing_date": "2023-05-30T15:32:59.804Z"
-      }
+      "fontColor": "#E4E1FB",
+      "arrowColor": "#BAF3FF"
+    },
+    {
+      "name": "Dollar Cost Averaging",
+      "header": "Dollar cost averaging",
+      "subheader": "Define a strategy with CalcFi",
+      "externalUrl": "https://app.calculated.fi/?chain=Osmosis",
+      "iconImageUrl": "/images/dollar-cost-averaging.svg",
+      "iconImageAlt": "Chart increasing to the upper right with dollar signs",
+      "gradient": "linear-gradient(136deg, #543E17 0%, #161A24 47.66%, #183B5B 100%);",
+      "fontColor": "#FFF5C7",
+      "arrowColor": "#EED75F"
     }
   ]
 }

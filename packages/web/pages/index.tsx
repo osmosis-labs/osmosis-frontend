@@ -86,13 +86,10 @@ const Home: NextPage = observer(function () {
           </g>
         </svg>
       </div>
-      <div className="flex h-full w-full items-center justify-center overflow-y-auto overflow-x-hidden">
+      <div className="ml-auto mr-[15%] flex h-full w-full items-center justify-center overflow-y-auto overflow-x-hidden lg:mx-auto md:mt-mobile-header">
         <div className="flex w-[27rem] flex-col gap-4">
           <AdBannerContainer />
-          <TradeClipboard
-            containerClassName="w-full md:mt-mobile-header ml-auto mr-[15%] lg:mx-auto"
-            pools={pools}
-          />
+          <TradeClipboard containerClassName="w-full" pools={pools} />
         </div>
       </div>
     </main>
