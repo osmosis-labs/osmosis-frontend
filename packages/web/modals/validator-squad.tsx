@@ -11,6 +11,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { SearchBox } from "~/components/input";
@@ -98,6 +99,8 @@ interface ValidatorSquadContentProps {
 
 const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
   observer(({ onRequestClose, isOpen }) => {
+    const t = useTranslation();
+
     const columnHelper = createColumnHelper<Validator>();
 
     const [sorting, setSorting] = useState<SortingState>([]);
@@ -144,7 +147,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
 
     return (
       <ModalBase
-        title="Validator Squad"
+        title={t("stake.validatorSquad.title")}
         isOpen={isOpen}
         onRequestClose={onRequestClose}
         className="!max-h-[938px] !max-w-[1168px]"
@@ -152,11 +155,10 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
         <div className="flex flex-col overflow-auto">
           <div className="mx-auto mb-9 flex max-w-[500px] flex-col items-center justify-center">
             <div className="mt-7 mb-3 font-medium">
-              Select the validators you’d like to delegate to. Once complete,
-              continue to stake. You may edit your validator set at any time.
+              {t("stake.validatorSquad.description")}
             </div>
             <SearchBox
-              placeholder="Search for a validator"
+              placeholder={t("stake.validatorSquad.searchPlaceholder")}
               onInput={handleSearchInput}
               className="self-end"
               size="full"
