@@ -326,14 +326,12 @@ export const ProfileModal: FunctionComponent<
             <DrawerButton className="transform transition-transform duration-300 ease-in-out hover:scale-105">
               {profileStore.currentAvatar === "ammelia" ? (
                 <AmmeliaAvatar className="mt-10" aria-label="Select avatar" />
-              ) : null}
-              {profileStore.currentAvatar === "wosmongton" ? (
+              ) : profileStore.currentAvatar === "wosmongton" ? (
                 <WosmongtonAvatar
                   className="mt-10"
                   aria-label="Select avatar"
                 />
-              ) : null}
-              {profileStore.currentAvatar === "stargaze-pfp" ? (
+              ) : profileStore.currentAvatar === "stargaze-pfp" ? (
                 <StargazeAvatar
                   className="mt-10"
                   aria-label="Select avatar"

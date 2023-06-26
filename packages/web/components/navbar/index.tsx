@@ -254,16 +254,14 @@ const WalletInfo: FunctionComponent<
                 height={32}
                 width={32}
               />
-            ) : null}
-            {profileStore.currentAvatar === "wosmongton" ? (
+            ) : profileStore.currentAvatar === "wosmongton" ? (
               <Image
                 alt="Wosmongton profile"
                 src="/images/profile-woz.png"
                 height={32}
                 width={32}
               />
-            ) : null}
-            {profileStore.currentAvatar === "stargaze-pfp" ? (
+            ) : profileStore.currentAvatar === "stargaze-pfp" ? (
               <Image
                 alt="Stargaze PFP"
                 src={
