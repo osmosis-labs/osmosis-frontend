@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { useMemo } from "react";
 
+import { AdBanner } from "~/components/ad-banner";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { TradeClipboard } from "~/components/trade-clipboard";
 import { useStore } from "~/stores";
@@ -85,12 +86,14 @@ const Home: NextPage = observer(function () {
           </g>
         </svg>
       </div>
-
-      <div className="flex h-full w-full items-center overflow-y-auto overflow-x-hidden">
-        <TradeClipboard
-          containerClassName="w-[27rem] md:mt-mobile-header ml-auto mr-[15%] lg:mx-auto"
-          pools={pools}
-        />
+      <div className="flex h-full w-full items-center justify-center overflow-y-auto overflow-x-hidden">
+        <div className="flex w-[27rem] flex-col gap-4">
+          <AdBanner />
+          <TradeClipboard
+            containerClassName="w-full md:mt-mobile-header ml-auto mr-[15%] lg:mx-auto"
+            pools={pools}
+          />
+        </div>
       </div>
     </main>
   );
