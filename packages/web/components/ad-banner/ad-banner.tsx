@@ -35,3 +35,18 @@ export const AdBanner = () => {
     </div>
   );
 };
+
+{
+  /* <Stepper autoplay={{ delayInMs: 4000, stopOnHover: true }}>
+          <Step>
+            <h4>Heading</h4>
+            <div className="h-12 w-12 bg-osmoverse-500"></div>
+            <p>test 1</p>
+          </Step>
+
+          <Step>
+            <p>test 2</p>
+          </Step>
+          <StepsIndicator />
+        </Stepper> */
+}

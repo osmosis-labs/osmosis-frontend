@@ -3,7 +3,6 @@ import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { useMemo } from "react";
 
-import { AdBanner } from "~/components/ad-banner/ad-banner";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { TradeClipboard } from "~/components/trade-clipboard";
 import { useStore } from "~/stores";
@@ -88,21 +87,6 @@ const Home: NextPage = observer(function () {
       </div>
 
       <div className="flex h-full w-full flex-col items-center gap-4 overflow-y-auto overflow-x-hidden">
-        {/* <Stepper autoplay={{ delayInMs: 4000, stopOnHover: true }}>
-          <Step>
-            <h4>Heading</h4>
-            <div className="h-12 w-12 bg-osmoverse-500"></div>
-            <p>test 1</p>
-          </Step>
-
-          <Step>
-            <p>test 2</p>
-          </Step>
-          <StepsIndicator />
-        </Stepper> */}
-        <div className="ml-auto mr-[15%] w-[27rem] lg:mx-auto md:mt-mobile-header">
-          <AdBanner />
-        </div>
         <TradeClipboard
           containerClassName="w-[27rem] md:mt-mobile-header ml-auto mr-[15%] lg:mx-auto"
           pools={pools}
