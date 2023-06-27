@@ -1,6 +1,8 @@
 import { Dec } from "@keplr-wallet/unit";
+import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
+import dynamic from "next/dynamic";
 import { useMemo } from "react";
 
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
@@ -9,6 +11,13 @@ import { useStore } from "~/stores";
 
 import { EventName, IS_FRONTIER, IS_TESTNET } from "../config";
 import { useAmplitudeAnalytics } from "../hooks";
+
+const AdBanner = dynamic<{}>(
+  () => import("../components/ad-banner").then((module) => module.AdBanner),
+  {
+    ssr: false,
+  }
+);
 
 const Home: NextPage = observer(function () {
   const { chainStore, queriesStore, priceStore } = useStore();
@@ -44,6 +53,8 @@ const Home: NextPage = observer(function () {
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
   });
+
+  const flags = useFlags();
 
   return (
     <main className="relative h-full bg-osmoverse-900">
@@ -85,11 +96,11 @@ const Home: NextPage = observer(function () {
           </g>
         </svg>
       </div>
-      <div className="flex h-full w-full items-center overflow-y-auto overflow-x-hidden">
-        <TradeClipboard
-          containerClassName="w-[27rem] md:mt-mobile-header ml-auto mr-[15%] lg:mx-auto"
-          pools={pools}
-        />
+      <div className="ml-auto mr-[15%] flex h-full w-full items-center justify-center overflow-y-auto overflow-x-hidden lg:mx-auto md:mt-mobile-header">
+        <div className="flex w-[27rem] flex-col gap-4">
+          {flags.swapsAdBanner && <AdBanner />}
+          <TradeClipboard containerClassName="w-full" pools={pools} />
+        </div>
       </div>
     </main>
   );
