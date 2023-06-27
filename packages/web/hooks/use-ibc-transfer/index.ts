@@ -96,7 +96,7 @@ export function useIbcTransfer({
 
   useMount(() => {
     /**
-     * For WalletConnect display the wallet select modal to signal the user to open
+     * Display the wallet select modal with WalletConnect wallets to signal the user to open
      * his mobile wallet app. We don't have to do this for extension wallets because
      * feedback is given by the extension itself.
      **/
