@@ -57,20 +57,15 @@ export const InputBox: FunctionComponent<Props> = ({
         "flex h-fit w-full flex-nowrap justify-between rounded-lg bg-osmoverse-1000 px-2 text-white-high",
         {
           border: style !== "no-border",
-          "border-osmoverse-200":
-            style !== "no-border" && (style === "active" || inputFocused),
-          "border-osmoverse-1000":
-            style !== "no-border" && style === "enabled" && !inputFocused,
+          "border-osmoverse-200": style !== "no-border" && (style === "active" || inputFocused),
+          "border-osmoverse-1000": style !== "no-border" && style === "enabled" && !inputFocused,
           "border-missionError": style === "error",
           "cursor-default border-white-disabled bg-osmoverse-800": disabled,
         },
         className
       )}
     >
-      <label
-        className="flex w-full shrink grow items-center"
-        htmlFor="text-input"
-      >
+      <label className="flex w-full shrink grow items-center" htmlFor="text-input">
         {isAutosize ? (
           <AutosizeInput
             inputRef={(ref) => {
@@ -126,37 +121,25 @@ export const InputBox: FunctionComponent<Props> = ({
       <div className="flex flex-nowrap gap-2">
         {!rightEntry &&
           (clearButton && currentValue !== "" ? (
-            <CloseButton
-              className="my-2.5 mr-1.5"
-              onClick={() => onInput("")}
-              disabled={disabled}
-            />
+            <CloseButton className="my-2.5 mr-1.5" onClick={() => onInput("")} disabled={disabled} />
           ) : (
-            labelButtons
-              .slice(0, 2)
-              .map(
-                (
-                  { label, onClick, disabled: labelButtonDisabled, className },
-                  index
-                ) => (
-                  <button
-                    key={index}
-                    className={classNames(
-                      "button mt-2.5 h-[1.375rem] select-none rounded-lg border-2 border-wosmongton-200 bg-wosmongton-200/30",
-                      {
-                        "opacity-30": disabled || labelButtonDisabled,
-                        "hover:bg-wosmongton-200/60":
-                          !disabled && !labelButtonDisabled,
-                      },
-                      className
-                    )}
-                    onClick={onClick}
-                    disabled={disabled || labelButtonDisabled}
-                  >
-                    <span className="mx-2 text-caption">{label}</span>
-                  </button>
-                )
-              )
+            labelButtons.slice(0, 2).map(({ label, onClick, disabled: labelButtonDisabled, className }, index) => (
+              <button
+                key={index}
+                className={classNames(
+                  "button mt-2.5 h-[1.375rem] select-none rounded-lg border-2 border-wosmongton-200 bg-wosmongton-200/30",
+                  {
+                    "opacity-30": disabled || labelButtonDisabled,
+                    "hover:bg-wosmongton-200/60": !disabled && !labelButtonDisabled,
+                  },
+                  className
+                )}
+                onClick={onClick}
+                disabled={disabled || labelButtonDisabled}
+              >
+                <span className="mx-2 text-caption">{label}</span>
+              </button>
+            ))
           ))}
       </div>
     </div>

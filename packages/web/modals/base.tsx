@@ -4,7 +4,7 @@ import ReactModal, { setAppElement } from "react-modal";
 
 import { useWindowSize } from "~/hooks";
 
-import { Icon } from "../components/assets";
+import { Icon, SpriteIconId } from "../components/assets";
 import IconButton from "../components/buttons/icon-button";
 
 setAppElement("body");
@@ -13,6 +13,7 @@ export interface ModalBaseProps {
   isOpen: boolean;
   onRequestClose: () => void;
   onRequestBack?: () => void;
+  backIcon?: SpriteIconId;
   title?: string | ReactElement;
   className?: string;
   bodyOpenClassName?: string;
@@ -24,6 +25,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   isOpen,
   onRequestClose,
   onRequestBack,
+  backIcon,
   title,
   className,
   bodyOpenClassName,
@@ -58,14 +60,12 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             mode="unstyled"
             size="unstyled"
             className="top-9.5 absolute left-8 z-50 w-fit cursor-pointer py-0 text-osmoverse-400 md:top-7 md:left-7"
-            icon={<Icon id="chevron-left" width={18} height={18} />}
+            icon={<Icon id={backIcon ?? "chevron-left"} width={18} height={18} />}
             onClick={onRequestBack}
           />
         )}
         {typeof title === "string" ? (
-          <div className="relative mx-auto">
-            {isMobile ? <h6>{title}</h6> : <h5>{title}</h5>}
-          </div>
+          <div className="relative mx-auto">{isMobile ? <h6>{title}</h6> : <h5>{title}</h5>}</div>
         ) : (
           <>{title}</>
         )}

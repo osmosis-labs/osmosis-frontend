@@ -22,6 +22,7 @@ import ErrorBoundary from "~/components/error/error-boundary";
 import ErrorFallback from "~/components/error/error-fallback";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { WalletSelectProvider } from "~/hooks/wallet-select";
+import { NotifiContextProvider } from "~/integrations/notifi";
 import DefaultSeo from "~/next-seo.config";
 
 import { MainLayout } from "../components/layouts";
@@ -147,19 +148,21 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <StoreProvider>
       <WalletSelectProvider>
-        <DefaultSeo />
-        <IbcNotifier />
-        <ToastContainer
-          toastStyle={{
-            backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
-          }}
-          transition={Bounce}
-        />
-        <MainLayout menus={menus}>
-          <ErrorBoundary fallback={ErrorFallback}>
-            {Component && <Component {...pageProps} />}
-          </ErrorBoundary>
-        </MainLayout>
+        <NotifiContextProvider>
+          <DefaultSeo />
+          <IbcNotifier />
+          <ToastContainer
+            toastStyle={{
+              backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
+            }}
+            transition={Bounce}
+          />
+          <MainLayout menus={menus}>
+            <ErrorBoundary fallback={ErrorFallback}>
+              {Component && <Component {...pageProps} />}
+            </ErrorBoundary>
+          </MainLayout>
+        </NotifiContextProvider>
       </WalletSelectProvider>
     </StoreProvider>
   );

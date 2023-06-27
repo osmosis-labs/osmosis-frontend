@@ -9,6 +9,7 @@ export const Switch: FunctionComponent<
     Disableable &
     CustomClasses & {
       containerClassName?: string;
+      labelClassName?: string;
       labelPosition?: "left" | "right";
     }
 > = ({
@@ -16,6 +17,7 @@ export const Switch: FunctionComponent<
   onToggle,
   disabled = false,
   containerClassName,
+  labelClassName,
   className,
   labelPosition = "left",
   children,
@@ -33,6 +35,7 @@ export const Switch: FunctionComponent<
       <div
         className={classNames(
           "mr-2 lg:mr-1",
+          labelClassName,
           disabled ? "opacity-30" : undefined
         )}
       >
@@ -58,7 +61,9 @@ export const Switch: FunctionComponent<
       <div
         className={classNames(
           "ml-2 lg:ml-1",
-          disabled ? "opacity-30" : undefined
+          labelClassName,
+          disabled ? "opacity-30" : undefined,
+          "text-[14px] font-[500]"
         )}
       >
         {children}

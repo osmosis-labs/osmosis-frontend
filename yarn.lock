@@ -2813,6 +2813,11 @@
   resolved "https://registry.npmjs.org/@gar/promisify/-/promisify-1.1.2.tgz"
   integrity sha512-82cpyJyKRoQoRi+14ibCeGPu0CwypgtBAdBhq1WfvagpCZNKqwXbKwXllYSMG91DhmG4jt9gN8eP6lGOtozuaw==
 
+"@graphql-typed-document-node/core@^3.1.1":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@graphql-typed-document-node/core/-/core-3.2.0.tgz#5f3d96ec6b2354ad6d8a28bf216a1d97b5426861"
+  integrity sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==
+
 "@hapi/hoek@^9.0.0":
   version "9.2.1"
   resolved "https://registry.npmjs.org/@hapi/hoek/-/hoek-9.2.1.tgz"
@@ -4704,6 +4709,77 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@notifi-network/notifi-axios-adapter@^0.75.2":
+  version "0.75.2"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-axios-adapter/-/notifi-axios-adapter-0.75.2.tgz#dbe6de3b7fe6f8ded5cf79d2106ba0bd9f60790d"
+  integrity sha512-gjRrknHu2acVL1JUlIphKQfOkXjlcNXcQ4RilBqOpeDsO9QueJNq6yGq1bpUN7VGwHb9Yn6tR/G7tiXg3pnLpg==
+  dependencies:
+    "@notifi-network/notifi-axios-utils" "^0.75.2"
+
+"@notifi-network/notifi-axios-utils@^0.75.2":
+  version "0.75.2"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-axios-utils/-/notifi-axios-utils-0.75.2.tgz#6df407d96702d018a40d24519c61097d82bbc785"
+  integrity sha512-6PZLJRx88VwqgpqnzEEFKYL2vM0rXx/Mnj4VcU1tt9dV16RtwBHXtim3kKEvnpcRqkCkGbQ5ez1ujnsGXdNtpQ==
+
+"@notifi-network/notifi-core@^0.75.2":
+  version "0.75.2"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-core/-/notifi-core-0.75.2.tgz#ac8b5702cacbe48222d8260222bca95b36facdc4"
+  integrity sha512-CgBrAOjpoyg17p1RdiuYk4rUkee6ZzS9IFwZ0ONv1HDOEcbSA5azqsGsRWfAjhnGYaYfciPx/b2zR3wIR23e/g==
+  dependencies:
+    "@notifi-network/notifi-graphql" "^0.75.2"
+
+"@notifi-network/notifi-frontend-client@0.75.2-alpha.0":
+  version "0.75.2-alpha.0"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-frontend-client/-/notifi-frontend-client-0.75.2-alpha.0.tgz#aad1eb1d6a40f885a99d94476dee11afc4abfbdc"
+  integrity sha512-8YFFdbR5KXVv1Xo9Ikg2F7kGdS8/b6aqGufOnVKStcsJgytveEfAQuShaSB6akxDUo0f8OSD73ypa0qwwxL/Cw==
+  dependencies:
+    "@notifi-network/notifi-graphql" "^0.75.2-alpha.0+4286c00"
+    graphql-request "5.1.0"
+    localforage "^1.10.0"
+
+"@notifi-network/notifi-frontend-client@^0.75.2-alpha.0+4286c00":
+  version "0.75.2"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-frontend-client/-/notifi-frontend-client-0.75.2.tgz#3941c637e6b4c09f8191c0f14e06cafed6b66732"
+  integrity sha512-qASgUNzJA/ouLxfFbCkxv0v3ut4Cy+cMrpSQ3A/c85LQiy4zqJqOI4ZuTucKPEfdF2jTlxs0lmi8XUMervK/kg==
+  dependencies:
+    "@notifi-network/notifi-graphql" "^0.75.2"
+    graphql-request "5.1.0"
+    localforage "^1.10.0"
+
+"@notifi-network/notifi-graphql@^0.75.2", "@notifi-network/notifi-graphql@^0.75.2-alpha.0+4286c00":
+  version "0.75.2"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-graphql/-/notifi-graphql-0.75.2.tgz#a45aec52f40f14cb84c193544fb1b390f6374e25"
+  integrity sha512-P28dN9rv5SKNVoSTj7XFII5wbhUTTCVTAibnWJm9brAeMc2iPixZTswBCAYCJAWQVb+TUXGRU8fXiUSW1EPlSw==
+  dependencies:
+    graphql "^16.6.0"
+    graphql-request "5.1.0"
+    uuid "^8.3.2"
+
+"@notifi-network/notifi-react-card@0.75.2-alpha.0":
+  version "0.75.2-alpha.0"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-react-card/-/notifi-react-card-0.75.2-alpha.0.tgz#751971616bc3c8ce425760de2a5dfad5dca9cd77"
+  integrity sha512-VvcBhvvbXu9LgaR7ZdycPm5DfOl2gBgTlItekBRRQx4+l6Qc9ASipdHzgQbB0PEZkaIRlnWRh74sjJNah1Sd6w==
+  dependencies:
+    "@notifi-network/notifi-frontend-client" "^0.75.2-alpha.0+4286c00"
+    "@notifi-network/notifi-react-hooks" "^0.75.2-alpha.0+4286c00"
+    clsx "^1.2.1"
+    date-fns "^2.29.3"
+    libphonenumber-js "^1.10.13"
+    react-virtuoso "^3.1.1"
+
+"@notifi-network/notifi-react-hooks@^0.75.2-alpha.0+4286c00":
+  version "0.75.2"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-react-hooks/-/notifi-react-hooks-0.75.2.tgz#e41e0d79950764346ff0629cd0d12bca54c1fe57"
+  integrity sha512-rP5OwlXfM9JzvEGEMtQcAPzDroXZbducuFBq+hCZTaLDjA4gtzE6yFIfObFE10btCle3EtI53QPBOTmjVpNwjw==
+  dependencies:
+    "@notifi-network/notifi-axios-adapter" "^0.75.2"
+    "@notifi-network/notifi-axios-utils" "^0.75.2"
+    "@notifi-network/notifi-core" "^0.75.2"
+    axios "^0.26.0"
+    localforage "^1.10.0"
+    typedoc-plugin-missing-exports "^0.22.6"
+    typescript "^4.5.5"
+
 "@npmcli/ci-detect@^1.0.0":
   version "1.4.0"
   resolved "https://registry.npmjs.org/@npmcli/ci-detect/-/ci-detect-1.4.0.tgz"
@@ -6189,6 +6265,18 @@
     "@typescript-eslint/types" "5.10.0"
     eslint-visitor-keys "^3.0.0"
 
+"@virtuoso.dev/react-urx@^0.2.12":
+  version "0.2.13"
+  resolved "https://registry.yarnpkg.com/@virtuoso.dev/react-urx/-/react-urx-0.2.13.tgz#e2cfc42d259d2a002695e7517d34cb97b64ee9c4"
+  integrity sha512-MY0ugBDjFb5Xt8v2HY7MKcRGqw/3gTpMlLXId2EwQvYJoC8sP7nnXjAxcBtTB50KTZhO0SbzsFimaZ7pSdApwA==
+  dependencies:
+    "@virtuoso.dev/urx" "^0.2.13"
+
+"@virtuoso.dev/urx@^0.2.12", "@virtuoso.dev/urx@^0.2.13":
+  version "0.2.13"
+  resolved "https://registry.yarnpkg.com/@virtuoso.dev/urx/-/urx-0.2.13.tgz#a65e7e8d923cb03397ac876bfdd45c7f71c8edf1"
+  integrity sha512-iirJNv92A1ZWxoOHHDYW/1KPoi83939o83iUBQHIim0i3tMeSKEh+bxhJdTHQ86Mr4uXx9xGUTq69cp52ZP8Xw==
+
 "@visx/annotation@2.18.0":
   version "2.18.0"
   resolved "https://registry.yarnpkg.com/@visx/annotation/-/annotation-2.18.0.tgz#6fe29e3bd33606d58fb63603d01c7a4a1bf36561"
@@ -7304,6 +7392,13 @@ axios@^0.21.1, axios@^0.21.2:
   dependencies:
     follow-redirects "^1.14.0"
 
+axios@^0.26.0:
+  version "0.26.1"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.26.1.tgz#1ede41c51fcf51bbbd6fd43669caaa4f0495aaa9"
+  integrity sha512-fPwcX4EvnSHuInCMItEhAGnaSEXRBjtzh9fOtsE6E1G6p7vl7edEeZe11QHf18+6+9gR5PbKV/sGKNaD8YaMeA==
+  dependencies:
+    follow-redirects "^1.14.8"
+
 axios@^0.27.2:
   version "0.27.2"
   resolved "https://registry.npmjs.org/axios/-/axios-0.27.2.tgz"
@@ -8049,6 +8144,11 @@ clsx@^1.1.1:
   resolved "https://registry.npmjs.org/clsx/-/clsx-1.1.1.tgz"
   integrity sha512-6/bPho624p3S2pMyvP5kKBPXnI3ufHLObBFCfgx+LkeR5lg2XYy2hqZqUf45ypD8COn2bhgGJSUE+l5dhNBieA==
 
+clsx@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/clsx/-/clsx-1.2.1.tgz#0ddc4a20a549b59c93a4116bb26f5294ca17dc12"
+  integrity sha512-EcR6r5a8bj6pu3ycsa/E/cKVGuTgZJZdsyUYHOksG/UHIiKfjxzRxYJpyVBwYaQeOvghal9fcc4PidlgzugAQg==
+
 cmd-shim@^4.1.0:
   version "4.1.0"
   resolved "https://registry.npmjs.org/cmd-shim/-/cmd-shim-4.1.0.tgz"
@@ -8609,6 +8709,13 @@ data-urls@^3.0.2:
     abab "^2.0.6"
     whatwg-mimetype "^3.0.0"
     whatwg-url "^11.0.0"
+
+date-fns@^2.29.3:
+  version "2.30.0"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.30.0.tgz#f367e644839ff57894ec6ac480de40cae4b0f4d0"
+  integrity sha512-fnULvOpxnC5/Vg3NCiWelDsLiUc9bRwAPs/+LfTLNvetFCtCTN+yQz15C/fs4AwX1R9K5GLtLfn8QW+dWisaAw==
+  dependencies:
+    "@babel/runtime" "^7.21.0"
 
 dateformat@^3.0.0:
   version "3.0.3"
@@ -9631,6 +9738,11 @@ external-editor@^3.0.3:
     iconv-lite "^0.4.24"
     tmp "^0.0.33"
 
+extract-files@^9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/extract-files/-/extract-files-9.0.0.tgz#8a7744f2437f81f5ed3250ed9f1550de902fe54a"
+  integrity sha512-CvdFfHkC95B4bBBk36hcEmvdR2awOdhhVUYH6S/zrVj3477zven/fJMYg7121h4T1xHZC+tetUpubpAhxwI7hQ==
+
 extsprintf@1.3.0:
   version "1.3.0"
   resolved "https://registry.npmjs.org/extsprintf/-/extsprintf-1.3.0.tgz"
@@ -9807,6 +9919,11 @@ follow-redirects@^1.10.0, follow-redirects@^1.14.0:
   version "1.14.7"
   resolved "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.14.7.tgz"
   integrity sha512-+hbxoLbFMbRKDwohX8GkTataGqO6Jb7jGwpAlwgy2bIz25XtRm7KEzJM76R1WiNT5SwZkX4Y75SwBolkpmE7iQ==
+
+follow-redirects@^1.14.8:
+  version "1.15.2"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.2.tgz#b460864144ba63f2681096f274c4e57026da2c13"
+  integrity sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==
 
 follow-redirects@^1.14.9:
   version "1.15.1"
@@ -10189,6 +10306,21 @@ graceful-fs@^4.2.9:
   version "4.2.11"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.11.tgz#4183e4e8bf08bb6e05bbb2f7d2e0c8f712ca40e3"
   integrity sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==
+
+graphql-request@5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/graphql-request/-/graphql-request-5.1.0.tgz#dbc8feee27d21b993cd5da2d3af67821827b240a"
+  integrity sha512-0OeRVYigVwIiXhNmqnPDt+JhMzsjinxHE7TVy3Lm6jUzav0guVcL0lfSbi6jVTRAxcbwgyr6yrZioSHxf9gHzw==
+  dependencies:
+    "@graphql-typed-document-node/core" "^3.1.1"
+    cross-fetch "^3.1.5"
+    extract-files "^9.0.0"
+    form-data "^3.0.0"
+
+graphql@^16.6.0:
+  version "16.7.1"
+  resolved "https://registry.yarnpkg.com/graphql/-/graphql-16.7.1.tgz#11475b74a7bff2aefd4691df52a0eca0abd9b642"
+  integrity sha512-DRYR9tf+UGU0KOsMcKAlXeFfX89UiiIZ0dRU3mR0yJfu6OjZqUcp68NnFLnqQU5RexygFoDy1EW+ccOYcPfmHg==
 
 gzip-size@^6.0.0:
   version "6.0.0"
@@ -12257,6 +12389,11 @@ libnpmpublish@^4.0.0:
     semver "^7.1.3"
     ssri "^8.0.1"
 
+libphonenumber-js@^1.10.13:
+  version "1.10.37"
+  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.10.37.tgz#185264130c9375f17d0c487a288223294579929c"
+  integrity sha512-Z10PCaOCiAxbUxLyR31DNeeNugSVP6iv/m7UrSKS5JHziEMApJtgku4e9Q69pzzSC9LnQiM09sqsGf2ticZnMw==
+
 libsodium-wrappers@^0.7.6:
   version "0.7.9"
   resolved "https://registry.npmjs.org/libsodium-wrappers/-/libsodium-wrappers-0.7.9.tgz"
@@ -12344,7 +12481,7 @@ load-json-file@^6.2.0:
     strip-bom "^4.0.0"
     type-fest "^0.6.0"
 
-localforage@^1.8.1:
+localforage@^1.10.0, localforage@^1.8.1:
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/localforage/-/localforage-1.10.0.tgz#5c465dc5f62b2807c3a84c0c6a1b1b3212781dd4"
   integrity sha512-14/H1aX7hzBBmmh7sGPd+AOMkkIrHM3Z1PAyGgZigA1H1p5O5ANnMyWzvpAETtG68/dC4pC0ncy3+PPGzXZHPg==
@@ -14353,6 +14490,14 @@ react-use@^17.4.0:
     ts-easing "^0.2.0"
     tslib "^2.1.0"
 
+react-virtuoso@^3.1.1:
+  version "3.1.5"
+  resolved "https://registry.yarnpkg.com/react-virtuoso/-/react-virtuoso-3.1.5.tgz#cee62d8f69240e6ce34d13d2101a5c0509345c49"
+  integrity sha512-Dwf7SGr73UAahfcQNIND+c+MtCb0PeHu+QTZ5ptR7oXxQkupfHXEKGwEDF5lDkLqdGxm+yH4uh/IFCqMKxudJw==
+  dependencies:
+    "@virtuoso.dev/react-urx" "^0.2.12"
+    "@virtuoso.dev/urx" "^0.2.12"
+
 react@17.0.2:
   version "17.0.2"
   resolved "https://registry.yarnpkg.com/react/-/react-17.0.2.tgz#d0b5cc516d29eb3eee383f75b62864cfb6800037"
@@ -16228,6 +16373,11 @@ typedarray@^0.0.6:
   resolved "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
+typedoc-plugin-missing-exports@^0.22.6:
+  version "0.22.6"
+  resolved "https://registry.yarnpkg.com/typedoc-plugin-missing-exports/-/typedoc-plugin-missing-exports-0.22.6.tgz#7467c60f1cd26507124103f0b9bca271d5aa8d71"
+  integrity sha512-1uguGQqa+c5f33nWS3v1mm0uAx4Ii1lw4Kx2zQksmYFKNEWTmrmMXbMNBoBg4wu0p4dFCNC7JIWPoRzpNS6pFA==
+
 typeforce@^1.11.5:
   version "1.18.0"
   resolved "https://registry.npmjs.org/typeforce/-/typeforce-1.18.0.tgz"
@@ -16237,6 +16387,11 @@ typescript@4.5.4:
   version "4.5.4"
   resolved "https://registry.npmjs.org/typescript/-/typescript-4.5.4.tgz"
   integrity sha512-VgYs2A2QIRuGphtzFV7aQJduJ2gyfTljngLzjpfW9FoYZF6xuw1W0vW9ghCKLfcWrCFxK81CSGRAvS1pn4fIUg==
+
+typescript@^4.5.5:
+  version "4.9.5"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.5.tgz#095979f9bcc0d09da324d58d03ce8f8374cbe65a"
+  integrity sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==
 
 uglify-js@^3.1.4:
   version "3.14.5"

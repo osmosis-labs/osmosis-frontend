@@ -41,6 +41,8 @@
     "@keplr-wallet/wc-client": "0.10.24-ibc.go.v7.hot.fix",
     "@metamask/onboarding": "^1.0.1",
     "@next/bundle-analyzer": "^12.1.6",
+    "@notifi-network/notifi-frontend-client": "0.75.2-alpha.0",
+    "@notifi-network/notifi-react-card": "0.75.2-alpha.0",
     "@osmosis-labs/math": "^5.0.0",
     "@osmosis-labs/pools": "^5.0.0",
     "@osmosis-labs/stores": "^5.0.0",

@@ -1,19 +1,18 @@
+import { useNotifiClientContext } from "@notifi-network/notifi-react-card";
 import classNames from "classnames";
+import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { Fragment, FunctionComponent, useEffect, useRef } from "react";
+import { Fragment, FunctionComponent, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import {
-  useAmplitudeAnalytics,
-  useDisclosure,
-  useLocalStorageState,
-} from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
 
 import { Announcement, EventName, IS_FRONTIER } from "../../config";
+import { useAmplitudeAnalytics, useDisclosure, useLocalStorageState } from "../../hooks";
+import { NotifiModal, NotifiPopover } from "../../integrations/notifi";
 import { ModalBase, ModalBaseProps, SettingsModal } from "../../modals";
 import { ProfileModal } from "../../modals/profile";
 import { useStore } from "../../stores";
@@ -46,21 +45,47 @@ export const NavBar: FunctionComponent<
 
   const featureFlags = useFeatureFlags();
 
-  const {
-    isOpen: isSettingsOpen,
-    onClose: onCloseSettings,
-    onOpen: onOpenSettings,
-  } = useDisclosure();
+  const { isOpen: isSettingsOpen, onClose: onCloseSettings, onOpen: onOpenSettings } = useDisclosure();
 
-  const {
-    isOpen: isProfileOpen,
-    onOpen: onOpenProfile,
-    onClose: onCloseProfile,
-  } = useDisclosure();
+  const { isOpen: isNotifiOpen, onClose: onCloseNotifi, onOpen: onOpenNotifi } = useDisclosure();
+
+  const { isOpen: isProfileOpen, onOpen: onOpenProfile, onClose: onCloseProfile } = useDisclosure();
 
   const closeMobileMenuRef = useRef(noop);
   const router = useRouter();
   const { isLoading: isWalletLoading } = useWalletSelect();
+
+  const { client } = useNotifiClientContext();
+  const [hasUnreadNotification, setHasUnreadNotification] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const wallet = accountStore.getWallet(chainId);
+      if (!wallet?.address || !client?.getNotificationHistory) return setHasUnreadNotification(true);
+      const localStorageKey = `lastStoredTimestamp:${wallet.address}`;
+      client
+        .getNotificationHistory({ first: 1 })
+        .then((res) => {
+          const newestHistoryItem = res.nodes?.[0];
+          const newestNotificationCreatedDate = newestHistoryItem?.createdDate
+            ? dayjs(newestHistoryItem?.createdDate)
+            : dayjs("2022-01-05T12:30:00.792Z");
+
+          const lastStoredTimestamp = dayjs(window.localStorage.getItem(localStorageKey)).isValid()
+            ? dayjs(window.localStorage.getItem(localStorageKey))
+            : dayjs("2022-01-05T10:30:00.792Z");
+
+          if (newestNotificationCreatedDate.isAfter(lastStoredTimestamp)) {
+            setHasUnreadNotification(true);
+          } else {
+            setHasUnreadNotification(false);
+          }
+        })
+        .catch(() => setHasUnreadNotification(true));
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const handler = () => {
@@ -72,9 +97,7 @@ export const NavBar: FunctionComponent<
   }, [router.events]);
 
   const account = accountStore.getWallet(chainId);
-  const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(
-    account?.address ?? ""
-  );
+  const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(account?.address ?? "");
 
   // announcement banner
   const [_showBanner, setShowBanner] = useLocalStorageState(
@@ -108,34 +131,31 @@ export const NavBar: FunctionComponent<
                       size="unstyled"
                       className="py-0"
                       aria-label="Open main menu dropdown"
-                      icon={
-                        <Icon
-                          id="hamburger"
-                          className="text-osmoverse-200"
-                          height={30}
-                          width={30}
-                        />
-                      }
+                      icon={<Icon id="hamburger" className="text-osmoverse-200" height={30} width={30} />}
                     />
                   </Popover.Button>
                   <Popover.Panel className="top-navbar-mobile absolute top-[100%] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
                     <MainMenu
-                      menus={menus.concat({
-                        label: "Settings",
-                        link: (e) => {
-                          e.stopPropagation();
-                          onOpenSettings();
-                          closeMobileMainMenu();
+                      menus={menus.concat(
+                        {
+                          label: "Settings",
+                          link: (e) => {
+                            e.stopPropagation();
+                            onOpenSettings();
+                            closeMobileMainMenu();
+                          },
+                          icon: <Icon id="setting" className="text-white-full" width={20} height={20} />,
                         },
-                        icon: (
-                          <Icon
-                            id="setting"
-                            className="text-white-full"
-                            width={20}
-                            height={20}
-                          />
-                        ),
-                      })}
+                        {
+                          label: "Notifications",
+                          link: (e) => {
+                            e.stopPropagation();
+                            onOpenNotifi();
+                            closeMobileMainMenu();
+                          },
+                          icon: <Icon id="bell" className="text-white-full" width={20} height={20} />,
+                        }
+                      )}
                     />
                     <ClientOnly>
                       <SkeletonLoader isLoaded={!isWalletLoading}>
@@ -149,9 +169,7 @@ export const NavBar: FunctionComponent<
           </Popover>
         </div>
         <div className="flex shrink-0 grow items-center gap-9 lg:gap-2 md:place-content-between md:gap-1">
-          <h4 className="md:text-h6 md:font-h6">
-            {navBarStore.title || title}
-          </h4>
+          <h4 className="md:text-h6 md:font-h6">{navBarStore.title || title}</h4>
           <div className="flex items-center gap-3 lg:gap-1">
             {navBarStore.callToActionButtons.map((button, index) => (
               <Button
@@ -167,23 +185,18 @@ export const NavBar: FunctionComponent<
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-3 lg:gap-2 md:hidden">
+          <NotifiPopover hasUnreadNotification={hasUnreadNotification} className="px-3 outline-none" />
           <IconButton
             aria-label="Open settings dropdown"
             icon={<Icon id="setting" width={24} height={24} />}
             className="px-3 outline-none"
             onClick={onOpenSettings}
           />
-          <SettingsModal
-            isOpen={isSettingsOpen}
-            onRequestClose={onCloseSettings}
-          />
+          <SettingsModal isOpen={isSettingsOpen} onRequestClose={onCloseSettings} />
+          <NotifiModal isOpen={isNotifiOpen} onRequestClose={onCloseNotifi} />
           <ClientOnly>
             <SkeletonLoader isLoaded={!isWalletLoading}>
-              <WalletInfo
-                className="md:hidden"
-                icnsName={icnsQuery?.primaryName}
-                onOpenProfile={onOpenProfile}
-              />
+              <WalletInfo className="md:hidden" icnsName={icnsQuery?.primaryName} onOpenProfile={onOpenProfile} />
             </SkeletonLoader>
           </ClientOnly>
         </div>
@@ -196,98 +209,75 @@ export const NavBar: FunctionComponent<
           backElementClassNames
         )}
       />
-      {showBanner && (
-        <AnnouncementBanner
-          {...Announcement!}
-          closeBanner={() => setShowBanner(false)}
-        />
-      )}
-      <ProfileModal
-        isOpen={isProfileOpen}
-        onRequestClose={onCloseProfile}
-        icnsName={icnsQuery?.primaryName}
-      />
+      {showBanner && <AnnouncementBanner {...Announcement!} closeBanner={() => setShowBanner(false)} />}
+      <ProfileModal isOpen={isProfileOpen} onRequestClose={onCloseProfile} icnsName={icnsQuery?.primaryName} />
     </>
   );
 });
 
-const WalletInfo: FunctionComponent<
-  CustomClasses & { onOpenProfile: () => void; icnsName?: string }
-> = observer(({ className, onOpenProfile, icnsName }) => {
-  const {
-    chainStore: {
-      osmosis: { chainId },
-    },
-    accountStore,
-    navBarStore,
-    profileStore,
-  } = useStore();
-  const { onOpenWalletSelect } = useWalletSelect();
+const WalletInfo: FunctionComponent<CustomClasses & { onOpenProfile: () => void; icnsName?: string }> = observer(
+  ({ className, onOpenProfile, icnsName }) => {
+    const {
+      chainStore: {
+        osmosis: { chainId },
+      },
+      accountStore,
+      navBarStore,
+      profileStore,
+    } = useStore();
+    const { onOpenWalletSelect } = useWalletSelect();
 
-  const t = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
+    const t = useTranslation();
+    const { logEvent } = useAmplitudeAnalytics();
 
-  // wallet
-  const wallet = accountStore.getWallet(chainId);
-  const walletConnected = Boolean(wallet?.isWalletConnected);
+    // wallet
+    const wallet = accountStore.getWallet(chainId);
+    const walletConnected = Boolean(wallet?.isWalletConnected);
 
-  return (
-    <div className={className}>
-      {!walletConnected ? (
-        <Button
-          className="!h-10 w-40 lg:w-36 md:w-full"
-          onClick={() => {
-            logEvent([EventName.Topnav.connectWalletClicked]);
-            onOpenWalletSelect(chainId);
-          }}
-        >
-          <span className="button mx-auto">{t("connectWallet")}</span>
-        </Button>
-      ) : (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onOpenProfile();
-          }}
-          className="group flex place-content-between items-center gap-[13px] rounded-xl border border-osmoverse-700 px-1.5 py-1 hover:border-[1.3px] hover:border-wosmongton-300 hover:bg-osmoverse-800 md:w-full"
-        >
-          <div className="h-8 w-8 shrink-0 overflow-hidden rounded-[7px] bg-osmoverse-700 group-hover:bg-gradient-positive">
-            {profileStore.currentAvatar === "ammelia" ? (
-              <Image
-                alt="Wosmongton profile"
-                src="/images/profile-ammelia.png"
-                height={32}
-                width={32}
-              />
-            ) : (
-              <Image
-                alt="Wosmongton profile"
-                src="/images/profile-woz.png"
-                height={32}
-                width={32}
-              />
-            )}
-          </div>
+    return (
+      <div className={className}>
+        {!walletConnected ? (
+          <Button
+            className="!h-10 w-40 lg:w-36 md:w-full"
+            onClick={() => {
+              logEvent([EventName.Topnav.connectWalletClicked]);
+              onOpenWalletSelect(chainId);
+            }}
+          >
+            <span className="button mx-auto">{t("connectWallet")}</span>
+          </Button>
+        ) : (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenProfile();
+            }}
+            className="group flex place-content-between items-center gap-[13px] rounded-xl border border-osmoverse-700 px-1.5 py-1 hover:border-[1.3px] hover:border-wosmongton-300 hover:bg-osmoverse-800 md:w-full"
+          >
+            <div className="h-8 w-8 shrink-0 overflow-hidden rounded-[7px] bg-osmoverse-700 group-hover:bg-gradient-positive">
+              {profileStore.currentAvatar === "ammelia" ? (
+                <Image alt="Wosmongton profile" src="/images/profile-ammelia.png" height={32} width={32} />
+              ) : (
+                <Image alt="Wosmongton profile" src="/images/profile-woz.png" height={32} width={32} />
+              )}
+            </div>
 
-          <div className="flex w-full  flex-col truncate text-right leading-tight">
-            <span className="body2 font-bold leading-4" title={icnsName}>
-              {Boolean(icnsName)
-                ? formatICNSName(icnsName)
-                : getShortAddress(wallet?.address!)}
-            </span>
-            <span className="caption font-medium tracking-wider text-osmoverse-200">
-              {navBarStore.walletInfo.balance.toString()}
-            </span>
-          </div>
-        </button>
-      )}
-    </div>
-  );
-});
+            <div className="flex w-full  flex-col truncate text-right leading-tight">
+              <span className="body2 font-bold leading-4" title={icnsName}>
+                {Boolean(icnsName) ? formatICNSName(icnsName) : getShortAddress(wallet?.address!)}
+              </span>
+              <span className="caption font-medium tracking-wider text-osmoverse-200">
+                {navBarStore.walletInfo.balance.toString()}
+              </span>
+            </div>
+          </button>
+        )}
+      </div>
+    );
+  }
+);
 
-const AnnouncementBanner: FunctionComponent<
-  typeof Announcement & { closeBanner: () => void }
-> = ({
+const AnnouncementBanner: FunctionComponent<typeof Announcement & { closeBanner: () => void }> = ({
   enTextOrLocalizationPath,
   link,
   isWarning,
@@ -302,9 +292,7 @@ const AnnouncementBanner: FunctionComponent<
     onOpen: onOpenLeavingOsmosis,
   } = useDisclosure();
 
-  const linkText = t(
-    link?.enTextOrLocalizationKey ?? "Click here to learn more"
-  );
+  const linkText = t(link?.enTextOrLocalizationKey ?? "Click here to learn more");
 
   return (
     <div
@@ -326,12 +314,7 @@ const AnnouncementBanner: FunctionComponent<
                 {linkText}
               </button>
             ) : (
-              <a
-                className="underline"
-                href={link?.url}
-                rel="noreferrer"
-                target="_blank"
-              >
+              <a className="underline" href={link?.url} rel="noreferrer" target="_blank">
                 {linkText}
               </a>
             )}
@@ -350,41 +333,29 @@ const AnnouncementBanner: FunctionComponent<
         />
       )}
       {link?.isExternal && (
-        <ExternalLinkModal
-          url={link.url}
-          onRequestClose={onCloseLeavingOsmosis}
-          isOpen={isLeavingOsmosisOpen}
-        />
+        <ExternalLinkModal url={link.url} onRequestClose={onCloseLeavingOsmosis} isOpen={isLeavingOsmosisOpen} />
       )}
     </div>
   );
 };
 
-const ExternalLinkModal: FunctionComponent<
-  { url: string } & Pick<ModalBaseProps, "isOpen" | "onRequestClose">
-> = ({ url, ...modalBaseProps }) => {
+const ExternalLinkModal: FunctionComponent<{ url: string } & Pick<ModalBaseProps, "isOpen" | "onRequestClose">> = ({
+  url,
+  ...modalBaseProps
+}) => {
   const t = useTranslation();
   return (
-    <ModalBase
-      title={t("app.banner.externalLinkModalTitle")}
-      className="!max-w-[400px]"
-      {...modalBaseProps}
-    >
+    <ModalBase title={t("app.banner.externalLinkModalTitle")} className="!max-w-[400px]" {...modalBaseProps}>
       <div className="flex flex-col items-center pt-9">
         <p className="body2 rounded-2xl bg-osmoverse-900 p-5">
-          {t("app.banner.externalLink")}{" "}
-          <span className="text-wosmongton-300">{url}</span>
+          {t("app.banner.externalLink")} <span className="text-wosmongton-300">{url}</span>
         </p>
         <p className="body2 border-gradient-neutral mt-2 rounded-[10px] border border-wosmongton-400 px-3 py-2 text-wosmongton-100">
           {t("app.banner.externalLinkDisclaimer")}
         </p>
 
         <div className="mt-4 flex w-full gap-3">
-          <Button
-            mode="secondary"
-            className="whitespace-nowrap !px-3.5"
-            onClick={modalBaseProps.onRequestClose}
-          >
+          <Button mode="secondary" className="whitespace-nowrap !px-3.5" onClick={modalBaseProps.onRequestClose}>
             {t("app.banner.backToOsmosis")}
           </Button>
           <a
