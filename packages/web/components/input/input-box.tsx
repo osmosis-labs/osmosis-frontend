@@ -81,6 +81,9 @@ export const InputBox: FunctionComponent<Props> = ({
             minWidth={0}
             value={currentValue}
             onInput={(e: any) => onInput(e.target.value)}
+            onBlur={() => {
+              setInputFocused(false);
+            }}
             onFocus={(e: any) => {
               setInputFocused(true);
               onFocus && onFocus(e);
@@ -105,7 +108,9 @@ export const InputBox: FunctionComponent<Props> = ({
             placeholder={placeholder ?? ""}
             autoComplete="off"
             type={type}
-            onBlur={() => setInputFocused(false)}
+            onBlur={() => {
+              setInputFocused(false);
+            }}
             onFocus={(e: any) => {
               setInputFocused(true);
               onFocus && onFocus(e);

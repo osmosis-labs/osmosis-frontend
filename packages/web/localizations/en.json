@@ -260,6 +260,9 @@
     "vote": "Vote",
     "new": "NEW"
   },
+  "notifi": {
+    "title": "Notifications"
+  },
   "pool": {
     "24hrTradingVolume": "24h Trading volume",
     "7davg": "(7d avg)",
