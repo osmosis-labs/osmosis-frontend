@@ -25,7 +25,7 @@
     "@cosmjs/cosmwasm-stargate": "0.29.0",
     "@cosmjs/proto-signing": "0.29.0",
     "@cosmjs/stargate": "0.29.0",
-    "@cosmos-kit/core": "1.6.0",
+    "@cosmos-kit/core": "1.7.0",
     "@cosmos-kit/cosmostation": "0.15.37",
     "@cosmos-kit/keplr": "0.33.39",
     "@cosmos-kit/leap": "0.15.9",

@@ -51,7 +51,7 @@
     "@cosmjs/math": "0.29.0",
     "@cosmjs/proto-signing": "0.29.0",
     "@cosmjs/stargate": "0.29.0",
-    "@cosmos-kit/core": "1.6.0",
+    "@cosmos-kit/core": "1.7.0",
     "@cosmjs/launchpad": "^0.24.1",
     "@keplr-wallet/common": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/cosmos": "0.10.24-ibc.go.v7.hot.fix",

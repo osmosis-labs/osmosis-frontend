@@ -1980,7 +1980,17 @@
   resolved "https://registry.yarnpkg.com/@cosmjs/utils/-/utils-0.29.5.tgz#3fed1b3528ae8c5f1eb5d29b68755bebfd3294ee"
   integrity sha512-m7h+RXDUxOzEOGt4P+3OVPX7PuakZT3GBmaM/Y2u+abN3xZkziykD/NvedYFvvCCdQo714XcGl33bwifS9FZPQ==
 
-"@cosmos-kit/core@1.6.0", "@cosmos-kit/core@^1.6.0":
+"@cosmos-kit/core@1.7.0":
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/core/-/core-1.7.0.tgz#e8be6d05cb9853cbf2718b384969373b1b6e9dac"
+  integrity sha512-udV9ySu4Vb9aKcfFIe3H2sPHPyiO3WMMjBRVmDfurQK5txSDukQssAXQY2At2BonHPgG0cVbx3U0snHWDW24uA==
+  dependencies:
+    "@chain-registry/types" "0.13.0"
+    "@walletconnect/types" "2.7.2"
+    bowser "2.11.0"
+    events "3.3.0"
+
+"@cosmos-kit/core@^1.6.0":
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/@cosmos-kit/core/-/core-1.6.0.tgz#74889bf497f57d193c2611324b272c14501f0be3"
   integrity sha512-ekO6PpqoNA7eZDcVIX1m9pt3e23f3ZHoZhAoUdi1I7eiqwpwTaMoJ6ecN943Nchs3o3mJxYEHdlaRbCUCExFaw==
