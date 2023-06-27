@@ -10,6 +10,8 @@ import { useStore } from "~/stores";
 import { EventName, IS_FRONTIER, IS_TESTNET } from "../config";
 import { useAmplitudeAnalytics } from "../hooks";
 
+// test comment
+
 const Home: NextPage = observer(function () {
   const { chainStore, queriesStore, priceStore } = useStore();
   const { chainId } = chainStore.osmosis;
