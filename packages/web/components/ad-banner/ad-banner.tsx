@@ -7,8 +7,9 @@ import {
 } from "~/components/ad-banner/ad-banner-content";
 import { Step, Stepper } from "~/components/stepper/index";
 
-const shuffleArray = (array: any[]): any[] =>
-  array.sort(() => 0.5 - Math.random());
+function shuffleArray<T>(array: T[]): T[] {
+  return array.sort(() => 0.5 - Math.random());
+}
 
 export const AdBanner = memo(() => {
   const featuredAds = useMemo(
