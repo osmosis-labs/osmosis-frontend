@@ -5,11 +5,12 @@ import {
   CosmosAccount,
   CosmosQueries,
   IQueriesStore,
+  ProtoMsgsOrWithAminoMsgs,
 } from "@keplr-wallet/stores";
 import { BondStatus } from "@keplr-wallet/stores/build/query/cosmos/staking/types";
 import { Currency, KeplrSignOptions } from "@keplr-wallet/types";
 import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
-import * as WeightedPoolEstimates from "@osmosis-labs/math";
+import * as OsmosisMath from "@osmosis-labs/math";
 import deepmerge from "deepmerge";
 import Long from "long";
 import { DeepPartial } from "utility-types";
@@ -449,7 +450,7 @@ export class OsmosisAccountImpl {
           DecUtils.getTenExponentNInPrecisionRange(2)
         );
 
-        const estimated = WeightedPoolEstimates.estimateJoinSwap(
+        const estimated = OsmosisMath.estimateJoinSwap(
           pool,
           pool.poolAssets,
           mkp,
@@ -586,7 +587,7 @@ export class OsmosisAccountImpl {
           throw new Error("Pool asset not weighted");
         }
 
-        const estimated = WeightedPoolEstimates.estimateJoinSwapExternAmountIn(
+        const estimated = OsmosisMath.estimateJoinSwapExternAmountIn(
           {
             amount: new Int(poolAsset.amount.toCoin().amount),
             weight: new Int(poolAssetWeight.toDec().truncate().toString()),
@@ -1483,7 +1484,7 @@ export class OsmosisAccountImpl {
           throw new Error("Unknown pool");
         }
 
-        const estimated = WeightedPoolEstimates.estimateExitSwap(
+        const estimated = OsmosisMath.estimateExitSwap(
           pool,
           mkp,
           shareInAmount,
@@ -1558,6 +1559,174 @@ export class OsmosisAccountImpl {
             .balances.forEach((balance) => balance.waitFreshResponse());
 
           this.queries.queryPools.getPool(poolId)?.waitFreshResponse();
+        }
+
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
+   * Automatically migrates **locked OR unlocked** shares to full range concentrated position.
+   * With lock IDs, will send a separate migrate message per given ID.
+   * Handles superfluid stake status.
+   *
+   * @param poolId Id of pool to exit.
+   * @param lockIds Locks to migrate. If migrating unlocked shares, leave undefined.
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
+   */
+  async sendMigrateSharesToFullRangeConcentratedPositionMsgs(
+    poolId: string,
+    lockIds: string[] | undefined,
+    maxSlippage: string = DEFAULT_SLIPPAGE,
+    memo: string = "",
+    onFulfill?: (tx: any) => void
+  ) {
+    const queryPool = this.queries.queryPools.getPool(poolId);
+
+    if (!Boolean(queryPool) || !queryPool) {
+      throw new Error("Unknown pool");
+    }
+
+    const multiMsgs: Required<ProtoMsgsOrWithAminoMsgs> = {
+      aminoMsgs: [],
+      protoMsgs: [],
+    };
+
+    // refresh data
+    const accountLocked = this.queries.queryAccountLocked.get(
+      this.base.bech32Address
+    );
+    await accountLocked.waitFreshResponse();
+    await queryPool.waitFreshResponse();
+
+    const queryAccountBalances = this.queriesStore
+      .get(this.chainId)
+      .queryBalances.getQueryBech32Address(this.base.bech32Address);
+    const queryPoolShares = queryAccountBalances.balances.find(
+      (balance) =>
+        balance.currency.coinMinimalDenom ===
+        queryPool.shareCurrency.coinMinimalDenom
+    );
+    await queryPoolShares?.waitFreshResponse();
+
+    (lockIds ?? ["0"]).forEach((lockId) => {
+      // ensure the lock ID is associated with the account, and that the coins locked are gamm shares
+      // if lock is 0, the shares are not unlocked and are in bank
+      const poolGammShares =
+        lockId === "0"
+          ? queryPoolShares?.balance
+          : accountLocked.lockedCoins.find(
+              ({ amount, lockIds }) =>
+                amount.denom === queryPool.shareCurrency.coinMinimalDenom &&
+                lockIds.includes(lockId)
+            )?.amount;
+
+      if (!poolGammShares || !queryPool?.sharePool?.totalShare) return;
+
+      const poolAssets = queryPool?.poolAssets.map(({ amount }) => ({
+        denom: amount.currency.coinMinimalDenom,
+        amount: new Int(amount.toCoin().amount),
+      }));
+      if (!poolAssets) throw new Error("Unknown pool assets");
+
+      // estimate exit pool for each locked share in pool
+      const estimated = OsmosisMath.estimateExitSwap(
+        {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          totalShare: queryPool.sharePool.totalShare,
+          poolAssets,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          exitFee: queryPool!.exitFee.toDec(),
+        },
+        this.makeCoinPretty,
+        poolGammShares.toDec().toString(),
+        poolGammShares.currency.coinDecimals
+      );
+
+      const maxSlippageDec = new Dec(maxSlippage).quo(
+        DecUtils.getTenExponentNInPrecisionRange(2)
+      );
+      const sortedSlippageTokenOuts = estimated.tokenOuts
+        .map((tokenOut) => ({
+          denom: tokenOut.currency.coinMinimalDenom,
+          amount: tokenOut
+            .toDec()
+            .mul(new Dec(1).sub(maxSlippageDec))
+            .mul(
+              DecUtils.getTenExponentNInPrecisionRange(
+                tokenOut.currency.coinDecimals
+              )
+            )
+            .truncate()
+            .toString(),
+        }))
+        .sort((a, b) => a.denom.localeCompare(b.denom));
+
+      multiMsgs.aminoMsgs.push({
+        type: this._msgOpts.unlockAndMigrateSharesToFullRangeConcentratedPosition(
+          1
+        ).type,
+        value: {
+          sender: this.base.bech32Address,
+          lock_id: lockId,
+          shares_to_migrate: {
+            denom: poolGammShares.currency.coinMinimalDenom,
+            amount: poolGammShares.toCoin().amount,
+          },
+          token_out_mins: sortedSlippageTokenOuts,
+        },
+      });
+
+      multiMsgs.protoMsgs.push({
+        typeUrl:
+          "/osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition",
+        value:
+          osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition.encode(
+            {
+              sender: this.base.bech32Address,
+              lockId: Long.fromString(lockId),
+              sharesToMigrate: {
+                denom: poolGammShares.currency.coinMinimalDenom,
+                amount: poolGammShares.toCoin().amount,
+              },
+              tokenOutMins: sortedSlippageTokenOuts,
+            }
+          ).finish(),
+      });
+    });
+
+    await this.base.cosmos.sendMsgs(
+      "unlockAndMigrateToFullRangePosition",
+      multiMsgs,
+      memo,
+      {
+        amount: [],
+        gas: this._msgOpts
+          .unlockAndMigrateSharesToFullRangeConcentratedPosition(
+            multiMsgs.aminoMsgs.length
+          )
+          .gas.toString(),
+      },
+      undefined,
+      (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.base.bech32Address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
+
+          // refresh pool that was exited
+          queryPool?.waitFreshResponse();
+
+          // refresh removed locked coins and new account positions
+          this.queries.queryAccountLocked
+            .get(this.base.bech32Address)
+            .waitFreshResponse();
+          this.queries.queryAccountsPositions
+            .get(this.base.bech32Address)
+            .waitFreshResponse();
         }
 
         onFulfill?.(tx);

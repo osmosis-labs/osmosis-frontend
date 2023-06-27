@@ -110,6 +110,26 @@
     "storeDisclaimer": "Certain content has been prepared by third parties not affiliated with Osmosis Labs or any of its affiliates and Osmosis Labs is not responsible for such content. Osmosis Labs is not liable for any errors or delays in content, or for any actions taken in reliance on any content. Information is provided for informational purposes only and is not investment advice. This is not a recommendation to buy or sell a particular digital asset or to employ a particular investment strategy. Osmosis Labs makes no representation on the accuracy, suitability, or validity of any information provided or for a particular asset. Prices shown are for illustrative purposes only. Actual cryptocurrency prices and associated stats may vary. Data presented may reflect assets traded on Osmosis Labs’s exchange and select other cryptocurrency exchanges.",
     "allAppsHeader": "All Apps"
   },
+  "addConcentratedLiquidityPoolCta": {
+    "title": "Supercharge your {pair}",
+    "caption": "Supercharged positions allow you to earn additional yield. Learn how it works in 30 seconds, or upgrade your position in a few clicks.",
+    "primaryCta": "Upgrade to supercharged",
+    "secondaryCta": "Learn in 30 seconds",
+    "migration": {
+      "title": "Upgrade your position",
+      "availableSharesTitle": "Migrate available shares",
+      "availableSharesDescription": "Migrate unbonded shares to the new pool. Shares will automatically be converted into the underlying assets and deposited into the new pool as a full range position",
+      "balance": "Your balance:",
+      "bondedSharesTitle": "Migrate bonded shares",
+      "bondedSharesDescription": "Migrate bonded or superfluid staked shares to the new pool. If shares are only bonded they will be unbonded, converted into the underlying assets, and deposited into the new pool as a full range position. Otherwise if they are superfluid staked, they will be converted into a superfluid staked full range position."
+    }
+  },
+  "createFirstPositionCta": {
+    "title": "Create your first supercharged position",
+    "caption": "This long awaited upgrade allows you to earn more with less capital. \n Get up and running in minutes, regardless of your level of experience.",
+    "primaryCta": "Create a position",
+    "secondaryCta": "Learn in 30 seconds"
+  },
   "assets": {
     "bondedAssets": "Bonded",
     "historyTable": {

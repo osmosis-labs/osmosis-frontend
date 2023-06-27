@@ -26,6 +26,11 @@ import { ArrowButton, Button } from "~/components/buttons";
 import { BondCard } from "~/components/cards";
 import { AssetBreakdownChart, PriceBreakdownChart } from "~/components/chart";
 import PoolComposition from "~/components/chart/pool-composition";
+import {
+  SelectCffmToClMigration,
+  SuperchargePool,
+  useCfmmToClMigration,
+} from "~/components/funnels/concentrated-liquidity";
 import { Disableable } from "~/components/types";
 import { EventName } from "~/config";
 import {
@@ -40,6 +45,7 @@ import {
   RemoveLiquidityModal,
   SuperfluidValidatorModal,
 } from "~/modals";
+import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
 import { useStore } from "~/stores";
 
 const E = EventName.PoolDetail;
@@ -324,6 +330,12 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
       []
     );
 
+    // migrate to CL from this pool
+    const { isLinked, userCanMigrate, linkedClPoolId } =
+      useCfmmToClMigration(poolId);
+    const [showMigrateToClModal, setShowMigrateToClModal] = useState(false);
+    const [showClLearnMoreModal, setShowClLearnMoreModal] = useState(false);
+
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
         <Head>
@@ -599,6 +611,45 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
             </div>
           )}
         </section>
+        {featureFlags.concentratedLiquidity &&
+          isLinked &&
+          userCanMigrate &&
+          pool && (
+            <section>
+              <SuperchargePool
+                title={t("addConcentratedLiquidityPoolCta.title", {
+                  pair: pool.poolAssets
+                    .map((asset) => asset.amount.denom)
+                    .join("/"),
+                })}
+                caption={t("addConcentratedLiquidityPoolCta.caption")}
+                primaryCta={t("addConcentratedLiquidityPoolCta.primaryCta")}
+                secondaryCta={t("addConcentratedLiquidityPoolCta.secondaryCta")}
+                onCtaClick={() => {
+                  setShowMigrateToClModal(true);
+                }}
+                onSecondaryClick={() => {
+                  setShowClLearnMoreModal(true);
+                }}
+              />
+              {showClLearnMoreModal && (
+                <ConcentratedLiquidityLearnMoreModal
+                  isOpen={true}
+                  onRequestClose={() => setShowClLearnMoreModal(false)}
+                />
+              )}
+              <SelectCffmToClMigration
+                cfmmPoolId={poolId}
+                isOpen={showMigrateToClModal}
+                onRequestClose={() => {
+                  setShowMigrateToClModal(false);
+                }}
+                onSuccessfulMigrate={() => {
+                  router.push("/pool/" + linkedClPoolId);
+                }}
+              />
+            </section>
+          )}
         <section className="flex flex-col gap-4 md:gap-4">
           <div className="flex flex-col flex-wrap px-8 md:gap-3">
             <h6 className="text-h6 font-h6">{t("pool.putAssetsToWork")}</h6>

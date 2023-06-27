@@ -4,6 +4,7 @@ import { Duration } from "dayjs/plugin/duration";
 import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
+import { useRouter } from "next/router";
 import { ComponentProps, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
@@ -11,7 +12,7 @@ import { ShowMoreButton } from "~/components/buttons/show-more";
 import { PoolCard } from "~/components/cards";
 import { AllPoolsTable } from "~/components/complex";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
-import { SuperchargeDaiOsmoPool } from "~/components/funnels/concentrated-liquidity/supercharge-dai-osmo-pool";
+import { SuperchargePool } from "~/components/funnels/concentrated-liquidity/supercharge-pool";
 import { MetricLoader } from "~/components/loaders";
 import { PoolsOverview } from "~/components/overview/pools";
 import { EventName } from "~/config";
@@ -31,15 +32,18 @@ import {
   RemoveLiquidityModal,
   SuperfluidValidatorModal,
 } from "~/modals";
+import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
 const Pools: NextPage = observer(function () {
   const { chainStore, accountStore, queriesStore } = useStore();
   const t = useTranslation();
+  const router = useRouter();
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Pools.pageViewed],
   });
+  const featureFlags = useFlags();
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
@@ -52,6 +56,9 @@ const Pools: NextPage = observer(function () {
     useDimension<HTMLDivElement>();
 
   const [myPositionsRef, { height: myPositionsHeight }] =
+    useDimension<HTMLDivElement>();
+
+  const [superchargeLiquidityRef, { height: superchargeLiquidityHeight }] =
     useDimension<HTMLDivElement>();
 
   // create pool dialog
@@ -211,6 +218,21 @@ const Pools: NextPage = observer(function () {
     }
   }, [createPoolConfig, account]);
 
+  // CL funnel
+  const [showConcentratedLiqIntro, setShowConcentratedLiqIntro] =
+    useState(false);
+  const userMigrateableClPoolId = queryOsmosis.queryGammPoolShare
+    .getOwnPools(account.bech32Address)
+    .map((poolId) =>
+      queryOsmosis.queryCfmmToConcentratedLiquidityPoolLinks.get(poolId)
+    )
+    .find((queryLink) =>
+      Boolean(queryLink.concentratedLiquidityPoolId)
+    )?.concentratedLiquidityPoolId;
+  const migrateableClPool = userMigrateableClPoolId
+    ? queryOsmosis.queryPools.getPool(userMigrateableClPoolId)
+    : undefined;
+
   return (
     <main className="m-auto max-w-container bg-osmoverse-900 px-8 md:px-3">
       <CreatePoolModal
@@ -260,17 +282,37 @@ const Pools: NextPage = observer(function () {
           setIsCreatingPool={useCallback(() => setIsCreatingPool(true), [])}
         />
       </section>
-      <section className="pt-8 pb-10 md:pt-4 md:pb-5">
-        <SuperchargeDaiOsmoPool
-          title="Supercharge you DAI/OSMO Pool"
-          caption="Supercharged positions allow you to earn 27.9% APR. 
-Learn how it works in 30 seconds, or upgrade your position in a few clicks. "
-          primaryCta="Upgrade to supercharged"
-          secondaryCta="Learn in 30 seconds"
-          onCtaClick={() => {}}
-          onSecondaryClick={() => {}}
-        />
-      </section>
+      {featureFlags.concentratedLiquidity && migrateableClPool && (
+        <section
+          ref={superchargeLiquidityRef}
+          className="pt-8 pb-10 md:pt-4 md:pb-5"
+        >
+          <SuperchargePool
+            title={t("addConcentratedLiquidityPoolCta.title", {
+              pair: migrateableClPool.poolAssets
+                .map(({ amount }) => amount.denom)
+                .join("/"),
+            })}
+            caption={t("addConcentratedLiquidityPoolCta.caption")}
+            primaryCta={t("addConcentratedLiquidityPoolCta.primaryCta")}
+            secondaryCta={t("addConcentratedLiquidityPoolCta.secondaryCta")}
+            onCtaClick={() => {
+              if (userMigrateableClPoolId) {
+                router.push("/pool/" + userMigrateableClPoolId);
+              }
+            }}
+            onSecondaryClick={() => {
+              setShowConcentratedLiqIntro(true);
+            }}
+          />
+          {showConcentratedLiqIntro && (
+            <ConcentratedLiquidityLearnMoreModal
+              isOpen
+              onRequestClose={() => setShowConcentratedLiqIntro(false)}
+            />
+          )}
+        </section>
+      )}
       <section ref={myPositionsRef}>
         <div className="flex w-full flex-col flex-nowrap gap-5 pb-[3.75rem]">
           <h6 className="pl-6">{t("clPositions.yourPositions")}</h6>
@@ -283,7 +325,12 @@ Learn how it works in 30 seconds, or upgrade your position in a few clicks. "
 
       <section>
         <AllPoolsTable
-          topOffset={myPositionsHeight + myPoolsHeight + poolsOverviewHeight}
+          topOffset={
+            myPositionsHeight +
+            myPoolsHeight +
+            poolsOverviewHeight +
+            superchargeLiquidityHeight
+          }
           {...quickActionProps}
         />
       </section>

@@ -29,6 +29,9 @@ export interface OsmosisMsgOpts {
   readonly clCollectPositionsIncentivesRewards: (
     numPositions: number
   ) => MsgOpt;
+  readonly unlockAndMigrateSharesToFullRangeConcentratedPosition: (
+    numLocks: number
+  ) => MsgOpt;
   readonly clWithdrawPosition: MsgOpt;
   readonly clAddToConcentratedPosition: MsgOpt;
 }
@@ -119,6 +122,12 @@ export const defaultMsgOpts: OsmosisMsgOpts = {
   clCollectPositionsIncentivesRewards: (numPositions: number) => ({
     type: "osmosis/cl-collect-incentives",
     gas: 300_000 * numPositions,
+  }),
+  unlockAndMigrateSharesToFullRangeConcentratedPosition: (
+    numLocks: number
+  ) => ({
+    type: "osmosis/unlock-and-migrate",
+    gas: 300_000 * numLocks,
   }),
   clWithdrawPosition: {
     type: "osmosis/cl-withdraw-position",

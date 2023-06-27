@@ -15,7 +15,7 @@ interface Props extends CustomClasses {
   onSecondaryClick: () => void;
 }
 
-export const SuperchargeDaiOsmoPool: FunctionComponent<Props> = (props) => {
+export const SuperchargePool: FunctionComponent<Props> = (props) => {
   const { isMobile } = useWindowSize();
 
   return (
