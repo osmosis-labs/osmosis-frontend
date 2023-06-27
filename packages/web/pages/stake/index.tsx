@@ -5,11 +5,8 @@ import { EstimatedEarningCard } from "~/components/cards/estimated-earnings-card
 import { StakeInfoCard } from "~/components/cards/stake-info-card";
 import { StakeTab } from "~/components/control/stake-tab";
 
-import { useWindowSize } from "../../hooks";
-
 export const Staking: React.FC = () => {
   const t = useTranslation();
-  const { isMobile } = useWindowSize();
   const [activeTab, setActiveTab] = useState("Stake");
 
   return (
