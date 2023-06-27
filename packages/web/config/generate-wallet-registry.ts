@@ -2,12 +2,11 @@
 import type { Wallet } from "@cosmos-kit/core";
 import { cosmostationExtensionInfo } from "@cosmos-kit/cosmostation-extension";
 import { keplrExtensionInfo } from "@cosmos-kit/keplr-extension";
+import { keplrMobileInfo } from "@cosmos-kit/keplr-mobile";
 import { leapExtensionInfo } from "@cosmos-kit/leap-extension";
 import * as fs from "fs";
 import path from "path";
 import * as prettier from "prettier";
-
-import { keplrMobileInfo } from "../integrations/keplr-walletconnect/registry";
 
 const WalletRegistry: (Wallet & {
   lazyInstallUrl: string;
@@ -15,6 +14,7 @@ const WalletRegistry: (Wallet & {
 })[] = [
   {
     ...keplrExtensionInfo,
+    mobileDisabled: false,
     logo: "/wallets/keplr.svg",
     lazyInstallUrl: "@cosmos-kit/keplr-extension",
     walletClassName: "KeplrExtensionWallet",
@@ -23,11 +23,12 @@ const WalletRegistry: (Wallet & {
     ...keplrMobileInfo,
     logo: "/wallets/keplr.svg",
     lazyInstallUrl: "../../integrations/keplr-walletconnect",
-    walletClassName: "KeplrMainWalletConnectV1",
+    walletClassName: "KeplrMobileWallet",
   },
   {
     ...leapExtensionInfo,
     logo: "/wallets/leap.png",
+    mobileDisabled: false,
     lazyInstallUrl: "@cosmos-kit/leap-extension",
     walletClassName: "LeapExtensionWallet",
   },
@@ -127,6 +128,9 @@ async function generateWalletRegistry() {
       export const WalletRegistry: (Wallet & { lazyInstall: Function })[] = [${WalletRegistry.map(
         getStringifiedWallet
       ).join(",")}];
+      export enum AvailableWallets {${WalletRegistry.map(
+        (wallet) => `${wallet.prettyName.replace(/\s/g, "")} = "${wallet.name}"`
+      ).join(",")}}
     `;
 
   const prettierConfig = await prettier.resolveConfig("./");

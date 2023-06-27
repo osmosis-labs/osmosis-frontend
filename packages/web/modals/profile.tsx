@@ -19,6 +19,8 @@ import {
 import { useTranslation } from "react-multi-lang";
 import { useCopyToClipboard, useTimeoutFn } from "react-use";
 
+import Spinner from "~/components/spinner";
+
 import {
   CopyIcon,
   ExternalLinkIcon,
@@ -81,6 +83,7 @@ export const ProfileModal: FunctionComponent<
   const wallet = accountStore.getWallet(chainId);
 
   const [hasCopied, setHasCopied] = useState(false);
+  const [isDisconnecting, setIsDisconnecting] = useState(false);
   const [_state, copyToClipboard] = useCopyToClipboard();
   const [_isReady, _cancel, reset] = useTimeoutFn(
     () => setHasCopied(false),
@@ -381,14 +384,25 @@ export const ProfileModal: FunctionComponent<
 
                 <ActionButton
                   title="Log Out"
-                  onClick={() => {
+                  onClick={async () => {
                     logEvent([EventName.ProfileModal.logOutClicked]);
-                    wallet?.disconnect(true);
-                    props.onRequestClose();
+                    try {
+                      setIsDisconnecting(true);
+                      await wallet?.disconnect(true);
+                      props.onRequestClose();
+                    } catch (e) {
+                      throw e;
+                    } finally {
+                      setIsDisconnecting(false);
+                    }
                   }}
                   className="group hover:text-rust-500"
                 >
-                  <LogOutIcon isAnimated />
+                  {isDisconnecting ? (
+                    <Spinner className="text-white-full" />
+                  ) : (
+                    <LogOutIcon isAnimated />
+                  )}
                 </ActionButton>
               </div>
             </div>
