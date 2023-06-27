@@ -1,3 +1,4 @@
+import { Staking } from "@keplr-wallet/stores";
 import {
   ColumnDef,
   createColumnHelper,
@@ -17,6 +18,8 @@ import { Icon } from "~/components/assets";
 import { SearchBox } from "~/components/input";
 import { IS_FRONTIER } from "~/config/index";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
+
+import { useStore } from "../stores";
 
 export const ValidatorSquadModal: FunctionComponent<ModalBaseProps> = observer(
   (props) => <ValidatorSquadContent {...props} />
@@ -99,6 +102,26 @@ interface ValidatorSquadContentProps {
 
 const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
   observer(({ onRequestClose, isOpen }) => {
+    const { chainStore, queriesStore, accountStore } = useStore();
+    const { chainId } = chainStore.osmosis;
+    const queries = queriesStore.get(chainId);
+
+    const account = accountStore.getWallet(chainId);
+
+    const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
+      Staking.BondStatus.Bonded
+    );
+
+    const activeValidators = queryValidators.validators;
+
+    const userValidatorDelegations =
+      queries.cosmos.queryDelegations.getQueryBech32Address(
+        account?.address ?? ""
+      ).delegations;
+
+    console.log("activeValidators: ", activeValidators);
+    console.log("userValidatorDelegations: ", userValidatorDelegations);
+
     const t = useTranslation();
 
     const columnHelper = createColumnHelper<Validator>();
