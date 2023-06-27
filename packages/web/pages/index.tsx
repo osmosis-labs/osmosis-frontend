@@ -1,4 +1,5 @@
 import { Dec } from "@keplr-wallet/unit";
+import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import dynamic from "next/dynamic";
@@ -53,6 +54,8 @@ const Home: NextPage = observer(function () {
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
   });
 
+  const flags = useFlags();
+
   return (
     <main className="relative h-full bg-osmoverse-900">
       <div className="absolute h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">
@@ -95,7 +98,7 @@ const Home: NextPage = observer(function () {
       </div>
       <div className="ml-auto mr-[15%] flex h-full w-full items-center justify-center overflow-y-auto overflow-x-hidden lg:mx-auto md:mt-mobile-header">
         <div className="flex w-[27rem] flex-col gap-4">
-          <AdBanner />
+          {flags.swapsAdBanner && <AdBanner />}
           <TradeClipboard containerClassName="w-full" pools={pools} />
         </div>
       </div>
