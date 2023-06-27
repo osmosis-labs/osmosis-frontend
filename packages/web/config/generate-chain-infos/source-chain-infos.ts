@@ -755,7 +755,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDecimals: 8,
         // coinGeckoId: "crypto-com-chain",
         coinGeckoId: "pool:basecro",
-        coinImageUrl: "/tokens/cro.svg",
+        coinImageUrl: "/tokens/cro-bg-navy.svg",
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {
@@ -2440,6 +2440,22 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:roar",
         coinImageUrl: "/tokens/roar.png",
       },
+      {
+        coinDenom: "CUB",
+        coinMinimalDenom:
+          "cw20:terra1lalvk0r6nhruel7fvzdppk3tup3mh5j4d4eadrqzfhle4zrf52as58hh9t",
+        coinDecimals: 6,
+        coinGeckoId: "pool:cub",
+        coinImageUrl: "/tokens/cub.png",
+      },
+      {
+        coinDenom: "BLUE",
+        coinMinimalDenom:
+          "cw20:terra1gwrz9xzhqsygyr5asrgyq3pu0ewpn00mv2zenu86yvx2nlwpe8lqppv584",
+        coinDecimals: 6,
+        coinGeckoId: "pool:blue",
+        coinImageUrl: "/tokens/blue.png",
+      },
     ],
     features: ["ibc-transfer"],
     explorerUrlToTx: "https://finder.terra.money/phoenix-1/tx/{txHash}",
@@ -3625,7 +3641,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {
-          low: 0.01,
+          low: 0,
           average: 0.025,
           high: 0.05,
         },
@@ -3633,6 +3649,34 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://explorer.nolus.io/pirin-1/tx/{txHash}",
+  },
+  {
+    rpc: "https://rpc-neutron.keplr.app",
+    rest: "https://lcd-neutron.keplr.app",
+    chainId: "neutron-1",
+    chainName: "Neutron",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("neutron"),
+    currencies: [
+      {
+        coinDenom: "NTRN",
+        coinMinimalDenom: "untrn",
+        coinDecimals: 6,
+        coinGeckoId: "pool:untrn",
+        coinImageUrl: "/tokens/ntrn.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.01,
+          average: 0.025,
+          high: 0.05,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://www.mintscan.io/neutron/txs/{txHash}",
   },
 ];
 
