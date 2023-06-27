@@ -1818,6 +1818,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-783",
         destChannelId: "channel-0",
         coinMinimalDenom: "unls",
+        isVerified: true,
       },
       {
         //ROAR
