@@ -3,7 +3,7 @@ import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
-import IconButton from "~/components/buttons/icon-button";
+import { EstimatedEarningCard } from "~/components/cards/estimated-earnings-card";
 import { StakeInfoCard } from "~/components/cards/stake-info-card";
 import { StakeTab } from "~/components/control/stake-tab";
 import { useWindowSize } from "~/hooks";
@@ -27,27 +27,7 @@ export const Staking: React.FC = () => {
               height={isMobile ? 20 : 28}
               className="text-osmoverse-400 hover:text-white-full"
             />
-
             <h6 className="text-center">{t("stake.title")}</h6>
-            <div className="flex items-center">
-              <IconButton
-                aria-label="Open swap settings"
-                className="z-40 w-fit py-0"
-                size="unstyled"
-                mode="unstyled"
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-                icon={
-                  <Icon
-                    id="setting"
-                    width={isMobile ? 20 : 28}
-                    height={isMobile ? 20 : 28}
-                    className="text-osmoverse-400 hover:text-white-full"
-                  />
-                }
-              />
-            </div>
           </div>
           <div className="flex justify-around border-b-2 border-transparent">
             <StakeTab
@@ -64,6 +44,7 @@ export const Staking: React.FC = () => {
             </StakeTab>
           </div>
           <StakeInfoCard />
+          <EstimatedEarningCard />
           <Button mode="special-1" onClick={() => setShowValidatorModal(true)}>
             Stake
           </Button>
