@@ -484,8 +484,6 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
   const walletInfo = wallet?.walletInfo;
   const qrUrl = wallet?.qrUrl;
 
-  console.log(qrUrl);
-
   const [description, errorTitle, errorDesc, status] = useMemo(() => {
     const isExpired = qrUrl?.message === ExpiredError.message;
 
