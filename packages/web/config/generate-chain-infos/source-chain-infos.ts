@@ -2739,8 +2739,8 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://www.mintscan.io/crescent/txs/{txHash}",
   },
   {
-    rpc: "https://lumenx-rpc.kynraze.com",
-    rest: "https://lumenx-api.kynraze.com",
+    rpc: "https://rpc-lumenx.cryptonet.pl",
+    rest: "https://api-lumenx.cryptonet.pl",
     chainId: "LumenX",
     chainName: "LumenX",
     bip44: {
