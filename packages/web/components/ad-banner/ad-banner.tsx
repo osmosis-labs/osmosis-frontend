@@ -5,7 +5,7 @@ import {
   AdBannerContent,
   AdBannerProps,
 } from "~/components/ad-banner/ad-banner-content";
-import { Step, Stepper, StepsIndicator } from "~/components/stepper/index";
+import { Step, Stepper } from "~/components/stepper/index";
 
 const shuffleArray = (array: any[]): any[] =>
   array.sort(() => 0.5 - Math.random());
@@ -24,7 +24,6 @@ export const AdBanner = memo(() => {
           <AdBannerContent {...ad} />
         </Step>
       ))}
-      <StepsIndicator />
     </Stepper>
   );
 });
