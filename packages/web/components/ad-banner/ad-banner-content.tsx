@@ -2,7 +2,7 @@ import classNames from "classnames";
 import Image from "next/image";
 import { memo } from "react";
 
-import { ArrowRightIcon } from "~/public/icons/arrow-right-icon";
+import { Icon } from "../assets";
 
 export interface AdBannerProps {
   name: string;
@@ -30,6 +30,7 @@ export const AdBannerContent: React.FC<AdBannerProps> = memo(
   }) => {
     const gradientStyle = { backgroundImage: gradient };
     const textContainerStyle = { color: fontColor };
+    const arrowStyle = { color: arrowColor };
 
     return (
       <a
@@ -49,7 +50,7 @@ export const AdBannerContent: React.FC<AdBannerProps> = memo(
           <h6 className="font-semibold">{header}</h6>
           <div className="flex gap-3">
             <p className="text-sm font-light">{subheader}</p>
-            <ArrowRightIcon stroke={arrowColor} />
+            <Icon id="arrow-right" style={arrowStyle} />
           </div>
         </div>
       </a>
