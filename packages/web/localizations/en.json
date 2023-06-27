@@ -421,7 +421,8 @@
     "validatorHeader": "Validator squad",
     "edit": "edit",
     "stake": "Stake OSMO",
-    "unstake": "Unstake OSMO"
+    "unstake": "Unstake OSMO",
+    "estimatedEarnings": "Estimated earnings"
   },
   "superfluidValidator": {
     "bondedAmount": "Bonded Amount",
