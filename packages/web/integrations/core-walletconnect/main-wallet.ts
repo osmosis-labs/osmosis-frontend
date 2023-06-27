@@ -9,12 +9,12 @@ export class WCWallet extends MainWalletBase {
   clientMutable: Mutable<WCClient> = { state: State.Init };
 
   constructor(walletInfo: Wallet, ChainWC: IChainWC, WCClient: IWCClient) {
+    super(walletInfo, ChainWC);
     if (!walletInfo.walletconnect) {
       throw new Error(
         `'walletconnect' info for wallet ${walletInfo.prettyName} is not provided in wallet registry.`
       );
     }
-    super(walletInfo, ChainWC);
     this.WCClient = WCClient;
   }
 

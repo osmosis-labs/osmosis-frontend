@@ -95,6 +95,15 @@ export function useIbcTransfer({
       : undefined;
 
   useMount(() => {
+    /**
+     * For WalletConnect display the wallet select modal to signal the user to open
+     * his mobile wallet app. We don't have to do this for extension wallets because
+     * feedback is given by the extension itself.
+     **/
+    if (account?.walletInfo.mode === "wallet-connect") {
+      onOpenWalletSelect(counterpartyChainId);
+    }
+
     counterpartyAccountRepo
       ?.connect(account?.walletName)
       .catch(() => onOpenWalletSelect(counterpartyChainId));

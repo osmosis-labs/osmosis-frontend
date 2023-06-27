@@ -166,6 +166,7 @@ const ModalContent: FunctionComponent<
 
     const currentWallet = walletRepo?.current;
     const walletInfo = currentWallet?.walletInfo ?? lazyWalletInfo;
+    const chainName = walletRepo?.chainRecord.chain.chain_name;
 
     const onConnect = async (
       sync: boolean,
@@ -174,7 +175,7 @@ const ModalContent: FunctionComponent<
       if (!wallet) return;
 
       const handleConnectError = (e: Error) => {
-        console.error("Error while connecting to direct wallet. Details: ", e);
+        console.error("Error while connecting to wallet. Details: ", e);
         localStorage.removeItem(CosmosKitWalletLocalStorageKey);
         localStorage.removeItem(CosmosKitAccountsLocalStorageKey);
       };
@@ -207,8 +208,8 @@ const ModalContent: FunctionComponent<
         );
 
         return walletManager
-          .getMainWallet(wallet.name)
-          .connect(sync)
+          .getWalletRepo(chainName)
+          .connect(wallet.name, sync)
           .then(() => {
             setLazyWalletInfo(undefined);
             onConnectProp?.();
@@ -434,7 +435,7 @@ const ModalContent: FunctionComponent<
                   "py-3 font-normal"
                 )}
                 key={wallet.name}
-                onClick={() => onConnect(true, wallet)}
+                onClick={() => onConnect(false, wallet)}
               >
                 <img className="h-16 w-16" src={wallet.logo} alt="" />
                 <div className="flex flex-col gap-1 text-left">
