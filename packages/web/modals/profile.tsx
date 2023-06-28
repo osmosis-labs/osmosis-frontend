@@ -406,7 +406,7 @@ export const ProfileModal: FunctionComponent<
                             className="outline-none sm:w-full"
                           />
                           <p className="subtitle1 mt-4 tracking-wide text-osmoverse-300">
-                            Select a Stargaze PFP
+                            Stargaze NFT
                           </p>
                         </div>
                       </DrawerButton>
