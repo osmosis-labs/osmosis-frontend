@@ -1,4 +1,3 @@
-import { SimpleAccount } from "@cosmos-kit/core";
 import {
   CosmosKitAccountsLocalStorageKey,
   CosmosKitWalletLocalStorageKey,
@@ -44,30 +43,6 @@ export const WalletSelectProvider: FunctionComponent = observer(
     const [isLoading, setIsLoading] = useState(true);
 
     const { setUserProperty } = useAmplitudeAnalytics();
-
-    useEffect(() => {
-      // Try to reconnect to wallet if user has changed account for current wallet
-      const tryReconnectToWallet = () => {
-        const accountsStr = window.localStorage.getItem(
-          CosmosKitAccountsLocalStorageKey
-        );
-
-        if (accountsStr) {
-          const accounts: SimpleAccount[] = JSON.parse(accountsStr);
-          try {
-            accountStore.getWalletRepo(accounts[0].chainId).connect();
-          } catch (e) {}
-        }
-      };
-
-      accountStore.walletManager.on("refresh_connection", tryReconnectToWallet);
-      return () => {
-        accountStore.walletManager.off(
-          "refresh_connection",
-          tryReconnectToWallet
-        );
-      };
-    }, [accountStore]);
 
     const setUserAmplitudeProperties = useCallback(() => {
       const wallet = accountStore.getWallet(chainId);
@@ -118,6 +93,8 @@ export const WalletSelectProvider: FunctionComponent = observer(
       const init = async () => {
         try {
           await installPrevSessionWallet();
+          // On mounted handles wallet connection if a session exists
+          await accountStore.walletManager.onMounted();
           setUserAmplitudeProperties();
         } finally {
           setIsLoading(false);
@@ -129,7 +106,7 @@ export const WalletSelectProvider: FunctionComponent = observer(
       return () => {
         accountStore.walletManager.onUnmounted();
       };
-    }, [accountStore, accountStore.walletManager, setUserAmplitudeProperties]);
+    }, [accountStore, setUserAmplitudeProperties]);
 
     const onOpenWalletSelect = useCallback((chainName: string) => {
       setIsWalletSelectOpen(true);
