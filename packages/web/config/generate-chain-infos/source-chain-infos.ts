@@ -1312,6 +1312,17 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:pepec",
         coinImageUrl: "/tokens/pepec.png",
       },
+      {
+        type: "cw20",
+        contractAddress:
+          "juno1ju8k8sqwsqu5k6umrypmtyqu2wqcpnrkf4w4mntvl0javt4nma7s8lzgss",
+        coinDenom: "CASA",
+        coinMinimalDenom:
+          "cw20:juno1ju8k8sqwsqu5k6umrypmtyqu2wqcpnrkf4w4mntvl0javt4nma7s8lzgss:CASA",
+        coinDecimals: 6,
+        coinGeckoId: "pool:casa",
+        coinImageUrl: "/tokens/casa.png",
+      },
     ],
     features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
     explorerUrlToTx: "https://www.mintscan.io/juno/txs/{txHash}",
