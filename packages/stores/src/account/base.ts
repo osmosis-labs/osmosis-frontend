@@ -111,14 +111,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     >
   ) {
     this._wallets = wallets;
-    this._walletManager = this.createWalletManager(wallets);
+    this._walletManager = this._createWalletManager(wallets);
     this.accountSetCreators = accountSetCreators;
 
     makeObservable(this);
   }
 
-  private createWalletManager(wallets: MainWalletBase[]) {
-    const walletManager = new WalletManager(
+  private _createWalletManager(wallets: MainWalletBase[]) {
+    this._walletManager = new WalletManager(
       this.chains,
       this.assets,
       wallets,
@@ -148,13 +148,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
     );
 
-    walletManager.setActions({
+    this._walletManager.setActions({
       viewWalletRepo: () => this.refresh(),
       data: () => this.refresh(),
       state: () => this.refresh(),
       message: () => this.refresh(),
     });
-    walletManager.walletRepos.forEach((repo) => {
+    this._walletManager.walletRepos.forEach((repo) => {
       repo.setActions({
         viewWalletRepo: () => this.refresh(),
       });
@@ -169,7 +169,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     this.refresh();
 
-    return walletManager;
+    return this._walletManager;
   }
 
   @action
@@ -177,10 +177,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     this._refreshRequests++;
   }
 
-  addWallet(wallet: MainWalletBase) {
+  async addWallet(wallet: MainWalletBase) {
     this._wallets = [...this._wallets, wallet];
-    this._walletManager = this.createWalletManager(this._wallets);
-    this.refresh();
+    // Unmount the previous wallet manager.
+    await this._walletManager.onUnmounted();
+    this._createWalletManager(this._wallets);
     return this._walletManager;
   }
 
@@ -531,15 +532,18 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId.startsWith("injective") ||
       chainId.startsWith("stride") ||
       currentChain?.features?.includes("ibc-go-v7-hot-fix");
+    const isMobile =
+      wallet.walletInfo.mode === "wallet-connect" ||
+      wallet.walletName === "keplr-mobile";
 
     const forceSignDirect =
       isWalletOfflineDirectSigner(signer, walletWindowName) &&
       isChainWithHotfix &&
-      !(wallet.walletInfo.mode === "wallet-connect");
+      !isMobile;
 
     if (
       isChainWithHotfix &&
-      !isWalletOfflineDirectSigner(signer, walletWindowName)
+      (!isWalletOfflineDirectSigner(signer, walletWindowName) || isMobile)
     ) {
       throw new Error(
         `${

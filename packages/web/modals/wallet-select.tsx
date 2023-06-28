@@ -5,6 +5,10 @@ import {
   WalletRepo,
   WalletStatus,
 } from "@cosmos-kit/core";
+import {
+  CosmosKitAccountsLocalStorageKey,
+  CosmosKitWalletLocalStorageKey,
+} from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
@@ -162,24 +166,27 @@ const ModalContent: FunctionComponent<
 
     const currentWallet = walletRepo?.current;
     const walletInfo = currentWallet?.walletInfo ?? lazyWalletInfo;
+    const chainName = walletRepo?.chainRecord.chain.chain_name;
 
     const onConnect = async (
       sync: boolean,
       wallet?: ChainWalletBase | (typeof WalletRegistry)[number]
     ) => {
       if (!wallet) return;
+
+      const handleConnectError = (e: Error) => {
+        console.error("Error while connecting to wallet. Details: ", e);
+        localStorage.removeItem(CosmosKitWalletLocalStorageKey);
+        localStorage.removeItem(CosmosKitAccountsLocalStorageKey);
+      };
+
       if (!("lazyInstall" in wallet)) {
         wallet
           .connect(sync)
           .then(() => {
             onConnectProp?.();
           })
-          .catch((e) =>
-            console.error(
-              "Error while connecting to direct wallet. Details: ",
-              e
-            )
-          );
+          .catch(handleConnectError);
         return;
       }
 
@@ -196,36 +203,26 @@ const ModalContent: FunctionComponent<
         const walletInfo = wallet;
         const WalletClass = await wallet.lazyInstall();
 
-        const walletManager = accountStore.addWallet(
+        const walletManager = await accountStore.addWallet(
           new WalletClass(walletInfo)
         );
         await walletManager.onMounted();
+        setLazyWalletInfo(undefined);
 
         return walletManager
-          .getMainWallet(wallet.name)
-          .connect(sync)
+          .getWalletRepo(chainName)
+          .connect(wallet.name, sync)
           .then(() => {
-            setLazyWalletInfo(undefined);
             onConnectProp?.();
           })
-          .catch((e) =>
-            console.error(
-              "Error while connecting to newly installed wallet. Details: ",
-              e
-            )
-          );
+          .catch(handleConnectError);
       } else {
         installedWallet
           ?.connect(sync)
           .then(() => {
             onConnectProp?.();
           })
-          .catch((e) =>
-            console.error(
-              "Error while connecting to installed wallet. Details: ",
-              e
-            )
-          );
+          .catch(handleConnectError);
       }
     };
 
@@ -439,7 +436,7 @@ const ModalContent: FunctionComponent<
                   "py-3 font-normal"
                 )}
                 key={wallet.name}
-                onClick={() => onConnect(true, wallet)}
+                onClick={() => onConnect(false, wallet)}
               >
                 <img className="h-16 w-16" src={wallet.logo} alt="" />
                 <div className="flex flex-col gap-1 text-left">
