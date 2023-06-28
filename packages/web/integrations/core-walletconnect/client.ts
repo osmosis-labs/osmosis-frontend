@@ -488,6 +488,14 @@ export class WCClient implements WalletClient {
     );
 
     this.sessions = [];
+
+    const pairings = this.signClient.pairing.getAll();
+    if (Array.isArray(pairings)) {
+      for (const pairing of pairings) {
+        this.signClient.core.expirer.set(pairing.topic, 0);
+      }
+    }
+
     this.emitter?.emit("sync_disconnect");
     this.logger?.debug("[WALLET EVENT] Emit `sync_disconnect`");
   }
