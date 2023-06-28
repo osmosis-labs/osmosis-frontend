@@ -3689,6 +3689,42 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://www.mintscan.io/neutron/txs/{txHash}",
   },
+  {
+    rpc: "https://rpc-composable-ia.cosmosia.notional.ventures",
+    rest: "https://api-composable-ia.cosmosia.notional.ventures",
+    chainId: "centauri-1",
+    chainName: "Centauri",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("centauri"),
+    currencies: [
+      {
+        coinDenom: "PICA",
+        coinMinimalDenom: "ppica",
+        coinDecimals: 12,
+        coinGeckoId: "pool:ppica",
+        coinImageUrl: "/tokens/composable.png",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0,
+          average: 0,
+          high: 0,
+        },
+      },
+      {
+        coinDenom: "KSM",
+        coinMinimalDenom:
+          "ibc/EE9046745AEC0E8302CB7ED9D5AD67F528FB3B7AE044B247FB0FB293DBDA35E9",
+        coinDecimals: 12,
+        coinGeckoId: "pool:ksm",
+        coinImageUrl: "/tokens/ksm.svg",
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://ping.pub/centauri/tx/{txHash}",
+  },
 ];
 
 const chainInfos = IS_TESTNET
