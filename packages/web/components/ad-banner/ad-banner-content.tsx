@@ -2,22 +2,12 @@ import classNames from "classnames";
 import Image from "next/image";
 import { memo } from "react";
 
-import { Icon } from "../assets";
+import { Ad } from "~/components/ad-banner/ad-banner-types";
+import { Icon } from "~/components/assets";
 
-export interface AdBannerProps {
-  name: string;
-  header: string;
-  subheader: string;
-  externalUrl: string;
-  iconImageUrl: string;
-  iconImageAlt: string;
-  gradient: string;
-  fontColor: string;
-  arrowColor: string;
-  featured: boolean;
-}
+type AdBannerContentProps = Ad;
 
-export const AdBannerContent: React.FC<AdBannerProps> = memo(
+export const AdBannerContent: React.FC<AdBannerContentProps> = memo(
   ({
     header,
     subheader,
