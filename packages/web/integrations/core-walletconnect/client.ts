@@ -468,6 +468,13 @@ export class WCClient implements WalletClient {
       return;
     }
 
+    const pairings = this.signClient.pairing.getAll();
+    if (Array.isArray(pairings)) {
+      for (const pairing of pairings) {
+        this.signClient.core.expirer.set(pairing.topic, 0);
+      }
+    }
+
     await Promise.all(
       this.sessions.map(async (session) => {
         if (!this.signClient) return;
