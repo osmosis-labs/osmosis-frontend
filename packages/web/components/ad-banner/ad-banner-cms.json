@@ -1,8 +1,8 @@
 {
   "banners": [
     {
-      "name": "Limit Orders",
-      "header": "Place limit orders",
+      "name": "Place limit and stop Orders",
+      "header": "Place limit and stop Orders",
       "subheader": "New trading options with Autonomy",
       "externalUrl": "https://autonomynetwork.io/autoswap",
       "iconImageUrl": "/images/place-limit-order.svg",
@@ -13,9 +13,9 @@
       "featured": true
     },
     {
-      "name": "Dollar Cost Averaging",
-      "header": "Dollar cost averaging",
-      "subheader": "Define a strategy with CalcFi",
+      "name": "Looking to DCA?",
+      "header": "Looking to DCA?",
+      "subheader": "Setup recurring swap strategies with CalcFi",
       "externalUrl": "https://app.calculated.fi/?chain=Osmosis",
       "iconImageUrl": "/images/dollar-cost-averaging.svg",
       "iconImageAlt": "Chart increasing to the upper right with dollar signs",
