@@ -93,6 +93,7 @@ type Validator = {
   myStake: string;
   votingPower: string;
   commissions: string;
+  website: string;
 };
 
 interface ValidatorSquadContentProps {
@@ -127,6 +128,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
       myStake: "0.01",
       votingPower: "1.44%",
       commissions: validator.commission.commission_rates.rate,
+      website: validator.description.website,
     }));
 
     const t = useTranslation();
@@ -164,6 +166,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
 
     const table = useReactTable({
       data,
+      // @ts-ignore
       columns,
       state: {
         sorting,
