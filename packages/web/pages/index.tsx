@@ -1,8 +1,7 @@
 import { Dec } from "@keplr-wallet/unit";
 import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
-import type { NextPage } from "next";
-import type { GetStaticProps } from "next";
+import type { GetStaticProps, InferGetServerSidePropsType } from "next";
 import { useMemo } from "react";
 
 import { AdBanner } from "~/components/ad-banner/ad-banner";
@@ -19,7 +18,12 @@ interface HomeProps {
   ads: Ad[];
 }
 
-const Home: NextPage<HomeProps> = observer(({ ads }) => {
+export const getStaticProps: GetStaticProps<HomeProps> = async () => {
+  const ads = adCMS.banners.filter(({ featured }) => featured);
+  return { props: { ads } };
+};
+
+const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
   const { chainStore, queriesStore, priceStore } = useStore();
   const { chainId } = chainStore.osmosis;
 
@@ -104,11 +108,6 @@ const Home: NextPage<HomeProps> = observer(({ ads }) => {
       </div>
     </main>
   );
-});
-
-export default Home;
-
-export const getStaticProps: GetStaticProps<HomeProps> = async () => {
-  const ads = adCMS.banners.filter(({ featured }) => featured);
-  return { props: { ads } };
 };
+
+export default observer(Home);
