@@ -25,68 +25,68 @@ export const ValidatorSquadModal: FunctionComponent<ModalBaseProps> = observer(
   (props) => <ValidatorSquadContent {...props} />
 );
 
-const data: Validator[] = [
-  {
-    validatorName: "Cosmostation",
-    myStake: "0.01",
-    votingPower: "1.44%",
-    commissions: "1%",
-  },
-  {
-    validatorName: "Figment",
-    myStake: "0.02",
-    votingPower: "2.44%",
-    commissions: "2%",
-  },
-  {
-    validatorName: "Stargaze",
-    myStake: "0.03",
-    votingPower: "3.44%",
-    commissions: "3%",
-  },
-  {
-    validatorName: "Frens",
-    myStake: "0.04",
-    votingPower: "4.44%",
-    commissions: "4%",
-  },
-  {
-    validatorName: "Figment",
-    myStake: "0.05",
-    votingPower: "5.44%",
-    commissions: "5%",
-  },
-  {
-    validatorName: "interchain.fm",
-    myStake: "0.06",
-    votingPower: "6.44%",
-    commissions: "6%",
-  },
-  {
-    validatorName: "imperator.co",
-    myStake: "0.07",
-    votingPower: "7.44%",
-    commissions: "7%",
-  },
-  {
-    validatorName: "Chorus One",
-    myStake: "0.08",
-    votingPower: "8.44%",
-    commissions: "8%",
-  },
-  {
-    validatorName: "Electric",
-    myStake: "0.09",
-    votingPower: "9.44%",
-    commissions: "9%",
-  },
-  {
-    validatorName: "wosmongton",
-    myStake: "0.10",
-    votingPower: "10.44%",
-    commissions: "10%",
-  },
-];
+// const data: Validator[] = [
+//   {
+//     validatorName: "Cosmostation",
+//     myStake: "0.01",
+//     votingPower: "1.44%",
+//     commissions: "1%",
+//   },
+//   {
+//     validatorName: "Figment",
+//     myStake: "0.02",
+//     votingPower: "2.44%",
+//     commissions: "2%",
+//   },
+//   {
+//     validatorName: "Stargaze",
+//     myStake: "0.03",
+//     votingPower: "3.44%",
+//     commissions: "3%",
+//   },
+//   {
+//     validatorName: "Frens",
+//     myStake: "0.04",
+//     votingPower: "4.44%",
+//     commissions: "4%",
+//   },
+//   {
+//     validatorName: "Figment",
+//     myStake: "0.05",
+//     votingPower: "5.44%",
+//     commissions: "5%",
+//   },
+//   {
+//     validatorName: "interchain.fm",
+//     myStake: "0.06",
+//     votingPower: "6.44%",
+//     commissions: "6%",
+//   },
+//   {
+//     validatorName: "imperator.co",
+//     myStake: "0.07",
+//     votingPower: "7.44%",
+//     commissions: "7%",
+//   },
+//   {
+//     validatorName: "Chorus One",
+//     myStake: "0.08",
+//     votingPower: "8.44%",
+//     commissions: "8%",
+//   },
+//   {
+//     validatorName: "Electric",
+//     myStake: "0.09",
+//     votingPower: "9.44%",
+//     commissions: "9%",
+//   },
+//   {
+//     validatorName: "wosmongton",
+//     myStake: "0.10",
+//     votingPower: "10.44%",
+//     commissions: "10%",
+//   },
+// ];
 
 type Validator = {
   validatorName: string;
@@ -121,6 +121,13 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
 
     console.log("activeValidators: ", activeValidators);
     console.log("userValidatorDelegations: ", userValidatorDelegations);
+
+    const data = activeValidators.map((validator) => ({
+      validatorName: validator.description.moniker,
+      myStake: "0.01",
+      votingPower: "1.44%",
+      commissions: validator.commission.commission_rates.rate,
+    }));
 
     const t = useTranslation();
 
