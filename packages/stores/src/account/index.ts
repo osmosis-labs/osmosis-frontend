@@ -1619,11 +1619,17 @@ export class OsmosisAccountImpl {
           ? queryPoolShares?.balance
           : accountLocked.lockedCoins.find(
               ({ amount, lockIds }) =>
-                amount.denom === queryPool.shareCurrency.coinMinimalDenom &&
+                amount.currency.coinMinimalDenom ===
+                  queryPool.shareCurrency.coinMinimalDenom &&
                 lockIds.includes(lockId)
             )?.amount;
 
-      if (!poolGammShares || !queryPool?.sharePool?.totalShare) return;
+      if (!poolGammShares) {
+        throw new Error(`User shares for pool #${poolId} not found`);
+      }
+      if (!queryPool?.sharePool?.totalShare) {
+        throw new Error(`Pool ${poolId} missing share info`);
+      }
 
       const poolAssets = queryPool?.poolAssets.map(({ amount }) => ({
         denom: amount.currency.coinMinimalDenom,

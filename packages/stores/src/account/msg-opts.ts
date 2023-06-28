@@ -127,7 +127,7 @@ export const defaultMsgOpts: OsmosisMsgOpts = {
     numLocks: number
   ) => ({
     type: "osmosis/unlock-and-migrate",
-    gas: 300_000 * numLocks,
+    gas: 1_000_000 * numLocks,
   }),
   clWithdrawPosition: {
     type: "osmosis/cl-withdraw-position",
