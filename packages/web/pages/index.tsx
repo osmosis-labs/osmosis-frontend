@@ -1,8 +1,12 @@
 import { Dec } from "@keplr-wallet/unit";
+import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
-import type { NextPage } from "next";
+import type { GetStaticProps, InferGetServerSidePropsType } from "next";
 import { useMemo } from "react";
 
+import { AdBanner } from "~/components/ad-banner/ad-banner";
+import adCMS from "~/components/ad-banner/ad-banner-cms.json";
+import { Ad } from "~/components/ad-banner/ad-banner-types";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { TradeClipboard } from "~/components/trade-clipboard";
 import { useStore } from "~/stores";
@@ -10,7 +14,16 @@ import { useStore } from "~/stores";
 import { EventName, IS_FRONTIER, IS_TESTNET } from "../config";
 import { useAmplitudeAnalytics } from "../hooks";
 
-const Home: NextPage = observer(function () {
+interface HomeProps {
+  ads: Ad[];
+}
+
+export const getStaticProps: GetStaticProps<HomeProps> = async () => {
+  const ads = adCMS.banners.filter(({ featured }) => featured);
+  return { props: { ads } };
+};
+
+const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
   const { chainStore, queriesStore, priceStore } = useStore();
   const { chainId } = chainStore.osmosis;
 
@@ -44,6 +57,8 @@ const Home: NextPage = observer(function () {
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
   });
+
+  const flags = useFlags();
 
   return (
     <main className="relative h-full bg-osmoverse-900">
@@ -85,14 +100,14 @@ const Home: NextPage = observer(function () {
           </g>
         </svg>
       </div>
-      <div className="flex h-full w-full items-center overflow-y-auto overflow-x-hidden">
-        <TradeClipboard
-          containerClassName="w-[27rem] md:mt-mobile-header ml-auto mr-[15%] lg:mx-auto"
-          pools={pools}
-        />
+      <div className="ml-auto mr-[15%] flex h-full w-full items-center justify-center overflow-y-auto overflow-x-hidden lg:mx-auto md:mt-mobile-header">
+        <div className="flex w-[27rem] flex-col gap-4">
+          {flags.swapsAdBanner && <AdBanner ads={ads} />}
+          <TradeClipboard containerClassName="w-full" pools={pools} />
+        </div>
       </div>
     </main>
   );
-});
+};
 
-export default Home;
+export default observer(Home);

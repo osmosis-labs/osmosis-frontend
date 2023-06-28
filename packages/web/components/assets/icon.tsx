@@ -33,7 +33,8 @@ export type SpriteIconId =
   | "sandbox"
   | "alert-triangle"
   | "wallet"
-  | "left-right";
+  | "left-right"
+  | "arrow-right";
 
 /**
  * It takes an icon id and returns an svg element with the corresponding icon defined in /public/icons/sprite.svg.
