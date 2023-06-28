@@ -54,7 +54,7 @@
     "secondaryCta": "Learn in 30s",
     "tutorialA": {
       "1": "Use way less capital to earn the same amount or more in pools. Here’s how it works.",
-      "2": "Instead of setting and forgetting a position, it’s a bit more active. You, Bob, Mary, and Ammelia can choose where to “concentrate” your liquidity.",
+      "2": "Instead of setting and forgetting a position, it’s a bit more active. You, Woz, Mary, and Ammelia can choose where to “concentrate” your liquidity.",
       "3": "Pick a strategy that best suits you. Woz might have an aggressive strategy that earns more, but only if the current price remains in his range.",
       "4": "Ammelia chose a passive strategy. By distributing a little bit across the entire span, she earns less but never goes out of range.",
       "5": "If the price goes out of your range, all assets will be converted to the lower nominal value of the two. This will revert if the price re-enters your range. Passive strategies are easier to manage.",
