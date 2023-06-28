@@ -2960,7 +2960,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinImageUrl: "/tokens/stumee.svg",
       },
     ],
-    features: ["ibc-transfer", "ibc-go", "ibc-go-v7-hot-fix"],
+    features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://explorer.stride.zone/stride/tx/{txHash}",
   },
   {
