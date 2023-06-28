@@ -326,6 +326,35 @@ const testnetChainInfos: SimplifiedChainInfo[] = [
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://explorer-testnet.c4e.io/transactions/{txHash}",
   },
+  {
+    rpc: "https://rpc-banksy.notional.ventures",
+    rest: "https://api-banksy.notional.ventures",
+    chainId: "banksy-testnet-3",
+    chainName: "Composable Testnet",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("centauri"),
+    currencies: [
+      {
+        coinDenom: "PICA",
+        coinMinimalDenom: "ppica",
+        coinDecimals: 6,
+        coinImageUrl: "/tokens/composable.png",
+        coinGeckoId: "usd-coin",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0,
+          average: 0,
+          high: 0,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx:
+      "https://explorer.nodexcapital.com/composable-3/tx/{txHash}",
+  },
 ];
 
 const mainnetChainInfos: SimplifiedChainInfo[] = [

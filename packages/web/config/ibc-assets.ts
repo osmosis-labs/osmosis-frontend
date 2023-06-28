@@ -112,6 +112,13 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "unls",
         isVerified: true,
       },
+      {
+        counterpartyChainId: "banksy-testnet-3",
+        sourceChannelId: "channel-329",
+        destChannelId: "channel-11",
+        coinMinimalDenom: "ppica",
+        isVerified: true,
+      },
     ]
   : [
       {
