@@ -100,8 +100,8 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
           </g>
         </svg>
       </div>
-      <div className="ml-auto mr-[15%] flex h-full w-full items-center justify-center overflow-y-auto overflow-x-hidden lg:mx-auto md:mt-mobile-header">
-        <div className="flex w-[27rem] flex-col gap-4">
+      <div className="flex h-full w-full items-center overflow-y-auto overflow-x-hidden">
+        <div className="ml-auto mr-[15%] flex w-[27rem] flex-col gap-4 lg:mx-auto md:mt-mobile-header">
           {flags.swapsAdBanner && <AdBanner ads={ads} />}
           <TradeClipboard containerClassName="w-full" pools={pools} />
         </div>
