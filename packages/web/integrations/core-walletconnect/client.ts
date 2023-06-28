@@ -511,7 +511,10 @@ export class WCClient implements WalletClient {
 
   getOfflineSignerAmino(chainId: string) {
     return {
-      getAccounts: async () => [await this.getAccount(chainId)],
+      getAccounts: async () => {
+        if (this.redirect) this.openApp();
+        return [await this.getAccount(chainId)];
+      },
       signAmino: (signerAddress: string, signDoc: StdSignDoc) =>
         this.signAmino(chainId, signerAddress, signDoc),
     } as OfflineAminoSigner;
@@ -519,7 +522,10 @@ export class WCClient implements WalletClient {
 
   getOfflineSignerDirect(chainId: string) {
     return {
-      getAccounts: async () => [await this.getAccount(chainId)],
+      getAccounts: async () => {
+        if (this.redirect) this.openApp();
+        return [await this.getAccount(chainId)];
+      },
       signDirect: (signerAddress: string, signDoc: DirectSignDoc) =>
         this.signDirect(chainId, signerAddress, signDoc),
     } as OfflineDirectSigner;
@@ -580,8 +586,6 @@ export class WCClient implements WalletClient {
     if (!session) {
       throw new Error(`Session for ${chainId} not established yet.`);
     }
-
-    if (this.redirect) this.openApp();
 
     const resp = await this.signClient?.request<AminoSignResponse>({
       topic: session.topic,
@@ -646,8 +650,6 @@ export class WCClient implements WalletClient {
       },
     };
 
-    if (this.redirect) this.openApp();
-
     const resp = await this.signClient?.request({
       topic: session.topic,
       chainId: `cosmos:${chainId}`,
@@ -666,6 +668,7 @@ export class WCClient implements WalletClient {
     signDoc: DirectSignDoc,
     signOptions?: SignOptions
   ): Promise<DirectSignResponse> {
+    console.log("bbb");
     const { signed, signature } = (await this._signDirect(
       chainId,
       signer,
