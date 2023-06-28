@@ -5,7 +5,7 @@ import {
   BalancerToConcentratedPoolLink,
   BalancerToConcentratedPoolLinkAmino,
   BalancerToConcentratedPoolLinkSDKType,
-} from "./genesis";
+} from "./shared";
 /**
  * ReplaceMigrationRecordsProposal is a gov Content type for updating the
  * migration records. If a ReplaceMigrationRecordsProposal passes, the

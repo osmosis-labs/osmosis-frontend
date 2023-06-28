@@ -54,7 +54,7 @@
     "secondaryCta": "Learn in 30s",
     "tutorialA": {
       "1": "Use way less capital to earn the same amount or more in pools. Here’s how it works.",
-      "2": "Instead of setting and forgetting a position, it’s a bit more active. You, Bob, Mary, and Ammelia can choose where to “concentrate” your liquidity.",
+      "2": "Instead of setting and forgetting a position, it’s a bit more active. You, Woz, Mary, and Ammelia can choose where to “concentrate” your liquidity.",
       "3": "Pick a strategy that best suits you. Woz might have an aggressive strategy that earns more, but only if the current price remains in his range.",
       "4": "Ammelia chose a passive strategy. By distributing a little bit across the entire span, she earns less but never goes out of range.",
       "5": "If the price goes out of your range, all assets will be converted to the lower nominal value of the two. This will revert if the price re-enters your range. Passive strategies are easier to manage.",
@@ -77,7 +77,7 @@
     "maxPrice": "Max price",
     "minPrice": "Min price",
     "collectRewards": "Collect Rewards",
-    "noRewards": "No rewards to collect",
+    "noRewards": "Nothing to collect, check back soon",
     "removeLiquidity": "Remove Liquidity",
     "increaseLiquidity": "Increase Liquidity",
     "yourPositions": "Your Positions",
@@ -109,6 +109,26 @@
     "applyButton": "Apply",
     "storeDisclaimer": "Certain content has been prepared by third parties not affiliated with Osmosis Labs or any of its affiliates and Osmosis Labs is not responsible for such content. Osmosis Labs is not liable for any errors or delays in content, or for any actions taken in reliance on any content. Information is provided for informational purposes only and is not investment advice. This is not a recommendation to buy or sell a particular digital asset or to employ a particular investment strategy. Osmosis Labs makes no representation on the accuracy, suitability, or validity of any information provided or for a particular asset. Prices shown are for illustrative purposes only. Actual cryptocurrency prices and associated stats may vary. Data presented may reflect assets traded on Osmosis Labs’s exchange and select other cryptocurrency exchanges.",
     "allAppsHeader": "All Apps"
+  },
+  "addConcentratedLiquidityPoolCta": {
+    "title": "Supercharge your {pair}",
+    "caption": "Supercharged positions allow you to earn additional yield. Learn how it works in 30 seconds, or upgrade your position in a few clicks.",
+    "primaryCta": "Upgrade to supercharged",
+    "secondaryCta": "Learn in 30 seconds",
+    "migration": {
+      "title": "Upgrade your position",
+      "availableSharesTitle": "Migrate available shares",
+      "availableSharesDescription": "Migrate unbonded shares to the new pool. Shares will automatically be converted into the underlying assets and deposited into the new pool as a full range position",
+      "balance": "Your balance:",
+      "bondedSharesTitle": "Migrate bonded shares",
+      "bondedSharesDescription": "Migrate bonded or superfluid staked shares to the new pool. If shares are only bonded they will be unbonded, converted into the underlying assets, and deposited into the new pool as a full range position. Otherwise if they are superfluid staked, they will be converted into a superfluid staked full range position."
+    }
+  },
+  "createFirstPositionCta": {
+    "title": "Create your first supercharged position",
+    "caption": "This long awaited upgrade allows you to earn more with less capital. \n Get up and running in minutes, regardless of your level of experience.",
+    "primaryCta": "Create a position",
+    "secondaryCta": "Learn in 30 seconds"
   },
   "assets": {
     "bondedAssets": "Bonded",

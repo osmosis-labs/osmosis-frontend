@@ -303,25 +303,12 @@ export function calcAmount0(
   upperTick: Int,
   currentSqrtPrice: Dec
 ): Int {
+  const liquidity1 = calcLiquidityAmount1(lowerTick, currentSqrtPrice, amount1);
+
   const upperTickSqrt = tickToSqrtPrice(upperTick);
-  const lowerTickSqrt = tickToSqrtPrice(lowerTick);
 
   let sqrtPriceA = currentSqrtPrice;
-  let sqrtPriceB = lowerTickSqrt;
-
-  if (sqrtPriceA.equals(sqrtPriceB)) {
-    return new Int(0);
-  }
-
-  if (sqrtPriceA.gt(sqrtPriceB)) {
-    sqrtPriceA = lowerTickSqrt;
-    sqrtPriceB = currentSqrtPrice;
-  }
-
-  const liquidity1 = calcLiquidityAmount1(sqrtPriceA, sqrtPriceB, amount1);
-
-  sqrtPriceA = currentSqrtPrice;
-  sqrtPriceB = upperTickSqrt;
+  let sqrtPriceB = upperTickSqrt;
 
   if (sqrtPriceA.gt(sqrtPriceB)) {
     sqrtPriceA = upperTickSqrt;
@@ -341,25 +328,12 @@ export function calcAmount1(
   upperTick: Int,
   currentSqrtPrice: Dec
 ): Int {
+  let liquidity0 = calcLiquidityAmount0(upperTick, currentSqrtPrice, amount0);
+
   const lowerTickSqrt = tickToSqrtPrice(lowerTick);
-  const upperTickSqrt = tickToSqrtPrice(upperTick);
 
   let sqrtPriceA = currentSqrtPrice;
-  let sqrtPriceB = upperTickSqrt;
-
-  if (sqrtPriceA.equals(sqrtPriceB)) {
-    return new Int(0);
-  }
-
-  if (sqrtPriceA.gt(sqrtPriceB)) {
-    sqrtPriceA = upperTickSqrt;
-    sqrtPriceB = currentSqrtPrice;
-  }
-
-  let liquidity0 = calcLiquidityAmount0(sqrtPriceA, sqrtPriceB, amount0);
-
-  sqrtPriceA = currentSqrtPrice;
-  sqrtPriceB = lowerTickSqrt;
+  let sqrtPriceB = lowerTickSqrt;
 
   if (sqrtPriceA.gt(sqrtPriceB)) {
     sqrtPriceA = lowerTickSqrt;
@@ -373,19 +347,47 @@ export function calcAmount1(
 
 /** REF https://github.com/osmosis-labs/osmosis/blob/ac46d443f3fa1b4c59f93d45916615b54a0fbf61/x/concentrated-liquidity/README.md#L587 */
 export function calcLiquidityAmount1(
-  sqrtPriceA: Dec,
-  sqrtPriceB: Dec,
+  lowerTick: Int,
+  currentSqrtPrice: Dec,
   amount1: Int
 ) {
+  const lowerTickSqrt = tickToSqrtPrice(lowerTick);
+
+  let sqrtPriceA = currentSqrtPrice;
+  let sqrtPriceB = lowerTickSqrt;
+
+  if (sqrtPriceA.equals(sqrtPriceB)) {
+    return new Dec(0);
+  }
+
+  if (sqrtPriceA.gt(sqrtPriceB)) {
+    sqrtPriceA = lowerTickSqrt;
+    sqrtPriceB = currentSqrtPrice;
+  }
+
   return amount1.toDec().quo(sqrtPriceB.sub(sqrtPriceA));
 }
 
 /** REF https://github.com/osmosis-labs/osmosis/blob/ac46d443f3fa1b4c59f93d45916615b54a0fbf61/x/concentrated-liquidity/README.md#L584 */
 export function calcLiquidityAmount0(
-  sqrtPriceA: Dec,
-  sqrtPriceB: Dec,
+  upperTick: Int,
+  currentSqrtPrice: Dec,
   amount0: Int
 ) {
+  const upperTickSqrt = tickToSqrtPrice(upperTick);
+
+  let sqrtPriceA = currentSqrtPrice;
+  let sqrtPriceB = upperTickSqrt;
+
+  if (sqrtPriceA.equals(sqrtPriceB)) {
+    return new Dec(0);
+  }
+
+  if (sqrtPriceA.gt(sqrtPriceB)) {
+    sqrtPriceA = upperTickSqrt;
+    sqrtPriceB = currentSqrtPrice;
+  }
+
   return amount0
     .toDec()
     .mul(sqrtPriceA.mul(sqrtPriceB))
