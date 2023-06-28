@@ -255,7 +255,7 @@ const testnetChainInfos: SimplifiedChainInfo[] = [
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
-    explorerUrlToTx: "https://explorer-rila.nolus.io/nolus-rila/tx/{txHash}",
+    explorerUrlToTx: "https://explorer-rila.nolus.io/rila-1/tx/{txHash}",
   },
   {
     rpc: "https://rpc-eu-1.kaon.kyve.network",
@@ -385,6 +385,14 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDecimals: 6,
         coinGeckoId: "pool:ibcx",
         coinImageUrl: "/tokens/ibcx.svg",
+      },
+      {
+        coinDenom: "stIBCX",
+        coinMinimalDenom:
+          "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
+        coinDecimals: 6,
+        coinGeckoId: "pool:stibcx",
+        coinImageUrl: "/tokens/stibcx.svg",
       },
     ],
     features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
@@ -763,7 +771,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDecimals: 8,
         // coinGeckoId: "crypto-com-chain",
         coinGeckoId: "pool:basecro",
-        coinImageUrl: "/tokens/cro.svg",
+        coinImageUrl: "/tokens/cro-bg-navy.svg",
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {
@@ -2440,6 +2448,30 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
           high: 0.04,
         },
       },
+      {
+        coinDenom: "ROAR",
+        coinMinimalDenom:
+          "cw20:terra1lxx40s29qvkrcj8fsa3yzyehy7w50umdvvnls2r830rys6lu2zns63eelv",
+        coinDecimals: 6,
+        coinGeckoId: "pool:roar",
+        coinImageUrl: "/tokens/roar.png",
+      },
+      {
+        coinDenom: "CUB",
+        coinMinimalDenom:
+          "cw20:terra1lalvk0r6nhruel7fvzdppk3tup3mh5j4d4eadrqzfhle4zrf52as58hh9t",
+        coinDecimals: 6,
+        coinGeckoId: "pool:cub",
+        coinImageUrl: "/tokens/cub.png",
+      },
+      {
+        coinDenom: "BLUE",
+        coinMinimalDenom:
+          "cw20:terra1gwrz9xzhqsygyr5asrgyq3pu0ewpn00mv2zenu86yvx2nlwpe8lqppv584",
+        coinDecimals: 6,
+        coinGeckoId: "pool:blue",
+        coinImageUrl: "/tokens/blue.png",
+      },
     ],
     features: ["ibc-transfer"],
     explorerUrlToTx: "https://finder.terra.money/phoenix-1/tx/{txHash}",
@@ -2925,8 +2957,15 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:staevmos",
         coinImageUrl: "/tokens/stevmos.svg",
       },
+      {
+        coinDenom: "stUMEE",
+        coinMinimalDenom: "stuumee",
+        coinDecimals: 6,
+        coinGeckoId: "pool:stuumee",
+        coinImageUrl: "/tokens/stumee.svg",
+      },
     ],
-    features: ["ibc-transfer", "ibc-go"],
+    features: ["ibc-transfer", "ibc-go", "ibc-go-v7-hot-fix"],
     explorerUrlToTx: "https://explorer.stride.zone/stride/tx/{txHash}",
   },
   {
@@ -3598,6 +3637,62 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://ping.pub/gitopia/tx/{txHash}",
+  },
+  {
+    rpc: "https://pirin-cl.nolus.network:26657",
+    rest: "https://pirin-cl.nolus.network:1317",
+    chainId: "pirin-1",
+    chainName: "Nolus",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("nolus"),
+    currencies: [
+      {
+        coinDenom: "NLS",
+        coinMinimalDenom: "unls",
+        coinDecimals: 6,
+        coinGeckoId: "pool:unls",
+        coinImageUrl: "/tokens/nolus.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0,
+          average: 0.025,
+          high: 0.05,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://explorer.nolus.io/pirin-1/tx/{txHash}",
+  },
+  {
+    rpc: "https://rpc-neutron.keplr.app",
+    rest: "https://lcd-neutron.keplr.app",
+    chainId: "neutron-1",
+    chainName: "Neutron",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("neutron"),
+    currencies: [
+      {
+        coinDenom: "NTRN",
+        coinMinimalDenom: "untrn",
+        coinDecimals: 6,
+        coinGeckoId: "pool:untrn",
+        coinImageUrl: "/tokens/ntrn.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.01,
+          average: 0.025,
+          high: 0.05,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://www.mintscan.io/neutron/txs/{txHash}",
   },
 ];
 

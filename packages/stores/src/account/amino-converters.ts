@@ -79,7 +79,7 @@ const osmosisAminoConverters: Record<
       pool_assets,
       future_pool_governor,
     }: Parameters<
-      typeof originalOsmosisAminoConverters["/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool"]["fromAmino"]
+      (typeof originalOsmosisAminoConverters)["/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool"]["fromAmino"]
     >[0]): MsgCreateBalancerPool => {
       return {
         sender,

@@ -6,10 +6,11 @@
   "recommendations": [
     "esbenp.prettier-vscode",
     "eamodio.gitlens",
-    "GitHub.vscode-pull-request-github",
+    "github.vscode-pull-request-github",
     "ms-vsliveshare.vsliveshare",
     "jock.svg",
-    "Orta.vscode-jest",
-    "dbaeumer.vscode-eslint"
+    "orta.vscode-jest",
+    "dbaeumer.vscode-eslint",
+    "inlang.vs-code-extension"
   ]
 }

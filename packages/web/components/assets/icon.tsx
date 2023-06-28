@@ -31,12 +31,14 @@ export type SpriteIconId =
   | "github"
   | "twitter"
   | "medium"
+  | "sandbox"
   | "alert-triangle"
   | "lightning"
   | "lightning-small"
   | "left-right-arrow"
   | "wallet"
-  | "left-right";
+  | "left-right"
+  | "arrow-right";
 
 /**
  * It takes an icon id and returns an svg element with the corresponding icon defined in /public/icons/sprite.svg.

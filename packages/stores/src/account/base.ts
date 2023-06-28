@@ -62,6 +62,8 @@ import {
   CosmosKitAccountsLocalStorageKey,
   getEndpointString,
   getWalletEndpoints,
+  getWalletWindowName,
+  isWalletOfflineDirectSigner,
   logger,
   removeLastSlash,
 } from "./utils";
@@ -87,7 +89,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   private _wallets: MainWalletBase[] = [];
 
   constructor(
-    protected readonly chains: Chain[],
+    public readonly chains: (Chain & { features?: string[] })[],
     protected readonly assets: AssetList[],
     protected readonly wallets: MainWalletBase[],
     protected readonly queriesStore: QueriesStore<
@@ -109,14 +111,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     >
   ) {
     this._wallets = wallets;
-    this._walletManager = this.createWalletManager(wallets);
+    this._walletManager = this._createWalletManager(wallets);
     this.accountSetCreators = accountSetCreators;
 
     makeObservable(this);
   }
 
-  private createWalletManager(wallets: MainWalletBase[]) {
-    const walletManager = new WalletManager(
+  private _createWalletManager(wallets: MainWalletBase[]) {
+    this._walletManager = new WalletManager(
       this.chains,
       this.assets,
       wallets,
@@ -146,13 +148,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
     );
 
-    walletManager.setActions({
+    this._walletManager.setActions({
       viewWalletRepo: () => this.refresh(),
       data: () => this.refresh(),
       state: () => this.refresh(),
       message: () => this.refresh(),
     });
-    walletManager.walletRepos.forEach((repo) => {
+    this._walletManager.walletRepos.forEach((repo) => {
       repo.setActions({
         viewWalletRepo: () => this.refresh(),
       });
@@ -167,7 +169,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     this.refresh();
 
-    return walletManager;
+    return this._walletManager;
   }
 
   @action
@@ -175,10 +177,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     this._refreshRequests++;
   }
 
-  addWallet(wallet: MainWalletBase) {
+  async addWallet(wallet: MainWalletBase) {
     this._wallets = [...this._wallets, wallet];
-    this._walletManager = this.createWalletManager(this._wallets);
-    this.refresh();
+    // Unmount the previous wallet manager.
+    await this._walletManager.onUnmounted();
+    this._createWalletManager(this._wallets);
     return this._walletManager;
   }
 
@@ -518,7 +521,38 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: chainId,
     };
 
-    return isOfflineDirectSigner(signer)
+    const walletWindowName = getWalletWindowName(wallet.walletName);
+
+    /**
+     * Remove once ibc-go-v7 fix is released.
+     * @see https://github.com/osmosis-labs/osmosis-frontend/pull/1691
+     */
+    const currentChain = this.chains.find((c) => c.chain_id === chainId);
+    const isChainWithHotfix =
+      chainId.startsWith("injective") ||
+      chainId.startsWith("stride") ||
+      currentChain?.features?.includes("ibc-go-v7-hot-fix");
+    const isMobile =
+      wallet.walletInfo.mode === "wallet-connect" ||
+      wallet.walletName === "keplr-mobile";
+
+    const forceSignDirect =
+      isWalletOfflineDirectSigner(signer, walletWindowName) &&
+      isChainWithHotfix &&
+      !isMobile;
+
+    if (
+      isChainWithHotfix &&
+      (!isWalletOfflineDirectSigner(signer, walletWindowName) || isMobile)
+    ) {
+      throw new Error(
+        `${
+          currentChain?.pretty_name ?? chainId
+        } chain is currently unavailable for ${wallet.walletPrettyName}.`
+      );
+    }
+
+    return isOfflineDirectSigner(signer) || forceSignDirect
       ? this.signDirect(
           wallet,
           signer,
@@ -526,7 +560,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           messages,
           fee,
           memo,
-          signerData
+          signerData,
+          forceSignDirect
         )
       : this.signAmino(
           wallet,
@@ -623,9 +658,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     messages: readonly EncodeObject[],
     fee: StdFee,
     memo: string,
-    { accountNumber, sequence, chainId }: SignerData
+    { accountNumber, sequence, chainId }: SignerData,
+    forceSignDirect = false
   ): Promise<TxRaw> {
-    if (!isOfflineDirectSigner(signer)) {
+    if (!isOfflineDirectSigner(signer) && !forceSignDirect) {
       throw new Error("Signer has to be OfflineDirectSigner");
     }
 
@@ -662,9 +698,24 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId,
       accountNumber
     );
-    const { signature, signed } = await (
-      signer as unknown as OfflineDirectSigner
-    ).signDirect(signerAddress, signDoc);
+
+    const walletWindowName = getWalletWindowName(wallet.walletName);
+
+    const { signature, signed } = isWalletOfflineDirectSigner(
+      signer,
+      walletWindowName
+    )
+      ? await signer[walletWindowName].signDirect.call(
+          signer[walletWindowName],
+          wallet.chainId,
+          signerAddress,
+          signDoc
+        )
+      : await (signer as unknown as OfflineDirectSigner).signDirect(
+          signerAddress,
+          signDoc
+        );
+
     return TxRaw.fromPartial({
       bodyBytes: signed.bodyBytes,
       authInfoBytes: signed.authInfoBytes,
