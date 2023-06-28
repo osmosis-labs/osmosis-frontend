@@ -206,12 +206,13 @@ const ModalContent: FunctionComponent<
         const walletManager = await accountStore.addWallet(
           new WalletClass(walletInfo)
         );
+        await walletManager.onMounted();
+        setLazyWalletInfo(undefined);
 
         return walletManager
           .getWalletRepo(chainName)
           .connect(wallet.name, sync)
           .then(() => {
-            setLazyWalletInfo(undefined);
             onConnectProp?.();
           })
           .catch(handleConnectError);
