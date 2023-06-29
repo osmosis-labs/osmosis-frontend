@@ -4,7 +4,7 @@
       "name": "Place limit and stop Orders",
       "header": "Place limit and stop Orders",
       "subheader": "New trading options with Autonomy",
-      "externalUrl": "https://autonomynetwork.io/autoswap",
+      "externalUrl": "https://osmosis.autoswap.trade/",
       "iconImageUrl": "/images/place-limit-order.svg",
       "iconImageAlt": "Variable chart decreasing to the lower right, then increasing to the upper right with dollar signs",
       "gradient": "linear-gradient(136deg, #3B154F 0%, #10061C 47.66%, #0E2654 100%)",
