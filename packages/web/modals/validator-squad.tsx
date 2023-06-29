@@ -147,7 +147,6 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
 
     const table = useReactTable({
       data,
-      // @ts-ignore
       columns,
       state: {
         sorting,
