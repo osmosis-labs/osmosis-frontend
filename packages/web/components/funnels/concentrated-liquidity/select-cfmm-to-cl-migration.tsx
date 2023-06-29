@@ -23,7 +23,7 @@ export const SelectCffmToClMigration: FunctionComponent<
     },
   } = useStore();
 
-  const account = accountStore.getAccount(chainId);
+  const account = accountStore.getWallet(chainId);
 
   const { sharePoolDetail } = derivedDataStore.getForPool(cfmmPoolId);
 
@@ -39,7 +39,7 @@ export const SelectCffmToClMigration: FunctionComponent<
       <div className="flex flex-col gap-3 p-3">
         {!sharePoolDetail.userAvailableShares.toDec().isZero() && (
           <OptionButton
-            disabled={Boolean(account.txTypeInProgress)}
+            disabled={Boolean(account?.txTypeInProgress)}
             title={t(
               "addConcentratedLiquidityPoolCta.migration.availableSharesTitle"
             )}
@@ -63,7 +63,7 @@ export const SelectCffmToClMigration: FunctionComponent<
         <OptionButton
           disabled={
             sharePoolDetail.userBondedShares.toDec().isZero() ||
-            Boolean(account.txTypeInProgress)
+            Boolean(account?.txTypeInProgress)
           }
           title={t(
             "addConcentratedLiquidityPoolCta.migration.bondedSharesTitle"
