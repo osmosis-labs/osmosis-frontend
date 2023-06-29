@@ -3723,7 +3723,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
-    explorerUrlToTx: "https://ping.pub/centauri/tx/{txHash}",
+    explorerUrlToTx: "https://ping.pub/Centauri/tx/{txHash}",
   },
 ];
 
