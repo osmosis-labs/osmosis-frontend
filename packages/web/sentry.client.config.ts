@@ -4,8 +4,6 @@
 
 import * as Sentry from "@sentry/nextjs";
 
-console.log("process.env.NODE_ENV", process.env.NODE_ENV);
-
 Sentry.init({
   dsn:
     process.env.NODE_ENV === "development"
