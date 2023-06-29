@@ -1,5 +1,6 @@
 import { Staking } from "@keplr-wallet/stores";
 import {
+  CellContext,
   ColumnDef,
   createColumnHelper,
   flexRender,
@@ -14,12 +15,11 @@ import { FunctionComponent } from "react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { Icon } from "~/components/assets";
+import { ExternalLinkIcon, Icon } from "~/components/assets";
 import { SearchBox } from "~/components/input";
 import { IS_FRONTIER } from "~/config/index";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
-
-import { useStore } from "../stores";
+import { useStore } from "~/stores";
 
 export const ValidatorSquadModal: FunctionComponent<ModalBaseProps> = observer(
   (props) => <ValidatorSquadContent {...props} />
@@ -134,8 +134,6 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
       ),
     }));
 
-    console.log("data: ", data);
-
     const t = useTranslation();
 
     const columnHelper = createColumnHelper<Validator>();
@@ -147,10 +145,46 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
         {
           id: "validatorSquadTable",
           columns: [
-            {
-              accessorKey: "validatorName",
+            columnHelper.accessor((row) => row, {
+              cell: observer((props: CellContext<any, any>) => {
+                console.log(
+                  "props.row.original.imageUrl: ",
+                  props.row.original.imageUrl
+                );
+                return (
+                  <div className="flex items-center gap-3">
+                    <input type="radio" />
+                    <div className="h-10 w-10 overflow-hidden rounded-full">
+                      <img
+                        alt={props.row.original.validatorName}
+                        src={props.row.original.imageUrl || ""}
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <div className="subtitle1 md:subtitle2">
+                        {props.row.original.validatorName}
+                      </div>
+                      <span className="text-xs text-wosmongton-100">
+                        <a
+                          href={props.row.original.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2"
+                        >
+                          {props.row.original.website}
+                          <ExternalLinkIcon
+                            isAnimated
+                            classes={{ container: "w-3 h-3" }}
+                          />
+                        </a>
+                      </span>
+                    </div>
+                  </div>
+                );
+              }),
               header: () => "Validator",
-            },
+              id: "validatorName",
+            }),
             {
               accessorKey: "myStake",
               header: () => "My Stake",
