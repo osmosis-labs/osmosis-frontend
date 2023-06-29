@@ -129,7 +129,12 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
       votingPower: "1.44%",
       commissions: validator.commission.commission_rates.rate,
       website: validator.description.website,
+      imageUrl: queryValidators.getValidatorThumbnail(
+        validator.operator_address
+      ),
     }));
+
+    console.log("data: ", data);
 
     const t = useTranslation();
 
