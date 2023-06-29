@@ -1340,7 +1340,7 @@ export class OsmosisAccountImpl {
 
     const multiMsgs: ReturnType<
       ReturnType<
-        (typeof this.msgOpts)["unlockAndMigrateSharesToFullRangeConcentratedPosition"]
+        (typeof osmosisMsgOpts)["unlockAndMigrateSharesToFullRangeConcentratedPosition"]
       >["messageComposer"]
     >[] = [];
 
