@@ -14,7 +14,6 @@ export const Staking: React.FC = () => {
   const { isMobile } = useWindowSize();
   const [activeTab, setActiveTab] = useState("Stake");
 
-  // @ts-ignore
   const [showValidatorModal, setShowValidatorModal] = useState(false);
 
   return (
@@ -71,8 +70,7 @@ export const Staking: React.FC = () => {
         </div>
       </div>
       <ValidatorSquadModal
-        // isOpen={showValidatorModal}
-        isOpen={true}
+        isOpen={showValidatorModal}
         onRequestClose={() => setShowValidatorModal(false)}
       />
     </main>

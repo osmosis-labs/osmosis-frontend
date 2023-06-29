@@ -254,7 +254,6 @@ export const AllPoolsTable: FunctionComponent<{
       initiallyFilteredPools,
       searchPoolsMemoedKeys
     );
-    console.log("filteredPools: ", filteredPools);
     const setQuery = useCallback(
       (search: string) => {
         if (search !== "" && !fetchedRemainingPoolsRef.current) {

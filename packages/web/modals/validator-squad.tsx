@@ -16,6 +16,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { ExternalLinkIcon, Icon } from "~/components/assets";
+import { Button } from "~/components/buttons";
 import { SearchBox } from "~/components/input";
 import { IS_FRONTIER } from "~/config/index";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
@@ -115,18 +116,16 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
 
     const activeValidators = queryValidators.validators;
 
+    // @ts-ignore will use in a future PR
     const userValidatorDelegations =
       queries.cosmos.queryDelegations.getQueryBech32Address(
         account?.address ?? ""
       ).delegations;
 
-    console.log("activeValidators: ", activeValidators);
-    console.log("userValidatorDelegations: ", userValidatorDelegations);
-
     const data = activeValidators.map((validator) => ({
       validatorName: validator.description.moniker,
-      myStake: "0.01",
-      votingPower: "1.44%",
+      myStake: "-",
+      votingPower: "-",
       commissions: validator.commission.commission_rates.rate,
       website: validator.description.website,
       imageUrl: queryValidators.getValidatorThumbnail(
@@ -147,12 +146,9 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
           columns: [
             columnHelper.accessor((row) => row, {
               cell: observer((props: CellContext<any, any>) => {
-                console.log(
-                  "props.row.original.imageUrl: ",
-                  props.row.original.imageUrl
-                );
                 return (
                   <div className="flex items-center gap-3">
+                    {/*  input placeholder */}
                     <input type="radio" />
                     <div className="h-10 w-10 overflow-hidden rounded-full">
                       <img
@@ -196,6 +192,10 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
             {
               accessorKey: "commissions",
               header: () => "Commissions",
+              cell: (props) =>
+                `${(
+                  parseFloat(props.row.original.commissions) * 100
+                ).toFixed()}%`,
             },
           ],
         },
@@ -222,22 +222,23 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
         title={t("stake.validatorSquad.title")}
         isOpen={isOpen}
         onRequestClose={onRequestClose}
-        className="!max-h-[938px] !max-w-[1168px]"
+        // className="flex !h-full !max-h-[938px] !max-w-[1168px] flex-col"
+        className="flex !max-w-[1168px] flex-col"
       >
-        <div className="flex flex-col overflow-auto">
-          <div className="mx-auto mb-9 flex max-w-[500px] flex-col items-center justify-center">
-            <div className="mt-7 mb-3 font-medium">
-              {t("stake.validatorSquad.description")}
-            </div>
-            <SearchBox
-              placeholder={t("stake.validatorSquad.searchPlaceholder")}
-              onInput={handleSearchInput}
-              className="self-end"
-              size="full"
-            />
+        <div className="mx-auto mb-9 flex max-w-[500px] flex-col items-center justify-center">
+          <div className="mt-7 mb-3 font-medium">
+            {t("stake.validatorSquad.description")}
           </div>
+          <SearchBox
+            placeholder={t("stake.validatorSquad.searchPlaceholder")}
+            onInput={handleSearchInput}
+            className="self-end"
+            size="full"
+          />
+        </div>
+        <div className="max-h-[528px] overflow-y-scroll">
           <table className="w-full">
-            <thead className="z-[51] m-0">
+            <thead className="sticky top-0 m-0">
               {table
                 .getHeaderGroups()
                 .slice(1)
@@ -314,6 +315,15 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
                 })}
             </tbody>
           </table>
+        </div>
+        <div className="mb-6 flex justify-center justify-self-end">
+          <Button
+            mode="special-1"
+            onClick={() => console.log("set squad")}
+            className="w-[383px]"
+          >
+            Set Squad
+          </Button>
         </div>
       </ModalBase>
     );
