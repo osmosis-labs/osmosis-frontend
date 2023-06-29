@@ -521,38 +521,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: chainId,
     };
 
-    const walletWindowName = getWalletWindowName(wallet.walletName);
-
-    /**
-     * Remove once ibc-go-v7 fix is released.
-     * @see https://github.com/osmosis-labs/osmosis-frontend/pull/1691
-     */
-    const currentChain = this.chains.find((c) => c.chain_id === chainId);
-    const isChainWithHotfix =
-      chainId.startsWith("injective") ||
-      chainId.startsWith("stride") ||
-      currentChain?.features?.includes("ibc-go-v7-hot-fix");
-    const isMobile =
-      wallet.walletInfo.mode === "wallet-connect" ||
-      wallet.walletName === "keplr-mobile";
-
-    const forceSignDirect =
-      isWalletOfflineDirectSigner(signer, walletWindowName) &&
-      isChainWithHotfix &&
-      !isMobile;
-
-    if (
-      isChainWithHotfix &&
-      (!isWalletOfflineDirectSigner(signer, walletWindowName) || isMobile)
-    ) {
-      throw new Error(
-        `${
-          currentChain?.pretty_name ?? chainId
-        } chain is currently unavailable for ${wallet.walletPrettyName}.`
-      );
-    }
-
-    return isOfflineDirectSigner(signer) || forceSignDirect
+    return isOfflineDirectSigner(signer)
       ? this.signDirect(
           wallet,
           signer,
@@ -560,8 +529,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           messages,
           fee,
           memo,
-          signerData,
-          forceSignDirect
+          signerData
         )
       : this.signAmino(
           wallet,
