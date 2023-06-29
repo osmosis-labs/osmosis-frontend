@@ -71,6 +71,7 @@ export function getAssetLists(assetInfos = initialAssetInfos): AssetList[] {
                 coinMinimalDenom.startsWith(ibcAsset.coinMinimalDenom) // cw20 tokens
             );
 
+            // Do not display assets that are not in the ibc-assets.ts file
             if (!currencyInIbcAssetFile) {
               console.warn(
                 `Warning: Currency ${coinMinimalDenom} not found in ibc-assets.ts file`
@@ -84,6 +85,7 @@ export function getAssetLists(assetInfos = initialAssetInfos): AssetList[] {
             return true;
           })
           .map(({ coinDecimals, coinDenom, coinMinimalDenom, coinGeckoId }) => {
+            // Use cosmology asset to fill in additional metadata.
             const cosmologyCurrency = cosmologyAssetList?.assets.find((asset) =>
               hasMatchingMinimalDenom(asset, coinMinimalDenom)
             );
