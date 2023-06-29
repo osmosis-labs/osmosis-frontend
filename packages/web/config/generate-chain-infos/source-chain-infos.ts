@@ -3700,7 +3700,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     bech32Config: Bech32Address.defaultBech32Config("centauri"),
     currencies: [
       {
-        coinDenom: "PICA",
+        coinDenom: "PICA", 
         coinMinimalDenom: "ppica",
         coinDecimals: 12,
         coinGeckoId: "pool:ppica",
