@@ -26,75 +26,13 @@ export const ValidatorSquadModal: FunctionComponent<ModalBaseProps> = observer(
   (props) => <ValidatorSquadContent {...props} />
 );
 
-// const data: Validator[] = [
-//   {
-//     validatorName: "Cosmostation",
-//     myStake: "0.01",
-//     votingPower: "1.44%",
-//     commissions: "1%",
-//   },
-//   {
-//     validatorName: "Figment",
-//     myStake: "0.02",
-//     votingPower: "2.44%",
-//     commissions: "2%",
-//   },
-//   {
-//     validatorName: "Stargaze",
-//     myStake: "0.03",
-//     votingPower: "3.44%",
-//     commissions: "3%",
-//   },
-//   {
-//     validatorName: "Frens",
-//     myStake: "0.04",
-//     votingPower: "4.44%",
-//     commissions: "4%",
-//   },
-//   {
-//     validatorName: "Figment",
-//     myStake: "0.05",
-//     votingPower: "5.44%",
-//     commissions: "5%",
-//   },
-//   {
-//     validatorName: "interchain.fm",
-//     myStake: "0.06",
-//     votingPower: "6.44%",
-//     commissions: "6%",
-//   },
-//   {
-//     validatorName: "imperator.co",
-//     myStake: "0.07",
-//     votingPower: "7.44%",
-//     commissions: "7%",
-//   },
-//   {
-//     validatorName: "Chorus One",
-//     myStake: "0.08",
-//     votingPower: "8.44%",
-//     commissions: "8%",
-//   },
-//   {
-//     validatorName: "Electric",
-//     myStake: "0.09",
-//     votingPower: "9.44%",
-//     commissions: "9%",
-//   },
-//   {
-//     validatorName: "wosmongton",
-//     myStake: "0.10",
-//     votingPower: "10.44%",
-//     commissions: "10%",
-//   },
-// ];
-
 type Validator = {
-  validatorName: string;
+  validatorName: string | undefined;
   myStake: string;
   votingPower: string;
   commissions: string;
-  website: string;
+  website: string | undefined;
+  imageUrl: string;
 };
 
 interface ValidatorSquadContentProps {
@@ -122,16 +60,18 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
         account?.address ?? ""
       ).delegations;
 
-    const data = activeValidators.map((validator) => ({
-      validatorName: validator.description.moniker,
-      myStake: "-",
-      votingPower: "-",
-      commissions: validator.commission.commission_rates.rate,
-      website: validator.description.website,
-      imageUrl: queryValidators.getValidatorThumbnail(
-        validator.operator_address
-      ),
-    }));
+    const data: Validator[] = activeValidators
+      .filter((validator) => !!validator.description.moniker)
+      .map((validator) => ({
+        validatorName: validator.description.moniker,
+        myStake: "-",
+        votingPower: "-",
+        commissions: validator.commission.commission_rates.rate,
+        website: validator.description.website,
+        imageUrl: queryValidators.getValidatorThumbnail(
+          validator.operator_address
+        ),
+      }));
 
     const t = useTranslation();
 
@@ -160,20 +100,22 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
                       <div className="subtitle1 md:subtitle2">
                         {props.row.original.validatorName}
                       </div>
-                      <span className="text-xs text-wosmongton-100">
-                        <a
-                          href={props.row.original.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2"
-                        >
-                          {props.row.original.website}
-                          <ExternalLinkIcon
-                            isAnimated
-                            classes={{ container: "w-3 h-3" }}
-                          />
-                        </a>
-                      </span>
+                      {!!props.row.original.website && (
+                        <span className="text-xs text-wosmongton-100">
+                          <a
+                            href={props.row.original.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2"
+                          >
+                            {props.row.original.website}
+                            <ExternalLinkIcon
+                              isAnimated
+                              classes={{ container: "w-3 h-3" }}
+                            />
+                          </a>
+                        </span>
+                      )}
                     </div>
                   </div>
                 );
