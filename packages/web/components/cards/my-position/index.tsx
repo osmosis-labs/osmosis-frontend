@@ -18,6 +18,7 @@ export const MyPositionCard: FunctionComponent<{
 }> = observer((props) => {
   const {
     position: {
+      id: positionId,
       poolId,
       baseAsset,
       quoteAsset,
@@ -35,12 +36,17 @@ export const MyPositionCard: FunctionComponent<{
     },
     priceStore,
     queriesStore,
+    derivedDataStore,
     queriesExternalStore,
   } = useStore();
   const [collapsed, setCollapsed] = useState(true);
 
   const queryPool = poolId
     ? queriesStore.get(chainId).osmosis!.queryPools.getPool(poolId)
+    : undefined;
+
+  const derivedPoolData = poolId
+    ? derivedDataStore.getForPool(poolId)
     : undefined;
 
   const config = poolId
@@ -67,6 +73,11 @@ export const MyPositionCard: FunctionComponent<{
           Number(upperTick.toString())
         )?.apr
       : undefined;
+
+  const superfluidStaked =
+    derivedPoolData?.superfluidPoolDetail.getSuperfluidStakedPositionInfo(
+      positionId
+    );
 
   return (
     <div className="flex flex-col gap-8 overflow-hidden rounded-[20px] bg-osmoverse-800 p-8 sm:p-4">
@@ -105,7 +116,7 @@ export const MyPositionCard: FunctionComponent<{
                   lowerPrice={lowerPrices.price}
                   upperPrice={upperPrices.price}
                   fullRange={isFullRange}
-                  superfluidStaked
+                  superfluidStaked={Boolean(superfluidStaked)}
                 />
               )}
           </div>
