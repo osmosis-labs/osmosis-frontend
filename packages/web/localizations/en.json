@@ -90,7 +90,10 @@
     "supercharged": "Supercharged",
     "createAPosition": "Create a position",
     "addMoreLiquidity": "Add more liquidity",
-    "pendingRewards": "Pending rewards"
+    "pendingRewards": "Pending rewards",
+    "superfluidValidator": "Validator",
+    "superfluidUnstake": "Once unstaked, available after {duration}",
+    "superfluidCommission": "commission"
   },
   "app": {
     "banner": {

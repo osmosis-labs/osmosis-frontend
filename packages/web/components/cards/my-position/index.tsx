@@ -1,5 +1,6 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { ObservableQueryLiquidityPositionById } from "@osmosis-labs/stores";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, ReactNode, useState } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -65,19 +66,21 @@ export const MyPositionCard: FunctionComponent<{
     fiatCurrency &&
     new PricePretty(fiatCurrency, baseAssetValue.add(quoteAssetValue));
 
-  const incentivesApr =
-    poolId && lowerTick && upperTick
-      ? queriesExternalStore.queryPositionsRangeApr.get(
-          poolId,
-          Number(lowerTick.toString()),
-          Number(upperTick.toString())
-        )?.apr
-      : undefined;
-
   const superfluidStaked =
     derivedPoolData?.superfluidPoolDetail.getSuperfluidStakedPositionInfo(
       positionId
     );
+
+  const incentivesApr =
+    poolId && lowerTick && upperTick
+      ? queriesExternalStore.queryPositionsRangeApr
+          .get(
+            poolId,
+            Number(lowerTick.toString()),
+            Number(upperTick.toString())
+          )
+          ?.apr?.add(superfluidStaked?.superfluidApr ?? new Dec(0))
+      : undefined;
 
   return (
     <div className="flex flex-col gap-8 overflow-hidden rounded-[20px] bg-osmoverse-800 p-8 sm:p-4">
@@ -142,6 +145,7 @@ export const MyPositionCard: FunctionComponent<{
             <PositionDataGroup
               label={t("clPositions.incentives")}
               value={`${formatPretty(incentivesApr.maxDecimals(0))} APR`}
+              isSuperfluid={Boolean(superfluidStaked)}
             />
           )}
         </div>
@@ -160,11 +164,19 @@ export const MyPositionCard: FunctionComponent<{
 const PositionDataGroup: FunctionComponent<{
   label: string;
   value: string | ReactNode;
-}> = ({ label, value }) => (
+  isSuperfluid?: boolean;
+}> = ({ label, value, isSuperfluid = false }) => (
   <div className="flex-grow-1 flex max-w-[12rem] flex-shrink-0 flex-col items-end gap-2 xl:items-start">
     <div className="text-subtitle1 text-osmoverse-400">{label}</div>
     {typeof value === "string" ? (
-      <h6 className="text-white w-full truncate text-right xl:text-left">
+      <h6
+        className={classNames(
+          "text-white w-full truncate text-right xl:text-left",
+          {
+            "text-superfluid-gradient": isSuperfluid,
+          }
+        )}
+      >
         {value}
       </h6>
     ) : (
