@@ -62,6 +62,13 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
         account?.address ?? ""
       ).delegations;
 
+    const userValidatorDelegationsByValidatorAddress = useMemo(() => {
+      return userValidatorDelegations.reduce((obj, delegation) => {
+        obj[delegation.delegation.validator_address] = delegation;
+        return obj;
+      }, {} as { [x: string]: Staking.Delegation });
+    }, [userValidatorDelegations]);
+
     const data: Validator[] = useMemo(
       () =>
         activeValidators
@@ -71,10 +78,12 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
             myStake: new CoinPretty(
               totalStakePool.currency,
               new Dec(
-                userValidatorDelegations.find(
-                  ({ delegation }) =>
-                    delegation.validator_address === validator.operator_address
-                )?.balance?.amount || 0
+                validator.operator_address in
+                userValidatorDelegationsByValidatorAddress
+                  ? userValidatorDelegationsByValidatorAddress[
+                      validator.operator_address
+                    ].balance?.amount || 0
+                  : 0
               )
             )
               .maxDecimals(2)
@@ -97,6 +106,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
         totalStakePool,
         queryValidators,
         userValidatorDelegations,
+        userValidatorDelegationsByValidatorAddress,
       ]
     );
 
