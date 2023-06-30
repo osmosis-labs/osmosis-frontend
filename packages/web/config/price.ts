@@ -1852,7 +1852,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
   },
   {
     alternativeCoinId: "pool:ppica",
-    poolId: "1055",
+    poolId: "1054",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
       [{ portId: "transfer", channelId: "channel-1279" }],
       "ppica"
@@ -1862,7 +1862,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
   },
   {
     alternativeCoinId: "pool:ksm",
-    poolId: "1056",
+    poolId: "1053",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
       [
         { portId: "transfer", channelId: "channel-1279" },
