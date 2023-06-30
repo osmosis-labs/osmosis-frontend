@@ -66,11 +66,21 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
         account?.address ?? ""
       ).delegations;
 
+    // const userValidatorDelegationsByValidatorAddress = useMemo(() => {
+    //   return userValidatorDelegations.reduce((delegations, delegation) => {
+    //     delegations[delegation.delegation.validator_address] = delegation;
+    //     return delegations;
+    //   }, {} as { [x: string]: Staking.Delegation });
+    // }, [userValidatorDelegations]);
+
     const userValidatorDelegationsByValidatorAddress = useMemo(() => {
-      return userValidatorDelegations.reduce((delegations, delegation) => {
-        delegations[delegation.delegation.validator_address] = delegation;
-        return delegations;
-      }, {} as { [x: string]: Staking.Delegation });
+      const delegationsMap = new Map<string, Staking.Delegation>();
+
+      userValidatorDelegations.forEach((delegation) => {
+        delegationsMap.set(delegation.delegation.validator_address, delegation);
+      });
+
+      return delegationsMap;
     }, [userValidatorDelegations]);
 
     const data: Validator[] = useMemo(
@@ -82,11 +92,12 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
             myStake: new CoinPretty(
               totalStakePool.currency,
               new Dec(
-                validator.operator_address in
-                userValidatorDelegationsByValidatorAddress
-                  ? userValidatorDelegationsByValidatorAddress[
+                userValidatorDelegationsByValidatorAddress.has(
+                  validator.operator_address
+                )
+                  ? userValidatorDelegationsByValidatorAddress.get(
                       validator.operator_address
-                    ].balance?.amount || 0
+                    )?.balance?.amount || 0
                   : 0
               )
             )
