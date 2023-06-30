@@ -140,7 +140,7 @@ export class CosmosAccountImpl {
       timeoutHeight: {
         /**
          * Omit the revision_number if the chain's version is 0.
-         * Sending the revision number as 0 will cause the transaction to fail.
+         * Sending the value as 0 will cause the transaction to fail.
          */
         revisionNumber:
           revisionNumber !== "0"
