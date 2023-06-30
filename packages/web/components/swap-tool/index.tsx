@@ -973,10 +973,11 @@ export const SwapTool: FunctionComponent<{
                   : "primary"
               }
               disabled={
-                tradeTokenInConfig.isEmptyInput ||
-                Boolean(tradeTokenInConfig.error) ||
-                account?.txTypeInProgress !== "" ||
-                tradeTokenInConfig.isQuoteLoading
+                account?.walletStatus === WalletStatus.Connected &&
+                (tradeTokenInConfig.isEmptyInput ||
+                  Boolean(tradeTokenInConfig.error) ||
+                  account?.txTypeInProgress !== "" ||
+                  tradeTokenInConfig.isQuoteLoading)
               }
               onClick={swap}
             >
@@ -990,12 +991,7 @@ export const SwapTool: FunctionComponent<{
                 )
               ) : (
                 <h6 className="flex items-center gap-3">
-                  <Image
-                    alt="wallet"
-                    src="/icons/wallet.svg"
-                    height={24}
-                    width={24}
-                  />
+                  <Icon id="wallet" className="h-6 w-6" />
                   {t("connectWallet")}
                 </h6>
               )}

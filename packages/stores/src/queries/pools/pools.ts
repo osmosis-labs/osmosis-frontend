@@ -41,7 +41,9 @@ export class ObservableQueryPools
     let limit = 1000;
     autorun(() => {
       const nodeVersion = queryNodeInfo.nodeVersion;
-      if (!nodeVersion) return;
+
+      if (typeof nodeVersion !== "number") return;
+      if (isNaN(nodeVersion)) throw new Error("`nodeVersion` is NaN");
 
       this.setUrl(
         nodeVersion < 16
@@ -55,6 +57,10 @@ export class ObservableQueryPools
         this.setUrl(`/osmosis/gamm/v1beta1/pools?pagination.limit=${limit}`);
       }
     });
+  }
+
+  protected canFetch(): boolean {
+    return this.queryNodeInfo.nodeVersion != null;
   }
 
   protected setResponse(response: Readonly<QueryResponse<Pools>>) {
