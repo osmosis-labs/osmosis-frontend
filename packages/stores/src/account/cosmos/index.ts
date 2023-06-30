@@ -124,6 +124,10 @@ export class CosmosAccountImpl {
       );
     }
 
+    const revisionNumber = ChainIdHelper.parse(
+      destinationInfo.network
+    ).version.toString();
+
     const msg = this.msgOpts.ibcTransfer.messageComposer({
       sourcePort: channel.portId,
       sourceChannel: channel.channelId,
@@ -134,9 +138,14 @@ export class CosmosAccountImpl {
       receiver: recipient,
       sender: this.address,
       timeoutHeight: {
-        revisionNumber: Long.fromString(
-          ChainIdHelper.parse(destinationInfo.network).version.toString()
-        ),
+        /**
+         * Omit the revision_number if the chain's version is 0.
+         * Sending the value as 0 will cause the transaction to fail.
+         */
+        revisionNumber:
+          revisionNumber !== "0"
+            ? Long.fromString(revisionNumber)
+            : (undefined as any),
         revisionHeight: Long.fromString(
           destinationInfo.latestBlockHeight.add(new Int("150")).toString()
         ),
