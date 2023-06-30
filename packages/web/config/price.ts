@@ -1862,7 +1862,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
   },
   {
     alternativeCoinId: "pool:ksm",
-    poolId: "1055",
+    poolId: "1058",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
       [
         { portId: "transfer", channelId: "channel-1279" },
