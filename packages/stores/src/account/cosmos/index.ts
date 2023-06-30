@@ -139,12 +139,13 @@ export class CosmosAccountImpl {
       sender: this.address,
       timeoutHeight: {
         /**
+         * Omit the revision_number if the chain's version is 0.
          * Sending the revision number as 0 will cause the transaction to fail.
          */
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         revisionNumber:
-          revisionNumber !== "0" ? Long.fromString(revisionNumber) : undefined,
+          revisionNumber !== "0"
+            ? Long.fromString(revisionNumber)
+            : (undefined as any),
         revisionHeight: Long.fromString(
           destinationInfo.latestBlockHeight.add(new Int("150")).toString()
         ),
