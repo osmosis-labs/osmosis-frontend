@@ -1,4 +1,5 @@
 import { Staking } from "@keplr-wallet/stores";
+import { Dec, RatePretty } from "@keplr-wallet/unit";
 import {
   CellContext,
   ColumnDef,
@@ -52,7 +53,11 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
       Staking.BondStatus.Bonded
     );
 
+    const totalStakePool = queries.cosmos.queryPool.bondedTokens;
+
     const activeValidators = queryValidators.validators;
+
+    console.log("activeValidators: ", activeValidators);
 
     // @ts-ignore will use in a future PR
     const userValidatorDelegations =
@@ -60,18 +65,26 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
         account?.address ?? ""
       ).delegations;
 
+    // memo on activeValidators and totalStakePool
     const data: Validator[] = activeValidators
       .filter((validator) => !!validator.description.moniker)
       .map((validator) => ({
         validatorName: validator.description.moniker,
         myStake: "-",
-        votingPower: "-",
+        votingPower: new RatePretty(
+          new Dec(validator.tokens).quo(totalStakePool.toDec())
+        )
+          .moveDecimalPointLeft(6)
+          .maxDecimals(2)
+          .toString(),
         commissions: validator.commission.commission_rates.rate,
         website: validator.description.website,
         imageUrl: queryValidators.getValidatorThumbnail(
           validator.operator_address
         ),
       }));
+
+    console.log("data: ", data);
 
     const t = useTranslation();
 
@@ -135,9 +148,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
               accessorKey: "commissions",
               header: () => "Commissions",
               cell: (props) =>
-                `${(
-                  parseFloat(props.row.original.commissions) * 100
-                ).toFixed()}%`,
+                new RatePretty(props.row.original.commissions).toString(),
             },
           ],
         },
