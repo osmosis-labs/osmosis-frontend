@@ -44,10 +44,14 @@ interface ValidatorSquadContentProps {
 const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
   observer(({ onRequestClose, isOpen }) => {
     const { chainStore, queriesStore, accountStore } = useStore();
+    const t = useTranslation();
+    const [sorting, setSorting] = useState<SortingState>([]);
+
     const { chainId } = chainStore.osmosis;
     const queries = queriesStore.get(chainId);
-
     const account = accountStore.getWallet(chainId);
+
+    const columnHelper = createColumnHelper<Validator>();
 
     const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
       Staking.BondStatus.Bonded
@@ -72,7 +76,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
     const data: Validator[] = useMemo(
       () =>
         activeValidators
-          .filter((validator) => !!validator.description.moniker)
+          .filter((validator) => Boolean(validator.description.moniker))
           .map((validator) => ({
             validatorName: validator.description.moniker,
             myStake: new CoinPretty(
@@ -109,12 +113,6 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
       ]
     );
 
-    const t = useTranslation();
-
-    const columnHelper = createColumnHelper<Validator>();
-
-    const [sorting, setSorting] = useState<SortingState>([]);
-
     const columns = useMemo<ColumnDef<Validator>[]>(
       () => [
         {
@@ -136,7 +134,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
                       <div className="subtitle1 md:subtitle2">
                         {props.row.original.validatorName}
                       </div>
-                      {!!props.row.original.website && (
+                      {Boolean(props.row.original.website) && (
                         <span className="text-xs text-wosmongton-100">
                           <a
                             href={props.row.original.website}
