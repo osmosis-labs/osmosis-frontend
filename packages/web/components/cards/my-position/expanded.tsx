@@ -221,7 +221,10 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
       )}
       <div className="mt-4 flex flex-row justify-end gap-5 sm:flex-wrap sm:justify-start">
         <PositionButton
-          disabled={!positionConfig.hasRewardsAvailable}
+          disabled={
+            !positionConfig.hasRewardsAvailable ||
+            Boolean(account.txTypeInProgress)
+          }
           onClick={() => {
             account.osmosis
               .sendCollectAllPositionsRewardsMsgs([positionConfig.id])
@@ -230,10 +233,29 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
         >
           {t("clPositions.collectRewards")}
         </PositionButton>
-        <PositionButton onClick={() => setActiveModal("remove")}>
-          {t("clPositions.removeLiquidity")}
+        <PositionButton
+          disabled={Boolean(account.txTypeInProgress)}
+          onClick={() => {
+            if (superfluidStaked) {
+              account.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
+                [
+                  {
+                    lockId: superfluidStaked.lockId,
+                    isSyntheticLock: true,
+                  },
+                ]
+              );
+            } else setActiveModal("remove");
+          }}
+        >
+          {Boolean(superfluidStaked)
+            ? t("clPositions.unstake")
+            : t("clPositions.removeLiquidity")}
         </PositionButton>
-        <PositionButton onClick={() => setActiveModal("increase")}>
+        <PositionButton
+          disabled={Boolean(account.txTypeInProgress)}
+          onClick={() => setActiveModal("increase")}
+        >
           {t("clPositions.increaseLiquidity")}
         </PositionButton>
       </div>
@@ -420,8 +442,6 @@ const SuperfluidStakedPositionInfo: FunctionComponent<
   stakeDuration,
 }) => {
   const t = useTranslation();
-
-  console.log({ validatorImgSrc });
 
   return (
     <div className="subtitle1 flex w-full flex-col gap-4 sm:flex-col">

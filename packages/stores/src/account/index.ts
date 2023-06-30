@@ -1878,7 +1878,8 @@ export class OsmosisAccountImpl {
   }
 
   /**
-   * https://docs.osmosis.zone/developing/osmosis-core/modules/spec-superfluid.html#superfluid-unbond-lock
+   * Will unbond normal locks or synthetic locks if superfluid.
+   *
    * @param locks IDs and whether the lock is synthetic
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fullfillment given raw response.
@@ -1899,7 +1900,6 @@ export class OsmosisAccountImpl {
           type: this._msgOpts.beginUnlocking.type,
           value: {
             owner: this.base.bech32Address,
-            // XXX: 얘는 어째서인지 소문자가 아님 ㅋ;
             ID: lock.lockId,
             coins: [],
           },
@@ -2007,6 +2007,10 @@ export class OsmosisAccountImpl {
             .waitFreshResponse();
           queries.osmosis?.querySuperfluidUndelegations
             .getQuerySuperfluidDelegations(this.base.bech32Address)
+            .waitFreshResponse();
+
+          queries.osmosis?.queryAccountsPositions
+            .get(this.base.bech32Address)
             .waitFreshResponse();
         }
 
