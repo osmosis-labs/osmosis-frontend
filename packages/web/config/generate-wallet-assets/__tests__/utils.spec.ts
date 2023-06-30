@@ -1,7 +1,17 @@
 import { getAssetLists, hasMatchingMinimalDenom } from "../utils";
 
+beforeAll(() => {
+  jest.spyOn(console, "warn").mockImplementation(() => {});
+});
+
+afterAll(() => {
+  // eslint-disable-next-line no-console
+  (console.warn as jest.Mock).mockRestore();
+});
+
 describe("getAssetLists", () => {
   const originalIsFrontier = process.env.NEXT_PUBLIC_IS_FRONTIER;
+
   afterEach(() => {
     process.env.NEXT_PUBLIC_IS_FRONTIER = originalIsFrontier;
   });

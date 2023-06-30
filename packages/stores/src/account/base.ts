@@ -423,31 +423,39 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         onBroadcasted(txHashBuffer);
       }
 
-      const tx = await txTracer
-        .traceTx(txHashBuffer)
-        .then(
-          (tx: {
+      const tx = await txTracer.traceTx(txHashBuffer).then(
+        (tx: {
+          data?: string;
+          events?: TxEvent;
+          gas_used?: string;
+          gas_wanted?: string;
+          log?: string;
+          code?: number;
+          height?: number;
+          tx_result?: {
             data: string;
+            code?: number;
+            codespace: string;
             events: TxEvent;
             gas_used: string;
             gas_wanted: string;
+            info: string;
             log: string;
-            code?: number;
-            height?: number;
-          }) => {
-            txTracer.close();
+          };
+        }) => {
+          txTracer.close();
 
-            return {
-              transactionHash: broadcasted.txhash.toLowerCase(),
-              code: tx?.code ?? 0,
-              height: tx?.height,
-              rawLog: tx?.log || "",
-              events: tx?.events,
-              gasUsed: tx?.gas_used,
-              gasWanted: tx?.gas_wanted,
-            };
-          }
-        );
+          return {
+            transactionHash: broadcasted.txhash.toLowerCase(),
+            code: tx?.code ?? tx?.tx_result?.code ?? 0,
+            height: tx?.height,
+            rawLog: tx?.log ?? tx?.tx_result?.log ?? "",
+            events: tx?.events ?? tx?.tx_result?.events,
+            gasUsed: tx?.gas_used ?? tx?.tx_result?.gas_used ?? "",
+            gasWanted: tx?.gas_wanted ?? tx?.tx_result?.gas_wanted ?? "",
+          };
+        }
+      );
 
       runInAction(() => {
         this.txTypeInProgressByChain.set(chainNameOrId, "");
@@ -521,38 +529,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: chainId,
     };
 
-    const walletWindowName = getWalletWindowName(wallet.walletName);
-
-    /**
-     * Remove once ibc-go-v7 fix is released.
-     * @see https://github.com/osmosis-labs/osmosis-frontend/pull/1691
-     */
-    const currentChain = this.chains.find((c) => c.chain_id === chainId);
-    const isChainWithHotfix =
-      chainId.startsWith("injective") ||
-      chainId.startsWith("stride") ||
-      currentChain?.features?.includes("ibc-go-v7-hot-fix");
-    const isMobile =
-      wallet.walletInfo.mode === "wallet-connect" ||
-      wallet.walletName === "keplr-mobile";
-
-    const forceSignDirect =
-      isWalletOfflineDirectSigner(signer, walletWindowName) &&
-      isChainWithHotfix &&
-      !isMobile;
-
-    if (
-      isChainWithHotfix &&
-      (!isWalletOfflineDirectSigner(signer, walletWindowName) || isMobile)
-    ) {
-      throw new Error(
-        `${
-          currentChain?.pretty_name ?? chainId
-        } chain is currently unavailable for ${wallet.walletPrettyName}.`
-      );
-    }
-
-    return isOfflineDirectSigner(signer) || forceSignDirect
+    return isOfflineDirectSigner(signer)
       ? this.signDirect(
           wallet,
           signer,
@@ -560,8 +537,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           messages,
           fee,
           memo,
-          signerData,
-          forceSignDirect
+          signerData
         )
       : this.signAmino(
           wallet,

@@ -2,9 +2,7 @@ import type { Asset, AssetList } from "@chain-registry/types";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { assets as assetLists } from "chain-registry";
 
-import { ChainInfos as chainInfos } from "../generate-chain-infos/source-chain-infos";
 import { ChainInfos } from "../generated/chain-infos";
-// eslint-disable-next-line import/no-extraneous-dependencies
 import IBCAssetInfos from "../ibc-assets";
 
 export type GeneratorAssetInfo = {
@@ -18,6 +16,16 @@ const initialAssetInfos: GeneratorAssetInfo[] = [
   // Add native Osmosis Assets as they are not included in IBCAssetInfos but are needed in the app.
   { coinMinimalDenom: "uosmo", isVerified: true },
   { coinMinimalDenom: "uion", isVerified: true },
+  {
+    coinMinimalDenom:
+      "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
+    isVerified: true,
+  },
+  {
+    coinMinimalDenom:
+      "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
+    isVerified: true,
+  },
 ];
 
 export const hasMatchingMinimalDenom = (
@@ -42,60 +50,79 @@ export function getAssetLists(assetInfos = initialAssetInfos): AssetList[] {
    *  assets: Asset[];
    * }
    */
-  let newAssetLists: AssetList[] = [];
+  const newAssetLists: AssetList[] = ChainInfos.map(
+    ({ chainName, currencies, chainRegistryChainName }) => {
+      const cosmologyAssetList = assetLists.find(
+        ({ chain_name }) => chain_name === chainRegistryChainName
+      );
 
-  for (const list of assetLists) {
-    const cloneList = { ...list };
-    // Filter out assets that are not in assetInfos
-    cloneList.assets = list.assets.filter((asset) =>
-      assetInfos.some(({ coinMinimalDenom, isVerified }) => {
-        const isFrontier = process.env.NEXT_PUBLIC_IS_FRONTIER === "true";
-
-        // If we are not on frontier, only show verified assets
-        if (!isFrontier && !isVerified) return false;
-        return hasMatchingMinimalDenom(asset, coinMinimalDenom);
-      })
-    );
-
-    cloneList.assets = cloneList.assets.map((asset) => {
-      // Always try to use our coingecko id
-      asset.coingecko_id =
-        chainInfos
-          .find(({ currencies }) =>
-            currencies.some(({ coinMinimalDenom }) =>
-              hasMatchingMinimalDenom(asset, coinMinimalDenom)
-            )
-          )
-          ?.currencies.find(({ coinMinimalDenom }) =>
-            hasMatchingMinimalDenom(asset, coinMinimalDenom)
-          )?.coinGeckoId ?? asset.coingecko_id;
-
-      if (asset.coingecko_id === "") {
-        console.warn(
-          `Warning: asset ${asset.name} does not have coingecko_id.`
-        );
+      if (!cosmologyAssetList) {
+        console.warn(`No asset list found for ${chainRegistryChainName}`);
       }
 
-      return asset;
-    });
+      return {
+        chain_name: chainName,
+        assets: currencies
+          .filter(({ coinMinimalDenom }) => {
+            const isFrontier = process.env.NEXT_PUBLIC_IS_FRONTIER === "true";
+            const currencyInIbcAssetFile = assetInfos.find(
+              (ibcAsset) =>
+                ibcAsset.coinMinimalDenom === coinMinimalDenom ||
+                coinMinimalDenom.startsWith(ibcAsset.coinMinimalDenom) // cw20 tokens
+            );
 
-    const newChainName = ChainInfos.find(
-      (chainInfo) =>
-        chainInfo?.chainRegistryChainName?.toLowerCase() ===
-          cloneList?.chain_name?.toLowerCase() ||
-        chainInfo?.chainName?.toLowerCase() ===
-          cloneList?.chain_name?.toLowerCase()
-    )?.chainName;
+            // Do not add assets that are not in the ibc-assets.ts file
+            if (!currencyInIbcAssetFile) {
+              console.warn(
+                `Warning: Currency ${coinMinimalDenom} not found in ibc-assets.ts file`
+              );
+              return false;
+            }
 
-    // Override the chain name with the one from chain-infos
-    if (newChainName) {
-      cloneList.chain_name = newChainName;
+            // If we are not on frontier, only show verified assets
+            if (!isFrontier && !currencyInIbcAssetFile?.isVerified)
+              return false;
+            return true;
+          })
+          .map(({ coinDecimals, coinDenom, coinMinimalDenom, coinGeckoId }) => {
+            // Use cosmology asset to fill in additional metadata.
+            const cosmologyCurrency = cosmologyAssetList?.assets.find((asset) =>
+              hasMatchingMinimalDenom(asset, coinMinimalDenom)
+            );
+
+            if (!cosmologyCurrency) {
+              console.warn(
+                `Warning: No asset found for ${coinMinimalDenom} in cosmology asset list. Consider bumping chain-registry version.`
+              );
+            }
+
+            return {
+              base: coinMinimalDenom,
+              name: cosmologyCurrency?.name ?? coinDenom,
+              denom_units: [
+                {
+                  exponent: coinDecimals,
+                  denom: coinDenom.toLowerCase(),
+                },
+                ...(cosmologyCurrency?.denom_units.filter(
+                  ({ denom }) => denom.toLowerCase() !== coinDenom.toLowerCase()
+                ) ?? []),
+              ],
+              display: coinDenom.toLowerCase(),
+              symbol: coinDenom,
+              coingecko_id: coinGeckoId,
+              logo_URIs: cosmologyCurrency?.logo_URIs,
+              address: cosmologyCurrency?.address,
+              description: cosmologyCurrency?.description,
+              ibc: cosmologyCurrency?.ibc,
+              keywords: cosmologyCurrency?.keywords,
+              traces: cosmologyCurrency?.traces,
+              type_asset: cosmologyCurrency?.type_asset,
+            } as Asset;
+          }),
+      };
     }
-
-    if (cloneList.assets.length > 0) {
-      newAssetLists.push(cloneList);
-    }
-  }
+  ).filter(({ assets }) => assets.length > 0);
 
   return newAssetLists;
 }

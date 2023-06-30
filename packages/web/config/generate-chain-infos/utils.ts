@@ -29,14 +29,14 @@ export function getChainInfos(): (ChainInfoWithExplorer &
 
       if (!registryChain) {
         console.warn(
-          `Warning: chain ${localChain.chainName} not found in chain-registry`
+          `Warning: chain ${localChain.chainName} not found in chain-registry. Consider bumping chain-registry version.`
         );
       }
 
       return {
         ...localChain,
         ...registryChain,
-        // We need this to override the assets chain name in `generate-wallet-assets/utils.ts`
+        // We need this to identify the registry chain while generating the wallet assets.
         chainRegistryChainName: registryChain?.chain_name,
         chain_name: localChain.chainName,
         chain_id: localChain.chainId,
