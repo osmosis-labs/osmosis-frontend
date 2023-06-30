@@ -45,7 +45,9 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
   observer(({ onRequestClose, isOpen }) => {
     const { chainStore, queriesStore, accountStore } = useStore();
     const t = useTranslation();
-    const [sorting, setSorting] = useState<SortingState>([]);
+    const [sorting, setSorting] = useState<SortingState>([
+      { id: "myStake", desc: true },
+    ]);
 
     const { chainId } = chainStore.osmosis;
     const queries = queriesStore.get(chainId);
@@ -65,13 +67,6 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
       queries.cosmos.queryDelegations.getQueryBech32Address(
         account?.address ?? ""
       ).delegations;
-
-    // const userValidatorDelegationsByValidatorAddress = useMemo(() => {
-    //   return userValidatorDelegations.reduce((delegations, delegation) => {
-    //     delegations[delegation.delegation.validator_address] = delegation;
-    //     return delegations;
-    //   }, {} as { [x: string]: Staking.Delegation });
-    // }, [userValidatorDelegations]);
 
     const userValidatorDelegationsByValidatorAddress = useMemo(() => {
       const delegationsMap = new Map<string, Staking.Delegation>();
