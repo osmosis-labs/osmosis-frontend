@@ -57,32 +57,33 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
 
     const activeValidators = queryValidators.validators;
 
-    console.log("activeValidators: ", activeValidators);
-
     // @ts-ignore will use in a future PR
     const userValidatorDelegations =
       queries.cosmos.queryDelegations.getQueryBech32Address(
         account?.address ?? ""
       ).delegations;
 
-    // memo on activeValidators and totalStakePool
-    const data: Validator[] = activeValidators
-      .filter((validator) => !!validator.description.moniker)
-      .map((validator) => ({
-        validatorName: validator.description.moniker,
-        myStake: "-",
-        votingPower: new RatePretty(
-          new Dec(validator.tokens).quo(totalStakePool.toDec())
-        )
-          .moveDecimalPointLeft(6)
-          .maxDecimals(2)
-          .toString(),
-        commissions: validator.commission.commission_rates.rate,
-        website: validator.description.website,
-        imageUrl: queryValidators.getValidatorThumbnail(
-          validator.operator_address
-        ),
-      }));
+    const data: Validator[] = useMemo(
+      () =>
+        activeValidators
+          .filter((validator) => !!validator.description.moniker)
+          .map((validator) => ({
+            validatorName: validator.description.moniker,
+            myStake: "-",
+            votingPower: new RatePretty(
+              new Dec(validator.tokens).quo(totalStakePool.toDec())
+            )
+              .moveDecimalPointLeft(6)
+              .maxDecimals(2)
+              .toString(),
+            commissions: validator.commission.commission_rates.rate,
+            website: validator.description.website,
+            imageUrl: queryValidators.getValidatorThumbnail(
+              validator.operator_address
+            ),
+          })),
+      [activeValidators, totalStakePool, queryValidators]
+    );
 
     console.log("data: ", data);
 
