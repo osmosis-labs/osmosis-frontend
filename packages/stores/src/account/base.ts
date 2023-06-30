@@ -425,11 +425,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       const tx = await txTracer.traceTx(txHashBuffer).then(
         (tx: {
-          data: string;
-          events: TxEvent;
-          gas_used: string;
-          gas_wanted: string;
-          log: string;
+          data?: string;
+          events?: TxEvent;
+          gas_used?: string;
+          gas_wanted?: string;
+          log?: string;
           code?: number;
           height?: number;
           tx_result?: {
@@ -451,8 +451,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
             height: tx?.height,
             rawLog: tx?.log ?? tx?.tx_result?.log ?? "",
             events: tx?.events ?? tx?.tx_result?.events,
-            gasUsed: tx?.gas_used ?? tx?.tx_result?.gas_used,
-            gasWanted: tx?.gas_wanted ?? tx?.tx_result?.gas_wanted,
+            gasUsed: tx?.gas_used ?? tx?.tx_result?.gas_used ?? "",
+            gasWanted: tx?.gas_wanted ?? tx?.tx_result?.gas_wanted ?? "",
           };
         }
       );
