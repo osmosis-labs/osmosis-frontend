@@ -63,9 +63,9 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
       ).delegations;
 
     const userValidatorDelegationsByValidatorAddress = useMemo(() => {
-      return userValidatorDelegations.reduce((obj, delegation) => {
-        obj[delegation.delegation.validator_address] = delegation;
-        return obj;
+      return userValidatorDelegations.reduce((delegations, delegation) => {
+        delegations[delegation.delegation.validator_address] = delegation;
+        return delegations;
       }, {} as { [x: string]: Staking.Delegation });
     }, [userValidatorDelegations]);
 
@@ -105,7 +105,6 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
         activeValidators,
         totalStakePool,
         queryValidators,
-        userValidatorDelegations,
         userValidatorDelegationsByValidatorAddress,
       ]
     );
