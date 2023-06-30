@@ -1,5 +1,5 @@
 import { Staking } from "@keplr-wallet/stores";
-import { Dec, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
 import {
   CellContext,
   ColumnDef,
@@ -57,7 +57,6 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
 
     const activeValidators = queryValidators.validators;
 
-    // @ts-ignore will use in a future PR
     const userValidatorDelegations =
       queries.cosmos.queryDelegations.getQueryBech32Address(
         account?.address ?? ""
@@ -69,7 +68,18 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
           .filter((validator) => !!validator.description.moniker)
           .map((validator) => ({
             validatorName: validator.description.moniker,
-            myStake: "-",
+            myStake: new CoinPretty(
+              totalStakePool.currency,
+              new Dec(
+                userValidatorDelegations.find(
+                  ({ delegation }) =>
+                    delegation.validator_address === validator.operator_address
+                )?.balance?.amount || 0
+              )
+            )
+              .maxDecimals(2)
+              .hideDenom(true)
+              .toString(),
             votingPower: new RatePretty(
               new Dec(validator.tokens).quo(totalStakePool.toDec())
             )
@@ -82,10 +92,13 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
               validator.operator_address
             ),
           })),
-      [activeValidators, totalStakePool, queryValidators]
+      [
+        activeValidators,
+        totalStakePool,
+        queryValidators,
+        userValidatorDelegations,
+      ]
     );
-
-    console.log("data: ", data);
 
     const t = useTranslation();
 
