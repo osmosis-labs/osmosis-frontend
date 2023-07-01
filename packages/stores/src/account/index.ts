@@ -2012,6 +2012,13 @@ export class OsmosisAccountImpl {
           queries.osmosis?.queryAccountsPositions
             .get(this.base.bech32Address)
             .waitFreshResponse();
+
+          queries.osmosis?.queryAccountsSuperfluidDelegatedPositions
+            .get(this.base.bech32Address)
+            .waitFreshResponse();
+          queries.osmosis?.queryAccountsSuperfluidUndelegatingPositions
+            .get(this.base.bech32Address)
+            .waitFreshResponse();
         }
 
         onFulfill?.(tx);
