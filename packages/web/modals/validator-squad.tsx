@@ -45,6 +45,23 @@ interface ValidatorSquadContentProps {
   isOpen: boolean;
 }
 
+function normalizeUrl(url: string): string {
+  // Remove "https://", "http://", "www.", and trailing slashes
+  url = url.replace(/^https?:\/\//, "");
+  url = url.replace(/^www\./, "");
+  url = url.replace(/\/$/, "");
+  return url;
+}
+
+function truncateString(str: string): string {
+  if (str.length <= 30) return str;
+
+  const halfLength = Math.floor((30 - 3) / 2);
+  const firstHalf = str.slice(0, halfLength);
+  const secondHalf = str.slice(-halfLength);
+  return `${firstHalf}...${secondHalf}`;
+}
+
 const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
   observer(({ onRequestClose, isOpen }) => {
     // chain
@@ -150,6 +167,11 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
           columns: [
             columnHelper.accessor((row) => row, {
               cell: observer((props: CellContext<any, any>) => {
+                const displayUrl = normalizeUrl(
+                  props.row.original.website || ""
+                );
+                const truncatedDisplayUrl = truncateString(displayUrl);
+
                 return (
                   <div className="flex items-center gap-3">
                     {/*  input placeholder */}
@@ -172,7 +194,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
                             rel="noopener noreferrer"
                             className="flex items-center gap-2"
                           >
-                            {props.row.original.website}
+                            {truncatedDisplayUrl}
                             <ExternalLinkIcon
                               isAnimated
                               classes={{ container: "w-3 h-3" }}
