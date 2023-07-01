@@ -11,6 +11,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import classNames from "classnames";
+import debounce from "debounce";
 import Fuse from "fuse.js";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
@@ -129,9 +130,9 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
 
     const [searchTerm, setSearchTerm] = useState("");
 
-    const handleSearchInput = (value: string) => {
-      setSearchTerm(value);
-    };
+    const debouncedSearchTerm = useMemo(() => debounce(setSearchTerm, 200), []);
+
+    const handleSearchInput = (value: string) => debouncedSearchTerm(value);
 
     const searchData: Validator[] = useMemo(() => {
       if (searchTerm.trim() === "") return rawData;
