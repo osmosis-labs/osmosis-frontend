@@ -204,7 +204,12 @@
     "notInitialized": "ساخته نشده است",
     "percentageSum": "جمع درصد ها 100 نیست",
     "scalingFactorTooLow": "فاکتور تبدیل کوچک است",
-    "zeroAmount": "مقدار صفر است"
+    "zeroAmount": "مقدار صفر است",
+    "fallbackText1": "خطایی رخ داد",
+    "fallbackText2": "لطفا یک",
+    "fallbackBugReport": "گزارش اشکال",
+    "fallbackText3": "یا دریافت کنید",
+    "fallbackSupport": "حمایت کردن"
   },
   "keplr": {
     "extension": "Keplr مرورگر",
@@ -400,8 +405,23 @@
   "viewExplorer": "مشاهده جزئیات تراکنش",
   "waitingForTransaction": "صبر کنید تا یک تراکنش در بلاک قرار بگیرد",
   "highPoolInflationWarning": "نرخ سود سالانه بالا ممکن است ناشی از پاداش‌های تورمی باشد. با احتیاط ادامه دهید.",
-  "ibcx": {
-    "description": "با نخستین شاخص اکوسیستم کوزموس از ION DAO آشنا شوید. فعال در مین‌نت: ",
-    "link": "index.ion.wtf"
-  }
+  "seo.404.title": "404 - صفحه یافت نشد",
+  "seo.404.description": "صفحه مورد نظر شما وجود ندارد.",
+  "seo.500.title": "500 - خطای سرور داخلی",
+  "seo.500.description": "یک خطای سرور داخلی روی داد.",
+  "seo.default.title": "تجارت در منطقه اسمز",
+  "seo.default.titleFrontier": "مرز اسمز",
+  "seo.default.description": "مبادله کنید، کسب درآمد کنید و بر روی صرافی غیرمتمرکز پیشرو Cosmos - بزرگترین DEX بین زنجیره ای ایجاد کنید",
+  "seo.apps.title": "اپ استور اسموز",
+  "seo.apps.description": "معامله فقط اولین قدم است. دارایی‌های خود را به کار بگیرید و با اهرم‌ها، خزانه‌ها و موارد دیگر، کارهای بیشتری انجام دهید",
+  "seo.assets.title": "دارایی اسمز",
+  "seo.assets.description": "همه دارایی‌های موجود در Osmosis - صرافی غیرمتمرکز Cosmos را مرور کنید",
+  "seo.bootstrap.title": "اسمز بوت استرپ",
+  "seo.bootstrap.description": "استخرهای راه‌اندازی نقدینگی در اسموز، صرافی غیرمتمرکز کاسموس",
+  "seo.disclaimer.title": "سلب مسئولیت اسمز",
+  "seo.disclaimer.description": "سلب مسئولیت و سیاست حفظ حریم خصوصی Osmosis - صرافی غیرمتمرکز پیشرو Cosmos را بخوانید",
+  "seo.pool.title": "استخر #",
+  "seo.pool.description": "دارایی های خود را به این استخر اضافه کنید تا قفل APR ها باز شود. هرچه دوره عدم پیوند شما طولانی تر باشد، سود بیشتری در اسموز - صرافی غیرمتمرکز کیهان پیشرو خواهید داشت",
+  "seo.pools.title": "استخرهای اسمز",
+  "seo.pools.description": "استخرهای نقدینگی را در اسموز کشف کنید - صرافی غیرمتمرکز کیهان"
 }

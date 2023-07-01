@@ -1,7 +1,6 @@
 import {
   CosmosQueries,
   HasMapStore,
-  IAccountStore,
   IQueriesStore,
   Staking,
 } from "@keplr-wallet/stores";
@@ -10,6 +9,7 @@ import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
+import { AccountStore } from "../../account";
 import { IPriceStore } from "../../price";
 import { OsmosisQueries } from "../../queries/store";
 import { ObservableConcentratedPoolDetails } from "./concentrated";
@@ -32,7 +32,7 @@ export class ObservableSuperfluidPoolDetail {
     protected readonly queriesStore: IQueriesStore<
       CosmosQueries & OsmosisQueries
     >,
-    protected readonly accountStore: IAccountStore,
+    protected readonly accountStore: AccountStore,
     protected readonly sharePoolDetails: ObservableSharePoolDetails,
     protected readonly concentratedPoolDetails: ObservableConcentratedPoolDetails,
     protected readonly priceStore: IPriceStore
@@ -50,7 +50,7 @@ export class ObservableSuperfluidPoolDetail {
   }
 
   protected get bech32Address() {
-    return this.accountStore.getAccount(this.osmosisChainId).bech32Address;
+    return this.accountStore.getWallet(this.osmosisChainId)?.address ?? "";
   }
 
   protected get querySharePoolDetails() {
@@ -312,7 +312,7 @@ export class ObservableSuperfluidPoolDetails extends HasMapStore<ObservableSuper
     protected readonly queriesStore: IQueriesStore<
       CosmosQueries & OsmosisQueries
     >,
-    protected readonly accountStore: IAccountStore,
+    protected readonly accountStore: AccountStore,
     protected readonly sharePoolDetails: ObservableSharePoolDetails,
     protected readonly concentratedPoolDetails: ObservableConcentratedPoolDetails,
     protected readonly priceStore: IPriceStore

@@ -35,14 +35,15 @@ export const DepositAmountGroup: FunctionComponent<{
     const { chainStore, queriesStore, accountStore } = useStore();
     const t = useTranslation();
     const { chainId } = chainStore.osmosis;
-    const { bech32Address } = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
+    const address = account?.address ?? "";
 
     const fiatPer = coin && getFiatValue ? getFiatValue(coin) : 0;
 
     const walletBalance = coin?.currency
       ? queriesStore
           .get(chainId)
-          .queryBalances.getQueryBech32Address(bech32Address)
+          .queryBalances.getQueryBech32Address(address)
           .getBalanceFromCurrency(coin.currency)
       : null;
 

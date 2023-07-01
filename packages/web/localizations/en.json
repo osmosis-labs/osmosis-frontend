@@ -54,7 +54,7 @@
     "secondaryCta": "Learn in 30s",
     "tutorialA": {
       "1": "Use way less capital to earn the same amount or more in pools. Here’s how it works.",
-      "2": "Instead of setting and forgetting a position, it’s a bit more active. You, Bob, Mary, and Ammelia can choose where to “concentrate” your liquidity.",
+      "2": "Instead of setting and forgetting a position, it’s a bit more active. You, Woz, Mary, and Ammelia can choose where to “concentrate” your liquidity.",
       "3": "Pick a strategy that best suits you. Woz might have an aggressive strategy that earns more, but only if the current price remains in his range.",
       "4": "Ammelia chose a passive strategy. By distributing a little bit across the entire span, she earns less but never goes out of range.",
       "5": "If the price goes out of your range, all assets will be converted to the lower nominal value of the two. This will revert if the price re-enters your range. Passive strategies are easier to manage.",
@@ -79,7 +79,7 @@
     "maxPrice": "Max price",
     "minPrice": "Min price",
     "collectRewards": "Collect Rewards",
-    "noRewards": "No rewards to collect",
+    "noRewards": "Nothing to collect, check back soon",
     "removeLiquidity": "Remove Liquidity",
     "increaseLiquidity": "Increase Liquidity",
     "yourPositions": "Your Positions",
@@ -116,6 +116,26 @@
     "applyButton": "Apply",
     "storeDisclaimer": "Certain content has been prepared by third parties not affiliated with Osmosis Labs or any of its affiliates and Osmosis Labs is not responsible for such content. Osmosis Labs is not liable for any errors or delays in content, or for any actions taken in reliance on any content. Information is provided for informational purposes only and is not investment advice. This is not a recommendation to buy or sell a particular digital asset or to employ a particular investment strategy. Osmosis Labs makes no representation on the accuracy, suitability, or validity of any information provided or for a particular asset. Prices shown are for illustrative purposes only. Actual cryptocurrency prices and associated stats may vary. Data presented may reflect assets traded on Osmosis Labs’s exchange and select other cryptocurrency exchanges.",
     "allAppsHeader": "All Apps"
+  },
+  "addConcentratedLiquidityPoolCta": {
+    "title": "Supercharge your {pair}",
+    "caption": "Supercharged positions allow you to earn additional yield. Learn how it works in 30 seconds, or upgrade your position in a few clicks.",
+    "primaryCta": "Upgrade to supercharged",
+    "secondaryCta": "Learn in 30 seconds",
+    "migration": {
+      "title": "Upgrade your position",
+      "availableSharesTitle": "Migrate available shares",
+      "availableSharesDescription": "Migrate unbonded shares to the new pool. Shares will automatically be converted into the underlying assets and deposited into the new pool as a full range position",
+      "balance": "Your balance:",
+      "bondedSharesTitle": "Migrate bonded shares",
+      "bondedSharesDescription": "Migrate bonded or superfluid staked shares to the new pool. If shares are only bonded they will be unbonded, converted into the underlying assets, and deposited into the new pool as a full range position. Otherwise if they are superfluid staked, they will be converted into a superfluid staked full range position."
+    }
+  },
+  "createFirstPositionCta": {
+    "title": "Create your first supercharged position",
+    "caption": "This long awaited upgrade allows you to earn more with less capital. \n Get up and running in minutes, regardless of your level of experience.",
+    "primaryCta": "Create a position",
+    "secondaryCta": "Learn in 30 seconds"
   },
   "assets": {
     "bondedAssets": "Bonded",
@@ -287,7 +307,12 @@
     "scalingFactorTooLow": "Scaling factor too low",
     "zeroAmount": "Amount is zero",
     "invalidRange": "Invalid price range",
-    "notAvailable": "Not available"
+    "notAvailable": "Not available",
+    "fallbackText1": "An error occurred",
+    "fallbackText2": "Please submit a",
+    "fallbackBugReport": "bug report",
+    "fallbackText3": "or get",
+    "fallbackSupport": "support"
   },
   "keplr": {
     "extension": "Keplr Browser Extension",
@@ -436,6 +461,28 @@
     "titleHideDust": "Hide pools with < {fiatSymbol}0.01",
     "titleLanguage": "Language"
   },
+  "stake": {
+    "title": "Stake",
+    "available": "Available",
+    "HALF": "HALF",
+    "MAX": "MAX",
+    "validatorHeader": "Validator squad",
+    "edit": "edit",
+    "stake": "Stake OSMO",
+    "unstake": "Unstake OSMO",
+    "validatorSquad": {
+      "title": "Validator Squad",
+      "description": "Select the validators you’d like to delegate to. Once complete, continue to stake. You may edit your validator set at any time.",
+      "searchPlaceholder": "Search for a validator",
+      "button": "Set Squad",
+      "column": {
+        "validator": "Validator",
+        "myStake": "My Stake",
+        "votingPower": "Voting Power",
+        "commission": "Commission"
+      }
+    }
+  },
   "superfluidValidator": {
     "bondedAmount": "Bonded Amount",
     "buttonBond": "Bond & Stake",
@@ -479,6 +526,26 @@
       "discoverSuperchargedPools": "Discover Supercharged Pools"
     }
   },
+  "walletSelect": {
+    "somethingWentWrong": "Something Went Wrong",
+    "changeWallet": "Change Wallet",
+    "isNotInstalled": "{walletName} is not installed",
+    "maybeInstalled": "If {walletName} is installed on your device, please refresh this page or follow the browser instructions.",
+    "downloadLinkNotProvided": "Download link not provided. Try searching it or consulting the developer team.",
+    "installWallet": "Install {walletName}",
+    "requestRejected": "Request Rejected",
+    "connectionDenied": "Connection permission denied.",
+    "reconnect": "Reconnect",
+    "connectingWallet": "Connecting Wallet",
+    "approveWalletConnect": "Approve {walletName} connection request on your mobile.",
+    "openExtension": "Open the {walletName} browser extension to connect your wallet.",
+    "initializingWallet": "Initializing Wallet Client",
+    "clickToRefresh": "Click to refresh.",
+    "qrCodeExpired": "QR Code Expired",
+    "qrCodeError": "QR Code Error",
+    "openAppToScan": "Open {walletName} App to Scan",
+    "refresh": "Refresh"
+  },
   "swapFailed": "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.",
   "transactionBroadcasting": "Transaction Broadcasting",
   "transactionFailed": "Transaction Failed",
@@ -487,8 +554,43 @@
   "viewExplorer": "View explorer",
   "waitingForTransaction": "Waiting for transaction to be included in the block",
   "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution.",
-  "ibcx": {
-    "description": "Meet the first Cosmos Ecosystem Index from ION DAO. Live on mainnet: ",
-    "link": "index.ion.wtf"
+  "seo": {
+    "404": {
+      "title": "404 - Page not found",
+      "description": "The page you are looking for does not exist."
+    },
+    "500": {
+      "title": "500 - Internal server error",
+      "description": "An internal server error occurred."
+    },
+    "default": {
+      "title": "Trade on Osmosis Zone",
+      "titleFrontier": "The Osmosis Frontier",
+      "description": "Swap, earn, and build on the leading decentralized Cosmos exchange - The largest interchain DEX"
+    },
+    "apps": {
+      "title": "Osmosis App Store",
+      "description": "Trading is just the first step. Put your assets to work and accomplish so much more with leverage, vaults, and beyond"
+    },
+    "assets": {
+      "title": "Osmosis Assets",
+      "description": "Browse all of the assets available on Osmosis - the leading decentralized Cosmos exchange"
+    },
+    "bootstrap": {
+      "title": "Osmosis Bootstrap",
+      "description": "Liquidity Bootstrapping Pools on Osmosis, the leading decentralized Cosmos exchange"
+    },
+    "disclaimer": {
+      "title": "Osmosis Disclaimer",
+      "description": "Read the disclaimer and privacy policy for the Osmosis - the leading decentralized Cosmos exchange"
+    },
+    "pool": {
+      "title": "Pool #{id}",
+      "description": "Add your assets to this pool to unlock APRs. The longer your unbonding period, the more you make on Osmosis - the leading decentralized Cosmos exchange"
+    },
+    "pools": {
+      "title": "Osmosis Pools",
+      "description": "Discover liqudity pools on Osmosis - the leading decentralized Cosmos exchange"
+    }
   }
 }

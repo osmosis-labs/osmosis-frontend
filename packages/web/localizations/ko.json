@@ -205,7 +205,12 @@
     "notInitialized": "초기화되지 않았습니다",
     "percentageSum": "퍼센티지의 합이 100이 아닙니다",
     "scalingFactorTooLow": "단위조정인수가 너무 낮습니다",
-    "zeroAmount": "수량이 0입니다."
+    "zeroAmount": "수량이 0입니다.",
+    "fallbackText1": "에러 발생됨",
+    "fallbackText2": "제출해주세요",
+    "fallbackBugReport": "버그 보고서",
+    "fallbackText3": "또는 얻을",
+    "fallbackSupport": "지원하다"
   },
   "keplr": {
     "extension": "Keplr 브라우저 익스텐션",
@@ -393,6 +398,26 @@
     },
     "title": "거래"
   },
+  "walletSelect": {
+    "somethingWentWrong": "오류가 발생했습니다.",
+    "changeWallet": "지갑 변경",
+    "isNotInstalled": "{walletName}이(가) 설치되어 있지 않습니다.",
+    "maybeInstalled": "{walletName}이(가) 장치에 설치되어 있다면, 이 페이지를 새로고침하거나 브라우저 지침을 따르세요.",
+    "downloadLinkNotProvided": "다운로드 링크가 제공되지 않았습니다. 검색하거나 개발팀에 문의해보세요.",
+    "installWallet": "{walletName} 설치",
+    "requestRejected": "요청이 거부되었습니다.",
+    "connectionDenied": "연결 권한이 거부되었습니다.",
+    "reconnect": "다시 연결",
+    "connectingWallet": "지갑 연결 중",
+    "approveWalletConnect": "모바일에서 {walletName} 연결 요청을 승인하세요.",
+    "openExtension": "{walletName} 브라우저 확장 프로그램을 열어서 지갑을 연결하세요.",
+    "initializingWallet": "지갑 클라이언트 초기화 중",
+    "clickToRefresh": "새로고침하려면 클릭하세요.",
+    "qrCodeExpired": "QR 코드가 만료되었습니다.",
+    "qrCodeError": "QR 코드 오류",
+    "openAppToScan": "{walletName} 앱을 열어서 스캔하세요.",
+    "refresh": "새로고침"
+  },
   "swapFailed": "교환에 실패했습니다. 교환에 필요한 유동성이 충분하지 않을 수 있습니다. 슬리피지를 조정하고 다시 시도해주세요.",
   "transactionBroadcasting": "전송 진행중",
   "transactionFailed": "전송 실패",
@@ -401,8 +426,23 @@
   "viewExplorer": "블록 익스플로러 보기",
   "waitingForTransaction": "트랜잭션이 블록에 담기는 중입니다",
   "highPoolInflationWarning": "높은 APR은 인플레이션 보상에서 비롯될 수 있습니다. 주의해서 진행하십시오.",
-  "ibcx": {
-    "description": "ION DAO로부터의 최초의 Cosmos 생태계 지수를 만나보세요. 메인넷에서 활성화되었습니다: ",
-    "link": "index.ion.wtf"
-  }
+  "seo.404.title": "404 페이지를 찾을 수 없습니다",
+  "seo.404.description": "찾으시는 페이지가 존재하지 않습니다.",
+  "seo.500.title": "500 내부 서버 오류",
+  "seo.500.description": "내부 서버 오류가 발생했습니다.",
+  "seo.default.title": "Osmosis Zone에서 거래",
+  "seo.default.titleFrontier": "삼투압 프론티어",
+  "seo.default.description": "가장 큰 인터체인 DEX인 선도적인 탈중앙화 Cosmos 거래소에서 스왑, 수익 및 구축",
+  "seo.apps.title": "삼투 앱 스토어",
+  "seo.apps.description": "거래는 첫 번째 단계일 뿐입니다. 자산을 업무에 활용하고 레버리지, 금고 등을 통해 훨씬 더 많은 것을 성취하십시오.",
+  "seo.assets.title": "삼투 자산",
+  "seo.assets.description": "Osmosis에서 사용 가능한 모든 자산 탐색 - 선도적인 탈중앙화 Cosmos 거래소",
+  "seo.bootstrap.title": "삼투 부트스트랩",
+  "seo.bootstrap.description": "선도적인 탈중앙화 Cosmos 거래소인 Osmosis의 유동성 부트스트래핑 풀",
+  "seo.disclaimer.title": "삼투 면책 조항",
+  "seo.disclaimer.description": "Osmosis에 대한 고지 사항 및 개인 정보 보호 정책 읽기 - 선도적인 탈중앙화 Cosmos 거래소",
+  "seo.pool.title": "수영장 #",
+  "seo.pool.description": "APR을 잠금 해제하려면 이 풀에 자산을 추가하세요. 언본딩 기간이 길수록 탈중앙화 코스모스 거래소인 Osmosis에서 더 많은 수익을 올릴 수 있습니다.",
+  "seo.pools.title": "삼투 풀",
+  "seo.pools.description": "Osmosis에서 유동성 풀을 발견하십시오 - 선도적인 탈중앙화 Cosmos 거래소"
 }

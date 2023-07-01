@@ -29,8 +29,8 @@ export const LockTokensModal: FunctionComponent<
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
-  const account = accountStore.getAccount(chainId);
-  const { bech32Address } = account;
+  const account = accountStore.getWallet(chainId);
+  const address = account?.address ?? "";
 
   // initialize pool data stores once root pool store is loaded
   const { sharePoolDetail, superfluidPoolDetail, poolBonding } =
@@ -41,10 +41,10 @@ export const LockTokensModal: FunctionComponent<
     [poolBonding?.bondDurations]
   );
   const availableToken = queryOsmosis.queryGammPoolShare.getAvailableGammShare(
-    bech32Address,
+    address,
     poolId
   );
-  const isSendingMsg = account.txTypeInProgress !== "";
+  const isSendingMsg = account?.txTypeInProgress !== "";
   /** If they have a superfluid validator already, they will automatically SFS stake if they select the highest gauge. (Cant be undone)
    *  TODO: perhaps we should display this in the view somehow
    */

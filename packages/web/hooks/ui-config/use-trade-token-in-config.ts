@@ -25,9 +25,9 @@ export function useTradeTokenInConfig(
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
   const queriesOsmosis = queriesStore.get(osmosisChainId).osmosis!;
-  const account = accountStore.getAccount(osmosisChainId);
+  const account = accountStore.getWallet(osmosisChainId);
 
-  const bech32Address = account.bech32Address;
+  const address = account?.address ?? "";
 
   const [config] = useState(
     () =>
@@ -36,7 +36,7 @@ export function useTradeTokenInConfig(
         queriesStore,
         priceStore,
         osmosisChainId,
-        bech32Address,
+        address,
         undefined,
         pools,
         {
@@ -55,7 +55,7 @@ export function useTradeTokenInConfig(
   );
   // updates UI config on render to reflect latest values
   config.setChain(osmosisChainId);
-  config.setSender(bech32Address);
+  config.setSender(address);
   config.setPools(pools);
   useEffect(() => {
     config.setIncentivizedPoolIds(
@@ -124,7 +124,7 @@ export function useTradeTokenInConfig(
 
       if (routes.length === 1) {
         const { pools } = routes[0];
-        account.osmosis
+        account?.osmosis
           .sendSwapExactAmountInMsg(
             pools,
             tokenIn,
@@ -144,7 +144,7 @@ export function useTradeTokenInConfig(
           });
         return pools.length === 1 ? "exact-in" : "multihop";
       } else if (routes.length > 1) {
-        account.osmosis
+        account?.osmosis
           .sendSplitRouteSwapExactAmountInMsg(
             routes,
             tokenIn,

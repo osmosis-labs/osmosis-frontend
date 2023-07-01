@@ -1,10 +1,16 @@
 {
+  // See https://go.microsoft.com/fwlink/?LinkId=827846 to learn about workspace recommendations.
+  // Extension identifier format: ${publisher}.${name}. Example: vscode.csharp
+
+  // List of extensions which should be recommended for users of this workspace.
   "recommendations": [
-    "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
     "eamodio.gitlens",
     "github.vscode-pull-request-github",
+    "ms-vsliveshare.vsliveshare",
     "jock.svg",
-    "orta.vscode-jest"
+    "orta.vscode-jest",
+    "dbaeumer.vscode-eslint",
+    "inlang.vs-code-extension"
   ]
 }

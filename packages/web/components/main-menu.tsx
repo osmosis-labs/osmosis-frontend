@@ -1,5 +1,4 @@
 import classNames from "classnames";
-import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -57,7 +56,6 @@ export const MainMenu: FunctionComponent<{
                 }
               }}
             >
-              <Head>{selected && <title key="title">{label}</title>}</Head>
               <LinkOrDiv href={link}>
                 <a
                   className={classNames(

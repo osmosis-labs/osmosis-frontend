@@ -205,7 +205,12 @@
     "notInitialized": "未初始化",
     "percentageSum": "百分比总和不是 100",
     "scalingFactorTooLow": "比例因子太低",
-    "zeroAmount": "数量为零"
+    "zeroAmount": "数量为零",
+    "fallbackText1": "发生错误",
+    "fallbackText2": "请提交一个",
+    "fallbackBugReport": "错误报告",
+    "fallbackText3": "或得到",
+    "fallbackSupport": "支持"
   },
   "keplr": {
     "extension": "Keplr 浏览器扩展",
@@ -393,6 +398,26 @@
     },
     "title": "兑换"
   },
+  "walletSelect": {
+    "somethingWentWrong": "出了点问题",
+    "changeWallet": "更换钱包",
+    "isNotInstalled": "{walletName} 未安装",
+    "maybeInstalled": "如果您的设备已安装 {walletName}，请刷新此页面或按照浏览器说明操作。",
+    "downloadLinkNotProvided": "未提供下载链接。请尝试搜索或咨询开发团队。",
+    "installWallet": "安装 {walletName}",
+    "requestRejected": "请求被拒绝",
+    "connectionDenied": "连接权限被拒绝。",
+    "reconnect": "重新连接",
+    "connectingWallet": "连接钱包中",
+    "approveWalletConnect": "在您的移动设备上批准 {walletName} 连接请求。",
+    "openExtension": "打开 {walletName} 浏览器扩展程序以连接您的钱包。",
+    "initializingWallet": "初始化钱包客户端",
+    "clickToRefresh": "点击刷新。",
+    "qrCodeExpired": "QR 码已过期",
+    "qrCodeError": "QR 码错误",
+    "openAppToScan": "打开 {walletName} 应用程序进行扫描",
+    "refresh": "刷新"
+  },
   "swapFailed": "交易失败，流动性不足，尝试调整允许的滑点.",
   "transactionBroadcasting": "广播交易中",
   "transactionFailed": "交易失败",
@@ -401,8 +426,23 @@
   "viewExplorer": "浏览器查看",
   "waitingForTransaction": "等待交易打包进区块",
   "highPoolInflationWarning": "高APR可能源自通胀性奖励。请谨慎操作。",
-  "ibcx": {
-    "description": "认识来自ION DAO的首个 Cosmos 生态系统指数。主网上线: ",
-    "link": "index.ion.wtf"
-  }
+  "seo.404.title": "404页面不存在",
+  "seo.404.description": "您要查找的页面不存在。",
+  "seo.500.title": "500内部服务器错误",
+  "seo.500.description": "发生内部服务器错误。",
+  "seo.default.title": "渗透区贸易",
+  "seo.default.titleFrontier": "渗透前沿",
+  "seo.default.description": "在领先的去中心化 Cosmos 交易所 - 最大的链间 DEX 上交换、赚取和构建",
+  "seo.apps.title": "渗透应用商店",
+  "seo.apps.description": "交易只是第一步。利用杠杆、金库等，让您的资产发挥作用并取得更多成就",
+  "seo.assets.title": "渗透资产",
+  "seo.assets.description": "浏览 Osmosis 上的所有可用资产——领先的去中心化 Cosmos 交易所",
+  "seo.bootstrap.title": "渗透自举",
+  "seo.bootstrap.description": "Osmosis 上的流动性引导池，领先的去中心化 Cosmos 交易所",
+  "seo.disclaimer.title": "渗透免责声明",
+  "seo.disclaimer.description": "阅读 Osmosis 的免责声明和隐私政策 - 领先的去中心化 Cosmos 交易所",
+  "seo.pool.title": "水池 ＃",
+  "seo.pool.description": "将您的资产添加到此池中以解锁 APR。您的解绑期越长，您在 Osmosis（领先的去中心化 Cosmos 交易所）上赚的钱就越多",
+  "seo.pools.title": "渗透池",
+  "seo.pools.description": "在 Osmosis 上发现流动性池——领先的去中心化 Cosmos 交易所"
 }

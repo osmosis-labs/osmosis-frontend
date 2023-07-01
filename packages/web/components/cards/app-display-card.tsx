@@ -26,33 +26,44 @@ export const AppDisplayCard: FunctionComponent<{
   index,
 }) => {
   const { logEvent } = useAmplitudeAnalytics();
+
+  const utmParams = new URLSearchParams({
+    utm_source: "OsmosisAppStore",
+    utm_medium: "AppCard",
+    utm_campaign: title || "UntitledApp",
+  }).toString();
+
+  const externalUrlWithUTM = externalUrl + `?${utmParams}`;
+
   const handleAppClicked = () => {
     logEvent([
       EventName.AppStore.appClicked,
       { appName: title, isFeatured: false, isBanner: false, position: index },
     ]);
-    window.open(externalUrl, "_blank", "noopener noreferrer");
+    window.open(externalUrlWithUTM, "_blank", "noopener noreferrer");
   };
+
   return (
     <>
       <style jsx>{`
         .app-display-card:hover .card-image {
           transform: scale(1.15);
+          transition: transform 0.3s ease-in-out;
         }
         .card-image {
           background-image: url(${imageUrl});
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          transition: transform 0.3s ease-in-out;
         }
       `}</style>
       <div className="cursor-pointer" onClick={handleAppClicked}>
-        <div className="app-display-card bg-white h-[280px] overflow-hidden rounded-2xl bg-osmoverse-800 shadow-md lg:h-[300px]">
-          <div className="overflow-hidden">
-            <img
-              className="card-image inset-0 h-40 w-full overflow-hidden rounded-2xl bg-cover bg-center transition-transform duration-300 ease-in"
-              src={imageUrl}
-              alt="card image"
-            />
+        <div className="app-display-card bg-white h-[320px] overflow-hidden rounded-2xl bg-osmoverse-800 shadow-md xl:h-[330px] lg:h-[360px] md:h-[360px] sm:h-[320px] xs:h-[330px]">
+          <div className="overflow-hidden rounded-2xl">
+            <div className="card-image  min-h-[190px] xl:min-h-[180px] lg:min-h-[140px] md:min-h-[210px]  sm:min-h-[160px]  xs:min-h-[210px]"></div>
           </div>
-          <div className="flex min-h-[120px] flex-col px-6 pt-4 pb-8">
+          <div className="flex h-[120px] flex-col px-6 pt-4 pb-8 xl:h-[160px] lg:h-[150px] md:h-[140px] sm:h-[120px]">
             <div className="flex items-center space-x-3">
               <h6 className="font-semibold">{title}</h6>
               {!!twitterUrl && (

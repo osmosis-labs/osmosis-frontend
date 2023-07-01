@@ -205,7 +205,12 @@
     "notInitialized": "Başlatılmadı",
     "percentageSum": "Yüzdeler toplamı 100'e eşit değil",
     "scalingFactorTooLow": "Ölçeklendirme faktörü çok düşük",
-    "zeroAmount": "Miktar sıfır"
+    "zeroAmount": "Miktar sıfır",
+    "fallbackText1": "Bir hata oluştu",
+    "fallbackText2": "Lütfen bir gönderin",
+    "fallbackBugReport": "hata raporu",
+    "fallbackText3": "ya da al",
+    "fallbackSupport": "Destek"
   },
   "keplr": {
     "extension": "Keplr Tarayıcı Uzantısı",
@@ -393,6 +398,26 @@
     },
     "title": "Takas"
   },
+  "walletSelect": {
+    "somethingWentWrong": "Bir şeyler yanlış gitti",
+    "changeWallet": "Cüzdanı Değiştir",
+    "isNotInstalled": "{walletName} yüklü değil",
+    "maybeInstalled": "{walletName} cihazınızda yüklü ise, lütfen bu sayfayı yenileyin veya tarayıcı talimatlarını izleyin.",
+    "downloadLinkNotProvided": "İndirme bağlantısı sağlanmadı. Arama yapmayı veya geliştirici ekibiyle danışmayı deneyin.",
+    "installWallet": "{walletName} Yükle",
+    "requestRejected": "İstek Reddedildi",
+    "connectionDenied": "Bağlantı izni reddedildi.",
+    "reconnect": "Tekrar Bağlan",
+    "connectingWallet": "Cüzdan Bağlanıyor",
+    "approveWalletConnect": "Mobil cihazınızda {walletName} bağlantı isteğini onaylayın.",
+    "openExtension": "{walletName} tarayıcı eklentisini açarak cüzdanınızı bağlayın.",
+    "initializingWallet": "Cüzdan İstemcisi Başlatılıyor",
+    "clickToRefresh": "Yenilemek için tıklayın.",
+    "qrCodeExpired": "QR Kodu Süresi Doldu",
+    "qrCodeError": "QR Kodu Hatası",
+    "openAppToScan": "{walletName} uygulamasını açarak tarama yapın",
+    "refresh": "Yenile"
+  },
   "swapFailed": "Takas başarısız. Likidite yetersiz olabilir. Slipaj oranında değişiklik yapmayı deneyin.",
   "transactionBroadcasting": "İşlem Gerçekleştiriliyor",
   "transactionFailed": "İşlem Başarısız",
@@ -401,8 +426,23 @@
   "viewExplorer": "gezginde görüntüle",
   "waitingForTransaction": "İşlemin bloğa eklenmesi bekleniyor",
   "highPoolInflationWarning": "Yüksek APR'ler enflasyonist ödüllerden kaynaklanabilir. Dikkatli ilerleyin.",
-  "ibcx": {
-    "description": "ION DAO'dan gelen ilk Cosmos Ekosistem Endeksine tanışın. Ana ağda canlı: ",
-    "link": "index.ion.wtf"
-  }
+  "seo.404.title": "404 Sayfa Bulunamadı",
+  "seo.404.description": "Aradığınız sayfa mevcut değil.",
+  "seo.500.title": "500 - Dahili sunucu hatası",
+  "seo.500.description": "Dahili bir sunucu hatası oluştu.",
+  "seo.default.title": "Ozmoz Bölgesinde Ticaret",
+  "seo.default.titleFrontier": "Ozmoz Sınırı",
+  "seo.default.description": "Önde gelen merkezi olmayan Cosmos borsasında değiş tokuş yapın, kazanın ve geliştirin - En büyük zincirler arası DEX",
+  "seo.apps.title": "Ozmoz Uygulama Mağazası",
+  "seo.apps.description": "Ticaret sadece ilk adımdır. Varlıklarınızı çalıştırın ve kaldıraç, kasalar ve daha fazlasıyla çok daha fazlasını başarın",
+  "seo.assets.title": "Osmoz Varlıkları",
+  "seo.assets.description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis'te bulunan tüm varlıklara göz atın",
+  "seo.bootstrap.title": "Ozmoz Önyükleme",
+  "seo.bootstrap.description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis'te Likidite Önyükleme Havuzları",
+  "seo.disclaimer.title": "Ozmoz Sorumluluk Reddi",
+  "seo.disclaimer.description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis için sorumluluk reddi beyanını ve gizlilik politikasını okuyun",
+  "seo.pool.title": "Havuz #",
+  "seo.pool.description": "APR'lerin kilidini açmak için varlıklarınızı bu havuza ekleyin. Ayrılma süreniz ne kadar uzun olursa, önde gelen merkezi olmayan Cosmos borsası Osmosis'te o kadar çok kazanırsınız",
+  "seo.pools.title": "Osmoz Havuzları",
+  "seo.pools.description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis'teki likidite havuzlarını keşfedin"
 }

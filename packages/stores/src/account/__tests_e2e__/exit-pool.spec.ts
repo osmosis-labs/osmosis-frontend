@@ -12,12 +12,11 @@ describe("Exit Pool Tx", () => {
   let queryPool: ObservableQueryPool | undefined; // relies on `jest --runInBand` to work properly
 
   beforeEach(async () => {
-    const account = accountStore.getAccount(chainId);
-    account.cosmos.broadcastMode = "sync";
+    const account = accountStore.getWallet(chainId);
     await waitAccountLoaded(account);
 
     // And prepare the pool
-    await account.osmosis.sendCreateBalancerPoolMsg(
+    await account?.osmosis.sendCreateBalancerPoolMsg(
       "0",
       [
         {
@@ -51,19 +50,19 @@ describe("Exit Pool Tx", () => {
   });
 
   test("should fail with 0 share in amount", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
 
     await expect(
-      account.osmosis.sendExitPoolMsg(queryPool!.id, "0")
+      account?.osmosis.sendExitPoolMsg(queryPool!.id, "0")
     ).rejects.not.toBeNull();
   });
 
   test("succeed with 50 share in amount without slippage", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
 
     await expect(
       new Promise<any>((resolve, rejects) => {
-        account.osmosis
+        account?.osmosis
           .sendExitPoolMsg(queryPool!.id, "50", "0", "", (tx) => {
             if (tx.code) rejects(tx);
             else resolve(tx);
@@ -74,11 +73,11 @@ describe("Exit Pool Tx", () => {
   });
 
   test("succeed with 50 share in amount with slippage", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
 
     await expect(
       new Promise<any>((resolve, rejects) => {
-        account.osmosis
+        account?.osmosis
           .sendExitPoolMsg(queryPool!.id, "50", "1", "", (tx) => {
             if (tx.code) rejects(tx);
             else resolve(tx);
@@ -89,11 +88,11 @@ describe("Exit Pool Tx", () => {
   });
 
   test("should fail with more max share in amount than in account", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
 
     await expect(
       new Promise<any>((resolve, rejects) => {
-        account.osmosis
+        account?.osmosis
           .sendExitPoolMsg(queryPool!.id, "100.1", "", "", (tx) => {
             if (tx.code) rejects(tx);
             else resolve(tx);

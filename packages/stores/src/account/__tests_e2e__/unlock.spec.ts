@@ -8,6 +8,7 @@ import {
 } from "../../__tests_e2e__/test-env";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
+import { DeliverTxResponse } from "../types";
 dayjs.extend(duration);
 
 describe("Unbond Token Tx", () => {
@@ -15,8 +16,7 @@ describe("Unbond Token Tx", () => {
     // fresh account
     "index light average senior silent limit usual local involve delay update rack cause inmate wall render magnet common feature laundry exact casual resource hundred"
   );
-  const account = accountStore.getAccount(chainId);
-  account.cosmos.broadcastMode = "sync";
+  const account = accountStore.getWallet(chainId);
 
   let userLockIds: string[] | undefined;
 
@@ -25,7 +25,7 @@ describe("Unbond Token Tx", () => {
     // LocalOsmosis has no configured durations
     const queriesOsmosis = queriesStore.get(chainId).osmosis!;
     const queriesAccountLocked = queriesOsmosis.queryAccountLocked.get(
-      account.bech32Address
+      account?.address ?? ""
     );
 
     const durationSeconds = 1;
@@ -38,8 +38,8 @@ describe("Unbond Token Tx", () => {
       amount: "1",
     };
 
-    await new Promise<any>(async (resolve, reject) => {
-      await account.osmosis
+    await new Promise<DeliverTxResponse>(async (resolve, reject) => {
+      await account?.osmosis
         .sendLockTokensMsg(durationSeconds, [coin], undefined, (tx) => {
           resolve(tx);
         })
@@ -55,8 +55,8 @@ describe("Unbond Token Tx", () => {
   });
 
   it("unlocks tokens", async () => {
-    const tx = await new Promise<any>(async (resolve, reject) => {
-      await account.osmosis
+    const tx = await new Promise<DeliverTxResponse>(async (resolve, reject) => {
+      await account?.osmosis
         .sendBeginUnlockingMsg(userLockIds!, undefined, (tx) => {
           resolve(tx);
         })

@@ -1,21 +1,14 @@
 import React, { FunctionComponent, useState } from "react";
 
-import { useKeplr } from "../hooks";
-import { AccountInitManagement } from "./account-init-management";
 import { RootStore } from "./root";
 
 const storeContext = React.createContext<RootStore | null>(null);
 
 export const StoreProvider: FunctionComponent = ({ children }) => {
-  const keplr = useKeplr();
-
-  const [rootStore] = useState(() => new RootStore(keplr.getKeplr));
+  const [rootStore] = useState(() => new RootStore());
 
   return (
-    <storeContext.Provider value={rootStore}>
-      <AccountInitManagement />
-      {children}
-    </storeContext.Provider>
+    <storeContext.Provider value={rootStore}>{children}</storeContext.Provider>
   );
 };
 

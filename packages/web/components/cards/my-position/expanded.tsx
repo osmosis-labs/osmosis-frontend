@@ -51,7 +51,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     derivedDataStore,
   } = useStore();
 
-  const account = accountStore.getAccount(chainId);
+  const account = accountStore.getWallet(chainId);
   const osmosisQueries = queriesStore.get(chainId).osmosis!;
   const queryPool = osmosisQueries.queryPools.getPool(poolId);
   const derivedPoolData = derivedDataStore.getForPool(poolId);
@@ -234,7 +234,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             <PositionButton
               className="text-superfluid-gradient"
               onClick={() => {
-                account.osmosis
+                account?.osmosis
                   .sendCollectAllPositionsRewardsMsgs([positionConfig.id])
                   .catch(console.error);
               }}
@@ -249,10 +249,10 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
         <PositionButton
           disabled={
             !positionConfig.hasRewardsAvailable ||
-            Boolean(account.txTypeInProgress)
+            Boolean(account?.txTypeInProgress)
           }
           onClick={() => {
-            account.osmosis
+            account?.osmosis
               .sendCollectAllPositionsRewardsMsgs([positionConfig.id])
               .catch(console.error);
           }}
@@ -261,11 +261,12 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
         </PositionButton>
         <PositionButton
           disabled={
-            Boolean(account.txTypeInProgress) || Boolean(superfluidUndelegation)
+            Boolean(account?.txTypeInProgress) ||
+            Boolean(superfluidUndelegation)
           }
           onClick={() => {
             if (superfluidDelegation) {
-              account.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
+              account?.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
                 [
                   {
                     lockId: superfluidDelegation.lockId,
@@ -281,7 +282,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             : t("clPositions.removeLiquidity")}
         </PositionButton>
         <PositionButton
-          disabled={Boolean(account.txTypeInProgress) || isCurrentlyStaked}
+          disabled={Boolean(account?.txTypeInProgress) || isCurrentlyStaked}
           onClick={() => setActiveModal("increase")}
         >
           {t("clPositions.increaseLiquidity")}
@@ -460,12 +461,12 @@ const Chart: FunctionComponent<{
 type DelegationOrUndelegationInfo =
   | NonNullable<
       ReturnType<
-        typeof ObservableSuperfluidPoolDetail["prototype"]["getDelegatedPositionInfo"]
+        (typeof ObservableSuperfluidPoolDetail)["prototype"]["getDelegatedPositionInfo"]
       >
     >
   | NonNullable<
       ReturnType<
-        typeof ObservableSuperfluidPoolDetail["prototype"]["getUndelegatingPositionInfo"]
+        (typeof ObservableSuperfluidPoolDetail)["prototype"]["getUndelegatingPositionInfo"]
       >
     >;
 

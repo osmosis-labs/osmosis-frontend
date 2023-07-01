@@ -32,6 +32,7 @@ import {
 import { ObservableQueryDistrInfo } from "./pool-incentives/distr-info";
 import { ObservableQueryGammPoolShare } from "./pool-share";
 import {
+  ObservableQueryCfmmToConcentratedLiquidityPoolLinks,
   ObservableQueryNumPools,
   ObservableQueryPoolGetter,
   ObservableQueryPools,
@@ -46,6 +47,7 @@ import {
   ObservableQuerySuperfluidPools,
   ObservableQuerySuperfluidUndelegations,
 } from "./superfluid-pools";
+import { ObservableQueryNodeInfo } from "./tendermint/node-info";
 
 export interface OsmosisQueries {
   osmosis?: OsmosisQueriesImpl;
@@ -93,6 +95,7 @@ export class OsmosisQueriesImpl {
 
   protected _queryPools: DeepReadonly<ObservableQueryPoolGetter>;
   public readonly queryGammNumPools: DeepReadonly<ObservableQueryNumPools>;
+  public readonly queryCfmmToConcentratedLiquidityPoolLinks: DeepReadonly<ObservableQueryCfmmToConcentratedLiquidityPoolLinks>;
   public readonly queryGammPoolShare: DeepReadonly<ObservableQueryGammPoolShare>;
 
   public readonly queryLockedCoins: DeepReadonly<ObservableQueryAccountLockedCoins>;
@@ -122,6 +125,8 @@ export class OsmosisQueriesImpl {
   public readonly queryAccountsSuperfluidDelegatedPositions: DeepReadonly<ObservableQueryAccountsSuperfluidDelegatedClPositions>;
   public readonly queryAccountsSuperfluidUndelegatingPositions: DeepReadonly<ObservableQueryAccountsSuperfluidUndelegatingClPositions>;
 
+  public readonly queryNodeInfo: DeepReadonly<ObservableQueryNodeInfo>;
+
   get queryPools(): ObservableQueryPoolGetter {
     return this._queryPools;
   }
@@ -133,6 +138,12 @@ export class OsmosisQueriesImpl {
     chainGetter: ChainGetter,
     isTestnet = false
   ) {
+    this.queryNodeInfo = new ObservableQueryNodeInfo(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+
     this.queryLockedCoins = new ObservableQueryAccountLockedCoins(
       kvStore,
       chainId,
@@ -189,7 +200,9 @@ export class OsmosisQueriesImpl {
               chainId,
               chainGetter,
               this.queryLiquiditiesInNetDirection,
-              queries.queryBalances
+              queries.queryBalances,
+              this.queryNodeInfo,
+              this.queryGammNumPools
             ),
           ]
         : [
@@ -206,7 +219,9 @@ export class OsmosisQueriesImpl {
               chainId,
               chainGetter,
               this.queryLiquiditiesInNetDirection,
-              queries.queryBalances
+              queries.queryBalances,
+              this.queryNodeInfo,
+              this.queryGammNumPools
             ),
           ]
     );
@@ -215,6 +230,13 @@ export class OsmosisQueriesImpl {
     autorun(() => {
       this._queryPools = poolsQueryFallbacks.responsiveStore;
     });
+
+    this.queryCfmmToConcentratedLiquidityPoolLinks =
+      new ObservableQueryCfmmToConcentratedLiquidityPoolLinks(
+        kvStore,
+        chainId,
+        chainGetter
+      );
 
     this.queryGammPoolShare = new ObservableQueryGammPoolShare(
       this._queryPools,

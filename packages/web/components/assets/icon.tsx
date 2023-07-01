@@ -18,6 +18,7 @@ export type SpriteIconId =
   | "dust-broom"
   | "arrow-right"
   | "close-small"
+  | "walletconnect"
   | "tune"
   | "help-circle"
   | "kado-logo"
@@ -30,10 +31,14 @@ export type SpriteIconId =
   | "github"
   | "twitter"
   | "medium"
+  | "sandbox"
   | "alert-triangle"
   | "lightning"
   | "lightning-small"
-  | "left-right-arrow";
+  | "left-right-arrow"
+  | "wallet"
+  | "left-right"
+  | "arrow-right";
 
 /**
  * It takes an icon id and returns an svg element with the corresponding icon defined in /public/icons/sprite.svg.

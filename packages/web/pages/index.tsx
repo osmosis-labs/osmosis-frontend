@@ -1,16 +1,28 @@
 import { Dec } from "@keplr-wallet/unit";
 import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
-import type { NextPage } from "next";
+import type { GetStaticProps, InferGetServerSidePropsType } from "next";
 import { useEffect, useMemo, useRef } from "react";
 
+import { AdBanner } from "~/components/ad-banner/ad-banner";
+import adCMS from "~/components/ad-banner/ad-banner-cms.json";
+import { Ad } from "~/components/ad-banner/ad-banner-types";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { SwapTool } from "~/components/swap-tool";
 import { EventName, IS_FRONTIER, IS_TESTNET } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useStore } from "~/stores";
 
-const Home: NextPage = observer(function () {
+interface HomeProps {
+  ads: Ad[];
+}
+
+export const getStaticProps: GetStaticProps<HomeProps> = async () => {
+  const ads = adCMS.banners.filter(({ featured }) => featured);
+  return { props: { ads } };
+};
+
+const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
   const featureFlags = useFlags();
 
   const { chainStore, queriesStore, priceStore } = useStore();
@@ -95,13 +107,13 @@ const Home: NextPage = observer(function () {
         </svg>
       </div>
       <div className="flex h-full w-full items-center overflow-y-auto overflow-x-hidden">
-        <SwapTool
-          containerClassName="w-[27rem] md:mt-mobile-header ml-auto mr-[15%] lg:mx-auto"
-          pools={pools}
-        />
+        <div className="ml-auto mr-[15%] flex w-[27rem] flex-col gap-4 lg:mx-auto md:mt-mobile-header">
+          {featureFlags.swapsAdBanner && <AdBanner ads={ads} />}
+          <SwapTool containerClassName="w-full" pools={pools} />
+        </div>
       </div>
     </main>
   );
-});
+};
 
-export default Home;
+export default observer(Home);
