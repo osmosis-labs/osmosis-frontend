@@ -38,6 +38,7 @@ import {
 } from "./pools";
 import {
   ObservableQueryAccountsSuperfluidDelegatedClPositions,
+  ObservableQueryAccountsSuperfluidUndelegatingClPositions,
   ObservableQuerySuperfluidAssetMultiplier,
   ObservableQuerySuperfluidDelegations,
   ObservableQuerySuperfluidOsmoEquivalent,
@@ -118,7 +119,8 @@ export class OsmosisQueriesImpl {
   public readonly querySuperfluidParams: DeepReadonly<ObservableQuerySuperfluidParams>;
   public readonly querySuperfluidAssetMultiplier: DeepReadonly<ObservableQuerySuperfluidAssetMultiplier>;
   public readonly querySuperfluidOsmoEquivalent: DeepReadonly<ObservableQuerySuperfluidOsmoEquivalent>;
-  public readonly queryAccountsSuperfluidPositions: DeepReadonly<ObservableQueryAccountsSuperfluidDelegatedClPositions>;
+  public readonly queryAccountsSuperfluidDelegatedPositions: DeepReadonly<ObservableQueryAccountsSuperfluidDelegatedClPositions>;
+  public readonly queryAccountsSuperfluidUndelegatingPositions: DeepReadonly<ObservableQueryAccountsSuperfluidUndelegatingClPositions>;
 
   get queryPools(): ObservableQueryPoolGetter {
     return this._queryPools;
@@ -303,8 +305,14 @@ export class OsmosisQueriesImpl {
         this._queryPools
       );
 
-    this.queryAccountsSuperfluidPositions =
+    this.queryAccountsSuperfluidDelegatedPositions =
       new ObservableQueryAccountsSuperfluidDelegatedClPositions(
+        kvStore,
+        chainId,
+        chainGetter
+      );
+    this.queryAccountsSuperfluidUndelegatingPositions =
+      new ObservableQueryAccountsSuperfluidUndelegatingClPositions(
         kvStore,
         chainId,
         chainGetter

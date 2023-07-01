@@ -10,13 +10,13 @@ import { computedFn } from "mobx-utils";
 
 import { AccountDelegatedClPositionsResponse } from "./types";
 
-export type StakedPositionInfo = {
+export type DelegatedPositionInfo = {
   validatorAddress: string;
   lockId: string;
   equivalentStakedAmount: CoinPretty;
 };
 
-/** Superfluid staked positions per account. */
+/** Superfluid delegated positions per account. */
 export class ObservableQueryAccountSuperfluidDelegatedClPositions extends ObservableChainQuery<AccountDelegatedClPositionsResponse> {
   constructor(
     kvStore: KVStore,
@@ -39,7 +39,7 @@ export class ObservableQueryAccountSuperfluidDelegatedClPositions extends Observ
   }
 
   @computed
-  get stakedPositionIds(): string[] {
+  get delegatedPositionIds(): string[] {
     return (
       this.response?.data.cl_pool_user_position_records.map(
         ({ position_id }) => position_id
@@ -48,7 +48,7 @@ export class ObservableQueryAccountSuperfluidDelegatedClPositions extends Observ
   }
 
   @computed
-  get stakedPositions(): (StakedPositionInfo & {
+  get delegatedPositions(): (DelegatedPositionInfo & {
     positionId: string;
   })[] {
     const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
@@ -67,10 +67,10 @@ export class ObservableQueryAccountSuperfluidDelegatedClPositions extends Observ
   }
 
   /** Gets info about a staked position given position ID. */
-  readonly getStakedPositionInfo = computedFn(
+  readonly getDelegatedPositionInfo = computedFn(
     (
       params: { positionId: string } | { lockId: string }
-    ): StakedPositionInfo | undefined => {
+    ): DelegatedPositionInfo | undefined => {
       const rawRecord = this.response?.data.cl_pool_user_position_records.find(
         ({ position_id }) =>
           ("positionId" in params && position_id === params.positionId) ||

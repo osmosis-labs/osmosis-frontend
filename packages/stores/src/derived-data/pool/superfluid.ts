@@ -74,9 +74,9 @@ export class ObservableSuperfluidPoolDetail {
   /** Superfluid staked positions, with API and relevant validator info. */
   @computed
   get superfluidStakedPositionInfos() {
-    return this.osmosisQueries.queryAccountsSuperfluidPositions
+    return this.osmosisQueries.queryAccountsSuperfluidDelegatedPositions
       .get(this.bech32Address)
-      .stakedPositions.map((stakedPositionInfo) => {
+      .delegatedPositions.map((stakedPositionInfo) => {
         const superfluidApr = new RatePretty(
           this.cosmosQueries.queryInflation.inflation
             .mul(
