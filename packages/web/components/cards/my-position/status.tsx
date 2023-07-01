@@ -19,7 +19,7 @@ export const MyPositionStatus: FunctionComponent<
     upperPrice: Dec;
     negative?: boolean;
     fullRange?: boolean;
-    superfluidStaked?: boolean;
+    isSuperfluid?: boolean;
   } & CustomClasses
 > = ({
   className,
@@ -28,7 +28,7 @@ export const MyPositionStatus: FunctionComponent<
   upperPrice,
   negative,
   fullRange,
-  superfluidStaked,
+  isSuperfluid: superfluidStaked,
 }) => {
   const t = useTranslation();
 

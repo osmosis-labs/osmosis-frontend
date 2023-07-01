@@ -57,8 +57,8 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
 
   const currentPrice = queryPool?.concentratedLiquidityPoolInfo?.currentPrice;
 
-  const superfluidStaked =
-    derivedPoolData?.superfluidPoolDetail.getSuperfluidStakedPositionInfo(
+  const superfluidDelegation =
+    derivedPoolData?.superfluidPoolDetail.getDelegatedPositionInfo(
       positionConfig.id
     );
 
@@ -213,12 +213,13 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           />
         </div>
       </div>
-      {superfluidStaked && derivedPoolData.sharePoolDetail.longestDuration && (
-        <SuperfluidStakedPositionInfo
-          {...superfluidStaked}
-          stakeDuration={derivedPoolData.sharePoolDetail.longestDuration}
-        />
-      )}
+      {superfluidDelegation &&
+        derivedPoolData.sharePoolDetail.longestDuration && (
+          <SuperfluidStakedPositionInfo
+            {...superfluidDelegation}
+            stakeDuration={derivedPoolData.sharePoolDetail.longestDuration}
+          />
+        )}
       <div className="mt-4 flex flex-row justify-end gap-5 sm:flex-wrap sm:justify-start">
         <PositionButton
           disabled={
@@ -236,11 +237,11 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
         <PositionButton
           disabled={Boolean(account.txTypeInProgress)}
           onClick={() => {
-            if (superfluidStaked) {
+            if (superfluidDelegation) {
               account.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
                 [
                   {
-                    lockId: superfluidStaked.lockId,
+                    lockId: superfluidDelegation.lockId,
                     isSyntheticLock: true,
                   },
                 ]
@@ -248,12 +249,14 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             } else setActiveModal("remove");
           }}
         >
-          {Boolean(superfluidStaked)
+          {Boolean(superfluidDelegation)
             ? t("clPositions.unstake")
             : t("clPositions.removeLiquidity")}
         </PositionButton>
         <PositionButton
-          disabled={Boolean(account.txTypeInProgress)}
+          disabled={
+            Boolean(account.txTypeInProgress) || Boolean(superfluidDelegation)
+          }
           onClick={() => setActiveModal("increase")}
         >
           {t("clPositions.increaseLiquidity")}
@@ -431,7 +434,7 @@ const Chart: FunctionComponent<{
 
 const SuperfluidStakedPositionInfo: FunctionComponent<
   ReturnType<
-    typeof ObservableSuperfluidPoolDetail["prototype"]["getSuperfluidStakedPositionInfo"]
+    typeof ObservableSuperfluidPoolDetail["prototype"]["getDelegatedPositionInfo"]
   > & { stakeDuration: Duration }
 > = ({
   validatorName,

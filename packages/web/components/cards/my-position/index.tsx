@@ -66,8 +66,11 @@ export const MyPositionCard: FunctionComponent<{
     fiatCurrency &&
     new PricePretty(fiatCurrency, baseAssetValue.add(quoteAssetValue));
 
-  const superfluidStaked =
-    derivedPoolData?.superfluidPoolDetail.getSuperfluidStakedPositionInfo(
+  const superfluidDelegation =
+    derivedPoolData?.superfluidPoolDetail.getDelegatedPositionInfo(positionId);
+
+  const superfluidUndelegation =
+    derivedPoolData?.superfluidPoolDetail.getUndelegatingPositionInfo(
       positionId
     );
 
@@ -79,7 +82,7 @@ export const MyPositionCard: FunctionComponent<{
             Number(lowerTick.toString()),
             Number(upperTick.toString())
           )
-          ?.apr?.add(superfluidStaked?.superfluidApr ?? new Dec(0))
+          ?.apr?.add(superfluidDelegation?.superfluidApr ?? new Dec(0))
       : undefined;
 
   return (
@@ -119,7 +122,7 @@ export const MyPositionCard: FunctionComponent<{
                   lowerPrice={lowerPrices.price}
                   upperPrice={upperPrices.price}
                   fullRange={isFullRange}
-                  superfluidStaked={Boolean(superfluidStaked)}
+                  isSuperfluid={Boolean(superfluidDelegation)}
                 />
               )}
           </div>
@@ -145,7 +148,7 @@ export const MyPositionCard: FunctionComponent<{
             <PositionDataGroup
               label={t("clPositions.incentives")}
               value={`${formatPretty(incentivesApr.maxDecimals(0))} APR`}
-              isSuperfluid={Boolean(superfluidStaked)}
+              isSuperfluid={Boolean(superfluidDelegation)}
             />
           )}
         </div>

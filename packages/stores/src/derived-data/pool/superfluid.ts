@@ -73,7 +73,7 @@ export class ObservableSuperfluidPoolDetail {
 
   /** Superfluid staked positions, with API and relevant validator info. */
   @computed
-  get superfluidStakedPositionInfos() {
+  get delegatedPositionInfos() {
     return this.osmosisQueries.queryAccountsSuperfluidDelegatedPositions
       .get(this.bech32Address)
       .delegatedPositions.map((stakedPositionInfo) => {
@@ -95,9 +95,39 @@ export class ObservableSuperfluidPoolDetail {
       });
   }
 
+  @computed
+  get undelegatingPositionInfos() {
+    return this.osmosisQueries.queryAccountsSuperfluidUndelegatingPositions
+      .get(this.bech32Address)
+      .undelegatingPositions.map((stakedPositionInfo) => {
+        const superfluidApr = new RatePretty(
+          this.cosmosQueries.queryInflation.inflation
+            .mul(
+              this.osmosisQueries.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
+                this.poolId
+              )
+            )
+            .moveDecimalPointLeft(2)
+        );
+
+        return {
+          ...stakedPositionInfo,
+          superfluidApr,
+          ...this.getValidatorInfo(stakedPositionInfo.validatorAddress),
+        };
+      });
+  }
+
+  /** Superfluid delegated position by ID, with API and relevant validator info. */
+  readonly getDelegatedPositionInfo = computedFn((positionId) => {
+    return this.delegatedPositionInfos.find(
+      (info) => info.positionId === positionId
+    );
+  });
+
   /** Superfluid staked position by ID, with API and relevant validator info. */
-  readonly getSuperfluidStakedPositionInfo = computedFn((positionId) => {
-    return this.superfluidStakedPositionInfos.find(
+  readonly getUndelegatingPositionInfo = computedFn((positionId) => {
+    return this.undelegatingPositionInfos.find(
       (info) => info.positionId === positionId
     );
   });
