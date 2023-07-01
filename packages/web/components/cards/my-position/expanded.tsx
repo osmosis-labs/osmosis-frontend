@@ -68,6 +68,9 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
       positionConfig.id
     );
 
+  const isCurrentlyStaked =
+    Boolean(superfluidDelegation) || Boolean(superfluidUndelegation);
+
   const {
     xRange,
     yRange,
@@ -241,7 +244,9 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           {t("clPositions.collectRewards")}
         </PositionButton>
         <PositionButton
-          disabled={Boolean(account.txTypeInProgress)}
+          disabled={
+            Boolean(account.txTypeInProgress) || Boolean(superfluidUndelegation)
+          }
           onClick={() => {
             if (superfluidDelegation) {
               account.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
@@ -260,9 +265,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             : t("clPositions.removeLiquidity")}
         </PositionButton>
         <PositionButton
-          disabled={
-            Boolean(account.txTypeInProgress) || Boolean(superfluidDelegation)
-          }
+          disabled={Boolean(account.txTypeInProgress) || isCurrentlyStaked}
           onClick={() => setActiveModal("increase")}
         >
           {t("clPositions.increaseLiquidity")}
