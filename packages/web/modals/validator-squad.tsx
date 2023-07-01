@@ -45,24 +45,17 @@ interface ValidatorSquadContentProps {
 
 const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
   observer(({ onRequestClose, isOpen }) => {
+    // chain
     const { chainStore, queriesStore, accountStore } = useStore();
-    const t = useTranslation();
-    const [sorting, setSorting] = useState<SortingState>([
-      { id: "myStake", desc: true },
-    ]);
-
     const { chainId } = chainStore.osmosis;
     const queries = queriesStore.get(chainId);
     const account = accountStore.getWallet(chainId);
 
-    const columnHelper = createColumnHelper<Validator>();
+    const totalStakePool = queries.cosmos.queryPool.bondedTokens;
 
     const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
       Staking.BondStatus.Bonded
     );
-
-    const totalStakePool = queries.cosmos.queryPool.bondedTokens;
-
     const activeValidators = queryValidators.validators;
 
     const userValidatorDelegations =
@@ -79,6 +72,20 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
 
       return delegationsMap;
     }, [userValidatorDelegations]);
+
+    // table
+    const [sorting, setSorting] = useState<SortingState>([
+      { id: "myStake", desc: true },
+    ]);
+    const columnHelper = createColumnHelper<Validator>();
+
+    // search
+    const [searchTerm, setSearchTerm] = useState("");
+    const debouncedSearchTerm = useMemo(() => debounce(setSearchTerm, 200), []);
+    const handleSearchInput = (value: string) => debouncedSearchTerm(value);
+
+    // i18n
+    const t = useTranslation();
 
     const rawData: Validator[] = useMemo(
       () =>
@@ -123,16 +130,9 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
 
     const fuse = useMemo(() => {
       return new Fuse(rawData, {
-        keys: ["validatorName"], // Add here all the properties you want to include in the search
-        includeScore: true,
+        keys: ["validatorName"],
       });
     }, [rawData]);
-
-    const [searchTerm, setSearchTerm] = useState("");
-
-    const debouncedSearchTerm = useMemo(() => debounce(setSearchTerm, 200), []);
-
-    const handleSearchInput = (value: string) => debouncedSearchTerm(value);
 
     const searchData: Validator[] = useMemo(() => {
       if (searchTerm.trim() === "") return rawData;
