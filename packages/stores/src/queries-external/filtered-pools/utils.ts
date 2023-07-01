@@ -14,7 +14,7 @@ export function makePoolRawFromFilteredPool(
   if (filteredPool.type === "osmosis.concentratedliquidity.v1beta1.Pool") {
     return {
       "@type": `/${filteredPool.type}`,
-      address: "test",
+      address: filteredPool.address,
       id: filteredPool.pool_id.toString(),
       current_tick_liquidity: filteredPool.current_tick_liquidity,
       token0: filteredPool.token0,
