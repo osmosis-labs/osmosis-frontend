@@ -46,7 +46,7 @@ export class ObservableQueryPools
       if (isNaN(nodeVersion)) throw new Error("`nodeVersion` is NaN");
 
       this.setUrl(
-        nodeVersion < 16
+        nodeVersion < 16 && nodeVersion > 0
           ? `/osmosis/gamm/v1beta1/pools?pagination.limit=${limit}`
           : "/osmosis/poolmanager/v1beta1/all-pools"
       );
