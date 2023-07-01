@@ -55,18 +55,16 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
   const osmosisQueries = queriesStore.get(chainId).osmosis!;
   const queryPool = osmosisQueries.queryPools.getPool(poolId);
   const derivedPoolData = derivedDataStore.getForPool(poolId);
+  const superfluidPoolDetail = derivedPoolData?.superfluidPoolDetail;
 
   const currentPrice = queryPool?.concentratedLiquidityPoolInfo?.currentPrice;
 
-  const superfluidDelegation =
-    derivedPoolData?.superfluidPoolDetail.getDelegatedPositionInfo(
-      positionConfig.id
-    );
+  const superfluidDelegation = superfluidPoolDetail.getDelegatedPositionInfo(
+    positionConfig.id
+  );
 
   const superfluidUndelegation =
-    derivedPoolData?.superfluidPoolDetail.getUndelegatingPositionInfo(
-      positionConfig.id
-    );
+    superfluidPoolDetail.getUndelegatingPositionInfo(positionConfig.id);
 
   const isCurrentlyStaked =
     Boolean(superfluidDelegation) || Boolean(superfluidUndelegation);
@@ -230,6 +228,24 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           />
         )}
       <div className="mt-4 flex flex-row justify-end gap-5 sm:flex-wrap sm:justify-start">
+        {positionConfig.isFullRange &&
+          superfluidPoolDetail.isSuperfluid &&
+          !isCurrentlyStaked && (
+            <PositionButton
+              className="text-superfluid-gradient"
+              onClick={() => {
+                account.osmosis
+                  .sendCollectAllPositionsRewardsMsgs([positionConfig.id])
+                  .catch(console.error);
+              }}
+            >
+              {t("pool.superfluidEarnMore", {
+                rate: superfluidPoolDetail.superfluidApr
+                  .maxDecimals(1)
+                  .toString(),
+              })}
+            </PositionButton>
+          )}
         <PositionButton
           disabled={
             !positionConfig.hasRewardsAvailable ||
