@@ -8,16 +8,17 @@ import { CoinPretty } from "@keplr-wallet/unit";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
-import { AccountDelegatedClPositionsResponse } from "./types";
+import { AccountUndelegatingClPositionsResponse } from "./types";
 
 export type UndelegatingPositionInfo = {
   validatorAddress: string;
   lockId: string;
   equivalentStakedAmount: CoinPretty;
+  endTime: Date;
 };
 
 /** Superfluid undelegating positions per account. */
-export class ObservableQueryAccountSuperfluidUndelegatingClPositions extends ObservableChainQuery<AccountDelegatedClPositionsResponse> {
+export class ObservableQueryAccountSuperfluidUndelegatingClPositions extends ObservableChainQuery<AccountUndelegatingClPositionsResponse> {
   constructor(
     kvStore: KVStore,
     chainId: string,
@@ -62,6 +63,7 @@ export class ObservableQueryAccountSuperfluidUndelegatingClPositions extends Obs
           stakeCurrency,
           record.equivalent_staked_amount.amount
         ),
+        endTime: new Date(record.synthetic_lock.end_time),
       })) ?? []
     );
   }
@@ -89,13 +91,14 @@ export class ObservableQueryAccountSuperfluidUndelegatingClPositions extends Obs
           stakeCurrency,
           rawRecord.equivalent_staked_amount.amount
         ),
+        endTime: new Date(rawRecord.synthetic_lock.end_time),
       };
     }
   );
 }
 
 /** Get superfluid undelegating positions per account. */
-export class ObservableQueryAccountsSuperfluidUndelegatingClPositions extends ObservableChainQueryMap<AccountDelegatedClPositionsResponse> {
+export class ObservableQueryAccountsSuperfluidUndelegatingClPositions extends ObservableChainQueryMap<AccountUndelegatingClPositionsResponse> {
   constructor(
     protected readonly kvStore: KVStore,
     protected readonly chainId: string,
