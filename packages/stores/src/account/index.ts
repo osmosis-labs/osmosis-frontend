@@ -1985,11 +1985,7 @@ export class OsmosisAccountImpl {
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
-          // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.base.bech32Address)
-            .balances.forEach((balance) => balance.waitFreshResponse());
 
           // Refresh the locked coins
           queries.osmosis?.queryLockedCoins
@@ -2002,6 +1998,7 @@ export class OsmosisAccountImpl {
             .get(this.base.bech32Address)
             .waitFreshResponse();
 
+          // refresh superfluid pool share delegations
           queries.osmosis?.querySuperfluidDelegations
             .getQuerySuperfluidDelegations(this.base.bech32Address)
             .waitFreshResponse();
@@ -2009,10 +2006,12 @@ export class OsmosisAccountImpl {
             .getQuerySuperfluidDelegations(this.base.bech32Address)
             .waitFreshResponse();
 
+          // refresh user CL positions
           queries.osmosis?.queryAccountsPositions
             .get(this.base.bech32Address)
             .waitFreshResponse();
 
+          // refresh CL position delegations
           queries.osmosis?.queryAccountsSuperfluidDelegatedPositions
             .get(this.base.bech32Address)
             .waitFreshResponse();
