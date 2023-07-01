@@ -7,6 +7,7 @@ import {
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
+  Row,
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
@@ -15,8 +16,9 @@ import debounce from "debounce";
 import Fuse from "fuse.js";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-multi-lang";
+import { useVirtual } from "react-virtual";
 
 import { ExternalLinkIcon, Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
@@ -216,6 +218,26 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
       getSortedRowModel: getSortedRowModel(),
     });
 
+    const { rows } = table.getRowModel();
+
+    const tableContainerRef = useRef<HTMLDivElement>(null);
+
+    const rowVirtualizer = useVirtual({
+      parentRef: tableContainerRef,
+      size: searchData.length,
+      overscan: 10,
+    });
+
+    const { virtualItems: virtualRows, totalSize } = rowVirtualizer;
+
+    const paddingTop =
+      virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
+
+    const paddingBottom =
+      virtualRows.length > 0
+        ? totalSize - (virtualRows?.[virtualRows.length - 1]?.end || 0)
+        : 0;
+
     return (
       <ModalBase
         title={t("stake.validatorSquad.title")}
@@ -234,7 +256,10 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
             size="full"
           />
         </div>
-        <div className="max-h-[528px] overflow-y-scroll">
+        <div
+          className="max-h-[528px] overflow-y-scroll"
+          ref={tableContainerRef}
+        >
           <table className="w-full">
             <thead className="sticky top-0 m-0">
               {table
@@ -292,22 +317,36 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
                 ))}
             </thead>
             <tbody>
-              {table.getRowModel().rows.map((row) => {
-                return (
-                  <tr key={row.id}>
-                    {row.getVisibleCells().map((cell) => {
-                      return (
-                        <td key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
+              {paddingTop > 0 && (
+                <tr>
+                  <td style={{ height: `${paddingTop}px` }} />
+                </tr>
+              )}
+              {virtualRows.map(
+                // @ts-ignore
+                (virtualRow) => {
+                  const row = rows[virtualRow.index] as Row<Validator>;
+                  return (
+                    <tr key={row.id}>
+                      {row.getVisibleCells().map((cell) => {
+                        return (
+                          <td key={cell.id}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                }
+              )}
+              {paddingBottom > 0 && (
+                <tr>
+                  <td style={{ height: `${paddingBottom}px` }} />
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

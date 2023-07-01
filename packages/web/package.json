@@ -80,6 +80,7 @@
     "react-multi-lang": "^2.1.1",
     "react-toastify": "^7.0.4",
     "react-use": "^17.4.0",
+    "react-virtual": "^2.10.4",
     "semver": "^7.3.7",
     "sha.js": "^2.4.11",
     "sharp": "^0.30.4",
