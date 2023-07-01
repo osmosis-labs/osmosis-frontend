@@ -11,6 +11,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import classNames from "classnames";
+import Fuse from "fuse.js";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 import { useMemo, useState } from "react";
@@ -78,7 +79,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
       return delegationsMap;
     }, [userValidatorDelegations]);
 
-    const data: Validator[] = useMemo(
+    const rawData: Validator[] = useMemo(
       () =>
         activeValidators
           .filter((validator) => Boolean(validator.description.moniker))
@@ -118,6 +119,26 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
         userValidatorDelegationsByValidatorAddress,
       ]
     );
+
+    const fuse = useMemo(() => {
+      return new Fuse(rawData, {
+        keys: ["validatorName"], // Add here all the properties you want to include in the search
+        includeScore: true,
+      });
+    }, [rawData]);
+
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const handleSearchInput = (value: string) => {
+      setSearchTerm(value);
+    };
+
+    const searchData: Validator[] = useMemo(() => {
+      if (searchTerm.trim() === "") return rawData;
+
+      const results = fuse.search(searchTerm);
+      return results.map((result) => result.item);
+    }, [searchTerm, rawData, fuse]);
 
     const columns = useMemo<ColumnDef<Validator>[]>(
       () => [
@@ -160,31 +181,31 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
                   </div>
                 );
               }),
-              header: () => "Validator",
+              header: () => t("stake.validatorSquad.column.validator"),
               id: "validatorName",
             }),
             {
               accessorKey: "myStake",
-              header: () => "My Stake",
+              header: () => t("stake.validatorSquad.column.myStake"),
             },
             {
               accessorKey: "votingPower",
-              header: () => "Voting Power",
+              header: () => t("stake.validatorSquad.column.votingPower"),
             },
             {
               accessorKey: "commissions",
-              header: () => "Commissions",
+              header: () => t("stake.validatorSquad.column.commission"),
               cell: (props) =>
                 new RatePretty(props.row.original.commissions).toString(),
             },
           ],
         },
       ],
-      [columnHelper]
+      [columnHelper, t]
     );
 
     const table = useReactTable({
-      data,
+      data: searchData,
       columns,
       state: {
         sorting,
@@ -194,14 +215,11 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
       getSortedRowModel: getSortedRowModel(),
     });
 
-    const handleSearchInput = () => console.log("search");
-
     return (
       <ModalBase
         title={t("stake.validatorSquad.title")}
         isOpen={isOpen}
         onRequestClose={onRequestClose}
-        // className="flex !h-full !max-h-[938px] !max-w-[1168px] flex-col"
         className="flex !max-w-[1168px] flex-col"
       >
         <div className="mx-auto mb-9 flex max-w-[500px] flex-col items-center justify-center">
