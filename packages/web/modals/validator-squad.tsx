@@ -128,6 +128,8 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
       ]
     );
 
+    console.log("rawData: ", rawData);
+
     const fuse = useMemo(() => {
       return new Fuse(rawData, {
         keys: ["validatorName"],
@@ -140,6 +142,8 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
       const results = fuse.search(searchTerm);
       return results.map((result) => result.item);
     }, [searchTerm, rawData, fuse]);
+
+    console.log("searchData: ", searchData);
 
     const columns = useMemo<ColumnDef<Validator>[]>(
       () => [
@@ -292,25 +296,22 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
                 ))}
             </thead>
             <tbody>
-              {table
-                .getRowModel()
-                .rows.slice(0, 10)
-                .map((row) => {
-                  return (
-                    <tr key={row.id}>
-                      {row.getVisibleCells().map((cell) => {
-                        return (
-                          <td key={cell.id}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  );
-                })}
+              {table.getRowModel().rows.map((row) => {
+                return (
+                  <tr key={row.id}>
+                    {row.getVisibleCells().map((cell) => {
+                      return (
+                        <td key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
