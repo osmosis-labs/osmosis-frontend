@@ -15,6 +15,13 @@ import { OsmosisQueries } from "../../queries/store";
 import { ObservableConcentratedPoolDetails } from "./concentrated";
 import { ObservableSharePoolDetails } from "./share-pool-details";
 
+export type SuperfluidValidatorInfo = {
+  validatorName: string | undefined;
+  validatorCommission: RatePretty | undefined;
+  validatorImgSrc: string | undefined;
+  inactive: "jailed" | "inactive" | undefined;
+};
+
 /** Convenience store getting common superfluid data for a pool via superfluid stores. */
 export class ObservableSuperfluidPoolDetail {
   protected readonly _fiatCurrency: FiatCurrency;
@@ -76,46 +83,22 @@ export class ObservableSuperfluidPoolDetail {
   get delegatedPositionInfos() {
     return this.osmosisQueries.queryAccountsSuperfluidDelegatedPositions
       .get(this.bech32Address)
-      .delegatedPositions.map((stakedPositionInfo) => {
-        const superfluidApr = new RatePretty(
-          this.cosmosQueries.queryInflation.inflation
-            .mul(
-              this.osmosisQueries.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
-                this.poolId
-              )
-            )
-            .moveDecimalPointLeft(2)
-        );
-
-        return {
-          ...stakedPositionInfo,
-          superfluidApr,
-          ...this.getValidatorInfo(stakedPositionInfo.validatorAddress),
-        };
-      });
+      .delegatedPositions.map((stakedPositionInfo) => ({
+        ...stakedPositionInfo,
+        superfluidApr: this.superfluidApr,
+        ...this.getValidatorInfo(stakedPositionInfo.validatorAddress),
+      }));
   }
 
   @computed
   get undelegatingPositionInfos() {
     return this.osmosisQueries.queryAccountsSuperfluidUndelegatingPositions
       .get(this.bech32Address)
-      .undelegatingPositions.map((stakedPositionInfo) => {
-        const superfluidApr = new RatePretty(
-          this.cosmosQueries.queryInflation.inflation
-            .mul(
-              this.osmosisQueries.querySuperfluidOsmoEquivalent.estimatePoolAPROsmoEquivalentMultiplier(
-                this.poolId
-              )
-            )
-            .moveDecimalPointLeft(2)
-        );
-
-        return {
-          ...stakedPositionInfo,
-          superfluidApr,
-          ...this.getValidatorInfo(stakedPositionInfo.validatorAddress),
-        };
-      });
+      .undelegatingPositions.map((stakedPositionInfo) => ({
+        ...stakedPositionInfo,
+        superfluidApr: this.superfluidApr,
+        ...this.getValidatorInfo(stakedPositionInfo.validatorAddress),
+      }));
   }
 
   /** Superfluid delegated position by ID, with API and relevant validator info. */
@@ -285,14 +268,7 @@ export class ObservableSuperfluidPoolDetail {
   }
 
   readonly getValidatorInfo = computedFn(
-    (
-      validatorBech32Address: string
-    ): {
-      validatorName: string | undefined;
-      validatorCommission: RatePretty | undefined;
-      validatorImgSrc: string | undefined;
-      inactive: "jailed" | "inactive" | undefined;
-    } => {
+    (validatorBech32Address: string): SuperfluidValidatorInfo => {
       let jailed = false;
       let inactive = false;
       let validator = this.cosmosQueries.queryValidators

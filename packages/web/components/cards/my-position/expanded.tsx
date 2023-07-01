@@ -4,6 +4,7 @@ import {
   ObservableSuperfluidPoolDetail,
 } from "@osmosis-labs/stores";
 import classNames from "classnames";
+import moment from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
@@ -59,6 +60,11 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
 
   const superfluidDelegation =
     derivedPoolData?.superfluidPoolDetail.getDelegatedPositionInfo(
+      positionConfig.id
+    );
+
+  const superfluidUndelegation =
+    derivedPoolData?.superfluidPoolDetail.getUndelegatingPositionInfo(
       positionConfig.id
     );
 
@@ -213,10 +219,10 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           />
         </div>
       </div>
-      {superfluidDelegation &&
+      {(superfluidDelegation || superfluidUndelegation) &&
         derivedPoolData.sharePoolDetail.longestDuration && (
-          <SuperfluidStakedPositionInfo
-            {...superfluidDelegation}
+          <SuperfluidPositionInfo
+            {...(superfluidDelegation ?? superfluidUndelegation!)}
             stakeDuration={derivedPoolData.sharePoolDetail.longestDuration}
           />
         )}
@@ -432,19 +438,33 @@ const Chart: FunctionComponent<{
   );
 };
 
-const SuperfluidStakedPositionInfo: FunctionComponent<
-  ReturnType<
-    typeof ObservableSuperfluidPoolDetail["prototype"]["getDelegatedPositionInfo"]
-  > & { stakeDuration: Duration }
-> = ({
-  validatorName,
-  validatorImgSrc,
-  equivalentStakedAmount,
-  validatorCommission,
-  superfluidApr,
-  stakeDuration,
-}) => {
+type DelegationOrUndelegationInfo =
+  | NonNullable<
+      ReturnType<
+        typeof ObservableSuperfluidPoolDetail["prototype"]["getDelegatedPositionInfo"]
+      >
+    >
+  | NonNullable<
+      ReturnType<
+        typeof ObservableSuperfluidPoolDetail["prototype"]["getUndelegatingPositionInfo"]
+      >
+    >;
+
+const SuperfluidPositionInfo: FunctionComponent<
+  DelegationOrUndelegationInfo & { stakeDuration: Duration }
+> = (props) => {
+  const {
+    validatorName,
+    validatorImgSrc,
+    equivalentStakedAmount,
+    validatorCommission,
+    superfluidApr,
+    stakeDuration,
+  } = props;
   const t = useTranslation();
+
+  /** is undelegation */
+  const endTime = "endTime" in props ? props.endTime : undefined;
 
   return (
     <div className="subtitle1 flex w-full flex-col gap-4 sm:flex-col">
@@ -475,11 +495,19 @@ const SuperfluidStakedPositionInfo: FunctionComponent<
           )}
         </div>
         <div className="flex flex-col pl-8 text-right md:pl-4">
-          <span>
-            {t("clPositions.superfluidUnstake", {
-              duration: stakeDuration.humanize(),
-            })}
-          </span>
+          {endTime ? (
+            <span>
+              {t("clPositions.superfluidUnstaking", {
+                fromNow: moment(endTime).fromNow(true),
+              })}
+            </span>
+          ) : (
+            <span>
+              {t("clPositions.superfluidUnstake", {
+                duration: stakeDuration.humanize(),
+              })}
+            </span>
+          )}
         </div>
       </div>
     </div>

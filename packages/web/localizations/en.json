@@ -93,6 +93,7 @@
     "pendingRewards": "Pending rewards",
     "superfluidValidator": "Validator",
     "superfluidUnstake": "Once unstaked, available after {duration}",
+    "superfluidUnstaking": "Unstaking, available in {fromNow}",
     "superfluidCommission": "commission",
     "unstake": "Unstake liquidity"
   },
