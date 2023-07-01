@@ -128,8 +128,6 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
       ]
     );
 
-    console.log("rawData: ", rawData);
-
     const fuse = useMemo(() => {
       return new Fuse(rawData, {
         keys: ["validatorName"],
@@ -142,8 +140,6 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
       const results = fuse.search(searchTerm);
       return results.map((result) => result.item);
     }, [searchTerm, rawData, fuse]);
-
-    console.log("searchData: ", searchData);
 
     const columns = useMemo<ColumnDef<Validator>[]>(
       () => [
