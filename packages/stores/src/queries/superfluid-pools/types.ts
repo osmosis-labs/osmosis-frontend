@@ -88,7 +88,7 @@ export type SuperfluidUndelegation = {
   lock_id: string;
 };
 
-export type ConcentratedPoolUserPositionRecord = {
+export type ConcentratedPoolAccountPositionRecord = {
   validator_address: string;
   position_id: string;
   lock_id: string;
@@ -102,6 +102,6 @@ export type ConcentratedPoolUserPositionRecord = {
   };
 };
 
-export type UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse = {
-  cl_pool_user_position_records: ConcentratedPoolUserPositionRecord[];
+export type AccountDelegatedClPositionsResponse = {
+  cl_pool_user_position_records: ConcentratedPoolAccountPositionRecord[];
 };

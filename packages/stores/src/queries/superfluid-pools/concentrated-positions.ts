@@ -8,7 +8,7 @@ import { CoinPretty } from "@keplr-wallet/unit";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
-import { UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse } from "./types";
+import { AccountDelegatedClPositionsResponse } from "./types";
 
 export type StakedPositionInfo = {
   validatorAddress: string;
@@ -16,35 +16,26 @@ export type StakedPositionInfo = {
   equivalentStakedAmount: CoinPretty;
 };
 
-export class ObservableQueryUserSuperfluidPositionsPerPool extends ObservableChainQuery<UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse> {
-  protected readonly delegatorBech32Address: string;
-  protected readonly concentratedPoolId: string;
-
+/** Superfluid staked positions per account. */
+export class ObservableQueryAccountSuperfluidDelegatedClPositions extends ObservableChainQuery<AccountDelegatedClPositionsResponse> {
   constructor(
     kvStore: KVStore,
     chainId: string,
     chainGetter: ChainGetter,
-    protected readonly key: string
+    protected readonly bech32Address: string
   ) {
     super(
       kvStore,
       chainId,
       chainGetter,
-      `/osmosis/superfluid/v1beta1/user_superfluid_positions_per_pool/${
-        parseKey(key).delegatorBech32Address
-      }/${parseKey(key).concentratedPoolId}`
+      `/osmosis/superfluid/v1beta1/account_delegated_cl_positions/${bech32Address}`
     );
-
-    const { delegatorBech32Address, concentratedPoolId } = parseKey(key);
-
-    this.delegatorBech32Address = delegatorBech32Address;
-    this.concentratedPoolId = concentratedPoolId;
 
     makeObservable(this);
   }
 
   protected canFetch(): boolean {
-    return this.delegatorBech32Address !== "" && this.concentratedPoolId !== "";
+    return this.bech32Address !== "";
   }
 
   @computed
@@ -103,45 +94,28 @@ export class ObservableQueryUserSuperfluidPositionsPerPool extends ObservableCha
   );
 }
 
-export class ObservableQueryUserSuperfluidPositionsPerPools extends ObservableChainQueryMap<UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse> {
+/** Get superfluid delegated positions per account. */
+export class ObservableQueryAccountsSuperfluidDelegatedClPositions extends ObservableChainQueryMap<AccountDelegatedClPositionsResponse> {
   constructor(
     protected readonly kvStore: KVStore,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter
   ) {
-    super(kvStore, chainId, chainGetter, (key) => {
-      return new ObservableQueryUserSuperfluidPositionsPerPool(
+    super(kvStore, chainId, chainGetter, (bech32Address) => {
+      return new ObservableQueryAccountSuperfluidDelegatedClPositions(
         this.kvStore,
         this.chainId,
         this.chainGetter,
-        key
+        bech32Address
       );
     });
   }
 
-  getQueryUserPositionsPerPool(
-    delegatorBech32Address: string,
-    concentratedPoolId: string
-  ): ObservableQueryUserSuperfluidPositionsPerPool {
+  get(
+    bech32Address: string
+  ): ObservableQueryAccountSuperfluidDelegatedClPositions {
     return super.get(
-      makeKey(delegatorBech32Address, concentratedPoolId)
-    ) as ObservableQueryUserSuperfluidPositionsPerPool;
+      bech32Address
+    ) as ObservableQueryAccountSuperfluidDelegatedClPositions;
   }
-}
-
-const delim = "/";
-
-function makeKey(
-  delegatorBech32Address: string,
-  concentratedPoolId: string
-): string {
-  return `${delegatorBech32Address}${delim}${concentratedPoolId}`;
-}
-
-function parseKey(key: string): {
-  delegatorBech32Address: string;
-  concentratedPoolId: string;
-} {
-  const split = key.split(delim);
-  return { delegatorBech32Address: split[0], concentratedPoolId: split[1] };
 }
