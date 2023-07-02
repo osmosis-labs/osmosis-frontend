@@ -175,7 +175,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
                 const [isChecked, setIsChecked] = useState(false);
 
                 return (
-                  <div className="flex items-center gap-3">
+                  <div className="flex w-[350px] items-center gap-3 sm:w-[300px]">
                     <CheckBox
                       isOn={isChecked}
                       onToggle={() => setIsChecked(!isChecked)}
@@ -287,7 +287,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
           ref={tableContainerRef}
         >
           <table className="w-full">
-            <thead className="sticky top-0 m-0">
+            <thead className="sticky top-0 z-50 m-0">
               {table
                 .getHeaderGroups()
                 .slice(1)
@@ -348,26 +348,23 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
                   <td style={{ height: `${paddingTop}px` }} />
                 </tr>
               )}
-              {virtualRows.map(
-                // @ts-ignore
-                (virtualRow) => {
-                  const row = rows[virtualRow.index] as Row<Validator>;
-                  return (
-                    <tr key={row.id}>
-                      {row.getVisibleCells().map((cell) => {
-                        return (
-                          <td key={cell.id}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  );
-                }
-              )}
+              {virtualRows.map((virtualRow) => {
+                const row = rows[virtualRow.index] as Row<Validator>;
+                return (
+                  <tr key={row.id}>
+                    {row.getVisibleCells().map((cell) => {
+                      return (
+                        <td key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
               {paddingBottom > 0 && (
                 <tr>
                   <td style={{ height: `${paddingBottom}px` }} />
