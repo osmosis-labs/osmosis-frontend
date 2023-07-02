@@ -22,6 +22,7 @@ import { useVirtual } from "react-virtual";
 
 import { ExternalLinkIcon, Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
+import { CheckBox } from "~/components/control";
 import { SearchBox } from "~/components/input";
 import { IS_FRONTIER } from "~/config/index";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
@@ -171,11 +172,14 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
                   props.row.original.website || ""
                 );
                 const truncatedDisplayUrl = truncateString(displayUrl);
+                const [isChecked, setIsChecked] = useState(false);
 
                 return (
                   <div className="flex items-center gap-3">
-                    {/*  input placeholder */}
-                    <input type="radio" />
+                    <CheckBox
+                      isOn={isChecked}
+                      onToggle={() => setIsChecked(!isChecked)}
+                    />
                     <div className="h-10 w-10 overflow-hidden rounded-full">
                       <img
                         alt={props.row.original.validatorName}
