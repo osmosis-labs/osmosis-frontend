@@ -52,7 +52,7 @@ export class ObservableQueryPools
       );
 
       const numPools = queryNumPools.numPools;
-      if (numPools > limit && nodeVersion < 16) {
+      if (numPools > limit && nodeVersion < 16 && nodeVersion > 0) {
         limit = numPools;
         this.setUrl(`/osmosis/gamm/v1beta1/pools?pagination.limit=${limit}`);
       }
