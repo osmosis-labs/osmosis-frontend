@@ -166,7 +166,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
           id: "validatorSquadTable",
           columns: [
             columnHelper.accessor((row) => row, {
-              cell: observer((props: CellContext<any, any>) => {
+              cell: observer((props: CellContext<Validator, Validator>) => {
                 const displayUrl = normalizeUrl(
                   props.row.original.website || ""
                 );
