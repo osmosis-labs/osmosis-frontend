@@ -5,6 +5,7 @@ import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
+import { NextSeo } from "next-seo";
 import { ComponentProps, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
@@ -47,7 +48,7 @@ const Pools: NextPage = observer(function () {
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
-  const account = accountStore.getAccount(chainId);
+  const account = accountStore.getWallet(chainId);
 
   const [poolsOverviewRef, { height: poolsOverviewHeight }] =
     useDimension<HTMLDivElement>();
@@ -67,7 +68,7 @@ const Pools: NextPage = observer(function () {
   const createPoolConfig = useCreatePoolConfig(
     chainStore,
     chainId,
-    account.bech32Address,
+    account?.address ?? "",
     queriesStore
   );
 
@@ -160,7 +161,7 @@ const Pools: NextPage = observer(function () {
   const onCreatePool = useCallback(async () => {
     try {
       if (createPoolConfig.poolType === "weighted") {
-        await account.osmosis.sendCreateBalancerPoolMsg(
+        await account?.osmosis.sendCreateBalancerPoolMsg(
           createPoolConfig.swapFee,
           createPoolConfig.assets.map((asset) => {
             if (!asset.percentage)
@@ -189,7 +190,7 @@ const Pools: NextPage = observer(function () {
           createPoolConfig.scalingFactorControllerAddress
             ? createPoolConfig.scalingFactorControllerAddress
             : undefined;
-        await account.osmosis.sendCreateStableswapPoolMsg(
+        await account?.osmosis.sendCreateStableswapPoolMsg(
           createPoolConfig.swapFee,
           createPoolConfig.assets.map((asset) => {
             if (!asset.scalingFactor)
@@ -222,7 +223,7 @@ const Pools: NextPage = observer(function () {
   const [showConcentratedLiqIntro, setShowConcentratedLiqIntro] =
     useState(false);
   const userMigrateableClPoolId = queryOsmosis.queryGammPoolShare
-    .getOwnPools(account.bech32Address)
+    .getOwnPools(account?.address ?? "")
     .map((poolId) =>
       queryOsmosis.queryCfmmToConcentratedLiquidityPoolLinks.get(poolId)
     )
@@ -235,12 +236,16 @@ const Pools: NextPage = observer(function () {
 
   return (
     <main className="m-auto max-w-container bg-osmoverse-900 px-8 md:px-3">
+      <NextSeo
+        title={t("seo.pools.title")}
+        description={t("seo.pools.description")}
+      />
       <CreatePoolModal
         isOpen={isCreatingPool}
         onRequestClose={useCallback(() => setIsCreatingPool(false), [])}
         title={t("pools.createPool.title")}
         createPoolConfig={createPoolConfig}
-        isSendingMsg={account.txTypeInProgress !== ""}
+        isSendingMsg={account?.txTypeInProgress !== ""}
         onCreatePool={onCreatePool}
       />
       {addLiquidityModalPoolId && (
@@ -354,11 +359,11 @@ const MyPoolsSection = observer(() => {
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
-  const account = accountStore.getAccount(chainId);
+  const account = accountStore.getWallet(chainId);
 
   // my pools
   const myPoolIds = queryOsmosis.queryGammPoolShare.getOwnPools(
-    account.bech32Address
+    account?.address ?? ""
   );
   const poolCountShowMoreThreshold = isMobile ? 3 : 6;
   const myPools = useMemo(
@@ -398,7 +403,7 @@ const MyPoolsSection = observer(() => {
         if (!_queryPool) return;
         return pool.totalValueLocked.mul(
           queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
-            account.bech32Address,
+            account?.address ?? "",
             _queryPool.id
           )
         );

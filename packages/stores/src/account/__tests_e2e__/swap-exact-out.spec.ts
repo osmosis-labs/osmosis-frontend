@@ -17,12 +17,11 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
   let queryPool: ObservableQueryPool | undefined;
 
   beforeEach(async () => {
-    const account = accountStore.getAccount(chainId);
-    account.cosmos.broadcastMode = "sync";
+    const account = accountStore.getWallet(chainId);
     await waitAccountLoaded(account);
 
     // And prepare the pool
-    await account.osmosis.sendCreateBalancerPoolMsg("0", [
+    await account?.osmosis.sendCreateBalancerPoolMsg("0", [
       {
         weight: "200",
         token: {
@@ -51,11 +50,11 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
   });
 
   test("should fail with unregistered pool asset", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
 
     await expect(
       new Promise((resolve, reject) => {
-        account.osmosis
+        account?.osmosis
           .sendSwapExactAmountOutMsg(
             [{ id: queryPool!.id, tokenInDenom: "uion" }],
             {
@@ -81,11 +80,11 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
   });
 
   test("should fail with unregistered pool asset (2)", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
 
     await expect(
       new Promise((resolve, reject) => {
-        account.osmosis
+        account?.osmosis
           .sendSwapExactAmountOutMsg(
             [{ id: queryPool!.id, tokenInDenom: "ukwon" }],
             {
@@ -111,7 +110,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
   });
 
   test("succeed with no max slippage", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
 
     const tokenInCurrency = {
       coinDenom: "OSMO",
@@ -134,7 +133,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
     );
 
     const tx = await new Promise<any>((resolve, reject) => {
-      account.osmosis
+      account?.osmosis
         .sendSwapExactAmountOutMsg(
           [
             {
@@ -175,7 +174,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
           { key: "module", value: "poolmanager" },
           {
             key: "sender",
-            value: account.bech32Address,
+            value: account?.address,
           },
         ],
       },
@@ -207,7 +206,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
   });
 
   test("succeed with slippage", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
 
     const tokenInCurrency = {
       coinDenom: "OSMO",
@@ -232,7 +231,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
     const slippageTolerance = new Dec(0.01);
 
     const tx = await new Promise<any>((resolve, reject) => {
-      account.osmosis
+      account?.osmosis
         .sendSwapExactAmountOutMsg(
           [
             {
@@ -273,7 +272,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
           { key: "module", value: "poolmanager" },
           {
             key: "sender",
-            value: account.bech32Address,
+            value: account?.address,
           },
         ],
       },
@@ -305,7 +304,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
   });
 
   test("succeed with exactly matched slippage and max slippage", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
 
     const tokenInCurrency = {
       coinDenom: "OSMO",
@@ -330,7 +329,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
     expect(estimated.priceImpact.toDec().gt(new Dec(0))).toBeTruthy();
 
     const tx = await new Promise<any>((resolve, reject) => {
-      account.osmosis
+      account?.osmosis
         .sendSwapExactAmountOutMsg(
           [
             {
@@ -362,7 +361,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
           { key: "module", value: "poolmanager" },
           {
             key: "sender",
-            value: account.bech32Address,
+            value: account?.address,
           },
         ],
       },
@@ -394,7 +393,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
   });
 
   test("should fail with more max price impact than calculated price impact", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
 
     const tokenInCurrency = {
       coinDenom: "OSMO",
@@ -427,7 +426,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
 
     await expect(
       new Promise<any>((resolve, reject) => {
-        account.osmosis
+        account?.osmosis
           .sendSwapExactAmountOutMsg(
             [
               {

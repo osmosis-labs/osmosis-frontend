@@ -1,4 +1,4 @@
-import { StdFee } from "@cosmjs/launchpad";
+import { StdFee } from "@cosmjs/stargate";
 import { DefaultGasPriceStep, FeeType, IFeeConfig } from "@keplr-wallet/hooks";
 import { ChainGetter, CoinPrimitive } from "@keplr-wallet/stores";
 import { Currency } from "@keplr-wallet/types";

@@ -205,7 +205,12 @@
     "notInitialized": "Nie zinicjalizowane",
     "percentageSum": "Suma procentów nie jest równa 100",
     "scalingFactorTooLow": "Zbyt niski współczynnik skalowania",
-    "zeroAmount": "Ilość jest zerowa"
+    "zeroAmount": "Ilość jest zerowa",
+    "fallbackText1": "Wystąpił błąd",
+    "fallbackText2": "Proszę złożyć a",
+    "fallbackBugReport": "Zgłoszenie błędu",
+    "fallbackText3": "lub dostać",
+    "fallbackSupport": "wsparcie"
   },
   "keplr": {
     "extension": "Keplr Rozszerzenie Przeglądarki",
@@ -393,6 +398,26 @@
     },
     "title": "Wymień"
   },
+  "walletSelect": {
+    "somethingWentWrong": "Coś poszło nie tak",
+    "changeWallet": "Zmień portfel",
+    "isNotInstalled": "{walletName} nie jest zainstalowany",
+    "maybeInstalled": "Jeśli {walletName} jest zainstalowany na Twoim urządzeniu, odśwież tę stronę lub postępuj zgodnie z instrukcjami przeglądarki.",
+    "downloadLinkNotProvided": "Nie podano linku do pobrania. Spróbuj poszukać go lub skonsultować się z zespołem programistów.",
+    "installWallet": "Zainstaluj {walletName}",
+    "requestRejected": "Żądanie odrzucone",
+    "connectionDenied": "Odmowa połączenia.",
+    "reconnect": "Połącz ponownie",
+    "connectingWallet": "Łączenie z portfelem",
+    "approveWalletConnect": "Zatwierdź żądanie połączenia {walletName} na swoim urządzeniu mobilnym.",
+    "openExtension": "Otwórz rozszerzenie przeglądarkowe {walletName}, aby połączyć swój portfel.",
+    "initializingWallet": "Inicjowanie klienta portfela",
+    "clickToRefresh": "Kliknij, aby odświeżyć.",
+    "qrCodeExpired": "Kod QR wygasł",
+    "qrCodeError": "Błąd kodu QR",
+    "openAppToScan": "Otwórz aplikację {walletName}, aby zeskanować",
+    "refresh": "Odśwież"
+  },
   "swapFailed": "Wymiana nie udała się. Płynność może być niewystarczająca. Spróbuj dostosować dozwolone odchylenie.",
   "transactionBroadcasting": "Nadawanie Transakcji",
   "transactionFailed": "Transakcja Nieudana",
@@ -401,8 +426,23 @@
   "viewExplorer": "zobacz eksplorer",
   "waitingForTransaction": "Oczekiwanie na dołączenie transakcji do bloku",
   "highPoolInflationWarning": "Wysokie APR-y mogą wynikać z nagród inflacyjnych. Postępuj ostrożnie.",
-  "ibcx": {
-    "description": "Poznaj pierwszy Indeks Ekosystemu Cosmos od ION DAO. Dostępny na żywo na mainnecie: ",
-    "link": "index.ion.wtf"
-  }
+  "seo.404.title": "404 — Nie znaleziono strony",
+  "seo.404.description": "Strona, której szukasz nie istnieje.",
+  "seo.500.title": "500 wewnętrzny błąd serwera",
+  "seo.500.description": "Wystąpił wewnętrzny błąd serwera.",
+  "seo.default.title": "Handluj w Strefie Osmozy",
+  "seo.default.titleFrontier": "Granica Osmozy",
+  "seo.default.description": "Wymieniaj, zarabiaj i buduj na wiodącej zdecentralizowanej giełdzie Cosmos — największym międzyłańcuchowym DEX",
+  "seo.apps.title": "Sklep z aplikacjami Osmosis",
+  "seo.apps.description": "Handel to tylko pierwszy krok. Wykorzystaj swoje zasoby do pracy i osiągnij znacznie więcej dzięki dźwigni finansowej, skarbcom i nie tylko",
+  "seo.assets.title": "Aktywa Osmozy",
+  "seo.assets.description": "Przeglądaj wszystkie aktywa dostępne na Osmosis - wiodącej zdecentralizowanej giełdzie Cosmos",
+  "seo.bootstrap.title": "Bootstrap osmozy",
+  "seo.bootstrap.description": "Liquidity Bootstrapping Pools na Osmosis, wiodącej zdecentralizowanej giełdzie Cosmos",
+  "seo.disclaimer.title": "Zrzeczenie się osmozy",
+  "seo.disclaimer.description": "Przeczytaj wyłączenie odpowiedzialności i politykę prywatności Osmosis - wiodącej zdecentralizowanej giełdy Cosmos",
+  "seo.pool.title": "Basen #",
+  "seo.pool.description": "Dodaj swoje aktywa do tej puli, aby odblokować RRSO. Im dłuższy okres rozłączenia, tym więcej zarabiasz na Osmosis - wiodącej zdecentralizowanej giełdzie Cosmos",
+  "seo.pools.title": "baseny osmotyczne",
+  "seo.pools.description": "Odkryj pule płynności na Osmosis - wiodącej zdecentralizowanej giełdzie Cosmos"
 }

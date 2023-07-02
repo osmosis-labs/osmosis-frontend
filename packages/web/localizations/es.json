@@ -205,7 +205,12 @@
     "notInitialized": "No inicializado",
     "percentageSum": "La suma de porcentajes no es 100",
     "scalingFactorTooLow": "Factor de escala demasiado bajo",
-    "zeroAmount": "La cantidad es cero"
+    "zeroAmount": "La cantidad es cero",
+    "fallbackText1": "Ocurrió un error",
+    "fallbackText2": "Por favor envíe un",
+    "fallbackBugReport": "informe de error",
+    "fallbackText3": "o conseguir",
+    "fallbackSupport": "apoyo"
   },
   "keplr": {
     "extension": "Extensión del navegador KEPLR",
@@ -393,6 +398,26 @@
     },
     "title": "Intercambio"
   },
+  "walletSelect": {
+    "somethingWentWrong": "Algo salió mal",
+    "changeWallet": "Cambiar Billetera",
+    "isNotInstalled": "{walletName} no está instalado",
+    "maybeInstalled": "Si {walletName} está instalado en su dispositivo, por favor actualice esta página o siga las instrucciones del navegador.",
+    "downloadLinkNotProvided": "Enlace de descarga no proporcionado. Intente buscarlo o consulte al equipo de desarrollo.",
+    "installWallet": "Instalar {walletName}",
+    "requestRejected": "Solicitud Rechazada",
+    "connectionDenied": "Permiso de conexión denegado.",
+    "reconnect": "Reconectar",
+    "connectingWallet": "Conectando Billetera",
+    "approveWalletConnect": "Aprobar la solicitud de conexión {walletName} en su dispositivo móvil.",
+    "openExtension": "Abra la extensión del navegador {walletName} para conectar su billetera.",
+    "initializingWallet": "Inicializando Cliente de Billetera",
+    "clickToRefresh": "Haga clic para actualizar.",
+    "qrCodeExpired": "Código QR Expirado",
+    "qrCodeError": "Error en el Código QR",
+    "openAppToScan": "Abra la aplicación {walletName} para escanear",
+    "refresh": "Actualizar"
+  },
   "swapFailed": "El intercambio falló. La liquidez puede no ser suficiente. Intente ajustar el deslizamiento permitido.",
   "transactionBroadcasting": "Ejecutando transacción",
   "transactionFailed": "Transacción fallida",
@@ -401,8 +426,23 @@
   "viewExplorer": "Ver Explorador",
   "waitingForTransaction": "Esperando que la transacción se incluya en el bloque",
   "highPoolInflationWarning": "Los APRs altos pueden ser resultado de recompensas inflacionarias. Proceda con precaución.",
-  "ibcx": {
-    "description": "Conoce el primer Índice del Ecosistema Cosmos de ION DAO. Activo en mainnet: ",
-    "link": "index.ion.wtf"
-  }
+  "seo.404.title": "404 Pagina no encontrada",
+  "seo.404.description": "La página que buscas no existe.",
+  "seo.500.title": "Error interno de servidor 500",
+  "seo.500.description": "Ocurrió un error interno del servidor.",
+  "seo.default.title": "Opere en Osmosis Zone",
+  "seo.default.titleFrontier": "La frontera de la ósmosis",
+  "seo.default.description": "Intercambie, gane y construya en el principal intercambio descentralizado de Cosmos: el DEX entre cadenas más grande",
+  "seo.apps.title": "Tienda de aplicaciones de ósmosis",
+  "seo.apps.description": "El comercio es sólo el primer paso. Ponga sus activos a trabajar y logre mucho más con apalancamiento, bóvedas y más",
+  "seo.assets.title": "Activos de ósmosis",
+  "seo.assets.description": "Explore todos los activos disponibles en Osmosis, el principal intercambio descentralizado de Cosmos",
+  "seo.bootstrap.title": "Arranque de ósmosis",
+  "seo.bootstrap.description": "Liquidity Bootstrapping Pools en Osmosis, el principal intercambio descentralizado de Cosmos",
+  "seo.disclaimer.title": "Descargo de responsabilidad de ósmosis",
+  "seo.disclaimer.description": "Lea el descargo de responsabilidad y la política de privacidad de Osmosis, el principal intercambio descentralizado de Cosmos",
+  "seo.pool.title": "Piscina #",
+  "seo.pool.description": "Agregue sus activos a este grupo para desbloquear APR. Cuanto más largo sea su período de desvinculación, más ganará en Osmosis, el principal intercambio descentralizado de Cosmos",
+  "seo.pools.title": "Piscinas de Osmosis",
+  "seo.pools.description": "Descubra fondos de liquidez en Osmosis, el principal intercambio descentralizado de Cosmos"
 }

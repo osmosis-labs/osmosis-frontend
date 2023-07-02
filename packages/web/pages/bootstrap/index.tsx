@@ -5,14 +5,21 @@ import { observer } from "mobx-react-lite";
 import { NextPage } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { NextSeo } from "next-seo";
 import React, { FunctionComponent } from "react";
+import { useTranslation } from "react-multi-lang";
 
 import { PromotedLBPPoolIds } from "../../config";
 import { useStore } from "../../stores";
 
 const BootstrapPage: NextPage = observer(() => {
+  const t = useTranslation();
   return (
     <div className="h-full w-full bg-osmoverse-900">
+      <NextSeo
+        title={t("seo.bootstrap.title")}
+        description={t("seo.bootstrap.description")}
+      />
       <div className="px-5 pt-10 pb-5 md:p-10 md:pt-20">
         <div className="max-w-page mx-auto">
           <LBPOverview

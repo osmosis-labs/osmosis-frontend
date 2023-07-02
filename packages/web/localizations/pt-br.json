@@ -205,7 +205,12 @@
     "notInitialized": "Não Inicializado",
     "percentageSum": "A soma das porcentagens não é 100",
     "scalingFactorTooLow": "Fator de escalonamento muito baixo",
-    "zeroAmount": "Quantia é zero"
+    "zeroAmount": "Quantia é zero",
+    "fallbackText1": "Um erro ocorreu",
+    "fallbackText2": "Por favor envie um",
+    "fallbackBugReport": "relatório de erro",
+    "fallbackText3": "ou obter",
+    "fallbackSupport": "apoiar"
   },
   "keplr": {
     "extension": "Extensão de Browser Keplr",
@@ -393,6 +398,26 @@
     },
     "title": "Trocar"
   },
+  "walletSelect": {
+    "somethingWentWrong": "Algo deu errado",
+    "changeWallet": "Trocar carteira",
+    "isNotInstalled": "{walletName} não está instalado",
+    "maybeInstalled": "Se {walletName} estiver instalado em seu dispositivo, atualize esta página ou siga as instruções do navegador.",
+    "downloadLinkNotProvided": "Link de download não fornecido. Tente pesquisar ou consultar a equipe de desenvolvimento.",
+    "installWallet": "Instalar {walletName}",
+    "requestRejected": "Solicitação rejeitada",
+    "connectionDenied": "Permissão de conexão negada.",
+    "reconnect": "Reconectar",
+    "connectingWallet": "Conectando carteira",
+    "approveWalletConnect": "Aprovar solicitação de conexão {walletName} em seu dispositivo móvel.",
+    "openExtension": "Abra a extensão do navegador {walletName} para conectar sua carteira.",
+    "initializingWallet": "Inicializando cliente de carteira",
+    "clickToRefresh": "Clique para atualizar.",
+    "qrCodeExpired": "Código QR expirado",
+    "qrCodeError": "Erro de código QR",
+    "openAppToScan": "Abra o aplicativo {walletName} para digitalizar",
+    "refresh": "Atualizar"
+  },
   "swapFailed": "Troca falhou. Liquidez pode não ser o suficiente. Tente ajustar o spread permitido.",
   "transactionBroadcasting": "Transmitindo Transação",
   "transactionFailed": "Transação falhou",
@@ -401,8 +426,23 @@
   "viewExplorer": "Visualizar explorer",
   "waitingForTransaction": "Aguardando para que a transação seja incluida no bloco",
   "highPoolInflationWarning": "APRs altos podem ser resultado de recompensas inflacionárias. Proceda com cautela.",
-  "ibcx": {
-    "description": "Conheça o primeiro Índice do Ecossistema Cosmos da ION DAO. Ativo na mainnet: ",
-    "link": "index.ion.wtf"
-  }
+  "seo.404.title": "404 Página Não Encontrada",
+  "seo.404.description": "A página que você está procurando não existe.",
+  "seo.500.title": "500 - Erro interno do servidor",
+  "seo.500.description": "Ocorreu um erro interno do servidor.",
+  "seo.default.title": "Negocie na Zona de Osmose",
+  "seo.default.titleFrontier": "A fronteira da osmose",
+  "seo.default.description": "Troque, ganhe e construa na principal exchange descentralizada do Cosmos - A maior DEX interchain",
+  "seo.apps.title": "App Store da Osmose",
+  "seo.apps.description": "A negociação é apenas o primeiro passo. Coloque seus ativos para trabalhar e realize muito mais com alavancagem, cofres e muito mais",
+  "seo.assets.title": "Ativos de Osmose",
+  "seo.assets.description": "Navegue por todos os ativos disponíveis na Osmosis - a principal exchange descentralizada do Cosmos",
+  "seo.bootstrap.title": "Bootstrap de osmose",
+  "seo.bootstrap.description": "Liquidity Bootstrapping Pools na Osmosis, a principal exchange descentralizada do Cosmos",
+  "seo.disclaimer.title": "Isenção de responsabilidade de osmose",
+  "seo.disclaimer.description": "Leia o aviso de isenção de responsabilidade e a política de privacidade da Osmosis - a principal bolsa descentralizada do Cosmos",
+  "seo.pool.title": "Piscina #",
+  "seo.pool.description": "Adicione seus ativos a este pool para desbloquear APRs. Quanto mais longo for o seu período de desvinculação, mais você ganha na Osmosis - a principal exchange descentralizada do Cosmos",
+  "seo.pools.title": "piscinas de osmose",
+  "seo.pools.description": "Descubra pools de liquidez na Osmosis - a principal exchange descentralizada do Cosmos"
 }

@@ -23,7 +23,7 @@ export function useCfmmToClMigration(cfmmPoolId: string): {
     derivedDataStore,
   } = useStore();
 
-  const osmosisAccount = accountStore.getAccount(chainId).osmosis;
+  const osmosisAccount = accountStore.getWallet(chainId)?.osmosis;
   const osmosisQueries = queriesStore.get(chainId).osmosis!;
   const { sharePoolDetail } = derivedDataStore.getForPool(cfmmPoolId);
 
@@ -47,7 +47,7 @@ export function useCfmmToClMigration(cfmmPoolId: string): {
         return new Promise<void>(
           (resolve, reject) =>
             osmosisAccount
-              .sendMigrateSharesToFullRangeConcentratedPositionMsgs(
+              ?.sendMigrateSharesToFullRangeConcentratedPositionMsgs(
                 cfmmPoolId,
                 undefined,
                 undefined,
@@ -64,7 +64,7 @@ export function useCfmmToClMigration(cfmmPoolId: string): {
         return new Promise<void>(
           (resolve, reject) =>
             osmosisAccount
-              .sendMigrateSharesToFullRangeConcentratedPositionMsgs(
+              ?.sendMigrateSharesToFullRangeConcentratedPositionMsgs(
                 cfmmPoolId,
                 params.lockIds.slice(0, 1),
                 undefined,

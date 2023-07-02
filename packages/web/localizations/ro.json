@@ -205,7 +205,12 @@
     "notInitialized": "Neinitializat",
     "percentageSum": "Suma procentelor nu este 100",
     "scalingFactorTooLow": "Factorul de scalare este prea mic",
-    "zeroAmount": "Suma este 0"
+    "zeroAmount": "Suma este 0",
+    "fallbackText1": "A aparut o eroare",
+    "fallbackText2": "Vă rugăm să trimiteți un",
+    "fallbackBugReport": "raport de eroare",
+    "fallbackText3": "sau obține",
+    "fallbackSupport": "a sustine"
   },
   "keplr": {
     "extension": "Extensia de browser Keplr",
@@ -393,6 +398,26 @@
     },
     "title": "Schimb"
   },
+  "walletSelect": {
+    "somethingWentWrong": "Ceva nu a mers bine",
+    "changeWallet": "Schimbă portofelul",
+    "isNotInstalled": "{walletName} nu este instalat",
+    "maybeInstalled": "Dacă {walletName} este instalat pe dispozitivul dvs., vă rugăm să reîmprospătați această pagină sau să urmați instrucțiunile browserului.",
+    "downloadLinkNotProvided": "Linkul de descărcare nu este furnizat. Încercați să-l căutați sau consultați echipa dezvoltatorilor.",
+    "installWallet": "Instalați {walletName}",
+    "requestRejected": "Cererea a fost respinsă",
+    "connectionDenied": "Permisiunea de conexiune a fost refuzată.",
+    "reconnect": "Reconectați",
+    "connectingWallet": "Se conectează la portofel",
+    "approveWalletConnect": "Aprobați cererea de conexiune {walletName} pe telefonul dvs. mobil.",
+    "openExtension": "Deschideți extensia browserului {walletName} pentru a vă conecta la portofelul dvs.",
+    "initializingWallet": "Se inițializează clientul portofelului",
+    "clickToRefresh": "Faceți clic pentru a reîmprospăta.",
+    "qrCodeExpired": "Codul QR a expirat",
+    "qrCodeError": "Eroare cod QR",
+    "openAppToScan": "Deschideți aplicația {walletName} pentru a scana",
+    "refresh": "Reîmprospătați"
+  },
   "swapFailed": "Schimbul a esuata. Lichiditatea poate fi insuficienta.Incearca ajustarea tolerantei.",
   "transactionBroadcasting": "Transmitere tranzactie",
   "transactionFailed": "Tranzactie Esuata",
@@ -401,8 +426,23 @@
   "viewExplorer": "vezi explorer",
   "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
   "highPoolInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență.",
-  "ibcx": {
-    "description": "Întâlniți primul Index al Ecosistemului Cosmos de la ION DAO. Activ pe mainnet: ",
-    "link": "index.ion.wtf"
-  }
+  "seo.404.title": "404 Pagina nu a fost găsită",
+  "seo.404.description": "Pagina pe care o cauți nu există.",
+  "seo.500.title": "500 Eroare internă a server-ului",
+  "seo.500.description": "A apărut o eroare internă de server.",
+  "seo.default.title": "Comerț în zona de osmoză",
+  "seo.default.titleFrontier": "Frontiera osmozei",
+  "seo.default.description": "Schimbați, câștigați și construiți pe cel mai important schimb Cosmos descentralizat - Cel mai mare interchain DEX",
+  "seo.apps.title": "Magazin de aplicații Osmosis",
+  "seo.apps.description": "Tranzacționarea este doar primul pas. Puneți-vă bunurile la lucru și realizați mult mai mult cu pârghie, seifuri și nu numai",
+  "seo.assets.title": "Active de osmoză",
+  "seo.assets.description": "Răsfoiți toate activele disponibile pe Osmosis - principalul schimb descentralizat Cosmos",
+  "seo.bootstrap.title": "Bootstrap pentru osmoză",
+  "seo.bootstrap.description": "Liquidity Bootstrapping Pools pe Osmosis, principalul schimb descentralizat Cosmos",
+  "seo.disclaimer.title": "Declinarea răspunderii pentru osmoză",
+  "seo.disclaimer.description": "Citiți declinarea răspunderii și politica de confidențialitate pentru Osmosis - principalul schimb descentralizat Cosmos",
+  "seo.pool.title": "Bazin #",
+  "seo.pool.description": "Adăugați-vă activele în acest grup pentru a debloca APR. Cu cât perioada de dezlegare este mai lungă, cu atât câștigi mai mult pe Osmosis - principalul schimb descentralizat Cosmos",
+  "seo.pools.title": "Bazine cu osmoză",
+  "seo.pools.description": "Descoperiți bazine de lichiditate pe Osmosis - principalul schimb descentralizat Cosmos"
 }

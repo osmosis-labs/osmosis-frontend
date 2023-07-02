@@ -47,7 +47,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
 
     const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId)
       .osmosis!;
-    const account = accountStore.getAccount(chainStore.osmosis.chainId);
+    const account = accountStore.getWallet(chainStore.osmosis.chainId);
 
     const {
       pool,
@@ -73,7 +73,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
 
     const userHasPositionInPool =
       osmosisQueries.queryAccountsPositions
-        .get(account.bech32Address)
+        .get(account?.address ?? "")
         .positions.filter((position) => position.poolId === poolId).length > 0;
 
     return (

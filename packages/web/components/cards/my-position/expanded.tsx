@@ -44,7 +44,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     queriesStore,
   } = useStore();
 
-  const account = accountStore.getAccount(chainId);
+  const account = accountStore.getWallet(chainId);
   const osmosisQueries = queriesStore.get(chainId).osmosis!;
   const queryPool = osmosisQueries.queryPools.getPool(poolId);
 
@@ -207,7 +207,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
         <PositionButton
           disabled={!positionConfig.hasRewardsAvailable}
           onClick={() => {
-            account.osmosis
+            account?.osmosis
               .sendCollectAllPositionsRewardsMsgs([positionConfig.id])
               .catch(console.error);
           }}

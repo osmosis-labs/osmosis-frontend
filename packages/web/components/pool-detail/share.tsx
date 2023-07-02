@@ -79,10 +79,9 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
 
     const queryCosmos = queriesStore.get(chainId).cosmos;
     const queryOsmosis = queriesStore.get(chainId).osmosis!;
-    const { bech32Address } = accountStore.getAccount(
-      chainStore.osmosis.chainId
-    );
-    const queryAccountPoolRewards = queryAccountsPoolRewards.get(bech32Address);
+    const account = accountStore.getWallet(chainStore.osmosis.chainId);
+    const address = account?.address ?? "";
+    const queryAccountPoolRewards = queryAccountsPoolRewards.get(address);
 
     // initialize pool data stores once root pool store is loaded
     const { sharePoolDetail, superfluidPoolDetail, poolBonding } =
@@ -706,7 +705,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                       <h6 className="subtitle1 text-osmoverse-300">
                         {t("pool.sharesAmount", {
                           shares: queryOsmosis.queryGammPoolShare
-                            .getAvailableGammShare(bech32Address, poolId)
+                            .getAvailableGammShare(address, poolId)
                             .trim(true)
                             .hideDenom(true)
                             .maxDecimals(4)
@@ -719,7 +718,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                         className="w-fit shrink-0 xs:w-full"
                         mode="secondary"
                         disabled={queryOsmosis.queryGammPoolShare
-                          .getAvailableGammShare(bech32Address, poolId)
+                          .getAvailableGammShare(address, poolId)
                           .toDec()
                           .isZero()}
                         onClick={() => {
@@ -755,7 +754,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                   <h6 className="subtitle1 text-osmoverse-300">
                     {t("pool.sharesAmount", {
                       shares: queryOsmosis.queryGammPoolShare
-                        .getAvailableGammShare(bech32Address, poolId)
+                        .getAvailableGammShare(address, poolId)
                         .trim(true)
                         .hideDenom(true)
                         .maxDecimals(4)

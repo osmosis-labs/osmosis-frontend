@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.json",
+  "ts-node": {
+    "swc": true,
+    "compilerOptions": {
+      "module": "CommonJS",
+      "esModuleInterop": true,
+      "target": "ES2018",
+      "moduleResolution": "node"
+    }
+  },
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "build",
+    "declaration": true,
+    "rootDir": "src"
+  },
+  "include": ["src/**/*"]
+}

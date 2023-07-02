@@ -3,6 +3,7 @@ import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
+import { NextSeo } from "next-seo";
 import {
   ComponentProps,
   FunctionComponent,
@@ -146,6 +147,10 @@ const Assets: NextPage = observer(() => {
 
   return (
     <main className="mx-auto flex max-w-container flex-col gap-20 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
+      <NextSeo
+        title={t("seo.assets.title")}
+        description={t("seo.assets.description")}
+      />
       <AssetsOverview />
       {isMobile && preTransferModalProps && (
         <PreTransferModal {...preTransferModalProps} />
@@ -306,12 +311,12 @@ const PoolAssets: FunctionComponent = observer(() => {
   const t = useTranslation();
 
   const { chainId } = chainStore.osmosis;
-  const { bech32Address } = accountStore.getAccount(chainId);
+  const address = accountStore.getWallet(chainId)?.address ?? "";
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
 
   const ownedPoolIds = queriesStore
     .get(chainId)
-    .osmosis!.queryGammPoolShare.getOwnPools(bech32Address);
+    .osmosis!.queryGammPoolShare.getOwnPools(address);
   const [showAllPools, setShowAllPools] = useState(false);
 
   useEffect(() => {
@@ -323,10 +328,7 @@ const PoolAssets: FunctionComponent = observer(() => {
       .getPool(poolId)
       ?.computeTotalValueLocked(priceStore)
       .mul(
-        queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
-          bech32Address,
-          poolId
-        )
+        queryOsmosis.queryGammPoolShare.getAllGammShareRatio(address, poolId)
       )
   );
 

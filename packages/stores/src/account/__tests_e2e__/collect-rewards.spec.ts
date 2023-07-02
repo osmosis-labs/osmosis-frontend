@@ -13,16 +13,15 @@ describe("Collect Cl Fees Txs", () => {
   let queryPool: ObservableQueryPool | undefined;
 
   beforeAll(async () => {
-    const account = accountStore.getAccount(chainId);
-    account.cosmos.broadcastMode = "sync";
+    const account = accountStore.getWallet(chainId);
     await waitAccountLoaded(account);
   });
 
   beforeEach(async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
 
     // prepare CL pool
-    await account.osmosis.sendCreateConcentratedPoolMsg(
+    await account?.osmosis.sendCreateConcentratedPoolMsg(
       "uion",
       "uosmo",
       1,
@@ -36,16 +35,16 @@ describe("Collect Cl Fees Txs", () => {
   it("should collect fees", async () => {
     await swapInPool(queryPool!.id);
 
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
     const userPositionIds = await getUserPositionsIds();
     await expect(
       new Promise((resolve, reject) =>
-        account.osmosis.sendCollectAllPositionsRewardsMsgs(
+        account?.osmosis.sendCollectAllPositionsRewardsMsgs(
           userPositionIds,
           undefined,
           undefined,
           (tx) => {
-            if (tx.code) reject(tx.log);
+            if (tx.code) reject(tx.rawLog);
             else resolve(tx);
           }
         )
@@ -57,17 +56,17 @@ describe("Collect Cl Fees Txs", () => {
     // DONT swap in pools
     // await swapInPool(queryPool!.id);
 
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
     const userPositionIds = await getUserPositionsIds();
     await expect(
       new Promise((resolve, reject) =>
-        account.osmosis
+        account?.osmosis
           .sendCollectAllPositionsRewardsMsgs(
             userPositionIds,
             undefined,
             undefined,
             (tx) => {
-              if (tx.code) reject(tx.log);
+              if (tx.code) reject(tx.rawLog);
               else resolve(tx);
             }
           )
@@ -80,7 +79,7 @@ describe("Collect Cl Fees Txs", () => {
   // TODO setup test with incentive rewards once we add incentive creation txs
 
   async function swapInPool(poolId: string) {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
 
     const osmoCurrency = chainStore
       .getChain(chainId)
@@ -91,7 +90,7 @@ describe("Collect Cl Fees Txs", () => {
     const ionSwapAmount = "10";
 
     // prepare CL position
-    await account.osmosis.sendCreateConcentratedLiquidityPositionMsg(
+    await account?.osmosis.sendCreateConcentratedLiquidityPositionMsg(
       poolId,
       minTick,
       maxTick,
@@ -107,7 +106,7 @@ describe("Collect Cl Fees Txs", () => {
 
     // swap in pool to incur fees
     await new Promise((resolve, reject) =>
-      account.osmosis.sendSwapExactAmountInMsg(
+      account?.osmosis.sendSwapExactAmountInMsg(
         [{ id: poolId, tokenOutDenom: "uion" }],
         { currency: osmoCurrency, amount: osmoSwapAmount },
         "9",
@@ -123,7 +122,7 @@ describe("Collect Cl Fees Txs", () => {
 
     // swap in pool to incur fees
     await new Promise((resolve, reject) =>
-      account.osmosis.sendSwapExactAmountInMsg(
+      account?.osmosis.sendSwapExactAmountInMsg(
         [{ id: poolId, tokenOutDenom: "uion" }],
         { currency: osmoCurrency, amount: osmoSwapAmount },
         "9",
@@ -139,11 +138,11 @@ describe("Collect Cl Fees Txs", () => {
   }
 
   async function getUserPositionsIds() {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
     const osmosisQueries = queriesStore.get(chainId).osmosis!;
 
     const positions = osmosisQueries.queryAccountsPositions.get(
-      account.bech32Address
+      account?.address ?? ""
     );
     await positions.waitResponse();
 

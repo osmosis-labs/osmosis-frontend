@@ -11,24 +11,23 @@ describe("Create Pool Tx", () => {
   const { accountStore } = new RootStore();
 
   beforeAll(async () => {
-    const account = accountStore.getAccount(chainId);
-    account.cosmos.broadcastMode = "block";
+    const account = accountStore.getWallet(chainId);
     await waitAccountLoaded(account);
   });
 
   test("weighted - should fail with 0 assets", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
 
     await expect(
-      account.osmosis.sendCreateBalancerPoolMsg("0", [])
+      account?.osmosis.sendCreateBalancerPoolMsg("0", [])
     ).rejects.not.toBeNull();
   });
 
   test("weighted - should fail with 1 assets", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
 
     await expect(
-      account.osmosis.sendCreateBalancerPoolMsg("0", [
+      account?.osmosis.sendCreateBalancerPoolMsg("0", [
         {
           weight: "100",
           token: {
@@ -45,10 +44,10 @@ describe("Create Pool Tx", () => {
   });
 
   test("weighted - should fail with duplicated assets", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
 
     await expect(
-      account.osmosis.sendCreateBalancerPoolMsg(
+      account?.osmosis.sendCreateBalancerPoolMsg(
         "0",
         [
           {
@@ -81,10 +80,10 @@ describe("Create Pool Tx", () => {
   });
 
   test("weighted - with 0 swap fee", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
 
     const tx = await new Promise<any>((resolve) => {
-      account.osmosis.sendCreateBalancerPoolMsg(
+      account?.osmosis.sendCreateBalancerPoolMsg(
         "0",
         [
           {
@@ -129,7 +128,7 @@ describe("Create Pool Tx", () => {
           { key: "module", value: "poolmanager" },
           {
             key: "sender",
-            value: account.bech32Address,
+            value: account?.address,
           },
         ],
       },
@@ -146,10 +145,10 @@ describe("Create Pool Tx", () => {
   });
 
   test("weighted - with swap fee", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
 
     const tx = await new Promise<any>((resolve) => {
-      account.osmosis.sendCreateBalancerPoolMsg(
+      account?.osmosis.sendCreateBalancerPoolMsg(
         "0.1",
         [
           {
@@ -194,7 +193,7 @@ describe("Create Pool Tx", () => {
           { key: "module", value: "poolmanager" },
           {
             key: "sender",
-            value: account.bech32Address,
+            value: account?.address,
           },
         ],
       },
@@ -211,11 +210,11 @@ describe("Create Pool Tx", () => {
   });
 
   test("concentrated - base creation", async () => {
-    const account = accountStore.getAccount(chainId);
+    const account = accountStore.getWallet(chainId);
 
     await expect(
       new Promise<any>((resolve, reject) => {
-        account.osmosis
+        account?.osmosis
           .sendCreateConcentratedPoolMsg(
             "uion",
             "uosmo",

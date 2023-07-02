@@ -1,36 +1,59 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { StdTx } from "@cosmjs/launchpad";
+import { Chain } from "@chain-registry/types";
+import { WalletStatus } from "@cosmos-kit/core";
 import { MemoryKVStore } from "@keplr-wallet/common";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import {
-  AccountSetBase,
-  AccountStore,
   ChainStore,
-  CosmosAccount,
   CosmosQueries,
-  CosmwasmAccount,
   CosmwasmQueries,
   IQueriesStore,
   QueriesStore,
-  WalletStatus,
 } from "@keplr-wallet/stores";
 import { ChainInfo } from "@keplr-wallet/types";
-import Axios from "axios";
-import { Buffer } from "buffer";
+import { assets } from "chain-registry";
 import { when } from "mobx";
-import WebSocket from "ws";
 
-import { ObservableQueryPool, OsmosisAccount, OsmosisQueries } from "..";
-import { MockKeplrWithFee } from "./mock-keplr-with-fee";
+import {
+  AccountStore,
+  CosmosAccount,
+  CosmwasmAccount,
+  ObservableQueryPool,
+  OsmosisAccount,
+  OsmosisQueries,
+} from "..";
+import { DeliverTxResponse } from "../account/types";
+import { TestWallet, testWalletInfo } from "./test-wallet";
 
 export const chainId = "localosmosis";
 
-export const TestChainInfos: ChainInfo[] = [
+export const TestChainInfos: (ChainInfo & Chain)[] = [
   {
     rpc: "http://127.0.0.1:26657",
     rest: "http://127.0.0.1:1317",
     chainId: chainId,
     chainName: "OSMOSIS",
+    /** Cosmoskit required properties */
+    chain_id: chainId,
+    chain_name: "OSMOSIS",
+    pretty_name: "Osmosis",
+    status: "live",
+    bech32_prefix: "osmo",
+    slip44: 118,
+    network_type: "mainnet",
+    apis: {
+      rpc: [
+        {
+          address: "http://127.0.0.1:26657",
+        },
+      ],
+      rest: [
+        {
+          address: "http://127.0.0.1:1317",
+        },
+      ],
+    },
+    /** End of Cosmoskit required properties */
     stakeCurrency: {
       coinDenom: "OSMO",
       coinMinimalDenom: "uosmo",
@@ -84,69 +107,14 @@ export class RootStore {
     [CosmosQueries, CosmwasmQueries, OsmosisQueries]
   >;
   public readonly accountStore: AccountStore<
-    [CosmosAccount, CosmwasmAccount, OsmosisAccount]
+    [OsmosisAccount, CosmosAccount, CosmwasmAccount]
   >;
 
   constructor(
     // osmo1cyyzpxplxdzkeea7kwsydadg87357qnahakaks
     mnemonic = "notice oak worry limit wrap speak medal online prefer cluster roof addict wrist behave treat actual wasp year salad speed social layer crew genius"
   ) {
-    const mockKeplr = new MockKeplrWithFee(
-      async (chainId: string, tx: StdTx | Uint8Array) => {
-        const chainInfo = TestChainInfos.find(
-          (info) => info.chainId === chainId
-        );
-        if (!chainInfo) {
-          throw new Error("Unknown chain info");
-        }
-
-        const restInstance = Axios.create({
-          ...{
-            baseURL: chainInfo.rest,
-          },
-        });
-
-        const isProtoTx = Buffer.isBuffer(tx) || tx instanceof Uint8Array;
-
-        const params = isProtoTx
-          ? {
-              tx_bytes: Buffer.from(tx as any).toString("base64"),
-              mode: "BROADCAST_MODE_SYNC",
-            }
-          : {
-              tx,
-              mode: "sync",
-            };
-
-        try {
-          const result = await restInstance.post(
-            isProtoTx ? "/cosmos/tx/v1beta1/txs" : "/txs",
-            params
-          );
-
-          const txResponse = isProtoTx
-            ? result.data["tx_response"]
-            : result.data;
-
-          if (txResponse.code != null && txResponse.code !== 0) {
-            throw new Error(txResponse["raw_log"]);
-          }
-
-          return Buffer.from(txResponse.txhash, "hex");
-        } finally {
-          // Sending the other tx right after the response is fetched makes the other tx be failed sometimes,
-          // because actually the increased sequence is commited after the block is fully processed.
-          // So, to prevent this problem, just wait more time after the response is fetched.
-          await new Promise((resolve) => {
-            setTimeout(resolve, 6_000);
-          });
-        }
-      },
-      TestChainInfos,
-      mnemonic
-    );
-
-    this.chainStore = new ChainStore(TestChainInfos);
+    this.chainStore = new ChainStore(TestChainInfos as unknown as ChainInfo[]);
 
     this.queriesStore = new QueriesStore(
       new MemoryKVStore("store_web_queries"),
@@ -156,43 +124,35 @@ export class RootStore {
       OsmosisQueries.use(chainId, true)
     );
 
+    const testWallet = new TestWallet(testWalletInfo, mnemonic);
+
     this.accountStore = new AccountStore(
-      {
-        // No need
-        addEventListener: () => null,
-        removeEventListener: () => null,
-      },
+      TestChainInfos,
+      assets,
+      [testWallet],
+      this.queriesStore,
       this.chainStore,
-      () => {
-        return {
-          suggestChain: false,
-          prefetching: true,
-          autoInit: true,
-          getKeplr: async () => {
-            return mockKeplr;
-          },
-          wsObject: WebSocket as any,
-        };
-      },
+      undefined,
+      OsmosisAccount.use({ queriesStore: this.queriesStore }),
       CosmosAccount.use({
         queriesStore: this.queriesStore,
         msgOptsCreator: () => ({ ibcTransfer: { gas: 130000 } }),
-        wsObject: WebSocket as any,
       }),
-      CosmwasmAccount.use({ queriesStore: this.queriesStore }),
-      OsmosisAccount.use({ queriesStore: this.queriesStore })
+      CosmwasmAccount.use({ queriesStore: this.queriesStore })
     );
   }
 }
 
-export async function waitAccountLoaded(account: AccountSetBase) {
-  if (account.isReadyToSendTx) {
+export async function waitAccountLoaded(
+  account: ReturnType<AccountStore["getWallet"]>
+) {
+  if (account?.isReadyToSendTx || !account) {
     return;
   }
 
   const resolution = when(
     () =>
-      account.isReadyToSendTx && account.walletStatus === WalletStatus.Loaded
+      account.isReadyToSendTx && account.walletStatus === WalletStatus.Connected
   );
 
   return new Promise<void>((resolve, reject) => {
@@ -207,8 +167,10 @@ export async function waitAccountLoaded(account: AccountSetBase) {
   });
 }
 
-export function getEventFromTx(tx: any, type: string): any {
-  return JSON.parse(tx.log)[0].events.find((e: any) => e.type === type);
+export function getEventFromTx(tx: DeliverTxResponse, type: string): any {
+  return JSON.parse(tx.rawLog ?? "")[0].events.find(
+    (e: any) => e.type === type
+  );
 }
 
 function deepContainedObj(obj1: any, obj2: any): boolean {

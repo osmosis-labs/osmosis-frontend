@@ -22,8 +22,8 @@ export function useAddConcentratedLiquidityConfig(
   const { accountStore, queriesStore } = useStore();
   const osmosisQueries = queriesStore.get(osmosisChainId).osmosis!;
 
-  const account = accountStore.getAccount(osmosisChainId);
-  const { bech32Address } = account;
+  const account = accountStore.getWallet(osmosisChainId);
+  const address = account?.address ?? "";
 
   const queryPool = osmosisQueries.queryPools.getPool(poolId);
 
@@ -33,7 +33,7 @@ export function useAddConcentratedLiquidityConfig(
         chainGetter,
         osmosisChainId,
         poolId,
-        bech32Address,
+        address,
         queriesStore,
         queriesStore.get(osmosisChainId).queryBalances
       )
@@ -64,7 +64,7 @@ export function useAddConcentratedLiquidityConfig(
           baseDepositValue = baseCoin;
         }
 
-        await account.osmosis.sendCreateConcentratedLiquidityPositionMsg(
+        await account?.osmosis.sendCreateConcentratedLiquidityPositionMsg(
           config.poolId,
           config.tickRange[0],
           config.tickRange[1],
@@ -73,7 +73,7 @@ export function useAddConcentratedLiquidityConfig(
           undefined,
           undefined,
           (tx) => {
-            if (tx.code) reject(tx.log);
+            if (tx.code) reject(tx.rawLog);
             else {
               osmosisQueries.queryLiquiditiesPerTickRange
                 .getForPoolId(poolId)
@@ -89,7 +89,7 @@ export function useAddConcentratedLiquidityConfig(
     });
   }, [
     poolId,
-    account.osmosis,
+    account?.osmosis,
     osmosisQueries.queryLiquiditiesPerTickRange,
     config.baseDepositAmountIn.sendCurrency,
     config.baseDepositAmountIn.amount,
@@ -108,14 +108,14 @@ export function useAddConcentratedLiquidityConfig(
         const amount1 = config.quoteDepositAmountIn.getAmountPrimitive().amount;
 
         try {
-          await account.osmosis.sendAddToConcentratedLiquidityPositionMsg(
+          await account?.osmosis.sendAddToConcentratedLiquidityPositionMsg(
             positionId,
             amount0,
             amount1,
             undefined,
             undefined,
             (tx) => {
-              if (tx.code) reject(tx.log);
+              if (tx.code) reject(tx.rawLog);
               else {
                 osmosisQueries.queryLiquiditiesPerTickRange
                   .getForPoolId(poolId)
@@ -135,7 +135,7 @@ export function useAddConcentratedLiquidityConfig(
       osmosisQueries.queryLiquiditiesPerTickRange,
       config.baseDepositAmountIn,
       config.quoteDepositAmountIn,
-      account.osmosis,
+      account?.osmosis,
     ]
   );
 
