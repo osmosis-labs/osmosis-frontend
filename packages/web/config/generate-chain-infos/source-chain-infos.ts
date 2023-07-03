@@ -3689,6 +3689,34 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://www.mintscan.io/neutron/txs/{txHash}",
   },
+  {
+    rpc: "https://realio-rpc.genznodes.dev",
+    rest: "https://realio-api.genznodes.dev",
+    chainId: "realionetwork_3301-1",
+    chainName: "Realio Network",
+    bip44: {
+      coinType: 60,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("realio"),
+    currencies: [
+      {
+        coinDenom: "RIO",
+        coinMinimalDenom: "ario",
+        coinDecimals: 18,
+        coinGeckoId: "pool:ario",
+        coinImageUrl: "/tokens/rio.png",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 4000000000,
+          average: 5000000000,
+          high: 8000000000,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://explorer.genznodes.dev/realio/tx/{txHash}",
+  },
 ];
 
 const chainInfos = IS_TESTNET
