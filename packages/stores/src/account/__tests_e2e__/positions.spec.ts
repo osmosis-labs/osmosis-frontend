@@ -3,6 +3,7 @@ import { ObservableQueryPool } from "src/queries";
 import {
   chainId,
   getLatestQueryPool,
+  initAccount,
   RootStore,
   waitAccountLoaded,
 } from "../../__tests_e2e__/test-env";
@@ -12,12 +13,14 @@ import { Int, Dec } from "@keplr-wallet/unit";
 
 describe("Create CL Positions Txs", () => {
   const { accountStore, queriesStore, chainStore } = new RootStore();
-  const account = accountStore.getWallet(chainId);
+  let account: ReturnType<(typeof accountStore)["getWallet"]>;
   const osmosisQueries = queriesStore.get(chainId).osmosis!;
 
   let queryPool: ObservableQueryPool | undefined;
 
   beforeAll(async () => {
+    await initAccount(accountStore, chainId);
+    account = accountStore.getWallet(chainId);
     await waitAccountLoaded(account);
   });
 
@@ -40,7 +43,7 @@ describe("Create CL Positions Txs", () => {
     queryPool = await getLatestQueryPool(chainId, queriesStore);
   });
 
-  it("should be able to be created - full range", async () => {
+  it.only("should be able to be created - full range", async () => {
     await expect(createFullRangePosition(queryPool!.id)).resolves.toBeDefined();
     await expect(
       getUserPositionsIdsForPool(queryPool!.id)

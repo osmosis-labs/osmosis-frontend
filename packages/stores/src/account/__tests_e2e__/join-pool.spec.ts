@@ -5,6 +5,7 @@ import {
   deepContained,
   getEventFromTx,
   getLatestQueryPool,
+  initAccount,
   RootStore,
   waitAccountLoaded,
 } from "../../__tests_e2e__/test-env";
@@ -14,6 +15,13 @@ import { ObservableQueryPool } from "../../queries";
 describe("Join Pool Tx", () => {
   let { accountStore, queriesStore } = new RootStore();
   let queryPool: ObservableQueryPool | undefined; // relies on `jest --runInBand` to work properly
+
+  let account: ReturnType<(typeof accountStore)["getWallet"]>;
+  beforeAll(async () => {
+    await initAccount(accountStore, chainId);
+    account = accountStore.getWallet(chainId);
+    await waitAccountLoaded(account);
+  });
 
   beforeEach(async () => {
     // Init new localnet per test

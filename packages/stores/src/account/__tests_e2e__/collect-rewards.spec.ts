@@ -3,6 +3,7 @@ import { ObservableQueryPool } from "src/queries";
 import {
   chainId,
   getLatestQueryPool,
+  initAccount,
   RootStore,
   waitAccountLoaded,
 } from "../../__tests_e2e__/test-env";
@@ -12,8 +13,10 @@ describe("Collect Cl Fees Txs", () => {
   const { accountStore, queriesStore, chainStore } = new RootStore();
   let queryPool: ObservableQueryPool | undefined;
 
+  let account: ReturnType<(typeof accountStore)["getWallet"]>;
   beforeAll(async () => {
-    const account = accountStore.getWallet(chainId);
+    await initAccount(accountStore, chainId);
+    account = accountStore.getWallet(chainId);
     await waitAccountLoaded(account);
   });
 

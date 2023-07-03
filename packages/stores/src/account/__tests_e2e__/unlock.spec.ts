@@ -3,6 +3,7 @@ import {
   chainId,
   deepContained,
   getEventFromTx,
+  initAccount,
   RootStore,
   waitAccountLoaded,
 } from "../../__tests_e2e__/test-env";
@@ -16,12 +17,16 @@ describe("Unbond Token Tx", () => {
     // fresh account
     "index light average senior silent limit usual local involve delay update rack cause inmate wall render magnet common feature laundry exact casual resource hundred"
   );
-  const account = accountStore.getWallet(chainId);
-
   let userLockIds: string[] | undefined;
 
-  beforeEach(async () => {
+  let account: ReturnType<(typeof accountStore)["getWallet"]>;
+  beforeAll(async () => {
+    await initAccount(accountStore, chainId);
+    account = accountStore.getWallet(chainId);
     await waitAccountLoaded(account);
+  });
+
+  beforeEach(async () => {
     // LocalOsmosis has no configured durations
     const queriesOsmosis = queriesStore.get(chainId).osmosis!;
     const queriesAccountLocked = queriesOsmosis.queryAccountLocked.get(

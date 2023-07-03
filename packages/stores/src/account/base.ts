@@ -103,6 +103,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         onBroadcasted?: (string: string, txHash: Uint8Array) => void;
         onFulfill?: (string: string, tx: any) => void;
       };
+      broadcastUrl?: string;
     } = {},
     ...accountSetCreators: ChainedFunctionifyTuple<
       AccountStore<Injects>,
@@ -398,7 +399,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           timestamp: string;
           events: unknown[];
         };
-      }>("/api/broadcast-transaction", {
+      }>(this.options?.broadcastUrl ?? "/api/broadcast-transaction", {
         restEndpoint: removeLastSlash(restEndpoint),
         tx_bytes: Buffer.from(encodedTx).toString("base64"),
         mode: "BROADCAST_MODE_SYNC",

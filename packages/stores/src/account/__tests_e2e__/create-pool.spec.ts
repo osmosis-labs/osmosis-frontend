@@ -3,6 +3,7 @@ import {
   chainId,
   deepContained,
   getEventFromTx,
+  initAccount,
   RootStore,
   waitAccountLoaded,
 } from "../../__tests_e2e__/test-env";
@@ -10,8 +11,10 @@ import {
 describe("Create Pool Tx", () => {
   const { accountStore } = new RootStore();
 
+  let account: ReturnType<(typeof accountStore)["getWallet"]>;
   beforeAll(async () => {
-    const account = accountStore.getWallet(chainId);
+    await initAccount(accountStore, chainId);
+    account = accountStore.getWallet(chainId);
     await waitAccountLoaded(account);
   });
 

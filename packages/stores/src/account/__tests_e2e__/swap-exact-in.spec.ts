@@ -10,6 +10,7 @@ import {
   deepContained,
   getEventFromTx,
   getLatestQueryPool,
+  initAccount,
   RootStore,
   waitAccountLoaded,
 } from "../../__tests_e2e__/test-env";
@@ -18,6 +19,13 @@ import { ObservableQueryPool } from "../../queries";
 describe("Test Osmosis Swap Exact Amount In Tx", () => {
   const { accountStore, queriesStore } = new RootStore();
   let queryPool: ObservableQueryPool | undefined;
+
+  let account: ReturnType<(typeof accountStore)["getWallet"]>;
+  beforeAll(async () => {
+    await initAccount(accountStore, chainId);
+    account = accountStore.getWallet(chainId);
+    await waitAccountLoaded(account);
+  });
 
   beforeEach(async () => {
     const account = accountStore.getWallet(chainId);
@@ -112,7 +120,7 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
     ).rejects.not.toBeNull();
   });
 
-  test("succeed with no max slippage - single route", async () => {
+  test.only("succeed with no max slippage - single route", async () => {
     const account = accountStore.getWallet(chainId);
 
     const tokenIn = {

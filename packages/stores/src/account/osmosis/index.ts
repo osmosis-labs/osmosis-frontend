@@ -122,10 +122,12 @@ export class OsmosisAccountImpl {
       poolAssets,
       sender: this.address,
       poolParams: {
-        swapFee: new Dec(swapFee)
-          .quo(DecUtils.getTenExponentNInPrecisionRange(2))
-          .toString(),
-        exitFee: new Dec(0).toString(),
+        swapFee: this.changeDecStringToProtoBz(
+          new Dec(swapFee)
+            .quo(DecUtils.getTenExponentNInPrecisionRange(2))
+            .toString()
+        ),
+        exitFee: this.changeDecStringToProtoBz(new Dec(0).toString()),
       },
     });
 

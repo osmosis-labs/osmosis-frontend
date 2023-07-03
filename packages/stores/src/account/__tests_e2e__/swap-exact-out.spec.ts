@@ -4,6 +4,7 @@ import {
   deepContained,
   getEventFromTx,
   getLatestQueryPool,
+  initAccount,
   RootStore,
   waitAccountLoaded,
 } from "../../__tests_e2e__/test-env";
@@ -16,10 +17,14 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
   const { accountStore, queriesStore } = new RootStore();
   let queryPool: ObservableQueryPool | undefined;
 
-  beforeEach(async () => {
-    const account = accountStore.getWallet(chainId);
+  let account: ReturnType<(typeof accountStore)["getWallet"]>;
+  beforeAll(async () => {
+    await initAccount(accountStore, chainId);
+    account = accountStore.getWallet(chainId);
     await waitAccountLoaded(account);
+  });
 
+  beforeEach(async () => {
     // And prepare the pool
     await account?.osmosis.sendCreateBalancerPoolMsg("0", [
       {
