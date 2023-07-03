@@ -466,6 +466,49 @@ export interface MsgAddToConcentratedLiquiditySuperfluidPositionResponseSDKType 
   new_liquidity: string;
   lock_id: Long;
 }
+/** ===================== MsgLockExistingFullRangePositionAndSFStake */
+export interface MsgLockExistingFullRangePositionAndSFStake {
+  positionId: Long;
+  sender: string;
+  valAddr: string;
+}
+export interface MsgLockExistingFullRangePositionAndSFStakeProtoMsg {
+  typeUrl: "/osmosis.superfluid.MsgLockExistingFullRangePositionAndSFStake";
+  value: Uint8Array;
+}
+/** ===================== MsgLockExistingFullRangePositionAndSFStake */
+export interface MsgLockExistingFullRangePositionAndSFStakeAmino {
+  position_id: string;
+  sender: string;
+  val_addr: string;
+}
+export interface MsgLockExistingFullRangePositionAndSFStakeAminoMsg {
+  type: "osmosis/lock-existing-full-range-position-and-sf-stake";
+  value: MsgLockExistingFullRangePositionAndSFStakeAmino;
+}
+/** ===================== MsgLockExistingFullRangePositionAndSFStake */
+export interface MsgLockExistingFullRangePositionAndSFStakeSDKType {
+  position_id: Long;
+  sender: string;
+  val_addr: string;
+}
+export interface MsgLockExistingFullRangePositionAndSFStakeResponse {
+  concentratedLockId: Long;
+}
+export interface MsgLockExistingFullRangePositionAndSFStakeResponseProtoMsg {
+  typeUrl: "/osmosis.superfluid.MsgLockExistingFullRangePositionAndSFStakeResponse";
+  value: Uint8Array;
+}
+export interface MsgLockExistingFullRangePositionAndSFStakeResponseAmino {
+  concentrated_lock_id: string;
+}
+export interface MsgLockExistingFullRangePositionAndSFStakeResponseAminoMsg {
+  type: "osmosis/lock-existing-full-range-position-and-sf-stake-response";
+  value: MsgLockExistingFullRangePositionAndSFStakeResponseAmino;
+}
+export interface MsgLockExistingFullRangePositionAndSFStakeResponseSDKType {
+  concentrated_lock_id: Long;
+}
 function createBaseMsgSuperfluidDelegate(): MsgSuperfluidDelegate {
   return {
     sender: "",
@@ -1853,7 +1896,7 @@ export const MsgUnPoolWhitelistedPoolResponse = {
 function createBaseMsgUnlockAndMigrateSharesToFullRangeConcentratedPosition(): MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition {
   return {
     sender: "",
-    lockId: Long.UZERO,
+    lockId: Long.ZERO,
     sharesToMigrate: undefined,
     tokenOutMins: [],
   };
@@ -1869,7 +1912,7 @@ export const MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition = {
       writer.uint32(10).string(message.sender);
     }
     if (!message.lockId.isZero()) {
-      writer.uint32(16).uint64(message.lockId);
+      writer.uint32(16).int64(message.lockId);
     }
     if (message.sharesToMigrate !== undefined) {
       Coin.encode(message.sharesToMigrate, writer.uint32(26).fork()).ldelim();
@@ -1894,7 +1937,7 @@ export const MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition = {
           message.sender = reader.string();
           break;
         case 2:
-          message.lockId = reader.uint64() as Long;
+          message.lockId = reader.int64() as Long;
           break;
         case 3:
           message.sharesToMigrate = Coin.decode(reader, reader.uint32());
@@ -1918,7 +1961,7 @@ export const MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition = {
     message.lockId =
       object.lockId !== undefined && object.lockId !== null
         ? Long.fromValue(object.lockId)
-        : Long.UZERO;
+        : Long.ZERO;
     message.sharesToMigrate =
       object.sharesToMigrate !== undefined && object.sharesToMigrate !== null
         ? Coin.fromPartial(object.sharesToMigrate)
@@ -2447,6 +2490,228 @@ export const MsgAddToConcentratedLiquiditySuperfluidPositionResponse = {
         "/osmosis.superfluid.MsgAddToConcentratedLiquiditySuperfluidPositionResponse",
       value:
         MsgAddToConcentratedLiquiditySuperfluidPositionResponse.encode(
+          message
+        ).finish(),
+    };
+  },
+};
+function createBaseMsgLockExistingFullRangePositionAndSFStake(): MsgLockExistingFullRangePositionAndSFStake {
+  return {
+    positionId: Long.UZERO,
+    sender: "",
+    valAddr: "",
+  };
+}
+export const MsgLockExistingFullRangePositionAndSFStake = {
+  typeUrl: "/osmosis.superfluid.MsgLockExistingFullRangePositionAndSFStake",
+  encode(
+    message: MsgLockExistingFullRangePositionAndSFStake,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (!message.positionId.isZero()) {
+      writer.uint32(8).uint64(message.positionId);
+    }
+    if (message.sender !== "") {
+      writer.uint32(18).string(message.sender);
+    }
+    if (message.valAddr !== "") {
+      writer.uint32(26).string(message.valAddr);
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): MsgLockExistingFullRangePositionAndSFStake {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgLockExistingFullRangePositionAndSFStake();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.positionId = reader.uint64() as Long;
+          break;
+        case 2:
+          message.sender = reader.string();
+          break;
+        case 3:
+          message.valAddr = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<MsgLockExistingFullRangePositionAndSFStake>
+  ): MsgLockExistingFullRangePositionAndSFStake {
+    const message = createBaseMsgLockExistingFullRangePositionAndSFStake();
+    message.positionId =
+      object.positionId !== undefined && object.positionId !== null
+        ? Long.fromValue(object.positionId)
+        : Long.UZERO;
+    message.sender = object.sender ?? "";
+    message.valAddr = object.valAddr ?? "";
+    return message;
+  },
+  fromAmino(
+    object: MsgLockExistingFullRangePositionAndSFStakeAmino
+  ): MsgLockExistingFullRangePositionAndSFStake {
+    return {
+      positionId: Long.fromString(object.position_id),
+      sender: object.sender,
+      valAddr: object.val_addr,
+    };
+  },
+  toAmino(
+    message: MsgLockExistingFullRangePositionAndSFStake
+  ): MsgLockExistingFullRangePositionAndSFStakeAmino {
+    const obj: any = {};
+    obj.position_id = message.positionId
+      ? message.positionId.toString()
+      : undefined;
+    obj.sender = message.sender;
+    obj.val_addr = message.valAddr;
+    return obj;
+  },
+  fromAminoMsg(
+    object: MsgLockExistingFullRangePositionAndSFStakeAminoMsg
+  ): MsgLockExistingFullRangePositionAndSFStake {
+    return MsgLockExistingFullRangePositionAndSFStake.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: MsgLockExistingFullRangePositionAndSFStake
+  ): MsgLockExistingFullRangePositionAndSFStakeAminoMsg {
+    return {
+      type: "osmosis/lock-existing-full-range-position-and-sf-stake",
+      value: MsgLockExistingFullRangePositionAndSFStake.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: MsgLockExistingFullRangePositionAndSFStakeProtoMsg
+  ): MsgLockExistingFullRangePositionAndSFStake {
+    return MsgLockExistingFullRangePositionAndSFStake.decode(message.value);
+  },
+  toProto(message: MsgLockExistingFullRangePositionAndSFStake): Uint8Array {
+    return MsgLockExistingFullRangePositionAndSFStake.encode(message).finish();
+  },
+  toProtoMsg(
+    message: MsgLockExistingFullRangePositionAndSFStake
+  ): MsgLockExistingFullRangePositionAndSFStakeProtoMsg {
+    return {
+      typeUrl: "/osmosis.superfluid.MsgLockExistingFullRangePositionAndSFStake",
+      value:
+        MsgLockExistingFullRangePositionAndSFStake.encode(message).finish(),
+    };
+  },
+};
+function createBaseMsgLockExistingFullRangePositionAndSFStakeResponse(): MsgLockExistingFullRangePositionAndSFStakeResponse {
+  return {
+    concentratedLockId: Long.UZERO,
+  };
+}
+export const MsgLockExistingFullRangePositionAndSFStakeResponse = {
+  typeUrl:
+    "/osmosis.superfluid.MsgLockExistingFullRangePositionAndSFStakeResponse",
+  encode(
+    message: MsgLockExistingFullRangePositionAndSFStakeResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (!message.concentratedLockId.isZero()) {
+      writer.uint32(8).uint64(message.concentratedLockId);
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): MsgLockExistingFullRangePositionAndSFStakeResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message =
+      createBaseMsgLockExistingFullRangePositionAndSFStakeResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.concentratedLockId = reader.uint64() as Long;
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<MsgLockExistingFullRangePositionAndSFStakeResponse>
+  ): MsgLockExistingFullRangePositionAndSFStakeResponse {
+    const message =
+      createBaseMsgLockExistingFullRangePositionAndSFStakeResponse();
+    message.concentratedLockId =
+      object.concentratedLockId !== undefined &&
+      object.concentratedLockId !== null
+        ? Long.fromValue(object.concentratedLockId)
+        : Long.UZERO;
+    return message;
+  },
+  fromAmino(
+    object: MsgLockExistingFullRangePositionAndSFStakeResponseAmino
+  ): MsgLockExistingFullRangePositionAndSFStakeResponse {
+    return {
+      concentratedLockId: Long.fromString(object.concentrated_lock_id),
+    };
+  },
+  toAmino(
+    message: MsgLockExistingFullRangePositionAndSFStakeResponse
+  ): MsgLockExistingFullRangePositionAndSFStakeResponseAmino {
+    const obj: any = {};
+    obj.concentrated_lock_id = message.concentratedLockId
+      ? message.concentratedLockId.toString()
+      : undefined;
+    return obj;
+  },
+  fromAminoMsg(
+    object: MsgLockExistingFullRangePositionAndSFStakeResponseAminoMsg
+  ): MsgLockExistingFullRangePositionAndSFStakeResponse {
+    return MsgLockExistingFullRangePositionAndSFStakeResponse.fromAmino(
+      object.value
+    );
+  },
+  toAminoMsg(
+    message: MsgLockExistingFullRangePositionAndSFStakeResponse
+  ): MsgLockExistingFullRangePositionAndSFStakeResponseAminoMsg {
+    return {
+      type: "osmosis/lock-existing-full-range-position-and-sf-stake-response",
+      value:
+        MsgLockExistingFullRangePositionAndSFStakeResponse.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: MsgLockExistingFullRangePositionAndSFStakeResponseProtoMsg
+  ): MsgLockExistingFullRangePositionAndSFStakeResponse {
+    return MsgLockExistingFullRangePositionAndSFStakeResponse.decode(
+      message.value
+    );
+  },
+  toProto(
+    message: MsgLockExistingFullRangePositionAndSFStakeResponse
+  ): Uint8Array {
+    return MsgLockExistingFullRangePositionAndSFStakeResponse.encode(
+      message
+    ).finish();
+  },
+  toProtoMsg(
+    message: MsgLockExistingFullRangePositionAndSFStakeResponse
+  ): MsgLockExistingFullRangePositionAndSFStakeResponseProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.superfluid.MsgLockExistingFullRangePositionAndSFStakeResponse",
+      value:
+        MsgLockExistingFullRangePositionAndSFStakeResponse.encode(
           message
         ).finish(),
     };
