@@ -23,6 +23,7 @@ import { Button } from "~/components/buttons";
 import { ChartButton } from "~/components/buttons";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import { CustomClasses } from "~/components/types";
+import { SuperfluidValidatorModal } from "~/modals";
 import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
 import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-liquidity";
 import { useStore } from "~/stores";
@@ -66,8 +67,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
   const superfluidUndelegation =
     superfluidPoolDetail.getUndelegatingPositionInfo(positionConfig.id);
 
-  const isCurrentlyStaked =
-    Boolean(superfluidDelegation) || Boolean(superfluidUndelegation);
+  const existingSfValidatorAddress = superfluidDelegation?.validatorAddress;
 
   const {
     xRange,
@@ -93,6 +93,9 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
   const [activeModal, setActiveModal] = useState<"increase" | "remove" | null>(
     null
   );
+
+  const [selectSfValidatorAddress, setSelectSfValidatorAddress] =
+    useState<boolean>(false);
 
   useEffect(() => {
     if (lowerPrices?.price && upperPrices?.price) {
@@ -230,29 +233,54 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
       <div className="mt-4 flex flex-row justify-end gap-5 sm:flex-wrap sm:justify-start">
         {positionConfig.isFullRange &&
           superfluidPoolDetail.isSuperfluid &&
-          !isCurrentlyStaked && (
-            <PositionButton
-              className="text-superfluid-gradient"
-              onClick={() => {
-                account?.osmosis
-                  .sendCollectAllPositionsRewardsMsgs([positionConfig.id])
-                  .catch(console.error);
-              }}
-            >
-              {t("pool.superfluidEarnMore", {
-                rate: superfluidPoolDetail.superfluidApr
-                  .maxDecimals(1)
-                  .toString(),
-              })}
-            </PositionButton>
+          account && (
+            <>
+              <button
+                className="w-fit rounded-lg bg-superfluid px-[2px]"
+                disabled={!Boolean(account)}
+                onClick={() => {
+                  if (!existingSfValidatorAddress) {
+                    setSelectSfValidatorAddress(true);
+                  } else {
+                    account.osmosis
+                      .sendStakePositionMsg(
+                        positionConfig.id,
+                        existingSfValidatorAddress
+                      )
+                      .catch(console.error);
+                  }
+                }}
+              >
+                <div className="w-full rounded-[6px] bg-osmoverse-800 px-3 py-[6px] md:px-2">
+                  <span className="text-superfluid-gradient">
+                    {t("pool.superfluidEarnMore", {
+                      rate: superfluidPoolDetail.superfluidApr
+                        .maxDecimals(1)
+                        .toString(),
+                    })}
+                  </span>
+                </div>
+              </button>
+              <SuperfluidValidatorModal
+                isOpen={selectSfValidatorAddress}
+                onRequestClose={() => setSelectSfValidatorAddress(false)}
+                onSelectValidator={async (address) => {
+                  await account.osmosis
+                    .sendStakePositionMsg(positionConfig.id, address)
+                    .catch(console.error);
+                  setSelectSfValidatorAddress(false);
+                }}
+              />
+            </>
           )}
         <PositionButton
           disabled={
             !positionConfig.hasRewardsAvailable ||
-            Boolean(account?.txTypeInProgress)
+            Boolean(account?.txTypeInProgress) ||
+            !Boolean(account)
           }
           onClick={() => {
-            account?.osmosis
+            account!.osmosis
               .sendCollectAllPositionsRewardsMsgs([positionConfig.id])
               .catch(console.error);
           }}
