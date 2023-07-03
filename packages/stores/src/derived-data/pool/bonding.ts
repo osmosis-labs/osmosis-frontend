@@ -204,13 +204,18 @@ export class ObservableSharePoolBonding {
           : undefined;
 
       // return if this gauge is not relevant to user
-      //  * Bonding is pointless with no gauges incentivizing this duration's locks
-      //  * User has no un/locked tokens in locks for this duration
+      //  * Bonding is pointless with no internal gauges incentivizing this lock duration
+      //    * OR Is superfluid but is not the longest lock duration
+      //  * No external gauges for this lock duration
+      //  * User has no un/locked tokens in locks for this lock duration
       if (
-        !internalGaugeOfDuration?.apr.toDec().gt(new Dec(0)) &&
+        (!internalGaugeOfDuration?.apr.toDec().gt(new Dec(0)) ||
+          (this.superfluidPoolDetail.isSuperfluid &&
+            curDuration.asMilliseconds() ===
+              this.sharePoolDetail.longestDuration?.asMilliseconds())) &&
         externalGaugesOfDuration.length === 0 &&
         lockedUserShares.toDec().isZero() &&
-        (!userUnlockingShares || userUnlockingShares?.shares.toDec().isZero())
+        (!userUnlockingShares || userUnlockingShares.shares.toDec().isZero())
       ) {
         return;
       }

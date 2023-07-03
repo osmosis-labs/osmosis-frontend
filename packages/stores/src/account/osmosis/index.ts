@@ -1392,19 +1392,25 @@ export class OsmosisAccountImpl {
     );
     await queryPoolShares?.waitFreshResponse();
 
-    (lockIds ?? ["0"]).forEach((lockId) => {
+    (lockIds ?? ["-1"]).forEach((lockId) => {
       // ensure the lock ID is associated with the account, and that the coins locked are gamm shares
-      // if lock is 0, the shares are not unlocked and are in bank
+      // if lock is -1, the shares are not locked and are in bank
       const poolGammShares =
-        lockId === "0"
+        lockId === "-1"
           ? queryPoolShares?.balance
           : accountLocked.lockedCoins.find(
               ({ amount, lockIds }) =>
-                amount.denom === queryPool.shareCurrency.coinMinimalDenom &&
+                amount.currency.coinMinimalDenom ===
+                  queryPool.shareCurrency.coinMinimalDenom &&
                 lockIds.includes(lockId)
             )?.amount;
 
-      if (!poolGammShares || !queryPool?.sharePool?.totalShare) return;
+      if (!poolGammShares) {
+        throw new Error(`User shares for pool #${poolId} not found`);
+      }
+      if (!queryPool?.sharePool?.totalShare) {
+        throw new Error(`Pool ${poolId} missing share info`);
+      }
 
       const poolAssets = queryPool?.poolAssets.map(({ amount }) => ({
         denom: amount.currency.coinMinimalDenom,

@@ -125,10 +125,10 @@
     "migration": {
       "title": "Upgrade your position",
       "availableSharesTitle": "Migrate available shares",
-      "availableSharesDescription": "Migrate unbonded shares to the new pool. Shares will automatically be converted into the underlying assets and deposited into the new pool as a full range position",
+      "availableSharesDescription": "Migrate unbonded shares to the new Supercharged pool. Shares will automatically be converted into the underlying assets and deposited into the new pool as a full range position.",
       "balance": "Your balance:",
       "bondedSharesTitle": "Migrate bonded shares",
-      "bondedSharesDescription": "Migrate bonded or superfluid staked shares to the new pool. If shares are only bonded they will be unbonded, converted into the underlying assets, and deposited into the new pool as a full range position. Otherwise if they are superfluid staked, they will be converted into a superfluid staked full range position."
+      "bondedSharesDescription": "Migrate bonded or Superfluid staked shares to the new Supercharged pool. If shares are only bonded they will be unbonded, converted into the underlying assets, and deposited into the new pool as a full range position. Otherwise if they are Superfluid staked, they will be converted into a Superfluid staked full range position."
     }
   },
   "createFirstPositionCta": {
@@ -356,7 +356,7 @@
     "bondLiquidityCaption": "Lock up your shares for longer durations to earn higher APRs.",
     "bondLiquidityUnavailable": "Bond liquidity (unavailable)",
     "bondShares": "Bond Shares",
-    "bondSuperfluidLiquidityCaption": "Go superfluid for maximum rewards.",
+    "bondSuperfluidLiquidityCaption": "Go Superfluid for maximum rewards.",
     "checkBackForBondingRewards": "Check back for bonding rewards",
     "collapseDetails": "Hide pool composition",
     "commission": "commission",
@@ -381,7 +381,7 @@
     "sharesAvailableIn": "available in",
     "showDetails": "Show pool composition",
     "stableswapEnabled": "Stableswap enabled",
-    "superfluidEarnMore": "Earn {rate} more. Go superfluid",
+    "superfluidEarnMore": "Earn {rate} more. Go Superfluid",
     "superfluidEnabled": "Superfluid staking enabled",
     "superfluidStaking": "Superfluid Staking",
     "swap": "Trade Pair",
@@ -486,7 +486,7 @@
   "superfluidValidator": {
     "bondedAmount": "Bonded Amount",
     "buttonBond": "Bond & Stake",
-    "choose": "Choose your superfluid validator",
+    "choose": "Choose your Superfluid validator",
     "columns": {
       "commission": "Commission",
       "validator": "Validator"

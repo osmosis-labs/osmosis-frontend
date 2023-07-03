@@ -4,6 +4,7 @@ import * as _m0 from "protobufjs/minimal";
 import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
 import { Timestamp } from "../../google/protobuf/timestamp";
 import { fromTimestamp, Long, toTimestamp } from "../../helpers";
+import { PeriodLock, PeriodLockAmino, PeriodLockSDKType } from "../lockup/lock";
 /**
  * Position contains position's id, address, pool id, lower tick, upper tick
  * join time, and liquidity.
@@ -109,6 +110,26 @@ export interface FullPositionBreakdownSDKType {
   claimable_spread_rewards: CoinSDKType[];
   claimable_incentives: CoinSDKType[];
   forfeited_incentives: CoinSDKType[];
+}
+export interface PositionWithPeriodLock {
+  position?: Position;
+  locks?: PeriodLock;
+}
+export interface PositionWithPeriodLockProtoMsg {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.PositionWithPeriodLock";
+  value: Uint8Array;
+}
+export interface PositionWithPeriodLockAmino {
+  position?: PositionAmino;
+  locks?: PeriodLockAmino;
+}
+export interface PositionWithPeriodLockAminoMsg {
+  type: "osmosis/concentratedliquidity/position-with-period-lock";
+  value: PositionWithPeriodLockAmino;
+}
+export interface PositionWithPeriodLockSDKType {
+  position?: PositionSDKType;
+  locks?: PeriodLockSDKType;
 }
 function createBasePosition(): Position {
   return {
@@ -433,6 +454,101 @@ export const FullPositionBreakdown = {
     return {
       typeUrl: "/osmosis.concentratedliquidity.v1beta1.FullPositionBreakdown",
       value: FullPositionBreakdown.encode(message).finish(),
+    };
+  },
+};
+function createBasePositionWithPeriodLock(): PositionWithPeriodLock {
+  return {
+    position: undefined,
+    locks: undefined,
+  };
+}
+export const PositionWithPeriodLock = {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.PositionWithPeriodLock",
+  encode(
+    message: PositionWithPeriodLock,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.position !== undefined) {
+      Position.encode(message.position, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.locks !== undefined) {
+      PeriodLock.encode(message.locks, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): PositionWithPeriodLock {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePositionWithPeriodLock();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.position = Position.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.locks = PeriodLock.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<PositionWithPeriodLock>): PositionWithPeriodLock {
+    const message = createBasePositionWithPeriodLock();
+    message.position =
+      object.position !== undefined && object.position !== null
+        ? Position.fromPartial(object.position)
+        : undefined;
+    message.locks =
+      object.locks !== undefined && object.locks !== null
+        ? PeriodLock.fromPartial(object.locks)
+        : undefined;
+    return message;
+  },
+  fromAmino(object: PositionWithPeriodLockAmino): PositionWithPeriodLock {
+    return {
+      position: object?.position
+        ? Position.fromAmino(object.position)
+        : undefined,
+      locks: object?.locks ? PeriodLock.fromAmino(object.locks) : undefined,
+    };
+  },
+  toAmino(message: PositionWithPeriodLock): PositionWithPeriodLockAmino {
+    const obj: any = {};
+    obj.position = message.position
+      ? Position.toAmino(message.position)
+      : undefined;
+    obj.locks = message.locks ? PeriodLock.toAmino(message.locks) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: PositionWithPeriodLockAminoMsg): PositionWithPeriodLock {
+    return PositionWithPeriodLock.fromAmino(object.value);
+  },
+  toAminoMsg(message: PositionWithPeriodLock): PositionWithPeriodLockAminoMsg {
+    return {
+      type: "osmosis/concentratedliquidity/position-with-period-lock",
+      value: PositionWithPeriodLock.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: PositionWithPeriodLockProtoMsg
+  ): PositionWithPeriodLock {
+    return PositionWithPeriodLock.decode(message.value);
+  },
+  toProto(message: PositionWithPeriodLock): Uint8Array {
+    return PositionWithPeriodLock.encode(message).finish();
+  },
+  toProtoMsg(message: PositionWithPeriodLock): PositionWithPeriodLockProtoMsg {
+    return {
+      typeUrl: "/osmosis.concentratedliquidity.v1beta1.PositionWithPeriodLock",
+      value: PositionWithPeriodLock.encode(message).finish(),
     };
   },
 };

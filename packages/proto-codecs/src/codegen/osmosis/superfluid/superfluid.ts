@@ -3,6 +3,11 @@ import * as _m0 from "protobufjs/minimal";
 
 import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
 import { isSet, Long } from "../../helpers";
+import {
+  SyntheticLock,
+  SyntheticLockAmino,
+  SyntheticLockSDKType,
+} from "../lockup/lock";
 /**
  * SuperfluidAssetType indicates whether the superfluid asset is
  * a native token, lp share of a pool, or concentrated share of a pool
@@ -264,6 +269,7 @@ export interface ConcentratedPoolUserPositionRecord {
   validatorAddress: string;
   positionId: Long;
   lockId: Long;
+  syntheticLock?: SyntheticLock;
   delegationAmount?: Coin;
   equivalentStakedAmount?: Coin;
 }
@@ -275,6 +281,7 @@ export interface ConcentratedPoolUserPositionRecordAmino {
   validator_address: string;
   position_id: string;
   lock_id: string;
+  synthetic_lock?: SyntheticLockAmino;
   delegation_amount?: CoinAmino;
   equivalent_staked_amount?: CoinAmino;
 }
@@ -286,6 +293,7 @@ export interface ConcentratedPoolUserPositionRecordSDKType {
   validator_address: string;
   position_id: Long;
   lock_id: Long;
+  synthetic_lock?: SyntheticLockSDKType;
   delegation_amount?: CoinSDKType;
   equivalent_staked_amount?: CoinSDKType;
 }
@@ -921,6 +929,7 @@ function createBaseConcentratedPoolUserPositionRecord(): ConcentratedPoolUserPos
     validatorAddress: "",
     positionId: Long.UZERO,
     lockId: Long.UZERO,
+    syntheticLock: undefined,
     delegationAmount: undefined,
     equivalentStakedAmount: undefined,
   };
@@ -940,13 +949,19 @@ export const ConcentratedPoolUserPositionRecord = {
     if (!message.lockId.isZero()) {
       writer.uint32(24).uint64(message.lockId);
     }
+    if (message.syntheticLock !== undefined) {
+      SyntheticLock.encode(
+        message.syntheticLock,
+        writer.uint32(34).fork()
+      ).ldelim();
+    }
     if (message.delegationAmount !== undefined) {
-      Coin.encode(message.delegationAmount, writer.uint32(34).fork()).ldelim();
+      Coin.encode(message.delegationAmount, writer.uint32(42).fork()).ldelim();
     }
     if (message.equivalentStakedAmount !== undefined) {
       Coin.encode(
         message.equivalentStakedAmount,
-        writer.uint32(42).fork()
+        writer.uint32(50).fork()
       ).ldelim();
     }
     return writer;
@@ -971,9 +986,12 @@ export const ConcentratedPoolUserPositionRecord = {
           message.lockId = reader.uint64() as Long;
           break;
         case 4:
-          message.delegationAmount = Coin.decode(reader, reader.uint32());
+          message.syntheticLock = SyntheticLock.decode(reader, reader.uint32());
           break;
         case 5:
+          message.delegationAmount = Coin.decode(reader, reader.uint32());
+          break;
+        case 6:
           message.equivalentStakedAmount = Coin.decode(reader, reader.uint32());
           break;
         default:
@@ -996,6 +1014,10 @@ export const ConcentratedPoolUserPositionRecord = {
       object.lockId !== undefined && object.lockId !== null
         ? Long.fromValue(object.lockId)
         : Long.UZERO;
+    message.syntheticLock =
+      object.syntheticLock !== undefined && object.syntheticLock !== null
+        ? SyntheticLock.fromPartial(object.syntheticLock)
+        : undefined;
     message.delegationAmount =
       object.delegationAmount !== undefined && object.delegationAmount !== null
         ? Coin.fromPartial(object.delegationAmount)
@@ -1014,6 +1036,9 @@ export const ConcentratedPoolUserPositionRecord = {
       validatorAddress: object.validator_address,
       positionId: Long.fromString(object.position_id),
       lockId: Long.fromString(object.lock_id),
+      syntheticLock: object?.synthetic_lock
+        ? SyntheticLock.fromAmino(object.synthetic_lock)
+        : undefined,
       delegationAmount: object?.delegation_amount
         ? Coin.fromAmino(object.delegation_amount)
         : undefined,
@@ -1031,6 +1056,9 @@ export const ConcentratedPoolUserPositionRecord = {
       ? message.positionId.toString()
       : undefined;
     obj.lock_id = message.lockId ? message.lockId.toString() : undefined;
+    obj.synthetic_lock = message.syntheticLock
+      ? SyntheticLock.toAmino(message.syntheticLock)
+      : undefined;
     obj.delegation_amount = message.delegationAmount
       ? Coin.toAmino(message.delegationAmount)
       : undefined;
