@@ -1359,11 +1359,11 @@ export class OsmosisAccountImpl {
     );
     await queryPoolShares?.waitFreshResponse();
 
-    (lockIds ?? ["0"]).forEach((lockId) => {
+    (lockIds ?? ["-1"]).forEach((lockId) => {
       // ensure the lock ID is associated with the account, and that the coins locked are gamm shares
-      // if lock is 0, the shares are not unlocked and are in bank
+      // if lock is -1, the shares are not locked and are in bank
       const poolGammShares =
-        lockId === "0"
+        lockId === "-1"
           ? queryPoolShares?.balance
           : accountLocked.lockedCoins.find(
               ({ amount, lockIds }) =>
