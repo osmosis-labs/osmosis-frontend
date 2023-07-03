@@ -120,7 +120,7 @@
   "addConcentratedLiquidityPoolCta": {
     "title": "Supercharge your {pair}",
     "caption": "Supercharged positions allow you to earn additional yield. Learn how it works in 30 seconds, or upgrade your position in a few clicks.",
-    "primaryCta": "Upgrade to supercharged",
+    "primaryCta": "Upgrade to Supercharged",
     "secondaryCta": "Learn in 30 seconds",
     "migration": {
       "title": "Upgrade your position",
@@ -132,7 +132,7 @@
     }
   },
   "createFirstPositionCta": {
-    "title": "Create your first supercharged position",
+    "title": "Create your first Supercharged position",
     "caption": "This long awaited upgrade allows you to earn more with less capital. \n Get up and running in minutes, regardless of your level of experience.",
     "primaryCta": "Create a position",
     "secondaryCta": "Learn in 30 seconds"
