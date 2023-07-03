@@ -684,6 +684,7 @@ export class OsmosisAccountImpl {
 
   /**
    * Adds to a concentrated liquidity position, if successful replacing the old position with a new position and ID.
+   * Handles a superfluid staked position.
    *
    * @param positionId Position ID.
    * @param amount0 Integer amount of token0 to add to the position.
@@ -704,6 +705,14 @@ export class OsmosisAccountImpl {
     const queryPosition =
       this.queries.queryLiquidityPositionsById.getForPositionId(positionId);
     await queryPosition.waitFreshResponse();
+    if (!queryPosition.poolId) throw new Error("Position not found");
+
+    // get CL pool
+    const queryClPool = this.queries.queryPools.getPool(queryPosition.poolId);
+    if (!queryClPool) throw new Error("Pool not found");
+    await queryClPool.waitResponse();
+
+    // calculate desired amounts with slippage
     const amount0WithSlippage = new Dec(amount0)
       .mul(new Dec(1).sub(new Dec(maxSlippage).quo(new Dec(100))))
       .truncate()
@@ -713,14 +722,33 @@ export class OsmosisAccountImpl {
       .truncate()
       .toString();
 
-    const msg = this.msgOpts.clAddToConcentratedPosition.messageComposer({
-      amount0,
-      amount1,
-      positionId: Long.fromString(positionId),
-      sender: this.address,
-      tokenMinAmount0: amount0WithSlippage,
-      tokenMinAmount1: amount1WithSlippage,
-    });
+    const queryDelegatedPositions =
+      this.queries.queryAccountsSuperfluidDelegatedPositions.get(this.address);
+    await queryDelegatedPositions.waitResponse();
+    const isSuperfluidStaked =
+      queryDelegatedPositions.delegatedPositionIds.includes(positionId);
+
+    const msg = isSuperfluidStaked
+      ? this.msgOpts.clAddToConcentatedSuperfluidPosition.messageComposer({
+          positionId: Long.fromString(positionId),
+          sender: this.address,
+          tokenDesired0: {
+            denom: queryClPool.poolAssetDenoms[0],
+            amount: amount0WithSlippage,
+          },
+          tokenDesired1: {
+            denom: queryClPool.poolAssetDenoms[1],
+            amount: amount1WithSlippage,
+          },
+        })
+      : this.msgOpts.clAddToConcentratedPosition.messageComposer({
+          amount0,
+          amount1,
+          positionId: Long.fromString(positionId),
+          sender: this.address,
+          tokenMinAmount0: amount0WithSlippage,
+          tokenMinAmount1: amount1WithSlippage,
+        });
 
     await this.base.signAndBroadcast(
       this.chainId,
@@ -751,6 +779,11 @@ export class OsmosisAccountImpl {
           queries.osmosis?.queryAccountsPositions
             .get(this.address)
             .waitFreshResponse();
+
+          // if it's staked, fetch new delegation amount and new ID
+          if (isSuperfluidStaked) {
+            queryDelegatedPositions.waitFreshResponse();
+          }
         }
         onFulfill?.(tx);
       }

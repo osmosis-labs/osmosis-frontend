@@ -282,7 +282,10 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             : t("clPositions.removeLiquidity")}
         </PositionButton>
         <PositionButton
-          disabled={Boolean(account?.txTypeInProgress) || isCurrentlyStaked}
+          disabled={
+            Boolean(account?.txTypeInProgress) ||
+            Boolean(superfluidUndelegation)
+          }
           onClick={() => setActiveModal("increase")}
         >
           {t("clPositions.increaseLiquidity")}
