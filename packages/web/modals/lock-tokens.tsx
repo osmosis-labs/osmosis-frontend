@@ -49,8 +49,8 @@ export const LockTokensModal: FunctionComponent<
    *  TODO: perhaps we should display this in the view somehow
    */
   const hasSuperfluidValidator =
-    superfluidPoolDetail?.superfluid?.delegations &&
-    superfluidPoolDetail.superfluid.delegations.length > 0;
+    superfluidPoolDetail?.userSharesDelegations &&
+    superfluidPoolDetail.userSharesDelegations.length > 0;
   const superfluidApr =
     bondDurations[bondDurations.length - 1]?.superfluid?.apr;
 

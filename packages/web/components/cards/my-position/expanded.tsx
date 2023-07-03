@@ -1,6 +1,11 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
-import { ObservableQueryLiquidityPositionById } from "@osmosis-labs/stores";
+import {
+  ObservableQueryLiquidityPositionById,
+  ObservableSuperfluidPoolDetail,
+} from "@osmosis-labs/stores";
 import classNames from "classnames";
+import moment from "dayjs";
+import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -13,6 +18,7 @@ import React, {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { FallbackImg } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { ChartButton } from "~/components/buttons";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
@@ -42,13 +48,26 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     },
     accountStore,
     queriesStore,
+    derivedDataStore,
   } = useStore();
 
   const account = accountStore.getWallet(chainId);
   const osmosisQueries = queriesStore.get(chainId).osmosis!;
   const queryPool = osmosisQueries.queryPools.getPool(poolId);
+  const derivedPoolData = derivedDataStore.getForPool(poolId);
+  const superfluidPoolDetail = derivedPoolData?.superfluidPoolDetail;
 
   const currentPrice = queryPool?.concentratedLiquidityPoolInfo?.currentPrice;
+
+  const superfluidDelegation = superfluidPoolDetail.getDelegatedPositionInfo(
+    positionConfig.id
+  );
+
+  const superfluidUndelegation =
+    superfluidPoolDetail.getUndelegatingPositionInfo(positionConfig.id);
+
+  const isCurrentlyStaked =
+    Boolean(superfluidDelegation) || Boolean(superfluidUndelegation);
 
   const {
     xRange,
@@ -170,42 +189,68 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           </div>
         </div>
       </div>
-      <div className="flex flex-row">
-        <div className="flex w-full flex-col gap-4 sm:flex-col">
-          <div className="flex justify-between sm:flex-col sm:gap-3">
-            <AssetsInfo
-              className="w-0 flex-shrink flex-grow sm:w-full"
-              title={t("clPositions.currentAssets")}
-              assets={useMemo(
-                () =>
-                  [baseAsset, quoteAsset].filter((asset): asset is CoinPretty =>
-                    Boolean(asset)
-                  ),
-                [baseAsset, quoteAsset]
-              )}
-            />
-            <AssetsInfo
-              className="w-0 flex-shrink flex-grow sm:w-full"
-              title={t("clPositions.totalSpreadEarned")}
-            />
-          </div>
-          <div className="flex justify-between sm:flex-col sm:gap-3">
-            <AssetsInfo
-              className="w-0 flex-shrink flex-grow sm:w-full"
-              title={t("clPositions.principleAssets")}
-            />
-            <AssetsInfo
-              className="w-0 flex-shrink flex-grow sm:w-full"
-              title={t("clPositions.unclaimedRewards")}
-              assets={totalClaimableRewards}
-              emptyText={t("clPositions.noRewards")}
-            />
-          </div>
+      <div className="flex w-full flex-col gap-4 sm:flex-col">
+        <div className="flex justify-between sm:flex-col sm:gap-3">
+          <AssetsInfo
+            className="w-0 flex-shrink flex-grow sm:w-full"
+            title={t("clPositions.currentAssets")}
+            assets={useMemo(
+              () =>
+                [baseAsset, quoteAsset].filter((asset): asset is CoinPretty =>
+                  Boolean(asset)
+                ),
+              [baseAsset, quoteAsset]
+            )}
+          />
+          <AssetsInfo
+            className="w-0 flex-shrink flex-grow sm:w-full"
+            title={t("clPositions.totalSpreadEarned")}
+          />
+        </div>
+        <div className="flex justify-between sm:flex-col sm:gap-3">
+          <AssetsInfo
+            className="w-0 flex-shrink flex-grow sm:w-full"
+            title={t("clPositions.principleAssets")}
+          />
+          <AssetsInfo
+            className="w-0 flex-shrink flex-grow sm:w-full"
+            title={t("clPositions.unclaimedRewards")}
+            assets={totalClaimableRewards}
+            emptyText={t("clPositions.noRewards")}
+          />
         </div>
       </div>
+      {(superfluidDelegation || superfluidUndelegation) &&
+        derivedPoolData.sharePoolDetail.longestDuration && (
+          <SuperfluidPositionInfo
+            {...(superfluidDelegation ?? superfluidUndelegation!)}
+            stakeDuration={derivedPoolData.sharePoolDetail.longestDuration}
+          />
+        )}
       <div className="mt-4 flex flex-row justify-end gap-5 sm:flex-wrap sm:justify-start">
+        {positionConfig.isFullRange &&
+          superfluidPoolDetail.isSuperfluid &&
+          !isCurrentlyStaked && (
+            <PositionButton
+              className="text-superfluid-gradient"
+              onClick={() => {
+                account?.osmosis
+                  .sendCollectAllPositionsRewardsMsgs([positionConfig.id])
+                  .catch(console.error);
+              }}
+            >
+              {t("pool.superfluidEarnMore", {
+                rate: superfluidPoolDetail.superfluidApr
+                  .maxDecimals(1)
+                  .toString(),
+              })}
+            </PositionButton>
+          )}
         <PositionButton
-          disabled={!positionConfig.hasRewardsAvailable}
+          disabled={
+            !positionConfig.hasRewardsAvailable ||
+            Boolean(account?.txTypeInProgress)
+          }
           onClick={() => {
             account?.osmosis
               .sendCollectAllPositionsRewardsMsgs([positionConfig.id])
@@ -214,10 +259,35 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
         >
           {t("clPositions.collectRewards")}
         </PositionButton>
-        <PositionButton onClick={() => setActiveModal("remove")}>
-          {t("clPositions.removeLiquidity")}
+        <PositionButton
+          disabled={
+            Boolean(account?.txTypeInProgress) ||
+            Boolean(superfluidUndelegation)
+          }
+          onClick={() => {
+            if (superfluidDelegation) {
+              account?.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
+                [
+                  {
+                    lockId: superfluidDelegation.lockId,
+                    isSyntheticLock: true,
+                  },
+                ]
+              );
+            } else setActiveModal("remove");
+          }}
+        >
+          {Boolean(superfluidDelegation)
+            ? t("clPositions.unstake")
+            : t("clPositions.removeLiquidity")}
         </PositionButton>
-        <PositionButton onClick={() => setActiveModal("increase")}>
+        <PositionButton
+          disabled={
+            Boolean(account?.txTypeInProgress) ||
+            Boolean(superfluidUndelegation)
+          }
+          onClick={() => setActiveModal("increase")}
+        >
           {t("clPositions.increaseLiquidity")}
         </PositionButton>
       </div>
@@ -388,5 +458,81 @@ const Chart: FunctionComponent<{
         lastChartData ? () => setHoverPrice(lastChartData.close) : undefined
       }
     />
+  );
+};
+
+type DelegationOrUndelegationInfo =
+  | NonNullable<
+      ReturnType<
+        (typeof ObservableSuperfluidPoolDetail)["prototype"]["getDelegatedPositionInfo"]
+      >
+    >
+  | NonNullable<
+      ReturnType<
+        (typeof ObservableSuperfluidPoolDetail)["prototype"]["getUndelegatingPositionInfo"]
+      >
+    >;
+
+const SuperfluidPositionInfo: FunctionComponent<
+  DelegationOrUndelegationInfo & { stakeDuration: Duration }
+> = (props) => {
+  const {
+    validatorName,
+    validatorImgSrc,
+    equivalentStakedAmount,
+    validatorCommission,
+    superfluidApr,
+    stakeDuration,
+  } = props;
+  const t = useTranslation();
+
+  /** is undelegation */
+  const endTime = "endTime" in props ? props.endTime : undefined;
+
+  return (
+    <div className="subtitle1 flex w-full flex-col gap-4 sm:flex-col">
+      <span className="text-osmoverse-400">
+        {t("clPositions.superfluidValidator")}
+      </span>
+      <div className="flex items-center gap-3">
+        <FallbackImg // don't use next/image because we may not know what origin the image is on, next.config.js requires listed origins
+          className="rounded-full"
+          src={validatorImgSrc}
+          fallbacksrc="/icons/profile.svg"
+          height={50}
+          width={50}
+        />
+        <div className="flex flex-col">
+          <span>{validatorName}</span>
+          <span>~{equivalentStakedAmount.trim(true).toString()}</span>
+        </div>
+        <div className="flex flex-col pl-8 text-right md:pl-4">
+          <span className="text-superfluid-gradient">
+            +{superfluidApr.toString()} {t("pool.APR")}
+          </span>
+          {validatorCommission && (
+            <span>
+              {validatorCommission?.toString()}{" "}
+              {t("clPositions.superfluidCommission")}
+            </span>
+          )}
+        </div>
+        <div className="flex flex-col pl-8 text-right md:pl-4">
+          {endTime ? (
+            <span>
+              {t("clPositions.superfluidUnstaking", {
+                fromNow: moment(endTime).fromNow(true),
+              })}
+            </span>
+          ) : (
+            <span>
+              {t("clPositions.superfluidUnstake", {
+                duration: stakeDuration.humanize(),
+              })}
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
   );
 };

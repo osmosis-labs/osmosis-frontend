@@ -29,7 +29,7 @@ export class ObservableQueryPositionRangeApr extends ObservableQueryExternalBase
   get apr(): RatePretty | undefined {
     // TODO: don't use mock data
 
-    return new RatePretty(23);
+    return new RatePretty(0.2);
   }
 }
 

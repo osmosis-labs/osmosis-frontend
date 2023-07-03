@@ -684,6 +684,7 @@ export class OsmosisAccountImpl {
 
   /**
    * Adds to a concentrated liquidity position, if successful replacing the old position with a new position and ID.
+   * Handles a superfluid staked position.
    *
    * @param positionId Position ID.
    * @param amount0 Integer amount of token0 to add to the position.
@@ -704,6 +705,14 @@ export class OsmosisAccountImpl {
     const queryPosition =
       this.queries.queryLiquidityPositionsById.getForPositionId(positionId);
     await queryPosition.waitFreshResponse();
+    if (!queryPosition.poolId) throw new Error("Position not found");
+
+    // get CL pool
+    const queryClPool = this.queries.queryPools.getPool(queryPosition.poolId);
+    if (!queryClPool) throw new Error("Pool not found");
+    await queryClPool.waitResponse();
+
+    // calculate desired amounts with slippage
     const amount0WithSlippage = new Dec(amount0)
       .mul(new Dec(1).sub(new Dec(maxSlippage).quo(new Dec(100))))
       .truncate()
@@ -713,14 +722,33 @@ export class OsmosisAccountImpl {
       .truncate()
       .toString();
 
-    const msg = this.msgOpts.clAddToConcentratedPosition.messageComposer({
-      amount0,
-      amount1,
-      positionId: Long.fromString(positionId),
-      sender: this.address,
-      tokenMinAmount0: amount0WithSlippage,
-      tokenMinAmount1: amount1WithSlippage,
-    });
+    const queryDelegatedPositions =
+      this.queries.queryAccountsSuperfluidDelegatedPositions.get(this.address);
+    await queryDelegatedPositions.waitResponse();
+    const isSuperfluidStaked =
+      queryDelegatedPositions.delegatedPositionIds.includes(positionId);
+
+    const msg = isSuperfluidStaked
+      ? this.msgOpts.clAddToConcentatedSuperfluidPosition.messageComposer({
+          positionId: Long.fromString(positionId),
+          sender: this.address,
+          tokenDesired0: {
+            denom: queryClPool.poolAssetDenoms[0],
+            amount: amount0WithSlippage,
+          },
+          tokenDesired1: {
+            denom: queryClPool.poolAssetDenoms[1],
+            amount: amount1WithSlippage,
+          },
+        })
+      : this.msgOpts.clAddToConcentratedPosition.messageComposer({
+          amount0,
+          amount1,
+          positionId: Long.fromString(positionId),
+          sender: this.address,
+          tokenMinAmount0: amount0WithSlippage,
+          tokenMinAmount1: amount1WithSlippage,
+        });
 
     await this.base.signAndBroadcast(
       this.chainId,
@@ -751,6 +779,11 @@ export class OsmosisAccountImpl {
           queries.osmosis?.queryAccountsPositions
             .get(this.address)
             .waitFreshResponse();
+
+          // if it's staked, fetch new delegation amount and new ID
+          if (isSuperfluidStaked) {
+            queryDelegatedPositions.waitFreshResponse();
+          }
         }
         onFulfill?.(tx);
       }
@@ -1706,7 +1739,8 @@ export class OsmosisAccountImpl {
   }
 
   /**
-   * https://docs.osmosis.zone/developing/osmosis-core/modules/spec-superfluid.html#superfluid-unbond-lock
+   * Will unbond normal locks or synthetic locks if superfluid.
+   *
    * @param locks IDs and whether the lock is synthetic
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fullfillment given raw response.
@@ -1719,14 +1753,13 @@ export class OsmosisAccountImpl {
     memo: string = "",
     onFulfill?: (tx: any) => void
   ) {
-    const msgs: EncodeObject[] = [];
     let numBeginUnlocking = 0;
     let numSuperfluidUndelegate = 0;
     let numSuperfluidUnbondLock = 0;
 
-    for (const lock of locks) {
+    const msgs = locks.reduce((msgs, lock) => {
       if (!lock.isSyntheticLock) {
-        numBeginUnlocking++;
+        // normal unlock
         msgs.push(
           this.msgOpts.beginUnlocking.messageComposer({
             owner: this.address,
@@ -1734,21 +1767,24 @@ export class OsmosisAccountImpl {
             coins: [],
           })
         );
+        numBeginUnlocking++;
       } else {
-        numSuperfluidUndelegate++;
-        numSuperfluidUnbondLock++;
+        // unbond and unlock
         msgs.push(
           this.msgOpts.superfluidUndelegate.messageComposer({
-            lockId: Long.fromString(lock.lockId),
             sender: this.address,
+            lockId: Long.fromString(lock.lockId),
           }),
           this.msgOpts.superfluidUnbondLock.messageComposer({
-            lockId: Long.fromString(lock.lockId),
             sender: this.address,
+            lockId: Long.fromString(lock.lockId),
           })
         );
+        numSuperfluidUndelegate++;
+        numSuperfluidUnbondLock++;
       }
-    }
+      return msgs;
+    }, [] as EncodeObject[]);
 
     await this.base.signAndBroadcast(
       this.chainId,
@@ -1766,11 +1802,7 @@ export class OsmosisAccountImpl {
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
-          // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((balance) => balance.waitFreshResponse());
 
           // Refresh the locked coins
           queries.osmosis?.queryLockedCoins
@@ -1783,11 +1815,25 @@ export class OsmosisAccountImpl {
             .get(this.address)
             .waitFreshResponse();
 
+          // refresh superfluid pool share delegations
           queries.osmosis?.querySuperfluidDelegations
             .getQuerySuperfluidDelegations(this.address)
             .waitFreshResponse();
           queries.osmosis?.querySuperfluidUndelegations
             .getQuerySuperfluidDelegations(this.address)
+            .waitFreshResponse();
+
+          // refresh user CL positions
+          queries.osmosis?.queryAccountsPositions
+            .get(this.address)
+            .waitFreshResponse();
+
+          // refresh CL position delegations
+          queries.osmosis?.queryAccountsSuperfluidDelegatedPositions
+            .get(this.address)
+            .waitFreshResponse();
+          queries.osmosis?.queryAccountsSuperfluidUndelegatingPositions
+            .get(this.address)
             .waitFreshResponse();
         }
 

@@ -11,7 +11,7 @@ import { TokenHistoricalPrice } from "./types";
 const AvailableRangeValues = [
   5, 15, 30, 60, 120, 240, 720, 1440, 10080, 43800,
 ] as const;
-type Tf = typeof AvailableRangeValues[number];
+type Tf = (typeof AvailableRangeValues)[number];
 
 /** Queries Imperator token history data chart. */
 export class ObservableQueryTokenHistoricalChart extends ObservableQueryExternalBase<

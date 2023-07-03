@@ -5,10 +5,12 @@ import { useTranslation } from "react-multi-lang";
 
 import { CustomClasses } from "~/components/types";
 
-export enum PositionStatus {
+const enum PositionStatus {
   InRange,
   NearBounds,
   OutOfRange,
+  FullRange,
+  SuperfluidStaked,
 }
 export const MyPositionStatus: FunctionComponent<
   {
@@ -16,9 +18,18 @@ export const MyPositionStatus: FunctionComponent<
     lowerPrice: Dec;
     upperPrice: Dec;
     negative?: boolean;
+    fullRange?: boolean;
+    isSuperfluid?: boolean;
   } & CustomClasses
-> = (props) => {
-  const { currentPrice, lowerPrice, upperPrice, negative } = props;
+> = ({
+  className,
+  currentPrice,
+  lowerPrice,
+  upperPrice,
+  negative,
+  fullRange,
+  isSuperfluid: superfluidStaked,
+}) => {
   const t = useTranslation();
 
   const inRange = lowerPrice.lt(currentPrice) && upperPrice.gt(currentPrice);
@@ -37,7 +48,7 @@ export const MyPositionStatus: FunctionComponent<
   let label, status;
 
   if (inRange) {
-    if (inRange && diffPercentage.lte(new Dec(10))) {
+    if (diffPercentage.lte(new Dec(10))) {
       status = PositionStatus.NearBounds;
       label = t("clPositions.nearBounds");
     } else {
@@ -49,6 +60,16 @@ export const MyPositionStatus: FunctionComponent<
     label = t("clPositions.outOfRange");
   }
 
+  if (fullRange) {
+    status = PositionStatus.FullRange;
+    label = t("clPositions.fullRange");
+  }
+
+  if (superfluidStaked) {
+    status = PositionStatus.SuperfluidStaked;
+    label = t("clPositions.superfluidStaked");
+  }
+
   return (
     <div
       className={classNames(
@@ -58,8 +79,11 @@ export const MyPositionStatus: FunctionComponent<
           "bg-ammelia-600/30":
             !negative && status === PositionStatus.NearBounds,
           "bg-rust-600/30": !negative && status === PositionStatus.OutOfRange,
+          "bg-[#2994D04D]/30": !negative && status === PositionStatus.FullRange,
+          "bg-superfluid/30":
+            !negative && status === PositionStatus.SuperfluidStaked,
         },
-        props?.className
+        className
       )}
     >
       <div
@@ -67,6 +91,8 @@ export const MyPositionStatus: FunctionComponent<
           "bg-bullish-500": status === PositionStatus.InRange,
           "bg-ammelia-600": status === PositionStatus.NearBounds,
           "bg-rust-500": status === PositionStatus.OutOfRange,
+          "bg-ion-400": status === PositionStatus.FullRange,
+          "bg-superfluid": status === PositionStatus.SuperfluidStaked,
         })}
       />
       <div className="text-subtitle1">{label}</div>

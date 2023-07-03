@@ -130,6 +130,12 @@ export const osmosisMsgOpts = createMsgOpts({
         .addToPosition,
     gas: 900_000,
   },
+  clAddToConcentatedSuperfluidPosition: {
+    messageComposer:
+      osmosis.superfluid.MessageComposer.withTypeUrl
+        .addToConcentratedLiquiditySuperfluidPosition,
+    gas: 1_000_000,
+  },
 });
 
 export const DEFAULT_SLIPPAGE = "2.5";
