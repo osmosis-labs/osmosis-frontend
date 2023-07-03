@@ -245,7 +245,6 @@ export class ObservableSuperfluidPoolDetail {
     }
   }
 
-  /** IF  */
   @computed
   get userSharesUndelegations():
     | {
