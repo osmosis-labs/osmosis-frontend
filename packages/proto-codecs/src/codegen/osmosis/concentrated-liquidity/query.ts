@@ -48,6 +48,9 @@ import {
   FullPositionBreakdown,
   FullPositionBreakdownAmino,
   FullPositionBreakdownSDKType,
+  PositionWithPeriodLock,
+  PositionWithPeriodLockAmino,
+  PositionWithPeriodLockSDKType,
 } from "./position";
 import {
   UptimeTracker,
@@ -606,6 +609,74 @@ export interface CFMMPoolIdLinkFromConcentratedPoolIdResponseAminoMsg {
 }
 export interface CFMMPoolIdLinkFromConcentratedPoolIdResponseSDKType {
   cfmm_pool_id: Long;
+}
+/** =============================== UserUnbondingPositions */
+export interface UserUnbondingPositionsRequest {
+  address: string;
+}
+export interface UserUnbondingPositionsRequestProtoMsg {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.UserUnbondingPositionsRequest";
+  value: Uint8Array;
+}
+/** =============================== UserUnbondingPositions */
+export interface UserUnbondingPositionsRequestAmino {
+  address: string;
+}
+export interface UserUnbondingPositionsRequestAminoMsg {
+  type: "osmosis/concentratedliquidity/user-unbonding-positions-request";
+  value: UserUnbondingPositionsRequestAmino;
+}
+/** =============================== UserUnbondingPositions */
+export interface UserUnbondingPositionsRequestSDKType {
+  address: string;
+}
+export interface UserUnbondingPositionsResponse {
+  positionsWithPeriodLock: PositionWithPeriodLock[];
+}
+export interface UserUnbondingPositionsResponseProtoMsg {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.UserUnbondingPositionsResponse";
+  value: Uint8Array;
+}
+export interface UserUnbondingPositionsResponseAmino {
+  positions_with_period_lock: PositionWithPeriodLockAmino[];
+}
+export interface UserUnbondingPositionsResponseAminoMsg {
+  type: "osmosis/concentratedliquidity/user-unbonding-positions-response";
+  value: UserUnbondingPositionsResponseAmino;
+}
+export interface UserUnbondingPositionsResponseSDKType {
+  positions_with_period_lock: PositionWithPeriodLockSDKType[];
+}
+/** =============================== GetTotalLiquidity */
+export interface GetTotalLiquidityRequest {}
+export interface GetTotalLiquidityRequestProtoMsg {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.GetTotalLiquidityRequest";
+  value: Uint8Array;
+}
+/** =============================== GetTotalLiquidity */
+export interface GetTotalLiquidityRequestAmino {}
+export interface GetTotalLiquidityRequestAminoMsg {
+  type: "osmosis/concentratedliquidity/get-total-liquidity-request";
+  value: GetTotalLiquidityRequestAmino;
+}
+/** =============================== GetTotalLiquidity */
+export interface GetTotalLiquidityRequestSDKType {}
+export interface GetTotalLiquidityResponse {
+  totalLiquidity: Coin[];
+}
+export interface GetTotalLiquidityResponseProtoMsg {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.GetTotalLiquidityResponse";
+  value: Uint8Array;
+}
+export interface GetTotalLiquidityResponseAmino {
+  total_liquidity: CoinAmino[];
+}
+export interface GetTotalLiquidityResponseAminoMsg {
+  type: "osmosis/concentratedliquidity/get-total-liquidity-response";
+  value: GetTotalLiquidityResponseAmino;
+}
+export interface GetTotalLiquidityResponseSDKType {
+  total_liquidity: CoinSDKType[];
 }
 function createBaseUserPositionsRequest(): UserPositionsRequest {
   return {
@@ -3218,6 +3289,362 @@ export const CFMMPoolIdLinkFromConcentratedPoolIdResponse = {
         "/osmosis.concentratedliquidity.v1beta1.CFMMPoolIdLinkFromConcentratedPoolIdResponse",
       value:
         CFMMPoolIdLinkFromConcentratedPoolIdResponse.encode(message).finish(),
+    };
+  },
+};
+function createBaseUserUnbondingPositionsRequest(): UserUnbondingPositionsRequest {
+  return {
+    address: "",
+  };
+}
+export const UserUnbondingPositionsRequest = {
+  typeUrl:
+    "/osmosis.concentratedliquidity.v1beta1.UserUnbondingPositionsRequest",
+  encode(
+    message: UserUnbondingPositionsRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.address !== "") {
+      writer.uint32(10).string(message.address);
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): UserUnbondingPositionsRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUserUnbondingPositionsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.address = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<UserUnbondingPositionsRequest>
+  ): UserUnbondingPositionsRequest {
+    const message = createBaseUserUnbondingPositionsRequest();
+    message.address = object.address ?? "";
+    return message;
+  },
+  fromAmino(
+    object: UserUnbondingPositionsRequestAmino
+  ): UserUnbondingPositionsRequest {
+    return {
+      address: object.address,
+    };
+  },
+  toAmino(
+    message: UserUnbondingPositionsRequest
+  ): UserUnbondingPositionsRequestAmino {
+    const obj: any = {};
+    obj.address = message.address;
+    return obj;
+  },
+  fromAminoMsg(
+    object: UserUnbondingPositionsRequestAminoMsg
+  ): UserUnbondingPositionsRequest {
+    return UserUnbondingPositionsRequest.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: UserUnbondingPositionsRequest
+  ): UserUnbondingPositionsRequestAminoMsg {
+    return {
+      type: "osmosis/concentratedliquidity/user-unbonding-positions-request",
+      value: UserUnbondingPositionsRequest.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: UserUnbondingPositionsRequestProtoMsg
+  ): UserUnbondingPositionsRequest {
+    return UserUnbondingPositionsRequest.decode(message.value);
+  },
+  toProto(message: UserUnbondingPositionsRequest): Uint8Array {
+    return UserUnbondingPositionsRequest.encode(message).finish();
+  },
+  toProtoMsg(
+    message: UserUnbondingPositionsRequest
+  ): UserUnbondingPositionsRequestProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.concentratedliquidity.v1beta1.UserUnbondingPositionsRequest",
+      value: UserUnbondingPositionsRequest.encode(message).finish(),
+    };
+  },
+};
+function createBaseUserUnbondingPositionsResponse(): UserUnbondingPositionsResponse {
+  return {
+    positionsWithPeriodLock: [],
+  };
+}
+export const UserUnbondingPositionsResponse = {
+  typeUrl:
+    "/osmosis.concentratedliquidity.v1beta1.UserUnbondingPositionsResponse",
+  encode(
+    message: UserUnbondingPositionsResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    for (const v of message.positionsWithPeriodLock) {
+      PositionWithPeriodLock.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): UserUnbondingPositionsResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUserUnbondingPositionsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.positionsWithPeriodLock.push(
+            PositionWithPeriodLock.decode(reader, reader.uint32())
+          );
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<UserUnbondingPositionsResponse>
+  ): UserUnbondingPositionsResponse {
+    const message = createBaseUserUnbondingPositionsResponse();
+    message.positionsWithPeriodLock =
+      object.positionsWithPeriodLock?.map((e) =>
+        PositionWithPeriodLock.fromPartial(e)
+      ) || [];
+    return message;
+  },
+  fromAmino(
+    object: UserUnbondingPositionsResponseAmino
+  ): UserUnbondingPositionsResponse {
+    return {
+      positionsWithPeriodLock: Array.isArray(object?.positions_with_period_lock)
+        ? object.positions_with_period_lock.map((e: any) =>
+            PositionWithPeriodLock.fromAmino(e)
+          )
+        : [],
+    };
+  },
+  toAmino(
+    message: UserUnbondingPositionsResponse
+  ): UserUnbondingPositionsResponseAmino {
+    const obj: any = {};
+    if (message.positionsWithPeriodLock) {
+      obj.positions_with_period_lock = message.positionsWithPeriodLock.map(
+        (e) => (e ? PositionWithPeriodLock.toAmino(e) : undefined)
+      );
+    } else {
+      obj.positions_with_period_lock = [];
+    }
+    return obj;
+  },
+  fromAminoMsg(
+    object: UserUnbondingPositionsResponseAminoMsg
+  ): UserUnbondingPositionsResponse {
+    return UserUnbondingPositionsResponse.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: UserUnbondingPositionsResponse
+  ): UserUnbondingPositionsResponseAminoMsg {
+    return {
+      type: "osmosis/concentratedliquidity/user-unbonding-positions-response",
+      value: UserUnbondingPositionsResponse.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: UserUnbondingPositionsResponseProtoMsg
+  ): UserUnbondingPositionsResponse {
+    return UserUnbondingPositionsResponse.decode(message.value);
+  },
+  toProto(message: UserUnbondingPositionsResponse): Uint8Array {
+    return UserUnbondingPositionsResponse.encode(message).finish();
+  },
+  toProtoMsg(
+    message: UserUnbondingPositionsResponse
+  ): UserUnbondingPositionsResponseProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.concentratedliquidity.v1beta1.UserUnbondingPositionsResponse",
+      value: UserUnbondingPositionsResponse.encode(message).finish(),
+    };
+  },
+};
+function createBaseGetTotalLiquidityRequest(): GetTotalLiquidityRequest {
+  return {};
+}
+export const GetTotalLiquidityRequest = {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.GetTotalLiquidityRequest",
+  encode(
+    _: GetTotalLiquidityRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): GetTotalLiquidityRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetTotalLiquidityRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(_: Partial<GetTotalLiquidityRequest>): GetTotalLiquidityRequest {
+    const message = createBaseGetTotalLiquidityRequest();
+    return message;
+  },
+  fromAmino(_: GetTotalLiquidityRequestAmino): GetTotalLiquidityRequest {
+    return {};
+  },
+  toAmino(_: GetTotalLiquidityRequest): GetTotalLiquidityRequestAmino {
+    const obj: any = {};
+    return obj;
+  },
+  fromAminoMsg(
+    object: GetTotalLiquidityRequestAminoMsg
+  ): GetTotalLiquidityRequest {
+    return GetTotalLiquidityRequest.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: GetTotalLiquidityRequest
+  ): GetTotalLiquidityRequestAminoMsg {
+    return {
+      type: "osmosis/concentratedliquidity/get-total-liquidity-request",
+      value: GetTotalLiquidityRequest.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: GetTotalLiquidityRequestProtoMsg
+  ): GetTotalLiquidityRequest {
+    return GetTotalLiquidityRequest.decode(message.value);
+  },
+  toProto(message: GetTotalLiquidityRequest): Uint8Array {
+    return GetTotalLiquidityRequest.encode(message).finish();
+  },
+  toProtoMsg(
+    message: GetTotalLiquidityRequest
+  ): GetTotalLiquidityRequestProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.concentratedliquidity.v1beta1.GetTotalLiquidityRequest",
+      value: GetTotalLiquidityRequest.encode(message).finish(),
+    };
+  },
+};
+function createBaseGetTotalLiquidityResponse(): GetTotalLiquidityResponse {
+  return {
+    totalLiquidity: [],
+  };
+}
+export const GetTotalLiquidityResponse = {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.GetTotalLiquidityResponse",
+  encode(
+    message: GetTotalLiquidityResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    for (const v of message.totalLiquidity) {
+      Coin.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): GetTotalLiquidityResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetTotalLiquidityResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.totalLiquidity.push(Coin.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<GetTotalLiquidityResponse>
+  ): GetTotalLiquidityResponse {
+    const message = createBaseGetTotalLiquidityResponse();
+    message.totalLiquidity =
+      object.totalLiquidity?.map((e) => Coin.fromPartial(e)) || [];
+    return message;
+  },
+  fromAmino(object: GetTotalLiquidityResponseAmino): GetTotalLiquidityResponse {
+    return {
+      totalLiquidity: Array.isArray(object?.total_liquidity)
+        ? object.total_liquidity.map((e: any) => Coin.fromAmino(e))
+        : [],
+    };
+  },
+  toAmino(message: GetTotalLiquidityResponse): GetTotalLiquidityResponseAmino {
+    const obj: any = {};
+    if (message.totalLiquidity) {
+      obj.total_liquidity = message.totalLiquidity.map((e) =>
+        e ? Coin.toAmino(e) : undefined
+      );
+    } else {
+      obj.total_liquidity = [];
+    }
+    return obj;
+  },
+  fromAminoMsg(
+    object: GetTotalLiquidityResponseAminoMsg
+  ): GetTotalLiquidityResponse {
+    return GetTotalLiquidityResponse.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: GetTotalLiquidityResponse
+  ): GetTotalLiquidityResponseAminoMsg {
+    return {
+      type: "osmosis/concentratedliquidity/get-total-liquidity-response",
+      value: GetTotalLiquidityResponse.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: GetTotalLiquidityResponseProtoMsg
+  ): GetTotalLiquidityResponse {
+    return GetTotalLiquidityResponse.decode(message.value);
+  },
+  toProto(message: GetTotalLiquidityResponse): Uint8Array {
+    return GetTotalLiquidityResponse.encode(message).finish();
+  },
+  toProtoMsg(
+    message: GetTotalLiquidityResponse
+  ): GetTotalLiquidityResponseProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.concentratedliquidity.v1beta1.GetTotalLiquidityResponse",
+      value: GetTotalLiquidityResponse.encode(message).finish(),
     };
   },
 };

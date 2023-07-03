@@ -26,7 +26,7 @@
     "test:e2e": "lerna run test:e2e",
     "lint": "turbo lint",
     "lint:fix": "turbo lint:fix",
-    "pre-commit": "lerna run pre-commit",
+    "pre-commit": "lerna run pre-commit --concurrency false",
     "publish:libs": "lerna publish",
     "machine-translate": "inlang machine translate"
   },

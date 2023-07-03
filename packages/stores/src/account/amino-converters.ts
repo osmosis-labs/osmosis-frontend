@@ -98,6 +98,25 @@ const osmosisAminoConverters: Record<
       };
     },
   },
+  "/osmosis.superfluid.MsgSuperfluidUndelegateAndUnbondLock": {
+    ...originalOsmosisAminoConverters[
+      "/osmosis.superfluid.MsgSuperfluidUndelegateAndUnbondLock"
+    ],
+    aminoType: "osmosis/sf-undelegate-and-unbond-lock",
+  },
+  "/osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition":
+    {
+      ...originalOsmosisAminoConverters[
+        "/osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition"
+      ],
+      aminoType: "osmosis/unlock-and-migrate",
+    },
+  "/osmosis.superfluid.MsgAddToConcentratedLiquiditySuperfluidPosition": {
+    ...originalOsmosisAminoConverters[
+      "/osmosis.superfluid.MsgAddToConcentratedLiquiditySuperfluidPosition"
+    ],
+    aminoType: "osmosis/add-to-cl-superfluid-position",
+  },
 };
 
 const ibcAminoConverters: Record<

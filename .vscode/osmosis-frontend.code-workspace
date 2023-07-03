@@ -7,6 +7,9 @@
       "path": "../packages/pools/"
     },
     {
+      "path": "../packages/proto-codecs/"
+    },
+    {
       "path": "../packages/stores/"
     },
     {
@@ -14,6 +17,7 @@
     }
   ],
   "settings": {
-    "jest.jestCommandLine": "yarn test"
+    "jest.jestCommandLine": "yarn test",
+    "jest.disabledWorkspaceFolders": ["proto-codecs"]
   }
 }

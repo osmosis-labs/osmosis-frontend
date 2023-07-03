@@ -6,12 +6,28 @@ import { FilteredPools } from "./types";
 export function makePoolRawFromFilteredPool(
   filteredPool: FilteredPools["pools"][0]
 ): PoolRaw | undefined {
-  // deny pools contianing tokens with gamm denoms
+  // deny pools containing tokens with gamm denoms
   if (filteredPool.pool_tokens.some((token) => token.denom.includes("gamm"))) {
     return;
   }
 
-  const base = {
+  if (filteredPool.type === "osmosis.concentratedliquidity.v1beta1.Pool") {
+    return {
+      "@type": `/${filteredPool.type}`,
+      address: filteredPool.address,
+      id: filteredPool.pool_id.toString(),
+      current_tick_liquidity: filteredPool.current_tick_liquidity,
+      token0: filteredPool.token0,
+      token1: filteredPool.token1,
+      current_sqrt_price: filteredPool.current_sqrt_price,
+      current_tick: filteredPool.current_tick,
+      tick_spacing: filteredPool.tick_spacing,
+      exponent_at_price_one: filteredPool.exponent_at_price_one,
+      spread_factor: filteredPool.spread_factor,
+    };
+  }
+
+  const sharePoolBase = {
     "@type": `/${filteredPool.type}`,
     id: filteredPool.pool_id.toString(),
     pool_params: {
@@ -28,7 +44,7 @@ export function makePoolRawFromFilteredPool(
 
   if (filteredPool.type === "osmosis.gamm.v1beta1.Pool") {
     return {
-      ...base,
+      ...sharePoolBase,
       pool_assets: filteredPool.pool_tokens.map((token) => ({
         token: {
           denom: token.denom,
@@ -42,7 +58,7 @@ export function makePoolRawFromFilteredPool(
 
   if (filteredPool.type === "osmosis.gamm.poolmodels.stableswap.v1beta1.Pool") {
     return {
-      ...base,
+      ...sharePoolBase,
       pool_liquidity: filteredPool.pool_tokens.map((token) => ({
         denom: token.denom,
         amount: floatNumberToStringInt(token.amount, token.exponent),

@@ -614,53 +614,72 @@ export interface QueryUnpoolWhitelistResponseAminoMsg {
 export interface QueryUnpoolWhitelistResponseSDKType {
   pool_ids: Long[];
 }
-/**
- * ===============================
- * UserSuperfluidPositionsPerConcentratedPoolBreakdown
- */
-export interface UserSuperfluidPositionsPerConcentratedPoolBreakdownRequest {
+export interface UserConcentratedSuperfluidPositionsDelegatedRequest {
   delegatorAddress: string;
-  concentratedPoolId: Long;
 }
-export interface UserSuperfluidPositionsPerConcentratedPoolBreakdownRequestProtoMsg {
-  typeUrl: "/osmosis.superfluid.UserSuperfluidPositionsPerConcentratedPoolBreakdownRequest";
+export interface UserConcentratedSuperfluidPositionsDelegatedRequestProtoMsg {
+  typeUrl: "/osmosis.superfluid.UserConcentratedSuperfluidPositionsDelegatedRequest";
   value: Uint8Array;
 }
-/**
- * ===============================
- * UserSuperfluidPositionsPerConcentratedPoolBreakdown
- */
-export interface UserSuperfluidPositionsPerConcentratedPoolBreakdownRequestAmino {
+export interface UserConcentratedSuperfluidPositionsDelegatedRequestAmino {
   delegator_address: string;
-  concentrated_pool_id: string;
 }
-export interface UserSuperfluidPositionsPerConcentratedPoolBreakdownRequestAminoMsg {
-  type: "osmosis/user-superfluid-positions-per-concentrated-pool-breakdown-request";
-  value: UserSuperfluidPositionsPerConcentratedPoolBreakdownRequestAmino;
+export interface UserConcentratedSuperfluidPositionsDelegatedRequestAminoMsg {
+  type: "osmosis/user-concentrated-superfluid-positions-delegated-request";
+  value: UserConcentratedSuperfluidPositionsDelegatedRequestAmino;
 }
-/**
- * ===============================
- * UserSuperfluidPositionsPerConcentratedPoolBreakdown
- */
-export interface UserSuperfluidPositionsPerConcentratedPoolBreakdownRequestSDKType {
+export interface UserConcentratedSuperfluidPositionsDelegatedRequestSDKType {
   delegator_address: string;
-  concentrated_pool_id: Long;
 }
-export interface UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse {
+export interface UserConcentratedSuperfluidPositionsDelegatedResponse {
   clPoolUserPositionRecords: ConcentratedPoolUserPositionRecord[];
 }
-export interface UserSuperfluidPositionsPerConcentratedPoolBreakdownResponseProtoMsg {
-  typeUrl: "/osmosis.superfluid.UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse";
+export interface UserConcentratedSuperfluidPositionsDelegatedResponseProtoMsg {
+  typeUrl: "/osmosis.superfluid.UserConcentratedSuperfluidPositionsDelegatedResponse";
   value: Uint8Array;
 }
-export interface UserSuperfluidPositionsPerConcentratedPoolBreakdownResponseAmino {
+export interface UserConcentratedSuperfluidPositionsDelegatedResponseAmino {
   cl_pool_user_position_records: ConcentratedPoolUserPositionRecordAmino[];
 }
-export interface UserSuperfluidPositionsPerConcentratedPoolBreakdownResponseAminoMsg {
-  type: "osmosis/user-superfluid-positions-per-concentrated-pool-breakdown-response";
-  value: UserSuperfluidPositionsPerConcentratedPoolBreakdownResponseAmino;
+export interface UserConcentratedSuperfluidPositionsDelegatedResponseAminoMsg {
+  type: "osmosis/user-concentrated-superfluid-positions-delegated-response";
+  value: UserConcentratedSuperfluidPositionsDelegatedResponseAmino;
 }
-export interface UserSuperfluidPositionsPerConcentratedPoolBreakdownResponseSDKType {
+export interface UserConcentratedSuperfluidPositionsDelegatedResponseSDKType {
+  cl_pool_user_position_records: ConcentratedPoolUserPositionRecordSDKType[];
+}
+export interface UserConcentratedSuperfluidPositionsUndelegatingRequest {
+  delegatorAddress: string;
+}
+export interface UserConcentratedSuperfluidPositionsUndelegatingRequestProtoMsg {
+  typeUrl: "/osmosis.superfluid.UserConcentratedSuperfluidPositionsUndelegatingRequest";
+  value: Uint8Array;
+}
+export interface UserConcentratedSuperfluidPositionsUndelegatingRequestAmino {
+  delegator_address: string;
+}
+export interface UserConcentratedSuperfluidPositionsUndelegatingRequestAminoMsg {
+  type: "osmosis/user-concentrated-superfluid-positions-undelegating-request";
+  value: UserConcentratedSuperfluidPositionsUndelegatingRequestAmino;
+}
+export interface UserConcentratedSuperfluidPositionsUndelegatingRequestSDKType {
+  delegator_address: string;
+}
+export interface UserConcentratedSuperfluidPositionsUndelegatingResponse {
+  clPoolUserPositionRecords: ConcentratedPoolUserPositionRecord[];
+}
+export interface UserConcentratedSuperfluidPositionsUndelegatingResponseProtoMsg {
+  typeUrl: "/osmosis.superfluid.UserConcentratedSuperfluidPositionsUndelegatingResponse";
+  value: Uint8Array;
+}
+export interface UserConcentratedSuperfluidPositionsUndelegatingResponseAmino {
+  cl_pool_user_position_records: ConcentratedPoolUserPositionRecordAmino[];
+}
+export interface UserConcentratedSuperfluidPositionsUndelegatingResponseAminoMsg {
+  type: "osmosis/user-concentrated-superfluid-positions-undelegating-response";
+  value: UserConcentratedSuperfluidPositionsUndelegatingResponseAmino;
+}
+export interface UserConcentratedSuperfluidPositionsUndelegatingResponseSDKType {
   cl_pool_user_position_records: ConcentratedPoolUserPositionRecordSDKType[];
 }
 function createBaseQueryParamsRequest(): QueryParamsRequest {
@@ -3790,43 +3809,36 @@ export const QueryUnpoolWhitelistResponse = {
     };
   },
 };
-function createBaseUserSuperfluidPositionsPerConcentratedPoolBreakdownRequest(): UserSuperfluidPositionsPerConcentratedPoolBreakdownRequest {
+function createBaseUserConcentratedSuperfluidPositionsDelegatedRequest(): UserConcentratedSuperfluidPositionsDelegatedRequest {
   return {
     delegatorAddress: "",
-    concentratedPoolId: Long.UZERO,
   };
 }
-export const UserSuperfluidPositionsPerConcentratedPoolBreakdownRequest = {
+export const UserConcentratedSuperfluidPositionsDelegatedRequest = {
   typeUrl:
-    "/osmosis.superfluid.UserSuperfluidPositionsPerConcentratedPoolBreakdownRequest",
+    "/osmosis.superfluid.UserConcentratedSuperfluidPositionsDelegatedRequest",
   encode(
-    message: UserSuperfluidPositionsPerConcentratedPoolBreakdownRequest,
+    message: UserConcentratedSuperfluidPositionsDelegatedRequest,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
     if (message.delegatorAddress !== "") {
       writer.uint32(10).string(message.delegatorAddress);
-    }
-    if (!message.concentratedPoolId.isZero()) {
-      writer.uint32(16).uint64(message.concentratedPoolId);
     }
     return writer;
   },
   decode(
     input: _m0.Reader | Uint8Array,
     length?: number
-  ): UserSuperfluidPositionsPerConcentratedPoolBreakdownRequest {
+  ): UserConcentratedSuperfluidPositionsDelegatedRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message =
-      createBaseUserSuperfluidPositionsPerConcentratedPoolBreakdownRequest();
+      createBaseUserConcentratedSuperfluidPositionsDelegatedRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
           message.delegatorAddress = reader.string();
-          break;
-        case 2:
-          message.concentratedPoolId = reader.uint64() as Long;
           break;
         default:
           reader.skipType(tag & 7);
@@ -3836,91 +3848,80 @@ export const UserSuperfluidPositionsPerConcentratedPoolBreakdownRequest = {
     return message;
   },
   fromPartial(
-    object: Partial<UserSuperfluidPositionsPerConcentratedPoolBreakdownRequest>
-  ): UserSuperfluidPositionsPerConcentratedPoolBreakdownRequest {
+    object: Partial<UserConcentratedSuperfluidPositionsDelegatedRequest>
+  ): UserConcentratedSuperfluidPositionsDelegatedRequest {
     const message =
-      createBaseUserSuperfluidPositionsPerConcentratedPoolBreakdownRequest();
+      createBaseUserConcentratedSuperfluidPositionsDelegatedRequest();
     message.delegatorAddress = object.delegatorAddress ?? "";
-    message.concentratedPoolId =
-      object.concentratedPoolId !== undefined &&
-      object.concentratedPoolId !== null
-        ? Long.fromValue(object.concentratedPoolId)
-        : Long.UZERO;
     return message;
   },
   fromAmino(
-    object: UserSuperfluidPositionsPerConcentratedPoolBreakdownRequestAmino
-  ): UserSuperfluidPositionsPerConcentratedPoolBreakdownRequest {
+    object: UserConcentratedSuperfluidPositionsDelegatedRequestAmino
+  ): UserConcentratedSuperfluidPositionsDelegatedRequest {
     return {
       delegatorAddress: object.delegator_address,
-      concentratedPoolId: Long.fromString(object.concentrated_pool_id),
     };
   },
   toAmino(
-    message: UserSuperfluidPositionsPerConcentratedPoolBreakdownRequest
-  ): UserSuperfluidPositionsPerConcentratedPoolBreakdownRequestAmino {
+    message: UserConcentratedSuperfluidPositionsDelegatedRequest
+  ): UserConcentratedSuperfluidPositionsDelegatedRequestAmino {
     const obj: any = {};
     obj.delegator_address = message.delegatorAddress;
-    obj.concentrated_pool_id = message.concentratedPoolId
-      ? message.concentratedPoolId.toString()
-      : undefined;
     return obj;
   },
   fromAminoMsg(
-    object: UserSuperfluidPositionsPerConcentratedPoolBreakdownRequestAminoMsg
-  ): UserSuperfluidPositionsPerConcentratedPoolBreakdownRequest {
-    return UserSuperfluidPositionsPerConcentratedPoolBreakdownRequest.fromAmino(
+    object: UserConcentratedSuperfluidPositionsDelegatedRequestAminoMsg
+  ): UserConcentratedSuperfluidPositionsDelegatedRequest {
+    return UserConcentratedSuperfluidPositionsDelegatedRequest.fromAmino(
       object.value
     );
   },
   toAminoMsg(
-    message: UserSuperfluidPositionsPerConcentratedPoolBreakdownRequest
-  ): UserSuperfluidPositionsPerConcentratedPoolBreakdownRequestAminoMsg {
+    message: UserConcentratedSuperfluidPositionsDelegatedRequest
+  ): UserConcentratedSuperfluidPositionsDelegatedRequestAminoMsg {
     return {
-      type: "osmosis/user-superfluid-positions-per-concentrated-pool-breakdown-request",
+      type: "osmosis/user-concentrated-superfluid-positions-delegated-request",
       value:
-        UserSuperfluidPositionsPerConcentratedPoolBreakdownRequest.toAmino(
-          message
-        ),
+        UserConcentratedSuperfluidPositionsDelegatedRequest.toAmino(message),
     };
   },
   fromProtoMsg(
-    message: UserSuperfluidPositionsPerConcentratedPoolBreakdownRequestProtoMsg
-  ): UserSuperfluidPositionsPerConcentratedPoolBreakdownRequest {
-    return UserSuperfluidPositionsPerConcentratedPoolBreakdownRequest.decode(
+    message: UserConcentratedSuperfluidPositionsDelegatedRequestProtoMsg
+  ): UserConcentratedSuperfluidPositionsDelegatedRequest {
+    return UserConcentratedSuperfluidPositionsDelegatedRequest.decode(
       message.value
     );
   },
   toProto(
-    message: UserSuperfluidPositionsPerConcentratedPoolBreakdownRequest
+    message: UserConcentratedSuperfluidPositionsDelegatedRequest
   ): Uint8Array {
-    return UserSuperfluidPositionsPerConcentratedPoolBreakdownRequest.encode(
+    return UserConcentratedSuperfluidPositionsDelegatedRequest.encode(
       message
     ).finish();
   },
   toProtoMsg(
-    message: UserSuperfluidPositionsPerConcentratedPoolBreakdownRequest
-  ): UserSuperfluidPositionsPerConcentratedPoolBreakdownRequestProtoMsg {
+    message: UserConcentratedSuperfluidPositionsDelegatedRequest
+  ): UserConcentratedSuperfluidPositionsDelegatedRequestProtoMsg {
     return {
       typeUrl:
-        "/osmosis.superfluid.UserSuperfluidPositionsPerConcentratedPoolBreakdownRequest",
+        "/osmosis.superfluid.UserConcentratedSuperfluidPositionsDelegatedRequest",
       value:
-        UserSuperfluidPositionsPerConcentratedPoolBreakdownRequest.encode(
+        UserConcentratedSuperfluidPositionsDelegatedRequest.encode(
           message
         ).finish(),
     };
   },
 };
-function createBaseUserSuperfluidPositionsPerConcentratedPoolBreakdownResponse(): UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse {
+function createBaseUserConcentratedSuperfluidPositionsDelegatedResponse(): UserConcentratedSuperfluidPositionsDelegatedResponse {
   return {
     clPoolUserPositionRecords: [],
   };
 }
-export const UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse = {
+export const UserConcentratedSuperfluidPositionsDelegatedResponse = {
   typeUrl:
-    "/osmosis.superfluid.UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse",
+    "/osmosis.superfluid.UserConcentratedSuperfluidPositionsDelegatedResponse",
   encode(
-    message: UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse,
+    message: UserConcentratedSuperfluidPositionsDelegatedResponse,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
     for (const v of message.clPoolUserPositionRecords) {
@@ -3934,11 +3935,11 @@ export const UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse = {
   decode(
     input: _m0.Reader | Uint8Array,
     length?: number
-  ): UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse {
+  ): UserConcentratedSuperfluidPositionsDelegatedResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message =
-      createBaseUserSuperfluidPositionsPerConcentratedPoolBreakdownResponse();
+      createBaseUserConcentratedSuperfluidPositionsDelegatedResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -3955,10 +3956,10 @@ export const UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse = {
     return message;
   },
   fromPartial(
-    object: Partial<UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse>
-  ): UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse {
+    object: Partial<UserConcentratedSuperfluidPositionsDelegatedResponse>
+  ): UserConcentratedSuperfluidPositionsDelegatedResponse {
     const message =
-      createBaseUserSuperfluidPositionsPerConcentratedPoolBreakdownResponse();
+      createBaseUserConcentratedSuperfluidPositionsDelegatedResponse();
     message.clPoolUserPositionRecords =
       object.clPoolUserPositionRecords?.map((e) =>
         ConcentratedPoolUserPositionRecord.fromPartial(e)
@@ -3966,8 +3967,8 @@ export const UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse = {
     return message;
   },
   fromAmino(
-    object: UserSuperfluidPositionsPerConcentratedPoolBreakdownResponseAmino
-  ): UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse {
+    object: UserConcentratedSuperfluidPositionsDelegatedResponseAmino
+  ): UserConcentratedSuperfluidPositionsDelegatedResponse {
     return {
       clPoolUserPositionRecords: Array.isArray(
         object?.cl_pool_user_position_records
@@ -3979,8 +3980,8 @@ export const UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse = {
     };
   },
   toAmino(
-    message: UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse
-  ): UserSuperfluidPositionsPerConcentratedPoolBreakdownResponseAmino {
+    message: UserConcentratedSuperfluidPositionsDelegatedResponse
+  ): UserConcentratedSuperfluidPositionsDelegatedResponseAmino {
     const obj: any = {};
     if (message.clPoolUserPositionRecords) {
       obj.cl_pool_user_position_records = message.clPoolUserPositionRecords.map(
@@ -3992,45 +3993,271 @@ export const UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse = {
     return obj;
   },
   fromAminoMsg(
-    object: UserSuperfluidPositionsPerConcentratedPoolBreakdownResponseAminoMsg
-  ): UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse {
-    return UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse.fromAmino(
+    object: UserConcentratedSuperfluidPositionsDelegatedResponseAminoMsg
+  ): UserConcentratedSuperfluidPositionsDelegatedResponse {
+    return UserConcentratedSuperfluidPositionsDelegatedResponse.fromAmino(
       object.value
     );
   },
   toAminoMsg(
-    message: UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse
-  ): UserSuperfluidPositionsPerConcentratedPoolBreakdownResponseAminoMsg {
+    message: UserConcentratedSuperfluidPositionsDelegatedResponse
+  ): UserConcentratedSuperfluidPositionsDelegatedResponseAminoMsg {
     return {
-      type: "osmosis/user-superfluid-positions-per-concentrated-pool-breakdown-response",
+      type: "osmosis/user-concentrated-superfluid-positions-delegated-response",
       value:
-        UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse.toAmino(
+        UserConcentratedSuperfluidPositionsDelegatedResponse.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: UserConcentratedSuperfluidPositionsDelegatedResponseProtoMsg
+  ): UserConcentratedSuperfluidPositionsDelegatedResponse {
+    return UserConcentratedSuperfluidPositionsDelegatedResponse.decode(
+      message.value
+    );
+  },
+  toProto(
+    message: UserConcentratedSuperfluidPositionsDelegatedResponse
+  ): Uint8Array {
+    return UserConcentratedSuperfluidPositionsDelegatedResponse.encode(
+      message
+    ).finish();
+  },
+  toProtoMsg(
+    message: UserConcentratedSuperfluidPositionsDelegatedResponse
+  ): UserConcentratedSuperfluidPositionsDelegatedResponseProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.superfluid.UserConcentratedSuperfluidPositionsDelegatedResponse",
+      value:
+        UserConcentratedSuperfluidPositionsDelegatedResponse.encode(
+          message
+        ).finish(),
+    };
+  },
+};
+function createBaseUserConcentratedSuperfluidPositionsUndelegatingRequest(): UserConcentratedSuperfluidPositionsUndelegatingRequest {
+  return {
+    delegatorAddress: "",
+  };
+}
+export const UserConcentratedSuperfluidPositionsUndelegatingRequest = {
+  typeUrl:
+    "/osmosis.superfluid.UserConcentratedSuperfluidPositionsUndelegatingRequest",
+  encode(
+    message: UserConcentratedSuperfluidPositionsUndelegatingRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.delegatorAddress !== "") {
+      writer.uint32(10).string(message.delegatorAddress);
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): UserConcentratedSuperfluidPositionsUndelegatingRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message =
+      createBaseUserConcentratedSuperfluidPositionsUndelegatingRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.delegatorAddress = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<UserConcentratedSuperfluidPositionsUndelegatingRequest>
+  ): UserConcentratedSuperfluidPositionsUndelegatingRequest {
+    const message =
+      createBaseUserConcentratedSuperfluidPositionsUndelegatingRequest();
+    message.delegatorAddress = object.delegatorAddress ?? "";
+    return message;
+  },
+  fromAmino(
+    object: UserConcentratedSuperfluidPositionsUndelegatingRequestAmino
+  ): UserConcentratedSuperfluidPositionsUndelegatingRequest {
+    return {
+      delegatorAddress: object.delegator_address,
+    };
+  },
+  toAmino(
+    message: UserConcentratedSuperfluidPositionsUndelegatingRequest
+  ): UserConcentratedSuperfluidPositionsUndelegatingRequestAmino {
+    const obj: any = {};
+    obj.delegator_address = message.delegatorAddress;
+    return obj;
+  },
+  fromAminoMsg(
+    object: UserConcentratedSuperfluidPositionsUndelegatingRequestAminoMsg
+  ): UserConcentratedSuperfluidPositionsUndelegatingRequest {
+    return UserConcentratedSuperfluidPositionsUndelegatingRequest.fromAmino(
+      object.value
+    );
+  },
+  toAminoMsg(
+    message: UserConcentratedSuperfluidPositionsUndelegatingRequest
+  ): UserConcentratedSuperfluidPositionsUndelegatingRequestAminoMsg {
+    return {
+      type: "osmosis/user-concentrated-superfluid-positions-undelegating-request",
+      value:
+        UserConcentratedSuperfluidPositionsUndelegatingRequest.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: UserConcentratedSuperfluidPositionsUndelegatingRequestProtoMsg
+  ): UserConcentratedSuperfluidPositionsUndelegatingRequest {
+    return UserConcentratedSuperfluidPositionsUndelegatingRequest.decode(
+      message.value
+    );
+  },
+  toProto(
+    message: UserConcentratedSuperfluidPositionsUndelegatingRequest
+  ): Uint8Array {
+    return UserConcentratedSuperfluidPositionsUndelegatingRequest.encode(
+      message
+    ).finish();
+  },
+  toProtoMsg(
+    message: UserConcentratedSuperfluidPositionsUndelegatingRequest
+  ): UserConcentratedSuperfluidPositionsUndelegatingRequestProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.superfluid.UserConcentratedSuperfluidPositionsUndelegatingRequest",
+      value:
+        UserConcentratedSuperfluidPositionsUndelegatingRequest.encode(
+          message
+        ).finish(),
+    };
+  },
+};
+function createBaseUserConcentratedSuperfluidPositionsUndelegatingResponse(): UserConcentratedSuperfluidPositionsUndelegatingResponse {
+  return {
+    clPoolUserPositionRecords: [],
+  };
+}
+export const UserConcentratedSuperfluidPositionsUndelegatingResponse = {
+  typeUrl:
+    "/osmosis.superfluid.UserConcentratedSuperfluidPositionsUndelegatingResponse",
+  encode(
+    message: UserConcentratedSuperfluidPositionsUndelegatingResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    for (const v of message.clPoolUserPositionRecords) {
+      ConcentratedPoolUserPositionRecord.encode(
+        v!,
+        writer.uint32(10).fork()
+      ).ldelim();
+    }
+    return writer;
+  },
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): UserConcentratedSuperfluidPositionsUndelegatingResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message =
+      createBaseUserConcentratedSuperfluidPositionsUndelegatingResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.clPoolUserPositionRecords.push(
+            ConcentratedPoolUserPositionRecord.decode(reader, reader.uint32())
+          );
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<UserConcentratedSuperfluidPositionsUndelegatingResponse>
+  ): UserConcentratedSuperfluidPositionsUndelegatingResponse {
+    const message =
+      createBaseUserConcentratedSuperfluidPositionsUndelegatingResponse();
+    message.clPoolUserPositionRecords =
+      object.clPoolUserPositionRecords?.map((e) =>
+        ConcentratedPoolUserPositionRecord.fromPartial(e)
+      ) || [];
+    return message;
+  },
+  fromAmino(
+    object: UserConcentratedSuperfluidPositionsUndelegatingResponseAmino
+  ): UserConcentratedSuperfluidPositionsUndelegatingResponse {
+    return {
+      clPoolUserPositionRecords: Array.isArray(
+        object?.cl_pool_user_position_records
+      )
+        ? object.cl_pool_user_position_records.map((e: any) =>
+            ConcentratedPoolUserPositionRecord.fromAmino(e)
+          )
+        : [],
+    };
+  },
+  toAmino(
+    message: UserConcentratedSuperfluidPositionsUndelegatingResponse
+  ): UserConcentratedSuperfluidPositionsUndelegatingResponseAmino {
+    const obj: any = {};
+    if (message.clPoolUserPositionRecords) {
+      obj.cl_pool_user_position_records = message.clPoolUserPositionRecords.map(
+        (e) => (e ? ConcentratedPoolUserPositionRecord.toAmino(e) : undefined)
+      );
+    } else {
+      obj.cl_pool_user_position_records = [];
+    }
+    return obj;
+  },
+  fromAminoMsg(
+    object: UserConcentratedSuperfluidPositionsUndelegatingResponseAminoMsg
+  ): UserConcentratedSuperfluidPositionsUndelegatingResponse {
+    return UserConcentratedSuperfluidPositionsUndelegatingResponse.fromAmino(
+      object.value
+    );
+  },
+  toAminoMsg(
+    message: UserConcentratedSuperfluidPositionsUndelegatingResponse
+  ): UserConcentratedSuperfluidPositionsUndelegatingResponseAminoMsg {
+    return {
+      type: "osmosis/user-concentrated-superfluid-positions-undelegating-response",
+      value:
+        UserConcentratedSuperfluidPositionsUndelegatingResponse.toAmino(
           message
         ),
     };
   },
   fromProtoMsg(
-    message: UserSuperfluidPositionsPerConcentratedPoolBreakdownResponseProtoMsg
-  ): UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse {
-    return UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse.decode(
+    message: UserConcentratedSuperfluidPositionsUndelegatingResponseProtoMsg
+  ): UserConcentratedSuperfluidPositionsUndelegatingResponse {
+    return UserConcentratedSuperfluidPositionsUndelegatingResponse.decode(
       message.value
     );
   },
   toProto(
-    message: UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse
+    message: UserConcentratedSuperfluidPositionsUndelegatingResponse
   ): Uint8Array {
-    return UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse.encode(
+    return UserConcentratedSuperfluidPositionsUndelegatingResponse.encode(
       message
     ).finish();
   },
   toProtoMsg(
-    message: UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse
-  ): UserSuperfluidPositionsPerConcentratedPoolBreakdownResponseProtoMsg {
+    message: UserConcentratedSuperfluidPositionsUndelegatingResponse
+  ): UserConcentratedSuperfluidPositionsUndelegatingResponseProtoMsg {
     return {
       typeUrl:
-        "/osmosis.superfluid.UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse",
+        "/osmosis.superfluid.UserConcentratedSuperfluidPositionsUndelegatingResponse",
       value:
-        UserSuperfluidPositionsPerConcentratedPoolBreakdownResponse.encode(
+        UserConcentratedSuperfluidPositionsUndelegatingResponse.encode(
           message
         ).finish(),
     };

@@ -66,7 +66,7 @@ export function useCfmmToClMigration(cfmmPoolId: string): {
             osmosisAccount
               ?.sendMigrateSharesToFullRangeConcentratedPositionMsgs(
                 cfmmPoolId,
-                params.lockIds,
+                params.lockIds.slice(0, 1),
                 undefined,
                 undefined,
                 (tx) => {

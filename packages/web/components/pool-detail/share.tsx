@@ -93,7 +93,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
             poolBonding: undefined,
           };
     const pool = sharePoolDetail?.querySharePool;
-    const { superfluidDelegateToValidator } = useSuperfluidPool();
+    const { delegateSharesToValidator } = useSuperfluidPool();
 
     // feature flag check
     useEffect(() => {
@@ -296,11 +296,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
 
         logEvent([E.superfluidStakeStarted, poolInfo]);
 
-        superfluidDelegateToValidator(
-          poolId,
-          validatorAddress,
-          lockLPTokensConfig
-        )
+        delegateSharesToValidator(poolId, validatorAddress, lockLPTokensConfig)
           .then(() => logEvent([E.superfluidStakeCompleted, poolInfo]))
           .finally(() => setShowSuperfluidValidatorsModal(false));
       },
@@ -310,7 +306,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
         queryCosmos.queryValidators,
         isSuperfluidEnabled,
         logEvent,
-        superfluidDelegateToValidator,
+        delegateSharesToValidator,
         lockLPTokensConfig,
       ]
     );
@@ -368,7 +364,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
             onLockToken={onLockToken}
           />
         )}
-        {superfluidPoolDetail?.superfluid &&
+        {superfluidPoolDetail?.isSuperfluid &&
           pool &&
           lockLPTokensConfig &&
           showSuperfluidValidatorModal && (
@@ -379,8 +375,8 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                   : t("superfluidValidator.title")
               }
               availableBondAmount={
-                superfluidPoolDetail?.superfluid.upgradeableLpLockIds
-                  ? superfluidPoolDetail.superfluid.upgradeableLpLockIds.amount // is delegating amount from existing lockup
+                superfluidPoolDetail?.userUpgradeableSharePoolLockIds
+                  ? superfluidPoolDetail.userUpgradeableSharePoolLockIds.amount // is delegating amount from existing lockup
                   : new CoinPretty(
                       pool.shareCurrency, // is delegating amount from new/pending lockup
                       lockLPTokensConfig.amount !== ""
@@ -415,7 +411,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                 className="flex place-content-between items-start gap-2 xl:flex-col"
               >
                 <div className="flex flex-col gap-2">
-                  <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-3">
                     {pool && (
                       <PoolAssetsIcon
                         assets={pool.poolAssets.map((asset) => ({
@@ -428,7 +424,13 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                     <h5>{poolName}</h5>
                   </div>
                   {superfluidPoolDetail?.isSuperfluid && (
-                    <span className="body2 text-superfluid-gradient">
+                    <span className="body2 text-superfluid-gradient flex items-center gap-1.5">
+                      <Image
+                        alt=""
+                        src="/icons/superfluid-osmo.svg"
+                        height={18}
+                        width={18}
+                      />
                       {t("pool.superfluidEnabled")}
                     </span>
                   )}
@@ -437,8 +439,8 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                       <Image
                         alt=""
                         src="/icons/stableswap-pool.svg"
-                        height={24}
-                        width={24}
+                        height={18}
+                        width={18}
                       />
                       <span>{t("pool.stableswapEnabled")}</span>
                     </div>

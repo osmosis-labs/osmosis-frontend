@@ -116,7 +116,7 @@ export const osmosisMsgOpts = createMsgOpts({
     messageComposer:
       osmosis.superfluid.MessageComposer.withTypeUrl
         .unlockAndMigrateSharesToFullRangeConcentratedPosition,
-    gas: 300_000 * numLocks,
+    gas: 1_000_000 * numLocks,
   }),
   clWithdrawPosition: {
     messageComposer:
@@ -129,6 +129,12 @@ export const osmosisMsgOpts = createMsgOpts({
       osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
         .addToPosition,
     gas: 900_000,
+  },
+  clAddToConcentatedSuperfluidPosition: {
+    messageComposer:
+      osmosis.superfluid.MessageComposer.withTypeUrl
+        .addToConcentratedLiquiditySuperfluidPosition,
+    gas: 1_000_000,
   },
 });
 

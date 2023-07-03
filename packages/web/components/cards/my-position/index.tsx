@@ -1,5 +1,6 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { ObservableQueryLiquidityPositionById } from "@osmosis-labs/stores";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, ReactNode, useState } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -18,6 +19,7 @@ export const MyPositionCard: FunctionComponent<{
 }> = observer((props) => {
   const {
     position: {
+      id: positionId,
       poolId,
       baseAsset,
       quoteAsset,
@@ -35,12 +37,17 @@ export const MyPositionCard: FunctionComponent<{
     },
     priceStore,
     queriesStore,
+    derivedDataStore,
     queriesExternalStore,
   } = useStore();
   const [collapsed, setCollapsed] = useState(true);
 
   const queryPool = poolId
     ? queriesStore.get(chainId).osmosis!.queryPools.getPool(poolId)
+    : undefined;
+
+  const derivedPoolData = poolId
+    ? derivedDataStore.getForPool(poolId)
     : undefined;
 
   const config = poolId
@@ -59,13 +66,26 @@ export const MyPositionCard: FunctionComponent<{
     fiatCurrency &&
     new PricePretty(fiatCurrency, baseAssetValue.add(quoteAssetValue));
 
+  const superfluidDelegation =
+    derivedPoolData?.superfluidPoolDetail.getDelegatedPositionInfo(positionId);
+
+  const superfluidUndelegation =
+    derivedPoolData?.superfluidPoolDetail.getUndelegatingPositionInfo(
+      positionId
+    );
+
+  const isSuperfluidStaked =
+    Boolean(superfluidDelegation) || Boolean(superfluidUndelegation);
+
   const incentivesApr =
     poolId && lowerTick && upperTick
-      ? queriesExternalStore.queryPositionsRangeApr.get(
-          poolId,
-          Number(lowerTick.toString()),
-          Number(upperTick.toString())
-        )?.apr
+      ? queriesExternalStore.queryPositionsRangeApr
+          .get(
+            poolId,
+            Number(lowerTick.toString()),
+            Number(upperTick.toString())
+          )
+          ?.apr?.add(superfluidDelegation?.superfluidApr ?? new Dec(0))
       : undefined;
 
   return (
@@ -104,6 +124,8 @@ export const MyPositionCard: FunctionComponent<{
                   }
                   lowerPrice={lowerPrices.price}
                   upperPrice={upperPrices.price}
+                  fullRange={isFullRange}
+                  isSuperfluid={Boolean(superfluidDelegation)}
                 />
               )}
           </div>
@@ -129,6 +151,7 @@ export const MyPositionCard: FunctionComponent<{
             <PositionDataGroup
               label={t("clPositions.incentives")}
               value={`${formatPretty(incentivesApr.maxDecimals(0))} APR`}
+              isSuperfluid={isSuperfluidStaked}
             />
           )}
         </div>
@@ -147,11 +170,19 @@ export const MyPositionCard: FunctionComponent<{
 const PositionDataGroup: FunctionComponent<{
   label: string;
   value: string | ReactNode;
-}> = ({ label, value }) => (
+  isSuperfluid?: boolean;
+}> = ({ label, value, isSuperfluid = false }) => (
   <div className="flex-grow-1 flex max-w-[12rem] flex-shrink-0 flex-col items-end gap-2 xl:items-start">
     <div className="text-subtitle1 text-osmoverse-400">{label}</div>
     {typeof value === "string" ? (
-      <h6 className="text-white w-full truncate text-right xl:text-left">
+      <h6
+        className={classNames(
+          "text-white w-full truncate text-right xl:text-left",
+          {
+            "text-superfluid-gradient": isSuperfluid,
+          }
+        )}
+      >
         {value}
       </h6>
     ) : (

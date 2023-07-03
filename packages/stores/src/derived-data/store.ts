@@ -55,6 +55,7 @@ export class DerivedDataStore {
       this.queriesStore,
       this.accountStore,
       this.sharePoolDetails,
+      this.concentratedPoolDetails,
       this.priceStore
     );
     this.poolsBonding = new ObservablePoolsBonding(

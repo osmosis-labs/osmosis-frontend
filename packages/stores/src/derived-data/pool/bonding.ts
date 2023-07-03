@@ -204,13 +204,18 @@ export class ObservableSharePoolBonding {
           : undefined;
 
       // return if this gauge is not relevant to user
-      //  * Bonding is pointless with no gauges incentivizing this duration's locks
-      //  * User has no un/locked tokens in locks for this duration
+      //  * Bonding is pointless with no internal gauges incentivizing this lock duration
+      //    * OR Is superfluid but is not the longest lock duration
+      //  * No external gauges for this lock duration
+      //  * User has no un/locked tokens in locks for this lock duration
       if (
-        !internalGaugeOfDuration?.apr.toDec().gt(new Dec(0)) &&
+        (!internalGaugeOfDuration?.apr.toDec().gt(new Dec(0)) ||
+          (this.superfluidPoolDetail.isSuperfluid &&
+            curDuration.asMilliseconds() ===
+              this.sharePoolDetail.longestDuration?.asMilliseconds())) &&
         externalGaugesOfDuration.length === 0 &&
         lockedUserShares.toDec().isZero() &&
-        (!userUnlockingShares || userUnlockingShares?.shares.toDec().isZero())
+        (!userUnlockingShares || userUnlockingShares.shares.toDec().isZero())
       ) {
         return;
       }
@@ -268,28 +273,27 @@ export class ObservableSharePoolBonding {
       let superfluid: BondDuration["superfluid"] | undefined;
       if (
         this.superfluidPoolDetail.isSuperfluid &&
-        this.superfluidPoolDetail.superfluid &&
         sfsDuration &&
         curDuration.asSeconds() === sfsDuration.asSeconds()
       ) {
         const delegation =
-          (this.superfluidPoolDetail.superfluid.delegations?.length ?? 0) > 0
-            ? this.superfluidPoolDetail.superfluid.delegations?.[0]
+          (this.superfluidPoolDetail.userSharesDelegations?.length ?? 0) > 0
+            ? this.superfluidPoolDetail.userSharesDelegations?.[0]
             : undefined;
         const undelegation =
-          (this.superfluidPoolDetail.superfluid.undelegations?.length ?? 0) > 0
-            ? this.superfluidPoolDetail.superfluid.undelegations?.[0]
+          (this.superfluidPoolDetail.userSharesUndelegations?.length ?? 0) > 0
+            ? this.superfluidPoolDetail.userSharesUndelegations?.[0]
             : undefined;
 
         superfluid = {
           duration: sfsDuration,
           apr: this.superfluidPoolDetail.superfluidApr,
           commission: delegation?.validatorCommission,
-          delegated: !this.superfluidPoolDetail.superfluid.upgradeableLpLockIds
-            ? delegation?.amount
+          delegated: !this.superfluidPoolDetail.userUpgradeableSharePoolLockIds
+            ? delegation?.equivalentOsmoAmount
             : undefined,
-          undelegating: !this.superfluidPoolDetail.superfluid
-            .upgradeableLpLockIds
+          undelegating: !this.superfluidPoolDetail
+            .userUpgradeableSharePoolLockIds
             ? undelegation?.amount
             : undefined,
           validatorMoniker: delegation?.validatorName,
