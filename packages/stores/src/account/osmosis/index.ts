@@ -188,7 +188,9 @@ export class OsmosisAccountImpl {
       denom0,
       denom1,
       sender: this.address,
-      spreadFactor: new Dec(spreadFactor).toString(),
+      spreadFactor: this.changeDecStringToProtoBz(
+        new Dec(spreadFactor).toString()
+      ),
       tickSpacing: Long.fromNumber(tickSpacing),
     });
 
