@@ -501,5 +501,7 @@
   "seo.pool.title": "Basen #",
   "seo.pool.description": "Dodaj swoje aktywa do tej puli, aby odblokować RRSO. Im dłuższy okres rozłączenia, tym więcej zarabiasz na Osmosis - wiodącej zdecentralizowanej giełdzie Cosmos",
   "seo.pools.title": "baseny osmotyczne",
-  "seo.pools.description": "Odkryj pule płynności na Osmosis - wiodącej zdecentralizowanej giełdzie Cosmos"
+  "seo.pools.description": "Odkryj pule płynności na Osmosis - wiodącej zdecentralizowanej giełdzie Cosmos",
+  "streamswap.description": "Nowe transmisje dla QSR/ATOM i QSR/OSMO są dostępne na Streamswap.",
+  "streamswap.link": "Sprawdź je."
 }

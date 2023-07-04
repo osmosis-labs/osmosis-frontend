@@ -502,5 +502,7 @@
   "seo.pool.title": "Bazin #",
   "seo.pool.description": "Adăugați-vă activele în acest grup pentru a debloca APR. Cu cât perioada de dezlegare este mai lungă, cu atât câștigi mai mult pe Osmosis - principalul schimb descentralizat Cosmos",
   "seo.pools.title": "Bazine cu osmoză",
-  "seo.pools.description": "Descoperiți bazine de lichiditate pe Osmosis - principalul schimb descentralizat Cosmos"
+  "seo.pools.description": "Descoperiți bazine de lichiditate pe Osmosis - principalul schimb descentralizat Cosmos",
+  "streamswap.description": "Noile fluxuri pentru QSR/ATOM și QSR/OSMO sunt live pe Streamswap.",
+  "streamswap.link": "Verifică-i."
 }

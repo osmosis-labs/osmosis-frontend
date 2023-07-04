@@ -501,5 +501,7 @@
   "seo.pool.title": "수영장 #",
   "seo.pool.description": "APR을 잠금 해제하려면 이 풀에 자산을 추가하세요. 언본딩 기간이 길수록 탈중앙화 코스모스 거래소인 Osmosis에서 더 많은 수익을 올릴 수 있습니다.",
   "seo.pools.title": "삼투 풀",
-  "seo.pools.description": "Osmosis에서 유동성 풀을 발견하십시오 - 선도적인 탈중앙화 Cosmos 거래소"
+  "seo.pools.description": "Osmosis에서 유동성 풀을 발견하십시오 - 선도적인 탈중앙화 Cosmos 거래소",
+  "streamswap.description": "QSR/ATOM 및 QSR/OSMO를 위한 새로운 스트림이 Streamswap에서 실시간으로 제공됩니다.",
+  "streamswap.link": "한번 봐봐."
 }

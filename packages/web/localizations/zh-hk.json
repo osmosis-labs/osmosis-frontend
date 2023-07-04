@@ -501,5 +501,7 @@
   "seo.pool.title": "水池 ＃",
   "seo.pool.description": "將您的資產添加到此池中以解鎖 APR。您的解綁期越長，您在 Osmosis（領先的去中心化 Cosmos 交易所）上賺的錢就越多",
   "seo.pools.title": "滲透池",
-  "seo.pools.description": "在 Osmosis 上發現流動性池——領先的去中心化 Cosmos 交易所"
+  "seo.pools.description": "在 Osmosis 上發現流動性池——領先的去中心化 Cosmos 交易所",
+  "streamswap.description": "QSR/ATOM 和 QSR/OSMO 的新流已在 Streamswap 上上線。",
+  "streamswap.link": "去看一下。"
 }
