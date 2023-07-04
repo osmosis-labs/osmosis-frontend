@@ -3689,6 +3689,70 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://www.mintscan.io/neutron/txs/{txHash}",
   },
+  {
+    rpc: "https://quasar-rpc.polkachu.com/",
+    rest: "https://quasar-api.polkachu.com",
+    chainId: "quasar-1",
+    chainName: "Quasar",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("quasar"),
+    currencies: [
+      {
+        coinDenom: "QSR",
+        coinMinimalDenom: "uqsr",
+        coinDecimals: 6,
+        //coinGeckoId: "pool:uqsr",
+        coinImageUrl: "/tokens/quasar.svg",
+        isStakeCurrency: true,
+      },
+      {
+        coinDenom: "OSMO",
+        coinMinimalDenom:
+          "ibc/0471F1C4E7AFD3F07702BEF6DC365268D64570F7C1FDC98EA6098DD6DE59817B",
+        coinDecimals: 6,
+        coinGeckoId: "pool:uosmo",
+        coinImageUrl: "/tokens/osmo.svg",
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.01,
+          average: 0.025,
+          high: 0.03,
+        },
+      },
+      {
+        coinDenom: "ATOM",
+        coinMinimalDenom:
+          "ibc/FA0006F056DB6719B8C16C551FC392B62F5729978FC0B125AC9A432DBB2AA1A5",
+        coinDecimals: 6,
+        coinGeckoId: "pool:uatom",
+        coinImageUrl: "/tokens/atom.svg",
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.01,
+          average: 0.025,
+          high: 0.03,
+        },
+      },
+      {
+        coinDenom: "USDC.axl",
+        coinMinimalDenom:
+          "ibc/FA7775734CC73176B7425910DE001A1D2AD9B6D9E93129A5D0750EAD13E4E63A",
+        coinDecimals: 6,
+        coinGeckoId: "usd-coin",
+        coinImageUrl: "/tokens/usdc.svg",
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.01,
+          average: 0.025,
+          high: 0.03,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://www.mintscan.io/quasar/txs/{txHash}",
+  },
 ];
 
 const chainInfos = IS_TESTNET

@@ -1878,6 +1878,12 @@ export const IBCAssetInfos: (IBCAsset & {
         ics20ContractAddress:
           "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
       },
+      {
+        counterpartyChainId: "quasar-1",
+        sourceChannelId: "channel-688",
+        destChannelId: "channel-1",
+        coinMinimalDenom: "uqsr",
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (
