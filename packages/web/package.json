@@ -9,7 +9,7 @@
     "test": "jest --passWithNoTests",
     "analyze": "dotenv -v ANALYZE=true -- next build",
     "start": "next start",
-    "lint": "prettier --check \"**/*\" && next lint && inlang lint",
+    "lint": "prettier --check \"**/*\" && next lint && inlang lint --config ../../inlang.config.js",
     "lint:fix": "prettier --write \"**/*\" && next lint --fix",
     "pre-commit": "lint-staged",
     "generate": "yarn generate:chain-info && yarn generate:wallet-assets && yarn generate:wallet-registry",

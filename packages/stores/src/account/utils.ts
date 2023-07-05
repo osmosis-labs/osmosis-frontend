@@ -68,6 +68,21 @@ export function getWalletWindowName(walletName: string) {
   return walletName.split("-")[0];
 }
 
+/**
+ * Change decimal string to proto bytes. This is
+ *
+ * @param decStr string
+ * @returns string
+ */
+export function changeDecStringToProtoBz(decStr: string): string {
+  let r = decStr;
+  while (r.length >= 2 && (r.startsWith(".") || r.startsWith("0"))) {
+    r = r.slice(1);
+  }
+
+  return r;
+}
+
 export const CosmosKitAccountsLocalStorageKey = "cosmos-kit@1:core//accounts";
 export const CosmosKitWalletLocalStorageKey =
   "cosmos-kit@1:core//current-wallet";

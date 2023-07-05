@@ -1,10 +1,10 @@
 {
   "banners": [
     {
-      "name": "Place limit and stop Orders",
-      "header": "Place limit and stop Orders",
-      "subheader": "New trading options with Autonomy",
-      "externalUrl": "https://osmosis.autoswap.trade/",
+      "name": "Place limit orders",
+      "header": "Place limit orders",
+      "subheader": "Experience pro trading with TFM",
+      "externalUrl": "https://osmosis.tfm.com/",
       "iconImageUrl": "/images/place-limit-order.svg",
       "iconImageAlt": "Variable chart decreasing to the lower right, then increasing to the upper right with dollar signs",
       "gradient": "linear-gradient(136deg, #3B154F 0%, #10061C 47.66%, #0E2654 100%)",
