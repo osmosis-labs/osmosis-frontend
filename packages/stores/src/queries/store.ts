@@ -6,6 +6,7 @@ import { DeepReadonly } from "utility-types";
 import { ObservableQueryFilteredPools } from "../queries-external/filtered-pools/filtered-pools";
 import {
   ObservableQueryAccountsPositions,
+  ObservableQueryAccountsUnbondingPositions,
   ObservableQueryLiquiditiesNetInDirection,
   ObservableQueryLiquiditiesPerTickRange,
   ObservableQueryLiquidityPositionsById,
@@ -92,6 +93,7 @@ export class OsmosisQueriesImpl {
   public readonly queryLiquiditiesPerTickRange: DeepReadonly<ObservableQueryLiquiditiesPerTickRange>;
   public readonly queryLiquidityPositionsById: DeepReadonly<ObservableQueryLiquidityPositionsById>;
   public readonly queryAccountsPositions: DeepReadonly<ObservableQueryAccountsPositions>;
+  public readonly queryAccountsUnbondingPositions: DeepReadonly<ObservableQueryAccountsUnbondingPositions>;
 
   protected _queryPools: DeepReadonly<ObservableQueryPoolGetter>;
   public readonly queryGammNumPools: DeepReadonly<ObservableQueryNumPools>;
@@ -190,6 +192,13 @@ export class OsmosisQueriesImpl {
       this.queryLiquidityPositionsById,
       chainGetter
     );
+
+    this.queryAccountsUnbondingPositions =
+      new ObservableQueryAccountsUnbondingPositions(
+        kvStore,
+        chainId,
+        chainGetter
+      );
 
     /** Contains a reference to the currently responsive pool store. */
     const poolsQueryFallbacks = new FallbackStore(
