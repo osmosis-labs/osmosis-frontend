@@ -6,6 +6,7 @@ import {
   osmosisAminoConverters as originalOsmosisAminoConverters,
 } from "@osmosis-labs/proto-codecs";
 import { MsgCreateBalancerPool } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/gamm/pool-models/balancer/tx/tx";
+import { MsgCreateStableswapPool } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/gamm/pool-models/stableswap/tx";
 import { MsgLockTokens } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/lockup/tx";
 import { MsgTransfer } from "cosmjs-types/ibc/applications/transfer/v1/tx";
 import Long from "long";
@@ -41,6 +42,73 @@ const osmosisAminoConverters: Record<
           denom: coin.denom,
           amount: coin.amount,
         })),
+      };
+    },
+  },
+  "/osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool": {
+    ...originalOsmosisAminoConverters[
+      "/osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool"
+    ],
+    toAmino: ({
+      sender,
+      poolParams,
+      futurePoolGovernor,
+      initialPoolLiquidity,
+      scalingFactorController,
+      scalingFactors,
+    }: MsgCreateStableswapPool) => {
+      return {
+        sender,
+        pool_params: {
+          swap_fee: poolParams?.swapFee,
+          exit_fee: poolParams?.exitFee,
+        },
+        initial_pool_liquidity: Array.isArray(initialPoolLiquidity)
+          ? initialPoolLiquidity.map(({ denom, amount }) => ({
+              denom,
+              amount,
+            }))
+          : [],
+        scaling_factors: Array.isArray(scalingFactors)
+          ? scalingFactors.map((e) => e.toString())
+          : [],
+        future_pool_governor: futurePoolGovernor,
+        scaling_factor_controller: scalingFactorController
+          ? scalingFactorController
+          : undefined,
+      };
+    },
+    fromAmino: ({
+      sender,
+      pool_params,
+      future_pool_governor,
+      initial_pool_liquidity,
+      scaling_factor_controller,
+      scaling_factors,
+    }: Parameters<
+      (typeof originalOsmosisAminoConverters)["/osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool"]["fromAmino"]
+    >[0]): MsgCreateStableswapPool => {
+      return {
+        sender,
+        poolParams: {
+          swapFee: pool_params?.swap_fee
+            ? changeDecStringToProtoBz(pool_params.swap_fee)
+            : changeDecStringToProtoBz("0.000000000000000000"),
+          exitFee: pool_params?.exit_fee
+            ? changeDecStringToProtoBz(pool_params.exit_fee)
+            : changeDecStringToProtoBz("0.000000000000000000"),
+        },
+        initialPoolLiquidity: Array.isArray(initial_pool_liquidity)
+          ? initial_pool_liquidity.map(({ denom, amount }) => ({
+              denom,
+              amount,
+            }))
+          : [],
+        scalingFactors: Array.isArray(scaling_factors)
+          ? scaling_factors.map((e: any) => e)
+          : [],
+        futurePoolGovernor: future_pool_governor,
+        scalingFactorController: scaling_factor_controller,
       };
     },
   },
@@ -89,8 +157,8 @@ const osmosisAminoConverters: Record<
           swapFee: pool_params?.swap_fee
             ? changeDecStringToProtoBz(pool_params.swap_fee)
             : changeDecStringToProtoBz("0.000000000000000000"),
-          exitFee: pool_params?.swap_fee
-            ? changeDecStringToProtoBz(pool_params.swap_fee)
+          exitFee: pool_params?.exit_fee
+            ? changeDecStringToProtoBz(pool_params.exit_fee)
             : changeDecStringToProtoBz("0.000000000000000000"),
         },
         poolAssets: pool_assets.map((el0) => ({
