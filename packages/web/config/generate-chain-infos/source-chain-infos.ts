@@ -3703,7 +3703,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDenom: "QSR",
         coinMinimalDenom: "uqsr",
         coinDecimals: 6,
-        //coinGeckoId: "pool:uqsr",
+        coinGeckoId: "pool:uqsr",
         coinImageUrl: "/tokens/quasar.svg",
         isStakeCurrency: true,
       },
