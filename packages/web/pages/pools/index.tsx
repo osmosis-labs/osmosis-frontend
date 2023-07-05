@@ -318,12 +318,16 @@ const Pools: NextPage = observer(function () {
           )}
         </section>
       )}
-      <section ref={myPositionsRef}>
-        <div className="flex w-full flex-col flex-nowrap gap-5 pb-[3.75rem]">
-          <h6 className="pl-6">{t("clPositions.yourPositions")}</h6>
-          <MyPositionsSection />
-        </div>
-      </section>
+      {featureFlags.concentratedLiquidity &&
+        queryOsmosis.queryAccountsPositions.get(account?.address ?? "")
+          .positions.length > 0 && (
+          <section ref={myPositionsRef}>
+            <div className="flex w-full flex-col flex-nowrap gap-5 pb-[3.75rem]">
+              <h6 className="pl-6">{t("clPositions.yourPositions")}</h6>
+              <MyPositionsSection />
+            </div>
+          </section>
+        )}
       <section ref={myPoolsRef}>
         <MyPoolsSection />
       </section>
