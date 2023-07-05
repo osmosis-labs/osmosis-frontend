@@ -46,13 +46,13 @@ export const osmosisMsgOpts = createMsgOpts({
   swapExactAmountIn: (numPools: number) => ({
     messageComposer:
       osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl.swapExactAmountIn,
-    gas: 25_0000 * numPools,
+    gas: 500_000 * numPools,
   }),
   swapExactAmountOut: (numPools: number) => ({
     messageComposer:
       osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl
         .swapExactAmountOut,
-    gas: 25_0000 * numPools,
+    gas: 500_000 * numPools,
   }),
   lockTokens: {
     gas: 450000,
