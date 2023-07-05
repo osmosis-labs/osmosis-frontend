@@ -1848,6 +1848,50 @@ export class OsmosisAccountImpl {
     );
   }
 
+  /**
+   * Stake an existing full range position to given.
+   *
+   * @param positionId Position ID to stake.
+   * @param validatorAddress Validator address to stake to.
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
+   */
+  async sendStakePositionMsg(
+    positionId: string,
+    validatorAddress: string,
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    const msg = this.msgOpts.sfStakeSuperfluidPosition.messageComposer({
+      positionId: Long.fromString(positionId),
+      sender: this.address,
+      valAddr: validatorAddress,
+    });
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "sfStakeSuperfluidPosition",
+      [msg],
+      memo,
+      {
+        amount: [],
+        gas: this.msgOpts.sfStakeSuperfluidPosition.gas.toString(),
+      },
+      undefined,
+      (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          this.queries?.queryAccountsPositions
+            .get(this.address)
+            .waitFreshResponse();
+          this.queries?.queryAccountsSuperfluidDelegatedPositions
+            .get(this.address)
+            .waitFreshResponse();
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+
   async sendUnPoolWhitelistedPoolMsg(
     poolId: string,
     memo: string = "",
