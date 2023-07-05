@@ -10,6 +10,8 @@ import { MsgLockTokens } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/
 import { MsgTransfer } from "cosmjs-types/ibc/applications/transfer/v1/tx";
 import Long from "long";
 
+import { changeDecStringToProtoBz } from "./utils";
+
 const osmosisAminoConverters: Record<
   keyof typeof originalOsmosisAminoConverters,
   {
@@ -84,8 +86,12 @@ const osmosisAminoConverters: Record<
       return {
         sender,
         poolParams: {
-          swapFee: pool_params?.swap_fee ?? "",
-          exitFee: pool_params?.exit_fee ?? "",
+          swapFee: pool_params?.swap_fee
+            ? changeDecStringToProtoBz(pool_params.swap_fee)
+            : changeDecStringToProtoBz("0.000000000000000000"),
+          exitFee: pool_params?.swap_fee
+            ? changeDecStringToProtoBz(pool_params.swap_fee)
+            : changeDecStringToProtoBz("0.000000000000000000"),
         },
         poolAssets: pool_assets.map((el0) => ({
           token: {
