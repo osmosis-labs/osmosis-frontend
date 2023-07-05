@@ -67,7 +67,13 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
   const superfluidUndelegation =
     superfluidPoolDetail.getUndelegatingPositionInfo(positionConfig.id);
 
-  const existingSfValidatorAddress = superfluidDelegation?.validatorAddress;
+  /** Is defined if there's some other SF position already in this pool.
+   *  On chain invariant: one validator can be selected per pool. */
+  const existingSfValidatorAddress = account?.address
+    ? osmosisQueries.queryAccountsSuperfluidDelegatedPositions.get(
+        account.address
+      ).delegatedPositions?.[0].validatorAddress ?? undefined
+    : undefined;
 
   const {
     xRange,
