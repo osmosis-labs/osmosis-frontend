@@ -72,7 +72,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
   const existingSfValidatorAddress = account?.address
     ? osmosisQueries.queryAccountsSuperfluidDelegatedPositions.get(
         account.address
-      ).delegatedPositions?.[0].validatorAddress ?? undefined
+      ).delegatedPositions?.[0]?.validatorAddress ?? undefined
     : undefined;
 
   const {
