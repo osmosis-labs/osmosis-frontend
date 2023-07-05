@@ -1,5 +1,6 @@
 import { Staking } from "@keplr-wallet/stores";
 import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -110,7 +111,10 @@ export const SuperfluidValidatorModal: FunctionComponent<
             columnDefs={[
               {
                 display: t("superfluidValidator.columns.validator"),
-                className: isMobile ? "caption" : undefined,
+                className: classNames(
+                  "text-left",
+                  isMobile ? "caption" : undefined
+                ),
                 sort:
                   sortKey === "validatorName"
                     ? {
@@ -122,7 +126,10 @@ export const SuperfluidValidatorModal: FunctionComponent<
               },
               {
                 display: t("superfluidValidator.columns.commission"),
-                className: `text-right ${isMobile ? "caption" : undefined}`,
+                className: classNames(
+                  "text-right !pr-3",
+                  isMobile ? "caption" : undefined
+                ),
                 sort:
                   sortKey === "validatorCommission"
                     ? {

@@ -236,7 +236,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           account && (
             <>
               <button
-                className="w-fit rounded-lg bg-superfluid px-[2px]"
+                className="w-fit rounded-[10px] bg-superfluid px-[2px]"
                 disabled={!Boolean(account)}
                 onClick={() => {
                   if (!existingSfValidatorAddress) {
@@ -251,7 +251,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                   }
                 }}
               >
-                <div className="w-full rounded-[6px] bg-osmoverse-800 px-3 py-[6px] md:px-2">
+                <div className="w-full rounded-[9px] bg-osmoverse-800 px-3 py-[6px] md:px-2">
                   <span className="text-superfluid-gradient">
                     {t("pool.superfluidEarnMore", {
                       rate: superfluidPoolDetail.superfluidApr
@@ -261,16 +261,18 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                   </span>
                 </div>
               </button>
-              <SuperfluidValidatorModal
-                isOpen={selectSfValidatorAddress}
-                onRequestClose={() => setSelectSfValidatorAddress(false)}
-                onSelectValidator={async (address) => {
-                  await account.osmosis
-                    .sendStakePositionMsg(positionConfig.id, address)
-                    .catch(console.error);
-                  setSelectSfValidatorAddress(false);
-                }}
-              />
+              {selectSfValidatorAddress && (
+                <SuperfluidValidatorModal
+                  isOpen={selectSfValidatorAddress}
+                  onRequestClose={() => setSelectSfValidatorAddress(false)}
+                  onSelectValidator={async (address) => {
+                    await account.osmosis
+                      .sendStakePositionMsg(positionConfig.id, address)
+                      .catch(console.error);
+                    setSelectSfValidatorAddress(false);
+                  }}
+                />
+              )}
             </>
           )}
         <PositionButton
