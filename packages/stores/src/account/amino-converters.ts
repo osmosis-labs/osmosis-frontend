@@ -104,6 +104,12 @@ const osmosisAminoConverters: Record<
     ],
     aminoType: "osmosis/sf-undelegate-and-unbond-lock",
   },
+  "/osmosis.superfluid.MsgLockExistingFullRangePositionAndSFStake": {
+    ...originalOsmosisAminoConverters[
+      "/osmosis.superfluid.MsgLockExistingFullRangePositionAndSFStake"
+    ],
+    aminoType: "osmosis/lock-existing-full-range-and-sf-stake",
+  },
   "/osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition":
     {
       ...originalOsmosisAminoConverters[

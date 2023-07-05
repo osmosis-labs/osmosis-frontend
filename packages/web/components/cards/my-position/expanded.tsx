@@ -239,6 +239,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
       <div className="mt-4 flex flex-row justify-end gap-5 sm:flex-wrap sm:justify-start">
         {positionConfig.isFullRange &&
           superfluidPoolDetail.isSuperfluid &&
+          !superfluidDelegation &&
           account && (
             <>
               <button

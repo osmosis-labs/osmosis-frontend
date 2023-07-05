@@ -1880,8 +1880,11 @@ export class OsmosisAccountImpl {
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
-          this.queries?.querySuperfluidDelegations
-            .getQuerySuperfluidDelegations(this.address)
+          this.queries?.queryAccountsPositions
+            .get(this.address)
+            .waitFreshResponse();
+          this.queries?.queryAccountsSuperfluidDelegatedPositions
+            .get(this.address)
             .waitFreshResponse();
         }
         onFulfill?.(tx);
