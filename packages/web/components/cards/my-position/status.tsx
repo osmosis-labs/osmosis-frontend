@@ -95,7 +95,7 @@ export const MyPositionStatus: FunctionComponent<
           "bg-superfluid": status === PositionStatus.SuperfluidStaked,
         })}
       />
-      <div className="text-subtitle1">{label}</div>
+      <span className="subtitle1">{label}</span>
     </div>
   );
 };

@@ -179,6 +179,12 @@ const osmosisAminoConverters: Record<
     ],
     aminoType: "osmosis/sf-undelegate-and-unbond-lock",
   },
+  "/osmosis.superfluid.MsgLockExistingFullRangePositionAndSFStake": {
+    ...originalOsmosisAminoConverters[
+      "/osmosis.superfluid.MsgLockExistingFullRangePositionAndSFStake"
+    ],
+    aminoType: "osmosis/lock-existing-full-range-and-sf-stake",
+  },
   "/osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition":
     {
       ...originalOsmosisAminoConverters[
@@ -191,6 +197,36 @@ const osmosisAminoConverters: Record<
       "/osmosis.superfluid.MsgAddToConcentratedLiquiditySuperfluidPosition"
     ],
     aminoType: "osmosis/add-to-cl-superfluid-position",
+  },
+  "/osmosis.concentratedliquidity.v1beta1.MsgCreatePosition": {
+    ...originalOsmosisAminoConverters[
+      "/osmosis.concentratedliquidity.v1beta1.MsgCreatePosition"
+    ],
+    aminoType: "osmosis/cl-create-position",
+  },
+  "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition": {
+    ...originalOsmosisAminoConverters[
+      "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition"
+    ],
+    aminoType: "osmosis/cl-withdraw-position",
+  },
+  "/osmosis.concentratedliquidity.v1beta1.MsgAddToPosition": {
+    ...originalOsmosisAminoConverters[
+      "/osmosis.concentratedliquidity.v1beta1.MsgAddToPosition"
+    ],
+    aminoType: "osmosis/cl-add-to-position",
+  },
+  "/osmosis.concentratedliquidity.v1beta1.MsgCollectSpreadRewards": {
+    ...originalOsmosisAminoConverters[
+      "/osmosis.concentratedliquidity.v1beta1.MsgCollectSpreadRewards"
+    ],
+    aminoType: "osmosis/cl-col-sp-rewards",
+  },
+  "/osmosis.concentratedliquidity.v1beta1.MsgCollectIncentives": {
+    ...originalOsmosisAminoConverters[
+      "/osmosis.concentratedliquidity.v1beta1.MsgCollectIncentives"
+    ],
+    aminoType: "osmosis/cl-collect-incentives",
   },
   "/osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MsgCreateConcentratedPool":
     {
