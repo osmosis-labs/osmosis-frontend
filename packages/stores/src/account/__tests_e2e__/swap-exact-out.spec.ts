@@ -161,7 +161,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
           undefined,
           undefined,
           (tx) => {
-            if (tx.code) reject(tx.log);
+            if (tx.code) reject(tx.rawLog);
             else resolve(tx);
           }
         )
@@ -259,7 +259,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
           undefined,
           undefined,
           (tx) => {
-            if (tx.code) reject(tx.log);
+            if (tx.code) reject(tx.rawLog);
             else resolve(tx);
           }
         )
@@ -348,7 +348,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
           undefined,
           undefined,
           (tx) => {
-            if (tx.code) reject(tx.log);
+            if (tx.code) reject(tx.rawLog);
             else resolve(tx);
           }
         )
@@ -445,7 +445,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
             undefined,
             undefined,
             (tx) => {
-              if (tx.code) reject(tx.log);
+              if (tx.code) reject(tx.rawLog);
               else resolve(tx);
             }
           )

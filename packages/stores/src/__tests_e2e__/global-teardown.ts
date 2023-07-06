@@ -9,7 +9,7 @@ module.exports = async (containerID: string) => {
     const { stdout } = await exec(
       `bash ./src/__tests_e2e__/stop-osmosisd.sh ${containerID}`
     );
-    console.log("Stopped osmosisd container:", stdout);
+    console.info("Stopped osmosisd container:", stdout);
   } catch (error) {
     console.error("Failed to stop osmosisd container:", error);
     throw error;

@@ -79,6 +79,7 @@
     "maxPrice": "Max price",
     "minPrice": "Min price",
     "collectRewards": "Collect Rewards",
+    "collectAllRewards": "Collect All Rewards",
     "noRewards": "Nothing to collect, check back soon",
     "removeLiquidity": "Remove Liquidity",
     "increaseLiquidity": "Increase Liquidity",
