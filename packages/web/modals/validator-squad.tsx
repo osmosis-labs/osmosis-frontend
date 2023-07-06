@@ -11,12 +11,12 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-multi-lang";
-import { useVirtual } from "react-virtual";
 
 import { ExternalLinkIcon, Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
@@ -126,7 +126,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
       ]
     );
 
-    const searchValidatorsMemoedKeys = ["validatorName"];
+    const searchValidatorsMemoedKeys = useMemo(() => ["validatorName"], []);
 
     const [query, _setQuery, filteredValidators] = useFilteredData(
       rawData,
@@ -228,13 +228,15 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
 
     const tableContainerRef = useRef<HTMLDivElement>(null);
 
-    const rowVirtualizer = useVirtual({
-      parentRef: tableContainerRef,
-      size: filteredValidators.length,
+    const rowVirtualizer = useVirtualizer({
+      count: rows.length,
+      getScrollElement: () => tableContainerRef.current,
+      estimateSize: () => 66,
       overscan: 10,
     });
 
-    const { virtualItems: virtualRows, totalSize } = rowVirtualizer;
+    const virtualRows = rowVirtualizer.getVirtualItems();
+    const totalSize = rowVirtualizer.getTotalSize();
 
     const paddingTop =
       virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
@@ -331,9 +333,10 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
               )}
               {virtualRows.map((virtualRow) => {
                 const row = rows[virtualRow.index] as Row<Validator>;
+                const cells = row?.getVisibleCells();
                 return (
-                  <tr key={row.id}>
-                    {row.getVisibleCells().map((cell) => {
+                  <tr key={row?.id}>
+                    {cells?.map((cell) => {
                       return (
                         <td key={cell.id}>
                           {flexRender(
