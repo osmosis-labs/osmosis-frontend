@@ -27,7 +27,7 @@ import {
 } from "@osmosis-labs/pools";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
-import { action, computed, makeObservable, observable } from "mobx";
+import { action, autorun, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { IPriceStore } from "src/price";
 
@@ -334,17 +334,26 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     readonly queryNodeInfo: ObservableQueryNodeInfo,
     raw: PoolRaw
   ) {
-    super(
-      kvStore,
-      chainId,
-      chainGetter,
-      ObservableQueryPool.makeEndpointUrl(raw.id)
-    );
+    super(kvStore, chainId, chainGetter, "");
+
+    // get node version and set URL accordingly
+    autorun(() => {
+      const nodeVersion = queryNodeInfo.nodeVersion;
+
+      if (typeof nodeVersion !== "number") return;
+      if (isNaN(nodeVersion)) throw new Error("`nodeVersion` is NaN");
+
+      this.setUrl(ObservableQueryPool.makeEndpointUrl(raw.id, nodeVersion));
+    });
 
     ObservableQueryPool.addUnknownCurrencies(raw, chainGetter, chainId);
     this.raw = raw;
 
     makeObservable(this);
+  }
+
+  protected canFetch() {
+    return Boolean(this.queryNodeInfo.response);
   }
 
   readonly getPoolAsset: (denom: string) => {
