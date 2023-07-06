@@ -203,6 +203,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
               </div>
             </div>
           </div>
+          <UserAssetsAndExternalIncentives poolId={poolId} />
           <div className="flex flex-col gap-8">
             <div className="flex flex-row md:flex-wrap md:gap-y-4">
               <div className="flex flex-grow flex-col gap-3">
@@ -321,3 +322,37 @@ const Chart: FunctionComponent<{
     />
   );
 });
+
+const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
+  observer(({ poolId }) => {
+    const { derivedDataStore } = useStore();
+    const t = useTranslation();
+
+    const concentratedPoolDetail =
+      derivedDataStore.concentratedPoolDetails.get(poolId);
+
+    return (
+      <div className="flex h-40 gap-4">
+        <div className="flex place-content-between">
+          <div className="flex flex-col gap-2 rounded-[28px] bg-osmoverse-1000 px-8 py-7">
+            <span className="body2 text-osmoverse-400">
+              {t("clPositions.totalBalance")}
+            </span>
+            <div>
+              <h4 className="text-osmoverse-100">
+                {concentratedPoolDetail.userPoolValue.toString()}
+              </h4>
+              <span className="subtitle1">
+                {concentratedPoolDetail.userPositions.length > 1
+                  ? t("clPositions.numPositions", {
+                      numPositions:
+                        concentratedPoolDetail.userPositions.length.toString(),
+                    })
+                  : t("clPositions.onePosition")}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  });

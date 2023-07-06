@@ -95,7 +95,10 @@
     "superfluidUnstake": "Once unstaked, available after {duration}",
     "superfluidUnstaking": "Unstaking, available in {fromNow}",
     "superfluidCommission": "commission",
-    "unstake": "Unstake liquidity"
+    "unstake": "Unstake liquidity",
+    "totalBalance": "Total balance",
+    "numPositions": "{numPositions} positions",
+    "onePosition": "1 position"
   },
   "app": {
     "banner": {

@@ -158,6 +158,18 @@ export class ObservableConcentratedPoolDetail {
 
     return Array.from(coinSumsMap.values()).map((asset) => ({ asset }));
   }
+
+  @computed
+  get userPoolValue(): PricePretty {
+    const queryPool = this.queryConcentratedPool;
+    if (!queryPool) return new PricePretty(this._fiatCurrency, 0);
+
+    return this.userPoolAssets.reduce<PricePretty>((sum, { asset }) => {
+      const value = this.priceStore.calculatePrice(asset);
+      if (value) sum.add(value);
+      return sum;
+    }, new PricePretty(this._fiatCurrency, 0));
+  }
 }
 
 /** Stores a map of additional details for each share pool (balancer or stable) ID. */
