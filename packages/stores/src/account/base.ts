@@ -585,6 +585,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       wallet?.signingStargateOptions?.aminoTypes?.toAmino(msg)
     ) as AminoMsg[];
 
+    console.log(msgs);
+
     const signDoc = makeSignDocAmino(
       msgs,
       fee,

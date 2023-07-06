@@ -1,8 +1,7 @@
 //@ts-nocheck
 import { fromBase64, toBase64 } from "@cosmjs/encoding";
-import * as _m0 from "protobufjs/minimal";
 
-import { Long } from "../../../helpers";
+import { BinaryReader, BinaryWriter } from "../../../binary";
 /**
  * UploadCosmWasmPoolCodeAndWhiteListProposal is a gov Content type for
  * uploading coswasm pool code and adding it to internal whitelist. Only the
@@ -79,13 +78,13 @@ export interface MigratePoolContractsProposal {
    * either to the new_code_id that is already uploaded to chain or to
    * the given wasm_byte_code.
    */
-  poolIds: Long[];
+  poolIds: bigint[];
   /**
    * new_code_id is the code id of the contract code to migrate to.
    * Assumes that the code is already uploaded to chain. Only one of
    * new_code_id and wasm_byte_code should be set.
    */
-  newCodeId: Long;
+  newCodeId: bigint;
   /**
    * WASMByteCode can be raw or gzip compressed. Assumes that the code id
    * has not been uploaded yet so uploads the given code and migrates to it.
@@ -186,8 +185,8 @@ export interface MigratePoolContractsProposalAminoMsg {
 export interface MigratePoolContractsProposalSDKType {
   title: string;
   description: string;
-  pool_ids: Long[];
-  new_code_id: Long;
+  pool_ids: bigint[];
+  new_code_id: bigint;
   wasm_byte_code: Uint8Array;
   migrate_msg: Uint8Array;
 }
@@ -203,8 +202,8 @@ export const UploadCosmWasmPoolCodeAndWhiteListProposal = {
     "/osmosis.cosmwasmpool.v1beta1.UploadCosmWasmPoolCodeAndWhiteListProposal",
   encode(
     message: UploadCosmWasmPoolCodeAndWhiteListProposal,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.title !== "") {
       writer.uint32(10).string(message.title);
     }
@@ -217,10 +216,11 @@ export const UploadCosmWasmPoolCodeAndWhiteListProposal = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): UploadCosmWasmPoolCodeAndWhiteListProposal {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUploadCosmWasmPoolCodeAndWhiteListProposal();
     while (reader.pos < end) {
@@ -308,7 +308,7 @@ function createBaseMigratePoolContractsProposal(): MigratePoolContractsProposal 
     title: "",
     description: "",
     poolIds: [],
-    newCodeId: Long.UZERO,
+    newCodeId: BigInt(0),
     wasmByteCode: new Uint8Array(),
     migrateMsg: new Uint8Array(),
   };
@@ -317,8 +317,8 @@ export const MigratePoolContractsProposal = {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.MigratePoolContractsProposal",
   encode(
     message: MigratePoolContractsProposal,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.title !== "") {
       writer.uint32(10).string(message.title);
     }
@@ -330,7 +330,7 @@ export const MigratePoolContractsProposal = {
       writer.uint64(v);
     }
     writer.ldelim();
-    if (!message.newCodeId.isZero()) {
+    if (message.newCodeId !== BigInt(0)) {
       writer.uint32(32).uint64(message.newCodeId);
     }
     if (message.wasmByteCode.length !== 0) {
@@ -342,10 +342,11 @@ export const MigratePoolContractsProposal = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MigratePoolContractsProposal {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMigratePoolContractsProposal();
     while (reader.pos < end) {
@@ -361,14 +362,14 @@ export const MigratePoolContractsProposal = {
           if ((tag & 7) === 2) {
             const end2 = reader.uint32() + reader.pos;
             while (reader.pos < end2) {
-              message.poolIds.push(reader.uint64() as Long);
+              message.poolIds.push(reader.uint64());
             }
           } else {
-            message.poolIds.push(reader.uint64() as Long);
+            message.poolIds.push(reader.uint64());
           }
           break;
         case 4:
-          message.newCodeId = reader.uint64() as Long;
+          message.newCodeId = reader.uint64();
           break;
         case 5:
           message.wasmByteCode = reader.bytes();
@@ -389,11 +390,11 @@ export const MigratePoolContractsProposal = {
     const message = createBaseMigratePoolContractsProposal();
     message.title = object.title ?? "";
     message.description = object.description ?? "";
-    message.poolIds = object.poolIds?.map((e) => Long.fromValue(e)) || [];
+    message.poolIds = object.poolIds?.map((e) => BigInt(e.toString())) || [];
     message.newCodeId =
       object.newCodeId !== undefined && object.newCodeId !== null
-        ? Long.fromValue(object.newCodeId)
-        : Long.UZERO;
+        ? BigInt(object.newCodeId.toString())
+        : BigInt(0);
     message.wasmByteCode = object.wasmByteCode ?? new Uint8Array();
     message.migrateMsg = object.migrateMsg ?? new Uint8Array();
     return message;
@@ -407,7 +408,7 @@ export const MigratePoolContractsProposal = {
       poolIds: Array.isArray(object?.pool_ids)
         ? object.pool_ids.map((e: any) => e)
         : [],
-      newCodeId: Long.fromString(object.new_code_id),
+      newCodeId: BigInt(object.new_code_id),
       wasmByteCode: fromBase64(object.wasm_byte_code),
       migrateMsg: object.migrate_msg,
     };

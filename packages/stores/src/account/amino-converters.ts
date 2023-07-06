@@ -1,20 +1,14 @@
 import { AminoMsgTransfer } from "@cosmjs/stargate";
-import { Dec, DecUtils } from "@keplr-wallet/unit";
 import {
   cosmosAminoConverters,
   cosmwasmAminoConverters,
   ibcAminoConverters as originalIbcAminoConverters,
   osmosisAminoConverters as originalOsmosisAminoConverters,
 } from "@osmosis-labs/proto-codecs";
-import { MsgCreateConcentratedPool } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/concentrated-liquidity/pool-model/concentrated/tx";
-import { MsgWithdrawPosition } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/concentrated-liquidity/tx";
-import { MsgCreateBalancerPool } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/gamm/pool-models/balancer/tx/tx";
 import { MsgCreateStableswapPool } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/gamm/pool-models/stableswap/tx";
 import { MsgLockTokens } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/lockup/tx";
 import { MsgTransfer } from "cosmjs-types/ibc/applications/transfer/v1/tx";
 import Long from "long";
-
-import { changeDecStringToProtoBz } from "./utils";
 
 const osmosisAminoConverters: Record<
   keyof typeof originalOsmosisAminoConverters,
@@ -47,6 +41,13 @@ const osmosisAminoConverters: Record<
         })),
       };
     },
+  },
+  "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool": {
+    ...originalOsmosisAminoConverters[
+      "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool"
+    ],
+    // The amino type in telescope is not compatible with nodes.
+    aminoType: "osmosis/gamm/create-balancer-pool",
   },
   "/osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool": {
     ...originalOsmosisAminoConverters[
@@ -94,12 +95,8 @@ const osmosisAminoConverters: Record<
       return {
         sender,
         poolParams: {
-          swapFee: pool_params?.swap_fee
-            ? changeDecStringToProtoBz(pool_params.swap_fee)
-            : changeDecStringToProtoBz("0.000000000000000000"),
-          exitFee: pool_params?.exit_fee
-            ? changeDecStringToProtoBz(pool_params.exit_fee)
-            : changeDecStringToProtoBz("0.000000000000000000"),
+          swapFee: pool_params?.swap_fee ?? "0",
+          exitFee: pool_params?.exit_fee ?? "0",
         },
         initialPoolLiquidity: Array.isArray(initial_pool_liquidity)
           ? initial_pool_liquidity.map(({ denom, amount }) => ({
@@ -112,66 +109,6 @@ const osmosisAminoConverters: Record<
           : [],
         futurePoolGovernor: future_pool_governor,
         scalingFactorController: scaling_factor_controller,
-      };
-    },
-  },
-  "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool": {
-    ...originalOsmosisAminoConverters[
-      "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool"
-    ],
-    // The amino type in telescope is not compatible with nodes.
-    aminoType: "osmosis/gamm/create-balancer-pool",
-    // Our pools do not require the `smooth_weight_change_params`
-    toAmino: ({
-      sender,
-      poolParams,
-      poolAssets,
-      futurePoolGovernor,
-    }: MsgCreateBalancerPool) => {
-      return {
-        sender,
-        pool_params: {
-          swap_fee: poolParams?.swapFee,
-          exit_fee: poolParams?.exitFee,
-        },
-        pool_assets: poolAssets.map((asset) => ({
-          token: {
-            denom: asset?.token?.denom,
-            amount: asset?.token?.amount
-              ? Long.fromValue(asset?.token?.amount).toString()
-              : "0",
-          },
-          weight: asset.weight,
-        })),
-        future_pool_governor: futurePoolGovernor,
-      };
-    },
-    fromAmino: ({
-      sender,
-      pool_params,
-      pool_assets,
-      future_pool_governor,
-    }: Parameters<
-      (typeof originalOsmosisAminoConverters)["/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool"]["fromAmino"]
-    >[0]): MsgCreateBalancerPool => {
-      return {
-        sender,
-        poolParams: {
-          swapFee: pool_params?.swap_fee
-            ? changeDecStringToProtoBz(pool_params.swap_fee)
-            : changeDecStringToProtoBz("0.000000000000000000"),
-          exitFee: pool_params?.exit_fee
-            ? changeDecStringToProtoBz(pool_params.exit_fee)
-            : changeDecStringToProtoBz("0.000000000000000000"),
-        },
-        poolAssets: pool_assets.map((el0) => ({
-          token: {
-            denom: el0?.token?.denom ?? "",
-            amount: el0?.token?.amount ?? "0",
-          },
-          weight: el0.weight,
-        })),
-        futurePoolGovernor: future_pool_governor,
       };
     },
   },
@@ -211,41 +148,6 @@ const osmosisAminoConverters: Record<
       "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition"
     ],
     aminoType: "osmosis/cl-withdraw-position",
-    toAmino: ({
-      sender,
-      liquidityAmount,
-      positionId,
-    }: MsgWithdrawPosition): Parameters<
-      (typeof originalOsmosisAminoConverters)["/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition"]["fromAmino"]
-    >[0] => {
-      return {
-        sender,
-        liquidity_amount: liquidityAmount,
-        position_id: positionId.toString(),
-      };
-    },
-    fromAmino: ({
-      sender,
-      liquidity_amount,
-      position_id,
-    }: Parameters<
-      (typeof originalOsmosisAminoConverters)["/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition"]["fromAmino"]
-    >[0]): MsgWithdrawPosition => {
-      return {
-        sender,
-        liquidityAmount: changeDecStringToProtoBz(
-          new Dec(liquidity_amount)
-            .mul(
-              DecUtils.getTenExponentNInPrecisionRange(
-                liquidity_amount.split(".")[1]?.length ?? 0
-              )
-            )
-            .truncate()
-            .toString()
-        ),
-        positionId: position_id.toString() as any,
-      };
-    },
   },
   "/osmosis.concentratedliquidity.v1beta1.MsgAddToPosition": {
     ...originalOsmosisAminoConverters[
@@ -271,40 +173,6 @@ const osmosisAminoConverters: Record<
         "/osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MsgCreateConcentratedPool"
       ],
       aminoType: "osmosis/cl-create-pool",
-      toAmino: ({
-        sender,
-        denom0,
-        denom1,
-        spreadFactor,
-        tickSpacing,
-      }: MsgCreateConcentratedPool): Parameters<
-        (typeof originalOsmosisAminoConverters)["/osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MsgCreateConcentratedPool"]["fromAmino"]
-      >[0] => {
-        return {
-          sender,
-          denom0: denom0,
-          denom1: denom1,
-          spread_factor: spreadFactor,
-          tick_spacing: tickSpacing.toString(),
-        };
-      },
-      fromAmino: ({
-        sender,
-        denom0,
-        denom1,
-        spread_factor,
-        tick_spacing,
-      }: Parameters<
-        (typeof originalOsmosisAminoConverters)["/osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MsgCreateConcentratedPool"]["fromAmino"]
-      >[0]): MsgCreateConcentratedPool => {
-        return {
-          sender,
-          denom0: denom0,
-          denom1: denom1,
-          spreadFactor: changeDecStringToProtoBz(spread_factor),
-          tickSpacing: tick_spacing.toString() as any,
-        };
-      },
     },
 };
 

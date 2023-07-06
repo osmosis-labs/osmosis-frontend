@@ -1,20 +1,18 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
-
-import { Long } from "../../../helpers";
+import { BinaryReader, BinaryWriter } from "../../../binary";
 export interface Params {
   /**
    * code_ide_whitelist contains the list of code ids that are allowed to be
    * instantiated.
    */
-  codeIdWhitelist: Long[];
+  codeIdWhitelist: bigint[];
   /**
    * pool_migration_limit is the maximum number of pools that can be migrated
    * at once via governance proposal. This is to have a constant bound on the
    * number of pools that can be migrated at once and remove the possibility
    * of an unlikely scenario of causing a chain halt due to a large migration.
    */
-  poolMigrationLimit: Long;
+  poolMigrationLimit: bigint;
 }
 export interface ParamsProtoMsg {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.Params";
@@ -39,33 +37,34 @@ export interface ParamsAminoMsg {
   value: ParamsAmino;
 }
 export interface ParamsSDKType {
-  code_id_whitelist: Long[];
-  pool_migration_limit: Long;
+  code_id_whitelist: bigint[];
+  pool_migration_limit: bigint;
 }
 function createBaseParams(): Params {
   return {
     codeIdWhitelist: [],
-    poolMigrationLimit: Long.UZERO,
+    poolMigrationLimit: BigInt(0),
   };
 }
 export const Params = {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.Params",
   encode(
     message: Params,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     writer.uint32(10).fork();
     for (const v of message.codeIdWhitelist) {
       writer.uint64(v);
     }
     writer.ldelim();
-    if (!message.poolMigrationLimit.isZero()) {
+    if (message.poolMigrationLimit !== BigInt(0)) {
       writer.uint32(16).uint64(message.poolMigrationLimit);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): Params {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): Params {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParams();
     while (reader.pos < end) {
@@ -75,14 +74,14 @@ export const Params = {
           if ((tag & 7) === 2) {
             const end2 = reader.uint32() + reader.pos;
             while (reader.pos < end2) {
-              message.codeIdWhitelist.push(reader.uint64() as Long);
+              message.codeIdWhitelist.push(reader.uint64());
             }
           } else {
-            message.codeIdWhitelist.push(reader.uint64() as Long);
+            message.codeIdWhitelist.push(reader.uint64());
           }
           break;
         case 2:
-          message.poolMigrationLimit = reader.uint64() as Long;
+          message.poolMigrationLimit = reader.uint64();
           break;
         default:
           reader.skipType(tag & 7);
@@ -94,12 +93,12 @@ export const Params = {
   fromPartial(object: Partial<Params>): Params {
     const message = createBaseParams();
     message.codeIdWhitelist =
-      object.codeIdWhitelist?.map((e) => Long.fromValue(e)) || [];
+      object.codeIdWhitelist?.map((e) => BigInt(e.toString())) || [];
     message.poolMigrationLimit =
       object.poolMigrationLimit !== undefined &&
       object.poolMigrationLimit !== null
-        ? Long.fromValue(object.poolMigrationLimit)
-        : Long.UZERO;
+        ? BigInt(object.poolMigrationLimit.toString())
+        : BigInt(0);
     return message;
   },
   fromAmino(object: ParamsAmino): Params {
@@ -107,7 +106,7 @@ export const Params = {
       codeIdWhitelist: Array.isArray(object?.code_id_whitelist)
         ? object.code_id_whitelist.map((e: any) => e)
         : [],
-      poolMigrationLimit: Long.fromString(object.pool_migration_limit),
+      poolMigrationLimit: BigInt(object.pool_migration_limit),
     };
   },
   toAmino(message: Params): ParamsAmino {

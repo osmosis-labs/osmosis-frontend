@@ -1,6 +1,5 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
-
+import { BinaryReader, BinaryWriter } from "../../../../binary";
 import {
   PageRequest,
   PageRequestAmino,
@@ -10,7 +9,6 @@ import {
   PageResponseSDKType,
 } from "../../../../cosmos/base/query/v1beta1/pagination";
 import { Any, AnyAmino, AnySDKType } from "../../../../google/protobuf/any";
-import { Long } from "../../../../helpers";
 import {
   ConsensusStateWithHeight,
   ConsensusStateWithHeightAmino,
@@ -63,11 +61,11 @@ export interface QueryClientStateRequestSDKType {
  */
 export interface QueryClientStateResponse {
   /** client state associated with the request identifier */
-  clientState?: Any;
+  clientState: Any;
   /** merkle proof of existence */
   proof: Uint8Array;
   /** height at which the proof was retrieved */
-  proofHeight?: Height;
+  proofHeight: Height;
 }
 export interface QueryClientStateResponseProtoMsg {
   typeUrl: "/ibc.core.client.v1.QueryClientStateResponse";
@@ -96,9 +94,9 @@ export interface QueryClientStateResponseAminoMsg {
  * which the proof was retrieved.
  */
 export interface QueryClientStateResponseSDKType {
-  client_state?: AnySDKType;
+  client_state: AnySDKType;
   proof: Uint8Array;
-  proof_height?: HeightSDKType;
+  proof_height: HeightSDKType;
 }
 /**
  * QueryClientStatesRequest is the request type for the Query/ClientStates RPC
@@ -106,7 +104,7 @@ export interface QueryClientStateResponseSDKType {
  */
 export interface QueryClientStatesRequest {
   /** pagination request */
-  pagination?: PageRequest;
+  pagination: PageRequest;
 }
 export interface QueryClientStatesRequestProtoMsg {
   typeUrl: "/ibc.core.client.v1.QueryClientStatesRequest";
@@ -129,7 +127,7 @@ export interface QueryClientStatesRequestAminoMsg {
  * method
  */
 export interface QueryClientStatesRequestSDKType {
-  pagination?: PageRequestSDKType;
+  pagination: PageRequestSDKType;
 }
 /**
  * QueryClientStatesResponse is the response type for the Query/ClientStates RPC
@@ -139,7 +137,7 @@ export interface QueryClientStatesResponse {
   /** list of stored ClientStates of the chain. */
   clientStates: IdentifiedClientState[];
   /** pagination response */
-  pagination?: PageResponse;
+  pagination: PageResponse;
 }
 export interface QueryClientStatesResponseProtoMsg {
   typeUrl: "/ibc.core.client.v1.QueryClientStatesResponse";
@@ -165,7 +163,7 @@ export interface QueryClientStatesResponseAminoMsg {
  */
 export interface QueryClientStatesResponseSDKType {
   client_states: IdentifiedClientStateSDKType[];
-  pagination?: PageResponseSDKType;
+  pagination: PageResponseSDKType;
 }
 /**
  * QueryConsensusStateRequest is the request type for the Query/ConsensusState
@@ -176,9 +174,9 @@ export interface QueryConsensusStateRequest {
   /** client identifier */
   clientId: string;
   /** consensus state revision number */
-  revisionNumber: Long;
+  revisionNumber: bigint;
   /** consensus state revision height */
-  revisionHeight: Long;
+  revisionHeight: bigint;
   /**
    * latest_height overrrides the height field and queries the latest stored
    * ConsensusState
@@ -218,8 +216,8 @@ export interface QueryConsensusStateRequestAminoMsg {
  */
 export interface QueryConsensusStateRequestSDKType {
   client_id: string;
-  revision_number: Long;
-  revision_height: Long;
+  revision_number: bigint;
+  revision_height: bigint;
   latest_height: boolean;
 }
 /**
@@ -228,11 +226,11 @@ export interface QueryConsensusStateRequestSDKType {
  */
 export interface QueryConsensusStateResponse {
   /** consensus state associated with the client identifier at the given height */
-  consensusState?: Any;
+  consensusState: Any;
   /** merkle proof of existence */
   proof: Uint8Array;
   /** height at which the proof was retrieved */
-  proofHeight?: Height;
+  proofHeight: Height;
 }
 export interface QueryConsensusStateResponseProtoMsg {
   typeUrl: "/ibc.core.client.v1.QueryConsensusStateResponse";
@@ -259,9 +257,9 @@ export interface QueryConsensusStateResponseAminoMsg {
  * RPC method
  */
 export interface QueryConsensusStateResponseSDKType {
-  consensus_state?: AnySDKType;
+  consensus_state: AnySDKType;
   proof: Uint8Array;
-  proof_height?: HeightSDKType;
+  proof_height: HeightSDKType;
 }
 /**
  * QueryConsensusStatesRequest is the request type for the Query/ConsensusStates
@@ -271,7 +269,7 @@ export interface QueryConsensusStatesRequest {
   /** client identifier */
   clientId: string;
   /** pagination request */
-  pagination?: PageRequest;
+  pagination: PageRequest;
 }
 export interface QueryConsensusStatesRequestProtoMsg {
   typeUrl: "/ibc.core.client.v1.QueryConsensusStatesRequest";
@@ -297,7 +295,7 @@ export interface QueryConsensusStatesRequestAminoMsg {
  */
 export interface QueryConsensusStatesRequestSDKType {
   client_id: string;
-  pagination?: PageRequestSDKType;
+  pagination: PageRequestSDKType;
 }
 /**
  * QueryConsensusStatesResponse is the response type for the
@@ -307,7 +305,7 @@ export interface QueryConsensusStatesResponse {
   /** consensus states associated with the identifier */
   consensusStates: ConsensusStateWithHeight[];
   /** pagination response */
-  pagination?: PageResponse;
+  pagination: PageResponse;
 }
 export interface QueryConsensusStatesResponseProtoMsg {
   typeUrl: "/ibc.core.client.v1.QueryConsensusStatesResponse";
@@ -333,7 +331,7 @@ export interface QueryConsensusStatesResponseAminoMsg {
  */
 export interface QueryConsensusStatesResponseSDKType {
   consensus_states: ConsensusStateWithHeightSDKType[];
-  pagination?: PageResponseSDKType;
+  pagination: PageResponseSDKType;
 }
 /**
  * QueryConsensusStateHeightsRequest is the request type for Query/ConsensusStateHeights
@@ -343,7 +341,7 @@ export interface QueryConsensusStateHeightsRequest {
   /** client identifier */
   clientId: string;
   /** pagination request */
-  pagination?: PageRequest;
+  pagination: PageRequest;
 }
 export interface QueryConsensusStateHeightsRequestProtoMsg {
   typeUrl: "/ibc.core.client.v1.QueryConsensusStateHeightsRequest";
@@ -369,7 +367,7 @@ export interface QueryConsensusStateHeightsRequestAminoMsg {
  */
 export interface QueryConsensusStateHeightsRequestSDKType {
   client_id: string;
-  pagination?: PageRequestSDKType;
+  pagination: PageRequestSDKType;
 }
 /**
  * QueryConsensusStateHeightsResponse is the response type for the
@@ -379,7 +377,7 @@ export interface QueryConsensusStateHeightsResponse {
   /** consensus state heights */
   consensusStateHeights: Height[];
   /** pagination response */
-  pagination?: PageResponse;
+  pagination: PageResponse;
 }
 export interface QueryConsensusStateHeightsResponseProtoMsg {
   typeUrl: "/ibc.core.client.v1.QueryConsensusStateHeightsResponse";
@@ -405,7 +403,7 @@ export interface QueryConsensusStateHeightsResponseAminoMsg {
  */
 export interface QueryConsensusStateHeightsResponseSDKType {
   consensus_state_heights: HeightSDKType[];
-  pagination?: PageResponseSDKType;
+  pagination: PageResponseSDKType;
 }
 /**
  * QueryClientStatusRequest is the request type for the Query/ClientStatus RPC
@@ -496,7 +494,7 @@ export interface QueryClientParamsRequestSDKType {}
  */
 export interface QueryClientParamsResponse {
   /** params defines the parameters of the module. */
-  params?: Params;
+  params: Params;
 }
 export interface QueryClientParamsResponseProtoMsg {
   typeUrl: "/ibc.core.client.v1.QueryClientParamsResponse";
@@ -519,7 +517,7 @@ export interface QueryClientParamsResponseAminoMsg {
  * method.
  */
 export interface QueryClientParamsResponseSDKType {
-  params?: ParamsSDKType;
+  params: ParamsSDKType;
 }
 /**
  * QueryUpgradedClientStateRequest is the request type for the
@@ -550,7 +548,7 @@ export interface QueryUpgradedClientStateRequestSDKType {}
  */
 export interface QueryUpgradedClientStateResponse {
   /** client state associated with the request identifier */
-  upgradedClientState?: Any;
+  upgradedClientState: Any;
 }
 export interface QueryUpgradedClientStateResponseProtoMsg {
   typeUrl: "/ibc.core.client.v1.QueryUpgradedClientStateResponse";
@@ -573,7 +571,7 @@ export interface QueryUpgradedClientStateResponseAminoMsg {
  * Query/UpgradedClientState RPC method.
  */
 export interface QueryUpgradedClientStateResponseSDKType {
-  upgraded_client_state?: AnySDKType;
+  upgraded_client_state: AnySDKType;
 }
 /**
  * QueryUpgradedConsensusStateRequest is the request type for the
@@ -604,7 +602,7 @@ export interface QueryUpgradedConsensusStateRequestSDKType {}
  */
 export interface QueryUpgradedConsensusStateResponse {
   /** Consensus state associated with the request identifier */
-  upgradedConsensusState?: Any;
+  upgradedConsensusState: Any;
 }
 export interface QueryUpgradedConsensusStateResponseProtoMsg {
   typeUrl: "/ibc.core.client.v1.QueryUpgradedConsensusStateResponse";
@@ -627,7 +625,7 @@ export interface QueryUpgradedConsensusStateResponseAminoMsg {
  * Query/UpgradedConsensusState RPC method.
  */
 export interface QueryUpgradedConsensusStateResponseSDKType {
-  upgraded_consensus_state?: AnySDKType;
+  upgraded_consensus_state: AnySDKType;
 }
 function createBaseQueryClientStateRequest(): QueryClientStateRequest {
   return {
@@ -638,18 +636,19 @@ export const QueryClientStateRequest = {
   typeUrl: "/ibc.core.client.v1.QueryClientStateRequest",
   encode(
     message: QueryClientStateRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.clientId !== "") {
       writer.uint32(10).string(message.clientId);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): QueryClientStateRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryClientStateRequest();
     while (reader.pos < end) {
@@ -716,15 +715,15 @@ function createBaseQueryClientStateResponse(): QueryClientStateResponse {
   return {
     clientState: undefined,
     proof: new Uint8Array(),
-    proofHeight: undefined,
+    proofHeight: Height.fromPartial({}),
   };
 }
 export const QueryClientStateResponse = {
   typeUrl: "/ibc.core.client.v1.QueryClientStateResponse",
   encode(
     message: QueryClientStateResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.clientState !== undefined) {
       Any.encode(message.clientState, writer.uint32(10).fork()).ldelim();
     }
@@ -737,10 +736,11 @@ export const QueryClientStateResponse = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): QueryClientStateResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryClientStateResponse();
     while (reader.pos < end) {
@@ -831,25 +831,26 @@ export const QueryClientStateResponse = {
 };
 function createBaseQueryClientStatesRequest(): QueryClientStatesRequest {
   return {
-    pagination: undefined,
+    pagination: PageRequest.fromPartial({}),
   };
 }
 export const QueryClientStatesRequest = {
   typeUrl: "/ibc.core.client.v1.QueryClientStatesRequest",
   encode(
     message: QueryClientStatesRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.pagination !== undefined) {
       PageRequest.encode(message.pagination, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): QueryClientStatesRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryClientStatesRequest();
     while (reader.pos < end) {
@@ -922,15 +923,15 @@ export const QueryClientStatesRequest = {
 function createBaseQueryClientStatesResponse(): QueryClientStatesResponse {
   return {
     clientStates: [],
-    pagination: undefined,
+    pagination: PageResponse.fromPartial({}),
   };
 }
 export const QueryClientStatesResponse = {
   typeUrl: "/ibc.core.client.v1.QueryClientStatesResponse",
   encode(
     message: QueryClientStatesResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.clientStates) {
       IdentifiedClientState.encode(v!, writer.uint32(10).fork()).ldelim();
     }
@@ -943,10 +944,11 @@ export const QueryClientStatesResponse = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): QueryClientStatesResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryClientStatesResponse();
     while (reader.pos < end) {
@@ -1039,8 +1041,8 @@ export const QueryClientStatesResponse = {
 function createBaseQueryConsensusStateRequest(): QueryConsensusStateRequest {
   return {
     clientId: "",
-    revisionNumber: Long.UZERO,
-    revisionHeight: Long.UZERO,
+    revisionNumber: BigInt(0),
+    revisionHeight: BigInt(0),
     latestHeight: false,
   };
 }
@@ -1048,15 +1050,15 @@ export const QueryConsensusStateRequest = {
   typeUrl: "/ibc.core.client.v1.QueryConsensusStateRequest",
   encode(
     message: QueryConsensusStateRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.clientId !== "") {
       writer.uint32(10).string(message.clientId);
     }
-    if (!message.revisionNumber.isZero()) {
+    if (message.revisionNumber !== BigInt(0)) {
       writer.uint32(16).uint64(message.revisionNumber);
     }
-    if (!message.revisionHeight.isZero()) {
+    if (message.revisionHeight !== BigInt(0)) {
       writer.uint32(24).uint64(message.revisionHeight);
     }
     if (message.latestHeight === true) {
@@ -1065,10 +1067,11 @@ export const QueryConsensusStateRequest = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): QueryConsensusStateRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryConsensusStateRequest();
     while (reader.pos < end) {
@@ -1078,10 +1081,10 @@ export const QueryConsensusStateRequest = {
           message.clientId = reader.string();
           break;
         case 2:
-          message.revisionNumber = reader.uint64() as Long;
+          message.revisionNumber = reader.uint64();
           break;
         case 3:
-          message.revisionHeight = reader.uint64() as Long;
+          message.revisionHeight = reader.uint64();
           break;
         case 4:
           message.latestHeight = reader.bool();
@@ -1100,12 +1103,12 @@ export const QueryConsensusStateRequest = {
     message.clientId = object.clientId ?? "";
     message.revisionNumber =
       object.revisionNumber !== undefined && object.revisionNumber !== null
-        ? Long.fromValue(object.revisionNumber)
-        : Long.UZERO;
+        ? BigInt(object.revisionNumber.toString())
+        : BigInt(0);
     message.revisionHeight =
       object.revisionHeight !== undefined && object.revisionHeight !== null
-        ? Long.fromValue(object.revisionHeight)
-        : Long.UZERO;
+        ? BigInt(object.revisionHeight.toString())
+        : BigInt(0);
     message.latestHeight = object.latestHeight ?? false;
     return message;
   },
@@ -1114,8 +1117,8 @@ export const QueryConsensusStateRequest = {
   ): QueryConsensusStateRequest {
     return {
       clientId: object.client_id,
-      revisionNumber: Long.fromString(object.revision_number),
-      revisionHeight: Long.fromString(object.revision_height),
+      revisionNumber: BigInt(object.revision_number),
+      revisionHeight: BigInt(object.revision_height),
       latestHeight: object.latest_height,
     };
   },
@@ -1167,15 +1170,15 @@ function createBaseQueryConsensusStateResponse(): QueryConsensusStateResponse {
   return {
     consensusState: undefined,
     proof: new Uint8Array(),
-    proofHeight: undefined,
+    proofHeight: Height.fromPartial({}),
   };
 }
 export const QueryConsensusStateResponse = {
   typeUrl: "/ibc.core.client.v1.QueryConsensusStateResponse",
   encode(
     message: QueryConsensusStateResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.consensusState !== undefined) {
       Any.encode(message.consensusState, writer.uint32(10).fork()).ldelim();
     }
@@ -1188,10 +1191,11 @@ export const QueryConsensusStateResponse = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): QueryConsensusStateResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryConsensusStateResponse();
     while (reader.pos < end) {
@@ -1287,15 +1291,15 @@ export const QueryConsensusStateResponse = {
 function createBaseQueryConsensusStatesRequest(): QueryConsensusStatesRequest {
   return {
     clientId: "",
-    pagination: undefined,
+    pagination: PageRequest.fromPartial({}),
   };
 }
 export const QueryConsensusStatesRequest = {
   typeUrl: "/ibc.core.client.v1.QueryConsensusStatesRequest",
   encode(
     message: QueryConsensusStatesRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.clientId !== "") {
       writer.uint32(10).string(message.clientId);
     }
@@ -1305,10 +1309,11 @@ export const QueryConsensusStatesRequest = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): QueryConsensusStatesRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryConsensusStatesRequest();
     while (reader.pos < end) {
@@ -1391,15 +1396,15 @@ export const QueryConsensusStatesRequest = {
 function createBaseQueryConsensusStatesResponse(): QueryConsensusStatesResponse {
   return {
     consensusStates: [],
-    pagination: undefined,
+    pagination: PageResponse.fromPartial({}),
   };
 }
 export const QueryConsensusStatesResponse = {
   typeUrl: "/ibc.core.client.v1.QueryConsensusStatesResponse",
   encode(
     message: QueryConsensusStatesResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.consensusStates) {
       ConsensusStateWithHeight.encode(v!, writer.uint32(10).fork()).ldelim();
     }
@@ -1412,10 +1417,11 @@ export const QueryConsensusStatesResponse = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): QueryConsensusStatesResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryConsensusStatesResponse();
     while (reader.pos < end) {
@@ -1513,15 +1519,15 @@ export const QueryConsensusStatesResponse = {
 function createBaseQueryConsensusStateHeightsRequest(): QueryConsensusStateHeightsRequest {
   return {
     clientId: "",
-    pagination: undefined,
+    pagination: PageRequest.fromPartial({}),
   };
 }
 export const QueryConsensusStateHeightsRequest = {
   typeUrl: "/ibc.core.client.v1.QueryConsensusStateHeightsRequest",
   encode(
     message: QueryConsensusStateHeightsRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.clientId !== "") {
       writer.uint32(10).string(message.clientId);
     }
@@ -1531,10 +1537,11 @@ export const QueryConsensusStateHeightsRequest = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): QueryConsensusStateHeightsRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryConsensusStateHeightsRequest();
     while (reader.pos < end) {
@@ -1617,15 +1624,15 @@ export const QueryConsensusStateHeightsRequest = {
 function createBaseQueryConsensusStateHeightsResponse(): QueryConsensusStateHeightsResponse {
   return {
     consensusStateHeights: [],
-    pagination: undefined,
+    pagination: PageResponse.fromPartial({}),
   };
 }
 export const QueryConsensusStateHeightsResponse = {
   typeUrl: "/ibc.core.client.v1.QueryConsensusStateHeightsResponse",
   encode(
     message: QueryConsensusStateHeightsResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.consensusStateHeights) {
       Height.encode(v!, writer.uint32(10).fork()).ldelim();
     }
@@ -1638,10 +1645,11 @@ export const QueryConsensusStateHeightsResponse = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): QueryConsensusStateHeightsResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryConsensusStateHeightsResponse();
     while (reader.pos < end) {
@@ -1741,18 +1749,19 @@ export const QueryClientStatusRequest = {
   typeUrl: "/ibc.core.client.v1.QueryClientStatusRequest",
   encode(
     message: QueryClientStatusRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.clientId !== "") {
       writer.uint32(10).string(message.clientId);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): QueryClientStatusRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryClientStatusRequest();
     while (reader.pos < end) {
@@ -1824,18 +1833,19 @@ export const QueryClientStatusResponse = {
   typeUrl: "/ibc.core.client.v1.QueryClientStatusResponse",
   encode(
     message: QueryClientStatusResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.status !== "") {
       writer.uint32(10).string(message.status);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): QueryClientStatusResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryClientStatusResponse();
     while (reader.pos < end) {
@@ -1905,15 +1915,16 @@ export const QueryClientParamsRequest = {
   typeUrl: "/ibc.core.client.v1.QueryClientParamsRequest",
   encode(
     _: QueryClientParamsRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): QueryClientParamsRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryClientParamsRequest();
     while (reader.pos < end) {
@@ -1969,25 +1980,26 @@ export const QueryClientParamsRequest = {
 };
 function createBaseQueryClientParamsResponse(): QueryClientParamsResponse {
   return {
-    params: undefined,
+    params: Params.fromPartial({}),
   };
 }
 export const QueryClientParamsResponse = {
   typeUrl: "/ibc.core.client.v1.QueryClientParamsResponse",
   encode(
     message: QueryClientParamsResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): QueryClientParamsResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryClientParamsResponse();
     while (reader.pos < end) {
@@ -2060,15 +2072,16 @@ export const QueryUpgradedClientStateRequest = {
   typeUrl: "/ibc.core.client.v1.QueryUpgradedClientStateRequest",
   encode(
     _: QueryUpgradedClientStateRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): QueryUpgradedClientStateRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryUpgradedClientStateRequest();
     while (reader.pos < end) {
@@ -2137,8 +2150,8 @@ export const QueryUpgradedClientStateResponse = {
   typeUrl: "/ibc.core.client.v1.QueryUpgradedClientStateResponse",
   encode(
     message: QueryUpgradedClientStateResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.upgradedClientState !== undefined) {
       Any.encode(
         message.upgradedClientState,
@@ -2148,10 +2161,11 @@ export const QueryUpgradedClientStateResponse = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): QueryUpgradedClientStateResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryUpgradedClientStateResponse();
     while (reader.pos < end) {
@@ -2233,15 +2247,16 @@ export const QueryUpgradedConsensusStateRequest = {
   typeUrl: "/ibc.core.client.v1.QueryUpgradedConsensusStateRequest",
   encode(
     _: QueryUpgradedConsensusStateRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): QueryUpgradedConsensusStateRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryUpgradedConsensusStateRequest();
     while (reader.pos < end) {
@@ -2310,8 +2325,8 @@ export const QueryUpgradedConsensusStateResponse = {
   typeUrl: "/ibc.core.client.v1.QueryUpgradedConsensusStateResponse",
   encode(
     message: QueryUpgradedConsensusStateResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.upgradedConsensusState !== undefined) {
       Any.encode(
         message.upgradedConsensusState,
@@ -2321,10 +2336,11 @@ export const QueryUpgradedConsensusStateResponse = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): QueryUpgradedConsensusStateResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryUpgradedConsensusStateResponse();
     while (reader.pos < end) {

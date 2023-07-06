@@ -1,6 +1,5 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
-
+import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
   Coin,
   CoinAmino,
@@ -24,7 +23,7 @@ import {
 export interface MsgSwapExactAmountIn {
   sender: string;
   routes: SwapAmountInRoute[];
-  tokenIn?: Coin;
+  tokenIn: Coin;
   tokenOutMinAmount: string;
 }
 export interface MsgSwapExactAmountInProtoMsg {
@@ -46,7 +45,7 @@ export interface MsgSwapExactAmountInAminoMsg {
 export interface MsgSwapExactAmountInSDKType {
   sender: string;
   routes: SwapAmountInRouteSDKType[];
-  token_in?: CoinSDKType;
+  token_in: CoinSDKType;
   token_out_min_amount: string;
 }
 export interface MsgSwapExactAmountInResponse {
@@ -117,7 +116,7 @@ export interface MsgSwapExactAmountOut {
   sender: string;
   routes: SwapAmountOutRoute[];
   tokenInMaxAmount: string;
-  tokenOut?: Coin;
+  tokenOut: Coin;
 }
 export interface MsgSwapExactAmountOutProtoMsg {
   typeUrl: "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut";
@@ -139,7 +138,7 @@ export interface MsgSwapExactAmountOutSDKType {
   sender: string;
   routes: SwapAmountOutRouteSDKType[];
   token_in_max_amount: string;
-  token_out?: CoinSDKType;
+  token_out: CoinSDKType;
 }
 export interface MsgSwapExactAmountOutResponse {
   tokenInAmount: string;
@@ -216,8 +215,8 @@ export const MsgSwapExactAmountIn = {
   typeUrl: "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
   encode(
     message: MsgSwapExactAmountIn,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.sender !== "") {
       writer.uint32(10).string(message.sender);
     }
@@ -233,10 +232,11 @@ export const MsgSwapExactAmountIn = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgSwapExactAmountIn {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSwapExactAmountIn();
     while (reader.pos < end) {
@@ -330,18 +330,19 @@ export const MsgSwapExactAmountInResponse = {
   typeUrl: "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountInResponse",
   encode(
     message: MsgSwapExactAmountInResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.tokenOutAmount !== "") {
       writer.uint32(10).string(message.tokenOutAmount);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgSwapExactAmountInResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSwapExactAmountInResponse();
     while (reader.pos < end) {
@@ -420,8 +421,8 @@ export const MsgSplitRouteSwapExactAmountIn = {
   typeUrl: "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
   encode(
     message: MsgSplitRouteSwapExactAmountIn,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.sender !== "") {
       writer.uint32(10).string(message.sender);
     }
@@ -437,10 +438,11 @@ export const MsgSplitRouteSwapExactAmountIn = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgSplitRouteSwapExactAmountIn {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSplitRouteSwapExactAmountIn();
     while (reader.pos < end) {
@@ -546,18 +548,19 @@ export const MsgSplitRouteSwapExactAmountInResponse = {
     "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountInResponse",
   encode(
     message: MsgSplitRouteSwapExactAmountInResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.tokenOutAmount !== "") {
       writer.uint32(10).string(message.tokenOutAmount);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgSplitRouteSwapExactAmountInResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSplitRouteSwapExactAmountInResponse();
     while (reader.pos < end) {
@@ -637,8 +640,8 @@ export const MsgSwapExactAmountOut = {
   typeUrl: "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut",
   encode(
     message: MsgSwapExactAmountOut,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.sender !== "") {
       writer.uint32(10).string(message.sender);
     }
@@ -654,10 +657,11 @@ export const MsgSwapExactAmountOut = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgSwapExactAmountOut {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSwapExactAmountOut();
     while (reader.pos < end) {
@@ -755,18 +759,19 @@ export const MsgSwapExactAmountOutResponse = {
   typeUrl: "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountOutResponse",
   encode(
     message: MsgSwapExactAmountOutResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.tokenInAmount !== "") {
       writer.uint32(10).string(message.tokenInAmount);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgSwapExactAmountOutResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSwapExactAmountOutResponse();
     while (reader.pos < end) {
@@ -845,8 +850,8 @@ export const MsgSplitRouteSwapExactAmountOut = {
   typeUrl: "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOut",
   encode(
     message: MsgSplitRouteSwapExactAmountOut,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.sender !== "") {
       writer.uint32(10).string(message.sender);
     }
@@ -862,10 +867,11 @@ export const MsgSplitRouteSwapExactAmountOut = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgSplitRouteSwapExactAmountOut {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSplitRouteSwapExactAmountOut();
     while (reader.pos < end) {
@@ -971,18 +977,19 @@ export const MsgSplitRouteSwapExactAmountOutResponse = {
     "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOutResponse",
   encode(
     message: MsgSplitRouteSwapExactAmountOutResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.tokenInAmount !== "") {
       writer.uint32(10).string(message.tokenInAmount);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgSplitRouteSwapExactAmountOutResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSplitRouteSwapExactAmountOutResponse();
     while (reader.pos < end) {

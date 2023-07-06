@@ -1,7 +1,5 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
-
-import { Long } from "../../../../../helpers";
+import { BinaryReader, BinaryWriter } from "../../../../../binary";
 import {
   PoolAsset,
   PoolAssetAmino,
@@ -13,7 +11,7 @@ import {
 /** ===================== MsgCreatePool */
 export interface MsgCreateBalancerPool {
   sender: string;
-  poolParams?: PoolParams;
+  poolParams: PoolParams;
   poolAssets: PoolAsset[];
   futurePoolGovernor: string;
 }
@@ -35,13 +33,13 @@ export interface MsgCreateBalancerPoolAminoMsg {
 /** ===================== MsgCreatePool */
 export interface MsgCreateBalancerPoolSDKType {
   sender: string;
-  pool_params?: PoolParamsSDKType;
+  pool_params: PoolParamsSDKType;
   pool_assets: PoolAssetSDKType[];
   future_pool_governor: string;
 }
 /** Returns the poolID */
 export interface MsgCreateBalancerPoolResponse {
-  poolId: Long;
+  poolId: bigint;
 }
 export interface MsgCreateBalancerPoolResponseProtoMsg {
   typeUrl: "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPoolResponse";
@@ -57,12 +55,12 @@ export interface MsgCreateBalancerPoolResponseAminoMsg {
 }
 /** Returns the poolID */
 export interface MsgCreateBalancerPoolResponseSDKType {
-  pool_id: Long;
+  pool_id: bigint;
 }
 function createBaseMsgCreateBalancerPool(): MsgCreateBalancerPool {
   return {
     sender: "",
-    poolParams: undefined,
+    poolParams: PoolParams.fromPartial({}),
     poolAssets: [],
     futurePoolGovernor: "",
   };
@@ -71,8 +69,8 @@ export const MsgCreateBalancerPool = {
   typeUrl: "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool",
   encode(
     message: MsgCreateBalancerPool,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.sender !== "") {
       writer.uint32(10).string(message.sender);
     }
@@ -88,10 +86,11 @@ export const MsgCreateBalancerPool = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgCreateBalancerPool {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateBalancerPool();
     while (reader.pos < end) {
@@ -181,7 +180,7 @@ export const MsgCreateBalancerPool = {
 };
 function createBaseMsgCreateBalancerPoolResponse(): MsgCreateBalancerPoolResponse {
   return {
-    poolId: Long.UZERO,
+    poolId: BigInt(0),
   };
 }
 export const MsgCreateBalancerPoolResponse = {
@@ -189,25 +188,26 @@ export const MsgCreateBalancerPoolResponse = {
     "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPoolResponse",
   encode(
     message: MsgCreateBalancerPoolResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.poolId.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.poolId !== BigInt(0)) {
       writer.uint32(8).uint64(message.poolId);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgCreateBalancerPoolResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateBalancerPoolResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.poolId = reader.uint64() as Long;
+          message.poolId = reader.uint64();
           break;
         default:
           reader.skipType(tag & 7);
@@ -222,15 +222,15 @@ export const MsgCreateBalancerPoolResponse = {
     const message = createBaseMsgCreateBalancerPoolResponse();
     message.poolId =
       object.poolId !== undefined && object.poolId !== null
-        ? Long.fromValue(object.poolId)
-        : Long.UZERO;
+        ? BigInt(object.poolId.toString())
+        : BigInt(0);
     return message;
   },
   fromAmino(
     object: MsgCreateBalancerPoolResponseAmino
   ): MsgCreateBalancerPoolResponse {
     return {
-      poolId: Long.fromString(object.pool_id),
+      poolId: BigInt(object.pool_id),
     };
   },
   toAmino(
