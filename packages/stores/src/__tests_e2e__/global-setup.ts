@@ -12,7 +12,7 @@ const delay = (time: number) => {
 module.exports = async () => {
   try {
     const { stdout } = await exec("bash ./src/__tests_e2e__/start-osmosisd.sh");
-    console.log(`\n`, "Started osmosisd container:", stdout);
+    console.info(`\n`, "Started osmosisd container:", stdout);
 
     // poll for blocks so we know it's initialized and ready to receive test txs
     const instance = Axios.create({
@@ -22,7 +22,7 @@ module.exports = async () => {
     // Wait for blocks to start being produced
     while (true) {
       await delay(5000);
-      console.log("Waiting for block production...");
+      console.info("Waiting for block production...");
       try {
         const result = await instance.get<{
           block: any;

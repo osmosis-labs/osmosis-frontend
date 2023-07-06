@@ -38,7 +38,7 @@ async function generateAvailablePackages() {
         flag: "w",
       }
     );
-    console.log("Successfully wrote package-types.ts");
+    console.info("Successfully wrote package-types.ts");
   } catch (e) {
     console.error(`Error writing package-types.ts: ${e}`);
   }

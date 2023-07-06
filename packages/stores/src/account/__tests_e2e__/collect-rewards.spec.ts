@@ -50,7 +50,6 @@ describe("Collect Cl Fees Txs", () => {
 
     const account = accountStore.getWallet(chainId);
     const userPositionIds = await getUserPositionsIds();
-    console.log({ userPositionIds });
     await expect(
       new Promise((resolve, reject) =>
         account!.osmosis

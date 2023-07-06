@@ -43,7 +43,7 @@ async function generateChainInfo() {
       encoding: "utf8",
       flag: "w",
     });
-    console.log("Successfully wrote chain-infos.ts");
+    console.info("Successfully wrote chain-infos.ts");
   } catch (e) {
     console.error(`Error writing chain-infos.ts: ${e}`);
   }
