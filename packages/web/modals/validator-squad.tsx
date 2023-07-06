@@ -331,24 +331,32 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
                   <td style={{ height: `${paddingTop}px` }} />
                 </tr>
               )}
-              {virtualRows.map((virtualRow) => {
-                const row = rows[virtualRow.index] as Row<Validator>;
-                const cells = row?.getVisibleCells();
-                return (
-                  <tr key={row?.id}>
-                    {cells?.map((cell) => {
-                      return (
-                        <td key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
+              {virtualRows.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="h-32 text-center">
+                    No results found
+                  </td>
+                </tr>
+              ) : (
+                virtualRows.map((virtualRow) => {
+                  const row = rows[virtualRow.index] as Row<Validator>;
+                  const cells = row?.getVisibleCells();
+                  return (
+                    <tr key={row?.id}>
+                      {cells?.map((cell) => {
+                        return (
+                          <td key={cell.id}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })
+              )}
               {paddingBottom > 0 && (
                 <tr>
                   <td style={{ height: `${paddingBottom}px` }} />
