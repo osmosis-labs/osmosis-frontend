@@ -3767,7 +3767,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDenom: "ARCH",
         coinMinimalDenom: "aarch",
         coinDecimals: 18,
-        //coinGeckoId: "pool:aarch",
+        coinGeckoId: "pool:aarch",
         coinImageUrl: "/tokens/archway.svg",
         isStakeCurrency: true,
         isFeeCurrency: true,
