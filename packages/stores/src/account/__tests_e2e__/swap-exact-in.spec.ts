@@ -75,25 +75,27 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
 
     await expect(
       new Promise((resolve, reject) => {
-        account?.osmosis.sendSwapExactAmountInMsg(
-          [{ id: queryPool!.id, tokenOutDenom: "ubar" }],
-          {
-            currency: {
-              coinDenom: "FOO",
-              coinMinimalDenom: "ufoo",
-              coinDecimals: 6,
+        account!.osmosis
+          .sendSwapExactAmountInMsg(
+            [{ id: queryPool!.id, tokenOutDenom: "ubar" }],
+            {
+              currency: {
+                coinDenom: "FOO",
+                coinMinimalDenom: "ufoo",
+                coinDecimals: 6,
+              },
+              amount: "10",
             },
-            amount: "10",
-          },
-          "1",
-          undefined,
-          undefined,
-          undefined,
-          (tx) => {
-            if (tx.code) reject(tx.rawLog);
-            else resolve(tx);
-          }
-        );
+            "1",
+            undefined,
+            undefined,
+            undefined,
+            (tx) => {
+              if (tx.code) reject(tx.rawLog);
+              else resolve(tx);
+            }
+          )
+          .catch(reject);
       })
     ).rejects.not.toBeNull();
   });
@@ -103,25 +105,27 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
 
     await expect(
       new Promise((resolve, reject) => {
-        account?.osmosis.sendSwapExactAmountInMsg(
-          [{ id: queryPool!.id, tokenOutDenom: "uatom" }],
-          {
-            currency: {
-              coinDenom: "ION",
-              coinMinimalDenom: "uion",
-              coinDecimals: 6,
+        account!.osmosis
+          .sendSwapExactAmountInMsg(
+            [{ id: queryPool!.id, tokenOutDenom: "uatom" }],
+            {
+              currency: {
+                coinDenom: "ION",
+                coinMinimalDenom: "uion",
+                coinDecimals: 6,
+              },
+              amount: "10",
             },
-            amount: "10",
-          },
-          "1",
-          undefined,
-          undefined,
-          undefined,
-          (tx) => {
-            if (tx.code) reject(tx.rawLog);
-            else resolve(tx);
-          }
-        );
+            "1",
+            undefined,
+            undefined,
+            undefined,
+            (tx) => {
+              if (tx.code) reject(tx.rawLog);
+              else resolve(tx);
+            }
+          )
+          .catch(reject);
       })
     ).rejects.not.toBeNull();
   });
@@ -150,7 +154,7 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
     );
 
     const tx = await new Promise<any>((resolve, reject) => {
-      account?.osmosis
+      account!.osmosis
         .sendSwapExactAmountInMsg(
           [
             {
@@ -246,7 +250,7 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
     expect(doubleSlippage.toDec().gt(new Dec(0))).toBeTruthy();
 
     const tx = await new Promise<any>((resolve, reject) => {
-      account?.osmosis
+      account!.osmosis
         .sendSwapExactAmountInMsg(
           [
             {
@@ -454,7 +458,7 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
             undefined,
             undefined,
             (tx) => {
-              if (tx.code) reject(tx);
+              if (tx.code) reject(tx.rawLog);
               else resolve(tx);
             }
           )
@@ -554,7 +558,7 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
           undefined,
           undefined,
           (tx) => {
-            if (tx.code) reject(tx);
+            if (tx.code) reject(tx.rawLog);
             else resolve(tx);
           }
         )
