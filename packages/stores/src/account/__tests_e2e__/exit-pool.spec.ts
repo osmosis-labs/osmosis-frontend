@@ -5,16 +5,21 @@ import {
   RootStore,
   waitAccountLoaded,
   getLatestQueryPool,
+  initAccount,
 } from "../../__tests_e2e__/test-env";
 
 describe("Exit Pool Tx", () => {
   let { accountStore, queriesStore } = new RootStore();
   let queryPool: ObservableQueryPool | undefined; // relies on `jest --runInBand` to work properly
 
-  beforeEach(async () => {
-    const account = accountStore.getWallet(chainId);
+  let account: ReturnType<(typeof accountStore)["getWallet"]>;
+  beforeAll(async () => {
+    await initAccount(accountStore, chainId);
+    account = accountStore.getWallet(chainId);
     await waitAccountLoaded(account);
+  });
 
+  beforeEach(async () => {
     // And prepare the pool
     await account?.osmosis.sendCreateBalancerPoolMsg(
       "0",

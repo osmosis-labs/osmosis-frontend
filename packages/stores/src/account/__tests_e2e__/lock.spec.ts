@@ -3,6 +3,7 @@ import {
   chainId,
   deepContained,
   getEventFromTx,
+  initAccount,
   RootStore,
   waitAccountLoaded,
 } from "../../__tests_e2e__/test-env";
@@ -13,7 +14,13 @@ describe("Lock Token Tx", () => {
 
     "cream sport mango believe inhale text fish rely elegant below earth april wall rug ritual blossom cherry detail length blind digital proof identify ride"
   );
-  const account = accountStore.getWallet(chainId);
+
+  let account: ReturnType<(typeof accountStore)["getWallet"]>;
+  beforeAll(async () => {
+    await initAccount(accountStore, chainId);
+    account = accountStore.getWallet(chainId);
+    await waitAccountLoaded(account);
+  });
 
   beforeEach(async () => {
     await waitAccountLoaded(account);

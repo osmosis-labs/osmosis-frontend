@@ -3,6 +3,7 @@ import {
   chainId,
   deepContained,
   getEventFromTx,
+  initAccount,
   RootStore,
   waitAccountLoaded,
 } from "../../__tests_e2e__/test-env";
@@ -10,8 +11,10 @@ import {
 describe("Create Pool Tx", () => {
   const { accountStore } = new RootStore();
 
+  let account: ReturnType<(typeof accountStore)["getWallet"]>;
   beforeAll(async () => {
-    const account = accountStore.getWallet(chainId);
+    await initAccount(accountStore, chainId);
+    account = accountStore.getWallet(chainId);
     await waitAccountLoaded(account);
   });
 
@@ -19,7 +22,7 @@ describe("Create Pool Tx", () => {
     const account = accountStore.getWallet(chainId);
 
     await expect(
-      account?.osmosis.sendCreateBalancerPoolMsg("0", [])
+      account!.osmosis.sendCreateBalancerPoolMsg("0", [])
     ).rejects.not.toBeNull();
   });
 
@@ -27,7 +30,7 @@ describe("Create Pool Tx", () => {
     const account = accountStore.getWallet(chainId);
 
     await expect(
-      account?.osmosis.sendCreateBalancerPoolMsg("0", [
+      account!.osmosis.sendCreateBalancerPoolMsg("0", [
         {
           weight: "100",
           token: {
@@ -47,7 +50,7 @@ describe("Create Pool Tx", () => {
     const account = accountStore.getWallet(chainId);
 
     await expect(
-      account?.osmosis.sendCreateBalancerPoolMsg(
+      account!.osmosis.sendCreateBalancerPoolMsg(
         "0",
         [
           {
@@ -82,8 +85,8 @@ describe("Create Pool Tx", () => {
   test("weighted - with 0 swap fee", async () => {
     const account = accountStore.getWallet(chainId);
 
-    const tx = await new Promise<any>((resolve) => {
-      account?.osmosis.sendCreateBalancerPoolMsg(
+    const tx = await new Promise<any>((resolve, reject) => {
+      account!.osmosis.sendCreateBalancerPoolMsg(
         "0",
         [
           {
@@ -111,7 +114,8 @@ describe("Create Pool Tx", () => {
         ],
         "",
         (tx) => {
-          resolve(tx);
+          if (tx.code) reject(tx.rawLog);
+          else resolve(tx);
         }
       );
     });
@@ -128,7 +132,7 @@ describe("Create Pool Tx", () => {
           { key: "module", value: "poolmanager" },
           {
             key: "sender",
-            value: account?.address,
+            value: account!.address,
           },
         ],
       },
@@ -147,38 +151,41 @@ describe("Create Pool Tx", () => {
   test("weighted - with swap fee", async () => {
     const account = accountStore.getWallet(chainId);
 
-    const tx = await new Promise<any>((resolve) => {
-      account?.osmosis.sendCreateBalancerPoolMsg(
-        "0.1",
-        [
-          {
-            weight: "100",
-            token: {
-              currency: {
-                coinDenom: "OSMO",
-                coinMinimalDenom: "uosmo",
-                coinDecimals: 6,
+    const tx = await new Promise<any>((resolve, reject) => {
+      account!.osmosis
+        .sendCreateBalancerPoolMsg(
+          "0.1",
+          [
+            {
+              weight: "100",
+              token: {
+                currency: {
+                  coinDenom: "OSMO",
+                  coinMinimalDenom: "uosmo",
+                  coinDecimals: 6,
+                },
+                amount: "100",
               },
-              amount: "100",
             },
-          },
-          {
-            weight: "100",
-            token: {
-              currency: {
-                coinDenom: "ION",
-                coinMinimalDenom: "uion",
-                coinDecimals: 6,
+            {
+              weight: "100",
+              token: {
+                currency: {
+                  coinDenom: "ION",
+                  coinMinimalDenom: "uion",
+                  coinDecimals: 6,
+                },
+                amount: "100",
               },
-              amount: "100",
             },
-          },
-        ],
-        "",
-        (tx) => {
-          resolve(tx);
-        }
-      );
+          ],
+          "",
+          (tx) => {
+            if (tx.code) reject(tx.rawLog);
+            else resolve(tx);
+          }
+        )
+        .catch(reject);
     });
 
     deepContained(
@@ -193,7 +200,7 @@ describe("Create Pool Tx", () => {
           { key: "module", value: "poolmanager" },
           {
             key: "sender",
-            value: account?.address,
+            value: account!.address,
           },
         ],
       },
@@ -214,7 +221,7 @@ describe("Create Pool Tx", () => {
 
     await expect(
       new Promise<any>((resolve, reject) => {
-        account?.osmosis
+        account!.osmosis
           .sendCreateConcentratedPoolMsg(
             "uion",
             "uosmo",
@@ -222,13 +229,12 @@ describe("Create Pool Tx", () => {
             0,
             undefined,
             (tx) => {
-              if (tx.code) reject();
+              if (tx.code) reject(tx.rawLog);
               else resolve(tx);
             }
           )
-          .then(resolve)
           .catch(reject);
       })
-    ).resolves.toBeUndefined();
+    ).resolves.toBeDefined();
   });
 });

@@ -3,7 +3,7 @@ export function isSlippageError(tx: any): boolean {
     tx &&
     tx.code === 7 &&
     tx.codespace === "gamm" &&
-    tx.log?.includes("token is lesser than min amount")
+    tx.rawLog?.includes("token is lesser than min amount")
   ) {
     return true;
   }

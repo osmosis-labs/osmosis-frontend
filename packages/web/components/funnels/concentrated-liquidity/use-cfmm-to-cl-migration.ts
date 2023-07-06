@@ -54,7 +54,7 @@ export function useCfmmToClMigration(cfmmPoolId: string): {
                 undefined,
                 (tx) => {
                   // fullfilled
-                  if (tx.code) reject(tx.log);
+                  if (tx.code) reject(tx.rawLog);
                   else resolve();
                 }
               )
@@ -71,7 +71,7 @@ export function useCfmmToClMigration(cfmmPoolId: string): {
                 undefined,
                 (tx) => {
                   // fullfilled
-                  if (tx.code) reject(tx.log);
+                  if (tx.code) reject(tx.rawLog);
                   else resolve();
                 }
               )

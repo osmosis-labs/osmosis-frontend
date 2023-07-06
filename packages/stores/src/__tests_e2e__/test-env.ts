@@ -13,6 +13,7 @@ import {
 import { ChainInfo } from "@keplr-wallet/types";
 import { assets } from "chain-registry";
 import { when } from "mobx";
+import WebSocket from "ws";
 
 import {
   AccountStore,
@@ -132,7 +133,10 @@ export class RootStore {
       [testWallet],
       this.queriesStore,
       this.chainStore,
-      undefined,
+      {
+        broadcastUrl: "http://127.0.0.1:1317/cosmos/tx/v1beta1/txs",
+        wsObject: WebSocket as any,
+      },
       OsmosisAccount.use({ queriesStore: this.queriesStore }),
       CosmosAccount.use({
         queriesStore: this.queriesStore,
@@ -141,6 +145,13 @@ export class RootStore {
       CosmwasmAccount.use({ queriesStore: this.queriesStore })
     );
   }
+}
+
+export async function initAccount(
+  accountStore: AccountStore<any>,
+  chainId: string
+) {
+  return accountStore.getWalletRepo(chainId).connect(testWalletInfo.name, true);
 }
 
 export async function waitAccountLoaded(

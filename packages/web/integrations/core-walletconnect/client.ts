@@ -675,7 +675,6 @@ export class WCClient implements WalletClient {
     signDoc: DirectSignDoc,
     signOptions?: SignOptions
   ): Promise<DirectSignResponse> {
-    console.log("bbb");
     const { signed, signature } = (await this._signDirect(
       chainId,
       signer,
