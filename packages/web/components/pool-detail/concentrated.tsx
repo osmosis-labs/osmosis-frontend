@@ -214,10 +214,10 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
               <div className="flex flex-grow flex-col gap-3">
                 <h6>{t("clPositions.yourPositions")}</h6>
                 <div className="flex items-center text-body2 font-body2">
-                  <span className="text-wosmongton-200">
+                  <span className="text-osmoverse-200">
                     {t("clPositions.yourPositionsDesc")}
                   </span>
-                  <span className="flex flex-row">
+                  {/* <span className="flex flex-row">
                     <a
                       className="mx-1 inline-flex items-center text-wosmongton-300 underline"
                       href="#"
@@ -226,7 +226,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     >
                       {t("clPositions.learnMoreAboutPools")}
                     </a>
-                  </span>
+                  </span> */}
                 </div>
               </div>
               <div className="flex gap-2">
