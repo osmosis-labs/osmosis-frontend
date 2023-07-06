@@ -12,11 +12,9 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import classNames from "classnames";
-import debounce from "debounce";
-import Fuse from "fuse.js";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 import { useVirtual } from "react-virtual";
 
@@ -25,6 +23,7 @@ import { Button } from "~/components/buttons";
 import { CheckBox } from "~/components/control";
 import { SearchBox } from "~/components/input";
 import { IS_FRONTIER } from "~/config/index";
+import { useFilteredData } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 
@@ -99,11 +98,6 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
     ]);
     const columnHelper = createColumnHelper<Validator>();
 
-    // search
-    const [searchTerm, setSearchTerm] = useState("");
-    const debouncedSearchTerm = useMemo(() => debounce(setSearchTerm, 200), []);
-    const handleSearchInput = (value: string) => debouncedSearchTerm(value);
-
     // i18n
     const t = useTranslation();
 
@@ -148,18 +142,20 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
       ]
     );
 
-    const fuse = useMemo(() => {
-      return new Fuse(rawData, {
-        keys: ["validatorName"],
-      });
-    }, [rawData]);
+    const searchValidatorsMemoedKeys = ["validatorName"];
 
-    const searchData: Validator[] = useMemo(() => {
-      if (searchTerm.trim() === "") return rawData;
+    const [query, _setQuery, filteredValidators] = useFilteredData(
+      rawData,
+      searchValidatorsMemoedKeys
+    );
 
-      const results = fuse.search(searchTerm);
-      return results.map((result) => result.item);
-    }, [searchTerm, rawData, fuse]);
+    const setQuery = useCallback(
+      (search: string) => {
+        setSorting([]);
+        _setQuery(search);
+      },
+      [_setQuery, setSorting]
+    );
 
     const columns = useMemo<ColumnDef<Validator>[]>(
       () => [
@@ -234,7 +230,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
     );
 
     const table = useReactTable({
-      data: searchData,
+      data: filteredValidators,
       columns,
       state: {
         sorting,
@@ -250,7 +246,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
 
     const rowVirtualizer = useVirtual({
       parentRef: tableContainerRef,
-      size: searchData.length,
+      size: filteredValidators.length,
       overscan: 10,
     });
 
@@ -277,9 +273,10 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
           </div>
           <SearchBox
             placeholder={t("stake.validatorSquad.searchPlaceholder")}
-            onInput={handleSearchInput}
             className="self-end"
             size="full"
+            onInput={setQuery}
+            currentValue={query}
           />
         </div>
         <div
