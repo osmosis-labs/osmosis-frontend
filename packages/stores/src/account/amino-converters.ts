@@ -1,4 +1,5 @@
 import { AminoMsgTransfer } from "@cosmjs/stargate";
+import { Dec, DecUtils } from "@keplr-wallet/unit";
 import {
   cosmosAminoConverters,
   cosmwasmAminoConverters,
@@ -6,6 +7,7 @@ import {
   osmosisAminoConverters as originalOsmosisAminoConverters,
 } from "@osmosis-labs/proto-codecs";
 import { MsgCreateConcentratedPool } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/concentrated-liquidity/pool-model/concentrated/tx";
+import { MsgWithdrawPosition } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/concentrated-liquidity/tx";
 import { MsgCreateBalancerPool } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/gamm/pool-models/balancer/tx/tx";
 import { MsgCreateStableswapPool } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/gamm/pool-models/stableswap/tx";
 import { MsgLockTokens } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/lockup/tx";
@@ -209,6 +211,41 @@ const osmosisAminoConverters: Record<
       "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition"
     ],
     aminoType: "osmosis/cl-withdraw-position",
+    toAmino: ({
+      sender,
+      liquidityAmount,
+      positionId,
+    }: MsgWithdrawPosition): Parameters<
+      (typeof originalOsmosisAminoConverters)["/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition"]["fromAmino"]
+    >[0] => {
+      return {
+        sender,
+        liquidity_amount: liquidityAmount,
+        position_id: positionId.toString(),
+      };
+    },
+    fromAmino: ({
+      sender,
+      liquidity_amount,
+      position_id,
+    }: Parameters<
+      (typeof originalOsmosisAminoConverters)["/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition"]["fromAmino"]
+    >[0]): MsgWithdrawPosition => {
+      return {
+        sender,
+        liquidityAmount: changeDecStringToProtoBz(
+          new Dec(liquidity_amount)
+            .mul(
+              DecUtils.getTenExponentNInPrecisionRange(
+                liquidity_amount.split(".")[1]?.length ?? 0
+              )
+            )
+            .truncate()
+            .toString()
+        ),
+        positionId: position_id.toString() as any,
+      };
+    },
   },
   "/osmosis.concentratedliquidity.v1beta1.MsgAddToPosition": {
     ...originalOsmosisAminoConverters[
