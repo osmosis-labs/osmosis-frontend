@@ -23,7 +23,7 @@ export class ObservableQueryNodeInfo extends ObservableChainQuery<NodeInfoRespon
     }
 
     const version = Number(
-      this.response.data.default_node_info.protocol_version.app
+      this.response.data.application_version.version.split(".")[0]
     );
 
     return isNaN(version) ? undefined : version;

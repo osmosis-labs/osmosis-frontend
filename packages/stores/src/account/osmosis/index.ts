@@ -122,12 +122,10 @@ export class OsmosisAccountImpl {
       poolAssets,
       sender: this.address,
       poolParams: {
-        swapFee: this.changeDecStringToProtoBz(
-          new Dec(swapFee)
-            .quo(DecUtils.getTenExponentNInPrecisionRange(2))
-            .toString()
-        ),
-        exitFee: this.changeDecStringToProtoBz(new Dec(0).toString()),
+        swapFee: new Dec(swapFee)
+          .quo(DecUtils.getTenExponentNInPrecisionRange(2))
+          .toString(),
+        exitFee: new Dec(0).toString(),
       },
     });
 
@@ -188,9 +186,7 @@ export class OsmosisAccountImpl {
       denom0,
       denom1,
       sender: this.address,
-      spreadFactor: this.changeDecStringToProtoBz(
-        new Dec(spreadFactor).toString()
-      ),
+      spreadFactor: new Dec(spreadFactor).toString(),
       tickSpacing: Long.fromNumber(tickSpacing),
     });
 
@@ -1899,15 +1895,6 @@ export class OsmosisAccountImpl {
         onFulfill?.(tx);
       }
     );
-  }
-
-  protected changeDecStringToProtoBz(decStr: string): string {
-    let r = decStr;
-    while (r.length >= 2 && (r.startsWith(".") || r.startsWith("0"))) {
-      r = r.slice(1);
-    }
-
-    return r;
   }
 
   protected get queries() {

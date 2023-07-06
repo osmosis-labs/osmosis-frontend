@@ -28,7 +28,6 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
   });
 
   beforeEach(async () => {
-    const account = accountStore.getWallet(chainId);
     await waitAccountLoaded(account);
 
     // And prepare the pool
@@ -60,7 +59,6 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
       ],
       ""
     );
-
     queryPool = await getLatestQueryPool(chainId, queriesStore);
   });
 
@@ -121,7 +119,7 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
   });
 
   test.only("succeed with no max slippage - single route", async () => {
-    const account = accountStore.getWallet(chainId);
+    queryPool = await getLatestQueryPool(chainId, queriesStore);
 
     const tokenIn = {
       currency: {
@@ -142,6 +140,8 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
       tokenIn,
       tokenOutCurrency
     );
+
+    console.log(estimated);
 
     const tx = await new Promise<any>((resolve, reject) => {
       account?.osmosis

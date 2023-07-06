@@ -5,6 +5,7 @@ import {
   ibcAminoConverters as originalIbcAminoConverters,
   osmosisAminoConverters as originalOsmosisAminoConverters,
 } from "@osmosis-labs/proto-codecs";
+import { MsgCreateConcentratedPool } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/concentrated-liquidity/pool-model/concentrated/tx";
 import { MsgCreateBalancerPool } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/gamm/pool-models/balancer/tx/tx";
 import { MsgCreateStableswapPool } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/gamm/pool-models/stableswap/tx";
 import { MsgLockTokens } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/lockup/tx";
@@ -197,6 +198,40 @@ const osmosisAminoConverters: Record<
         "/osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MsgCreateConcentratedPool"
       ],
       aminoType: "osmosis/cl-create-pool",
+      toAmino: ({
+        sender,
+        denom0,
+        denom1,
+        spreadFactor,
+        tickSpacing,
+      }: MsgCreateConcentratedPool): Parameters<
+        (typeof originalOsmosisAminoConverters)["/osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MsgCreateConcentratedPool"]["fromAmino"]
+      >[0] => {
+        return {
+          sender,
+          denom0: denom0,
+          denom1: denom1,
+          spread_factor: spreadFactor,
+          tick_spacing: tickSpacing.toString(),
+        };
+      },
+      fromAmino: ({
+        sender,
+        denom0,
+        denom1,
+        spread_factor,
+        tick_spacing,
+      }: Parameters<
+        (typeof originalOsmosisAminoConverters)["/osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MsgCreateConcentratedPool"]["fromAmino"]
+      >[0]): MsgCreateConcentratedPool => {
+        return {
+          sender,
+          denom0: denom0,
+          denom1: denom1,
+          spreadFactor: changeDecStringToProtoBz(spread_factor),
+          tickSpacing: tick_spacing.toString() as any,
+        };
+      },
     },
 };
 

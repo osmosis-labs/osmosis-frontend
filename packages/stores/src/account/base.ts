@@ -48,7 +48,7 @@ import {
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
 import axios from "axios";
-import { Buffer } from "buffer";
+import { Buffer } from "buffer/";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { action, makeObservable, observable, runInAction } from "mobx";
@@ -104,6 +104,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         onFulfill?: (string: string, tx: any) => void;
       };
       broadcastUrl?: string;
+      wsObject?: new (url: string, protocols?: string | string[]) => WebSocket;
     } = {},
     ...accountSetCreators: ChainedFunctionifyTuple<
       AccountStore<Injects>,
@@ -408,7 +409,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       const broadcasted = res.data.tx_response;
 
       const rpcEndpoint = getEndpointString(await wallet.getRpcEndpoint(true));
-      const txTracer = new TxTracer(rpcEndpoint, "/websocket");
+
+      const txTracer = new TxTracer(rpcEndpoint, "/websocket", {
+        wsObject: this?.options?.wsObject,
+      });
 
       if (broadcasted.code) {
         throw new BroadcastTxError(broadcasted.code, "", broadcasted.raw_log);
