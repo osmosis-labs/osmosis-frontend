@@ -156,6 +156,7 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
     });
   }
 
+  /** Deep compare the result tx against the quote amount. */
   function deepCompareSwapTx(
     tx: any,
     tokenInAmount: string,
