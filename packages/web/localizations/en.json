@@ -505,10 +505,6 @@
   "viewExplorer": "View explorer",
   "waitingForTransaction": "Waiting for transaction to be included in the block",
   "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution.",
-  "streamswap": {
-    "description": "New streams for QSR/ATOM and QSR/OSMO are live on Streamswap.",
-    "link": "Check them out."
-  },
   "seo": {
     "404": {
       "title": "404 - Page not found",

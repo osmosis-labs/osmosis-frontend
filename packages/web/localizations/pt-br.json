@@ -501,7 +501,5 @@
   "seo.pool.title": "Piscina #",
   "seo.pool.description": "Adicione seus ativos a este pool para desbloquear APRs. Quanto mais longo for o seu período de desvinculação, mais você ganha na Osmosis - a principal exchange descentralizada do Cosmos",
   "seo.pools.title": "piscinas de osmose",
-  "seo.pools.description": "Descubra pools de liquidez na Osmosis - a principal exchange descentralizada do Cosmos",
-  "streamswap.description": "Novos streams para QSR/ATOM e QSR/OSMO estão ao vivo no Streamswap.",
-  "streamswap.link": "Verifique-os."
+  "seo.pools.description": "Descubra pools de liquidez na Osmosis - a principal exchange descentralizada do Cosmos"
 }
