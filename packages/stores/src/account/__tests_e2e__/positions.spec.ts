@@ -302,25 +302,27 @@ describe("Create CL Positions Txs", () => {
 
     // prepare CL position
     return new Promise<any>((resolve, reject) => {
-      account?.osmosis.sendCreateConcentratedLiquidityPositionMsg(
-        poolId,
-        minTick,
-        maxTick,
-        {
-          currency: osmoCurrency,
-          amount: osmoSwapAmount,
-        },
-        {
-          currency: ionCurrency,
-          amount: ionSwapAmount,
-        },
-        undefined,
-        undefined,
-        (tx) => {
-          if (tx.code) reject(tx.rawLog);
-          else resolve(tx);
-        }
-      );
+      account?.osmosis
+        .sendCreateConcentratedLiquidityPositionMsg(
+          poolId,
+          minTick,
+          maxTick,
+          {
+            currency: osmoCurrency,
+            amount: osmoSwapAmount,
+          },
+          {
+            currency: ionCurrency,
+            amount: ionSwapAmount,
+          },
+          undefined,
+          undefined,
+          (tx) => {
+            if (tx.code) reject(tx.rawLog);
+            else resolve(tx);
+          }
+        )
+        .catch(reject); // catch broadcast error;
     });
   }
 });
