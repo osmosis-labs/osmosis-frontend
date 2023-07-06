@@ -65,7 +65,7 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
     );
 
     const tx = await swapExactIn(
-      tokenInAmount,
+      tokenInDenom,
       tokenOutDenom,
       tokenInAmount,
       quote.amount.toString()
@@ -125,6 +125,7 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
     amountIn: string,
     minAmountOut: string
   ) {
+    console.log(chainStore.getChain(chainId).forceFindCurrency(tokenInDenom));
     return new Promise<any>((resolve, reject) => {
       account!.osmosis
         .sendSwapExactAmountInMsg(
