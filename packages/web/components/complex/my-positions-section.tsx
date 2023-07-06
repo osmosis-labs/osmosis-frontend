@@ -43,7 +43,7 @@ export const MyPositionsSection: FunctionComponent<{ forPoolId?: string }> =
           <MyPositionCard key={position.id} position={position} />
         ))}
         {visiblePositions.length > 0 &&
-          visiblePositions.length > INITIAL_POSITION_CNT && (
+          positions.length > INITIAL_POSITION_CNT && (
             <ShowMoreButton
               className="mx-auto"
               isOn={viewMore}

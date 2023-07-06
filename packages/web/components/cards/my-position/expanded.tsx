@@ -303,14 +303,14 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           }
           onClick={() => {
             if (superfluidDelegation) {
-              account?.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
-                [
+              account?.osmosis
+                .sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock([
                   {
                     lockId: superfluidDelegation.lockId,
                     isSyntheticLock: true,
                   },
-                ]
-              );
+                ])
+                .catch(console.error);
             } else setActiveModal("remove");
           }}
         >

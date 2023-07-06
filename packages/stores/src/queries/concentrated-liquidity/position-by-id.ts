@@ -165,6 +165,11 @@ export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<{
   }
 
   @computed
+  get hasClaimableRewards(): boolean {
+    return this.totalClaimableRewards.length > 0;
+  }
+
+  @computed
   get isFullRange(): boolean {
     if (this.lowerTick?.equals(minTick) && this.upperTick?.equals(maxTick)) {
       return true;
