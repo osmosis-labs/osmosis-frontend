@@ -37,7 +37,7 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
           0.001, // must have spread factor to generate fees
           undefined,
           (tx) => {
-            if (tx.code) reject(tx.log);
+            if (tx.code) reject(tx.rawLog);
             else resolve(tx);
           }
         )
@@ -148,7 +148,7 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
           undefined,
           undefined,
           (tx: any) => {
-            if (tx.code) reject(tx.log);
+            if (tx.code) reject(tx.rawLog);
             else resolve(tx);
           }
         )

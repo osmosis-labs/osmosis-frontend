@@ -34,7 +34,7 @@ describe("Create CL Positions Txs", () => {
         0.001, // must have spread factor to generate fees
         undefined,
         (tx) => {
-          if (tx.code) reject(tx.log);
+          if (tx.code) reject(tx.rawLog);
           else resolve(tx);
         }
       )
