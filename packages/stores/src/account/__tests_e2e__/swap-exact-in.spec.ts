@@ -3,7 +3,6 @@ import { Currency } from "@keplr-wallet/types";
 import { Coin, Dec, DecUtils, Int, IntPretty } from "@keplr-wallet/unit";
 import { estimateSwapExactAmountIn } from "@osmosis-labs/math";
 import { OptimizedRoutes } from "@osmosis-labs/pools";
-import { when } from "mobx";
 
 import {
   chainId,
@@ -28,8 +27,6 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
   });
 
   beforeEach(async () => {
-    await waitAccountLoaded(account);
-
     // And prepare the pool
     await new Promise<void>((resolve, reject) => {
       account!.osmosis
@@ -71,8 +68,6 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
   });
 
   test("should fail with unregistered pool asset", async () => {
-    const account = accountStore.getWallet(chainId);
-
     await expect(
       new Promise((resolve, reject) => {
         account!.osmosis
@@ -101,8 +96,6 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
   });
 
   test("should fail with unregistered pool asset (2)", async () => {
-    const account = accountStore.getWallet(chainId);
-
     await expect(
       new Promise((resolve, reject) => {
         account!.osmosis
@@ -131,8 +124,6 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
   });
 
   test("succeed with no max slippage - single route", async () => {
-    queryPool = await getLatestQueryPool(chainId, queriesStore);
-
     const tokenIn = {
       currency: {
         coinDenom: "ION",
@@ -218,8 +209,6 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
   });
 
   test("succeed with slippage - single route", async () => {
-    const account = accountStore.getWallet(chainId);
-
     const tokenIn = {
       currency: {
         coinDenom: "ION",
@@ -314,8 +303,6 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
   });
 
   test("with exactly matched slippage and max slippage - single route", async () => {
-    const account = accountStore.getWallet(chainId);
-
     const tokenIn = {
       currency: {
         coinDenom: "ION",
@@ -403,8 +390,6 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
   });
 
   test("should fail with more max price impact than calculated price impact - single route", async () => {
-    const account = accountStore.getWallet(chainId);
-
     const tokenIn = {
       currency: {
         coinDenom: "ION",
@@ -469,8 +454,6 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
 
   test("succeed without slippage - split route 2 pools", async () => {
     // create an additional pool (exactly the same as beforeEach pool)
-    const account = accountStore.getWallet(chainId);
-    await waitAccountLoaded(account);
     await new Promise<void>((resolve, reject) => {
       account!.osmosis
         .sendCreateBalancerPoolMsg(
@@ -626,8 +609,7 @@ async function estimateSharePoolSwapExactIn(
   tokenIn: { currency: Currency; amount: string },
   tokenOutCurrency: Currency
 ) {
-  queryPool.waitFreshResponse();
-  await when(() => !queryPool.isFetching);
+  await queryPool.waitFreshResponse();
 
   const inPoolAsset = queryPool.getPoolAsset(tokenIn.currency.coinMinimalDenom);
   const outPoolAsset = queryPool.getPoolAsset(
