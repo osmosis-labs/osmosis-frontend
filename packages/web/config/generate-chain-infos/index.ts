@@ -45,7 +45,7 @@ async function generateChainInfo() {
     });
     console.log("Successfully wrote chain-infos.ts");
   } catch (e) {
-    console.log(`Error writing chain-infos.ts: ${e}`);
+    console.error(`Error writing chain-infos.ts: ${e}`);
   }
 }
 

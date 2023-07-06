@@ -43,7 +43,7 @@ async function generateWalletAssets() {
     });
     console.log("Successfully wrote wallet-assets.ts");
   } catch (e) {
-    console.log(`Error writing wallet-assets.ts: ${e}`);
+    console.error(`Error writing wallet-assets.ts: ${e}`);
   }
 }
 
