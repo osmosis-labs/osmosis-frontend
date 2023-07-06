@@ -80,6 +80,7 @@ export class ObservableQueryPools
             this.chainGetter,
             this.queryLiquiditiesInNetDirection,
             this.queryBalances,
+            this.queryNodeInfo,
             poolRaw
           )
         );
