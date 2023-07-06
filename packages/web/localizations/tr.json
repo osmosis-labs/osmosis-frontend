@@ -501,7 +501,5 @@
   "seo.pool.title": "Havuz #",
   "seo.pool.description": "APR'lerin kilidini açmak için varlıklarınızı bu havuza ekleyin. Ayrılma süreniz ne kadar uzun olursa, önde gelen merkezi olmayan Cosmos borsası Osmosis'te o kadar çok kazanırsınız",
   "seo.pools.title": "Osmoz Havuzları",
-  "seo.pools.description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis'teki likidite havuzlarını keşfedin",
-  "streamswap.description": "QSR/ATOM ve QSR/OSMO için yeni akışlar, Streamswap'te yayında.",
-  "streamswap.link": "Onları kontrol et."
+  "seo.pools.description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis'teki likidite havuzlarını keşfedin"
 }
