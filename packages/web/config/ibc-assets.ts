@@ -1893,6 +1893,16 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "aarch",
         isVerified: true,
       },
+      {
+        counterpartyChainId: "centauri-1",
+        sourceChannelId: "channel-1279",
+        destChannelId: "channel-3",
+        coinMinimalDenom: "ppica",
+        depositUrlOverride:
+          "https://app.trustless.zone/multihop?from=PICASSO&to=OSMOSIS",
+        withdrawUrlOverride:
+          "https://app.trustless.zone/multihop?from=OSMOSIS&to=PICASSO",
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (
