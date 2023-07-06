@@ -16,7 +16,7 @@
       "name": "Looking to DCA?",
       "header": "Looking to DCA?",
       "subheader": "Set up recurring swaps with CalcFi",
-      "externalUrl": "https://app.calculated.fi/?chain=Osmosis",
+      "externalUrl": "https://app.calculated.fi/create-strategy/dca-in/assets/?chain=Osmosis&utm_source=osmosis_dex",
       "iconImageUrl": "/images/dollar-cost-averaging.svg",
       "iconImageAlt": "Chart increasing to the upper right with dollar signs",
       "gradient": "linear-gradient(136deg, #543E17 0%, #161A24 47.66%, #183B5B 100%)",
