@@ -26,6 +26,7 @@ import { IS_FRONTIER } from "~/config/index";
 import { useFilteredData } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
+import { normalizeUrl, truncateString } from "~/utils/string";
 
 export const ValidatorSquadModal: FunctionComponent<ModalBaseProps> = observer(
   (props) => <ValidatorSquadContent {...props} />
@@ -43,23 +44,6 @@ type Validator = {
 interface ValidatorSquadContentProps {
   onRequestClose: () => void;
   isOpen: boolean;
-}
-
-function normalizeUrl(url: string): string {
-  // Remove "https://", "http://", "www.", and trailing slashes
-  url = url.replace(/^https?:\/\//, "");
-  url = url.replace(/^www\./, "");
-  url = url.replace(/\/$/, "");
-  return url;
-}
-
-function truncateString(str: string): string {
-  if (str.length <= 30) return str;
-
-  const halfLength = Math.floor((30 - 3) / 2);
-  const firstHalf = str.slice(0, halfLength);
-  const secondHalf = str.slice(-halfLength);
-  return `${firstHalf}...${secondHalf}`;
 }
 
 const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
@@ -167,7 +151,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
                 const displayUrl = normalizeUrl(
                   props.row.original.website || ""
                 );
-                const truncatedDisplayUrl = truncateString(displayUrl);
+                const truncatedDisplayUrl = truncateString(displayUrl, 30);
                 const [isChecked, setIsChecked] = useState(false);
 
                 return (
