@@ -176,11 +176,12 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     this.validateDenoms(tokenIn.denom, tokenOutDenom);
 
     /** Reminder: currentSqrtPrice: amountToken1/amountToken0 or token 1 per token 0  */
-    const isTokenInSpotPriceDenominator = tokenIn.denom === this.raw.token0;
+    const is0For1 = tokenIn.denom === this.raw.token0;
 
-    const beforeSpotPriceInOverOut = isTokenInSpotPriceDenominator
-      ? this.getSpotPriceInOverOut(tokenIn.denom, tokenOutDenom)
-      : this.getSpotPriceOutOverIn(tokenOutDenom, tokenIn.denom);
+    /** Spot price as stored in pool model. */
+    const before1Over0SpotPrice = this.spotPrice(
+      is0For1 ? tokenIn.denom : tokenOutDenom
+    );
 
     /** Fetch ticks and calculate the out amount */
     let calcResult = undefined;
@@ -219,18 +220,31 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     if (amountOut.lte(new Int(0))) throw new NotEnoughLiquidityError();
 
     /** final price token1/token0 */
-    const afterSpotPriceInOverOut = this.spotPrice(
-      isTokenInSpotPriceDenominator ? tokenIn.denom : tokenOutDenom,
+    const after1Over0SpotPrice = this.spotPrice(
+      is0For1 ? tokenIn.denom : tokenOutDenom,
       afterSqrtPrice
     );
 
-    if (afterSpotPriceInOverOut.lt(beforeSpotPriceInOverOut)) {
-      throw new Error("Spot price can't be decreased after swap");
+    if (is0For1 && after1Over0SpotPrice.gt(before1Over0SpotPrice)) {
+      throw new Error(
+        "Spot price can't be increased after swap when swapping token 0 for 1"
+      );
+    } else if (!is0For1 && after1Over0SpotPrice.lt(before1Over0SpotPrice)) {
+      throw new Error(
+        "Spot price can't be decreased after swap when swapping token 1 for 0"
+      );
     }
 
     const effectivePriceInOverOut = new Dec(tokenIn.amount).quoTruncate(
       new Dec(amountOut)
     );
+
+    const beforeSpotPriceInOverOut = is0For1
+      ? before1Over0SpotPrice
+      : new Dec(1).quoTruncate(before1Over0SpotPrice);
+    const afterSpotPriceInOverOut = is0For1
+      ? after1Over0SpotPrice
+      : new Dec(1).quoTruncate(after1Over0SpotPrice);
 
     const priceImpactTokenOut = effectivePriceInOverOut
       .quo(beforeSpotPriceInOverOut)
@@ -238,7 +252,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
 
     return {
       amount: amountOut,
-      beforeSpotPriceInOverOut,
+      beforeSpotPriceInOverOut: beforeSpotPriceInOverOut,
       beforeSpotPriceOutOverIn: new Dec(1).quoTruncate(
         beforeSpotPriceInOverOut
       ),
@@ -261,12 +275,14 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     this.validateDenoms(tokenInDenom, tokenOut.denom);
 
     /** Reminder: currentSqrtPrice: amountToken1/amountToken0 or token 1 per token 0  */
-    const isTokenInSpotPriceDenominator = tokenOut.denom !== this.raw.token0;
+    const is0For1 = tokenInDenom === this.raw.token0;
 
-    // reminder: the token being swapped, even though the token out is the amount specified
-    const beforeSpotPriceInOverOut = isTokenInSpotPriceDenominator
-      ? this.getSpotPriceInOverOut(tokenInDenom, tokenOut.denom)
-      : this.getSpotPriceOutOverIn(tokenOut.denom, tokenInDenom);
+    /** Spot price as stored in pool model.
+     *  reminder: the token being swapped, even though the token out is the amount specified
+     */
+    const before1Over0SpotPrice = this.spotPrice(
+      is0For1 ? tokenInDenom : tokenOut.denom
+    );
 
     let calcResult = undefined;
     do {
@@ -304,10 +320,27 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     if (amountIn.lte(new Int(0))) throw new NotEnoughLiquidityError();
 
     /** final price token1/token0 */
-    const afterSpotPriceInOverOut = this.spotPrice(
-      isTokenInSpotPriceDenominator ? tokenInDenom : tokenOut.denom,
+    const after1Over0SpotPrice = this.spotPrice(
+      is0For1 ? tokenInDenom : tokenOut.denom,
       afterSqrtPrice
     );
+
+    if (is0For1 && after1Over0SpotPrice.gt(before1Over0SpotPrice)) {
+      throw new Error(
+        "Spot price can't be increased after swap when swapping token 0 for 1"
+      );
+    } else if (!is0For1 && after1Over0SpotPrice.lt(before1Over0SpotPrice)) {
+      throw new Error(
+        "Spot price can't be decreased after swap when swapping token 1 for 0"
+      );
+    }
+
+    const beforeSpotPriceInOverOut = is0For1
+      ? before1Over0SpotPrice
+      : new Dec(1).quoTruncate(before1Over0SpotPrice);
+    const afterSpotPriceInOverOut = is0For1
+      ? after1Over0SpotPrice
+      : new Dec(1).quoTruncate(after1Over0SpotPrice);
 
     const effectivePriceInOverOut = new Dec(amountIn).quoTruncate(
       new Dec(tokenOut.amount)
@@ -332,8 +365,6 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
   }
 
   async getLimitAmountByTokenIn(denom: string): Promise<Int> {
-    this.validateDenoms(denom);
-
     const { token0Amount, token1Amount } =
       await this.poolAmountsProvider.getPoolAmounts(this);
 
