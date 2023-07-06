@@ -123,19 +123,19 @@ export const osmosisMsgOpts = createMsgOpts({
     messageComposer:
       osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
         .withdrawPosition,
-    gas: 3000000,
+    gas: 3_000_000,
   },
   clAddToConcentratedPosition: {
     messageComposer:
       osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
         .addToPosition,
-    gas: 900_000,
+    gas: 2_200_000,
   },
   clAddToConcentatedSuperfluidPosition: {
     messageComposer:
       osmosis.superfluid.MessageComposer.withTypeUrl
         .addToConcentratedLiquiditySuperfluidPosition,
-    gas: 1_000_000,
+    gas: 2_500_000,
   },
   sfStakeSuperfluidPosition: {
     messageComposer:

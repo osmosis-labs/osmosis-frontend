@@ -758,7 +758,9 @@ export class OsmosisAccountImpl {
       memo,
       {
         amount: [],
-        gas: this.msgOpts.clAddToConcentratedPosition.gas.toString(),
+        gas: isSuperfluidStaked
+          ? this.msgOpts.clAddToConcentatedSuperfluidPosition.gas.toString()
+          : this.msgOpts.clAddToConcentratedPosition.gas.toString(),
       },
       undefined,
       (tx) => {
