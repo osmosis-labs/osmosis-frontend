@@ -1,10 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { Currency } from "@keplr-wallet/types";
 import { Int } from "@keplr-wallet/unit";
 import { maxTick, minTick } from "@osmosis-labs/math";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 
 import {
   chainId,
+  deepContained,
+  getEventFromTx,
   getLatestQueryPool,
   initAccount,
   RootStore,
@@ -51,11 +54,9 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
     const tokenInAmount = "10";
     const tokenOutDenom = "uosmo";
 
-    console.log(
-      queryPool!.pool
-        .getSpotPriceInOverOut(tokenInDenom, tokenOutDenom)
-        .toString()
-    );
+    const tokenOutCurrency = chainStore
+      .getChain(chainId)
+      .forceFindCurrency(tokenOutDenom);
 
     const quote = await (
       queryPool!.pool as ConcentratedLiquidityPool
@@ -71,7 +72,13 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
       quote.amount.toString()
     );
 
-    console.log(tx);
+    deepCompareSwapTx(
+      tx,
+      tokenInAmount,
+      tokenInDenom,
+      quote.amount,
+      tokenOutCurrency
+    );
   });
 
   /** Create position with current pool. Default full range. */
@@ -125,15 +132,15 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
     amountIn: string,
     minAmountOut: string
   ) {
-    console.log(chainStore.getChain(chainId).forceFindCurrency(tokenInDenom));
+    const tokenInCurrency = chainStore
+      .getChain(chainId)
+      .forceFindCurrency(tokenInDenom);
     return new Promise<any>((resolve, reject) => {
       account!.osmosis
         .sendSwapExactAmountInMsg(
           [{ id: queryPool!.id, tokenOutDenom }],
           {
-            currency: chainStore
-              .getChain(chainId)
-              .forceFindCurrency(tokenInDenom),
+            currency: tokenInCurrency,
             amount: amountIn,
           },
           minAmountOut,
@@ -147,5 +154,47 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
         )
         .catch(reject);
     });
+  }
+
+  function deepCompareSwapTx(
+    tx: any,
+    tokenInAmount: string,
+    tokenInMinDenom: string,
+    quoteAmount: Int,
+    tokenOutCurrency: Currency
+  ) {
+    // deep compare key events from tx result
+    deepContained(
+      {
+        type: "message",
+        attributes: [
+          {
+            key: "action",
+            value: "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
+          },
+          { key: "module", value: "poolmanager" },
+          {
+            key: "sender",
+            value: account!.address,
+          },
+        ],
+      },
+      getEventFromTx(tx, "message")
+    );
+
+    // make sure amounts match
+    deepContained(
+      {
+        type: "transfer",
+        attributes: [
+          { key: "amount", value: tokenInAmount + tokenInMinDenom },
+          {
+            key: "amount",
+            value: quoteAmount.toString() + tokenOutCurrency.coinMinimalDenom,
+          },
+        ],
+      },
+      getEventFromTx(tx, "transfer")
+    );
   }
 });

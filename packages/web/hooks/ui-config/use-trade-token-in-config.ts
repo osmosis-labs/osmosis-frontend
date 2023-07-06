@@ -1,4 +1,4 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec, DecUtils } from "@keplr-wallet/unit";
 import {
   ObservableQueryPool,
   ObservableTradeTokenInConfig,
@@ -109,9 +109,17 @@ export function useTradeTokenInConfig(
         });
       }
 
+      /** In amount converted to integer (remove decimals) */
       const tokenIn = {
         currency: config.sendCurrency,
-        amount: config.amount,
+        amount: new Dec(config.amount)
+          .mul(
+            DecUtils.getTenExponentNInPrecisionRange(
+              config.sendCurrency.coinDecimals
+            )
+          )
+          .truncate()
+          .toString(),
       };
 
       const tokenOutMinAmount = config

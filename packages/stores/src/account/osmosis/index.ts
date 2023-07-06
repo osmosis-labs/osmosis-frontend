@@ -999,27 +999,26 @@ export class OsmosisAccountImpl {
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const numPools = routes.reduce((acc, route) => acc + route.pools.length, 0);
+
+    const msg = this.msgOpts
+      .splitRouteSwapExactAmountIn(numPools)
+      .messageComposer({
+        sender: this.address,
+        routes: routes.map(({ pools, tokenInAmount }) => ({
+          pools: pools.map(({ id, tokenOutDenom }) => ({
+            poolId: Long.fromString(id),
+            tokenOutDenom: tokenOutDenom,
+          })),
+          tokenInAmount: tokenInAmount,
+        })),
+        tokenInDenom: tokenIn.currency.coinMinimalDenom,
+        tokenOutMinAmount,
+      });
+
     await this.base.signAndBroadcast(
       this.chainId,
       "splitRouteSwapExactAmountIn",
-      () => {
-        const msg = this.msgOpts
-          .splitRouteSwapExactAmountIn(numPools)
-          .messageComposer({
-            sender: this.address,
-            routes: routes.map(({ pools, tokenInAmount }) => ({
-              pools: pools.map(({ id, tokenOutDenom }) => ({
-                poolId: Long.fromString(id),
-                tokenOutDenom: tokenOutDenom,
-              })),
-              tokenInAmount: tokenInAmount,
-            })),
-            tokenInDenom: tokenIn.currency.coinMinimalDenom,
-            tokenOutMinAmount,
-          });
-
-        return [msg];
-      },
+      [msg],
       memo,
       {
         amount: stdFee.amount ?? [],
@@ -1086,38 +1085,29 @@ export class OsmosisAccountImpl {
     signOptions?: KeplrSignOptions,
     onFulfill?: (tx: any) => void
   ) {
+    const tokenInCoin = new Coin(
+      tokenIn.currency.coinMinimalDenom,
+      tokenIn.amount
+    );
+    const msg = this.msgOpts.swapExactAmountIn(pools.length).messageComposer({
+      sender: this.address,
+      routes: pools.map(({ id, tokenOutDenom }) => {
+        return {
+          poolId: Long.fromString(id),
+          tokenOutDenom: tokenOutDenom,
+        };
+      }),
+      tokenIn: {
+        denom: tokenInCoin.denom,
+        amount: tokenInCoin.amount.toString(),
+      },
+      tokenOutMinAmount,
+    });
+
     await this.base.signAndBroadcast(
       this.chainId,
       "swapExactAmountIn",
-      async () => {
-        const amount = new Dec(tokenIn.amount)
-          .mul(
-            DecUtils.getTenExponentNInPrecisionRange(
-              tokenIn.currency.coinDecimals
-            )
-          )
-          .truncate();
-        const coin = new Coin(tokenIn.currency.coinMinimalDenom, amount);
-
-        const msg = this.msgOpts
-          .swapExactAmountIn(pools.length)
-          .messageComposer({
-            sender: this.address,
-            routes: pools.map(({ id, tokenOutDenom }) => {
-              return {
-                poolId: Long.fromString(id),
-                tokenOutDenom: tokenOutDenom,
-              };
-            }),
-            tokenIn: {
-              denom: coin.denom,
-              amount: coin.amount.toString(),
-            },
-            tokenOutMinAmount,
-          });
-
-        return [msg];
-      },
+      [msg],
       memo,
       {
         amount: stdFee.amount ?? [],
