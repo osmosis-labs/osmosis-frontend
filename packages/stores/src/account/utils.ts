@@ -69,8 +69,9 @@ export function getWalletWindowName(walletName: string) {
 }
 
 /**
- * Change decimal string to proto bytes. This is
- *
+ * Change decimal string to proto bytes. This is necessary to handle decimals
+ * in the proto messages.
+ 
  * @param decStr string
  * @returns string
  */
