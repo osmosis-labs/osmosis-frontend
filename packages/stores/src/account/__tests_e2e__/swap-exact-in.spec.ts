@@ -141,8 +141,6 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
       tokenOutCurrency
     );
 
-    console.log(estimated);
-
     const tx = await new Promise<any>((resolve, reject) => {
       account?.osmosis
         .sendSwapExactAmountInMsg(
