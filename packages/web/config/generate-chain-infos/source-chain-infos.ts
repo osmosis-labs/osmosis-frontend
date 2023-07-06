@@ -3753,6 +3753,34 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://www.mintscan.io/quasar/txs/{txHash}",
   },
+  {
+    rpc: "https://rpc.mainnet.archway.io",
+    rest: "https://api.mainnet.archway.io",
+    chainId: "archway-1",
+    chainName: "Archway",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("archway"),
+    currencies: [
+      {
+        coinDenom: "ARCH",
+        coinMinimalDenom: "aarch",
+        coinDecimals: 18,
+        coinGeckoId: "pool:aarch",
+        coinImageUrl: "/tokens/archway.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 1000000000000,
+          average: 1500000000000,
+          high: 2000000000000,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://mintscan.io/archway/txs/{txHash}",
+  },
 ];
 
 const chainInfos = IS_TESTNET

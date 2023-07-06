@@ -1886,6 +1886,13 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "uqsr",
         isVerified: true,
       },
+      {
+        counterpartyChainId: "archway-1",
+        sourceChannelId: "channel-1429",
+        destChannelId: "channel-1",
+        coinMinimalDenom: "aarch",
+        isVerified: true,
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (
