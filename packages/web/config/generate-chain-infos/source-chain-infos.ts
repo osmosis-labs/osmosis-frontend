@@ -3796,7 +3796,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinMinimalDenom: "ppica",
         coinDecimals: 12,
         coinGeckoId: "pool:ppica",
-        coinImageUrl: "/tokens/pica.svg",
+        coinImageUrl: "/tokens/pica.svg", 
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {
