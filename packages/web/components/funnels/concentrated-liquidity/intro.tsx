@@ -30,11 +30,18 @@ export const ConcentratedLiquidityIntro: FunctionComponent<{
       </div>
 
       <div className="flex items-center gap-4 px-8">
-        <Button size="sm" mode="secondary" onClick={onLearnMore}>
-          {t("addConcentratedLiquidityIntro.secondaryCta")}
-        </Button>
+        <div className="relative z-10 w-full before:absolute before:-inset-[1px] before:-z-[1] before:rounded-xl before:bg-gradient-supercharged before:transition-all before:duration-200 before:hover:-inset-[2px]">
+          <Button
+            size="sm"
+            mode="unstyled"
+            className="rounded-xl bg-osmoverse-800 text-ion-100 hover:text-white-full"
+            onClick={onLearnMore}
+          >
+            {t("addConcentratedLiquidityIntro.secondaryCta")}
+          </Button>
+        </div>
         <Button
-          className="border-0 bg-gradient-supercharged text-osmoverse-1000"
+          className="border-0 bg-gradient-supercharged text-osmoverse-1000 transition-shadow duration-200 ease-in hover:shadow-[0px_0px_15px_0px_rgba(73,197,255,0.50)]"
           size="sm"
           onClick={onCtaClick}
         >
