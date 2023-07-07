@@ -88,6 +88,13 @@ function calcOutGivenIn({
       swapState.amountRemaining
     );
 
+    console.log("nextTick", nextTick.tickIndex.toString());
+    console.log("sqrtPriceCurrent", swapState.sqrtPrice.toString());
+    console.log("sqrtPriceNext", sqrtPriceNext.toString());
+    console.log("amountInConsumed", amountInConsumed.toString());
+    console.log("amountOutComputed", amountOutComputed.toString());
+    console.log("feeChargeTotal", feeChargeTotal.toString());
+
     swapState.sqrtPrice = sqrtPriceNext;
     swapState.amountRemaining = swapState.amountRemaining.sub(
       amountInConsumed.add(feeChargeTotal)
