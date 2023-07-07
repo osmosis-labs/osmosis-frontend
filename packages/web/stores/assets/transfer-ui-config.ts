@@ -16,11 +16,7 @@ import {
   ObservableWallet,
   SourceChainKey,
 } from "../../integrations";
-import {
-  EthWallet,
-  ObservableMetamask,
-  ObservableWalletConnect,
-} from "../../integrations/ethereum";
+import { EthWallet, ObservableMetamask } from "../../integrations/ethereum";
 import {
   BridgeTransferModal,
   FiatRampsModal,
@@ -105,14 +101,18 @@ export class ObservableTransferUIConfig {
   readonly metamask = new ObservableMetamask(
     makeLocalStorageKVStore("metamask")
   );
-  @observable
-  readonly walletConnectEth = new ObservableWalletConnect(
-    makeLocalStorageKVStore("wc-eth")
-  );
+  /**
+   * Disabled for now. WalletConnect V1 is no longer available.
+   * // TODO: WalletConnect V2
+   */
+  // @observable
+  // readonly walletConnectEth = new ObservableWalletConnect(
+  //   makeLocalStorageKVStore("wc-eth")
+  // );
 
   @computed
   protected get _ethClientWallets(): EthWallet[] {
-    return [this.metamask, this.walletConnectEth].filter((wallet) =>
+    return [this.metamask].filter((wallet) =>
       this._isMobile ? wallet.mobileEnabled : true
     );
   }

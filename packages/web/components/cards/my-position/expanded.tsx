@@ -163,21 +163,21 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             <div className="mt-7 mr-6 flex h-6 gap-1">
               <ChartButton
                 alt="refresh"
-                src="/icons/refresh-ccw.svg"
+                icon="refresh-ccw"
                 selected={false}
                 onClick={() => setZoom(1)}
               />
               <ChartButton
-                alt="zoom in"
-                src="/icons/zoom-in.svg"
-                selected={false}
-                onClick={zoomIn}
-              />
-              <ChartButton
                 alt="zoom out"
-                src="/icons/zoom-out.svg"
+                icon="zoom-out"
                 selected={false}
                 onClick={zoomOut}
+              />
+              <ChartButton
+                alt="zoom in"
+                icon="zoom-in"
+                selected={false}
+                onClick={zoomIn}
               />
             </div>
             <div className="flex h-full flex-col justify-between py-4">

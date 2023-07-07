@@ -187,7 +187,7 @@ export class OsmosisAccountImpl {
       denom1,
       sender: this.address,
       spreadFactor: new Dec(spreadFactor).toString(),
-      tickSpacing: Long.fromNumber(tickSpacing),
+      tickSpacing: BigInt(tickSpacing),
     });
 
     await this.base.signAndBroadcast(
@@ -279,7 +279,7 @@ export class OsmosisAccountImpl {
     // sort initial liquidity and scaling factors to pass chain encoding check
     // chain does this to make sure that index of scaling factors is consistent with token indexes
     initialPoolLiquidity.sort((a, b) => a.denom.localeCompare(b.denom));
-    const sortedScalingFactors: Long[] = [];
+    const sortedScalingFactors: bigint[] = [];
     initialPoolLiquidity.forEach((asset) => {
       const scalingFactor = scalingFactorsMap.get(asset.denom);
       if (!scalingFactor) {
@@ -288,7 +288,7 @@ export class OsmosisAccountImpl {
         );
       }
 
-      sortedScalingFactors.push(scalingFactor);
+      sortedScalingFactors.push(BigInt(scalingFactor.toString()));
     });
 
     const msg = this.msgOpts.createStableswapPool.messageComposer({
@@ -296,7 +296,11 @@ export class OsmosisAccountImpl {
       futurePoolGovernor: "24h",
       scalingFactors: sortedScalingFactors,
       initialPoolLiquidity,
-      scalingFactorController: scalingFactorControllerAddress ?? "",
+      /**
+       * Empty string provoke a message discrepancy between the amino and proto message.
+       * Telescope team has been notified. While awaiting a fix, set the type to any.
+       * */
+      scalingFactorController: scalingFactorControllerAddress as any,
       poolParams,
     });
 
@@ -405,7 +409,7 @@ export class OsmosisAccountImpl {
             });
 
         const msg = this.msgOpts.joinPool.messageComposer({
-          poolId: Long.fromString(poolId),
+          poolId: BigInt(poolId),
           sender: this.address,
           shareOutAmount: new Dec(shareOutAmount)
             .mul(
@@ -528,7 +532,7 @@ export class OsmosisAccountImpl {
           .truncate();
 
         const msg = this.msgOpts.joinSwapExternAmountIn.messageComposer({
-          poolId: Long.fromString(poolId),
+          poolId: BigInt(poolId),
           sender: this.address,
           tokenIn: {
             denom: coin.denom,
@@ -647,9 +651,9 @@ export class OsmosisAccountImpl {
             : "0";
 
         const msg = this.msgOpts.clCreatePosition.messageComposer({
-          poolId: Long.fromString(poolId),
-          lowerTick: Long.fromString(lowerTick.toString()),
-          upperTick: Long.fromString(upperTick.toString()),
+          poolId: BigInt(poolId),
+          lowerTick: BigInt(lowerTick.toString()),
+          upperTick: BigInt(upperTick.toString()),
           sender: this.address,
           tokenMinAmount0: token_min_amount0,
           tokenMinAmount1: token_min_amount1,
@@ -730,7 +734,7 @@ export class OsmosisAccountImpl {
 
     const msg = isSuperfluidStaked
       ? this.msgOpts.clAddToConcentatedSuperfluidPosition.messageComposer({
-          positionId: Long.fromString(positionId),
+          positionId: BigInt(positionId),
           sender: this.address,
           tokenDesired0: {
             denom: queryClPool.poolAssetDenoms[0],
@@ -744,7 +748,7 @@ export class OsmosisAccountImpl {
       : this.msgOpts.clAddToConcentratedPosition.messageComposer({
           amount0,
           amount1,
-          positionId: Long.fromString(positionId),
+          positionId: BigInt(positionId),
           sender: this.address,
           tokenMinAmount0: amount0WithSlippage,
           tokenMinAmount1: amount1WithSlippage,
@@ -757,7 +761,9 @@ export class OsmosisAccountImpl {
       memo,
       {
         amount: [],
-        gas: this.msgOpts.clAddToConcentratedPosition.gas.toString(),
+        gas: isSuperfluidStaked
+          ? this.msgOpts.clAddToConcentatedSuperfluidPosition.gas.toString()
+          : this.msgOpts.clAddToConcentratedPosition.gas.toString(),
       },
       undefined,
       (tx) => {
@@ -807,7 +813,7 @@ export class OsmosisAccountImpl {
   ) {
     const msg = this.msgOpts.clWithdrawPosition.messageComposer({
       liquidityAmount: liquidityAmount.toString(),
-      positionId: Long.fromString(positionId),
+      positionId: BigInt(positionId),
       sender: this.address,
     });
 
@@ -902,15 +908,11 @@ export class OsmosisAccountImpl {
       );
 
     const spreadRewardsMsg = spreadRewardsMsgOpts.messageComposer({
-      positionIds: positionIdsWithSpreadRewards.map((val) =>
-        Long.fromString(val)
-      ),
+      positionIds: positionIdsWithSpreadRewards.map((val) => BigInt(val)),
       sender: this.address,
     });
     const incentiveRewardsMsg = incentiveRewardsMsgOpts.messageComposer({
-      positionIds: positionIdsWithIncentiveRewards.map((val) =>
-        Long.fromString(val)
-      ),
+      positionIds: positionIdsWithIncentiveRewards.map((val) => BigInt(val)),
       sender: this.address,
     });
 
@@ -959,9 +961,6 @@ export class OsmosisAccountImpl {
             .balances.forEach((bal) => {
               bal.waitFreshResponse();
             });
-          this.queries.queryAccountsPositions
-            .get(this.address)
-            ?.waitFreshResponse();
           positionIds.forEach((id) => {
             this.queries.queryLiquidityPositionsById
               .getForPositionId(id)
@@ -1006,7 +1005,7 @@ export class OsmosisAccountImpl {
         sender: this.address,
         routes: routes.map(({ pools, tokenInAmount }) => ({
           pools: pools.map(({ id, tokenOutDenom }) => ({
-            poolId: Long.fromString(id),
+            poolId: BigInt(id),
             tokenOutDenom: tokenOutDenom,
           })),
           tokenInAmount: tokenInAmount,
@@ -1093,7 +1092,7 @@ export class OsmosisAccountImpl {
       sender: this.address,
       routes: pools.map(({ id, tokenOutDenom }) => {
         return {
-          poolId: Long.fromString(id),
+          poolId: BigInt(id),
           tokenOutDenom: tokenOutDenom,
         };
       }),
@@ -1191,7 +1190,7 @@ export class OsmosisAccountImpl {
             },
             routes: pools.map(({ id, tokenInDenom }) => {
               return {
-                poolId: Long.fromString(id),
+                poolId: BigInt(id),
                 tokenInDenom,
               };
             }),
@@ -1302,7 +1301,7 @@ export class OsmosisAccountImpl {
             });
 
         const msg = this.msgOpts.exitPool.messageComposer({
-          poolId: Long.fromString(pool.id),
+          poolId: BigInt(pool.id),
           sender: this.address,
           shareInAmount: new Dec(shareInAmount)
             .mul(
@@ -1445,7 +1444,7 @@ export class OsmosisAccountImpl {
         .unlockAndMigrateSharesToFullRangeConcentratedPosition(1)
         .messageComposer({
           sender: this.address,
-          lockId: Long.fromString(lockId),
+          lockId: BigInt(lockId),
           tokenOutMins: sortedSlippageTokenOuts,
           sharesToMigrate: {
             denom: poolGammShares.currency.coinMinimalDenom,
@@ -1525,7 +1524,7 @@ export class OsmosisAccountImpl {
       owner: this.address,
       coins: primitiveTokens,
       duration: {
-        seconds: Long.fromNumber(duration),
+        seconds: BigInt(duration),
         nanos: duration * 1_000_000_000,
       },
     });
@@ -1573,7 +1572,7 @@ export class OsmosisAccountImpl {
     const msgs = lockIds.map((lockId) => {
       return this.msgOpts.superfluidDelegate.messageComposer({
         sender: this.address,
-        lockId: Long.fromString(lockId),
+        lockId: BigInt(lockId),
         valAddr: validatorAddress,
       });
     });
@@ -1698,7 +1697,7 @@ export class OsmosisAccountImpl {
     const msgs = lockIds.map((lockId) => {
       return this.msgOpts.beginUnlocking.messageComposer({
         owner: this.address,
-        ID: Long.fromString(lockId),
+        ID: BigInt(lockId),
         coins: [],
       });
     });
@@ -1759,7 +1758,7 @@ export class OsmosisAccountImpl {
         msgs.push(
           this.msgOpts.beginUnlocking.messageComposer({
             owner: this.address,
-            ID: Long.fromString(lock.lockId),
+            ID: BigInt(lock.lockId),
             coins: [],
           })
         );
@@ -1769,11 +1768,11 @@ export class OsmosisAccountImpl {
         msgs.push(
           this.msgOpts.superfluidUndelegate.messageComposer({
             sender: this.address,
-            lockId: Long.fromString(lock.lockId),
+            lockId: BigInt(lock.lockId),
           }),
           this.msgOpts.superfluidUnbondLock.messageComposer({
             sender: this.address,
-            lockId: Long.fromString(lock.lockId),
+            lockId: BigInt(lock.lockId),
           })
         );
         numSuperfluidUndelegate++;
@@ -1853,7 +1852,7 @@ export class OsmosisAccountImpl {
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const msg = this.msgOpts.sfStakeSuperfluidPosition.messageComposer({
-      positionId: Long.fromString(positionId),
+      positionId: BigInt(positionId),
       sender: this.address,
       valAddr: validatorAddress,
     });
@@ -1888,7 +1887,7 @@ export class OsmosisAccountImpl {
     onFulfill?: (tx: any) => void
   ) {
     const msg = this.msgOpts.unPoolWhitelistedPool.messageComposer({
-      poolId: Long.fromString(poolId),
+      poolId: BigInt(poolId),
       sender: this.address,
     });
 

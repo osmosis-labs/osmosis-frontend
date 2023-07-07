@@ -27,7 +27,7 @@ import {
 } from "@osmosis-labs/pools";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
-import { action, computed, makeObservable, observable } from "mobx";
+import { action, autorun, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { IPriceStore } from "src/price";
 
@@ -36,6 +36,7 @@ import {
   ConcentratedLiquidityPoolTickDataProvider,
   ObservableQueryLiquiditiesNetInDirection,
 } from "../concentrated-liquidity";
+import { ObservableQueryNodeInfo } from "../tendermint/node-info";
 import { Head } from "../utils";
 
 export type PoolRaw =
@@ -330,19 +331,29 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     readonly chainGetter: ChainGetter,
     readonly queryLiquiditiesInNetDirection: ObservableQueryLiquiditiesNetInDirection,
     readonly queryBalances: ObservableQueryBalances,
+    readonly queryNodeInfo: ObservableQueryNodeInfo,
     raw: PoolRaw
   ) {
-    super(
-      kvStore,
-      chainId,
-      chainGetter,
-      ObservableQueryPool.makeEndpointUrl(raw.id)
-    );
+    super(kvStore, chainId, chainGetter, "");
+
+    // get node version and set URL accordingly
+    autorun(() => {
+      const nodeVersion = queryNodeInfo.nodeVersion;
+
+      if (typeof nodeVersion !== "number") return;
+      if (isNaN(nodeVersion)) throw new Error("`nodeVersion` is NaN");
+
+      this.setUrl(ObservableQueryPool.makeEndpointUrl(raw.id, nodeVersion));
+    });
 
     ObservableQueryPool.addUnknownCurrencies(raw, chainGetter, chainId);
     this.raw = raw;
 
     makeObservable(this);
+  }
+
+  protected canFetch() {
+    return Boolean(this.queryNodeInfo.response);
   }
 
   readonly getPoolAsset: (denom: string) => {
@@ -466,6 +477,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     this.setRaw(response.data.pool);
   }
 
+  /** Async & static fetch and construct a new query pool using the individual pool query. */
   static async makeWithoutRaw(
     poolId: string,
     ...[
@@ -474,24 +486,34 @@ export class ObservableQueryPool extends ObservableChainQuery<{
       chainGetter,
       queryLiquiditiesInNetDirection,
       queryBalances,
+      queryNodeInfo,
     ]: Head<ConstructorParameters<typeof ObservableQueryPool>>
   ): Promise<ObservableQueryPool> {
-    let lcdUrl = chainGetter.getChain(chainId).rest;
-    if (lcdUrl.endsWith("/")) lcdUrl = lcdUrl.slice(0, lcdUrl.length - 1);
-    const endpoint = ObservableQueryPool.makeEndpointUrl(poolId);
     try {
+      // extract lcd url from chain config registry
+      let lcdUrl = chainGetter.getChain(chainId).rest;
+      if (lcdUrl.endsWith("/")) lcdUrl = lcdUrl.slice(0, lcdUrl.length - 1);
+
+      // make endpoint, considering the node version
+      await queryNodeInfo.waitResponse();
+      const nodeVersion = queryNodeInfo.nodeVersion;
+      const endpoint = ObservableQueryPool.makeEndpointUrl(poolId, nodeVersion);
+
+      // fetch pool
       const response = await fetch(lcdUrl + endpoint);
       const data = (await response.json()) as { pool: PoolRaw };
       if (!response.ok) {
         throw new Error();
       }
 
+      // construct resulting pool
       return new ObservableQueryPool(
         kvStore,
         chainId,
         chainGetter,
         queryLiquiditiesInNetDirection,
         queryBalances,
+        queryNodeInfo,
         data.pool
       );
     } catch {
@@ -499,8 +521,10 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     }
   }
 
-  protected static makeEndpointUrl(poolId: string) {
-    return `/osmosis/gamm/v1beta1/pools/${poolId}`;
+  protected static makeEndpointUrl(poolId: string, nodeVersion?: number) {
+    return nodeVersion && nodeVersion >= 16
+      ? `/osmosis/poolmanager/v1beta1/pools/${poolId}`
+      : `/osmosis/gamm/v1beta1/pools/${poolId}`;
   }
 
   /** Add any currencies found within pool to the registry. */

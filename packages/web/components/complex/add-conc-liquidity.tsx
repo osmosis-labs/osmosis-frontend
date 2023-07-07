@@ -360,21 +360,21 @@ const AddConcLiqView: FunctionComponent<
               <div className="mt-7 mr-6 mb-8 flex h-6 justify-end gap-1">
                 <ChartButton
                   alt="refresh"
-                  src="/icons/refresh-ccw.svg"
+                  icon="refresh-ccw"
                   selected={false}
                   onClick={() => chartConfig.setZoom(1)}
                 />
                 <ChartButton
-                  alt="zoom in"
-                  src="/icons/zoom-in.svg"
-                  selected={false}
-                  onClick={chartConfig.zoomIn}
-                />
-                <ChartButton
                   alt="zoom out"
-                  src="/icons/zoom-out.svg"
+                  icon="zoom-out"
                   selected={false}
                   onClick={chartConfig.zoomOut}
+                />
+                <ChartButton
+                  alt="zoom in"
+                  icon="zoom-in"
+                  selected={false}
+                  onClick={chartConfig.zoomIn}
                 />
               </div>
               <ConcentratedLiquidityDepthChart

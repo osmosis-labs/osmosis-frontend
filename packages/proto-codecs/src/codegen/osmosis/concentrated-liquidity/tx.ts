@@ -1,14 +1,14 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
+import { Decimal } from "@cosmjs/math";
 
+import { BinaryReader, BinaryWriter } from "../../binary";
 import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
-import { Long } from "../../helpers";
 /** ===================== MsgCreatePosition */
 export interface MsgCreatePosition {
-  poolId: Long;
+  poolId: bigint;
   sender: string;
-  lowerTick: Long;
-  upperTick: Long;
+  lowerTick: bigint;
+  upperTick: bigint;
   /**
    * tokens_provided is the amount of tokens provided for the position.
    * It must at a minimum be of length 1 (for a single sided position)
@@ -45,16 +45,16 @@ export interface MsgCreatePositionAminoMsg {
 }
 /** ===================== MsgCreatePosition */
 export interface MsgCreatePositionSDKType {
-  pool_id: Long;
+  pool_id: bigint;
   sender: string;
-  lower_tick: Long;
-  upper_tick: Long;
+  lower_tick: bigint;
+  upper_tick: bigint;
   tokens_provided: CoinSDKType[];
   token_min_amount0: string;
   token_min_amount1: string;
 }
 export interface MsgCreatePositionResponse {
-  positionId: Long;
+  positionId: bigint;
   amount0: string;
   amount1: string;
   liquidityCreated: string;
@@ -64,8 +64,8 @@ export interface MsgCreatePositionResponse {
    * we may move their provided tick to the canonical tick that represents
    * the same price.
    */
-  lowerTick: Long;
-  upperTick: Long;
+  lowerTick: bigint;
+  upperTick: bigint;
 }
 export interface MsgCreatePositionResponseProtoMsg {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCreatePositionResponse";
@@ -90,16 +90,16 @@ export interface MsgCreatePositionResponseAminoMsg {
   value: MsgCreatePositionResponseAmino;
 }
 export interface MsgCreatePositionResponseSDKType {
-  position_id: Long;
+  position_id: bigint;
   amount0: string;
   amount1: string;
   liquidity_created: string;
-  lower_tick: Long;
-  upper_tick: Long;
+  lower_tick: bigint;
+  upper_tick: bigint;
 }
 /** ===================== MsgAddToPosition */
 export interface MsgAddToPosition {
-  positionId: Long;
+  positionId: bigint;
   sender: string;
   /** amount0 represents the amount of token0 willing to put in. */
   amount0: string;
@@ -153,7 +153,7 @@ export interface MsgAddToPositionAminoMsg {
 }
 /** ===================== MsgAddToPosition */
 export interface MsgAddToPositionSDKType {
-  position_id: Long;
+  position_id: bigint;
   sender: string;
   amount0: string;
   amount1: string;
@@ -161,7 +161,7 @@ export interface MsgAddToPositionSDKType {
   token_min_amount1: string;
 }
 export interface MsgAddToPositionResponse {
-  positionId: Long;
+  positionId: bigint;
   amount0: string;
   amount1: string;
 }
@@ -179,13 +179,13 @@ export interface MsgAddToPositionResponseAminoMsg {
   value: MsgAddToPositionResponseAmino;
 }
 export interface MsgAddToPositionResponseSDKType {
-  position_id: Long;
+  position_id: bigint;
   amount0: string;
   amount1: string;
 }
 /** ===================== MsgWithdrawPosition */
 export interface MsgWithdrawPosition {
-  positionId: Long;
+  positionId: bigint;
   sender: string;
   liquidityAmount: string;
 }
@@ -205,7 +205,7 @@ export interface MsgWithdrawPositionAminoMsg {
 }
 /** ===================== MsgWithdrawPosition */
 export interface MsgWithdrawPositionSDKType {
-  position_id: Long;
+  position_id: bigint;
   sender: string;
   liquidity_amount: string;
 }
@@ -231,7 +231,7 @@ export interface MsgWithdrawPositionResponseSDKType {
 }
 /** ===================== MsgCollectSpreadRewards */
 export interface MsgCollectSpreadRewards {
-  positionIds: Long[];
+  positionIds: bigint[];
   sender: string;
 }
 export interface MsgCollectSpreadRewardsProtoMsg {
@@ -249,7 +249,7 @@ export interface MsgCollectSpreadRewardsAminoMsg {
 }
 /** ===================== MsgCollectSpreadRewards */
 export interface MsgCollectSpreadRewardsSDKType {
-  position_ids: Long[];
+  position_ids: bigint[];
   sender: string;
 }
 export interface MsgCollectSpreadRewardsResponse {
@@ -271,7 +271,7 @@ export interface MsgCollectSpreadRewardsResponseSDKType {
 }
 /** ===================== MsgCollectIncentives */
 export interface MsgCollectIncentives {
-  positionIds: Long[];
+  positionIds: bigint[];
   sender: string;
 }
 export interface MsgCollectIncentivesProtoMsg {
@@ -289,7 +289,7 @@ export interface MsgCollectIncentivesAminoMsg {
 }
 /** ===================== MsgCollectIncentives */
 export interface MsgCollectIncentivesSDKType {
-  position_ids: Long[];
+  position_ids: bigint[];
   sender: string;
 }
 export interface MsgCollectIncentivesResponse {
@@ -314,7 +314,7 @@ export interface MsgCollectIncentivesResponseSDKType {
 }
 /** ===================== MsgFungifyChargedPositions */
 export interface MsgFungifyChargedPositions {
-  positionIds: Long[];
+  positionIds: bigint[];
   sender: string;
 }
 export interface MsgFungifyChargedPositionsProtoMsg {
@@ -332,11 +332,11 @@ export interface MsgFungifyChargedPositionsAminoMsg {
 }
 /** ===================== MsgFungifyChargedPositions */
 export interface MsgFungifyChargedPositionsSDKType {
-  position_ids: Long[];
+  position_ids: bigint[];
   sender: string;
 }
 export interface MsgFungifyChargedPositionsResponse {
-  newPositionId: Long;
+  newPositionId: bigint;
 }
 export interface MsgFungifyChargedPositionsResponseProtoMsg {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgFungifyChargedPositionsResponse";
@@ -350,14 +350,14 @@ export interface MsgFungifyChargedPositionsResponseAminoMsg {
   value: MsgFungifyChargedPositionsResponseAmino;
 }
 export interface MsgFungifyChargedPositionsResponseSDKType {
-  new_position_id: Long;
+  new_position_id: bigint;
 }
 function createBaseMsgCreatePosition(): MsgCreatePosition {
   return {
-    poolId: Long.UZERO,
+    poolId: BigInt(0),
     sender: "",
-    lowerTick: Long.ZERO,
-    upperTick: Long.ZERO,
+    lowerTick: BigInt(0),
+    upperTick: BigInt(0),
     tokensProvided: [],
     tokenMinAmount0: "",
     tokenMinAmount1: "",
@@ -367,18 +367,18 @@ export const MsgCreatePosition = {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCreatePosition",
   encode(
     message: MsgCreatePosition,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.poolId.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.poolId !== BigInt(0)) {
       writer.uint32(8).uint64(message.poolId);
     }
     if (message.sender !== "") {
       writer.uint32(18).string(message.sender);
     }
-    if (!message.lowerTick.isZero()) {
+    if (message.lowerTick !== BigInt(0)) {
       writer.uint32(24).int64(message.lowerTick);
     }
-    if (!message.upperTick.isZero()) {
+    if (message.upperTick !== BigInt(0)) {
       writer.uint32(32).int64(message.upperTick);
     }
     for (const v of message.tokensProvided) {
@@ -392,24 +392,25 @@ export const MsgCreatePosition = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreatePosition {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): MsgCreatePosition {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreatePosition();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.poolId = reader.uint64() as Long;
+          message.poolId = reader.uint64();
           break;
         case 2:
           message.sender = reader.string();
           break;
         case 3:
-          message.lowerTick = reader.int64() as Long;
+          message.lowerTick = reader.int64();
           break;
         case 4:
-          message.upperTick = reader.int64() as Long;
+          message.upperTick = reader.int64();
           break;
         case 5:
           message.tokensProvided.push(Coin.decode(reader, reader.uint32()));
@@ -431,17 +432,17 @@ export const MsgCreatePosition = {
     const message = createBaseMsgCreatePosition();
     message.poolId =
       object.poolId !== undefined && object.poolId !== null
-        ? Long.fromValue(object.poolId)
-        : Long.UZERO;
+        ? BigInt(object.poolId.toString())
+        : BigInt(0);
     message.sender = object.sender ?? "";
     message.lowerTick =
       object.lowerTick !== undefined && object.lowerTick !== null
-        ? Long.fromValue(object.lowerTick)
-        : Long.ZERO;
+        ? BigInt(object.lowerTick.toString())
+        : BigInt(0);
     message.upperTick =
       object.upperTick !== undefined && object.upperTick !== null
-        ? Long.fromValue(object.upperTick)
-        : Long.ZERO;
+        ? BigInt(object.upperTick.toString())
+        : BigInt(0);
     message.tokensProvided =
       object.tokensProvided?.map((e) => Coin.fromPartial(e)) || [];
     message.tokenMinAmount0 = object.tokenMinAmount0 ?? "";
@@ -450,10 +451,10 @@ export const MsgCreatePosition = {
   },
   fromAmino(object: MsgCreatePositionAmino): MsgCreatePosition {
     return {
-      poolId: Long.fromString(object.pool_id),
+      poolId: BigInt(object.pool_id),
       sender: object.sender,
-      lowerTick: Long.fromString(object.lower_tick),
-      upperTick: Long.fromString(object.upper_tick),
+      lowerTick: BigInt(object.lower_tick),
+      upperTick: BigInt(object.upper_tick),
       tokensProvided: Array.isArray(object?.tokens_provided)
         ? object.tokens_provided.map((e: any) => Coin.fromAmino(e))
         : [],
@@ -506,21 +507,21 @@ export const MsgCreatePosition = {
 };
 function createBaseMsgCreatePositionResponse(): MsgCreatePositionResponse {
   return {
-    positionId: Long.UZERO,
+    positionId: BigInt(0),
     amount0: "",
     amount1: "",
     liquidityCreated: "",
-    lowerTick: Long.ZERO,
-    upperTick: Long.ZERO,
+    lowerTick: BigInt(0),
+    upperTick: BigInt(0),
   };
 }
 export const MsgCreatePositionResponse = {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCreatePositionResponse",
   encode(
     message: MsgCreatePositionResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.positionId.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.positionId !== BigInt(0)) {
       writer.uint32(8).uint64(message.positionId);
     }
     if (message.amount0 !== "") {
@@ -530,28 +531,31 @@ export const MsgCreatePositionResponse = {
       writer.uint32(26).string(message.amount1);
     }
     if (message.liquidityCreated !== "") {
-      writer.uint32(42).string(message.liquidityCreated);
+      writer
+        .uint32(42)
+        .string(Decimal.fromUserInput(message.liquidityCreated, 18).atomics);
     }
-    if (!message.lowerTick.isZero()) {
+    if (message.lowerTick !== BigInt(0)) {
       writer.uint32(48).int64(message.lowerTick);
     }
-    if (!message.upperTick.isZero()) {
+    if (message.upperTick !== BigInt(0)) {
       writer.uint32(56).int64(message.upperTick);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgCreatePositionResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreatePositionResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.positionId = reader.uint64() as Long;
+          message.positionId = reader.uint64();
           break;
         case 2:
           message.amount0 = reader.string();
@@ -560,13 +564,16 @@ export const MsgCreatePositionResponse = {
           message.amount1 = reader.string();
           break;
         case 5:
-          message.liquidityCreated = reader.string();
+          message.liquidityCreated = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
           break;
         case 6:
-          message.lowerTick = reader.int64() as Long;
+          message.lowerTick = reader.int64();
           break;
         case 7:
-          message.upperTick = reader.int64() as Long;
+          message.upperTick = reader.int64();
           break;
         default:
           reader.skipType(tag & 7);
@@ -581,29 +588,29 @@ export const MsgCreatePositionResponse = {
     const message = createBaseMsgCreatePositionResponse();
     message.positionId =
       object.positionId !== undefined && object.positionId !== null
-        ? Long.fromValue(object.positionId)
-        : Long.UZERO;
+        ? BigInt(object.positionId.toString())
+        : BigInt(0);
     message.amount0 = object.amount0 ?? "";
     message.amount1 = object.amount1 ?? "";
     message.liquidityCreated = object.liquidityCreated ?? "";
     message.lowerTick =
       object.lowerTick !== undefined && object.lowerTick !== null
-        ? Long.fromValue(object.lowerTick)
-        : Long.ZERO;
+        ? BigInt(object.lowerTick.toString())
+        : BigInt(0);
     message.upperTick =
       object.upperTick !== undefined && object.upperTick !== null
-        ? Long.fromValue(object.upperTick)
-        : Long.ZERO;
+        ? BigInt(object.upperTick.toString())
+        : BigInt(0);
     return message;
   },
   fromAmino(object: MsgCreatePositionResponseAmino): MsgCreatePositionResponse {
     return {
-      positionId: Long.fromString(object.position_id),
+      positionId: BigInt(object.position_id),
       amount0: object.amount0,
       amount1: object.amount1,
       liquidityCreated: object.liquidity_created,
-      lowerTick: Long.fromString(object.lower_tick),
-      upperTick: Long.fromString(object.upper_tick),
+      lowerTick: BigInt(object.lower_tick),
+      upperTick: BigInt(object.upper_tick),
     };
   },
   toAmino(message: MsgCreatePositionResponse): MsgCreatePositionResponseAmino {
@@ -655,7 +662,7 @@ export const MsgCreatePositionResponse = {
 };
 function createBaseMsgAddToPosition(): MsgAddToPosition {
   return {
-    positionId: Long.UZERO,
+    positionId: BigInt(0),
     sender: "",
     amount0: "",
     amount1: "",
@@ -667,9 +674,9 @@ export const MsgAddToPosition = {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgAddToPosition",
   encode(
     message: MsgAddToPosition,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.positionId.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.positionId !== BigInt(0)) {
       writer.uint32(8).uint64(message.positionId);
     }
     if (message.sender !== "") {
@@ -689,15 +696,16 @@ export const MsgAddToPosition = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgAddToPosition {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): MsgAddToPosition {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgAddToPosition();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.positionId = reader.uint64() as Long;
+          message.positionId = reader.uint64();
           break;
         case 2:
           message.sender = reader.string();
@@ -725,8 +733,8 @@ export const MsgAddToPosition = {
     const message = createBaseMsgAddToPosition();
     message.positionId =
       object.positionId !== undefined && object.positionId !== null
-        ? Long.fromValue(object.positionId)
-        : Long.UZERO;
+        ? BigInt(object.positionId.toString())
+        : BigInt(0);
     message.sender = object.sender ?? "";
     message.amount0 = object.amount0 ?? "";
     message.amount1 = object.amount1 ?? "";
@@ -736,7 +744,7 @@ export const MsgAddToPosition = {
   },
   fromAmino(object: MsgAddToPositionAmino): MsgAddToPosition {
     return {
-      positionId: Long.fromString(object.position_id),
+      positionId: BigInt(object.position_id),
       sender: object.sender,
       amount0: object.amount0,
       amount1: object.amount1,
@@ -780,7 +788,7 @@ export const MsgAddToPosition = {
 };
 function createBaseMsgAddToPositionResponse(): MsgAddToPositionResponse {
   return {
-    positionId: Long.UZERO,
+    positionId: BigInt(0),
     amount0: "",
     amount1: "",
   };
@@ -789,9 +797,9 @@ export const MsgAddToPositionResponse = {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgAddToPositionResponse",
   encode(
     message: MsgAddToPositionResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.positionId.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.positionId !== BigInt(0)) {
       writer.uint32(8).uint64(message.positionId);
     }
     if (message.amount0 !== "") {
@@ -803,17 +811,18 @@ export const MsgAddToPositionResponse = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgAddToPositionResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgAddToPositionResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.positionId = reader.uint64() as Long;
+          message.positionId = reader.uint64();
           break;
         case 2:
           message.amount0 = reader.string();
@@ -834,15 +843,15 @@ export const MsgAddToPositionResponse = {
     const message = createBaseMsgAddToPositionResponse();
     message.positionId =
       object.positionId !== undefined && object.positionId !== null
-        ? Long.fromValue(object.positionId)
-        : Long.UZERO;
+        ? BigInt(object.positionId.toString())
+        : BigInt(0);
     message.amount0 = object.amount0 ?? "";
     message.amount1 = object.amount1 ?? "";
     return message;
   },
   fromAmino(object: MsgAddToPositionResponseAmino): MsgAddToPositionResponse {
     return {
-      positionId: Long.fromString(object.position_id),
+      positionId: BigInt(object.position_id),
       amount0: object.amount0,
       amount1: object.amount1,
     };
@@ -889,7 +898,7 @@ export const MsgAddToPositionResponse = {
 };
 function createBaseMsgWithdrawPosition(): MsgWithdrawPosition {
   return {
-    positionId: Long.UZERO,
+    positionId: BigInt(0),
     sender: "",
     liquidityAmount: "",
   };
@@ -898,34 +907,43 @@ export const MsgWithdrawPosition = {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition",
   encode(
     message: MsgWithdrawPosition,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.positionId.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.positionId !== BigInt(0)) {
       writer.uint32(8).uint64(message.positionId);
     }
     if (message.sender !== "") {
       writer.uint32(18).string(message.sender);
     }
     if (message.liquidityAmount !== "") {
-      writer.uint32(26).string(message.liquidityAmount);
+      writer
+        .uint32(26)
+        .string(Decimal.fromUserInput(message.liquidityAmount, 18).atomics);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgWithdrawPosition {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): MsgWithdrawPosition {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgWithdrawPosition();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.positionId = reader.uint64() as Long;
+          message.positionId = reader.uint64();
           break;
         case 2:
           message.sender = reader.string();
           break;
         case 3:
-          message.liquidityAmount = reader.string();
+          message.liquidityAmount = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
           break;
         default:
           reader.skipType(tag & 7);
@@ -938,15 +956,15 @@ export const MsgWithdrawPosition = {
     const message = createBaseMsgWithdrawPosition();
     message.positionId =
       object.positionId !== undefined && object.positionId !== null
-        ? Long.fromValue(object.positionId)
-        : Long.UZERO;
+        ? BigInt(object.positionId.toString())
+        : BigInt(0);
     message.sender = object.sender ?? "";
     message.liquidityAmount = object.liquidityAmount ?? "";
     return message;
   },
   fromAmino(object: MsgWithdrawPositionAmino): MsgWithdrawPosition {
     return {
-      positionId: Long.fromString(object.position_id),
+      positionId: BigInt(object.position_id),
       sender: object.sender,
       liquidityAmount: object.liquidity_amount,
     };
@@ -992,8 +1010,8 @@ export const MsgWithdrawPositionResponse = {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPositionResponse",
   encode(
     message: MsgWithdrawPositionResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.amount0 !== "") {
       writer.uint32(10).string(message.amount0);
     }
@@ -1003,10 +1021,11 @@ export const MsgWithdrawPositionResponse = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgWithdrawPositionResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgWithdrawPositionResponse();
     while (reader.pos < end) {
@@ -1090,8 +1109,8 @@ export const MsgCollectSpreadRewards = {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCollectSpreadRewards",
   encode(
     message: MsgCollectSpreadRewards,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     writer.uint32(10).fork();
     for (const v of message.positionIds) {
       writer.uint64(v);
@@ -1103,10 +1122,11 @@ export const MsgCollectSpreadRewards = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgCollectSpreadRewards {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCollectSpreadRewards();
     while (reader.pos < end) {
@@ -1116,10 +1136,10 @@ export const MsgCollectSpreadRewards = {
           if ((tag & 7) === 2) {
             const end2 = reader.uint32() + reader.pos;
             while (reader.pos < end2) {
-              message.positionIds.push(reader.uint64() as Long);
+              message.positionIds.push(reader.uint64());
             }
           } else {
-            message.positionIds.push(reader.uint64() as Long);
+            message.positionIds.push(reader.uint64());
           }
           break;
         case 2:
@@ -1137,14 +1157,14 @@ export const MsgCollectSpreadRewards = {
   ): MsgCollectSpreadRewards {
     const message = createBaseMsgCollectSpreadRewards();
     message.positionIds =
-      object.positionIds?.map((e) => Long.fromValue(e)) || [];
+      object.positionIds?.map((e) => BigInt(e.toString())) || [];
     message.sender = object.sender ?? "";
     return message;
   },
   fromAmino(object: MsgCollectSpreadRewardsAmino): MsgCollectSpreadRewards {
     return {
       positionIds: Array.isArray(object?.position_ids)
-        ? object.position_ids.map((e: any) => e)
+        ? object.position_ids.map((e: any) => BigInt(e))
         : [],
       sender: object.sender,
     };
@@ -1152,7 +1172,7 @@ export const MsgCollectSpreadRewards = {
   toAmino(message: MsgCollectSpreadRewards): MsgCollectSpreadRewardsAmino {
     const obj: any = {};
     if (message.positionIds) {
-      obj.position_ids = message.positionIds.map((e) => e);
+      obj.position_ids = message.positionIds.map((e) => e.toString());
     } else {
       obj.position_ids = [];
     }
@@ -1199,18 +1219,19 @@ export const MsgCollectSpreadRewardsResponse = {
     "/osmosis.concentratedliquidity.v1beta1.MsgCollectSpreadRewardsResponse",
   encode(
     message: MsgCollectSpreadRewardsResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.collectedSpreadRewards) {
       Coin.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgCollectSpreadRewardsResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCollectSpreadRewardsResponse();
     while (reader.pos < end) {
@@ -1299,8 +1320,8 @@ export const MsgCollectIncentives = {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCollectIncentives",
   encode(
     message: MsgCollectIncentives,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     writer.uint32(10).fork();
     for (const v of message.positionIds) {
       writer.uint64(v);
@@ -1312,10 +1333,11 @@ export const MsgCollectIncentives = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgCollectIncentives {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCollectIncentives();
     while (reader.pos < end) {
@@ -1325,10 +1347,10 @@ export const MsgCollectIncentives = {
           if ((tag & 7) === 2) {
             const end2 = reader.uint32() + reader.pos;
             while (reader.pos < end2) {
-              message.positionIds.push(reader.uint64() as Long);
+              message.positionIds.push(reader.uint64());
             }
           } else {
-            message.positionIds.push(reader.uint64() as Long);
+            message.positionIds.push(reader.uint64());
           }
           break;
         case 2:
@@ -1344,14 +1366,14 @@ export const MsgCollectIncentives = {
   fromPartial(object: Partial<MsgCollectIncentives>): MsgCollectIncentives {
     const message = createBaseMsgCollectIncentives();
     message.positionIds =
-      object.positionIds?.map((e) => Long.fromValue(e)) || [];
+      object.positionIds?.map((e) => BigInt(e.toString())) || [];
     message.sender = object.sender ?? "";
     return message;
   },
   fromAmino(object: MsgCollectIncentivesAmino): MsgCollectIncentives {
     return {
       positionIds: Array.isArray(object?.position_ids)
-        ? object.position_ids.map((e: any) => e)
+        ? object.position_ids.map((e: any) => BigInt(e))
         : [],
       sender: object.sender,
     };
@@ -1359,7 +1381,7 @@ export const MsgCollectIncentives = {
   toAmino(message: MsgCollectIncentives): MsgCollectIncentivesAmino {
     const obj: any = {};
     if (message.positionIds) {
-      obj.position_ids = message.positionIds.map((e) => e);
+      obj.position_ids = message.positionIds.map((e) => e.toString());
     } else {
       obj.position_ids = [];
     }
@@ -1399,8 +1421,8 @@ export const MsgCollectIncentivesResponse = {
     "/osmosis.concentratedliquidity.v1beta1.MsgCollectIncentivesResponse",
   encode(
     message: MsgCollectIncentivesResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.collectedIncentives) {
       Coin.encode(v!, writer.uint32(10).fork()).ldelim();
     }
@@ -1410,10 +1432,11 @@ export const MsgCollectIncentivesResponse = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgCollectIncentivesResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCollectIncentivesResponse();
     while (reader.pos < end) {
@@ -1519,8 +1542,8 @@ export const MsgFungifyChargedPositions = {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgFungifyChargedPositions",
   encode(
     message: MsgFungifyChargedPositions,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     writer.uint32(10).fork();
     for (const v of message.positionIds) {
       writer.uint64(v);
@@ -1532,10 +1555,11 @@ export const MsgFungifyChargedPositions = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgFungifyChargedPositions {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgFungifyChargedPositions();
     while (reader.pos < end) {
@@ -1545,10 +1569,10 @@ export const MsgFungifyChargedPositions = {
           if ((tag & 7) === 2) {
             const end2 = reader.uint32() + reader.pos;
             while (reader.pos < end2) {
-              message.positionIds.push(reader.uint64() as Long);
+              message.positionIds.push(reader.uint64());
             }
           } else {
-            message.positionIds.push(reader.uint64() as Long);
+            message.positionIds.push(reader.uint64());
           }
           break;
         case 2:
@@ -1566,7 +1590,7 @@ export const MsgFungifyChargedPositions = {
   ): MsgFungifyChargedPositions {
     const message = createBaseMsgFungifyChargedPositions();
     message.positionIds =
-      object.positionIds?.map((e) => Long.fromValue(e)) || [];
+      object.positionIds?.map((e) => BigInt(e.toString())) || [];
     message.sender = object.sender ?? "";
     return message;
   },
@@ -1575,7 +1599,7 @@ export const MsgFungifyChargedPositions = {
   ): MsgFungifyChargedPositions {
     return {
       positionIds: Array.isArray(object?.position_ids)
-        ? object.position_ids.map((e: any) => e)
+        ? object.position_ids.map((e: any) => BigInt(e))
         : [],
       sender: object.sender,
     };
@@ -1585,7 +1609,7 @@ export const MsgFungifyChargedPositions = {
   ): MsgFungifyChargedPositionsAmino {
     const obj: any = {};
     if (message.positionIds) {
-      obj.position_ids = message.positionIds.map((e) => e);
+      obj.position_ids = message.positionIds.map((e) => e.toString());
     } else {
       obj.position_ids = [];
     }
@@ -1625,7 +1649,7 @@ export const MsgFungifyChargedPositions = {
 };
 function createBaseMsgFungifyChargedPositionsResponse(): MsgFungifyChargedPositionsResponse {
   return {
-    newPositionId: Long.UZERO,
+    newPositionId: BigInt(0),
   };
 }
 export const MsgFungifyChargedPositionsResponse = {
@@ -1633,25 +1657,26 @@ export const MsgFungifyChargedPositionsResponse = {
     "/osmosis.concentratedliquidity.v1beta1.MsgFungifyChargedPositionsResponse",
   encode(
     message: MsgFungifyChargedPositionsResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.newPositionId.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.newPositionId !== BigInt(0)) {
       writer.uint32(8).uint64(message.newPositionId);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgFungifyChargedPositionsResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgFungifyChargedPositionsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.newPositionId = reader.uint64() as Long;
+          message.newPositionId = reader.uint64();
           break;
         default:
           reader.skipType(tag & 7);
@@ -1666,15 +1691,15 @@ export const MsgFungifyChargedPositionsResponse = {
     const message = createBaseMsgFungifyChargedPositionsResponse();
     message.newPositionId =
       object.newPositionId !== undefined && object.newPositionId !== null
-        ? Long.fromValue(object.newPositionId)
-        : Long.UZERO;
+        ? BigInt(object.newPositionId.toString())
+        : BigInt(0);
     return message;
   },
   fromAmino(
     object: MsgFungifyChargedPositionsResponseAmino
   ): MsgFungifyChargedPositionsResponse {
     return {
-      newPositionId: Long.fromString(object.new_position_id),
+      newPositionId: BigInt(object.new_position_id),
     };
   },
   toAmino(

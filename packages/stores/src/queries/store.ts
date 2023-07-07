@@ -212,7 +212,8 @@ export class OsmosisQueriesImpl {
               chainGetter,
               this.queryGammNumPools,
               this.queryLiquiditiesInNetDirection,
-              queries.queryBalances
+              queries.queryBalances,
+              this.queryNodeInfo
             ),
             new ObservableQueryPools(
               kvStore,

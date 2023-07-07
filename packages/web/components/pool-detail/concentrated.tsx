@@ -158,21 +158,21 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 <div className="mt-7 flex h-6 justify-end gap-1 pr-8 sm:pr-0">
                   <ChartButton
                     alt="refresh"
-                    src="/icons/refresh-ccw.svg"
+                    icon="refresh-ccw"
                     selected={false}
                     onClick={() => setZoom(1)}
                   />
                   <ChartButton
-                    alt="zoom in"
-                    src="/icons/zoom-in.svg"
-                    selected={false}
-                    onClick={zoomIn}
-                  />
-                  <ChartButton
                     alt="zoom out"
-                    src="/icons/zoom-out.svg"
+                    icon="zoom-out"
                     selected={false}
                     onClick={zoomOut}
+                  />
+                  <ChartButton
+                    alt="zoom in"
+                    icon="zoom-in"
+                    selected={false}
+                    onClick={zoomIn}
                   />
                 </div>
                 <div className="mt-[32px] flex flex-1 flex-col">
