@@ -120,7 +120,6 @@ describe("Collect Cl Fees Txs", () => {
             amount: ionSwapAmount,
           },
           undefined,
-          undefined,
           (tx) => {
             if (tx.code) reject(tx.rawLog);
             else resolve();

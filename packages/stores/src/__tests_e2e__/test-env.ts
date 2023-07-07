@@ -11,6 +11,7 @@ import {
   QueriesStore,
 } from "@keplr-wallet/stores";
 import { ChainInfo } from "@keplr-wallet/types";
+import { Coin, Int } from "@keplr-wallet/unit";
 import { assets } from "chain-registry";
 import { when } from "mobx";
 import WebSocket from "ws";
@@ -30,8 +31,8 @@ export const chainId = "localosmosis";
 
 export const TestChainInfos: (ChainInfo & Chain)[] = [
   {
-    rpc: "http://127.0.0.1:26657",
-    rest: "http://127.0.0.1:1317",
+    rpc: "http://207.154.252.194:26657",
+    rest: "http://207.154.252.194:1317",
     chainId: chainId,
     chainName: "OSMOSIS",
     /** Cosmoskit required properties */
@@ -45,12 +46,12 @@ export const TestChainInfos: (ChainInfo & Chain)[] = [
     apis: {
       rpc: [
         {
-          address: "http://127.0.0.1:26657",
+          address: "http://207.154.252.194:26657",
         },
       ],
       rest: [
         {
-          address: "http://127.0.0.1:1317",
+          address: "http://207.154.252.194:1317",
         },
       ],
     },
@@ -134,7 +135,7 @@ export class RootStore {
       this.queriesStore,
       this.chainStore,
       {
-        broadcastUrl: "http://127.0.0.1:1317/cosmos/tx/v1beta1/txs",
+        broadcastUrl: "http://207.154.252.194:1317/cosmos/tx/v1beta1/txs",
         wsObject: WebSocket as any,
       },
       OsmosisAccount.use({ queriesStore: this.queriesStore }),
@@ -182,6 +183,31 @@ export function getEventFromTx(tx: DeliverTxResponse, type: string): any {
   return JSON.parse(tx.rawLog ?? "")[0].events.find(
     (e: any) => e.type === type
   );
+}
+
+export function getAttributeFromEvent(event: any, name: string): any {
+  return event.attributes.find((a: any) => a.key === name);
+}
+
+// get map of the amounts transferred in our out
+// key is the denom, value is the total amount transferred
+export function getAmountsTransferredMapFromEvent(attributes: any): any {
+  const actualAmountsMapByDenom: Map<string, Int> = new Map();
+  attributes.forEach((attr: any) => {
+    const coin = Coin.parse(attr.value);
+
+    let newMapValue = coin.amount;
+    if (actualAmountsMapByDenom.has(coin.denom)) {
+      newMapValue = newMapValue.add(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        actualAmountsMapByDenom.get(coin.denom)!
+      );
+    }
+
+    actualAmountsMapByDenom.set(coin.denom, newMapValue);
+  });
+
+  return actualAmountsMapByDenom;
 }
 
 function deepContainedObj(obj1: any, obj2: any): boolean {

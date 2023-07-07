@@ -578,7 +578,6 @@ export class OsmosisAccountImpl {
     upperTick: Int,
     baseDeposit?: { currency: Currency; amount: string },
     quoteDeposit?: { currency: Currency; amount: string },
-    maxSlippage = DEFAULT_SLIPPAGE,
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
@@ -627,24 +626,8 @@ export class OsmosisAccountImpl {
           .filter((coin): coin is Coin => coin !== undefined)
           .sort((a, b) => a?.denom.localeCompare(b?.denom))
           .map(({ denom, amount }) => ({ denom, amount: amount.toString() }));
-        const token_min_amount0 =
-          baseCoin &&
-          // full tolerance if 0 sqrt price so no positions
-          !queryPool.concentratedLiquidityPoolInfo?.currentSqrtPrice.isZero()
-            ? new Dec(baseCoin.amount)
-                .mul(new Dec(1).sub(new Dec(maxSlippage).quo(new Dec(100))))
-                .truncate()
-                .toString()
-            : "0";
-        const token_min_amount1 =
-          quoteCoin &&
-          // full tolerance if 0 sqrt price so no positions
-          !queryPool.concentratedLiquidityPoolInfo?.currentSqrtPrice.isZero()
-            ? new Dec(quoteCoin.amount)
-                .mul(new Dec(1).sub(new Dec(maxSlippage).quo(new Dec(100))))
-                .truncate()
-                .toString()
-            : "0";
+        const token_min_amount0 = "0";
+        const token_min_amount1 = "0";
 
         const msg = this.msgOpts.clCreatePosition.messageComposer({
           poolId: Long.fromString(poolId),

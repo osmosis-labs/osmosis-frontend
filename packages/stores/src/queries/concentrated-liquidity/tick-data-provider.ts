@@ -23,8 +23,8 @@ export class ConcentratedLiquidityPoolTickDataProvider
 
   constructor(
     protected readonly queryLiquiditiesNetInDirection: ObservableQueryLiquiditiesNetInDirection,
-    protected readonly nextTicksRampMultiplier = new Int(8),
-    protected readonly maxNumRequeriesPerDenom = 9
+    protected readonly nextTicksRampMultiplier = new Int(20),
+    protected readonly maxNumRequeriesPerDenom = 100
   ) {}
 
   async getTickDepthsTokenOutGivenIn(
@@ -44,6 +44,10 @@ export class ConcentratedLiquidityPoolTickDataProvider
       currentSqrtPrice: pool.currentSqrtPrice,
       currentTickLiquidity: pool.currentTickLiquidity,
     });
+
+    // console.log("boundTickIndex", boundTickIndex.toString())
+    // console.log("nextTicksRampMultiplier", this.nextTicksRampMultiplier.toString())
+    // console.log("maxNumRequeriesPerDenom", this.maxNumRequeriesPerDenom.toString())
 
     if (
       getMoreTicks &&
