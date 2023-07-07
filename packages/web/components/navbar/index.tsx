@@ -12,7 +12,6 @@ import {
   useAmplitudeAnalytics,
   useDisclosure,
   useLocalStorageState,
-  useWindowSize,
 } from "../../hooks";
 import { ModalBase, ModalBaseProps, SettingsModal } from "../../modals";
 import { ProfileModal } from "../../modals/profile";
@@ -55,8 +54,6 @@ export const NavBar: FunctionComponent<
     onOpen: onOpenProfile,
     onClose: onCloseProfile,
   } = useDisclosure();
-
-  const { isMobile } = useWindowSize();
 
   const closeMobileMenuRef = useRef(noop);
   const router = useRouter();
