@@ -260,10 +260,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
     return (
       quote?.case({
-        fulfilled: (quote) => {
-          return this.makePrettyQuote(quote)
-            .beforeSpotPriceWithoutSwapFeeOutOverIn;
-        },
+        fulfilled: (quote) =>
+          this.makePrettyQuote(quote).beforeSpotPriceWithoutSwapFeeOutOverIn,
         rejected: (e) => {
           // these are expected
           if (e instanceof NoRouteError) return undefined;
