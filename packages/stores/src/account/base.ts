@@ -605,8 +605,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       memo: signed.memo,
     };
 
-    console.log({ msgs: signed.msgs, signedTxBody: signedTxBody.messages });
-
     const signedTxBodyEncodeObject = {
       typeUrl: "/cosmos.tx.v1beta1.TxBody",
       value: signedTxBody,
