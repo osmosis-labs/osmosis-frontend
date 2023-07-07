@@ -102,8 +102,8 @@ export function useAddConcentratedLiquidityConfig(
   ]);
 
   const increaseLiquidity = useCallback(
-    (positionId: string) => {
-      return new Promise<void>(async (resolve, reject) => {
+    (positionId: string) =>
+      new Promise<void>(async (resolve, reject) => {
         const amount0 = config.quoteDepositOnly
           ? "0"
           : config.baseDepositAmountIn.getAmountPrimitive().amount;
@@ -132,8 +132,7 @@ export function useAddConcentratedLiquidityConfig(
           console.error(e);
           reject(e.message);
         }
-      });
-    },
+      }),
     [
       poolId,
       osmosisQueries.queryLiquiditiesPerTickRange,
