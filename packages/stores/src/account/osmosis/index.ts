@@ -961,9 +961,6 @@ export class OsmosisAccountImpl {
             .balances.forEach((bal) => {
               bal.waitFreshResponse();
             });
-          this.queries.queryAccountsPositions
-            .get(this.address)
-            ?.waitFreshResponse();
           positionIds.forEach((id) => {
             this.queries.queryLiquidityPositionsById
               .getForPositionId(id)

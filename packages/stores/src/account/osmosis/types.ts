@@ -103,13 +103,13 @@ export const osmosisMsgOpts = createMsgOpts({
     messageComposer:
       osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
         .collectSpreadRewards,
-    gas: 120_000 * numPositions,
+    gas: 750_000 * numPositions,
   }),
   clCollectPositionsIncentivesRewards: (numPositions: number) => ({
     messageComposer:
       osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
         .collectIncentives,
-    gas: 300_000 * numPositions,
+    gas: 800_000 * numPositions,
   }),
   unlockAndMigrateSharesToFullRangeConcentratedPosition: (
     numLocks: number
