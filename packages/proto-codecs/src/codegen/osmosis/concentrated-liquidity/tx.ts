@@ -40,7 +40,7 @@ export interface MsgCreatePositionAmino {
   token_min_amount1: string;
 }
 export interface MsgCreatePositionAminoMsg {
-  type: "osmosis/concentratedliquidity/create-position";
+  type: "osmosis/cl-create-position";
   value: MsgCreatePositionAmino;
 }
 /** ===================== MsgCreatePosition */
@@ -148,7 +148,7 @@ export interface MsgAddToPositionAmino {
   token_min_amount1: string;
 }
 export interface MsgAddToPositionAminoMsg {
-  type: "osmosis/concentratedliquidity/add-to-position";
+  type: "osmosis/cl-add-to-position";
   value: MsgAddToPositionAmino;
 }
 /** ===================== MsgAddToPosition */
@@ -200,7 +200,7 @@ export interface MsgWithdrawPositionAmino {
   liquidity_amount: string;
 }
 export interface MsgWithdrawPositionAminoMsg {
-  type: "osmosis/concentratedliquidity/withdraw-position";
+  type: "osmosis/cl-withdraw-position";
   value: MsgWithdrawPositionAmino;
 }
 /** ===================== MsgWithdrawPosition */
@@ -244,7 +244,7 @@ export interface MsgCollectSpreadRewardsAmino {
   sender: string;
 }
 export interface MsgCollectSpreadRewardsAminoMsg {
-  type: "osmosis/concentratedliquidity/collect-spread-rewards";
+  type: "osmosis/cl-col-sp-rewards";
   value: MsgCollectSpreadRewardsAmino;
 }
 /** ===================== MsgCollectSpreadRewards */
@@ -284,7 +284,7 @@ export interface MsgCollectIncentivesAmino {
   sender: string;
 }
 export interface MsgCollectIncentivesAminoMsg {
-  type: "osmosis/concentratedliquidity/collect-incentives";
+  type: "osmosis/cl-collect-incentives";
   value: MsgCollectIncentivesAmino;
 }
 /** ===================== MsgCollectIncentives */
@@ -327,7 +327,7 @@ export interface MsgFungifyChargedPositionsAmino {
   sender: string;
 }
 export interface MsgFungifyChargedPositionsAminoMsg {
-  type: "osmosis/concentratedliquidity/fungify-charged-positions";
+  type: "osmosis/cl-fungify-charged-positions";
   value: MsgFungifyChargedPositionsAmino;
 }
 /** ===================== MsgFungifyChargedPositions */
@@ -488,7 +488,7 @@ export const MsgCreatePosition = {
   },
   toAminoMsg(message: MsgCreatePosition): MsgCreatePositionAminoMsg {
     return {
-      type: "osmosis/concentratedliquidity/create-position",
+      type: "osmosis/cl-create-position",
       value: MsgCreatePosition.toAmino(message),
     };
   },
@@ -769,7 +769,7 @@ export const MsgAddToPosition = {
   },
   toAminoMsg(message: MsgAddToPosition): MsgAddToPositionAminoMsg {
     return {
-      type: "osmosis/concentratedliquidity/add-to-position",
+      type: "osmosis/cl-add-to-position",
       value: MsgAddToPosition.toAmino(message),
     };
   },
@@ -983,7 +983,7 @@ export const MsgWithdrawPosition = {
   },
   toAminoMsg(message: MsgWithdrawPosition): MsgWithdrawPositionAminoMsg {
     return {
-      type: "osmosis/concentratedliquidity/withdraw-position",
+      type: "osmosis/cl-withdraw-position",
       value: MsgWithdrawPosition.toAmino(message),
     };
   },
@@ -1188,7 +1188,7 @@ export const MsgCollectSpreadRewards = {
     message: MsgCollectSpreadRewards
   ): MsgCollectSpreadRewardsAminoMsg {
     return {
-      type: "osmosis/concentratedliquidity/collect-spread-rewards",
+      type: "osmosis/cl-col-sp-rewards",
       value: MsgCollectSpreadRewards.toAmino(message),
     };
   },
@@ -1393,7 +1393,7 @@ export const MsgCollectIncentives = {
   },
   toAminoMsg(message: MsgCollectIncentives): MsgCollectIncentivesAminoMsg {
     return {
-      type: "osmosis/concentratedliquidity/collect-incentives",
+      type: "osmosis/cl-collect-incentives",
       value: MsgCollectIncentives.toAmino(message),
     };
   },
@@ -1625,7 +1625,7 @@ export const MsgFungifyChargedPositions = {
     message: MsgFungifyChargedPositions
   ): MsgFungifyChargedPositionsAminoMsg {
     return {
-      type: "osmosis/concentratedliquidity/fungify-charged-positions",
+      type: "osmosis/cl-fungify-charged-positions",
       value: MsgFungifyChargedPositions.toAmino(message),
     };
   },

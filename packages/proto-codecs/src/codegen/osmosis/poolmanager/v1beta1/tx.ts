@@ -84,7 +84,7 @@ export interface MsgSplitRouteSwapExactAmountInAmino {
   token_out_min_amount: string;
 }
 export interface MsgSplitRouteSwapExactAmountInAminoMsg {
-  type: "osmosis/poolmanager/split-route-swap-exact-amount-in";
+  type: "osmosis/poolmanager/split-amount-in";
   value: MsgSplitRouteSwapExactAmountInAmino;
 }
 /** ===================== MsgSplitRouteSwapExactAmountIn */
@@ -176,7 +176,7 @@ export interface MsgSplitRouteSwapExactAmountOutAmino {
   token_in_max_amount: string;
 }
 export interface MsgSplitRouteSwapExactAmountOutAminoMsg {
-  type: "osmosis/poolmanager/split-route-swap-exact-amount-out";
+  type: "osmosis/poolmanager/split-amount-out";
   value: MsgSplitRouteSwapExactAmountOutAmino;
 }
 /** ===================== MsgSplitRouteSwapExactAmountOut */
@@ -517,7 +517,7 @@ export const MsgSplitRouteSwapExactAmountIn = {
     message: MsgSplitRouteSwapExactAmountIn
   ): MsgSplitRouteSwapExactAmountInAminoMsg {
     return {
-      type: "osmosis/poolmanager/split-route-swap-exact-amount-in",
+      type: "osmosis/poolmanager/split-amount-in",
       value: MsgSplitRouteSwapExactAmountIn.toAmino(message),
     };
   },
@@ -946,7 +946,7 @@ export const MsgSplitRouteSwapExactAmountOut = {
     message: MsgSplitRouteSwapExactAmountOut
   ): MsgSplitRouteSwapExactAmountOutAminoMsg {
     return {
-      type: "osmosis/poolmanager/split-route-swap-exact-amount-out",
+      type: "osmosis/poolmanager/split-amount-out",
       value: MsgSplitRouteSwapExactAmountOut.toAmino(message),
     };
   },
