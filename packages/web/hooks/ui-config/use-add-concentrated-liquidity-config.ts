@@ -77,8 +77,8 @@ export function useAddConcentratedLiquidityConfig(
             else {
               osmosisQueries.queryLiquiditiesPerTickRange
                 .getForPoolId(poolId)
-                .waitFreshResponse();
-              resolve();
+                .waitFreshResponse()
+                .then(() => resolve());
             }
           }
         );
@@ -104,8 +104,12 @@ export function useAddConcentratedLiquidityConfig(
   const increaseLiquidity = useCallback(
     (positionId: string) => {
       return new Promise<void>(async (resolve, reject) => {
-        const amount0 = config.baseDepositAmountIn.getAmountPrimitive().amount;
-        const amount1 = config.quoteDepositAmountIn.getAmountPrimitive().amount;
+        const amount0 = config.quoteDepositOnly
+          ? "0"
+          : config.baseDepositAmountIn.getAmountPrimitive().amount;
+        const amount1 = config.baseDepositOnly
+          ? "0"
+          : config.quoteDepositAmountIn.getAmountPrimitive().amount;
 
         try {
           await account?.osmosis.sendAddToConcentratedLiquidityPositionMsg(
@@ -135,6 +139,8 @@ export function useAddConcentratedLiquidityConfig(
       osmosisQueries.queryLiquiditiesPerTickRange,
       config.baseDepositAmountIn,
       config.quoteDepositAmountIn,
+      config.baseDepositOnly,
+      config.quoteDepositOnly,
       account?.osmosis,
     ]
   );
