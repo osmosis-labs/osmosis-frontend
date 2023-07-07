@@ -250,8 +250,6 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       .quo(beforeSpotPriceInOverOut)
       .sub(new Dec(1));
 
-    console.log({ calcResNumCrossed: calcResult.numTicksCrossed });
-
     return {
       amount: amountOut,
       beforeSpotPriceInOverOut: beforeSpotPriceInOverOut,
