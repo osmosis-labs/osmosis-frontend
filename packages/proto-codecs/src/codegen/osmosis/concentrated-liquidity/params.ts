@@ -208,7 +208,7 @@ export const Params = {
   fromAmino(object: ParamsAmino): Params {
     return {
       authorizedTickSpacing: Array.isArray(object?.authorized_tick_spacing)
-        ? object.authorized_tick_spacing.map((e: any) => e)
+        ? object.authorized_tick_spacing.map((e: any) => BigInt(e))
         : [],
       authorizedSpreadFactors: Array.isArray(object?.authorized_spread_factors)
         ? object.authorized_spread_factors.map((e: any) => e)
@@ -227,7 +227,9 @@ export const Params = {
   toAmino(message: Params): ParamsAmino {
     const obj: any = {};
     if (message.authorizedTickSpacing) {
-      obj.authorized_tick_spacing = message.authorizedTickSpacing.map((e) => e);
+      obj.authorized_tick_spacing = message.authorizedTickSpacing.map((e) =>
+        e.toString()
+      );
     } else {
       obj.authorized_tick_spacing = [];
     }

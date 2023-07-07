@@ -1863,7 +1863,7 @@ export const MsgUnPoolWhitelistedPoolResponse = {
   ): MsgUnPoolWhitelistedPoolResponse {
     return {
       exitedLockIds: Array.isArray(object?.exited_lock_ids)
-        ? object.exited_lock_ids.map((e: any) => e)
+        ? object.exited_lock_ids.map((e: any) => BigInt(e))
         : [],
     };
   },
@@ -1872,7 +1872,7 @@ export const MsgUnPoolWhitelistedPoolResponse = {
   ): MsgUnPoolWhitelistedPoolResponseAmino {
     const obj: any = {};
     if (message.exitedLockIds) {
-      obj.exited_lock_ids = message.exitedLockIds.map((e) => e);
+      obj.exited_lock_ids = message.exitedLockIds.map((e) => e.toString());
     } else {
       obj.exited_lock_ids = [];
     }

@@ -1903,7 +1903,7 @@ export const PinCodesProposal = {
       title: object.title,
       description: object.description,
       codeIds: Array.isArray(object?.code_ids)
-        ? object.code_ids.map((e: any) => e)
+        ? object.code_ids.map((e: any) => BigInt(e))
         : [],
     };
   },
@@ -1912,7 +1912,7 @@ export const PinCodesProposal = {
     obj.title = message.title;
     obj.description = message.description;
     if (message.codeIds) {
-      obj.code_ids = message.codeIds.map((e) => e);
+      obj.code_ids = message.codeIds.map((e) => e.toString());
     } else {
       obj.code_ids = [];
     }
@@ -2013,7 +2013,7 @@ export const UnpinCodesProposal = {
       title: object.title,
       description: object.description,
       codeIds: Array.isArray(object?.code_ids)
-        ? object.code_ids.map((e: any) => e)
+        ? object.code_ids.map((e: any) => BigInt(e))
         : [],
     };
   },
@@ -2022,7 +2022,7 @@ export const UnpinCodesProposal = {
     obj.title = message.title;
     obj.description = message.description;
     if (message.codeIds) {
-      obj.code_ids = message.codeIds.map((e) => e);
+      obj.code_ids = message.codeIds.map((e) => e.toString());
     } else {
       obj.code_ids = [];
     }

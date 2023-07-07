@@ -36,7 +36,6 @@ import {
   PreTransferModal,
   SelectAssetSourceModal,
   TransferAssetSelectModal,
-  WalletConnectQRModal,
 } from "../../modals";
 import { useStore } from "../../stores";
 
@@ -196,13 +195,17 @@ const Assets: NextPage = observer(() => {
           {...transferConfig.fiatRampsModal}
         />
       )}
-      {transferConfig?.walletConnectEth.sessionConnectUri && (
+      {/* 
+        Removed for now as we have to upgrade to WalletConnect v2
+        TODO: Upgrade to Eth WalletConnect v2 
+       */}
+      {/* {transferConfig?.walletConnectEth.sessionConnectUri && (
         <WalletConnectQRModal
           isOpen={true}
           uri={transferConfig.walletConnectEth.sessionConnectUri || ""}
           onRequestClose={() => transferConfig.walletConnectEth.disable()}
         />
-      )}
+      )} */}
       <AssetsTable
         nativeBalances={nativeBalances}
         ibcBalances={ibcBalances}

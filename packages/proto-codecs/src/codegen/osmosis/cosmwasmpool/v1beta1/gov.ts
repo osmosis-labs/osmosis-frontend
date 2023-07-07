@@ -406,7 +406,7 @@ export const MigratePoolContractsProposal = {
       title: object.title,
       description: object.description,
       poolIds: Array.isArray(object?.pool_ids)
-        ? object.pool_ids.map((e: any) => e)
+        ? object.pool_ids.map((e: any) => BigInt(e))
         : [],
       newCodeId: BigInt(object.new_code_id),
       wasmByteCode: fromBase64(object.wasm_byte_code),
@@ -420,7 +420,7 @@ export const MigratePoolContractsProposal = {
     obj.title = message.title;
     obj.description = message.description;
     if (message.poolIds) {
-      obj.pool_ids = message.poolIds.map((e) => e);
+      obj.pool_ids = message.poolIds.map((e) => e.toString());
     } else {
       obj.pool_ids = [];
     }

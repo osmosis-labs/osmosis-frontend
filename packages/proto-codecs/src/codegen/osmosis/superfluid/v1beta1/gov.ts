@@ -437,7 +437,9 @@ export const UpdateUnpoolWhiteListProposal = {
     return {
       title: object.title,
       description: object.description,
-      ids: Array.isArray(object?.ids) ? object.ids.map((e: any) => e) : [],
+      ids: Array.isArray(object?.ids)
+        ? object.ids.map((e: any) => BigInt(e))
+        : [],
       isOverwrite: object.is_overwrite,
     };
   },
@@ -448,7 +450,7 @@ export const UpdateUnpoolWhiteListProposal = {
     obj.title = message.title;
     obj.description = message.description;
     if (message.ids) {
-      obj.ids = message.ids.map((e) => e);
+      obj.ids = message.ids.map((e) => e.toString());
     } else {
       obj.ids = [];
     }

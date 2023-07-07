@@ -585,8 +585,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       wallet?.signingStargateOptions?.aminoTypes?.toAmino(msg)
     ) as AminoMsg[];
 
-    console.log(msgs);
-
     const signDoc = makeSignDocAmino(
       msgs,
       fee,
@@ -606,6 +604,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       ),
       memo: signed.memo,
     };
+
+    console.log({ msgs: signed.msgs, signedTxBody: signedTxBody.messages });
 
     const signedTxBodyEncodeObject = {
       typeUrl: "/cosmos.tx.v1beta1.TxBody",

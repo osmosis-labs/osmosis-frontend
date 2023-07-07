@@ -279,7 +279,7 @@ export class OsmosisAccountImpl {
     // sort initial liquidity and scaling factors to pass chain encoding check
     // chain does this to make sure that index of scaling factors is consistent with token indexes
     initialPoolLiquidity.sort((a, b) => a.denom.localeCompare(b.denom));
-    const sortedScalingFactors: string[] = [];
+    const sortedScalingFactors: bigint[] = [];
     initialPoolLiquidity.forEach((asset) => {
       const scalingFactor = scalingFactorsMap.get(asset.denom);
       if (!scalingFactor) {
@@ -288,16 +288,19 @@ export class OsmosisAccountImpl {
         );
       }
 
-      sortedScalingFactors.push(scalingFactor.toString());
+      sortedScalingFactors.push(BigInt(scalingFactor.toString()));
     });
 
     const msg = this.msgOpts.createStableswapPool.messageComposer({
       sender: this.address,
       futurePoolGovernor: "24h",
-      /** Message composer type is incorrect. It's actually expecting a string */
-      scalingFactors: sortedScalingFactors as any,
+      scalingFactors: sortedScalingFactors,
       initialPoolLiquidity,
-      scalingFactorController: scalingFactorControllerAddress ?? "",
+      /**
+       * Empty string provoke a message discrepancy between the amino and proto message.
+       * Telescope team has been notified. While awaiting a fix, set the type to any.
+       * */
+      scalingFactorController: scalingFactorControllerAddress as any,
       poolParams,
     });
 

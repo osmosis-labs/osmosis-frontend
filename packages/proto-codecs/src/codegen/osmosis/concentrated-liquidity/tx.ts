@@ -1164,7 +1164,7 @@ export const MsgCollectSpreadRewards = {
   fromAmino(object: MsgCollectSpreadRewardsAmino): MsgCollectSpreadRewards {
     return {
       positionIds: Array.isArray(object?.position_ids)
-        ? object.position_ids.map((e: any) => e)
+        ? object.position_ids.map((e: any) => BigInt(e))
         : [],
       sender: object.sender,
     };
@@ -1172,7 +1172,7 @@ export const MsgCollectSpreadRewards = {
   toAmino(message: MsgCollectSpreadRewards): MsgCollectSpreadRewardsAmino {
     const obj: any = {};
     if (message.positionIds) {
-      obj.position_ids = message.positionIds.map((e) => e);
+      obj.position_ids = message.positionIds.map((e) => e.toString());
     } else {
       obj.position_ids = [];
     }
@@ -1373,7 +1373,7 @@ export const MsgCollectIncentives = {
   fromAmino(object: MsgCollectIncentivesAmino): MsgCollectIncentives {
     return {
       positionIds: Array.isArray(object?.position_ids)
-        ? object.position_ids.map((e: any) => e)
+        ? object.position_ids.map((e: any) => BigInt(e))
         : [],
       sender: object.sender,
     };
@@ -1381,7 +1381,7 @@ export const MsgCollectIncentives = {
   toAmino(message: MsgCollectIncentives): MsgCollectIncentivesAmino {
     const obj: any = {};
     if (message.positionIds) {
-      obj.position_ids = message.positionIds.map((e) => e);
+      obj.position_ids = message.positionIds.map((e) => e.toString());
     } else {
       obj.position_ids = [];
     }
@@ -1599,7 +1599,7 @@ export const MsgFungifyChargedPositions = {
   ): MsgFungifyChargedPositions {
     return {
       positionIds: Array.isArray(object?.position_ids)
-        ? object.position_ids.map((e: any) => e)
+        ? object.position_ids.map((e: any) => BigInt(e))
         : [],
       sender: object.sender,
     };
@@ -1609,7 +1609,7 @@ export const MsgFungifyChargedPositions = {
   ): MsgFungifyChargedPositionsAmino {
     const obj: any = {};
     if (message.positionIds) {
-      obj.position_ids = message.positionIds.map((e) => e);
+      obj.position_ids = message.positionIds.map((e) => e.toString());
     } else {
       obj.position_ids = [];
     }

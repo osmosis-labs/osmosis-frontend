@@ -2590,7 +2590,7 @@ export const QueryPinnedCodesResponse = {
   fromAmino(object: QueryPinnedCodesResponseAmino): QueryPinnedCodesResponse {
     return {
       codeIds: Array.isArray(object?.code_ids)
-        ? object.code_ids.map((e: any) => e)
+        ? object.code_ids.map((e: any) => BigInt(e))
         : [],
       pagination: object?.pagination
         ? PageResponse.fromAmino(object.pagination)
@@ -2600,7 +2600,7 @@ export const QueryPinnedCodesResponse = {
   toAmino(message: QueryPinnedCodesResponse): QueryPinnedCodesResponseAmino {
     const obj: any = {};
     if (message.codeIds) {
-      obj.code_ids = message.codeIds.map((e) => e);
+      obj.code_ids = message.codeIds.map((e) => e.toString());
     } else {
       obj.code_ids = [];
     }

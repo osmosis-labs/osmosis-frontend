@@ -104,7 +104,7 @@ export const Params = {
   fromAmino(object: ParamsAmino): Params {
     return {
       codeIdWhitelist: Array.isArray(object?.code_id_whitelist)
-        ? object.code_id_whitelist.map((e: any) => e)
+        ? object.code_id_whitelist.map((e: any) => BigInt(e))
         : [],
       poolMigrationLimit: BigInt(object.pool_migration_limit),
     };
@@ -112,7 +112,7 @@ export const Params = {
   toAmino(message: Params): ParamsAmino {
     const obj: any = {};
     if (message.codeIdWhitelist) {
-      obj.code_id_whitelist = message.codeIdWhitelist.map((e) => e);
+      obj.code_id_whitelist = message.codeIdWhitelist.map((e) => e.toString());
     } else {
       obj.code_id_whitelist = [];
     }

@@ -342,7 +342,7 @@ export const Pool = {
         ? object.pool_liquidity.map((e: any) => Coin.fromAmino(e))
         : [],
       scalingFactors: Array.isArray(object?.scaling_factors)
-        ? object.scaling_factors.map((e: any) => e)
+        ? object.scaling_factors.map((e: any) => BigInt(e))
         : [],
       scalingFactorController: object.scaling_factor_controller,
     };
@@ -366,7 +366,7 @@ export const Pool = {
       obj.pool_liquidity = [];
     }
     if (message.scalingFactors) {
-      obj.scaling_factors = message.scalingFactors.map((e) => e);
+      obj.scaling_factors = message.scalingFactors.map((e) => e.toString());
     } else {
       obj.scaling_factors = [];
     }

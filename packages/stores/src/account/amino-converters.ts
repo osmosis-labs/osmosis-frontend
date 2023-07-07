@@ -5,8 +5,6 @@ import {
   ibcAminoConverters as originalIbcAminoConverters,
   osmosisAminoConverters as originalOsmosisAminoConverters,
 } from "@osmosis-labs/proto-codecs";
-import { MsgCreateStableswapPool } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/gamm/pool-models/stableswap/tx";
-import { MsgLockTokens } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/lockup/tx";
 import { MsgTransfer } from "cosmjs-types/ibc/applications/transfer/v1/tx";
 import Long from "long";
 
@@ -19,99 +17,6 @@ const osmosisAminoConverters: Record<
   }
 > = {
   ...originalOsmosisAminoConverters,
-  "/osmosis.lockup.MsgBeginUnlocking": {
-    ...originalOsmosisAminoConverters["/osmosis.lockup.MsgBeginUnlocking"],
-    // The amino type in telescope is not compatible with our nodes.
-    aminoType: "osmosis/lockup/begin-unlock-period-lock",
-  },
-  "/osmosis.lockup.MsgLockTokens": {
-    ...originalOsmosisAminoConverters["/osmosis.lockup.MsgLockTokens"],
-    /**
-     * Duration type definition in telescope crashes toAmino as it does a wrong conversion.
-     * @see https://github.com/osmosis-labs/osmojs/issues/12
-     * @see https://github.com/osmosis-labs/telescope/issues/211
-     */
-    toAmino: ({ owner, duration, coins }: MsgLockTokens) => {
-      return {
-        owner,
-        duration: duration?.nanos ? (duration?.nanos).toString() : undefined,
-        coins: coins.map((coin) => ({
-          denom: coin.denom,
-          amount: coin.amount,
-        })),
-      };
-    },
-  },
-  "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool": {
-    ...originalOsmosisAminoConverters[
-      "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool"
-    ],
-    // The amino type in telescope is not compatible with nodes.
-    aminoType: "osmosis/gamm/create-balancer-pool",
-  },
-  "/osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool": {
-    ...originalOsmosisAminoConverters[
-      "/osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool"
-    ],
-    toAmino: ({
-      sender,
-      poolParams,
-      futurePoolGovernor,
-      initialPoolLiquidity,
-      scalingFactorController,
-      scalingFactors,
-    }: MsgCreateStableswapPool) => {
-      return {
-        sender,
-        pool_params: {
-          swap_fee: poolParams?.swapFee,
-          exit_fee: poolParams?.exitFee,
-        },
-        initial_pool_liquidity: Array.isArray(initialPoolLiquidity)
-          ? initialPoolLiquidity.map(({ denom, amount }) => ({
-              denom,
-              amount,
-            }))
-          : [],
-        scaling_factors: Array.isArray(scalingFactors)
-          ? scalingFactors.map((e) => e.toString())
-          : [],
-        future_pool_governor: futurePoolGovernor,
-        scaling_factor_controller: scalingFactorController
-          ? scalingFactorController
-          : undefined,
-      };
-    },
-    fromAmino: ({
-      sender,
-      pool_params,
-      future_pool_governor,
-      initial_pool_liquidity,
-      scaling_factor_controller,
-      scaling_factors,
-    }: Parameters<
-      (typeof originalOsmosisAminoConverters)["/osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool"]["fromAmino"]
-    >[0]): MsgCreateStableswapPool => {
-      return {
-        sender,
-        poolParams: {
-          swapFee: pool_params?.swap_fee ?? "0",
-          exitFee: pool_params?.exit_fee ?? "0",
-        },
-        initialPoolLiquidity: Array.isArray(initial_pool_liquidity)
-          ? initial_pool_liquidity.map(({ denom, amount }) => ({
-              denom,
-              amount,
-            }))
-          : [],
-        scalingFactors: Array.isArray(scaling_factors)
-          ? scaling_factors.map((e: any) => e)
-          : [],
-        futurePoolGovernor: future_pool_governor,
-        scalingFactorController: scaling_factor_controller,
-      };
-    },
-  },
   "/osmosis.superfluid.MsgSuperfluidUndelegateAndUnbondLock": {
     ...originalOsmosisAminoConverters[
       "/osmosis.superfluid.MsgSuperfluidUndelegateAndUnbondLock"

@@ -222,7 +222,7 @@ export const MsgCreateStableswapPool = {
         ? object.initial_pool_liquidity.map((e: any) => Coin.fromAmino(e))
         : [],
       scalingFactors: Array.isArray(object?.scaling_factors)
-        ? object.scaling_factors.map((e: any) => e)
+        ? object.scaling_factors.map((e: any) => BigInt(e))
         : [],
       futurePoolGovernor: object.future_pool_governor,
       scalingFactorController: object.scaling_factor_controller,
@@ -242,7 +242,7 @@ export const MsgCreateStableswapPool = {
       obj.initial_pool_liquidity = [];
     }
     if (message.scalingFactors) {
-      obj.scaling_factors = message.scalingFactors.map((e) => e);
+      obj.scaling_factors = message.scalingFactors.map((e) => e.toString());
     } else {
       obj.scaling_factors = [];
     }
@@ -455,7 +455,7 @@ export const MsgStableSwapAdjustScalingFactors = {
       sender: object.sender,
       poolId: BigInt(object.pool_id),
       scalingFactors: Array.isArray(object?.scaling_factors)
-        ? object.scaling_factors.map((e: any) => e)
+        ? object.scaling_factors.map((e: any) => BigInt(e))
         : [],
     };
   },
@@ -466,7 +466,7 @@ export const MsgStableSwapAdjustScalingFactors = {
     obj.sender = message.sender;
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     if (message.scalingFactors) {
-      obj.scaling_factors = message.scalingFactors.map((e) => e);
+      obj.scaling_factors = message.scalingFactors.map((e) => e.toString());
     } else {
       obj.scaling_factors = [];
     }

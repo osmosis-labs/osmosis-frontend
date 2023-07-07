@@ -900,13 +900,15 @@ export const UnpoolWhitelistedPools = {
   },
   fromAmino(object: UnpoolWhitelistedPoolsAmino): UnpoolWhitelistedPools {
     return {
-      ids: Array.isArray(object?.ids) ? object.ids.map((e: any) => e) : [],
+      ids: Array.isArray(object?.ids)
+        ? object.ids.map((e: any) => BigInt(e))
+        : [],
     };
   },
   toAmino(message: UnpoolWhitelistedPools): UnpoolWhitelistedPoolsAmino {
     const obj: any = {};
     if (message.ids) {
-      obj.ids = message.ids.map((e) => e);
+      obj.ids = message.ids.map((e) => e.toString());
     } else {
       obj.ids = [];
     }

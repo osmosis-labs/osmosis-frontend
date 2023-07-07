@@ -3801,7 +3801,7 @@ export const QueryUnpoolWhitelistResponse = {
   ): QueryUnpoolWhitelistResponse {
     return {
       poolIds: Array.isArray(object?.pool_ids)
-        ? object.pool_ids.map((e: any) => e)
+        ? object.pool_ids.map((e: any) => BigInt(e))
         : [],
     };
   },
@@ -3810,7 +3810,7 @@ export const QueryUnpoolWhitelistResponse = {
   ): QueryUnpoolWhitelistResponseAmino {
     const obj: any = {};
     if (message.poolIds) {
-      obj.pool_ids = message.poolIds.map((e) => e);
+      obj.pool_ids = message.poolIds.map((e) => e.toString());
     } else {
       obj.pool_ids = [];
     }
