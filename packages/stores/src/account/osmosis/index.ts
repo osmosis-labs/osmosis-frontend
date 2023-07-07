@@ -1343,7 +1343,7 @@ export class OsmosisAccountImpl {
    * Handles superfluid stake status.
    *
    * @param poolId Id of pool to exit.
-   * @param lockIds Locks to migrate. If migrating unlocked shares, leave undefined.
+   * @param lockIds Locks to migrate. If migrating unlocked shares, leave undefined or pass array value of `-1`.
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fullfillment given raw response.
    */

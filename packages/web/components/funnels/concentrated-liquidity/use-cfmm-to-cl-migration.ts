@@ -3,9 +3,10 @@ import { useCallback, useMemo } from "react";
 
 import { useStore } from "~/stores";
 
-export type MigrationParams =
+export type MigrationParams = (
   | { cfmmShares: CoinPretty }
-  | { lockIds: string[] };
+  | { lockIds: string[] }
+)[];
 
 /** Use for sending CFMM to CL migration messages if applicable. */
 export function useCfmmToClMigration(cfmmPoolId: string): {
@@ -42,6 +43,15 @@ export function useCfmmToClMigration(cfmmPoolId: string): {
   const migrate = useCallback(
     (params: MigrationParams) => {
       if (!userCanMigrate) throw new Error("User cannot migrate");
+
+      const lockIds = params.reduce((acc, param) => {
+        if ("lockIds" in param) {
+          acc.push(...param.lockIds);
+        } else if ("cfmmShares" in param) {
+          acc.push("-1");
+        }
+        return acc;
+      }, [] as string[]);
 
       if ("cfmmShares" in params) {
         return new Promise<void>(
