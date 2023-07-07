@@ -175,7 +175,8 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
   ): Promise<Quote> {
     this.validateDenoms(tokenIn.denom, tokenOutDenom);
 
-    /** Reminder: currentSqrtPrice: amountToken1/amountToken0 or token 1 per token 0  */
+    /** Reminder: currentSqrtPrice: amountToken1/amountToken0 or token 1 per token 0.
+     *  0 for 1 is how prices are represented in CL pool model. */
     const is0For1 = tokenIn.denom === this.raw.token0;
 
     /** Spot price as stored in pool model. */
@@ -240,11 +241,11 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     );
 
     const beforeSpotPriceInOverOut = is0For1
-      ? before1Over0SpotPrice
-      : new Dec(1).quoTruncate(before1Over0SpotPrice);
+      ? new Dec(1).quoTruncate(before1Over0SpotPrice)
+      : before1Over0SpotPrice;
     const afterSpotPriceInOverOut = is0For1
-      ? after1Over0SpotPrice
-      : new Dec(1).quoTruncate(after1Over0SpotPrice);
+      ? new Dec(1).quoTruncate(after1Over0SpotPrice)
+      : after1Over0SpotPrice;
 
     const priceImpactTokenOut = effectivePriceInOverOut
       .quo(beforeSpotPriceInOverOut)
@@ -275,12 +276,12 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
   ): Promise<Quote> {
     this.validateDenoms(tokenInDenom, tokenOut.denom);
 
-    /** Reminder: currentSqrtPrice: amountToken1/amountToken0 or token 1 per token 0  */
+    /** Reminder: currentSqrtPrice: amountToken1/amountToken0 or token 1 per token 0.
+     *  0 for 1 is how prices are represented in CL pool model. */
     const is0For1 = tokenInDenom === this.raw.token0;
 
     /** Spot price as stored in pool model.
-     *  reminder: the token being swapped, even though the token out is the amount specified
-     */
+     *  reminder: the token being swapped, even though the token out is the amount specified */
     const before1Over0SpotPrice = this.spotPrice(
       is0For1 ? tokenInDenom : tokenOut.denom
     );
@@ -337,11 +338,11 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     }
 
     const beforeSpotPriceInOverOut = is0For1
-      ? before1Over0SpotPrice
-      : new Dec(1).quoTruncate(before1Over0SpotPrice);
+      ? new Dec(1).quoTruncate(before1Over0SpotPrice)
+      : before1Over0SpotPrice;
     const afterSpotPriceInOverOut = is0For1
-      ? after1Over0SpotPrice
-      : new Dec(1).quoTruncate(after1Over0SpotPrice);
+      ? new Dec(1).quoTruncate(after1Over0SpotPrice)
+      : after1Over0SpotPrice;
 
     const effectivePriceInOverOut = new Dec(amountIn).quoTruncate(
       new Dec(tokenOut.amount)
