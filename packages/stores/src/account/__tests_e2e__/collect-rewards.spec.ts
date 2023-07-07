@@ -139,6 +139,7 @@ describe("Collect Cl Fees Txs", () => {
           undefined,
           undefined,
           undefined,
+          undefined,
           (tx) => {
             if (tx.code) reject(tx.rawLog);
             else resolve(tx);
@@ -154,6 +155,7 @@ describe("Collect Cl Fees Txs", () => {
           [{ id: poolId, tokenOutDenom: "uion" }],
           { currency: osmoCurrency, amount: osmoSwapAmount },
           "9",
+          undefined,
           undefined,
           undefined,
           undefined,
