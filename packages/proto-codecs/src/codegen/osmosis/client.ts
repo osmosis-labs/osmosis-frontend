@@ -76,7 +76,7 @@ export const getSigningOsmosisClient = async ({
     rpcEndpoint,
     signer,
     {
-      registry,
+      registry: registry as any,
       aminoTypes,
     }
   );

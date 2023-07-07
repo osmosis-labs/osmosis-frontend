@@ -1,13 +1,13 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
+import { Decimal } from "@cosmjs/math";
 
-import { Long } from "../../../../helpers";
+import { BinaryReader, BinaryWriter } from "../../../../binary";
 /** ===================== MsgCreateConcentratedPool */
 export interface MsgCreateConcentratedPool {
   sender: string;
   denom0: string;
   denom1: string;
-  tickSpacing: Long;
+  tickSpacing: bigint;
   spreadFactor: string;
 }
 export interface MsgCreateConcentratedPoolProtoMsg {
@@ -31,12 +31,12 @@ export interface MsgCreateConcentratedPoolSDKType {
   sender: string;
   denom0: string;
   denom1: string;
-  tick_spacing: Long;
+  tick_spacing: bigint;
   spread_factor: string;
 }
 /** Returns a unique poolID to identify the pool with. */
 export interface MsgCreateConcentratedPoolResponse {
-  poolId: Long;
+  poolId: bigint;
 }
 export interface MsgCreateConcentratedPoolResponseProtoMsg {
   typeUrl: "/osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MsgCreateConcentratedPoolResponse";
@@ -52,14 +52,14 @@ export interface MsgCreateConcentratedPoolResponseAminoMsg {
 }
 /** Returns a unique poolID to identify the pool with. */
 export interface MsgCreateConcentratedPoolResponseSDKType {
-  pool_id: Long;
+  pool_id: bigint;
 }
 function createBaseMsgCreateConcentratedPool(): MsgCreateConcentratedPool {
   return {
     sender: "",
     denom0: "",
     denom1: "",
-    tickSpacing: Long.UZERO,
+    tickSpacing: BigInt(0),
     spreadFactor: "",
   };
 }
@@ -68,8 +68,8 @@ export const MsgCreateConcentratedPool = {
     "/osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MsgCreateConcentratedPool",
   encode(
     message: MsgCreateConcentratedPool,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.sender !== "") {
       writer.uint32(10).string(message.sender);
     }
@@ -79,19 +79,22 @@ export const MsgCreateConcentratedPool = {
     if (message.denom1 !== "") {
       writer.uint32(26).string(message.denom1);
     }
-    if (!message.tickSpacing.isZero()) {
+    if (message.tickSpacing !== BigInt(0)) {
       writer.uint32(32).uint64(message.tickSpacing);
     }
     if (message.spreadFactor !== "") {
-      writer.uint32(42).string(message.spreadFactor);
+      writer
+        .uint32(42)
+        .string(Decimal.fromUserInput(message.spreadFactor, 18).atomics);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgCreateConcentratedPool {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateConcentratedPool();
     while (reader.pos < end) {
@@ -107,10 +110,13 @@ export const MsgCreateConcentratedPool = {
           message.denom1 = reader.string();
           break;
         case 4:
-          message.tickSpacing = reader.uint64() as Long;
+          message.tickSpacing = reader.uint64();
           break;
         case 5:
-          message.spreadFactor = reader.string();
+          message.spreadFactor = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
           break;
         default:
           reader.skipType(tag & 7);
@@ -128,8 +134,8 @@ export const MsgCreateConcentratedPool = {
     message.denom1 = object.denom1 ?? "";
     message.tickSpacing =
       object.tickSpacing !== undefined && object.tickSpacing !== null
-        ? Long.fromValue(object.tickSpacing)
-        : Long.UZERO;
+        ? BigInt(object.tickSpacing.toString())
+        : BigInt(0);
     message.spreadFactor = object.spreadFactor ?? "";
     return message;
   },
@@ -138,7 +144,7 @@ export const MsgCreateConcentratedPool = {
       sender: object.sender,
       denom0: object.denom0,
       denom1: object.denom1,
-      tickSpacing: Long.fromString(object.tick_spacing),
+      tickSpacing: BigInt(object.tick_spacing),
       spreadFactor: object.spread_factor,
     };
   },
@@ -186,7 +192,7 @@ export const MsgCreateConcentratedPool = {
 };
 function createBaseMsgCreateConcentratedPoolResponse(): MsgCreateConcentratedPoolResponse {
   return {
-    poolId: Long.UZERO,
+    poolId: BigInt(0),
   };
 }
 export const MsgCreateConcentratedPoolResponse = {
@@ -194,25 +200,26 @@ export const MsgCreateConcentratedPoolResponse = {
     "/osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MsgCreateConcentratedPoolResponse",
   encode(
     message: MsgCreateConcentratedPoolResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.poolId.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.poolId !== BigInt(0)) {
       writer.uint32(8).uint64(message.poolId);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgCreateConcentratedPoolResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateConcentratedPoolResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.poolId = reader.uint64() as Long;
+          message.poolId = reader.uint64();
           break;
         default:
           reader.skipType(tag & 7);
@@ -227,15 +234,15 @@ export const MsgCreateConcentratedPoolResponse = {
     const message = createBaseMsgCreateConcentratedPoolResponse();
     message.poolId =
       object.poolId !== undefined && object.poolId !== null
-        ? Long.fromValue(object.poolId)
-        : Long.UZERO;
+        ? BigInt(object.poolId.toString())
+        : BigInt(0);
     return message;
   },
   fromAmino(
     object: MsgCreateConcentratedPoolResponseAmino
   ): MsgCreateConcentratedPoolResponse {
     return {
-      poolId: Long.fromString(object.pool_id),
+      poolId: BigInt(object.pool_id),
     };
   },
   toAmino(

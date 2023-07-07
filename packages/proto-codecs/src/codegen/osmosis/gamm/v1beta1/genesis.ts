@@ -1,6 +1,5 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
-
+import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
   Coin,
   CoinAmino,
@@ -12,7 +11,6 @@ import {
   AnyProtoMsg,
   AnySDKType,
 } from "../../../google/protobuf/any";
-import { Long } from "../../../helpers";
 import { Pool as Pool1 } from "../../concentrated-liquidity/pool";
 import { PoolProtoMsg as Pool1ProtoMsg } from "../../concentrated-liquidity/pool";
 import { PoolSDKType as Pool1SDKType } from "../../concentrated-liquidity/pool";
@@ -56,9 +54,9 @@ export interface ParamsSDKType {
 export interface GenesisState {
   pools: (Pool1 & CosmWasmPool & Pool2 & Pool3 & Any)[] | Any[];
   /** will be renamed to next_pool_id in an upcoming version */
-  nextPoolNumber: Long;
-  params?: Params;
-  migrationRecords?: MigrationRecords;
+  nextPoolNumber: bigint;
+  params: Params;
+  migrationRecords: MigrationRecords;
 }
 export interface GenesisStateProtoMsg {
   typeUrl: "/osmosis.gamm.v1beta1.GenesisState";
@@ -94,9 +92,9 @@ export interface GenesisStateSDKType {
     | Pool3SDKType
     | AnySDKType
   )[];
-  next_pool_number: Long;
-  params?: ParamsSDKType;
-  migration_records?: MigrationRecordsSDKType;
+  next_pool_number: bigint;
+  params: ParamsSDKType;
+  migration_records: MigrationRecordsSDKType;
 }
 function createBaseParams(): Params {
   return {
@@ -107,15 +105,16 @@ export const Params = {
   typeUrl: "/osmosis.gamm.v1beta1.Params",
   encode(
     message: Params,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.poolCreationFee) {
       Coin.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): Params {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): Params {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParams();
     while (reader.pos < end) {
@@ -180,21 +179,21 @@ export const Params = {
 function createBaseGenesisState(): GenesisState {
   return {
     pools: [],
-    nextPoolNumber: Long.UZERO,
-    params: undefined,
-    migrationRecords: undefined,
+    nextPoolNumber: BigInt(0),
+    params: Params.fromPartial({}),
+    migrationRecords: MigrationRecords.fromPartial({}),
   };
 }
 export const GenesisState = {
   typeUrl: "/osmosis.gamm.v1beta1.GenesisState",
   encode(
     message: GenesisState,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.pools) {
       Any.encode(v! as Any, writer.uint32(10).fork()).ldelim();
     }
-    if (!message.nextPoolNumber.isZero()) {
+    if (message.nextPoolNumber !== BigInt(0)) {
       writer.uint32(16).uint64(message.nextPoolNumber);
     }
     if (message.params !== undefined) {
@@ -208,8 +207,9 @@ export const GenesisState = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): GenesisState {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): GenesisState {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGenesisState();
     while (reader.pos < end) {
@@ -219,7 +219,7 @@ export const GenesisState = {
           message.pools.push(PoolI_InterfaceDecoder(reader) as Any);
           break;
         case 2:
-          message.nextPoolNumber = reader.uint64() as Long;
+          message.nextPoolNumber = reader.uint64();
           break;
         case 3:
           message.params = Params.decode(reader, reader.uint32());
@@ -242,8 +242,8 @@ export const GenesisState = {
     message.pools = object.pools?.map((e) => Any.fromPartial(e)) || [];
     message.nextPoolNumber =
       object.nextPoolNumber !== undefined && object.nextPoolNumber !== null
-        ? Long.fromValue(object.nextPoolNumber)
-        : Long.UZERO;
+        ? BigInt(object.nextPoolNumber.toString())
+        : BigInt(0);
     message.params =
       object.params !== undefined && object.params !== null
         ? Params.fromPartial(object.params)
@@ -259,7 +259,7 @@ export const GenesisState = {
       pools: Array.isArray(object?.pools)
         ? object.pools.map((e: any) => PoolI_FromAmino(e))
         : [],
-      nextPoolNumber: Long.fromString(object.next_pool_number),
+      nextPoolNumber: BigInt(object.next_pool_number),
       params: object?.params ? Params.fromAmino(object.params) : undefined,
       migrationRecords: object?.migration_records
         ? MigrationRecords.fromAmino(object.migration_records)
@@ -307,9 +307,10 @@ export const GenesisState = {
   },
 };
 export const PoolI_InterfaceDecoder = (
-  input: _m0.Reader | Uint8Array
+  input: BinaryReader | Uint8Array
 ): Pool1 | CosmWasmPool | Pool2 | Pool3 | Any => {
-  const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  const reader =
+    input instanceof BinaryReader ? input : new BinaryReader(input);
   const data = Any.decode(reader, reader.uint32());
   switch (data.typeUrl) {
     case "/osmosis.concentratedliquidity.v1beta1.Pool":
