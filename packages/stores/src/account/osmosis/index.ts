@@ -1108,8 +1108,6 @@ export class OsmosisAccountImpl {
       tokenOutMinAmount,
     });
 
-    console.log({ numTicksCrossed });
-
     await this.base.signAndBroadcast(
       this.chainId,
       "swapExactAmountIn",
