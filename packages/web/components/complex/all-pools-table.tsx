@@ -171,7 +171,7 @@ export const AllPoolsTable: FunctionComponent<{
 
     const { chainId } = chainStore.osmosis;
     const queriesOsmosis = queriesStore.get(chainId).osmosis!;
-    const queriesCosmos = queriesStore.get(chainId).cosmos!;
+    const queriesCosmos = queriesStore.get(chainId).cosmos;
     const queryActiveGauges = queriesExternalStore.queryActiveGauges;
 
     const [sorting, _setSorting] = useState<
@@ -392,6 +392,7 @@ export const AllPoolsTable: FunctionComponent<{
               const pool = props.getValue();
 
               const inflation = queriesCosmos.queryInflation;
+              console.log({ inflation: inflation.inflation.toString() });
               /**
                * If pool APR is 5 times bigger than staking APR, warn user
                * that pool may be subject to inflation

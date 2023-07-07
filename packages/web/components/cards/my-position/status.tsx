@@ -10,6 +10,7 @@ const enum PositionStatus {
   NearBounds,
   OutOfRange,
   FullRange,
+  Unbonding,
   SuperfluidStaked,
 }
 export const MyPositionStatus: FunctionComponent<
@@ -20,6 +21,7 @@ export const MyPositionStatus: FunctionComponent<
     negative?: boolean;
     fullRange?: boolean;
     isSuperfluid?: boolean;
+    isUnbonding?: boolean;
   } & CustomClasses
 > = ({
   className,
@@ -29,6 +31,7 @@ export const MyPositionStatus: FunctionComponent<
   negative,
   fullRange,
   isSuperfluid: superfluidStaked,
+  isUnbonding = false,
 }) => {
   const t = useTranslation();
 
@@ -68,6 +71,11 @@ export const MyPositionStatus: FunctionComponent<
   if (superfluidStaked) {
     status = PositionStatus.SuperfluidStaked;
     label = t("clPositions.superfluidStaked");
+  }
+
+  if (isUnbonding) {
+    status = PositionStatus.Unbonding;
+    label = t("clPositions.unbonding");
   }
 
   return (

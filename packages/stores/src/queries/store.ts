@@ -197,7 +197,8 @@ export class OsmosisQueriesImpl {
       new ObservableQueryAccountsUnbondingPositions(
         kvStore,
         chainId,
-        chainGetter
+        chainGetter,
+        this.queryLiquidityPositionsById
       );
 
     /** Contains a reference to the currently responsive pool store. */

@@ -69,6 +69,19 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
   const isCurrentlyStaked =
     Boolean(superfluidDelegation) || Boolean(superfluidUndelegation);
 
+  const isUnbonding =
+    osmosisQueries.queryAccountsUnbondingPositions
+      .get(account?.address ?? "")
+      .getPositionUnbondingInfo(positionConfig.id) !== undefined;
+
+  console.log({
+    id: positionConfig.id,
+    isUnbonding,
+    r: osmosisQueries.queryAccountsUnbondingPositions.get(
+      account?.address ?? ""
+    ).response,
+  });
+
   const {
     xRange,
     yRange,
