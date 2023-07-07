@@ -58,6 +58,7 @@ type PrettyQuote = {
   swapFee: RatePretty;
   priceImpact: RatePretty;
   isMultihopOsmoFeeDiscount: boolean;
+  numTicksCrossed: number | undefined;
 };
 
 export class ObservableTradeTokenInConfig extends AmountConfig {
@@ -351,6 +352,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       swapFee: new RatePretty(0).ready(false),
       priceImpact: new RatePretty(0).ready(false),
       isMultihopOsmoFeeDiscount: false,
+      numTicksCrossed: undefined,
     };
   }
 
@@ -666,6 +668,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       isMultihopOsmoFeeDiscount: result.split.some(
         ({ multiHopOsmoDiscount }) => multiHopOsmoDiscount
       ),
+      numTicksCrossed: result.numTicksCrossed,
     };
   }
 }

@@ -37,22 +37,22 @@ export const osmosisMsgOpts = createMsgOpts({
     shareCoinDecimals: 18,
     messageComposer: osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.exitPool,
   },
-  splitRouteSwapExactAmountIn: (numPools: number) => ({
+  splitRouteSwapExactAmountIn: (numPools: number, numTicks = 0) => ({
     messageComposer:
       osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl
         .splitRouteSwapExactAmountIn,
-    gas: 110_000 * numPools,
+    gas: 510_000 * numPools + 20_000 * numTicks,
   }),
-  swapExactAmountIn: (numPools: number) => ({
+  swapExactAmountIn: (numPools: number, numTicks = 0) => ({
     messageComposer:
       osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl.swapExactAmountIn,
-    gas: 500_000 * numPools,
+    gas: 500_000 * numPools + 20_000 * numTicks,
   }),
-  swapExactAmountOut: (numPools: number) => ({
+  swapExactAmountOut: (numPools: number, numTicks = 0) => ({
     messageComposer:
       osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl
         .swapExactAmountOut,
-    gas: 500_000 * numPools,
+    gas: 500_000 * numPools + 20_000 * numTicks,
   }),
   lockTokens: {
     gas: 450000,

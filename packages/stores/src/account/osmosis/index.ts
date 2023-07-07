@@ -977,6 +977,7 @@ export class OsmosisAccountImpl {
    * @param routes Routes to split swap through.
    * @param tokenIn Token swapping in.
    * @param tokenOutMinAmount Minimum amount of token out expected.
+   * @param numTicksCrossed Number of CL ticks crossed for swap quote.
    * @param memo Transaction memo.
    * @param stdFee Fee options.
    * @param signOptions Signing options.
@@ -992,6 +993,7 @@ export class OsmosisAccountImpl {
     }[],
     tokenIn: { currency: Currency },
     tokenOutMinAmount: string,
+    numTicksCrossed = 0,
     memo: string = "",
     stdFee: Partial<StdFee> = {},
     signOptions?: KeplrSignOptions,
@@ -1020,10 +1022,11 @@ export class OsmosisAccountImpl {
       [msg],
       memo,
       {
-        amount: stdFee.amount ?? [],
-        gas:
-          stdFee.gas ??
-          this.msgOpts.splitRouteSwapExactAmountIn(numPools).gas.toString(),
+        amount: [],
+        gas: this.msgOpts
+          .splitRouteSwapExactAmountIn(numPools, numTicksCrossed)
+          .gas.toString(),
+        ...stdFee,
       },
       signOptions,
       (tx) => {
@@ -1067,6 +1070,7 @@ export class OsmosisAccountImpl {
    * @param pools Desired pools to swap through.
    * @param tokenIn Token being swapped.
    * @param tokenOutMinAmount Min out amount.
+   * @param numTicksCrossed Number of CL ticks crossed for swap quote.
    * @param memo Transaction memo.
    * @param stdFee Fee options.
    * @param signOptions Signing options.
@@ -1079,6 +1083,7 @@ export class OsmosisAccountImpl {
     }[],
     tokenIn: { currency: Currency; amount: string },
     tokenOutMinAmount: string,
+    numTicksCrossed = 0,
     memo: string = "",
     stdFee: Partial<StdFee> = {},
     signOptions?: KeplrSignOptions,
@@ -1103,16 +1108,19 @@ export class OsmosisAccountImpl {
       tokenOutMinAmount,
     });
 
+    console.log({ numTicksCrossed });
+
     await this.base.signAndBroadcast(
       this.chainId,
       "swapExactAmountIn",
       [msg],
       memo,
       {
-        amount: stdFee.amount ?? [],
-        gas:
-          stdFee.gas ??
-          this.msgOpts.swapExactAmountIn(pools.length).gas.toString(),
+        amount: [],
+        gas: this.msgOpts
+          .swapExactAmountIn(pools.length, numTicksCrossed)
+          .gas.toString(),
+        ...stdFee,
       },
       signOptions,
       (tx) => {
@@ -1149,6 +1157,7 @@ export class OsmosisAccountImpl {
    * @param pools Desired pools to swap through.
    * @param tokenOut Token specified out.
    * @param tokenInMaxAmount Max token in.
+   * @param numTicksCrossed Number of CL ticks crossed for swap quote.
    * @param memo Transaction memo.
    * @param stdFee Fee options.
    * @param signOptions Signing options.
@@ -1161,6 +1170,7 @@ export class OsmosisAccountImpl {
     }[],
     tokenOut: { currency: Currency; amount: string },
     tokenInMaxAmount: string,
+    numTicksCrossed = 0,
     memo: string = "",
     stdFee: Partial<StdFee> = {},
     signOptions?: KeplrSignOptions,
@@ -1200,10 +1210,11 @@ export class OsmosisAccountImpl {
       },
       memo,
       {
-        amount: stdFee.amount ?? [],
-        gas:
-          stdFee.gas ??
-          this.msgOpts.swapExactAmountIn(pools.length).gas.toString(),
+        amount: [],
+        gas: this.msgOpts
+          .swapExactAmountIn(pools.length, numTicksCrossed)
+          .gas.toString(),
+        ...stdFee,
       },
       signOptions,
       (tx) => {

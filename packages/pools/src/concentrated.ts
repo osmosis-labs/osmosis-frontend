@@ -250,6 +250,8 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       .quo(beforeSpotPriceInOverOut)
       .sub(new Dec(1));
 
+    console.log({ calcResNumCrossed: calcResult.numTicksCrossed });
+
     return {
       amount: amountOut,
       beforeSpotPriceInOverOut: beforeSpotPriceInOverOut,
@@ -261,6 +263,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       effectivePriceInOverOut,
       effectivePriceOutOverIn: new Dec(1).quoTruncate(effectivePriceInOverOut),
       priceImpactTokenOut,
+      numTicksCrossed: calcResult.numTicksCrossed,
     };
   }
 
@@ -361,6 +364,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       effectivePriceInOverOut,
       effectivePriceOutOverIn: new Dec(1).quoTruncate(effectivePriceInOverOut),
       priceImpactTokenOut,
+      numTicksCrossed: calcResult.numTicksCrossed,
     };
   }
 
