@@ -6,6 +6,7 @@ import {
 } from "@keplr-wallet/stores";
 import { makeObservable, observable, runInAction } from "mobx";
 import { computedFn } from "mobx-utils";
+import { ObservableQueryNodeInfo } from "src/queries/tendermint/node-info";
 
 import { ObservableQueryLiquiditiesNetInDirection } from "../../queries";
 import {
@@ -53,6 +54,7 @@ export class ObservableQueryFilteredPools
     protected readonly queryNumPools: ObservableQueryNumPools,
     readonly queryLiquiditiesInNetDirection: ObservableQueryLiquiditiesNetInDirection,
     readonly queryBalances: ObservableQueryBalances,
+    readonly queryNodeInfo: ObservableQueryNodeInfo,
     protected readonly baseUrl = IMPERATOR_HISTORICAL_DATA_BASEURL,
     initialFilters: Filters = {
       min_liquidity: 1_000,
@@ -113,6 +115,7 @@ export class ObservableQueryFilteredPools
             this.chainGetter,
             this.queryLiquiditiesInNetDirection,
             this.queryBalances,
+            this.queryNodeInfo,
             poolRaw
           )
         );
@@ -140,7 +143,8 @@ export class ObservableQueryFilteredPools
           this.chainId,
           this.chainGetter,
           this.queryLiquiditiesInNetDirection,
-          this.queryBalances
+          this.queryBalances,
+          this.queryNodeInfo
         )
           .then((pool) =>
             runInAction(() => {

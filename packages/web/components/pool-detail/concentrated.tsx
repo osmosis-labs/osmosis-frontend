@@ -71,10 +71,16 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       ? pool.concentratedLiquidityPoolInfo.currentPrice
       : undefined;
 
+    const userPositions = osmosisQueries.queryAccountsPositions.get(
+      account?.address ?? ""
+    ).positions;
+
     const userHasPositionInPool =
-      osmosisQueries.queryAccountsPositions
-        .get(account?.address ?? "")
-        .positions.filter((position) => position.poolId === poolId).length > 0;
+      userPositions.filter((position) => position.poolId === poolId).length > 0;
+
+    const rewardedPositions = userPositions.filter(
+      (position) => position.hasClaimableRewards
+    );
 
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
@@ -208,10 +214,10 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
               <div className="flex flex-grow flex-col gap-3">
                 <h6>{t("clPositions.yourPositions")}</h6>
                 <div className="flex items-center text-body2 font-body2">
-                  <span className="text-wosmongton-200">
+                  <span className="text-osmoverse-200">
                     {t("clPositions.yourPositionsDesc")}
                   </span>
-                  <span className="flex flex-row">
+                  {/* <span className="flex flex-row">
                     <a
                       className="mx-1 inline-flex items-center text-wosmongton-300 underline"
                       href="#"
@@ -220,18 +226,36 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     >
                       {t("clPositions.learnMoreAboutPools")}
                     </a>
-                  </span>
+                  </span> */}
                 </div>
               </div>
-              <Button
-                className="subtitle1 w-fit"
-                size="sm"
-                onClick={() => {
-                  setActiveModal("add-liquidity");
-                }}
-              >
-                {t("clPositions.createAPosition")}
-              </Button>
+              <div className="flex gap-2">
+                {account && rewardedPositions.length > 0 && (
+                  <Button
+                    className="subtitle1 w-fit"
+                    size="sm"
+                    onClick={() => {
+                      account.osmosis
+                        .sendCollectAllPositionsRewardsMsgs(
+                          rewardedPositions.map(({ id }) => id),
+                          true
+                        )
+                        .catch(console.error);
+                    }}
+                  >
+                    {t("clPositions.collectAllRewards")}
+                  </Button>
+                )}
+                <Button
+                  className="subtitle1 w-fit"
+                  size="sm"
+                  onClick={() => {
+                    setActiveModal("add-liquidity");
+                  }}
+                >
+                  {t("clPositions.createAPosition")}
+                </Button>
+              </div>
             </div>
             {!userHasPositionInPool && (
               <>

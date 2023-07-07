@@ -111,7 +111,7 @@ telescope({
   },
 })
   .then(() => {
-    console.log("✨ all done!");
+    console.info("✨ all done!");
   })
   .catch((e) => {
     console.error(e);
