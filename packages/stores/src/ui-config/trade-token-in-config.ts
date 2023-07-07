@@ -16,6 +16,7 @@ import {
 } from "@keplr-wallet/unit";
 import {
   NoRouteError,
+  NotEnoughLiquidityError,
   OptimizedRoutes,
   SplitTokenInQuote,
   Token,
@@ -213,8 +214,9 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       this._latestQuote?.case({
         fulfilled: (quote) => this.makePrettyQuote(quote),
         rejected: (e) => {
-          // this may happen a lot, so don't log to console
+          // these are expected
           if (e instanceof NoRouteError) return undefined;
+          if (e instanceof NotEnoughLiquidityError) return undefined;
 
           console.error("Swap result rejected", e);
           return undefined;
@@ -230,8 +232,9 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       this._latestQuote?.case({
         fulfilled: ({ split }) => split,
         rejected: (e) => {
-          // this may happen a lot, so don't log to console
+          // these are expected
           if (e instanceof NoRouteError) return [];
+          if (e instanceof NotEnoughLiquidityError) return [];
 
           console.error("Optimized routes rejected", e);
           return [];
@@ -262,8 +265,9 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
             .beforeSpotPriceWithoutSwapFeeOutOverIn;
         },
         rejected: (e) => {
-          // this may happen a lot, so don't log to console
+          // these are expected
           if (e instanceof NoRouteError) return undefined;
+          if (e instanceof NotEnoughLiquidityError) return undefined;
 
           console.error("Spot price rejected", e);
           return undefined;
