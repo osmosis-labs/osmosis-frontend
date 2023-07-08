@@ -340,7 +340,7 @@ const testnetChainInfos: SimplifiedChainInfo[] = [
         coinDenom: "PICA",
         coinMinimalDenom: "ppica",
         coinDecimals: 12,
-        coinImageUrl: "/tokens/composable.png",
+        coinImageUrl: "/tokens/pica.svg",
         coinGeckoId: "usd-coin",
         isStakeCurrency: true,
         isFeeCurrency: true,
