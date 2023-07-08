@@ -1471,19 +1471,37 @@ export class OsmosisAccountImpl {
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
-          const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((balance) => balance.waitFreshResponse());
-
           // refresh pool that was exited
-          queryPool?.waitFreshResponse();
+          queryPool.waitFreshResponse();
 
-          // refresh removed locked coins and new account positions
+          // refresh relevant share balance
+          this.queriesStore
+            .get(this.chainId)
+            .queryBalances.getQueryBech32Address(this.address)
+            .balances.forEach((balance) => {
+              if (
+                queryPool.shareCurrency.coinMinimalDenom ===
+                balance.currency.coinMinimalDenom
+              ) {
+                balance.waitFreshResponse();
+              }
+            });
+
+          // refresh removed un/locked coins and new account positions
           this.queries.queryAccountLocked.get(this.address).waitFreshResponse();
+          this.queries.queryUnlockingCoins
+            .get(this.address)
+            .waitFreshResponse();
           this.queries.queryAccountsPositions
             .get(this.address)
             .waitFreshResponse();
+
+          // refresh superfluid delegated positions
+          this.queries.queryAccountsSuperfluidDelegatedPositions
+            .get(this.address)
+            .waitFreshResponse();
+
+          // TODO: refresh unbonding positions
         }
 
         onFulfill?.(tx);

@@ -13,6 +13,7 @@ import { ShowMoreButton } from "~/components/buttons/show-more";
 import { PoolCard } from "~/components/cards";
 import { AllPoolsTable } from "~/components/complex";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
+import { useCfmmToClMigration } from "~/components/funnels/concentrated-liquidity";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity/supercharge-pool";
 import { MetricLoader } from "~/components/loaders";
 import { PoolsOverview } from "~/components/overview/pools";
@@ -222,16 +223,9 @@ const Pools: NextPage = observer(function () {
   // CL funnel
   const [showConcentratedLiqIntro, setShowConcentratedLiqIntro] =
     useState(false);
-  const userMigrateableClPoolId = queryOsmosis.queryGammPoolShare
-    .getOwnPools(account?.address ?? "")
-    .map((poolId) =>
-      queryOsmosis.queryCfmmToConcentratedLiquidityPoolLinks.get(poolId)
-    )
-    .find((queryLink) =>
-      Boolean(queryLink.concentratedLiquidityPoolId)
-    )?.concentratedLiquidityPoolId;
-  const migrateableClPool = userMigrateableClPoolId
-    ? queryOsmosis.queryPools.getPool(userMigrateableClPoolId)
+  const { migrate, userCanMigrate, linkedClPoolId } = useCfmmToClMigration();
+  const migrateableClPool = linkedClPoolId
+    ? queryOsmosis.queryPools.getPool(linkedClPoolId)
     : undefined;
 
   return (
@@ -287,37 +281,40 @@ const Pools: NextPage = observer(function () {
           setIsCreatingPool={useCallback(() => setIsCreatingPool(true), [])}
         />
       </section>
-      {featureFlags.concentratedLiquidity && migrateableClPool && (
-        <section
-          ref={superchargeLiquidityRef}
-          className="pt-8 pb-10 md:pt-4 md:pb-5"
-        >
-          <SuperchargePool
-            title={t("addConcentratedLiquidityPoolCta.title", {
-              pair: migrateableClPool.poolAssets
-                .map(({ amount }) => amount.denom)
-                .join("/"),
-            })}
-            caption={t("addConcentratedLiquidityPoolCta.caption")}
-            primaryCta={t("addConcentratedLiquidityPoolCta.primaryCta")}
-            secondaryCta={t("addConcentratedLiquidityPoolCta.secondaryCta")}
-            onCtaClick={() => {
-              if (userMigrateableClPoolId) {
-                router.push("/pool/" + userMigrateableClPoolId);
+      {featureFlags.concentratedLiquidity &&
+        linkedClPoolId &&
+        userCanMigrate &&
+        migrateableClPool && (
+          <section
+            ref={superchargeLiquidityRef}
+            className="pt-8 pb-10 md:pt-4 md:pb-5"
+          >
+            <SuperchargePool
+              title={t("addConcentratedLiquidityPoolCta.title", {
+                pair: migrateableClPool.poolAssets
+                  .map(({ amount }) => amount.denom)
+                  .join("/"),
+              })}
+              caption={t("addConcentratedLiquidityPoolCta.caption")}
+              primaryCta={t("addConcentratedLiquidityPoolCta.primaryCta")}
+              secondaryCta={t("addConcentratedLiquidityPoolCta.secondaryCta")}
+              onCtaClick={() =>
+                migrate()
+                  .then(() => router.push("/pool/" + linkedClPoolId))
+                  .catch(console.error)
               }
-            }}
-            onSecondaryClick={() => {
-              setShowConcentratedLiqIntro(true);
-            }}
-          />
-          {showConcentratedLiqIntro && (
-            <ConcentratedLiquidityLearnMoreModal
-              isOpen
-              onRequestClose={() => setShowConcentratedLiqIntro(false)}
+              onSecondaryClick={() => {
+                setShowConcentratedLiqIntro(true);
+              }}
             />
-          )}
-        </section>
-      )}
+            {showConcentratedLiqIntro && (
+              <ConcentratedLiquidityLearnMoreModal
+                isOpen
+                onRequestClose={() => setShowConcentratedLiqIntro(false)}
+              />
+            )}
+          </section>
+        )}
       {featureFlags.concentratedLiquidity &&
         queryOsmosis.queryAccountsPositions.get(account?.address ?? "")
           .positions.length > 0 && (

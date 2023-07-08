@@ -13,7 +13,7 @@ export class ObservableQueryCfmmToConcentratedLiquidityPoolLink extends Observab
     kvStore: KVStore,
     chainId: string,
     chainGetter: ChainGetter,
-    cfmmPoolId: string
+    protected readonly cfmmPoolId: string
   ) {
     super(
       kvStore,
@@ -23,6 +23,10 @@ export class ObservableQueryCfmmToConcentratedLiquidityPoolLink extends Observab
     );
 
     makeObservable(this);
+  }
+
+  protected canFetch(): boolean {
+    return Boolean(this.cfmmPoolId);
   }
 
   /** Returns the ID of the linked concentrated liquidity pool if it exists, `false` if there's no link, or `undefined` if the request is in flight. */

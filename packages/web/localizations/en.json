@@ -122,15 +122,7 @@
     "title": "Supercharge your {pair}",
     "caption": "Supercharged positions allow you to earn additional yield. Learn how it works in 30 seconds, or upgrade your position in a few clicks.",
     "primaryCta": "Upgrade to Supercharged",
-    "secondaryCta": "Learn in 30 seconds",
-    "migration": {
-      "title": "Upgrade your position",
-      "availableSharesTitle": "Migrate available shares",
-      "availableSharesDescription": "Migrate unbonded shares to the new Supercharged pool. Shares will automatically be converted into the underlying assets and deposited into the new pool as a full range position.",
-      "balance": "Your balance:",
-      "bondedSharesTitle": "Migrate bonded shares",
-      "bondedSharesDescription": "Migrate bonded or Superfluid staked shares to the new Supercharged pool. If shares are only bonded they will be unbonded, converted into the underlying assets, and deposited into the new pool as a full range position. Otherwise if they are Superfluid staked, they will be converted into a Superfluid staked full range position."
-    }
+    "secondaryCta": "Learn in 30 seconds"
   },
   "createFirstPositionCta": {
     "title": "Create your first Supercharged position",

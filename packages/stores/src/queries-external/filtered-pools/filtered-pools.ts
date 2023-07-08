@@ -134,7 +134,8 @@ export class ObservableQueryFilteredPools
       if (
         ((this.response && !this.isFetching) || !this._canFetch) &&
         !this._pools.has(id) &&
-        !this._fetchingPoolIds.has(id)
+        !this._fetchingPoolIds.has(id) &&
+        Boolean(id)
       ) {
         this._fetchingPoolIds.add(id);
         ObservableQueryPool.makeWithoutRaw(
@@ -167,7 +168,7 @@ export class ObservableQueryFilteredPools
     (id: string) => {
       if (this._pools.has(id)) return true;
       else this.fetchRemainingPools();
-      if (this._nonExistentPoolsSet.has(id)) return false; // getPool was also used
+      if (!Boolean(id) || this._nonExistentPoolsSet.has(id)) return false; // getPool was also used
 
       const r = this.response;
       if (r && !this.isFetching) {
