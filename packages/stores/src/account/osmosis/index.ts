@@ -1524,7 +1524,7 @@ export class OsmosisAccountImpl {
       owner: this.address,
       coins: primitiveTokens,
       duration: {
-        seconds: BigInt(duration),
+        seconds: BigInt(Math.floor(duration / 1_000)),
         nanos: duration * 1_000_000_000,
       },
     });
