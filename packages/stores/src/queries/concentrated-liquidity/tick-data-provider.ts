@@ -45,10 +45,6 @@ export class ConcentratedLiquidityPoolTickDataProvider
       currentTickLiquidity: pool.currentTickLiquidity,
     });
 
-    // console.log("boundTickIndex", boundTickIndex.toString())
-    // console.log("nextTicksRampMultiplier", this.nextTicksRampMultiplier.toString())
-    // console.log("maxNumRequeriesPerDenom", this.maxNumRequeriesPerDenom.toString())
-
     if (
       getMoreTicks &&
       incrementCounterMap(this._triesPerDenomOutGivenIn, tokenIn.denom) >
