@@ -8,7 +8,10 @@ import {
   tickToSqrtPrice,
 } from "@osmosis-labs/math/src/pool/concentrated";
 import { makeSwapStrategy } from "@osmosis-labs/math/src/pool/concentrated/swap-strategy";
-import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
+import {
+  ConcentratedLiquidityPool,
+  NotEnoughLiquidityError,
+} from "@osmosis-labs/pools";
 
 import {
   chainId,
@@ -393,8 +396,6 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
         .getChain(chainId)
         .forceFindCurrency(tokenOutDenom);
 
-      console.log(queryPool!.id);
-
       const quote = await (
         queryPool!.pool as ConcentratedLiquidityPool
       ).getTokenOutByTokenIn(
@@ -420,6 +421,50 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
 
     test.only("swap in the direction with far away liqudity with NO full range position existing, ofz (right)", async () => {
       // creating positions with same initial amounts makes current tick be zero
+      await createPosition(new Int(2000000), maxTick, "1000000", "1000000");
+
+      const tokenInAmount = new Int(1000000);
+
+      const amountOut = await (
+        queryPool!.pool as ConcentratedLiquidityPool
+      ).getTokenOutByTokenIn(
+        { denom: tokenInDenom, amount: tokenInAmount },
+        tokenOutDenom
+      );
+
+      const tx = await swapExactIn(
+        tokenInDenom,
+        tokenOutDenom,
+        tokenInAmount.toString(),
+        amountOut.amount.toString()
+      );
+
+      // validate swap event
+      const swapEvent = getEventFromTx(tx, "transfer");
+
+      // filter token trasfers and get amounts by denom
+      const transferAttributes = swapEvent.attributes.filter(
+        (attr: any) => attr.key == "amount"
+      );
+
+      const actualAmountsMapByDenom =
+        getAmountsTransferredMapFromEventAttributes(transferAttributes);
+
+      // Validate amounts in
+      validateAmounts(
+        tokenInAmount,
+        actualAmountsMapByDenom.get(tokenInDenom)!
+      );
+
+      // Validate amounts out
+      validateAmounts(
+        amountOut.amount,
+        actualAmountsMapByDenom.get(tokenOutDenom)!
+      );
+    });
+
+    it("swap in the direction with far away liqudity with NO full range position existing, ofz (right) (fails due to lack of precision, needs fixing)", async () => {
+      // creating positions with same initial amounts makes current tick be zero
       await createPosition(
         maxTick.sub(new Int(1000)),
         maxTick,
@@ -427,8 +472,46 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
         defaultLPAmount
       );
 
-      //   console.log(tickToSqrtPrice(maxTick.sub(new Int(1000))).toString());
-      //   console.log(tickToSqrtPrice(maxTick).toString());
+      try {
+        await (
+          queryPool!.pool as ConcentratedLiquidityPool
+        ).getTokenOutByTokenIn(
+          { denom: tokenInDenom, amount: new Int(defaultTokenInAmount) },
+          tokenOutDenom
+        );
+      } catch (e: any) {
+        // Note, this should not happen and is likely due to the lack of precision.
+        // This test should be fixed once precision is increased.
+        expect(e.message).toContain(
+          "Failed to advance the swap step while estimating slippage bound"
+        );
+      }
+    });
+
+    it("swap fails due to not getting more than 1 unit out (error needs changing)", async () => {
+      // creating positions with same initial amounts makes current tick be zero
+      await createPosition(
+        new Int(142000000),
+        maxTick,
+        defaultLPAmount,
+        defaultLPAmount
+      );
+
+      try {
+        await (
+          queryPool!.pool as ConcentratedLiquidityPool
+        ).getTokenOutByTokenIn(
+          { denom: tokenInDenom, amount: new Int(defaultTokenInAmount) },
+          tokenOutDenom
+        );
+      } catch (e: any) {
+        // Need to change to a new "NotEnoughTokenOutError": https://app.clickup.com/t/862k3p20d
+        expect(e instanceof NotEnoughLiquidityError).toBeTruthy();
+      }
+    });
+
+    it("swap in the direction with far away liqudity with full range position existing, ofz (right)", async () => {
+      await createDefaultValidPositions(maxTick.sub(new Int(100)), maxTick);
 
       const tokenOutCurrency = chainStore
         .getChain(chainId)
