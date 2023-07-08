@@ -1476,6 +1476,14 @@ export class OsmosisAccountImpl {
           this.queries.queryAccountsPositions
             .get(this.address)
             .waitFreshResponse();
+
+          // refresh superfluid delegation of positions
+          this.queries.queryAccountsSuperfluidDelegatedPositions
+            .get(this.address)
+            .waitFreshResponse();
+          this.queries.queryAccountsSuperfluidUndelegatingPositions
+            .get(this.address)
+            .waitFreshResponse();
         }
 
         onFulfill?.(tx);
