@@ -74,9 +74,6 @@ export const MyPositionCard: FunctionComponent<{
       positionId
     );
 
-  const isSuperfluidStaked =
-    Boolean(superfluidDelegation) || Boolean(superfluidUndelegation);
-
   const incentivesApr =
     poolId && lowerTick && upperTick
       ? queriesExternalStore.queryPositionsRangeApr
@@ -126,6 +123,7 @@ export const MyPositionCard: FunctionComponent<{
                   upperPrice={upperPrices.price}
                   fullRange={isFullRange}
                   isSuperfluid={Boolean(superfluidDelegation)}
+                  isSuperfluidUnstaking={Boolean(superfluidUndelegation)}
                 />
               )}
           </div>
@@ -151,7 +149,9 @@ export const MyPositionCard: FunctionComponent<{
             <PositionDataGroup
               label={t("clPositions.incentives")}
               value={`${formatPretty(incentivesApr.maxDecimals(0))} APR`}
-              isSuperfluid={isSuperfluidStaked}
+              isSuperfluid={
+                Boolean(superfluidDelegation) || Boolean(superfluidUndelegation)
+              }
             />
           )}
         </div>
