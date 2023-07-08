@@ -1,5 +1,6 @@
 import { Coin, Dec, Int } from "@keplr-wallet/unit";
 
+import { maxTick } from "../const";
 import { calcInGivenOut, ConcentratedLiquidityMath } from "../quotes";
 const { calcOutGivenIn } = ConcentratedLiquidityMath;
 
@@ -1373,6 +1374,47 @@ describe("calcInGivenOut matches chain code", () => {
           swapFee,
         })
       ).toEqual("no-more-ticks");
+    });
+  });
+
+  describe("edge cases found in live testing", () => {
+    it("one for zero at large ticks, no progress is being made", () => {
+      const tokenIn = new Coin("usdc", "42000000");
+      const tokenDenom0 = "eth";
+      const poolLiquidity2 = new Dec("0");
+      // found by printing liquidity net values to console with go test
+      const inittedTicks = [
+        {
+          tickIndex: maxTick.sub(new Int(1000)),
+          netLiquidity: new Dec(
+            "199984999874993749609347654199057.829367574974588761"
+          ),
+        },
+        {
+          tickIndex: maxTick,
+          netLiquidity: new Dec(
+            "-199984999874993749609347654199057.829367574974588761"
+          ),
+        },
+      ];
+      const curSqrtPrice = new Dec("1.000000000000000000");
+      const swapFee = new Dec("0.001");
+
+      try {
+        calcOutGivenIn({
+          tokenIn,
+          tokenDenom0,
+          poolLiquidity: poolLiquidity2,
+          inittedTicks,
+          curSqrtPrice,
+          swapFee,
+        });
+        fail("should have thrown");
+      } catch (e: any) {
+        expect(e.message).toContain(
+          "Failed to advance the swap step while estimating slippage bound"
+        );
+      }
     });
   });
 });
