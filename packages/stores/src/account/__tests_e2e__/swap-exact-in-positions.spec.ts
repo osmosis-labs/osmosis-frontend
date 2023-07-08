@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Currency } from "@keplr-wallet/types/build/currency";
 import { Dec, Int } from "@keplr-wallet/unit";
 import { maxTick, minTick } from "@osmosis-labs/math";
 import {
@@ -15,7 +14,6 @@ import {
 
 import {
   chainId,
-  deepContained,
   getAmountsTransferredMapFromEvent as getAmountsTransferredMapFromEventAttributes,
   getAttributeFromEvent,
   getEventFromTx,
@@ -44,7 +42,13 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
 
   const uion = "uion";
   const uosmo = "uosmo";
-  //   const spreadFactor = new Dec("0.001");
+
+  const defaultTokenInDenom = uosmo;
+  const defaultTokenOutDenom = uion;
+
+  const defaultLPAmount = "1000";
+
+  const spreadFactor = new Dec("0.001");
 
   beforeAll(async () => {
     await initAccount(accountStore, chainId);
@@ -74,147 +78,8 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
   });
 
   describe("Positions above current tick 0 (swapping one for zero, right)", () => {
-    const tokenInDenom = uosmo;
-    const tokenOutDenom = uion;
     const defaultTokenInAmount = "10";
-    const defaultLPAmount = "1000";
-
-    // creates 2 positions with default amounts:
-    // 1. full range
-    // 2. narrow range with given ticks.
-    async function createDefaultValidPositions(
-      secondPositionLowerTick: Int,
-      secondPositionUpperTick: Int
-    ) {
-      // create full range, otherwise it currently cannot estimate due to zero liquidity
-      // at current tick
-      await createPosition();
-      // creating positions with same initial amounts makes current tick be zero
-      await createPosition(
-        secondPositionLowerTick,
-        secondPositionUpperTick,
-        defaultLPAmount,
-        defaultLPAmount
-      );
-    }
-
-    function getLiquidityDecFromEvent(tx: any) {
-      const event = getEventFromTx(tx, "create_position");
-      return new Dec(getAttributeFromEvent(event, "liquidity").value);
-    }
-
-    // note: correctness of strategy is assume
-    function estimateSwapExactAmountOutGivenIn(
-      tokenInAmount: Int,
-      ranges: Range[]
-    ) {
-      // estimate quote
-      const strategy = makeSwapStrategy(
-        true,
-        tickToSqrtPrice(maxTick),
-        new Dec("0.001")
-      );
-
-      let tokenInAmountRemainingDec = tokenInAmount.toDec();
-      let tokenOutTotal = new Dec(0);
-      for (
-        let i = 0;
-        i < ranges.length && tokenInAmountRemainingDec.gt(new Dec(0));
-        i++
-      ) {
-        const range = ranges[i];
-        const { amountInConsumed, amountOutComputed, feeChargeTotal } =
-          strategy.computeSwapStepOutGivenIn(
-            tickToSqrtPrice(range.lowerTick),
-            tickToSqrtPrice(range.upperTick),
-            range.liquidity,
-            tokenInAmountRemainingDec
-          );
-
-        console.log(
-          "step " + i,
-          tokenInAmountRemainingDec.toString(),
-          amountInConsumed.toString(),
-          amountOutComputed.toString(),
-          feeChargeTotal.toString()
-        );
-
-        tokenInAmountRemainingDec = tokenInAmountRemainingDec
-          .sub(amountInConsumed)
-          .sub(feeChargeTotal);
-        tokenOutTotal = tokenOutTotal.add(amountOutComputed);
-      }
-
-      return tokenOutTotal;
-    }
-
-    // note: correctness of strategy is assume
-    function estimateAmountZeroOutAndInToTick(
-      tickToSwapTo: Int,
-      ranges: Range[]
-    ) {
-      const spreadFactor = new Dec("0.001");
-
-      // estimate quote
-      let tokenOutTotal = new Dec(0);
-      let tokenInTotal = new Dec(0);
-      for (
-        let i = 0;
-        i < ranges.length && ranges[i].lowerTick < tickToSwapTo;
-        i++
-      ) {
-        const range = ranges[i];
-
-        console.log("test lower tick", range.lowerTick.toString());
-        console.log("test upper tick", range.upperTick.toString());
-        console.log("test liquidity", range.liquidity.toString());
-
-        const amountZeroOut = calcAmount0Delta(
-          range.liquidity,
-          tickToSqrtPrice(range.lowerTick),
-          tickToSqrtPrice(range.upperTick),
-          false
-        );
-
-        const amountOneIn = calcAmount1Delta(
-          range.liquidity,
-          tickToSqrtPrice(range.lowerTick),
-          tickToSqrtPrice(range.upperTick),
-          true
-        );
-
-        // fee charge
-        const feeCharge = amountOneIn
-          .mul(spreadFactor)
-          .quo(new Dec(1).sub(spreadFactor));
-
-        console.log("test amountOneIn", amountOneIn.toString());
-        console.log("test fee", feeCharge.toString());
-        console.log("test upper amountZerOut", amountZeroOut.toString());
-        console.log("test liquidity", range.liquidity.toString());
-
-        tokenOutTotal = tokenOutTotal.add(amountZeroOut);
-        tokenInTotal = tokenInTotal.add(amountOneIn).add(feeCharge);
-      }
-
-      const result: EstimateResult = {
-        amountIn: tokenInTotal,
-        amountOut: tokenOutTotal,
-      };
-
-      return result;
-    }
-
-    function validateAmounts(actualAmount: Int, expectedAmount: Int) {
-      if (!expectedAmount.equals(actualAmount)) {
-        throw new Error(
-          "amount mismatch " +
-            actualAmount.toString() +
-            " != " +
-            expectedAmount.toString()
-        );
-      }
-    }
+    const defaultTokenInAmountInt = new Int(defaultTokenInAmount);
 
     it("swap across multiple initialized ticks near max spot price", async () => {
       // max tick - arbitrary number
@@ -245,6 +110,7 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
       tx = await createPosition(nr3Lower, nr3Upper);
       const nr3Liquidity = getLiquidityDecFromEvent(tx);
 
+      // Liquidity layout in the pool for this test.
       const ranges: Range[] = [
         {
           lowerTick: new Int(0),
@@ -276,7 +142,7 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
         },
       ];
 
-      // swap arbitrary small amount
+      // Swap arbitrary small amount
       const tokenInAmount = new Int(1000);
 
       const tokenOutTotal = estimateSwapExactAmountOutGivenIn(
@@ -284,20 +150,20 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
         ranges
       );
 
-      // get quote
+      // Get quote
       const quote = await (
         queryPool!.pool as ConcentratedLiquidityPool
       ).getTokenOutByTokenIn(
-        { denom: tokenInDenom, amount: tokenInAmount },
-        tokenOutDenom
+        { denom: defaultTokenInDenom, amount: tokenInAmount },
+        defaultTokenOutDenom
       );
 
       tokenOutTotal.truncate();
 
-      // validate results
+      // Validate results
       validateAmounts(tokenOutTotal.truncate(), quote.amount);
 
-      // estimate fee charge to one of the ticks
+      // Estimate fee charge to one of the ticks
       const expectedAmountsToNR2Upper = estimateAmountZeroOutAndInToTick(
         nr2Upper,
         ranges
@@ -307,52 +173,33 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
         expectedAmountsToNR2Upper.amountOut.truncate();
       const amountInNR2UpperInt = expectedAmountsToNR2Upper.amountIn.truncate();
 
-      // run quote estimation logic
+      // Run quote estimation logic
       const actualAmountNR2Upper = await (
         queryPool!.pool as ConcentratedLiquidityPool
       ).getTokenOutByTokenIn(
         {
-          denom: tokenInDenom,
+          denom: defaultTokenInDenom,
           amount: amountInNR2UpperInt,
         },
-        tokenOutDenom
+        defaultTokenOutDenom
       );
 
-      // validate results
+      // Validate results
       validateAmounts(amountOutNR2UpperInt, actualAmountNR2Upper.amount);
 
-      // swap in using quote
-      const tx2 = await swapExactIn(
-        tokenInDenom,
-        tokenOutDenom,
+      // Swap in using quoted amount
+      tx = await swapExactIn(
+        defaultTokenInDenom,
+        defaultTokenOutDenom,
         amountInNR2UpperInt.toString(),
         actualAmountNR2Upper.amount.toString()
       );
 
-      // validate swap event
-      const swapEvent = getEventFromTx(tx2, "transfer");
-
-      // filter token trasfers and get amounts by denom
-      const transferAttributes = swapEvent.attributes.filter(
-        (attr: any) => attr.key == "amount"
-      );
-      console.log("attributes", transferAttributes);
-      const actualAmountsMapByDenom =
-        getAmountsTransferredMapFromEventAttributes(transferAttributes);
-
-      console.log("amountIn FE", amountInNR2UpperInt.toString());
-      console.log("amountOut FE", amountOutNR2UpperInt.toString());
-
-      // Validate amounts out
-      validateAmounts(
+      // Validate amounts
+      validateAmountsFromTxEvents(
+        tx,
         amountInNR2UpperInt,
-        actualAmountsMapByDenom.get(tokenInDenom)!
-      );
-
-      // Validate amounts in
-      validateAmounts(
-        amountOutNR2UpperInt,
-        actualAmountsMapByDenom.get(tokenOutDenom)!
+        amountOutNR2UpperInt
       );
     });
 
@@ -363,63 +210,44 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
       const quote = await (
         queryPool!.pool as ConcentratedLiquidityPool
       ).getTokenOutByTokenIn(
-        { denom: tokenInDenom, amount: new Int(defaultTokenInAmount) },
-        tokenOutDenom
+        { denom: defaultTokenInDenom, amount: defaultTokenInAmountInt },
+        defaultTokenOutDenom
       );
 
       // swap in using quote
       const tx = await swapExactIn(
-        tokenInDenom,
-        tokenOutDenom,
+        defaultTokenInDenom,
+        defaultTokenOutDenom,
         defaultTokenInAmount,
         quote.amount.toString()
       );
 
-      // basic assert
-      const tokenOutCurrency = chainStore
-        .getChain(chainId)
-        .forceFindCurrency(tokenOutDenom);
-
-      deepCompareSwapTx(
-        tx,
-        defaultTokenInAmount,
-        tokenInDenom,
-        quote.amount,
-        tokenOutCurrency
-      );
+      // Validate amounts
+      validateAmountsFromTxEvents(tx, defaultTokenInAmountInt, quote.amount);
     });
 
     it("swap in the direction with far away liqudity with full range position existing, ofz (right)", async () => {
       await createDefaultValidPositions(maxTick.sub(new Int(100)), maxTick);
 
-      const tokenOutCurrency = chainStore
-        .getChain(chainId)
-        .forceFindCurrency(tokenOutDenom);
-
       const quote = await (
         queryPool!.pool as ConcentratedLiquidityPool
       ).getTokenOutByTokenIn(
-        { denom: tokenInDenom, amount: new Int(defaultTokenInAmount) },
-        tokenOutDenom
+        { denom: defaultTokenInDenom, amount: defaultTokenInAmountInt },
+        defaultTokenOutDenom
       );
 
       const tx = await swapExactIn(
-        tokenInDenom,
-        tokenOutDenom,
+        defaultTokenInDenom,
+        defaultTokenOutDenom,
         defaultTokenInAmount,
         quote.amount.toString()
       );
 
-      deepCompareSwapTx(
-        tx,
-        defaultTokenInAmount,
-        tokenInDenom,
-        quote.amount,
-        tokenOutCurrency
-      );
+      // Validate amounts
+      validateAmountsFromTxEvents(tx, defaultTokenInAmountInt, quote.amount);
     });
 
-    test.only("swap in the direction with far away liqudity with NO full range position existing, ofz (right)", async () => {
+    it("swap in the direction with far away liqudity with NO full range position existing, ofz (right)", async () => {
       // creating positions with same initial amounts makes current tick be zero
       await createPosition(new Int(2000000), maxTick, "1000000", "1000000");
 
@@ -428,39 +256,19 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
       const amountOut = await (
         queryPool!.pool as ConcentratedLiquidityPool
       ).getTokenOutByTokenIn(
-        { denom: tokenInDenom, amount: tokenInAmount },
-        tokenOutDenom
+        { denom: defaultTokenInDenom, amount: tokenInAmount },
+        defaultTokenOutDenom
       );
 
       const tx = await swapExactIn(
-        tokenInDenom,
-        tokenOutDenom,
+        defaultTokenInDenom,
+        defaultTokenOutDenom,
         tokenInAmount.toString(),
         amountOut.amount.toString()
       );
 
-      // validate swap event
-      const swapEvent = getEventFromTx(tx, "transfer");
-
-      // filter token trasfers and get amounts by denom
-      const transferAttributes = swapEvent.attributes.filter(
-        (attr: any) => attr.key == "amount"
-      );
-
-      const actualAmountsMapByDenom =
-        getAmountsTransferredMapFromEventAttributes(transferAttributes);
-
-      // Validate amounts in
-      validateAmounts(
-        tokenInAmount,
-        actualAmountsMapByDenom.get(tokenInDenom)!
-      );
-
-      // Validate amounts out
-      validateAmounts(
-        amountOut.amount,
-        actualAmountsMapByDenom.get(tokenOutDenom)!
-      );
+      // Validate amounts
+      validateAmountsFromTxEvents(tx, tokenInAmount, amountOut.amount);
     });
 
     it("swap in the direction with far away liqudity with NO full range position existing, ofz (right) (fails due to lack of precision, needs fixing)", async () => {
@@ -476,8 +284,8 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
         await (
           queryPool!.pool as ConcentratedLiquidityPool
         ).getTokenOutByTokenIn(
-          { denom: tokenInDenom, amount: new Int(defaultTokenInAmount) },
-          tokenOutDenom
+          { denom: defaultTokenInDenom, amount: defaultTokenInAmountInt },
+          defaultTokenOutDenom
         );
       } catch (e: any) {
         // Note, this should not happen and is likely due to the lack of precision.
@@ -501,8 +309,8 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
         await (
           queryPool!.pool as ConcentratedLiquidityPool
         ).getTokenOutByTokenIn(
-          { denom: tokenInDenom, amount: new Int(defaultTokenInAmount) },
-          tokenOutDenom
+          { denom: defaultTokenInDenom, amount: defaultTokenInAmountInt },
+          defaultTokenOutDenom
         );
       } catch (e: any) {
         // Need to change to a new "NotEnoughTokenOutError": https://app.clickup.com/t/862k3p20d
@@ -513,33 +321,22 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
     it("swap in the direction with far away liqudity with full range position existing, ofz (right)", async () => {
       await createDefaultValidPositions(maxTick.sub(new Int(100)), maxTick);
 
-      const tokenOutCurrency = chainStore
-        .getChain(chainId)
-        .forceFindCurrency(tokenOutDenom);
-
-      console.log(queryPool!.id);
-
       const quote = await (
         queryPool!.pool as ConcentratedLiquidityPool
       ).getTokenOutByTokenIn(
-        { denom: tokenInDenom, amount: new Int(defaultTokenInAmount) },
-        tokenOutDenom
+        { denom: defaultTokenInDenom, amount: defaultTokenInAmountInt },
+        defaultTokenOutDenom
       );
 
       const tx = await swapExactIn(
-        tokenInDenom,
-        tokenOutDenom,
+        defaultTokenInDenom,
+        defaultTokenOutDenom,
         defaultTokenInAmount,
         quote.amount.toString()
       );
 
-      deepCompareSwapTx(
-        tx,
-        defaultTokenInAmount,
-        tokenInDenom,
-        quote.amount,
-        tokenOutCurrency
-      );
+      // Validate amounts
+      validateAmountsFromTxEvents(tx, defaultTokenInAmountInt, quote.amount);
     });
 
     it("fails to swap in the direction where no liquidity exists ", async () => {
@@ -547,8 +344,8 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
         await (
           queryPool!.pool as ConcentratedLiquidityPool
         ).getTokenOutByTokenIn(
-          { denom: tokenInDenom, amount: new Int(defaultTokenInAmount) },
-          tokenOutDenom
+          { denom: defaultTokenInDenom, amount: defaultTokenInAmountInt },
+          defaultTokenOutDenom
         );
         fail("should have thrown");
       } catch (e) {
@@ -632,46 +429,156 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
     });
   }
 
-  /** Deep compare the result tx against the quote amount. */
-  function deepCompareSwapTx(
-    tx: any,
-    tokenInAmount: string,
-    tokenInMinDenom: string,
-    quoteAmount: Int,
-    tokenOutCurrency: Currency
+  // creates 2 positions with default amounts:
+  // 1. full range
+  // 2. narrow range with given ticks.
+  async function createDefaultValidPositions(
+    secondPositionLowerTick: Int,
+    secondPositionUpperTick: Int
   ) {
-    // deep compare key events from tx result
-    deepContained(
-      {
-        type: "message",
-        attributes: [
-          {
-            key: "action",
-            value: "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
-          },
-          { key: "module", value: "poolmanager" },
-          {
-            key: "sender",
-            value: account!.address,
-          },
-        ],
-      },
-      getEventFromTx(tx, "message")
+    // create full range, otherwise it currently cannot estimate due to zero liquidity
+    // at current tick
+    await createPosition();
+    // creating positions with same initial amounts makes current tick be zero
+    await createPosition(
+      secondPositionLowerTick,
+      secondPositionUpperTick,
+      defaultLPAmount,
+      defaultLPAmount
+    );
+  }
+
+  function getLiquidityDecFromEvent(tx: any) {
+    const event = getEventFromTx(tx, "create_position");
+    return new Dec(getAttributeFromEvent(event, "liquidity").value);
+  }
+
+  // note: correctness of strategy is assume
+  function estimateSwapExactAmountOutGivenIn(
+    tokenInAmount: Int,
+    ranges: Range[]
+  ) {
+    // estimate quote
+    const strategy = makeSwapStrategy(
+      true,
+      tickToSqrtPrice(maxTick),
+      spreadFactor
     );
 
-    // make sure amounts match
-    deepContained(
-      {
-        type: "transfer",
-        attributes: [
-          { key: "amount", value: tokenInAmount + tokenInMinDenom },
-          {
-            key: "amount",
-            value: quoteAmount.toString() + tokenOutCurrency.coinMinimalDenom,
-          },
-        ],
-      },
-      getEventFromTx(tx, "transfer")
+    let tokenInAmountRemainingDec = tokenInAmount.toDec();
+    let tokenOutTotal = new Dec(0);
+    for (
+      let i = 0;
+      i < ranges.length && tokenInAmountRemainingDec.gt(new Dec(0));
+      i++
+    ) {
+      const range = ranges[i];
+      const { amountInConsumed, amountOutComputed, feeChargeTotal } =
+        strategy.computeSwapStepOutGivenIn(
+          tickToSqrtPrice(range.lowerTick),
+          tickToSqrtPrice(range.upperTick),
+          range.liquidity,
+          tokenInAmountRemainingDec
+        );
+
+      tokenInAmountRemainingDec = tokenInAmountRemainingDec
+        .sub(amountInConsumed)
+        .sub(feeChargeTotal);
+      tokenOutTotal = tokenOutTotal.add(amountOutComputed);
+    }
+
+    return tokenOutTotal;
+  }
+
+  // note: correctness of strategy is assume
+  function estimateAmountZeroOutAndInToTick(
+    tickToSwapTo: Int,
+    ranges: Range[]
+  ) {
+    // estimate quote
+    let tokenOutTotal = new Dec(0);
+    let tokenInTotal = new Dec(0);
+    for (
+      let i = 0;
+      i < ranges.length && ranges[i].lowerTick < tickToSwapTo;
+      i++
+    ) {
+      const range = ranges[i];
+
+      const amountZeroOut = calcAmount0Delta(
+        range.liquidity,
+        tickToSqrtPrice(range.lowerTick),
+        tickToSqrtPrice(range.upperTick),
+        false
+      );
+
+      const amountOneIn = calcAmount1Delta(
+        range.liquidity,
+        tickToSqrtPrice(range.lowerTick),
+        tickToSqrtPrice(range.upperTick),
+        true
+      );
+
+      // fee charge
+      const feeCharge = amountOneIn
+        .mul(spreadFactor)
+        .quo(new Dec(1).sub(spreadFactor));
+
+      tokenOutTotal = tokenOutTotal.add(amountZeroOut);
+      tokenInTotal = tokenInTotal.add(amountOneIn).add(feeCharge);
+    }
+
+    const result: EstimateResult = {
+      amountIn: tokenInTotal,
+      amountOut: tokenOutTotal,
+    };
+
+    return result;
+  }
+
+  function validateAmounts(actualAmount: Int, expectedAmount: Int) {
+    if (!expectedAmount.equals(actualAmount)) {
+      throw new Error(
+        "amount mismatch " +
+          actualAmount.toString() +
+          " != " +
+          expectedAmount.toString()
+      );
+    }
+  }
+
+  // returns map of amountsIn and Out by denom from tx's events
+  function getActualAmountFromTx(tx: any) {
+    // validate swap event
+    const swapEvent = getEventFromTx(tx, "transfer");
+
+    // filter token trasfers and get amounts by denom
+    const transferAttributes = swapEvent.attributes.filter(
+      (attr: any) => attr.key == "amount"
+    );
+    const actualAmountsMapByDenom =
+      getAmountsTransferredMapFromEventAttributes(transferAttributes);
+
+    return actualAmountsMapByDenom;
+  }
+
+  function validateAmountsFromTxEvents(
+    tx: any,
+    tokenInAmount: Int,
+    amountOut: Int
+  ) {
+    const actualAmountsMapByDenom = getActualAmountFromTx(tx);
+
+    // Validate amounts in
+    validateAmounts(
+      tokenInAmount,
+      actualAmountsMapByDenom.get(defaultTokenInDenom)!
+    );
+
+    // Validate amounts out
+    validateAmounts(
+      amountOut,
+      actualAmountsMapByDenom.get(defaultTokenOutDenom)!
     );
   }
 });
