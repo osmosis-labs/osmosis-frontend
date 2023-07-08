@@ -582,6 +582,7 @@ export class OsmosisAccountImpl {
     upperTick: Int,
     baseDeposit?: { currency: Currency; amount: string },
     quoteDeposit?: { currency: Currency; amount: string },
+    maxSlippage = DEFAULT_SLIPPAGE,
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
@@ -630,8 +631,63 @@ export class OsmosisAccountImpl {
           .filter((coin): coin is Coin => coin !== undefined)
           .sort((a, b) => a?.denom.localeCompare(b?.denom))
           .map(({ denom, amount }) => ({ denom, amount: amount.toString() }));
-        const token_min_amount0 = "0";
-        const token_min_amount1 = "0";
+
+        // full tolerance if 0 sqrt price so no positions
+        let token_min_amount0 = "0";
+        let token_min_amount1 = "0";
+
+        // 3 cases:
+        // - If position is active, consists of both tokens
+        // - If position is under current tick, consists only of token 1.
+        // - If position is above current tick, consists only of token 0.
+        if (
+          !queryPool.concentratedLiquidityPoolInfo?.currentSqrtPrice.isZero()
+        ) {
+          const currentSqrtPrice =
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+            queryPool.concentratedLiquidityPoolInfo?.currentSqrtPrice!;
+
+          const currentTick = OsmosisMath.priceToTick(
+            currentSqrtPrice.mul(currentSqrtPrice)
+          );
+
+          const slippageMultiplier = new Dec(1).sub(
+            new Dec(maxSlippage).quo(new Dec(100))
+          );
+
+          if (currentTick >= lowerTick && currentTick < upperTick) {
+            // Position consists of both tokens
+            token_min_amount0 = baseCoin
+              ? new Dec(baseCoin.amount)
+                  .mul(slippageMultiplier)
+                  .truncate()
+                  .toString()
+              : token_min_amount0;
+
+            token_min_amount1 = quoteCoin
+              ? new Dec(quoteCoin.amount)
+                  .mul(slippageMultiplier)
+                  .truncate()
+                  .toString()
+              : token_min_amount1;
+          } else if (currentTick < lowerTick) {
+            // Position consists of 1 token only.
+            token_min_amount0 = baseCoin
+              ? new Dec(baseCoin.amount)
+                  .mul(slippageMultiplier)
+                  .truncate()
+                  .toString()
+              : token_min_amount0;
+          } else if (currentTick >= upperTick) {
+            // Position consists of 1 token only.
+            token_min_amount1 = quoteCoin
+              ? new Dec(quoteCoin.amount)
+                  .mul(slippageMultiplier)
+                  .truncate()
+                  .toString()
+              : token_min_amount1;
+          }
+        }
 
         const msg = this.msgOpts.clCreatePosition.messageComposer({
           poolId: BigInt(poolId),

@@ -86,6 +86,7 @@ describe("Create CL Positions Txs", () => {
               amount: osmoSwapAmount,
             },
             undefined,
+            undefined,
             (tx) => {
               if (tx.code) reject(tx.rawLog);
               else resolve(tx);
@@ -124,6 +125,7 @@ describe("Create CL Positions Txs", () => {
               currency: ionCurrency,
               amount: ionSwapAmount,
             },
+            undefined,
             undefined,
             undefined,
             (tx) => {
@@ -313,6 +315,7 @@ describe("Create CL Positions Txs", () => {
             currency: ionCurrency,
             amount: ionSwapAmount,
           },
+          undefined,
           undefined,
           (tx) => {
             if (tx.code) reject(tx.rawLog);

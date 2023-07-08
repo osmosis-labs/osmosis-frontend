@@ -381,6 +381,7 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
             currency: ionCurrency,
             amount: ionAmount,
           },
+          "0",
           undefined,
           (tx) => {
             if (tx.code) reject(tx.rawLog);
