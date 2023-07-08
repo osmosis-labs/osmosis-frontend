@@ -16,7 +16,7 @@ module.exports = async () => {
 
     // poll for blocks so we know it's initialized and ready to receive test txs
     const instance = Axios.create({
-      baseURL: "http://207.154.252.194:1317",
+      baseURL: "http://127.0.0.1:1317",
     });
 
     // Wait for blocks to start being produced
