@@ -3823,7 +3823,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDenom: "MPWR",
         coinMinimalDenom: "umpwr",
         coinDecimals: 6,
-        //coinGeckoId: "pool:umpwr",
+        coinGeckoId: "pool:umpwr",
         coinImageUrl: "/tokens/mpwr.svg",
         isStakeCurrency: true,
         isFeeCurrency: true,
