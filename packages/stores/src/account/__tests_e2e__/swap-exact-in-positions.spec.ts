@@ -418,14 +418,17 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
       );
     });
 
-    it("swap in the direction with far away liqudity with NO full range position existing, ofz (right)", async () => {
+    test.only("swap in the direction with far away liqudity with NO full range position existing, ofz (right)", async () => {
       // creating positions with same initial amounts makes current tick be zero
       await createPosition(
-        maxTick.sub(new Int(100)),
+        maxTick.sub(new Int(1000)),
         maxTick,
         defaultLPAmount,
         defaultLPAmount
       );
+
+      //   console.log(tickToSqrtPrice(maxTick.sub(new Int(1000))).toString());
+      //   console.log(tickToSqrtPrice(maxTick).toString());
 
       const tokenOutCurrency = chainStore
         .getChain(chainId)

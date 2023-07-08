@@ -71,7 +71,6 @@ export function useAddConcentratedLiquidityConfig(
           baseDepositValue,
           quoteDepositValue,
           undefined,
-          undefined,
           (tx) => {
             if (tx.code) reject(tx.rawLog);
             else {
