@@ -3809,6 +3809,34 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://ping.pub/Centauri/tx/{txHash}",
   },
+  {
+    rpc: "https://empower-rpc.polkachu.com",
+    rest: "https://empower-api.polkachu.com",
+    chainId: "empowerchain-1",
+    chainName: "EmpowerChain",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("empower"),
+    currencies: [
+      {
+        coinDenom: "MPWR",
+        coinMinimalDenom: "umpwr",
+        coinDecimals: 6,
+        coinGeckoId: "pool:umpwr",
+        coinImageUrl: "/tokens/mpwr.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.025,
+          average: 0.025,
+          high: 0.03,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://ping.pub/empower/tx/${txHash}",
+  },
 ];
 
 const chainInfos = IS_TESTNET

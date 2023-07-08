@@ -1903,6 +1903,14 @@ export const IBCAssetInfos: (IBCAsset & {
         withdrawUrlOverride:
           "https://app.trustless.zone/multihop?from=OSMOSIS&to=PICASSO",
       },
+      {
+        counterpartyChainId: "empowerchain-1",
+        sourceChannelId: "channel-1411",
+        destChannelId: "channel-1",
+        coinMinimalDenom: "umpwr",
+        depositUrlOverride:
+          "https://tfm.com/bridge?chainTo=osmosis-1&chainFrom=empowerchain-1&token0=umpwr&token1=ibc%2FDD3938D8131F41994C1F01F4EB5233DEE9A0A5B787545B9A07A321925655BF38",
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (
