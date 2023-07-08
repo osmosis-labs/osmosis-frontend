@@ -67,6 +67,7 @@
     "outOfRange": "OUT OF RANGE",
     "fullRange": "FULL RANGE",
     "superfluidStaked": "SUPERFLUID STAKED",
+    "superfluidUnstakingStatus": "SUPERFLUID UNSTAKING",
     "currentAssets": "Current Assets",
     "principleAssets": "Principle Assets",
     "totalSpreadEarned": "Total Spread Earned",

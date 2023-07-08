@@ -21,10 +21,6 @@ export const createMsgOpts = <
   dict: Dict
 ) => dict;
 
-export async function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 export const logger = new Logger("WARN");
 
 export function getWalletEndpoints(chains: Chain[]) {
