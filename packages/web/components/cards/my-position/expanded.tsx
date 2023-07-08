@@ -110,8 +110,6 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     }
   }, [lowerPrices, upperPrices, setPriceRange]);
 
-  console.log({ superfluidDelegation, superfluidUndelegation });
-
   return (
     <div className="flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
       {activeModal === "increase" && (
