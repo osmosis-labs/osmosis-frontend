@@ -31,8 +31,8 @@ export const chainId = "localosmosis";
 
 export const TestChainInfos: (ChainInfo & Chain)[] = [
   {
-    rpc: "http://207.154.252.194:26657",
-    rest: "http://207.154.252.194:1317",
+    rpc: "http://127.0.0.1:26657",
+    rest: "http://127.0.0.1:1317",
     chainId: chainId,
     chainName: "OSMOSIS",
     /** Cosmoskit required properties */
@@ -46,12 +46,12 @@ export const TestChainInfos: (ChainInfo & Chain)[] = [
     apis: {
       rpc: [
         {
-          address: "http://207.154.252.194:26657",
+          address: "http://127.0.0.1:26657",
         },
       ],
       rest: [
         {
-          address: "http://207.154.252.194:1317",
+          address: "http://127.0.0.1:1317",
         },
       ],
     },
@@ -135,7 +135,7 @@ export class RootStore {
       this.queriesStore,
       this.chainStore,
       {
-        broadcastUrl: "http://207.154.252.194:1317/cosmos/tx/v1beta1/txs",
+        broadcastUrl: "http://127.0.0.1:1317/cosmos/tx/v1beta1/txs",
         wsObject: WebSocket as any,
       },
       OsmosisAccount.use({ queriesStore: this.queriesStore }),
