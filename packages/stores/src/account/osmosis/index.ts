@@ -1494,7 +1494,7 @@ export class OsmosisAccountImpl {
             .get(this.address)
             .waitFreshResponse();
 
-          // refresh delegation of positions
+          // refresh superfluid delegation of positions
           this.queries.queryAccountsSuperfluidDelegatedPositions
             .get(this.address)
             .waitFreshResponse();
