@@ -490,7 +490,8 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
     return tokenOutTotal;
   }
 
-  // note: correctness of strategy is assume
+  // Estimates amount zero out and amount one in necessary to swap to a specific tick
+  // Note: correctness of strategy is assumed
   function estimateAmountZeroOutAndInToTick(
     tickToSwapTo: Int,
     ranges: Range[]
