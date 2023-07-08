@@ -87,7 +87,7 @@ describe("tickToSqrtPrice", () => {
       expectedPrice: maxSpotPrice,
     },
     "Min tick and max k": {
-      tickIndex: new Int("-162000000"),
+      tickIndex: new Int("-108000000"),
       expectedPrice: minSpotPrice,
     },
     "error: tickIndex less than minimum": {
@@ -217,7 +217,7 @@ describe("estimateInitialTickBound", () => {
         currentTickLiquidity: new Dec("1517882343.751510418088349649"),
         currentSqrtPrice: new Dec("70.710678118654752440"),
 
-        expectedBoundTickIndex: new Int("-162000000"),
+        expectedBoundTickIndex: new Int("-108000000"),
       },
     },
     {
@@ -277,7 +277,7 @@ describe("estimateInitialTickBound", () => {
         currentTickLiquidity: new Dec("1517882343.751510418088349649"),
         currentSqrtPrice: new Dec("70.710678118654752440"),
 
-        expectedBoundTickIndex: new Int("-162000000"),
+        expectedBoundTickIndex: new Int("-108000000"),
       },
     },
     {
