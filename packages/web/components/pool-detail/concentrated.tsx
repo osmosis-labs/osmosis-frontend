@@ -3,6 +3,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Head from "next/head";
+import Image from "next/image";
 import React, { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
@@ -37,6 +38,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       priceStore,
       queriesStore,
       accountStore,
+      derivedDataStore,
     } = useStore();
     const { chainId } = chainStore.osmosis;
     const config = useHistoricalAndLiquidityData(chainId, poolId);
@@ -48,6 +50,14 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId)
       .osmosis!;
     const account = accountStore.getWallet(chainStore.osmosis.chainId);
+
+    // initialize pool data stores once root pool store is loaded
+    const { superfluidPoolDetail } =
+      typeof poolId === "string" && Boolean(poolId)
+        ? derivedDataStore.getForPool(poolId as string)
+        : {
+            superfluidPoolDetail: undefined,
+          };
 
     const {
       pool,
@@ -122,11 +132,24 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center">
-                  <Icon id="lightning-small" height={18} width={18} />
-                  <span className="text-supercharged-gradient body2">
-                    {t("clPositions.supercharged")}
-                  </span>
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-1.5 text-ion-400">
+                    <Icon id="lightning-small" height={18} width={18} />
+                    <span className="body2">
+                      {t("clPositions.supercharged")}
+                    </span>
+                  </div>
+                  {superfluidPoolDetail?.isSuperfluid && (
+                    <span className="body2 text-supercharged-gradient flex items-center gap-1.5">
+                      <Image
+                        alt=""
+                        src="/icons/superfluid-osmo.svg"
+                        height={18}
+                        width={18}
+                      />
+                      {t("pool.superfluidEnabled")}
+                    </span>
+                  )}
                 </div>
               </div>
               <div className="flex flex-grow justify-end gap-10 lg:justify-start xs:items-end xs:justify-between">
