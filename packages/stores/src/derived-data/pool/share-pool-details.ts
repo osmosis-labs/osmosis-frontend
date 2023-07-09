@@ -87,6 +87,14 @@ export class ObservableSharePoolDetail {
     return this.lockableDurations[this.lockableDurations.length - 1];
   }
 
+  get linkedClPoolId(): string | undefined {
+    return (
+      this.osmosisQueries.queryCfmmToConcentratedLiquidityPoolLinks.get(
+        this.poolId
+      ).concentratedLiquidityPoolId || undefined
+    );
+  }
+
   @computed
   get swapFeeApr(): RatePretty {
     const queryPool = this.osmosisQueries.queryPools.getPool(this.poolId);
@@ -102,11 +110,20 @@ export class ObservableSharePoolDetail {
   get internalGauges() {
     return this.osmosisQueries.queryLockableDurations.lockableDurations
       .map((duration) => {
-        const gaugeId =
+        let gaugeId =
           this.osmosisQueries.queryIncentivizedPools.getIncentivizedGaugeId(
             this.poolId,
             duration
           );
+
+        // if there's not a gauge already, check if there's a gauge for the linked CL pool as replacement
+        gaugeId =
+          this.linkedClPoolId && !gaugeId
+            ? this.osmosisQueries.queryIncentivizedPools.getIncentivizedGaugeId(
+                this.linkedClPoolId,
+                duration
+              )
+            : undefined;
 
         const gauge = this.externalQueries.queryActiveGauges.get(
           gaugeId ?? "1"
@@ -321,13 +338,21 @@ export class ObservableSharePoolDetail {
 
   @computed
   get allExternalGauges(): ExternalSharesGauge[] {
-    const queryPoolGuageIds = this.osmosisQueries.queryPoolsGaugeIds.get(
-      this.poolId
-    );
+    const queryPoolGuageIds =
+      this.osmosisQueries.queryPoolsGaugeIds.get(this.poolId)
+        .gaugeIdsWithDuration ?? [];
+
+    // consider the linked CL pool's external gauges as incentives for this pool
+    if (this.linkedClPoolId) {
+      queryPoolGuageIds.push(
+        ...(this.osmosisQueries.queryPoolsGaugeIds.get(this.linkedClPoolId)
+          .gaugeIdsWithDuration ?? [])
+      );
+    }
 
     return (
-      queryPoolGuageIds.gaugeIdsWithDuration
-        ?.map(({ gaugeId }) => {
+      queryPoolGuageIds
+        .map(({ gaugeId }) => {
           const gauge = this.externalQueries.queryActiveGauges.get(gaugeId);
           if (!gauge) return;
 
