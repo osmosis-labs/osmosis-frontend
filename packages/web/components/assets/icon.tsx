@@ -41,7 +41,8 @@ export type SpriteIconId =
   | "arrow-right"
   | "zoom-in"
   | "zoom-out"
-  | "refresh-ccw";
+  | "refresh-ccw"
+  | "superfluid-osmo";
 
 /**
  * It takes an icon id and returns an svg element with the corresponding icon defined in /public/icons/sprite.svg.
