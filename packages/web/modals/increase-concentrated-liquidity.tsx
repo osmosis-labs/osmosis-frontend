@@ -269,6 +269,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
               },
               [config]
             )}
+            onMax={config.setBaseDepositAmountMax}
             currentValue={config.baseDepositAmountIn.amount}
             outOfRange={config.quoteDepositOnly}
             percentage={config.depositPercentages[0]}
@@ -287,6 +288,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
               },
               [config]
             )}
+            onMax={config.setQuoteDepositAmountMax}
             currentValue={config.quoteDepositAmountIn.amount}
             outOfRange={config.baseDepositOnly}
             percentage={config.depositPercentages[1]}
