@@ -77,6 +77,14 @@ export class ZeroForOneStrategy implements SwapStrategy {
         liquidity,
         amountZeroInRemainingLessFee
       );
+
+      // This may happen due to a lack of precison. We need 36 for this to not happen.
+      // Must be fixed post-launch.
+      if (curSqrtPrice.equals(sqrtPriceNext)) {
+        throw new Error(
+          "Failed to advance the swap step while estimating slippage bound. Please try swapping in a larger amount."
+        );
+      }
     }
 
     const hasReachedTarget = sqrtPriceTarget.equals(sqrtPriceNext);
@@ -159,6 +167,14 @@ export class ZeroForOneStrategy implements SwapStrategy {
         liquidity,
         amountOneRemainingOut
       );
+
+      // This may happen due to a lack of precison. We need 36 for this to not happen.
+      // Must be fixed post-launch.
+      if (curSqrtPrice.equals(sqrtPriceNext)) {
+        throw new Error(
+          "Failed to advance the swap step while estimating slippage bound. Please try swapping in a larger amount."
+        );
+      }
     }
 
     const hasReachedTarget = sqrtPriceTarget.equals(sqrtPriceNext);
