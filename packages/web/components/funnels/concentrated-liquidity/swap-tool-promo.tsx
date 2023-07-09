@@ -7,7 +7,6 @@ import { FunctionComponent, useMemo } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
-import { buttonCVA } from "~/components/buttons";
 
 /** Show link to pools page in promo drawer if the send or out currency in swap tool is in the given list of pools.
  *  Returns null if no pools are found containing the send or out currency.
@@ -58,14 +57,7 @@ export const SwapToolPromo: FunctionComponent<{
           </span>
         )}
         <Link href="/pools?pool=concentrated" passHref>
-          <a
-            className={buttonCVA({
-              size: "sm",
-              mode: "unstyled",
-              className:
-                "text-supercharged-gradient subtitle1 group !h-fit justify-start gap-1 !px-0 py-1",
-            })}
-          >
+          <a className="text-supercharged-gradient subtitle1 group flex !h-fit items-center gap-1 py-1">
             {t("swap.promo.discoverSuperchargedPools")}
             <Icon
               id="arrow-right"
