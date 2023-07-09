@@ -42,14 +42,14 @@ export function useCfmmToClMigration(cfmmPoolId?: string): {
     )
   );
 
-  const cfmmPoolId_ = cfmmPoolId ?? firstClLinkedUserPoolId ?? "";
+  const cfmmPoolIdParam = cfmmPoolId ?? firstClLinkedUserPoolId ?? "";
 
   const { sharePoolDetail } = derivedDataStore.getForPool(
-    cfmmPoolId_ ?? firstClLinkedUserPoolId
+    cfmmPoolIdParam ?? firstClLinkedUserPoolId
   );
 
   const userCanMigrate =
-    (Boolean(cfmmPoolId_) &&
+    (Boolean(cfmmPoolIdParam) &&
       !sharePoolDetail.userAvailableShares.toDec().isZero()) ||
     sharePoolDetail.userLockedAssets.flatMap(({ lockIds }) => lockIds).length >
       0 ||
@@ -58,7 +58,7 @@ export function useCfmmToClMigration(cfmmPoolId?: string): {
 
   const concentratedPoolLink =
     osmosisQueries.queryCfmmToConcentratedLiquidityPoolLinks.get(
-      cfmmPoolId_
+      cfmmPoolIdParam
     ).concentratedLiquidityPoolId;
 
   /** Collected migration params:
@@ -111,7 +111,7 @@ export function useCfmmToClMigration(cfmmPoolId?: string): {
       (resolve, reject) =>
         osmosisAccount
           .sendMigrateSharesToFullRangeConcentratedPositionMsgs(
-            cfmmPoolId_,
+            cfmmPoolIdParam,
             lockIds,
             undefined,
             undefined,
@@ -123,7 +123,7 @@ export function useCfmmToClMigration(cfmmPoolId?: string): {
           )
           .catch(reject) // broadcast error
     );
-  }, [userCanMigrate, osmosisAccount, migrationParams, cfmmPoolId_]);
+  }, [userCanMigrate, osmosisAccount, migrationParams, cfmmPoolIdParam]);
 
   return useMemo(
     () => ({

@@ -1542,6 +1542,8 @@ export class OsmosisAccountImpl {
       owner: this.address,
       coins: primitiveTokens,
       duration: {
+        // TODO: current workaround to avoid seconds being improperly serialized by telescope
+        // remove when telescope is fixed
         seconds: BigInt(Math.floor(duration / 1_000)),
         nanos: duration * 1_000_000_000,
       },
