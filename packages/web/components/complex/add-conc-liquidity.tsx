@@ -278,6 +278,7 @@ const AddConcLiqView: FunctionComponent<
   } & CustomClasses
 > = observer(({ addLiquidityConfig, actionButton, getFiatValue, pool }) => {
   const {
+    poolId,
     range: inputRange,
     fullRange,
     baseDepositAmountIn,
@@ -290,8 +291,9 @@ const AddConcLiqView: FunctionComponent<
     setMaxRange,
     setMinRange,
     setFullRange,
-    poolId,
     setAnchorAsset,
+    setBaseDepositAmountMax,
+    setQuoteDepositAmountMax,
   } = addLiquidityConfig;
 
   const t = useTranslation();
@@ -459,6 +461,7 @@ const AddConcLiqView: FunctionComponent<
               },
               [baseDepositAmountIn, setAnchorAsset]
             )}
+            onMax={setBaseDepositAmountMax}
             currentValue={baseDepositAmountIn.amount}
             outOfRange={quoteDepositOnly}
             percentage={depositPercentages[0]}
@@ -474,6 +477,7 @@ const AddConcLiqView: FunctionComponent<
               },
               [quoteDepositAmountIn, setAnchorAsset]
             )}
+            onMax={setQuoteDepositAmountMax}
             currentValue={quoteDepositAmountIn.amount}
             outOfRange={baseDepositOnly}
             percentage={depositPercentages[1]}
