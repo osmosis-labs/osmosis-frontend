@@ -188,13 +188,7 @@
       <circle cx="4" cy="18" r="1" fill="currentColor" />
     </symbol>
 
-    <symbol
-      width="25"
-      height="24"
-      viewBox="0 0 25 24"
-      fill="none"
-      id="arrow-right"
-    >
+    <symbol viewBox="0 0 25 24" fill="none" id="arrow-right">
       <path
         d="M3 12H21.5"
         stroke="currentColor"
