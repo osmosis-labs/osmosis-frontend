@@ -9,23 +9,19 @@ import { AdBanner } from "~/components/ad-banner/ad-banner";
 import { Ad, AdCMS } from "~/components/ad-banner/ad-banner-types";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { TradeClipboard } from "~/components/trade-clipboard";
+import { ADS_BANNER_URL, EventName, IS_FRONTIER, IS_TESTNET } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useStore } from "~/stores";
-
-import { EventName, IS_FRONTIER, IS_TESTNET } from "../config";
-import { useAmplitudeAnalytics } from "../hooks";
 
 interface HomeProps {
   ads: Ad[];
 }
 
-const ADS_URL =
-  "https://raw.githubusercontent.com/osmosis-labs/fe-content/main/cms/swap-rotating-banner.json";
-
 export const getStaticProps: GetStaticProps<HomeProps> = async () => {
   let ads: Ad[] = [];
 
   try {
-    const { data: adCMS }: { data: AdCMS } = await axios.get(ADS_URL);
+    const { data: adCMS }: { data: AdCMS } = await axios.get(ADS_BANNER_URL);
     ads = adCMS.banners.filter(({ featured }) => featured);
   } catch (error) {
     console.error("Error fetching ads:", error);
