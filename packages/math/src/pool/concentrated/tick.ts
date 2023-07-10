@@ -187,9 +187,23 @@ export function estimateInitialTickBound({
     // to grab enough ticks in one round trip query.
     // Fee charge makes the target final tick smaller so drop it.
 
-    const estimate = currentSqrtPrice.sub(
-      currentTickLiquidity.quo(new Dec(tokenIn.amount))
-    );
+    let estimate;
+
+    // if there is no liquidity in the current range, set estimate constant value
+    // away from current tick in the direction of the swap
+    // if the division makes the result zero, also set it to constant value away from current tick.
+    if (
+      currentTickLiquidity.isZero() ||
+      currentTickLiquidity.quo(new Dec(tokenIn.amount)).isZero()
+    ) {
+      const currentTick = priceToTick(currentSqrtPrice.pow(new Int(2)));
+      // price is increasing so move estimate up
+      estimate = tickToSqrtPrice(currentTick.sub(constantTickEstimateMove));
+    } else {
+      estimate = currentSqrtPrice.sub(
+        currentTickLiquidity.quo(new Dec(tokenIn.amount))
+      );
+    }
 
     // Note, that if we only have a few positions in the pool, the estimate will be quite off
     // as current tick liquidity will vary from active range to the next range.
@@ -211,15 +225,14 @@ export function estimateInitialTickBound({
     let estimate: Dec;
     // if there is no liquidity in the current range, set estimate constant value
     // away from current tick in the direction of the swap
-    if (currentTickLiquidity.isZero()) {
+    // if the division makes the result zero, also set it to constant value away from current tick.
+    if (
+      currentTickLiquidity.isZero() ||
+      new Dec(tokenIn.amount).quo(currentTickLiquidity).isZero()
+    ) {
       const currentTick = priceToTick(currentSqrtPrice.pow(new Int(2)));
-      if (isZeroForOne) {
-        // price is decreasing so move estimate down
-        estimate = tickToSqrtPrice(currentTick.sub(constantTickEstimateMove));
-      } else {
-        // price is increasing so move estimate up
-        estimate = tickToSqrtPrice(currentTick.add(constantTickEstimateMove));
-      }
+      // price is increasing so move estimate up
+      estimate = tickToSqrtPrice(currentTick.add(constantTickEstimateMove));
     } else {
       estimate = currentSqrtPrice.add(
         new Dec(tokenIn.amount).quo(currentTickLiquidity)
