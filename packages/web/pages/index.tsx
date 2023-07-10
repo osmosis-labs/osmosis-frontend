@@ -18,12 +18,19 @@ interface HomeProps {
   ads: Ad[];
 }
 
-export const getStaticProps: GetStaticProps<HomeProps> = async () => {
-  const { data: adCMS }: { data: AdCMS } = await axios.get(
-    "https://raw.githubusercontent.com/osmosis-labs/fe-content/main/cms/swap-rotating-banner.json"
-  );
+const ADS_URL =
+  "https://raw.githubusercontent.com/osmosis-labs/fe-content/main/cms/swap-rotating-banner.json";
 
-  const ads = adCMS.banners.filter(({ featured }) => featured);
+export const getStaticProps: GetStaticProps<HomeProps> = async () => {
+  let ads: Ad[] = [];
+
+  try {
+    const { data: adCMS }: { data: AdCMS } = await axios.get(ADS_URL);
+
+    ads = adCMS.banners.filter(({ featured }) => featured);
+  } catch (error) {
+    console.error("Error fetching ads:", error);
+  }
 
   return { props: { ads } };
 };
