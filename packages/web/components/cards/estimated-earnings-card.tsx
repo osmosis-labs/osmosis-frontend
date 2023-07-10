@@ -17,7 +17,7 @@ const PriceCaption: FunctionComponent<{
       <span className="text-base text-white-full">{price}</span>&nbsp;/{term}
     </div>
     <div className="mt-2 text-xs">
-      <span>{osmoPrice} OSMO</span>&nbsp;/{term}
+      <span>{osmoPrice ? osmoPrice : "0 OSMO"}</span>/{term}
     </div>
   </span>
 );
@@ -46,14 +46,13 @@ export const EstimatedEarningCard: FunctionComponent<{
     new Dec(12)
   );
 
-  const caluclatedOsmoPerDay = stakeAmount?.toDec().quo(new Dec(365));
-  const caluclatedOsmoPerMonth = stakeAmount?.toDec().quo(new Dec(12));
-
   const prettifiedDailyAmount = perDayCalculation
     ? new CoinPretty(osmo, perDayCalculation).moveDecimalPointRight(
         osmo.coinDecimals
       )
     : "";
+
+  console.log("prettified", prettifiedDailyAmount.toString());
 
   const prettifiedMonthlyAmount = perMonthCalculation
     ? new CoinPretty(osmo, perMonthCalculation).moveDecimalPointRight(
@@ -78,12 +77,12 @@ export const EstimatedEarningCard: FunctionComponent<{
           <PriceCaption
             price={calculatedDailyPrice?.toString()}
             term={t("stake.day")}
-            osmoPrice={caluclatedOsmoPerDay?.toString()}
+            osmoPrice={prettifiedDailyAmount?.toString()}
           />
           <PriceCaption
             price={calculatedMonthlyPrice?.toString()}
             term={t("stake.month")}
-            osmoPrice={caluclatedOsmoPerMonth?.toString()}
+            osmoPrice={prettifiedMonthlyAmount?.toString()}
           />
         </div>
       </div>

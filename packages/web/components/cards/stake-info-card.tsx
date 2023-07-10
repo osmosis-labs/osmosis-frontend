@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import Image from "next/image";
 import React, { FunctionComponent, useMemo } from "react";
@@ -57,7 +57,10 @@ export const StakeInfoCard: FunctionComponent<{
             className="py-1 px-1.5 text-xs"
             onClick={() => {
               setInputAmount(
-                new Dec(Number(balance)).quo(new Dec(2)).toString()
+                new IntPretty(new Dec(Number(balance)).quo(new Dec(2)))
+                  .maxDecimals(4)
+                  .trim(true)
+                  .toString()
               );
             }}
           >
