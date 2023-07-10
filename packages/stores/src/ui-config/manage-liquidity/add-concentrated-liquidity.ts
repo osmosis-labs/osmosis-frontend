@@ -18,6 +18,7 @@ import {
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
 
+import { DecimalConfig } from "../decimal";
 import { InvalidRangeError } from "./errors";
 
 /** Use to config user input UI for eventually sending a valid add concentrated liquidity msg.
@@ -39,7 +40,7 @@ export class ObservableAddConcentratedLiquidityConfig {
    Used to get min and max range for adding concentrated liquidity
    */
   @observable
-  protected _priceRange: [Dec, Dec];
+  protected _priceRangeInput: [DecimalConfig, DecimalConfig];
 
   @observable
   protected _fullRange: boolean = false;
@@ -191,10 +192,14 @@ export class ObservableAddConcentratedLiquidityConfig {
     // can be 0 if no positions in pool
     if (this.currentPrice.isZero()) return false;
 
+    const range0 = this.range[0];
+    const range1 = this.range[1];
+    if (typeof range0 === "string" || typeof range1 === "string") return false;
+
     return (
       !this.fullRange &&
-      this.currentPrice.lt(this.range[0]) &&
-      this.currentPrice.lt(this.range[1])
+      this.currentPrice.lt(range0) &&
+      this.currentPrice.lt(range1)
     );
   }
 
@@ -247,10 +252,26 @@ export class ObservableAddConcentratedLiquidityConfig {
     return this._baseDepositAmountIn.error || this._quoteDepositAmountIn.error;
   }
 
+  /** User-selected price range, rounded to nearest tick. */
   @computed
   get range(): [Dec, Dec] {
-    if (this.fullRange) return [minSpotPrice, maxSpotPrice];
-    return this._priceRange;
+    const input0 = this._priceRangeInput[0].toDec();
+    const input1 = this._priceRangeInput[1].toDec();
+    if (this.fullRange || !this.pool) return [minSpotPrice, maxSpotPrice];
+
+    return [
+      roundPriceToNearestTick(input0, this.pool.tickSpacing, true),
+      roundPriceToNearestTick(input1, this.pool.tickSpacing, true),
+    ];
+  }
+
+  /** Warning: not adjusted to nearest tick. */
+  @computed
+  get rangeRaw(): [string, string] {
+    return [
+      this._priceRangeInput[0].toString(),
+      this._priceRangeInput[1].toString(),
+    ];
   }
 
   @computed
@@ -258,8 +279,8 @@ export class ObservableAddConcentratedLiquidityConfig {
     if (this.fullRange || !this.pool) return [minTick, maxTick];
     try {
       // account for precision issues from price <> tick conversion
-      const lowerTick = priceToTick(this._priceRange[0]);
-      const upperTick = priceToTick(this._priceRange[1]);
+      const lowerTick = priceToTick(this.range[0]);
+      const upperTick = priceToTick(this.range[1]);
 
       const lowerTickRounded = roundToNearestDivisible(
         lowerTick,
@@ -311,8 +332,11 @@ export class ObservableAddConcentratedLiquidityConfig {
     this._baseDepositAmountIn.setAmount("0");
     this._quoteDepositAmountIn.setAmount("0");
 
+    this._priceRangeInput = [new DecimalConfig(), new DecimalConfig()];
+
     // Set the initial range to be the moderate range
-    this._priceRange = this.moderatePriceRange;
+    this._priceRangeInput[0].input(this.moderatePriceRange[0]);
+    this._priceRangeInput[1].input(this.moderatePriceRange[1]);
 
     const queryAccountBalances =
       this.queryBalances.getQueryBech32Address(sender);
@@ -469,23 +493,17 @@ export class ObservableAddConcentratedLiquidityConfig {
   };
 
   @action
-  readonly setMinRange = (min: Dec) => {
+  readonly setMinRange = (min: string) => {
     if (!this.pool) return;
 
-    this._priceRange = [
-      roundPriceToNearestTick(min, this.pool.tickSpacing, true),
-      this._priceRange[1],
-    ];
+    this._priceRangeInput[0].input(min);
   };
 
   @action
-  readonly setMaxRange = (max: Dec) => {
+  readonly setMaxRange = (max: string) => {
     if (!this.pool) return;
 
-    this._priceRange = [
-      this._priceRange[0],
-      roundPriceToNearestTick(max, this.pool.tickSpacing, false),
-    ];
+    this._priceRangeInput[1].input(max);
   };
 
   @action

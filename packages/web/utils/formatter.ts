@@ -5,21 +5,34 @@ import {
   PricePretty,
   RatePretty,
 } from "@keplr-wallet/unit";
+import { trimZerosFromEnd } from "@osmosis-labs/stores";
+
+type FormatOptions = Partial<
+  Intl.NumberFormatOptions & { maxDecimals: number }
+>;
+
+type FormatOptionsWithDefaults = Partial<Intl.NumberFormatOptions> & {
+  maxDecimals: number;
+};
+
+const DEFAULT = {
+  maxDecimals: 2,
+};
 
 /** Formats a pretty object as compact by default. i.e. $7.53M or $265K, or 2K%. Validate handled by pretty object. */
 export function formatPretty(
   prettyValue: PricePretty | CoinPretty | RatePretty | Dec,
-  opts?: Partial<Intl.NumberFormatOptions>
+  opts: FormatOptions = {}
 ) {
-  const { ...formatOpts } = opts || {};
+  const optsWithDefaults: FormatOptionsWithDefaults = { ...DEFAULT, ...opts };
   if (prettyValue instanceof PricePretty) {
-    return priceFormatter(prettyValue, opts ?? formatOpts);
+    return priceFormatter(prettyValue, optsWithDefaults);
   } else if (prettyValue instanceof CoinPretty) {
-    return coinFormatter(prettyValue, opts ?? { ...formatOpts });
+    return coinFormatter(prettyValue, optsWithDefaults);
   } else if (prettyValue instanceof RatePretty) {
-    return rateFormatter(prettyValue, opts ?? formatOpts);
+    return rateFormatter(prettyValue, optsWithDefaults);
   } else if (prettyValue instanceof Dec) {
-    return decFormatter(prettyValue, opts ?? formatOpts);
+    return decFormatter(prettyValue, optsWithDefaults);
   } else {
     throw new Error("Unknown pretty value");
   }
@@ -28,7 +41,7 @@ export function formatPretty(
 /** Formats a dec as compact by default. i.e. $7.53M or $265K. Validate handled by `Dec`. */
 function decFormatter(
   dec: Dec,
-  opts?: Partial<Intl.NumberFormatOptions>
+  opts: FormatOptionsWithDefaults = DEFAULT
 ): string {
   const options: Intl.NumberFormatOptions = {
     maximumSignificantDigits: 3,
@@ -36,25 +49,30 @@ function decFormatter(
     compactDisplay: "short",
     ...opts,
   };
-  const numStr = new IntPretty(dec).maxDecimals(2).locale(false).toString();
+  const numStr = new IntPretty(dec)
+    .maxDecimals(opts.maxDecimals)
+    .locale(false)
+    .toString();
   let num = Number(numStr);
   num = isNaN(num) ? 0 : num;
-  if (Object.keys(opts ?? {}).length > 0) {
-    const formatter = new Intl.NumberFormat("en", options);
-    return formatter.format(num);
+  if (hasIntlFormatOptions(opts)) {
+    const formatter = new Intl.NumberFormat("en-US", options);
+    return trimZerosFromEnd(formatter.format(num));
   } else {
-    return new IntPretty(dec)
-      .maxDecimals(0)
-      .locale(false)
-      .shrink(true)
-      .toString();
+    return trimZerosFromEnd(
+      new IntPretty(dec)
+        .maxDecimals(opts.maxDecimals)
+        .locale(false)
+        .shrink(true)
+        .toString()
+    );
   }
 }
 
 /** Formats a price as compact by default. i.e. $7.53M or $265K. Validate handled by `PricePretty`. */
 function priceFormatter(
   price: PricePretty,
-  opts?: Partial<Intl.NumberFormatOptions>
+  opts: FormatOptionsWithDefaults = DEFAULT
 ): string {
   const options: Intl.NumberFormatOptions = {
     maximumSignificantDigits: 3,
@@ -65,7 +83,7 @@ function priceFormatter(
     ...opts,
   };
   let num = Number(
-    new IntPretty(price).maxDecimals(2).locale(false).toString()
+    new IntPretty(price).maxDecimals(opts.maxDecimals).locale(false).toString()
   );
   num = isNaN(num) ? 0 : num;
   const formatter = new Intl.NumberFormat(price.fiatCurrency.locale, options);
@@ -75,10 +93,7 @@ function priceFormatter(
 /** Formats a coin as compact by default. i.e. $7.53 ATOM or $265 OSMO. Validate handled by `CoinPretty`. */
 function coinFormatter(
   coin: CoinPretty,
-  opts?: Partial<Intl.NumberFormatOptions> & {
-    hideCoinDenom?: boolean;
-    maxDecimals?: number;
-  }
+  opts: FormatOptionsWithDefaults = DEFAULT
 ): string {
   const { ...formatOpts } = opts || {};
   const options: Intl.NumberFormatOptions = {
@@ -88,7 +103,9 @@ function coinFormatter(
     style: "decimal",
     ...formatOpts,
   };
-  let num = Number(new IntPretty(coin).maxDecimals(2).locale(false).toString());
+  let num = Number(
+    new IntPretty(coin).maxDecimals(opts.maxDecimals).locale(false).toString()
+  );
   num = isNaN(num) ? 0 : num;
   const formatter = new Intl.NumberFormat("en-US", options);
   return [formatter.format(num), coin.currency.coinDenom.toUpperCase()].join(
@@ -99,7 +116,7 @@ function coinFormatter(
 /** Formats a coin as compact by default. i.e. $7.53 ATOM or $265 OSMO. Validate handled by `CoinPretty`. */
 function rateFormatter(
   rate: RatePretty,
-  opts?: Partial<Intl.NumberFormatOptions>
+  opts: FormatOptionsWithDefaults = DEFAULT
 ): string {
   const options: Intl.NumberFormatOptions = {
     maximumSignificantDigits: 3,
@@ -109,9 +126,20 @@ function rateFormatter(
     ...opts,
   };
   let num = Number(
-    new RatePretty(rate).maxDecimals(2).locale(false).symbol("").toString()
+    new RatePretty(rate)
+      .maxDecimals(opts.maxDecimals)
+      .locale(false)
+      .symbol("")
+      .toString()
   );
   num = isNaN(num) ? 0 : num;
   const formatter = new Intl.NumberFormat("en-US", options);
   return `${formatter.format(num)}${rate.options.symbol}`;
+}
+
+/** Copy opts and remove our custom format opts to reveal whether there are `Intl.NumberFormatOptions`. */
+function hasIntlFormatOptions(opts: FormatOptions) {
+  const copy = { ...opts };
+  if ("maxDecimals" in copy) delete copy.maxDecimals;
+  return Object.keys(copy).length > 0;
 }
