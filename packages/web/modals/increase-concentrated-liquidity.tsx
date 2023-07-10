@@ -97,8 +97,8 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   useEffect(() => {
     if (lowerPrices?.price && upperPrices?.price) {
       setPriceRange([lowerPrices.price, upperPrices.price]);
-      config.setMinRange(lowerPrices.price);
-      config.setMaxRange(upperPrices.price);
+      config.setMinRange(lowerPrices.price.toString());
+      config.setMaxRange(upperPrices.price.toString());
     }
   }, [config, setPriceRange, lowerPrices, upperPrices]);
 

@@ -306,12 +306,12 @@ const AddConcLiqView: FunctionComponent<
   const { chainId } = chainStore.osmosis;
   const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
 
-  const { priceDecimal, yRange, xRange, depthChartData } = chartConfig;
+  const { yRange, xRange, depthChartData } = chartConfig;
 
   const updateInputAndRangeMinMax = useCallback(
     (min: number, max: number) => {
-      setMinRange(new Dec(min));
-      setMaxRange(new Dec(max));
+      setMinRange(min.toString());
+      setMaxRange(max.toString());
     },
     [setMinRange, setMaxRange]
   );
@@ -319,7 +319,8 @@ const AddConcLiqView: FunctionComponent<
   // sync the price range of the add liq config and the chart config
   useEffect(() => {
     chartConfig.setPriceRange([inputRange[0], inputRange[1]]);
-  }, [chartConfig, inputRange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chartConfig, inputRange[0].toString(), inputRange[1].toString()]);
 
   return (
     <>
@@ -397,23 +398,25 @@ const AddConcLiqView: FunctionComponent<
                   [chartConfig.xRange, currentPrice]
                 )}
                 // eslint-disable-next-line react-hooks/exhaustive-deps
-                onMoveMax={useCallback(debounce(setMaxRange, 500), [
-                  priceDecimal,
-                ])}
+                onMoveMax={useCallback(
+                  debounce((num: number) => setMaxRange(num.toString()), 250),
+                  []
+                )}
                 // eslint-disable-next-line react-hooks/exhaustive-deps
-                onMoveMin={useCallback(debounce(setMinRange, 500), [
-                  priceDecimal,
-                ])}
+                onMoveMin={useCallback(
+                  debounce((num: number) => setMinRange(num.toString()), 250),
+                  []
+                )}
                 onSubmitMin={useCallback(
-                  (val) => {
-                    setMinRange(val);
+                  (val: number) => {
+                    setMinRange(val.toString());
                     setFullRange(false);
                   },
                   [setMinRange, setFullRange]
                 )}
                 onSubmitMax={useCallback(
-                  (val) => {
-                    setMaxRange(val);
+                  (val: number) => {
+                    setMaxRange(val.toString());
                     setFullRange(false);
                   },
                   [setMaxRange, setFullRange]
@@ -425,21 +428,14 @@ const AddConcLiqView: FunctionComponent<
             </div>
             <div className="flex flex-col items-center justify-center gap-4 pr-8">
               <PriceInputBox
-                currentValue={
-                  fullRange ? "" : formatPretty(inputRange[1]).toString()
-                }
                 label={t("addConcentratedLiquidity.high")}
-                onChange={(val) => setMaxRange(Number(val))}
-                onBlur={(e) => setMaxRange(+e.target.value)}
-                infinity={fullRange}
+                forPriceIndex={1}
+                addConcLiquidityConfig={addLiquidityConfig}
               />
               <PriceInputBox
-                currentValue={
-                  fullRange ? "0" : formatPretty(inputRange[0]).toString()
-                }
                 label={t("addConcentratedLiquidity.low")}
-                onChange={(val) => setMinRange(Number(val))}
-                onBlur={(e) => setMinRange(+e.target.value)}
+                forPriceIndex={0}
+                addConcLiquidityConfig={addLiquidityConfig}
               />
             </div>
           </div>
@@ -714,31 +710,46 @@ const PresetStrategyCard: FunctionComponent<
 
 const PriceInputBox: FunctionComponent<{
   label: string;
-  currentValue: string;
-  onChange: (val: string) => void;
-  onBlur: (e: any) => void;
-  infinity?: boolean;
-}> = ({ label, currentValue, onChange, onBlur, infinity }) => (
-  <div className="flex w-full max-w-[9.75rem] flex-col items-end rounded-xl bg-osmoverse-800 px-2">
-    <span className="caption px-2 pt-2 text-osmoverse-400">{label}</span>
-    {infinity ? (
-      <div className="flex h-[41px] items-center px-2">
-        <Image
-          alt="infinity"
-          src="/icons/infinity.svg"
-          width={16}
-          height={16}
+  forPriceIndex: 0 | 1;
+  addConcLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+}> = observer(({ label, forPriceIndex, addConcLiquidityConfig }) => {
+  const [isFocused, setIsFocused] = useState(false);
+
+  return (
+    <div className="flex w-full max-w-[9.75rem] flex-col items-end rounded-xl bg-osmoverse-800 px-2">
+      <span className="caption px-2 pt-2 text-osmoverse-400">{label}</span>
+      {forPriceIndex === 1 && addConcLiquidityConfig.fullRange && !isFocused ? (
+        <div className="flex h-[41px] items-center px-2">
+          <Image
+            alt="infinity"
+            src="/icons/infinity.svg"
+            width={16}
+            height={16}
+          />
+        </div>
+      ) : (
+        <InputBox
+          className="border-0 bg-transparent text-subtitle1 leading-tight"
+          type="number"
+          rightEntry
+          currentValue={
+            // to allow decimals, display the raw string value while typing
+            // otherwise, display the nearest tick rounded price
+            isFocused
+              ? addConcLiquidityConfig.rangeRaw[forPriceIndex]
+              : formatPretty(addConcLiquidityConfig.range[forPriceIndex], {
+                  maxDecimals: 8,
+                })
+          }
+          onFocus={() => setIsFocused(true)}
+          onInput={(val) =>
+            forPriceIndex === 0
+              ? addConcLiquidityConfig.setMinRange(val)
+              : addConcLiquidityConfig.setMaxRange(val)
+          }
+          onBlur={() => setIsFocused(false)}
         />
-      </div>
-    ) : (
-      <InputBox
-        className="border-0 bg-transparent text-subtitle1 leading-tight"
-        type="number"
-        rightEntry
-        currentValue={currentValue}
-        onInput={(val) => onChange(val)}
-        onBlur={onBlur}
-      />
-    )}
-  </div>
-);
+      )}
+    </div>
+  );
+});
