@@ -1,12 +1,12 @@
 import { Dec } from "@keplr-wallet/unit";
+import axios from "axios";
 import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import type { GetStaticProps, InferGetServerSidePropsType } from "next";
 import { useMemo } from "react";
 
 import { AdBanner } from "~/components/ad-banner/ad-banner";
-import adCMS from "~/components/ad-banner/ad-banner-cms.json";
-import { Ad } from "~/components/ad-banner/ad-banner-types";
+import { Ad, AdCMS } from "~/components/ad-banner/ad-banner-types";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { TradeClipboard } from "~/components/trade-clipboard";
 import { useStore } from "~/stores";
@@ -19,7 +19,12 @@ interface HomeProps {
 }
 
 export const getStaticProps: GetStaticProps<HomeProps> = async () => {
+  const { data: adCMS }: { data: AdCMS } = await axios.get(
+    "https://raw.githubusercontent.com/osmosis-labs/fe-content/main/cms/swap-rotating-banner.json"
+  );
+
   const ads = adCMS.banners.filter(({ featured }) => featured);
+
   return { props: { ads } };
 };
 
