@@ -10,6 +10,8 @@ import {
 } from "./const";
 import { approxSqrt, convertTokenInGivenOutToTokenOutGivenIn } from "./math";
 const nine = new Dec(9);
+// Note: chosen arbitrarily
+const constantTickEstimateMove = new Int(10000);
 
 // Ref: https://github.com/osmosis-labs/osmosis/blob/main/x/concentrated-liquidity/README.md#tick-spacing-example-tick-to-price
 // chain: https://github.com/osmosis-labs/osmosis/blob/0f9eb3c1259078035445b3e3269659469b95fd9f/x/concentrated-liquidity/math/tick.go#L35
@@ -206,9 +208,23 @@ export function estimateInitialTickBound({
     // Fee charge makes the target smaller. We want buffer to get all ticks
     // Therefore, drop fee.
 
-    const estimate = currentSqrtPrice.add(
-      new Dec(tokenIn.amount).quo(currentTickLiquidity)
-    );
+    let estimate: Dec;
+    // if there is no liquidity in the current range, set estimate constant value
+    // away from current tick in the direction of the swap
+    if (currentTickLiquidity.isZero()) {
+      const currentTick = priceToTick(currentSqrtPrice.pow(new Int(2)));
+      if (isZeroForOne) {
+        // price is decreasing so move estimate down
+        estimate = tickToSqrtPrice(currentTick.sub(constantTickEstimateMove));
+      } else {
+        // price is increasing so move estimate up
+        estimate = tickToSqrtPrice(currentTick.add(constantTickEstimateMove));
+      }
+    } else {
+      estimate = currentSqrtPrice.add(
+        new Dec(tokenIn.amount).quo(currentTickLiquidity)
+      );
+    }
 
     // Similarly to swapping to the left of the current sqrt price,
     // estimating tick bound in the other direction, we take the max of the estimate and the maximum sqrt price.

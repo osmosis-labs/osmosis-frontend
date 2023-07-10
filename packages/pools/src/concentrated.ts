@@ -251,16 +251,18 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       .quo(beforeSpotPriceInOverOut)
       .sub(new Dec(1));
 
+    // HACK: @jonator - getting a div by zero in some cases. Letting you deal with a proper solution to this.
+    const invertIfNonZero = (toInvert: Dec) =>
+      toInvert.lte(new Dec(0)) ? new Dec(1) : new Dec(1).quoTruncate(toInvert);
+
     return {
       amount: amountOut,
       beforeSpotPriceInOverOut: beforeSpotPriceInOverOut,
-      beforeSpotPriceOutOverIn: new Dec(1).quoTruncate(
-        beforeSpotPriceInOverOut
-      ),
+      beforeSpotPriceOutOverIn: invertIfNonZero(beforeSpotPriceInOverOut),
       afterSpotPriceInOverOut,
-      afterSpotPriceOutOverIn: new Dec(1).quoTruncate(afterSpotPriceInOverOut),
+      afterSpotPriceOutOverIn: invertIfNonZero(afterSpotPriceInOverOut),
       effectivePriceInOverOut,
-      effectivePriceOutOverIn: new Dec(1).quoTruncate(effectivePriceInOverOut),
+      effectivePriceOutOverIn: invertIfNonZero(effectivePriceInOverOut),
       priceImpactTokenOut,
       numTicksCrossed: calcResult.numTicksCrossed,
     };
