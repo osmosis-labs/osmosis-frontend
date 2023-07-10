@@ -52,7 +52,6 @@ function decFormatter(
     compactDisplay: "short",
     ...opts,
   };
-  console.log("opts max dec", opts.maxDecimals);
   const numStr = new IntPretty(dec)
     .maxDecimals(opts.maxDecimals)
     .locale(false)

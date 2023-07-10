@@ -708,13 +708,13 @@ const PriceInputBox: FunctionComponent<{
   label: string;
   forPriceIndex: 0 | 1;
   addConcLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-}> = observer(({ label, forPriceIndex, addConcLiquidityConfig: config }) => {
+}> = observer(({ label, forPriceIndex, addConcLiquidityConfig }) => {
   const [isFocused, setIsFocused] = useState(false);
 
   return (
     <div className="flex w-full max-w-[9.75rem] flex-col items-end rounded-xl bg-osmoverse-800 px-2">
       <span className="caption px-2 pt-2 text-osmoverse-400">{label}</span>
-      {forPriceIndex === 1 && config.fullRange && !isFocused ? (
+      {forPriceIndex === 1 && addConcLiquidityConfig.fullRange && !isFocused ? (
         <div className="flex h-[41px] items-center px-2">
           <Image
             alt="infinity"
@@ -732,14 +732,16 @@ const PriceInputBox: FunctionComponent<{
             // to allow decimals, display the raw string value while typing
             // otherwise, display the nearest tick rounded price
             isFocused
-              ? config.rangeRaw[forPriceIndex]
-              : formatPretty(config.range[forPriceIndex], { maxDecimals: 8 })
+              ? addConcLiquidityConfig.rangeRaw[forPriceIndex]
+              : formatPretty(addConcLiquidityConfig.range[forPriceIndex], {
+                  maxDecimals: 8,
+                })
           }
           onFocus={() => setIsFocused(true)}
           onInput={(val) =>
             forPriceIndex === 0
-              ? config.setMinRange(val)
-              : config.setMaxRange(val)
+              ? addConcLiquidityConfig.setMinRange(val)
+              : addConcLiquidityConfig.setMaxRange(val)
           }
           onBlur={() => setIsFocused(false)}
         />
