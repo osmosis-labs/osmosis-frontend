@@ -24,7 +24,10 @@ export function formatPretty(
   prettyValue: PricePretty | CoinPretty | RatePretty | Dec,
   opts: FormatOptions = {}
 ) {
-  const optsWithDefaults: FormatOptionsWithDefaults = { ...DEFAULT, ...opts };
+  const optsWithDefaults: FormatOptionsWithDefaults = {
+    ...{ ...DEFAULT },
+    ...opts,
+  };
   if (prettyValue instanceof PricePretty) {
     return priceFormatter(prettyValue, optsWithDefaults);
   } else if (prettyValue instanceof CoinPretty) {
@@ -49,6 +52,7 @@ function decFormatter(
     compactDisplay: "short",
     ...opts,
   };
+  console.log("opts max dec", opts.maxDecimals);
   const numStr = new IntPretty(dec)
     .maxDecimals(opts.maxDecimals)
     .locale(false)

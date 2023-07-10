@@ -19,7 +19,6 @@ export class DecimalConfig {
 
   @action
   input(value: string | Dec) {
-    console.log(value);
     if (value instanceof Dec) {
       this._decRaw = value.toString();
     } else if (value === "") {

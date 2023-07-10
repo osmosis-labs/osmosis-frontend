@@ -733,7 +733,7 @@ const PriceInputBox: FunctionComponent<{
             // otherwise, display the nearest tick rounded price
             isFocused
               ? config.rangeRaw[forPriceIndex]
-              : formatPretty(config.range[forPriceIndex])
+              : formatPretty(config.range[forPriceIndex], { maxDecimals: 8 })
           }
           onFocus={() => setIsFocused(true)}
           onInput={(val) =>
