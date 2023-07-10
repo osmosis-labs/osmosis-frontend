@@ -135,10 +135,10 @@ const Overview: FunctionComponent<
             className="!p-0"
             icon={
               <Icon
-                id="close-thin"
-                className="text-wosmongton-400 hover:text-wosmongton-100"
-                height={24}
-                width={24}
+                id="close"
+                className="text-osmoverse-400 hover:text-white-full"
+                width={32}
+                height={32}
               />
             }
             onClick={onRequestClose}
@@ -204,19 +204,23 @@ const Overview: FunctionComponent<
       </div>
       <div className="flex flex-col">
         <div className="flex justify-center gap-[12px]">
-          <StrategySelector
-            title={t("addConcentratedLiquidity.managed")}
-            description={t("addConcentratedLiquidity.managedDescription")}
-            selected={selected === "add_managed"}
-            imgSrc="/images/managed_liquidity_mock.png"
-          />
-          <StrategySelector
-            title={t("addConcentratedLiquidity.manual")}
-            description={t("addConcentratedLiquidity.manualDescription")}
-            selected={selected === "add_manual"}
-            onClick={() => selectView("add_manual")}
-            imgSrc="/images/conliq_mock_range.png"
-          />
+          <div className="cursor-not-allowed opacity-50">
+            <StrategySelector
+              title={t("addConcentratedLiquidity.managed")}
+              description={t("addConcentratedLiquidity.managedDescription")}
+              selected={selected === "add_managed"}
+              imgSrc="/images/cl-managed-pick-strategy.png"
+            />
+          </div>
+          <div>
+            <StrategySelector
+              title={t("addConcentratedLiquidity.manual")}
+              description={t("addConcentratedLiquidity.manualDescription")}
+              selected={selected === "add_manual"}
+              onClick={() => selectView("add_manual")}
+              imgSrc="/images/cl-manual-pick-strategy.png"
+            />
+          </div>
         </div>
       </div>
       <div className="flex w-full items-center justify-center">
@@ -259,8 +263,8 @@ const StrategySelector: FunctionComponent<{
           }
         )}
       >
-        <div className="mb-16 text-h6 font-h6">{title}</div>
-        <Image alt="" src={imgSrc} width={255} height={145} />
+        <div className="text-h6 font-h6">{title}</div>
+        <Image alt="" src={imgSrc} width={354} height={180} />
         <div className="body2 text-center text-osmoverse-200">
           {description}
         </div>
