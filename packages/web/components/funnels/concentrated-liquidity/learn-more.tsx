@@ -12,21 +12,21 @@ import {
 
 const lotties: Record<string, Record<string, any>> = {};
 
+const loadLottie = async (
+  key: string,
+  importFn: () => Promise<Record<string, any>>
+) => {
+  if (!lotties[key]) {
+    const lottie = await importFn();
+    lotties[key] = lottie;
+    return lottie;
+  }
+
+  return lotties[key];
+};
+
 export const ConcentratedLiquidityLearnMore: FunctionComponent = () => {
   const t = useTranslation();
-
-  const loadLottie = async (
-    key: string,
-    importFn: () => Promise<Record<string, any>>
-  ) => {
-    if (!lotties[key]) {
-      const lottie = await importFn();
-      lotties[key] = lottie;
-      return lottie;
-    }
-
-    return lotties[key];
-  };
 
   return (
     <Stepper

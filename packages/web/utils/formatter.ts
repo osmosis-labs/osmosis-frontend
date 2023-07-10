@@ -6,12 +6,19 @@ import {
   RatePretty,
 } from "@keplr-wallet/unit";
 
+import { getNumberMagnitude, toScientificNotation } from "./number";
+
 /** Formats a pretty object as compact by default. i.e. $7.53M or $265K, or 2K%. Validate handled by pretty object. */
 export function formatPretty(
   prettyValue: PricePretty | CoinPretty | RatePretty | Dec,
   opts?: Partial<Intl.NumberFormatOptions>
 ) {
   const { ...formatOpts } = opts || {};
+
+  if (Math.abs(getNumberMagnitude(prettyValue.toString())) > 20) {
+    return toScientificNotation(prettyValue.toString());
+  }
+
   if (prettyValue instanceof PricePretty) {
     return priceFormatter(prettyValue, opts ?? formatOpts);
   } else if (prettyValue instanceof CoinPretty) {

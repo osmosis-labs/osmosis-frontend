@@ -203,7 +203,7 @@ const RangeDataGroup: FunctionComponent<{
       label={t("clPositions.selectedRange")}
       value={
         <div className="flex w-full justify-end gap-1 xl:justify-start sm:flex-wrap">
-          <h6 title={lowerPrice.toString(2)}>
+          <h6 title={lowerPrice.toString(2)} className="whitespace-nowrap">
             {isFullRange
               ? "0"
               : formatPretty(lowerPrice, {
@@ -212,7 +212,7 @@ const RangeDataGroup: FunctionComponent<{
                 })}
           </h6>
           <Icon id="left-right-arrow" className="flex-shrink-0" />
-          <h6 title={lowerPrice.toString(2)}>
+          <h6 title={upperPrice.toString(2)} className="whitespace-nowrap">
             {isFullRange
               ? "∞"
               : formatPretty(upperPrice, {
