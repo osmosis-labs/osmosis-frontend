@@ -197,7 +197,7 @@ export function estimateInitialTickBound({
       currentTickLiquidity.quo(new Dec(tokenIn.amount)).isZero()
     ) {
       const currentTick = priceToTick(currentSqrtPrice.pow(new Int(2)));
-      // price is increasing so move estimate up
+      // price is decreasing so move estimate down
       estimate = tickToSqrtPrice(currentTick.sub(constantTickEstimateMove));
     } else {
       estimate = currentSqrtPrice.sub(
