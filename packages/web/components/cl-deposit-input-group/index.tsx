@@ -13,6 +13,7 @@ export const DepositAmountGroup: FunctionComponent<{
   coin?: CoinPretty;
   coinIsToken0: boolean;
   onUpdate: (amount: number) => void;
+  onMax: () => void;
   currentValue: string;
   percentage: RatePretty;
   outOfRange?: boolean;
@@ -25,6 +26,7 @@ export const DepositAmountGroup: FunctionComponent<{
     coin,
     percentage,
     onUpdate,
+    onMax,
     coinIsToken0,
     currentValue,
     outOfRange,
@@ -109,13 +111,7 @@ export const DepositAmountGroup: FunctionComponent<{
           <div className="relative flex flex-1 flex-col gap-0.5">
             {walletBalance && (
               <span
-                onClick={() => {
-                  const val = Number(
-                    walletBalance.locale(false).hideDenom(true).toString() ?? 0
-                  );
-                  if (isNaN(val)) return;
-                  onUpdate(val);
-                }}
+                onClick={onMax}
                 className="caption absolute right-0 top-[-16px] mb-[2px] mr-2 cursor-pointer text-right text-wosmongton-300"
               >
                 {walletBalance.trim(true).maxDecimals(8).toString()}

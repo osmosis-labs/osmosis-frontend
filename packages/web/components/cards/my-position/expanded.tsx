@@ -12,6 +12,7 @@ import Image from "next/image";
 import React, {
   ComponentProps,
   FunctionComponent,
+  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -138,23 +139,32 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
               yRange={yRange}
               xRange={xRange}
               data={depthChartData}
-              annotationDatum={{
-                price: currentPrice
-                  ? Number(currentPrice.toString())
-                  : lastChartData?.close || 0,
-                depth: xRange[1],
-              }}
-              rangeAnnotation={[
-                {
-                  price: Number(lowerPrices?.price.toString() ?? 0),
+              annotationDatum={useMemo(
+                () => ({
+                  price: currentPrice
+                    ? Number(currentPrice.toString())
+                    : lastChartData?.close || 0,
                   depth: xRange[1],
-                },
-                {
-                  price: Number(upperPrices?.price.toString() ?? 0),
-                  depth: xRange[1],
-                },
-              ]}
-              offset={{ top: 0, right: 36, bottom: 24 + 28, left: 0 }}
+                }),
+                [currentPrice, lastChartData, xRange]
+              )}
+              rangeAnnotation={useMemo(
+                () => [
+                  {
+                    price: Number(lowerPrices?.price.toString() ?? 0),
+                    depth: xRange[1],
+                  },
+                  {
+                    price: Number(upperPrices?.price.toString() ?? 0),
+                    depth: xRange[1],
+                  },
+                ],
+                [lowerPrices, upperPrices, xRange]
+              )}
+              offset={useMemo(
+                () => ({ top: 0, right: 36, bottom: 24 + 28, left: 0 }),
+                []
+              )}
               horizontal
               fullRange={isFullRange}
             />
@@ -288,11 +298,11 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             Boolean(account?.txTypeInProgress) ||
             !Boolean(account)
           }
-          onClick={() => {
+          onClick={useCallback(() => {
             account!.osmosis
               .sendCollectAllPositionsRewardsMsgs([positionConfig.id])
               .catch(console.error);
-          }}
+          }, [account, positionConfig.id])}
         >
           {t("clPositions.collectRewards")}
         </PositionButton>
@@ -301,7 +311,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             Boolean(account?.txTypeInProgress) ||
             Boolean(superfluidUndelegation)
           }
-          onClick={() => {
+          onClick={useCallback(() => {
             if (superfluidDelegation) {
               account?.osmosis
                 .sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock([
@@ -312,7 +322,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                 ])
                 .catch(console.error);
             } else setActiveModal("remove");
-          }}
+          }, [account, superfluidDelegation])}
         >
           {Boolean(superfluidDelegation)
             ? t("clPositions.unstake")
@@ -321,9 +331,10 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
         <PositionButton
           disabled={
             Boolean(account?.txTypeInProgress) ||
+            Boolean(superfluidDelegation) ||
             Boolean(superfluidUndelegation)
           }
-          onClick={() => setActiveModal("increase")}
+          onClick={useCallback(() => setActiveModal("increase"), [])}
         >
           {t("clPositions.increaseLiquidity")}
         </PositionButton>

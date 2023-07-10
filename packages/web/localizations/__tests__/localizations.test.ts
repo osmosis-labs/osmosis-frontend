@@ -3,7 +3,7 @@ import * as fs from "fs";
 import { glob } from "glob";
 
 // use to silence warnings
-const warn = (..._args: Parameters<typeof console.log>) => null; // console.warn(...args);
+const warn = (..._args: Parameters<typeof console.warn>) => null; // console.warn(...args);
 
 describe("Localization JSON files", () => {
   const localizationObjs = getJSONsAsObjs();

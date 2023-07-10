@@ -233,7 +233,7 @@ export interface MsgCreateFullRangePositionAndSuperfluidDelegateAmino {
   pool_id: string;
 }
 export interface MsgCreateFullRangePositionAndSuperfluidDelegateAminoMsg {
-  type: "osmosis/create-full-range-position-and-superfluid-delegate";
+  type: "osmosis/full-range-and-sf-delegate";
   value: MsgCreateFullRangePositionAndSuperfluidDelegateAmino;
 }
 /**
@@ -360,7 +360,7 @@ export interface MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionAmino {
   token_out_mins: CoinAmino[];
 }
 export interface MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionAminoMsg {
-  type: "osmosis/unlock-and-migrate-shares-to-full-range-concentrated-position";
+  type: "osmosis/unlock-and-migrate";
   value: MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionAmino;
 }
 /**
@@ -418,7 +418,7 @@ export interface MsgAddToConcentratedLiquiditySuperfluidPositionAmino {
   token_desired1?: CoinAmino;
 }
 export interface MsgAddToConcentratedLiquiditySuperfluidPositionAminoMsg {
-  type: "osmosis/add-to-concentrated-liquidity-superfluid-position";
+  type: "osmosis/add-to-cl-superfluid-position";
   value: MsgAddToConcentratedLiquiditySuperfluidPositionAmino;
 }
 /** ===================== MsgAddToConcentratedLiquiditySuperfluidPosition */
@@ -484,7 +484,7 @@ export interface MsgLockExistingFullRangePositionAndSFStakeAmino {
   val_addr: string;
 }
 export interface MsgLockExistingFullRangePositionAndSFStakeAminoMsg {
-  type: "osmosis/lock-existing-full-range-position-and-sf-stake";
+  type: "osmosis/lock-existing-full-range-and-sf-stake";
   value: MsgLockExistingFullRangePositionAndSFStakeAmino;
 }
 /** ===================== MsgLockExistingFullRangePositionAndSFStake */
@@ -1552,7 +1552,7 @@ export const MsgCreateFullRangePositionAndSuperfluidDelegate = {
     message: MsgCreateFullRangePositionAndSuperfluidDelegate
   ): MsgCreateFullRangePositionAndSuperfluidDelegateAminoMsg {
     return {
-      type: "osmosis/create-full-range-position-and-superfluid-delegate",
+      type: "osmosis/full-range-and-sf-delegate",
       value: MsgCreateFullRangePositionAndSuperfluidDelegate.toAmino(message),
     };
   },
@@ -2029,7 +2029,7 @@ export const MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition = {
     message: MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition
   ): MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionAminoMsg {
     return {
-      type: "osmosis/unlock-and-migrate-shares-to-full-range-concentrated-position",
+      type: "osmosis/unlock-and-migrate",
       value:
         MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition.toAmino(
           message
@@ -2329,7 +2329,7 @@ export const MsgAddToConcentratedLiquiditySuperfluidPosition = {
     message: MsgAddToConcentratedLiquiditySuperfluidPosition
   ): MsgAddToConcentratedLiquiditySuperfluidPositionAminoMsg {
     return {
-      type: "osmosis/add-to-concentrated-liquidity-superfluid-position",
+      type: "osmosis/add-to-cl-superfluid-position",
       value: MsgAddToConcentratedLiquiditySuperfluidPosition.toAmino(message),
     };
   },
@@ -2611,7 +2611,7 @@ export const MsgLockExistingFullRangePositionAndSFStake = {
     message: MsgLockExistingFullRangePositionAndSFStake
   ): MsgLockExistingFullRangePositionAndSFStakeAminoMsg {
     return {
-      type: "osmosis/lock-existing-full-range-position-and-sf-stake",
+      type: "osmosis/lock-existing-full-range-and-sf-stake",
       value: MsgLockExistingFullRangePositionAndSFStake.toAmino(message),
     };
   },

@@ -421,28 +421,30 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                     )}
                     <h5>{poolName}</h5>
                   </div>
-                  {superfluidPoolDetail?.isSuperfluid && (
-                    <span className="body2 text-superfluid-gradient flex items-center gap-1.5">
-                      <Image
-                        alt=""
-                        src="/icons/superfluid-osmo.svg"
-                        height={18}
-                        width={18}
-                      />
-                      {t("pool.superfluidEnabled")}
-                    </span>
-                  )}
-                  {pool?.type === "stable" && (
-                    <div className="body2 text-gradient-positive flex items-center gap-1.5">
-                      <Image
-                        alt=""
-                        src="/icons/stableswap-pool.svg"
-                        height={18}
-                        width={18}
-                      />
-                      <span>{t("pool.stableswapEnabled")}</span>
-                    </div>
-                  )}
+                  <div className="flex flex-col gap-1">
+                    {superfluidPoolDetail?.isSuperfluid && (
+                      <span className="body2 text-superfluid-gradient flex items-center gap-1.5">
+                        <Image
+                          alt=""
+                          src="/icons/superfluid-osmo.svg"
+                          height={18}
+                          width={18}
+                        />
+                        {t("pool.superfluidEnabled")}
+                      </span>
+                    )}
+                    {pool?.type === "stable" && (
+                      <div className="body2 text-gradient-positive flex items-center gap-1.5">
+                        <Image
+                          alt=""
+                          src="/icons/stableswap-pool.svg"
+                          height={18}
+                          width={18}
+                        />
+                        <span>{t("pool.stableswapEnabled")}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div className="flex items-center gap-10 xl:w-full xl:place-content-between lg:w-fit lg:flex-col lg:items-start lg:gap-3">
                   <div className="space-y-2">

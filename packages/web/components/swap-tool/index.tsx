@@ -110,6 +110,8 @@ export const SwapTool: FunctionComponent<{
 
     const routesVisDisclosure = useDisclosure();
 
+    const [willDisplayPromo, setWillDisplayPromo] = useState(false);
+
     // show details
     const [showEstimateDetails, setShowEstimateDetails] = useState(false);
     const isEstimateDetailRelevant = !tradeTokenInConfig.isEmptyInput;
@@ -298,7 +300,11 @@ export const SwapTool: FunctionComponent<{
 
     return (
       <div
-        className={classNames("relative overflow-hidden", containerClassName)}
+        className={classNames(
+          "relative overflow-hidden",
+          containerClassName,
+          willDisplayPromo && "-translate-y-[6%] transform"
+        )}
       >
         {!isInModal && (
           <PromoDrawer
@@ -308,6 +314,7 @@ export const SwapTool: FunctionComponent<{
               tradeTokenInConfig.sendCurrency,
               tradeTokenInConfig.outCurrency
             )}
+            beforeEnter={() => setWillDisplayPromo(true)}
           >
             <ConcentratedLiquidityPromo
               pools={pools}

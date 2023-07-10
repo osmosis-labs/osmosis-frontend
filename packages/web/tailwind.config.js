@@ -38,8 +38,16 @@ module.exports = {
             700: "#462ADF",
           },
       ion: IS_FRONTIER
-        ? { 400: "#9FD9DC", 500: "#7DCACE", 700: "#61B5BA" }
+        ? {
+            100: "#DCF9FF",
+            300: "#87DDF8",
+            400: "#9FD9DC",
+            500: "#7DCACE",
+            700: "#61B5BA",
+          }
         : {
+            100: "#DCF9FF",
+            300: "#87DDF8",
             400: "#64C5EE",
             500: "#2994D0",
             700: "#1469AF",
@@ -164,7 +172,7 @@ module.exports = {
         : "url('/images/osmosis-home-bg-pattern.svg')",
       "loading-bar":
         "linear-gradient(to left,rgba(251, 251, 251, 0.1),rgba(251, 251, 251, 0.2),rgba(251, 251, 251, 0.3),rgba(251, 251, 251, 0.2),rgba(251, 251, 251, 0.1))",
-      superfluid: "linear-gradient(90deg, #8A86FF 0.04%, #E13CBD 99.5%)",
+      superfluid: "linear-gradient(270deg, #64C5EE 0%, #EE64E8 100%);",
       supercharged: "linear-gradient(270deg, #64C5EE 0%, #EE64E8 100%);",
       "superfluid-20": IS_FRONTIER
         ? "linear-gradient(90deg, #8A86FF 0.04%, #E13CBD 99.5%);"

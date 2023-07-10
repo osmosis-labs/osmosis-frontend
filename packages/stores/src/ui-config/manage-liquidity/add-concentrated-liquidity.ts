@@ -59,139 +59,16 @@ export class ObservableAddConcentratedLiquidityConfig {
   @observable
   protected chainId: string;
 
-  constructor(
-    protected readonly chainGetter: ChainGetter,
-    initialChainId: string,
-    readonly poolId: string,
-    sender: string,
-    protected readonly queriesStore: IQueriesStore,
-    protected readonly queryBalances: ObservableQueryBalances
-  ) {
-    this.chainId = initialChainId;
-
-    this._sender = sender;
-
-    this._baseDepositAmountIn = new AmountConfig(
-      chainGetter,
-      queriesStore,
-      this.chainId,
-      this.sender,
-      undefined
-    );
-
-    this._quoteDepositAmountIn = new AmountConfig(
-      chainGetter,
-      queriesStore,
-      this.chainId,
-      this.sender,
-      undefined
-    );
-
-    this._baseDepositAmountIn.setAmount("0");
-    this._quoteDepositAmountIn.setAmount("0");
-
-    // Set the initial range to be the moderate range
-    this._priceRange = this.moderatePriceRange;
-
-    // Calculate quote amount when base amount is input and anchor is base
-    // Calculate an amount1 given an amount0
-    autorun(() => {
-      const baseAmountRaw =
-        this.baseDepositAmountIn.getAmountPrimitive().amount;
-      const amount0 = new Int(baseAmountRaw);
-      const anchor = this._anchorAsset;
-
-      if (anchor !== "base" || amount0.lt(new Int(0))) return;
-
-      // special case: likely no positions created yet in pool
-      if (!this.pool || this.pool.currentSqrtPrice.isZero()) {
-        return;
-      }
-
-      if (amount0.isZero()) this.quoteDepositAmountIn.setAmount("0");
-
-      const [lowerTick, upperTick] = this.tickRange;
-
-      // calculate proportional amount of other amount
-      const amount1 = calcAmount1(
-        amount0,
-        lowerTick,
-        upperTick,
-        this.pool.currentSqrtPrice
-      );
-      // include decimals, as is displayed to user
-      const quoteCoin = new CoinPretty(
-        this._quoteDepositAmountIn.sendCurrency,
-        amount1
-      );
-      const quoteAmountWithDecimals = quoteCoin
-        .hideDenom(true)
-        .locale(false)
-        .trim(true)
-        .toString();
-      this.quoteDepositAmountIn.setAmount(quoteAmountWithDecimals.toString());
-    });
-
-    // Calculate base amount when quote amount is input and anchor is quote
-    // calculate amount0 given an amount1
-    autorun(() => {
-      const quoteAmountRaw =
-        this.quoteDepositAmountIn.getAmountPrimitive().amount;
-      const amount1 = new Int(quoteAmountRaw);
-      const anchor = this._anchorAsset;
-
-      if (anchor !== "quote" || amount1.lt(new Int(0))) return;
-
-      // special case: likely no positions created yet in pool
-      if (!this.pool || this.pool.currentSqrtPrice.isZero()) {
-        return;
-      }
-
-      if (amount1.isZero()) this.baseDepositAmountIn.setAmount("0");
-
-      const [lowerTick, upperTick] = this.tickRange;
-
-      // calculate proportional amount of other amount
-      const amount0 = calcAmount0(
-        amount1,
-        lowerTick,
-        upperTick,
-        this.pool.currentSqrtPrice
-      );
-      // include decimals, as is displayed to user
-      const baseCoin = new CoinPretty(
-        this._baseDepositAmountIn.sendCurrency,
-        amount0
-      );
-      const baseAmountWithDecimals = baseCoin
-        .hideDenom(true)
-        .locale(false)
-        .trim(true)
-        .toString();
-      this.baseDepositAmountIn.setAmount(baseAmountWithDecimals.toString());
-    });
-
-    makeObservable(this);
-  }
-
-  @action
-  setPool(pool: ConcentratedLiquidityPool) {
-    this._pool = pool;
-
-    const [baseDenom, quoteDenom] = pool.poolAssetDenoms;
-    const baseCurrency = this.chainGetter
-      .getChain(this.chainId)
-      .findCurrency(baseDenom);
-    const quoteCurrency = this.chainGetter
-      .getChain(this.chainId)
-      .findCurrency(quoteDenom);
-
-    this._baseDepositAmountIn.setSendCurrency(baseCurrency);
-    this._quoteDepositAmountIn.setSendCurrency(quoteCurrency);
-  }
-
   get pool(): ConcentratedLiquidityPool | null {
     return this._pool;
+  }
+
+  get sender(): string {
+    return this._sender;
+  }
+
+  get modalView(): "overview" | "add_manual" | "add_managed" {
+    return this._modalView;
   }
 
   @computed
@@ -297,95 +174,6 @@ export class ObservableAddConcentratedLiquidityConfig {
     return this._pool?.poolAssetDenoms[1] ?? "";
   }
 
-  @action
-  setSender(sender: string) {
-    this._sender = sender;
-  }
-
-  get sender(): string {
-    return this._sender;
-  }
-
-  @action
-  setModalView = (viewType: "overview" | "add_manual" | "add_managed") => {
-    this._modalView = viewType;
-  };
-
-  get modalView(): "overview" | "add_manual" | "add_managed" {
-    return this._modalView;
-  }
-
-  @action
-  setAnchorAsset = (anchor: "base" | "quote") => {
-    this._anchorAsset = anchor;
-  };
-
-  @action
-  setMinRange = (min: Dec | number) => {
-    if (!this.pool) return;
-
-    this._priceRange = [
-      roundPriceToNearestTick(
-        typeof min === "number" ? new Dec(min) : min,
-        this.pool.tickSpacing,
-        true
-      ),
-      this._priceRange[1],
-    ];
-  };
-
-  @action
-  setMaxRange = (max: Dec | number) => {
-    if (!this.pool) return;
-
-    this._priceRange = [
-      this._priceRange[0],
-      roundPriceToNearestTick(
-        typeof max === "number" ? new Dec(max) : max,
-        this.pool.tickSpacing,
-        false
-      ),
-    ];
-  };
-
-  @computed
-  get range(): [Dec, Dec] {
-    if (this.fullRange) return [minSpotPrice, maxSpotPrice];
-    return this._priceRange;
-  }
-
-  @computed
-  get tickRange(): [Int, Int] {
-    if (this.fullRange || !this.pool) return [minTick, maxTick];
-    try {
-      // account for precision issues from price <> tick conversion
-      const lowerTick = priceToTick(this._priceRange[0]);
-      const upperTick = priceToTick(this._priceRange[1]);
-
-      const lowerTickRounded = roundToNearestDivisible(
-        lowerTick,
-        new Int(this.pool.tickSpacing)
-      );
-      const upperTickRounded = roundToNearestDivisible(
-        upperTick,
-        new Int(this.pool.tickSpacing)
-      );
-
-      return [
-        lowerTickRounded.lt(minTick) ? minTick : lowerTickRounded,
-        upperTickRounded.gt(maxTick) ? maxTick : upperTickRounded,
-      ];
-    } catch (e) {
-      console.error(e);
-      return [minTick, maxTick];
-    }
-  }
-
-  @action
-  setFullRange = (isFullRange: boolean) => {
-    this._fullRange = isFullRange;
-  };
-
   get fullRange(): boolean {
     return this._fullRange;
   }
@@ -458,6 +246,260 @@ export class ObservableAddConcentratedLiquidityConfig {
 
     return this._baseDepositAmountIn.error || this._quoteDepositAmountIn.error;
   }
+
+  @computed
+  get range(): [Dec, Dec] {
+    if (this.fullRange) return [minSpotPrice, maxSpotPrice];
+    return this._priceRange;
+  }
+
+  @computed
+  get tickRange(): [Int, Int] {
+    if (this.fullRange || !this.pool) return [minTick, maxTick];
+    try {
+      // account for precision issues from price <> tick conversion
+      const lowerTick = priceToTick(this._priceRange[0]);
+      const upperTick = priceToTick(this._priceRange[1]);
+
+      const lowerTickRounded = roundToNearestDivisible(
+        lowerTick,
+        new Int(this.pool.tickSpacing)
+      );
+      const upperTickRounded = roundToNearestDivisible(
+        upperTick,
+        new Int(this.pool.tickSpacing)
+      );
+
+      return [
+        lowerTickRounded.lt(minTick) ? minTick : lowerTickRounded,
+        upperTickRounded.gt(maxTick) ? maxTick : upperTickRounded,
+      ];
+    } catch (e) {
+      console.error(e);
+      return [minTick, maxTick];
+    }
+  }
+
+  constructor(
+    protected readonly chainGetter: ChainGetter,
+    initialChainId: string,
+    readonly poolId: string,
+    sender: string,
+    protected readonly queriesStore: IQueriesStore,
+    protected readonly queryBalances: ObservableQueryBalances
+  ) {
+    this.chainId = initialChainId;
+
+    this._sender = sender;
+
+    this._baseDepositAmountIn = new AmountConfig(
+      chainGetter,
+      queriesStore,
+      this.chainId,
+      this.sender,
+      undefined
+    );
+
+    this._quoteDepositAmountIn = new AmountConfig(
+      chainGetter,
+      queriesStore,
+      this.chainId,
+      this.sender,
+      undefined
+    );
+
+    this._baseDepositAmountIn.setAmount("0");
+    this._quoteDepositAmountIn.setAmount("0");
+
+    // Set the initial range to be the moderate range
+    this._priceRange = this.moderatePriceRange;
+
+    const queryAccountBalances =
+      this.queryBalances.getQueryBech32Address(sender);
+
+    // Calculate quote amount when base amount is input and anchor is base
+    // Calculate an amount1 given an amount0
+    autorun(() => {
+      const baseAmountRaw =
+        this.baseDepositAmountIn.getAmountPrimitive().amount;
+      const amount0 = new Int(baseAmountRaw);
+      const anchor = this._anchorAsset;
+
+      // TODO: check counterparty balance and subtract to not exceed that
+      // potential approach: subtract from to meet counterparty balance max amount then let effect set the max balance
+
+      if (anchor !== "base" || amount0.lt(new Int(0))) return;
+
+      // special case: likely no positions created yet in pool
+      if (!this.pool || this.pool.currentSqrtPrice.isZero()) {
+        return;
+      }
+
+      if (amount0.isZero()) this._quoteDepositAmountIn.setAmount("0");
+
+      const [lowerTick, upperTick] = this.tickRange;
+
+      // calculate proportional amount of other amount
+      const amount1 = calcAmount1(
+        amount0,
+        lowerTick,
+        upperTick,
+        this.pool.currentSqrtPrice
+      );
+      // include decimals, as is displayed to user
+      const quoteCoin = new CoinPretty(
+        this._quoteDepositAmountIn.sendCurrency,
+        amount1
+      );
+
+      const quoteBalance = queryAccountBalances.getBalanceFromCurrency(
+        this._quoteDepositAmountIn.sendCurrency
+      );
+
+      // set max: if quote coin higher than quote balance, set to quote balance
+      if (
+        this._baseDepositAmountIn.isMax &&
+        quoteCoin.toDec().gt(quoteBalance.toDec())
+      ) {
+        this.setQuoteDepositAmountMax();
+      } else {
+        this._quoteDepositAmountIn.setAmount(
+          quoteCoin.hideDenom(true).locale(false).trim(true).toString()
+        );
+      }
+    });
+
+    // Calculate base amount when quote amount is input and anchor is quote
+    // calculate amount0 given an amount1
+    autorun(() => {
+      const quoteAmountRaw =
+        this.quoteDepositAmountIn.getAmountPrimitive().amount;
+      const amount1 = new Int(quoteAmountRaw);
+      const anchor = this._anchorAsset;
+
+      if (anchor !== "quote" || amount1.lt(new Int(0))) return;
+
+      // special case: likely no positions created yet in pool
+      if (!this.pool || this.pool.currentSqrtPrice.isZero()) {
+        return;
+      }
+
+      if (amount1.isZero()) this._baseDepositAmountIn.setAmount("0");
+
+      const [lowerTick, upperTick] = this.tickRange;
+
+      // calculate proportional amount of other amount
+      const amount0 = calcAmount0(
+        amount1,
+        lowerTick,
+        upperTick,
+        this.pool.currentSqrtPrice
+      );
+      // include decimals, as is displayed to user
+      const baseCoin = new CoinPretty(
+        this._baseDepositAmountIn.sendCurrency,
+        amount0
+      );
+
+      const baseBalance = queryAccountBalances.getBalanceFromCurrency(
+        this._baseDepositAmountIn.sendCurrency
+      );
+
+      // set max: if base coin higher than base balance, set to base balance
+      if (
+        this._quoteDepositAmountIn.isMax &&
+        baseCoin.toDec().gt(baseBalance.toDec())
+      ) {
+        this.setBaseDepositAmountMax();
+      } else {
+        this._baseDepositAmountIn.setAmount(
+          baseCoin.hideDenom(true).locale(false).trim(true).toString()
+        );
+      }
+    });
+
+    makeObservable(this);
+  }
+
+  @action
+  setPool(pool: ConcentratedLiquidityPool) {
+    this._pool = pool;
+
+    const [baseDenom, quoteDenom] = pool.poolAssetDenoms;
+    const baseCurrency = this.chainGetter
+      .getChain(this.chainId)
+      .findCurrency(baseDenom);
+    const quoteCurrency = this.chainGetter
+      .getChain(this.chainId)
+      .findCurrency(quoteDenom);
+
+    this._baseDepositAmountIn.setSendCurrency(baseCurrency);
+    this._quoteDepositAmountIn.setSendCurrency(quoteCurrency);
+  }
+
+  @action
+  setSender(sender: string) {
+    this._sender = sender;
+  }
+
+  @action
+  readonly setModalView = (
+    viewType: "overview" | "add_manual" | "add_managed"
+  ) => {
+    this._modalView = viewType;
+  };
+
+  @action
+  readonly setAnchorAsset = (anchor: "base" | "quote") => {
+    this._anchorAsset = anchor;
+  };
+
+  @action
+  readonly setBaseDepositAmountMax = () => {
+    this.setAnchorAsset("base");
+    this.quoteDepositAmountIn.setIsMax(false);
+    this.baseDepositAmountIn.setIsMax(true);
+  };
+
+  @action
+  readonly setQuoteDepositAmountMax = () => {
+    this.setAnchorAsset("quote");
+    this.baseDepositAmountIn.setIsMax(false);
+    this.quoteDepositAmountIn.setIsMax(true);
+  };
+
+  @action
+  readonly setMinRange = (min: Dec | number) => {
+    if (!this.pool) return;
+
+    this._priceRange = [
+      roundPriceToNearestTick(
+        typeof min === "number" ? new Dec(min) : min,
+        this.pool.tickSpacing,
+        true
+      ),
+      this._priceRange[1],
+    ];
+  };
+
+  @action
+  readonly setMaxRange = (max: Dec | number) => {
+    if (!this.pool) return;
+
+    this._priceRange = [
+      this._priceRange[0],
+      roundPriceToNearestTick(
+        typeof max === "number" ? new Dec(max) : max,
+        this.pool.tickSpacing,
+        false
+      ),
+    ];
+  };
+
+  @action
+  readonly setFullRange = (isFullRange: boolean) => {
+    this._fullRange = isFullRange;
+  };
 }
 
 function roundToNearestDivisible(int: Int, divisor: Int): Int {
