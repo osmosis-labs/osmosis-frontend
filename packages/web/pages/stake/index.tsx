@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
@@ -8,11 +9,43 @@ import { StakeInfoCard } from "~/components/cards/stake-info-card";
 import { StakeTab } from "~/components/control/stake-tab";
 import { useWindowSize } from "~/hooks";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
+import { useStore } from "~/stores";
 
 export const Staking: React.FC = () => {
   const t = useTranslation();
   const { isMobile } = useWindowSize();
   const [activeTab, setActiveTab] = useState("Stake");
+  const [inputAmount, setInputAmount] = useState(undefined);
+
+  const { chainStore, accountStore, queriesStore } = useStore();
+  const { chainId } = chainStore.osmosis;
+  const account = accountStore.getWallet(chainId);
+  const address = account?.address ?? "";
+  const queries = queriesStore.get(chainId);
+  const osmo = chainStore.osmosis.stakeCurrency;
+
+  let balance = useMemo(
+    () =>
+      queries.queryBalances
+        .getQueryBech32Address(address)
+        .getBalanceFromCurrency(osmo)
+        .trim(true)
+        .hideDenom(true)
+        .maxDecimals(8)
+        .toString(),
+    [address, osmo, queries.queryBalances]
+  );
+
+  balance = "100";
+
+  const stakeAmount = useMemo(() => {
+    if (inputAmount) {
+      const formattedAmount = new Dec(inputAmount).mul(
+        DecUtils.getTenExponentNInPrecisionRange(osmo.coinDecimals)
+      );
+      return new CoinPretty(osmo, formattedAmount);
+    }
+  }, [inputAmount, osmo]);
 
   const [showValidatorModal, setShowValidatorModal] = useState(false);
 
@@ -43,8 +76,12 @@ export const Staking: React.FC = () => {
               {t("stake.unstake")}
             </StakeTab>
           </div>
-          <StakeInfoCard />
-          <EstimatedEarningCard />
+          <StakeInfoCard
+            balance={balance}
+            setInputAmount={setInputAmount}
+            inputAmount={inputAmount}
+          />
+          <EstimatedEarningCard stakeAmount={stakeAmount} />
           <Button mode="special-1" onClick={() => setShowValidatorModal(true)}>
             Stake
           </Button>

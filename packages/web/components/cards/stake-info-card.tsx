@@ -1,11 +1,10 @@
-import { Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import Image from "next/image";
-import React, { useMemo } from "react";
+import React, { FunctionComponent, useMemo } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { IS_FRONTIER, IS_TESTNET } from "~/config";
-import { useTradeTokenInConfig, useWindowSize } from "~/hooks";
+import { useWindowSize } from "~/hooks";
 
 import { useStore } from "../../stores";
 import { Button } from "../buttons";
@@ -13,48 +12,31 @@ import { OsmoverseCard } from "./osmoverse-card";
 
 const OSMO_IMG_URL = "/tokens/osmo.svg";
 
-export const StakeInfoCard = () => {
+export const StakeInfoCard: FunctionComponent<{
+  balance?: String;
+  setInputAmount: any;
+  inputAmount: any;
+}> = ({ balance, inputAmount, setInputAmount }) => {
   const t = useTranslation();
   const isMobile = useWindowSize();
-  const outAmountValue = "1,917,227";
-  const inAmountValue = "3763470";
 
-  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
-  const { chainId } = chainStore.osmosis;
-  const account = accountStore.getWallet(chainId);
-  const address = account?.address ?? "";
+  const { chainStore, priceStore } = useStore();
+  const osmo = chainStore.osmosis.stakeCurrency;
 
-  const queries = queriesStore.get(chainId);
-  const queryPools = queries.osmosis!.queryGammPools;
-  const allPools = queryPools.getAllPools();
-
-  const pools = useMemo(
+  // amount fiat value
+  const outAmountValue = useMemo(
     () =>
-      allPools
-        .filter((pool) =>
-          pool
-            .computeTotalValueLocked(priceStore)
-            .toDec()
-            .gte(new Dec(IS_TESTNET ? -1 : IS_FRONTIER ? 1_000 : 10_000))
-        )
-        .sort((a, b) => {
-          // sort by TVL to find routes amongst most valuable pools
-          const aTVL = a.computeTotalValueLocked(priceStore);
-          const bTVL = b.computeTotalValueLocked(priceStore);
-
-          return Number(bTVL.sub(aTVL).toDec().toString());
-        })
-        .map((pool) => pool.pool),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [allPools, priceStore.response]
-  );
-
-  const tradeTokenInConfig = useTradeTokenInConfig(
-    chainStore,
-    chainId,
-    address,
-    queriesStore,
-    pools
+      inputAmount !== "" && new Dec(inputAmount).gt(new Dec(0))
+        ? priceStore.calculatePrice(
+            new CoinPretty(
+              osmo,
+              new Dec(inputAmount).mul(
+                DecUtils.getTenExponentNInPrecisionRange(osmo.coinDecimals)
+              )
+            )
+          )
+        : undefined,
+    [inputAmount, osmo, priceStore]
   );
 
   return (
@@ -65,13 +47,7 @@ export const StakeInfoCard = () => {
             {t("stake.available")}
           </span>
           <span className="caption ml-1.5 text-sm text-wosmongton-300 md:text-xs">
-            {queries.queryBalances
-              .getQueryBech32Address(address)
-              .getBalanceFromCurrency(tradeTokenInConfig.sendCurrency)
-              .trim(true)
-              .hideDenom(true)
-              .maxDecimals(8)
-              .toString()}
+            {balance}
             &nbsp; OSMO
           </span>
         </div>
@@ -80,7 +56,9 @@ export const StakeInfoCard = () => {
             mode="amount"
             className="py-1 px-1.5 text-xs"
             onClick={() => {
-              console.log("clicked the half");
+              setInputAmount(
+                new Dec(Number(balance)).quo(new Dec(2)).toString()
+              );
             }}
           >
             {t("swap.HALF")}
@@ -89,7 +67,7 @@ export const StakeInfoCard = () => {
             mode="amount"
             className="py-1 px-1.5 text-xs"
             onClick={() => {
-              console.log("clicked the whole");
+              setInputAmount(balance);
             }}
           >
             {t("stake.MAX")}
@@ -114,14 +92,28 @@ export const StakeInfoCard = () => {
           </div>
         </div>
         <div className="flex w-full flex-col items-end">
-          <h5
+          <input
+            type="number"
             className={classNames(
-              "md:subtitle1 text-right",
-              inAmountValue ? "text-white-full" : "text-white-disabled"
+              "w-full bg-transparent text-right text-white-full placeholder:text-white-disabled focus:outline-none md:text-subtitle1",
+              inputAmount?.length >= 14
+                ? "caption"
+                : "text-h5 font-h5 md:font-subtitle1"
             )}
-          >
-            {inAmountValue}
-          </h5>
+            placeholder="0"
+            onChange={(e) => {
+              e.preventDefault();
+              if (
+                !isNaN(Number(e.target.value)) &&
+                Number(e.target.value) >= 0 &&
+                Number(e.target.value) <= Number.MAX_SAFE_INTEGER &&
+                e.target.value.length <= (isMobile ? 19 : 26)
+              ) {
+                setInputAmount(e.target.value);
+              }
+            }}
+            value={inputAmount}
+          />
           <div
             className={classNames(
               "subtitle1 md:caption text-osmoverse-300 transition-opacity",

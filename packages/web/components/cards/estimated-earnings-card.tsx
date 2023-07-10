@@ -7,42 +7,66 @@ import { useStore } from "~/stores";
 
 import { OsmoverseCard } from "./osmoverse-card";
 
+const PriceCaption: FunctionComponent<{
+  price: string | undefined;
+  term: string;
+  osmoPrice: string | undefined;
+}> = ({ price, term, osmoPrice }) => (
+  <span className="caption flex flex-grow flex-col text-sm text-osmoverse-200 md:text-xs">
+    <div>
+      <span className="text-base text-white-full">{price}</span>&nbsp;/{term}
+    </div>
+    <div className="mt-2 text-xs">
+      <span>{osmoPrice} OSMO</span>&nbsp;/{term}
+    </div>
+  </span>
+);
+
 export const EstimatedEarningCard: FunctionComponent<{
-  stakeAmount: CoinPretty;
-}> = observer(({}) => {
+  stakeAmount?: CoinPretty;
+}> = observer(({ stakeAmount }) => {
   const t = useTranslation();
   const { queriesStore, chainStore, priceStore } = useStore();
 
   const osmosisChainId = chainStore.osmosis.chainId;
 
   const osmo = chainStore.osmosis.stakeCurrency;
-  const amount = new CoinPretty(osmo, 1000000000);
 
   const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
 
   // staking APR, despite the name.
   const inflation = cosmosQueries.queryInflation.inflation.toDec();
 
-  const calculatedInflationAmountPerYear = amount
-    .toDec()
+  const calculatedInflationAmountPerYear = stakeAmount
+    ?.toDec()
     .mul(inflation.quo(new Dec(100)));
 
-  const perDayCalculation = calculatedInflationAmountPerYear.quo(new Dec(365));
-  const perMonthCalculation = calculatedInflationAmountPerYear.quo(new Dec(12));
-
-  const prettifiedDailyAmount = new CoinPretty(
-    osmo,
-    perDayCalculation
-  ).moveDecimalPointRight(osmo.coinDecimals);
-  const prettifiedMonthlyAmount = new CoinPretty(
-    osmo,
-    perMonthCalculation
-  ).moveDecimalPointRight(osmo.coinDecimals);
-
-  const calculatedDailyPrice = priceStore.calculatePrice(prettifiedDailyAmount);
-  const calculatedMonthlyPrice = priceStore.calculatePrice(
-    prettifiedMonthlyAmount
+  const perDayCalculation = calculatedInflationAmountPerYear?.quo(new Dec(365));
+  const perMonthCalculation = calculatedInflationAmountPerYear?.quo(
+    new Dec(12)
   );
+
+  const caluclatedOsmoPerDay = stakeAmount?.toDec().quo(new Dec(365));
+  const caluclatedOsmoPerMonth = stakeAmount?.toDec().quo(new Dec(12));
+
+  const prettifiedDailyAmount = perDayCalculation
+    ? new CoinPretty(osmo, perDayCalculation).moveDecimalPointRight(
+        osmo.coinDecimals
+      )
+    : "";
+
+  const prettifiedMonthlyAmount = perMonthCalculation
+    ? new CoinPretty(osmo, perMonthCalculation).moveDecimalPointRight(
+        osmo.coinDecimals
+      )
+    : "";
+
+  const calculatedDailyPrice = prettifiedDailyAmount
+    ? priceStore.calculatePrice(prettifiedDailyAmount)
+    : 0;
+  const calculatedMonthlyPrice = prettifiedMonthlyAmount
+    ? priceStore.calculatePrice(prettifiedMonthlyAmount)
+    : 0;
 
   return (
     <OsmoverseCard containerClasses="bg-opacity-50">
@@ -50,13 +74,17 @@ export const EstimatedEarningCard: FunctionComponent<{
         <span className="caption text-sm text-osmoverse-200 md:text-xs">
           {t("stake.estimatedEarnings")}
         </span>
-        <div className="mt-5 mb-2 flex items-center justify-around">
-          <span className="caption text-sm text-osmoverse-200 md:text-xs">
-            {calculatedDailyPrice?.toString()}/day
-          </span>
-          <span className="caption text-sm text-osmoverse-200 md:text-xs">
-            {calculatedMonthlyPrice?.toString()}/month
-          </span>
+        <div className="mt-5 mb-2 flex items-center">
+          <PriceCaption
+            price={calculatedDailyPrice?.toString()}
+            term={t("stake.day")}
+            osmoPrice={caluclatedOsmoPerDay?.toString()}
+          />
+          <PriceCaption
+            price={calculatedMonthlyPrice?.toString()}
+            term={t("stake.month")}
+            osmoPrice={caluclatedOsmoPerMonth?.toString()}
+          />
         </div>
       </div>
     </OsmoverseCard>
