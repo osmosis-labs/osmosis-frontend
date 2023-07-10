@@ -36,10 +36,19 @@ function decFormatter(
     compactDisplay: "short",
     ...opts,
   };
-  let num = Number(new IntPretty(dec).maxDecimals(2).locale(false).toString());
+  const numStr = new IntPretty(dec).maxDecimals(2).locale(false).toString();
+  let num = Number(numStr);
   num = isNaN(num) ? 0 : num;
-  const formatter = new Intl.NumberFormat("en", options);
-  return formatter.format(num);
+  if (Object.keys(opts ?? {}).length > 0) {
+    const formatter = new Intl.NumberFormat("en", options);
+    return formatter.format(num);
+  } else {
+    return new IntPretty(dec)
+      .maxDecimals(0)
+      .locale(false)
+      .shrink(true)
+      .toString();
+  }
 }
 
 /** Formats a price as compact by default. i.e. $7.53M or $265K. Validate handled by `PricePretty`. */

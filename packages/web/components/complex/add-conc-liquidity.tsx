@@ -393,13 +393,15 @@ const AddConcLiqView: FunctionComponent<
                   [chartConfig.xRange, currentPrice]
                 )}
                 // eslint-disable-next-line react-hooks/exhaustive-deps
-                onMoveMax={useCallback(debounce(setMaxRange, 500), [
-                  priceDecimal,
-                ])}
+                onMoveMax={useCallback(
+                  debounce((num) => setMaxRange(new Dec(num)), 500),
+                  [priceDecimal]
+                )}
                 // eslint-disable-next-line react-hooks/exhaustive-deps
-                onMoveMin={useCallback(debounce(setMinRange, 500), [
-                  priceDecimal,
-                ])}
+                onMoveMin={useCallback(
+                  debounce((num) => setMinRange(new Dec(num)), 500),
+                  [priceDecimal]
+                )}
                 onSubmitMin={useCallback(
                   (val) => {
                     setMinRange(val);
@@ -422,20 +424,24 @@ const AddConcLiqView: FunctionComponent<
             <div className="flex flex-col items-center justify-center gap-4 pr-8">
               <PriceInputBox
                 currentValue={
-                  fullRange ? "" : formatPretty(inputRange[1]).toString()
+                  fullRange ? "" : formatPretty(inputRange[1], {}).toString()
                 }
                 label={t("addConcentratedLiquidity.high")}
-                onChange={(val) => setMaxRange(Number(val))}
-                onBlur={(e) => setMaxRange(+e.target.value)}
+                onChange={(val) =>
+                  setMaxRange(val === "" ? new Dec(0) : new Dec(val))
+                }
+                onBlur={(e) => setMaxRange(new Dec(+e.target.value))}
                 infinity={fullRange}
               />
               <PriceInputBox
                 currentValue={
-                  fullRange ? "0" : formatPretty(inputRange[0]).toString()
+                  fullRange ? "0" : formatPretty(inputRange[0], {}).toString()
                 }
                 label={t("addConcentratedLiquidity.low")}
-                onChange={(val) => setMinRange(Number(val))}
-                onBlur={(e) => setMinRange(+e.target.value)}
+                onChange={(val) =>
+                  setMinRange(val === "" ? new Dec(0) : new Dec(val))
+                }
+                onBlur={(e) => setMinRange(new Dec(+e.target.value))}
               />
             </div>
           </div>

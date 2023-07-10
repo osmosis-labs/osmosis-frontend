@@ -469,30 +469,22 @@ export class ObservableAddConcentratedLiquidityConfig {
   };
 
   @action
-  readonly setMinRange = (min: Dec | number) => {
+  readonly setMinRange = (min: Dec) => {
     if (!this.pool) return;
 
     this._priceRange = [
-      roundPriceToNearestTick(
-        typeof min === "number" ? new Dec(min) : min,
-        this.pool.tickSpacing,
-        true
-      ),
+      roundPriceToNearestTick(min, this.pool.tickSpacing, true),
       this._priceRange[1],
     ];
   };
 
   @action
-  readonly setMaxRange = (max: Dec | number) => {
+  readonly setMaxRange = (max: Dec) => {
     if (!this.pool) return;
 
     this._priceRange = [
       this._priceRange[0],
-      roundPriceToNearestTick(
-        typeof max === "number" ? new Dec(max) : max,
-        this.pool.tickSpacing,
-        false
-      ),
+      roundPriceToNearestTick(max, this.pool.tickSpacing, false),
     ];
   };
 
