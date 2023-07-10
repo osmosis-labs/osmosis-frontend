@@ -27,7 +27,6 @@ import { BondCard } from "~/components/cards";
 import { AssetBreakdownChart, PriceBreakdownChart } from "~/components/chart";
 import PoolComposition from "~/components/chart/pool-composition";
 import {
-  SelectCffmToClMigration,
   SuperchargePool,
   useCfmmToClMigration,
 } from "~/components/funnels/concentrated-liquidity";
@@ -326,9 +325,8 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
     );
 
     // migrate to CL from this pool
-    const { isLinked, userCanMigrate, linkedClPoolId } =
+    const { isLinked, userCanMigrate, migrate, linkedClPoolId } =
       useCfmmToClMigration(poolId);
-    const [showMigrateToClModal, setShowMigrateToClModal] = useState(false);
     const [showClLearnMoreModal, setShowClLearnMoreModal] = useState(false);
 
     return (
@@ -617,6 +615,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
         {featureFlags.concentratedLiquidity &&
           isLinked &&
           userCanMigrate &&
+          linkedClPoolId &&
           pool && (
             <section>
               <SuperchargePool
@@ -628,9 +627,13 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                 caption={t("addConcentratedLiquidityPoolCta.caption")}
                 primaryCta={t("addConcentratedLiquidityPoolCta.primaryCta")}
                 secondaryCta={t("addConcentratedLiquidityPoolCta.secondaryCta")}
-                onCtaClick={() => {
-                  setShowMigrateToClModal(true);
-                }}
+                onCtaClick={() =>
+                  migrate()
+                    .then(() => {
+                      router.push("/pool/" + linkedClPoolId);
+                    })
+                    .catch(console.error)
+                }
                 onSecondaryClick={() => {
                   setShowClLearnMoreModal(true);
                 }}
@@ -641,16 +644,6 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                   onRequestClose={() => setShowClLearnMoreModal(false)}
                 />
               )}
-              <SelectCffmToClMigration
-                cfmmPoolId={poolId}
-                isOpen={showMigrateToClModal}
-                onRequestClose={() => {
-                  setShowMigrateToClModal(false);
-                }}
-                onSuccessfulMigrate={() => {
-                  router.push("/pool/" + linkedClPoolId);
-                }}
-              />
             </section>
           )}
         <section className="flex flex-col gap-4 md:gap-4">

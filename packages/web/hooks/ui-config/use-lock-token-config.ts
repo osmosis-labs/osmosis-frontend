@@ -111,12 +111,7 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
         }
       });
     },
-    [
-      queryOsmosis,
-      queryOsmosis.querySyntheticLockupsByLockId,
-      queryOsmosis.queryLockableDurations.response,
-      account?.osmosis,
-    ]
+    [queryOsmosis, account?.osmosis]
   );
 
   // refresh query stores when an unbonding token happens to unbond with window open
@@ -147,7 +142,13 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
     return () => {
       timeoutIds.forEach((timeout) => clearTimeout(timeout));
     };
-  }, [queryOsmosis.queryAccountLocked.get(address).response, address]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    queryOsmosis.queryAccountLocked.get(address).response,
+    address,
+    queryOsmosis.queryAccountLocked,
+  ]);
 
   return { config, lockToken, unlockTokens };
 }

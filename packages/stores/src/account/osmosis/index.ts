@@ -1352,7 +1352,7 @@ export class OsmosisAccountImpl {
    * Handles superfluid stake status.
    *
    * @param poolId Id of pool to exit.
-   * @param lockIds Locks to migrate. If migrating unlocked shares, leave undefined.
+   * @param lockIds Locks to migrate. If migrating unlocked shares, leave undefined or pass array value of `-1`.
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
@@ -1480,16 +1480,27 @@ export class OsmosisAccountImpl {
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
-          const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((balance) => balance.waitFreshResponse());
-
           // refresh pool that was exited
-          queryPool?.waitFreshResponse();
+          queryPool.waitFreshResponse();
 
-          // refresh removed locked coins and new account positions
+          // refresh relevant share balance
+          this.queriesStore
+            .get(this.chainId)
+            .queryBalances.getQueryBech32Address(this.address)
+            .balances.forEach((balance) => {
+              if (
+                queryPool.shareCurrency.coinMinimalDenom ===
+                balance.currency.coinMinimalDenom
+              ) {
+                balance.waitFreshResponse();
+              }
+            });
+
+          // refresh removed un/locked coins and new account positions
           this.queries.queryAccountLocked.get(this.address).waitFreshResponse();
+          this.queries.queryUnlockingCoins
+            .get(this.address)
+            .waitFreshResponse();
           this.queries.queryAccountsPositions
             .get(this.address)
             .waitFreshResponse();
@@ -1501,6 +1512,7 @@ export class OsmosisAccountImpl {
           this.queries.queryAccountsSuperfluidUndelegatingPositions
             .get(this.address)
             .waitFreshResponse();
+          // TODO: refresh unbonding positions
         }
 
         onFulfill?.(tx);
@@ -1541,7 +1553,9 @@ export class OsmosisAccountImpl {
       owner: this.address,
       coins: primitiveTokens,
       duration: {
-        seconds: BigInt(duration),
+        // TODO: current workaround to avoid seconds being improperly serialized by telescope
+        // remove when telescope is fixed
+        seconds: BigInt(Math.floor(duration / 1_000)),
         nanos: duration * 1_000_000_000,
       },
     });
