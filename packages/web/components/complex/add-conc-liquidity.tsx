@@ -302,7 +302,7 @@ const AddConcLiqView: FunctionComponent<
   const { chainId } = chainStore.osmosis;
   const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
 
-  const { priceDecimal, yRange, xRange, depthChartData } = chartConfig;
+  const { yRange, xRange, depthChartData } = chartConfig;
 
   const updateInputAndRangeMinMax = useCallback(
     (min: number, max: number) => {
@@ -395,23 +395,23 @@ const AddConcLiqView: FunctionComponent<
                 // eslint-disable-next-line react-hooks/exhaustive-deps
                 onMoveMax={useCallback(
                   debounce((num) => setMaxRange(new Dec(num)), 500),
-                  [priceDecimal]
+                  []
                 )}
                 // eslint-disable-next-line react-hooks/exhaustive-deps
                 onMoveMin={useCallback(
                   debounce((num) => setMinRange(new Dec(num)), 500),
-                  [priceDecimal]
+                  []
                 )}
                 onSubmitMin={useCallback(
-                  (val) => {
-                    setMinRange(val);
+                  (val: number) => {
+                    setMinRange(new Dec(val));
                     setFullRange(false);
                   },
                   [setMinRange, setFullRange]
                 )}
                 onSubmitMax={useCallback(
-                  (val) => {
-                    setMaxRange(val);
+                  (val: number) => {
+                    setMaxRange(new Dec(val));
                     setFullRange(false);
                   },
                   [setMaxRange, setFullRange]
