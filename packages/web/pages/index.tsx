@@ -27,7 +27,7 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
     console.error("Error fetching ads:", error);
   }
 
-  return { props: { ads } };
+  return { props: { ads }, revalidate: 3600 };
 };
 
 const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
