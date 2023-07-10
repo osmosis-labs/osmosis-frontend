@@ -26,7 +26,6 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
 
   try {
     const { data: adCMS }: { data: AdCMS } = await axios.get(ADS_URL);
-
     ads = adCMS.banners.filter(({ featured }) => featured);
   } catch (error) {
     console.error("Error fetching ads:", error);
