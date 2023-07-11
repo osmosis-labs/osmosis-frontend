@@ -211,45 +211,13 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
     it("handles basic swap in the direction with liqudity, ofz (right)", async () => {
       await createDefaultValidPositions(new Int(150), new Int(151));
 
-      // get quote
-      const quote = await (
-        queryPool!.pool as ConcentratedLiquidityPool
-      ).getTokenOutByTokenIn(
-        { denom: defaultTokenInDenom, amount: defaultTokenInAmountInt },
-        defaultTokenOutDenom
-      );
-
-      // swap in using quote
-      const tx = await swapExactIn(
-        defaultTokenInDenom,
-        defaultTokenOutDenom,
-        defaultTokenInAmount,
-        quote.amount.toString()
-      );
-
-      // Validate amounts
-      validateAmountsFromTxEvents(tx, defaultTokenInAmountInt, quote.amount);
+      await runBasicSuccessTest(defaultTokenInAmountInt);
     });
 
     it("swap in the direction with far away liqudity with full range position existing, ofz (right)", async () => {
       await createDefaultValidPositions(maxTick.sub(new Int(100)), maxTick);
 
-      const quote = await (
-        queryPool!.pool as ConcentratedLiquidityPool
-      ).getTokenOutByTokenIn(
-        { denom: defaultTokenInDenom, amount: defaultTokenInAmountInt },
-        defaultTokenOutDenom
-      );
-
-      const tx = await swapExactIn(
-        defaultTokenInDenom,
-        defaultTokenOutDenom,
-        defaultTokenInAmount,
-        quote.amount.toString()
-      );
-
-      // Validate amounts
-      validateAmountsFromTxEvents(tx, defaultTokenInAmountInt, quote.amount);
+      await runBasicSuccessTest(defaultTokenInAmountInt);
     });
 
     it("swap in the direction with far away liqudity with NO full range position existing, ofz (right)", async () => {
@@ -258,22 +226,7 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
 
       const tokenInAmount = new Int(1000000);
 
-      const amountOut = await (
-        queryPool!.pool as ConcentratedLiquidityPool
-      ).getTokenOutByTokenIn(
-        { denom: defaultTokenInDenom, amount: tokenInAmount },
-        defaultTokenOutDenom
-      );
-
-      const tx = await swapExactIn(
-        defaultTokenInDenom,
-        defaultTokenOutDenom,
-        tokenInAmount.toString(),
-        amountOut.amount.toString()
-      );
-
-      // Validate amounts
-      validateAmountsFromTxEvents(tx, tokenInAmount, amountOut.amount);
+      await runBasicSuccessTest(tokenInAmount);
     });
 
     it("swap in the direction with far away liqudity with NO full range position existing, ofz (right) (fails due to lack of precision, needs fixing)", async () => {
@@ -326,22 +279,7 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
     it("swap in the direction with far away liqudity with full range position existing, ofz (right)", async () => {
       await createDefaultValidPositions(maxTick.sub(new Int(100)), maxTick);
 
-      const quote = await (
-        queryPool!.pool as ConcentratedLiquidityPool
-      ).getTokenOutByTokenIn(
-        { denom: defaultTokenInDenom, amount: defaultTokenInAmountInt },
-        defaultTokenOutDenom
-      );
-
-      const tx = await swapExactIn(
-        defaultTokenInDenom,
-        defaultTokenOutDenom,
-        defaultTokenInAmount,
-        quote.amount.toString()
-      );
-
-      // Validate amounts
-      validateAmountsFromTxEvents(tx, defaultTokenInAmountInt, quote.amount);
+      await runBasicSuccessTest(defaultTokenInAmountInt);
     });
 
     it("fails to swap in the direction where no liquidity exists ", async () => {
@@ -502,45 +440,13 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
     it("handles basic swap in the direction with liqudity, zfo (left)", async () => {
       await createDefaultValidPositions(new Int(-151), new Int(-150));
 
-      // get quote
-      const quote = await (
-        queryPool!.pool as ConcentratedLiquidityPool
-      ).getTokenOutByTokenIn(
-        { denom: defaultTokenInDenom, amount: defaultTokenInAmountInt },
-        defaultTokenOutDenom
-      );
-
-      // swap in using quote
-      const tx = await swapExactIn(
-        defaultTokenInDenom,
-        defaultTokenOutDenom,
-        defaultTokenInAmount,
-        quote.amount.toString()
-      );
-
-      // Validate amounts
-      validateAmountsFromTxEvents(tx, defaultTokenInAmountInt, quote.amount);
+      await runBasicSuccessTest(defaultTokenInAmountInt);
     });
 
     it("swap in the direction with far away liqudity with full range position existing, zfo (left)", async () => {
       await createDefaultValidPositions(minTick, minTick.add(new Int(100)));
 
-      const quote = await (
-        queryPool!.pool as ConcentratedLiquidityPool
-      ).getTokenOutByTokenIn(
-        { denom: defaultTokenInDenom, amount: defaultTokenInAmountInt },
-        defaultTokenOutDenom
-      );
-
-      const tx = await swapExactIn(
-        defaultTokenInDenom,
-        defaultTokenOutDenom,
-        defaultTokenInAmount,
-        quote.amount.toString()
-      );
-
-      // Validate amounts
-      validateAmountsFromTxEvents(tx, defaultTokenInAmountInt, quote.amount);
+      await runBasicSuccessTest(defaultTokenInAmountInt);
     });
 
     it("swap in the direction with far away liqudity with NO full range position existing, zfo (left)", async () => {
@@ -549,22 +455,7 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
 
       const tokenInAmount = new Int(1000000);
 
-      const amountOut = await (
-        queryPool!.pool as ConcentratedLiquidityPool
-      ).getTokenOutByTokenIn(
-        { denom: defaultTokenInDenom, amount: tokenInAmount },
-        defaultTokenOutDenom
-      );
-
-      const tx = await swapExactIn(
-        defaultTokenInDenom,
-        defaultTokenOutDenom,
-        tokenInAmount.toString(),
-        amountOut.amount.toString()
-      );
-
-      // Validate amounts
-      validateAmountsFromTxEvents(tx, tokenInAmount, amountOut.amount);
+      await runBasicSuccessTest(tokenInAmount);
     });
 
     it("swap in the direction with far away liqudity with NO full range position existing, ofz (right) (fails due to lack of precision, needs fixing)", async () => {
@@ -595,22 +486,7 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
     it("swap in the direction with far away liqudity with full range position existing, zfo (left)", async () => {
       await createDefaultValidPositions(minTick, minTick.add(new Int(100)));
 
-      const quote = await (
-        queryPool!.pool as ConcentratedLiquidityPool
-      ).getTokenOutByTokenIn(
-        { denom: defaultTokenInDenom, amount: defaultTokenInAmountInt },
-        defaultTokenOutDenom
-      );
-
-      const tx = await swapExactIn(
-        defaultTokenInDenom,
-        defaultTokenOutDenom,
-        defaultTokenInAmount,
-        quote.amount.toString()
-      );
-
-      // Validate amounts
-      validateAmountsFromTxEvents(tx, defaultTokenInAmountInt, quote.amount);
+      await runBasicSuccessTest(defaultTokenInAmountInt);
     });
 
     it("fails to swap in the direction where no liquidity exists ", async () => {
@@ -703,6 +579,25 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
         )
         .catch(reject);
     });
+  }
+
+  async function runBasicSuccessTest(tokenInAmount: Int) {
+    const quote = await (
+      queryPool!.pool as ConcentratedLiquidityPool
+    ).getTokenOutByTokenIn(
+      { denom: defaultTokenInDenom, amount: tokenInAmount },
+      defaultTokenOutDenom
+    );
+
+    const tx = await swapExactIn(
+      defaultTokenInDenom,
+      defaultTokenOutDenom,
+      tokenInAmount.toString(),
+      quote.amount.toString()
+    );
+
+    // Validate amounts
+    validateAmountsFromTxEvents(tx, tokenInAmount, quote.amount);
   }
 
   // creates 2 positions with default amounts:
