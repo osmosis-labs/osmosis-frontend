@@ -47,8 +47,7 @@ export const StakeInfoCard: FunctionComponent<{
             {t("stake.available")}
           </span>
           <span className="caption ml-1.5 text-sm text-wosmongton-300 md:text-xs">
-            {balance}
-            &nbsp; OSMO
+            {balance}&nbsp;OSMO
           </span>
         </div>
         <div className="flex items-center gap-1.5">
@@ -87,10 +86,10 @@ export const StakeInfoCard: FunctionComponent<{
           />
         </div>
         <div className="flex flex-col">
-          <div className="flex items-center">
+          <div className="flex items-center text-lg">
             {isMobile ? <span className="subtitle1">OSMO</span> : <h4>OSMO</h4>}
           </div>
-          <div className="subtitle2 md:caption w-32 text-osmoverse-400">
+          <div className="subtitle2 md:caption w-32 text-xs text-osmoverse-400">
             Osmosis
           </div>
         </div>

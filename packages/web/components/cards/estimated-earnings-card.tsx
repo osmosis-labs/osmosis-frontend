@@ -17,7 +17,7 @@ const PriceCaption: FunctionComponent<{
       <span className="text-base text-white-full">{price}</span>&nbsp;/{term}
     </div>
     <div className="mt-2 text-xs">
-      <span>{osmoPrice ? osmoPrice : "0 OSMO"}</span>/{term}
+      <span>{osmoPrice || "0 OSMO"}</span>/{term}
     </div>
   </span>
 );
@@ -35,11 +35,11 @@ export const EstimatedEarningCard: FunctionComponent<{
   const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
 
   // staking APR, despite the name.
-  const inflation = cosmosQueries.queryInflation.inflation.toDec();
+  const stakingAPR = cosmosQueries.queryInflation.inflation.toDec();
 
   const calculatedInflationAmountPerYear = stakeAmount
     ?.toDec()
-    .mul(inflation.quo(new Dec(100)));
+    .mul(stakingAPR.quo(new Dec(100)));
 
   const perDayCalculation = calculatedInflationAmountPerYear?.quo(new Dec(365));
   const perMonthCalculation = calculatedInflationAmountPerYear?.quo(
@@ -51,8 +51,6 @@ export const EstimatedEarningCard: FunctionComponent<{
         osmo.coinDecimals
       )
     : "";
-
-  console.log("prettified", prettifiedDailyAmount.toString());
 
   const prettifiedMonthlyAmount = perMonthCalculation
     ? new CoinPretty(osmo, perMonthCalculation).moveDecimalPointRight(
