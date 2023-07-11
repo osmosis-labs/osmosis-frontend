@@ -51,6 +51,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     accountStore,
     queriesStore,
     derivedDataStore,
+    queriesExternalStore,
   } = useStore();
 
   const account = accountStore.getWallet(chainId);
@@ -67,6 +68,9 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
 
   const superfluidUndelegation =
     superfluidPoolDetail.getUndelegatingPositionInfo(positionConfig.id);
+
+  const queryPositionMetrics =
+    queriesExternalStore.queryPositionsPerformaceMetrics.get(positionConfig.id);
 
   /** Is defined if there's some other SF position already in this pool.
    *  On chain invariant: one validator can be selected per pool. */
@@ -223,13 +227,17 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           />
           <AssetsInfo
             className="w-0 flex-shrink flex-grow sm:w-full"
-            title={t("clPositions.totalSpreadEarned")}
+            title={t("clPositions.totalRewardsEarned")}
+            assets={queryPositionMetrics.totalEarned}
+            totalValue={queryPositionMetrics.totalEarnedValue}
           />
         </div>
         <div className="flex justify-between sm:flex-col sm:gap-3">
           <AssetsInfo
             className="w-0 flex-shrink flex-grow sm:w-full"
-            title={t("clPositions.principleAssets")}
+            title={t("clPositions.principalAssets")}
+            assets={queryPositionMetrics.principal.map(({ coin }) => coin)}
+            totalValue={queryPositionMetrics.totalPrincipalValue}
           />
           <AssetsInfo
             className="w-0 flex-shrink flex-grow sm:w-full"
@@ -363,72 +371,84 @@ const AssetsInfo: FunctionComponent<
   {
     title: string;
     assets?: CoinPretty[];
+    totalValue?: PricePretty;
     emptyText?: string;
   } & CustomClasses
-> = observer(({ className, title, assets = [], emptyText }) => {
-  const t = useTranslation();
-  const { priceStore } = useStore();
+> = observer(
+  ({
+    className,
+    title,
+    assets = [],
+    totalValue: totalValueProp,
+    emptyText,
+  }) => {
+    const t = useTranslation();
+    const { priceStore } = useStore();
 
-  const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
-  const totalValue =
-    assets.length > 0 && fiat
-      ? assets.reduce(
-          (sum, asset) =>
-            sum.add(
-              priceStore.calculatePrice(asset) ?? new PricePretty(fiat, 0)
-            ),
-          new PricePretty(fiat, 0)
-        )
-      : undefined;
+    const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+    const totalValue =
+      totalValueProp ??
+      (assets.length > 0 && fiat
+        ? assets.reduce(
+            (sum, asset) =>
+              sum.add(
+                priceStore.calculatePrice(asset) ?? new PricePretty(fiat, 0)
+              ),
+            new PricePretty(fiat, 0)
+          )
+        : undefined);
 
-  return (
-    <div
-      className={classNames(
-        "subtitle1 flex flex-col gap-2 text-osmoverse-400",
-        className
-      )}
-    >
-      <div>{title}</div>
-      {assets.length > 0 ? (
-        <div className="grid grid-cols-3 gap-3">
-          <div
-            className={classNames(
-              "grid gap-2",
-              assets.length > 1
-                ? "col-span-2 grid-cols-2"
-                : "grid-cols col-span-1"
-            )}
-          >
-            <div className="col-span-2 flex flex-wrap gap-x-5 gap-y-3">
-              {assets.map((asset) => (
-                <div key={asset.denom} className="flex items-center gap-2">
-                  <div className="h-[24px] w-[24px] flex-shrink-0">
-                    {asset.currency.coinImageUrl && (
-                      <Image
-                        alt="base currency"
-                        src={asset.currency.coinImageUrl}
-                        height={24}
-                        width={24}
-                      />
-                    )}
+    return (
+      <div
+        className={classNames(
+          "subtitle1 flex flex-col gap-2 text-osmoverse-400",
+          className
+        )}
+      >
+        <div>{title}</div>
+        {assets.length > 0 ? (
+          <div className="grid grid-cols-3 gap-3">
+            <div
+              className={classNames(
+                "grid gap-2",
+                assets.length > 1
+                  ? "col-span-2 grid-cols-2"
+                  : "grid-cols col-span-1"
+              )}
+            >
+              <div className="col-span-2 flex flex-wrap gap-x-5 gap-y-3">
+                {assets.map((asset) => (
+                  <div key={asset.denom} className="flex items-center gap-2">
+                    <div className="h-[24px] w-[24px] flex-shrink-0">
+                      {asset.currency.coinImageUrl && (
+                        <Image
+                          alt="base currency"
+                          src={asset.currency.coinImageUrl}
+                          height={24}
+                          width={24}
+                        />
+                      )}
+                    </div>
+                    <span>{asset.trim(true).toString()}</span>
                   </div>
-                  <span>{asset.trim(true).toString()}</span>
-                </div>
-              ))}
+                ))}
+              </div>
+            </div>
+            <div className="col-start-3">
+              {totalValue && (
+                <div className="text-white-full">({totalValue.toString()})</div>
+              )}
             </div>
           </div>
-          <div className="col-start-3">
-            {totalValue && (
-              <div className="text-white-full">({totalValue.toString()})</div>
-            )}
-          </div>
-        </div>
-      ) : (
-        <span className="italic">{emptyText ?? t("errors.notAvailable")}</span>
-      )}
-    </div>
-  );
-});
+        ) : (
+          <span className="italic">
+            {emptyText ?? t("errors.notAvailable")}
+          </span>
+        )}
+      </div>
+    );
+  }
+);
 
 const PriceBox: FunctionComponent<{
   label: string;

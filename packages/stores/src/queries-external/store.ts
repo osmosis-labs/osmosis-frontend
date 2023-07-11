@@ -96,6 +96,7 @@ export class QueriesExternalStore {
         kvStore,
         chainGetter,
         chainId,
+        priceStore,
         indexerDataBaseUrl
       );
   }
