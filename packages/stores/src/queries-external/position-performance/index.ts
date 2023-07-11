@@ -1,7 +1,8 @@
 import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter, HasMapStore, QueryResponse } from "@keplr-wallet/stores";
-import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { computed, makeObservable } from "mobx";
+import { computedFn } from "mobx-utils";
 
 import { IMPERATOR_INDEXER_DEFAULT_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
@@ -67,6 +68,48 @@ export class ObservableQueryPositionPerformanceMetrics extends ObservableQueryEx
       }
     );
   }
+
+  readonly calculateReturnOnInvestment = computedFn(
+    (currentPositionCoins: CoinPretty[]): RatePretty => {
+      // aggreate principal coins by denom
+      const principalCoinDenomMap = new Map<string, CoinPretty>();
+      this.totalEarned.forEach((coin) => {
+        const existingCoin = principalCoinDenomMap.get(
+          coin.currency.coinMinimalDenom
+        );
+        if (existingCoin) {
+          principalCoinDenomMap.set(
+            coin.currency.coinMinimalDenom,
+            existingCoin.add(coin)
+          );
+        } else {
+          principalCoinDenomMap.set(coin.currency.coinMinimalDenom, coin);
+        }
+      });
+
+      // calculate ROI per coin denom
+      const roiPerCoinDenom = new Map<string, RatePretty>();
+      currentPositionCoins.forEach((coin) => {
+        const denom = coin.currency.coinMinimalDenom;
+        const principalCoin = principalCoinDenomMap.get(denom);
+        if (principalCoin) {
+          // roi = (finalValue - initialInvestment) / initialInvestment
+          const roi = coin
+            .toDec()
+            .sub(principalCoin.toDec())
+            .quo(principalCoin.toDec())
+            .mul(new Dec(100));
+          roiPerCoinDenom.set(denom, new RatePretty(roi));
+        }
+      });
+
+      // return the average of all ROI per coin denom
+      const roiPerCoinDenomArray = Array.from(roiPerCoinDenom.values());
+      return roiPerCoinDenomArray
+        .reduce((sum, roi) => sum.add(roi), new RatePretty(0))
+        .quo(new Dec(roiPerCoinDenomArray.length));
+    }
+  );
 
   protected setResponse(
     response: Readonly<QueryResponse<PositionPerformance>>
