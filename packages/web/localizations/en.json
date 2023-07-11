@@ -422,6 +422,9 @@
     "edit": "edit",
     "stake": "Stake OSMO",
     "unstake": "Unstake OSMO",
+    "estimatedEarnings": "Estimated earnings",
+    "day": "day",
+    "month": "month",
     "validatorSquad": {
       "title": "Validator Squad",
       "description": "Select the validators you’d like to delegate to. Once complete, continue to stake. You may edit your validator set at any time.",
