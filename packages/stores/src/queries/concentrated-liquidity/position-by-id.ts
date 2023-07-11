@@ -7,7 +7,13 @@ import {
 } from "@keplr-wallet/stores";
 import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
 import { maxTick, minTick, tickToSqrtPrice } from "@osmosis-labs/math";
-import { action, computed, makeObservable, observable } from "mobx";
+import {
+  action,
+  computed,
+  getObserverTree,
+  makeObservable,
+  observable,
+} from "mobx";
 
 import { LiquidityPosition } from "./types";
 
@@ -124,6 +130,7 @@ export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<{
 
   @computed
   get claimableSpreadRewards(): CoinPretty[] {
+    console.log("calc sp rew");
     if (!this._raw?.claimable_spread_rewards) return [];
     return this._raw?.claimable_spread_rewards.map(
       ({ denom, amount }) =>
@@ -200,13 +207,18 @@ export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<{
   }
 
   protected canFetch() {
-    return this._canFetch;
+    return Boolean(this._raw) || this._canFetch;
   }
 
   protected setResponse(
     response: Readonly<QueryResponse<{ position: LiquidityPosition }>>
   ) {
     super.setResponse(response);
+    console.log(
+      "setRaw",
+      response.data.position.position.position_id,
+      response.data.position.claimable_spread_rewards
+    );
     this.setRaw(response.data.position);
     const rewardDenoms = Array.from(
       new Set(
@@ -246,6 +258,13 @@ export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<{
     queryPosition.allowFetch();
     return queryPosition;
   }
+
+  waitFreshResponse(): Promise<
+    Readonly<QueryResponse<{ position: LiquidityPosition }>> | undefined
+  > {
+    this._canFetch = true;
+    return super.waitFreshResponse();
+  }
 }
 
 export class ObservableQueryLiquidityPositionsById extends ObservableChainQueryMap<{
@@ -280,18 +299,32 @@ export class ObservableQueryLiquidityPositionsById extends ObservableChainQueryM
         .finally(() => this._fetchingPositionIds.delete(positionId));
     }
 
+    console.log({ positionId });
+    console.log(getObserverTree(pos, "totalClaimableRewards"));
+
     return super.get(positionId) as ObservableQueryLiquidityPositionById;
   }
 
+  @action
   setWithPosition(position: LiquidityPosition) {
-    const queryLiquidityPosition =
-      ObservableQueryLiquidityPositionById.makeWithRaw(
-        this.kvStore,
-        this.chainId,
-        this.chainGetter,
-        position
-      );
+    if (this.has(position.position.position_id)) {
+      console.log("has", position.position.position_id);
+      (
+        this.get(
+          position.position.position_id
+        ) as ObservableQueryLiquidityPositionById
+      ).setRaw(position);
+    } else {
+      const queryLiquidityPosition =
+        ObservableQueryLiquidityPositionById.makeWithRaw(
+          this.kvStore,
+          this.chainId,
+          this.chainGetter,
+          position
+        );
+      queryLiquidityPosition.allowFetch();
 
-    this.map.set(position.position.position_id, queryLiquidityPosition);
+      this.map.set(position.position.position_id, queryLiquidityPosition);
+    }
   }
 }
