@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { CoinPretty } from "@keplr-wallet/unit";
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
@@ -35,10 +35,9 @@ export const Staking: React.FC = () => {
 
   const stakeAmount = useMemo(() => {
     if (inputAmount) {
-      const formattedAmount = new Dec(inputAmount).mul(
-        DecUtils.getTenExponentNInPrecisionRange(osmo.coinDecimals)
+      return new CoinPretty(osmo, inputAmount).moveDecimalPointRight(
+        osmo.coinDecimals
       );
-      return new CoinPretty(osmo, formattedAmount);
     }
   }, [inputAmount, osmo]);
 
