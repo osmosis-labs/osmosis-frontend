@@ -12,7 +12,7 @@ import { useStore } from "~/stores";
 export const Staking: React.FC = () => {
   const t = useTranslation();
   const [activeTab, setActiveTab] = useState("Stake");
-  const [inputAmount, setInputAmount] = useState(undefined);
+  const [inputAmount, setInputAmount] = useState<string | undefined>(undefined);
 
   const { chainStore, accountStore, queriesStore } = useStore();
   const { chainId } = chainStore.osmosis;
