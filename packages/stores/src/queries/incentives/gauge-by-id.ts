@@ -18,7 +18,7 @@ export class ObservableQueryGauge extends ObservableChainQuery<GaugeById> {
   // since there are many gauge requests that may happen, we don't want to over fetch
   // when it becomes un/observed since it rarely changes.
   @observable.ref
-  protected _raw?: Gauge;
+  protected _raw: Gauge | null = null;
 
   protected _canFetch = false;
 
@@ -192,12 +192,18 @@ export class ObservableQueryGauges extends ObservableChainQueryMap<GaugeById> {
   /** Adds a gauge to the map store with prepopulated data. */
   @action
   setWithGauge(gauge: Gauge) {
-    const queryGauge = ObservableQueryGauge.makeWithRaw(
-      this.kvStore,
-      this.chainId,
-      this.chainGetter,
-      gauge
-    );
-    this.map.set(gauge.id, queryGauge);
+    const gaugeId = gauge.id;
+    if (this.has(gaugeId)) {
+      const queryGauge = this.get(gaugeId);
+      queryGauge.setRaw(gauge);
+    } else {
+      const queryGauge = ObservableQueryGauge.makeWithRaw(
+        this.kvStore,
+        this.chainId,
+        this.chainGetter,
+        gauge
+      );
+      this.map.set(gaugeId, queryGauge);
+    }
   }
 }

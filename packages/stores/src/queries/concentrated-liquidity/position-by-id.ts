@@ -23,10 +23,26 @@ export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<{
   position: LiquidityPosition;
 }> {
   @observable.ref
-  protected _raw?: LiquidityPosition;
+  protected _raw: LiquidityPosition | null = null;
 
   @observable
   protected _canFetch = false;
+
+  constructor(
+    kvStore: KVStore,
+    chainId: string,
+    chainGetter: ChainGetter,
+    readonly id: string
+  ) {
+    super(
+      kvStore,
+      chainId,
+      chainGetter,
+      `${URL_BASE}/position_by_id?position_id=${id}`
+    );
+
+    makeObservable(this);
+  }
 
   get hasData() {
     return this._raw !== undefined;
@@ -178,22 +194,6 @@ export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<{
     return false;
   }
 
-  constructor(
-    kvStore: KVStore,
-    chainId: string,
-    chainGetter: ChainGetter,
-    readonly id: string
-  ) {
-    super(
-      kvStore,
-      chainId,
-      chainGetter,
-      `${URL_BASE}/position_by_id?position_id=${id}`
-    );
-
-    makeObservable(this);
-  }
-
   @action
   allowFetch() {
     this._canFetch = true;
@@ -283,15 +283,24 @@ export class ObservableQueryLiquidityPositionsById extends ObservableChainQueryM
     return super.get(positionId) as ObservableQueryLiquidityPositionById;
   }
 
+  @action
   setWithPosition(position: LiquidityPosition) {
-    const queryLiquidityPosition =
-      ObservableQueryLiquidityPositionById.makeWithRaw(
-        this.kvStore,
-        this.chainId,
-        this.chainGetter,
+    const positionId = position.position.position_id;
+    if (this.has(positionId)) {
+      (this.get(positionId) as ObservableQueryLiquidityPositionById).setRaw(
         position
       );
+    } else {
+      const queryLiquidityPosition =
+        ObservableQueryLiquidityPositionById.makeWithRaw(
+          this.kvStore,
+          this.chainId,
+          this.chainGetter,
+          position
+        );
+      queryLiquidityPosition.allowFetch();
 
-    this.map.set(position.position.position_id, queryLiquidityPosition);
+      this.map.set(positionId, queryLiquidityPosition);
+    }
   }
 }
