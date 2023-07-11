@@ -14,7 +14,7 @@ type CursorInfo = Readonly<{
   endCursor?: string | undefined;
 }>;
 
-const MESSAGES_PER_PAGE = 50;
+const MESSAGES_PER_PAGE = 20;
 
 interface Props {
   setAlertEntry: React.Dispatch<
@@ -76,5 +76,30 @@ export const HistoryView: FunctionComponent<Props> = ({ setAlertEntry }) => {
   //   return <HistoryEmpty />;
   // }
 
-  return <HistoryRows rows={allNodes} setAlertEntry={setAlertEntry} />;
+  const loadMore = async () => {
+    if (!cursorInfo.hasNextPage) return;
+    client
+      .getNotificationHistory({
+        first: MESSAGES_PER_PAGE,
+        after: cursorInfo.endCursor,
+      })
+      .then((result) => {
+        setAllNodes((existing) => existing.concat(result.nodes ?? []));
+        setCursorInfo(result.pageInfo);
+      });
+  };
+
+  return (
+    <>
+      <HistoryRows rows={allNodes} setAlertEntry={setAlertEntry} />
+      {cursorInfo.hasNextPage ? (
+        <div
+          className="my-auto h-[2rem] w-full cursor-pointer bg-osmoverse-700 py-1 text-center"
+          onClick={loadMore}
+        >
+          Load More
+        </div>
+      ) : null}
+    </>
+  );
 };
