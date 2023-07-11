@@ -4,7 +4,7 @@ import { RatePretty } from "@keplr-wallet/unit";
 import { maxTick, minTick } from "@osmosis-labs/math";
 import { computed, makeObservable } from "mobx";
 
-import { IMPERATOR_TX_REWARD_BASEURL } from "..";
+import { IMPERATOR_INDEXER_DEFAULT_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
 
 /** Queries Imperator for extrapolated APR of a given position's tick range. */
@@ -36,7 +36,7 @@ export class ObservableQueryPositionRangeApr extends ObservableQueryExternalBase
 export class ObservableQueryPositionsRangeApr extends HasMapStore<ObservableQueryPositionRangeApr> {
   constructor(
     kvStore: KVStore,
-    poolRewardsBaseUrl = IMPERATOR_TX_REWARD_BASEURL
+    poolRewardsBaseUrl = IMPERATOR_INDEXER_DEFAULT_BASEURL
   ) {
     super((key) => {
       const { poolId, lowerTickIndex, upperTickIndex } = parseKey(key);
