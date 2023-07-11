@@ -71,7 +71,7 @@ export class ObservableQueryPositionPerformanceMetrics extends ObservableQueryEx
 
   readonly calculateReturnOnInvestment = computedFn(
     (currentPositionCoins: CoinPretty[]): RatePretty => {
-      // aggreate principal coins by denom
+      // aggregate principal coins by denom
       const principalCoinDenomMap = new Map<string, CoinPretty>();
       this.totalEarned.forEach((coin) => {
         const existingCoin = principalCoinDenomMap.get(
@@ -87,7 +87,7 @@ export class ObservableQueryPositionPerformanceMetrics extends ObservableQueryEx
         }
       });
 
-      // calculate ROI per coin denom
+      // calculate ROI per given coin denom
       const roiPerCoinDenom = new Map<string, RatePretty>();
       currentPositionCoins.forEach((coin) => {
         const denom = coin.currency.coinMinimalDenom;
