@@ -14,7 +14,7 @@ import {
   ObservableQueryPool,
   ObservableQueryPoolGetter,
 } from "../../queries/pools";
-import { IMPERATOR_HISTORICAL_DATA_BASEURL } from "..";
+import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
 import { FilteredPools, Filters, objToQueryParams, Pagination } from "./types";
 import { makePoolRawFromFilteredPool } from "./utils";
@@ -55,7 +55,7 @@ export class ObservableQueryFilteredPools
     readonly queryLiquiditiesInNetDirection: ObservableQueryLiquiditiesNetInDirection,
     readonly queryBalances: ObservableQueryBalances,
     readonly queryNodeInfo: ObservableQueryNodeInfo,
-    protected readonly baseUrl = IMPERATOR_HISTORICAL_DATA_BASEURL,
+    protected readonly baseUrl = IMPERATOR_TIMESERIES_DEFAULT_BASEURL,
     initialFilters: Filters = {
       min_liquidity: 1_000,
       order_key: "liquidity",

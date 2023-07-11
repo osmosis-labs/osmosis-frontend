@@ -6,8 +6,8 @@ import { IPriceStore } from "../price";
 import { ObservableQueryGauges } from "../queries/incentives";
 import { ObservableQueryIncentivizedPools } from "../queries/pool-incentives";
 import {
-  IMPERATOR_HISTORICAL_DATA_BASEURL as IMPERATOR_TIMESERIES_DATA_BASE_URL,
-  IMPERATOR_TX_REWARD_BASEURL as IMPERATOR_INDEXER_DATA_BASE_URL,
+  IMPERATOR_INDEXER_DEFAULT_BASEURL as IMPERATOR_INDEXER_DATA_BASE_URL,
+  IMPERATOR_TIMESERIES_DEFAULT_BASEURL as IMPERATOR_TIMESERIES_DATA_BASE_URL,
 } from ".";
 import { ObservableQueryActiveGauges } from "./active-gauges";
 import { ObservableQueryPositionsRangeApr } from "./concentrated-liquidity";
