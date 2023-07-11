@@ -1000,7 +1000,11 @@ export class OsmosisAccountImpl {
             .balances.forEach((bal) => {
               bal.waitFreshResponse();
             });
-          queryPositions.forEach((position) => position.waitFreshResponse());
+          positionIds.forEach((id) => {
+            this.queries.queryLiquidityPositionsById
+              .getForPositionId(id)
+              ?.waitFreshResponse();
+          });
         }
         onFulfill?.(tx);
       }

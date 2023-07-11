@@ -192,17 +192,12 @@ export class ObservableQueryGauges extends ObservableChainQueryMap<GaugeById> {
   /** Adds a gauge to the map store with prepopulated data. */
   @action
   setWithGauge(gauge: Gauge) {
-    if (this.has(gauge.id)) {
-      const queryGauge = this.get(gauge.id);
-      queryGauge.setRaw(gauge);
-    } else {
-      const queryGauge = ObservableQueryGauge.makeWithRaw(
-        this.kvStore,
-        this.chainId,
-        this.chainGetter,
-        gauge
-      );
-      this.map.set(gauge.id, queryGauge);
-    }
+    const queryGauge = ObservableQueryGauge.makeWithRaw(
+      this.kvStore,
+      this.chainId,
+      this.chainGetter,
+      gauge
+    );
+    this.map.set(gauge.id, queryGauge);
   }
 }

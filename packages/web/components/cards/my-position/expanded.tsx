@@ -6,7 +6,6 @@ import {
 import classNames from "classnames";
 import moment from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
-import { trace } from "mobx";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -110,8 +109,6 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
       setPriceRange([lowerPrices.price, upperPrices.price]);
     }
   }, [lowerPrices, upperPrices, setPriceRange]);
-
-  trace(positionConfig, "totalClaimableRewards");
 
   return (
     <div className="flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
