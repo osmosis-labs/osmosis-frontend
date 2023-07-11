@@ -14,7 +14,7 @@ type CursorInfo = Readonly<{
   endCursor?: string | undefined;
 }>;
 
-const MESSAGES_PER_PAGE = 20;
+const MESSAGES_PER_PAGE = 50;
 
 interface Props {
   setAlertEntry: React.Dispatch<
@@ -91,7 +91,10 @@ export const HistoryView: FunctionComponent<Props> = ({ setAlertEntry }) => {
 
   return (
     <>
-      <HistoryRows rows={allNodes} setAlertEntry={setAlertEntry} />
+      <HistoryRows
+        rows={hotFixDuplication([...allNodes])}
+        setAlertEntry={setAlertEntry}
+      />
       {cursorInfo.hasNextPage ? (
         <div
           className="my-auto h-[2rem] w-full cursor-pointer bg-osmoverse-700 py-1 text-center"
@@ -102,4 +105,12 @@ export const HistoryView: FunctionComponent<Props> = ({ setAlertEntry }) => {
       ) : null}
     </>
   );
+};
+
+// TODO: Remove this hotfix before release
+const hotFixDuplication = (nodes: HistoryRowData[]) => {
+  return nodes.filter((node, index) => {
+    const foundIndex = nodes.findIndex((it) => it.id === node.id);
+    return foundIndex === index;
+  });
 };

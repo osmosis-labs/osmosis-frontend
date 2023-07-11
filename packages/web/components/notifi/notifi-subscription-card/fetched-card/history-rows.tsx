@@ -50,7 +50,7 @@ interface RowProps {
   dummyRow?: DummyRow;
 }
 
-const HistoryRow: FunctionComponent<RowProps> = ({
+export const HistoryRow: FunctionComponent<RowProps> = ({
   onCtaClick,
   isModalCloseAfterClick,
   row,
@@ -282,7 +282,7 @@ const HistoryRow: FunctionComponent<RowProps> = ({
   );
 };
 
-type DummyRow = {
+export type DummyRow = {
   __typename: "DummyRow";
   emoji: string;
   title: string;
@@ -292,7 +292,7 @@ type DummyRow = {
   onCtaClick: () => void;
 };
 
-const dummyRows: DummyRow[] = [
+export const dummyRows: DummyRow[] = [
   {
     emoji: "🎉",
     __typename: "DummyRow",

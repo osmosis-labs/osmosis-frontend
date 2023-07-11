@@ -1,5 +1,10 @@
 import classNames from "classnames";
-import React, { ComponentProps, Fragment, FunctionComponent } from "react";
+import React, {
+  ComponentProps,
+  Fragment,
+  FunctionComponent,
+  useRef,
+} from "react";
 
 import { useStore } from "~/stores";
 
@@ -35,6 +40,7 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
     },
     accountStore,
   } = useStore();
+  const cardRef = useRef<HTMLDivElement>(null);
 
   const { innerState: { onRequestBack, backIcon, title } = {} } =
     useNotifiModalContext();
@@ -78,7 +84,15 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
             <>{title}</>
           )}
         </div>
-        <div className="overflow-scroll">
+        <div
+          ref={cardRef}
+          className={
+            cardRef.current &&
+            cardRef.current?.scrollHeight > cardRef.current?.offsetHeight
+              ? "{overflow-scroll}"
+              : ""
+          }
+        >
           <NotifiSubscriptionCard />
         </div>
       </Popover.Panel>

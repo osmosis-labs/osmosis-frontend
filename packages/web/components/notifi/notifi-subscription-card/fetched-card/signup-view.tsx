@@ -7,53 +7,35 @@ import { FunctionComponent, useCallback, useState } from "react";
 import { Button } from "~/components/buttons";
 
 import { useNotifiModalContext } from "../../notifi-modal-context";
-import { HistoryRowData, HistoryRows } from "./history-rows";
+import { DummyRow, HistoryRow } from "./history-rows";
 
-const dummyHistoryRows: HistoryRowData[] = [
+export const dummyRows: DummyRow[] = [
   {
-    id: "1",
-    createdDate: new Date().toLocaleDateString(),
-    eventId: "1",
-    read: false,
-    sourceAddress: "0x1234567890",
-    targets: [],
-    detail: {
-      __typename: "GenericEventDetails",
-      sourceName: "Deposit complete",
-      notificationTypeName: "1,129.39 OSMO received",
-      icon: "INFO",
-      genericMessage: "string",
-    },
+    emoji: "💸",
+    __typename: "DummyRow",
+    title: "Deposit complete",
+    message: "1,129.39 OSMO received",
+    cta: "View",
+    timestamp: "12:36 PM",
+    onCtaClick: () => {},
   },
   {
-    id: "2",
-    createdDate: new Date().toLocaleDateString(),
-    eventId: "2",
-    read: false,
-    sourceAddress: "0x1234567890",
-    targets: [],
-    detail: {
-      __typename: "GenericEventDetails",
-      sourceName: "Position near bounds",
-      notificationTypeName: "OSMO/ATOM Pool is within 10% of your set range",
-      icon: "MEGAPHONE",
-      genericMessage: "string",
-    },
+    emoji: "🚧",
+    __typename: "DummyRow",
+    title: "Position near bounds",
+    message: "OSMO/ATOM Pool is within 10% of your set range",
+    cta: "View",
+    timestamp: "yesterday",
+    onCtaClick: () => {},
   },
   {
-    id: "3",
-    createdDate: new Date().toLocaleDateString(),
-    eventId: "3",
-    read: false,
-    sourceAddress: "0x1234567890",
-    targets: [],
-    detail: {
-      __typename: "GenericEventDetails",
-      sourceName: "Update from the team",
-      notificationTypeName: "string;",
-      icon: "STAR",
-      genericMessage: "string",
-    },
+    emoji: "🎉",
+    __typename: "DummyRow",
+    title: "Update from the team",
+    message: "Learn how to deposit funds on Osmosis ",
+    cta: "View",
+    timestamp: "",
+    onCtaClick: () => {},
   },
 ];
 
@@ -94,9 +76,7 @@ export const SignupView: FunctionComponent = () => {
         Never miss an important update again, from new token listings to
         critical position statuses.
       </p>
-      <div
-        className="relative h-[200px] overflow-hidden rounded-3xl" /*style={{ borderRadius: "30px", overflow: "hidden" }}*/
-      >
+      <div className="relative h-[200px] overflow-hidden rounded-3xl">
         <div
           className="absolute z-10 h-full w-full"
           // TODO: Project Tailwind does not support gradients for now. Use CSS instead
@@ -105,9 +85,14 @@ export const SignupView: FunctionComponent = () => {
               "linear-gradient(rgb(90, 83, 99,0.3), rgb(40, 39, 80, 1) ",
           }}
         ></div>
-        <div className="m-[-10px]">
-          <HistoryRows rows={[...dummyHistoryRows]} setAlertEntry={() => {}} />
-        </div>
+        {dummyRows.map((row, key) => (
+          <HistoryRow
+            onCtaClick={row.onCtaClick}
+            row={row}
+            key={key}
+            isModalCloseAfterClick={true}
+          />
+        ))}
       </div>
 
       <Button mode="primary" disabled={loading} onClick={() => onClickVerify()}>
