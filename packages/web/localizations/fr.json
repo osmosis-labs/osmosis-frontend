@@ -483,6 +483,10 @@
   "viewExplorer": "Voir dans l'exploreur",
   "waitingForTransaction": "Attente de l'inclusion de la transaction dans le bloc",
   "highPoolInflationWarning": "Des APR élevés peuvent être le résultat de récompenses inflationnistes. Procédez avec prudence.",
+  "tally": {
+    "description": "De passionnantes nouveautés arrivent bientôt.",
+    "link": "Nous échangeons des aperçus en échange de commentaires."
+  },
   "seo.404.title": "404 Page non trouvée",
   "seo.404.description": "La page que vous recherchez n'existe pas.",
   "seo.500.title": "500 - Erreur interne du serveur",

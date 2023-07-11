@@ -483,6 +483,10 @@
   "viewExplorer": "浏览器查看",
   "waitingForTransaction": "等待交易打包进区块",
   "highPoolInflationWarning": "高APR可能源自通胀性奖励。请谨慎操作。",
+  "tally": {
+    "description": "精彩的新更新即将到来。",
+    "link": "我们用反馈交换悄悄话。"
+  },
   "seo.404.title": "404页面不存在",
   "seo.404.description": "您要查找的页面不存在。",
   "seo.500.title": "500内部服务器错误",
