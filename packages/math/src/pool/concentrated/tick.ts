@@ -194,6 +194,7 @@ export function estimateInitialTickBound({
     // if the division makes the result zero, also set it to constant value away from current tick.
     if (
       currentTickLiquidity.isZero() ||
+      tokenIn.amount.isZero() ||
       currentTickLiquidity.quo(new Dec(tokenIn.amount)).isZero()
     ) {
       const currentTick = priceToTick(currentSqrtPrice.pow(new Int(2)));
@@ -228,6 +229,7 @@ export function estimateInitialTickBound({
     // if the division makes the result zero, also set it to constant value away from current tick.
     if (
       currentTickLiquidity.isZero() ||
+      tokenIn.amount.isZero() ||
       new Dec(tokenIn.amount).quo(currentTickLiquidity).isZero()
     ) {
       const currentTick = priceToTick(currentSqrtPrice.pow(new Int(2)));
