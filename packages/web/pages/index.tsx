@@ -1,15 +1,15 @@
 import { Dec } from "@keplr-wallet/unit";
+import axios from "axios";
 import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import type { GetStaticProps, InferGetServerSidePropsType } from "next";
 import { useEffect, useMemo, useRef } from "react";
 
 import { AdBanner } from "~/components/ad-banner/ad-banner";
-import adCMS from "~/components/ad-banner/ad-banner-cms.json";
-import { Ad } from "~/components/ad-banner/ad-banner-types";
+import { Ad, AdCMS } from "~/components/ad-banner/ad-banner-types";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { SwapTool } from "~/components/swap-tool";
-import { EventName, IS_FRONTIER, IS_TESTNET } from "~/config";
+import { ADS_BANNER_URL, EventName, IS_FRONTIER, IS_TESTNET } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useStore } from "~/stores";
 
@@ -18,8 +18,16 @@ interface HomeProps {
 }
 
 export const getStaticProps: GetStaticProps<HomeProps> = async () => {
-  const ads = adCMS.banners.filter(({ featured }) => featured);
-  return { props: { ads } };
+  let ads: Ad[] = [];
+
+  try {
+    const { data: adCMS }: { data: AdCMS } = await axios.get(ADS_BANNER_URL);
+    ads = adCMS.banners.filter(({ featured }) => featured);
+  } catch (error) {
+    console.error("Error fetching ads:", error);
+  }
+
+  return { props: { ads }, revalidate: 3600 };
 };
 
 const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
