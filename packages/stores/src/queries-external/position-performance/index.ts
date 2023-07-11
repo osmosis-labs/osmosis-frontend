@@ -130,13 +130,13 @@ export class ObservableQueryPositionsPerformanceMetrics extends HasMapStore<Obse
     kvStore: KVStore,
     chainGetter: ChainGetter,
     chainId: string,
-    poolRewardsBaseUrl = IMPERATOR_INDEXER_DEFAULT_BASEURL
+    indexerBaseUrl = IMPERATOR_INDEXER_DEFAULT_BASEURL
   ) {
     super(
       (bech32Address) =>
         new ObservableQueryPositionPerformanceMetrics(
           kvStore,
-          poolRewardsBaseUrl,
+          indexerBaseUrl,
           chainGetter,
           chainId,
           bech32Address

@@ -15,6 +15,7 @@ import { ObservableQueryIbcChainsStatus } from "./ibc";
 import { ObservableQueryICNSNames } from "./icns";
 import { ObservableQueryPoolFeesMetrics } from "./pool-fees";
 import { ObservableQueryAccountsPoolRewards } from "./pool-rewards";
+import { ObservableQueryPositionsPerformanceMetrics } from "./position-performance";
 import { ObservableQueryTokensData } from "./token-data";
 import { ObservableQueryTokensHistoricalChart } from "./token-historical-chart";
 import { ObservableQueryTokensPairHistoricalChart } from "./token-pair-historical-chart";
@@ -30,6 +31,7 @@ export class QueriesExternalStore {
   public readonly queryTokenData: DeepReadonly<ObservableQueryTokensData>;
   public readonly queryActiveGauges: DeepReadonly<ObservableQueryActiveGauges>;
   public readonly queryICNSNames: DeepReadonly<ObservableQueryICNSNames>;
+  public readonly queryPositionsPerformaceMetrics: DeepReadonly<ObservableQueryPositionsPerformanceMetrics>;
 
   constructor(
     kvStore: KVStore,
@@ -88,5 +90,13 @@ export class QueriesExternalStore {
       chainId,
       chainGetter
     );
+
+    this.queryPositionsPerformaceMetrics =
+      new ObservableQueryPositionsPerformanceMetrics(
+        kvStore,
+        chainGetter,
+        chainId,
+        indexerDataBaseUrl
+      );
   }
 }
