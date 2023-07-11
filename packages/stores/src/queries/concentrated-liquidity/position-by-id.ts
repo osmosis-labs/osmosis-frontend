@@ -200,7 +200,7 @@ export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<{
   }
 
   protected canFetch() {
-    return Boolean(this._raw) || this._canFetch;
+    return this._canFetch;
   }
 
   protected setResponse(
