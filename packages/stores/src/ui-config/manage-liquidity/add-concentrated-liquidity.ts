@@ -252,16 +252,34 @@ export class ObservableAddConcentratedLiquidityConfig {
     return this._baseDepositAmountIn.error || this._quoteDepositAmountIn.error;
   }
 
-  /** User-selected price range, rounded to nearest tick. */
+  /** User-selected price range, rounded to nearest tick. Within +/-50x of current tick. */
   @computed
   get range(): [Dec, Dec] {
     const input0 = this._priceRangeInput[0].toDec();
     const input1 = this._priceRangeInput[1].toDec();
     if (this.fullRange || !this.pool) return [minSpotPrice, maxSpotPrice];
 
+    const inputMinPrice = roundPriceToNearestTick(
+      input0,
+      this.pool.tickSpacing,
+      true
+    );
+    const inputMaxPrice = roundPriceToNearestTick(
+      input1,
+      this.pool.tickSpacing,
+      true
+    );
+
+    const minPrice50x = this.pool.currentSqrtPrice
+      .mul(this.pool.currentSqrtPrice)
+      .quo(new Dec(50));
+    const maxPrice50x = this.pool.currentSqrtPrice
+      .mul(this.pool.currentSqrtPrice)
+      .mul(new Dec(50));
+
     return [
-      roundPriceToNearestTick(input0, this.pool.tickSpacing, true),
-      roundPriceToNearestTick(input1, this.pool.tickSpacing, true),
+      inputMinPrice.lt(minPrice50x) ? minPrice50x : inputMinPrice,
+      inputMaxPrice.gt(maxPrice50x) ? maxPrice50x : inputMaxPrice,
     ];
   }
 
