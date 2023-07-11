@@ -6,8 +6,8 @@ import { IPriceStore } from "../price";
 import { ObservableQueryGauges } from "../queries/incentives";
 import { ObservableQueryIncentivizedPools } from "../queries/pool-incentives";
 import {
-  IMPERATOR_HISTORICAL_DATA_BASEURL,
-  IMPERATOR_TX_REWARD_BASEURL,
+  IMPERATOR_HISTORICAL_DATA_BASEURL as IMPERATOR_TIMESERIES_DATA_BASE_URL,
+  IMPERATOR_TX_REWARD_BASEURL as IMPERATOR_INDEXER_DATA_BASE_URL,
 } from ".";
 import { ObservableQueryActiveGauges } from "./active-gauges";
 import { ObservableQueryPositionsRangeApr } from "./concentrated-liquidity";
@@ -39,43 +39,43 @@ export class QueriesExternalStore {
     observableQueryGuage: ObservableQueryGauges,
     incentivizedPools: ObservableQueryIncentivizedPools,
     webApiBaseUrl: string,
-    feeMetricsBaseURL = IMPERATOR_HISTORICAL_DATA_BASEURL,
-    poolRewardsBaseUrl = IMPERATOR_TX_REWARD_BASEURL,
+    timeseriesDataBaseUrl = IMPERATOR_TIMESERIES_DATA_BASE_URL,
+    indexerDataBaseUrl = IMPERATOR_INDEXER_DATA_BASE_URL,
     isTestnet = false
   ) {
     this.queryGammPoolFeeMetrics = new ObservableQueryPoolFeesMetrics(
       kvStore,
-      feeMetricsBaseURL
+      timeseriesDataBaseUrl
     );
     this.queryAccountsPoolRewards = new ObservableQueryAccountsPoolRewards(
       kvStore,
       priceStore,
-      poolRewardsBaseUrl
+      indexerDataBaseUrl
     );
     this.queryChainStatus = new ObservableQueryIbcChainsStatus(
       kvStore,
       chainId,
-      feeMetricsBaseURL
+      timeseriesDataBaseUrl
     );
     this.queryTokenHistoricalChart = new ObservableQueryTokensHistoricalChart(
       kvStore,
       priceStore,
-      feeMetricsBaseURL
+      timeseriesDataBaseUrl
     );
     this.queryTokenPairHistoricalChart =
       new ObservableQueryTokensPairHistoricalChart(
         kvStore,
         priceStore,
-        feeMetricsBaseURL,
+        timeseriesDataBaseUrl,
         isTestnet
       );
     this.queryPositionsRangeApr = new ObservableQueryPositionsRangeApr(
       kvStore,
-      poolRewardsBaseUrl
+      indexerDataBaseUrl
     );
     this.queryTokenData = new ObservableQueryTokensData(
       kvStore,
-      feeMetricsBaseURL
+      timeseriesDataBaseUrl
     );
     this.queryActiveGauges = new ObservableQueryActiveGauges(
       kvStore,

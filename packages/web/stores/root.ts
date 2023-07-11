@@ -29,8 +29,10 @@ import {
 import {
   ChainInfos,
   IBCAssetInfos,
+  INDEXER_DATA_URL,
   IS_FRONTIER,
   PoolPriceRoutes,
+  TIMESERIES_DATA_URL,
   WalletAssets,
   WALLETCONNECT_PROJECT_KEY,
   WALLETCONNECT_RELAY_URL,
@@ -176,8 +178,8 @@ export class RootStore {
         : IS_FRONTIER
         ? "https://frontier.osmosis.zone"
         : "https://app.osmosis.zone",
-      IS_TESTNET ? "https://api.osmotest5.osmosis.zone/" : undefined,
-      undefined,
+      TIMESERIES_DATA_URL,
+      INDEXER_DATA_URL,
       IS_TESTNET
     );
 
