@@ -64,7 +64,7 @@ export const osmosisMsgOpts = createMsgOpts({
       osmosis.superfluid.MessageComposer.withTypeUrl.superfluidDelegate,
   },
   lockAndSuperfluidDelegate: {
-    gas: 502000,
+    gas: 540_000,
     messageComposer:
       osmosis.superfluid.MessageComposer.withTypeUrl.lockAndSuperfluidDelegate,
   },
@@ -103,13 +103,13 @@ export const osmosisMsgOpts = createMsgOpts({
     messageComposer:
       osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
         .collectSpreadRewards,
-    gas: 750_000 * numPositions,
+    gas: 1_000_000 * numPositions,
   }),
   clCollectPositionsIncentivesRewards: (numPositions: number) => ({
     messageComposer:
       osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
         .collectIncentives,
-    gas: 800_000 * numPositions,
+    gas: 1_000_000 * numPositions,
   }),
   unlockAndMigrateSharesToFullRangeConcentratedPosition: (
     numLocks: number
