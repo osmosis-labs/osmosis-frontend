@@ -17,6 +17,7 @@ import {
 import {
   NoRouteError,
   NotEnoughLiquidityError,
+  NotEnoughQuotedError,
   OptimizedRoutes,
   SplitTokenInQuote,
   Token,
@@ -217,6 +218,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           // these are expected
           if (e instanceof NoRouteError) return undefined;
           if (e instanceof NotEnoughLiquidityError) return undefined;
+          if (e instanceof NotEnoughQuotedError) return undefined;
 
           console.error("Swap result rejected", e);
           return undefined;
@@ -235,6 +237,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           // these are expected
           if (e instanceof NoRouteError) return [];
           if (e instanceof NotEnoughLiquidityError) return [];
+          if (e instanceof NotEnoughQuotedError) return [];
 
           console.error("Optimized routes rejected", e);
           return [];
