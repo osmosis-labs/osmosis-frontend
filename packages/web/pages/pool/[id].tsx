@@ -68,7 +68,8 @@ const Pool: FunctionComponent = observer(() => {
           memoedPools={[queryPool]}
         />
       )}
-      {queryPool?.type === "concentrated" ? (
+      {featureFlags.concentratedLiquidity &&
+      queryPool?.type === "concentrated" ? (
         <ConcentratedLiquidityPool poolId={poolId} />
       ) : (
         queryPool && <SharePool poolId={poolId} />
