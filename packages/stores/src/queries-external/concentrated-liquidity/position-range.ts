@@ -27,9 +27,11 @@ export class ObservableQueryPositionRangeApr extends ObservableQueryExternalBase
 
   @computed
   get apr(): RatePretty | undefined {
-    // TODO: don't use mock data
+    if (!this.response) return;
 
-    return new RatePretty(0.2);
+    return new RatePretty(this.response.data.spreadFactorApr).add(
+      new RatePretty(this.response.data.incentivesApr)
+    );
   }
 }
 
